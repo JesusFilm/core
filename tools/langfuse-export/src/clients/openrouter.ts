@@ -3,7 +3,8 @@
 // Two responsibilities, both content-bearing and therefore network/trust-
 // boundary crossing:
 //   - synthesizeThemes: theme LABELS + group assignments only (never excerpt
-//     text — report.ts renders quotes verbatim from the sanitised records).
+//     text — the explorer renders message text verbatim from the sanitised
+//     records).
 //   - createLlmScrub: the optional --llm-scrub primitive, injected into
 //     sanitize.ts by run.ts.
 // Both accept only SanitisedConversation / already-scrubbed text.

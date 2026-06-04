@@ -69,63 +69,17 @@ export interface Conversation {
 }
 
 // Branded type: only sanitize.ts can construct a SanitisedConversation.
-// Downstream code (aggregate, openrouter, report) accepts only this type,
-// so a raw Conversation cannot reach the OpenRouter call — the
-// "samples are scrubbed before any LLM call" guarantee is compile-checked.
+// Downstream code (openrouter, facets, dataset) accepts only this type, so a
+// raw Conversation cannot reach the OpenRouter call — the "samples are
+// scrubbed before any LLM call" guarantee is compile-checked.
 declare const sanitisedBrand: unique symbol
 export type SanitisedConversation = Conversation & {
   readonly [sanitisedBrand]: true
 }
 
-export interface CountShare {
-  count: number
-  share: number // 0..1 of the relevant denominator
-}
-
-export interface TopQuestion {
-  message: string
-  count: number
-}
-
-export interface ReportStats {
-  windowFrom: string
-  windowTo: string
-  generatedAt: string
-
-  totalConversations: number
-  totalTurns: number
-
-  // Grouping fidelity — surfaces how trustworthy the conversation grouping is.
-  nullSession: CountShare // conversations from traces with no sessionId
-  singleTurn: CountShare // conversations with exactly one turn
-  excludedLoadTest: { count: number } // turns dropped by the discriminator
-
-  perModel: Record<string, number>
-  perDay: Record<string, number>
-
-  totalCostUsd: number
-  costPerDayUsd: Record<string, number>
-  totalInputTokens: number
-  totalOutputTokens: number
-
-  latencySeconds: {
-    count: number
-    p50: number
-    p95: number
-    p99: number
-    max: number
-  }
-
-  conversationLengthHistogram: Record<string, number> // turns -> conversation count
-
-  // Computed only over real-session, length>1 conversations.
-  topQuestions: TopQuestion[]
-  topQuestionsIncludedConversations: number
-  topQuestionsExcludedConversations: number
-}
-
 // Theme labels + group assignments returned by the LLM. Never excerpt text —
-// report.ts renders excerpt text verbatim from the sanitised records.
+// the explorer renders message text verbatim from the sanitised records; the
+// model only contributes labels.
 export interface Theme {
   label: string
   sessionIds: string[]
@@ -138,12 +92,11 @@ export interface ThemeSynthesis {
 // ===========================================================================
 // Insights explorer (NES-1719) — lossless dataset + shippable HTML viewer.
 //
-// The v1 path above (ReportStats + static report.ts) pre-aggregates into a
-// fixed summary. The explorer path below keeps the corpus intact: every
-// sanitised session with its full ordered message list, plus deterministic
-// keyword facets and optional per-session LLM themes, serialised into a
-// single offline HTML viewer that filters and drills in rather than reads a
-// fixed report. The deliverable becomes the browsable data, not a summary.
+// The explorer keeps the corpus intact: every sanitised session with its full
+// ordered message list, plus deterministic keyword facets and optional
+// per-session LLM themes, serialised into a single offline HTML viewer that
+// filters and drills in rather than reads a fixed report. The deliverable is
+// the browsable data, not a summary.
 // ===========================================================================
 
 // One message in a session, in conversation order. `role` distinguishes the

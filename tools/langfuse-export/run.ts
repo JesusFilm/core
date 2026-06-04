@@ -10,8 +10,7 @@
 //   themes) -> dataset (lossless corpus) -> explorer (offline HTML viewer)
 //   -> zip (dataset + viewer, opens by double-clicking from file://).
 //
-// The v1 static report (aggregate -> report.html, superseded) is opt-in via
-// --legacy-report / --pdf. Build offline from a fixture with --fixture PATH.
+// Build offline from a local fixture with --fixture PATH.
 
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
@@ -25,12 +24,10 @@ import {
 } from './src/clients/openrouter'
 import { createZip } from './src/clients/zip'
 import { loadEnvFile, parseEnv } from './src/env'
-import { buildStats } from './src/pipeline/aggregate'
 import { buildDataset, invertThemes } from './src/pipeline/dataset'
 import { buildFacets } from './src/pipeline/facets'
 import { renderExplorer } from './src/pipeline/explorer'
 import { normalize } from './src/pipeline/normalize'
-import { renderReport } from './src/pipeline/report'
 import { sanitize } from './src/pipeline/sanitize'
 import type {
   ObservationRecord,
@@ -103,14 +100,6 @@ async function main(): Promise<void> {
     return
   }
 
-  const wantExplorer = options.explorer
-  const wantLegacy = options.legacyReport || options.pdf
-  if (!wantExplorer && !wantLegacy) {
-    throw new Error(
-      'nothing to produce: --no-explorer was set without --legacy-report/--pdf'
-    )
-  }
-
   const window = resolveWindow(options)
   const normalizeOptions = parseDiscriminator(options.discriminator)
   const useFixture = options.fixture != null
@@ -119,9 +108,7 @@ async function main(): Promise<void> {
   console.log(
     `Window:        ${window.from.toISOString()} -> ${window.to.toISOString()}`
   )
-  console.log(
-    `Deliverable:   ${wantExplorer ? 'explorer bundle' : ''}${wantExplorer && wantLegacy ? ' + ' : ''}${wantLegacy ? 'legacy report' : ''}`
-  )
+  console.log('Deliverable:   insights-explorer bundle')
   console.log(`Discriminator: ${options.discriminator}`)
 
   // ---- source: live Langfuse, or an offline fixture ----
@@ -207,63 +194,40 @@ async function main(): Promise<void> {
   mkdirSync(outDir, { recursive: true })
   const generatedAt = new Date().toISOString()
 
-  // ---- deliverable 1: the insights-explorer bundle (default) ----
-  if (wantExplorer) {
-    const facets = buildFacets(sanitised)
-    const themesBySession = useFixture
-      ? fixtureThemes != null
-        ? new Map(Object.entries(fixtureThemes))
-        : null
-      : themeSynthesis != null
-        ? invertThemes(themeSynthesis)
-        : null
+  // ---- build the insights-explorer bundle ----
+  const facets = buildFacets(sanitised)
+  const themesBySession = useFixture
+    ? fixtureThemes != null
+      ? new Map(Object.entries(fixtureThemes))
+      : null
+    : themeSynthesis != null
+      ? invertThemes(themeSynthesis)
+      : null
 
-    const dataset = buildDataset(
-      sanitised,
-      window,
-      facets,
-      themesBySession,
-      excludedTurnCount,
-      generatedAt
-    )
-    const html = renderExplorer(dataset)
-    const datasetJson = JSON.stringify(dataset, null, 2)
-    const zip = createZip([
-      { name: 'index.html', data: html },
-      { name: 'dataset.json', data: datasetJson },
-      { name: 'README.txt', data: BUNDLE_README }
-    ])
+  const dataset = buildDataset(
+    sanitised,
+    window,
+    facets,
+    themesBySession,
+    excludedTurnCount,
+    generatedAt
+  )
+  const html = renderExplorer(dataset)
+  const datasetJson = JSON.stringify(dataset, null, 2)
+  const zip = createZip([
+    { name: 'index.html', data: html },
+    { name: 'dataset.json', data: datasetJson },
+    { name: 'README.txt', data: BUNDLE_README }
+  ])
 
-    writeFileSync(resolve(outDir, 'insights-explorer.zip'), zip)
-    // Unzipped copies too, so the engineer can preview without extracting.
-    writeFileSync(resolve(outDir, 'index.html'), html, 'utf8')
-    writeFileSync(resolve(outDir, 'dataset.json'), datasetJson, 'utf8')
-    console.log(
-      `  explorer: ${dataset.sessions.length} sessions, ${dataset.facets.length} facets, ` +
-        `${dataset.summary.suppressedKeywordCount} over-common keywords suppressed`
-    )
-  }
-
-  // ---- deliverable 2: the v1 static report (opt-in, superseded) ----
-  if (wantLegacy) {
-    const stats = buildStats(sanitised, excludedTurnCount, window)
-    const reportHtml = renderReport(stats, sanitised, themeSynthesis)
-    const htmlPath = resolve(outDir, 'report.html')
-    writeFileSync(htmlPath, reportHtml, 'utf8')
-
-    if (options.pdf) {
-      console.log('Rendering PDF...')
-      const { renderPdf } = await import('./src/clients/pdf')
-      try {
-        await renderPdf(htmlPath, resolve(outDir, 'report.pdf'))
-      } catch (error) {
-        console.error(
-          `PDF render failed — report.html is available at ${htmlPath}`
-        )
-        throw error
-      }
-    }
-  }
+  writeFileSync(resolve(outDir, 'insights-explorer.zip'), zip)
+  // Unzipped copies too, so the engineer can preview without extracting.
+  writeFileSync(resolve(outDir, 'index.html'), html, 'utf8')
+  writeFileSync(resolve(outDir, 'dataset.json'), datasetJson, 'utf8')
+  console.log(
+    `  explorer: ${dataset.sessions.length} sessions, ${dataset.facets.length} facets, ` +
+      `${dataset.summary.suppressedKeywordCount} over-common keywords suppressed`
+  )
 
   if (options.debug) {
     const lines: string[] = []
@@ -303,11 +267,9 @@ async function main(): Promise<void> {
 
   console.log('')
   console.log(`Done. Output: tools/langfuse-export/output/${id}/`)
-  if (wantExplorer) {
-    console.log(
-      'Share insights-explorer.zip directly with named recipients (offline; double-click index.html).'
-    )
-  }
+  console.log(
+    'Share insights-explorer.zip directly with named recipients (offline; double-click index.html).'
+  )
 }
 
 main().catch((error) => {

@@ -1,6 +1,6 @@
 # tools/langfuse-export
 
-Engineer-run CLI that pulls Apologist chat traces from the **Langfuse Public API**, scrubs free-text PII, and produces a shareable artifact. The default deliverable (**NES-1719**) is a **self-contained insights-explorer bundle**: a single zip containing the full sanitised dataset plus an offline HTML viewer a stakeholder unzips and opens by double-clicking — no server, no install, no internet. The v1 static report (**NES-1577 / NES-1690**) is still available behind `--legacy-report`.
+Engineer-run CLI that pulls Apologist chat traces from the **Langfuse Public API**, scrubs free-text PII, and produces a **self-contained insights-explorer bundle** (**NES-1719**): a single zip containing the full sanitised dataset plus an offline HTML viewer a stakeholder unzips and opens by double-clicking — no server, no install, no internet.
 
 Built for **NES-1690**, implementing the **NES-1656** export-path spike; the explorer bundle supersedes the back half of **NES-1577** (parked PR #9276). The manual CSV observations export drops the trace-level fields needed to group turns into conversations (`sessionId`), attribute country (`metadata.ipCountry`), and tag — this tool reads those from the API instead.
 
@@ -35,16 +35,13 @@ tools/langfuse-export/
     clients/            # external I/O — verified by the manual run, not unit tests
       langfuse.ts       #   fetchTraces + per-traceId fetchObservations
       openrouter.ts     #   OpenRouter client + theme synthesis + llmScrub
-      pdf.ts            #   optional Playwright HTML->PDF
       zip.ts            #   dependency-free ZIP writer (node:zlib) — pure, unit tested
     pipeline/           # pure transforms — unit tested
       normalize.ts      #   join obs->trace, group by sessionId -> Conversation[]
       sanitize.ts       #   regex PII scrub -> SanitisedConversation[]; injected llmScrub
-      facets.ts         #   deterministic keyword vocabulary + over-common suppression
+      facets.ts         #   keyword + country + journey-language facets, over-common suppression
       dataset.ts        #   SanitisedConversation[] -> lossless InsightsDataset (+ theme inversion)
       explorer.ts       #   self-contained offline HTML viewer (dataset inlined)
-      aggregate.ts      #   v1 deterministic usage stats (legacy report)
-      report.ts         #   v1 static HTML report (legacy; superseded by the explorer)
   output/               # gitignored — per-run artifacts (chat-derived; never commit)
 ```
 
@@ -73,12 +70,6 @@ bash tools/langfuse-export/fetch-env.sh
 
 This writes `tools/langfuse-export/.env` (gitignored). **Delete it when you're done — it holds live secrets.**
 
-For `--pdf`, install the Chromium browser binary once:
-
-```sh
-pnpm exec playwright install chromium
-```
-
 ## Run
 
 ```sh
@@ -94,10 +85,6 @@ pnpm exec tsx tools/langfuse-export/run.ts \
   --from 2026-05-01 --to 2026-06-01 \
   --fixture tools/langfuse-export/fixtures/sample.json
 
-# Also emit the v1 static report / PDF (superseded; opt-in):
-pnpm exec tsx tools/langfuse-export/run.ts --days 14 --legacy-report
-pnpm exec tsx tools/langfuse-export/run.ts --days 14 --legacy-report --pdf
-
 # Every environment (incl. pre-NES-1688 untagged history), no load-test exclusion:
 pnpm exec tsx tools/langfuse-export/run.ts --days 7 --environment all --discriminator none
 ```
@@ -112,13 +99,10 @@ Running with no arguments prints usage.
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `--days N`            | Window = last N days (default 14). Mutually exclusive with `--from`/`--to`.                                                                                 |
 | `--from ISO --to ISO` | Explicit window (both required together).                                                                                                                   |
-| `--no-explorer`       | Skip the `insights-explorer.zip` bundle (the default deliverable).                                                                                          |
-| `--legacy-report`     | Also emit the v1 static `report.html` (superseded by the explorer).                                                                                         |
 | `--fixture PATH`      | Build from a local `{traces, observations, themes?}` JSON instead of Langfuse — fully offline, no credentials, no LLM (themes read from the file).          |
 | `--discriminator V`   | Load-test exclusion: `default` (exclude known probes), `none`, `message:<regex>`, `journey:<csv>`, `tag:<csv>`. Orthogonal to `--environment` — both apply. |
 | `--environment E`     | Deployment-env filter (NES-1688): `production` (default), `stage`, `preview`, `development`, or `all` (every env, including pre-NES-1688 untagged traces).  |
 | `--llm-scrub`         | Extra LLM PII scrub pass (pending NES-1562 sign-off). Ignored under `--fixture`.                                                                            |
-| `--pdf`               | Render `report.pdf` from the v1 static report (implies `--legacy-report`; needs `playwright install chromium`).                                             |
 | `--model ID`          | OpenRouter model id (default `google/gemini-2.5-flash-lite`).                                                                                               |
 | `--throttle MS`       | Delay between Langfuse calls (default 700ms; keep under the ~100 req/min Hobby ceiling).                                                                    |
 | `--debug`             | Also write `records.ndjson` (one sanitised turn per line). **Debug artifact — never share.**                                                                |
@@ -127,10 +111,8 @@ Running with no arguments prints usage.
 
 Each run writes `tools/langfuse-export/output/<timestamp>/`:
 
-- `insights-explorer.zip` — **the deliverable** (dataset + offline viewer + readme). Default.
+- `insights-explorer.zip` — **the deliverable** (dataset + offline viewer + readme).
 - `index.html`, `dataset.json` — the unzipped bundle files, written alongside so you can preview without extracting (the same bytes are inside the zip).
-- `report.html` — only with `--legacy-report` (or `--pdf`).
-- `report.pdf` — only with `--pdf`.
 - `records.ndjson` — only with `--debug`; sanitised per-turn records for inspection.
 
 `output/` is gitignored — the bundle is chat-derived, never commit it.
@@ -145,13 +127,11 @@ Each run writes `tools/langfuse-export/output/<timestamp>/`:
 
 **Fetch.** The Langfuse legacy list endpoints (`/api/public/traces`, `/api/public/observations` — what the SDK v3 wraps) **time out on Langfuse Cloud**, so reads go via raw `fetch` instead: the cursor-paginated **v2 observations index** (`/api/public/v2/observations`) enumerates the distinct `traceId`s in the window, then **`GET /api/public/traces/{id}`** per trace returns the trace context (`sessionId`, `metadata`, `tags`) plus its full nested observations (input/output/usage/cost) in one by-id call. Neither call scans a list, so neither times out.
 
-**Explorer.** `facets.ts` derives the keyword vocabulary deterministically: each session is one document, terms above a document-frequency share (default 50%) are suppressed as over-common, terms below a floor are dropped as noise, the rest are ranked by coverage and capped. `dataset.ts` serialises the sanitised corpus losslessly (every session, every message, in order) and folds in the LLM's per-session themes (inverted from `synthesizeThemes`). `explorer.ts` inlines that dataset into a dependency-free HTML viewer; every piece of corpus text reaches the page via `textContent` (never `innerHTML`), and the inlined JSON has its `<` escaped so content cannot break out of the script block. `zip.ts` assembles the archive with `node:zlib` (no external dependency). If theme synthesis fails or `--fixture` supplies none, the explorer still works with keyword-only facets.
-
-**Legacy report.** Numbers and user-attributed quotes are **always code-produced**; the OpenRouter LLM contributes only theme labels and group assignments. `report.ts` renders excerpt text verbatim from the sanitised records, so the model cannot fabricate a quote or leak content it was never given. If theme synthesis fails, the report still renders stats + verbatim excerpts (with a visible note), just without thematic grouping.
+**Explorer.** `facets.ts` derives the keyword vocabulary deterministically: each session is one document, terms above a document-frequency share (default 50%) are suppressed as over-common, terms below a floor are dropped as noise, the rest are ranked by coverage and capped; it also builds the `country` (ipCountry) and `journey-language` metadata facets. `dataset.ts` serialises the sanitised corpus losslessly (every session, every message, in order) and folds in the LLM's per-session themes (inverted from `synthesizeThemes`). The LLM contributes **only** theme labels — never message text — so it cannot fabricate or leak a quote. `explorer.ts` inlines that dataset into a dependency-free HTML viewer; every piece of corpus text reaches the page via `textContent` (never `innerHTML`), and the inlined JSON has its `<` escaped so content cannot break out of the script block. `zip.ts` assembles the archive with `node:zlib` (no external dependency). If theme synthesis fails or `--fixture` supplies none, the explorer still works with keyword/metadata facets.
 
 ## Tests & typecheck
 
-Pure modules (`env`, `normalize`, `sanitize`, `facets`, `dataset`, `explorer`, `zip`, `aggregate`, `report`, `cli`) are unit-tested. The I/O modules (`langfuse`, `openrouter`, `pdf`) are verified by a manual end-to-end run; the offline end-to-end path is exercised with `--fixture`.
+Pure modules (`env`, `normalize`, `sanitize`, `facets`, `dataset`, `explorer`, `zip`, `cli`) are unit-tested. The I/O modules (`langfuse`, `openrouter`) are verified by a manual end-to-end run; the offline end-to-end path is exercised with `--fixture`.
 
 ```sh
 npx vitest run --config tools/langfuse-export/vitest.config.mts --coverage=false
@@ -172,4 +152,3 @@ npx tsc -p tools/langfuse-export/tsconfig.json --noEmit
 - **`country` is IP-geolocation.** The `country` facet is the trace's `ipCountry` (a rough proxy: VPNs, travel, and server egress can skew it), not a declared region.
 - **Anonymity grain is the session.** Sessions are labelled `Session 001…` in the viewer; the pseudonymous Langfuse `sessionId` is retained in `dataset.json` for traceability. Cross-session "user" identity is not reconstructed (no persistent id is captured today).
 - **Single-page size.** The whole corpus is inlined into one HTML file. That is fine at report scale; a very large window (many thousands of sessions) would produce a heavy page — narrow the window or add pagination before then.
-- **v1 static report not yet removed.** Per NES-1719 the explorer supersedes the v1 `aggregate`/`report` back half; deleting that code is carved into a follow-up subtask. It stays available behind `--legacy-report` until then.

@@ -10,7 +10,6 @@ describe('parseArgs', () => {
       '--environment',
       'preview',
       '--llm-scrub',
-      '--pdf',
       '--model',
       'google/gemini-2.5-flash',
       '--debug'
@@ -20,7 +19,6 @@ describe('parseArgs', () => {
       discriminator: 'none',
       environment: 'preview',
       llmScrub: true,
-      pdf: true,
       model: 'google/gemini-2.5-flash',
       debug: true
     })
@@ -32,28 +30,15 @@ describe('parseArgs', () => {
       discriminator: 'default',
       environment: 'production',
       llmScrub: false,
-      pdf: false,
       debug: false
     })
   })
 
-  it('defaults to the explorer bundle on, legacy report off, no fixture', () => {
-    const opts = parseArgs([])
-    expect(opts.explorer).toBe(true)
-    expect(opts.legacyReport).toBe(false)
-    expect(opts.fixture).toBeUndefined()
-  })
-
-  it('parses --no-explorer, --legacy-report and --fixture', () => {
-    const opts = parseArgs([
-      '--no-explorer',
-      '--legacy-report',
-      '--fixture',
+  it('defaults fixture to undefined and parses --fixture', () => {
+    expect(parseArgs([]).fixture).toBeUndefined()
+    expect(parseArgs(['--fixture', 'fixtures/sample.json']).fixture).toBe(
       'fixtures/sample.json'
-    ])
-    expect(opts.explorer).toBe(false)
-    expect(opts.legacyReport).toBe(true)
-    expect(opts.fixture).toBe('fixtures/sample.json')
+    )
   })
 
   it('throws when --fixture is missing its value', () => {
@@ -96,8 +81,8 @@ describe('parseArgs', () => {
   })
 
   it('throws when --throttle swallows the next flag as its value', () => {
-    // requireValue rejects '--pdf' before it can be NaN-parsed as a number.
-    expect(() => parseArgs(['--throttle', '--pdf'])).toThrow(
+    // requireValue rejects '--debug' before it can be NaN-parsed as a number.
+    expect(() => parseArgs(['--throttle', '--debug'])).toThrow(
       /--throttle requires a value/
     )
   })
