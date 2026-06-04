@@ -11,6 +11,8 @@ export type MediaCreateData = {
   embedUrl: string | null
   muxVideoId: string | null
   muxPlaybackId: string | null
+  muxName: string | null
+  muxDuration: number | null
 }
 
 /**
@@ -48,11 +50,25 @@ export async function resolveMediaInput(
 
   if (parsed.data.type === 'link') {
     const { embedUrl } = await linkValidate(parsed.data.url)
-    return { type: 'link', embedUrl, muxVideoId: null, muxPlaybackId: null }
+    return {
+      type: 'link',
+      embedUrl,
+      muxVideoId: null,
+      muxPlaybackId: null,
+      muxName: null,
+      muxDuration: null
+    }
   }
 
-  const { muxVideoId, muxPlaybackId } = await muxValidate(
+  const { muxVideoId, muxPlaybackId, muxName, muxDuration } = await muxValidate(
     parsed.data.muxVideoId
   )
-  return { type: 'mux', embedUrl: null, muxVideoId, muxPlaybackId }
+  return {
+    type: 'mux',
+    embedUrl: null,
+    muxVideoId,
+    muxPlaybackId,
+    muxName,
+    muxDuration
+  }
 }

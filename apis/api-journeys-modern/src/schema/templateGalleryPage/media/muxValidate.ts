@@ -10,6 +10,8 @@ const GET_MUX_VIDEO_QUERY = graphql(`
     getMuxVideo(id: $id) {
       id
       playbackId
+      name
+      duration
     }
   }
 `)
@@ -26,9 +28,12 @@ const GET_MUX_VIDEO_QUERY = graphql(`
  * processing has none); it is captured here so public-page reads never have to
  * cross back to the media subgraph.
  */
-export async function muxValidate(
+export async function muxValidate(muxVideoId: string): Promise<{
   muxVideoId: string
-): Promise<{ muxVideoId: string; muxPlaybackId: string }> {
+  muxPlaybackId: string
+  muxName: string | null
+  muxDuration: number | null
+}> {
   const apollo = new ApolloClient({
     link: createHttpLink({
       uri: env.GATEWAY_URL,
@@ -59,5 +64,10 @@ export async function muxValidate(
     })
   }
 
-  return { muxVideoId, muxPlaybackId: data.getMuxVideo.playbackId }
+  return {
+    muxVideoId,
+    muxPlaybackId: data.getMuxVideo.playbackId,
+    muxName: data.getMuxVideo.name ?? null,
+    muxDuration: data.getMuxVideo.duration ?? null
+  }
 }

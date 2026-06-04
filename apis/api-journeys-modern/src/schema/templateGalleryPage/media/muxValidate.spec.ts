@@ -14,18 +14,47 @@ describe('muxValidate', () => {
     vi.clearAllMocks()
   })
 
-  it('returns muxVideoId + denormalized playbackId for a ready video', async () => {
+  it('returns muxVideoId + denormalized playbackId, name and duration for a ready video', async () => {
     mockQuery.mockResolvedValue({
-      data: { getMuxVideo: { id: 'vid-1', playbackId: 'pb_x' } }
+      data: {
+        getMuxVideo: {
+          id: 'vid-1',
+          playbackId: 'pb_x',
+          name: 'My clip',
+          duration: 125
+        }
+      }
     })
 
     await expect(muxValidate('vid-1')).resolves.toEqual({
       muxVideoId: 'vid-1',
-      muxPlaybackId: 'pb_x'
+      muxPlaybackId: 'pb_x',
+      muxName: 'My clip',
+      muxDuration: 125
     })
     expect(mockQuery).toHaveBeenCalledWith(
       expect.objectContaining({ variables: { id: 'vid-1' } })
     )
+  })
+
+  it('returns null name/duration when Mux reports none', async () => {
+    mockQuery.mockResolvedValue({
+      data: {
+        getMuxVideo: {
+          id: 'vid-1',
+          playbackId: 'pb_x',
+          name: null,
+          duration: null
+        }
+      }
+    })
+
+    await expect(muxValidate('vid-1')).resolves.toEqual({
+      muxVideoId: 'vid-1',
+      muxPlaybackId: 'pb_x',
+      muxName: null,
+      muxDuration: null
+    })
   })
 
   it('throws NOT_FOUND when the video does not exist', async () => {

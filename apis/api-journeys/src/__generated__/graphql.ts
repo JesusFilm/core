@@ -5249,12 +5249,16 @@ export type TemplateGalleryPageCreateInput = {
   title: Scalars['String']['input'];
 };
 
-/** Media attached to a TemplateGalleryPage. `type` discriminates the populated fields: `link` populates `embedUrl`; `mux` populates `muxPlaybackId`. All fields source directly from the stored row so public-page reads never cross to the media database. */
+/** Media attached to a TemplateGalleryPage. `type` discriminates the populated fields: `link` populates `embedUrl`; `mux` populates `muxPlaybackId` (plus `muxName`/`muxDuration`). All fields source directly from the stored row so public-page reads never cross to the media database. */
 export type TemplateGalleryPageMedia = {
   __typename?: 'TemplateGalleryPageMedia';
   /** Server-normalized iframe URL. Populated for `link`; null for `mux`. */
   embedUrl?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  /** Video duration in seconds, denormalized from MuxVideo at save time. Populated for `mux` when Mux reports a duration; null for `link`. */
+  muxDuration?: Maybe<Scalars['Int']['output']>;
+  /** Video name, denormalized from MuxVideo at save time. Populated for `mux` when Mux has a name; null for `link`. */
+  muxName?: Maybe<Scalars['String']['output']>;
   /** Mux playback ID, denormalized from MuxVideo at save time so public reads never cross to the media DB. Populated for `mux`; null for `link`. */
   muxPlaybackId?: Maybe<Scalars['String']['output']>;
   /** Discriminator for which underlying field is populated. */

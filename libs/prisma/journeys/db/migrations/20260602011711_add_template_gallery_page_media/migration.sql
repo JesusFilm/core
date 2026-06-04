@@ -9,6 +9,8 @@ CREATE TABLE "TemplateGalleryPageMedia" (
     "embedUrl" TEXT,
     "muxVideoId" TEXT,
     "muxPlaybackId" TEXT,
+    "muxName" TEXT,
+    "muxDuration" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

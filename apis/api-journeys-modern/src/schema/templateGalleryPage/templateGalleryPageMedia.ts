@@ -17,7 +17,7 @@ export const TemplateGalleryPageMediaRef = builder.prismaObject(
   'TemplateGalleryPageMedia',
   {
     description:
-      'Media attached to a TemplateGalleryPage. `type` discriminates the populated fields: `link` populates `embedUrl`; `mux` populates `muxPlaybackId`. All fields source directly from the stored row so public-page reads never cross to the media database.',
+      'Media attached to a TemplateGalleryPage. `type` discriminates the populated fields: `link` populates `embedUrl`; `mux` populates `muxPlaybackId` (plus `muxName`/`muxDuration`). All fields source directly from the stored row so public-page reads never cross to the media database.',
     fields: (t) => ({
       id: t.exposeID('id', { nullable: false }),
       type: t.expose('type', {
@@ -34,6 +34,16 @@ export const TemplateGalleryPageMediaRef = builder.prismaObject(
         nullable: true,
         description:
           'Mux playback ID, denormalized from MuxVideo at save time so public reads never cross to the media DB. Populated for `mux`; null for `link`.'
+      }),
+      muxName: t.exposeString('muxName', {
+        nullable: true,
+        description:
+          'Video name, denormalized from MuxVideo at save time. Populated for `mux` when Mux has a name; null for `link`.'
+      }),
+      muxDuration: t.exposeInt('muxDuration', {
+        nullable: true,
+        description:
+          'Video duration in seconds, denormalized from MuxVideo at save time. Populated for `mux` when Mux reports a duration; null for `link`.'
       })
     })
   }
