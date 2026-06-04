@@ -103,17 +103,33 @@ export function FeaturedRow({
               sx={{
                 color: GALLERY_ACCENT,
                 fontWeight: 700,
+                // Bumped up so the Explore meta reads bigger than the More
+                // grid's meta (which uses the variant's default 10px),
+                // matching the broader Explore > More size hierarchy.
+                fontSize: '0.75rem',
                 letterSpacing: '0.12em'
               }}
             >
               {meta}
             </Typography>
           )}
-          <Typography variant="h4" sx={{ fontWeight: 800 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>
             {item.title}
           </Typography>
           {hasDescription && (
-            <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+            <Typography
+              variant="body1"
+              sx={{
+                color: 'text.secondary',
+                // Long descriptions otherwise dominate the row; cap to three
+                // lines and let Preview show the full text on the template
+                // page. Same `-webkit-line-clamp` recipe as the More cards.
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: 3,
+                overflow: 'hidden'
+              }}
+            >
               {item.description}
             </Typography>
           )}

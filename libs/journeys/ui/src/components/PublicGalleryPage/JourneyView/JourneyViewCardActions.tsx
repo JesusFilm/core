@@ -143,7 +143,15 @@ export function JourneyViewCardActions({
         fullWidth={fullWidth}
         aria-label={t('Use {{title}}', { title: itemTitle })}
         data-testid="GalleryTemplateCardUseButton"
-        sx={{ height: ACTION_SIZE, ...useButtonSx }}
+        sx={{
+          height: ACTION_SIZE,
+          // In the Explore section the button is non-fullWidth (it sits in a
+          // text column next to a Play icon button); give it a roomier
+          // minWidth so the label has weight matching the surrounding type.
+          // In More cards `fullWidth` stretches it to fill the column.
+          minWidth: fullWidth ? undefined : 130,
+          ...useButtonSx
+        }}
       >
         {t('Use')}
       </Button>

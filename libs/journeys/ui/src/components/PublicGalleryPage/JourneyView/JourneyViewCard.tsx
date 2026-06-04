@@ -76,14 +76,17 @@ export function JourneyViewCard({
       </Stack>
     )
 
+  // Same `overline` variant used by FeaturedRow's meta, just with the More
+  // section's smaller default size and tighter letter-spacing. Both grid
+  // variants share this so the panel/overlay cards align.
   const eyebrow =
     meta !== '' ? (
       <Typography
-        variant="caption"
+        variant="overline"
         sx={{
           color: 'text.secondary',
-          letterSpacing: '0.08em',
-          textTransform: 'uppercase'
+          fontWeight: 700,
+          letterSpacing: '0.08em'
         }}
       >
         {meta}
@@ -133,6 +136,9 @@ export function JourneyViewCard({
           {hasDescription && (
             <Typography
               variant="body2"
+              // Same `body2` description font as the overlay variant — pick
+              // a fixed two-line clamp so cards in a row finish at the same
+              // height regardless of how much text each item carries.
               sx={{ color: 'text.secondary', ...clamp(2) }}
             >
               {item.description}
@@ -187,12 +193,11 @@ export function JourneyViewCard({
           <Stack spacing={0.75}>
             {meta !== '' && (
               <Typography
+                variant="overline"
                 sx={{
                   color: 'rgba(255,255,255,0.85)',
-                  fontSize: '0.65rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.08em',
-                  textTransform: 'uppercase'
+                  fontWeight: 700,
+                  letterSpacing: '0.08em'
                 }}
               >
                 {meta}
@@ -202,8 +207,10 @@ export function JourneyViewCard({
               sx={{
                 color: 'common.white',
                 fontWeight: 700,
-                fontSize: '1.125rem',
-                lineHeight: 1.25,
+                // Same 17px / lh 1.3 as the panel variant so the two More
+                // grids align in title size, not just description size.
+                fontSize: '1.0625rem',
+                lineHeight: 1.3,
                 ...clamp(2)
               }}
             >
@@ -211,12 +218,8 @@ export function JourneyViewCard({
             </Typography>
             {hasDescription && (
               <Typography
-                sx={{
-                  color: 'rgba(255,255,255,0.85)',
-                  fontSize: '0.8125rem',
-                  lineHeight: 1.4,
-                  ...clamp(2)
-                }}
+                variant="body2"
+                sx={{ color: 'rgba(255,255,255,0.85)', ...clamp(2) }}
               >
                 {item.description}
               </Typography>

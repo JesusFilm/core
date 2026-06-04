@@ -156,7 +156,9 @@ describe('PublicGalleryPage', () => {
       const menuButton = within(nav).getByRole('button', {
         name: 'Gallery sections'
       })
-      expect(menuButton).toHaveAttribute('aria-haspopup', 'true')
+      // `dialog` is the canonical value for a Drawer trigger (the boolean
+      // form is deprecated in ARIA 1.1+).
+      expect(menuButton).toHaveAttribute('aria-haspopup', 'dialog')
     })
 
     it('shows the cover CTA when there are templates', () => {

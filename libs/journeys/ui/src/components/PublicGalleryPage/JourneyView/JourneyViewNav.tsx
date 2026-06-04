@@ -160,7 +160,7 @@ export function JourneyViewNav({
         <Container maxWidth="lg">
           <Stack
             direction="row"
-            spacing={4}
+            spacing={0}
             justifyContent="center"
             sx={{
               // The bar is slim; hide the scrollbar that horizontal overflow
@@ -180,7 +180,7 @@ export function JourneyViewNav({
                   type="button"
                   onClick={() => scrollToSection(section.id)}
                   underline="none"
-                  aria-current={active ? 'true' : undefined}
+                  aria-current={active ? 'location' : undefined}
                   sx={{
                     whiteSpace: 'nowrap',
                     fontWeight: active ? 700 : 600,
@@ -189,6 +189,12 @@ export function JourneyViewNav({
                     color: active ? GALLERY_ACCENT : 'text.secondary',
                     borderBottom: '2px solid',
                     borderColor: active ? GALLERY_ACCENT : 'transparent',
+                    // Symmetric horizontal padding on each link instead of a
+                    // Stack `spacing` (which lives only on the left of each
+                    // non-first item). Equal left+right keeps the active
+                    // underline visually centred under its label and balances
+                    // the row regardless of which link is active.
+                    px: 1,
                     pb: 0.25,
                     transition: 'color 150ms ease, border-color 150ms ease',
                     '&:hover': {
@@ -209,7 +215,9 @@ export function JourneyViewNav({
           from here rather than as a separate bar. */}
       <IconButton
         aria-label={ariaLabel}
-        aria-haspopup="true"
+        // `aria-haspopup="dialog"` matches the MUI Drawer's role and replaces
+        // the deprecated boolean form.
+        aria-haspopup="dialog"
         aria-controls="gallery-nav-drawer"
         aria-expanded={drawerOpen ? 'true' : undefined}
         onClick={handleOpenDrawer}

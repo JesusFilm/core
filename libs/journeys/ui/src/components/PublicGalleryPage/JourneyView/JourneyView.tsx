@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 import { Theme, lighten } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, ReactNode, useMemo } from 'react'
+import { ReactElement, ReactNode, useMemo, useState } from 'react'
 
 import {
   GALLERY_ACCENT,
@@ -25,7 +25,7 @@ import {
   JourneyViewNavSection,
   scrollToSection
 } from './JourneyViewNav'
-import { ScrollProvider } from './scrollContext'
+import { ScrollProvider, useScrollSubscription } from './scrollContext'
 import { ScrollReveal } from './ScrollReveal'
 import { useParallax } from './useParallax'
 
@@ -133,72 +133,29 @@ function JourneyViewBody({ data }: JourneyViewProps): ReactElement {
         sections={navSections}
         ariaLabel={t('Gallery sections')}
       />
+      {/* The CTA floats fixed at the viewport bottom and serves as a scroll
+          affordance. It only really earns its keep while the user is still at
+          the top (telling them "there's more below"); as soon as they start
+          scrolling it fades out so it doesn't crowd the cards. If the page is
+          short enough to fit without scrolling, the fade-out trigger never
+          fires and the button stays visible. */}
+      {hasTemplates && <CoverCta />}
       {/* Section 1 — intro/cover (title, description, author) with a parallax
           drift; the nav's first, always-present section. */}
       <Box
         component="section"
         id={SECTION_IDS.cover}
         sx={{
-          minHeight: '100svh',
-          display: 'flex',
-          flexDirection: 'column',
+          ...fullHeightSection,
           scrollMarginTop: { xs: 0, md: `${GALLERY_NAV_HEIGHT}px` },
-          pt: { xs: 8, md: 14 },
-          pb: { xs: 5, md: 8 }
+          py: { xs: 8, md: 14 }
         }}
       >
-        {/* The header centres in the available height; the CTA follows it in
-            normal flow, so the gap between them is guaranteed and never
-            collapses on short screens. */}
-        <Box
-          sx={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center'
-          }}
-        >
-          <Container maxWidth="md">
-            <Box ref={introRef}>
-              <JourneyViewHeader data={data} creatorAboveDescription />
-            </Box>
-          </Container>
-        </Box>
-        {/* A standing call to action at the foot of the cover: it both invites
-            the visitor in and points to the templates below. The top padding
-            sets the minimum distance from the header above — wide enough that
-            the header's parallax drift (up to ~6% of the viewport) never pushes
-            the text under the button. */}
-        {hasTemplates && (
-          <Box
-            sx={{
-              flexShrink: 0,
-              display: 'flex',
-              justifyContent: 'center',
-              px: 2,
-              pt: { xs: 10, md: 14 }
-            }}
-          >
-            <Button
-              variant="contained"
-              onClick={() => scrollToSection(SECTION_IDS.featured)}
-              endIcon={<KeyboardArrowDownRoundedIcon />}
-              data-testid="GalleryCoverCta"
-              sx={{
-                backgroundColor: GALLERY_ACCENT,
-                color: '#FFFFFF',
-                borderRadius: 999,
-                px: 3,
-                py: 1.25,
-                fontWeight: 700,
-                textTransform: 'none',
-                '&:hover': { backgroundColor: lighten(GALLERY_ACCENT, 0.15) }
-              }}
-            >
-              {t('Explore')}
-            </Button>
+        <Container maxWidth="md">
+          <Box ref={introRef}>
+            <JourneyViewHeader data={data} creatorAboveDescription />
           </Box>
-        )}
+        </Container>
       </Box>
 
       {/* Section 2 — the featured templates (two, or three when that's all) */}
@@ -322,6 +279,68 @@ function JourneyViewBody({ data }: JourneyViewProps): ReactElement {
           </Container>
         </Box>
       )}
+    </Box>
+  )
+}
+
+/**
+ * Floating "Explore" call-to-action pinned to the bottom of the viewport.
+ * Visible while the user is still at the top of the page (so it signals
+ * "there's more to see below"), and on pages too short to scroll. Fades out
+ * as soon as the user starts scrolling so it doesn't sit over the cards.
+ * Lives at JourneyViewBody root so it's outside the scrolling section flow
+ * and uses the shared ScrollProvider via `useScrollSubscription`.
+ */
+function CoverCta(): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
+  const [visible, setVisible] = useState(true)
+
+  useScrollSubscription(() => {
+    const root = document.documentElement
+    const pageScrolls = root.scrollHeight > window.innerHeight + 1
+    // On a non-scrolling page the CTA stays put — there's nothing to scroll
+    // to but the design still earns the affordance.
+    setVisible(!pageScrolls || window.scrollY < 100)
+  })
+
+  return (
+    <Box
+      sx={{
+        position: 'fixed',
+        bottom: { xs: 24, md: 40 },
+        left: 0,
+        right: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        // The wrapper spans the page so the button can centre, but only the
+        // button itself receives clicks — the empty sides shouldn't trap a
+        // tap meant for the content underneath.
+        pointerEvents: 'none',
+        zIndex: (theme) => theme.zIndex.appBar - 1,
+        opacity: visible ? 1 : 0,
+        transition: 'opacity 250ms ease',
+        px: 2
+      }}
+    >
+      <Button
+        variant="contained"
+        onClick={() => scrollToSection(SECTION_IDS.featured)}
+        endIcon={<KeyboardArrowDownRoundedIcon />}
+        data-testid="GalleryCoverCta"
+        sx={{
+          pointerEvents: 'auto',
+          backgroundColor: GALLERY_ACCENT,
+          color: '#FFFFFF',
+          borderRadius: 999,
+          px: 3,
+          py: 1.25,
+          fontWeight: 700,
+          textTransform: 'none',
+          '&:hover': { backgroundColor: lighten(GALLERY_ACCENT, 0.15) }
+        }}
+      >
+        {t('Explore')}
+      </Button>
     </Box>
   )
 }
