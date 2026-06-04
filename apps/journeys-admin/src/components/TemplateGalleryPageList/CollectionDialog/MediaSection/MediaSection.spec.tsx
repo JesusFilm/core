@@ -221,4 +221,24 @@ describe('MediaSection', () => {
     expect(screen.getByRole('button', { name: 'Link' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Upload' })).toBeDisabled()
   })
+
+  it('shows a grey placeholder box on the Link tab when there is no media', () => {
+    renderSection({ type: 'none' })
+    expect(
+      screen.getByTestId('GalleryMediaPreviewPlaceholder')
+    ).toBeInTheDocument()
+  })
+
+  it('blanks the link-tab preview box when the saved media is a video', () => {
+    // Saved video, but the Link tab must show a blank box, not the video
+    // (boxMedia follows the active tab; the Upload box is its own component).
+    renderSection({ type: 'mux', muxVideoId: '', muxPlaybackId: 'pb-1' })
+    fireEvent.click(screen.getByRole('button', { name: 'Link' }))
+    expect(
+      screen.queryByTestId('GalleryMediaPreviewThumbnail')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId('GalleryMediaPreviewPlaceholder')
+    ).toBeInTheDocument()
+  })
 })

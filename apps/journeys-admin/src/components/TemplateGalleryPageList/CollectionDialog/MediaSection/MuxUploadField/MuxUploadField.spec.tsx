@@ -38,8 +38,8 @@ function renderField(
   render(
     <MuxUploadField
       uploadKey="key-1"
+      media={{ type: 'none' }}
       hasVideo={false}
-      playbackId={null}
       onUploadStart={onUploadStart}
       onComplete={onComplete}
       onCancel={onCancel}
@@ -127,13 +127,28 @@ describe('MuxUploadField', () => {
     ).toBeInTheDocument()
   })
 
-  it('shows the attached state with a thumbnail and removes on request', () => {
-    const { onRemove } = renderField({ hasVideo: true, playbackId: 'pb-1' })
+  it('frames the empty box as "Choose a video"', () => {
+    renderField()
+    expect(
+      screen.getByRole('button', { name: 'Choose a video' })
+    ).toBeInTheDocument()
+  })
+
+  it('shows the attached state — thumbnail in the box, Video attached + Remove', () => {
+    const { onRemove } = renderField({
+      hasVideo: true,
+      media: { type: 'mux', muxVideoId: '', muxPlaybackId: 'pb-1' }
+    })
     expect(screen.getByTestId('MuxUploadFieldReady')).toBeInTheDocument()
-    expect(screen.getByRole('img')).toHaveAttribute(
+    expect(screen.getByText('Video attached')).toBeInTheDocument()
+    // The thumbnail renders in the box; the box doubles as Replace.
+    expect(screen.getByTestId('GalleryMediaPreviewThumbnail')).toHaveAttribute(
       'src',
       'https://image.mux.com/pb-1/thumbnail.jpg'
     )
+    expect(
+      screen.getByRole('button', { name: 'Replace video' })
+    ).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Remove' }))
     expect(onRemove).toHaveBeenCalledTimes(1)
   })

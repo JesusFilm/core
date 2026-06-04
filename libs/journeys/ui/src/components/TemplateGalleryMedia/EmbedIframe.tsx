@@ -21,6 +21,12 @@ interface EmbedIframeProps {
    * responsively below that on narrow screens. Omit for full width.
    */
   maxHeight?: number
+  /**
+   * Fill the parent container (width + height 100%) instead of rendering at
+   * the host's intrinsic aspect ratio. The embedded player letterboxes its own
+   * content inside. Used by the compact field box, which has a fixed size.
+   */
+  fill?: boolean
 }
 
 /**
@@ -34,7 +40,8 @@ export function EmbedIframe({
   title,
   borderRadius = 1,
   testId,
-  maxHeight
+  maxHeight,
+  fill = false
 }: EmbedIframeProps): ReactElement {
   const attrs = embedAttrs(embedUrl)
   // aspectRatioPaddingTop is height-as-%-of-width (e.g. '56.25%').
@@ -52,14 +59,18 @@ export function EmbedIframe({
   return (
     <Box
       data-testid={testId}
-      sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        width: '100%',
+        ...(fill && { height: '100%' })
+      }}
     >
       <Box
         sx={{
           position: 'relative',
           width: '100%',
-          maxWidth,
-          aspectRatio,
+          ...(fill ? { height: '100%' } : { maxWidth, aspectRatio }),
           borderRadius,
           overflow: 'hidden'
         }}

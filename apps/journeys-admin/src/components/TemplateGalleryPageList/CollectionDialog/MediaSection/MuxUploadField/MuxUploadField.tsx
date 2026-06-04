@@ -13,16 +13,18 @@ import {
   GET_MY_MUX_VIDEO_QUERY,
   useMuxVideoUpload
 } from '../../../../MuxVideoUploadProvider'
+import { MediaPreview } from '../../MediaPreview'
+import { CollectionMediaValues } from '../../useCollectionForm/collectionMedia'
+import { MediaFieldFrame } from '../MediaFieldFrame'
 
 interface MuxUploadFieldProps {
   /** Stable key identifying this dialog's upload task in the provider. */
   uploadKey: string
+  /** Box preview value (the mux media or none) — drives the left thumbnail. */
+  media: CollectionMediaValues
   /** True when a video is already attached (fresh upload completed or an
    *  existing saved row). Drives the attached/empty rendering. */
   hasVideo: boolean
-  /** Persisted playback id (edit mode) — renders a thumbnail. Fresh uploads
-   *  have no playback id until after save. */
-  playbackId?: string | null
   /** Fires the moment a file is chosen, before the upload completes — lets
    *  the parent mark the form's media as a pending mux upload so Save is
    *  gated until the upload finishes. */
@@ -40,18 +42,19 @@ interface MuxUploadFieldProps {
 }
 
 /**
- * File-upload control over `MuxVideoUploadProvider`, scoped to the collection
- * dialog. Surfaces upload progress, the post-upload processing state, errors,
- * and the attached/ready state. Readiness is captured from the provider's
- * `onComplete(videoId)` callback (the provider fires it only after it has
- * confirmed `readyToStream` internally) — there is no `readyToStream` field on
- * the upload task, and the task is removed shortly after completion, so the
- * durable signal is the captured video id, lifted to the form by the parent.
+ * Upload control over `MuxVideoUploadProvider`, scoped to the collection
+ * dialog. Renders the shared `[preview box | control]` row: the box (a clickable
+ * `MediaFieldFrame`) is Choose / Replace, and the right column surfaces upload
+ * progress, the post-upload processing state, errors, and the attached state.
+ * Readiness is captured from the provider's `onComplete(videoId)` callback (the
+ * provider fires it only after confirming `readyToStream` internally) — there is
+ * no `readyToStream` field on the upload task, and the task is removed shortly
+ * after completion, so the durable signal is the captured video id.
  */
 export function MuxUploadField({
   uploadKey,
+  media,
   hasVideo,
-  playbackId,
   onUploadStart,
   onComplete,
   onCancel,
@@ -104,7 +107,7 @@ export function MuxUploadField({
   const errored = status === 'error'
 
   return (
-    <Box>
+    <Stack direction="row" spacing={1.5} alignItems="flex-start">
       <Box
         component="input"
         ref={inputRef}
@@ -116,105 +119,79 @@ export function MuxUploadField({
         aria-hidden="true"
       />
 
-      {uploading && (
-        <Stack spacing={1} data-testid="MuxUploadFieldUploading">
-          <Typography variant="body2">{t('Uploading video…')}</Typography>
-          <LinearProgress variant="determinate" value={task?.progress ?? 0} />
-          <Button size="small" color="error" onClick={handleCancel}>
-            {t('Cancel')}
-          </Button>
-        </Stack>
-      )}
+      {/* Box = Choose / Replace (clickable, with the edit affordance). */}
+      <MediaFieldFrame
+        onEdit={openPicker}
+        editLabel={hasVideo ? t('Replace video') : t('Choose a video')}
+      >
+        {/* 56×56 preview matching the creator-details image. */}
+        <Box sx={{ width: 56, height: 56, flexShrink: 0 }}>
+          <MediaPreview media={media} compact fill />
+        </Box>
+      </MediaFieldFrame>
 
-      {processing && (
-        <Stack
-          direction="row"
-          spacing={1.5}
-          alignItems="center"
-          data-testid="MuxUploadFieldProcessing"
-        >
-          <CircularProgress size={20} />
-          <Typography variant="body2">{t('Processing video…')}</Typography>
-          <Button size="small" color="error" onClick={handleCancel}>
-            {t('Cancel')}
-          </Button>
-        </Stack>
-      )}
-
-      {errored && (
-        <Stack spacing={1} data-testid="MuxUploadFieldError">
-          <Typography variant="body2" color="error">
-            {t('Upload failed. Try another file.')}
-          </Typography>
-          <Button size="small" variant="outlined" onClick={openPicker}>
-            {t('Try again')}
-          </Button>
-        </Stack>
-      )}
-
-      {!uploading && !processing && !errored && hasVideo && (
-        // Compact attached state: a small 16:9 thumbnail beside the actions so
-        // the whole row fits the section's reserved height (the wide editing
-        // column made a full-size thumbnail dominate the dialog, and the left
-        // preview pane already shows the video at full size).
-        <Stack
-          direction="row"
-          spacing={1.5}
-          alignItems="center"
-          data-testid="MuxUploadFieldReady"
-        >
-          {playbackId != null && playbackId !== '' ? (
-            <Box
-              sx={{
-                width: 96,
-                flexShrink: 0,
-                aspectRatio: '16 / 9',
-                borderRadius: 1,
-                overflow: 'hidden'
-              }}
-            >
-              <Box
-                component="img"
-                src={`https://image.mux.com/${playbackId}/thumbnail.jpg`}
-                alt={t('Video thumbnail')}
-                sx={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: 'block'
-                }}
-              />
-            </Box>
-          ) : (
-            <Typography variant="body2">{t('Video ready')}</Typography>
-          )}
-          <Stack direction="row" spacing={1}>
-            <Button size="small" variant="outlined" onClick={openPicker}>
-              {t('Replace')}
+      <Box sx={{ flex: 1, minWidth: 0 }}>
+        {uploading && (
+          <Stack spacing={1} data-testid="MuxUploadFieldUploading">
+            <Typography variant="body2">{t('Uploading video…')}</Typography>
+            <LinearProgress variant="determinate" value={task?.progress ?? 0} />
+            <Button size="small" color="error" onClick={handleCancel}>
+              {t('Cancel')}
             </Button>
+          </Stack>
+        )}
+
+        {processing && (
+          <Stack
+            direction="row"
+            spacing={1.5}
+            alignItems="center"
+            data-testid="MuxUploadFieldProcessing"
+          >
+            <CircularProgress size={20} />
+            <Typography variant="body2">{t('Processing video…')}</Typography>
+            <Button size="small" color="error" onClick={handleCancel}>
+              {t('Cancel')}
+            </Button>
+          </Stack>
+        )}
+
+        {errored && (
+          <Stack spacing={1} data-testid="MuxUploadFieldError">
+            <Typography variant="body2" color="error">
+              {t('Upload failed. Try another file.')}
+            </Typography>
+            <Button size="small" variant="outlined" onClick={openPicker}>
+              {t('Try again')}
+            </Button>
+          </Stack>
+        )}
+
+        {!uploading && !processing && !errored && hasVideo && (
+          // Attached: label + Remove on one row, Remove floated to the end.
+          // Replace lives in the box's edit affordance.
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            justifyContent="space-between"
+            data-testid="MuxUploadFieldReady"
+          >
+            <Typography variant="body2" color="text.secondary">
+              {t('Video attached')}
+            </Typography>
             <Button size="small" color="error" onClick={onRemove}>
               {t('Remove')}
             </Button>
           </Stack>
-        </Stack>
-      )}
+        )}
 
-      {!uploading && !processing && !errored && !hasVideo && (
-        <Stack spacing={0.5} alignItems="flex-start">
-          <Button
-            variant="outlined"
-            color="secondary"
-            fullWidth
-            onClick={openPicker}
-            data-testid="MuxUploadFieldPick"
-          >
-            {t('Choose a video')}
-          </Button>
+        {!uploading && !processing && !errored && !hasVideo && (
           <Typography variant="caption" color="text.secondary">
-            {t('MP4 or MOV, up to 1 GB.')}
+            {t('Click the box to upload a video. MP4 or MOV, up to 1 GB.')}
           </Typography>
-        </Stack>
-      )}
-    </Box>
+        )}
+      </Box>
+    </Stack>
   )
 }

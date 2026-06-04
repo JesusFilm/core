@@ -14,15 +14,20 @@ import {
   useState
 } from 'react'
 
+import {
+  MediaPreview,
+  MEDIA_BOX_WIDTH,
+  MEDIA_BOX_HEIGHT
+} from '../MediaPreview'
 import { CollectionMediaValues } from '../useCollectionForm/collectionMedia'
 
 import { MuxUploadField } from './MuxUploadField'
 
 type MediaUiMode = 'mux' | 'link'
 
-// Reserved height for the media input area. Every state — Link field, the empty
+// Reserved height for the media input row. Every state — Link field, the empty
 // upload prompt, an in-flight upload, the attached video — renders inside this
-// fixed-height box so switching Link <-> Upload (or an upload moving through its
+// fixed-height row so switching Link <-> Upload (or an upload moving through its
 // states) never shifts the dialog layout. Sized to the tallest steady state
 // (the link field plus its helper line).
 const MEDIA_AREA_MIN_HEIGHT = 80
@@ -121,6 +126,13 @@ export function MediaSection({
       ? media.muxPlaybackId
       : null
 
+  // The left box mirrors the ACTIVE tab, not the stored media. Switching tabs
+  // never clears the saved media, so on a tab whose type doesn't match the
+  // stored media (e.g. Link while a video is saved) the box must be blank, not
+  // show the other tab's preview.
+  const boxMedia: CollectionMediaValues =
+    mode === media.type ? media : { type: 'none' }
+
   return (
     <Stack gap={1}>
       <Typography sx={headerSx}>{t('Media')}</Typography>
@@ -148,15 +160,18 @@ export function MediaSection({
         </ToggleButton>
       </ToggleButtonGroup>
 
+      {/* Both modes share the [preview box | control] row. Upload renders its
+          own row (the box is Choose / Replace); Link pairs a non-interactive
+          box with the URL field. */}
       <Box sx={{ minHeight: MEDIA_AREA_MIN_HEIGHT }}>
         {mode === 'mux' ? (
           <MuxUploadField
             uploadKey={uploadKey}
+            media={boxMedia}
             hasVideo={
               media.type === 'mux' &&
               (media.muxVideoId !== '' || savedPlaybackId != null)
             }
-            playbackId={savedPlaybackId}
             // Preserve any existing playbackId so an in-flight *replacement*
             // upload still knows about the previously-saved video (so cancelling
             // reverts to it instead of clearing it). Start is transient; the
@@ -194,21 +209,36 @@ export function MediaSection({
             onRemove={() => onCommit({ type: 'none' })}
           />
         ) : (
-          <TextField
-            value={linkValue}
-            onChange={handleUrlChange}
-            onBlur={handleUrlBlur}
-            disabled={saving}
-            placeholder={t('Paste link')}
-            fullWidth
-            variant="filled"
-            hiddenLabel
-            inputProps={{ 'aria-label': t('Media link') }}
-            error={error != null}
-            helperText={
-              error ?? t('We support YouTube, Canva, and Google Slides.')
-            }
-          />
+          <Stack direction="row" spacing={1.5} alignItems="flex-start">
+            {/* No edit button on Link, so no grey frame — the preview fills
+                the whole 92×77 box. */}
+            <Box
+              sx={{
+                width: MEDIA_BOX_WIDTH,
+                height: MEDIA_BOX_HEIGHT,
+                flexShrink: 0
+              }}
+            >
+              <MediaPreview media={boxMedia} compact fill />
+            </Box>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <TextField
+                value={linkValue}
+                onChange={handleUrlChange}
+                onBlur={handleUrlBlur}
+                disabled={saving}
+                placeholder={t('Paste link')}
+                fullWidth
+                variant="filled"
+                hiddenLabel
+                inputProps={{ 'aria-label': t('Media link') }}
+                error={error != null}
+                helperText={
+                  error ?? t('We support YouTube, Canva, and Google Slides.')
+                }
+              />
+            </Box>
+          </Stack>
         )}
       </Box>
 

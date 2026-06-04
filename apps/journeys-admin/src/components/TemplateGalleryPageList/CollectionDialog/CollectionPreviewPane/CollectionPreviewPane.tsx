@@ -8,17 +8,15 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { ReactElement, memo, useEffect, useState } from 'react'
+import { ReactElement, memo } from 'react'
 
-import { EmbedIframe } from '@core/journeys/ui/TemplateGalleryMedia'
 import CopyRightIcon from '@core/shared/ui/icons/CopyRight'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
 import { copyToClipboard } from '../../../../libs/copyToClipboard'
+import { MediaPreview } from '../MediaPreview'
 import { CollectionMediaValues } from '../useCollectionForm/collectionMedia'
-
-import { previewEmbedUrl } from './previewEmbedUrl'
 
 export interface CollectionPreviewValues {
   title: string
@@ -383,130 +381,9 @@ function CollectionPreviewPaneImpl({
           </Stack>
         </Box>
         <Box sx={{ mt: 2.5 }}>
-          <GalleryMediaPreview media={values.media} />
+          <MediaPreview media={values.media} />
         </Box>
       </Box>
-    </Box>
-  )
-}
-
-/**
- * Mirrors the public `TemplateGalleryMedia` renderer inside the preview card.
- * `mux` shows a thumbnail from the persisted playbackId (only available for an
- * already-saved upload; a fresh upload shows a processing placeholder). `link`
- * shows an iframe for any URL previewEmbedUrl accepts: a YouTube URL (normalized
- * client-side to the nocookie embed) or an already server-normalized Canva /
- * Slides embed URL (which persistMedia writes back on commit). A raw Canva /
- * Slides link the user is still typing isn't directly embeddable, so it shows a
- * placeholder until committed. The link URL is debounced so the iframe does not
- * reflow on every keystroke.
- */
-function GalleryMediaPreview({
-  media
-}: {
-  media: CollectionMediaValues
-}): ReactElement | null {
-  const { t } = useTranslation('apps-journeys-admin')
-  const url = media.type === 'link' ? media.url : ''
-  const [debouncedUrl, setDebouncedUrl] = useState(url)
-
-  useEffect(() => {
-    const handle = setTimeout(() => setDebouncedUrl(url), 500)
-    return () => clearTimeout(handle)
-  }, [url])
-
-  if (media.type === 'none') return null
-
-  if (media.type === 'mux') {
-    if (media.muxPlaybackId != null && media.muxPlaybackId !== '') {
-      return (
-        // Letterbox the thumbnail in a fixed 16:9 black frame, mirroring the
-        // public page's video player: a portrait (or any non-16:9) video keeps
-        // the same height as a landscape one and fills the sides with black
-        // bars, rather than stretching the preview card to its native height.
-        <Box
-          sx={{
-            width: '100%',
-            aspectRatio: '16 / 9',
-            borderRadius: 1,
-            overflow: 'hidden',
-            bgcolor: 'common.black'
-          }}
-        >
-          <Box
-            component="img"
-            data-testid="GalleryMediaPreviewThumbnail"
-            src={`https://image.mux.com/${media.muxPlaybackId}/thumbnail.jpg`}
-            alt={t('Video thumbnail')}
-            sx={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'contain',
-              display: 'block'
-            }}
-          />
-        </Box>
-      )
-    }
-    return (
-      <MediaPreviewPlaceholder label={t('Processing video…')} />
-    )
-  }
-
-  const embedUrl = previewEmbedUrl(debouncedUrl)
-  if (embedUrl != null) {
-    return (
-      <EmbedIframe
-        embedUrl={embedUrl}
-        title={t('Media preview')}
-        borderRadius={1}
-        testId="GalleryMediaPreview"
-      />
-    )
-  }
-
-  // Non-empty but not yet client-previewable — a raw Canva / Slides link the
-  // user is still typing. It becomes previewable once committed: the server
-  // normalizes it (Canva `…/view?embed`, Slides `/embed`) and persistMedia
-  // writes that embeddable URL back, which previewEmbedUrl then passes through.
-  return (
-    <MediaPreviewPlaceholder
-      label={
-        debouncedUrl.trim() !== ''
-          ? t('Preview appears once you add the link')
-          : t('Paste a link to see a preview')
-      }
-    />
-  )
-}
-
-function MediaPreviewPlaceholder({ label }: { label: string }): ReactElement {
-  return (
-    <Box
-      data-testid="GalleryMediaPreviewPlaceholder"
-      sx={{
-        width: '100%',
-        aspectRatio: '16 / 9',
-        position: 'relative',
-        borderRadius: 1,
-        bgcolor: 'action.hover'
-      }}
-    >
-      <Typography
-        variant="caption"
-        sx={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          textAlign: 'center',
-          color: 'text.secondary',
-          px: 2
-        }}
-      >
-        {label}
-      </Typography>
     </Box>
   )
 }
