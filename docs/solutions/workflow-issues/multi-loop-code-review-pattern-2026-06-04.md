@@ -51,7 +51,7 @@ Each loop is:
 4. **(Optional) verify each candidate** with a 1-vote verifier prompt (`PLAUSIBLE` / `NOT PLAUSIBLE` / `NEEDS MORE CONTEXT`). Default to PLAUSIBLE if the verifier is uncertain — false negatives cost more than false positives at this stage.
 5. **Apply confirmed fixes** to the working tree.
 6. **Run tests, re-typecheck, re-lint.** Update assertions that the fix legitimately invalidated; do not silence assertions that still encode the desired behaviour.
-7. **Repeat with a narrower scope.** Loop N+1 reads Loop N's diff first and tightens onto the *deltas*.
+7. **Repeat with a narrower scope.** Loop N+1 reads Loop N's diff first and tightens onto the _deltas_.
 
 ### Angle taxonomy
 
@@ -114,7 +114,7 @@ The non-obvious value of this pattern is **catching regressions that the previou
 
 **Loop 1's ScrollReveal fix.** A finder flagged `useState<boolean>(() => disabled || reduceMotion)` as an SSR hydration risk — `reduceMotion` is `false` on the server but `true` on a reduce-motion client. Fix: drop `reduceMotion` from the initial state so it's just `useState(disabled)`. Effect ran the post-mount sync. Tests passed.
 
-**Loop 2 caught that the fix was incomplete.** A focused correctness finder, reading Loop 1's diff, noticed that the `transition`, `transitionDelay`, and `willChange` sx props *still* read `reduceMotion` directly:
+**Loop 2 caught that the fix was incomplete.** A focused correctness finder, reading Loop 1's diff, noticed that the `transition`, `transitionDelay`, and `willChange` sx props _still_ read `reduceMotion` directly:
 
 ```tsx
 transition: reduceMotion || disabled ? 'none' : theme.transitions.create(...)
@@ -158,7 +158,7 @@ Do **not** use it for:
 
 - Small, surgical PRs (<200 lines, single file).
 - Pure refactors with green tests and no behaviour change — one altitude pass is enough.
-- Cases where a real second reviewer is available *and* has bandwidth — humans are still the gold standard; this pattern is for when that surface has already been exhausted.
+- Cases where a real second reviewer is available _and_ has bandwidth — humans are still the gold standard; this pattern is for when that surface has already been exhausted.
 
 ## Examples
 
@@ -254,7 +254,7 @@ useScrollSubscription(() => {
 })
 ```
 
-Loop 3 also strengthened the ScrollReveal test to assert **both** `observe` *and* `disconnect` ran — catching a future regression class where the observer is attached but never torn down under reduce-motion.
+Loop 3 also strengthened the ScrollReveal test to assert **both** `observe` _and_ `disconnect` ran — catching a future regression class where the observer is attached but never torn down under reduce-motion.
 
 ## Related
 
