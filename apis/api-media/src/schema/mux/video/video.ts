@@ -89,7 +89,7 @@ builder.queryFields((t) => ({
           readyToStream: true,
           playbackId: { not: null }
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         take: limit ?? undefined,
         skip: offset ?? undefined
       })

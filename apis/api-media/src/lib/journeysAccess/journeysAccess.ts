@@ -27,8 +27,9 @@ export async function assertTeamMembership({
 /**
  * Resolves the home team for an asset upload from the journey being edited.
  * Looks up the journey's teamId and verifies the caller is a member of that team
- * in a single query, returning the teamId. Throws NOT_FOUND if the journey does
- * not exist, FORBIDDEN if the caller is not a member of the journey's team.
+ * in a single query, returning the teamId. Throws FORBIDDEN with a uniform shape
+ * whether the journey is missing or the caller is not a member of its team, so
+ * callers cannot probe journey existence by ID.
  */
 export async function resolveAuthorizedTeamId({
   journeyId,
@@ -47,12 +48,7 @@ export async function resolveAuthorizedTeamId({
     }
   })
 
-  if (journey == null)
-    throw new GraphQLError('Journey not found', {
-      extensions: { code: 'NOT_FOUND' }
-    })
-
-  if (journey.team.userTeams.length === 0)
+  if (journey == null || journey.team.userTeams.length === 0)
     throw new GraphQLError('Not a member of this team', {
       extensions: { code: 'FORBIDDEN' }
     })

@@ -150,7 +150,7 @@ describe('mux/video', () => {
               readyToStream: true,
               playbackId: { not: null }
             },
-            orderBy: { createdAt: 'desc' },
+            orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
             take: 10,
             skip: 0
           })
@@ -188,7 +188,7 @@ describe('mux/video', () => {
               readyToStream: true,
               playbackId: { not: null }
             },
-            orderBy: { createdAt: 'desc' },
+            orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
             take: undefined,
             skip: undefined
           })
@@ -218,7 +218,7 @@ describe('mux/video', () => {
               readyToStream: true,
               playbackId: { not: null }
             },
-            orderBy: { createdAt: 'desc' },
+            orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
             take: 5,
             skip: 20
           })
@@ -278,7 +278,7 @@ describe('mux/video', () => {
               readyToStream: true,
               playbackId: { not: null }
             },
-            orderBy: { createdAt: 'desc' }
+            orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
           })
         )
       })

@@ -228,7 +228,7 @@ describe('cloudflareImage', () => {
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
           where: { userId: 'testUserId' },
-          orderBy: { createdAt: 'desc' }
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
         })
       })
 
@@ -286,7 +286,7 @@ describe('cloudflareImage', () => {
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
           where: { userId: 'testUserId' },
-          orderBy: { createdAt: 'desc' },
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
           take: 10,
           skip: 0
         })
@@ -300,7 +300,7 @@ describe('cloudflareImage', () => {
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
           where: { userId: 'testUserId', isAi: true },
-          orderBy: { createdAt: 'desc' }
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
         })
       })
 
@@ -312,7 +312,7 @@ describe('cloudflareImage', () => {
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
           where: { userId: 'testUserId', isAi: false },
-          orderBy: { createdAt: 'desc' }
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
         })
       })
 
@@ -324,7 +324,7 @@ describe('cloudflareImage', () => {
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
           where: { userId: 'testUserId' },
-          orderBy: { createdAt: 'desc' }
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
         })
       })
 
@@ -352,7 +352,7 @@ describe('cloudflareImage', () => {
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
           where: { OR: [{ userId: 'testUserId' }, { teamId: 'teamId' }] },
-          orderBy: { createdAt: 'desc' }
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
         })
       })
 
@@ -372,7 +372,7 @@ describe('cloudflareImage', () => {
             OR: [{ userId: 'testUserId' }, { teamId: 'teamId' }],
             isAi: true
           },
-          orderBy: { createdAt: 'desc' }
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
         })
       })
 

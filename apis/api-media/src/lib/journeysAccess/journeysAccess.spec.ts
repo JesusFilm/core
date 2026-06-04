@@ -63,14 +63,14 @@ describe('journeysAccess', () => {
       })
     })
 
-    it('should throw NOT_FOUND when the journey does not exist', async () => {
+    it('should throw FORBIDDEN with a uniform shape when the journey does not exist', async () => {
       journeysPrismaMock.journey.findUnique.mockResolvedValue(null)
 
       await expect(
         resolveAuthorizedTeamId({ journeyId: 'journeyId', userId: 'userId' })
       ).rejects.toThrow(
-        new GraphQLError('Journey not found', {
-          extensions: { code: 'NOT_FOUND' }
+        new GraphQLError('Not a member of this team', {
+          extensions: { code: 'FORBIDDEN' }
         })
       )
     })
