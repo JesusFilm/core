@@ -34,8 +34,6 @@ export const GET_MY_MUX_VIDEO_QUERY = gql`
       assetId
       playbackId
       readyToStream
-      name
-      duration
     }
   }
 `

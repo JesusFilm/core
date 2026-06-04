@@ -40,8 +40,6 @@ export const getMuxVideoMock: MockedResponse<GetMyMuxVideoQuery> = {
         assetId: null,
         playbackId: null,
         readyToStream: true,
-        name: null,
-        duration: null,
         __typename: 'MuxVideo'
       }
     }

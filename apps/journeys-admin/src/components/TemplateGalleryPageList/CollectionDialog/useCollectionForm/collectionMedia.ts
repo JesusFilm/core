@@ -14,16 +14,7 @@ import {
  */
 export type CollectionMediaValues =
   | { type: 'none' }
-  | {
-      type: 'mux'
-      muxVideoId: string
-      muxPlaybackId?: string | null
-      // Display-only metadata captured from the Mux video on upload. Not sent
-      // to the server (see `formMediaToInput`) and absent for an existing saved
-      // row until the read model exposes it.
-      name?: string | null
-      duration?: number | null
-    }
+  | { type: 'mux'; muxVideoId: string; muxPlaybackId?: string | null }
   | { type: 'link'; url: string }
 
 /**
