@@ -476,7 +476,7 @@ function CollectionDialogContent({
                               </Typography>
                               <Stack
                                 direction="row"
-                                spacing={1.5}
+                                spacing={2}
                                 alignItems="stretch"
                               >
                                 <ButtonBase

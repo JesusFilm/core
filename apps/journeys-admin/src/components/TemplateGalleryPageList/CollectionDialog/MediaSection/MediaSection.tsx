@@ -211,7 +211,7 @@ export function MediaSection({
             onRemove={() => onCommit({ type: 'none' })}
           />
         ) : (
-          <Stack direction="row" spacing={1.5} alignItems="flex-start">
+          <Stack direction="row" spacing={2} alignItems="flex-start">
             {/* No edit button on Link, so no grey frame — the preview fills
                 the whole 92×77 box. */}
             <Box

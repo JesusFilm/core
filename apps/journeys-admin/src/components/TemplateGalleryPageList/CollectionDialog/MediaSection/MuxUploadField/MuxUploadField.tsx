@@ -130,7 +130,9 @@ export function MuxUploadField({
   const videoDuration = media.type === 'mux' ? media.duration : null
 
   return (
-    <Stack direction="row" spacing={1.5} alignItems="flex-start">
+    <>
+      {/* Kept out of the Stack so its (display:none) slot doesn't push the
+          preview right via the Stack's spacing. */}
       <Box
         component="input"
         ref={inputRef}
@@ -141,93 +143,97 @@ export function MuxUploadField({
         sx={{ display: 'none' }}
         aria-hidden="true"
       />
+      <Stack direction="row" spacing={2} alignItems="center">
+        {/* Box = Choose / Replace (clickable, with the edit affordance). */}
+        <MediaFieldFrame
+          onEdit={openPicker}
+          editLabel={hasVideo ? t('Replace video') : t('Choose a video')}
+        >
+          {/* 56×56 preview matching the creator-details image. */}
+          <Box sx={{ width: 56, height: 56, flexShrink: 0 }}>
+            <MediaPreview media={media} compact fill />
+          </Box>
+        </MediaFieldFrame>
 
-      {/* Box = Choose / Replace (clickable, with the edit affordance). */}
-      <MediaFieldFrame
-        onEdit={openPicker}
-        editLabel={hasVideo ? t('Replace video') : t('Choose a video')}
-      >
-        {/* 56×56 preview matching the creator-details image. */}
-        <Box sx={{ width: 56, height: 56, flexShrink: 0 }}>
-          <MediaPreview media={media} compact fill />
-        </Box>
-      </MediaFieldFrame>
-
-      <Box sx={{ flex: 1, minWidth: 0 }}>
-        {uploading && (
-          <Stack spacing={1} data-testid="MuxUploadFieldUploading">
-            <Typography variant="body2">{t('Uploading video…')}</Typography>
-            <LinearProgress variant="determinate" value={task?.progress ?? 0} />
-            <Button size="small" color="error" onClick={handleCancel}>
-              {t('Cancel')}
-            </Button>
-          </Stack>
-        )}
-
-        {processing && (
-          <Stack
-            direction="row"
-            spacing={1.5}
-            alignItems="center"
-            data-testid="MuxUploadFieldProcessing"
-          >
-            <CircularProgress size={20} />
-            <Typography variant="body2">{t('Processing video…')}</Typography>
-            <Button size="small" color="error" onClick={handleCancel}>
-              {t('Cancel')}
-            </Button>
-          </Stack>
-        )}
-
-        {errored && (
-          <Stack spacing={1} data-testid="MuxUploadFieldError">
-            <Typography variant="body2" color="error">
-              {t('Upload failed. Try another file.')}
-            </Typography>
-            <Button size="small" variant="outlined" onClick={openPicker}>
-              {t('Try again')}
-            </Button>
-          </Stack>
-        )}
-
-        {!uploading && !processing && !errored && hasVideo && (
-          // Attached: the video name + duration (when known) with Remove on the
-          // end. Replace lives in the box's edit affordance.
-          <Stack
-            direction="row"
-            spacing={1}
-            alignItems="center"
-            justifyContent="space-between"
-            data-testid="MuxUploadFieldReady"
-          >
-            <Stack sx={{ minWidth: 0 }}>
-              {videoName != null && videoName !== '' ? (
-                <Typography variant="body2" noWrap title={videoName}>
-                  {videoName}
-                </Typography>
-              ) : (
-                <Typography variant="body2" color="text.secondary">
-                  {t('Video attached')}
-                </Typography>
-              )}
-              {videoDuration != null && (
-                <Typography variant="caption" color="text.secondary">
-                  {formatDuration(videoDuration)}
-                </Typography>
-              )}
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          {uploading && (
+            <Stack spacing={1} data-testid="MuxUploadFieldUploading">
+              <Typography variant="body2">{t('Uploading video…')}</Typography>
+              <LinearProgress
+                variant="determinate"
+                value={task?.progress ?? 0}
+              />
+              <Button size="small" color="error" onClick={handleCancel}>
+                {t('Cancel')}
+              </Button>
             </Stack>
-            <Button size="small" color="error" onClick={onRemove}>
-              {t('Remove')}
-            </Button>
-          </Stack>
-        )}
+          )}
 
-        {!uploading && !processing && !errored && !hasVideo && (
-          <Typography variant="caption" color="text.secondary">
-            {t('Click the box to upload a video. MP4 or MOV, up to 1 GB.')}
-          </Typography>
-        )}
-      </Box>
-    </Stack>
+          {processing && (
+            <Stack
+              direction="row"
+              spacing={1.5}
+              alignItems="center"
+              data-testid="MuxUploadFieldProcessing"
+            >
+              <CircularProgress size={20} />
+              <Typography variant="body2">{t('Processing video…')}</Typography>
+              <Button size="small" color="error" onClick={handleCancel}>
+                {t('Cancel')}
+              </Button>
+            </Stack>
+          )}
+
+          {errored && (
+            <Stack spacing={1} data-testid="MuxUploadFieldError">
+              <Typography variant="body2" color="error">
+                {t('Upload failed. Try another file.')}
+              </Typography>
+              <Button size="small" variant="outlined" onClick={openPicker}>
+                {t('Try again')}
+              </Button>
+            </Stack>
+          )}
+
+          {!uploading && !processing && !errored && hasVideo && (
+            // Attached: the video name + duration (when known) with Remove on the
+            // end. Replace lives in the box's edit affordance.
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              justifyContent="space-between"
+              data-testid="MuxUploadFieldReady"
+            >
+              <Stack sx={{ minWidth: 0 }}>
+                {videoName != null && videoName !== '' ? (
+                  <Typography variant="body2" noWrap title={videoName}>
+                    {videoName}
+                  </Typography>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    {t('Video attached')}
+                  </Typography>
+                )}
+                {videoDuration != null && (
+                  <Typography variant="caption" color="text.secondary">
+                    {formatDuration(videoDuration)}
+                  </Typography>
+                )}
+              </Stack>
+              <Button size="small" color="error" onClick={onRemove}>
+                {t('Remove')}
+              </Button>
+            </Stack>
+          )}
+
+          {!uploading && !processing && !errored && !hasVideo && (
+            <Typography variant="caption" color="text.secondary">
+              {t('Click the box to upload a video. MP4 or MOV, up to 1 GB.')}
+            </Typography>
+          )}
+        </Box>
+      </Stack>
+    </>
   )
 }
