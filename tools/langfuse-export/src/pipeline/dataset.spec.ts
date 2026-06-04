@@ -74,7 +74,9 @@ const facets: FacetExtraction = {
     ['s2', []]
   ]),
   suppressedKeywordCount: 3,
-  countryFacets: [{ key: 'country:US', label: 'US', kind: 'country', count: 1 }],
+  countryFacets: [
+    { key: 'country:US', label: 'US', kind: 'country', count: 1 }
+  ],
   sessionCountryKeys: new Map([
     ['s1', ['country:US']],
     ['s2', []]
