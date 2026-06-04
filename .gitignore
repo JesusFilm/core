@@ -46,11 +46,10 @@ Thumbs.db
 
 # local .env files
 .env
+.env.stage
+.env.prod
 .env*local
 .dev.vars
-
-# langfuse-export run artifacts (contain chat-derived content — never commit)
-tools/langfuse-export/output/
 
 # nx generated files
 migrations.json

@@ -7,7 +7,9 @@
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "defaultConfiguration": "development",
       "options": {
         "outputPath": "dist/apps/api-languages",
@@ -41,7 +43,9 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
         "cache": true,
         "cacheLocation": ".cache/api-languages/eslint",
@@ -50,7 +54,9 @@
     },
     "test": {
       "executor": "@nx/vitest:test",
-      "outputs": ["{workspaceRoot}/coverage/apis/api-languages"],
+      "outputs": [
+        "{workspaceRoot}/coverage/apis/api-languages"
+      ],
       "options": {
         "configFile": "apis/api-languages/vitest.config.mts"
       }
@@ -71,6 +77,28 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "DOPPLER_TOKEN=$DOPPLER_API_LANGUAGES_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-languages > apis/api-languages/.env"
+      }
+    },
+    "fetch-secrets-stage": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_CONFIG=stg DOPPLER_TOKEN=$DOPPLER_API_LANGUAGES_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-languages > apis/api-languages/.env.stage"
+      }
+    },
+    "fetch-secrets-prod": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_CONFIG=prd DOPPLER_TOKEN=$DOPPLER_API_LANGUAGES_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-languages > apis/api-languages/.env.prod"
+      }
+    },
+    "fetch-secrets-envs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "DOPPLER_CONFIG=stg DOPPLER_TOKEN=$DOPPLER_API_LANGUAGES_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-languages > apis/api-languages/.env.stage",
+          "DOPPLER_CONFIG=prd DOPPLER_TOKEN=$DOPPLER_API_LANGUAGES_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-languages > apis/api-languages/.env.prod"
+        ],
+        "parallel": false
       }
     },
     "type-check": {
@@ -95,6 +123,48 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "pnpm exec tsx apis/api-languages/src/scripts/data-import.ts"
+      }
+    },
+    "audit-arclight-cloudfront-refs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json apis/api-languages/src/scripts/audit-arclight-cloudfront-refs.ts"
+      }
+    },
+    "wess-languages-import": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json apis/api-languages/src/scripts/wess-languages-import.ts"
+      }
+    },
+    "wess-countries-import": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json apis/api-languages/src/scripts/wess-countries-import.ts"
+      }
+    },
+    "wess-country-languages-import": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json apis/api-languages/src/scripts/wess-country-languages-import.ts"
+      }
+    },
+    "_wess-inspect": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json tmp/wess-inspect.ts"
+      }
+    },
+    "_wess-find-unmatched-geo": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json tmp/wess-find-unmatched-geo.ts"
+      }
+    },
+    "_wess-check-155-dups": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json tmp/wess-check-155-dups.ts"
       }
     }
   }

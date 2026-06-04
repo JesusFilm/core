@@ -7,7 +7,9 @@
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "defaultConfiguration": "development",
       "options": {
         "outputPath": "dist/apps/api-media",
@@ -41,7 +43,9 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
         "cache": true,
         "cacheLocation": ".cache/api-media/eslint",
@@ -50,7 +54,9 @@
     },
     "test": {
       "executor": "@nx/vitest:test",
-      "outputs": ["{workspaceRoot}/coverage/apis/api-media"],
+      "outputs": [
+        "{workspaceRoot}/coverage/apis/api-media"
+      ],
       "options": {
         "configFile": "apis/api-media/vitest.config.mts"
       }
@@ -71,6 +77,28 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "DOPPLER_TOKEN=$DOPPLER_API_MEDIA_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-media > apis/api-media/.env"
+      }
+    },
+    "fetch-secrets-stage": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_CONFIG=stg DOPPLER_TOKEN=$DOPPLER_API_MEDIA_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-media > apis/api-media/.env.stage"
+      }
+    },
+    "fetch-secrets-prod": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_CONFIG=prd DOPPLER_TOKEN=$DOPPLER_API_MEDIA_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-media > apis/api-media/.env.prod"
+      }
+    },
+    "fetch-secrets-envs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "DOPPLER_CONFIG=stg DOPPLER_TOKEN=$DOPPLER_API_MEDIA_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-media > apis/api-media/.env.stage",
+          "DOPPLER_CONFIG=prd DOPPLER_TOKEN=$DOPPLER_API_MEDIA_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-media > apis/api-media/.env.prod"
+        ],
+        "parallel": false
       }
     },
     "type-check": {
@@ -161,11 +189,13 @@
         "command": "pnpm exec tsx apis/api-media/src/scripts/mux-videos.ts"
       }
     },
-    "run-daily-video-slack-summary": {
+    "run-weekly-video-slack-summary": {
       "executor": "nx:run-commands",
-      "dependsOn": ["prisma-media:prisma-generate"],
+      "dependsOn": [
+        "prisma-media:prisma-generate"
+      ],
       "options": {
-        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/run-daily-video-slack-summary.ts"
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/run-weekly-video-slack-summary.ts"
       }
     },
     "populate-crowdin-ids": {
@@ -177,7 +207,87 @@
     "prisma-seed": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["pnpm exec tsx apis/api-media/db/seed.ts"]
+        "commands": [
+          "pnpm exec tsx apis/api-media/db/seed.ts"
+        ]
+      }
+    },
+    "audit-arclight-cloudfront-refs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/audit-arclight-cloudfront-refs.ts"
+      }
+    },
+    "sync-prod-subtitle-audio-links": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/sync-prod-subtitle-audio-links-to-stage.ts"
+      }
+    },
+    "export-broken-media-prod-refs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/export-broken-media-prod-refs.ts"
+      }
+    },
+    "discover-video-variant-r2-matches": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/discover-video-variant-r2-matches.ts"
+      }
+    },
+    "repair-video-variant-r2-masters": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/repair-video-variant-r2-masters.ts"
+      }
+    },
+    "repair-video-variant-r2-download-fallbacks": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/repair-video-variant-r2-download-fallbacks.ts"
+      }
+    },
+    "sync-prod-video-variant-r2-masters-to-stage": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/sync-prod-video-variant-r2-masters-to-stage.ts"
+      }
+    },
+    "sync-prod-video-variant-r2-download-fallbacks-to-stage": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/sync-prod-video-variant-r2-download-fallbacks-to-stage.ts"
+      }
+    },
+    "clear-bad-video-variant-masters": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/clear-bad-video-variant-masters.ts"
+      }
+    },
+    "delete-bad-media-shortlinks": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/delete-bad-media-shortlinks.ts"
+      }
+    },
+    "run-daily-video-slack-summary": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "prisma-media:prisma-generate"
+      ],
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/run-daily-video-slack-summary.ts"
+      }
+    },
+    "run-weekly-video-slack-bulk-summary": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "prisma-media:prisma-generate"
+      ],
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/run-weekly-video-slack-bulk-summary.ts"
       }
     }
   }
