@@ -149,7 +149,7 @@ export function JourneyViewCardActions({
           // text column next to a Play icon button); give it a roomier
           // minWidth so the label has weight matching the surrounding type.
           // In More cards `fullWidth` stretches it to fill the column.
-          minWidth: fullWidth ? undefined : 130,
+          minWidth: fullWidth ? undefined : 180,
           ...useButtonSx
         }}
       >
