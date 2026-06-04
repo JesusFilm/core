@@ -134,3 +134,78 @@ export interface Theme {
 export interface ThemeSynthesis {
   themes: Theme[]
 }
+
+// ===========================================================================
+// Insights explorer (NES-1719) — lossless dataset + shippable HTML viewer.
+//
+// The v1 path above (ReportStats + static report.ts) pre-aggregates into a
+// fixed summary. The explorer path below keeps the corpus intact: every
+// sanitised session with its full ordered message list, plus deterministic
+// keyword facets and optional per-session LLM themes, serialised into a
+// single offline HTML viewer that filters and drills in rather than reads a
+// fixed report. The deliverable becomes the browsable data, not a summary.
+// ===========================================================================
+
+// One message in a session, in conversation order. `role` distinguishes the
+// (sanitised) user turn from the assistant reply so the viewer can render a
+// real back-and-forth a reader can follow start to finish.
+export interface DatasetMessage {
+  role: 'user' | 'assistant'
+  text: string
+  startTime: string
+  model: string | null
+}
+
+// A facet the viewer can filter on. `kind` separates LLM themes from
+// deterministic keywords so the UI groups them; `count` is the number of
+// sessions carrying the facet (document frequency), shown next to each chip.
+export type FacetKind = 'theme' | 'keyword'
+
+export interface Facet {
+  key: string // stable filter key, e.g. 'keyword:resurrection' or 'theme:Suffering'
+  label: string // human label, e.g. 'resurrection'
+  kind: FacetKind
+  count: number // sessions carrying this facet
+}
+
+// One session in the explorer dataset. `id` is the real (pseudonymous)
+// Langfuse sessionId, kept for traceability; `label` is the short anonymous
+// display name ('Session 001'). `facetKeys` lists the facets this session
+// matches (drives filtering); `themes` are the per-session LLM labels.
+export interface DatasetSession {
+  id: string
+  label: string
+  synthetic: boolean
+  language?: string
+  ipCountry?: string
+  journeyId?: string
+  messageCount: number
+  firstUserMessage: string
+  startTime: string
+  themes: string[]
+  facetKeys: string[]
+  messages: DatasetMessage[]
+}
+
+// Corpus-level counts shown in the viewer header so a reader can judge how
+// trustworthy the grouping is (mirrors the v1 data-quality banner).
+export interface DatasetSummary {
+  windowFrom: string
+  windowTo: string
+  generatedAt: string
+  totalSessions: number
+  totalMessages: number
+  nullSessionCount: number // sessions from traces with no sessionId
+  singleTurnCount: number // sessions with exactly one turn
+  excludedLoadTestTurns: number // turns dropped by the discriminator
+  suppressedKeywordCount: number // over-common terms held back as facets
+  themesAvailable: boolean // false when the LLM enrichment did not run
+}
+
+// The full bundle payload: the lossless session corpus + the curated facet
+// vocabulary + summary. Serialised verbatim into the viewer and dataset.json.
+export interface InsightsDataset {
+  summary: DatasetSummary
+  facets: Facet[]
+  sessions: DatasetSession[]
+}

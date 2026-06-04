@@ -37,6 +37,29 @@ describe('parseArgs', () => {
     })
   })
 
+  it('defaults to the explorer bundle on, legacy report off, no fixture', () => {
+    const opts = parseArgs([])
+    expect(opts.explorer).toBe(true)
+    expect(opts.legacyReport).toBe(false)
+    expect(opts.fixture).toBeUndefined()
+  })
+
+  it('parses --no-explorer, --legacy-report and --fixture', () => {
+    const opts = parseArgs([
+      '--no-explorer',
+      '--legacy-report',
+      '--fixture',
+      'fixtures/sample.json'
+    ])
+    expect(opts.explorer).toBe(false)
+    expect(opts.legacyReport).toBe(true)
+    expect(opts.fixture).toBe('fixtures/sample.json')
+  })
+
+  it('throws when --fixture is missing its value', () => {
+    expect(() => parseArgs(['--fixture'])).toThrow(/--fixture requires a value/)
+  })
+
   it('accepts "all" as the env-filter bypass', () => {
     expect(parseArgs(['--environment', 'all']).environment).toBe('all')
   })
