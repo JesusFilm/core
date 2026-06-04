@@ -25,7 +25,8 @@ import { ScrollReveal } from './ScrollReveal'
 export function FeaturedRow({
   item,
   imagePosition,
-  priority = false
+  priority = false,
+  decorative = false
 }: {
   item: PublicGalleryPageItem
   imagePosition: 'left' | 'right'
@@ -35,6 +36,13 @@ export function FeaturedRow({
    * image is the closest thing to a hero on this page).
    */
   priority?: boolean
+  /**
+   * Render as a static, non-interactive preview — skips the reveal-on-
+   * scroll choreography and disables the card-action links. Used by the
+   * admin collection-edit preview so it shares the live layout without
+   * the animation/interaction surface.
+   */
+  decorative?: boolean
 }): ReactElement {
   const meta = metaLine(item)
   const hasDescription = item.description != null && item.description !== ''
@@ -57,6 +65,7 @@ export function FeaturedRow({
     >
       <ScrollReveal
         from={imageFrom}
+        disabled={decorative}
         sx={{ width: '100%', flex: { md: '1 1 56%' } }}
       >
         <Box
@@ -94,6 +103,7 @@ export function FeaturedRow({
       <ScrollReveal
         from={textFrom}
         delay={180}
+        disabled={decorative}
         sx={{ width: '100%', flex: { md: '1 1 44%' } }}
       >
         <Stack spacing={2}>
@@ -139,6 +149,7 @@ export function FeaturedRow({
               itemSlug={item.slug}
               itemTitle={item.title}
               accent={GALLERY_ACCENT}
+              decorative={decorative}
             />
           </Box>
         </Stack>

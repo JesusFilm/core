@@ -9,6 +9,7 @@ import {
   PublicGalleryPageData,
   splitFeatured
 } from '../galleryTokens'
+import { FeaturedRow } from '../JourneyView/FeaturedRow'
 import { JourneyViewCard } from '../JourneyView/JourneyViewCard'
 import { JourneyViewHeader } from '../JourneyView/JourneyViewHeader'
 import { JourneyViewMedia } from '../JourneyView/JourneyViewMedia'
@@ -88,12 +89,18 @@ export function AdminView({ data }: AdminViewProps): ReactElement {
       {featured.length > 0 && (
         <Box component="section" sx={sectionSx}>
           <SectionLabel>{t('Explore')}</SectionLabel>
+          {/* Mirror the live journey view's Explore layout (image + text,
+              alternating left/right) so the preview reflects what
+              publishers will actually see, just without the animations
+              and live links. The narrow preview width keeps the rows in
+              their stacked (xs) form, which matches mobile on the live
+              page. */}
           <Stack spacing={3}>
-            {featured.map((item) => (
-              <JourneyViewCard
+            {featured.map((item, index) => (
+              <FeaturedRow
                 key={item.id}
                 item={item}
-                variant="panel"
+                imagePosition={index % 2 === 0 ? 'left' : 'right'}
                 decorative
               />
             ))}

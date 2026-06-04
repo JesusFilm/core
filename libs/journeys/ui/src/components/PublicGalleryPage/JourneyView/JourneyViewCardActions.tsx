@@ -70,6 +70,10 @@ export function JourneyViewCardActions({
             flex: fullWidth ? 1 : '0 0 auto',
             height: ACTION_SIZE,
             px: fullWidth ? 0 : 2.5,
+            // Match the live (non-decorative) button's `minWidth` so the
+            // admin preview's Use look-alike carries the same visual
+            // weight as what the publisher will see.
+            minWidth: fullWidth ? undefined : 180,
             borderRadius: 1,
             border: `1px solid ${accent}`,
             color: accent,
