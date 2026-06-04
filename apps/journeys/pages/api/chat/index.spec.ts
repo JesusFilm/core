@@ -799,9 +799,8 @@ describe('/api/chat handler', () => {
       // The promise handed to waitUntil is the one returned by flushAsync,
       // so Vercel waits on the actual batch ship — not on a stale resolved
       // promise.
-      const flushPromise = fake.flushAsync.mock.results[0].value as Promise<
-        unknown
-      >
+      const flushPromise = fake.flushAsync.mock.results[0]
+        .value as Promise<unknown>
       expect(mockWaitUntil).toHaveBeenCalledWith(flushPromise)
     })
 
@@ -816,9 +815,8 @@ describe('/api/chat handler', () => {
 
       expect(fake.flushAsync).toHaveBeenCalledTimes(1)
       expect(mockWaitUntil).toHaveBeenCalledTimes(1)
-      const flushPromise = fake.flushAsync.mock.results[0].value as Promise<
-        unknown
-      >
+      const flushPromise = fake.flushAsync.mock.results[0]
+        .value as Promise<unknown>
       expect(mockWaitUntil).toHaveBeenCalledWith(flushPromise)
     })
 
