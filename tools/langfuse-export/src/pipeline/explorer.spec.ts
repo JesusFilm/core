@@ -17,7 +17,12 @@ const dataset: InsightsDataset = {
   facets: [
     { key: 'country:US', label: 'US', kind: 'country', count: 1 },
     { key: 'language:en', label: 'en', kind: 'language', count: 1 },
-    { key: 'keyword:resurrection', label: 'resurrection', kind: 'keyword', count: 1 }
+    {
+      key: 'keyword:resurrection',
+      label: 'resurrection',
+      kind: 'keyword',
+      count: 1
+    }
   ],
   sessions: [
     {

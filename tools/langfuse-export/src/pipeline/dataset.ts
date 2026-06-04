@@ -101,7 +101,8 @@ export function buildDataset(
       facets.sessionCountryKeys.get(conversation.sessionId) ?? []
     const languageKeys =
       facets.sessionLanguageKeys.get(conversation.sessionId) ?? []
-    const keywordKeys = facets.sessionKeywordKeys.get(conversation.sessionId) ?? []
+    const keywordKeys =
+      facets.sessionKeywordKeys.get(conversation.sessionId) ?? []
 
     return {
       id: conversation.sessionId,
@@ -114,7 +115,12 @@ export function buildDataset(
       firstUserMessage: firstUserMessage(conversation),
       startTime: conversationStartTime(conversation),
       themes,
-      facetKeys: [...countryKeys, ...languageKeys, ...themeKeys, ...keywordKeys],
+      facetKeys: [
+        ...countryKeys,
+        ...languageKeys,
+        ...themeKeys,
+        ...keywordKeys
+      ],
       messages
     }
   })
