@@ -40,6 +40,11 @@ export function JourneyViewHeader({
           color: 'text.secondary',
           whiteSpace: 'pre-wrap',
           maxWidth: 620,
+          // The header Stack centres the block on the page; inside the
+          // block we left-align so long descriptions read as paragraph
+          // copy instead of a centred ribbon that gets harder to follow
+          // line by line.
+          textAlign: 'left',
           // Extra breathing room above the description on mobile when the
           // author sits between it and the title.
           ...(creatorAboveDescription && { pt: { xs: 3, md: 0 } })
