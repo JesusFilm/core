@@ -54,19 +54,31 @@ export function FeaturedRow({
   const imageFrom = imagePosition === 'left' ? 'left' : 'right'
   const textFrom = imagePosition === 'left' ? 'right' : 'left'
 
+  // The live row goes side-by-side at md+. In decorative use (admin preview)
+  // we force the stacked xs layout regardless of viewport: MUI's responsive
+  // `sx` keys off the viewport, not the container, so the ~287px preview
+  // pane inside an md+ browser would otherwise resolve to the side-by-side
+  // form and squish both image and text into half-widths.
   return (
     <Stack
-      direction={{
-        xs: 'column',
-        md: imagePosition === 'right' ? 'row-reverse' : 'row'
-      }}
-      spacing={{ xs: 3, md: 6 }}
-      sx={{ alignItems: { md: 'center' } }}
+      direction={
+        decorative
+          ? 'column'
+          : {
+              xs: 'column',
+              md: imagePosition === 'right' ? 'row-reverse' : 'row'
+            }
+      }
+      spacing={decorative ? 3 : { xs: 3, md: 6 }}
+      sx={decorative ? undefined : { alignItems: { md: 'center' } }}
     >
       <ScrollReveal
         from={imageFrom}
         disabled={decorative}
-        sx={{ width: '100%', flex: { md: '1 1 56%' } }}
+        sx={{
+          width: '100%',
+          ...(decorative ? {} : { flex: { md: '1 1 56%' } })
+        }}
       >
         <Box
           sx={{
@@ -104,7 +116,10 @@ export function FeaturedRow({
         from={textFrom}
         delay={180}
         disabled={decorative}
-        sx={{ width: '100%', flex: { md: '1 1 44%' } }}
+        sx={{
+          width: '100%',
+          ...(decorative ? {} : { flex: { md: '1 1 44%' } })
+        }}
       >
         <Stack spacing={2}>
           {meta !== '' && (
