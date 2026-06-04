@@ -166,6 +166,12 @@
       "options": {
         "command": "pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json tmp/wess-check-155-dups.ts"
       }
+    },
+    "migrate-country-flags-to-r2": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json apis/api-languages/src/scripts/migrate-country-flags-to-r2.ts"
+      }
     }
   }
 }

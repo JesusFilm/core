@@ -289,6 +289,12 @@
       "options": {
         "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/run-weekly-video-slack-bulk-summary.ts"
       }
+    },
+    "copy-non-dialogue-variants": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx apis/api-media/src/scripts/copy-non-dialogue-variants.ts"
+      }
     }
   }
 }
