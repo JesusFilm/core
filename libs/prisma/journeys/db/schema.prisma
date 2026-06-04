@@ -769,6 +769,10 @@ model TemplateGalleryPageMedia {
   muxVideoId            String?
   /// Denormalized from MuxVideo.playbackId at save time. Populated for `mux`, null for `link`.
   muxPlaybackId         String?
+  /// Denormalized from MuxVideo.name at save time. Populated for `mux`, null for `link`.
+  muxName               String?
+  /// Denormalized from MuxVideo.duration (seconds) at save time. Populated for `mux`, null for `link`.
+  muxDuration           Int?
   createdAt             DateTime                     @default(now())
   updatedAt             DateTime                     @updatedAt
   templateGalleryPage   TemplateGalleryPage          @relation(fields: [templateGalleryPageId], references: [id], onDelete: Cascade)

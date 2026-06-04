@@ -658,13 +658,17 @@ describe('templateGalleryPageUpdate', () => {
           type: 'link',
           embedUrl: 'https://www.youtube-nocookie.com/embed/abc',
           muxVideoId: null,
-          muxPlaybackId: null
+          muxPlaybackId: null,
+          muxName: null,
+          muxDuration: null
         },
         update: {
           type: 'link',
           embedUrl: 'https://www.youtube-nocookie.com/embed/abc',
           muxVideoId: null,
-          muxPlaybackId: null
+          muxPlaybackId: null,
+          muxName: null,
+          muxDuration: null
         }
       })
     })
@@ -672,7 +676,9 @@ describe('templateGalleryPageUpdate', () => {
     it('upserts a mux media row (replace existing)', async () => {
       mockMuxValidate.mockResolvedValue({
         muxVideoId: 'vid-1',
-        muxPlaybackId: 'pb_x'
+        muxPlaybackId: 'pb_x',
+        muxName: 'My clip',
+        muxDuration: 125
       })
       mockExistingPage({
         id: 'm1',

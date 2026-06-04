@@ -473,7 +473,9 @@ describe('templateGalleryPageCreate', () => {
           type: 'link',
           embedUrl: 'https://www.youtube-nocookie.com/embed/abc',
           muxVideoId: null,
-          muxPlaybackId: null
+          muxPlaybackId: null,
+          muxName: null,
+          muxDuration: null
         }
       })
     })
@@ -481,7 +483,9 @@ describe('templateGalleryPageCreate', () => {
     it('creates a mux media row and returns the media relation', async () => {
       mockMuxValidate.mockResolvedValue({
         muxVideoId: 'vid-1',
-        muxPlaybackId: 'pb_x'
+        muxPlaybackId: 'pb_x',
+        muxName: 'My clip',
+        muxDuration: 125
       })
       mockPageRead({
         id: 'm1',
@@ -516,7 +520,9 @@ describe('templateGalleryPageCreate', () => {
           type: 'mux',
           embedUrl: null,
           muxVideoId: 'vid-1',
-          muxPlaybackId: 'pb_x'
+          muxPlaybackId: 'pb_x',
+          muxName: 'My clip',
+          muxDuration: 125
         }
       })
     })

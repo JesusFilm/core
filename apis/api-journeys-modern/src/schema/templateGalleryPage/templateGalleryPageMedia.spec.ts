@@ -17,9 +17,9 @@ const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
 
 // The public-anonymous field-surface audit (NES-1547). `TemplateGalleryPage.media`
 // is reachable by unauthenticated traffic via `templateGalleryPageBySlug`, so the
-// exposed surface must stay narrow: only id/type/embedUrl/muxPlaybackId. These
-// tests fail loudly if a future change exposes `embedHtml`, the raw `muxVideoId`
-// FK, or a federated `muxVideo` relation.
+// exposed surface must stay narrow: only id/type/embedUrl/muxPlaybackId/muxName/
+// muxDuration — all row-sourced scalars. These tests fail loudly if a future change
+// exposes `embedHtml`, the raw `muxVideoId` FK, or a federated `muxVideo` relation.
 describe('TemplateGalleryPageMedia field surface', () => {
   const publicClient = getClient()
 
@@ -28,7 +28,7 @@ describe('TemplateGalleryPageMedia field surface', () => {
     mockGetUserFromPayload.mockReturnValue(null)
   })
 
-  it('exposes id, type, embedUrl, muxPlaybackId on the media relation', async () => {
+  it('exposes id, type, embedUrl, muxPlaybackId, muxName, muxDuration on the media relation', async () => {
     prismaMock.templateGalleryPage.findFirst.mockResolvedValue({
       id: 'p1',
       title: 'Hello',
@@ -36,9 +36,11 @@ describe('TemplateGalleryPageMedia field surface', () => {
       status: 'published',
       media: {
         id: 'm1',
-        type: 'link',
-        embedUrl: 'https://www.canva.com/design/x/y/view?embed',
-        muxPlaybackId: null
+        type: 'mux',
+        embedUrl: null,
+        muxPlaybackId: 'pb_x',
+        muxName: 'My clip',
+        muxDuration: 125
       }
     } as any)
 
@@ -51,6 +53,8 @@ describe('TemplateGalleryPageMedia field surface', () => {
             type
             embedUrl
             muxPlaybackId
+            muxName
+            muxDuration
           }
         }
       }
@@ -67,9 +71,11 @@ describe('TemplateGalleryPageMedia field surface', () => {
           id: 'p1',
           media: {
             id: 'm1',
-            type: 'link',
-            embedUrl: 'https://www.canva.com/design/x/y/view?embed',
-            muxPlaybackId: null
+            type: 'mux',
+            embedUrl: null,
+            muxPlaybackId: 'pb_x',
+            muxName: 'My clip',
+            muxDuration: 125
           }
         }
       }

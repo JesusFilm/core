@@ -29,7 +29,9 @@ describe('resolveMediaInput', () => {
         type: 'link',
         embedUrl: 'https://embed',
         muxVideoId: null,
-        muxPlaybackId: null
+        muxPlaybackId: null,
+        muxName: null,
+        muxDuration: null
       }
     )
     expect(mockLinkValidate).toHaveBeenCalledWith('https://x')
@@ -38,13 +40,17 @@ describe('resolveMediaInput', () => {
   it('dispatches a mux input to muxValidate and composes the row', async () => {
     mockMuxValidate.mockResolvedValue({
       muxVideoId: 'v',
-      muxPlaybackId: 'pb'
+      muxPlaybackId: 'pb',
+      muxName: 'My clip',
+      muxDuration: 125
     })
     expect(await resolveMediaInput({ type: 'mux', muxVideoId: 'v' })).toEqual({
       type: 'mux',
       embedUrl: null,
       muxVideoId: 'v',
-      muxPlaybackId: 'pb'
+      muxPlaybackId: 'pb',
+      muxName: 'My clip',
+      muxDuration: 125
     })
     expect(mockMuxValidate).toHaveBeenCalledWith('v')
   })
