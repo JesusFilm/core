@@ -3,11 +3,15 @@ import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
 import { Block, prisma } from '@core/prisma/journeys/client'
-import { createOpenrouterFallbackSession } from '@core/shared/ai/openrouterModel'
+import {
+  AiRequestTimeoutError,
+  createOpenrouterFallbackSession
+} from '@core/shared/ai/openrouterModel'
 import { hardenPrompt } from '@core/shared/ai/prompts'
 
 import { env } from '../../env'
 import { Action, ability, subject } from '../../lib/auth/ability'
+import { logger } from '../../logger'
 import { builder } from '../builder'
 import { JourneyRef } from '../journey/journey'
 
@@ -170,9 +174,10 @@ ${hardenPrompt(cardContent)}
 Blocks to translate (use the EXACT IDs shown in square brackets as blockId):
 ${hardenPrompt(blocksInfo)}`
 
-  await session.execute(async (model) => {
+  await session.execute(async (model, abortSignal) => {
     const { elementStream } = streamText({
       model,
+      abortSignal,
       maxRetries: 0,
       messages: [
         { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
@@ -183,9 +188,9 @@ ${hardenPrompt(blocksInfo)}`
       ],
       output: Output.array({ element: BlockTranslationSchema }),
       onError: ({ error }) => {
-        console.warn(
-          `Error in translation stream for card ${cardBlock.id}:`,
-          error
+        logger.warn(
+          { error, cardBlockId: cardBlock.id },
+          'Error in translation stream for card'
         )
       }
     })
@@ -212,7 +217,10 @@ ${hardenPrompt(blocksInfo)}`
 
         onBlockUpdated?.(cleanBlockId, validatedUpdates)
       } catch (updateError) {
-        console.error(`Error updating block ${item.blockId}:`, updateError)
+        logger.error(
+          { error: updateError, blockId: item.blockId },
+          'Error updating block'
+        )
       }
     }
   })
@@ -504,9 +512,9 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
               },
               session
             }).catch((error) => {
-              console.warn(
-                `Error translating card ${cardBlocks[cardIndex].id}:`,
-                error
+              logger.warn(
+                { error, cardBlockId: cardBlocks[cardIndex].id },
+                'Error translating card'
               )
             })
           })
@@ -546,12 +554,21 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           journey: finalJourney
         }
       } catch (error) {
-        console.error('Translation error:', error)
-        yield {
-          progress: 100,
-          message: 'Translation failed: ' + (error as Error).message,
-          journey: null
+        logger.error({ error }, 'Translation error')
+        // Rethrow as a GraphQLError so the client subscription terminates with
+        // an error (firing the frontend `onError`) instead of completing
+        // normally. A normal completion would silently close the dialog with
+        // no error surfaced. GraphQLErrors are not masked by the Yoga server,
+        // so the message reaches the client.
+        if (error instanceof GraphQLError) throw error
+        if (error instanceof AiRequestTimeoutError) {
+          throw new GraphQLError(
+            'Translation timed out while contacting the AI service. Please try again.'
+          )
         }
+        // Keep unknown errors generic — the original error is logged above, so
+        // we avoid leaking provider/SDK internals to the client.
+        throw new GraphQLError('Translation failed')
       }
     },
     resolve: (progressUpdate) => progressUpdate
@@ -715,12 +732,15 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
               targetLanguageName,
               session
             }).catch((error) => {
-              console.warn(`Error translating card ${cardBlock.id}:`, error)
+              logger.warn(
+                { error, cardBlockId: cardBlock.id },
+                'Error translating card'
+              )
             })
           )
         )
       } catch (error: unknown) {
-        console.error('Error analyzing journey with Gemini:', error)
+        logger.error({ error }, 'Error analyzing journey with Gemini')
         const errorMessage =
           error instanceof Error ? error.message : 'Unknown error occurred'
         throw new Error(`Failed to analyze journey: ${errorMessage}`)

@@ -5,6 +5,8 @@ import { SnackbarProvider, useSnackbar } from 'notistack'
 import { ReactNode } from 'react'
 import { type Mock } from 'vitest'
 
+import { refreshToken } from '../api'
+
 import {
   COMPLETE_R2_MULTIPART,
   CREATE_MUX_VIDEO_UPLOAD_BY_URL,
@@ -34,6 +36,10 @@ vi.mock('notistack', async () => ({
 
 vi.mock('uuid', () => ({
   v4: vi.fn().mockReturnValue('uuidv4')
+}))
+
+vi.mock('../api', () => ({
+  refreshToken: vi.fn().mockResolvedValue('refreshed-token')
 }))
 
 // Mock the getExtension function
@@ -278,6 +284,7 @@ const createWrapper = (mocks: any[] = []) => {
 describe('UploadVideoVariantContext', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    ;(refreshToken as Mock).mockResolvedValue('refreshed-token')
   })
 
   it('should initialize with default state', () => {
@@ -315,6 +322,14 @@ describe('UploadVideoVariantContext', () => {
       // Kick off the upload. START_UPLOAD dispatches synchronously before the
       // first await, so the metadata is observable mid-flight — before the
       // pipeline reaches COMPLETE and resets state back to initial.
+      let resolveUpload: (value: { headers: { etag: string } }) => void
+      const uploadDeferred = new Promise<{ headers: { etag: string } }>(
+        (resolve) => {
+          resolveUpload = resolve
+        }
+      )
+      ;(axios.put as Mock).mockImplementationOnce(() => uploadDeferred)
+
       let uploadPromise: Promise<void> = Promise.resolve()
       act(() => {
         uploadPromise = result.current.startUpload(
@@ -330,13 +345,16 @@ describe('UploadVideoVariantContext', () => {
       })
 
       // Should be in uploading state with correct metadata
-      expect(result.current.uploadState.videoId).toBe('video-id')
+      await waitFor(() => {
+        expect(result.current.uploadState.videoId).toBe('video-id')
+      })
       expect(result.current.uploadState.languageId).toBe('language-id')
       expect(result.current.uploadState.languageSlug).toBe('en')
       expect(result.current.uploadState.edition).toBe('base')
 
       // Let the upload pipeline run to completion
       await act(async () => {
+        resolveUpload({ headers: { etag: '"etag-1"' } })
         await uploadPromise
       })
 
