@@ -184,11 +184,13 @@ export function MediaSection({
               })
             }
             // Completion is the commit point — persist the new video now.
-            onComplete={(videoId, playbackId) =>
+            onComplete={(videoId, playbackId, name, duration) =>
               onCommit({
                 type: 'mux',
                 muxVideoId: videoId,
-                muxPlaybackId: playbackId
+                muxPlaybackId: playbackId,
+                name,
+                duration
               })
             }
             // Cancel reverts (transient) to the prior saved video when one

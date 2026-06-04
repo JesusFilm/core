@@ -79,8 +79,10 @@ describe('MuxUploadField', () => {
     )
   })
 
-  it('passes the videoId and the cached playbackId to onComplete', () => {
-    mockReadQuery.mockReturnValue({ getMyMuxVideo: { playbackId: 'pb-x' } })
+  it('passes the videoId, playbackId, name and duration to onComplete', () => {
+    mockReadQuery.mockReturnValue({
+      getMyMuxVideo: { playbackId: 'pb-x', name: 'clip.mp4', duration: 34 }
+    })
     const { onComplete } = renderField()
     pickFile()
     // The provider invokes the completion callback (5th arg to addUploadTask).
@@ -88,10 +90,10 @@ describe('MuxUploadField', () => {
       videoId: string
     ) => void
     completeCb('vid-1')
-    expect(onComplete).toHaveBeenCalledWith('vid-1', 'pb-x')
+    expect(onComplete).toHaveBeenCalledWith('vid-1', 'pb-x', 'clip.mp4', 34)
   })
 
-  it('passes null playbackId when the cache has none', () => {
+  it('passes nulls when the cache has no video', () => {
     mockReadQuery.mockReturnValue(null)
     const { onComplete } = renderField()
     pickFile()
@@ -99,7 +101,7 @@ describe('MuxUploadField', () => {
       videoId: string
     ) => void
     completeCb('vid-1')
-    expect(onComplete).toHaveBeenCalledWith('vid-1', null)
+    expect(onComplete).toHaveBeenCalledWith('vid-1', null, null, null)
   })
 
   it('shows progress and cancels an in-flight upload (reverting, not removing)', () => {
@@ -134,13 +136,20 @@ describe('MuxUploadField', () => {
     ).toBeInTheDocument()
   })
 
-  it('shows the attached state — thumbnail in the box, Video attached + Remove', () => {
+  it('shows the attached state — thumbnail in the box, name + duration + Remove', () => {
     const { onRemove } = renderField({
       hasVideo: true,
-      media: { type: 'mux', muxVideoId: '', muxPlaybackId: 'pb-1' }
+      media: {
+        type: 'mux',
+        muxVideoId: '',
+        muxPlaybackId: 'pb-1',
+        name: 'clip.mp4',
+        duration: 95
+      }
     })
     expect(screen.getByTestId('MuxUploadFieldReady')).toBeInTheDocument()
-    expect(screen.getByText('Video attached')).toBeInTheDocument()
+    expect(screen.getByText('clip.mp4')).toBeInTheDocument()
+    expect(screen.getByText('1:35')).toBeInTheDocument()
     // The thumbnail renders in the box; the box doubles as Replace.
     expect(screen.getByTestId('GalleryMediaPreviewThumbnail')).toHaveAttribute(
       'src',
@@ -151,5 +160,13 @@ describe('MuxUploadField', () => {
     ).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Remove' }))
     expect(onRemove).toHaveBeenCalledTimes(1)
+  })
+
+  it('falls back to "Video attached" when name/duration are unknown', () => {
+    renderField({
+      hasVideo: true,
+      media: { type: 'mux', muxVideoId: '', muxPlaybackId: 'pb-1' }
+    })
+    expect(screen.getByText('Video attached')).toBeInTheDocument()
   })
 })

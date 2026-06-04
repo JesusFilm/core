@@ -486,7 +486,13 @@ export function useCollectionForm({
         })
         return {}
       }
-      const normalized = collectionMediaToFormValues(saved.media)
+      const serverMedia = collectionMediaToFormValues(saved.media)
+      // The read model doesn't return the Mux name/duration, so carry the
+      // display-only metadata captured on upload through the save.
+      const normalized =
+        serverMedia.type === 'mux' && next.type === 'mux'
+          ? { ...serverMedia, name: next.name, duration: next.duration }
+          : serverMedia
       lastPersistedMediaKeyRef.current = mediaKey(normalized)
       return { media: normalized }
     } catch (error) {

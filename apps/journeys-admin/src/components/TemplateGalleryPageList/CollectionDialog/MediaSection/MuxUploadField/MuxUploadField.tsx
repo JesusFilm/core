@@ -17,6 +17,13 @@ import { MediaPreview } from '../../MediaPreview'
 import { CollectionMediaValues } from '../../useCollectionForm/collectionMedia'
 import { MediaFieldFrame } from '../MediaFieldFrame'
 
+/** Mux durations are whole seconds; show them as m:ss. */
+function formatDuration(seconds: number): string {
+  const mins = Math.floor(seconds / 60)
+  const secs = Math.floor(seconds % 60)
+  return `${mins}:${String(secs).padStart(2, '0')}`
+}
+
 interface MuxUploadFieldProps {
   /** Stable key identifying this dialog's upload task in the provider. */
   uploadKey: string
@@ -30,9 +37,15 @@ interface MuxUploadFieldProps {
    *  gated until the upload finishes. */
   onUploadStart: () => void
   /** Fires when the provider confirms the upload is ready, with the new Mux
-   *  video id and its playback id (read from the provider's poll cache so the
-   *  preview can render a thumbnail immediately, before the row is saved). */
-  onComplete: (videoId: string, playbackId: string | null) => void
+   *  video id plus its playback id, name and duration — all read from the
+   *  provider's poll cache so the thumbnail and metadata can show immediately,
+   *  before the row is saved. */
+  onComplete: (
+    videoId: string,
+    playbackId: string | null,
+    name: string | null,
+    duration: number | null
+  ) => void
   /** Aborts an in-flight upload and reverts the form to its prior committed
    *  media (the previously-saved video, or none). Distinct from `onRemove`,
    *  which deletes an already-attached video. */
@@ -72,11 +85,16 @@ export function MuxUploadField({
   // cache. Read it here and pass it up so the preview can show the thumbnail
   // immediately, without waiting for the save round-trip.
   function handleComplete(videoId: string): void {
-    const cached = client.readQuery<GetMyMuxVideoQuery>({
+    const video = client.readQuery<GetMyMuxVideoQuery>({
       query: GET_MY_MUX_VIDEO_QUERY,
       variables: { id: videoId }
-    })
-    onComplete(videoId, cached?.getMyMuxVideo?.playbackId ?? null)
+    })?.getMyMuxVideo
+    onComplete(
+      videoId,
+      video?.playbackId ?? null,
+      video?.name ?? null,
+      video?.duration ?? null
+    )
   }
 
   function handlePick(event: ChangeEvent<HTMLInputElement>): void {
@@ -105,6 +123,11 @@ export function MuxUploadField({
   const uploading = status === 'uploading'
   const processing = status === 'processing'
   const errored = status === 'error'
+
+  // Display-only metadata carried on the form value (set on upload). Absent for
+  // an existing saved row until the read model exposes it.
+  const videoName = media.type === 'mux' ? media.name : null
+  const videoDuration = media.type === 'mux' ? media.duration : null
 
   return (
     <Stack direction="row" spacing={1.5} alignItems="flex-start">
@@ -168,8 +191,8 @@ export function MuxUploadField({
         )}
 
         {!uploading && !processing && !errored && hasVideo && (
-          // Attached: label + Remove on one row, Remove floated to the end.
-          // Replace lives in the box's edit affordance.
+          // Attached: the video name + duration (when known) with Remove on the
+          // end. Replace lives in the box's edit affordance.
           <Stack
             direction="row"
             spacing={1}
@@ -177,9 +200,22 @@ export function MuxUploadField({
             justifyContent="space-between"
             data-testid="MuxUploadFieldReady"
           >
-            <Typography variant="body2" color="text.secondary">
-              {t('Video attached')}
-            </Typography>
+            <Stack sx={{ minWidth: 0 }}>
+              {videoName != null && videoName !== '' ? (
+                <Typography variant="body2" noWrap title={videoName}>
+                  {videoName}
+                </Typography>
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  {t('Video attached')}
+                </Typography>
+              )}
+              {videoDuration != null && (
+                <Typography variant="caption" color="text.secondary">
+                  {formatDuration(videoDuration)}
+                </Typography>
+              )}
+            </Stack>
             <Button size="small" color="error" onClick={onRemove}>
               {t('Remove')}
             </Button>

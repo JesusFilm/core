@@ -903,6 +903,62 @@ describe('useCollectionForm', () => {
       })
     })
 
+    it('carries the captured mux name/duration through the save', async () => {
+      const collection = makeCollection({ id: 'page-1' })
+      const updateMock = getTemplateGalleryPageUpdateMock(
+        {
+          id: 'page-1',
+          input: {
+            media: {
+              type: TemplateGalleryPageMediaType.mux,
+              muxVideoId: 'vid-1'
+            }
+          }
+        },
+        {
+          media: {
+            __typename: 'TemplateGalleryPageMedia',
+            id: 'm1',
+            type: TemplateGalleryPageMediaType.mux,
+            embedUrl: null,
+            muxPlaybackId: 'pb-1'
+          }
+        }
+      )
+
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose: vi.fn()
+          }),
+        { wrapper: wrapperWithMocks([updateMock]) }
+      )
+
+      let outcome: unknown
+      await act(async () => {
+        outcome = await result.current.persistMedia({
+          type: 'mux',
+          muxVideoId: 'vid-1',
+          muxPlaybackId: 'pb-1',
+          name: 'clip.mp4',
+          duration: 34
+        })
+      })
+      // The read model returns only playbackId; name/duration are carried over.
+      expect(outcome).toEqual({
+        media: {
+          type: 'mux',
+          muxVideoId: '',
+          muxPlaybackId: 'pb-1',
+          name: 'clip.mp4',
+          duration: 34
+        }
+      })
+    })
+
     it('clears the media row when committing none', async () => {
       const collection = makeCollection({
         id: 'page-1',
