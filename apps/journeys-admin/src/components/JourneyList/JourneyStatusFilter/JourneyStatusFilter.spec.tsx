@@ -3,10 +3,10 @@ import { fireEvent, render } from '@testing-library/react'
 import { JourneyStatusFilter } from '.'
 
 describe('JourneyList/JourneyStatusFilter', () => {
-  const mockOnChange = jest.fn()
+  const mockOnChange = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render with Active as default status', () => {

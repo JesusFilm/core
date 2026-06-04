@@ -38,7 +38,7 @@ describe('TextScreen', () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
-          <TextScreen handleNext={jest.fn()} />
+          <TextScreen handleNext={vi.fn()} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -52,7 +52,7 @@ describe('TextScreen', () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
-          <TextScreen handleNext={jest.fn()} />
+          <TextScreen handleNext={vi.fn()} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -71,7 +71,7 @@ describe('TextScreen', () => {
   })
 
   it('submits only when values changed and calls handleNext', async () => {
-    const handleNext = jest.fn().mockResolvedValue(undefined)
+    const handleNext = vi.fn().mockResolvedValue(undefined)
     const journeyCustomizationFieldUpdate: MockedResponse<
       JourneyCustomizationFieldUpdate,
       JourneyCustomizationFieldUpdateVariables
@@ -86,7 +86,7 @@ describe('TextScreen', () => {
           ]
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           journeyCustomizationFieldUserUpdate: [
             {
@@ -103,7 +103,10 @@ describe('TextScreen', () => {
             }
           ]
         }
-      }))
+      })) as MockedResponse<
+        JourneyCustomizationFieldUpdate,
+        JourneyCustomizationFieldUpdateVariables
+      >['result']
     }
 
     render(
@@ -134,7 +137,7 @@ describe('TextScreen', () => {
   })
 
   it('should show loading state on the Next button after clicking', () => {
-    const handleNext = jest.fn().mockResolvedValue(undefined)
+    const handleNext = vi.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
@@ -153,7 +156,7 @@ describe('TextScreen', () => {
   })
 
   it('does not submit when no changes and still calls handleNext', () => {
-    const handleNext = jest.fn().mockResolvedValue(undefined)
+    const handleNext = vi.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>

@@ -12,9 +12,9 @@ import { journey } from '../../../../JourneyList/ActiveJourneyList/ActivePriorit
 
 import { JourneyDetailsDialog } from '.'
 
-const onClose = jest.fn()
+const onClose = vi.fn()
 
-jest.mock('@mui/material/useMediaQuery')
+vi.mock('@mui/material/useMediaQuery')
 
 describe('JourneyDetailsDialog', () => {
   it('should not set journey title on close', async () => {
@@ -44,7 +44,7 @@ describe('JourneyDetailsDialog', () => {
   })
 
   it('should update journey title, description and language on submit', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeyUpdate: {
           __typename: 'Journey',
@@ -148,7 +148,7 @@ describe('JourneyDetailsDialog', () => {
   })
 
   it('should require the title field', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeyUpdate: {
           __typename: 'Journey',

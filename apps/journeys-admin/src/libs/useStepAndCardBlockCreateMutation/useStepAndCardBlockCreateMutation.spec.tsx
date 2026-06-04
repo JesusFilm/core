@@ -10,7 +10,7 @@ import { useStepAndCardBlockCreateMutation } from '.'
 
 describe('useStepAndCardBlockCreateMutation', () => {
   it('should create step and card block', async () => {
-    const mockResult = jest
+    const mockResult = vi
       .fn()
       .mockReturnValue(stepAndCardBlockCreateMock.result)
 

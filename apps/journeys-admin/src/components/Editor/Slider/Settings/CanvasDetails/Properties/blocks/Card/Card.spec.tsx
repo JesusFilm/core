@@ -130,6 +130,29 @@ describe('Card', () => {
       })
     })
 
+    it('shows event label for non-template journey when editJourneyTrackingMetrics is enabled', async () => {
+      const card = createCard()
+      renderWithProviders(<Card {...card} />, {
+        selectedBlock: card,
+        journey: { template: false },
+        flags: { editJourneyTrackingMetrics: true }
+      })
+      const trackingButton = screen.getByText('Tracking')
+      fireEvent.click(trackingButton)
+      await waitFor(() => {
+        expect(screen.getByTestId('EventLabelSelect')).toBeInTheDocument()
+      })
+    })
+
+    it('hides event label for non-template journey when editJourneyTrackingMetrics is disabled', () => {
+      const card = createCard()
+      renderWithProviders(<Card {...card} />, {
+        selectedBlock: card,
+        journey: { template: false }
+      })
+      expect(screen.queryByText('Tracking')).not.toBeInTheDocument()
+    })
+
     it('shows default attributes when no props provided', () => {
       const card = createCard()
       renderWithProviders(<Card {...card} />)
@@ -600,7 +623,7 @@ describe('Card', () => {
   })
 
   describe('ChatAssistant Section', () => {
-    it('does not render the AI chat accordion when apologistChat flag is off', () => {
+    it('does not render the AI chat accordion when aiChatEditor flag is off', () => {
       const card = createCard()
       renderWithProviders(<Card {...card} />)
 
@@ -609,10 +632,10 @@ describe('Card', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('renders the AI chat accordion when apologistChat flag is on', () => {
+    it('renders the AI chat accordion when aiChatEditor flag is on', () => {
       const card = createCard()
       renderWithProviders(<Card {...card} />, {
-        flags: { apologistChat: true }
+        flags: { aiChatEditor: true }
       })
 
       expect(
@@ -629,7 +652,7 @@ describe('Card', () => {
         expandChatByDefault: false
       })
       renderWithProviders(<Card {...card} />, {
-        flags: { apologistChat: true }
+        flags: { aiChatEditor: true }
       })
 
       expect(
@@ -643,7 +666,7 @@ describe('Card', () => {
         expandChatByDefault: true
       })
       renderWithProviders(<Card {...card} />, {
-        flags: { apologistChat: true }
+        flags: { aiChatEditor: true }
       })
 
       expect(

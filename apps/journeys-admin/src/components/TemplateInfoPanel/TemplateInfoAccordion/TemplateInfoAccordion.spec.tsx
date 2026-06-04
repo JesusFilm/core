@@ -9,7 +9,7 @@ describe('TemplateInfoAccordion', () => {
         id="example"
         title="Example title"
         expanded
-        onChange={jest.fn()}
+        onChange={vi.fn()}
       >
         <p>Example body</p>
       </TemplateInfoAccordion>
@@ -20,7 +20,7 @@ describe('TemplateInfoAccordion', () => {
   })
 
   it('fires onChange with the next expanded state when the summary is clicked', () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     render(
       <TemplateInfoAccordion
         id="example"
@@ -38,7 +38,7 @@ describe('TemplateInfoAccordion', () => {
   })
 
   it('fires onChange(false) when an already-expanded summary is clicked', () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     render(
       <TemplateInfoAccordion
         id="example"
@@ -61,7 +61,7 @@ describe('TemplateInfoAccordion', () => {
         id="example"
         title="Example title"
         expanded
-        onChange={jest.fn()}
+        onChange={vi.fn()}
       >
         <p>Example body</p>
       </TemplateInfoAccordion>

@@ -1,5 +1,7 @@
 import { UserCredential } from 'firebase/auth'
 
+import { getFirebaseAuth } from '../../libs/auth/firebase'
+
 export async function login(token: string): Promise<void> {
   const headers: Record<string, string> = {
     Authorization: `Bearer ${token}`
@@ -37,14 +39,21 @@ export async function checkEmailVerification(): Promise<void> {
   })
 }
 
-export async function refreshToken(): Promise<void> {
-  const headers: Record<string, string> = {}
+export async function refreshToken(): Promise<string | null> {
+  const currentUser = getFirebaseAuth().currentUser
 
-  // Intentionally a simple GET to let edge middleware refresh tokens/cookies
+  if (currentUser != null) {
+    const idToken = await currentUser.getIdToken(true)
+    await login(idToken)
+    return idToken
+  }
+
+  // Fallback for cases where the browser Firebase user is unavailable.
   await fetch('/api/refresh-token', {
     method: 'GET',
-    headers,
-    // Avoid caching; ensure request hits the edge/middleware
+    headers: {},
     cache: 'no-store'
   })
+
+  return null
 }

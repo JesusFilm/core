@@ -16,7 +16,7 @@ import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { MoveBlock } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -156,11 +156,11 @@ describe('MoveBlockButton', () => {
   }
 
   it('should move selected block up on click', async () => {
-    const result = jest.fn(() => ({ ...mockBlockOrderFirstMock.result }))
-    const resultUndo = jest.fn(() => ({
+    const result = vi.fn(() => ({ ...mockBlockOrderFirstMock.result }))
+    const resultUndo = vi.fn(() => ({
       ...mockBlockOrderLastMock.result
     }))
-    const resultRedo = jest.fn(() => ({
+    const resultRedo = vi.fn(() => ({
       ...mockBlockOrderFirstMock.result
     }))
     render(
@@ -191,11 +191,11 @@ describe('MoveBlockButton', () => {
   })
 
   it('should move selected block down on click', async () => {
-    const result = jest.fn(() => ({ ...mockBlockOrderLastMock.result }))
-    const resultUndo = jest.fn(() => ({
+    const result = vi.fn(() => ({ ...mockBlockOrderLastMock.result }))
+    const resultUndo = vi.fn(() => ({
       ...mockBlockOrderFirstMock.result
     }))
-    const resultRedo = jest.fn(() => ({
+    const resultRedo = vi.fn(() => ({
       ...mockBlockOrderLastMock.result
     }))
 

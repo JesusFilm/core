@@ -1,23 +1,24 @@
 import { act, render, renderHook, waitFor } from '@testing-library/react'
 import { Auth, User as FirebaseUser, onAuthStateChanged } from 'firebase/auth'
 import { ReactNode } from 'react'
+import { type MockedFunction } from 'vitest'
 
 import { User, useAuth } from './authContext'
 import { AuthProvider } from './AuthProvider'
 import { getFirebaseAuth } from './firebase'
 
-jest.mock('firebase/auth', () => ({
-  onAuthStateChanged: jest.fn()
+vi.mock('firebase/auth', () => ({
+  onAuthStateChanged: vi.fn()
 }))
 
-jest.mock('./firebase', () => ({
-  getFirebaseAuth: jest.fn()
+vi.mock('./firebase', () => ({
+  getFirebaseAuth: vi.fn()
 }))
 
-const mockGetFirebaseAuth = getFirebaseAuth as jest.MockedFunction<
+const mockGetFirebaseAuth = getFirebaseAuth as MockedFunction<
   typeof getFirebaseAuth
 >
-const mockOnAuthStateChanged = onAuthStateChanged as jest.MockedFunction<
+const mockOnAuthStateChanged = onAuthStateChanged as MockedFunction<
   typeof onAuthStateChanged
 >
 
@@ -43,7 +44,7 @@ const firebaseUser = {
   emailVerified: true,
   isAnonymous: false,
   providerId: 'google.com',
-  getIdToken: jest.fn().mockResolvedValue('firebase-token')
+  getIdToken: vi.fn().mockResolvedValue('firebase-token')
 } as unknown as FirebaseUser
 
 function renderAuthHook(
@@ -58,10 +59,10 @@ function renderAuthHook(
 
 describe('AuthProvider', () => {
   let authStateCallback: ((user: FirebaseUser | null) => void) | null = null
-  const mockUnsubscribe = jest.fn()
+  const mockUnsubscribe = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     authStateCallback = null
     mockGetFirebaseAuth.mockReturnValue({} as Auth)
     mockOnAuthStateChanged.mockImplementation((_auth, callback) => {
@@ -163,7 +164,7 @@ describe('AuthProvider', () => {
   it('should set clientUser to null when getIdToken fails', async () => {
     const failingFirebaseUser = {
       ...firebaseUser,
-      getIdToken: jest.fn().mockRejectedValue(new Error('token error'))
+      getIdToken: vi.fn().mockRejectedValue(new Error('token error'))
     } as unknown as FirebaseUser
 
     const { result } = renderAuthHook(null)
@@ -184,7 +185,7 @@ describe('AuthProvider', () => {
       isAnonymous: true,
       email: null,
       displayName: null,
-      getIdToken: jest.fn().mockResolvedValue('anon-token')
+      getIdToken: vi.fn().mockResolvedValue('anon-token')
     } as unknown as FirebaseUser
 
     const { result } = renderAuthHook(null)

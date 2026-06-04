@@ -13,7 +13,7 @@ describe('Button', () => {
   })
 
   it('should handle click', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
 
     render(
       <Button icon={<Cursor6Icon />} value="test value" onClick={handleClick} />

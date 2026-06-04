@@ -39,7 +39,7 @@ describe('useBlockActionDeleteMutation', () => {
   }
 
   it('should delete block action', async () => {
-    const mockResult = jest.fn().mockReturnValue(blockActionDeleteMock.result)
+    const mockResult = vi.fn().mockReturnValue(blockActionDeleteMock.result)
 
     const { result } = renderHook(() => useBlockActionDeleteMutation(), {
       wrapper: ({ children }) => (

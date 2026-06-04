@@ -18,7 +18,7 @@ describe('TextFieldForm', () => {
           'data-testid': 'TextField form',
           'aria-label': 'Search'
         }}
-        onSubmit={jest.fn()}
+        onSubmit={vi.fn()}
         endIcon={<Search1Icon />}
       />
     )
@@ -39,7 +39,7 @@ describe('TextFieldForm', () => {
         label="Navigate to..."
         initialValue="Default Value"
         helperText="Label goes here"
-        onSubmit={jest.fn()}
+        onSubmit={vi.fn()}
       />
     )
     expect(getByText('Label goes here')).toBeInTheDocument()
@@ -49,7 +49,7 @@ describe('TextFieldForm', () => {
     const validationSchema = object({
       link: string().required('This field is required')
     })
-    const onSubmit = jest.fn()
+    const onSubmit = vi.fn()
 
     const { getByRole } = render(
       <TextFieldForm
@@ -75,7 +75,7 @@ describe('TextFieldForm', () => {
   })
 
   it('should call onSubmit on enter keypress', async () => {
-    const onSubmit = jest.fn()
+    const onSubmit = vi.fn()
     const { getByRole, getByText } = render(
       <TextFieldForm
         id="enterSubmit"
@@ -98,7 +98,7 @@ describe('TextFieldForm', () => {
   })
 
   it('should call onSubmit on blur', async () => {
-    const onSubmit = jest.fn()
+    const onSubmit = vi.fn()
     const validationSchema = object({
       link: string().required('This field is required')
     })
@@ -127,7 +127,7 @@ describe('TextFieldForm', () => {
     const validationSchema = object({
       link: string().required('This field is required')
     })
-    const onSubmit = jest.fn()
+    const onSubmit = vi.fn()
 
     const { getByRole } = render(
       <TextFieldForm
@@ -157,12 +157,12 @@ describe('TextFieldForm', () => {
   })
 
   it('should call onPaste when a user pastes value', async () => {
-    const onPaste = jest.fn()
+    const onPaste = vi.fn()
     const { getByRole } = render(
       <TextFieldForm
         id="link"
         label="Add image by url"
-        onSubmit={jest.fn()}
+        onSubmit={vi.fn()}
         onPaste={onPaste}
       />
     )
@@ -179,7 +179,7 @@ describe('TextFieldForm', () => {
       <TextFieldForm
         id="focusTest"
         label="Focus Test"
-        onSubmit={jest.fn()}
+        onSubmit={vi.fn()}
         ref={ref}
       />
     )

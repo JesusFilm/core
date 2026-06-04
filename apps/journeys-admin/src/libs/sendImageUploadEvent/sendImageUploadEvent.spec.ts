@@ -1,17 +1,16 @@
 import { sendGTMEvent } from '@next/third-parties/google'
+import { type MockedFunction } from 'vitest'
 
 import {
   sendImageUploadFailureEvent,
   sendImageUploadSuccessEvent
 } from './sendImageUploadEvent'
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+vi.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: vi.fn()
 }))
 
-const mockSendGTMEvent = sendGTMEvent as jest.MockedFunction<
-  typeof sendGTMEvent
->
+const mockSendGTMEvent = sendGTMEvent as MockedFunction<typeof sendGTMEvent>
 
 describe('sendImageUploadEvent', () => {
   beforeEach(() => {

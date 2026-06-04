@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
@@ -8,18 +9,18 @@ import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { Accordion } from '.'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('accordion', () => {
-  const push = jest.fn()
-  const on = jest.fn()
+  const push = vi.fn()
+  const on = vi.fn()
 
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('selects accordion', () => {
     render(

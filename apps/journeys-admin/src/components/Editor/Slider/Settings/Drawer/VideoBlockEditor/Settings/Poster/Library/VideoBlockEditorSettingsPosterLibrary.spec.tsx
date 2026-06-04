@@ -4,6 +4,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
@@ -54,17 +55,17 @@ import {
 
 import { VideoBlockEditorSettingsPosterLibrary } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -191,11 +192,11 @@ const image: ImageBlock = {
   customizable: null
 }
 
-const onClose = jest.fn()
+const onClose = vi.fn()
 
 describe('VideoBlockEditorSettingsPosterLibrary', () => {
   beforeEach(() => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
   })
 
   const posterImageBlockDeleteMock: MockedResponse<
@@ -272,7 +273,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
         __typename: 'VideoBlock'
       }
     }
-    const createResult = jest.fn(() => ({
+    const createResult = vi.fn(() => ({
       data: response
     }))
     const posterImageBlockCreateMock: MockedResponse<
@@ -361,7 +362,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
   describe('Existing image poster', () => {
     it('updates image poster block from gallery selection', async () => {
       const undoInput = toImageBlockUpdateInput(image)
-      const updateResult = jest.fn(() => ({
+      const updateResult = vi.fn(() => ({
         data: {
           imageBlockUpdate: {
             ...image,
@@ -369,7 +370,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           }
         }
       }))
-      const undoResult = jest.fn(() => ({
+      const undoResult = vi.fn(() => ({
         data: {
           imageBlockUpdate: {
             ...image,

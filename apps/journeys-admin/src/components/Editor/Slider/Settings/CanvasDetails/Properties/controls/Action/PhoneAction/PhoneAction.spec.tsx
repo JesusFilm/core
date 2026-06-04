@@ -20,7 +20,7 @@ import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoI
 
 import { PhoneAction } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -79,7 +79,7 @@ describe('PhoneAction', () => {
   })
 
   it('updates phone number', async () => {
-    const result = jest.fn().mockReturnValue(blockActionPhoneUpdateMock.result)
+    const result = vi.fn().mockReturnValue(blockActionPhoneUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...blockActionPhoneUpdateMock, result }]}>
         <EditorProvider initialState={{ selectedBlock, selectedStep }}>
@@ -250,7 +250,7 @@ describe('PhoneAction', () => {
       }
     }
 
-    const result = jest.fn().mockReturnValue(contactActionUpdateMock.result)
+    const result = vi.fn().mockReturnValue(contactActionUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...contactActionUpdateMock, result }]}>
         <EditorProvider initialState={{ selectedBlock, selectedStep }}>
@@ -369,7 +369,7 @@ describe('PhoneAction', () => {
       }
     }
 
-    const result = jest.fn().mockReturnValue(blockActionPhoneUpdateMock.result)
+    const result = vi.fn().mockReturnValue(blockActionPhoneUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...blockActionPhoneUpdateMock, result }]}>
         <EditorProvider

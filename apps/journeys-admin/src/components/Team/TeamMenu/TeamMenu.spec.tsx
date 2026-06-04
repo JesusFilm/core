@@ -3,6 +3,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
@@ -12,25 +13,25 @@ import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__ge
 
 import { TeamMenu } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+  useRouter: vi.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('TeamMenu', () => {
-  const push = jest.fn()
-  const on = jest.fn()
+  const push = vi.fn()
+  const on = vi.fn()
 
   beforeEach(() => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
-    jest.clearAllMocks()
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
+    vi.clearAllMocks()
   })
 
   const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
@@ -216,7 +217,7 @@ describe('TeamMenu', () => {
   it('shows customs domain name if set', async () => {
     const mockTeamWithCustomDomain = {
       ...getTeamsMock,
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           teams: [
             {
@@ -279,7 +280,7 @@ describe('TeamMenu', () => {
       }
     } as unknown as NextRouter)
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         teams: [
           {

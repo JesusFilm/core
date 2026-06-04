@@ -1,4 +1,5 @@
 import { renderHook } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import {
   buildCustomizeUrl,
@@ -11,9 +12,9 @@ import {
   useTemplateCustomizationRedirect
 } from './useTemplateCustomizationRedirect'
 
-const mockReplace = jest.fn()
-const mockEnqueueSnackbar = jest.fn()
-const mockT = jest.fn((key: string) => key)
+const mockReplace = vi.fn()
+const mockEnqueueSnackbar = vi.fn()
+const mockT = vi.fn((key: string) => key)
 
 const defaultRouter = {
   isReady: true,
@@ -21,19 +22,19 @@ const defaultRouter = {
   replace: mockReplace
 }
 
-jest.mock('next/router', () => ({
-  useRouter: jest.fn()
+vi.mock('next/router', () => ({
+  useRouter: vi.fn()
 }))
 
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({ t: mockT })
 }))
 
-jest.mock('notistack', () => ({
+vi.mock('notistack', () => ({
   useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
 }))
 
-const mockUseRouter = jest.requireMock('next/router').useRouter as jest.Mock
+const mockUseRouter = (await vi.importMock('next/router')).useRouter as Mock
 
 function createParams(
   overrides: Partial<UseTemplateCustomizationRedirectParams> = {}
@@ -50,7 +51,7 @@ function createParams(
 
 describe('useTemplateCustomizationRedirect', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockUseRouter.mockImplementation(() => defaultRouter)
   })
 

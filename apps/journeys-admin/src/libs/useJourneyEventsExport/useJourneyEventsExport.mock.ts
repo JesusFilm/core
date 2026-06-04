@@ -107,7 +107,7 @@ export const getMockGetJourneyEventsCountQuery = (
       ...variables
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       journeyEventsCount: 2
     }

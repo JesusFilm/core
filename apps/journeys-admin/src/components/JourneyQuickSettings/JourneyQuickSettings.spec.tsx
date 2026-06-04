@@ -7,9 +7,9 @@ import { journey } from '../../libs/useHostCreate/useHostCreate.mocks'
 
 import { JourneyQuickSettings } from './JourneyQuickSettings'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('JourneyQuickSettings', () => {

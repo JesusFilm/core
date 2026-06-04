@@ -15,7 +15,7 @@ import { useAdminJourneysQuery } from '.'
 
 describe('useAdminJourneysQuery', () => {
   it('should get journeys', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeys: [
           {
@@ -128,7 +128,7 @@ describe('useAdminJourneysQuery', () => {
   })
 
   it('should skip query when skip option is true', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeys: []
       }

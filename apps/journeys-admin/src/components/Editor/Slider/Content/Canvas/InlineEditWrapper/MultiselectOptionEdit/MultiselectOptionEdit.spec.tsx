@@ -15,7 +15,7 @@ import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { MULTISELECT_OPTION_BLOCK_UPDATE, MultiselectOptionEdit } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -40,7 +40,7 @@ describe('MultiselectOptionEdit', () => {
         }
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         multiselectOptionBlockUpdate: {
           __typename: 'MultiselectOptionBlock',
@@ -61,7 +61,7 @@ describe('MultiselectOptionEdit', () => {
         }
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         multiselectOptionBlockUpdate: {
           __typename: 'MultiselectOptionBlock',
@@ -77,7 +77,7 @@ describe('MultiselectOptionEdit', () => {
     template: false
   } as unknown as Journey
 
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('selects the input on click', () => {
     render(
@@ -118,7 +118,7 @@ describe('MultiselectOptionEdit', () => {
   it('should redo the change to label that was undone', async () => {
     const redoUpdateMock = {
       ...mockOptionUpdate1,
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           multiselectOptionBlockUpdate: {
             __typename: 'MultiselectOptionBlock',

@@ -28,7 +28,7 @@ describe('useJourneyImageBlockUpdateMutation', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           imageBlockUpdate: {
             __typename: 'ImageBlock',
@@ -46,7 +46,7 @@ describe('useJourneyImageBlockUpdateMutation', () => {
             customizable: null
           }
         }
-      }))
+      })) as MockedResponse<JourneyImageBlockUpdate>['result']
     }
 
   it('should update image block', async () => {

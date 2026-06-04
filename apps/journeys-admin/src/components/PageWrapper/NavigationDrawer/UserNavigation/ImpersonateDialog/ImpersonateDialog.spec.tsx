@@ -2,31 +2,32 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { UserCredential, signInWithCustomToken } from 'firebase/auth'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { USER_IMPERSONATE } from './ImpersonateDialog'
 
 import { ImpersonateDialog } from '.'
 
-const mockLoginWithCredential = jest.fn().mockResolvedValue(undefined)
+const mockLoginWithCredential = vi.fn().mockResolvedValue(undefined)
 
-jest.mock('firebase/auth', () => ({
-  getAuth: jest.fn(() => ({})),
-  signInWithCustomToken: jest.fn()
+vi.mock('firebase/auth', () => ({
+  getAuth: vi.fn(() => ({})),
+  signInWithCustomToken: vi.fn()
 }))
 
-jest.mock('../../../../../libs/auth', () => ({
+vi.mock('../../../../../libs/auth', () => ({
   loginWithCredential: (...args: unknown[]) => mockLoginWithCredential(...args)
 }))
 
-const mockSignInWithCustomToken = signInWithCustomToken as jest.MockedFunction<
+const mockSignInWithCustomToken = signInWithCustomToken as MockedFunction<
   typeof signInWithCustomToken
 >
 
-const onClose = jest.fn()
+const onClose = vi.fn()
 
 describe('JourneyView/Menu/ImpersonateDialog', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should not set journey impersonate on close', async () => {
@@ -50,7 +51,7 @@ describe('JourneyView/Menu/ImpersonateDialog', () => {
     const credential = { user: {} } as unknown as UserCredential
     mockSignInWithCustomToken.mockResolvedValue(credential)
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         userImpersonate: 'accessToken'
       }

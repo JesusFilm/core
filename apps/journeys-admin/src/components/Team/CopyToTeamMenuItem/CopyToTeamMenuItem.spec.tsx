@@ -7,6 +7,7 @@ import {
   within
 } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
@@ -28,27 +29,27 @@ import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../libs/useTempl
 
 import { CopyToTeamMenuItem } from './CopyToTeamMenuItem'
 
-jest.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
-  useTemplateFamilyStatsAggregateLazyQuery: jest.fn()
+vi.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
+  useTemplateFamilyStatsAggregateLazyQuery: vi.fn()
 }))
 
 const mockedUseTemplateFamilyStatsAggregateLazyQuery =
-  useTemplateFamilyStatsAggregateLazyQuery as jest.MockedFunction<
+  useTemplateFamilyStatsAggregateLazyQuery as MockedFunction<
     typeof useTemplateFamilyStatsAggregateLazyQuery
   >
 
 type Journey = GetAdminJourney & JourneyFields
 
 describe('CopyToTeamMenuItem', () => {
-  const handleCloseMenu = jest.fn()
-  const refetchTemplateStats = jest.fn()
+  const handleCloseMenu = vi.fn()
+  const refetchTemplateStats = vi.fn()
 
   beforeEach(() => {
     handleCloseMenu.mockClear()
     refetchTemplateStats.mockClear()
     mockedUseTemplateFamilyStatsAggregateLazyQuery.mockReturnValue({
       query: [
-        jest.fn(),
+        vi.fn(),
         {
           data: undefined,
           loading: false,
@@ -68,14 +69,14 @@ describe('CopyToTeamMenuItem', () => {
         }
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         journeyProfileUpdate: {
           __typename: 'JourneyProfile',
           id: 'teamId'
         }
       }
-    }))
+    })) as MockedResponse<UpdateLastActiveTeamId>['result']
   }
 
   // Additional mock for translation scenario where updateLastActiveTeamId is called twice
@@ -89,14 +90,14 @@ describe('CopyToTeamMenuItem', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           journeyProfileUpdate: {
             __typename: 'JourneyProfile',
             id: 'teamId'
           }
         }
-      }))
+      })) as MockedResponse<UpdateLastActiveTeamId>['result']
     }
 
   const translateSubscriptionMock = {
@@ -112,7 +113,7 @@ describe('CopyToTeamMenuItem', () => {
         userLanguageName: ''
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         journeyAiTranslateCreateSubscription: {
           progress: 100,
@@ -154,7 +155,7 @@ describe('CopyToTeamMenuItem', () => {
         teamId: 'teamId'
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         journeyDuplicate: {
           id: 'duplicatedJourneyId',
@@ -162,7 +163,7 @@ describe('CopyToTeamMenuItem', () => {
           template: false
         }
       }
-    }))
+    })) as MockedResponse<JourneyDuplicate>['result']
   }
 
   const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
@@ -170,7 +171,7 @@ describe('CopyToTeamMenuItem', () => {
       request: {
         query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           teams: [
             {
@@ -188,7 +189,7 @@ describe('CopyToTeamMenuItem', () => {
             lastActiveTeamId: 'teamId'
           }
         }
-      }))
+      })) as MockedResponse<GetLastActiveTeamIdAndTeams>['result']
     }
 
   const mockLanguage = {
@@ -595,7 +596,7 @@ describe('CopyToTeamMenuItem', () => {
   })
 
   it('should call handleKeepMounted when provided', async () => {
-    const handleKeepMounted = jest.fn()
+    const handleKeepMounted = vi.fn()
 
     render(
       <MockedProvider
@@ -904,7 +905,7 @@ describe('CopyToTeamMenuItem', () => {
   })
 
   it('should call setHasOpenDialog when opening and closing copy to team dialog', async () => {
-    const setHasOpenDialog = jest.fn()
+    const setHasOpenDialog = vi.fn()
 
     render(
       <SnackbarProvider>

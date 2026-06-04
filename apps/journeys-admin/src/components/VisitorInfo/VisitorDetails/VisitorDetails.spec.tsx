@@ -7,7 +7,7 @@ import { VisitorDetails } from '.'
 
 describe('VisitorDetails', () => {
   it('should show last chat started at', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         visitor: {
           __typename: 'Visitor',
@@ -41,7 +41,7 @@ describe('VisitorDetails', () => {
   })
 
   it('should show country code', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         visitor: {
           __typename: 'Visitor',
@@ -76,7 +76,7 @@ describe('VisitorDetails', () => {
   })
 
   it('should show user device', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         visitor: {
           __typename: 'Visitor',
@@ -115,7 +115,7 @@ describe('VisitorDetails', () => {
   })
 
   it('should show visitor id', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         visitor: {
           __typename: 'Visitor',
