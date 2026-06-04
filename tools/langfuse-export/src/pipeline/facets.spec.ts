@@ -68,7 +68,9 @@ describe('buildFacets', () => {
       'keyword:evil',
       'keyword:suffering'
     ])
-    expect(result.sessionKeywordKeys.get('s2')).toEqual(['keyword:resurrection'])
+    expect(result.sessionKeywordKeys.get('s2')).toEqual([
+      'keyword:resurrection'
+    ])
     expect(result.sessionKeywordKeys.get('s4')).toEqual([
       'keyword:evil',
       'keyword:suffering'

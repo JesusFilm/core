@@ -15,7 +15,12 @@ const dataset: InsightsDataset = {
     themesAvailable: true
   },
   facets: [
-    { key: 'keyword:resurrection', label: 'resurrection', kind: 'keyword', count: 1 }
+    {
+      key: 'keyword:resurrection',
+      label: 'resurrection',
+      kind: 'keyword',
+      count: 1
+    }
   ],
   sessions: [
     {

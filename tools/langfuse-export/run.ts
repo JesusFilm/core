@@ -119,7 +119,9 @@ async function main(): Promise<void> {
   console.log(
     `Window:        ${window.from.toISOString()} -> ${window.to.toISOString()}`
   )
-  console.log(`Deliverable:   ${wantExplorer ? 'explorer bundle' : ''}${wantExplorer && wantLegacy ? ' + ' : ''}${wantLegacy ? 'legacy report' : ''}`)
+  console.log(
+    `Deliverable:   ${wantExplorer ? 'explorer bundle' : ''}${wantExplorer && wantLegacy ? ' + ' : ''}${wantLegacy ? 'legacy report' : ''}`
+  )
   console.log(`Discriminator: ${options.discriminator}`)
 
   // ---- source: live Langfuse, or an offline fixture ----
@@ -131,7 +133,9 @@ async function main(): Promise<void> {
   if (useFixture) {
     console.log(`Source:        fixture ${options.fixture} (offline)`)
     console.log('')
-    const fixture = loadFixture(resolve(process.cwd(), options.fixture as string))
+    const fixture = loadFixture(
+      resolve(process.cwd(), options.fixture as string)
+    )
     traces = fixture.traces
     observations = fixture.observations
     fixtureThemes = fixture.themes
