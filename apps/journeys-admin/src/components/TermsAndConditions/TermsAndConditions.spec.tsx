@@ -303,6 +303,56 @@ describe('TermsAndConditions', () => {
     )
   })
 
+  it('should swallow a forbidden journey duplicate and still move the user on', async () => {
+    // Regression: a rejected journeyDuplicate (e.g. throwing "user is not
+    // allowed to duplicate journey") must not strand the user on a spinner.
+    // The onboarding template is best-effort — the user still gets a team and
+    // is navigated to the destination, and the button resets.
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null }
+    } as unknown as NextRouter)
+
+    const journeyDuplicateErrorMock: MockedResponse<JourneyDuplicate> = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: ONBOARDING_TEMPLATE_ID,
+          teamId: 'teamId1'
+        }
+      },
+      error: new Error('user is not allowed to duplicate journey')
+    }
+
+    const { getByRole, queryByRole } = render(
+      <MockedProvider
+        mocks={[
+          journeyProfileCreateMock,
+          teamCreateMock,
+          getTeams, // initial TeamProvider query
+          getTeams, // query.refetch()
+          updateLastActiveTeamIdMock,
+          journeyDuplicateErrorMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <TermsAndConditions />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('checkbox'))
+    fireEvent.click(getByRole('button', { name: 'Next' }))
+
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/?onboarding=true'))
+    await waitFor(() =>
+      expect(queryByRole('progressbar')).not.toBeInTheDocument()
+    )
+    expect(getByRole('button', { name: 'Next' })).not.toBeDisabled()
+  })
+
   it('should pass redirect query location to next page', async () => {
     mockUseRouter.mockReturnValue({
       push,
