@@ -32,6 +32,7 @@ import {
   OVERLAY_FG_MUTED,
   OVERLAY_FG_RETRY,
   OVERLAY_HERO_FG,
+  OVERLAY_LINK_FG,
   SHEET_BOTTOM_FADE
 } from './chatStyles'
 import { DragHandle } from './DragHandle'
@@ -704,12 +705,12 @@ export function AiChat({
               rel="noopener noreferrer"
               underline="always"
               sx={{
-                // Same tap-target treatment as the panel/mobile variant
-                // — surrounding text on the dark overlay is muted white,
-                // so the primary colour lifts the link out as clearly
-                // interactive without introducing a new chat-surface
-                // token.
-                color: 'primary.main',
+                // OVERLAY_LINK_FG is a concrete brighter brand-red —
+                // see PANEL_LINK_FG note in ChatHeader for why we don't
+                // use 'primary.main'. The brighter variant keeps the
+                // label readable against the ~grey.900 overlay
+                // backdrop, where brandRed itself would be too dim.
+                color: OVERLAY_LINK_FG,
                 fontSize: 'inherit',
                 fontWeight: 600,
                 whiteSpace: 'nowrap'

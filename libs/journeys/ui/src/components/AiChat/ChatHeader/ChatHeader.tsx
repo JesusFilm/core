@@ -7,6 +7,7 @@ import { ReactElement } from 'react'
 import {
   ASSISTANT_FG,
   DIVIDER,
+  PANEL_LINK_FG,
   PRIMARY_ON,
   SPARKLE_AVATAR_SHADOW,
   SPARKLE_GRADIENT,
@@ -151,14 +152,16 @@ export function ChatHeader({
             rel="noopener noreferrer"
             underline="always"
             sx={{
-              // Use the theme's primary colour so the label reads as a
-              // tap target rather than more caption text — important on
-              // mobile where there's no hover state to disambiguate.
-              // whiteSpace:nowrap keeps the label tokenised so longer
-              // translations of "About this chat" don't break mid-word;
-              // the surrounding Typography still wraps the bullet and
-              // link to a new line when the whole line overflows.
-              color: 'primary.main',
+              // PANEL_LINK_FG is a concrete brandRed — using
+              // 'primary.main' here would invert to near-white under
+              // dark-themed journey cards (whose theme this component
+              // inherits), making the label invisible on the panel's
+              // white surface. whiteSpace:nowrap keeps the label
+              // tokenised so longer translations of "About this chat"
+              // don't break mid-word; the surrounding Typography still
+              // wraps the bullet and link to a new line when the whole
+              // line overflows.
+              color: PANEL_LINK_FG,
               fontSize: 'inherit',
               fontWeight: 600,
               whiteSpace: 'nowrap'
