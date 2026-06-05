@@ -385,13 +385,33 @@ describe('PublicGalleryPage', () => {
       ).toBeInTheDocument()
     })
 
-    it('shows the empty state when there are no items', () => {
+    it('renders no Explore/More sections when there are no items', () => {
       render(
         <PublicGalleryPage variant="journey" data={makeData({ items: [] })} />
       )
+      // Sections gate per-data, not via a dedicated empty-state component:
+      // no templates → no Explore or More.
       expect(
-        screen.getByTestId('TemplateGalleryEmptyState')
-      ).toBeInTheDocument()
+        screen.queryByTestId('GalleryTemplateCard')
+      ).not.toBeInTheDocument()
+    })
+
+    it('renders the media section but no Explore/More when items are empty and mediaUrl is set', () => {
+      // Regression guard: previously the empty-state component rendered
+      // unconditionally on `items: []`, sitting above the media section
+      // and producing contradictory "no templates yet" copy on a page that
+      // actually had content. The new per-section gating drops the empty
+      // state entirely — media still renders, Explore/More don't.
+      render(
+        <PublicGalleryPage
+          variant="journey"
+          data={makeData({
+            items: [],
+            mediaUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+          })}
+        />
+      )
+      expect(screen.getByTestId('TemplateGalleryMedia')).toBeInTheDocument()
       expect(
         screen.queryByTestId('GalleryTemplateCard')
       ).not.toBeInTheDocument()

@@ -17,7 +17,6 @@ import {
 
 import { FeaturedRow } from './FeaturedRow'
 import { JourneyViewCard } from './JourneyViewCard'
-import { JourneyViewEmptyState } from './JourneyViewEmptyState'
 import { JourneyViewHeader } from './JourneyViewHeader'
 import { JourneyViewMedia } from './JourneyViewMedia'
 import {
@@ -257,12 +256,6 @@ function JourneyViewBody({ data }: JourneyViewProps): ReactElement {
             </Box>
           </Container>
         </Box>
-      )}
-
-      {!hasTemplates && (
-        <Container maxWidth="lg" sx={{ py: 10 }}>
-          <JourneyViewEmptyState />
-        </Container>
       )}
 
       {hasMedia && (
