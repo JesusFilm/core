@@ -12,9 +12,9 @@ import { ReactElement } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
-import { ThemeMode, ThemeName } from '../../__generated__/globalTypes'
-import i18nConfig from '../../next-i18next.config'
-import logo from '../../public/logo.svg'
+import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
+import i18nConfig from '../../../next-i18next.config'
+import logo from '../../../public/logo.svg'
 
 function AboutChatPage(): ReactElement {
   const { t } = useTranslation('apps-journeys')

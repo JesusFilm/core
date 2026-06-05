@@ -3,6 +3,7 @@
 import { useChat } from '@ai-sdk/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 import { DefaultChatTransport, UIMessage } from 'ai'
 import { useTranslation } from 'next-i18next/pages'
@@ -28,6 +29,7 @@ import { ChatHeader } from './ChatHeader'
 import {
   HEADER_WASH,
   MUTED_FG,
+  OVERLAY_FG_MUTED,
   OVERLAY_FG_RETRY,
   OVERLAY_HERO_FG,
   SHEET_BOTTOM_FADE
@@ -647,8 +649,9 @@ export function AiChat({
           bottom: 'calc(env(safe-area-inset-bottom) + 8px)',
           zIndex: 2,
           display: 'flex',
-          alignItems: 'center',
-          gap: 1,
+          flexDirection: 'column',
+          alignItems: 'stretch',
+          gap: 0.75,
           mx: 'auto',
           maxWidth: { xs: 'none', sm: '48rem' },
           // Slide the floating input out the bottom when the sheet is
@@ -662,17 +665,55 @@ export function AiChat({
             'transform 280ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease-out'
         }}
       >
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          <PromptInput
-            input={input}
-            onInputChange={setInput}
-            onSubmit={handleSubmit}
-            isLoading={isLoading}
-            onStop={stop}
-            disabled={isConversationCapped}
-            variant={isOverlay ? 'floating' : 'inline'}
-          />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <PromptInput
+              input={input}
+              onInputChange={setInput}
+              onSubmit={handleSubmit}
+              isLoading={isLoading}
+              onStop={stop}
+              disabled={isConversationCapped}
+              variant={isOverlay ? 'floating' : 'inline'}
+            />
+          </Box>
         </Box>
+        {isOverlay && (
+          // Overlay-only disclosure caption — sits directly under the
+          // floating input. On panel/mobile the same subtitle + link
+          // live in ChatHeader at the top of the sheet, so we don't
+          // duplicate them here. Inline-flow Typography lets long
+          // translations of the leading phrase wrap to a second line
+          // naturally; whiteSpace:nowrap on the link prevents the
+          // label itself from breaking mid-word.
+          <Typography
+            variant="caption"
+            sx={{
+              color: OVERLAY_FG_MUTED,
+              fontSize: 12,
+              lineHeight: '18px',
+              textAlign: 'center',
+              px: 1
+            }}
+          >
+            {t('Replies may not be perfect')}
+            {' · '}
+            <Link
+              href="/legal/about-chat"
+              target="_blank"
+              rel="noopener noreferrer"
+              underline="always"
+              sx={{
+                color: 'inherit',
+                fontSize: 'inherit',
+                fontWeight: 500,
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {t('About this chat')}
+            </Link>
+          </Typography>
+        )}
       </Box>
     </Box>
   )
