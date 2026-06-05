@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
@@ -143,6 +144,26 @@ export function ChatHeader({
           }}
         >
           {t('Replies may not be perfect')}
+          {' · '}
+          <Link
+            href="/legal/about-chat"
+            target="_blank"
+            rel="noopener noreferrer"
+            underline="always"
+            sx={{
+              // Inherit caption colour/size so the link sits as a peer of the
+              // subtitle text rather than as a chip. Keep the label tokenised
+              // so longer translations of "About this chat" don't break
+              // mid-word; the surrounding Typography still wraps the bullet
+              // and link to a new line when the whole line overflows.
+              color: 'inherit',
+              fontSize: 'inherit',
+              fontWeight: 500,
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {t('About this chat')}
+          </Link>
         </Typography>
       </Box>
     </Box>
