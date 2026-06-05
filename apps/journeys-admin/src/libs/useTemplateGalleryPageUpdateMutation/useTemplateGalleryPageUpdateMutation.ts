@@ -29,6 +29,8 @@ export const TEMPLATE_GALLERY_PAGE_UPDATE = gql`
         type
         embedUrl
         muxPlaybackId
+        muxName
+        muxDuration
       }
       publishedAt
       createdAt

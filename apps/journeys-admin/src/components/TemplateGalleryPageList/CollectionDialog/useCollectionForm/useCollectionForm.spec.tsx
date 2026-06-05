@@ -66,17 +66,25 @@ function linkMedia(embedUrl: string): TemplateGalleryPageMedia {
     id: 'media-1',
     type: TemplateGalleryPageMediaType.link,
     embedUrl,
-    muxPlaybackId: null
+    muxPlaybackId: null,
+    muxName: null,
+    muxDuration: null
   }
 }
 
-function muxMedia(muxPlaybackId: string): TemplateGalleryPageMedia {
+function muxMedia(
+  muxPlaybackId: string,
+  muxName: string | null = null,
+  muxDuration: number | null = null
+): TemplateGalleryPageMedia {
   return {
     __typename: 'TemplateGalleryPageMedia',
     id: 'media-1',
     type: TemplateGalleryPageMediaType.mux,
     embedUrl: null,
-    muxPlaybackId
+    muxPlaybackId,
+    muxName,
+    muxDuration
   }
 }
 
@@ -203,7 +211,9 @@ describe('useCollectionForm', () => {
     })
 
     it('hydrates an existing mux row, seeding playbackId with an empty videoId', () => {
-      const collection = makeCollection({ media: muxMedia('pb-9') })
+      const collection = makeCollection({
+        media: muxMedia('pb-9', 'My clip', 125)
+      })
       const { result } = renderHook(
         () =>
           useCollectionForm({
@@ -217,7 +227,9 @@ describe('useCollectionForm', () => {
       expect(result.current.initialValues.media).toEqual({
         type: 'mux',
         muxVideoId: '',
-        muxPlaybackId: 'pb-9'
+        muxPlaybackId: 'pb-9',
+        muxName: 'My clip',
+        muxDuration: 125
       })
     })
   })
@@ -874,7 +886,9 @@ describe('useCollectionForm', () => {
             id: 'm1',
             type: TemplateGalleryPageMediaType.link,
             embedUrl: 'https://canva.com/embed/x',
-            muxPlaybackId: null
+            muxPlaybackId: null,
+            muxName: null,
+            muxDuration: null
           }
         }
       )

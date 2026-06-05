@@ -15,9 +15,9 @@ import {
 } from 'react'
 
 import {
-  MediaPreview,
+  MEDIA_BOX_HEIGHT,
   MEDIA_BOX_WIDTH,
-  MEDIA_BOX_HEIGHT
+  MediaPreview
 } from '../MediaPreview'
 import { CollectionMediaValues } from '../useCollectionForm/collectionMedia'
 
@@ -183,12 +183,17 @@ export function MediaSection({
                 muxPlaybackId: savedPlaybackId
               })
             }
-            // Completion is the commit point — persist the new video now.
-            onComplete={(videoId, playbackId) =>
+            // Completion is the commit point — persist the new video now. Carry
+            // name/duration from the provider cache so the attached state shows
+            // the metadata immediately (persistMedia re-reads them from the
+            // saved row, which keeps it correct after the round-trip too).
+            onComplete={(videoId, playbackId, muxName, muxDuration) =>
               onCommit({
                 type: 'mux',
                 muxVideoId: videoId,
-                muxPlaybackId: playbackId
+                muxPlaybackId: playbackId,
+                muxName,
+                muxDuration
               })
             }
             // Cancel reverts (transient) to the prior saved video when one
