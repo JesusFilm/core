@@ -704,9 +704,14 @@ export function AiChat({
               rel="noopener noreferrer"
               underline="always"
               sx={{
-                color: 'inherit',
+                // Same tap-target treatment as the panel/mobile variant
+                // — surrounding text on the dark overlay is muted white,
+                // so the primary colour lifts the link out as clearly
+                // interactive without introducing a new chat-surface
+                // token.
+                color: 'primary.main',
                 fontSize: 'inherit',
-                fontWeight: 500,
+                fontWeight: 600,
                 whiteSpace: 'nowrap'
               }}
             >

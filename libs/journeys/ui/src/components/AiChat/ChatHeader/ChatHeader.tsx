@@ -151,14 +151,16 @@ export function ChatHeader({
             rel="noopener noreferrer"
             underline="always"
             sx={{
-              // Inherit caption colour/size so the link sits as a peer of the
-              // subtitle text rather than as a chip. Keep the label tokenised
-              // so longer translations of "About this chat" don't break
-              // mid-word; the surrounding Typography still wraps the bullet
-              // and link to a new line when the whole line overflows.
-              color: 'inherit',
+              // Use the theme's primary colour so the label reads as a
+              // tap target rather than more caption text — important on
+              // mobile where there's no hover state to disambiguate.
+              // whiteSpace:nowrap keeps the label tokenised so longer
+              // translations of "About this chat" don't break mid-word;
+              // the surrounding Typography still wraps the bullet and
+              // link to a new line when the whole line overflows.
+              color: 'primary.main',
               fontSize: 'inherit',
-              fontWeight: 500,
+              fontWeight: 600,
               whiteSpace: 'nowrap'
             }}
           >
