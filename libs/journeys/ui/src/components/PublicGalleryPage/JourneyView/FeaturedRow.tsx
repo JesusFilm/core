@@ -160,7 +160,6 @@ export function FeaturedRow({
           <Box sx={{ pt: 1 }}>
             <JourneyViewCardActions
               itemId={item.id}
-              itemSlug={item.slug}
               itemTitle={item.title}
               accent={GALLERY_ACCENT}
               decorative={decorative}

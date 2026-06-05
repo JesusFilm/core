@@ -15,7 +15,7 @@ describe('TemplateGalleryView', () => {
     expect(screen.getByText('Sample Template')).toBeInTheDocument()
   })
 
-  it('forwards the template id and slug into the card action links', () => {
+  it('forwards the template id into the Use Template link', () => {
     render(
       <TemplateGalleryView
         gallery={makeGallery({ templates: [mockTemplate] })}
@@ -25,8 +25,5 @@ describe('TemplateGalleryView', () => {
       'href',
       'https://admin.nextstep.is/?useTemplate=template-1'
     )
-    expect(
-      screen.getByTestId('GalleryTemplateCardPreviewButton')
-    ).toHaveAttribute('href', '/sample-template')
   })
 })

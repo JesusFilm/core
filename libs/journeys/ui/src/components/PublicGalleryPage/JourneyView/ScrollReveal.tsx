@@ -1,8 +1,7 @@
 import Box from '@mui/material/Box'
 import { SxProps, Theme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
-
-import { usePrefersReducedMotion } from './usePrefersReducedMotion'
 
 type RevealFrom = 'left' | 'right' | 'up'
 
@@ -38,7 +37,11 @@ export function ScrollReveal({
   sx
 }: ScrollRevealProps): ReactElement {
   const ref = useRef<HTMLDivElement>(null)
-  const reduceMotion = usePrefersReducedMotion()
+  // `useMediaQuery` defaults `defaultMatches` to `false`, so SSR and the
+  // first client render produce identical markup (matches our previous
+  // hand-rolled hook's behaviour) and then resolves to the real value on
+  // the next tick.
+  const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
   // Initial `shown` must be deterministic between server and client to avoid
   // a hydration mismatch — `disabled` is a prop (safe), but `reduceMotion`
   // is `false` on the server and `true` on a reduce-motion client, so we

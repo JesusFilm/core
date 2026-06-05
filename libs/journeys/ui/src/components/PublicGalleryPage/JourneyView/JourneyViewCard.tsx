@@ -94,7 +94,7 @@ export function JourneyViewCard({
         sx={{
           width: '100%',
           height: '100%',
-          borderRadius: 3,
+          borderRadius: GALLERY_CARD_RADIUS,
           overflow: 'hidden',
           backgroundColor: '#FFFFFF',
           border: '1px solid rgba(0,0,0,0.1)',
@@ -140,7 +140,6 @@ export function JourneyViewCard({
           <Box sx={{ pt: 1, mt: 'auto' }}>
             <JourneyViewCardActions
               itemId={item.id}
-              itemSlug={item.slug}
               itemTitle={item.title}
               accent={GALLERY_ACCENT}
               fullWidth
@@ -223,7 +222,6 @@ export function JourneyViewCard({
 
       <JourneyViewCardActions
         itemId={item.id}
-        itemSlug={item.slug}
         itemTitle={item.title}
         accent={GALLERY_ACCENT}
         fullWidth

@@ -6,6 +6,7 @@ import { ReactElement } from 'react'
 
 import {
   GALLERY_ACCENT,
+  GALLERY_CARD_RADIUS,
   PublicGalleryPageData,
   splitFeatured
 } from '../galleryTokens'
@@ -141,7 +142,7 @@ export function AdminView({ data }: AdminViewProps): ReactElement {
                 sx={{
                   width: '100%',
                   aspectRatio: '16 / 11',
-                  borderRadius: 3,
+                  borderRadius: GALLERY_CARD_RADIUS,
                   bgcolor: 'action.hover',
                   opacity: 0.6
                 }}

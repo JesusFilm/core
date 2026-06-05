@@ -1,8 +1,8 @@
 import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { RefObject, useEffect, useRef } from 'react'
 
 import { useScrollSubscription } from './scrollContext'
-import { usePrefersReducedMotion } from './usePrefersReducedMotion'
 
 /**
  * Viewport-relative parallax that closes the gap between sections as you
@@ -32,7 +32,11 @@ export function useParallax(
   const cachedTransform = useRef<string>('')
   const { breakpoints } = useTheme()
   const mobileMaxWidth = breakpoints.values.md
-  const reduceMotion = usePrefersReducedMotion()
+  // `useMediaQuery` defaults `defaultMatches` to `false` for SSR safety;
+  // it resolves to the real value (and re-renders) once mounted, and
+  // subscribes to `matchMedia('change')` so the parallax stops mid-session
+  // when the user flips the OS setting.
+  const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
 
   // Flush any lingering transform when reduce-motion flips ON. The scroll
   // callback only fires on actual scroll, so an idle user would otherwise
