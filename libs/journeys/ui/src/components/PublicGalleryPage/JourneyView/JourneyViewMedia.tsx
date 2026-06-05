@@ -3,16 +3,16 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
-import { StrategySection } from '@core/journeys/ui/StrategySection'
+import { StrategySection } from '../../StrategySection'
 
-interface TemplateGalleryMediaProps {
-  mediaUrl: string | null
+interface JourneyViewMediaProps {
+  mediaUrl?: string | null
 }
 
-export function TemplateGalleryMedia({
+export function JourneyViewMedia({
   mediaUrl
-}: TemplateGalleryMediaProps): ReactElement | null {
-  const { t } = useTranslation('apps-journeys')
+}: JourneyViewMediaProps): ReactElement | null {
+  const { t } = useTranslation('libs-journeys-ui')
   if (mediaUrl == null || mediaUrl === '') return null
 
   return (
