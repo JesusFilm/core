@@ -1,7 +1,7 @@
 -- DropForeignKey
-ALTER TABLE "TemplateGalleryPage" DROP CONSTRAINT "TemplateGalleryPage_creatorImageBlockId_fkey";
+ALTER TABLE "TemplateGalleryPage" DROP CONSTRAINT IF EXISTS "TemplateGalleryPage_creatorImageBlockId_fkey";
 
 -- AlterTable
-ALTER TABLE "TemplateGalleryPage" DROP COLUMN "creatorImageBlockId",
-ADD COLUMN     "creatorImageAlt" TEXT,
-ADD COLUMN     "creatorImageSrc" TEXT;
+ALTER TABLE "TemplateGalleryPage" DROP COLUMN IF EXISTS "creatorImageBlockId";
+ALTER TABLE "TemplateGalleryPage" ADD COLUMN IF NOT EXISTS "creatorImageAlt" TEXT;
+ALTER TABLE "TemplateGalleryPage" ADD COLUMN IF NOT EXISTS "creatorImageSrc" TEXT;

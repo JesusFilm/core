@@ -1,32 +1,78 @@
-import Container from '@mui/material/Container'
-import Stack from '@mui/material/Stack'
-import { ReactElement } from 'react'
+import Box from '@mui/material/Box'
+import { ReactElement, useMemo } from 'react'
 
-import { GetTemplateGalleryPage_templateGalleryPageBySlug as TemplateGalleryPage } from '../../../__generated__/GetTemplateGalleryPage'
+import {
+  PublicGalleryPage,
+  PublicGalleryPageData,
+  PublicGalleryPageMedia
+} from '@core/journeys/ui/PublicGalleryPage'
 
-import { TemplateGalleryEmptyState } from './TemplateGalleryEmptyState'
-import { TemplateGalleryGrid } from './TemplateGalleryGrid'
-import { TemplateGalleryHeader } from './TemplateGalleryHeader'
-import { TemplateGalleryMedia } from './TemplateGalleryMedia'
+import {
+  GetTemplateGalleryPage_templateGalleryPageBySlug as TemplateGalleryPage,
+  GetTemplateGalleryPage_templateGalleryPageBySlug_media as TemplateGalleryPageMedia
+} from '../../../__generated__/GetTemplateGalleryPage'
+import { TemplateGalleryPageMediaType } from '../../../__generated__/globalTypes'
 
 interface TemplateGalleryViewProps {
   gallery: TemplateGalleryPage
 }
 
+/**
+ * Maps the generated media row to the lib's neutral tagged union. Rows whose
+ * payload field is missing (a mux row without a playbackId, a link row
+ * without an embedUrl) map to null so the media section simply doesn't
+ * render rather than mounting a broken player/iframe.
+ */
+function toMedia(
+  media: TemplateGalleryPageMedia | null
+): PublicGalleryPageMedia | null {
+  if (media == null) return null
+  if (media.type === TemplateGalleryPageMediaType.mux) {
+    if (media.muxPlaybackId == null) return null
+    return { type: 'mux', muxPlaybackId: media.muxPlaybackId }
+  }
+  if (media.embedUrl == null) return null
+  return { type: 'link', embedUrl: media.embedUrl }
+}
+
+function toData(gallery: TemplateGalleryPage): PublicGalleryPageData {
+  return {
+    title: gallery.title,
+    description: gallery.description,
+    creatorName: gallery.creatorName,
+    creatorImageSrc: gallery.creatorImageSrc,
+    creatorImageAlt: gallery.creatorImageAlt,
+    media: toMedia(gallery.media),
+    items: gallery.templates.map((template) => ({
+      id: template.id,
+      title: template.title,
+      description: template.description,
+      slug: template.slug,
+      // String-coerce defensively: if Apollo ever returns a custom DateTime
+      // scalar or a Date here, parseISO downstream silently yields Invalid
+      // Date and the meta line drops the date without warning.
+      createdAt: template.createdAt != null ? String(template.createdAt) : null,
+      languageName: template.language.name,
+      image:
+        template.primaryImageBlock != null
+          ? {
+              src: template.primaryImageBlock.src,
+              alt: template.primaryImageBlock.alt
+            }
+          : null
+    }))
+  }
+}
+
 export function TemplateGalleryView({
   gallery
 }: TemplateGalleryViewProps): ReactElement {
-  const hasTemplates = gallery.templates.length > 0
-  const hasMedia = gallery.media != null
-
+  // Memoise the mapped view-model so a React.memo wrapper around children
+  // would actually benefit; a fresh object every render is the default.
+  const data = useMemo(() => toData(gallery), [gallery])
   return (
-    <Container maxWidth="lg" sx={{ py: { xs: 4, md: 8 } }}>
-      <Stack spacing={{ xs: 4, md: 6 }}>
-        <TemplateGalleryHeader gallery={gallery} />
-        {hasTemplates && <TemplateGalleryGrid templates={gallery.templates} />}
-        {!hasTemplates && !hasMedia && <TemplateGalleryEmptyState />}
-        <TemplateGalleryMedia media={gallery.media} />
-      </Stack>
-    </Container>
+    <Box sx={{ minHeight: '100dvh' }}>
+      <PublicGalleryPage variant="journey" data={data} />
+    </Box>
   )
 }

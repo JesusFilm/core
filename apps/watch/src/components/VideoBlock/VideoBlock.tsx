@@ -72,7 +72,9 @@ export function VideoBlock({
         onMuxInsertComplete={onMuxInsertComplete}
         onSkip={onSkipActiveVideo}
         wasUnmuted={wasUnmuted}
-        key={currentMuxInsert ? currentMuxInsert.id : variant?.hls}
+        key={
+          currentMuxInsert ? currentMuxInsert.id : (variant?.id ?? variant?.hls)
+        }
       />
     </div>
   )

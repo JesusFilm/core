@@ -52,5 +52,8 @@ export const env = {
       'loom.com',
       'www.loom.com'
     ])
+  },
+  get TRANSLATION_AI_MODELS(): string[] {
+    return ['google/gemma-4-26b-a4b-it', 'google/gemini-2.5-flash']
   }
 }

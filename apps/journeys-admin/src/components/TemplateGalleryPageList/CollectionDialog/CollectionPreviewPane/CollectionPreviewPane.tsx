@@ -1,15 +1,17 @@
-import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Tooltip from '@mui/material/Tooltip'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { ReactElement, memo } from 'react'
+import { ReactElement, memo, useMemo } from 'react'
 
+import {
+  PublicGalleryPage,
+  PublicGalleryPageData
+} from '@core/journeys/ui/PublicGalleryPage'
 import CopyRightIcon from '@core/shared/ui/icons/CopyRight'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
@@ -54,9 +56,50 @@ interface CollectionPreviewPaneProps {
 }
 
 /**
+ * Map the dialog form values + selected journeys into the neutral
+ * `PublicGalleryPageData` shared with the live public page, so the admin
+ * preview and the real page render from one source of truth.
+ */
+function toData(
+  values: CollectionPreviewValues,
+  journeys: readonly Journey[]
+): PublicGalleryPageData {
+  return {
+    title: values.title,
+    description: values.description,
+    creatorName: values.creatorName,
+    creatorImageSrc: values.creatorImageSrc,
+    creatorImageAlt: values.creatorImageAlt,
+    // Media is intentionally NOT mapped here: the preview renders *form
+    // state* (typing, processing, thumbnails) through the `mediaSlot` below,
+    // which the neutral data shape can't express.
+    items: journeys.map((journey) => ({
+      id: journey.id,
+      title: journey.title,
+      description: journey.description,
+      slug: journey.slug,
+      // String-coerce defensively: if Apollo ever returns a custom DateTime
+      // scalar or a Date here, parseISO downstream silently yields Invalid
+      // Date and the meta line drops the date without warning.
+      createdAt: journey.createdAt != null ? String(journey.createdAt) : null,
+      languageName: journey.language.name,
+      image:
+        journey.primaryImageBlock != null
+          ? {
+              src: journey.primaryImageBlock.src,
+              alt: journey.primaryImageBlock.alt
+            }
+          : null
+    }))
+  }
+}
+
+/**
  * Mobile-shaped preview card mirroring the public gallery page layout.
  * Read-only — no form interactions. Lives on the left of CollectionDialog
- * so the publisher sees how their values will render to viewers.
+ * so the publisher sees how their values will render to viewers. The card
+ * body is the shared `PublicGalleryPage` admin variant; the URL row and
+ * frame around it are admin-only chrome.
  *
  * Wrapped in React.memo so unrelated re-renders of CollectionDialog
  * (e.g. typing in any non-preview field) don't rebuild the carousel.
@@ -72,6 +115,12 @@ function CollectionPreviewPaneImpl({
 }: CollectionPreviewPaneProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
+  // Memoise the mapped view-model so PublicGalleryPage gets a stable
+  // reference unless the form values or selected journeys actually change.
+  const data = useMemo(
+    () => toData(values, selectedJourneysOrdered),
+    [values, selectedJourneysOrdered]
+  )
 
   // Open is disabled when (a) the collection isn't saved yet (no slug),
   // (b) the URL is missing, or (c) the team's custom-domain gate blocks
@@ -182,12 +231,13 @@ function CollectionPreviewPaneImpl({
       </Stack>
       <Box
         // The mobile-shaped preview card is a visual mirror of the
-        // public gallery page rendered from the same values the form
-        // fields below already announce (title, description, creator,
-        // template carousel, strategy embed). aria-hidden keeps screen
-        // readers from traversing the duplicate. The URL row above
-        // stays announced because it's the only way to copy / open the
-        // public link from inside the edit dialog.
+        // public gallery page (the shared PublicGalleryPage admin
+        // variant) rendered from the same values the form fields below
+        // already announce (title, description, creator, template
+        // carousel). aria-hidden keeps screen readers from traversing
+        // the duplicate. The URL row above stays announced because it's
+        // the only way to copy / open the public link from inside the
+        // edit dialog.
         aria-hidden="true"
         sx={{
           bgcolor: 'white',
@@ -198,7 +248,7 @@ function CollectionPreviewPaneImpl({
           // Take all the height the URL row above leaves. Using
           // height: '100%' here would compute against the gray pane
           // and ignore the URL row, pushing the bottom of the card
-          // (the StrategySection) out of the visible area.
+          // out of the visible area.
           flex: 1,
           minHeight: 0,
           p: 2.5,
@@ -209,180 +259,18 @@ function CollectionPreviewPaneImpl({
           overflowY: 'auto'
         }}
       >
-        <Stack spacing={1.5}>
-          <Typography
-            sx={{
-              fontFamily: 'Montserrat, sans-serif',
-              fontWeight: 600,
-              fontSize: 20,
-              lineHeight: 1.2,
-              color: '#444451'
-            }}
-          >
-            {values.title !== '' ? values.title : t('Untitled collection')}
-          </Typography>
-          <Typography
-            sx={{
-              fontFamily: 'Open Sans, sans-serif',
-              fontSize: 14,
-              lineHeight: 1.43,
-              color: '#444451',
-              whiteSpace: 'pre-wrap'
-            }}
-          >
-            {values.description !== ''
-              ? values.description
-              : t('A short description of your collection will appear here.')}
-          </Typography>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Avatar
-              src={
-                values.creatorImageSrc !== ''
-                  ? values.creatorImageSrc
-                  : undefined
-              }
-              alt={values.creatorImageAlt}
-              sx={{ width: 32, height: 32 }}
-            />
-            <Typography
-              sx={{
-                fontFamily: 'Open Sans, sans-serif',
-                fontSize: 14,
-                color: '#6d6d7d'
-              }}
-            >
-              {values.creatorName !== ''
-                ? values.creatorName
-                : t('Creator name')}
-            </Typography>
-          </Stack>
-        </Stack>
-        <Box
-          sx={{
-            mt: 2.5,
-            // Horizontal scroll for the carousel of selected
-            // templates — mirrors the public gallery page layout.
-            overflowX: 'auto',
-            overflowY: 'hidden',
-            mx: -2.5, // bleed past the card padding so cards can
-            px: 2.5, // start flush with the card text above
-            pb: 2.5 // breathing room below cards so the
-            // horizontal scrollbar doesn't sit on the
-            // Use/Play buttons
-          }}
-        >
-          <Stack direction="row" spacing={1} sx={{ width: 'fit-content' }}>
-            {selectedJourneysOrdered.length === 0
-              ? [0, 1].map((idx) => (
-                  <Box
-                    key={`placeholder-${idx}`}
-                    sx={{
-                      width: 160,
-                      height: 280,
-                      borderRadius: 1.5,
-                      bgcolor: 'action.hover',
-                      flexShrink: 0,
-                      opacity: 0.6
-                    }}
-                  />
-                ))
-              : selectedJourneysOrdered.map((journey) => (
-                  <Stack
-                    key={journey.id}
-                    spacing={0.75}
-                    sx={{ width: 160, flexShrink: 0 }}
-                  >
-                    <Box
-                      sx={{
-                        width: '100%',
-                        height: 240,
-                        borderRadius: 1.5,
-                        overflow: 'hidden',
-                        position: 'relative',
-                        bgcolor: 'action.hover',
-                        ...(journey.primaryImageBlock?.src != null && {
-                          backgroundImage: `url(${journey.primaryImageBlock.src})`,
-                          backgroundSize: 'cover',
-                          backgroundPosition: 'center'
-                        })
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          inset: 0,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'flex-end',
-                          p: 1,
-                          background:
-                            'linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.16) 50%, rgba(0,0,0,0) 90%)'
-                        }}
-                      >
-                        <Typography
-                          sx={{
-                            fontFamily: 'Montserrat, sans-serif',
-                            fontWeight: 600,
-                            fontSize: 13,
-                            lineHeight: 1.25,
-                            color: 'white',
-                            overflow: 'hidden',
-                            display: '-webkit-box',
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical'
-                          }}
-                        >
-                          {journey.title}
-                        </Typography>
-                      </Box>
-                    </Box>
-                    {/* Use + Play buttons mirror the public gallery
-                        card. They're decorative here — render as Box
-                        so they're not keyboard-focusable and assistive
-                        tech doesn't announce them as actionable. */}
-                    <Stack direction="row" spacing={0.75} aria-hidden="true">
-                      <Box
-                        sx={{
-                          flex: '0 0 auto',
-                          width: 96,
-                          height: 32,
-                          borderRadius: 1,
-                          border: '1px solid #444451',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontFamily: 'Montserrat, sans-serif',
-                          fontWeight: 700,
-                          fontSize: 12,
-                          color: '#444451',
-                          opacity: 0.6
-                        }}
-                      >
-                        {t('Use')}
-                      </Box>
-                      <Box
-                        sx={{
-                          flex: 1,
-                          height: 32,
-                          borderRadius: 1,
-                          bgcolor: '#26262E',
-                          color: 'common.white',
-                          opacity: 0.6,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }}
-                      >
-                        <Play3Icon sx={{ fontSize: 18 }} />
-                      </Box>
-                    </Stack>
-                  </Stack>
-                ))}
-          </Stack>
-        </Box>
-        <Box sx={{ mt: 2.5 }}>
-          <MediaPreview media={values.media} />
-        </Box>
+        <PublicGalleryPage
+          variant="admin"
+          data={data}
+          // The media section previews live form state (a link mid-typing, a
+          // processing upload, a mux thumbnail) — states the public renderer
+          // can't express — so the admin injects its own MediaPreview.
+          mediaSlot={
+            values.media.type !== 'none' ? (
+              <MediaPreview media={values.media} />
+            ) : null
+          }
+        />
       </Box>
     </Box>
   )
