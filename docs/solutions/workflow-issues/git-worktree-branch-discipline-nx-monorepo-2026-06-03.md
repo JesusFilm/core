@@ -32,11 +32,12 @@ During NES-1706 several avoidable git mistakes caused real churn: a commit lande
 
 **Never commit to "whatever branch is checked out."** The shared main checkout (`/workspaces/core`) can be on a different branch than you think — verify `git branch --show-current` before committing, or (better) work in a dedicated worktree so the active branch is unambiguous. If a commit lands on the wrong branch: cherry-pick it onto the correct branch first, then `git reset --hard HEAD~1` on the wrong one (and force-push only branches you solely own).
 
-**Make a fresh worktree a functional dev env before running tests.** A new worktree has no `node_modules` and no generated Prisma clients (both are gitignored), so vitest/tsc fail with "vitest not found" or "Cannot find module './__generated__/client/client'". Fix:
+**Make a fresh worktree a functional dev env before running tests.** A new worktree has no `node_modules` and no generated Prisma clients (both are gitignored), so vitest/tsc fail with "vitest not found" or "Cannot find module './**generated**/client/client'". Fix:
+
 - `ln -s /workspaces/core/node_modules node_modules` — symlink the main checkout's installed deps (version-matched; avoids a full `pnpm install`).
 - `npx nx prisma-generate prisma-<domain>` for every domain the code imports — not just the one you changed. Missing `users`/`languages` clients break cross-module `tsc` even when your change is unrelated (e.g. the email worker imports the users client).
 
-**`git commit` in a worktree fails the husky hook.** A fresh worktree lacks `.husky/_/husky.sh`, so the pre-commit hook errors and *silently aborts the commit* (the push then pushes nothing new). Run prettier / lint / tsc / tests manually, then `git commit --no-verify`.
+**`git commit` in a worktree fails the husky hook.** A fresh worktree lacks `.husky/_/husky.sh`, so the pre-commit hook errors and _silently aborts the commit_ (the push then pushes nothing new). Run prettier / lint / tsc / tests manually, then `git commit --no-verify`.
 
 **`rm -rf` of a generated dir deletes its tracked `.gitignore`.** `libs/prisma/<domain>/src/__generated__/.gitignore` is committed. If you `rm -rf` the dir (e.g. to reset a symlink), restore it with `git checkout -- <path>/.gitignore`, or the regenerated `client/` shows up as untracked.
 

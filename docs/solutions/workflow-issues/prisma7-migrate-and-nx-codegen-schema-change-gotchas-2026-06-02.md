@@ -45,7 +45,7 @@ The local journeys DB already matches the committed schema, but its recorded mig
 - `prisma migrate deploy` → replays the whole inconsistent history and dies with `type "MessagePlatform" already exists`.
 - A pure file-to-file `prisma migrate diff --from-schema OLD --to-schema NEW --script` silently returns **empty** SQL — do not rely on it. (Prisma 7 also removed `--from-schema-datamodel`/`--to-schema-datamodel`; the flags are now `--from-schema`/`--to-schema`.)
 
-**Fix — diff the *live local DB* against the new schema** (it ignores history entirely). Run from inside the prisma project dir so `prisma.config.ts` autoloads, with the DB URL exported:
+**Fix — diff the _live local DB_ against the new schema** (it ignores history entirely). Run from inside the prisma project dir so `prisma.config.ts` autoloads, with the DB URL exported:
 
 ```bash
 cd libs/prisma/journeys
@@ -98,7 +98,7 @@ After this the field appears, e.g. `media?: InputMaybe<TemplateGalleryPageMediaI
 
 ## Why This Matters
 
-- **Gotcha 1:** the shadow-DB and `migrate deploy` paths both replay the *recorded migration history*, which is locally drifted. `migrate diff --from-config-datasource ... --to-schema ...` introspects the *current live database state* and computes the delta to the target schema — bypassing history. Because the live DB already matches the committed schema, the delta is exactly your additive change. Manually inserting the `_prisma_migrations` row marks it applied so it won't be re-run. (The pure file-to-file diff returned empty in this invocation; the live DB is the only reliable `--from` reference here.)
+- **Gotcha 1:** the shadow-DB and `migrate deploy` paths both replay the _recorded migration history_, which is locally drifted. `migrate diff --from-config-datasource ... --to-schema ...` introspects the _current live database state_ and computes the delta to the target schema — bypassing history. Because the live DB already matches the committed schema, the delta is exactly your additive change. Manually inserting the `_prisma_migrations` row marks it applied so it won't be re-run. (The pure file-to-file diff returned empty in this invocation; the live DB is the only reliable `--from` reference here.)
 - **Gotcha 2:** Nx caches task outputs keyed on declared inputs. The `codegen` task's cache key did not capture the freshly-composed gateway `schema.graphql`, so Nx replayed an earlier (pre-field) run and silently shipped stale generated types. A cache hit is not evidence that an upstream gateway-schema change was picked up.
 
 ## When to Apply
