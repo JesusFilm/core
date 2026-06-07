@@ -8,6 +8,7 @@ import {
 } from '@aws-sdk/client-s3'
 import { PrismaPg } from '@prisma/adapter-pg'
 import fetch from 'node-fetch'
+import sharp from 'sharp'
 
 import { PrismaClient } from '../../libs/prisma/languages/src/__generated__/client/client'
 
@@ -25,6 +26,7 @@ interface Options {
   outputDir: string
   limit?: number
   countryIds: string[]
+  useFlagcdnFallback: boolean
 }
 
 interface CountryFlagRow {
@@ -48,7 +50,8 @@ interface UploadedAsset {
   contentType: string
   contentLength: number
   sourceUrl: string
-  action: 'uploaded' | 'existing' | 'dryRun'
+  downloadedFrom: string | null
+  action: 'uploaded' | 'existing' | 'wouldUpload' | 'wouldUseExisting'
 }
 
 interface FailedAsset {
@@ -67,7 +70,8 @@ function parseArgs(): Options {
     force: false,
     envFiles: [],
     outputDir: DEFAULT_OUTPUT_DIR,
-    countryIds: []
+    countryIds: [],
+    useFlagcdnFallback: true
   }
 
   for (let i = 2; i < process.argv.length; i += 1) {
@@ -80,6 +84,8 @@ function parseArgs(): Options {
       options.apply = false
     } else if (arg === '--force') {
       options.force = true
+    } else if (arg === '--no-flagcdn-fallback') {
+      options.useFlagcdnFallback = false
     } else if (arg === '--env-file' && next != null) {
       options.envFiles.push({ path: next, mode: 'all' })
       i += 1
@@ -157,6 +163,62 @@ function contentTypeForKey(key: string): string {
   return 'application/octet-stream'
 }
 
+function countryIdFromFlagKey(key: string): string | null {
+  const match = key.match(
+    /(?:^|\/)flag_country_detail_([a-z]{2})\.(?:png|webp)$/i
+  )
+  return match?.[1]?.toLowerCase() ?? null
+}
+
+async function fetchBuffer(url: string): Promise<Buffer> {
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error(
+      `Failed to download ${url}: ${response.status} ${response.statusText}`
+    )
+  }
+
+  const body = Buffer.from(await response.arrayBuffer())
+  if (body.length === 0) throw new Error(`Downloaded empty file: ${url}`)
+
+  return body
+}
+
+async function downloadAssetBody(
+  asset: FlagAsset,
+  options: Options
+): Promise<{ body: Buffer; downloadedFrom: string }> {
+  try {
+    return {
+      body: await fetchBuffer(asset.sourceUrl),
+      downloadedFrom: asset.sourceUrl
+    }
+  } catch (error) {
+    if (!options.useFlagcdnFallback) throw error
+
+    const countryId = countryIdFromFlagKey(asset.key)
+    if (
+      countryId == null ||
+      !['image/png', 'image/webp'].includes(asset.contentType)
+    ) {
+      throw error
+    }
+
+    const fallbackUrl = `https://flagcdn.com/w2560/${countryId}.png`
+    const sourceBody = await fetchBuffer(fallbackUrl)
+    const image = sharp(sourceBody).resize({ width: 2048 })
+    const body =
+      asset.contentType === 'image/png'
+        ? await image.png({ palette: true }).toBuffer()
+        : await image.webp({ quality: 50 }).toBuffer()
+
+    if (body.length === 0)
+      throw new Error(`Generated empty fallback file: ${asset.key}`)
+
+    return { body, downloadedFrom: fallbackUrl }
+  }
+}
+
 function toFlagAsset(
   countryId: string,
   field: FlagAsset['field'],
@@ -230,7 +292,8 @@ async function uploadAsset(
       contentType: asset.contentType,
       contentLength: existing.contentLength,
       sourceUrl: asset.sourceUrl,
-      action: options.apply ? 'existing' : 'dryRun'
+      downloadedFrom: null,
+      action: options.apply ? 'existing' : 'wouldUseExisting'
     }
   }
 
@@ -241,19 +304,13 @@ async function uploadAsset(
       contentType: asset.contentType,
       contentLength: existing.contentLength,
       sourceUrl: asset.sourceUrl,
-      action: 'dryRun'
+      downloadedFrom: null,
+      action:
+        existing.exists && !options.force ? 'wouldUseExisting' : 'wouldUpload'
     }
   }
 
-  const response = await fetch(asset.sourceUrl)
-  if (!response.ok) {
-    throw new Error(
-      `Failed to download ${asset.sourceUrl}: ${response.status} ${response.statusText}`
-    )
-  }
-
-  const body = Buffer.from(await response.arrayBuffer())
-  if (body.length === 0) throw new Error(`Downloaded empty file: ${asset.key}`)
+  const { body, downloadedFrom } = await downloadAssetBody(asset, options)
 
   await client.send(
     new PutObjectCommand({
@@ -276,6 +333,7 @@ async function uploadAsset(
     contentType: asset.contentType,
     contentLength: head.contentLength,
     sourceUrl: asset.sourceUrl,
+    downloadedFrom,
     action: 'uploaded'
   }
 }
@@ -284,10 +342,7 @@ async function getCountries(
   prisma: PrismaClient,
   options: Options
 ): Promise<CountryFlagRow[]> {
-  const countryFilter =
-    options.countryIds.length > 0
-      ? `and id = any($1)`
-      : ''
+  const countryFilter = options.countryIds.length > 0 ? `and id = any($1)` : ''
   const limit = options.limit != null ? `limit ${options.limit}` : ''
   const values = options.countryIds.length > 0 ? [options.countryIds] : []
 
@@ -335,10 +390,7 @@ async function main(): Promise<void> {
   const r2Client = getR2Client()
 
   const generatedAt = new Date().toISOString()
-  const runDir = path.join(
-    options.outputDir,
-    generatedAt.replace(/[:.]/g, '-')
-  )
+  const runDir = path.join(options.outputDir, generatedAt.replace(/[:.]/g, '-'))
   await mkdir(runDir, { recursive: true })
 
   const uploadedByKey = new Map<string, UploadedAsset>()
@@ -408,6 +460,7 @@ async function main(): Promise<void> {
       generatedAt,
       mode: options.apply ? 'apply' : 'dry-run',
       force: options.force,
+      flagcdnFallback: options.useFlagcdnFallback,
       countriesScanned: countries.length,
       flagRefs: assets.length,
       uniqueKeys: uniqueAssets.length,
@@ -417,8 +470,11 @@ async function main(): Promise<void> {
       existing: Array.from(uploadedByKey.values()).filter(
         ({ action }) => action === 'existing'
       ).length,
-      dryRunReady: Array.from(uploadedByKey.values()).filter(
-        ({ action }) => action === 'dryRun'
+      wouldUpload: Array.from(uploadedByKey.values()).filter(
+        ({ action }) => action === 'wouldUpload'
+      ).length,
+      wouldUseExisting: Array.from(uploadedByKey.values()).filter(
+        ({ action }) => action === 'wouldUseExisting'
       ).length,
       failed: failures.length,
       countryUpdates: plannedUpdates.length,
