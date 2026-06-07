@@ -1,1 +1,0 @@
-export { TemplateGalleryEmptyState } from './TemplateGalleryEmptyState'
