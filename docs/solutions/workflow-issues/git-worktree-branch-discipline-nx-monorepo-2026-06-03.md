@@ -12,6 +12,7 @@ applies_when:
   - Making a fresh worktree able to run vitest / tsc / lint
 tags:
   - git-worktree
+  - worktree-placement
   - branch-management
   - nx-monorepo
   - node-modules
@@ -28,15 +29,20 @@ During NES-1706 several avoidable git mistakes caused real churn: a commit lande
 
 ## Guidance
 
+**Worktrees inside the repo MUST live at a gitignored path — use `.claude/worktrees/<branch>`.** A worktree at an unignored path (e.g. `.worktrees/`) is scanned by Nx in the primary checkout, and every project is then "defined in multiple locations" — this breaks `nf start`, `nx run-many`, and the entire project graph for everyone using the main checkout, not just you. Use `.claude/worktrees/<branch>` (already gitignored) or a directory outside the repo entirely (e.g. a sibling of `/workspaces/core`). An existing misplaced worktree can be relocated without losing its `node_modules`/generated clients: `git worktree move <old-path> .claude/worktrees/<branch>`.
+
+**Remove the worktree when the task ends.** The push is what shares your work — the worktree is scratch space. After pushing, run `git worktree remove <path>` then `git worktree prune`; don't leave worktrees behind.
+
 **One unit of work → one worktree → one branch → one PR.** For work that must land on a specific branch, pull that remote branch and open a dedicated worktree on it (`git worktree add <path> <branch>`); do the work there. Don't create a new branch for a change that belongs on an existing one, and don't bundle unrelated changes (e.g. a cross-domain migration) onto a feature branch — give genuinely separate work its own intentional branch (or confirm with the owner).
 
 **Never commit to "whatever branch is checked out."** The shared main checkout (`/workspaces/core`) can be on a different branch than you think — verify `git branch --show-current` before committing, or (better) work in a dedicated worktree so the active branch is unambiguous. If a commit lands on the wrong branch: cherry-pick it onto the correct branch first, then `git reset --hard HEAD~1` on the wrong one (and force-push only branches you solely own).
 
-**Make a fresh worktree a functional dev env before running tests.** A new worktree has no `node_modules` and no generated Prisma clients (both are gitignored), so vitest/tsc fail with "vitest not found" or "Cannot find module './__generated__/client/client'". Fix:
+**Make a fresh worktree a functional dev env before running tests.** A new worktree has no `node_modules` and no generated Prisma clients (both are gitignored), so vitest/tsc fail with "vitest not found" or "Cannot find module './**generated**/client/client'". Fix:
+
 - `ln -s /workspaces/core/node_modules node_modules` — symlink the main checkout's installed deps (version-matched; avoids a full `pnpm install`).
 - `npx nx prisma-generate prisma-<domain>` for every domain the code imports — not just the one you changed. Missing `users`/`languages` clients break cross-module `tsc` even when your change is unrelated (e.g. the email worker imports the users client).
 
-**`git commit` in a worktree fails the husky hook.** A fresh worktree lacks `.husky/_/husky.sh`, so the pre-commit hook errors and *silently aborts the commit* (the push then pushes nothing new). Run prettier / lint / tsc / tests manually, then `git commit --no-verify`.
+**`git commit` in a worktree fails the husky hook.** A fresh worktree lacks `.husky/_/husky.sh`, so the pre-commit hook errors and _silently aborts the commit_ (the push then pushes nothing new). Run prettier / lint / tsc / tests manually, then `git commit --no-verify`.
 
 **`rm -rf` of a generated dir deletes its tracked `.gitignore`.** `libs/prisma/<domain>/src/__generated__/.gitignore` is committed. If you `rm -rf` the dir (e.g. to reset a symlink), restore it with `git checkout -- <path>/.gitignore`, or the regenerated `client/` shows up as untracked.
 
