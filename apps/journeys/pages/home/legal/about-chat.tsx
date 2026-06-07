@@ -36,36 +36,42 @@ function AboutChatPage(): ReactElement {
                 alignSelf: 'center'
               }}
             />
-            <Stack spacing={3} component="article">
-              <Typography variant="h4" component="h1">
-                {t('About this chat')}
-              </Typography>
-              <Typography variant="body1">
-                {t(
-                  'The chat on this journey is powered by an AI assistant. To help us improve future replies, the messages you send and the assistant’s replies are saved.'
-                )}
-              </Typography>
-              <Typography variant="body1">
-                {t(
-                  'We do not save your name, email address, or any account details, and we do not link conversations to your identity.'
-                )}
-              </Typography>
-              <Typography variant="h6" component="h2">
-                {t('Where the messages go')}
-              </Typography>
-              <Typography variant="body1">
-                {t(
-                  'Your messages and the assistant’s replies pass through two third-party services: an AI service that generates the replies, and an analytics service called Langfuse where the conversations are stored so the team can review them in aggregate to improve the experience. They are not sold and they are not used for advertising.'
-                )}
-              </Typography>
-              <Typography variant="h6" component="h2">
-                {t('If you prefer not to take part')}
-              </Typography>
-              <Typography variant="body1">
-                {t(
-                  'There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.'
-                )}
-              </Typography>
+            <Stack spacing={4} component="article">
+              <Stack spacing={2}>
+                <Typography variant="h4" component="h1">
+                  {t('About this chat')}
+                </Typography>
+                <Typography variant="body1">
+                  {t(
+                    'The chat on this journey is powered by an AI assistant. To help us improve future replies, the messages you send and the assistant’s replies are saved.'
+                  )}
+                </Typography>
+                <Typography variant="body1">
+                  {t(
+                    'We do not save your name, email address, or any account details, and we do not link conversations to your identity.'
+                  )}
+                </Typography>
+              </Stack>
+              <Stack spacing={1.5}>
+                <Typography variant="h5" component="h2">
+                  {t('Where the messages go')}
+                </Typography>
+                <Typography variant="body1">
+                  {t(
+                    'Your messages and the assistant’s replies pass through two third-party services: an AI service that generates the replies, and an analytics service called Langfuse where the conversations are stored so the team can review them in aggregate to improve the experience. They are not sold and they are not used for advertising.'
+                  )}
+                </Typography>
+              </Stack>
+              <Stack spacing={1.5}>
+                <Typography variant="h5" component="h2">
+                  {t('If you prefer not to take part')}
+                </Typography>
+                <Typography variant="body1">
+                  {t(
+                    'There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.'
+                  )}
+                </Typography>
+              </Stack>
               <Typography variant="caption" color="text.secondary">
                 {t('Last updated: June 2026')}
               </Typography>
