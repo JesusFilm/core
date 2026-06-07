@@ -12,6 +12,7 @@ applies_when:
   - Making a fresh worktree able to run vitest / tsc / lint
 tags:
   - git-worktree
+  - worktree-placement
   - branch-management
   - nx-monorepo
   - node-modules
@@ -27,6 +28,10 @@ tags:
 During NES-1706 several avoidable git mistakes caused real churn: a commit landed on the wrong branch (the main checkout had been switched to a different feature branch, so a commit meant for the backend branch went onto the frontend branch); new throwaway branches were created for changes that belonged on an existing branch; an unrelated change (a media-index migration) got bundled onto a feature branch; and extra worktrees/branches had to be force-pushed and deleted to clean up. This captures the discipline that avoids the rework.
 
 ## Guidance
+
+**Worktrees inside the repo MUST live at a gitignored path — use `.claude/worktrees/<branch>`.** A worktree at an unignored path (e.g. `.worktrees/`) is scanned by Nx in the primary checkout, and every project is then "defined in multiple locations" — this breaks `nf start`, `nx run-many`, and the entire project graph for everyone using the main checkout, not just you. Use `.claude/worktrees/<branch>` (already gitignored) or a directory outside the repo entirely (e.g. a sibling of `/workspaces/core`). An existing misplaced worktree can be relocated without losing its `node_modules`/generated clients: `git worktree move <old-path> .claude/worktrees/<branch>`.
+
+**Remove the worktree when the task ends.** The push is what shares your work — the worktree is scratch space. After pushing, run `git worktree remove <path>` then `git worktree prune`; don't leave worktrees behind.
 
 **One unit of work → one worktree → one branch → one PR.** For work that must land on a specific branch, pull that remote branch and open a dedicated worktree on it (`git worktree add <path> <branch>`); do the work there. Don't create a new branch for a change that belongs on an existing one, and don't bundle unrelated changes (e.g. a cross-domain migration) onto a feature branch — give genuinely separate work its own intentional branch (or confirm with the owner).
 
