@@ -30,7 +30,7 @@ export interface CliOptions {
   model?: string
   throttleMs?: number
   llmScrub: boolean
-  pdf: boolean
+  fixture?: string
   debug: boolean
   help: boolean
 }
@@ -43,8 +43,9 @@ export const USAGE = `Usage: pnpm exec tsx tools/langfuse-export/run.ts [options
                        (default = exclude known load-test probes)
   --environment E      deployment env filter: production | stage | preview | development | all
                        (default production; all = every env incl. pre-NES-1688 untagged traces)
+  --fixture PATH       build from a local {traces,observations,themes?} JSON instead of
+                       Langfuse — fully offline, no credentials, no LLM (themes from the file)
   --llm-scrub          run an extra LLM PII scrub pass (pending NES-1562 sign-off)
-  --pdf                also render report.pdf (needs: pnpm exec playwright install chromium)
   --model ID           OpenRouter model id (default from env / google/gemini-2.5-flash-lite)
   --throttle MS        delay between Langfuse API calls (default 700ms; keep under ~100 req/min)
   --debug              also write records.ndjson (sanitised turns; never upload to Drive)
@@ -70,7 +71,6 @@ export function parseArgs(argv: string[]): CliOptions {
     discriminator: 'default',
     environment: 'production',
     llmScrub: false,
-    pdf: false,
     debug: false,
     help: false
   }
@@ -115,8 +115,8 @@ export function parseArgs(argv: string[]): CliOptions {
       case '--llm-scrub':
         options.llmScrub = true
         break
-      case '--pdf':
-        options.pdf = true
+      case '--fixture':
+        options.fixture = requireValue(argv, (index += 1), '--fixture')
         break
       case '--debug':
         options.debug = true
@@ -130,7 +130,7 @@ export function parseArgs(argv: string[]): CliOptions {
     }
   }
 
-  // Validate --throttle here (not in resolveWindow): `Number('--pdf')` /
+  // Validate --throttle here (not in resolveWindow): `Number('--debug')` /
   // `Number('abc')` yield NaN, which the `?? DEFAULT` guard in langfuse.ts
   // does NOT catch, silently disabling the rate-limit delay.
   if (

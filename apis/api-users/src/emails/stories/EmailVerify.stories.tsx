@@ -14,7 +14,6 @@ const Template: StoryObj<typeof EmailVerifyJesusFilmOne> = {
     <EmailVerifyJesusFilmOne
       recipient={args.recipient}
       token={args.token}
-      inviteLink="https://admin.nextstep.is/"
       story
     />
   )

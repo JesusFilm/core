@@ -1,1 +1,0 @@
-export { TemplateGalleryMedia } from './TemplateGalleryMedia'

@@ -1,1 +1,0 @@
-export { TemplateGalleryGrid } from './TemplateGalleryGrid'

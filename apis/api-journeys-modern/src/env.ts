@@ -33,6 +33,7 @@ export const env = createEnv({
     CLOUDFLARE_IMAGES_TOKEN: z.string().trim().min(1),
     MUX_UGC_ACCESS_TOKEN_ID: z.string().trim().min(1),
     MUX_UGC_SECRET_KEY: z.string().trim().min(1),
+    OPENROUTER_API_KEY: z.string().trim().min(1),
     REDIS_PORT: z.coerce.number().int().positive().default(6379),
     REDIS_URL: z.string().trim().min(1).default('redis'),
     SERVICE_VERSION: z.string().trim().default(''),
@@ -45,6 +46,28 @@ export const env = createEnv({
     TEMPLATE_LIBRARY_EMBED_HOSTS: z
       .string()
       .default('{}')
-      .transform(parseEmbedHostsEnv)
+      .transform(parseEmbedHostsEnv),
+    IMAGE_DESCRIPTION_AI_MODELS: z
+      .string()
+      .trim()
+      .default('google/gemma-4-26b-a4b-it,google/gemini-2.5-flash')
+      .transform((val) =>
+        val
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+      )
+      .pipe(z.array(z.string().min(1)).min(1)),
+    TRANSLATION_AI_MODELS: z
+      .string()
+      .trim()
+      .default('google/gemma-4-26b-a4b-it,google/gemini-2.5-flash')
+      .transform((val) =>
+        val
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+      )
+      .pipe(z.array(z.string().min(1)).min(1))
   }
 })
