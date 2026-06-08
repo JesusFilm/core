@@ -1,6 +1,6 @@
 import { useApolloClient } from '@apollo/client'
-import { useSnackbar } from 'notistack'
 import { useTranslation } from 'next-i18next/pages'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
