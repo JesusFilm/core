@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
@@ -161,6 +161,22 @@ describe('CollectionPreviewPane', () => {
       expect(
         screen.getByTestId('GalleryMediaPreviewThumbnail')
       ).toHaveAttribute('src', 'https://image.mux.com/pb-1/thumbnail.jpg')
+    })
+
+    it('shows a loading skeleton until the Mux thumbnail loads', () => {
+      renderPane({
+        values: {
+          ...baseValues,
+          media: { type: 'mux', muxVideoId: '', muxPlaybackId: 'pb-1' }
+        }
+      })
+      expect(
+        screen.getByTestId('GalleryMediaPreviewSkeleton')
+      ).toBeInTheDocument()
+      fireEvent.load(screen.getByTestId('GalleryMediaPreviewThumbnail'))
+      expect(
+        screen.queryByTestId('GalleryMediaPreviewSkeleton')
+      ).not.toBeInTheDocument()
     })
 
     it('shows a processing placeholder for a fresh upload without a playbackId', () => {

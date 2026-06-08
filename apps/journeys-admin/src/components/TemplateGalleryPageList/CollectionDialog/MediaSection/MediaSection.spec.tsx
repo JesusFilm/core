@@ -29,10 +29,8 @@ function renderSection(
   props: { error?: string; saving?: boolean; disableModeSwitch?: boolean } = {}
 ): {
   onChange: ReturnType<typeof vi.fn>
-  onCommit: ReturnType<typeof vi.fn>
 } {
   const onChange = vi.fn()
-  const onCommit = vi.fn()
   render(
     <MediaSection
       media={media}
@@ -41,11 +39,10 @@ function renderSection(
       saving={props.saving}
       disableModeSwitch={props.disableModeSwitch}
       onChange={onChange}
-      onCommit={onCommit}
       headerSx={{}}
     />
   )
-  return { onChange, onCommit }
+  return { onChange }
 }
 
 describe('MediaSection', () => {
@@ -66,8 +63,8 @@ describe('MediaSection', () => {
     expect(screen.getByLabelText('Media link')).toBeInTheDocument()
   })
 
-  it('emits a transient link value as the user types a URL (no commit yet)', () => {
-    const { onChange, onCommit } = renderSection({ type: 'none' })
+  it('emits the link value as the user types a URL', () => {
+    const { onChange } = renderSection({ type: 'none' })
     fireEvent.change(screen.getByLabelText('Media link'), {
       target: { value: 'https://canva.com/x' }
     })
@@ -75,41 +72,41 @@ describe('MediaSection', () => {
       type: 'link',
       url: 'https://canva.com/x'
     })
-    // Typing must not persist — that only happens on blur.
-    expect(onCommit).not.toHaveBeenCalled()
   })
 
-  it('commits the link on blur', () => {
-    const { onCommit } = renderSection({
+  it('does nothing on blur — links save with the dialog Save', () => {
+    const { onChange } = renderSection({
       type: 'link',
       url: 'https://canva.com/x'
     })
     fireEvent.blur(screen.getByLabelText('Media link'), {
       target: { value: 'https://canva.com/x' }
     })
-    expect(onCommit).toHaveBeenCalledWith({
-      type: 'link',
-      url: 'https://canva.com/x'
-    })
+    expect(onChange).not.toHaveBeenCalled()
   })
 
-  it('commits none when the link is cleared and blurred', () => {
-    const { onCommit } = renderSection({ type: 'link', url: 'https://x.test/a' })
-    fireEvent.blur(screen.getByLabelText('Media link'), {
-      target: { value: '   ' }
+  it('clears the link when Remove is clicked (form state, saved by dialog Save)', () => {
+    const { onChange } = renderSection({
+      type: 'link',
+      url: 'https://x.test/a'
     })
-    expect(onCommit).toHaveBeenCalledWith({ type: 'none' })
+    fireEvent.click(screen.getByRole('button', { name: 'Remove' }))
+    expect(onChange).toHaveBeenCalledWith({ type: 'none' })
+  })
+
+  it('renders Remove disabled when there is no link (no layout shift)', () => {
+    renderSection({ type: 'none' })
+    expect(screen.getByRole('button', { name: 'Remove' })).toBeDisabled()
   })
 
   it('does NOT clear saved media when switching tabs', () => {
-    const { onChange, onCommit } = renderSection({
+    const { onChange } = renderSection({
       type: 'link',
       url: 'https://canva.com/x'
     })
     fireEvent.click(screen.getByRole('button', { name: 'Upload' }))
-    // Switching only changes the visible input — no value change/persist.
+    // Switching only changes the visible input — no value change.
     expect(onChange).not.toHaveBeenCalled()
-    expect(onCommit).not.toHaveBeenCalled()
     expect(screen.getByRole('button', { name: 'Upload' })).toHaveAttribute(
       'aria-pressed',
       'true'
@@ -153,8 +150,8 @@ describe('MediaSection', () => {
     expect(screen.getByTestId('MuxUploadFieldStub')).toBeInTheDocument()
   })
 
-  it('preserves the existing playbackId (transiently) when a replacement upload starts', () => {
-    const { onChange, onCommit } = renderSection({
+  it('preserves the existing playbackId when a replacement upload starts', () => {
+    const { onChange } = renderSection({
       type: 'mux',
       muxVideoId: '',
       muxPlaybackId: 'pb-9'
@@ -165,12 +162,10 @@ describe('MediaSection', () => {
       muxVideoId: '',
       muxPlaybackId: 'pb-9'
     })
-    // An in-flight upload isn't persisted until it completes.
-    expect(onCommit).not.toHaveBeenCalled()
   })
 
-  it('reverts (transiently) to the prior saved video when a replacement upload is cancelled', () => {
-    const { onChange, onCommit } = renderSection({
+  it('reverts to the prior saved video when a replacement upload is cancelled', () => {
+    const { onChange } = renderSection({
       type: 'mux',
       muxVideoId: '',
       muxPlaybackId: 'pb-9'
@@ -181,38 +176,36 @@ describe('MediaSection', () => {
       muxVideoId: '',
       muxPlaybackId: 'pb-9'
     })
-    expect(onCommit).not.toHaveBeenCalled()
   })
 
-  it('clears to none (transiently) when cancelling a fresh upload with no prior video', () => {
+  it('clears to none when cancelling a fresh upload with no prior video', () => {
     const { onChange } = renderSection({ type: 'mux', muxVideoId: '' })
     fireEvent.click(screen.getByRole('button', { name: 'stub-cancel' }))
     expect(onChange).toHaveBeenCalledWith({ type: 'none' })
   })
 
-  it('commits the new video id and playbackId on upload completion', () => {
-    const { onCommit } = renderSection({ type: 'mux', muxVideoId: '' })
+  it('updates the form with the new video id and playbackId on upload completion', () => {
+    const { onChange } = renderSection({ type: 'mux', muxVideoId: '' })
     fireEvent.click(screen.getByRole('button', { name: 'stub-complete' }))
-    expect(onCommit).toHaveBeenCalledWith({
+    expect(onChange).toHaveBeenCalledWith({
       type: 'mux',
       muxVideoId: 'vid-new',
       muxPlaybackId: 'pb-new'
     })
   })
 
-  it('commits none on Remove', () => {
-    const { onCommit } = renderSection({
+  it('clears to none on Remove (form state, saved by dialog Save)', () => {
+    const { onChange } = renderSection({
       type: 'mux',
       muxVideoId: '',
       muxPlaybackId: 'pb-1'
     })
     fireEvent.click(screen.getByRole('button', { name: 'stub-remove' }))
-    expect(onCommit).toHaveBeenCalledWith({ type: 'none' })
+    expect(onChange).toHaveBeenCalledWith({ type: 'none' })
   })
 
-  it('shows a saving indicator and disables the link field while persisting', () => {
+  it('disables the link field while the dialog is saving', () => {
     renderSection({ type: 'link', url: 'https://x.test/a' }, { saving: true })
-    expect(screen.getByText('Saving…')).toBeInTheDocument()
     expect(screen.getByLabelText('Media link')).toBeDisabled()
   })
 

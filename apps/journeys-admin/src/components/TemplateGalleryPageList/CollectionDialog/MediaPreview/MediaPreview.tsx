@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
@@ -8,10 +9,12 @@ import { EmbedIframe } from '@core/journeys/ui/TemplateGalleryMedia'
 import { previewEmbedUrl } from '../CollectionPreviewPane/previewEmbedUrl'
 import { CollectionMediaValues } from '../useCollectionForm/collectionMedia'
 
-// Field box dimensions, matching the creator-image block (92×77) so the media
-// field lines up with the Creator Details field.
-export const MEDIA_BOX_WIDTH = 92
-export const MEDIA_BOX_HEIGHT = 77
+// Field box dimensions, shared with the Creator Details image box so the two
+// fields line up. Gently landscape (≈8:7), and tall enough that the right-hand
+// column can stack its text above its action button (e.g. Remove) without the
+// row looking lopsided.
+export const MEDIA_BOX_WIDTH = 140
+export const MEDIA_BOX_HEIGHT = 112
 
 interface MediaPreviewProps {
   media: CollectionMediaValues
@@ -71,22 +74,19 @@ export function MediaPreview({
           ...sizeSx,
           borderRadius: 1,
           overflow: 'hidden',
-          bgcolor: 'common.black'
+          bgcolor: 'common.black',
+          position: 'relative'
         }}
       >
-        <Box
-          component="img"
-          data-testid="GalleryMediaPreviewThumbnail"
+        {/* key resets the loaded state when the video changes, so a stale
+            thumbnail never shows while the new one fetches. */}
+        <MuxThumbnail
+          key={media.muxPlaybackId}
           src={`https://image.mux.com/${media.muxPlaybackId}/thumbnail.jpg`}
           alt={t('Video thumbnail')}
-          sx={{
-            width: '100%',
-            height: '100%',
-            // Fill mode is the fixed square upload box (match the creator image
-            // — cover it); otherwise letterbox like the public player.
-            objectFit: fill ? 'cover' : 'contain',
-            display: 'block'
-          }}
+          // Fill mode is the fixed field box (match the creator image — cover
+          // it); otherwise letterbox like the public player.
+          objectFit={fill ? 'cover' : 'contain'}
         />
       </Box>
     )
@@ -96,13 +96,34 @@ export function MediaPreview({
     const embedUrl = previewEmbedUrl(debouncedUrl)
     if (embedUrl != null) {
       return (
-        <EmbedIframe
-          embedUrl={embedUrl}
-          title={t('Media preview')}
-          borderRadius={1}
-          testId="GalleryMediaPreview"
-          fill={fill}
-        />
+        // A skeleton sits behind the iframe (which is transparent until its
+        // document paints), so re-mounts — e.g. tab switches — show a loading
+        // shimmer instead of a flash of empty box.
+        <Box
+          sx={{
+            position: 'relative',
+            width: '100%',
+            ...(fill && { height: '100%' })
+          }}
+        >
+          <Skeleton
+            variant="rectangular"
+            animation="wave"
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              height: '100%',
+              borderRadius: 1
+            }}
+          />
+          <EmbedIframe
+            embedUrl={embedUrl}
+            title={t('Media preview')}
+            borderRadius={1}
+            testId="GalleryMediaPreview"
+            fill={fill}
+          />
+        </Box>
       )
     }
   }
@@ -120,6 +141,52 @@ export function MediaPreview({
         ? t('Preview appears once you add the link')
         : t('Paste a link to see a preview')
   return <MediaPreviewPlaceholder label={label} />
+}
+
+/**
+ * Mux thumbnail with a loading shimmer: a skeleton fills the frame until the
+ * image's `load` event fires, so re-mounts (e.g. switching the Link/Upload
+ * tab) shimmer instead of flashing an empty black box while the thumbnail
+ * re-fetches. The parent letterbox supplies `position: relative`.
+ */
+function MuxThumbnail({
+  src,
+  alt,
+  objectFit
+}: {
+  src: string
+  alt: string
+  objectFit: 'cover' | 'contain'
+}): ReactElement {
+  const [loaded, setLoaded] = useState(false)
+  return (
+    <>
+      {!loaded && (
+        <Skeleton
+          data-testid="GalleryMediaPreviewSkeleton"
+          variant="rectangular"
+          animation="wave"
+          sx={{ position: 'absolute', inset: 0, height: '100%' }}
+        />
+      )}
+      <Box
+        component="img"
+        data-testid="GalleryMediaPreviewThumbnail"
+        src={src}
+        alt={alt}
+        onLoad={() => setLoaded(true)}
+        sx={{
+          width: '100%',
+          height: '100%',
+          objectFit,
+          display: 'block',
+          // Keep the element mounted while loading (so `load` fires) but
+          // invisible under the skeleton.
+          opacity: loaded ? 1 : 0
+        }}
+      />
+    </>
+  )
 }
 
 function MediaPreviewPlaceholder({

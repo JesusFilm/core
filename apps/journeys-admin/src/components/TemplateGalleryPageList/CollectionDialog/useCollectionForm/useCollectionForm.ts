@@ -38,19 +38,6 @@ export interface CollectionFormValues {
   journeyIds: string[]
 }
 
-/**
- * Outcome of an out-of-band media persist. Exactly one of `media` / `error`
- * is set on a settled edit-mode commit; both are absent when there was
- * nothing to persist (create mode, an unchanged value, or a hard failure
- * already surfaced via snackbar).
- */
-export interface MediaPersistResult {
-  /** Server-normalized media to write back into the form on success. */
-  media?: CollectionMediaValues
-  /** Translated inline error (a BAD_USER_INPUT reason) to show on the field. */
-  error?: string
-}
-
 export interface UseCollectionFormParams {
   mode: 'create' | 'edit' | 'publish'
   teamId: string
@@ -116,26 +103,17 @@ export interface UseCollectionFormResult {
    */
   isUnpublishing: boolean
   /**
-   * Persists a media change immediately, out of band from the dialog's
-   * Save button — the parallel to how a Mux upload creates its asset the
-   * moment a file is picked. Edit / publish mode only (an existing
-   * collection id is required); in create mode there is no row to update,
-   * so it is a no-op and the value rides along with the create mutation.
-   * No-ops when the value is unchanged from the last persisted media.
-   * On success returns the server-normalized media; on a BAD_USER_INPUT
-   * media reason returns a translated inline error; hard failures surface
-   * a snackbar and return an empty result. Because media is saved here,
-   * `handleSubmit` no longer diffs or sends it on update.
-   */
-  persistMedia: (next: CollectionMediaValues) => Promise<MediaPersistResult>
-  /** True while persistMedia is in flight. Gates submit + close. */
-  mediaSaving: boolean
-  /**
-   * Dirtiness of every field EXCEPT media. Media is persisted out of band,
-   * so a media-only change must not trip the unsaved-changes discard
-   * prompt. Callers OR this with their own create-mode unsaved-media check.
+   * Dirtiness of every field EXCEPT media. Callers OR this with
+   * `mediaDirty` when guarding close paths.
    */
   nonMediaDirty: (values: CollectionFormValues) => boolean
+  /**
+   * True when the form's media differs from what the collection has saved
+   * (or, in create mode, from empty). All media — link or upload — stays
+   * unsaved until the dialog's Save, so any pending value trips the
+   * discard prompt.
+   */
+  mediaDirty: (values: CollectionFormValues) => boolean
 }
 
 const FIELD_ERROR_KEYS = new Set(['slug', 'creatorImageSrc', 'title'])
@@ -199,12 +177,10 @@ export function useCollectionForm({
   const [templateGalleryPageUnpublish] =
     useTemplateGalleryPageUnpublishMutation()
   const [unpublishing, setUnpublishing] = useState(false)
-  const [mediaSaving, setMediaSaving] = useState(false)
-
   // Key of the media currently persisted on the server. Seeded from the
-  // collection so re-committing the same value (e.g. blurring a link the
-  // user didn't change) is a no-op. Advanced after every successful
-  // persistMedia so the next commit diffs against the latest saved state.
+  // collection so submitting an untouched value is a no-op (media stays out
+  // of the update input). Advanced after a successful update that included
+  // media so a retried submit doesn't resend it.
   const lastPersistedMediaKeyRef = useRef(
     mediaKey(collectionMediaToFormValues(collection?.media))
   )
@@ -300,11 +276,13 @@ export function useCollectionForm({
           input.creatorImageAlt =
             values.creatorImageAlt === '' ? null : values.creatorImageAlt
         }
-        // Media is intentionally NOT diffed or sent here. In edit / publish
-        // mode it is persisted out of band the instant it changes (see
-        // persistMedia), so by the time Save fires the media row is already
-        // current — re-sending it would be a redundant write and would make
-        // a media-only edit emit a spurious "Collection updated" toast.
+        // Media: diff against the last server-persisted value. All media —
+        // a pasted link, a completed upload, a removal — stays in the form
+        // until this Save, then rides along with the update like any other
+        // field.
+        if (mediaKey(values.media) !== lastPersistedMediaKeyRef.current) {
+          input.media = formMediaToInput(values.media)
+        }
         // Skip the slug field when the user cleared it. yup's
         // `excludeEmptyString` lets an empty value pass validation (so
         // create mode's empty default doesn't error), but sending
@@ -331,6 +309,11 @@ export function useCollectionForm({
           await templateGalleryPageUpdate({
             variables: { id: collection.id, input }
           })
+          // The update persisted the form's media — advance the key so a
+          // retry after a later failure (e.g. publish) doesn't resend it.
+          if (input.media !== undefined) {
+            lastPersistedMediaKeyRef.current = mediaKey(values.media)
+          }
           // Suppress the update snackbar when we're about to fire publish
           // — the success dialog covers it, and stacking two toasts
           // (Updated + Published) reads as noise.
@@ -453,58 +436,6 @@ export function useCollectionForm({
     }
   }
 
-  async function persistMedia(
-    next: CollectionMediaValues
-  ): Promise<MediaPersistResult> {
-    // Create mode: no row exists yet — the value rides along with the
-    // create mutation, so there is nothing to persist now.
-    if (collection == null) return {}
-    // Unchanged from what's already saved (e.g. blurring an untouched link).
-    if (mediaKey(next) === lastPersistedMediaKeyRef.current) return {}
-    if (parentBusy) {
-      enqueueSnackbar(t('Finishing previous action…'), {
-        variant: 'info',
-        preventDuplicate: true
-      })
-      return {}
-    }
-    // Don't interleave a media write with a Save / publish in flight.
-    if (submittingRef.current) return {}
-    setMediaSaving(true)
-    try {
-      const { data } = await templateGalleryPageUpdate({
-        variables: { id: collection.id, input: { media: formMediaToInput(next) } }
-      })
-      const saved = data?.templateGalleryPageUpdate
-      if (saved == null) {
-        // Partial GraphQL error reaches `errorPolicy: 'all'` as
-        // { data: null, errors: [...] } — surface a snackbar rather than
-        // silently leaving the field in its pre-save state.
-        enqueueSnackbar(t("Couldn't save media"), {
-          variant: 'error',
-          preventDuplicate: true
-        })
-        return {}
-      }
-      const normalized = collectionMediaToFormValues(saved.media)
-      lastPersistedMediaKeyRef.current = mediaKey(normalized)
-      return { media: normalized }
-    } catch (error) {
-      if (error instanceof ApolloError) {
-        const rawReason = error.graphQLErrors?.[0]?.extensions?.reason
-        const reason = typeof rawReason === 'string' ? rawReason : undefined
-        if (reason != null) return { error: mediaErrorMessage(reason, t) }
-      }
-      enqueueSnackbar(
-        error instanceof Error ? error.message : t("Couldn't save media"),
-        { variant: 'error', preventDuplicate: true }
-      )
-      return {}
-    } finally {
-      setMediaSaving(false)
-    }
-  }
-
   function nonMediaDirty(values: CollectionFormValues): boolean {
     return (
       values.title !== initialValues.title ||
@@ -517,6 +448,10 @@ export function useCollectionForm({
     )
   }
 
+  function mediaDirty(values: CollectionFormValues): boolean {
+    return mediaKey(values.media) !== lastPersistedMediaKeyRef.current
+  }
+
   return {
     initialValues,
     schema,
@@ -525,8 +460,7 @@ export function useCollectionForm({
     setSubmitIntent,
     handleUnpublishAction,
     isUnpublishing: unpublishing,
-    persistMedia,
-    mediaSaving,
-    nonMediaDirty
+    nonMediaDirty,
+    mediaDirty
   }
 }

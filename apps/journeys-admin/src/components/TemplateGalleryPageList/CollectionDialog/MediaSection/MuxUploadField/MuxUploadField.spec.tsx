@@ -136,6 +136,12 @@ describe('MuxUploadField', () => {
     ).toBeInTheDocument()
   })
 
+  it('renders Remove disabled when no video is attached (no layout shift)', () => {
+    renderField()
+    expect(screen.getByTestId('MuxUploadFieldEmpty')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Remove' })).toBeDisabled()
+  })
+
   it('shows the attached state — thumbnail in the box, name + duration + Remove', () => {
     const { onRemove } = renderField({
       hasVideo: true,

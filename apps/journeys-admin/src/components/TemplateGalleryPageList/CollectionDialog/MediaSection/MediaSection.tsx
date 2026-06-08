@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { SxProps, Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
@@ -6,13 +7,7 @@ import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import {
-  ChangeEvent,
-  FocusEvent,
-  MouseEvent,
-  ReactElement,
-  useState
-} from 'react'
+import { ChangeEvent, MouseEvent, ReactElement, useState } from 'react'
 
 import {
   MEDIA_BOX_HEIGHT,
@@ -28,9 +23,9 @@ type MediaUiMode = 'mux' | 'link'
 // Reserved height for the media input row. Every state — Link field, the empty
 // upload prompt, an in-flight upload, the attached video — renders inside this
 // fixed-height row so switching Link <-> Upload (or an upload moving through its
-// states) never shifts the dialog layout. Sized to the tallest steady state
-// (the link field plus its helper line).
-const MEDIA_AREA_MIN_HEIGHT = 80
+// states) never shifts the dialog layout. Both modes now size their row to the
+// preview box, so the box height is the reserve.
+const MEDIA_AREA_MIN_HEIGHT = MEDIA_BOX_HEIGHT
 
 interface MediaSectionProps {
   media: CollectionMediaValues
@@ -39,15 +34,13 @@ interface MediaSectionProps {
   uploadKey: string
   /** Inline error for the media field (schema or backend reason message). */
   error?: string
-  /** Transient update — typing a link, an upload starting. No network. */
-  onChange: (media: CollectionMediaValues) => void
   /**
-   * Commit — the value is final, persist it now (out of band from the
-   * dialog's Save). Fires on link blur, upload completion, and Remove. The
-   * parent runs the immediate save and writes the normalized result back.
+   * Form-state update — typing/clearing a link, an upload starting,
+   * completing, or being removed. No network: every media value persists
+   * with the dialog's Save button.
    */
-  onCommit: (media: CollectionMediaValues) => void
-  /** True while the parent is persisting a committed media value. */
+  onChange: (media: CollectionMediaValues) => void
+  /** True while the dialog is saving — disables the media inputs. */
   saving?: boolean
   /** True while a Mux upload is in flight — locks the Link/Upload toggle so the
    *  user can't switch to a link mid-upload (which would race the upload's
@@ -67,19 +60,19 @@ function inferMode(media: CollectionMediaValues): MediaUiMode {
  * Media editing surface for the CollectionDialog: a two-way picker — Link (any
  * embeddable URL: Canva, YouTube, Google Slides) or Upload (a Mux video). The
  * provider is inferred server-side from the URL host, so Link is a single
- * field; the backend validates and normalizes it. Media saves out of band from
- * the dialog (link on blur, upload on completion, Remove immediately), so
- * switching only changes which input is shown — it never wipes the saved media;
- * the active media is replaced only by committing a new link / upload or an
- * explicit Remove. The input lives in a fixed-height box so no state change
- * shifts the layout. Must be rendered inside a `MuxVideoUploadProvider`.
+ * field; the backend validates and normalizes it. Both tabs are plain form
+ * state persisted by the dialog's Save button — closing without saving
+ * discards a pasted link or a completed upload alike (the upload's Mux asset
+ * already exists, but the collection row only references it once saved).
+ * Switching tabs only changes which input is shown; it never wipes the saved
+ * media. The input lives in a fixed-height box so no state change shifts the
+ * layout. Must be rendered inside a `MuxVideoUploadProvider`.
  */
 export function MediaSection({
   media,
   uploadKey,
   error,
   onChange,
-  onCommit,
   saving = false,
   disableModeSwitch = false,
   headerSx
@@ -106,14 +99,11 @@ export function MediaSection({
       value.trim() === '' ? { type: 'none' } : { type: 'link', url: value }
     )
   }
-  // Commit the link the moment the field loses focus — read the DOM value
-  // directly so the committed value can't lag a final keystroke. An empty
-  // field commits `none` (clears the saved link).
-  function handleUrlBlur(event: FocusEvent<HTMLInputElement>): void {
-    const value = event.target.value
-    onCommit(
-      value.trim() === '' ? { type: 'none' } : { type: 'link', url: value }
-    )
+  // Remove clears the link from the form — a one-click equivalent of
+  // emptying the field. Like typing, it's transient: the cleared value
+  // persists with the dialog's Save.
+  function handleLinkRemove(): void {
+    onChange({ type: 'none' })
   }
 
   // The previously-saved video, if any — the read model exposes only a
@@ -183,12 +173,11 @@ export function MediaSection({
                 muxPlaybackId: savedPlaybackId
               })
             }
-            // Completion is the commit point — persist the new video now. Carry
-            // name/duration from the provider cache so the attached state shows
-            // the metadata immediately (persistMedia re-reads them from the
-            // saved row, which keeps it correct after the round-trip too).
+            // Completion updates the form with the durable video id (saved by
+            // the dialog's Save). Carry name/duration from the provider cache
+            // so the attached state shows the metadata immediately.
             onComplete={(videoId, playbackId, muxName, muxDuration) =>
-              onCommit({
+              onChange({
                 type: 'mux',
                 muxVideoId: videoId,
                 muxPlaybackId: playbackId,
@@ -210,13 +199,14 @@ export function MediaSection({
                   : { type: 'none' }
               )
             }
-            // Remove deletes the attached video — commit the cleared state.
-            onRemove={() => onCommit({ type: 'none' })}
+            // Remove clears the attached video from the form — persisted by
+            // the dialog's Save like every other media change.
+            onRemove={() => onChange({ type: 'none' })}
           />
         ) : (
           <Stack direction="row" spacing={2} alignItems="flex-start">
             {/* No edit button on Link, so no grey frame — the preview fills
-                the whole 92×77 box. */}
+                the whole box. */}
             <Box
               sx={{
                 width: MEDIA_BOX_WIDTH,
@@ -226,11 +216,13 @@ export function MediaSection({
             >
               <MediaPreview media={boxMedia} compact fill />
             </Box>
-            <Box sx={{ flex: 1, minWidth: 0 }}>
+            {/* Right column: Remove sits directly under the field + helper
+                (natural flow, no bottom pinning). Always rendered — disabled
+                when there's no link — so it never shifts layout. */}
+            <Stack spacing={1} sx={{ flex: 1, minWidth: 0 }}>
               <TextField
                 value={linkValue}
                 onChange={handleUrlChange}
-                onBlur={handleUrlBlur}
                 disabled={saving}
                 placeholder={t('Paste link')}
                 fullWidth
@@ -242,19 +234,17 @@ export function MediaSection({
                   error ?? t('We support YouTube, Canva, and Google Slides.')
                 }
               />
-            </Box>
+              <Button
+                size="small"
+                color="error"
+                onClick={handleLinkRemove}
+                disabled={saving || linkValue.trim() === ''}
+                sx={{ alignSelf: 'flex-start' }}
+              >
+                {t('Remove')}
+              </Button>
+            </Stack>
           </Stack>
-        )}
-      </Box>
-
-      {/* Status line — gives the section a consistent bottom rhythm and keeps
-          its height stable when "Saving…" toggles (also covers Upload mode,
-          which has no helper-text line of its own). */}
-      <Box sx={{ minHeight: 20 }}>
-        {saving && (
-          <Typography variant="caption" color="text.secondary">
-            {t('Saving…')}
-          </Typography>
         )}
       </Box>
     </Stack>

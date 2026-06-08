@@ -26,6 +26,7 @@ import { CollectionPreviewPane } from './CollectionPreviewPane'
 import { CreatorImagePickerDrawer } from './CreatorImagePickerDrawer'
 import { DiscardConfirmDialog } from './DiscardConfirmDialog'
 import { JourneyPickerField } from './JourneyPickerField'
+import { MEDIA_BOX_HEIGHT, MEDIA_BOX_WIDTH } from './MediaPreview'
 import { MediaSection } from './MediaSection'
 import { useCollectionForm } from './useCollectionForm'
 
@@ -90,9 +91,8 @@ function CollectionDialogContent({
     setSubmitIntent,
     handleUnpublishAction,
     isUnpublishing,
-    persistMedia,
-    mediaSaving,
-    nonMediaDirty
+    nonMediaDirty,
+    mediaDirty
   } = useCollectionForm({
     mode,
     teamId,
@@ -145,26 +145,22 @@ function CollectionDialogContent({
         const uploadInFlight =
           uploadTask?.status === 'uploading' ||
           uploadTask?.status === 'processing'
-        // Media saves out of band (persistMedia), so it must not count as an
-        // unsaved change: a media-only edit is already committed. Discard
-        // only guards the dialog-saved fields — plus, in create mode where
-        // media rides along with the create mutation, any pending media. An
-        // in-flight upload also counts so Cancel routes through discard (which
-        // aborts it).
+        // Unsaved changes = dialog-saved fields (nonMediaDirty) plus any
+        // media that hasn't reached the server — an edited link, a completed
+        // upload, a removal (all covered by mediaDirty; every media value
+        // saves with the Save button) — and an in-flight upload, so Cancel
+        // routes through discard (which aborts it).
         const hasUnsavedChanges =
-          nonMediaDirty(values) ||
-          (mode === 'create' && values.media.type !== 'none') ||
-          uploadInFlight
+          nonMediaDirty(values) || mediaDirty(values) || uploadInFlight
         // Block close paths while a mutation is in flight so the user
         // can't dismiss the dialog mid-mutation (which would orphan the
-        // post-await side effects). Covers Formik submit (isSubmitting),
-        // the out-of-band unpublish action (isUnpublishing), and an
-        // in-flight media persist (mediaSaving). Submit succeeds →
-        // onClose() runs explicitly. Also intercepts close paths when
-        // there are unsaved (dialog-saved) changes: opens the "discard
-        // changes?" confirmation instead of closing immediately.
+        // post-await side effects). Covers Formik submit (isSubmitting) and
+        // the out-of-band unpublish action (isUnpublishing). Submit succeeds
+        // → onClose() runs explicitly. Also intercepts close paths when
+        // there are unsaved changes: opens the "discard changes?"
+        // confirmation instead of closing immediately.
         const guardedClose = (): void => {
-          if (isSubmitting || isUnpublishing || mediaSaving) return
+          if (isSubmitting || isUnpublishing) return
           if (hasUnsavedChanges) {
             setDiscardConfirmOpen(true)
             return
@@ -197,11 +193,10 @@ function CollectionDialogContent({
           .map((id) => journeysById.get(id))
           .filter((j): j is Journey => j != null)
         // Block every submit path while a Mux upload is in flight (provider
-        // status) or while an out-of-band media persist is running, plus the
-        // form-value guard for a fresh upload that hasn't produced a durable id
-        // yet (also covers an errored upload sitting on an empty muxVideoId).
+        // status), plus the form-value guard for a fresh upload that hasn't
+        // produced a durable id yet (also covers an errored upload sitting on
+        // an empty muxVideoId).
         const mediaBlocked =
-          mediaSaving ||
           uploadInFlight ||
           (values.media.type === 'mux' &&
             values.media.muxVideoId === '' &&
@@ -477,15 +472,19 @@ function CollectionDialogContent({
                               <Stack
                                 direction="row"
                                 spacing={2}
-                                alignItems="stretch"
+                                alignItems="flex-start"
                               >
+                                {/* Square image box matching the media field's
+                                    preview box so the two sections line up. */}
                                 <ButtonBase
                                   onClick={() => setImagePickerOpen(true)}
                                   sx={{
                                     bgcolor: '#efefef',
                                     borderRadius: 2,
-                                    p: 1,
-                                    height: 77,
+                                    // 8px inset (theme spacing unit is 4px).
+                                    p: 2,
+                                    width: MEDIA_BOX_WIDTH,
+                                    height: MEDIA_BOX_HEIGHT,
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: 1,
@@ -493,106 +492,108 @@ function CollectionDialogContent({
                                   }}
                                   aria-label={t('Choose creator image')}
                                 >
+                                  {/* Image fills the padded area's height and
+                                      stretches up to the edit icon's lane, so
+                                      the grey border is even on the left/top/
+                                      bottom — mirroring the media field's
+                                      frame. */}
                                   {values.creatorImageSrc !== '' ? (
                                     <Box
                                       component="img"
                                       src={values.creatorImageSrc}
                                       alt={values.creatorImageAlt}
                                       sx={{
-                                        width: 56,
-                                        height: 56,
+                                        flex: 1,
+                                        minWidth: 0,
+                                        height: '100%',
                                         borderRadius: 1,
-                                        objectFit: 'cover'
+                                        objectFit: 'cover',
+                                        display: 'block'
                                       }}
                                     />
                                   ) : (
                                     <Box
                                       sx={{
-                                        width: 56,
-                                        height: 56,
+                                        flex: 1,
+                                        minWidth: 0,
+                                        height: '100%',
                                         borderRadius: 1,
                                         bgcolor: 'rgba(0,0,0,0.08)'
                                       }}
                                     />
                                   )}
                                   <Edit2Icon
-                                    sx={{ fontSize: 24, color: 'primary.main' }}
+                                    sx={{
+                                      fontSize: 24,
+                                      color: 'primary.main',
+                                      flexShrink: 0
+                                    }}
                                   />
                                 </ButtonBase>
-                                <TextField
-                                  id="creatorName"
-                                  name="creatorName"
-                                  placeholder={t('Creator name')}
-                                  fullWidth
-                                  variant="filled"
-                                  hiddenLabel
-                                  value={values.creatorName}
-                                  onChange={handleChange}
-                                  onBlur={handleBlur}
-                                  error={
-                                    touched.creatorName === true &&
-                                    Boolean(errors.creatorName)
-                                  }
-                                  helperText={
-                                    touched.creatorName === true &&
-                                    errors.creatorName
-                                  }
-                                  inputProps={{
-                                    'aria-label': t('Creator name'),
-                                    maxLength: 100
-                                  }}
-                                />
-                              </Stack>
-                              {values.creatorImageSrc !== '' && (
-                                <Box sx={{ pt: 0.5, alignSelf: 'flex-end' }}>
+                                {/* Right column: Remove sits directly under
+                                    the name field (natural flow, no bottom
+                                    pinning). Always rendered — disabled when
+                                    there's no image — so toggling the image
+                                    never shifts the layout. */}
+                                <Stack
+                                  spacing={1}
+                                  sx={{ flex: 1, minWidth: 0 }}
+                                >
+                                  <TextField
+                                    id="creatorName"
+                                    name="creatorName"
+                                    placeholder={t('Creator name')}
+                                    fullWidth
+                                    variant="filled"
+                                    hiddenLabel
+                                    value={values.creatorName}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    error={
+                                      touched.creatorName === true &&
+                                      Boolean(errors.creatorName)
+                                    }
+                                    helperText={
+                                      touched.creatorName === true &&
+                                      errors.creatorName
+                                    }
+                                    inputProps={{
+                                      'aria-label': t('Creator name'),
+                                      maxLength: 100
+                                    }}
+                                  />
                                   <Button
                                     variant="text"
                                     size="small"
                                     color="error"
+                                    disabled={values.creatorImageSrc === ''}
                                     onClick={() => {
                                       void setFieldValue('creatorImageSrc', '')
                                       void setFieldValue('creatorImageAlt', '')
                                     }}
+                                    sx={{ alignSelf: 'flex-start' }}
                                   >
                                     {t('Remove image')}
                                   </Button>
-                                </Box>
-                              )}
+                                </Stack>
+                              </Stack>
                             </Stack>
 
                             <MediaSection
                               media={values.media}
                               uploadKey={uploadKey}
                               disableModeSwitch={uploadInFlight}
-                              saving={mediaSaving}
+                              saving={isSubmitting}
                               error={
                                 Boolean(touched.media) &&
                                 typeof errors.media === 'string'
                                   ? errors.media
                                   : undefined
                               }
-                              // Transient edits (typing a link, an upload
-                              // starting) only update the form value.
+                              // Every media edit — link or upload — is form
+                              // state, persisted by the dialog's Save.
                               onChange={(next) => {
                                 void setFieldValue('media', next)
-                              }}
-                              // Commit persists immediately, out of band from
-                              // the dialog's Save (the link/upload parallel).
-                              // Apply optimistically, then write back the
-                              // server-normalized value or surface the inline
-                              // error.
-                              onCommit={async (next) => {
-                                await setFieldValue('media', next)
-                                const result = await persistMedia(next)
-                                if (result.media != null) {
-                                  await setFieldValue('media', result.media)
-                                }
-                                if (result.error != null) {
-                                  await setFieldTouched('media', true, false)
-                                  setFieldError('media', result.error)
-                                } else {
-                                  setFieldError('media', undefined)
-                                }
                               }}
                               headerSx={SECTION_HEADER}
                             />

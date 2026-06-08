@@ -5,7 +5,7 @@ import { ReactElement, ReactNode } from 'react'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
-import { MEDIA_BOX_HEIGHT } from '../../MediaPreview'
+import { MEDIA_BOX_HEIGHT, MEDIA_BOX_WIDTH } from '../../MediaPreview'
 
 interface MediaFieldFrameProps {
   /** The inner 16:9 preview (thumbnail / embed / grey placeholder). */
@@ -20,18 +20,20 @@ interface MediaFieldFrameProps {
   editLabel?: string
 }
 
-// Fixed grey-box width matching the creator-image box (92×77). The preview
-// fills the space left of the edit icon; without an icon (Link) it stretches
-// to the full padded width.
-const FRAME_WIDTH = 92
-
+// Fixed grey box matching the creator-image box (MEDIA_BOX-sized). The
+// preview fills the padded area's full height and stretches up to the edit
+// icon's column, so the grey border reads evenly on the left/top/bottom while
+// the right keeps a dedicated lane for the edit affordance. Without an icon
+// (Link) the preview fills the full padded width.
 const frameSx: SxProps<Theme> = {
-  width: FRAME_WIDTH,
+  width: MEDIA_BOX_WIDTH,
   height: MEDIA_BOX_HEIGHT,
   flexShrink: 0,
   bgcolor: '#efefef',
   borderRadius: 2,
-  p: 1,
+  // 8px inset between the preview and the frame edge (theme spacing unit is
+  // 4px, so p:2 = 8px).
+  p: 2,
   display: 'flex',
   alignItems: 'center',
   gap: 1
@@ -49,7 +51,7 @@ export function MediaFieldFrame({
 }: MediaFieldFrameProps): ReactElement {
   const inner = (
     <>
-      {children}
+      <Box sx={{ flex: 1, height: '100%', minWidth: 0 }}>{children}</Box>
       {onEdit != null && (
         <Edit2Icon sx={{ fontSize: 24, color: 'primary.main', flexShrink: 0 }} />
       )}
