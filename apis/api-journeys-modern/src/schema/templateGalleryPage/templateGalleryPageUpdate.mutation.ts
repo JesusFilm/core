@@ -10,14 +10,18 @@ import { assertHttpsUrl } from './assertHttpsUrl'
 import { filterToTeamTemplates } from './filterToTeamTemplates'
 import { SlugTakenError, validateUserSuppliedSlug } from './generateUniqueSlug'
 import { TemplateGalleryPageUpdateInput } from './inputs'
-import { resolveMediaInput } from './media/resolveMediaInput'
-import { TemplateGalleryPageRef } from './templateGalleryPage'
+import {
+  mediaCreateData,
+  mediaUpdateData,
+  resolveMediaInput
+} from './media/resolveMediaInput'
+import { TemplateGalleryPageAdminRef } from './templateGalleryPage'
 
 builder.mutationField('templateGalleryPageUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
       "Update editable fields of a TemplateGalleryPage. All input fields are optional: a field omitted leaves the existing value alone, a field set to `null` clears it (where the field is nullable). When `input.journeyIds` is provided, the page's template list is replaced — existing assignments are deleted and recreated in the given order. Single-membership is enforced: if any supplied journey id is currently a member of another TemplateGalleryPage, the call fails before any write. Allowed on both `draft` and `published` pages (publishers can correct typos and curate the template list while live).\n\nAuth: caller must be a member of the page's team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the page's team.\n- BAD_USER_INPUT (field: `slug`): user-supplied slug fails shape, length, reserved-word, or uniqueness checks — including the concurrent-Update race where two callers pass the same slug and the second one trips the DB unique constraint at commit time.\n- BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.\n- CONFLICT (field: `journeyIds`; extension `journeyId` carries the offending id): one of the supplied journeys is already a member of another TemplateGalleryPage.",
-    type: TemplateGalleryPageRef,
+    type: TemplateGalleryPageAdminRef,
     nullable: false,
     args: {
       id: t.arg({
@@ -52,9 +56,9 @@ builder.mutationField('templateGalleryPageUpdate', (t) =>
 
       // Validate + normalize media BEFORE the transaction — the external IO
       // (oEmbed fetches, cross-DB Mux read) must not run inside the tx. Returns
-      // null when media is null or undefined; the tx below distinguishes
-      // `null` (clear the row) from `undefined` (leave it alone).
-      const mediaCreate = await resolveMediaInput(input.media)
+      // null when `input.media` is null or undefined (leave existing media
+      // alone); otherwise carries the active `type` + per-slot merge intents.
+      const resolvedMedia = await resolveMediaInput(input.media)
 
       const slug =
         input.slug != null
@@ -120,14 +124,13 @@ builder.mutationField('templateGalleryPageUpdate', (t) =>
           }
         }
 
-        // media: undefined leaves it alone, null clears it (idempotent), an
-        // object replaces it. mediaCreate is non-null exactly when an object
-        // was supplied (validated/normalized pre-tx).
-        if (input.media === null) {
-          await tx.templateGalleryPageMedia.deleteMany({
-            where: { templateGalleryPageId: id }
-          })
-        } else if (mediaCreate != null) {
+        // media: undefined/null leaves the row alone (no delete — the row, once
+        // created, persists; hide everything with `type: none` and clear a slot
+        // with `url: null` / `muxVideoId: null`). When an object is supplied,
+        // merge it: the active `type` is always set, and each payload slot is
+        // left, cleared, or replaced per its merge intent (mediaUpdateData);
+        // mediaCreateData seeds a fresh row if none exists yet.
+        if (resolvedMedia != null) {
           // Upsert keyed on the unique templateGalleryPageId. A concurrent
           // first-create can race two upserts into a P2002 on that unique
           // constraint; surface it as CONFLICT rather than an unwrapped 500
@@ -135,8 +138,11 @@ builder.mutationField('templateGalleryPageUpdate', (t) =>
           try {
             await tx.templateGalleryPageMedia.upsert({
               where: { templateGalleryPageId: id },
-              create: { templateGalleryPageId: id, ...mediaCreate },
-              update: { ...mediaCreate }
+              create: {
+                templateGalleryPageId: id,
+                ...mediaCreateData(resolvedMedia)
+              },
+              update: mediaUpdateData(resolvedMedia)
             })
           } catch (error) {
             if (

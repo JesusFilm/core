@@ -6,7 +6,7 @@ import { isInTeam } from '../authScopes'
 import { builder } from '../builder'
 
 import { applyContiguousOrder, lockPage } from './applyContiguousOrder'
-import { TemplateGalleryPageRef } from './templateGalleryPage'
+import { TemplateGalleryPageAdminRef } from './templateGalleryPage'
 
 // Re-reads `pageId`'s template rows in display order and writes them
 // back at contiguous orders 0..N-1. Caller must hold a lockPage on the
@@ -27,7 +27,7 @@ builder.mutationField('templateGalleryPageAssignJourney', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
       "Assign a journey to a TemplateGalleryPage, or unassign it. A journey may belong to at most one page at a time (single-membership invariant).\n\n- `pageId` set: move the journey into that page. The new row appends at the end of the target's display order; if the journey was already in another page (cross-page move) it is removed from the source page first. Both pages are renumbered to contiguous orders 0..N-1 after the change. Allowed on both `draft` and `published` pages.\n- `pageId` null/omitted: unassign — remove the journey from whatever page it is currently in. Returns null (idempotent no-op) if the journey is not in any page.\n- Same-page-already: idempotent return; no row changes.\n\nAuth: caller must be a member of the target page's team (and, on a cross-page move, also of the source page's team).\n\nErrors:\n- NOT_FOUND: target `pageId` does not resolve.\n- NOT_FOUND (field: `journeyId`): journey does not exist or is soft-deleted.\n- BAD_USER_INPUT (field: `journeyId`): journey is not flagged as a template.\n- FORBIDDEN: caller is not in the target page's team.\n- FORBIDDEN (field: `journeyId`): journey belongs to a different team than the target page.",
-    type: TemplateGalleryPageRef,
+    type: TemplateGalleryPageAdminRef,
     nullable: true,
     args: {
       journeyId: t.arg({

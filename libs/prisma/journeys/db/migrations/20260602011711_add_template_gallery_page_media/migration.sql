@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "TemplateGalleryPageMediaType" AS ENUM ('link', 'mux');
+CREATE TYPE "TemplateGalleryPageMediaType" AS ENUM ('link', 'mux', 'none');
 
 -- CreateTable
 CREATE TABLE "TemplateGalleryPageMedia" (

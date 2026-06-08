@@ -5,13 +5,13 @@ import { prisma } from '@core/prisma/journeys/client'
 import { isInTeam } from '../authScopes'
 import { builder } from '../builder'
 
-import { TemplateGalleryPageRef } from './templateGalleryPage'
+import { TemplateGalleryPageAdminRef } from './templateGalleryPage'
 
 builder.mutationField('templateGalleryPageDelete', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
       "Hard-delete a TemplateGalleryPage. Cascades through `TemplateGalleryPageTemplate` join rows automatically; the underlying `Journey` rows are NOT deleted. Returns the deleted page (last canonical view).\n\nAuth: caller must be a member of the page's team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the page's team.",
-    type: TemplateGalleryPageRef,
+    type: TemplateGalleryPageAdminRef,
     nullable: false,
     args: {
       id: t.arg({

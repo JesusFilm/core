@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface TemplateGalleryPageDelete_templateGalleryPageDelete {
-  __typename: "TemplateGalleryPage";
+  __typename: "TemplateGalleryPageAdmin";
   /**
    * Stable UUID identifier.
    */

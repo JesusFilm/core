@@ -1,28 +1,20 @@
 import { z } from 'zod'
 
-// Discriminated-union validation for TemplateGalleryPageMediaInput. No Pothos
-// @oneOf plugin is loaded in this subgraph, so the one-of invariant is enforced
-// in zod (matching the blockUpdateAction zod precedent).
+// Shape validation for TemplateGalleryPageMediaInput. The model retains both
+// payload slots at once and uses `type` as the active selector, so there is NO
+// mutual-exclusion invariant — the only hard requirement is a valid `type`.
 //
-// This schema is the single source of truth for the SHAPE invariant only. The
-// per-type helper dispatch (linkValidate / muxValidate) and the row composition
-// live in resolveMediaInput, which both the Create and Update mutations call
-// BEFORE opening their prisma.$transaction — it performs external IO (provider
-// oEmbed fetches, the cross-DB Mux read) that must not run inside a tx.
+// Per-slot tri-state (preserved from the GraphQL input, not collapsed here):
+//   url / muxVideoId omitted  → leave that slot as-is
+//   url / muxVideoId === null → clear that slot
+//   url / muxVideoId === value → set/replace that slot (validated downstream)
 //
-//   type=link → `url` required, `muxVideoId` must be absent/null
-//   type=mux  → `muxVideoId` required, `url` must be absent/null
-export const mediaInputSchema = z.discriminatedUnion('type', [
-  z.object({
-    type: z.literal('link'),
-    url: z.string().min(1),
-    muxVideoId: z.null().optional()
-  }),
-  z.object({
-    type: z.literal('mux'),
-    muxVideoId: z.string().min(1),
-    url: z.null().optional()
-  })
-])
+// `.min(1)` rejects an empty-string payload while `.nullish()` still allows the
+// explicit-null clear and the omitted-leave cases.
+export const mediaInputSchema = z.object({
+  type: z.enum(['link', 'mux', 'none']),
+  url: z.string().min(1).nullish(),
+  muxVideoId: z.string().min(1).nullish()
+})
 
 export type MediaInput = z.infer<typeof mediaInputSchema>

@@ -651,6 +651,8 @@ describe('templateGalleryPageUpdate', () => {
         embedUrl: 'https://www.youtube-nocookie.com/embed/abc',
         muxPlaybackId: null
       })
+      // create seeds the full row; update only touches the provided slot (the
+      // link), leaving any stored mux payload untouched (muxVideoId omitted).
       expect(prismaMock.templateGalleryPageMedia.upsert).toHaveBeenCalledWith({
         where: { templateGalleryPageId: 'p1' },
         create: {
@@ -664,7 +666,72 @@ describe('templateGalleryPageUpdate', () => {
         },
         update: {
           type: 'link',
-          embedUrl: 'https://www.youtube-nocookie.com/embed/abc',
+          embedUrl: 'https://www.youtube-nocookie.com/embed/abc'
+        }
+      })
+    })
+
+    it('retains the other slot when switching type without re-sending it', async () => {
+      // Switch to type: none, sending no payloads — both stored slots stay.
+      mockExistingPage({
+        id: 'm1',
+        type: 'none',
+        embedUrl: 'e',
+        muxPlaybackId: 'pb'
+      })
+
+      const result = (await authClient({
+        document: TEMPLATE_GALLERY_PAGE_UPDATE_WITH_MEDIA,
+        variables: { id: 'p1', input: { media: { type: 'none' } } }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      // Only `type` is written; neither payload slot is touched.
+      expect(prismaMock.templateGalleryPageMedia.upsert).toHaveBeenCalledWith({
+        where: { templateGalleryPageId: 'p1' },
+        create: {
+          templateGalleryPageId: 'p1',
+          type: 'none',
+          embedUrl: null,
+          muxVideoId: null,
+          muxPlaybackId: null,
+          muxName: null,
+          muxDuration: null
+        },
+        update: { type: 'none' }
+      })
+    })
+
+    it('clears a single slot when its field is null', async () => {
+      // type stays link, but clear the parked upload slot.
+      mockExistingPage({
+        id: 'm1',
+        type: 'link',
+        embedUrl: 'e',
+        muxPlaybackId: null
+      })
+
+      await authClient({
+        document: TEMPLATE_GALLERY_PAGE_UPDATE_WITH_MEDIA,
+        variables: {
+          id: 'p1',
+          input: { media: { type: 'link', muxVideoId: null } }
+        }
+      })
+
+      expect(prismaMock.templateGalleryPageMedia.upsert).toHaveBeenCalledWith({
+        where: { templateGalleryPageId: 'p1' },
+        create: {
+          templateGalleryPageId: 'p1',
+          type: 'link',
+          embedUrl: null,
+          muxVideoId: null,
+          muxPlaybackId: null,
+          muxName: null,
+          muxDuration: null
+        },
+        update: {
+          type: 'link',
           muxVideoId: null,
           muxPlaybackId: null,
           muxName: null,
@@ -702,8 +769,16 @@ describe('templateGalleryPageUpdate', () => {
       expect(mockMuxValidate).toHaveBeenCalledWith('vid-1')
     })
 
-    it('clears the media row when media is null', async () => {
-      mockExistingPage(null)
+    it('leaves the media row alone when media is null (no delete)', async () => {
+      // There is no media delete anymore: `media: null` is a no-op, like
+      // omitting it. Hide media with `type: none`, clear a slot with a null
+      // payload field.
+      mockExistingPage({
+        id: 'm1',
+        type: 'link',
+        embedUrl: 'https://x',
+        muxPlaybackId: null
+      })
 
       const result = (await authClient({
         document: TEMPLATE_GALLERY_PAGE_UPDATE_WITH_MEDIA,
@@ -711,10 +786,9 @@ describe('templateGalleryPageUpdate', () => {
       })) as any
 
       expect(result.errors).toBeUndefined()
-      expect(result.data.templateGalleryPageUpdate.media).toBeNull()
       expect(
         prismaMock.templateGalleryPageMedia.deleteMany
-      ).toHaveBeenCalledWith({ where: { templateGalleryPageId: 'p1' } })
+      ).not.toHaveBeenCalled()
       expect(prismaMock.templateGalleryPageMedia.upsert).not.toHaveBeenCalled()
     })
 
@@ -737,14 +811,14 @@ describe('templateGalleryPageUpdate', () => {
       ).not.toHaveBeenCalled()
     })
 
-    it('rejects a shape-mismatched media input', async () => {
+    it('rejects an empty url string with MEDIA_INPUT_SHAPE_MISMATCH', async () => {
       mockExistingPage(null)
 
       const result = (await authClient({
         document: TEMPLATE_GALLERY_PAGE_UPDATE_WITH_MEDIA,
         variables: {
           id: 'p1',
-          input: { media: { type: 'link', muxVideoId: 'v' } as any }
+          input: { media: { type: 'link', url: '' } as any }
         }
       })) as any
 

@@ -10,7 +10,7 @@ import { TemplateGalleryPageStatus } from "./globalTypes";
 // ====================================================
 
 export interface TemplateGalleryPageUnpublish_templateGalleryPageUnpublish {
-  __typename: "TemplateGalleryPage";
+  __typename: "TemplateGalleryPageAdmin";
   /**
    * Stable UUID identifier.
    */

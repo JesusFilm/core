@@ -286,11 +286,12 @@ export enum Service {
 }
 
 /**
- * Discriminator for the media attached to a TemplateGalleryPage. Determines which underlying fields are populated.
+ * Active selector for the media attached to a TemplateGalleryPage: which payload renders. Both payload slots may stay populated regardless of this value, so switching never discards a payload.
  */
 export enum TemplateGalleryPageMediaType {
   link = "link",
   mux = "mux",
+  none = "none",
 }
 
 /**
@@ -977,7 +978,7 @@ export interface TemplateGalleryPageCreateInput {
 }
 
 /**
- * Discriminated input for attaching media to a TemplateGalleryPage. When `type` is `link`, supply `url` (server-validated and normalized per provider). When `type` is `mux`, supply `muxVideoId` (validated against the media DB).
+ * Input for attaching media to a TemplateGalleryPage. `type` (`link`/`mux`/`none`) selects what renders; both payload slots may stay populated at once. For `url` and `muxVideoId`: omit to leave the stored value, pass `null` to clear that slot, or pass a value to set/replace it.
  */
 export interface TemplateGalleryPageMediaInput {
   type: TemplateGalleryPageMediaType;
