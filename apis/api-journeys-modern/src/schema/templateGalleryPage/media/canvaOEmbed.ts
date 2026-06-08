@@ -21,6 +21,12 @@ const CANONICAL_DESIGN_PATH =
 const CANVA_LINK_HOST = 'canva.link'
 const CANVA_DESIGN_HOSTS = new Set(['canva.com', 'www.canva.com'])
 
+// Redirect hops resolveShareLink will follow before failing closed. canva.link
+// resolves in 1-2 hops in practice; the cap exists so a hostile chain can't
+// chew through Node's default ~20 follows.
+const MAX_REDIRECTS = 5
+const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308])
+
 function canvaUnavailable(): GraphQLError {
   return new GraphQLError(
     'Canva embed could not be verified for this URL. Open the design, use Share → "More" → embed, and paste a design link of the form canva.com/design/<id>/<slug>/view.',
@@ -83,12 +89,30 @@ function canvaRegexFallback(url: string): { embedUrl: string } {
   }
 }
 
+// One redirect hop with its own 5s timeout, so total wall time is bounded by
+// (MAX_REDIRECTS + 1) * FETCH_TIMEOUT_MS rather than drifting on a shared timer.
+async function fetchHop(url: string): Promise<Response> {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
+  try {
+    return await fetch(url, {
+      redirect: 'manual',
+      signal: controller.signal
+    })
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
 // Resolves a canva.link short share link to its underlying canva.com design
-// URL by following the HTTP redirect, then validates the destination is an
-// https canva.com host before handing it to the normal oEmbed + fallback path.
-// Non-share hosts pass through unchanged. Fails closed (CANVA_UNAVAILABLE) when
-// the link can't be resolved or resolves somewhere unexpected — the canonical
-// fallback can't rescue a bare canva.link URL.
+// URL by following HTTP redirects manually (capped at MAX_REDIRECTS), then
+// validates the destination is an https canva.com host before handing it to
+// the normal oEmbed + fallback path. Every intermediate hop must be https and
+// stay on a Canva host (canva.link or a design host) — a chain that bounces
+// through http: or a foreign host fails closed without being fetched.
+// Non-share hosts pass through unchanged. Fails closed (CANVA_UNAVAILABLE)
+// when the link can't be resolved or resolves somewhere unexpected — the
+// canonical fallback can't rescue a bare canva.link URL.
 async function resolveShareLink(url: string): Promise<string> {
   let parsed: URL
   try {
@@ -98,34 +122,47 @@ async function resolveShareLink(url: string): Promise<string> {
   }
   if (parsed.hostname.toLowerCase() !== CANVA_LINK_HOST) return url
 
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
-  let finalUrl: string
-  try {
-    const response = await fetch(url, {
-      redirect: 'follow',
-      signal: controller.signal
-    })
-    finalUrl = response.url
-  } catch {
-    throw canvaUnavailable()
-  } finally {
-    clearTimeout(timeout)
+  let currentUrl = url
+  for (let attempt = 0; attempt <= MAX_REDIRECTS; attempt++) {
+    let response: Response
+    try {
+      response = await fetchHop(currentUrl)
+    } catch {
+      throw canvaUnavailable()
+    }
+
+    if (response.status >= 200 && response.status < 300) {
+      const finalParsed = new URL(currentUrl)
+      if (
+        finalParsed.protocol !== 'https:' ||
+        !CANVA_DESIGN_HOSTS.has(finalParsed.hostname.toLowerCase())
+      ) {
+        throw canvaUnavailable()
+      }
+      return currentUrl
+    }
+
+    if (!REDIRECT_STATUSES.has(response.status)) throw canvaUnavailable()
+    const location = response.headers.get('location')
+    if (location == null) throw canvaUnavailable()
+
+    let next: URL
+    try {
+      next = new URL(location, currentUrl)
+    } catch {
+      throw canvaUnavailable()
+    }
+    const nextHost = next.hostname.toLowerCase()
+    if (
+      next.protocol !== 'https:' ||
+      (nextHost !== CANVA_LINK_HOST && !CANVA_DESIGN_HOSTS.has(nextHost))
+    ) {
+      throw canvaUnavailable()
+    }
+    currentUrl = next.toString()
   }
 
-  let finalParsed: URL
-  try {
-    finalParsed = new URL(finalUrl)
-  } catch {
-    throw canvaUnavailable()
-  }
-  if (
-    finalParsed.protocol !== 'https:' ||
-    !CANVA_DESIGN_HOSTS.has(finalParsed.hostname.toLowerCase())
-  ) {
-    throw canvaUnavailable()
-  }
-  return finalUrl
+  throw canvaUnavailable()
 }
 
 async function normalize(url: string): Promise<{ embedUrl: string }> {

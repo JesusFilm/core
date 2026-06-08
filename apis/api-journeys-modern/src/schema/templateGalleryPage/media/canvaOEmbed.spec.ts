@@ -86,11 +86,20 @@ describe('canvaSpec.normalize', () => {
     const SHARE_LINK = 'https://canva.link/0fi14tc9momlpe8'
     const RESOLVED = 'https://www.canva.com/design/DAF123/abc/view'
 
+    function redirectTo(location: string): {
+      status: number
+      headers: Headers
+    } {
+      return { status: 302, headers: new Headers({ location }) }
+    }
+
     it('resolves the redirect, then returns the oEmbed src', async () => {
       fetchMock
-        // 1) redirect resolution: response.url is the canonical design URL
-        .mockResolvedValueOnce({ url: RESOLVED })
-        // 2) oEmbed on the resolved URL
+        // 1) share-link hop: 302 to the canonical design URL
+        .mockResolvedValueOnce(redirectTo(RESOLVED))
+        // 2) design URL responds 2xx — redirect resolution complete
+        .mockResolvedValueOnce({ status: 200, headers: new Headers() })
+        // 3) oEmbed on the resolved URL
         .mockResolvedValueOnce({
           ok: true,
           status: 200,
@@ -106,7 +115,8 @@ describe('canvaSpec.normalize', () => {
 
     it('falls back to /view?embed on the resolved URL when oEmbed fails', async () => {
       fetchMock
-        .mockResolvedValueOnce({ url: RESOLVED })
+        .mockResolvedValueOnce(redirectTo(RESOLVED))
+        .mockResolvedValueOnce({ status: 200, headers: new Headers() })
         .mockResolvedValueOnce({ ok: false, status: 503 })
 
       await expect(canvaSpec.normalize(SHARE_LINK)).resolves.toEqual({
@@ -115,13 +125,44 @@ describe('canvaSpec.normalize', () => {
     })
 
     it('fails closed when the share link resolves to a non-canva host', async () => {
-      fetchMock.mockResolvedValueOnce({ url: 'https://evil.example.com/x' })
+      fetchMock.mockResolvedValueOnce(redirectTo('https://evil.example.com/x'))
 
       await expect(canvaSpec.normalize(SHARE_LINK)).rejects.toMatchObject({
         extensions: { reason: 'CANVA_UNAVAILABLE' }
       })
       // oEmbed must never be reached for a bad resolution
       expect(fetchMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('fails closed when a redirect hop downgrades to http', async () => {
+      fetchMock.mockResolvedValueOnce(
+        redirectTo('http://www.canva.com/design/DAF123/abc/view')
+      )
+
+      await expect(canvaSpec.normalize(SHARE_LINK)).rejects.toMatchObject({
+        extensions: { reason: 'CANVA_UNAVAILABLE' }
+      })
+      // the http: hop must never be fetched
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('fails closed when the redirect chain exceeds MAX_REDIRECTS', async () => {
+      // every hop redirects again — the chain never terminates
+      fetchMock.mockResolvedValue(redirectTo('https://canva.link/next'))
+
+      await expect(canvaSpec.normalize(SHARE_LINK)).rejects.toMatchObject({
+        extensions: { reason: 'CANVA_UNAVAILABLE' }
+      })
+      // MAX_REDIRECTS (5) hops followed + the initial fetch, then fail closed
+      expect(fetchMock).toHaveBeenCalledTimes(6)
+    })
+
+    it('fails closed on a redirect response with no location header', async () => {
+      fetchMock.mockResolvedValueOnce({ status: 302, headers: new Headers() })
+
+      await expect(canvaSpec.normalize(SHARE_LINK)).rejects.toMatchObject({
+        extensions: { reason: 'CANVA_UNAVAILABLE' }
+      })
     })
 
     it('fails closed when the redirect resolution fetch fails', async () => {
