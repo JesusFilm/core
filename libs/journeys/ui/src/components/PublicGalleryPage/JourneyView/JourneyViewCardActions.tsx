@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
-import { alpha, darken } from '@mui/material/styles'
+import { alpha } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
@@ -10,6 +10,7 @@ import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import {
   GALLERY_ACTION_SIZE,
+  GALLERY_PREVIEW_BG,
   GALLERY_USE_BUTTON_MIN_WIDTH
 } from '../galleryTokens'
 
@@ -84,7 +85,7 @@ export function JourneyViewCardActions({
     width: GALLERY_ACTION_SIZE,
     height: GALLERY_ACTION_SIZE,
     borderRadius: 1,
-    backgroundColor: accent,
+    backgroundColor: GALLERY_PREVIEW_BG,
     color: '#FFFFFF',
     display: 'flex',
     alignItems: 'center',
@@ -187,7 +188,7 @@ export function JourneyViewCardActions({
         sx={{
           ...previewSquareSx,
           '&:hover': {
-            backgroundColor: darken(accent, 0.2)
+            backgroundColor: '#000000'
           }
         }}
       >
