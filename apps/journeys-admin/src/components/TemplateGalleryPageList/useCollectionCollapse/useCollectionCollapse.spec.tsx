@@ -111,9 +111,7 @@ describe('useCollectionCollapse', () => {
     setCollapsedCollectionIds('team-1', ['a', 'b'])
     // 'b' is no longer among the live collections → it must be dropped from
     // both state and storage so the persisted set can't grow unbounded.
-    const { result } = renderHook(() =>
-      useCollectionCollapse('team-1', ['a'])
-    )
+    const { result } = renderHook(() => useCollectionCollapse('team-1', ['a']))
     expect(result.current.isCollapsed('a')).toBe(true)
     expect(result.current.isCollapsed('b')).toBe(false)
     expect(getCollapsedCollectionIds('team-1')).toEqual(['a'])

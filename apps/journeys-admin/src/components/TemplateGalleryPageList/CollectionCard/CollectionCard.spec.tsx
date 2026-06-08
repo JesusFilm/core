@@ -349,9 +349,9 @@ describe('CollectionCard', () => {
       expect(toggle).toHaveAttribute('aria-expanded', 'false')
       // Collapsed: grid unmounted, count badge reflects the template count.
       expect(screen.queryByTestId('children-payload')).not.toBeInTheDocument()
-      expect(screen.getByTestId('CollectionCardCount-page-1')).toHaveTextContent(
-        '2'
-      )
+      expect(
+        screen.getByTestId('CollectionCardCount-page-1')
+      ).toHaveTextContent('2')
     })
 
     it('does not show a count badge for an empty collapsed collection', () => {
@@ -371,9 +371,7 @@ describe('CollectionCard', () => {
           onToggleCollapse={onToggleCollapse}
         />
       )
-      await userEvent.click(
-        screen.getByTestId('CollectionCardToggle-page-1')
-      )
+      await userEvent.click(screen.getByTestId('CollectionCardToggle-page-1'))
       expect(onToggleCollapse).toHaveBeenCalledWith(collection)
     })
 
