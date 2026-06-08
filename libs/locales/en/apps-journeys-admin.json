@@ -1352,5 +1352,6 @@
   "Block": "Block",
   "Could not load your videos.": "Could not load your videos.",
   "Select uploaded video": "Select uploaded video",
-  "Select image": "Select image"
+  "Select image": "Select image",
+  "This video didn't finish uploading. Remove it or try again.": "This video didn't finish uploading. Remove it or try again."
 }

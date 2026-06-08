@@ -54,7 +54,6 @@ interface MuxUploadFieldProps {
   disabled?: boolean
 }
 
-
 /**
  * Upload control over `MuxVideoUploadProvider`, scoped to the collection
  * dialog. Renders the shared `[preview box | control]` row: the box (a clickable
@@ -299,6 +298,16 @@ export function MuxUploadField({
                       </Typography>
                     )}
                   </>
+                ) : media.type === 'mux' ? (
+                  // The form is stuck holding an incomplete upload (e.g. the
+                  // error UI was lost to a tab switch after the provider
+                  // cleaned up the failed task). Without this hint, Save is
+                  // disabled with no visible reason.
+                  <Typography variant="caption" color="error">
+                    {t(
+                      "This video didn't finish uploading. Remove it or try again."
+                    )}
+                  </Typography>
                 ) : (
                   <Typography variant="caption" color="text.secondary">
                     {t('Click the box to upload a video. MP4 or MOV, up to 1 GB.')}

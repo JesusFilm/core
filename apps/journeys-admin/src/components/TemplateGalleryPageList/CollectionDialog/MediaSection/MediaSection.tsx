@@ -20,7 +20,6 @@ import { MuxUploadField } from './MuxUploadField'
 
 type MediaUiMode = 'mux' | 'link'
 
-
 interface MediaSectionProps {
   media: CollectionMediaValues
   /** Stable per-dialog upload key, owned by the dialog so it can read the
@@ -102,13 +101,21 @@ export function MediaSection({
 
   // The previously-saved video, if any — the read model exposes only a
   // playbackId (never the original muxVideoId), so this both marks the row as
-  // already-saved and is the value an in-flight replacement reverts to.
+  // already-saved and is what the box preview renders during a replacement.
   const savedPlaybackId =
     media.type === 'mux' &&
     media.muxPlaybackId != null &&
     media.muxPlaybackId !== ''
       ? media.muxPlaybackId
       : null
+  // A video the form can actually save: a fresh completed upload (has a
+  // muxVideoId) or an existing saved row (has a playbackId). A committed
+  // value must survive a replacement attempt untouched — overwriting it with
+  // an empty placeholder would lose the muxVideoId, which create mode (no
+  // server row to recover from) could never restore.
+  const committedVideo =
+    media.type === 'mux' &&
+    (media.muxVideoId !== '' || savedPlaybackId != null)
 
   // The left box mirrors the ACTIVE tab, not the stored media. Switching tabs
   // never clears the saved media, so on a tab whose type doesn't match the
@@ -154,21 +161,17 @@ export function MediaSection({
             uploadKey={uploadKey}
             disabled={saving}
             media={boxMedia}
-            hasVideo={
-              media.type === 'mux' &&
-              (media.muxVideoId !== '' || savedPlaybackId != null)
-            }
-            // Preserve any existing playbackId so an in-flight *replacement*
-            // upload still knows about the previously-saved video (so cancelling
-            // reverts to it instead of clearing it). Start is transient; the
-            // upload isn't saved until it completes.
-            onUploadStart={() =>
-              onChange({
-                type: 'mux',
-                muxVideoId: '',
-                muxPlaybackId: savedPlaybackId
-              })
-            }
+            hasVideo={committedVideo}
+            // A replacement upload leaves the committed video in the form
+            // untouched (the in-flight provider task is what gates Save), so
+            // a failed or cancelled replacement keeps it saveable. Only a
+            // fresh upload writes the incomplete placeholder, which keeps
+            // Save blocked until completion.
+            onUploadStart={() => {
+              if (!committedVideo) {
+                onChange({ type: 'mux', muxVideoId: '', muxPlaybackId: null })
+              }
+            }}
             // Completion updates the form with the durable video id (saved by
             // the dialog's Save). Carry name/duration from the provider cache
             // so the attached state shows the metadata immediately.
@@ -181,20 +184,12 @@ export function MediaSection({
                 muxDuration
               })
             }
-            // Cancel reverts (transient) to the prior saved video when one
-            // existed, else none — nothing was persisted during the in-flight
-            // upload, so there's nothing to save here.
-            onCancel={() =>
-              onChange(
-                savedPlaybackId != null
-                  ? {
-                      type: 'mux',
-                      muxVideoId: '',
-                      muxPlaybackId: savedPlaybackId
-                    }
-                  : { type: 'none' }
-              )
-            }
+            // Cancel only needs to clear a fresh upload's placeholder — a
+            // replacement never overwrote the committed value (above), so
+            // there is nothing to revert.
+            onCancel={() => {
+              if (!committedVideo) onChange({ type: 'none' })
+            }}
             // Remove clears the attached video from the form — persisted by
             // the dialog's Save like every other media change.
             onRemove={() => onChange({ type: 'none' })}

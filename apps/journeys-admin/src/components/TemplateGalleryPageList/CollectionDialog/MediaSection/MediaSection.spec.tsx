@@ -150,31 +150,38 @@ describe('MediaSection', () => {
     expect(screen.getByTestId('MuxUploadFieldStub')).toBeInTheDocument()
   })
 
-  it('preserves the existing playbackId when a replacement upload starts', () => {
+  it('leaves the committed video untouched when a replacement upload starts', () => {
+    // Overwriting the committed value with an empty placeholder would lose
+    // the muxVideoId — unrecoverable in create mode (no server row). The
+    // in-flight provider task is what gates Save during the replacement.
     const { onChange } = renderSection({
       type: 'mux',
       muxVideoId: '',
       muxPlaybackId: 'pb-9'
     })
     fireEvent.click(screen.getByRole('button', { name: 'stub-start' }))
-    expect(onChange).toHaveBeenCalledWith({
-      type: 'mux',
-      muxVideoId: '',
-      muxPlaybackId: 'pb-9'
-    })
+    expect(onChange).not.toHaveBeenCalled()
   })
 
-  it('reverts to the prior saved video when a replacement upload is cancelled', () => {
+  it('keeps the committed video when a replacement upload is cancelled', () => {
     const { onChange } = renderSection({
       type: 'mux',
       muxVideoId: '',
       muxPlaybackId: 'pb-9'
     })
     fireEvent.click(screen.getByRole('button', { name: 'stub-cancel' }))
+    // Nothing was overwritten at start, so there is nothing to revert.
+    expect(onChange).not.toHaveBeenCalled()
+  })
+
+  it('writes the incomplete placeholder when a fresh upload starts', () => {
+    const { onChange } = renderSection({ type: 'none' })
+    fireEvent.click(screen.getByRole('button', { name: 'Upload' }))
+    fireEvent.click(screen.getByRole('button', { name: 'stub-start' }))
     expect(onChange).toHaveBeenCalledWith({
       type: 'mux',
       muxVideoId: '',
-      muxPlaybackId: 'pb-9'
+      muxPlaybackId: null
     })
   })
 

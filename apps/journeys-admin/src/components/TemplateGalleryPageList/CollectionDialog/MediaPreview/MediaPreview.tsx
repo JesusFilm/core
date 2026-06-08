@@ -27,8 +27,9 @@ interface MediaPreviewProps {
   compact?: boolean
   /**
    * Fill the parent box (height 100%) rather than rendering at an intrinsic
-   * 16:9. The Link box uses this to fill the whole 92×77 area with the preview
-   * (no grey frame); the embed player letterboxes its own content inside.
+   * 16:9. The Link box uses this to fill the whole MEDIA_BOX-sized area with
+   * the preview (no grey frame); the embed player letterboxes its own content
+   * inside.
    */
   fill?: boolean
 }
