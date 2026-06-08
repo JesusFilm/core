@@ -9,8 +9,8 @@ import { ReactElement } from 'react'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import {
+  GALLERY_ACTION_COLOR,
   GALLERY_ACTION_SIZE,
-  GALLERY_PREVIEW_BG,
   GALLERY_USE_BUTTON_MIN_WIDTH
 } from '../galleryTokens'
 
@@ -29,8 +29,6 @@ interface JourneyViewCardActionsProps {
    * (`/<slug>`, which the journeys middleware rewrites to `/home/<slug>`).
    */
   itemSlug: string
-  /** Accent colour for the outlined Use button and the filled Preview button. */
-  accent: string
   fullWidth?: boolean
   /**
    * Render the buttons as non-interactive, `aria-hidden` look-alikes — used
@@ -70,7 +68,6 @@ export function JourneyViewCardActions({
   itemId,
   itemTitle,
   itemSlug,
-  accent,
   fullWidth = false,
   decorative = false
 }: JourneyViewCardActionsProps): ReactElement {
@@ -85,7 +82,7 @@ export function JourneyViewCardActions({
     width: GALLERY_ACTION_SIZE,
     height: GALLERY_ACTION_SIZE,
     borderRadius: 1,
-    backgroundColor: GALLERY_PREVIEW_BG,
+    backgroundColor: GALLERY_ACTION_COLOR,
     color: '#FFFFFF',
     display: 'flex',
     alignItems: 'center',
@@ -111,8 +108,8 @@ export function JourneyViewCardActions({
             px: 2.5,
             minWidth: fullWidth ? undefined : GALLERY_USE_BUTTON_MIN_WIDTH,
             borderRadius: 1,
-            border: `1px solid ${accent}`,
-            color: accent,
+            border: `1px solid ${GALLERY_ACTION_COLOR}`,
+            color: GALLERY_ACTION_COLOR,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -168,11 +165,11 @@ export function JourneyViewCardActions({
           // matching the surrounding type. In More cards `fullWidth` stretches
           // it to fill the column.
           minWidth: fullWidth ? undefined : GALLERY_USE_BUTTON_MIN_WIDTH,
-          color: accent,
-          borderColor: accent,
+          color: GALLERY_ACTION_COLOR,
+          borderColor: GALLERY_ACTION_COLOR,
           '&:hover': {
-            borderColor: accent,
-            backgroundColor: alpha(accent, 0.06)
+            borderColor: GALLERY_ACTION_COLOR,
+            backgroundColor: alpha(GALLERY_ACTION_COLOR, 0.06)
           }
         }}
       >

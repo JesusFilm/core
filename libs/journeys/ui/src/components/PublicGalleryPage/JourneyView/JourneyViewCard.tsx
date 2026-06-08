@@ -6,7 +6,6 @@ import Image from 'next/image'
 import { ReactElement } from 'react'
 
 import {
-  GALLERY_ACCENT,
   GALLERY_CARD_RADIUS,
   PublicGalleryPageItem,
   clampLines,
@@ -142,7 +141,6 @@ export function JourneyViewCard({
               itemId={item.id}
               itemTitle={item.title}
               itemSlug={item.slug}
-              accent={GALLERY_ACCENT}
               fullWidth
               decorative={decorative}
             />
@@ -225,7 +223,6 @@ export function JourneyViewCard({
         itemId={item.id}
         itemTitle={item.title}
         itemSlug={item.slug}
-        accent={GALLERY_ACCENT}
         fullWidth
         decorative={decorative}
       />

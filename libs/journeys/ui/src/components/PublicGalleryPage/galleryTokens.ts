@@ -28,14 +28,14 @@ import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
 export const GALLERY_ACCENT = brandRed
 
 /**
- * Background for the filled Preview action button: the base theme's
- * "almost black" `palette[900]` token (what journeysAdmin re-exports as
- * `palette.solid.main`). Hardcoded here because the public gallery renders
- * under the website theme, which doesn't expose that palette slot — keep in
- * sync with `palette[900]` in
+ * Colour of the card action controls — the outlined "Use" button and the
+ * filled "Preview" button. The base theme's "almost black" `palette[900]`
+ * token (what journeysAdmin re-exports as `palette.solid.main`). Hardcoded
+ * here because the public gallery renders under the website theme, which
+ * doesn't expose that palette slot — keep in sync with `palette[900]` in
  * `libs/shared/ui/src/libs/themes/base/tokens/colors.ts` if it ever changes.
  */
-export const GALLERY_PREVIEW_BG = '#26262E'
+export const GALLERY_ACTION_COLOR = '#26262E'
 
 /** Corner radius (theme spacing units) for gallery card images. */
 export const GALLERY_CARD_RADIUS = 3
