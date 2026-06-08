@@ -1,4 +1,5 @@
 import { useApolloClient } from '@apollo/client'
+import { useSnackbar } from 'notistack'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
@@ -40,8 +41,9 @@ export interface CopyToCollectionMenuItemProps {
  * three-step pipeline (journeyDuplicate → optional translation
  * subscription → templateGalleryPageAssignJourney), with a
  * `GetAdminJourneys` refetch after assign success/failure and after
- * translation failure. Surfaces results into `CopyToCollectionDialog`
- * via `loading`, `errorMessage`, and `done` props.
+ * translation failure. Surfaces in-progress and error states into
+ * `CopyToCollectionDialog` via `loading` and `errorMessage`; success
+ * closes the dialog and confirms with an auto-dismissing snackbar.
  */
 export function CopyToCollectionMenuItem({
   id,
@@ -53,14 +55,11 @@ export function CopyToCollectionMenuItem({
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const client = useApolloClient()
+  const { enqueueSnackbar } = useSnackbar()
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [done, setDone] = useState(false)
-  const [selectedCollectionTitle, setSelectedCollectionTitle] = useState<
-    string | undefined
-  >(undefined)
   const [translationVariables, setTranslationVariables] =
     useState<TranslationVars | null>(null)
 
@@ -69,6 +68,9 @@ export function CopyToCollectionMenuItem({
   const mountedRef = useRef(false)
   const newJourneyIdRef = useRef<string | null>(null)
   const pendingTargetCollectionIdRef = useRef<string | null>(null)
+  // Captured at submit time so the success snackbar can name the target
+  // collection even when fired from the subscription onComplete closure.
+  const pendingCollectionTitleRef = useRef('')
   const loadingRef = useRef(false)
 
   const [journeyDuplicate] = useJourneyDuplicateMutation()
@@ -91,6 +93,7 @@ export function CopyToCollectionMenuItem({
       setHasOpenDialog?.(false)
       newJourneyIdRef.current = null
       pendingTargetCollectionIdRef.current = null
+      pendingCollectionTitleRef.current = ''
     }
     // Lifecycle effect — mount/unmount only. Capturing the latest
     // `setHasOpenDialog` reference is fine because it is a prop that
@@ -131,9 +134,14 @@ export function CopyToCollectionMenuItem({
       })
       refetchAdminJourneys()
       if (!mountedRef.current) return
-      safeSetLoading(false)
-      setTranslationVariables(null)
-      setDone(true)
+      const collectionTitle = pendingCollectionTitleRef.current
+      enqueueSnackbar(
+        collectionTitle !== ''
+          ? t('Copied to {{title}}.', { title: collectionTitle })
+          : t('Copied to collection.'),
+        { variant: 'success', preventDuplicate: true }
+      )
+      guardedClose()
     } catch {
       refetchAdminJourneys()
       if (!mountedRef.current) return
@@ -167,9 +175,9 @@ export function CopyToCollectionMenuItem({
     }
 
     safeSetLoading(true)
+    pendingCollectionTitleRef.current = values.collectionTitle
     if (mountedRef.current) {
       setErrorMessage(null)
-      setSelectedCollectionTitle(values.collectionTitle)
     }
 
     let duplicatedId: string | null = null
@@ -239,11 +247,10 @@ export function CopyToCollectionMenuItem({
     setLoading(false)
     loadingRef.current = false
     setErrorMessage(null)
-    setDone(false)
-    setSelectedCollectionTitle(undefined)
     setTranslationVariables(null)
     newJourneyIdRef.current = null
     pendingTargetCollectionIdRef.current = null
+    pendingCollectionTitleRef.current = ''
     setHasOpenDialog?.(false)
     handleCloseMenu()
   }
@@ -267,8 +274,6 @@ export function CopyToCollectionMenuItem({
         open={dialogOpen}
         loading={loading}
         errorMessage={errorMessage ?? undefined}
-        done={done}
-        selectedCollectionTitle={selectedCollectionTitle}
         journeyTitle={journey?.title}
         isTranslating={translationVariables != null}
         onClose={guardedClose}
