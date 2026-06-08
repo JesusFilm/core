@@ -394,9 +394,18 @@ export function useCollectionForm({
           | undefined
         if (fieldError != null) {
           // Mark the field as touched so the error renders even if the
-          // user submitted without focusing it first.
+          // user submitted without focusing it first. Fall back to the
+          // ApolloError's combined message when the individual error's
+          // message is empty — an empty field error renders as nothing,
+          // which would make the failed save look like a silent no-op.
           await helpers.setFieldTouched(fieldError, true, false)
-          helpers.setFieldError(fieldError, fieldErrorSource?.message ?? '')
+          helpers.setFieldError(
+            fieldError,
+            fieldErrorSource?.message !== undefined &&
+              fieldErrorSource.message !== ''
+              ? fieldErrorSource.message
+              : error.message
+          )
           return
         }
       }

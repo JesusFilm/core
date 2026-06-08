@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
@@ -23,6 +24,7 @@ interface JourneyViewMediaProps {
 export function JourneyViewMedia({
   media
 }: JourneyViewMediaProps): ReactElement | null {
+  const { t } = useTranslation('libs-journeys-ui')
   if (media == null) return null
 
   if (media.type === 'mux') {
@@ -35,7 +37,7 @@ export function JourneyViewMedia({
   return (
     <EmbedIframe
       embedUrl={media.embedUrl}
-      title="Gallery media"
+      title={t('Gallery media')}
       borderRadius={4}
       testId="TemplateGalleryMedia"
     />

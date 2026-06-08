@@ -18,6 +18,8 @@ interface MediaFieldFrameProps {
   onEdit?: () => void
   /** Accessible label for the clickable frame (when `onEdit` is set). */
   editLabel?: string
+  /** Disables the clickable frame (e.g. while the dialog is saving). */
+  disabled?: boolean
 }
 
 // Fixed grey box matching the creator-image box (MEDIA_BOX-sized). The
@@ -47,7 +49,8 @@ const frameSx: SxProps<Theme> = {
 export function MediaFieldFrame({
   children,
   onEdit,
-  editLabel
+  editLabel,
+  disabled = false
 }: MediaFieldFrameProps): ReactElement {
   const inner = (
     <>
@@ -63,6 +66,7 @@ export function MediaFieldFrame({
       <ButtonBase
         onClick={onEdit}
         aria-label={editLabel}
+        disabled={disabled}
         sx={{ ...frameSx, textAlign: 'left' }}
       >
         {inner}

@@ -50,6 +50,26 @@ function renderField(
   return { onUploadStart, onComplete, onCancel, onRemove }
 }
 
+function renderFieldWithRerender(): {
+  rerender: (props: React.ComponentProps<typeof MuxUploadField>) => void
+  props: React.ComponentProps<typeof MuxUploadField>
+} {
+  const props: React.ComponentProps<typeof MuxUploadField> = {
+    uploadKey: 'key-1',
+    media: { type: 'mux', muxVideoId: '' },
+    hasVideo: false,
+    onUploadStart: vi.fn(),
+    onComplete: vi.fn(),
+    onCancel: vi.fn(),
+    onRemove: vi.fn()
+  }
+  const { rerender } = render(<MuxUploadField {...props} />)
+  return {
+    rerender: (next) => rerender(<MuxUploadField {...next} />),
+    props
+  }
+}
+
 describe('MuxUploadField', () => {
   beforeEach(() => {
     mockGetUploadStatus.mockReset().mockReturnValue(null)
@@ -133,12 +153,26 @@ describe('MuxUploadField', () => {
     // Without this, an errored fresh upload leaves the form stuck on an
     // incomplete mux value that blocks Save indefinitely.
     mockGetUploadStatus.mockReturnValue({ status: 'error', progress: 0 })
-    const { onCancel } = renderField()
+    const { onRemove } = renderField()
     const remove = screen.getByRole('button', { name: 'Remove' })
     expect(remove).toBeEnabled()
     fireEvent.click(remove)
     expect(mockCancelUploadForBlock).toHaveBeenCalled()
-    expect(onCancel).toHaveBeenCalledTimes(1)
+    // Remove clears to none (label-accurate even for a failed replacement).
+    expect(onRemove).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps the error UI after the provider cleans up the errored task', () => {
+    // The provider deletes errored tasks ~1s after failure; the latched
+    // local flag must keep the error (and its escape hatch) visible.
+    mockGetUploadStatus.mockReturnValue({ status: 'error', progress: 0 })
+    const { rerender, props } = renderFieldWithRerender()
+    expect(screen.getByTestId('MuxUploadFieldError')).toBeInTheDocument()
+    // Task cleaned up: provider now reports no task at all.
+    mockGetUploadStatus.mockReturnValue(null)
+    rerender(props)
+    expect(screen.getByTestId('MuxUploadFieldError')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Remove' })).toBeEnabled()
   })
 
   it('frames the empty box as "Choose a video"', () => {

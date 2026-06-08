@@ -152,6 +152,7 @@ export function MediaSection({
         {mode === 'mux' ? (
           <MuxUploadField
             uploadKey={uploadKey}
+            disabled={saving}
             media={boxMedia}
             hasVideo={
               media.type === 'mux' &&

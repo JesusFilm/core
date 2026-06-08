@@ -28,7 +28,7 @@ import { DiscardConfirmDialog } from './DiscardConfirmDialog'
 import { JourneyPickerField } from './JourneyPickerField'
 import { MEDIA_BOX_HEIGHT, MEDIA_BOX_WIDTH } from './MediaPreview'
 import { MediaSection } from './MediaSection'
-import { useCollectionForm } from './useCollectionForm'
+import { CollectionFormValues, useCollectionForm } from './useCollectionForm'
 
 export interface CollectionDialogProps {
   open: boolean
@@ -119,11 +119,34 @@ function CollectionDialogContent({
   // Discard.
   const [discardConfirmOpen, setDiscardConfirmOpen] = useState(false)
 
+  // True while the media value can't be saved: a Mux upload in flight
+  // (provider status), or a fresh upload that hasn't produced a durable id
+  // yet (also covers an errored upload sitting on an empty muxVideoId).
+  function isMediaBlocked(media: CollectionFormValues['media']): boolean {
+    const task = getUploadStatus(uploadKey)
+    const inFlight =
+      task?.status === 'uploading' || task?.status === 'processing'
+    return (
+      inFlight ||
+      (media.type === 'mux' &&
+        media.muxVideoId === '' &&
+        (media.muxPlaybackId == null || media.muxPlaybackId === ''))
+    )
+  }
+
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={schema}
-      onSubmit={handleSubmit}
+      // Guard the Enter-key path: the footer buttons disable on mediaBlocked,
+      // but a keyboard form submit bypasses them — without this, Enter during
+      // a replacement upload (which passes schema validation thanks to the
+      // prior playbackId) would save mid-upload and close the dialog,
+      // silently dropping the new video.
+      onSubmit={async (vals, helpers) => {
+        if (isMediaBlocked(vals.media)) return
+        await handleSubmit(vals, helpers)
+      }}
     >
       {({
         values,
@@ -189,16 +212,9 @@ function CollectionDialogContent({
         const selectedJourneysOrdered = values.journeyIds
           .map((id) => journeysById.get(id))
           .filter((j): j is Journey => j != null)
-        // Block every submit path while a Mux upload is in flight (provider
-        // status), plus the form-value guard for a fresh upload that hasn't
-        // produced a durable id yet (also covers an errored upload sitting on
-        // an empty muxVideoId).
-        const mediaBlocked =
-          uploadInFlight ||
-          (values.media.type === 'mux' &&
-            values.media.muxVideoId === '' &&
-            (values.media.muxPlaybackId == null ||
-              values.media.muxPlaybackId === ''))
+        // Blocks every submit path (footer buttons here; the Enter-key path
+        // is guarded in Formik's onSubmit above with the same predicate).
+        const mediaBlocked = isMediaBlocked(values.media)
         return (
           <>
             <Dialog

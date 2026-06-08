@@ -6,7 +6,7 @@ import LinearProgress from '@mui/material/LinearProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ChangeEvent, ReactElement, useRef } from 'react'
+import { ChangeEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
@@ -48,6 +48,10 @@ interface MuxUploadFieldProps {
   onCancel: () => void
   /** Deletes the attached video from the form (Remove button). */
   onRemove: () => void
+  /** True while the dialog is saving — locks the picker and actions so a
+   *  file can't be chosen mid-submit (which would mutate form state after
+   *  the mutation snapshotted it). */
+  disabled?: boolean
 }
 
 
@@ -68,7 +72,8 @@ export function MuxUploadField({
   onUploadStart,
   onComplete,
   onCancel,
-  onRemove
+  onRemove,
+  disabled = false
 }: MuxUploadFieldProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { getUploadStatus, addUploadTask, cancelUploadForBlock } =
@@ -76,6 +81,17 @@ export function MuxUploadField({
   const client = useApolloClient()
   const inputRef = useRef<HTMLInputElement>(null)
   const task = getUploadStatus(uploadKey)
+
+  // Sticky failure flag: the provider deletes errored tasks ~1s after the
+  // failure (TASK_CLEANUP_DELAY), which would make the error UI — and its
+  // Remove escape hatch — vanish while the form still holds the incomplete
+  // mux value that blocks Save. Latch the error locally until the user
+  // acts (retry or remove).
+  const [uploadFailed, setUploadFailed] = useState(false)
+  const status = task?.status
+  useEffect(() => {
+    if (status === 'error') setUploadFailed(true)
+  }, [status])
 
   // The provider polls `getMyMuxVideo` (network-only) until ready, so by the
   // time it fires the completion callback the playbackId, name, and duration
@@ -99,11 +115,12 @@ export function MuxUploadField({
     const file = event.target.files?.[0]
     // Reset the input so re-selecting the same file fires onChange again.
     event.target.value = ''
-    if (file == null) return
+    if (file == null || disabled) return
     // Abort any prior in-flight upload for this key before starting a new
     // one, so a quick re-pick doesn't leave two pipelines racing to set the
     // form's muxVideoId.
     cancelUploadForBlock({ id: uploadKey })
+    setUploadFailed(false)
     onUploadStart()
     addUploadTask(uploadKey, file, undefined, undefined, handleComplete)
   }
@@ -113,14 +130,22 @@ export function MuxUploadField({
     onCancel()
   }
 
+  // Clears the failed upload from the form entirely (→ none), unblocking
+  // Save. Label-accurate even after a failed replacement: Remove removes.
+  function handleErrorRemove(): void {
+    cancelUploadForBlock({ id: uploadKey })
+    setUploadFailed(false)
+    onRemove()
+  }
+
   function openPicker(): void {
+    if (disabled) return
     inputRef.current?.click()
   }
 
-  const status = task?.status
   const uploading = status === 'uploading'
   const processing = status === 'processing'
-  const errored = status === 'error'
+  const errored = status === 'error' || uploadFailed
 
   // Attached-state metadata. muxName/muxDuration come either from a fresh
   // upload's onComplete (provider cache) or from an existing saved row
@@ -156,6 +181,7 @@ export function MuxUploadField({
         <MediaFieldFrame
           onEdit={openPicker}
           editLabel={hasVideo ? t('Replace video') : t('Choose a video')}
+          disabled={disabled}
         >
           {/* Inner preview fills the frame's padded area (even border all
               round), matching the creator-details image. */}
@@ -165,8 +191,9 @@ export function MuxUploadField({
         </MediaFieldFrame>
 
         {/* Right column: every state stacks its text with its action button
-            directly underneath (natural flow, no bottom pinning). */}
-        <Stack spacing={1} sx={{ flex: 1, minWidth: 0 }}>
+            directly underneath (natural flow, no bottom pinning). aria-live
+            announces the async upload-state changes to assistive tech. */}
+        <Stack spacing={1} sx={{ flex: 1, minWidth: 0 }} aria-live="polite">
           {uploading && (
             <>
               <Stack spacing={1} data-testid="MuxUploadFieldUploading">
@@ -223,13 +250,22 @@ export function MuxUploadField({
               {/* Remove gives an escape hatch out of the errored mux state —
                   without it the form's media stays an incomplete mux value
                   that blocks Save indefinitely (the user's only other way
-                  out would be a successful upload or typing a link). It
-                  reverts to the prior saved video when one existed. */}
+                  out would be a successful upload or typing a link). */}
               <Stack direction="row" spacing={1}>
-                <Button size="small" variant="outlined" onClick={openPicker}>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={openPicker}
+                  disabled={disabled}
+                >
                   {t('Try again')}
                 </Button>
-                <Button size="small" color="error" onClick={handleCancel}>
+                <Button
+                  size="small"
+                  color="error"
+                  onClick={handleErrorRemove}
+                  disabled={disabled}
+                >
                   {t('Remove')}
                 </Button>
               </Stack>
@@ -273,7 +309,11 @@ export function MuxUploadField({
                 size="small"
                 color="error"
                 onClick={onRemove}
-                disabled={!hasVideo}
+                // Enabled when there's a video to remove, and ALSO when the
+                // form is stuck holding an incomplete mux value (belt and
+                // braces: even if the error UI is gone, the user can always
+                // clear back to "no media").
+                disabled={disabled || (!hasVideo && media.type !== 'mux')}
                 sx={{ alignSelf: 'flex-start' }}
               >
                 {t('Remove')}
