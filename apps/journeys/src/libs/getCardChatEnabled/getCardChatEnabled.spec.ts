@@ -1,6 +1,9 @@
 import { IdType } from '../../../__generated__/globalTypes'
 
-import { CARD_LOOKUP_TIMEOUT_MS, getCardChatEnabled } from './getCardChatEnabled'
+import {
+  CARD_LOOKUP_TIMEOUT_MS,
+  getCardChatEnabled
+} from './getCardChatEnabled'
 
 const { mockQuery, mockLoggerWarn } = vi.hoisted(() => ({
   mockQuery: vi.fn(),
