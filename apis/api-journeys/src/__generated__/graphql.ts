@@ -5241,7 +5241,7 @@ export type TemplateGalleryPageCreateInput = {
   journeyIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   /** Optional embedded media. When `type` is `link`, the `url` is server-validated and normalized per provider; when `type` is `mux`, the `muxVideoId` is validated against the media DB. */
   media?: InputMaybe<TemplateGalleryPageMediaInput>;
-  /** Optional https URL of a hero/cover media asset. Rejected if not https. */
+  /** Deprecated: superseded by the `media` input (NES-1704); will be removed together with the deprecated `TemplateGalleryPage.mediaUrl` field. Optional https URL of a hero/cover media asset. Rejected if not https. */
   mediaUrl?: InputMaybe<Scalars['String']['input']>;
   /** Owning team. Caller must be a member. */
   teamId: Scalars['ID']['input'];
@@ -5305,7 +5305,7 @@ export type TemplateGalleryPageUpdateInput = {
   journeyIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   /** Embedded media. Omit to leave the existing media unchanged; pass `null` to clear it (deletes the media row); pass an object to replace it (validated and normalized per `type`). */
   media?: InputMaybe<TemplateGalleryPageMediaInput>;
-  /** Optional https hero media URL. Pass `null` to clear. Rejected if not https. */
+  /** Deprecated: superseded by the `media` input (NES-1704); will be removed together with the deprecated `TemplateGalleryPage.mediaUrl` field. Optional https hero media URL. Pass `null` to clear. Rejected if not https. */
   mediaUrl?: InputMaybe<Scalars['String']['input']>;
   /** Updated public slug. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`, max 200 characters, not be in the reserved list, and not be in use by another page. Changing the slug breaks any external links to the old URL. */
   slug?: InputMaybe<Scalars['String']['input']>;

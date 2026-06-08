@@ -2,13 +2,13 @@ import { z } from 'zod'
 
 // Discriminated-union validation for TemplateGalleryPageMediaInput. No Pothos
 // @oneOf plugin is loaded in this subgraph, so the one-of invariant is enforced
-// here at the resolver (matching the blockUpdateAction zod precedent).
+// in zod (matching the blockUpdateAction zod precedent).
 //
-// This is intentionally just the SHAPE schema — the per-type helper dispatch
-// (linkValidate / muxValidate) and the row composition stay inlined at each
-// call site (Create + Update), so the external IO is visible at the resolver
-// rather than hidden behind an orchestrator. The schema is shared only so the
-// shape invariant has a single source of truth across both mutations.
+// This schema is the single source of truth for the SHAPE invariant only. The
+// per-type helper dispatch (linkValidate / muxValidate) and the row composition
+// live in resolveMediaInput, which both the Create and Update mutations call
+// BEFORE opening their prisma.$transaction — it performs external IO (provider
+// oEmbed fetches, the cross-DB Mux read) that must not run inside a tx.
 //
 //   type=link → `url` required, `muxVideoId` must be absent/null
 //   type=mux  → `muxVideoId` required, `url` must be absent/null

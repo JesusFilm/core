@@ -37,10 +37,15 @@ export const TemplateGalleryPageUpdateInput = builder.inputType(
         required: false,
         description: 'Optional creator avatar alt text. Pass `null` to clear.'
       }),
+      // Not @deprecated: the legacy apollo CLI used by 5 frontend codegen
+      // targets predates @deprecated on INPUT_FIELD_DEFINITION and fails to
+      // load any schema containing it, so the deprecation lives in the
+      // description instead. Remove this field together with the @deprecated
+      // TemplateGalleryPage.mediaUrl output field.
       mediaUrl: t.string({
         required: false,
         description:
-          'Optional https hero media URL. Pass `null` to clear. Rejected if not https.'
+          'Deprecated: superseded by the `media` input (NES-1704); will be removed together with the deprecated `TemplateGalleryPage.mediaUrl` field. Optional https hero media URL. Pass `null` to clear. Rejected if not https.'
       }),
       journeyIds: t.idList({
         required: false,
