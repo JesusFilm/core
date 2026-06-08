@@ -3,6 +3,7 @@ import { convertToModelMessages, streamText } from 'ai'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { type Mock, type MockedFunction } from 'vitest'
 
+import { getCardChatEnabled } from '../../../src/libs/getCardChatEnabled'
 import { getFlags } from '../../../src/libs/getFlags'
 import {
   getActivePromptLabel,
@@ -38,6 +39,9 @@ vi.mock('langfuse', () => ({
 vi.mock('../../../src/libs/getFlags', () => ({
   getFlags: vi.fn()
 }))
+vi.mock('../../../src/libs/getCardChatEnabled', () => ({
+  getCardChatEnabled: vi.fn()
+}))
 vi.mock('../../../src/libs/langfuse/client', () => ({
   APOLOGIST_PROMPT_NAME: 'apologist-world-cup-chat',
   getActivePromptLabel: vi.fn(() => 'development'),
@@ -48,6 +52,9 @@ vi.mock('../../../src/libs/logger', () => ({
 }))
 
 const mockGetFlags = getFlags as unknown as MockedFunction<typeof getFlags>
+const mockGetCardChatEnabled = getCardChatEnabled as unknown as MockedFunction<
+  typeof getCardChatEnabled
+>
 const mockGetLangfuse = getLangfuse as unknown as MockedFunction<
   typeof getLangfuse
 >
@@ -167,6 +174,9 @@ describe('/api/chat handler', () => {
     process.env.APOLOGIST_API_KEY = 'apologist-test-key'
     mockGetActivePromptLabel.mockReturnValue('development')
     mockGetLangfuse.mockReturnValue(null)
+    // Default the per-card kill switch to "enabled" so the existing happy-path
+    // tests reach streamText. Tests that exercise the 403 override this.
+    mockGetCardChatEnabled.mockResolvedValue(true)
     lastStreamConfig = null
     installStreamTextSuccess()
   })
@@ -270,7 +280,7 @@ describe('/api/chat handler', () => {
     function postReq(): NextApiRequest {
       return {
         method: 'POST',
-        body: { messages: [{ role: 'user', content: 'hi' }] },
+        body: { messages: [{ role: 'user', content: 'hi' }], cardId: 'card-1' },
         headers: {}
       } as unknown as NextApiRequest
     }
@@ -402,6 +412,7 @@ describe('/api/chat handler', () => {
         method: 'POST',
         body: {
           messages: [{ role: 'user', content: 'hi' }],
+          cardId: 'card-1',
           ...(language != null && { language })
         },
         headers: {}
@@ -519,6 +530,7 @@ describe('/api/chat handler', () => {
         method: 'POST',
         body: {
           messages: [{ role: 'user', content: 'hi' }],
+          cardId: 'card-1',
           ...(overrides.language != null && { language: overrides.language }),
           ...(overrides.sessionId != null && {
             sessionId: overrides.sessionId
@@ -629,7 +641,8 @@ describe('/api/chat handler', () => {
             messages: [{ role: 'user', content: 'hi' }],
             language: 'es',
             sessionId: 'sess-1',
-            journeyId: 'journey-1'
+            journeyId: 'journey-1',
+            cardId: 'card-1'
           },
           headers: { 'x-vercel-ip-country': 'NZ' }
         } as unknown as NextApiRequest,
@@ -841,9 +854,17 @@ describe('/api/chat handler', () => {
     })
 
     function postReq(body: unknown): NextApiRequest {
+      // cardId is now required (NES-1679). Inject it into object bodies so each
+      // bounds test fails for its intended reason rather than for a missing
+      // cardId. Non-object bodies (e.g. the "not-an-object" case) and bodies
+      // that already set cardId pass through unchanged.
+      const withCardId =
+        body != null && typeof body === 'object' && !Array.isArray(body)
+          ? { cardId: 'card-1', ...(body as Record<string, unknown>) }
+          : body
       return {
         method: 'POST',
-        body,
+        body: withCardId,
         headers: {}
       } as unknown as NextApiRequest
     }
@@ -993,7 +1014,8 @@ describe('/api/chat handler', () => {
             messages,
             language: 'es',
             sessionId: 'sess-1',
-            journeyId: 'journey-1'
+            journeyId: 'journey-1',
+            cardId: 'card-1'
           },
           headers: {}
         } as unknown as NextApiRequest,
@@ -1073,6 +1095,101 @@ describe('/api/chat handler', () => {
       expect(status).not.toHaveBeenCalledWith(400)
       expect(json).not.toHaveBeenCalledWith({ error: 'invalid request' })
       expect(mockStreamText).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('per-card kill switch (NES-1679)', () => {
+    beforeEach(() => {
+      mockGetFlags.mockResolvedValue({ apologistChat: true })
+    })
+
+    function postReq(body: Record<string, unknown>): NextApiRequest {
+      return {
+        method: 'POST',
+        body,
+        headers: {}
+      } as unknown as NextApiRequest
+    }
+
+    it('returns 400 when cardId is missing from the body', async () => {
+      const { res, status, json } = makeRes()
+
+      await handler(
+        postReq({ messages: [{ role: 'user', content: 'hi' }] }),
+        res
+      )
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
+      // The card lookup never runs — the schema rejects the request first.
+      expect(mockGetCardChatEnabled).not.toHaveBeenCalled()
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('passes journeyId + cardId to the lookup and streams when chat is enabled', async () => {
+      mockGetCardChatEnabled.mockResolvedValue(true)
+      mockGetLangfuse.mockReturnValue(null)
+
+      await handler(
+        postReq({
+          messages: [{ role: 'user', content: 'hi' }],
+          journeyId: 'journey-1',
+          cardId: 'card-1'
+        }),
+        makeRes().res
+      )
+
+      expect(mockGetCardChatEnabled).toHaveBeenCalledWith({
+        journeyId: 'journey-1',
+        cardId: 'card-1'
+      })
+      expect(mockStreamText).toHaveBeenCalledTimes(1)
+    })
+
+    it('returns 403 with a chat_disabled code when the card has chat disabled', async () => {
+      mockGetCardChatEnabled.mockResolvedValue(false)
+      const { res, status, json } = makeRes()
+
+      await handler(
+        postReq({
+          messages: [{ role: 'user', content: 'hi' }],
+          journeyId: 'journey-1',
+          cardId: 'card-1'
+        }),
+        res
+      )
+
+      expect(status).toHaveBeenCalledWith(403)
+      expect(json).toHaveBeenCalledWith({
+        error: 'chat disabled for this card',
+        code: 'chat_disabled'
+      })
+      // Fails closed before any model work.
+      expect(mockStreamText).not.toHaveBeenCalled()
+      expect(mockLoggerWarn).toHaveBeenCalledWith(
+        expect.objectContaining({ event: 'chat_card_disabled' }),
+        '[chat] blocked: chat disabled for card'
+      )
+    })
+
+    it('does not run the card lookup when the apologistChat flag is off', async () => {
+      mockGetFlags.mockResolvedValue({ apologistChat: false })
+      const { res, status } = makeRes()
+
+      await handler(
+        postReq({
+          messages: [{ role: 'user', content: 'hi' }],
+          journeyId: 'journey-1',
+          cardId: 'card-1'
+        }),
+        res
+      )
+
+      expect(status).toHaveBeenCalledWith(404)
+      expect(mockGetCardChatEnabled).not.toHaveBeenCalled()
     })
   })
 })

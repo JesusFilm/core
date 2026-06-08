@@ -18,6 +18,7 @@ import {
 } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { getCardChild, useBlocks } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 import { Actions } from '../Actions'
 import { Conversation } from '../Conversation'
@@ -107,7 +108,9 @@ function parseChatErrorCode(error: Error | undefined): string | undefined {
 const NON_RETRIABLE_CHAT_ERROR_CODES = new Set([
   'conversation_capped',
   'invalid_request',
-  'not_found'
+  'not_found',
+  // A card with chat disabled (NES-1679) is deterministic — re-firing 403s again.
+  'chat_disabled'
 ])
 
 const CONVERSATION_CAPPED_CODE = 'conversation_capped'
@@ -251,6 +254,15 @@ export function AiChat({
   const journeyIdRef = useRef(journeyId)
   journeyIdRef.current = journeyId
 
+  // The active card id (NES-1679) lets the server enforce the per-card chat
+  // kill switch. Read from the same global block history the rest of the viewer
+  // uses (Conductor, StepFooter), so it tracks card navigation without
+  // threading a prop through PinnedChatBar / ChatOverlay.
+  const { blockHistory } = useBlocks()
+  const cardId = getCardChild(blockHistory[blockHistory.length - 1])?.id
+  const cardIdRef = useRef(cardId)
+  cardIdRef.current = cardId
+
   const [sessionId, setSessionId] = useState<string | undefined>(() => {
     if (typeof window === 'undefined') return undefined
     // sessionStorage can throw in Safari private mode, sandboxed
@@ -276,7 +288,8 @@ export function AiChat({
         body: () => ({
           language: languageRef.current,
           sessionId: sessionIdRef.current,
-          journeyId: journeyIdRef.current
+          journeyId: journeyIdRef.current,
+          cardId: cardIdRef.current
         })
       }),
     []

@@ -11,6 +11,7 @@ import { Langfuse, TextPromptClient } from 'langfuse'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
+import { getCardChatEnabled } from '../../../src/libs/getCardChatEnabled'
 import { getFlags } from '../../../src/libs/getFlags'
 import {
   APOLOGIST_PROMPT_NAME,
@@ -74,7 +75,10 @@ const chatRequestSchema = z.object({
   messages: z.array(messageSchema).min(1).max(MAX_MESSAGES),
   language: z.string().max(64).optional(),
   sessionId: z.string().max(128).optional(),
-  journeyId: z.string().max(128).optional()
+  journeyId: z.string().max(128).optional(),
+  // Required (NES-1679): the server reads the card's `showAssistant` to enforce
+  // the per-card chat kill switch, so every request must say which card it is.
+  cardId: z.string().min(1).max(128)
 })
 
 type ParsedChatMessage = z.infer<typeof messageSchema>
@@ -194,7 +198,7 @@ export default async function handler(
     res.status(400).json({ error: 'invalid request', code: 'invalid_request' })
     return
   }
-  const { messages, language, sessionId, journeyId } = parsed.data
+  const { messages, language, sessionId, journeyId, cardId } = parsed.data
 
   const promptChars = totalMessageChars(messages)
   if (promptChars > MAX_TOTAL_CHARS) {
@@ -222,6 +226,24 @@ export default async function handler(
     res
       .status(400)
       .json({ error: 'request too large', code: 'conversation_capped' })
+    return
+  }
+
+  // Per-card kill switch (NES-1679): the card's `showAssistant` is enforced
+  // server-side so flipping it off in the editor stops chat for tabs that are
+  // already open, on their very next message. Runs after the cheap local
+  // schema/size checks so an obviously-bad request never reaches the gateway.
+  const chatEnabled = await getCardChatEnabled({ journeyId, cardId })
+  if (!chatEnabled) {
+    logger.warn(
+      { event: 'chat_card_disabled', journeyId, cardId, sessionId },
+      '[chat] blocked: chat disabled for card'
+    )
+    // `code` keeps the client's error-code contract: a disabled card is
+    // deterministic, so the client hides Retry (re-firing would 403 again).
+    res
+      .status(403)
+      .json({ error: 'chat disabled for this card', code: 'chat_disabled' })
     return
   }
 

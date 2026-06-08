@@ -2,7 +2,13 @@ import { useChat } from '@ai-sdk/react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { type Mock } from 'vitest'
 
+import { type TreeBlock, blockHistoryVar } from '../../libs/block'
+
 import { AiChat } from './AiChat'
+
+const { mockTransportConstructor } = vi.hoisted(() => ({
+  mockTransportConstructor: vi.fn()
+}))
 
 vi.mock('@ai-sdk/react', () => ({
   useChat: vi.fn()
@@ -10,9 +16,14 @@ vi.mock('@ai-sdk/react', () => ({
 
 // `ai` transitively loads streaming machinery that needs `TransformStream`
 // (absent in jsdom). `useChat` is mocked, so the transport is never
-// exercised — stub it to a constructable no-op.
+// exercised — stub it to a constructable no-op that records its options so
+// tests can assert the request body (NES-1679).
 vi.mock('ai', () => ({
-  DefaultChatTransport: class DefaultChatTransport {}
+  DefaultChatTransport: class DefaultChatTransport {
+    constructor(options: unknown) {
+      mockTransportConstructor(options)
+    }
+  }
 }))
 
 vi.mock('next-i18next/pages', () => ({
@@ -77,6 +88,7 @@ function codedError(code: string): Error {
 describe('AiChat', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    blockHistoryVar([])
   })
 
   describe('error states — catered message + retry-gating (NES-1663)', () => {
@@ -178,6 +190,17 @@ describe('AiChat', () => {
 
       render(<AiChat variant="overlay" collapsible={false} />)
 
+      expect(
+        screen.queryByRole('button', { name: 'Retry' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('hides Retry for a deterministic chat_disabled (kill switch) error', () => {
+      setChatState({ error: codedError('chat_disabled') })
+
+      render(<AiChat variant="overlay" collapsible={false} />)
+
+      // The card's chat was turned off — re-firing would 403 again.
       expect(
         screen.queryByRole('button', { name: 'Retry' })
       ).not.toBeInTheDocument()
@@ -297,6 +320,38 @@ describe('AiChat', () => {
       expect(
         screen.getAllByRole('link', { name: 'About this chat' })
       ).toHaveLength(1)
+    })
+  })
+
+  describe('chat request body (NES-1679)', () => {
+    it('includes the active card id in the chat request body', () => {
+      blockHistoryVar([
+        {
+          __typename: 'StepBlock',
+          id: 'step-1',
+          children: [{ __typename: 'CardBlock', id: 'card-1', children: [] }]
+        }
+      ] as unknown as TreeBlock[])
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="overlay" collapsible={false} />)
+
+      const options = mockTransportConstructor.mock.calls[0]?.[0] as {
+        body: () => Record<string, unknown>
+      }
+      expect(options.body()).toMatchObject({ cardId: 'card-1' })
+    })
+
+    it('sends an undefined cardId when no card is active', () => {
+      blockHistoryVar([])
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="overlay" collapsible={false} />)
+
+      const options = mockTransportConstructor.mock.calls[0]?.[0] as {
+        body: () => Record<string, unknown>
+      }
+      expect(options.body().cardId).toBeUndefined()
     })
   })
 })
