@@ -29,6 +29,9 @@ interface LanguageOptions {
   languages: LanguageOption[]
 }
 
+// English is the default language used when no other language is selected.
+const ENGLISH_LANGUAGE_ID = '529'
+
 const StyledPopperOption = styled(ButtonBase)(() => ({
   backgroundColor: 'transparent',
   display: 'flex',
@@ -60,7 +63,16 @@ export function LanguagesFilterPopper({
           <Box
             data-testid="PresentationLayer"
             onClick={() => {
-              setOpen(!open)
+              // When the dropdown is closed with nothing selected, fall back
+              // to English so it is ticked the next time the dropdown opens.
+              if (values.languages.length === 0) {
+                const englishOption = sortedLanguages.find(
+                  ({ id }) => id === ENGLISH_LANGUAGE_ID
+                )
+                if (englishOption != null)
+                  onSubmit({ languages: [englishOption] })
+              }
+              setOpen(false)
             }}
             sx={{
               position: 'absolute',
