@@ -5166,7 +5166,7 @@ input TemplateGalleryPageCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   creatorImageAlt: String
   """
-  Optional https URL of a hero/cover media asset. Rejected if not https.
+  Deprecated: superseded by the `media` input (NES-1704); will be removed together with the deprecated `TemplateGalleryPage.mediaUrl` field. Optional https URL of a hero/cover media asset. Rejected if not https.
   """
   mediaUrl: String
   """
@@ -5226,7 +5226,7 @@ input TemplateGalleryPageUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   creatorImageAlt: String
   """
-  Optional https hero media URL. Pass `null` to clear. Rejected if not https.
+  Deprecated: superseded by the `media` input (NES-1704); will be removed together with the deprecated `TemplateGalleryPage.mediaUrl` field. Optional https hero media URL. Pass `null` to clear. Rejected if not https.
   """
   mediaUrl: String
   """

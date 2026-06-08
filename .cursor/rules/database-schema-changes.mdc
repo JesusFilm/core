@@ -174,6 +174,12 @@ nx run-many -t codegen --skip-nx-cache
 
 See `docs/solutions/workflow-issues/prisma7-migrate-and-nx-codegen-schema-change-gotchas-2026-06-02.md`.
 
+### `codegen` fails at schema load: `Directive "deprecated" may not be used on INPUT_FIELD_DEFINITION`
+
+The 5 frontend codegen targets that use the legacy `apollo client:codegen` CLI (`journeys`, `journeys-admin`, `journeys-ui`, `resources`, `watch`) reject `@deprecated` on input fields and arguments — their bundled validator predates graphql-js 15.5, and the failure is all-or-nothing at schema load. `generate-graphql` and the gateway compose (Steps 5–6) pass; only Step 7 fails. Do not add `deprecationReason` to Pothos **input** fields — express the deprecation in the field `description` text instead, and keep `@deprecated` on output fields (legal in every consumer).
+
+See `docs/solutions/build-errors/apollo-codegen-deprecated-directive-input-field-2026-06-08.md`.
+
 ## Common Mistakes to Avoid
 
 - **Do NOT edit `schema.graphql` directly** in any API — it is auto-generated. Edit the `.graphql` SDL files (api-journeys) or Pothos schema code (all other APIs).
@@ -181,3 +187,4 @@ See `docs/solutions/workflow-issues/prisma7-migrate-and-nx-codegen-schema-change
 - **Do NOT forget `nx run-many -t codegen`** — frontend TypeScript types will be stale until codegen runs.
 - **Do NOT skip generating for all APIs that share a prisma domain** — e.g., both `api-journeys` and `api-journeys-modern` share `prisma-journeys`.
 - **Do NOT trust a `codegen` cache hit after a gateway-schema change** — `nx run-many -t codegen` can replay stale output; run with `--skip-nx-cache` or grep the generated artifacts for the new field.
+- **Do NOT add `deprecationReason` to Pothos input fields** — the legacy apollo CLI codegen consumers fail at schema load; put the deprecation in the field description instead (see Troubleshooting).

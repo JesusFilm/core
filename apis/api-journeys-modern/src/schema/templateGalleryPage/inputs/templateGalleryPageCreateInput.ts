@@ -35,10 +35,15 @@ export const TemplateGalleryPageCreateInput = builder.inputType(
         required: false,
         description: 'Optional alt text for the creator avatar.'
       }),
+      // Not @deprecated: the legacy apollo CLI used by 5 frontend codegen
+      // targets predates @deprecated on INPUT_FIELD_DEFINITION and fails to
+      // load any schema containing it, so the deprecation lives in the
+      // description instead. Remove this field together with the @deprecated
+      // TemplateGalleryPage.mediaUrl output field.
       mediaUrl: t.string({
         required: false,
         description:
-          'Optional https URL of a hero/cover media asset. Rejected if not https.'
+          'Deprecated: superseded by the `media` input (NES-1704); will be removed together with the deprecated `TemplateGalleryPage.mediaUrl` field. Optional https URL of a hero/cover media asset. Rejected if not https.'
       }),
       journeyIds: t.idList({
         required: false,
