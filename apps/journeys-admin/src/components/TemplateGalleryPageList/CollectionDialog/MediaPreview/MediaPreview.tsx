@@ -4,7 +4,10 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { EmbedIframe } from '@core/journeys/ui/TemplateGalleryMedia'
+import {
+  EmbedIframe,
+  isValidMuxPlaybackId
+} from '@core/journeys/ui/TemplateGalleryMedia'
 
 import { previewEmbedUrl } from '../CollectionPreviewPane/previewEmbedUrl'
 import { CollectionMediaValues } from '../useCollectionForm/collectionMedia'
@@ -63,7 +66,7 @@ export function MediaPreview({
   if (
     media.type === 'mux' &&
     media.muxPlaybackId != null &&
-    media.muxPlaybackId !== ''
+    isValidMuxPlaybackId(media.muxPlaybackId)
   ) {
     return (
       // Letterbox the thumbnail in a 16:9 black frame, mirroring the public

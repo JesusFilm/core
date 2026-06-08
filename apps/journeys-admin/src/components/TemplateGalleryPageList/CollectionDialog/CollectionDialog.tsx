@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useId, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useId, useMemo, useRef, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
@@ -83,6 +83,21 @@ function CollectionDialogContent({
   // controls. Lifted out of MediaSection so the dialog can read the in-flight
   // status (to lock the toggle + Save) and abort the upload from discard.
   const uploadKey = useId()
+
+  // Backstop: abort any in-flight upload if the dialog unmounts WITHOUT going
+  // through the discard flow (e.g. a parent route change or re-render drops it)
+  // — otherwise the upchunk request keeps running detached. The discard path
+  // already cancels explicitly; a second cancel here is a no-op (the provider
+  // ignores an absent/finished task), and Save is blocked while an upload is in
+  // flight, so this never aborts a just-saved upload. A ref keeps the latest
+  // canceller so the unmount-only effect can't capture a stale closure.
+  const cancelUploadRef = useRef(cancelUploadForBlock)
+  cancelUploadRef.current = cancelUploadForBlock
+  useEffect(() => {
+    return () => {
+      cancelUploadRef.current({ id: uploadKey })
+    }
+  }, [uploadKey])
 
   const {
     initialValues,

@@ -4,16 +4,46 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
 import {
+  isEmbedUrlAllowed,
+  resolveEmbedHosts
+} from '@core/journeys/ui/TemplateGalleryMedia'
+
+import {
   GetTemplateGalleryPage,
   GetTemplateGalleryPageVariables,
   GetTemplateGalleryPage_templateGalleryPageBySlug as TemplateGalleryPage
 } from '../../../__generated__/GetTemplateGalleryPage'
+import { TemplateGalleryPageMediaType } from '../../../__generated__/globalTypes'
 import i18nConfig from '../../../next-i18next.config'
 import { TemplateGalleryView } from '../../../src/components/TemplateGalleryView'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { getFlags } from '../../../src/libs/getFlags'
 import { GET_TEMPLATE_GALLERY_PAGE } from '../../../src/libs/getTemplateGalleryPage'
 import { isValidGallerySlug } from '../../../src/libs/isValidGallerySlug'
+
+/**
+ * Defense-in-depth at the read boundary: strip a `link` media whose
+ * server-normalized `embedUrl` is not a https URL on the embed-host allowlist,
+ * so an off-allowlist or non-https URL never reaches the client iframe even if
+ * the API's save-time normalizer regresses. The allowlist is the same
+ * `TEMPLATE_LIBRARY_EMBED_HOSTS` Doppler secret the API uses, read here
+ * server-side (no `NEXT_PUBLIC_`) so a Doppler change applies at runtime.
+ * `mux` media carries no URL and passes through (its playbackId is shape-
+ * guarded where it is interpolated into the Mux URLs).
+ */
+function withGatedMedia(gallery: TemplateGalleryPage): TemplateGalleryPage {
+  const { media } = gallery
+  if (media == null || media.type !== TemplateGalleryPageMediaType.link) {
+    return gallery
+  }
+  const allowedHosts = resolveEmbedHosts(
+    process.env.TEMPLATE_LIBRARY_EMBED_HOSTS
+  )
+  if (media.embedUrl != null && isEmbedUrlAllowed(media.embedUrl, allowedHosts)) {
+    return gallery
+  }
+  return { ...gallery, media: null }
+}
 
 const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? 'your.nextstep.is'
 
@@ -142,7 +172,7 @@ export const getServerSideProps: GetServerSideProps<
     props: {
       flags: await getFlags(),
       ...translations,
-      gallery
+      gallery: withGatedMedia(gallery)
     }
   }
 }

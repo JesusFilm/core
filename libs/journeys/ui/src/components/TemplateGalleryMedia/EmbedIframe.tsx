@@ -39,7 +39,9 @@ interface EmbedIframeProps {
  * Renders an embed URL in a responsive, centred iframe with the host-derived
  * `allow` / `referrerPolicy` / `sandbox` attributes from `embedAttrs`.
  * Single-sourced so the public gallery renderer and the admin preview cannot
- * drift on the security-sensitive iframe wiring.
+ * drift on the security-sensitive iframe wiring. Renders nothing for a
+ * non-https / unparseable URL — `embedAttrs` returns null and an unsafe `src`
+ * never reaches the DOM.
  */
 export function EmbedIframe({
   embedUrl,
@@ -49,8 +51,9 @@ export function EmbedIframe({
   maxHeight,
   fill = false,
   onLoad
-}: EmbedIframeProps): ReactElement {
+}: EmbedIframeProps): ReactElement | null {
   const attrs = embedAttrs(embedUrl)
+  if (attrs == null) return null
   // aspectRatioPaddingTop is height-as-%-of-width (e.g. '56.25%').
   const fraction = parseFloat(attrs.aspectRatioPaddingTop) / 100
   // Use the CSS `aspect-ratio` property (relative to the element's OWN width)

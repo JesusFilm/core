@@ -40,21 +40,48 @@ const YOUTUBE_HOSTS = new Set([
 const CANVA_HOSTS = new Set(['canva.com', 'www.canva.com'])
 const SLIDES_HOSTS = new Set(['docs.google.com'])
 
-function parseHost(embedUrl: string): string {
+/**
+ * The hosts this module renders with host-tuned iframe attributes. Used as
+ * the fail-safe default allowlist when no env-driven list is supplied (see
+ * `isEmbedUrlAllowed`) — so the public page never renders fewer providers
+ * than it tunes, and an env list strictly extends this set.
+ */
+export const KNOWN_EMBED_HOSTS: ReadonlySet<string> = new Set([
+  ...YOUTUBE_HOSTS,
+  ...CANVA_HOSTS,
+  ...SLIDES_HOSTS
+])
+
+/**
+ * Parses `embedUrl` and returns its lowercased hostname, but ONLY for https
+ * URLs. Returns null for any non-https scheme (`javascript:`, `data:`,
+ * `http:`) or an unparseable string — the caller renders nothing in that
+ * case. This is the protocol half of the defense-in-depth gate; an iframe
+ * `src` is the one place a `javascript:` URL would execute in the embedding
+ * origin, so it must never reach the DOM.
+ */
+function parseHttpsHost(embedUrl: string): string | null {
+  let url: URL
   try {
-    return new URL(embedUrl).hostname.toLowerCase()
+    url = new URL(embedUrl)
   } catch {
-    // Empty string is in none of the host sets, so it falls to the default.
-    return ''
+    return null
   }
+  if (url.protocol !== 'https:') return null
+  return url.hostname.toLowerCase()
 }
 
 /**
- * Returns the iframe attributes for the given embed URL, keyed on its host.
- * Unknown or unparseable URLs fall back to the most-restrictive safe default.
+ * Returns the iframe attributes for the given embed URL, keyed on its host —
+ * or `null` when the URL is not a renderable https URL, in which case the
+ * caller (`EmbedIframe`) renders nothing. Known hosts get host-tuned
+ * attributes; any other https host gets the most-restrictive safe default
+ * (notably WITHOUT `allow-same-origin`, so an untuned third-party embed runs
+ * script-isolated in an opaque origin).
  */
-export function embedAttrs(embedUrl: string): EmbedIframeAttrs {
-  const host = parseHost(embedUrl)
+export function embedAttrs(embedUrl: string): EmbedIframeAttrs | null {
+  const host = parseHttpsHost(embedUrl)
+  if (host == null) return null
 
   if (YOUTUBE_HOSTS.has(host)) {
     return {
@@ -87,10 +114,15 @@ export function embedAttrs(embedUrl: string): EmbedIframeAttrs {
     }
   }
 
+  // Unknown (but https) host: most-restrictive safe default. No
+  // `allow-same-origin` — combined with `allow-scripts` it would let the
+  // frame script the embedding origin; an untuned embed runs in an opaque
+  // origin instead. Hosts added via the env allowlist render here until/unless
+  // a host-tuned branch is added above.
   return {
     allow: '',
     allowFullScreen: false,
-    sandbox: 'allow-scripts allow-same-origin',
+    sandbox: 'allow-scripts',
     aspectRatioPaddingTop: RATIO_16_9
   }
 }
