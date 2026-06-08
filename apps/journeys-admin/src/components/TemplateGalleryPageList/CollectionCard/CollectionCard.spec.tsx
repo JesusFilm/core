@@ -413,5 +413,62 @@ describe('CollectionCard', () => {
         screen.getByRole('menuitem', { name: 'Publish' })
       ).toBeInTheDocument()
     })
+
+    it('points aria-controls at the mounted content region when expanded and drops it when collapsed', () => {
+      const { rerender } = render(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+        >
+          <div data-testid="children-payload" />
+        </CollectionCard>
+      )
+      const toggle = screen.getByTestId('CollectionCardToggle-page-1')
+      const controls = toggle.getAttribute('aria-controls')
+      expect(controls).toBe('collection-content-page-1')
+      // The referenced element must actually exist while expanded.
+      expect(document.getElementById(controls as string)).toBeInTheDocument()
+
+      // Collapsed: the region unmounts, so we must not dangle a reference.
+      rerender(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+          collapsed
+        >
+          <div data-testid="children-payload" />
+        </CollectionCard>
+      )
+      expect(
+        screen.getByTestId('CollectionCardToggle-page-1')
+      ).not.toHaveAttribute('aria-controls')
+    })
+
+    it('does not toggle while busy (a drop mutation is settling)', async () => {
+      // Collapsing mid-settle would unmount the SortableContext under dnd-kit.
+      const onToggleCollapse = vi.fn()
+      render(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+          onToggleCollapse={onToggleCollapse}
+          busy
+        />
+      )
+      const toggle = screen.getByTestId('CollectionCardToggle-page-1')
+      expect(toggle).toHaveAttribute('aria-disabled', 'true')
+      await userEvent.click(toggle)
+      toggle.focus()
+      await userEvent.keyboard('{Enter}')
+      expect(onToggleCollapse).not.toHaveBeenCalled()
+    })
+
+    it('does not throw when the header is toggled without an onToggleCollapse handler', async () => {
+      render(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+        />
+      )
+      await expect(
+        userEvent.click(screen.getByTestId('CollectionCardToggle-page-1'))
+      ).resolves.not.toThrow()
+    })
   })
 })

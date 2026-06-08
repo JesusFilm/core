@@ -142,6 +142,11 @@ function CollectionCardImpl({
     onUngroup?.(collection)
   }
   function handleToggleCollapse(): void {
+    // Refuse toggles while busy — `busy` is true while a drop's mutation is in
+    // flight (parent passes `dragInFlight`), and collapsing then would unmount
+    // this collection's SortableContext under dnd-kit's settling drop,
+    // corrupting its measured rects (NES-1717 review).
+    if (busy === true) return
     onToggleCollapse?.(collection)
   }
   function handleToggleKeyDown(event: KeyboardEvent<HTMLDivElement>): void {
@@ -150,6 +155,7 @@ function CollectionCardImpl({
     // scrolling the page.
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
+      if (busy === true) return
       onToggleCollapse?.(collection)
     }
   }
@@ -192,7 +198,12 @@ function CollectionCardImpl({
           role="button"
           tabIndex={0}
           aria-expanded={!collapsed}
-          aria-controls={contentId}
+          // Only reference the content region while it's mounted. `Collapse
+          // unmountOnExit` removes it from the DOM when collapsed, so a static
+          // aria-controls would dangle for screen readers (mirrors the
+          // TemplateInfoHelper pattern). aria-expanded still conveys state.
+          aria-controls={collapsed ? undefined : contentId}
+          aria-disabled={busy === true}
           aria-label={t('Toggle {{title}} collection', {
             title: collection.title
           })}
@@ -202,7 +213,7 @@ function CollectionCardImpl({
           sx={{
             flex: 1,
             minWidth: 0,
-            cursor: 'pointer',
+            cursor: busy === true ? 'default' : 'pointer',
             userSelect: 'none',
             borderRadius: 1
           }}

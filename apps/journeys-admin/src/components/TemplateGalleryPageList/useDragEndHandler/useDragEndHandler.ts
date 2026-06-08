@@ -183,6 +183,13 @@ export function useDragEndHandler(
           targetCollectionId != null
             ? collectionsById.get(targetCollectionId)
             : null
+        // Capture collapse state at drop time, before the await — the toast
+        // confirms "you dropped onto something you couldn't see", which is a
+        // fact about the moment of the drop, not about whatever the state has
+        // become by the time the network round-trip resolves (NES-1717 review).
+        const targetWasCollapsed =
+          targetCollectionId != null &&
+          isCollectionCollapsed?.(targetCollectionId) === true
         const assignResult = await templateGalleryPageAssignJourney({
           variables: { journeyId: templateId, pageId: targetCollectionId },
           // NES-1668: in production the source-page `cache.modify` below
@@ -295,13 +302,14 @@ export function useDragEndHandler(
               t("Couldn't move template — the server rejected the move."),
               { variant: 'error', preventDuplicate: true }
             )
-          } else if (isCollectionCollapsed?.(targetCollectionId) === true) {
+          } else if (targetWasCollapsed) {
             // The template landed in a collapsed collection the user can't
             // see — confirm the drop so the move doesn't feel like it
             // vanished (NES-1717).
             enqueueSnackbar(
               t('Added to {{collection}}', {
-                collection: targetCollection?.title ?? ''
+                collection:
+                  targetCollection?.title ?? returnedPage?.title ?? ''
               }),
               { variant: 'success', preventDuplicate: true }
             )

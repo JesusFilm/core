@@ -44,13 +44,20 @@ export function useCollectionCollapse(
   const toggle = useCallback(
     (collectionId: string): void => {
       if (teamId == null) return
-      const next = new Set(collapsedIds)
-      if (next.has(collectionId)) next.delete(collectionId)
-      else next.add(collectionId)
-      setCollapsedIds(next)
-      setCollapsedCollectionIds(teamId, [...next])
+      // Functional updater so `toggle` doesn't close over `collapsedIds`: its
+      // identity stays stable across toggles (preserving the React.memo on
+      // each CollectionCard) and two toggles in the same tick can't clobber
+      // each other. Persisting inside the updater keeps the write in lockstep
+      // with the state it derives from.
+      setCollapsedIds((prev) => {
+        const next = new Set(prev)
+        if (next.has(collectionId)) next.delete(collectionId)
+        else next.add(collectionId)
+        setCollapsedCollectionIds(teamId, [...next])
+        return next
+      })
     },
-    [collapsedIds, teamId]
+    [teamId]
   )
 
   return { isCollapsed, toggle }

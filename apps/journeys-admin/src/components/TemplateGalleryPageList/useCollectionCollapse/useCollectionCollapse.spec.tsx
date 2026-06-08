@@ -73,4 +73,16 @@ describe('useCollectionCollapse', () => {
     act(() => result.current.toggle('a'))
     expect(result.current.isCollapsed('a')).toBe(false)
   })
+
+  it('survives a full unmount/remount via localStorage alone', () => {
+    // Proves the toggle->persist->reload loop end-to-end without re-seeding
+    // storage by hand: a fresh hook instance must recover the state.
+    const first = renderHook(() => useCollectionCollapse('team-1'))
+    act(() => first.result.current.toggle('a'))
+    expect(first.result.current.isCollapsed('a')).toBe(true)
+    first.unmount()
+
+    const second = renderHook(() => useCollectionCollapse('team-1'))
+    expect(second.result.current.isCollapsed('a')).toBe(true)
+  })
 })

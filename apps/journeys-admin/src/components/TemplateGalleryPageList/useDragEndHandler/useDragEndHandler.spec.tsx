@@ -598,4 +598,47 @@ describe('useDragEndHandler', () => {
     expect(assignMock.result).toHaveBeenCalledTimes(1)
     expect(screen.queryByText('Added to page-B')).not.toBeInTheDocument()
   })
+
+  it('shows the rejection error (not the added toast) when a collapsed-target drop is rejected', async () => {
+    const j1 = journey('j1', 'A')
+    const source = makeCollection('page-A', [j1])
+    const target = makeCollection('page-B', [])
+    const indexes = buildIndexes({
+      collections: [source, target],
+      journeys: [j1]
+    })
+
+    // Server returns the target WITHOUT j1 → silent rejection (accepted false).
+    const assignMock = getTemplateGalleryPageAssignJourneyMock(
+      { journeyId: 'j1', pageId: 'page-B' },
+      { id: 'page-B', title: 'page-B', templates: [] }
+    )
+
+    const { result } = renderHook(
+      () =>
+        useDragEndHandler({
+          ...indexes,
+          dragInFlightRef: { current: false },
+          setDragInFlight: vi.fn(),
+          setActiveDragId: vi.fn(),
+          isCollectionCollapsed: () => true
+        }),
+      { wrapper: wrapperWithMocks([assignMock]) }
+    )
+
+    await act(async () => {
+      await result.current(
+        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
+      )
+    })
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(
+          "Couldn't move template — the server rejected the move."
+        )
+      ).toBeInTheDocument()
+    )
+    expect(screen.queryByText('Added to page-B')).not.toBeInTheDocument()
+  })
 })
