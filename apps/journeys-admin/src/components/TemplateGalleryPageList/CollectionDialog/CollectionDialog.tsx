@@ -32,7 +32,7 @@ import { useCollectionForm } from './useCollectionForm'
 
 export interface CollectionDialogProps {
   open: boolean
-  mode: 'create' | 'edit' | 'publish'
+  mode: 'create' | 'edit'
   teamId: string
   collection?: TemplateGalleryPage
   availableJourneys: readonly Journey[]
@@ -44,14 +44,15 @@ export interface CollectionDialogProps {
   parentBusy?: boolean
   /**
    * False when the active team has a `routeAllTeamJourneys` custom
-   * domain. Disables the "Open in new tab" preview button on the
-   * preview pane (NES-1644). Defaults to true.
+   * domain. Disables the footer's Publish button and the "Open in new
+   * tab" preview button on the preview pane (NES-1644). Defaults to
+   * true.
    */
   canPublish?: boolean
-  /** Tooltip copy for the disabled preview button. */
+  /** Tooltip copy for the disabled Publish / preview buttons. */
   publishBlockedReason?: string | null
   onClose: () => void
-  /** Forwarded to useCollectionForm in publish mode. */
+  /** Fired after the footer's Publish succeeds (edit mode, drafts). */
   onPublished?: (collection: TemplateGalleryPage) => void
 }
 
@@ -167,17 +168,14 @@ function CollectionDialogContent({
           }
           onClose()
         }
-        // Named handlers wired into the footer. Save Draft + Publish
-        // share Formik's submitForm and disambiguate via the intent
-        // ref; Unpublish bypasses Formik (see useCollectionForm).
+        // Named handlers wired into the footer. Save + Publish share
+        // Formik's submitForm and disambiguate via the intent ref
+        // (which defaults to — and resets to — 'save'); Unpublish
+        // bypasses Formik (see useCollectionForm).
         const handleCreateClick = (): void => {
           handleSubmit()
         }
         const handleSaveClick = (): void => {
-          handleSubmit()
-        }
-        const handleSaveDraftClick = (): void => {
-          setSubmitIntent('draft')
           handleSubmit()
         }
         const handlePublishClick = (): void => {
@@ -218,14 +216,12 @@ function CollectionDialogContent({
                 title:
                   mode === 'create'
                     ? t('New Collection')
-                    : mode === 'publish'
-                      ? t('Publish Collection')
-                      : t('Edit Collection'),
+                    : t('Edit Collection'),
                 closeButton: true
               }}
               // Footer is always rendered via dialogActionChildren so
               // CollectionDialogFooter owns the mode-based branching in
-              // one place — see that component for the four button
+              // one place — see that component for the three button
               // configurations.
               dialogActionChildren={
                 <CollectionDialogFooter
@@ -239,7 +235,6 @@ function CollectionDialogContent({
                   onCancel={guardedClose}
                   onCreate={handleCreateClick}
                   onSave={handleSaveClick}
-                  onSaveDraft={handleSaveDraftClick}
                   onPublish={handlePublishClick}
                   onUnpublish={handleUnpublishClick}
                   submitBlocked={mediaBlocked}

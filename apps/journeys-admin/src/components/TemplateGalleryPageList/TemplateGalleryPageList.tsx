@@ -202,7 +202,6 @@ export function TemplateGalleryPageList({
   // `submittingRef` in useCollectionForm and `dragInFlightRef` above.
   const creatingRef = useRef(false)
   const [editTargetId, setEditTargetId] = useState<string | null>(null)
-  const [publishTargetId, setPublishTargetId] = useState<string | null>(null)
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
   // `dragInFlight` drives rendering (busy chips, droppable lock); the ref
   // is the synchronous source of truth for gating a second drop that
@@ -257,7 +256,6 @@ export function TemplateGalleryPageList({
   // beneath the dialog (z-index 1300) even while hidden.
   const dialogOpen =
     editTargetId != null ||
-    publishTargetId != null ||
     publishSuccessCollection != null ||
     openDialogCardIds.size > 0
   const interactionsLocked = dragInFlight || dialogOpen
@@ -351,15 +349,11 @@ export function TemplateGalleryPageList({
 
   const editTarget =
     editTargetId != null ? (collectionsById.get(editTargetId) ?? null) : null
-  const publishTarget =
-    publishTargetId != null
-      ? (collectionsById.get(publishTargetId) ?? null)
-      : null
 
   // Pool the dialog's template picker draws from. Only ungrouped templates
   // are addable, plus the templates already in the collection being
-  // edited / published so the user can deselect them. Hides templates
-  // owned by other collections to prevent accidental dual-membership.
+  // edited so the user can deselect them. Hides templates owned by other
+  // collections to prevent accidental dual-membership.
   function buildAvailableJourneys(
     target: TemplateGalleryPage | null
   ): readonly Journey[] {
@@ -378,11 +372,6 @@ export function TemplateGalleryPageList({
     () => buildAvailableJourneys(editTarget),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [unsectioned, editTarget, journeyById]
-  )
-  const publishAvailableJourneys = useMemo<readonly Journey[]>(
-    () => buildAvailableJourneys(publishTarget),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [unsectioned, publishTarget, journeyById]
   )
 
   const sensors = useSensors(
@@ -450,12 +439,6 @@ export function TemplateGalleryPageList({
   }
   function handleEdit(collection: TemplateGalleryPage): void {
     setEditTargetId(collection.id)
-  }
-  function handleOpenPublish(collection: TemplateGalleryPage): void {
-    setPublishTargetId(collection.id)
-  }
-  function handleClosePublish(): void {
-    setPublishTargetId(null)
   }
 
   function handleDragStart(event: DragStartEvent): void {
@@ -623,7 +606,6 @@ export function TemplateGalleryPageList({
                       <CollectionCard
                         collection={collection}
                         onEdit={handleEdit}
-                        onPublish={handleOpenPublish}
                         onUngroup={handleUngroup}
                         busy={busyId === collection.id || dragInFlight}
                         canPublish={canPublish}
@@ -695,26 +677,6 @@ export function TemplateGalleryPageList({
               publishBlockedReason != null ? t(publishBlockedReason) : null
             }
             onClose={handleCloseEdit}
-          />
-        )}
-        {publishTarget != null && (
-          <CollectionDialog
-            // Distinct key prefix so React tears down the Formik instance
-            // when the user pivots from Edit to Publish on the same
-            // collection — without it, the edit form's dirty state would
-            // leak into the publish dialog.
-            key={`publish-${publishTarget.id}`}
-            open
-            mode="publish"
-            teamId={teamId}
-            collection={publishTarget}
-            availableJourneys={publishAvailableJourneys}
-            parentBusy={dragInFlight}
-            canPublish={canPublish}
-            publishBlockedReason={
-              publishBlockedReason != null ? t(publishBlockedReason) : null
-            }
-            onClose={handleClosePublish}
             onPublished={handlePublished}
           />
         )}

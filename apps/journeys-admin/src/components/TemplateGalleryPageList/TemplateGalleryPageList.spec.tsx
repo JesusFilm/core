@@ -422,18 +422,18 @@ describe('TemplateGalleryPageList', () => {
     // Default state: no dialog open, subtree is interactive.
     expect(dndScope).not.toHaveAttribute('inert')
 
-    // Open the publish dialog from the draft collection's action menu
-    // and confirm the DnD subtree flips to inert. The CollectionDialog
+    // Open the edit dialog from the collection's action menu and
+    // confirm the DnD subtree flips to inert. The CollectionDialog
     // renders in a portal so it is unaffected. (The create button no
     // longer opens a dialog — it creates instantly with an auto-name —
-    // and drafts now surface "Publish" as the single dialog entry
-    // point in place of the old "Edit" item.)
+    // and "Edit" is the single dialog entry point regardless of
+    // status.)
     fireEvent.click(
       within(getByTestId('CollectionCard-page-1')).getByLabelText(
         'Collection actions'
       )
     )
-    fireEvent.click(getByText('Publish'))
+    fireEvent.click(getByText('Edit'))
     await waitFor(() =>
       expect(getByTestId('TemplateGalleryDndScope')).toHaveAttribute('inert')
     )

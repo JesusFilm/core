@@ -39,7 +39,7 @@ export interface CollectionFormValues {
 }
 
 export interface UseCollectionFormParams {
-  mode: 'create' | 'edit' | 'publish'
+  mode: 'create' | 'edit'
   teamId: string
   collection?: TemplateGalleryPage
   /** When true, submit is short-circuited with a snackbar — a sibling
@@ -48,8 +48,8 @@ export interface UseCollectionFormParams {
   /** Called once on a successful create or update. */
   onClose: () => void
   /**
-   * Called after a successful publish (mode === 'publish') with the
-   * just-published collection so the parent can open the success
+   * Called after a successful publish (a 'publish'-intent submit) with
+   * the just-published collection so the parent can open the success
    * dialog with the live public URL.
    */
   onPublished?: (collection: TemplateGalleryPage) => void
@@ -64,9 +64,9 @@ export interface UseCollectionFormResult {
   /**
    * Formik onSubmit. Branches on mode + intent:
    *  - create → templateGalleryPageCreate, then onClose
-   *  - edit, or publish + intent 'draft' → diff vs original, send
-   *    only changed fields to templateGalleryPageUpdate, then onClose
-   *  - publish + intent 'publish' → diffed update (if any), then
+   *  - edit (default 'save' intent) → diff vs original, send only
+   *    changed fields to templateGalleryPageUpdate, then onClose
+   *  - edit + intent 'publish' → diffed update (if any), then
    *    templateGalleryPagePublish, then onClose
    * On ApolloError, maps `extensions.field` back to a Formik field error
    * for slug / mediaUrl / creatorImageSrc / title; falls back to a
@@ -77,12 +77,14 @@ export interface UseCollectionFormResult {
     helpers: FormikHelpers<CollectionFormValues>
   ) => Promise<void>
   /**
-   * Set the next submit's intent. Only meaningful in publish mode where
-   * the dialog renders both Save Draft and Publish buttons backed by a
-   * single Formik onSubmit. Call this synchronously before triggering
-   * `submitForm` so handleSubmit reads the right branch.
+   * Set the next submit's intent. The edit dialog renders both Save and
+   * (for drafts) Publish backed by a single Formik onSubmit — the
+   * Publish button calls this synchronously before triggering
+   * `submitForm` so handleSubmit reads the right branch. The intent
+   * resets to 'save' after every submit, so a plain Save (or Enter)
+   * never inherits a stale publish intent.
    */
-  setSubmitIntent: (intent: 'publish' | 'draft') => void
+  setSubmitIntent: (intent: 'publish' | 'save') => void
   /**
    * Runs the unpublish mutation against the underlying collection and
    * closes the dialog on success. Used by the Unpublish secondary
@@ -90,14 +92,14 @@ export interface UseCollectionFormResult {
    * Formik entirely — any pending field edits are discarded, on the
    * assumption that "unpublish" is a deliberate action distinct from
    * "save".
-   * No-op when called from create or publish mode, or when no
-   * collection is attached.
+   * No-op when called from create mode, or when no collection is
+   * attached.
    */
   handleUnpublishAction: () => Promise<void>
   /**
    * True only while handleUnpublishAction is in flight. Disjoint from
-   * Formik's `isSubmitting`, which still tracks the Save / Save Draft /
-   * Publish paths. Callers should OR the two together when binding the
+   * Formik's `isSubmitting`, which still tracks the Save / Publish
+   * paths. Callers should OR the two together when binding the
    * footer's `disabled` so neither path can fire a duplicate while the
    * other is mid-mutation.
    */
@@ -212,16 +214,17 @@ export function useCollectionForm({
   // same JS tick that fires the mutation, so the second invocation
   // returns immediately.
   const submittingRef = useRef(false)
-  // The dialog in publish mode renders both "Save Draft" and "Publish"
-  // buttons backed by a single Formik submitForm. Each button flips
-  // this ref before triggering submit so handleSubmit can branch
+  // The edit dialog renders both "Save" and (for drafts) "Publish"
+  // buttons backed by a single Formik submitForm. The Publish button
+  // flips this ref before triggering submit so handleSubmit can branch
   // without needing two different form `onSubmit` handlers (which
   // would split validation + error mapping in two).
-  // Default 'publish' so an edit-mode submit (which doesn't read this
-  // ref) and a publish-mode submit triggered by Enter both land on the
-  // intended action.
-  const submitIntentRef = useRef<'publish' | 'draft'>('publish')
-  const setSubmitIntent = (intent: 'publish' | 'draft'): void => {
+  // Default 'save' — a plain Save or an Enter-key submit must never
+  // publish; handleSubmit resets the ref after every run so a stale
+  // publish intent (e.g. from a failed publish attempt) can't leak
+  // into the next submit.
+  const submitIntentRef = useRef<'publish' | 'save'>('save')
+  const setSubmitIntent = (intent: 'publish' | 'save'): void => {
     submitIntentRef.current = intent
   }
 
@@ -297,14 +300,15 @@ export function useCollectionForm({
         if (initialIds !== nextIds) {
           input.journeyIds = values.journeyIds
         }
-        const shouldPublish =
-          mode === 'publish' && submitIntentRef.current === 'publish'
+        // 'publish' only ever holds when the footer's Publish button set
+        // it synchronously before this submit (drafts only — published
+        // collections don't render the button).
+        const shouldPublish = submitIntentRef.current === 'publish'
         // Only fire the update when at least one field actually changed.
-        // In publish mode the dialog opens pre-filled and the user may
-        // submit without edits — an empty-input update is a wasted
-        // round-trip and would still emit the "Collection updated"
-        // snackbar, which is confusing when the only action they took
-        // was publish.
+        // The dialog opens pre-filled and the user may hit Publish
+        // without edits — an empty-input update is a wasted round-trip
+        // and would still emit the "Collection updated" snackbar, which
+        // is confusing when the only action they took was publish.
         if (Object.keys(input).length > 0) {
           await templateGalleryPageUpdate({
             variables: { id: collection.id, input }
@@ -385,6 +389,9 @@ export function useCollectionForm({
       )
     } finally {
       submittingRef.current = false
+      // Intent is per-submit: reset so a later plain Save (or Enter)
+      // can't inherit a publish intent from a failed publish attempt.
+      submitIntentRef.current = 'save'
     }
   }
 

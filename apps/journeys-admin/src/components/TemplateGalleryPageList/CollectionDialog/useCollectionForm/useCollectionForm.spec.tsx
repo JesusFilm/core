@@ -15,6 +15,7 @@ import {
   TemplateGalleryPageStatus
 } from '../../../../../__generated__/globalTypes'
 import { getTemplateGalleryPageCreateMock } from '../../../../libs/useTemplateGalleryPageCreateMutation/useTemplateGalleryPageCreateMutation.mock'
+import { getTemplateGalleryPagePublishMock } from '../../../../libs/useTemplateGalleryPagePublishMutation/useTemplateGalleryPagePublishMutation.mock'
 import { TEMPLATE_GALLERY_PAGE_UPDATE } from '../../../../libs/useTemplateGalleryPageUpdateMutation/useTemplateGalleryPageUpdateMutation'
 import { getTemplateGalleryPageUpdateMock } from '../../../../libs/useTemplateGalleryPageUpdateMutation/useTemplateGalleryPageUpdateMutation.mock'
 
@@ -897,6 +898,103 @@ describe('useCollectionForm', () => {
 
       expect(updateMock.result).toHaveBeenCalledTimes(1)
       expect(onClose).toHaveBeenCalled()
+    })
+  })
+
+  describe('handleSubmit — publish intent', () => {
+    it('publishes after a publish-intent submit and resets the intent for the next one', async () => {
+      const onClose = vi.fn()
+      const onPublished = vi.fn()
+      const collection = makeCollection({ id: 'page-1' })
+      // No field edits — the publish-intent submit fires only the
+      // publish mutation (no update round-trip).
+      const publishMock = getTemplateGalleryPagePublishMock({ id: 'page-1' })
+
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose,
+            onPublished
+          }),
+        { wrapper: wrapperWithMocks([publishMock]) }
+      )
+
+      const untouchedValues = {
+        title: collection.title,
+        description: collection.description ?? '',
+        creatorName: collection.creatorName ?? '',
+        creatorImageSrc: '',
+        creatorImageAlt: '',
+        media: { type: 'none' } as const,
+        slug: collection.slug,
+        journeyIds: []
+      }
+      await act(async () => {
+        result.current.setSubmitIntent('publish')
+        await result.current.handleSubmit(untouchedValues, fakeHelpers())
+      })
+
+      expect(publishMock.result).toHaveBeenCalledTimes(1)
+      expect(onPublished).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'page-1',
+          status: TemplateGalleryPageStatus.published
+        })
+      )
+      expect(onClose).toHaveBeenCalledTimes(1)
+
+      // The intent reset to 'save': a follow-up plain submit must not
+      // publish again (the single-use publish mock would reject a second
+      // request, and the no-change input means no update fires either).
+      await act(async () => {
+        await result.current.handleSubmit(untouchedValues, fakeHelpers())
+      })
+      expect(publishMock.result).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not publish on a plain submit (default save intent)', async () => {
+      const onClose = vi.fn()
+      const onPublished = vi.fn()
+      const collection = makeCollection({ id: 'page-1' })
+      const updateMock = getTemplateGalleryPageUpdateMock({
+        id: 'page-1',
+        input: { title: 'New Title' }
+      })
+
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose,
+            onPublished
+          }),
+        { wrapper: wrapperWithMocks([updateMock]) }
+      )
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          {
+            title: 'New Title',
+            description: collection.description ?? '',
+            creatorName: collection.creatorName ?? '',
+            creatorImageSrc: '',
+            creatorImageAlt: '',
+            media: { type: 'none' },
+            slug: collection.slug,
+            journeyIds: []
+          },
+          fakeHelpers()
+        )
+      })
+
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+      expect(onPublished).not.toHaveBeenCalled()
+      expect(onClose).toHaveBeenCalledTimes(1)
     })
   })
 

@@ -58,7 +58,7 @@ describe('CollectionCard', () => {
     expect(screen.queryByText('Empty')).not.toBeInTheDocument()
   })
 
-  it('renders Publish (not Edit) / Preview / Remove menu items for a draft with templates', async () => {
+  it('renders Edit / Preview / Remove menu items for a draft with templates', async () => {
     render(
       <CollectionCard
         collection={makeCollection({ templates: [journeyRef('j1')] })}
@@ -67,14 +67,13 @@ describe('CollectionCard', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Collection actions' })
     )
-    // Drafts surface "Publish" as the single entry point into the
-    // dialog; Edit only shows up on published collections.
+    // Edit is the single entry point into the dialog regardless of
+    // status — the dialog's footer is what's contextual (Publish for
+    // drafts, Unpublish for published collections).
+    expect(screen.getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
     expect(
-      screen.queryByRole('menuitem', { name: 'Edit' })
+      screen.queryByRole('menuitem', { name: 'Publish' })
     ).not.toBeInTheDocument()
-    expect(
-      screen.getByRole('menuitem', { name: 'Publish' })
-    ).toBeInTheDocument()
     expect(
       screen.queryByRole('menuitem', { name: 'Unpublish' })
     ).not.toBeInTheDocument()
@@ -83,7 +82,7 @@ describe('CollectionCard', () => {
     ).toBeInTheDocument()
   })
 
-  it('keeps the Publish menu item enabled for an empty draft so the user can still open the dialog', async () => {
+  it('keeps the Edit menu item enabled for an empty draft so the user can still open the dialog', async () => {
     // The dialog's own Publish button is what gates emptiness — the
     // menu item is the user's only way to access metadata, so it
     // stays clickable even before any templates have been added.
@@ -91,12 +90,13 @@ describe('CollectionCard', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Collection actions' })
     )
-    expect(
-      screen.getByRole('menuitem', { name: 'Publish' })
-    ).not.toHaveAttribute('aria-disabled', 'true')
+    expect(screen.getByRole('menuitem', { name: 'Edit' })).not.toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
   })
 
-  it('replaces Publish with Edit for a published collection (Unpublish now lives inside the dialog)', async () => {
+  it('shows the same Edit entry for a published collection (Unpublish lives inside the dialog)', async () => {
     render(
       <CollectionCard
         collection={makeCollection({
@@ -113,31 +113,23 @@ describe('CollectionCard', () => {
       screen.queryByRole('menuitem', { name: 'Publish' })
     ).not.toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
-    // Unpublish was promoted into CollectionDialog's footer so the card
-    // menu has a single state-aware entry point.
     expect(
       screen.queryByRole('menuitem', { name: 'Unpublish' })
     ).not.toBeInTheDocument()
   })
 
-  it('fires onPublish on a draft and onEdit on a published collection', async () => {
+  it('fires onEdit with the collection for drafts and published alike', async () => {
     const onEdit = vi.fn()
-    const onPublish = vi.fn()
     const draft = makeCollection({ templates: [journeyRef('j1')] })
 
     const { rerender } = render(
-      <CollectionCard
-        collection={draft}
-        onEdit={onEdit}
-        onPublish={onPublish}
-      />
+      <CollectionCard collection={draft} onEdit={onEdit} />
     )
     await userEvent.click(
       screen.getByRole('button', { name: 'Collection actions' })
     )
-    await userEvent.click(screen.getByRole('menuitem', { name: 'Publish' }))
-    expect(onPublish).toHaveBeenCalledWith(draft)
-    expect(onEdit).not.toHaveBeenCalled()
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Edit' }))
+    expect(onEdit).toHaveBeenCalledWith(draft)
 
     const published = makeCollection({
       templates: [journeyRef('j1')],
@@ -268,24 +260,21 @@ describe('CollectionCard', () => {
     expect(await screen.findByRole('tooltip')).toHaveTextContent(reason)
   })
 
-  it('disables Publish (and shows the gate reason) when canPublish is false on a draft', async () => {
-    const reason = 'gate copy'
+  it('keeps Edit enabled when canPublish is false (the gate lives on the dialog footer)', async () => {
     render(
       <CollectionCard
         collection={makeCollection({ templates: [journeyRef('j1')] })}
         canPublish={false}
-        publishBlockedReason={reason}
+        publishBlockedReason="gate copy"
       />
     )
     await userEvent.click(
       screen.getByRole('button', { name: 'Collection actions' })
     )
-    const publishItem = screen.getByRole('menuitem', { name: 'Publish' })
-    expect(publishItem).toHaveAttribute('aria-disabled', 'true')
-    // MUI wraps disabled menu items in a <span> so the Tooltip can listen for
-    // hover (the disabled <li> itself has pointer-events: none).
-    await userEvent.hover(publishItem.parentElement as HTMLElement)
-    expect(await screen.findByRole('tooltip')).toHaveTextContent(reason)
+    expect(screen.getByRole('menuitem', { name: 'Edit' })).not.toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
   })
 
   it('renders empty-state caption when there are no templates and children otherwise', () => {
