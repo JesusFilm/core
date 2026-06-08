@@ -1,6 +1,6 @@
 import { IdType } from '../../../__generated__/globalTypes'
 
-import { getCardChatEnabled } from './getCardChatEnabled'
+import { CARD_LOOKUP_TIMEOUT_MS, getCardChatEnabled } from './getCardChatEnabled'
 
 const { mockQuery, mockLoggerWarn } = vi.hoisted(() => ({
   mockQuery: vi.fn(),
@@ -97,6 +97,15 @@ describe('getCardChatEnabled', () => {
     expect(mockQuery).not.toHaveBeenCalled()
   })
 
+  it('returns false when the journey response is null (non-throwing not-found)', async () => {
+    mockQuery.mockResolvedValue({ data: { journey: null } })
+
+    await expect(
+      getCardChatEnabled({ journeyId: 'journey-1', cardId: 'card-1' })
+    ).resolves.toBe(false)
+    expect(mockLoggerWarn).not.toHaveBeenCalled()
+  })
+
   it('returns false when the journey is not found (definitive negative)', async () => {
     mockQuery.mockRejectedValue(new Error('journey not found'))
 
@@ -116,5 +125,33 @@ describe('getCardChatEnabled', () => {
       expect.objectContaining({ event: 'chat_card_lookup_error' }),
       expect.any(String)
     )
+  })
+
+  it('aborts and fails open (returns true) when the lookup hangs past the timeout', async () => {
+    vi.useFakeTimers()
+    // Simulate a hanging gateway: the query only settles when the abort signal
+    // passed through Apollo's fetchOptions fires.
+    mockQuery.mockImplementation(({ context }) => {
+      const signal = context?.fetchOptions?.signal as AbortSignal
+      return new Promise((_resolve, reject) => {
+        signal.addEventListener('abort', () => {
+          reject(new Error('The operation was aborted'))
+        })
+      })
+    })
+
+    const result = getCardChatEnabled({
+      journeyId: 'journey-1',
+      cardId: 'card-1'
+    })
+    await vi.advanceTimersByTimeAsync(CARD_LOOKUP_TIMEOUT_MS)
+
+    await expect(result).resolves.toBe(true)
+    expect(mockLoggerWarn).toHaveBeenCalledWith(
+      expect.objectContaining({ event: 'chat_card_lookup_error' }),
+      expect.any(String)
+    )
+
+    vi.useRealTimers()
   })
 })
