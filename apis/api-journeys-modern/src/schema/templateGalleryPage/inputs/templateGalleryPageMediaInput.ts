@@ -19,7 +19,7 @@ export const TemplateGalleryPageMediaInput = builder.inputType(
       url: t.string({
         required: false,
         description:
-          'The pasted embed URL. Required when `type` is `link`; must be omitted when `type` is `mux`.'
+          'The pasted embed URL. Required when `type` is `link`; must be omitted when `type` is `mux`. Provider verification varies: Canva and YouTube are confirmed via oEmbed, but Google Slides is shape-validated only (a published-shaped URL that is actually private or non-existent passes validation), so a stored Google Slides embed is not guaranteed to render.'
       }),
       muxVideoId: t.id({
         required: false,

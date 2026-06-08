@@ -480,6 +480,43 @@ describe('templateGalleryPageCreate', () => {
       })
     })
 
+    it('wraps a media-row P2002 as CONFLICT (no slug retry)', async () => {
+      mockLinkValidate.mockResolvedValue({
+        embedUrl: 'https://www.youtube-nocookie.com/embed/abc'
+      })
+      prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
+      prismaMock.journey.findMany.mockResolvedValue([] as any)
+      prismaMock.templateGalleryPage.create.mockResolvedValue({
+        id: 'p1'
+      } as any)
+      const p2002 = new Prisma.PrismaClientKnownRequestError(
+        'unique constraint failed',
+        {
+          code: 'P2002',
+          clientVersion: '7.0.0',
+          meta: { target: ['templateGalleryPageId'] }
+        }
+      )
+      prismaMock.templateGalleryPageMedia.create.mockRejectedValue(p2002)
+
+      const result = (await authClient({
+        document: TEMPLATE_GALLERY_PAGE_CREATE_WITH_MEDIA,
+        variables: {
+          input: {
+            teamId: 'team-1',
+            title: 'X',
+            creatorName: 'Alice',
+            media: { type: 'link', url: 'https://www.youtube.com/watch?v=abc' }
+          }
+        }
+      })) as any
+
+      expect(result.errors?.[0]?.extensions?.code).toBe('CONFLICT')
+      expect(result.errors?.[0]?.extensions?.field).toBe('media')
+      // the media P2002 must NOT trigger the slug-regenerating retry
+      expect(prismaMock.templateGalleryPage.create).toHaveBeenCalledTimes(1)
+    })
+
     it('creates a mux media row and returns the media relation', async () => {
       mockMuxValidate.mockResolvedValue({
         muxVideoId: 'vid-1',

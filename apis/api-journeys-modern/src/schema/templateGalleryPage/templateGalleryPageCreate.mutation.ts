@@ -1,3 +1,5 @@
+import { GraphQLError } from 'graphql'
+
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
@@ -78,9 +80,27 @@ builder.mutationField('templateGalleryPageCreate', (t) =>
                 }
               })
               if (mediaCreate != null) {
-                await tx.templateGalleryPageMedia.create({
-                  data: { templateGalleryPageId: page.id, ...mediaCreate }
-                })
+                // page.id is a fresh uuid so a media-row P2002 is unreachable
+                // here, but wrap it as CONFLICT anyway to match the Update
+                // path — a raw P2002 must never leak as a 500. A GraphQLError
+                // is not a PrismaClientKnownRequestError, so it passes straight
+                // through the slug-retry catch below.
+                try {
+                  await tx.templateGalleryPageMedia.create({
+                    data: { templateGalleryPageId: page.id, ...mediaCreate }
+                  })
+                } catch (error) {
+                  if (
+                    error instanceof Prisma.PrismaClientKnownRequestError &&
+                    error.code === 'P2002'
+                  ) {
+                    throw new GraphQLError(
+                      'media was modified concurrently; retry',
+                      { extensions: { code: 'CONFLICT', field: 'media' } }
+                    )
+                  }
+                  throw error
+                }
               }
               // Re-read with the Pothos `query` spread so the response includes
               // the just-created `media` relation and any nested selections
