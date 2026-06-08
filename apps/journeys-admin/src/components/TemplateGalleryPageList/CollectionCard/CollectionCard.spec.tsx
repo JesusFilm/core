@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import '../../../../test/i18n'
@@ -458,6 +458,34 @@ describe('CollectionCard', () => {
       toggle.focus()
       await userEvent.keyboard('{Enter}')
       expect(onToggleCollapse).not.toHaveBeenCalled()
+    })
+
+    it('lets Space scroll natively while busy instead of swallowing the keypress', () => {
+      // While busy the toggle is inert; it must NOT preventDefault on Space,
+      // or the user loses native page scroll for no effect.
+      render(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+          onToggleCollapse={vi.fn()}
+          busy
+        />
+      )
+      const toggle = screen.getByTestId('CollectionCardToggle-page-1')
+      // fireEvent returns false when the event was cancelled (preventDefault).
+      const notCancelledWhenBusy = fireEvent.keyDown(toggle, { key: ' ' })
+      expect(notCancelledWhenBusy).toBe(true)
+    })
+
+    it('prevents default on Space when not busy (suppresses page scroll while toggling)', () => {
+      render(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+          onToggleCollapse={vi.fn()}
+        />
+      )
+      const toggle = screen.getByTestId('CollectionCardToggle-page-1')
+      const notCancelled = fireEvent.keyDown(toggle, { key: ' ' })
+      expect(notCancelled).toBe(false)
     })
 
     it('does not throw when the header is toggled without an onToggleCollapse handler', async () => {

@@ -305,12 +305,13 @@ export function useDragEndHandler(
           } else if (targetWasCollapsed) {
             // The template landed in a collapsed collection the user can't
             // see — confirm the drop so the move doesn't feel like it
-            // vanished (NES-1717).
+            // vanished (NES-1717). Fall back to a generic message rather than
+            // interpolating an empty name if the title can't be resolved.
+            const targetName = targetCollection?.title ?? returnedPage?.title
             enqueueSnackbar(
-              t('Added to {{collection}}', {
-                collection:
-                  targetCollection?.title ?? returnedPage?.title ?? ''
-              }),
+              targetName != null && targetName !== ''
+                ? t('Added to {{collection}}', { collection: targetName })
+                : t('Added to collection'),
               { variant: 'success', preventDuplicate: true }
             )
           }

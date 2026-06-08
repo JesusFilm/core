@@ -641,4 +641,39 @@ describe('useDragEndHandler', () => {
     )
     expect(screen.queryByText('Added to page-B')).not.toBeInTheDocument()
   })
+
+  it('uses a generic confirmation when the collapsed target has no resolvable name', async () => {
+    const j1 = journey('j1', 'A')
+    const source = makeCollection('page-A', [j1])
+    // page-B is a collapsed drop target that is NOT in collectionsById and the
+    // server returns an empty title → the toast must not interpolate a blank.
+    const indexes = buildIndexes({ collections: [source], journeys: [j1] })
+
+    const assignMock = getTemplateGalleryPageAssignJourneyMock(
+      { journeyId: 'j1', pageId: 'page-B' },
+      { id: 'page-B', title: '', templates: [templateRef(j1)] }
+    )
+
+    const { result } = renderHook(
+      () =>
+        useDragEndHandler({
+          ...indexes,
+          dragInFlightRef: { current: false },
+          setDragInFlight: vi.fn(),
+          setActiveDragId: vi.fn(),
+          isCollectionCollapsed: () => true
+        }),
+      { wrapper: wrapperWithMocks([assignMock]) }
+    )
+
+    await act(async () => {
+      await result.current(
+        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
+      )
+    })
+
+    await waitFor(() =>
+      expect(screen.getByText('Added to collection')).toBeInTheDocument()
+    )
+  })
 })

@@ -85,4 +85,23 @@ describe('useCollectionCollapse', () => {
     const second = renderHook(() => useCollectionCollapse('team-1'))
     expect(second.result.current.isCollapsed('a')).toBe(true)
   })
+
+  it('prunes stored ids for collections that no longer exist', () => {
+    setCollapsedCollectionIds('team-1', ['a', 'b'])
+    // 'b' is no longer among the live collections → it must be dropped from
+    // both state and storage so the persisted set can't grow unbounded.
+    const { result } = renderHook(() =>
+      useCollectionCollapse('team-1', ['a'])
+    )
+    expect(result.current.isCollapsed('a')).toBe(true)
+    expect(result.current.isCollapsed('b')).toBe(false)
+    expect(getCollapsedCollectionIds('team-1')).toEqual(['a'])
+  })
+
+  it('does not prune while the collections list is empty (still loading)', () => {
+    setCollapsedCollectionIds('team-1', ['a'])
+    const { result } = renderHook(() => useCollectionCollapse('team-1', []))
+    expect(result.current.isCollapsed('a')).toBe(true)
+    expect(getCollapsedCollectionIds('team-1')).toEqual(['a'])
+  })
 })

@@ -191,17 +191,6 @@ export function TemplateGalleryPageList({
 
   const { busyId, ungroup: handleUngroup } = useCollectionMutations()
 
-  // NES-1717: per-collection collapse state, persisted per team in
-  // localStorage. Default is expanded; a collapsed collection hides its grid
-  // but its header stays a valid drop target.
-  const { isCollapsed, toggle: toggleCollapse } = useCollectionCollapse(teamId)
-  const handleToggleCollapse = useCallback(
-    (collection: TemplateGalleryPage): void => {
-      toggleCollapse(collection.id)
-    },
-    [toggleCollapse]
-  )
-
   const [templateGalleryPageCreate, { loading: createLoading }] =
     useTemplateGalleryPageCreateMutation()
   // Synchronous double-click guard for the instant-create flow. The
@@ -291,6 +280,25 @@ export function TemplateGalleryPageList({
   const collections = useMemo<readonly TemplateGalleryPage[]>(
     () => collectionsQuery.data?.templateGalleryPages ?? [],
     [collectionsQuery.data]
+  )
+
+  // NES-1717: per-collection collapse state, persisted per team in
+  // localStorage. Default is expanded; a collapsed collection hides its grid
+  // but its header stays a valid drop target. The live ids let the hook
+  // prune persisted entries for deleted collections.
+  const collectionIds = useMemo(
+    () => collections.map((collection) => collection.id),
+    [collections]
+  )
+  const { isCollapsed, toggle: toggleCollapse } = useCollectionCollapse(
+    teamId,
+    collectionIds
+  )
+  const handleToggleCollapse = useCallback(
+    (collection: TemplateGalleryPage): void => {
+      toggleCollapse(collection.id)
+    },
+    [toggleCollapse]
   )
   // Filter the cached journeys list to the statuses this view allows.
   // The server-side query is already keyed on `status:

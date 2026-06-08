@@ -20,9 +20,15 @@ export interface UseCollectionCollapseResult {
  * localStorage is read in an effect (client-only) so the first render
  * matches the SSR markup (all expanded) and the stored set is applied after
  * mount. State is also reset and reloaded whenever the active team changes.
+ *
+ * @param liveCollectionIds the ids of the collections currently shown. When
+ *   provided, stored ids that no longer match a live collection (e.g. the
+ *   collection was deleted) are pruned from state and storage so the
+ *   persisted set can't grow unbounded.
  */
 export function useCollectionCollapse(
-  teamId: string | undefined
+  teamId: string | undefined,
+  liveCollectionIds?: readonly string[]
 ): UseCollectionCollapseResult {
   const [collapsedIds, setCollapsedIds] = useState<ReadonlySet<string>>(
     () => new Set()
@@ -35,6 +41,27 @@ export function useCollectionCollapse(
     }
     setCollapsedIds(new Set(getCollapsedCollectionIds(teamId)))
   }, [teamId])
+
+  // Garbage-collect ids for collections that no longer exist. Guarded on a
+  // non-empty list so a still-loading (or genuinely empty) collections query
+  // can't wipe the freshly-loaded set. Runs after the load effect; the
+  // functional updater sees the loaded set.
+  useEffect(() => {
+    if (teamId == null || liveCollectionIds == null) return
+    if (liveCollectionIds.length === 0) return
+    const live = new Set(liveCollectionIds)
+    setCollapsedIds((prev) => {
+      let changed = false
+      const next = new Set<string>()
+      for (const id of prev) {
+        if (live.has(id)) next.add(id)
+        else changed = true
+      }
+      if (!changed) return prev
+      setCollapsedCollectionIds(teamId, [...next])
+      return next
+    })
+  }, [teamId, liveCollectionIds])
 
   const isCollapsed = useCallback(
     (collectionId: string): boolean => collapsedIds.has(collectionId),

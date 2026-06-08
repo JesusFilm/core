@@ -151,13 +151,15 @@ function CollectionCardImpl({
   }
   function handleToggleKeyDown(event: KeyboardEvent<HTMLDivElement>): void {
     // Enter / Space activate a button per WAI-ARIA; the header is a div with
-    // role="button" so we wire them by hand. preventDefault stops Space from
-    // scrolling the page.
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault()
-      if (busy === true) return
-      onToggleCollapse?.(collection)
-    }
+    // role="button" so we wire them by hand.
+    if (event.key !== 'Enter' && event.key !== ' ') return
+    // While busy the toggle is inert — bail before preventDefault so a Space
+    // press still does its native thing (page scroll) instead of being
+    // swallowed to no effect.
+    if (busy === true) return
+    // preventDefault stops Space from scrolling the page when we do toggle.
+    event.preventDefault()
+    onToggleCollapse?.(collection)
   }
 
   return (
