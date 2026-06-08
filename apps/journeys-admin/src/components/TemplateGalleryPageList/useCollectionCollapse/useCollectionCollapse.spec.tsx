@@ -74,6 +74,27 @@ describe('useCollectionCollapse', () => {
     expect(result.current.isCollapsed('a')).toBe(false)
   })
 
+  it('prunes against the new team after a team switch, not the old', () => {
+    // Regression guard: on switching teams the freshly-loaded set must be
+    // pruned against the NEW team's live ids — never the previous team's.
+    setCollapsedCollectionIds('team-1', ['a'])
+    setCollapsedCollectionIds('team-2', ['y', 'stale'])
+    const { result, rerender } = renderHook(
+      ({ teamId, ids }: { teamId: string | undefined; ids: string[] }) =>
+        useCollectionCollapse(teamId, ids),
+      { initialProps: { teamId: 'team-1' as string | undefined, ids: ['a'] } }
+    )
+    expect(result.current.isCollapsed('a')).toBe(true)
+
+    rerender({ teamId: 'team-2', ids: ['y'] })
+    // team-2's stored 'stale' id (no live collection) is pruned; 'y' survives.
+    expect(result.current.isCollapsed('y')).toBe(true)
+    expect(result.current.isCollapsed('stale')).toBe(false)
+    expect(getCollapsedCollectionIds('team-2')).toEqual(['y'])
+    // team-1's storage is untouched by team-2's prune.
+    expect(getCollapsedCollectionIds('team-1')).toEqual(['a'])
+  })
+
   it('survives a full unmount/remount via localStorage alone', () => {
     // Proves the toggle->persist->reload loop end-to-end without re-seeding
     // storage by hand: a fresh hook instance must recover the state.
