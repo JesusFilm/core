@@ -1,7 +1,7 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { DragEndEvent } from '@dnd-kit/core'
-import { act, renderHook } from '@testing-library/react'
+import { act, renderHook, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactNode } from 'react'
 
@@ -520,5 +520,82 @@ describe('useDragEndHandler', () => {
       (p) => p.id === 'page-A'
     )
     expect(sourceAfter?.templates.map((t) => t.id)).toEqual(['j1'])
+  })
+
+  // NES-1717: dropping onto a collapsed collection lands the template out of
+  // sight, so the handler surfaces an "Added to {collection}" toast.
+  it('toasts when a template is added to a collapsed collection', async () => {
+    const j1 = journey('j1', 'A')
+    const source = makeCollection('page-A', [j1])
+    const target = makeCollection('page-B', [])
+    const indexes = buildIndexes({
+      collections: [source, target],
+      journeys: [j1]
+    })
+
+    // Server confirms the move (target now contains j1) so `accepted` is true.
+    const assignMock = getTemplateGalleryPageAssignJourneyMock(
+      { journeyId: 'j1', pageId: 'page-B' },
+      { id: 'page-B', title: 'page-B', templates: [templateRef(j1)] }
+    )
+
+    const { result } = renderHook(
+      () =>
+        useDragEndHandler({
+          ...indexes,
+          dragInFlightRef: { current: false },
+          setDragInFlight: vi.fn(),
+          setActiveDragId: vi.fn(),
+          isCollectionCollapsed: (id) => id === 'page-B'
+        }),
+      { wrapper: wrapperWithMocks([assignMock]) }
+    )
+
+    await act(async () => {
+      await result.current(
+        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
+      )
+    })
+
+    expect(assignMock.result).toHaveBeenCalledTimes(1)
+    await waitFor(() =>
+      expect(screen.getByText('Added to page-B')).toBeInTheDocument()
+    )
+  })
+
+  it('does not toast when the target collection is expanded', async () => {
+    const j1 = journey('j1', 'A')
+    const source = makeCollection('page-A', [j1])
+    const target = makeCollection('page-B', [])
+    const indexes = buildIndexes({
+      collections: [source, target],
+      journeys: [j1]
+    })
+
+    const assignMock = getTemplateGalleryPageAssignJourneyMock(
+      { journeyId: 'j1', pageId: 'page-B' },
+      { id: 'page-B', title: 'page-B', templates: [templateRef(j1)] }
+    )
+
+    const { result } = renderHook(
+      () =>
+        useDragEndHandler({
+          ...indexes,
+          dragInFlightRef: { current: false },
+          setDragInFlight: vi.fn(),
+          setActiveDragId: vi.fn(),
+          isCollectionCollapsed: () => false
+        }),
+      { wrapper: wrapperWithMocks([assignMock]) }
+    )
+
+    await act(async () => {
+      await result.current(
+        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
+      )
+    })
+
+    expect(assignMock.result).toHaveBeenCalledTimes(1)
+    expect(screen.queryByText('Added to page-B')).not.toBeInTheDocument()
   })
 })

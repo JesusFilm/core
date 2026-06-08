@@ -61,6 +61,7 @@ import {
   GalleryDialogLockContext,
   GalleryDialogLockContextValue
 } from './GalleryDialogLockContext'
+import { useCollectionCollapse } from './useCollectionCollapse'
 import { useCollectionMutations } from './useCollectionMutations'
 import { useDragEndHandler } from './useDragEndHandler'
 
@@ -189,6 +190,17 @@ export function TemplateGalleryPageList({
   }, [])
 
   const { busyId, ungroup: handleUngroup } = useCollectionMutations()
+
+  // NES-1717: per-collection collapse state, persisted per team in
+  // localStorage. Default is expanded; a collapsed collection hides its grid
+  // but its header stays a valid drop target.
+  const { isCollapsed, toggle: toggleCollapse } = useCollectionCollapse(teamId)
+  const handleToggleCollapse = useCallback(
+    (collection: TemplateGalleryPage): void => {
+      toggleCollapse(collection.id)
+    },
+    [toggleCollapse]
+  )
 
   const [templateGalleryPageCreate, { loading: createLoading }] =
     useTemplateGalleryPageCreateMutation()
@@ -480,7 +492,8 @@ export function TemplateGalleryPageList({
     collectionsById,
     dragInFlightRef,
     setDragInFlight,
-    setActiveDragId
+    setActiveDragId,
+    isCollectionCollapsed: isCollapsed
   })
 
   if (teamId == null) {
@@ -632,6 +645,8 @@ export function TemplateGalleryPageList({
                             ? t(publishBlockedReason)
                             : null
                         }
+                        collapsed={isCollapsed(collection.id)}
+                        onToggleCollapse={handleToggleCollapse}
                       >
                         <DraggableJourneysGrid
                           journeys={

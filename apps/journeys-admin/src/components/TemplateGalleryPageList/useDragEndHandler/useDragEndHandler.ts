@@ -30,6 +30,13 @@ export interface UseDragEndHandlerParams {
   setDragInFlight: (next: boolean) => void
   /** Setter for the active drag id — the hook clears it on drop. */
   setActiveDragId: (next: string | null) => void
+  /**
+   * NES-1717: true when the given collection is currently collapsed. A drop
+   * onto a collapsed collection lands via its header (the only visible part),
+   * so the user can't see the template arrive — we surface a confirmation
+   * toast instead. Defaults to "never collapsed" when omitted.
+   */
+  isCollectionCollapsed?: (collectionId: string) => boolean
 }
 
 /**
@@ -52,7 +59,8 @@ export function useDragEndHandler(
     collectionsById,
     dragInFlightRef,
     setDragInFlight,
-    setActiveDragId
+    setActiveDragId,
+    isCollectionCollapsed
   } = params
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -286,6 +294,16 @@ export function useDragEndHandler(
             enqueueSnackbar(
               t("Couldn't move template — the server rejected the move."),
               { variant: 'error', preventDuplicate: true }
+            )
+          } else if (isCollectionCollapsed?.(targetCollectionId) === true) {
+            // The template landed in a collapsed collection the user can't
+            // see — confirm the drop so the move doesn't feel like it
+            // vanished (NES-1717).
+            enqueueSnackbar(
+              t('Added to {{collection}}', {
+                collection: targetCollection?.title ?? ''
+              }),
+              { variant: 'success', preventDuplicate: true }
             )
           }
         }
