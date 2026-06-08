@@ -267,4 +267,36 @@ describe('AiChat', () => {
       expect(screen.queryByTestId('overlay-hero')).not.toBeInTheDocument()
     })
   })
+
+  describe('about-this-chat disclosure link (NES-1588)', () => {
+    // The disclosure link lives on exactly one surface per variant: the
+    // ChatHeader in panel mode, the floating-input footer caption in overlay
+    // mode (`showHeader = isPanel`). These guard both the safe external-link
+    // attributes and the no-duplication invariant across the two surfaces.
+
+    it('renders one disclosure link with safe external-link attributes in overlay mode', () => {
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="overlay" collapsible={false} />)
+
+      // Overlay suppresses ChatHeader, so the footer caption is the sole copy.
+      const links = screen.getAllByRole('link', { name: 'About this chat' })
+      expect(links).toHaveLength(1)
+      expect(links[0]).toHaveAttribute('href', '/legal/about-chat')
+      expect(links[0]).toHaveAttribute('target', '_blank')
+      expect(links[0]).toHaveAttribute('rel', 'noopener noreferrer')
+    })
+
+    it('renders the disclosure link only in the header in panel mode', () => {
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="panel" collapsible={false} />)
+
+      // Panel shows the ChatHeader link; the overlay-only footer caption is
+      // suppressed, so again exactly one copy renders.
+      expect(
+        screen.getAllByRole('link', { name: 'About this chat' })
+      ).toHaveLength(1)
+    })
+  })
 })
