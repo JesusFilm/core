@@ -1,6 +1,7 @@
 ---
 title: Multi-action Formik dialog footer with intent-ref submit handler
 date: 2026-05-24
+last_updated: 2026-06-08
 category: design-patterns
 module: journeys-admin/template-gallery
 problem_type: design_pattern
@@ -25,14 +26,13 @@ tags:
 
 ## Context
 
-Dialog forms often grow beyond a single submit action. The Template Gallery `CollectionDialog` in `apps/journeys-admin/` has four distinct footer configurations depending on mode and publish state:
+Dialog forms often grow beyond a single submit action. The Template Gallery `CollectionDialog` in `apps/journeys-admin/` has three distinct footer configurations depending on mode and publish state (the separate publish mode and its `Save Draft` button were folded into edit mode in NES-1707):
 
 - **Create mode**: `Cancel | Create`
-- **Edit mode (draft)**: `Cancel | Save`
+- **Edit mode (draft)**: `Cancel | Publish | Save`
 - **Edit mode (published)**: `Cancel | Unpublish | Save`
-- **Publish mode (draft)**: `Cancel | Save Draft | Publish`
 
-The friction: `Save Draft` and `Publish` differ only in whether a publish mutation fires after the update. They share the same Formik values, the same Yup validation, the same field-level error mapping, and the same `isSubmitting` lifecycle. Splitting them into two independent `onSubmit` handlers — or two separate Formik instances — duplicates all of that and creates two divergent error-handling paths that immediately drift.
+The friction: `Save` and `Publish` differ only in whether a publish mutation fires after the update. They share the same Formik values, the same Yup validation, the same field-level error mapping, and the same `isSubmitting` lifecycle. Splitting them into two independent `onSubmit` handlers — or two separate Formik instances — duplicates all of that and creates two divergent error-handling paths that immediately drift.
 
 Meanwhile `Unpublish` is fundamentally different: it ignores form values entirely and just changes status. Forcing it through Formik would either run irrelevant validation or require special-case bypass logic inside `handleSubmit`.
 
@@ -42,19 +42,27 @@ The pattern below resolves both: **one Formik path for actions that share valida
 
 ### Part 1: Intent-ref for shared-validation actions
 
-Hold the user's intent in a `useRef`, flip it synchronously in the button's `onClick`, then call Formik's `submitForm`. The single `handleSubmit` reads the ref and branches:
+Hold the user's intent in a `useRef`, flip it synchronously in the button's `onClick`, then call Formik's `submitForm`. The single `handleSubmit` **reads and consumes** the ref at function entry — before any early-return guard — and branches:
 
 ```ts
 // useCollectionForm.ts
-const submitIntentRef = useRef<'publish' | 'draft'>('publish')
+const submitIntentRef = useRef<'publish' | 'save'>('save')
 
-const setSubmitIntent = (intent: 'publish' | 'draft'): void => {
+const setSubmitIntent = (intent: 'publish' | 'save'): void => {
   submitIntentRef.current = intent
 }
 
 async function handleSubmit(values, helpers) {
+  // Read-and-consume FIRST — before the early-return guards — so a
+  // short-circuited submit (double-click, parent busy) can't leave a
+  // stale 'publish' for a later plain Save or Enter to inherit.
+  const intent = submitIntentRef.current
+  submitIntentRef.current = 'save'
+  if (submittingRef.current) return
+  if (parentBusy) return // (with snackbar)
+
   // ...diffed update logic shared by all modes...
-  const shouldPublish = mode === 'publish' && submitIntentRef.current === 'publish'
+  const shouldPublish = intent === 'publish'
 
   if (Object.keys(input).length > 0) {
     await templateGalleryPageUpdate({ variables: { id, input } })
@@ -68,10 +76,9 @@ async function handleSubmit(values, helpers) {
 ```
 
 ```tsx
-// CollectionDialog.tsx
-<Button onClick={() => { setSubmitIntent('draft'); handleSubmit() }}>
-  Save Draft
-</Button>
+// CollectionDialog.tsx — Save submits with the default intent; only
+// Publish sets the one-shot intent before submitting.
+<Button onClick={() => handleSubmit()}>Save</Button>
 <Button onClick={() => { setSubmitIntent('publish'); handleSubmit() }}>
   Publish
 </Button>
@@ -110,7 +117,7 @@ Then disable every footer button from a unified flag so neither path can double-
 
 **Why a ref, not state.** The click handler runs `setSubmitIntent(...)` and then `handleSubmit()` in the same tick. A `useState` setter schedules a re-render; the new value is not visible to a synchronous read that happens before React commits. A `useRef` mutation is visible immediately, which is exactly what same-tick branching needs. This is the canonical "imperative latch" use of refs.
 
-**Why default to `'publish'`.** In publish mode the form's primary action is Publish. Formik's default submit path fires on Enter inside any text input — and that path doesn't go through any button's `onClick`, so the ref keeps whatever value it had. Defaulting to `'publish'` makes Enter do the obvious thing instead of silently saving a draft.
+**Why default to the safe intent and read-and-consume at entry.** Formik's default submit path fires on Enter inside any text input — and that path doesn't go through any button's `onClick`, so the ref keeps whatever value it had. The one-shot ref must therefore (a) default to the *least destructive* action (`'save'` — Enter must never publish), and (b) be consumed at the top of `handleSubmit`, before any early-return guard. An earlier version reset the ref in `finally`, but the double-submit/busy guards return before the `try` block, so a short-circuited Publish click leaked its intent into the next plain submit (NES-1707, see [the upload state-machine learnings](../ui-bugs/collection-dialog-mux-upload-state-machine-bugs-2026-06-08.md)).
 
 **Why bypass Formik for Unpublish.** Three reasons:
 
@@ -118,7 +125,18 @@ Then disable every footer button from a unified flag so neither path can double-
 2. Formik's `isSubmitting` is a single flag; piggybacking a non-submit action onto it confuses error mapping (`setFieldError` after an unpublish failure makes no sense).
 3. Conceptual clarity: the footer has two kinds of actions — "submit this form" and "change status of this entity". Keeping them on separate code paths matches the mental model.
 
-**Why one unified `disabled` flag across both paths.** Users can click fast. If `isSubmitting` only covers the Formik path and `isMutating` only covers Unpublish, a click on Unpublish during a Save-Draft submission still fires. Or-ing both flags into every button's `disabled` closes that race.
+**Why one unified `disabled` flag across both paths.** Users can click fast. If `isSubmitting` only covers the Formik path and `isMutating` only covers Unpublish, a click on Unpublish during a Save submission still fires. Or-ing both flags into every button's `disabled` closes the *button* race — but buttons are not the only entry point. **The Enter key submits the form directly, bypassing every button's `disabled` prop.** Any predicate that gates submission (e.g. "a media upload is in flight") must also guard Formik's `onSubmit` itself:
+
+```tsx
+<Formik
+  onSubmit={async (vals, helpers) => {
+    if (isMediaBlocked(vals.media)) return
+    await handleSubmit(vals, helpers)
+  }}
+>
+```
+
+Extract one predicate and call it from both the `disabled` props and the `onSubmit` guard so the two can't drift (NES-1707).
 
 ## When to Apply
 
@@ -145,10 +163,10 @@ Do **not** use intent-ref when:
 ### Before: two independent handlers (the anti-pattern)
 
 ```ts
-async function handleSaveDraft(values) {
+async function handleSave(values) {
   if (!(await validateForm(values))) return
   try {
-    setSavingDraft(true)
+    setSaving(true)
     const input = diff(values, initialValues)
     if (Object.keys(input).length > 0) {
       await templateGalleryPageUpdate({ variables: { id, input } })
@@ -157,7 +175,7 @@ async function handleSaveDraft(values) {
   } catch (e) {
     mapApolloErrorsToFields(e, setFieldError) // duplicated
   } finally {
-    setSavingDraft(false)
+    setSaving(false)
   }
 }
 
@@ -185,8 +203,10 @@ Problems: two `validateForm` calls, two `try/catch` blocks, two submitting flags
 
 ```ts
 async function handleSubmit(values, helpers) {
+  const intent = submitIntentRef.current // read-and-consume at entry
+  submitIntentRef.current = 'save'
   const input = diff(values, initialValues)
-  const shouldPublish = mode === 'publish' && submitIntentRef.current === 'publish'
+  const shouldPublish = intent === 'publish'
   if (Object.keys(input).length > 0) {
     await templateGalleryPageUpdate({ variables: { id, input } })
   }
@@ -202,23 +222,24 @@ Formik handles `isSubmitting`, error mapping runs once, Yup validates once, and 
 ### The actual CollectionDialog footer
 
 ```tsx
-// Publish mode (draft collection)
+// Edit mode (draft collection) — Publish is the contextual middle action;
+// Save stays anchored as the primary.
 <Button onClick={onClose}>Cancel</Button>
 <Button
-  disabled={isSubmitting || isMutating}
-  onClick={() => { setSubmitIntent('draft'); handleSubmit() }}
->
-  Save Draft
-</Button>
-<Button
-  variant="contained"
   disabled={isSubmitting || isMutating}
   onClick={() => { setSubmitIntent('publish'); handleSubmit() }}
 >
   Publish
 </Button>
+<Button
+  variant="contained"
+  disabled={isSubmitting || isMutating}
+  onClick={() => handleSubmit()}
+>
+  Save
+</Button>
 
-// Edit mode (published collection)
+// Edit mode (published collection) — Unpublish takes the contextual slot.
 <Button onClick={onClose}>Cancel</Button>
 <Button
   color="error"
@@ -242,10 +263,11 @@ Formik handles `isSubmitting`, error mapping runs once, Yup validates once, and 
 
 - **`outerPadding` prop on shared grid components.** When the same grid is used both inside a card (needs symmetric padding so the grid's gap visually matches the card's edge padding) and at the top level of a page (needs no padding so it aligns flush with sibling card edges), a single boolean prop is cleaner than two near-duplicate components or a wrapper div with margin hacks.
 
-- **Don't gate the entry point if it's the only path to a needed sub-action.** When consolidating menu items into one state-aware entry (e.g. "Edit" for published, "Publish" for draft), move any gating logic _down_ into the dialog (disable the Publish button for empty drafts) rather than disabling the menu item itself. Otherwise the user loses access to legitimate sub-actions like editing draft metadata.
+- **Don't gate the entry point if it's the only path to a needed sub-action.** When consolidating menu items into one entry (the card menu now always says "Edit" regardless of status — NES-1707), move any gating logic _down_ into the dialog (disable the Publish button for empty drafts) rather than disabling the menu item itself. Otherwise the user loses access to legitimate sub-actions like editing draft metadata.
 
 ## Related
 
+- [CollectionDialog Mux upload state-machine learnings (NES-1707)](../ui-bugs/collection-dialog-mux-upload-state-machine-bugs-2026-06-08.md) — the bugs found in this pattern's first implementation (leaked intent through early returns, Enter bypassing disabled buttons) and the fixes this doc now reflects.
 - [Template Gallery Page Collections patterns (NES-1539)](../best-practices/template-gallery-page-collections-patterns-nes1539.md) — the broader CollectionDialog patterns catalog. This intent-ref pattern is the next entry in that catalog and should be referenced from it.
 - [Local Template Dialog Consolidation (NES-1543)](../best-practices/local-template-dialog-consolidation-patterns-nes1543.md) — a sibling pattern: single Formik form firing multiple GraphQL mutations routed by dirty subset (`Promise.allSettled`). Orthogonal to submit-intent routing — that flavor routes on _what changed_, this one routes on _which button was pressed_.
-- PR [#9247](https://github.com/JesusFilm/core/pull/9247) — collection create/edit/publish flow rework where this pattern shipped.
+- PR [#9247](https://github.com/JesusFilm/core/pull/9247) — collection create/edit/publish flow rework where this pattern first shipped; PR [#9282](https://github.com/JesusFilm/core/pull/9282) (NES-1707) — where the intent default, read-and-consume reset, and onSubmit guard landed.
