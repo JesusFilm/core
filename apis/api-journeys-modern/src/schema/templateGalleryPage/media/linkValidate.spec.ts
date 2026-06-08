@@ -1,6 +1,6 @@
 import { canvaSpec } from './canvaOEmbed'
 import { googleSlidesSpec } from './googleSlidesValidate'
-import { linkValidate } from './linkValidate'
+import { linkValidate, normalizerHostsMissingFrom } from './linkValidate'
 import { youTubeSpec } from './youTubeOEmbed'
 
 describe('linkValidate', () => {
@@ -65,5 +65,45 @@ describe('linkValidate', () => {
     await expect(linkValidate('http://www.canva.com/design/x')).rejects.toThrow(
       /https/
     )
+  })
+
+  describe('normalizerHostsMissingFrom (allowlist drift guard)', () => {
+    it('returns no missing hosts when the allowlist covers every normalizer host', () => {
+      const allowed = new Set([
+        'canva.com',
+        'www.canva.com',
+        'canva.link',
+        'youtube.com',
+        'www.youtube.com',
+        'm.youtube.com',
+        'youtu.be',
+        'docs.google.com'
+      ])
+      expect(normalizerHostsMissingFrom(allowed)).toEqual([])
+    })
+
+    it('flags a normalizer host the allowlist omits (e.g. youtu.be)', () => {
+      const allowed = new Set([
+        'canva.com',
+        'www.canva.com',
+        'canva.link',
+        'youtube.com',
+        'www.youtube.com',
+        'm.youtube.com',
+        'docs.google.com'
+      ])
+      expect(normalizerHostsMissingFrom(allowed)).toContain('youtu.be')
+    })
+
+    it('flags every normalizer host when the allowlist is empty', () => {
+      expect(normalizerHostsMissingFrom(new Set())).toEqual(
+        expect.arrayContaining([
+          'canva.com',
+          'youtube.com',
+          'youtu.be',
+          'docs.google.com'
+        ])
+      )
+    })
   })
 })

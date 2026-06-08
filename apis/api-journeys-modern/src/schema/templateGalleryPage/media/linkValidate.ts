@@ -1,6 +1,7 @@
 import { GraphQLError } from 'graphql'
 
 import { env } from '../../../env'
+import { logger } from '../../logger'
 import { assertHttpsUrl } from '../assertHttpsUrl'
 
 import { canvaSpec } from './canvaOEmbed'
@@ -40,8 +41,34 @@ const NORMALIZERS = new Map<string, EmbedNormalizerSpec>(
 // mock env just because this module sits in the import graph.
 let allowedHosts: ReadonlySet<string> | null = null
 function getAllowedHosts(): ReadonlySet<string> {
-  allowedHosts ??= new Set(env.TEMPLATE_LIBRARY_EMBED_HOSTS)
+  if (allowedHosts == null) {
+    allowedHosts = new Set(env.TEMPLATE_LIBRARY_EMBED_HOSTS)
+    warnOnNormalizerDrift(allowedHosts)
+  }
   return allowedHosts
+}
+
+// Normalizer hosts that are NOT in the given allowlist. Each such host rejects
+// every URL for it even though provider-specific handling exists — a silent
+// divergence (e.g. ops allowlists `youtube.com` but omits `youtu.be`). Exported
+// for tests; consumed by warnOnNormalizerDrift.
+export function normalizerHostsMissingFrom(
+  allowed: ReadonlySet<string>
+): string[] {
+  return [...NORMALIZERS.keys()].filter((host) => !allowed.has(host))
+}
+
+// Warn once, on the first allowlist read, rather than fail: removing a provider
+// host from the list is also the intended way to disable that provider without
+// a deploy, so this must not crash boot.
+function warnOnNormalizerDrift(allowed: ReadonlySet<string>): void {
+  const missing = normalizerHostsMissingFrom(allowed)
+  if (missing.length > 0) {
+    logger.warn(
+      { missingHosts: missing },
+      'normalizer hosts absent from TEMPLATE_LIBRARY_EMBED_HOSTS — URLs for these hosts will reject despite having a normalizer'
+    )
+  }
 }
 
 /**
