@@ -114,6 +114,13 @@ const NON_RETRIABLE_CHAT_ERROR_CODES = new Set([
 ])
 
 const CONVERSATION_CAPPED_CODE = 'conversation_capped'
+// The card's chat was turned off server-side (NES-1679). We swap the generic
+// "try again" copy for an honest "turned off" message and hide Retry (it would
+// 403 again). The input deliberately stays usable: per the kill-switch design a
+// stale tab still shows the input and each send fails closed with a visible
+// message, and locking it would strand the user if they navigate to a card
+// where chat is still enabled (the error persists in the mounted chat).
+const CHAT_DISABLED_CODE = 'chat_disabled'
 
 const TYPEWRITER_CHARS_PER_SEC = 280
 
@@ -324,6 +331,7 @@ export function AiChat({
 
   const errorCode = useMemo(() => parseChatErrorCode(error), [error])
   const isConversationCapped = errorCode === CONVERSATION_CAPPED_CODE
+  const isChatDisabled = errorCode === CHAT_DISABLED_CODE
   // Retriable by default so transient failures (network/5xx/mid-stream, which
   // carry no code) keep their Retry; hidden only for known deterministic codes.
   const canRetry =
@@ -594,7 +602,11 @@ export function AiChat({
                     ? t(
                         "This conversation's gotten long. Start a new one to keep chatting — this clears the current session."
                       )
-                    : t('Something went wrong. Please try again.')}
+                    : isChatDisabled
+                      ? t(
+                          'Chat has been turned off for this part of the journey.'
+                        )
+                      : t('Something went wrong. Please try again.')}
                 </Box>
               </Message>
               {isConversationCapped ? (

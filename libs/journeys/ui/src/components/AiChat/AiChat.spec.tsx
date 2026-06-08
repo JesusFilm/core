@@ -195,15 +195,27 @@ describe('AiChat', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('hides Retry for a deterministic chat_disabled (kill switch) error', () => {
+    it('shows the catered "turned off" message and hides Retry when chat is disabled', () => {
       setChatState({ error: codedError('chat_disabled') })
 
       render(<AiChat variant="overlay" collapsible={false} />)
 
-      // The card's chat was turned off — re-firing would 403 again.
+      // Honest copy instead of the misleading "try again" generic.
+      expect(screen.getByText(/chat has been turned off/i)).toBeInTheDocument()
+      expect(
+        screen.queryByText(/Something went wrong/i)
+      ).not.toBeInTheDocument()
+      // Retry is hidden (re-firing 403s again)…
       expect(
         screen.queryByRole('button', { name: 'Retry' })
       ).not.toBeInTheDocument()
+      // …but the input stays usable: the kill-switch floor keeps the stale tab
+      // interactive, and locking it would strand a user who navigates to a card
+      // where chat is still enabled.
+      expect(screen.getByTestId('prompt-input')).toHaveAttribute(
+        'data-disabled',
+        'false'
+      )
     })
 
     it('does not render the error block while a request is still in flight', () => {
