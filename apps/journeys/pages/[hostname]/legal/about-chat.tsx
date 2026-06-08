@@ -4,8 +4,9 @@ import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslation
 import i18nConfig from '../../../next-i18next.config'
 
 // The page is hostname-agnostic — same static content under both the
-// default preview host (routed to `pages/home/legal/about-chat.tsx`)
-// and any custom hostname (routed here via Vercel's hostname rewrite).
+// root domain (routed to `pages/home/legal/about-chat.tsx`) and any
+// custom hostname (routed here by the `apps/journeys/proxy.ts` Next.js
+// middleware, which rewrites `/{path}` → `/{hostname}/{path}`).
 // We re-export the component and provide a getStaticProps that only
 // loads translations.
 export { default } from '../../home/legal/about-chat'
