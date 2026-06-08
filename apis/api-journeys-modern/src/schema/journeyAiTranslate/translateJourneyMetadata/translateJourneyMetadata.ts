@@ -109,9 +109,10 @@ Return only the translated text — no field labels, no surrounding quotes, no e
 ${fieldName}:
 ${hardenPrompt(value)}`
 
-  const { output } = await session.execute((model) =>
+  const { output } = await session.execute((model, abortSignal) =>
     generateText({
       model,
+      abortSignal,
       maxRetries: 0,
       messages: [
         { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
@@ -176,19 +177,21 @@ export async function translateJourneyMetadata({
     cardBlocksContent
   })
 
-  const { output: analysisOutput } = await session.execute((model) =>
-    generateText({
-      model,
-      maxRetries: 0,
-      messages: [
-        { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
-        {
-          role: 'user',
-          content: [{ type: 'text', text: analysisPrompt }]
-        }
-      ],
-      output: Output.object({ schema: JourneyAnalysisSchema })
-    })
+  const { output: analysisOutput } = await session.execute(
+    (model, abortSignal) =>
+      generateText({
+        model,
+        abortSignal,
+        maxRetries: 0,
+        messages: [
+          { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
+          {
+            role: 'user',
+            content: [{ type: 'text', text: analysisPrompt }]
+          }
+        ],
+        output: Output.object({ schema: JourneyAnalysisSchema })
+      })
   )
 
   const analysis = analysisOutput.analysis
