@@ -58,7 +58,8 @@ import {
   DraggableJourneysGrid,
   DroppableCollectionWrapper,
   UnsectionedDroppable,
-  resolveSectionDropCollisions
+  parseDropZoneId,
+  resolveSectionDrop
 } from './Droppables'
 import {
   GalleryDialogLockContext,
@@ -415,29 +416,47 @@ export function TemplateGalleryPageList({
     })
   )
 
-  // Pointer-based collision detection. `closestCenter` resolves the drop
-  // target from the *dragged card's* centre, which is offset from the cursor
-  // by wherever the user grabbed the card and competes with the wide
-  // collection / All-Templates droppables — so the resolved target drifted
-  // away from where the user was actually pointing, leaving bands (notably the
-  // row edges) where a drop did nothing. `pointerWithin` keys off the real
-  // cursor; falling back to `closestCenter` only when the cursor is outside
-  // every droppable preserves edge-of-canvas forgiveness.
+  // Pointer-based collision detection, two-level (the dnd-kit "multiple
+  // containers" pattern). `closestCenter` alone resolved the target from the
+  // *dragged card's* centre — offset from the cursor by the grab point and
+  // competing with the wide section droppables — leaving dead bands where a
+  // drop landed nowhere. `pointerWithin` keys off the real cursor instead.
   //
-  // `resolveSectionDropCollisions` then makes the whole collection a single
-  // drop zone: hovering anywhere inside it — including over its cards — targets
-  // the collection (and lights its highlight), except when reordering within
-  // the same collection, where the card under the cursor is kept as the slot.
+  // From the pointer collisions, `resolveSectionDrop` decides intent: moving
+  // into a section targets the whole section (so the collection is one drop
+  // zone and its highlight lights anywhere inside it); reordering within a
+  // collection targets the nearest card *within that collection* via a scoped
+  // `closestCenter`, so the slot resolves even when the cursor is in the gap
+  // between cards (where `pointerWithin` only sees the container).
+  //
+  // When the cursor is outside every droppable we fall back to the raw
+  // `closestCenter` WITHOUT promoting to a section — a drop in dead space must
+  // not silently reassign a template's collection.
   const collisionDetection = useCallback<CollisionDetection>(
     (args) => {
       const pointerCollisions = pointerWithin(args)
-      const collisions =
-        pointerCollisions.length > 0 ? pointerCollisions : closestCenter(args)
-      return resolveSectionDropCollisions(
-        collisions,
+      if (pointerCollisions.length === 0) return closestCenter(args)
+
+      const resolution = resolveSectionDrop(
+        pointerCollisions,
         String(args.active.id),
         templateIdToCollection
       )
+      if (resolution.kind === 'passthrough') return pointerCollisions
+      if (resolution.kind === 'section') return [resolution.collision]
+
+      // reorder: nearest card within the dragged card's own collection.
+      const cardCollisions = closestCenter({
+        ...args,
+        droppableContainers: args.droppableContainers.filter((container) => {
+          const id = String(container.id)
+          return (
+            parseDropZoneId(id) == null &&
+            templateIdToCollection.get(id)?.id === resolution.collectionId
+          )
+        })
+      })
+      return cardCollisions.length > 0 ? cardCollisions : pointerCollisions
     },
     [templateIdToCollection]
   )

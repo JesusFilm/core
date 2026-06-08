@@ -3,7 +3,7 @@ import { Collision } from '@dnd-kit/core'
 import {
   encodeDropZoneId,
   parseDropZoneId,
-  resolveSectionDropCollisions
+  resolveSectionDrop
 } from './Droppables'
 
 describe('encodeDropZoneId / parseDropZoneId', () => {
@@ -40,10 +40,8 @@ describe('encodeDropZoneId / parseDropZoneId', () => {
   })
 })
 
-describe('resolveSectionDropCollisions', () => {
+describe('resolveSectionDrop', () => {
   const collision = (id: string): Collision => ({ id })
-  const ids = (collisions: Collision[]): string[] =>
-    collisions.map((c) => String(c.id))
   const collectionX = encodeDropZoneId({ kind: 'collection', id: 'X' })
   const unsectioned = encodeDropZoneId({ kind: 'unsectioned' })
   const membership = (
@@ -51,25 +49,31 @@ describe('resolveSectionDropCollisions', () => {
   ): ReadonlyMap<string, { id: string }> =>
     new Map(entries.map(([templateId, colId]) => [templateId, { id: colId }]))
 
-  it('returns the input unchanged when there are no collisions', () => {
-    expect(resolveSectionDropCollisions([], 'j1', membership([]))).toEqual([])
+  it('passes through when no section is under the cursor', () => {
+    const collisions = [collision('jA'), collision('jB')]
+    expect(resolveSectionDrop(collisions, 'jA', membership([]))).toEqual({
+      kind: 'passthrough'
+    })
   })
 
-  it('remaps a card hit to its collection when moving in from the unsectioned pool', () => {
-    // Cursor over card j-in-x (which lives in collection X); the dragged card
-    // is unsectioned → the whole collection is the drop zone.
+  it('targets the collection when moving in from the unsectioned pool', () => {
+    // Cursor over card j-in-x (in collection X); dragged card is unsectioned →
+    // the whole collection is the drop zone.
     const collisions = [collision('j-in-x'), collision(collectionX)]
-    const result = resolveSectionDropCollisions(
+    const result = resolveSectionDrop(
       collisions,
       'j-unsectioned',
       membership([['j-in-x', 'X']])
     )
-    expect(ids(result)).toEqual([collectionX])
+    expect(result).toEqual({
+      kind: 'section',
+      collision: collision(collectionX)
+    })
   })
 
-  it('remaps a card hit to its collection when moving in from a different collection', () => {
+  it('targets the collection when moving in from a different collection', () => {
     const collisions = [collision('j-in-x'), collision(collectionX)]
-    const result = resolveSectionDropCollisions(
+    const result = resolveSectionDrop(
       collisions,
       'j-src',
       membership([
@@ -77,14 +81,19 @@ describe('resolveSectionDropCollisions', () => {
         ['j-src', 'Y']
       ])
     )
-    expect(ids(result)).toEqual([collectionX])
+    expect(result).toEqual({
+      kind: 'section',
+      collision: collision(collectionX)
+    })
   })
 
-  it('keeps the specific card for a reorder within the same collection', () => {
-    // Dragged card j1 and the hovered card j2 both live in X → keep the card
-    // target so the existing reorder path lands it at that slot.
-    const collisions = [collision('j2'), collision(collectionX)]
-    const result = resolveSectionDropCollisions(
+  it('signals a reorder when the dragged card belongs to the collection under the cursor', () => {
+    // Whether the cursor is over a card OR the container gap, a same-collection
+    // drag resolves to reorder so the caller can find the nearest in-collection
+    // slot. Here the container ranks first (cursor in a gap) — must still
+    // reorder, not no-op.
+    const collisions = [collision(collectionX), collision('j2')]
+    const result = resolveSectionDrop(
       collisions,
       'j1',
       membership([
@@ -92,38 +101,34 @@ describe('resolveSectionDropCollisions', () => {
         ['j2', 'X']
       ])
     )
-    expect(result).toBe(collisions)
+    expect(result).toEqual({ kind: 'reorder', collectionId: 'X' })
   })
 
-  it('returns the collection container when the cursor is over the empty area', () => {
+  it('targets the collection when the cursor is over its empty area', () => {
     const collisions = [collision(collectionX)]
-    const result = resolveSectionDropCollisions(
+    const result = resolveSectionDrop(
       collisions,
       'j-unsectioned',
       membership([])
     )
-    expect(ids(result)).toEqual([collectionX])
+    expect(result).toEqual({
+      kind: 'section',
+      collision: collision(collectionX)
+    })
   })
 
   it('targets the unsectioned zone when dragging a collection card over it', () => {
-    // Moving a collection card out to the unsectioned pool, cursor over one of
-    // its cards → the whole unsectioned pool is the drop zone.
+    // Moving a collection card out to the unsectioned pool → the whole pool is
+    // the drop zone (unsectioned has no reorder, so it's a plain section).
     const collisions = [collision('j-unsectioned'), collision(unsectioned)]
-    const result = resolveSectionDropCollisions(
+    const result = resolveSectionDrop(
       collisions,
       'j-src',
       membership([['j-src', 'A']])
     )
-    expect(ids(result)).toEqual([unsectioned])
-  })
-
-  it('leaves card-only collisions untouched (no section under the cursor)', () => {
-    const collisions = [collision('jA'), collision('jB')]
-    const result = resolveSectionDropCollisions(
-      collisions,
-      'jA',
-      membership([])
-    )
-    expect(result).toBe(collisions)
+    expect(result).toEqual({
+      kind: 'section',
+      collision: collision(unsectioned)
+    })
   })
 })
