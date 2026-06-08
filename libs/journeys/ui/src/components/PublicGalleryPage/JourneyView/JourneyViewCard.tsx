@@ -141,6 +141,7 @@ export function JourneyViewCard({
             <JourneyViewCardActions
               itemId={item.id}
               itemTitle={item.title}
+              itemSlug={item.slug}
               accent={GALLERY_ACCENT}
               fullWidth
               decorative={decorative}
@@ -223,6 +224,7 @@ export function JourneyViewCard({
       <JourneyViewCardActions
         itemId={item.id}
         itemTitle={item.title}
+        itemSlug={item.slug}
         accent={GALLERY_ACCENT}
         fullWidth
         decorative={decorative}

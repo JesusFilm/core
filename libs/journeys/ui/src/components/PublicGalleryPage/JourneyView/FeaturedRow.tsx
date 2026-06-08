@@ -161,6 +161,7 @@ export function FeaturedRow({
             <JourneyViewCardActions
               itemId={item.id}
               itemTitle={item.title}
+              itemSlug={item.slug}
               accent={GALLERY_ACCENT}
               decorative={decorative}
             />

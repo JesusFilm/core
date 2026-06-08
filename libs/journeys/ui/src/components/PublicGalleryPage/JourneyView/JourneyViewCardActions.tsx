@@ -1,9 +1,12 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
-import { alpha } from '@mui/material/styles'
+import { alpha, darken } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
+
+import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import {
   GALLERY_ACTION_SIZE,
@@ -14,16 +17,22 @@ interface JourneyViewCardActionsProps {
   /** Template id used in the admin "Use Template" deep link. */
   itemId: string
   /**
-   * Template title — used to disambiguate the Use control on a page
-   * with many cards (every card otherwise has an identical "Use" label,
-   * which is impossible to navigate with voice control or a screen reader).
+   * Template title — used to disambiguate the Use/Preview controls on a page
+   * with many cards (every card otherwise has an identical "Use"/"Preview"
+   * label, which is impossible to navigate with voice control or a screen
+   * reader).
    */
   itemTitle: string
-  /** Accent colour for the outlined Use button. */
+  /**
+   * Template slug — builds the public viewer link the Preview button opens
+   * (`/<slug>`, which the journeys middleware rewrites to `/home/<slug>`).
+   */
+  itemSlug: string
+  /** Accent colour for the outlined Use button and the filled Preview button. */
   accent: string
   fullWidth?: boolean
   /**
-   * Render the button as a non-interactive, `aria-hidden` look-alike — used
+   * Render the buttons as non-interactive, `aria-hidden` look-alikes — used
    * by the read-only admin preview so the same card visual carries no real
    * link or focus target.
    */
@@ -59,36 +68,63 @@ function buildUseTemplateHref(adminUrl: string, itemId: string): string {
 export function JourneyViewCardActions({
   itemId,
   itemTitle,
+  itemSlug,
   accent,
   fullWidth = false,
   decorative = false
 }: JourneyViewCardActionsProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
 
+  // The Preview button is a fixed square that sits beside the Use button.
+  // `flexShrink: 0` keeps it at full size when the Use button stretches
+  // (`fullWidth` More cards) — without it the icon button is the item that
+  // gets squeezed, which is exactly the regression this restores.
+  const previewSquareSx = {
+    flexShrink: 0,
+    width: GALLERY_ACTION_SIZE,
+    height: GALLERY_ACTION_SIZE,
+    borderRadius: 1,
+    backgroundColor: accent,
+    color: '#FFFFFF',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  } as const
+
   if (decorative) {
     return (
-      <Box
+      <Stack
+        direction="row"
+        spacing={1}
+        alignItems="center"
         aria-hidden="true"
-        sx={{
-          width: fullWidth ? '100%' : undefined,
-          height: GALLERY_ACTION_SIZE,
-          px: fullWidth ? 0 : 2.5,
-          // Match the live (non-decorative) button's `minWidth` so the
-          // admin preview's Use look-alike carries the same visual
-          // weight as what the publisher will see.
-          minWidth: fullWidth ? undefined : GALLERY_USE_BUTTON_MIN_WIDTH,
-          borderRadius: 1,
-          border: `1px solid ${accent}`,
-          color: accent,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontWeight: 500,
-          fontSize: '0.875rem'
-        }}
+        sx={{ width: fullWidth ? '100%' : undefined }}
       >
-        {t('Use')}
-      </Box>
+        <Box
+          sx={{
+            // The Use look-alike fills the row in `fullWidth` More cards and
+            // keeps a roomy minWidth in the Explore section so it carries the
+            // same visual weight as the live button the publisher will see.
+            flex: fullWidth ? 1 : undefined,
+            height: GALLERY_ACTION_SIZE,
+            px: 2.5,
+            minWidth: fullWidth ? undefined : GALLERY_USE_BUTTON_MIN_WIDTH,
+            borderRadius: 1,
+            border: `1px solid ${accent}`,
+            color: accent,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontWeight: 500,
+            fontSize: '0.875rem'
+          }}
+        >
+          {t('Use')}
+        </Box>
+        <Box sx={previewSquareSx}>
+          <Play3Icon />
+        </Box>
+      </Stack>
     )
   }
 
@@ -104,33 +140,59 @@ export function JourneyViewCardActions({
   // sanitised template string if the env var is ever a schemeless value
   // (e.g. `admin.staging.local`) — `new URL` would throw and crash render.
   const useTemplateHref = buildUseTemplateHref(adminUrl, itemId)
+  // Public viewer route on the same root domain; the journeys middleware
+  // rewrites `/<slug>` → `/home/<slug>`.
+  const previewHref = `/${itemSlug}`
 
   return (
-    <Button
-      component="a"
-      href={useTemplateHref}
-      target="_blank"
-      rel="noopener noreferrer"
-      variant="outlined"
-      fullWidth={fullWidth}
-      aria-label={t('Use {{title}}', { title: itemTitle })}
-      data-testid="GalleryTemplateCardUseButton"
-      sx={{
-        height: GALLERY_ACTION_SIZE,
-        // In the Explore section the button is non-fullWidth (it sits in a
-        // text column); give it a roomier minWidth so the label has weight
-        // matching the surrounding type. In More cards `fullWidth` stretches
-        // it to fill the column.
-        minWidth: fullWidth ? undefined : GALLERY_USE_BUTTON_MIN_WIDTH,
-        color: accent,
-        borderColor: accent,
-        '&:hover': {
-          borderColor: accent,
-          backgroundColor: alpha(accent, 0.06)
-        }
-      }}
+    <Stack
+      direction="row"
+      spacing={1}
+      alignItems="center"
+      sx={{ width: fullWidth ? '100%' : undefined }}
     >
-      {t('Use')}
-    </Button>
+      <Button
+        component="a"
+        href={useTemplateHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        variant="outlined"
+        fullWidth={fullWidth}
+        aria-label={t('Use {{title}}', { title: itemTitle })}
+        data-testid="GalleryTemplateCardUseButton"
+        sx={{
+          height: GALLERY_ACTION_SIZE,
+          // In the Explore section the button is non-fullWidth (it sits in a
+          // text column); give it a roomier minWidth so the label has weight
+          // matching the surrounding type. In More cards `fullWidth` stretches
+          // it to fill the column.
+          minWidth: fullWidth ? undefined : GALLERY_USE_BUTTON_MIN_WIDTH,
+          color: accent,
+          borderColor: accent,
+          '&:hover': {
+            borderColor: accent,
+            backgroundColor: alpha(accent, 0.06)
+          }
+        }}
+      >
+        {t('Use')}
+      </Button>
+      <IconButton
+        component="a"
+        href={previewHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={t('Preview {{title}}', { title: itemTitle })}
+        data-testid="GalleryTemplateCardPreviewButton"
+        sx={{
+          ...previewSquareSx,
+          '&:hover': {
+            backgroundColor: darken(accent, 0.2)
+          }
+        }}
+      >
+        <Play3Icon />
+      </IconButton>
+    </Stack>
   )
 }
