@@ -63,7 +63,7 @@ Every provider embeds differently and changes its URL shapes / oEmbed endpoints 
 
 File layout (the registry + gate live together, one file per provider):
 
-```
+```text
 media/
   types.ts                 # EmbedNormalizerSpec interface
   linkValidate.ts          # https → allowlist gate → normalizer dispatch
