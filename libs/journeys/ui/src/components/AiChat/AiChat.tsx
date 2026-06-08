@@ -666,19 +666,15 @@ export function AiChat({
             'transform 280ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease-out'
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <PromptInput
-              input={input}
-              onInputChange={setInput}
-              onSubmit={handleSubmit}
-              isLoading={isLoading}
-              onStop={stop}
-              disabled={isConversationCapped}
-              variant={isOverlay ? 'floating' : 'inline'}
-            />
-          </Box>
-        </Box>
+        <PromptInput
+          input={input}
+          onInputChange={setInput}
+          onSubmit={handleSubmit}
+          isLoading={isLoading}
+          onStop={stop}
+          disabled={isConversationCapped}
+          variant={isOverlay ? 'floating' : 'inline'}
+        />
         {isOverlay && (
           // Overlay-only disclosure caption — sits directly under the
           // floating input. On panel/mobile the same subtitle + link
