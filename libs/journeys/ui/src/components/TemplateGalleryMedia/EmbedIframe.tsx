@@ -27,6 +27,12 @@ interface EmbedIframeProps {
    * content inside. Used by the compact field box, which has a fixed size.
    */
   fill?: boolean
+  /**
+   * Fired when the iframe's document finishes loading. Consumers use it to
+   * dismiss loading affordances (the event fires for cross-origin documents
+   * too — only the content stays opaque).
+   */
+  onLoad?: () => void
 }
 
 /**
@@ -41,7 +47,8 @@ export function EmbedIframe({
   borderRadius = 1,
   testId,
   maxHeight,
-  fill = false
+  fill = false,
+  onLoad
 }: EmbedIframeProps): ReactElement {
   const attrs = embedAttrs(embedUrl)
   // aspectRatioPaddingTop is height-as-%-of-width (e.g. '56.25%').
@@ -80,6 +87,7 @@ export function EmbedIframe({
           data-testid={`${testId}Iframe`}
           src={embedUrl}
           title={title}
+          onLoad={onLoad}
           allow={attrs.allow}
           allowFullScreen={attrs.allowFullScreen}
           referrerPolicy={attrs.referrerPolicy}

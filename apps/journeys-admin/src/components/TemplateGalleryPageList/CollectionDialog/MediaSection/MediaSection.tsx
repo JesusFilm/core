@@ -20,12 +20,6 @@ import { MuxUploadField } from './MuxUploadField'
 
 type MediaUiMode = 'mux' | 'link'
 
-// Reserved height for the media input row. Every state — Link field, the empty
-// upload prompt, an in-flight upload, the attached video — renders inside this
-// fixed-height row so switching Link <-> Upload (or an upload moving through its
-// states) never shifts the dialog layout. Both modes now size their row to the
-// preview box, so the box height is the reserve.
-const MEDIA_AREA_MIN_HEIGHT = MEDIA_BOX_HEIGHT
 
 interface MediaSectionProps {
   media: CollectionMediaValues
@@ -152,8 +146,9 @@ export function MediaSection({
 
       {/* Both modes share the [preview box | control] row. Upload renders its
           own row (the box is Choose / Replace); Link pairs a non-interactive
-          box with the URL field. */}
-      <Box sx={{ minHeight: MEDIA_AREA_MIN_HEIGHT }}>
+          box with the URL field. The reserved min-height (the preview box's)
+          keeps Link <-> Upload switches from shifting the dialog layout. */}
+      <Box sx={{ minHeight: MEDIA_BOX_HEIGHT }}>
         {mode === 'mux' ? (
           <MuxUploadField
             uploadKey={uploadKey}

@@ -28,10 +28,12 @@ function toMedia(
 ): PublicGalleryPageMedia | null {
   if (media == null) return null
   if (media.type === TemplateGalleryPageMediaType.mux) {
-    if (media.muxPlaybackId == null) return null
+    if (media.muxPlaybackId == null || media.muxPlaybackId === '') return null
     return { type: 'mux', muxPlaybackId: media.muxPlaybackId }
   }
-  if (media.embedUrl == null) return null
+  // Empty string is as unrenderable as null — an `src=""` iframe would
+  // mount a broken embed instead of the section simply not rendering.
+  if (media.embedUrl == null || media.embedUrl === '') return null
   return { type: 'link', embedUrl: media.embedUrl }
 }
 

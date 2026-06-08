@@ -129,6 +129,18 @@ describe('MuxUploadField', () => {
     ).toBeInTheDocument()
   })
 
+  it('offers an enabled Remove escape hatch in the errored state', () => {
+    // Without this, an errored fresh upload leaves the form stuck on an
+    // incomplete mux value that blocks Save indefinitely.
+    mockGetUploadStatus.mockReturnValue({ status: 'error', progress: 0 })
+    const { onCancel } = renderField()
+    const remove = screen.getByRole('button', { name: 'Remove' })
+    expect(remove).toBeEnabled()
+    fireEvent.click(remove)
+    expect(mockCancelUploadForBlock).toHaveBeenCalled()
+    expect(onCancel).toHaveBeenCalledTimes(1)
+  })
+
   it('frames the empty box as "Choose a video"', () => {
     renderField()
     expect(

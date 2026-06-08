@@ -72,7 +72,10 @@ export function formMediaToInput(
 ): TemplateGalleryPageMediaInput | null {
   if (media.type === 'none') return null
   if (media.type === 'link') {
-    return { type: TemplateGalleryPageMediaType.link, url: media.url }
+    // Trim at the input boundary: pasted links commonly carry surrounding
+    // whitespace, and the preview trims internally — without this the
+    // server would reject a URL the user can see previewing correctly.
+    return { type: TemplateGalleryPageMediaType.link, url: media.url.trim() }
   }
   return { type: TemplateGalleryPageMediaType.mux, muxVideoId: media.muxVideoId }
 }

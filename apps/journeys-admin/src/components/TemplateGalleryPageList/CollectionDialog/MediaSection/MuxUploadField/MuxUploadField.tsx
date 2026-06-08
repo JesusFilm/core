@@ -8,6 +8,8 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ChangeEvent, ReactElement, useRef } from 'react'
 
+import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
+
 import { GetMyMuxVideoQuery } from '../../../../../../__generated__/GetMyMuxVideoQuery'
 import {
   GET_MY_MUX_VIDEO_QUERY,
@@ -48,12 +50,6 @@ interface MuxUploadFieldProps {
   onRemove: () => void
 }
 
-/** Formats a Mux duration (seconds) as `m:ss` for the attached-video label. */
-function formatDuration(totalSeconds: number): string {
-  const minutes = Math.floor(totalSeconds / 60)
-  const seconds = Math.floor(totalSeconds % 60)
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`
-}
 
 /**
  * Upload control over `MuxVideoUploadProvider`, scoped to the collection
@@ -134,7 +130,12 @@ export function MuxUploadField({
     media.type === 'mux' && media.muxName != null && media.muxName !== ''
       ? media.muxName
       : t('Video attached')
-  const videoDuration = media.type === 'mux' ? media.muxDuration : null
+  // Finite-guard: a corrupt/partial Mux metadata read could surface NaN,
+  // which passes a bare null check and would render "NaN:NaN".
+  const videoDuration =
+    media.type === 'mux' && Number.isFinite(media.muxDuration ?? NaN)
+      ? media.muxDuration
+      : null
 
   return (
     <>
@@ -219,14 +220,19 @@ export function MuxUploadField({
               >
                 {t('Upload failed. Try another file.')}
               </Typography>
-              <Button
-                size="small"
-                variant="outlined"
-                onClick={openPicker}
-                sx={{ alignSelf: 'flex-start' }}
-              >
-                {t('Try again')}
-              </Button>
+              {/* Remove gives an escape hatch out of the errored mux state —
+                  without it the form's media stays an incomplete mux value
+                  that blocks Save indefinitely (the user's only other way
+                  out would be a successful upload or typing a link). It
+                  reverts to the prior saved video when one existed. */}
+              <Stack direction="row" spacing={1}>
+                <Button size="small" variant="outlined" onClick={openPicker}>
+                  {t('Try again')}
+                </Button>
+                <Button size="small" color="error" onClick={handleCancel}>
+                  {t('Remove')}
+                </Button>
+              </Stack>
             </>
           )}
 
@@ -251,7 +257,9 @@ export function MuxUploadField({
                     </Typography>
                     {videoDuration != null && (
                       <Typography variant="caption" color="text.secondary">
-                        {formatDuration(videoDuration)}
+                        {secondsToTimeFormat(videoDuration, {
+                          trimZeroes: true
+                        })}
                       </Typography>
                     )}
                   </>

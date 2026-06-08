@@ -26,7 +26,10 @@ export function JourneyViewMedia({
   if (media == null) return null
 
   if (media.type === 'mux') {
-    return <MuxMedia playbackId={media.muxPlaybackId} />
+    // Keyed so a playbackId change remounts the player — video.js only
+    // reads the <source> at init (the effect has no deps), so an in-place
+    // re-render with a different id would silently keep the old stream.
+    return <MuxMedia key={media.muxPlaybackId} playbackId={media.muxPlaybackId} />
   }
 
   return (

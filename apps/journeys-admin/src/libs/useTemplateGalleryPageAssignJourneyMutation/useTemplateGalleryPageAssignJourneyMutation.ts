@@ -43,6 +43,8 @@ export const TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY = gql`
         type
         embedUrl
         muxPlaybackId
+        muxName
+        muxDuration
       }
       publishedAt
       createdAt

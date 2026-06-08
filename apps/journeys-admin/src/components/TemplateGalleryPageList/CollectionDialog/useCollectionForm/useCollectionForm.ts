@@ -118,7 +118,7 @@ export interface UseCollectionFormResult {
   mediaDirty: (values: CollectionFormValues) => boolean
 }
 
-const FIELD_ERROR_KEYS = new Set(['slug', 'creatorImageSrc', 'title'])
+const FIELD_ERROR_KEYS = new Set(['slug', 'creatorImageSrc', 'title', 'media'])
 
 function buildSchema(t: TFunction): ObjectSchema<CollectionFormValues> {
   return object({
@@ -232,6 +232,12 @@ export function useCollectionForm({
     values: CollectionFormValues,
     helpers: FormikHelpers<CollectionFormValues>
   ): Promise<void> {
+    // Read-and-consume the intent FIRST — before the early-return guards
+    // below. A Publish click that short-circuits (double-submit, parent
+    // busy) must not leave a stale 'publish' behind for a later plain
+    // Save or Enter-key submit to inherit.
+    const intent = submitIntentRef.current
+    submitIntentRef.current = 'save'
     if (submittingRef.current) return
     if (parentBusy) {
       // A DnD mutation is still in flight on the parent. Bail rather than
@@ -303,7 +309,7 @@ export function useCollectionForm({
         // 'publish' only ever holds when the footer's Publish button set
         // it synchronously before this submit (drafts only — published
         // collections don't render the button).
-        const shouldPublish = submitIntentRef.current === 'publish'
+        const shouldPublish = intent === 'publish'
         // Only fire the update when at least one field actually changed.
         // The dialog opens pre-filled and the user may hit Publish
         // without edits — an empty-input update is a wasted round-trip
@@ -362,10 +368,15 @@ export function useCollectionForm({
       onClose()
     } catch (error) {
       if (error instanceof ApolloError) {
+        // Scan every GraphQL error, not just [0] — a batched response can
+        // carry the actionable extension at any index.
+        const gqlErrors = error.graphQLErrors ?? []
         // Media validation errors carry a structured `extensions.reason`
         // (BAD_USER_INPUT) rather than a `field` — surface them inline on the
         // media field with a human-readable, translated message.
-        const rawReason = error.graphQLErrors?.[0]?.extensions?.reason
+        const rawReason = gqlErrors.find(
+          (e) => typeof e.extensions?.reason === 'string'
+        )?.extensions?.reason
         const reason = typeof rawReason === 'string' ? rawReason : undefined
         if (reason != null) {
           await helpers.setFieldTouched('media', true, false)
@@ -373,13 +384,19 @@ export function useCollectionForm({
           return
         }
         // Map field-scoped errors back to Formik fields when possible.
-        const rawField = error.graphQLErrors?.[0]?.extensions?.field
-        const fieldError = typeof rawField === 'string' ? rawField : undefined
-        if (fieldError != null && FIELD_ERROR_KEYS.has(fieldError)) {
+        const fieldErrorSource = gqlErrors.find(
+          (e) =>
+            typeof e.extensions?.field === 'string' &&
+            FIELD_ERROR_KEYS.has(e.extensions.field)
+        )
+        const fieldError = fieldErrorSource?.extensions?.field as
+          | string
+          | undefined
+        if (fieldError != null) {
           // Mark the field as touched so the error renders even if the
           // user submitted without focusing it first.
           await helpers.setFieldTouched(fieldError, true, false)
-          helpers.setFieldError(fieldError, error.message)
+          helpers.setFieldError(fieldError, fieldErrorSource?.message ?? '')
           return
         }
       }
@@ -389,9 +406,6 @@ export function useCollectionForm({
       )
     } finally {
       submittingRef.current = false
-      // Intent is per-submit: reset so a later plain Save (or Enter)
-      // can't inherit a publish intent from a failed publish attempt.
-      submitIntentRef.current = 'save'
     }
   }
 

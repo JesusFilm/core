@@ -95,36 +95,9 @@ export function MediaPreview({
   if (media.type === 'link') {
     const embedUrl = previewEmbedUrl(debouncedUrl)
     if (embedUrl != null) {
-      return (
-        // A skeleton sits behind the iframe (which is transparent until its
-        // document paints), so re-mounts — e.g. tab switches — show a loading
-        // shimmer instead of a flash of empty box.
-        <Box
-          sx={{
-            position: 'relative',
-            width: '100%',
-            ...(fill && { height: '100%' })
-          }}
-        >
-          <Skeleton
-            variant="rectangular"
-            animation="wave"
-            sx={{
-              position: 'absolute',
-              inset: 0,
-              height: '100%',
-              borderRadius: 1
-            }}
-          />
-          <EmbedIframe
-            embedUrl={embedUrl}
-            title={t('Media preview')}
-            borderRadius={1}
-            testId="GalleryMediaPreview"
-            fill={fill}
-          />
-        </Box>
-      )
+      // key resets the loaded state when the URL changes, so editing the
+      // link re-shimmers instead of showing the stale embed's last frame.
+      return <LinkPreview key={embedUrl} embedUrl={embedUrl} fill={fill} />
     }
   }
 
@@ -144,10 +117,61 @@ export function MediaPreview({
 }
 
 /**
+ * Link embed with a loading shimmer: a skeleton sits behind the iframe
+ * (transparent until its document paints) and unmounts once the iframe's
+ * `load` event fires — so re-mounts (e.g. tab switches) shimmer instead of
+ * flashing an empty box, without leaving a wave animation running forever
+ * behind the loaded embed.
+ */
+function LinkPreview({
+  embedUrl,
+  fill
+}: {
+  embedUrl: string
+  fill: boolean
+}): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const [loaded, setLoaded] = useState(false)
+  return (
+    <Box
+      sx={{
+        position: 'relative',
+        width: '100%',
+        ...(fill && { height: '100%' })
+      }}
+    >
+      {!loaded && (
+        <Skeleton
+          variant="rectangular"
+          animation="wave"
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            height: '100%',
+            borderRadius: 1
+          }}
+        />
+      )}
+      <EmbedIframe
+        embedUrl={embedUrl}
+        title={t('Media preview')}
+        borderRadius={1}
+        testId="GalleryMediaPreview"
+        fill={fill}
+        onLoad={() => setLoaded(true)}
+      />
+    </Box>
+  )
+}
+
+/**
  * Mux thumbnail with a loading shimmer: a skeleton fills the frame until the
  * image's `load` event fires, so re-mounts (e.g. switching the Link/Upload
  * tab) shimmer instead of flashing an empty black box while the thumbnail
- * re-fetches. The parent letterbox supplies `position: relative`.
+ * re-fetches. A failed fetch (Mux may 404 the still while the asset is
+ * processing) stops the shimmer and falls back to the parent's black
+ * letterbox rather than animating forever. The parent letterbox supplies
+ * `position: relative`.
  */
 function MuxThumbnail({
   src,
@@ -159,9 +183,10 @@ function MuxThumbnail({
   objectFit: 'cover' | 'contain'
 }): ReactElement {
   const [loaded, setLoaded] = useState(false)
+  const [failed, setFailed] = useState(false)
   return (
     <>
-      {!loaded && (
+      {!loaded && !failed && (
         <Skeleton
           data-testid="GalleryMediaPreviewSkeleton"
           variant="rectangular"
@@ -175,13 +200,15 @@ function MuxThumbnail({
         src={src}
         alt={alt}
         onLoad={() => setLoaded(true)}
+        onError={() => setFailed(true)}
         sx={{
           width: '100%',
           height: '100%',
           objectFit,
           display: 'block',
           // Keep the element mounted while loading (so `load` fires) but
-          // invisible under the skeleton.
+          // invisible under the skeleton — and keep a failed fetch's broken
+          // image glyph hidden too.
           opacity: loaded ? 1 : 0
         }}
       />

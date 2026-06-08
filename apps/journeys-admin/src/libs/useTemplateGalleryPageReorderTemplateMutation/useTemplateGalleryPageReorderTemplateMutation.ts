@@ -38,6 +38,8 @@ export const TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE = gql`
         type
         embedUrl
         muxPlaybackId
+        muxName
+        muxDuration
       }
       publishedAt
       createdAt

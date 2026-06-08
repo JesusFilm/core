@@ -24,6 +24,14 @@ export interface TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourn
    * Mux playback ID, denormalized from MuxVideo at save time so public reads never cross to the media DB. Populated for `mux`; null for `link`.
    */
   muxPlaybackId: string | null;
+  /**
+   * Video name, denormalized from MuxVideo at save time. Populated for `mux` when Mux has a name; null for `link`.
+   */
+  muxName: string | null;
+  /**
+   * Video duration in seconds, denormalized from MuxVideo at save time. Populated for `mux` when Mux reports a duration; null for `link`.
+   */
+  muxDuration: number | null;
 }
 
 export interface TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_templates_primaryImageBlock {

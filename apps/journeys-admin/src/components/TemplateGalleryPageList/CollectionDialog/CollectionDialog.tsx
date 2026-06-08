@@ -134,7 +134,6 @@ function CollectionDialogContent({
         handleSubmit,
         setFieldValue,
         setFieldTouched,
-        setFieldError,
         setValues,
         isSubmitting
       }) => {

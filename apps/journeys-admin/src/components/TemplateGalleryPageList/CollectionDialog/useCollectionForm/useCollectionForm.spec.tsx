@@ -955,6 +955,62 @@ describe('useCollectionForm', () => {
       expect(publishMock.result).toHaveBeenCalledTimes(1)
     })
 
+    it('does not leak a publish intent through a short-circuited submit', async () => {
+      const onClose = vi.fn()
+      const onPublished = vi.fn()
+      const collection = makeCollection({ id: 'page-1' })
+      // Only an update mock is registered — if the second submit carried the
+      // stale publish intent, the unmatched publish request would error.
+      const updateMock = getTemplateGalleryPageUpdateMock({
+        id: 'page-1',
+        input: { title: 'New Title' }
+      })
+
+      const { result, rerender } = renderHook(
+        (props: { parentBusy: boolean }) =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            parentBusy: props.parentBusy,
+            onClose,
+            onPublished
+          }),
+        {
+          initialProps: { parentBusy: true },
+          wrapper: wrapperWithMocks([updateMock])
+        }
+      )
+
+      const values = {
+        title: 'New Title',
+        description: collection.description ?? '',
+        creatorName: collection.creatorName ?? '',
+        creatorImageSrc: '',
+        creatorImageAlt: '',
+        media: { type: 'none' } as const,
+        slug: collection.slug,
+        journeyIds: []
+      }
+      // Publish click while the parent is busy: submit short-circuits with
+      // an info snackbar before reaching the mutation...
+      await act(async () => {
+        result.current.setSubmitIntent('publish')
+        await result.current.handleSubmit(values, fakeHelpers())
+      })
+      expect(onPublished).not.toHaveBeenCalled()
+
+      // ...and the intent must have been consumed: a later plain Save (or
+      // Enter submit) performs an update only, never the stale publish.
+      rerender({ parentBusy: false })
+      await act(async () => {
+        await result.current.handleSubmit(values, fakeHelpers())
+      })
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+      expect(onPublished).not.toHaveBeenCalled()
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
+
     it('does not publish on a plain submit (default save intent)', async () => {
       const onClose = vi.fn()
       const onPublished = vi.fn()
