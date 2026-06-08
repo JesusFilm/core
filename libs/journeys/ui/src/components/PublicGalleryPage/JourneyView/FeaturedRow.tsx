@@ -162,6 +162,7 @@ export function FeaturedRow({
               itemId={item.id}
               itemTitle={item.title}
               itemSlug={item.slug}
+              fullWidth="responsive"
               decorative={decorative}
             />
           </Box>

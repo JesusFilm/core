@@ -29,7 +29,21 @@ interface JourneyViewCardActionsProps {
    * (`/<slug>`, which the journeys middleware rewrites to `/home/<slug>`).
    */
   itemSlug: string
-  fullWidth?: boolean
+  /**
+   * Width behaviour of the Use button within the action row:
+   * - `true` — always fill the row (the More grid cards).
+   * - `'responsive'` — fill when stacked (mobile), fixed width when
+   *   side-by-side (desktop). The breakpoint matches FeaturedRow's
+   *   column→row switch at `md`, so the Use button goes full-width exactly
+   *   when the two Explore rows stack on top of each other.
+   * - `false` (default) — always fixed width.
+   *
+   * The read-only admin preview is always stacked-narrow, so both `true` and
+   * `'responsive'` fill there. We deliberately avoid viewport `sx`
+   * breakpoints for the preview — they key off the browser viewport, not the
+   * ~287px preview pane, and would resolve to the desktop form.
+   */
+  fullWidth?: boolean | 'responsive'
   /**
    * Render the buttons as non-interactive, `aria-hidden` look-alikes — used
    * by the read-only admin preview so the same card visual carries no real
@@ -73,10 +87,13 @@ export function JourneyViewCardActions({
 }: JourneyViewCardActionsProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
 
+  const alwaysFull = fullWidth === true
+  const responsiveFull = fullWidth === 'responsive'
+
   // The Preview button is a fixed square that sits beside the Use button.
   // `flexShrink: 0` keeps it at full size when the Use button stretches
-  // (`fullWidth` More cards) — without it the icon button is the item that
-  // gets squeezed, which is exactly the regression this restores.
+  // (filled rows) — without it the icon button is the item that gets
+  // squeezed, which is exactly the regression this restores.
   const previewSquareSx = {
     flexShrink: 0,
     width: GALLERY_ACTION_SIZE,
@@ -90,23 +107,26 @@ export function JourneyViewCardActions({
   } as const
 
   if (decorative) {
+    // The preview pane is always stacked, so anything that fills on mobile
+    // fills here too (no viewport breakpoints — see the prop doc).
+    const fill = alwaysFull || responsiveFull
     return (
       <Stack
         direction="row"
         spacing={1}
         alignItems="center"
         aria-hidden="true"
-        sx={{ width: fullWidth ? '100%' : undefined }}
+        sx={{ width: fill ? '100%' : undefined }}
       >
         <Box
           sx={{
-            // The Use look-alike fills the row in `fullWidth` More cards and
-            // keeps a roomy minWidth in the Explore section so it carries the
-            // same visual weight as the live button the publisher will see.
-            flex: fullWidth ? 1 : undefined,
+            // The Use look-alike fills the row when stacked and keeps a roomy
+            // minWidth otherwise so it carries the same visual weight as the
+            // live button the publisher will see.
+            flex: fill ? 1 : undefined,
             height: GALLERY_ACTION_SIZE,
             px: 2.5,
-            minWidth: fullWidth ? undefined : GALLERY_USE_BUTTON_MIN_WIDTH,
+            minWidth: fill ? undefined : GALLERY_USE_BUTTON_MIN_WIDTH,
             borderRadius: 1,
             border: `1px solid ${GALLERY_ACTION_COLOR}`,
             color: GALLERY_ACTION_COLOR,
@@ -142,12 +162,27 @@ export function JourneyViewCardActions({
   // rewrites `/<slug>` → `/home/<slug>`.
   const previewHref = `/${itemSlug}`
 
+  // `responsive`: fill on mobile (stacked), fixed on desktop (md+, where the
+  // Explore row goes side-by-side). `flexGrow` lets the Use button take the
+  // row's free space when filling; `0` + a minWidth pins it otherwise.
+  const useFlexGrow = alwaysFull ? 1 : responsiveFull ? { xs: 1, md: 0 } : 0
+  const useMinWidth = alwaysFull
+    ? undefined
+    : responsiveFull
+      ? { xs: undefined, md: GALLERY_USE_BUTTON_MIN_WIDTH }
+      : GALLERY_USE_BUTTON_MIN_WIDTH
+  const rowWidth = alwaysFull
+    ? '100%'
+    : responsiveFull
+      ? { xs: '100%', md: 'auto' }
+      : undefined
+
   return (
     <Stack
       direction="row"
       spacing={1}
       alignItems="center"
-      sx={{ width: fullWidth ? '100%' : undefined }}
+      sx={{ width: rowWidth }}
     >
       <Button
         component="a"
@@ -155,16 +190,12 @@ export function JourneyViewCardActions({
         target="_blank"
         rel="noopener noreferrer"
         variant="outlined"
-        fullWidth={fullWidth}
         aria-label={t('Use {{title}}', { title: itemTitle })}
         data-testid="GalleryTemplateCardUseButton"
         sx={{
           height: GALLERY_ACTION_SIZE,
-          // In the Explore section the button is non-fullWidth (it sits in a
-          // text column); give it a roomier minWidth so the label has weight
-          // matching the surrounding type. In More cards `fullWidth` stretches
-          // it to fill the column.
-          minWidth: fullWidth ? undefined : GALLERY_USE_BUTTON_MIN_WIDTH,
+          flexGrow: useFlexGrow,
+          minWidth: useMinWidth,
           color: GALLERY_ACTION_COLOR,
           borderColor: GALLERY_ACTION_COLOR,
           '&:hover': {
