@@ -4,6 +4,7 @@ export {
   DroppableCollectionWrapper,
   UnsectionedDroppable,
   encodeDropZoneId,
-  parseDropZoneId
+  parseDropZoneId,
+  resolveSectionDropCollisions
 } from './Droppables'
 export type { DropZoneId } from './Droppables'

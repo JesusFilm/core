@@ -1,4 +1,4 @@
-import { useDroppable } from '@dnd-kit/core'
+import { Collision, useDroppable } from '@dnd-kit/core'
 import {
   SortableContext,
   rectSortingStrategy,
@@ -34,6 +34,47 @@ export function parseDropZoneId(raw: string): DropZoneId | null {
     return { kind: 'collection', id: raw.slice(COLLECTION_PREFIX.length) }
   }
   return null
+}
+
+/**
+ * Makes a whole section (a collection, or the unsectioned pool) a single drop
+ * zone. dnd-kit's pointer/closest collision returns the specific card under
+ * the cursor first, but the gallery's intent when the cursor is anywhere
+ * inside a section is "drop into this section" — so a card hit is remapped to
+ * its enclosing section container, which also drives the section's drop
+ * highlight. The one exception is reordering within the same section: when the
+ * dragged card already belongs to the section under the cursor, the specific
+ * card is kept as the target so the drop lands at that position.
+ *
+ * Pure and dnd-kit-geometry-free so it's unit-testable: the caller runs the
+ * real collision strategy, this just rewrites the result.
+ */
+export function resolveSectionDropCollisions(
+  collisions: Collision[],
+  activeId: string,
+  templateIdToCollection: ReadonlyMap<string, { id: string }>
+): Collision[] {
+  if (collisions.length === 0) return collisions
+  // A section container present anywhere under the cursor (collection or
+  // unsectioned). Cards have raw journey ids, which parse to null.
+  const sectionCollision = collisions.find(
+    (collision) => parseDropZoneId(String(collision.id)) != null
+  )
+  if (sectionCollision == null) return collisions
+
+  const topId = String(collisions[0].id)
+  const topIsCard = parseDropZoneId(topId) == null
+  if (topIsCard) {
+    const sourceCollectionId = templateIdToCollection.get(activeId)?.id ?? null
+    const cardCollectionId = templateIdToCollection.get(topId)?.id ?? null
+    // Same-collection drag over one of its own cards → keep the card so the
+    // existing reorder path fires for that slot. (Both null = unsectioned over
+    // unsectioned, which is a no-op downstream either way.)
+    if (cardCollectionId != null && cardCollectionId === sourceCollectionId) {
+      return collisions
+    }
+  }
+  return [sectionCollision]
 }
 
 interface DroppableCollectionWrapperProps {

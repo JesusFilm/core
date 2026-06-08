@@ -1,10 +1,12 @@
 import {
+  CollisionDetection,
   DndContext,
   DragOverlay,
   DragStartEvent,
   MouseSensor,
   TouchSensor,
   closestCenter,
+  pointerWithin,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
@@ -55,7 +57,8 @@ import { CollectionPublishSuccessDialog } from './CollectionPublishSuccessDialog
 import {
   DraggableJourneysGrid,
   DroppableCollectionWrapper,
-  UnsectionedDroppable
+  UnsectionedDroppable,
+  resolveSectionDropCollisions
 } from './Droppables'
 import {
   GalleryDialogLockContext,
@@ -412,6 +415,33 @@ export function TemplateGalleryPageList({
     })
   )
 
+  // Pointer-based collision detection. `closestCenter` resolves the drop
+  // target from the *dragged card's* centre, which is offset from the cursor
+  // by wherever the user grabbed the card and competes with the wide
+  // collection / All-Templates droppables — so the resolved target drifted
+  // away from where the user was actually pointing, leaving bands (notably the
+  // row edges) where a drop did nothing. `pointerWithin` keys off the real
+  // cursor; falling back to `closestCenter` only when the cursor is outside
+  // every droppable preserves edge-of-canvas forgiveness.
+  //
+  // `resolveSectionDropCollisions` then makes the whole collection a single
+  // drop zone: hovering anywhere inside it — including over its cards — targets
+  // the collection (and lights its highlight), except when reordering within
+  // the same collection, where the card under the cursor is kept as the slot.
+  const collisionDetection = useCallback<CollisionDetection>(
+    (args) => {
+      const pointerCollisions = pointerWithin(args)
+      const collisions =
+        pointerCollisions.length > 0 ? pointerCollisions : closestCenter(args)
+      return resolveSectionDropCollisions(
+        collisions,
+        String(args.active.id),
+        templateIdToCollection
+      )
+    },
+    [templateIdToCollection]
+  )
+
   // Scan existing collection titles for the "Collection N" pattern and
   // return the smallest unused N (>= 1). The match is case-sensitive
   // and ignores extra whitespace — only the exact shape this handler
@@ -604,7 +634,7 @@ export function TemplateGalleryPageList({
           sx={{ display: 'contents' }}
         >
           <DndContext
-            collisionDetection={closestCenter}
+            collisionDetection={collisionDetection}
             sensors={sensors}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
