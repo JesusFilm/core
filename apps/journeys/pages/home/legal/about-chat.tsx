@@ -1,10 +1,8 @@
 import Container from '@mui/material/Container'
-import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { GetStaticProps } from 'next'
 import Image from 'next/image'
-import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next/pages'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { NextSeo } from 'next-seo'
@@ -21,7 +19,9 @@ function AboutChatPage(): ReactElement {
 
   return (
     <>
-      <NextSeo title={t('About this chat | Next Steps')} nofollow noindex />
+      {/* `_app.tsx` sets titleTemplate '%s | Next Steps', so pass the bare
+          page title here — the template appends the site name centrally. */}
+      <NextSeo title={t('About this chat')} nofollow noindex />
       <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
         <Container maxWidth="sm">
           <Stack spacing={5} py={{ xs: 5, sm: 7 }}>
@@ -75,16 +75,6 @@ function AboutChatPage(): ReactElement {
               <Typography variant="caption" color="text.secondary">
                 {t('Last updated: June 2026')}
               </Typography>
-            </Stack>
-            <Stack direction="row" spacing={2} justifyContent="center">
-              <Link
-                component={NextLink}
-                href="/"
-                underline="none"
-                variant="body2"
-              >
-                {t('Back to Next Steps')}
-              </Link>
             </Stack>
           </Stack>
         </Container>
