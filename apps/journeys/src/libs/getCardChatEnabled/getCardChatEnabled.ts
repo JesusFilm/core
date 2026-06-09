@@ -64,33 +64,11 @@ export async function getCardChatEnabled({
       fetchPolicy: 'no-cache'
     })
 
-    const found = data.journey?.blocks?.find(
+    const card = data.journey?.blocks?.find(
       (block) => block.__typename === 'CardBlock' && block.id === cardId
     )
-    const cardBlock = found?.__typename === 'CardBlock' ? found : undefined
-    const enabled = cardBlock?.showAssistant === true
 
-    // Observability for the allow path. The kill switch already logs when it
-    // blocks (`chat_card_disabled`) and when it errors (`chat_card_lookup_error`),
-    // but not what it read when it *allows* — so a "killed card still chatting"
-    // report can't be localised. Record exactly what the gateway returned:
-    // whether the journey/card were found and the resolved `showAssistant`, so
-    // a stale read (cardFound + showAssistant !== false) can be told apart from
-    // a request-identity mismatch (journeyFound/cardFound false).
-    logger.info(
-      {
-        event: 'chat_card_lookup',
-        journeyId,
-        cardId,
-        journeyFound: data.journey != null,
-        cardFound: cardBlock != null,
-        showAssistant: cardBlock?.showAssistant ?? null,
-        enabled
-      },
-      '[chat] card showAssistant lookup result'
-    )
-
-    return enabled
+    return card?.__typename === 'CardBlock' && card.showAssistant === true
   } catch (error) {
     // A genuinely missing journey is a definitive negative → fail closed.
     if (isJourneyNotFoundError(error)) return false

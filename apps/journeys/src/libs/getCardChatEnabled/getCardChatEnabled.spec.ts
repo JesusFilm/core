@@ -2,10 +2,9 @@ import { IdType } from '../../../__generated__/globalTypes'
 
 import { getCardChatEnabled } from './getCardChatEnabled'
 
-const { mockQuery, mockLoggerWarn, mockLoggerInfo } = vi.hoisted(() => ({
+const { mockQuery, mockLoggerWarn } = vi.hoisted(() => ({
   mockQuery: vi.fn(),
-  mockLoggerWarn: vi.fn(),
-  mockLoggerInfo: vi.fn()
+  mockLoggerWarn: vi.fn()
 }))
 
 vi.mock('../apolloClient', () => ({
@@ -13,7 +12,7 @@ vi.mock('../apolloClient', () => ({
 }))
 
 vi.mock('../logger', () => ({
-  logger: { warn: mockLoggerWarn, error: vi.fn(), info: mockLoggerInfo }
+  logger: { warn: mockLoggerWarn, error: vi.fn(), info: vi.fn() }
 }))
 
 function journeyWithBlocks(blocks: unknown[]): unknown {
@@ -52,29 +51,6 @@ describe('getCardChatEnabled', () => {
         }),
         fetchPolicy: 'no-cache'
       })
-    )
-  })
-
-  it('logs the kill-switch lookup result (showAssistant + enabled)', async () => {
-    mockQuery.mockResolvedValue(
-      journeyWithBlocks([
-        { __typename: 'CardBlock', id: 'card-1', showAssistant: false }
-      ])
-    )
-
-    await getCardChatEnabled({ journeyId: 'journey-1', cardId: 'card-1' })
-
-    expect(mockLoggerInfo).toHaveBeenCalledWith(
-      expect.objectContaining({
-        event: 'chat_card_lookup',
-        journeyId: 'journey-1',
-        cardId: 'card-1',
-        journeyFound: true,
-        cardFound: true,
-        showAssistant: false,
-        enabled: false
-      }),
-      expect.any(String)
     )
   })
 
