@@ -14,4 +14,7 @@ import './templateGalleryPageAssignJourney.mutation'
 import './templateGalleryPageReorderTemplate.mutation'
 import './templateGalleryPageDelete.mutation'
 
-export { TemplateGalleryPageRef } from './templateGalleryPage'
+export {
+  TemplateGalleryPageRef,
+  TemplateGalleryPageAdminRef
+} from './templateGalleryPage'

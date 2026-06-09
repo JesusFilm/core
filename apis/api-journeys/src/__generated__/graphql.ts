@@ -2007,7 +2007,7 @@ export type Mutation = {
    * - FORBIDDEN: caller is not in the target page's team.
    * - FORBIDDEN (field: `journeyId`): journey belongs to a different team than the target page.
    */
-  templateGalleryPageAssignJourney?: Maybe<TemplateGalleryPage>;
+  templateGalleryPageAssignJourney?: Maybe<TemplateGalleryPageAdmin>;
   /**
    * Create a new TemplateGalleryPage in `draft` status. The server generates a unique slug from `input.title`. Initial `journeyIds` are attached as templates in the order given (cross-team and non-template ids are silently filtered out).
    *
@@ -2017,7 +2017,7 @@ export type Mutation = {
    * - BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.
    * - BAD_USER_INPUT (field: `slug`): the title normalizes to empty or to a reserved word.
    */
-  templateGalleryPageCreate: TemplateGalleryPage;
+  templateGalleryPageCreate: TemplateGalleryPageAdmin;
   /**
    * Hard-delete a TemplateGalleryPage. Cascades through `TemplateGalleryPageTemplate` join rows automatically; the underlying `Journey` rows are NOT deleted. Returns the deleted page (last canonical view).
    *
@@ -2027,7 +2027,7 @@ export type Mutation = {
    * - NOT_FOUND: id does not resolve.
    * - FORBIDDEN: caller is not in the page's team.
    */
-  templateGalleryPageDelete: TemplateGalleryPage;
+  templateGalleryPageDelete: TemplateGalleryPageAdmin;
   /**
    * Transition a `draft` page to `published`, stamping `publishedAt` on the first publish only. Idempotent: calling on an already-published page is a no-op (no state change, no re-stamp of `publishedAt`).
    *
@@ -2037,7 +2037,7 @@ export type Mutation = {
    * - NOT_FOUND: id does not resolve, or the page was deleted between the auth-fetch and the canonical re-read.
    * - FORBIDDEN: caller is not in the page's team.
    */
-  templateGalleryPagePublish: TemplateGalleryPage;
+  templateGalleryPagePublish: TemplateGalleryPageAdmin;
   /**
    * Reorder a single template within a TemplateGalleryPage by addressing the destination as a 0-based display index. The page is renumbered to contiguous orders 0..N-1 after the move so the next reorder sees a clean range. Allowed on both `draft` and `published` pages (the frontend gates the UX; the backend accepts unconditionally for symmetry with `templateGalleryPageUpdate` and `templateGalleryPageAssignJourney`).
    *
@@ -2051,7 +2051,7 @@ export type Mutation = {
    * - BAD_USER_INPUT (field: `journeyId`): journey is not currently a member of the page.
    * - BAD_USER_INPUT (field: `order`): order is out of range; must satisfy `0 <= order < count(templates in page)`.
    */
-  templateGalleryPageReorderTemplate: TemplateGalleryPage;
+  templateGalleryPageReorderTemplate: TemplateGalleryPageAdmin;
   /**
    * Transition a `published` page back to `draft`. `publishedAt` is intentionally NOT cleared — the historical first-publish timestamp is preserved across unpublish/republish cycles. Idempotent: calling on an already-draft page is a no-op.
    *
@@ -2061,7 +2061,7 @@ export type Mutation = {
    * - NOT_FOUND: id does not resolve, or the page was deleted between the auth-fetch and the canonical re-read.
    * - FORBIDDEN: caller is not in the page's team.
    */
-  templateGalleryPageUnpublish: TemplateGalleryPage;
+  templateGalleryPageUnpublish: TemplateGalleryPageAdmin;
   /**
    * Update editable fields of a TemplateGalleryPage. All input fields are optional: a field omitted leaves the existing value alone, a field set to `null` clears it (where the field is nullable). When `input.journeyIds` is provided, the page's template list is replaced — existing assignments are deleted and recreated in the given order. Single-membership is enforced: if any supplied journey id is currently a member of another TemplateGalleryPage, the call fails before any write. Allowed on both `draft` and `published` pages (publishers can correct typos and curate the template list while live).
    *
@@ -2074,7 +2074,7 @@ export type Mutation = {
    * - BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.
    * - CONFLICT (field: `journeyIds`; extension `journeyId` carries the offending id): one of the supplied journeys is already a member of another TemplateGalleryPage.
    */
-  templateGalleryPageUpdate: TemplateGalleryPage;
+  templateGalleryPageUpdate: TemplateGalleryPageAdmin;
   textResponseBlockCreate: TextResponseBlock;
   textResponseBlockUpdate: TextResponseBlock;
   textResponseSubmissionEventCreate: TextResponseSubmissionEvent;
@@ -4013,7 +4013,7 @@ export type Query = {
    * - NOT_FOUND: id does not resolve.
    * - FORBIDDEN: caller is not in the page's team.
    */
-  templateGalleryPage: TemplateGalleryPage;
+  templateGalleryPage: TemplateGalleryPageAdmin;
   /** Public, unauthenticated read by slug. Returns the TemplateGalleryPage with the given slug, but ONLY if the page is currently `published`. Returns null for: unknown slug, draft slug, malformed slug (does not match `^[a-z0-9]+(-[a-z0-9]+)*$`), or slug exceeding 200 characters. Authenticated readers fetching their own team's drafts should use `templateGalleryPage(id)` or `templateGalleryPages(teamId)` instead. */
   templateGalleryPageBySlug?: Maybe<TemplateGalleryPage>;
   /**
@@ -4021,7 +4021,7 @@ export type Query = {
    *
    * Auth: caller must be a member of the requested team.
    */
-  templateGalleryPages: Array<TemplateGalleryPage>;
+  templateGalleryPages: Array<TemplateGalleryPageAdmin>;
   user?: Maybe<AuthenticatedUser>;
   userByEmail?: Maybe<AuthenticatedUser>;
   userInvites?: Maybe<Array<UserInvite>>;
@@ -5205,7 +5205,7 @@ export type TemplateGalleryPage = {
   description: Scalars['String']['output'];
   /** Stable UUID identifier. */
   id: Scalars['ID']['output'];
-  /** Embedded media shown on the public page. `null` for legacy rows that predate the multi-type embed (which used the deprecated `mediaUrl` scalar). */
+  /** Embedded media shown on the public page, or `null` when nothing renders (no media, `type: none`, or the active slot is empty). Only the active payload is ever exposed; parked payloads are not. */
   media?: Maybe<TemplateGalleryPageMedia>;
   /**
    * Optional https URL of a hero/cover media asset shown on the public page. https-only on write.
@@ -5221,6 +5221,42 @@ export type TemplateGalleryPage = {
   /** Owning team. The page is hard-deleted when the team is deleted. */
   team: Team;
   /** Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type. */
+  templates: Array<TemplateGalleryItem>;
+  /** Display title shown in admin UI and on the public page. */
+  title: Scalars['String']['output'];
+  updatedAt: Scalars['DateTimeISO']['output'];
+};
+
+/** Authenticated projection of a TemplateGalleryPage, returned by team-scoped reads and mutations. Identical to the public type except `media` exposes the full row (both retained payload slots + raw `muxVideoId`) so the editor can restore a parked payload. */
+export type TemplateGalleryPageAdmin = {
+  __typename?: 'TemplateGalleryPageAdmin';
+  createdAt: Scalars['DateTimeISO']['output'];
+  /** Optional alt text for the creator avatar. */
+  creatorImageAlt?: Maybe<Scalars['String']['output']>;
+  /** Optional https URL of the creator avatar image. Plain string (not a Block FK) — survives independently of any owning Block. https-only on write. */
+  creatorImageSrc?: Maybe<Scalars['String']['output']>;
+  /** Display name of the team or person credited as the page creator. */
+  creatorName: Scalars['String']['output'];
+  /** Long-form description shown on the public page. Defaults to empty string. */
+  description: Scalars['String']['output'];
+  /** Stable UUID identifier. */
+  id: Scalars['ID']['output'];
+  /** Embedded media with both retained payload slots and the raw `muxVideoId`, so the editor can restore a parked link/upload. `null` only when the page has no media row. */
+  media?: Maybe<TemplateGalleryPageMediaAdmin>;
+  /**
+   * Optional https URL of a hero/cover media asset shown on the public page. https-only on write.
+   * @deprecated Superseded by the `media` relation (NES-1704). Retained on legacy rows behind the LD flag; not written by new UI.
+   */
+  mediaUrl?: Maybe<Scalars['String']['output']>;
+  /** Timestamp of the first publish event. Monotonic — never re-set on subsequent unpublish/republish, and never cleared. Null while the page has not yet been published. */
+  publishedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  /** URL-safe identifier. The public page is reached at `/collections/<slug>`. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`, max 200 characters, and must not be in the reserved list. Mutable after publish — changing it breaks any external links to the old URL. */
+  slug: Scalars['String']['output'];
+  /** `draft` hides the page from the public renderer; `published` exposes it via `templateGalleryPageBySlug`. */
+  status: TemplateGalleryPageStatus;
+  /** Owning team. The page is hard-deleted when the team is deleted. */
+  team: Team;
+  /** Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only. Each item is the narrow `TemplateGalleryItem` DTO, NOT the full `Journey` type. */
   templates: Array<TemplateGalleryItem>;
   /** Display title shown in admin UI and on the public page. */
   title: Scalars['String']['output'];
@@ -5249,38 +5285,58 @@ export type TemplateGalleryPageCreateInput = {
   title: Scalars['String']['input'];
 };
 
-/** Media attached to a TemplateGalleryPage. `type` discriminates the populated fields: `link` populates `embedUrl`; `mux` populates `muxPlaybackId` (plus `muxName`/`muxDuration`). All fields source directly from the stored row so public-page reads never cross to the media database. */
+/** Public media attached to a TemplateGalleryPage. Exposes only the payload selected by `type` (`link` → `embedUrl`; `mux` → `muxPlaybackId`/`muxName`/`muxDuration`; `none` → nothing). Parked payloads for the non-active slot are never exposed. All fields source directly from the stored row so public-page reads never cross to the media database. */
 export type TemplateGalleryPageMedia = {
   __typename?: 'TemplateGalleryPageMedia';
-  /** Server-normalized iframe URL. Populated for `link`; null for `mux`. */
+  /** Server-normalized iframe URL. Non-null only when `type` is `link`. */
   embedUrl?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  /** Video duration in seconds, denormalized from MuxVideo at save time. Populated for `mux` when Mux reports a duration; null for `link`. */
+  /** Video duration in seconds, denormalized at save time. Non-null only when `type` is `mux` and Mux reports a duration. */
   muxDuration?: Maybe<Scalars['Int']['output']>;
-  /** Video name, denormalized from MuxVideo at save time. Populated for `mux` when Mux has a name; null for `link`. */
+  /** Video name, denormalized at save time. Non-null only when `type` is `mux` and Mux has a name. */
   muxName?: Maybe<Scalars['String']['output']>;
-  /** Mux playback ID, denormalized from MuxVideo at save time so public reads never cross to the media DB. Populated for `mux`; null for `link`. */
+  /** Mux playback ID, denormalized at save time so public reads never cross to the media DB. Non-null only when `type` is `mux`. */
   muxPlaybackId?: Maybe<Scalars['String']['output']>;
-  /** Discriminator for which underlying field is populated. */
+  /** Active selector for which payload renders. */
   type: TemplateGalleryPageMediaType;
 };
 
-/** Discriminated input for attaching media to a TemplateGalleryPage. When `type` is `link`, supply `url` (server-validated and normalized per provider). When `type` is `mux`, supply `muxVideoId` (validated against the media DB). */
-export type TemplateGalleryPageMediaInput = {
-  /** The Mux video id to attach. Required when `type` is `mux`; must be omitted when `type` is `link`. */
-  muxVideoId?: InputMaybe<Scalars['ID']['input']>;
-  /** Discriminator selecting which other field is required. */
+/** Authenticated media projection for the editor. Exposes the full row, including both retained payload slots and the raw `muxVideoId`, so a parked link/upload can be restored. Returned only by authenticated, team-scoped read paths. */
+export type TemplateGalleryPageMediaAdmin = {
+  __typename?: 'TemplateGalleryPageMediaAdmin';
+  /** The stored link payload. May be retained while `type` is `mux`/`none` so the editor can offer switching back. */
+  embedUrl?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  /** Video duration in seconds denormalized at save time. Tracks `muxVideoId`. */
+  muxDuration?: Maybe<Scalars['Int']['output']>;
+  /** Video name denormalized at save time. Tracks `muxVideoId`. */
+  muxName?: Maybe<Scalars['String']['output']>;
+  /** Mux playback ID denormalized at save time. Tracks `muxVideoId`. */
+  muxPlaybackId?: Maybe<Scalars['String']['output']>;
+  /** Raw Mux video id of the stored upload payload. Authenticated-only — never exposed on the public type. */
+  muxVideoId?: Maybe<Scalars['ID']['output']>;
+  /** Active selector for which payload renders. */
   type: TemplateGalleryPageMediaType;
-  /** The pasted embed URL. Required when `type` is `link`; must be omitted when `type` is `mux`. */
+};
+
+/** Input for attaching media to a TemplateGalleryPage. `type` (`link`/`mux`/`none`) selects what renders; both payload slots may stay populated at once. For `url` and `muxVideoId`: omit to leave the stored value, pass `null` to clear that slot, or pass a value to set/replace it. */
+export type TemplateGalleryPageMediaInput = {
+  /** The Mux upload slot. Omit to leave unchanged, `null` to clear, or a value to set/replace (validated against the media DB). */
+  muxVideoId?: InputMaybe<Scalars['ID']['input']>;
+  /** Active selector: which payload renders (`link`/`mux`/`none`). Required. */
+  type: TemplateGalleryPageMediaType;
+  /** The embed URL slot. Omit to leave unchanged, `null` to clear, or a value to set/replace (server-validated and normalized per provider). Provider verification varies: Canva and YouTube are confirmed via oEmbed, but Google Slides is shape-validated only (a published-shaped URL that is actually private or non-existent passes validation), so a stored Google Slides embed is not guaranteed to render. */
   url?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** Discriminator for the media attached to a TemplateGalleryPage. Determines which underlying fields are populated. */
+/** Active selector for the media attached to a TemplateGalleryPage: which payload renders. Both payload slots may stay populated regardless of this value, so switching never discards a payload. */
 export enum TemplateGalleryPageMediaType {
-  /** An embeddable URL (Canva, YouTube, Google Slides, or an allowlisted host). `embedUrl` is populated; the Mux fields are null. */
+  /** Render the embed URL (`embedUrl`). */
   Link = 'link',
-  /** A Mux video upload. `muxPlaybackId` is populated; `embedUrl` is null. */
-  Mux = 'mux'
+  /** Render the Mux upload (`muxPlaybackId`). */
+  Mux = 'mux',
+  /** Render nothing. Any stored `embedUrl`/upload payload is retained but not shown; the public page treats this as no media. */
+  None = 'none'
 }
 
 /** Lifecycle state of a TemplateGalleryPage. Anonymous traffic via `templateGalleryPageBySlug` only sees `published` rows; drafts are hidden. */

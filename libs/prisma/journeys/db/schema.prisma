@@ -757,21 +757,25 @@ model TemplateGalleryPage {
 enum TemplateGalleryPageMediaType {
   link
   mux
+  none
 }
 
 model TemplateGalleryPageMedia {
   id                    String                       @id @default(uuid())
   templateGalleryPageId String                       @unique
+  /// Active selector: which payload renders. `link` shows embedUrl, `mux` shows
+  /// the upload, `none` shows nothing. Both payload slots may stay populated
+  /// regardless of `type` so switching back and forth never discards a payload.
   type                  TemplateGalleryPageMediaType
-  /// Populated for `link`, null for `mux`.
+  /// The link payload. May be retained while `type` is `mux`/`none`.
   embedUrl              String?
-  /// Cross-DB scalar (no @relation). Populated for `mux`, null for `link`.
+  /// Cross-DB scalar (no @relation). The upload payload; may be retained while `type` is `link`/`none`.
   muxVideoId            String?
-  /// Denormalized from MuxVideo.playbackId at save time. Populated for `mux`, null for `link`.
+  /// Denormalized from MuxVideo.playbackId at save time. Tracks `muxVideoId`.
   muxPlaybackId         String?
-  /// Denormalized from MuxVideo.name at save time. Populated for `mux`, null for `link`.
+  /// Denormalized from MuxVideo.name at save time. Tracks `muxVideoId`.
   muxName               String?
-  /// Denormalized from MuxVideo.duration (seconds) at save time. Populated for `mux`, null for `link`.
+  /// Denormalized from MuxVideo.duration (seconds) at save time. Tracks `muxVideoId`.
   muxDuration           Int?
   createdAt             DateTime                     @default(now())
   updatedAt             DateTime                     @updatedAt

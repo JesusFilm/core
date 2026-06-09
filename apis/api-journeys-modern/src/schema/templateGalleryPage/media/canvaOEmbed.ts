@@ -21,6 +21,15 @@ const CANONICAL_DESIGN_PATH =
 const CANVA_LINK_HOST = 'canva.link'
 const CANVA_DESIGN_HOSTS = new Set(['canva.com', 'www.canva.com'])
 
+// Defense-in-depth host pin for the oEmbed-returned iframe src. Suffix match on
+// canva.com (rather than the exact CANVA_DESIGN_HOSTS set) so legitimate Canva
+// subdomains/CDN hosts still pass, while a poisoned oEmbed response pointing at
+// a foreign host is rejected.
+function isCanvaHost(hostname: string): boolean {
+  const host = hostname.toLowerCase()
+  return host === 'canva.com' || host.endsWith('.canva.com')
+}
+
 // Redirect hops resolveShareLink will follow before failing closed. canva.link
 // resolves in 1-2 hops in practice; the cap exists so a hostile chain can't
 // chew through Node's default ~20 follows.
@@ -173,12 +182,18 @@ async function normalize(url: string): Promise<{ embedUrl: string }> {
     // to user input — closes a `javascript:`/`data:` injection vector if the
     // oEmbed response is ever poisoned. This throws hard; it must NOT fall
     // through to the regex fallback.
-    //
-    // Trust boundary: the returned `src` host is NOT re-checked against the
-    // allowlist — only https is enforced here. We trust Canva's own oEmbed
-    // endpoint to return a Canva-hosted iframe URL, so the src host is
-    // unconstrained beyond the https scheme.
     assertHttpsUrl(src, 'url')
+    // Defense-in-depth: pin the returned host to Canva. The src is rendered in
+    // a public iframe, so a poisoned/compromised oEmbed response must not be
+    // able to plant an arbitrary https host on a public page. Suffix-matched on
+    // canva.com so legitimate Canva subdomains pass; anything else fails closed.
+    let srcParsed: URL
+    try {
+      srcParsed = new URL(src)
+    } catch {
+      throw canvaUnavailable()
+    }
+    if (!isCanvaHost(srcParsed.hostname)) throw canvaUnavailable()
     return { embedUrl: src }
   }
   return canvaRegexFallback(resolvedUrl)

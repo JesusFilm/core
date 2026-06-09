@@ -480,6 +480,43 @@ describe('templateGalleryPageCreate', () => {
       })
     })
 
+    it('wraps a media-row P2002 as CONFLICT (no slug retry)', async () => {
+      mockLinkValidate.mockResolvedValue({
+        embedUrl: 'https://www.youtube-nocookie.com/embed/abc'
+      })
+      prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
+      prismaMock.journey.findMany.mockResolvedValue([] as any)
+      prismaMock.templateGalleryPage.create.mockResolvedValue({
+        id: 'p1'
+      } as any)
+      const p2002 = new Prisma.PrismaClientKnownRequestError(
+        'unique constraint failed',
+        {
+          code: 'P2002',
+          clientVersion: '7.0.0',
+          meta: { target: ['templateGalleryPageId'] }
+        }
+      )
+      prismaMock.templateGalleryPageMedia.create.mockRejectedValue(p2002)
+
+      const result = (await authClient({
+        document: TEMPLATE_GALLERY_PAGE_CREATE_WITH_MEDIA,
+        variables: {
+          input: {
+            teamId: 'team-1',
+            title: 'X',
+            creatorName: 'Alice',
+            media: { type: 'link', url: 'https://www.youtube.com/watch?v=abc' }
+          }
+        }
+      })) as any
+
+      expect(result.errors?.[0]?.extensions?.code).toBe('CONFLICT')
+      expect(result.errors?.[0]?.extensions?.field).toBe('media')
+      // the media P2002 must NOT trigger the slug-regenerating retry
+      expect(prismaMock.templateGalleryPage.create).toHaveBeenCalledTimes(1)
+    })
+
     it('creates a mux media row and returns the media relation', async () => {
       mockMuxValidate.mockResolvedValue({
         muxVideoId: 'vid-1',
@@ -552,14 +589,56 @@ describe('templateGalleryPageCreate', () => {
       }
     )
 
-    it.each([
-      [
-        'link with a muxVideoId',
-        { type: 'link', url: 'https://x', muxVideoId: 'v' }
-      ],
-      ['mux with a url', { type: 'mux', muxVideoId: 'v', url: 'https://x' }],
-      ['link with no url', { type: 'link' }]
-    ])('rejects %s with MEDIA_INPUT_SHAPE_MISMATCH', async (_label, media) => {
+    it('creates a row with both payload slots populated at once', async () => {
+      mockLinkValidate.mockResolvedValue({
+        embedUrl: 'https://www.youtube-nocookie.com/embed/abc'
+      })
+      mockMuxValidate.mockResolvedValue({
+        muxVideoId: 'vid-1',
+        muxPlaybackId: 'pb_x',
+        muxName: 'My clip',
+        muxDuration: 125
+      })
+      mockPageRead({
+        id: 'm1',
+        type: 'link',
+        embedUrl: 'e',
+        muxPlaybackId: 'pb_x'
+      })
+
+      const result = (await authClient({
+        document: TEMPLATE_GALLERY_PAGE_CREATE_WITH_MEDIA,
+        variables: {
+          input: {
+            teamId: 'team-1',
+            title: 'X',
+            creatorName: 'Alice',
+            media: {
+              type: 'link',
+              url: 'https://www.youtube.com/watch?v=abc',
+              muxVideoId: 'vid-1'
+            }
+          }
+        }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(prismaMock.templateGalleryPageMedia.create).toHaveBeenCalledWith({
+        data: {
+          templateGalleryPageId: 'p1',
+          type: 'link',
+          embedUrl: 'https://www.youtube-nocookie.com/embed/abc',
+          muxVideoId: 'vid-1',
+          muxPlaybackId: 'pb_x',
+          muxName: 'My clip',
+          muxDuration: 125
+        }
+      })
+    })
+
+    it('rejects an empty url string with MEDIA_INPUT_SHAPE_MISMATCH', async () => {
+      // type is a required GraphQL enum so a bad/missing type is caught at
+      // validation; an empty-string url is the case that reaches the zod guard.
       prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
       prismaMock.journey.findMany.mockResolvedValue([] as any)
 
@@ -570,7 +649,7 @@ describe('templateGalleryPageCreate', () => {
             teamId: 'team-1',
             title: 'X',
             creatorName: 'Alice',
-            media: media as any
+            media: { type: 'link', url: '' }
           }
         }
       })) as any

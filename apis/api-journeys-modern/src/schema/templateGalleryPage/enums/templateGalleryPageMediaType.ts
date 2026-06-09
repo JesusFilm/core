@@ -7,15 +7,17 @@ export const TemplateGalleryPageMediaType = builder.enumType(
   {
     name: 'TemplateGalleryPageMediaType',
     description:
-      'Discriminator for the media attached to a TemplateGalleryPage. Determines which underlying fields are populated.',
+      'Active selector for the media attached to a TemplateGalleryPage: which payload renders. Both payload slots may stay populated regardless of this value, so switching never discards a payload.',
     values: {
       link: {
-        description:
-          'An embeddable URL (Canva, YouTube, Google Slides, or an allowlisted host). `embedUrl` is populated; the Mux fields are null.'
+        description: 'Render the embed URL (`embedUrl`).'
       },
       mux: {
+        description: 'Render the Mux upload (`muxPlaybackId`).'
+      },
+      none: {
         description:
-          'A Mux video upload. `muxPlaybackId` is populated; `embedUrl` is null.'
+          'Render nothing. Any stored `embedUrl`/upload payload is retained but not shown; the public page treats this as no media.'
       }
     }
   }

@@ -5,7 +5,7 @@ import { prisma } from '@core/prisma/journeys/client'
 import { isInTeam } from '../authScopes'
 import { builder } from '../builder'
 
-import { TemplateGalleryPageRef } from './templateGalleryPage'
+import { TemplateGalleryPageAdminRef } from './templateGalleryPage'
 
 // Authenticated read-by-id. Mirrors the auth pattern of
 // templateGalleryPageDelete.mutation.ts: load the row by id to learn its
@@ -16,7 +16,7 @@ builder.queryField('templateGalleryPage', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
       "Read a single TemplateGalleryPage by id. Returns both `draft` and `published` rows — use this for in-team authenticated reads (e.g. an admin viewing or QA-ing their own team's drafts). Anonymous viewers must use `templateGalleryPageBySlug`, which only returns published pages.\n\nAuth: caller must be a member of the page's team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the page's team.",
-    type: TemplateGalleryPageRef,
+    type: TemplateGalleryPageAdminRef,
     nullable: false,
     args: {
       id: t.arg({

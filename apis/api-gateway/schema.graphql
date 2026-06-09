@@ -411,7 +411,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.
   - BAD_USER_INPUT (field: `slug`): the title normalizes to empty or to a reserved word.
   """
-  templateGalleryPageCreate(input: TemplateGalleryPageCreateInput!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
+  templateGalleryPageCreate(input: TemplateGalleryPageCreateInput!) : TemplateGalleryPageAdmin! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Update editable fields of a TemplateGalleryPage. All input fields are optional: a field omitted leaves the existing value alone, a field set to `null` clears it (where the field is nullable). When `input.journeyIds` is provided, the page's template list is replaced — existing assignments are deleted and recreated in the given order. Single-membership is enforced: if any supplied journey id is currently a member of another TemplateGalleryPage, the call fails before any write. Allowed on both `draft` and `published` pages (publishers can correct typos and curate the template list while live).
   
@@ -430,7 +430,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     """
     id: ID!
     input: TemplateGalleryPageUpdateInput!
-  ): TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
+  ): TemplateGalleryPageAdmin! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Transition a `draft` page to `published`, stamping `publishedAt` on the first publish only. Idempotent: calling on an already-published page is a no-op (no state change, no re-stamp of `publishedAt`).
   
@@ -443,7 +443,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   templateGalleryPagePublish("""
   Stable page identifier.
   """
-  id: ID!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
+  id: ID!) : TemplateGalleryPageAdmin! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Transition a `published` page back to `draft`. `publishedAt` is intentionally NOT cleared — the historical first-publish timestamp is preserved across unpublish/republish cycles. Idempotent: calling on an already-draft page is a no-op.
   
@@ -456,7 +456,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   templateGalleryPageUnpublish("""
   Stable page identifier.
   """
-  id: ID!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
+  id: ID!) : TemplateGalleryPageAdmin! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Assign a journey to a TemplateGalleryPage, or unassign it. A journey may belong to at most one page at a time (single-membership invariant).
   
@@ -482,7 +482,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     Target page id. Omit or pass `null` to unassign the journey from whatever page currently owns it (returning it to the flat template list). When set, the journey is moved into this page (and removed from any current source page in the same transaction).
     """
     pageId: ID
-  ): TemplateGalleryPage @join__field(graph: API_JOURNEYS_MODERN) 
+  ): TemplateGalleryPageAdmin @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Reorder a single template within a TemplateGalleryPage by addressing the destination as a 0-based display index. The page is renumbered to contiguous orders 0..N-1 after the move so the next reorder sees a clean range. Allowed on both `draft` and `published` pages (the frontend gates the UX; the backend accepts unconditionally for symmetry with `templateGalleryPageUpdate` and `templateGalleryPageAssignJourney`).
   
@@ -509,7 +509,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     0-based display index in the page's CURRENT template list, NOT the stored `order` column value. Range: `0 <= order < count(templates in page)`. The underlying `order` column may be gappy from prior assign/unassign churn; the resolver translates the display index into the correct splice position and renumbers the page contiguously.
     """
     order: Int!
-  ): TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
+  ): TemplateGalleryPageAdmin! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Hard-delete a TemplateGalleryPage. Cascades through `TemplateGalleryPageTemplate` join rows automatically; the underlying `Journey` rows are NOT deleted. Returns the deleted page (last canonical view).
   
@@ -522,7 +522,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   templateGalleryPageDelete("""
   Stable page identifier.
   """
-  id: ID!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
+  id: ID!) : TemplateGalleryPageAdmin! @join__field(graph: API_JOURNEYS_MODERN) 
   userDeleteJourneysCheck(userId: String!) : UserDeleteJourneysCheckResult! @join__field(graph: API_JOURNEYS_MODERN) 
   userDeleteJourneysConfirm(userId: String!) : UserDeleteJourneysConfirmResult! @join__field(graph: API_JOURNEYS_MODERN) 
   audioPreviewCreate(input: MutationAudioPreviewCreateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
@@ -1826,7 +1826,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   templateGalleryPage("""
   Stable page identifier.
   """
-  id: ID!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
+  id: ID!) : TemplateGalleryPageAdmin! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Public, unauthenticated read by slug. Returns the TemplateGalleryPage with the given slug, but ONLY if the page is currently `published`. Returns null for: unknown slug, draft slug, malformed slug (does not match `^[a-z0-9]+(-[a-z0-9]+)*$`), or slug exceeding 200 characters. Authenticated readers fetching their own team's drafts should use `templateGalleryPage(id)` or `templateGalleryPages(teamId)` instead.
   """
@@ -1844,7 +1844,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   templateGalleryPages("""
   Owning team. Caller must be a member.
   """
-  teamId: ID!) : [TemplateGalleryPage!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  teamId: ID!) : [TemplateGalleryPageAdmin!]! @join__field(graph: API_JOURNEYS_MODERN) 
   getUserRole: UserRole @join__field(graph: API_JOURNEYS_MODERN) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
@@ -2770,34 +2770,127 @@ type TemplateGalleryPage @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   templates: [TemplateGalleryItem!]!
   """
-  Embedded media shown on the public page. `null` for legacy rows that predate the multi-type embed (which used the deprecated `mediaUrl` scalar).
+  Embedded media shown on the public page, or `null` when nothing renders (no media, `type: none`, or the active slot is empty). Only the active payload is ever exposed; parked payloads are not.
   """
   media: TemplateGalleryPageMedia
 }
 
 """
-Media attached to a TemplateGalleryPage. `type` discriminates the populated fields: `link` populates `embedUrl`; `mux` populates `muxPlaybackId` (plus `muxName`/`muxDuration`). All fields source directly from the stored row so public-page reads never cross to the media database.
+Authenticated projection of a TemplateGalleryPage, returned by team-scoped reads and mutations. Identical to the public type except `media` exposes the full row (both retained payload slots + raw `muxVideoId`) so the editor can restore a parked payload.
+"""
+type TemplateGalleryPageAdmin @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Stable UUID identifier.
+  """
+  id: ID!
+  """
+  Display title shown in admin UI and on the public page.
+  """
+  title: String!
+  """
+  Long-form description shown on the public page. Defaults to empty string.
+  """
+  description: String!
+  """
+  URL-safe identifier. The public page is reached at `/collections/<slug>`. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`, max 200 characters, and must not be in the reserved list. Mutable after publish — changing it breaks any external links to the old URL.
+  """
+  slug: String!
+  """
+  `draft` hides the page from the public renderer; `published` exposes it via `templateGalleryPageBySlug`.
+  """
+  status: TemplateGalleryPageStatus!
+  """
+  Display name of the team or person credited as the page creator.
+  """
+  creatorName: String!
+  """
+  Optional https URL of the creator avatar image. Plain string (not a Block FK) — survives independently of any owning Block. https-only on write.
+  """
+  creatorImageSrc: String
+  """
+  Optional alt text for the creator avatar.
+  """
+  creatorImageAlt: String
+  """
+  Optional https URL of a hero/cover media asset shown on the public page. https-only on write.
+  """
+  mediaUrl: String @deprecated(
+    reason: "Superseded by the `media` relation (NES-1704). Retained on legacy rows behind the LD flag; not written by new UI."
+  )
+  """
+  Timestamp of the first publish event. Monotonic — never re-set on subsequent unpublish/republish, and never cleared. Null while the page has not yet been published.
+  """
+  publishedAt: DateTimeISO
+  createdAt: DateTimeISO!
+  updatedAt: DateTimeISO!
+  """
+  Owning team. The page is hard-deleted when the team is deleted.
+  """
+  team: Team!
+  """
+  Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only. Each item is the narrow `TemplateGalleryItem` DTO, NOT the full `Journey` type.
+  """
+  templates: [TemplateGalleryItem!]!
+  """
+  Embedded media with both retained payload slots and the raw `muxVideoId`, so the editor can restore a parked link/upload. `null` only when the page has no media row.
+  """
+  media: TemplateGalleryPageMediaAdmin
+}
+
+"""
+Public media attached to a TemplateGalleryPage. Exposes only the payload selected by `type` (`link` → `embedUrl`; `mux` → `muxPlaybackId`/`muxName`/`muxDuration`; `none` → nothing). Parked payloads for the non-active slot are never exposed. All fields source directly from the stored row so public-page reads never cross to the media database.
 """
 type TemplateGalleryPageMedia @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
   """
-  Discriminator for which underlying field is populated.
+  Active selector for which payload renders.
   """
   type: TemplateGalleryPageMediaType!
   """
-  Server-normalized iframe URL. Populated for `link`; null for `mux`.
+  Server-normalized iframe URL. Non-null only when `type` is `link`.
   """
   embedUrl: String
   """
-  Mux playback ID, denormalized from MuxVideo at save time so public reads never cross to the media DB. Populated for `mux`; null for `link`.
+  Mux playback ID, denormalized at save time so public reads never cross to the media DB. Non-null only when `type` is `mux`.
   """
   muxPlaybackId: String
   """
-  Video name, denormalized from MuxVideo at save time. Populated for `mux` when Mux has a name; null for `link`.
+  Video name, denormalized at save time. Non-null only when `type` is `mux` and Mux has a name.
   """
   muxName: String
   """
-  Video duration in seconds, denormalized from MuxVideo at save time. Populated for `mux` when Mux reports a duration; null for `link`.
+  Video duration in seconds, denormalized at save time. Non-null only when `type` is `mux` and Mux reports a duration.
+  """
+  muxDuration: Int
+}
+
+"""
+Authenticated media projection for the editor. Exposes the full row, including both retained payload slots and the raw `muxVideoId`, so a parked link/upload can be restored. Returned only by authenticated, team-scoped read paths.
+"""
+type TemplateGalleryPageMediaAdmin @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID!
+  """
+  Active selector for which payload renders.
+  """
+  type: TemplateGalleryPageMediaType!
+  """
+  The stored link payload. May be retained while `type` is `mux`/`none` so the editor can offer switching back.
+  """
+  embedUrl: String
+  """
+  Raw Mux video id of the stored upload payload. Authenticated-only — never exposed on the public type.
+  """
+  muxVideoId: ID
+  """
+  Mux playback ID denormalized at save time. Tracks `muxVideoId`.
+  """
+  muxPlaybackId: String
+  """
+  Video name denormalized at save time. Tracks `muxVideoId`.
+  """
+  muxName: String
+  """
+  Video duration in seconds denormalized at save time. Tracks `muxVideoId`.
   """
   muxDuration: Int
 }
@@ -4096,17 +4189,21 @@ enum TemplateGalleryPageStatus @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 """
-Discriminator for the media attached to a TemplateGalleryPage. Determines which underlying fields are populated.
+Active selector for the media attached to a TemplateGalleryPage: which payload renders. Both payload slots may stay populated regardless of this value, so switching never discards a payload.
 """
 enum TemplateGalleryPageMediaType @join__type(graph: API_JOURNEYS_MODERN)  {
   """
-  An embeddable URL (Canva, YouTube, Google Slides, or an allowlisted host). `embedUrl` is populated; the Mux fields are null.
+  Render the embed URL (`embedUrl`).
   """
   link @join__enumValue(graph: API_JOURNEYS_MODERN) 
   """
-  A Mux video upload. `muxPlaybackId` is populated; `embedUrl` is null.
+  Render the Mux upload (`muxPlaybackId`).
   """
   mux @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  """
+  Render nothing. Any stored `embedUrl`/upload payload is retained but not shown; the public page treats this as no media.
+  """
+  none @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum USER_DELETE_LOG_LEVEL @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  {
@@ -5180,19 +5277,19 @@ input TemplateGalleryPageCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 """
-Discriminated input for attaching media to a TemplateGalleryPage. When `type` is `link`, supply `url` (server-validated and normalized per provider). When `type` is `mux`, supply `muxVideoId` (validated against the media DB).
+Input for attaching media to a TemplateGalleryPage. `type` (`link`/`mux`/`none`) selects what renders; both payload slots may stay populated at once. For `url` and `muxVideoId`: omit to leave the stored value, pass `null` to clear that slot, or pass a value to set/replace it.
 """
 input TemplateGalleryPageMediaInput @join__type(graph: API_JOURNEYS_MODERN)  {
   """
-  Discriminator selecting which other field is required.
+  Active selector: which payload renders (`link`/`mux`/`none`). Required.
   """
   type: TemplateGalleryPageMediaType!
   """
-  The pasted embed URL. Required when `type` is `link`; must be omitted when `type` is `mux`.
+  The embed URL slot. Omit to leave unchanged, `null` to clear, or a value to set/replace (server-validated and normalized per provider). Provider verification varies: Canva and YouTube are confirmed via oEmbed, but Google Slides is shape-validated only (a published-shaped URL that is actually private or non-existent passes validation), so a stored Google Slides embed is not guaranteed to render.
   """
   url: String
   """
-  The Mux video id to attach. Required when `type` is `mux`; must be omitted when `type` is `link`.
+  The Mux upload slot. Omit to leave unchanged, `null` to clear, or a value to set/replace (validated against the media DB).
   """
   muxVideoId: ID
 }

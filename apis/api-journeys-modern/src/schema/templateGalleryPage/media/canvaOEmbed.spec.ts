@@ -38,6 +38,40 @@ describe('canvaSpec.normalize', () => {
     ).rejects.toThrow(/https/)
   })
 
+  it('fails closed when the oEmbed src points at a non-canva host', async () => {
+    // https is satisfied, but the host pin must reject a foreign iframe src so
+    // a poisoned oEmbed response can't plant an arbitrary host on a public page.
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        html: '<iframe src="https://evil.example.com/design/DAF123/abc/view?embed"></iframe>'
+      })
+    })
+
+    await expect(
+      canvaSpec.normalize('https://www.canva.com/design/DAF123/abc/edit')
+    ).rejects.toMatchObject({
+      extensions: { reason: 'CANVA_UNAVAILABLE' }
+    })
+  })
+
+  it('accepts an oEmbed src on a canva.com subdomain', async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        html: '<iframe src="https://embed.canva.com/design/DAF123/abc/view?embed"></iframe>'
+      })
+    })
+
+    await expect(
+      canvaSpec.normalize('https://www.canva.com/design/DAF123/abc/edit')
+    ).resolves.toEqual({
+      embedUrl: 'https://embed.canva.com/design/DAF123/abc/view?embed'
+    })
+  })
+
   it('falls back to a /view?embed rewrite for a canonical URL when oEmbed fails', async () => {
     fetchMock.mockResolvedValue({ ok: false, status: 503 })
 
