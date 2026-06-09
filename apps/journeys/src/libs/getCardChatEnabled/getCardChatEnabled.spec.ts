@@ -150,5 +150,4 @@ describe('getCardChatEnabled', () => {
       expect.any(String)
     )
   })
-
 })
