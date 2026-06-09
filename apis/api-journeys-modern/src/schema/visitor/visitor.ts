@@ -1,7 +1,12 @@
-import { prisma } from '@core/prisma/journeys/client'
+import {
+  UserJourneyRole,
+  UserTeamRole,
+  prisma
+} from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 import { MessagePlatform } from '../enums'
+import { EventInterface } from '../event/event'
 
 import { VisitorStatus } from './enums'
 import { UserAgentRef } from './userAgent'
@@ -46,7 +51,43 @@ export const VisitorRef = builder.prismaObject('Visitor', {
       nullable: true
     }),
     referrer: t.exposeString('referrer', { nullable: true }),
-    events: t.relation('events', { nullable: false })
+    events: t.field({
+      type: [EventInterface],
+      nullable: false,
+      resolve: async (visitor, _args, context) => {
+        if (context.type !== 'authenticated') return []
+
+        const userId = context.user.id
+        const events = await prisma.event.findMany({
+          where: { visitorId: visitor.id },
+          include: {
+            journey: {
+              include: {
+                userJourneys: true,
+                team: { include: { userTeams: true } }
+              }
+            }
+          }
+        })
+
+        return events.filter((event) => {
+          if (event.journey == null) return false
+
+          const isTeamMember = event.journey.team?.userTeams.some(
+            (ut) =>
+              ut.userId === userId &&
+              (ut.role === UserTeamRole.manager ||
+                ut.role === UserTeamRole.member)
+          )
+          if (isTeamMember === true) return true
+
+          const isJourneyOwner = event.journey.userJourneys?.some(
+            (uj) => uj.userId === userId && uj.role === UserJourneyRole.owner
+          )
+          return isJourneyOwner === true
+        })
+      }
+    })
   })
 })
 
