@@ -1353,5 +1353,8 @@
   "Could not load your videos.": "Could not load your videos.",
   "Select uploaded video": "Select uploaded video",
   "Select image": "Select image",
-  "This video didn't finish uploading. Remove it or try again.": "This video didn't finish uploading. Remove it or try again."
+  "This video didn't finish uploading. Remove it or try again.": "This video didn't finish uploading. Remove it or try again.",
+  "Used in the public URL. Must be unique across all collections — changing it breaks existing links.": "Used in the public URL. Must be unique across all collections — changing it breaks existing links.",
+  "Your uploaded video will appear here": "Your uploaded video will appear here",
+  "No media will be shown on the public page.": "No media will be shown on the public page."
 }

@@ -479,7 +479,7 @@ function CollectionDialogContent({
                                   helperText={
                                     (touched.slug === true && errors.slug) ||
                                     t(
-                                      'Used in the public URL. Must be unique across your collections — changing it breaks existing links.'
+                                      'Used in the public URL. Must be unique across all collections — changing it breaks existing links.'
                                     )
                                   }
                                 />
