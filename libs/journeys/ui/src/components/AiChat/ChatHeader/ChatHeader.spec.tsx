@@ -8,9 +8,13 @@ vi.mock('next-i18next/pages', () => ({
 
 describe('ChatHeader', () => {
   it('renders the title and caption', () => {
-    const { getByText } = render(<ChatHeader />)
+    const { getByText, getByRole } = render(<ChatHeader />)
     expect(getByText('Ask a question')).toBeInTheDocument()
-    expect(getByText('Replies may not be perfect')).toBeInTheDocument()
+    expect(getByText(/Replies may not be perfect/)).toBeInTheDocument()
+    const link = getByRole('link', { name: 'About this chat' })
+    expect(link).toHaveAttribute('href', '/legal/about-chat')
+    expect(link).toHaveAttribute('target', '_blank')
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer')
   })
 
   it('renders the animated mark in both states', () => {
