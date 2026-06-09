@@ -28,6 +28,12 @@ vi.mock('next-i18next/pages', async () => ({
   })
 }))
 
+vi.mock('./HeroVideo', () => ({
+  HeroVideo: ({ isFullscreen }: { isFullscreen: boolean }) => (
+    <div data-testid="HeroVideo" data-is-fullscreen={isFullscreen} />
+  )
+}))
+
 const mockedFscreen = fscreen
 
 const originalScrollTo = window.scrollTo
@@ -73,6 +79,59 @@ describe('VideoContentHero', () => {
       'fullscreenchange',
       listener
     )
+  })
+
+  it('remounts HeroVideo when variant id changes and HLS stays the same', () => {
+    const firstContent = videos[0]
+    const firstVariant = firstContent.variant
+
+    if (firstVariant == null) throw new Error('Expected test video variant')
+
+    const secondContent = {
+      ...firstContent,
+      variant: {
+        ...firstVariant,
+        id: 'duplicate-language-variant',
+        slug: 'jesus/duplicate-language',
+        hls: firstVariant.hls
+      }
+    }
+
+    const { rerender, getByTestId } = render(
+      <MockedProvider>
+        <VideoProvider value={{ content: firstContent }}>
+          <WatchProvider
+            initialState={{
+              audioLanguageId: '529',
+              subtitleLanguageId: '529',
+              subtitleOn: false
+            }}
+          >
+            <VideoContentHero isFullscreen={false} />
+          </WatchProvider>
+        </VideoProvider>
+      </MockedProvider>
+    )
+
+    const firstHeroVideo = getByTestId('HeroVideo')
+
+    rerender(
+      <MockedProvider>
+        <VideoProvider value={{ content: secondContent }}>
+          <WatchProvider
+            initialState={{
+              audioLanguageId: '529',
+              subtitleLanguageId: '529',
+              subtitleOn: false
+            }}
+          >
+            <VideoContentHero isFullscreen={false} />
+          </WatchProvider>
+        </VideoProvider>
+      </MockedProvider>
+    )
+
+    expect(getByTestId('HeroVideo')).not.toBe(firstHeroVideo)
   })
 
   describe('fullscreenchange handler', () => {
