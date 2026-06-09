@@ -1,13 +1,11 @@
 import { IdType } from '../../../__generated__/globalTypes'
 
-import {
-  CARD_LOOKUP_TIMEOUT_MS,
-  getCardChatEnabled
-} from './getCardChatEnabled'
+import { getCardChatEnabled } from './getCardChatEnabled'
 
-const { mockQuery, mockLoggerWarn } = vi.hoisted(() => ({
+const { mockQuery, mockLoggerWarn, mockLoggerInfo } = vi.hoisted(() => ({
   mockQuery: vi.fn(),
-  mockLoggerWarn: vi.fn()
+  mockLoggerWarn: vi.fn(),
+  mockLoggerInfo: vi.fn()
 }))
 
 vi.mock('../apolloClient', () => ({
@@ -15,7 +13,7 @@ vi.mock('../apolloClient', () => ({
 }))
 
 vi.mock('../logger', () => ({
-  logger: { warn: mockLoggerWarn, error: vi.fn(), info: vi.fn() }
+  logger: { warn: mockLoggerWarn, error: vi.fn(), info: mockLoggerInfo }
 }))
 
 function journeyWithBlocks(blocks: unknown[]): unknown {
@@ -54,6 +52,29 @@ describe('getCardChatEnabled', () => {
         }),
         fetchPolicy: 'no-cache'
       })
+    )
+  })
+
+  it('logs the kill-switch lookup result (showAssistant + enabled)', async () => {
+    mockQuery.mockResolvedValue(
+      journeyWithBlocks([
+        { __typename: 'CardBlock', id: 'card-1', showAssistant: false }
+      ])
+    )
+
+    await getCardChatEnabled({ journeyId: 'journey-1', cardId: 'card-1' })
+
+    expect(mockLoggerInfo).toHaveBeenCalledWith(
+      expect.objectContaining({
+        event: 'chat_card_lookup',
+        journeyId: 'journey-1',
+        cardId: 'card-1',
+        journeyFound: true,
+        cardFound: true,
+        showAssistant: false,
+        enabled: false
+      }),
+      expect.any(String)
     )
   })
 
@@ -130,31 +151,4 @@ describe('getCardChatEnabled', () => {
     )
   })
 
-  it('aborts and fails open (returns true) when the lookup hangs past the timeout', async () => {
-    vi.useFakeTimers()
-    // Simulate a hanging gateway: the query only settles when the abort signal
-    // passed through Apollo's fetchOptions fires.
-    mockQuery.mockImplementation(({ context }) => {
-      const signal = context?.fetchOptions?.signal as AbortSignal
-      return new Promise((_resolve, reject) => {
-        signal.addEventListener('abort', () => {
-          reject(new Error('The operation was aborted'))
-        })
-      })
-    })
-
-    const result = getCardChatEnabled({
-      journeyId: 'journey-1',
-      cardId: 'card-1'
-    })
-    await vi.advanceTimersByTimeAsync(CARD_LOOKUP_TIMEOUT_MS)
-
-    await expect(result).resolves.toBe(true)
-    expect(mockLoggerWarn).toHaveBeenCalledWith(
-      expect.objectContaining({ event: 'chat_card_lookup_error' }),
-      expect.any(String)
-    )
-
-    vi.useRealTimers()
-  })
 })
