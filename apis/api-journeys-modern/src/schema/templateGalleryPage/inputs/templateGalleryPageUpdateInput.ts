@@ -56,7 +56,7 @@ export const TemplateGalleryPageUpdateInput = builder.inputType(
         type: TemplateGalleryPageMediaInput,
         required: false,
         description:
-          'Embedded media. Omit to leave the existing media unchanged; pass `null` to clear it (deletes the media row); pass an object to replace it (validated and normalized per `type`).'
+          'Embedded media. Omit (or pass `null`) to leave the existing media untouched — there is no media delete. When an object is supplied, `type` (`link`/`mux`/`none`) selects what renders and each payload slot merges independently: for `url` and `muxVideoId`, omit to leave the stored value, pass `null` to clear that slot, or pass a value to set/replace it. Both slots may stay populated; hide everything with `type: none`.'
       })
     })
   }

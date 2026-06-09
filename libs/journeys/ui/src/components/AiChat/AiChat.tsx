@@ -3,6 +3,7 @@
 import { useChat } from '@ai-sdk/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 import { DefaultChatTransport, UIMessage } from 'ai'
 import { useTranslation } from 'next-i18next/pages'
@@ -17,6 +18,7 @@ import {
 } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { getCardChild, useBlocks } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 import { Actions } from '../Actions'
 import { Conversation } from '../Conversation'
@@ -28,8 +30,10 @@ import { ChatHeader } from './ChatHeader'
 import {
   HEADER_WASH,
   MUTED_FG,
+  OVERLAY_FG_MUTED,
   OVERLAY_FG_RETRY,
   OVERLAY_HERO_FG,
+  OVERLAY_LINK_FG,
   SHEET_BOTTOM_FADE
 } from './chatStyles'
 import { DragHandle } from './DragHandle'
@@ -104,10 +108,19 @@ function parseChatErrorCode(error: Error | undefined): string | undefined {
 const NON_RETRIABLE_CHAT_ERROR_CODES = new Set([
   'conversation_capped',
   'invalid_request',
-  'not_found'
+  'not_found',
+  // A card with chat disabled (NES-1679) is deterministic — re-firing 403s again.
+  'chat_disabled'
 ])
 
 const CONVERSATION_CAPPED_CODE = 'conversation_capped'
+// The card's chat was turned off server-side (NES-1679). We swap the generic
+// "try again" copy for an honest "turned off" message and hide Retry (it would
+// 403 again). The input deliberately stays usable: per the kill-switch design a
+// stale tab still shows the input and each send fails closed with a visible
+// message, and locking it would strand the user if they navigate to a card
+// where chat is still enabled (the error persists in the mounted chat).
+const CHAT_DISABLED_CODE = 'chat_disabled'
 
 const TYPEWRITER_CHARS_PER_SEC = 280
 
@@ -248,6 +261,15 @@ export function AiChat({
   const journeyIdRef = useRef(journeyId)
   journeyIdRef.current = journeyId
 
+  // The active card id (NES-1679) lets the server enforce the per-card chat
+  // kill switch. Read from the same global block history the rest of the viewer
+  // uses (Conductor, StepFooter), so it tracks card navigation without
+  // threading a prop through PinnedChatBar / ChatOverlay.
+  const { blockHistory } = useBlocks()
+  const cardId = getCardChild(blockHistory[blockHistory.length - 1])?.id
+  const cardIdRef = useRef(cardId)
+  cardIdRef.current = cardId
+
   const [sessionId, setSessionId] = useState<string | undefined>(() => {
     if (typeof window === 'undefined') return undefined
     // sessionStorage can throw in Safari private mode, sandboxed
@@ -273,7 +295,8 @@ export function AiChat({
         body: () => ({
           language: languageRef.current,
           sessionId: sessionIdRef.current,
-          journeyId: journeyIdRef.current
+          journeyId: journeyIdRef.current,
+          cardId: cardIdRef.current
         })
       }),
     []
@@ -308,6 +331,7 @@ export function AiChat({
 
   const errorCode = useMemo(() => parseChatErrorCode(error), [error])
   const isConversationCapped = errorCode === CONVERSATION_CAPPED_CODE
+  const isChatDisabled = errorCode === CHAT_DISABLED_CODE
   // Retriable by default so transient failures (network/5xx/mid-stream, which
   // carry no code) keep their Retry; hidden only for known deterministic codes.
   const canRetry =
@@ -578,7 +602,11 @@ export function AiChat({
                     ? t(
                         "This conversation's gotten long. Start a new one to keep chatting — this clears the current session."
                       )
-                    : t('Something went wrong. Please try again.')}
+                    : isChatDisabled
+                      ? t(
+                          'Chat has been turned off for this part of the journey.'
+                        )
+                      : t('Something went wrong. Please try again.')}
                 </Box>
               </Message>
               {isConversationCapped ? (
@@ -647,8 +675,9 @@ export function AiChat({
           bottom: 'calc(env(safe-area-inset-bottom) + 8px)',
           zIndex: 2,
           display: 'flex',
-          alignItems: 'center',
-          gap: 1,
+          flexDirection: 'column',
+          alignItems: 'stretch',
+          gap: 0.75,
           mx: 'auto',
           maxWidth: { xs: 'none', sm: '48rem' },
           // Slide the floating input out the bottom when the sheet is
@@ -662,17 +691,56 @@ export function AiChat({
             'transform 280ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease-out'
         }}
       >
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          <PromptInput
-            input={input}
-            onInputChange={setInput}
-            onSubmit={handleSubmit}
-            isLoading={isLoading}
-            onStop={stop}
-            disabled={isConversationCapped}
-            variant={isOverlay ? 'floating' : 'inline'}
-          />
-        </Box>
+        <PromptInput
+          input={input}
+          onInputChange={setInput}
+          onSubmit={handleSubmit}
+          isLoading={isLoading}
+          onStop={stop}
+          disabled={isConversationCapped}
+          variant={isOverlay ? 'floating' : 'inline'}
+        />
+        {isOverlay && (
+          // Overlay-only disclosure caption — sits directly under the
+          // floating input. On panel/mobile the same subtitle + link
+          // live in ChatHeader at the top of the sheet, so we don't
+          // duplicate them here. Inline-flow Typography lets long
+          // translations of the leading phrase wrap to a second line
+          // naturally; whiteSpace:nowrap on the link prevents the
+          // label itself from breaking mid-word.
+          <Typography
+            variant="caption"
+            sx={{
+              color: OVERLAY_FG_MUTED,
+              fontSize: 12,
+              lineHeight: '18px',
+              textAlign: 'center',
+              px: 1
+            }}
+          >
+            {t('Replies may not be perfect')}
+            {' · '}
+            <Link
+              href="/legal/about-chat"
+              target="_blank"
+              rel="noopener noreferrer"
+              underline="always"
+              sx={{
+                // OVERLAY_LINK_FG is a concrete brighter brand-red —
+                // see PANEL_LINK_FG note in ChatHeader for why we don't
+                // use 'primary.main'. The brighter variant keeps the
+                // label readable against the ~grey.900 overlay
+                // backdrop, where brandRed itself would be too dim.
+                color: OVERLAY_LINK_FG,
+                fontSize: 'inherit',
+                fontWeight: 600,
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {t('About this chat')}
+            </Link>
+          </Typography>
+        )}
       </Box>
     </Box>
   )

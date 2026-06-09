@@ -5275,7 +5275,7 @@ export type TemplateGalleryPageCreateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   /** Optional initial template journeys to attach. Cross-team and non-template ids are silently filtered out. */
   journeyIds?: InputMaybe<Array<Scalars['ID']['input']>>;
-  /** Optional embedded media. When `type` is `link`, the `url` is server-validated and normalized per provider; when `type` is `mux`, the `muxVideoId` is validated against the media DB. */
+  /** Optional embedded media. `type` (`link`/`mux`/`none`) selects what renders; supply `url` and/or `muxVideoId` to populate either slot (both may be set at once). `url` is server-validated and normalized per provider; `muxVideoId` is validated against the media DB. */
   media?: InputMaybe<TemplateGalleryPageMediaInput>;
   /** Deprecated: superseded by the `media` input (NES-1704); will be removed together with the deprecated `TemplateGalleryPage.mediaUrl` field. Optional https URL of a hero/cover media asset. Rejected if not https. */
   mediaUrl?: InputMaybe<Scalars['String']['input']>;
@@ -5359,7 +5359,7 @@ export type TemplateGalleryPageUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   /** When provided, replaces the page's template list with these journeys in this exact order (existing assignments are deleted then recreated). Cross-team and non-template ids are silently filtered out. Omit to leave the template list unchanged. */
   journeyIds?: InputMaybe<Array<Scalars['ID']['input']>>;
-  /** Embedded media. Omit to leave the existing media unchanged; pass `null` to clear it (deletes the media row); pass an object to replace it (validated and normalized per `type`). */
+  /** Embedded media. Omit (or pass `null`) to leave the existing media untouched — there is no media delete. When an object is supplied, `type` (`link`/`mux`/`none`) selects what renders and each payload slot merges independently: for `url` and `muxVideoId`, omit to leave the stored value, pass `null` to clear that slot, or pass a value to set/replace it. Both slots may stay populated; hide everything with `type: none`. */
   media?: InputMaybe<TemplateGalleryPageMediaInput>;
   /** Deprecated: superseded by the `media` input (NES-1704); will be removed together with the deprecated `TemplateGalleryPage.mediaUrl` field. Optional https hero media URL. Pass `null` to clear. Rejected if not https. */
   mediaUrl?: InputMaybe<Scalars['String']['input']>;
