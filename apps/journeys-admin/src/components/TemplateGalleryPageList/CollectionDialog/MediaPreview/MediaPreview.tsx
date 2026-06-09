@@ -112,12 +112,27 @@ export function MediaPreview({
 
   // Full (preview card): nothing for empty media, otherwise a labelled hint.
   if (media.type === TemplateGalleryPageMediaType.none) return null
+  if (media.type === TemplateGalleryPageMediaType.mux) {
+    // Reaches here only when there's no renderable thumbnail. A pending upload
+    // (carries a videoId) is genuinely processing; an empty slot is idle, so
+    // promise the upload rather than implying work is happening.
+    const hasUpload =
+      media.muxVideoId !== '' ||
+      (media.muxPlaybackId != null && media.muxPlaybackId !== '')
+    return (
+      <MediaPreviewPlaceholder
+        label={
+          hasUpload
+            ? t('Processing video…')
+            : t('Your uploaded video will appear here')
+        }
+      />
+    )
+  }
   const label =
-    media.type === TemplateGalleryPageMediaType.mux
-      ? t('Processing video…')
-      : debouncedUrl.trim() !== ''
-        ? t('Preview appears once you add the link')
-        : t('Paste a link to see a preview')
+    debouncedUrl.trim() !== ''
+      ? t('Preview appears once you add the link')
+      : t('Paste a link to see a preview')
   return <MediaPreviewPlaceholder label={label} />
 }
 

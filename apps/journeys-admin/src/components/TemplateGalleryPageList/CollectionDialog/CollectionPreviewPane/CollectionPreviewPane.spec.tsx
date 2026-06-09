@@ -202,6 +202,16 @@ describe('CollectionPreviewPane', () => {
       expect(screen.getByText('Processing video…')).toBeInTheDocument()
     })
 
+    it('shows an idle placeholder (not "processing") for an empty upload slot', () => {
+      // Upload tab selected but nothing uploaded/uploading: must not imply work
+      // is in progress.
+      renderPane({ values: { ...baseValues, media: muxMedia() } })
+      expect(
+        screen.getByText('Your uploaded video will appear here')
+      ).toBeInTheDocument()
+      expect(screen.queryByText('Processing video…')).not.toBeInTheDocument()
+    })
+
     it('renders no media node when media is none', () => {
       renderPane()
       expect(
