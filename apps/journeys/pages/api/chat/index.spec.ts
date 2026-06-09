@@ -280,7 +280,11 @@ describe('/api/chat handler', () => {
     function postReq(): NextApiRequest {
       return {
         method: 'POST',
-        body: { messages: [{ role: 'user', content: 'hi' }], cardId: 'card-1' },
+        body: {
+          messages: [{ role: 'user', content: 'hi' }],
+          journeyId: 'journey-1',
+          cardId: 'card-1'
+        },
         headers: {}
       } as unknown as NextApiRequest
     }
@@ -412,6 +416,7 @@ describe('/api/chat handler', () => {
         method: 'POST',
         body: {
           messages: [{ role: 'user', content: 'hi' }],
+          journeyId: 'journey-1',
           cardId: 'card-1',
           ...(language != null && { language })
         },
@@ -530,12 +535,12 @@ describe('/api/chat handler', () => {
         method: 'POST',
         body: {
           messages: [{ role: 'user', content: 'hi' }],
+          journeyId: overrides.journeyId ?? 'journey-1',
           cardId: 'card-1',
           ...(overrides.language != null && { language: overrides.language }),
           ...(overrides.sessionId != null && {
             sessionId: overrides.sessionId
-          }),
-          ...(overrides.journeyId != null && { journeyId: overrides.journeyId })
+          })
         },
         headers
       } as unknown as NextApiRequest
@@ -854,17 +859,21 @@ describe('/api/chat handler', () => {
     })
 
     function postReq(body: unknown): NextApiRequest {
-      // cardId is now required (NES-1679). Inject it into object bodies so each
-      // bounds test fails for its intended reason rather than for a missing
-      // cardId. Non-object bodies (e.g. the "not-an-object" case) and bodies
-      // that already set cardId pass through unchanged.
-      const withCardId =
+      // journeyId + cardId are now required (NES-1679). Inject them into object
+      // bodies so each bounds test fails for its intended reason rather than for
+      // a missing id. Non-object bodies (e.g. the "not-an-object" case) and
+      // bodies that already set these ids pass through unchanged.
+      const withRequiredIds =
         body != null && typeof body === 'object' && !Array.isArray(body)
-          ? { cardId: 'card-1', ...(body as Record<string, unknown>) }
+          ? {
+              journeyId: 'journey-1',
+              cardId: 'card-1',
+              ...(body as Record<string, unknown>)
+            }
           : body
       return {
         method: 'POST',
-        body: withCardId,
+        body: withRequiredIds,
         headers: {}
       } as unknown as NextApiRequest
     }
@@ -1125,6 +1134,29 @@ describe('/api/chat handler', () => {
         code: 'invalid_request'
       })
       // The card lookup never runs — the schema rejects the request first.
+      expect(mockGetCardChatEnabled).not.toHaveBeenCalled()
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('returns 400 (not 403) when journeyId is missing from the body', async () => {
+      const { res, status, json } = makeRes()
+
+      await handler(
+        postReq({
+          messages: [{ role: 'user', content: 'hi' }],
+          cardId: 'card-1'
+        }),
+        res
+      )
+
+      // A missing journeyId is a malformed request, not a killed card: it must
+      // 400 invalid_request, not route through the kill switch to a 403
+      // chat_disabled (which would wrongly show the "chat turned off" copy).
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
       expect(mockGetCardChatEnabled).not.toHaveBeenCalled()
       expect(mockStreamText).not.toHaveBeenCalled()
     })

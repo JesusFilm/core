@@ -75,7 +75,12 @@ const chatRequestSchema = z.object({
   messages: z.array(messageSchema).min(1).max(MAX_MESSAGES),
   language: z.string().max(64).optional(),
   sessionId: z.string().max(128).optional(),
-  journeyId: z.string().max(128).optional(),
+  // Required (NES-1679): a missing journeyId is a malformed request, not a
+  // killed card. Requiring it returns 400 invalid_request instead of routing
+  // through the kill switch to a 403 chat_disabled (which would show users the
+  // "chat turned off" copy and pollute the chat_card_disabled signal). Matches
+  // the required cardId below.
+  journeyId: z.string().min(1).max(128),
   // Required (NES-1679): the server reads the card's `showAssistant` to enforce
   // the per-card chat kill switch, so every request must say which card it is.
   cardId: z.string().min(1).max(128)
