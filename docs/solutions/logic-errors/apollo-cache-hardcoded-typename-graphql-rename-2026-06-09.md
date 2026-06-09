@@ -43,7 +43,7 @@ Nothing flagged it — that is the whole hazard:
 
 - **`tsc` stayed green.** The `__typename` is a plain string literal, not the generated type, so the rename couldn't propagate a type error to these call sites. `cache.identify({ __typename })` takes a `{ __typename: string }` — any literal is valid.
 - **Lint stayed green.** The string is syntactically fine.
-- **Unit tests stayed green.** The test fixtures/mocks seeded cache entities under the **old** `__typename`, so the hardcoded literal *matched the fixtures* and the cache ops appeared to work. Production code and fixtures were wrong in the same direction and masked each other. One evict fixture even used `cache.extract() as Record<string, unknown>`, defeating any type check on the seeded key.
+- **Unit tests stayed green.** The test fixtures/mocks seeded cache entities under the **old** `__typename`, so the hardcoded literal _matched the fixtures_ and the cache ops appeared to work. Production code and fixtures were wrong in the same direction and masked each other. One evict fixture even used `cache.extract() as Record<string, unknown>`, defeating any type check on the seeded key.
 - The bug only surfaced when the fixtures were renamed to match the new production `__typename` — the renamed fixtures made a DnD source-update test fail, which exposed that the cache literals were stale everywhere.
 
 ## Solution
@@ -80,12 +80,22 @@ cache.evict({ id: cache.identify({ __typename: 'TemplateGalleryPageAdmin', id: d
 // before
 for (const cacheId of Object.keys(snapshot)) {
   if (!cacheId.startsWith('TemplateGalleryPage:')) continue
-  cache.modify({ id: cacheId, fields: { /* drop the moved/trashed ref */ } })
+  cache.modify({
+    id: cacheId,
+    fields: {
+      /* drop the moved/trashed ref */
+    }
+  })
 }
 // after
 for (const cacheId of Object.keys(snapshot)) {
   if (!cacheId.startsWith('TemplateGalleryPageAdmin:')) continue
-  cache.modify({ id: cacheId, fields: { /* drop the moved/trashed ref */ } })
+  cache.modify({
+    id: cacheId,
+    fields: {
+      /* drop the moved/trashed ref */
+    }
+  })
 }
 ```
 
@@ -110,6 +120,6 @@ Apollo's default normalized cache key is `${__typename}:${id}`. `cache.identify`
 
 - `docs/solutions/best-practices/template-gallery-page-collections-patterns-nes1539.md` — same component; its Pattern 11 documents the very `cache.identify({ __typename: 'TemplateGalleryPage' })` idiom this bug breaks (updated to the new typename when this landed).
 - `docs/solutions/best-practices/local-template-dialog-consolidation-patterns-nes1543.md` — same `cache.identify` + `cache.modify` normalized-cache patching idiom.
-- `docs/solutions/logic-errors/plausible-analytics-event-name-mismatch-qa359.md` — same failure *shape* in another domain: a hardcoded string literal silently mismatches a renamed identifier, `tsc` stays green, masked until runtime.
+- `docs/solutions/logic-errors/plausible-analytics-event-name-mismatch-qa359.md` — same failure _shape_ in another domain: a hardcoded string literal silently mismatches a renamed identifier, `tsc` stays green, masked until runtime.
 - `docs/solutions/logic-errors/response-cache-empty-list-invalidation-2026-05-10.md` and `docs/solutions/runtime-errors/yoga-response-cache-null-stickiness-and-zombie-process-debugging-nes1644.md` — adjacent server-side cache-staleness bugs on the same templateGalleryPages feature (see-also, different cache layer).
 - NES-1722 (this bug, filed for separate verification), NES-1706 (backend type rename), NES-1707 / PR #9282 (frontend work where it surfaced).

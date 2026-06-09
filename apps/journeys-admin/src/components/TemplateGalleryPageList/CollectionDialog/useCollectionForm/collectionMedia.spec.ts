@@ -25,14 +25,19 @@ function row(
   }
 }
 
-function form(overrides: Partial<CollectionMediaValues> = {}): CollectionMediaValues {
+function form(
+  overrides: Partial<CollectionMediaValues> = {}
+): CollectionMediaValues {
   return { ...EMPTY_MEDIA, ...overrides }
 }
 
 describe('collectionMediaToFormValues', () => {
   it('maps a link row to a link slot', () => {
     const v = collectionMediaToFormValues(
-      row({ type: TemplateGalleryPageMediaType.link, embedUrl: 'https://x.test/a' })
+      row({
+        type: TemplateGalleryPageMediaType.link,
+        embedUrl: 'https://x.test/a'
+      })
     )
     expect(v).toMatchObject({
       type: TemplateGalleryPageMediaType.link,
@@ -83,32 +88,57 @@ describe('collectionMediaToFormValues', () => {
 
 describe('mediaDirty', () => {
   it('is false when nothing changed', () => {
-    const base = form({ type: TemplateGalleryPageMediaType.link, url: 'https://x.test/a' })
+    const base = form({
+      type: TemplateGalleryPageMediaType.link,
+      url: 'https://x.test/a'
+    })
     expect(mediaDirty(base, base)).toBe(false)
   })
 
   it('detects a type change', () => {
-    const persisted = form({ type: TemplateGalleryPageMediaType.link, url: 'https://x.test/a' })
-    expect(mediaDirty({ ...persisted, type: TemplateGalleryPageMediaType.none }, persisted)).toBe(true)
+    const persisted = form({
+      type: TemplateGalleryPageMediaType.link,
+      url: 'https://x.test/a'
+    })
+    expect(
+      mediaDirty(
+        { ...persisted, type: TemplateGalleryPageMediaType.none },
+        persisted
+      )
+    ).toBe(true)
   })
 
   it('ignores whitespace-only differences in the link', () => {
-    const persisted = form({ type: TemplateGalleryPageMediaType.link, url: 'https://x.test/a' })
-    expect(mediaDirty({ ...persisted, url: ' https://x.test/a ' }, persisted)).toBe(false)
+    const persisted = form({
+      type: TemplateGalleryPageMediaType.link,
+      url: 'https://x.test/a'
+    })
+    expect(
+      mediaDirty({ ...persisted, url: ' https://x.test/a ' }, persisted)
+    ).toBe(false)
   })
 })
 
 describe('formMediaToInput', () => {
   it('always sends type and omits unchanged slots', () => {
-    const persisted = form({ type: TemplateGalleryPageMediaType.link, url: 'https://x.test/a' })
+    const persisted = form({
+      type: TemplateGalleryPageMediaType.link,
+      url: 'https://x.test/a'
+    })
     expect(formMediaToInput(persisted, persisted)).toEqual({
       type: TemplateGalleryPageMediaType.link
     })
   })
 
   it('sends a changed link, trimmed', () => {
-    const persisted = form({ type: TemplateGalleryPageMediaType.link, url: 'https://old.test' })
-    const current = form({ type: TemplateGalleryPageMediaType.link, url: '  https://new.test  ' })
+    const persisted = form({
+      type: TemplateGalleryPageMediaType.link,
+      url: 'https://old.test'
+    })
+    const current = form({
+      type: TemplateGalleryPageMediaType.link,
+      url: '  https://new.test  '
+    })
     expect(formMediaToInput(current, persisted)).toEqual({
       type: TemplateGalleryPageMediaType.link,
       url: 'https://new.test'
@@ -116,7 +146,10 @@ describe('formMediaToInput', () => {
   })
 
   it('sends url:null when the link is cleared', () => {
-    const persisted = form({ type: TemplateGalleryPageMediaType.link, url: 'https://old.test' })
+    const persisted = form({
+      type: TemplateGalleryPageMediaType.link,
+      url: 'https://old.test'
+    })
     const current = form({ type: TemplateGalleryPageMediaType.link, url: '' })
     expect(formMediaToInput(current, persisted)).toEqual({
       type: TemplateGalleryPageMediaType.link,
@@ -126,7 +159,10 @@ describe('formMediaToInput', () => {
 
   it('sends a fresh upload videoId', () => {
     const persisted = form({ type: TemplateGalleryPageMediaType.none })
-    const current = form({ type: TemplateGalleryPageMediaType.mux, muxVideoId: 'vid-new' })
+    const current = form({
+      type: TemplateGalleryPageMediaType.mux,
+      muxVideoId: 'vid-new'
+    })
     expect(formMediaToInput(current, persisted)).toEqual({
       type: TemplateGalleryPageMediaType.mux,
       muxVideoId: 'vid-new'
@@ -139,7 +175,10 @@ describe('formMediaToInput', () => {
       muxVideoId: 'vid-1',
       muxPlaybackId: 'pb-1'
     })
-    const current = form({ type: TemplateGalleryPageMediaType.mux, muxVideoId: '' })
+    const current = form({
+      type: TemplateGalleryPageMediaType.mux,
+      muxVideoId: ''
+    })
     expect(formMediaToInput(current, persisted)).toEqual({
       type: TemplateGalleryPageMediaType.mux,
       muxVideoId: null

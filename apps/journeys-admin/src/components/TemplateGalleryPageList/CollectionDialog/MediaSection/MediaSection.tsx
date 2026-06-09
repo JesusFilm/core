@@ -85,7 +85,13 @@ export function MediaSection({
   // Clears the upload slot only (keeps `type`). Shared by Cancel-of-fresh and
   // Remove.
   function clearMuxSlot(): CollectionMediaValues {
-    return { ...media, muxVideoId: '', muxPlaybackId: null, muxName: null, muxDuration: null }
+    return {
+      ...media,
+      muxVideoId: '',
+      muxPlaybackId: null,
+      muxName: null,
+      muxDuration: null
+    }
   }
 
   const savedPlaybackId =
@@ -114,13 +120,22 @@ export function MediaSection({
           '& .MuiToggleButton-root': { textTransform: 'none', py: 1, mb: 1 }
         }}
       >
-        <ToggleButton value={TemplateGalleryPageMediaType.link} aria-label={t('Link')}>
+        <ToggleButton
+          value={TemplateGalleryPageMediaType.link}
+          aria-label={t('Link')}
+        >
           {t('Link')}
         </ToggleButton>
-        <ToggleButton value={TemplateGalleryPageMediaType.mux} aria-label={t('Upload')}>
+        <ToggleButton
+          value={TemplateGalleryPageMediaType.mux}
+          aria-label={t('Upload')}
+        >
           {t('Upload')}
         </ToggleButton>
-        <ToggleButton value={TemplateGalleryPageMediaType.none} aria-label={t('None')}>
+        <ToggleButton
+          value={TemplateGalleryPageMediaType.none}
+          aria-label={t('None')}
+        >
           {t('None')}
         </ToggleButton>
       </ToggleButtonGroup>

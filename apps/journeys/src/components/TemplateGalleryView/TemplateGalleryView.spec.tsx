@@ -46,8 +46,6 @@ describe('TemplateGalleryView', () => {
 
   it('omits the media section when media is null (legacy row)', () => {
     render(<TemplateGalleryView gallery={makeGallery({ media: null })} />)
-    expect(
-      screen.queryByTestId('TemplateGalleryMedia')
-    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId('TemplateGalleryMedia')).not.toBeInTheDocument()
   })
 })

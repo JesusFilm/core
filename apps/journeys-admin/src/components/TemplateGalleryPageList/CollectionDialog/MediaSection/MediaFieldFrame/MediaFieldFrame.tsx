@@ -56,7 +56,9 @@ export function MediaFieldFrame({
     <>
       <Box sx={{ flex: 1, height: '100%', minWidth: 0 }}>{children}</Box>
       {onEdit != null && (
-        <Edit2Icon sx={{ fontSize: 24, color: 'primary.main', flexShrink: 0 }} />
+        <Edit2Icon
+          sx={{ fontSize: 24, color: 'primary.main', flexShrink: 0 }}
+        />
       )}
     </>
   )

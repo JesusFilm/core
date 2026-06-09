@@ -13,7 +13,11 @@ import { MuxUploadField } from './MuxUploadField'
 function muxMedia(
   overrides: Partial<CollectionMediaValues> = {}
 ): CollectionMediaValues {
-  return { ...EMPTY_MEDIA, type: TemplateGalleryPageMediaType.mux, ...overrides }
+  return {
+    ...EMPTY_MEDIA,
+    type: TemplateGalleryPageMediaType.mux,
+    ...overrides
+  }
 }
 
 const mockGetUploadStatus = vi.fn()

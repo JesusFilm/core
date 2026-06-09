@@ -19,7 +19,11 @@ function linkMedia(url: string): CollectionMediaValues {
 function muxMedia(
   overrides: Partial<CollectionMediaValues> = {}
 ): CollectionMediaValues {
-  return { ...EMPTY_MEDIA, type: TemplateGalleryPageMediaType.mux, ...overrides }
+  return {
+    ...EMPTY_MEDIA,
+    type: TemplateGalleryPageMediaType.mux,
+    ...overrides
+  }
 }
 
 describe('CollectionPreviewPane', () => {
@@ -131,7 +135,9 @@ describe('CollectionPreviewPane', () => {
       renderPane({
         values: {
           ...baseValues,
-          media: linkMedia('https://www.canva.com/design/DAF/my-slug/view?embed')
+          media: linkMedia(
+            'https://www.canva.com/design/DAF/my-slug/view?embed'
+          )
         }
       })
       expect(screen.getByTestId('GalleryMediaPreviewIframe')).toHaveAttribute(

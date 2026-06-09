@@ -75,8 +75,8 @@ describe('isEmbedUrlAllowed', () => {
 
   it('is not fooled by userinfo-style host spoofing', () => {
     // The WHATWG parser treats this host as evil.example, not canva.com.
-    expect(
-      isEmbedUrlAllowed('https://canva.com@evil.example/x', hosts)
-    ).toBe(false)
+    expect(isEmbedUrlAllowed('https://canva.com@evil.example/x', hosts)).toBe(
+      false
+    )
   })
 })

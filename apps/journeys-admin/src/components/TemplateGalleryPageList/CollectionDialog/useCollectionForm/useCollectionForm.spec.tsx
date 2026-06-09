@@ -19,10 +19,7 @@ import { getTemplateGalleryPagePublishMock } from '../../../../libs/useTemplateG
 import { TEMPLATE_GALLERY_PAGE_UPDATE } from '../../../../libs/useTemplateGalleryPageUpdateMutation/useTemplateGalleryPageUpdateMutation'
 import { getTemplateGalleryPageUpdateMock } from '../../../../libs/useTemplateGalleryPageUpdateMutation/useTemplateGalleryPageUpdateMutation.mock'
 
-import {
-  CollectionMediaValues,
-  EMPTY_MEDIA
-} from './collectionMedia'
+import { CollectionMediaValues, EMPTY_MEDIA } from './collectionMedia'
 import { CollectionFormValues, useCollectionForm } from './useCollectionForm'
 
 const mockEnqueueSnackbar = vi.fn()
@@ -44,7 +41,11 @@ function linkForm(url: string): CollectionMediaValues {
 function muxForm(
   overrides: Partial<CollectionMediaValues> = {}
 ): CollectionMediaValues {
-  return { ...EMPTY_MEDIA, type: TemplateGalleryPageMediaType.mux, ...overrides }
+  return {
+    ...EMPTY_MEDIA,
+    type: TemplateGalleryPageMediaType.mux,
+    ...overrides
+  }
 }
 
 function wrapperWithMocks(
@@ -751,14 +752,16 @@ describe('useCollectionForm', () => {
           creatorImageSrc: null,
           creatorImageAlt: null,
           description: null,
-          media: { type: TemplateGalleryPageMediaType.mux, muxVideoId: 'vid-1' },
+          media: {
+            type: TemplateGalleryPageMediaType.mux,
+            muxVideoId: 'vid-1'
+          },
           journeyIds: []
         }
       })
 
       const { result } = renderHook(
-        () =>
-          useCollectionForm({ mode: 'create', teamId: 'team-1', onClose }),
+        () => useCollectionForm({ mode: 'create', teamId: 'team-1', onClose }),
         { wrapper: wrapperWithMocks([createMock]) }
       )
 
@@ -1307,9 +1310,9 @@ describe('useCollectionForm', () => {
         { wrapper: wrapperWithMocks([]) }
       )
 
-      expect(
-        result.current.mediaDirty(defaultValues({ media: NONE }))
-      ).toBe(false)
+      expect(result.current.mediaDirty(defaultValues({ media: NONE }))).toBe(
+        false
+      )
       expect(
         result.current.mediaDirty(
           defaultValues({ media: muxForm({ muxVideoId: 'vid-1' }) })

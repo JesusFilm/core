@@ -8,7 +8,14 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useEffect, useId, useMemo, useRef, useState } from 'react'
+import {
+  ReactElement,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'

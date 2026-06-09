@@ -89,7 +89,9 @@ describe('previewEmbedUrl', () => {
       previewEmbedUrl('data:text/html,<script>alert(1)</script>')
     ).toBeNull()
     expect(
-      previewEmbedUrl('https://www.youtube.com@evil.example/watch?v=dQw4w9WgXcQ')
+      previewEmbedUrl(
+        'https://www.youtube.com@evil.example/watch?v=dQw4w9WgXcQ'
+      )
     ).toBeNull()
   })
 })

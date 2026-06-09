@@ -1,15 +1,15 @@
 ---
-title: "CollectionDialog Mux upload state machine: latch errors, preserve committed values, guard every submit path"
+title: 'CollectionDialog Mux upload state machine: latch errors, preserve committed values, guard every submit path'
 date: 2026-06-08
 category: ui-bugs
 module: journeys-admin/CollectionDialog
 problem_type: ui_bug
 component: journeys-admin/TemplateGalleryPageList
 symptoms:
-  - "Upload error UI disappears ~1s after failure because it derives from a provider task that self-deletes (TASK_CLEANUP_DELAY)"
+  - 'Upload error UI disappears ~1s after failure because it derives from a provider task that self-deletes (TASK_CLEANUP_DELAY)'
   - "Save stays permanently disabled with no on-screen reason after a failed upload's error UI is lost"
-  - "Enter key submits the form mid-replacement-upload, bypassing the disabled footer buttons and silently dropping the new video"
-  - "A failed replacement upload overwrites the committed video value — unrecoverable in create mode (no server row)"
+  - 'Enter key submits the form mid-replacement-upload, bypassing the disabled footer buttons and silently dropping the new video'
+  - 'A failed replacement upload overwrites the committed video value — unrecoverable in create mode (no server row)'
   - "A Publish click short-circuited by a busy guard leaks 'publish' intent into the next plain Save or Enter submit"
 root_cause: async_timing
 resolution_type: code_fix
@@ -39,14 +39,14 @@ In the CollectionDialog media picker (NES-1707), async upload state lives in the
 
 - The upload error UI ("Upload failed. Try another file.") and its action buttons vanished ~1 second after the failure — the provider deleted the errored task out from under the component.
 - Save stayed disabled forever with no on-screen reason once the error UI was lost (e.g. after a tab switch), because the form still held an incomplete `{ type: 'mux', muxVideoId: '', muxPlaybackId: null }` value.
-- Pressing Enter during a *replacement* upload passed schema validation (the prior `playbackId` was still present), saved mid-upload, closed the dialog, and silently dropped the new video.
+- Pressing Enter during a _replacement_ upload passed schema validation (the prior `playbackId` was still present), saved mid-upload, closed the dialog, and silently dropped the new video.
 - A failed replacement upload in create mode corrupted the committed video: `onUploadStart` had overwritten the form with an empty placeholder, and there was no server row to recover the `muxVideoId` from.
 - A Publish click that short-circuited (parent busy / double-submit) left a stale `'publish'` in the intent ref, which the next plain Save or Enter inherited — and published.
 
 ## What Didn't Work
 
 - **Adding a Remove button to the error UI** (review round 1) — correct idea, defeated by the provider's `TASK_CLEANUP_DELAY` cleanup: the errored task (and with it the error branch, including the new Remove button) disappeared ~1s after failure, before the user could act.
-- **Resetting the submit-intent ref in `finally`** — the early-return guards (`submittingRef`, `parentBusy`) sit *before* the `try` block, so a short-circuited submit returned without ever reaching `finally`, leaking the stale intent.
+- **Resetting the submit-intent ref in `finally`** — the early-return guards (`submittingRef`, `parentBusy`) sit _before_ the `try` block, so a short-circuited submit returned without ever reaching `finally`, leaking the stale intent.
 - **Deriving `errored`/`hasVideo` purely from the transient provider task** — the task map is in-flight progress, not durable state; once GC'd, the derived flags flipped back while the form's real (incomplete) value was no longer reflected anywhere in the UI.
 
 ## Solution
@@ -67,7 +67,7 @@ const errored = status === 'error' || uploadFailed
 
 Cleared only on user action (retrying a pick, or the error-state Remove).
 
-**2. Never overwrite a committed form value when a replacement async op starts** (`MediaSection.tsx`) — only a *fresh* upload writes the incomplete placeholder; the in-flight provider task is what gates Save during a replacement:
+**2. Never overwrite a committed form value when a replacement async op starts** (`MediaSection.tsx`) — only a _fresh_ upload writes the incomplete placeholder; the in-flight provider task is what gates Save during a replacement:
 
 ```tsx
 // Empty-string playbackId deliberately counts as "no saved video".
@@ -119,7 +119,9 @@ const mediaBlocked = isMediaBlocked(values.media)
 const intent = submitIntentRef.current
 submitIntentRef.current = 'save'
 if (submittingRef.current) return
-if (parentBusy) { /* short-circuit with snackbar */ }
+if (parentBusy) {
+  /* short-circuit with snackbar */
+}
 // ...later: const shouldPublish = intent === 'publish'
 ```
 
@@ -135,7 +137,7 @@ if (parentBusy) { /* short-circuit with snackbar */ }
 
 ## Why This Works
 
-The provider's task map is a *transient signal* — in-flight upload progress, intentionally garbage-collected once terminal. Every bug came from treating it as durable state: as the source of truth for the error UI (vanished on GC), as the trigger to overwrite the form (lost the committed id), and as the only gate the buttons read (keyboard bypassed it). Relocating durable state to the form and latched local state, and reducing the task to an "in flight right now" gate, removes the entire bug class. Equally: a guard that only disables buttons doesn't guard the *operation* — it must sit on the submit handler so buttons, Enter, and programmatic submits all pass through it.
+The provider's task map is a _transient signal_ — in-flight upload progress, intentionally garbage-collected once terminal. Every bug came from treating it as durable state: as the source of truth for the error UI (vanished on GC), as the trigger to overwrite the form (lost the committed id), and as the only gate the buttons read (keyboard bypassed it). Relocating durable state to the form and latched local state, and reducing the task to an "in flight right now" gate, removes the entire bug class. Equally: a guard that only disables buttons doesn't guard the _operation_ — it must sit on the submit handler so buttons, Enter, and programmatic submits all pass through it.
 
 ## Prevention
 
@@ -143,7 +145,7 @@ The provider's task map is a *transient signal* — in-flight upload progress, i
 - **Never destructively overwrite a committed value on async-start.** Gate the write (`if (!committedVideo) onChange(placeholder)`); in create flows there is no server row to recover from.
 - **Guards belong on the submit handler, not just the buttons.** Extract one predicate and call it from both the `disabled` props and the form's `onSubmit` — Enter submits the form directly.
 - **One-shot refs are read-and-consumed at function entry**, before any early-return guard, so short-circuited calls can't leak the value. (Supersedes the `finally`-reset approach in the [formik-intent-ref pattern doc](../design-patterns/formik-intent-ref-multi-button-submit-2026-05-24.md).)
-- **Every blocked state needs an escape hatch** the user can see: an enabled Remove plus a one-line explanation of *why* the action is blocked.
+- **Every blocked state needs an escape hatch** the user can see: an enabled Remove plus a one-line explanation of _why_ the action is blocked.
 - **Write regression tests that simulate the provider cleanup** — mock the status getter returning `null` after an error:
   - `MuxUploadField.spec.tsx` › "keeps the error UI after the provider cleans up the errored task"
   - `useCollectionForm.spec.tsx` › "does not leak a publish intent through a short-circuited submit"

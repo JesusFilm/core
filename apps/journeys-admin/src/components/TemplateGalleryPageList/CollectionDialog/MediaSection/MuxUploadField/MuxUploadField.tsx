@@ -302,7 +302,9 @@ export function MuxUploadField({
                   // public page), so there's no stuck/blocked state — just the
                   // prompt to upload.
                   <Typography variant="caption" color="text.secondary">
-                    {t('Click the box to upload a video. MP4 or MOV, up to 1 GB.')}
+                    {t(
+                      'Click the box to upload a video. MP4 or MOV, up to 1 GB.'
+                    )}
                   </Typography>
                 )}
               </Box>

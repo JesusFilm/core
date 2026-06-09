@@ -290,7 +290,10 @@ export function useCollectionForm({
         // set). All media — a pasted link, a completed upload, a removal, a
         // None toggle — stays in the form until this Save.
         if (mediaDiffers(values.media, persistedMediaRef.current)) {
-          input.media = formMediaToInput(values.media, persistedMediaRef.current)
+          input.media = formMediaToInput(
+            values.media,
+            persistedMediaRef.current
+          )
         }
         // Skip the slug field when the user cleared it. yup's
         // `excludeEmptyString` lets an empty value pass validation (so

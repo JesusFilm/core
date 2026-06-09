@@ -33,8 +33,8 @@ describe('EmbedIframe', () => {
       />
     )
     expect(screen.getByTestId('Embed')).toBeInTheDocument()
-    expect(
-      screen.getByTestId('EmbedIframe').getAttribute('sandbox')
-    ).toContain('allow-forms')
+    expect(screen.getByTestId('EmbedIframe').getAttribute('sandbox')).toContain(
+      'allow-forms'
+    )
   })
 })

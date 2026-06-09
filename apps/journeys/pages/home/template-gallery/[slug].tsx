@@ -39,7 +39,10 @@ function withGatedMedia(gallery: TemplateGalleryPage): TemplateGalleryPage {
   const allowedHosts = resolveEmbedHosts(
     process.env.TEMPLATE_LIBRARY_EMBED_HOSTS
   )
-  if (media.embedUrl != null && isEmbedUrlAllowed(media.embedUrl, allowedHosts)) {
+  if (
+    media.embedUrl != null &&
+    isEmbedUrlAllowed(media.embedUrl, allowedHosts)
+  ) {
     return gallery
   }
   return { ...gallery, media: null }

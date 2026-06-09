@@ -1,5 +1,5 @@
 ---
-title: "feat: NES-1707 frontend embed picker in CollectionDialog + multi-type public renderer"
+title: 'feat: NES-1707 frontend embed picker in CollectionDialog + multi-type public renderer'
 type: feat
 status: active
 date: 2026-06-02
@@ -118,7 +118,7 @@ NES-1682 commented out the "Add PDF/Video with instructions" `TextField` at `Col
 
 ## High-Level Technical Design
 
-> *This illustrates the intended approach and is directional guidance for review, not implementation specification. The implementing agent should treat it as context, not code to reproduce.*
+> _This illustrates the intended approach and is directional guidance for review, not implementation specification. The implementing agent should treat it as context, not code to reproduce._
 
 ```
 CollectionDialog (wrapped in MuxVideoUploadProvider)
@@ -159,10 +159,12 @@ A small shared helper (U5) derives iframe `allow`/wrapper attributes from the em
 **Dependencies:** None
 
 **Files:**
+
 - Modify: `apps/journeys-admin/src/components/TemplateGalleryPageList/CollectionDialog/useCollectionForm/useCollectionForm.ts`
 - Test: `apps/journeys-admin/src/components/TemplateGalleryPageList/CollectionDialog/useCollectionForm/useCollectionForm.spec.tsx`
 
 **Approach:**
+
 - Define and export `CollectionMediaValues` tagged union. Add `media` to `CollectionFormValues`; remove `mediaUrl`.
 - `buildSchema`: replace the `mediaUrl` string rule with a Yup `object`/`lazy` discriminated on `type` (`none` | `mux` requires non-empty `muxVideoId` | `link` requires non-empty `url`). Keep validation lenient — the server is the source of truth; the schema only guards "don't submit an empty url/upload".
 - `initialValues`: derive from `collection?.media` (the new GraphQL field once U7-admin types regenerate) → `toFormMedia()`; fall back to `{ type: 'none' }` when `media == null` (covers legacy `mediaUrl`-only rows).
@@ -171,6 +173,7 @@ A small shared helper (U5) derives iframe `allow`/wrapper attributes from the em
 **Patterns to follow:** existing `useMemo(initialValues)` identity-stability comment; existing Yup `buildSchema` structure.
 
 **Test scenarios:**
+
 - Happy path: collection with `media.type==='link'` → `initialValues.media` is `{type:'link',url}`. Covers F1.
 - Happy path: collection with `media.type==='mux'` → `{type:'mux',muxVideoId}`.
 - Edge case: `collection.media == null` (legacy row) → `{type:'none'}`. Covers F3 / AE.
@@ -189,11 +192,13 @@ A small shared helper (U5) derives iframe `allow`/wrapper attributes from the em
 **Dependencies:** U1
 
 **Files:**
+
 - Modify: `apps/journeys-admin/src/components/TemplateGalleryPageList/CollectionDialog/useCollectionForm/useCollectionForm.ts`
 - Create: `apps/journeys-admin/src/components/TemplateGalleryPageList/CollectionDialog/useCollectionForm/mediaErrorMessage.ts` (reason → `t()` message map + fallback)
 - Test: `apps/journeys-admin/src/components/TemplateGalleryPageList/CollectionDialog/useCollectionForm/useCollectionForm.spec.tsx`, `.../mediaErrorMessage.spec.ts`
 
 **Approach:**
+
 - `toInput(media)`: `none → null`; `mux → { type:'mux', muxVideoId }`; `link → { type:'link', url }`.
 - Create branch: set `input.media = toInput(values.media)` (or omit when `none` to avoid creating an empty row — `null` and omit are equivalent on create).
 - Edit branch: compare `values.media` against `toFormMedia(collection.media)`; only set `input.media` when changed. Changed-to-`none` → `input.media = null` (clear). Unchanged → omit.
@@ -202,6 +207,7 @@ A small shared helper (U5) derives iframe `allow`/wrapper attributes from the em
 **Patterns to follow:** existing per-field diff blocks (lines 235–266); existing ApolloError mapping (322–333).
 
 **Test scenarios:**
+
 - Happy path: unchanged media → `input.media` omitted from update.
 - Happy path: `link → none` → `input.media === null`.
 - Happy path: new `mux` on create → `input.media === { type:'mux', muxVideoId }`.
@@ -222,16 +228,18 @@ A small shared helper (U5) derives iframe `allow`/wrapper attributes from the em
 **Dependencies:** U1, U2
 
 **Files:**
+
 - Modify: `apps/journeys-admin/src/components/TemplateGalleryPageList/CollectionDialog/CollectionDialog.tsx`
 - Create: `apps/journeys-admin/.../CollectionDialog/MediaSection/MediaSection.tsx` (+ `index.ts`)
 - Test: `apps/journeys-admin/.../CollectionDialog/MediaSection/MediaSection.spec.tsx`
 - (`MuxUploadField.tsx` + its spec are created in U4, not here.)
 
 **Approach:**
+
 - `MediaSection` reads Formik `values.media` + helpers. A local UI-mode state tracks which of `mux | canva | youtube` is selected (Canva/YouTube both map to `media.type==='link'`).
 - **Initial UI-mode inference (edit mode):** on open, derive the tab from `values.media`: `type==='mux'` → Video upload; `type==='link'` → parse the host of `media.url`/`embedUrl` — `youtube-nocookie.com`/`youtube.com`/`youtu.be` → YouTube tab, `canva.com` → Canva tab, anything else (incl. unparseable) → Canva tab as the safe default; `type==='none'` → default to Video upload (or Canva — pick one and assert it).
 - `ToggleButtonGroup` with three `ToggleButton`s. **Accessibility:** group gets `aria-label="Media type"`; each `ToggleButton` gets an `aria-label` matching its visible text. State clears **only on explicit activation** (click/Enter/Space `onChange`), never on focus traversal — otherwise a keyboard user tabbing through silently wipes a typed URL (R12 clears state). On change: set UI mode AND clear form media to a fresh empty shape for that mode (`{type:'mux',muxVideoId:''}` / `{type:'link',url:''}`).
-- Canva mode: `TextField` bound to `media.url`; helper copy: *"Paste a Canva design link. In Canva: Share → set to Anyone with the link before pasting."* (via `t()`). Surface `errors.media` as `helperText`.
+- Canva mode: `TextField` bound to `media.url`; helper copy: _"Paste a Canva design link. In Canva: Share → set to Anyone with the link before pasting."_ (via `t()`). Surface `errors.media` as `helperText`.
 - YouTube mode: `TextField` bound to `media.url`; helper copy listing accepted shapes; surface `errors.media`.
 - Mux mode: render `MuxUploadField` (see U4). Contract: pass the synthetic upload key; receive `onComplete(videoId)` → `setFieldValue('media', {type:'mux',muxVideoId:videoId})`, and an `onReadyStateChange(isReady)` (or equivalent) used for Save-gating.
 - **Save gating:** OR a media-not-ready signal into the dialog footer's `disabled` binding (alongside `isSubmitting`/`isUnpublishing`). In Mux mode, Save is disabled until the persisted `media.muxVideoId` is set and the live upload `status` is not `waiting|uploading|processing|error`. (See Key Technical Decisions — there is no task `readyToStream` field.)
@@ -241,6 +249,7 @@ A small shared helper (U5) derives iframe `allow`/wrapper attributes from the em
 **Patterns to follow:** existing `SECTION_HEADER`/`Stack spacing={1}` sections in `CollectionDialog.tsx`; footer disabled-OR pattern from `useCollectionForm` doc comments; repo a11y rule (`aria-label`/keyboard on all interactive elements).
 
 **Test scenarios:**
+
 - Happy path: select Canva → type URL → `media` is `{type:'link',url}`; helper copy present.
 - Happy path: select YouTube → type URL → `media.url` updates.
 - Edge case: switching Canva→Video upload clears `media.url` (R12); switching back clears `muxVideoId`.
@@ -253,7 +262,7 @@ A small shared helper (U5) derives iframe `allow`/wrapper attributes from the em
 
 ---
 
-- U4. **MuxUploadField: file picker, progress, processing indicator, cancel/retry** *(child of U3, broken out for testability)*
+- U4. **MuxUploadField: file picker, progress, processing indicator, cancel/retry** _(child of U3, broken out for testability)_
 
 **Goal:** A self-contained upload control over `useMuxVideoUpload` with a stable synthetic key, surfacing progress/processing/error and cancel/retry.
 
@@ -262,10 +271,12 @@ A small shared helper (U5) derives iframe `allow`/wrapper attributes from the em
 **Dependencies:** U3 (provider wrap)
 
 **Files:**
+
 - Create: `apps/journeys-admin/.../CollectionDialog/MediaSection/MuxUploadField/MuxUploadField.tsx`
 - Test: `.../MuxUploadField/MuxUploadField.spec.tsx`
 
 **Approach:**
+
 - Generate a stable upload key once (`useRef`) — collection id in edit mode, generated id in create mode — in place of the editor's `videoBlockId`.
 - File `<input>`/MUI button → `addUploadTask(key, file, undefined, undefined, onComplete)`.
 - Read `getUploadStatus(key)` for `status`/`progress`/`error`; render progress bar (`status==='uploading'`), processing indicator (`status==='processing'`), a ready indicator once `onComplete` has fired (the task is deleted ~1s after `completed`, so do NOT rely on reading `status==='completed'` back — capture readiness from `onComplete`), and an error state (`status==='error'`).
@@ -276,6 +287,7 @@ A small shared helper (U5) derives iframe `allow`/wrapper attributes from the em
 **Patterns to follow:** `apps/journeys-admin/.../VideoLibrary/VideoFromMux/AddByFile/AddByFile.tsx` (`addUploadTask` + `status`-driven UI; note it has no cancel/retry — those are net-new here).
 
 **Test scenarios:**
+
 - Happy path: choose file → `addUploadTask` called with the synthetic key; progress renders; on complete, `onComplete(videoId)` fires and the ready indicator shows.
 - Error path: `status==='error'` → error UI + retry control; retry re-invokes `addUploadTask`.
 - Edge case: cancel mid-upload → task cleared, field returns to empty, ready signal false.
@@ -294,10 +306,12 @@ A small shared helper (U5) derives iframe `allow`/wrapper attributes from the em
 **Dependencies:** None
 
 **Files:**
+
 - Create: `libs/journeys/ui/src/components/TemplateGalleryMedia/embedAttrs.ts` — placed in the shared lib (not in `apps/journeys`) so both `apps/journeys` (U8) and `apps/journeys-admin` (U6) import it via `@core/journeys/ui`. Verified: `libs/journeys/ui` has no Nx scope/type tag restricting consumers, so the cross-app import is allowed — there is no boundary fork to resolve.
 - Test: `libs/journeys/ui/src/components/TemplateGalleryMedia/embedAttrs.spec.ts`
 
 **Approach:**
+
 - Parse the host from `embedUrl`. Return per-host config including a `sandbox` token string:
   - `youtube-nocookie.com` → `allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"`, `allowFullScreen`, `referrerPolicy="strict-origin-when-cross-origin"`, `sandbox="allow-scripts allow-same-origin allow-popups allow-presentation allow-fullscreen"`, wrapper `16/9`.
   - `canva.com` → `allow="fullscreen"`, `sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-fullscreen"`, wrapper `padding-top: 56.2225%`.
@@ -308,6 +322,7 @@ A small shared helper (U5) derives iframe `allow`/wrapper attributes from the em
 **Patterns to follow:** small pure-function + table; `project_intra_lib_imports` (relative sibling imports inside the lib, not `@core/*`).
 
 **Test scenarios:**
+
 - Happy path: youtube-nocookie host → expected `allow` string + `referrerPolicy` + `sandbox`.
 - Happy path: canva.com → `allow="fullscreen"` + 56.2225% wrapper flag + Canva `sandbox`.
 - Edge case: docs.google.com → Slides config (Canva-equivalent allow/wrapper, R14).
@@ -326,10 +341,12 @@ A small shared helper (U5) derives iframe `allow`/wrapper attributes from the em
 **Dependencies:** U1, U5
 
 **Files:**
+
 - Modify: `apps/journeys-admin/.../CollectionDialog/CollectionPreviewPane/CollectionPreviewPane.tsx`
 - Test: `apps/journeys-admin/.../CollectionDialog/CollectionPreviewPane/CollectionPreviewPane.spec.tsx`
 
 **Approach:**
+
 - Change `CollectionPreviewValues` from `mediaUrl: string` to `media: CollectionMediaValues` (parent already passes `values`). In edit mode the persisted `media.muxPlaybackId` must also reach the pane (thread it via the parent) so a `mux` row can show a real thumbnail.
 - `none` → render nothing (no Strategy label).
 - `mux` → **edit-only thumbnail:** when a persisted `media.muxPlaybackId` is available (edit mode), render `image.mux.com/<muxPlaybackId>/thumbnail.jpg`. For a fresh upload the form holds only `muxVideoId` (no `playbackId` until after save), so show a "Processing video…" placeholder through save — do NOT attempt a thumbnail from `muxVideoId`. (Preview does not need the full video.js player.)
@@ -339,6 +356,7 @@ A small shared helper (U5) derives iframe `allow`/wrapper attributes from the em
 **Patterns to follow:** existing preview card structure; `aria-hidden` duplicate-content handling; `embedAttrs` (U5); backend YouTube normalization (`youTubeOEmbed.ts`) for the client-side id-extraction shapes.
 
 **Test scenarios:**
+
 - Happy path: `media.type==='link'` YouTube `watch?v=` URL → normalized to `youtube-nocookie.com/embed/<id>` and iframed with YouTube `allow`/`sandbox`.
 - Happy path: `media.type==='link'` Canva share URL → "Preview available after saving" placeholder, NOT a raw iframe.
 - Happy path (edit): `media.type==='mux'` with persisted `muxPlaybackId` → thumbnail `img`.
@@ -360,6 +378,7 @@ A small shared helper (U5) derives iframe `allow`/wrapper attributes from the em
 **Dependencies:** None to author — but consumed by U1/U2/U6/U8, and **not independently mergeable**: removing `mediaUrl` from selections breaks every consumer that still reads it (e.g. `TemplateGalleryView.tsx:20,28` reads `gallery.mediaUrl`), so U7 must land in the **same PR/commit set** as U1/U2/U6/U8. A standalone U7 commit leaves a red branch.
 
 **Files:**
+
 - Modify: `apps/journeys-admin/src/libs/useTemplateGalleryPageCreateMutation/useTemplateGalleryPageCreateMutation.ts`
 - Modify: `apps/journeys-admin/src/libs/useTemplateGalleryPageUpdateMutation/useTemplateGalleryPageUpdateMutation.ts`
 - Modify: `apps/journeys-admin/src/libs/useTemplateGalleryPagesQuery/useTemplateGalleryPagesQuery.ts` (and the `GetTemplateGalleryPages` fragment/shape consumed by `useCollectionForm`)
@@ -370,6 +389,7 @@ A small shared helper (U5) derives iframe `allow`/wrapper attributes from the em
 - Modify: remaining mutation/query mock files under `apps/journeys-admin/src/libs/.../*.mock.ts` that reference `mediaUrl`
 
 **Approach:**
+
 - Add the `media { id type embedUrl muxPlaybackId }` selection to **every** gallery operation that currently selects `mediaUrl` (create, update, list, reorder, assignJourney, public page); remove `mediaUrl` from the selections (legacy rows return `media == null`, which R10 maps to "render nothing"/`{type:'none'}`).
 - Run the repo's GraphQL codegen Nx target for `api-journeys`/apps (per `docs/solutions` and `653cf8873` Prisma 7 + Nx codegen notes — use `--skip-nx-cache` to avoid stale-type cache hits) to regenerate operation types and `globalTypes`. Do not hand-edit generated files.
 - Update the `TemplateGalleryPage` fragment type imported by `useCollectionForm` so `collection.media` is typed.
@@ -393,12 +413,14 @@ A small shared helper (U5) derives iframe `allow`/wrapper attributes from the em
 **Dependencies:** U5, U7
 
 **Files:**
+
 - Modify: `apps/journeys/src/components/TemplateGalleryView/TemplateGalleryMedia/TemplateGalleryMedia.tsx`
 - Modify: `apps/journeys/src/components/TemplateGalleryView/TemplateGalleryView.tsx` (pass `gallery.media`; recompute `hasMedia` from `media != null`)
 - Modify: `apps/journeys/src/components/TemplateGalleryView/galleryFixture.ts` (add `media` cases: mux, link-youtube, link-canva, link-slides, null)
 - Test: `apps/journeys/src/components/TemplateGalleryView/TemplateGalleryMedia/TemplateGalleryMedia.spec.tsx`, `apps/journeys/.../TemplateGalleryView.spec.tsx`
 
 **Approach:**
+
 - Props become `media: TemplateGalleryPageMedia | null`. `null` → render nothing (covers legacy rows, R10).
 - `media.type==='mux'` → render the existing video.js mux pattern from `media.muxPlaybackId` (`stream.mux.com/<playbackId>.m3u8`), mirroring `TemplateVideoPlayer`. Consider reusing/extracting that player; do not modify shared components beyond what's safe.
 - `media.type==='link'` → `<iframe src={media.embedUrl}>` wrapped per U5 attrs **including `sandbox`** (aspect-ratio wrapper for Canva/Slides, full `allow` for YouTube). `embedUrl` is the server-normalized URL, so no client-side normalization is needed here (unlike the preview). Slides (`docs.google.com`) renders through the same `link` branch (R14).
@@ -407,6 +429,7 @@ A small shared helper (U5) derives iframe `allow`/wrapper attributes from the em
 **Patterns to follow:** `libs/journeys/ui/.../TemplateVideoPlayer/TemplateVideoPlayer.tsx` (video.js + m3u8); `embedAttrs` (U5).
 
 **Test scenarios:**
+
 - Happy path: `media.type==='link'` (youtube-nocookie embedUrl) → iframe with YouTube `allow` + `referrerPolicy` + `sandbox`. Covers F2.
 - Happy path: `media.type==='link'` (canva.com) → iframe in 56.2225% wrapper, `allow="fullscreen"` + Canva `sandbox`.
 - Happy path: `media.type==='link'` (docs.google.com Slides embedUrl) → iframe with Slides config. Covers R14.
@@ -431,16 +454,16 @@ A small shared helper (U5) derives iframe `allow`/wrapper attributes from the em
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
-| `TEMPLATE_LIBRARY_EMBED_HOSTS` is dev-only — Canva/YouTube/Slides validation fails on stage/prod until set | Per `project_nes1706_doppler_embed_hosts`, add the secret to stage + prod before QA/deploy; flag to maintainer. |
-| Ticket says "Mux Player web component" but repo has no such dep | Use the existing video.js HLS pattern (Key Decision); call it out in the PR so reviewers expect video.js, not `@mux/mux-player`. |
-| Codegen drift / unrelated regenerated diffs (Prisma 7 + Nx, per `653cf8873`) | Run the documented codegen target only; review generated diffs to ensure they're scoped to the new `media` field. |
-| Cross-app shared `embedAttrs` placement | Placed in `libs/journeys/ui` (no Nx tag restricts consumers — verified), imported by both apps via `@core/journeys/ui`. Single source prevents preview/public drift. |
-| MuxVideoUploadProvider keyed by `videoBlockId`, not a dialog concept | Use a stable synthetic key (collection id / generated ref); readiness derives from `onComplete`/`muxVideoId`, not a task `readyToStream` field (which doesn't exist). |
-| Preview iframe could load a client-typed URL pre-validation | Preview only iframes https + allowlisted + directly-embeddable URLs (YouTube normalized client-side); Canva shows a save-first placeholder; all iframes carry `sandbox` (U5). |
-| Public page embeds third-party iframes / is itself embeddable | Defense-in-depth (low-confidence, defer if Next.js headers already cover it): consider a `Content-Security-Policy` `frame-src` allowlist + `frame-ancestors` on the public gallery page; guard `muxPlaybackId` against a strict format regex before interpolating into `stream.mux.com/<id>.m3u8`. Confirm whether existing `apps/journeys` CSP headers already constrain `frame-src`. |
-| NES-1694 restyle may merge first and re-flow this component | Keep `TemplateGalleryMedia` self-contained; coordinate timing; re-flow only if NES-1694 lands first. |
+| Risk                                                                                                       | Mitigation                                                                                                                                                                                                                                                                                                                                                                             |
+| ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TEMPLATE_LIBRARY_EMBED_HOSTS` is dev-only — Canva/YouTube/Slides validation fails on stage/prod until set | Per `project_nes1706_doppler_embed_hosts`, add the secret to stage + prod before QA/deploy; flag to maintainer.                                                                                                                                                                                                                                                                        |
+| Ticket says "Mux Player web component" but repo has no such dep                                            | Use the existing video.js HLS pattern (Key Decision); call it out in the PR so reviewers expect video.js, not `@mux/mux-player`.                                                                                                                                                                                                                                                       |
+| Codegen drift / unrelated regenerated diffs (Prisma 7 + Nx, per `653cf8873`)                               | Run the documented codegen target only; review generated diffs to ensure they're scoped to the new `media` field.                                                                                                                                                                                                                                                                      |
+| Cross-app shared `embedAttrs` placement                                                                    | Placed in `libs/journeys/ui` (no Nx tag restricts consumers — verified), imported by both apps via `@core/journeys/ui`. Single source prevents preview/public drift.                                                                                                                                                                                                                   |
+| MuxVideoUploadProvider keyed by `videoBlockId`, not a dialog concept                                       | Use a stable synthetic key (collection id / generated ref); readiness derives from `onComplete`/`muxVideoId`, not a task `readyToStream` field (which doesn't exist).                                                                                                                                                                                                                  |
+| Preview iframe could load a client-typed URL pre-validation                                                | Preview only iframes https + allowlisted + directly-embeddable URLs (YouTube normalized client-side); Canva shows a save-first placeholder; all iframes carry `sandbox` (U5).                                                                                                                                                                                                          |
+| Public page embeds third-party iframes / is itself embeddable                                              | Defense-in-depth (low-confidence, defer if Next.js headers already cover it): consider a `Content-Security-Policy` `frame-src` allowlist + `frame-ancestors` on the public gallery page; guard `muxPlaybackId` against a strict format regex before interpolating into `stream.mux.com/<id>.m3u8`. Confirm whether existing `apps/journeys` CSP headers already constrain `frame-src`. |
+| NES-1694 restyle may merge first and re-flow this component                                                | Keep `TemplateGalleryMedia` self-contained; coordinate timing; re-flow only if NES-1694 lands first.                                                                                                                                                                                                                                                                                   |
 
 ---
 

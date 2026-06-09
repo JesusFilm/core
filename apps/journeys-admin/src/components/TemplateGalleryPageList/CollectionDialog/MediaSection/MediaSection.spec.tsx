@@ -33,7 +33,9 @@ vi.mock('./MuxUploadField', () => ({
   )
 }))
 
-function media(overrides: Partial<CollectionMediaValues> = {}): CollectionMediaValues {
+function media(
+  overrides: Partial<CollectionMediaValues> = {}
+): CollectionMediaValues {
   return { ...EMPTY_MEDIA, ...overrides }
 }
 const linkMedia = (url: string): CollectionMediaValues =>

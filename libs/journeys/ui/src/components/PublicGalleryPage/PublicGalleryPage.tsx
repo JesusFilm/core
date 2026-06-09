@@ -40,6 +40,7 @@ export function PublicGalleryPage({
   variant = 'journey',
   mediaSlot
 }: PublicGalleryPageProps): ReactElement {
-  if (variant === 'admin') return <AdminView data={data} mediaSlot={mediaSlot} />
+  if (variant === 'admin')
+    return <AdminView data={data} mediaSlot={mediaSlot} />
   return <JourneyView data={data} />
 }

@@ -21,7 +21,9 @@ export function mediaErrorMessage(reason: string, t: TFunction): string {
         'This YouTube video cannot be embedded. Check that embedding is allowed for the video.'
       )
     case 'YOUTUBE_INVALID_URL':
-      return t("That doesn't look like a YouTube link. Paste a valid video URL.")
+      return t(
+        "That doesn't look like a YouTube link. Paste a valid video URL."
+      )
     case 'CANVA_UNAVAILABLE':
       return t(
         "We couldn't load this Canva design. In Canva, choose Share → Anyone with the link, then paste it again."
@@ -39,7 +41,9 @@ export function mediaErrorMessage(reason: string, t: TFunction): string {
     case 'EMBED_HOST_BLOCKED':
       return t('That link is from a blocked site and cannot be embedded.')
     case 'MUX_NOT_READY':
-      return t('The video is still processing. Wait for it to finish, then save.')
+      return t(
+        'The video is still processing. Wait for it to finish, then save.'
+      )
     case 'MUX_NOT_FOUND':
       return t('We could not find that uploaded video. Try uploading it again.')
     case 'MEDIA_INPUT_SHAPE_MISMATCH':
