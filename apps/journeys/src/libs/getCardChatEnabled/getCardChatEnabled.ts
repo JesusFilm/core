@@ -33,6 +33,14 @@ interface GetCardChatEnabledArgs {
  * belongs to the journey in the request, so a stale tab can't keep chatting by
  * spoofing a different journeyId.
  *
+ * Threat-model scope: this is a creator emergency stop, not a malicious-actor
+ * defense. The check is still bounded by the client-supplied `cardId`, so a
+ * viewer who knows another (un-killed) card id in the *same* journey could send
+ * that instead and keep chatting on those cards — the killed card itself still
+ * can't be re-enabled this way, which is what the switch guarantees. For a
+ * journey-wide / global stop, the hammer is the LaunchDarkly `apologistChat`
+ * flag, which disables chat everywhere at once.
+ *
  * Freshness matters: the lookup uses `fetchPolicy: 'no-cache'` so flipping the
  * toggle off in the editor stops chat for already-open tabs on their next
  * message — an in-memory Apollo cache would otherwise mask the change.
