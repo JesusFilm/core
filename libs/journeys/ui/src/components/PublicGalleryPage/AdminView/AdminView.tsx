@@ -160,6 +160,7 @@ export function AdminView({ data, mediaSlot }: AdminViewProps): ReactElement {
 
       {mediaSlot != null && (
         <Box component="section" sx={sectionSx}>
+          <SectionLabel>{t('Media')}</SectionLabel>
           {mediaSlot}
         </Box>
       )}

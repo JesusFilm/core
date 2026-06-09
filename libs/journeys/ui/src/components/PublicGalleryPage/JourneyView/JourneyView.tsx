@@ -272,6 +272,7 @@ function JourneyViewBody({ data }: JourneyViewProps): ReactElement {
           }}
         >
           <Container maxWidth="lg">
+            <SectionLabel>{t('Media')}</SectionLabel>
             <JourneyViewMedia media={data.media} />
           </Container>
         </Box>
