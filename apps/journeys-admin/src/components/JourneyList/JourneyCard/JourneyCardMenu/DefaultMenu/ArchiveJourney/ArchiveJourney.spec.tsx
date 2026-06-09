@@ -180,10 +180,12 @@ describe('ArchiveJourney', () => {
       })
 
       const finalSnapshot = cache.extract()
-      expect(finalSnapshot['TemplateGalleryPageAdmin:page-A']?.templates).toEqual([
-        { __ref: 'TemplateGalleryItem:other-journey' }
-      ])
-      expect(finalSnapshot['TemplateGalleryPageAdmin:page-B']?.templates).toEqual([])
+      expect(
+        finalSnapshot['TemplateGalleryPageAdmin:page-A']?.templates
+      ).toEqual([{ __ref: 'TemplateGalleryItem:other-journey' }])
+      expect(
+        finalSnapshot['TemplateGalleryPageAdmin:page-B']?.templates
+      ).toEqual([])
     })
 
     it('unassigns the journey from its collection after archiving', async () => {
