@@ -666,6 +666,7 @@ describe('/api/chat handler', () => {
       expect(fields).toMatchObject({
         event: 'apologist_chat_completed',
         journeyId: 'journey-1',
+        cardId: 'card-1',
         language: 'es',
         ipCountry: 'NZ',
         sessionId: 'sess-1',

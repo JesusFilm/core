@@ -270,6 +270,12 @@ export default async function handler(
   // or the raw IP.
   const chatLogContext = {
     journeyId,
+    // `cardId` is recorded on every chat event (NES-1679) so the kill switch's
+    // allow path is queryable: on a "killed card still chatting" report the
+    // success/error events show which card the server actually consulted, which
+    // is the signal needed to tell a request-identity mismatch apart from a
+    // stale read — without a per-message log on the lookup itself.
+    cardId,
     language,
     ipCountry,
     sessionId,
