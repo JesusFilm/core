@@ -54,7 +54,7 @@ export const TemplateGalleryPageCreateInput = builder.inputType(
         type: TemplateGalleryPageMediaInput,
         required: false,
         description:
-          'Optional embedded media. When `type` is `link`, the `url` is server-validated and normalized per provider; when `type` is `mux`, the `muxVideoId` is validated against the media DB.'
+          'Optional embedded media. `type` (`link`/`mux`/`none`) selects what renders; supply `url` and/or `muxVideoId` to populate either slot (both may be set at once). `url` is server-validated and normalized per provider; `muxVideoId` is validated against the media DB.'
       })
     })
   }
