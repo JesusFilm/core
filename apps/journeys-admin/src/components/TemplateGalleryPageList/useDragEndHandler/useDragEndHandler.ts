@@ -247,7 +247,7 @@ export function useDragEndHandler(
               if (!accepted) return
             }
             const sourceCacheId = cache.identify({
-              __typename: 'TemplateGalleryPage',
+              __typename: 'TemplateGalleryPageAdmin',
               id: sourceCollection.id
             })
             const movedRef = cache.identify({

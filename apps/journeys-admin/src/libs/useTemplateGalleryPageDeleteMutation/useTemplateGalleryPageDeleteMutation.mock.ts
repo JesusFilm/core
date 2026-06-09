@@ -17,7 +17,7 @@ export const getTemplateGalleryPageDeleteMock = (
   result: vi.fn(() => ({
     data: {
       templateGalleryPageDelete: {
-        __typename: 'TemplateGalleryPage' as const,
+        __typename: 'TemplateGalleryPageAdmin' as const,
         id: variables.id
       }
     }

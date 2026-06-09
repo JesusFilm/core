@@ -36,7 +36,7 @@ function makeCollection(
   overrides: Partial<TemplateGalleryPage> = {}
 ): TemplateGalleryPage {
   return {
-    __typename: 'TemplateGalleryPage',
+    __typename: 'TemplateGalleryPageAdmin',
     id,
     title: id,
     description: '',

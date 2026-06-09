@@ -12,7 +12,7 @@ interface EvictFromTemplateGalleryPagesOptions {
 }
 
 /**
- * Drops the given journey ids from every cached `TemplateGalleryPage.templates`
+ * Drops the given journey ids from every cached `TemplateGalleryPageAdmin.templates`
  * list, then evicts the `TemplateGalleryItem` variant (and optionally the
  * `Journey` entity itself) from the normalized cache.
  *
@@ -26,7 +26,7 @@ interface EvictFromTemplateGalleryPagesOptions {
  * Two non-obvious notes:
  *
  * - `cache.modify` without `id` only targets ROOT_QUERY. Enumerating
- *   TemplateGalleryPage entities by id prefix from `cache.extract()` is
+ *   TemplateGalleryPageAdmin entities by id prefix from `cache.extract()` is
  *   the only API-level way to reach every cached page regardless of the
  *   query variables tuple that fetched it.
  * - The templates list stores entities as `TemplateGalleryItem:<id>`
@@ -52,7 +52,7 @@ export function evictFromTemplateGalleryPages<TCache>(
   // this layer, so cast to a string-keyed record to enumerate cache ids.
   const snapshot = cache.extract() as Record<string, unknown>
   for (const cacheId of Object.keys(snapshot)) {
-    if (!cacheId.startsWith('TemplateGalleryPage:')) continue
+    if (!cacheId.startsWith('TemplateGalleryPageAdmin:')) continue
     cache.modify({
       id: cacheId,
       fields: {

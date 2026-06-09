@@ -184,16 +184,16 @@ describe('TrashJourneyDialog', () => {
     // TemplateGalleryItem ref — the Pothos variant the public templates
     // field stores. The trash update should filter both lists.
     cache.restore({
-      'TemplateGalleryPage:page-A': {
-        __typename: 'TemplateGalleryPage',
+      'TemplateGalleryPageAdmin:page-A': {
+        __typename: 'TemplateGalleryPageAdmin',
         id: 'page-A',
         templates: [
           { __ref: 'TemplateGalleryItem:journey-id' },
           { __ref: 'TemplateGalleryItem:other-journey' }
         ]
       },
-      'TemplateGalleryPage:page-B': {
-        __typename: 'TemplateGalleryPage',
+      'TemplateGalleryPageAdmin:page-B': {
+        __typename: 'TemplateGalleryPageAdmin',
         id: 'page-B',
         templates: [{ __ref: 'TemplateGalleryItem:journey-id' }]
       },
@@ -258,10 +258,12 @@ describe('TrashJourneyDialog', () => {
     // Every cached TemplateGalleryPage.templates list is trimmed of the
     // trashed ref, sibling refs survive.
     const finalSnapshot = cache.extract()
-    expect(finalSnapshot['TemplateGalleryPage:page-A']?.templates).toEqual([
-      { __ref: 'TemplateGalleryItem:other-journey' }
-    ])
-    expect(finalSnapshot['TemplateGalleryPage:page-B']?.templates).toEqual([])
+    expect(finalSnapshot['TemplateGalleryPageAdmin:page-A']?.templates).toEqual(
+      [{ __ref: 'TemplateGalleryItem:other-journey' }]
+    )
+    expect(finalSnapshot['TemplateGalleryPageAdmin:page-B']?.templates).toEqual(
+      []
+    )
   })
 
   it('should not call refetchTemplateStats when trashing a journey without fromTemplateId', async () => {

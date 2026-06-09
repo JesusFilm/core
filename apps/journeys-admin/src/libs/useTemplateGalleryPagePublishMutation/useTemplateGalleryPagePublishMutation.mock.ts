@@ -18,7 +18,7 @@ export const getTemplateGalleryPagePublishMock = (
   result: vi.fn(() => ({
     data: {
       templateGalleryPagePublish: {
-        __typename: 'TemplateGalleryPage',
+        __typename: 'TemplateGalleryPageAdmin',
         id: variables.id,
         status: TemplateGalleryPageStatus.published,
         publishedAt: '2026-05-06T00:00:00Z',
