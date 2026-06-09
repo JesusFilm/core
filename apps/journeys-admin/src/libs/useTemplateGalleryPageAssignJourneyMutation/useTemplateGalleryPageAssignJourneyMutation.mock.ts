@@ -10,7 +10,7 @@ import {
 import { TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY } from './useTemplateGalleryPageAssignJourneyMutation'
 
 const defaultAssigned: Assigned = {
-  __typename: 'TemplateGalleryPage',
+  __typename: 'TemplateGalleryPageAdmin',
   id: 'page-1',
   title: 'Collection',
   description: '',

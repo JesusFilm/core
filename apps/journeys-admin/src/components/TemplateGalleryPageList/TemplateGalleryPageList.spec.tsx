@@ -33,7 +33,7 @@ const collectionsMock: MockedResponse<GetTemplateGalleryPages> = {
     data: {
       templateGalleryPages: [
         {
-          __typename: 'TemplateGalleryPage',
+          __typename: 'TemplateGalleryPageAdmin',
           id: 'page-1',
           title: 'Featured Templates',
           description: 'Our pick of the team',

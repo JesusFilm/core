@@ -9,6 +9,7 @@ import {
   isValidMuxPlaybackId
 } from '@core/journeys/ui/TemplateGalleryMedia'
 
+import { TemplateGalleryPageMediaType } from '../../../../../__generated__/globalTypes'
 import { previewEmbedUrl } from '../CollectionPreviewPane/previewEmbedUrl'
 import { CollectionMediaValues } from '../useCollectionForm/collectionMedia'
 
@@ -52,7 +53,7 @@ export function MediaPreview({
   fill = false
 }: MediaPreviewProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
-  const url = media.type === 'link' ? media.url : ''
+  const url = media.type === TemplateGalleryPageMediaType.link ? media.url : ''
   const [debouncedUrl, setDebouncedUrl] = useState(url)
 
   useEffect(() => {
@@ -64,7 +65,7 @@ export function MediaPreview({
   const sizeSx = fill ? { height: '100%' } : { aspectRatio: '16 / 9' }
 
   if (
-    media.type === 'mux' &&
+    media.type === TemplateGalleryPageMediaType.mux &&
     media.muxPlaybackId != null &&
     isValidMuxPlaybackId(media.muxPlaybackId)
   ) {
@@ -96,7 +97,7 @@ export function MediaPreview({
     )
   }
 
-  if (media.type === 'link') {
+  if (media.type === TemplateGalleryPageMediaType.link) {
     const embedUrl = previewEmbedUrl(debouncedUrl)
     if (embedUrl != null) {
       // key resets the loaded state when the URL changes, so editing the
@@ -110,9 +111,9 @@ export function MediaPreview({
   if (compact) return <MediaPreviewPlaceholder dark sizeSx={sizeSx} />
 
   // Full (preview card): nothing for empty media, otherwise a labelled hint.
-  if (media.type === 'none') return null
+  if (media.type === TemplateGalleryPageMediaType.none) return null
   const label =
-    media.type === 'mux'
+    media.type === TemplateGalleryPageMediaType.mux
       ? t('Processing video…')
       : debouncedUrl.trim() !== ''
         ? t('Preview appears once you add the link')

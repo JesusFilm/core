@@ -7,8 +7,9 @@ import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ChangeEvent, MouseEvent, ReactElement, useState } from 'react'
+import { ChangeEvent, MouseEvent, ReactElement } from 'react'
 
+import { TemplateGalleryPageMediaType } from '../../../../../__generated__/globalTypes'
 import {
   MEDIA_BOX_HEIGHT,
   MEDIA_BOX_WIDTH,
@@ -18,8 +19,6 @@ import { CollectionMediaValues } from '../useCollectionForm/collectionMedia'
 
 import { MuxUploadField } from './MuxUploadField'
 
-type MediaUiMode = 'mux' | 'link'
-
 interface MediaSectionProps {
   media: CollectionMediaValues
   /** Stable per-dialog upload key, owned by the dialog so it can read the
@@ -28,38 +27,31 @@ interface MediaSectionProps {
   /** Inline error for the media field (schema or backend reason message). */
   error?: string
   /**
-   * Form-state update — typing/clearing a link, an upload starting,
-   * completing, or being removed. No network: every media value persists
-   * with the dialog's Save button.
+   * Form-state update — switching the active type, typing/clearing a link, an
+   * upload starting/completing/being removed. No network: every media value
+   * persists with the dialog's Save button.
    */
   onChange: (media: CollectionMediaValues) => void
   /** True while the dialog is saving — disables the media inputs. */
   saving?: boolean
-  /** True while a Mux upload is in flight — locks the Link/Upload toggle so the
-   *  user can't switch to a link mid-upload (which would race the upload's
-   *  completion). The dialog also blocks Save and routes Cancel through the
-   *  discard prompt while this holds. */
+  /** True while a Mux upload is in flight — locks the Link/Upload/None toggle so
+   *  the user can't switch mid-upload (which would race completion). The dialog
+   *  also blocks Save and routes Cancel through the discard prompt while this
+   *  holds. */
   disableModeSwitch?: boolean
   /** Section-header typography, shared with the rest of the dialog. */
   headerSx: SxProps<Theme>
 }
 
-/** A `mux` row opens Upload; everything else (link / none) opens Link. */
-function inferMode(media: CollectionMediaValues): MediaUiMode {
-  return media.type === 'mux' ? 'mux' : 'link'
-}
-
 /**
- * Media editing surface for the CollectionDialog: a two-way picker — Link (any
- * embeddable URL: Canva, YouTube, Google Slides) or Upload (a Mux video). The
- * provider is inferred server-side from the URL host, so Link is a single
- * field; the backend validates and normalizes it. Both tabs are plain form
- * state persisted by the dialog's Save button — closing without saving
- * discards a pasted link or a completed upload alike (the upload's Mux asset
- * already exists, but the collection row only references it once saved).
- * Switching tabs only changes which input is shown; it never wipes the saved
- * media. The input lives in a fixed-height box so no state change shifts the
- * layout. Must be rendered inside a `MuxVideoUploadProvider`.
+ * Media editing surface for the CollectionDialog. The `Link / Upload / None`
+ * toggle selects which payload renders (`media.type`); the link slot (`url`)
+ * and the upload slot (`muxVideoId`/`muxPlaybackId`/…) are retained
+ * independently, so switching the toggle never wipes the parked slot. Every
+ * change is form state persisted by the dialog's Save button. Nothing is
+ * implicit: the toggle is the ONLY thing that changes `type`; clearing or
+ * removing a slot clears only that slot. Must be rendered inside a
+ * `MuxVideoUploadProvider`.
  */
 export function MediaSection({
   media,
@@ -71,133 +63,109 @@ export function MediaSection({
   headerSx
 }: MediaSectionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [mode, setMode] = useState<MediaUiMode>(() => inferMode(media))
 
-  function handleModeChange(
+  function handleTypeChange(
     _event: MouseEvent<HTMLElement>,
-    next: MediaUiMode | null
+    next: TemplateGalleryPageMediaType | null
   ): void {
     // `next` is null when the active button is re-clicked — ignore so the
-    // selection can't be toggled off. Switching only changes the visible
-    // input; it never clears the saved media (the user can compare Upload vs
-    // Link without losing it).
-    if (next == null || next === mode) return
-    setMode(next)
+    // selection can't be toggled off. Setting the type retains both slots.
+    if (next == null || next === media.type) return
+    onChange({ ...media, type: next })
   }
 
-  const linkValue = media.type === 'link' ? media.url : ''
+  // Link slot editors — touch only `url`, never `type`.
   function handleUrlChange(event: ChangeEvent<HTMLInputElement>): void {
-    const value = event.target.value
-    onChange(
-      value.trim() === '' ? { type: 'none' } : { type: 'link', url: value }
-    )
+    onChange({ ...media, url: event.target.value })
   }
-  // Remove clears the link from the form — a one-click equivalent of
-  // emptying the field. Like typing, it's transient: the cleared value
-  // persists with the dialog's Save.
   function handleLinkRemove(): void {
-    onChange({ type: 'none' })
+    onChange({ ...media, url: '' })
   }
 
-  // The previously-saved video, if any — the read model exposes only a
-  // playbackId (never the original muxVideoId), so this both marks the row as
-  // already-saved and is what the box preview renders during a replacement.
+  // Clears the upload slot only (keeps `type`). Shared by Cancel-of-fresh and
+  // Remove.
+  function clearMuxSlot(): CollectionMediaValues {
+    return { ...media, muxVideoId: '', muxPlaybackId: null, muxName: null, muxDuration: null }
+  }
+
   const savedPlaybackId =
-    media.type === 'mux' &&
-    media.muxPlaybackId != null &&
-    media.muxPlaybackId !== ''
+    media.muxPlaybackId != null && media.muxPlaybackId !== ''
       ? media.muxPlaybackId
       : null
-  // A video the form can actually save: a fresh completed upload (has a
-  // muxVideoId) or an existing saved row (has a playbackId). A committed
-  // value must survive a replacement attempt untouched — overwriting it with
-  // an empty placeholder would lose the muxVideoId, which create mode (no
-  // server row to recover from) could never restore.
-  const committedVideo =
-    media.type === 'mux' &&
-    (media.muxVideoId !== '' || savedPlaybackId != null)
-
-  // The left box mirrors the ACTIVE tab, not the stored media. Switching tabs
-  // never clears the saved media, so on a tab whose type doesn't match the
-  // stored media (e.g. Link while a video is saved) the box must be blank, not
-  // show the other tab's preview.
-  const boxMedia: CollectionMediaValues =
-    mode === media.type ? media : { type: 'none' }
+  // A video the upload slot can actually save: a fresh completed upload (has a
+  // muxVideoId) or an existing saved row (has a playbackId). A committed value
+  // must survive a replacement attempt untouched.
+  const committedVideo = media.muxVideoId !== '' || savedPlaybackId != null
 
   return (
     <Stack gap={1}>
       <Typography sx={headerSx}>{t('Media')}</Typography>
 
-      {/* Full-width, equal-width toggle matching the app's media-source
-          switches (e.g. BackgroundMedia's Image/Video). textTransform none so
-          it reads "Link" / "Upload", not the bare size="small" caps group this
-          used to be. */}
+      {/* Full-width equal-width 3-way toggle. textTransform none so it reads
+          "Link" / "Upload" / "None". Selecting only sets `type`. */}
       <ToggleButtonGroup
         exclusive
         fullWidth
-        value={mode}
-        onChange={handleModeChange}
+        value={media.type}
+        onChange={handleTypeChange}
         aria-label={t('Media type')}
         disabled={saving || disableModeSwitch}
         sx={{
           '& .MuiToggleButton-root': { textTransform: 'none', py: 1, mb: 1 }
         }}
       >
-        <ToggleButton value="link" aria-label={t('Link')}>
+        <ToggleButton value={TemplateGalleryPageMediaType.link} aria-label={t('Link')}>
           {t('Link')}
         </ToggleButton>
-        <ToggleButton value="mux" aria-label={t('Upload')}>
+        <ToggleButton value={TemplateGalleryPageMediaType.mux} aria-label={t('Upload')}>
           {t('Upload')}
+        </ToggleButton>
+        <ToggleButton value={TemplateGalleryPageMediaType.none} aria-label={t('None')}>
+          {t('None')}
         </ToggleButton>
       </ToggleButtonGroup>
 
-      {/* Both modes share the [preview box | control] row. Upload renders its
-          own row (the box is Choose / Replace); Link pairs a non-interactive
-          box with the URL field. The reserved min-height (the preview box's)
-          keeps Link <-> Upload switches from shifting the dialog layout. */}
+      {/* The active tab renders its own slot; the reserved min-height keeps
+          switching from shifting the dialog layout. */}
       <Box sx={{ minHeight: MEDIA_BOX_HEIGHT }}>
-        {mode === 'mux' ? (
+        {media.type === TemplateGalleryPageMediaType.mux && (
           <MuxUploadField
             uploadKey={uploadKey}
             disabled={saving}
-            media={boxMedia}
+            media={media}
             hasVideo={committedVideo}
-            // A replacement upload leaves the committed video in the form
-            // untouched (the in-flight provider task is what gates Save), so
-            // a failed or cancelled replacement keeps it saveable. Only a
-            // fresh upload writes the incomplete placeholder, which keeps
-            // Save blocked until completion.
+            // A replacement upload leaves the committed video untouched (the
+            // in-flight provider task is what gates Save). Only a fresh upload
+            // writes the incomplete placeholder, which keeps Save blocked until
+            // completion.
             onUploadStart={() => {
-              if (!committedVideo) {
-                onChange({ type: 'mux', muxVideoId: '', muxPlaybackId: null })
-              }
+              // Fresh upload: reset the whole upload slot (incl. any stale
+              // name/duration) to the in-flight placeholder.
+              if (!committedVideo) onChange(clearMuxSlot())
             }}
-            // Completion updates the form with the durable video id (saved by
-            // the dialog's Save). Carry name/duration from the provider cache
-            // so the attached state shows the metadata immediately.
             onComplete={(videoId, playbackId, muxName, muxDuration) =>
               onChange({
-                type: 'mux',
+                ...media,
                 muxVideoId: videoId,
                 muxPlaybackId: playbackId,
                 muxName,
                 muxDuration
               })
             }
-            // Cancel only needs to clear a fresh upload's placeholder — a
-            // replacement never overwrote the committed value (above), so
-            // there is nothing to revert.
+            // Cancel only clears a fresh upload's placeholder — a replacement
+            // never overwrote the committed value.
             onCancel={() => {
-              if (!committedVideo) onChange({ type: 'none' })
+              if (!committedVideo) onChange(clearMuxSlot())
             }}
-            // Remove clears the attached video from the form — persisted by
-            // the dialog's Save like every other media change.
-            onRemove={() => onChange({ type: 'none' })}
+            // Remove clears only the upload slot; `type` stays `mux`.
+            onRemove={() => onChange(clearMuxSlot())}
           />
-        ) : (
+        )}
+
+        {media.type === TemplateGalleryPageMediaType.link && (
           <Stack direction="row" spacing={2} alignItems="flex-start">
-            {/* No edit button on Link, so no grey frame — the preview fills
-                the whole box. */}
+            {/* No edit button on Link, so no grey frame — the preview fills the
+                whole box. */}
             <Box
               sx={{
                 width: MEDIA_BOX_WIDTH,
@@ -205,14 +173,11 @@ export function MediaSection({
                 flexShrink: 0
               }}
             >
-              <MediaPreview media={boxMedia} compact fill />
+              <MediaPreview media={media} compact fill />
             </Box>
-            {/* Right column: Remove sits directly under the field + helper
-                (natural flow, no bottom pinning). Always rendered — disabled
-                when there's no link — so it never shifts layout. */}
             <Stack spacing={1} sx={{ flex: 1, minWidth: 0 }}>
               <TextField
-                value={linkValue}
+                value={media.url}
                 onChange={handleUrlChange}
                 disabled={saving}
                 placeholder={t('Paste link')}
@@ -229,12 +194,29 @@ export function MediaSection({
                 size="small"
                 color="error"
                 onClick={handleLinkRemove}
-                disabled={saving || linkValue.trim() === ''}
+                disabled={saving || media.url.trim() === ''}
                 sx={{ alignSelf: 'flex-start' }}
               >
                 {t('Remove')}
               </Button>
             </Stack>
+          </Stack>
+        )}
+
+        {media.type === TemplateGalleryPageMediaType.none && (
+          <Stack
+            alignItems="center"
+            justifyContent="center"
+            sx={{ height: MEDIA_BOX_HEIGHT }}
+            data-testid="MediaSectionNone"
+            // Announce the empty state to assistive tech when the user toggles
+            // to None — the aria-pressed toggle alone doesn't read out the
+            // "nothing will show" consequence.
+            role="status"
+          >
+            <Typography variant="caption" color="text.secondary">
+              {t('No media will be shown on the public page.')}
+            </Typography>
           </Stack>
         )}
       </Box>

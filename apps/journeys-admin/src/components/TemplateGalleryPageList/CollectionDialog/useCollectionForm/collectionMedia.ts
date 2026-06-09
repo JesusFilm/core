@@ -5,77 +5,95 @@ import {
 } from '../../../../../__generated__/globalTypes'
 
 /**
- * Tagged-union media value carried by the collection form. The frontend does
- * not distinguish Canva vs YouTube vs Slides at the value layer — they all
- * submit as `{ type: 'link', url }`; the picker only chooses which input UI to
- * show. `muxPlaybackId` is carried for existing mux rows so the preview can
- * render a thumbnail and the diff can recognise an untouched upload (the read
- * model exposes `muxPlaybackId`, never the original `muxVideoId`). `muxName` and
- * `muxDuration` are the denormalized Mux metadata, carried for display in the
- * attached-video state (both fresh uploads and existing saved rows).
+ * Media value carried by the collection form. Mirrors the backend's
+ * retained-both-slots model: `type` selects which payload renders, while the
+ * link slot (`url`) and the upload slot (`muxVideoId` + denormalized
+ * `muxPlaybackId`/`muxName`/`muxDuration`) are held independently and survive
+ * switching `type`. An empty link slot is `url: ''`; an empty upload slot is
+ * `muxVideoId: '' && muxPlaybackId: null`. `type: none` renders nothing while
+ * keeping both parked slots intact.
+ *
+ * The denormalized mux fields are display-only (preview thumbnail + attached
+ * metadata); only `type`, `url`, and `muxVideoId` map to the write input.
  */
-export type CollectionMediaValues =
-  | { type: 'none' }
-  | {
-      type: 'mux'
-      muxVideoId: string
-      muxPlaybackId?: string | null
-      muxName?: string | null
-      muxDuration?: number | null
-    }
-  | { type: 'link'; url: string }
+export interface CollectionMediaValues {
+  type: TemplateGalleryPageMediaType
+  url: string
+  muxVideoId: string
+  muxPlaybackId: string | null
+  muxName: string | null
+  muxDuration: number | null
+}
+
+export const EMPTY_MEDIA: CollectionMediaValues = {
+  type: TemplateGalleryPageMediaType.none,
+  url: '',
+  muxVideoId: '',
+  muxPlaybackId: null,
+  muxName: null,
+  muxDuration: null
+}
 
 /**
- * Maps a persisted `TemplateGalleryPageMedia` (or null) to the form value used
- * for `initialValues`. Legacy rows — whose only media was the deprecated
- * `mediaUrl` scalar — arrive as `null` and present as `{ type: 'none' }`.
+ * Maps a persisted admin media row (or null) to the form value used for
+ * `initialValues` and as the diff baseline. Both slots are seeded regardless
+ * of the active `type` so a parked link/upload is preserved and restorable.
+ * A null row (legacy `mediaUrl`-only or no media) presents as `none` with
+ * empty slots.
  */
 export function collectionMediaToFormValues(
   media: TemplateGalleryPageMedia | null | undefined
 ): CollectionMediaValues {
-  if (media == null) return { type: 'none' }
-  if (media.type === TemplateGalleryPageMediaType.mux) {
-    // No original muxVideoId in the read model — seed empty; the persisted
-    // playbackId both drives the preview thumbnail and marks the row as a
-    // valid, already-saved upload. muxName/muxDuration are denormalized onto the
-    // row so an existing video shows its metadata without re-reading Mux.
-    return {
-      type: 'mux',
-      muxVideoId: '',
-      muxPlaybackId: media.muxPlaybackId,
-      muxName: media.muxName,
-      muxDuration: media.muxDuration
-    }
+  if (media == null) return { ...EMPTY_MEDIA }
+  return {
+    type: media.type,
+    url: media.embedUrl ?? '',
+    muxVideoId: media.muxVideoId ?? '',
+    muxPlaybackId: media.muxPlaybackId,
+    muxName: media.muxName,
+    muxDuration: media.muxDuration
   }
-  return { type: 'link', url: media.embedUrl ?? '' }
 }
 
 /**
- * Stable comparison key for diffing form media against the persisted value.
- * Two values produce the same key iff they represent the same saved media.
+ * True when the form's media differs from the persisted baseline in `type` or
+ * either slot. Drives whether `media` is included in the update and the
+ * dialog's unsaved-changes guard. Derived from `formMediaToInput` so the
+ * "what counts as a change" rule lives in one place: dirty iff the built input
+ * changes `type` or carries any slot key beyond `type`.
  */
-export function mediaKey(media: CollectionMediaValues): string {
-  if (media.type === 'none') return 'none'
-  if (media.type === 'link') return `link:${media.url}`
-  // A fresh upload is keyed by its new videoId; an untouched existing row is
-  // keyed by its persisted playbackId — so unchanged rows compare equal.
-  return `mux:${media.muxVideoId}:${media.muxPlaybackId ?? ''}`
+export function mediaDirty(
+  current: CollectionMediaValues,
+  persisted: CollectionMediaValues
+): boolean {
+  const input = formMediaToInput(current, persisted)
+  return current.type !== persisted.type || Object.keys(input).length > 1
 }
 
 /**
- * Converts the current form media to the mutation input. `none` → `null`
- * (clears / no row). `link` → `{ type: 'link', url }`. `mux` →
- * `{ type: 'mux', muxVideoId }`.
+ * Builds the tri-state write input by diffing the form's slots against the
+ * persisted baseline, per the backend contract:
+ *   - `type` is always sent (it selects what renders).
+ *   - `url` / `muxVideoId`: OMIT when unchanged, `null` when cleared, value
+ *     when set/replaced.
+ * The denormalized mux metadata is never sent — the backend re-denormalizes
+ * from `muxVideoId`. Links are trimmed at this boundary (pasted links often
+ * carry whitespace and the preview trims internally).
  */
 export function formMediaToInput(
-  media: CollectionMediaValues
-): TemplateGalleryPageMediaInput | null {
-  if (media.type === 'none') return null
-  if (media.type === 'link') {
-    // Trim at the input boundary: pasted links commonly carry surrounding
-    // whitespace, and the preview trims internally — without this the
-    // server would reject a URL the user can see previewing correctly.
-    return { type: TemplateGalleryPageMediaType.link, url: media.url.trim() }
+  current: CollectionMediaValues,
+  persisted: CollectionMediaValues
+): TemplateGalleryPageMediaInput {
+  const input: TemplateGalleryPageMediaInput = { type: current.type }
+
+  const url = current.url.trim()
+  if (url !== persisted.url.trim()) {
+    input.url = url === '' ? null : url
   }
-  return { type: TemplateGalleryPageMediaType.mux, muxVideoId: media.muxVideoId }
+
+  if (current.muxVideoId !== persisted.muxVideoId) {
+    input.muxVideoId = current.muxVideoId === '' ? null : current.muxVideoId
+  }
+
+  return input
 }

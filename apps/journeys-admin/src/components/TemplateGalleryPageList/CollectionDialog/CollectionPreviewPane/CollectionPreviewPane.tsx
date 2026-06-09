@@ -16,6 +16,7 @@ import CopyRightIcon from '@core/shared/ui/icons/CopyRight'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
+import { TemplateGalleryPageMediaType } from '../../../../../__generated__/globalTypes'
 import { copyToClipboard } from '../../../../libs/copyToClipboard'
 import { MediaPreview } from '../MediaPreview'
 import { CollectionMediaValues } from '../useCollectionForm/collectionMedia'
@@ -266,7 +267,7 @@ function CollectionPreviewPaneImpl({
           // processing upload, a mux thumbnail) — states the public renderer
           // can't express — so the admin injects its own MediaPreview.
           mediaSlot={
-            values.media.type !== 'none' ? (
+            values.media.type !== TemplateGalleryPageMediaType.none ? (
               <MediaPreview media={values.media} />
             ) : null
           }

@@ -46,7 +46,7 @@ export function useTemplateGalleryPageDeleteMutation(
       })
       cache.evict({
         id: cache.identify({
-          __typename: 'TemplateGalleryPage',
+          __typename: 'TemplateGalleryPageAdmin',
           id: deletedId
         })
       })

@@ -4,7 +4,23 @@ import { SnackbarProvider } from 'notistack'
 
 import '../../../../../test/i18n'
 
+import { TemplateGalleryPageMediaType } from '../../../../../__generated__/globalTypes'
+import {
+  CollectionMediaValues,
+  EMPTY_MEDIA
+} from '../useCollectionForm/collectionMedia'
+
 import { CollectionPreviewPane } from './CollectionPreviewPane'
+
+function linkMedia(url: string): CollectionMediaValues {
+  return { ...EMPTY_MEDIA, type: TemplateGalleryPageMediaType.link, url }
+}
+
+function muxMedia(
+  overrides: Partial<CollectionMediaValues> = {}
+): CollectionMediaValues {
+  return { ...EMPTY_MEDIA, type: TemplateGalleryPageMediaType.mux, ...overrides }
+}
 
 describe('CollectionPreviewPane', () => {
   let originalOpen: typeof window.open
@@ -24,7 +40,7 @@ describe('CollectionPreviewPane', () => {
     creatorName: 'Creator',
     creatorImageSrc: '',
     creatorImageAlt: '',
-    media: { type: 'none' as const }
+    media: EMPTY_MEDIA
   }
 
   function renderPane(
@@ -87,7 +103,7 @@ describe('CollectionPreviewPane', () => {
       renderPane({
         values: {
           ...baseValues,
-          media: { type: 'link', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' }
+          media: linkMedia('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
         }
       })
       expect(screen.getByTestId('GalleryMediaPreviewIframe')).toHaveAttribute(
@@ -100,7 +116,7 @@ describe('CollectionPreviewPane', () => {
       renderPane({
         values: {
           ...baseValues,
-          media: { type: 'link', url: 'https://www.canva.com/design/DA/view' }
+          media: linkMedia('https://www.canva.com/design/DA/view')
         }
       })
       expect(
@@ -115,10 +131,7 @@ describe('CollectionPreviewPane', () => {
       renderPane({
         values: {
           ...baseValues,
-          media: {
-            type: 'link',
-            url: 'https://www.canva.com/design/DAF/my-slug/view?embed'
-          }
+          media: linkMedia('https://www.canva.com/design/DAF/my-slug/view?embed')
         }
       })
       expect(screen.getByTestId('GalleryMediaPreviewIframe')).toHaveAttribute(
@@ -131,7 +144,7 @@ describe('CollectionPreviewPane', () => {
       const url =
         'https://docs.google.com/presentation/d/e/2PACX-abc/embed?start=false'
       renderPane({
-        values: { ...baseValues, media: { type: 'link', url } }
+        values: { ...baseValues, media: linkMedia(url) }
       })
       expect(screen.getByTestId('GalleryMediaPreviewIframe')).toHaveAttribute(
         'src',
@@ -143,7 +156,7 @@ describe('CollectionPreviewPane', () => {
       renderPane({
         values: {
           ...baseValues,
-          media: { type: 'link', url: 'http://evil.example/x' }
+          media: linkMedia('http://evil.example/x')
         }
       })
       expect(
@@ -155,7 +168,7 @@ describe('CollectionPreviewPane', () => {
       renderPane({
         values: {
           ...baseValues,
-          media: { type: 'mux', muxVideoId: '', muxPlaybackId: 'pb-1' }
+          media: muxMedia({ muxPlaybackId: 'pb-1' })
         }
       })
       expect(
@@ -167,7 +180,7 @@ describe('CollectionPreviewPane', () => {
       renderPane({
         values: {
           ...baseValues,
-          media: { type: 'mux', muxVideoId: '', muxPlaybackId: 'pb-1' }
+          media: muxMedia({ muxPlaybackId: 'pb-1' })
         }
       })
       expect(
@@ -183,7 +196,7 @@ describe('CollectionPreviewPane', () => {
       renderPane({
         values: {
           ...baseValues,
-          media: { type: 'mux', muxVideoId: 'v1' }
+          media: muxMedia({ muxVideoId: 'v1' })
         }
       })
       expect(screen.getByText('Processing video…')).toBeInTheDocument()

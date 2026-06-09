@@ -25,7 +25,7 @@ const TEAM_ID = 'team-1'
 
 function makePage(overrides: Partial<Page> = {}): Page {
   return {
-    __typename: 'TemplateGalleryPage',
+    __typename: 'TemplateGalleryPageAdmin',
     id: 'page-1',
     title: 'Featured Templates',
     description: '',

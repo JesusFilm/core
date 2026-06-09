@@ -21,9 +21,10 @@ import { useTemplateGalleryPageUpdateMutation } from '../../../../libs/useTempla
 
 import {
   CollectionMediaValues,
+  EMPTY_MEDIA,
   collectionMediaToFormValues,
   formMediaToInput,
-  mediaKey
+  mediaDirty as mediaDiffers
 } from './collectionMedia'
 import { mediaErrorMessage } from './mediaErrorMessage'
 
@@ -129,20 +130,12 @@ function buildSchema(t: TFunction): ObjectSchema<CollectionFormValues> {
     creatorName: string().max(100, t('Max 100 characters')).default(''),
     creatorImageSrc: string().default(''),
     creatorImageAlt: string().default(''),
-    // Tagged media union (NES-1707). The server is the source of truth for
-    // URL validation and normalization; this rule only guards against
-    // submitting an empty link/upload. An existing mux row is valid via its
-    // persisted playbackId even though the form's muxVideoId is empty (the
-    // read model never exposes the original muxVideoId).
-    media: mixed<CollectionMediaValues>()
-      .required()
-      .test('media-complete', t('Add a link or upload a video'), (value) => {
-        if (value == null) return false
-        if (value.type === 'none') return true
-        if (value.type === 'link') return value.url.trim() !== ''
-        return value.muxVideoId !== '' || value.muxPlaybackId != null
-      })
-      .default({ type: 'none' }),
+    // Both-slots media value (NES-1706/1707). No completeness rule: an empty
+    // active slot is valid and renders nothing (the server is the source of
+    // truth for URL validation/normalization). The only Save-time media gate
+    // is an in-flight/incomplete Mux upload, enforced separately in
+    // CollectionDialog (`mediaBlocked`), not here.
+    media: mixed<CollectionMediaValues>().required().default(EMPTY_MEDIA),
     slug: string()
       .max(200, t('Max 200 characters'))
       .matches(TEMPLATE_GALLERY_SLUG_RE, {
@@ -179,12 +172,13 @@ export function useCollectionForm({
   const [templateGalleryPageUnpublish] =
     useTemplateGalleryPageUnpublishMutation()
   const [unpublishing, setUnpublishing] = useState(false)
-  // Key of the media currently persisted on the server. Seeded from the
-  // collection so submitting an untouched value is a no-op (media stays out
-  // of the update input). Advanced after a successful update that included
-  // media so a retried submit doesn't resend it.
-  const lastPersistedMediaKeyRef = useRef(
-    mediaKey(collectionMediaToFormValues(collection?.media))
+  // The media currently persisted on the server (both slots). Seeded from the
+  // collection so submitting an untouched value is a no-op (media stays out of
+  // the update input) and so `formMediaToInput` can diff each slot. Advanced
+  // after a successful update that included media so a retried submit doesn't
+  // resend it.
+  const persistedMediaRef = useRef<CollectionMediaValues>(
+    collectionMediaToFormValues(collection?.media)
   )
 
   // Memoize so identity is stable across re-renders. Formik uses
@@ -260,8 +254,14 @@ export function useCollectionForm({
           creatorImageAlt:
             values.creatorImageAlt === '' ? null : values.creatorImageAlt,
           description: values.description === '' ? null : values.description,
-          media: formMediaToInput(values.media),
           journeyIds: values.journeyIds
+        }
+        // Include media only when the user set a slot. An empty (none) create
+        // omits it entirely — symmetric with the update branch, no `{ type:
+        // none }` noise for a media-less collection. Diff against empty so each
+        // set slot is sent.
+        if (mediaDiffers(values.media, EMPTY_MEDIA)) {
+          input.media = formMediaToInput(values.media, EMPTY_MEDIA)
         }
         await templateGalleryPageCreate({ variables: { input } })
         enqueueSnackbar(t('Collection created'), {
@@ -285,12 +285,12 @@ export function useCollectionForm({
           input.creatorImageAlt =
             values.creatorImageAlt === '' ? null : values.creatorImageAlt
         }
-        // Media: diff against the last server-persisted value. All media —
-        // a pasted link, a completed upload, a removal — stays in the form
-        // until this Save, then rides along with the update like any other
-        // field.
-        if (mediaKey(values.media) !== lastPersistedMediaKeyRef.current) {
-          input.media = formMediaToInput(values.media)
+        // Media: diff each slot against the last server-persisted value and
+        // send the tri-state input (omit unchanged / null cleared / value
+        // set). All media — a pasted link, a completed upload, a removal, a
+        // None toggle — stays in the form until this Save.
+        if (mediaDiffers(values.media, persistedMediaRef.current)) {
+          input.media = formMediaToInput(values.media, persistedMediaRef.current)
         }
         // Skip the slug field when the user cleared it. yup's
         // `excludeEmptyString` lets an empty value pass validation (so
@@ -319,10 +319,10 @@ export function useCollectionForm({
           await templateGalleryPageUpdate({
             variables: { id: collection.id, input }
           })
-          // The update persisted the form's media — advance the key so a
+          // The update persisted the form's media — advance the baseline so a
           // retry after a later failure (e.g. publish) doesn't resend it.
           if (input.media !== undefined) {
-            lastPersistedMediaKeyRef.current = mediaKey(values.media)
+            persistedMediaRef.current = values.media
           }
           // Suppress the update snackbar when we're about to fire publish
           // — the success dialog covers it, and stacking two toasts
@@ -479,7 +479,7 @@ export function useCollectionForm({
   }
 
   function mediaDirty(values: CollectionFormValues): boolean {
-    return mediaKey(values.media) !== lastPersistedMediaKeyRef.current
+    return mediaDiffers(values.media, persistedMediaRef.current)
   }
 
   return {

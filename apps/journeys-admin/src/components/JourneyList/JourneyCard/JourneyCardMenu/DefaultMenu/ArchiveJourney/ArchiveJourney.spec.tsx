@@ -111,16 +111,16 @@ describe('ArchiveJourney', () => {
     it('removes the archived journey from every cached TemplateGalleryPage.templates list and evicts the TemplateGalleryItem variant', async () => {
       const cache = new InMemoryCache()
       cache.restore({
-        'TemplateGalleryPage:page-A': {
-          __typename: 'TemplateGalleryPage',
+        'TemplateGalleryPageAdmin:page-A': {
+          __typename: 'TemplateGalleryPageAdmin',
           id: 'page-A',
           templates: [
             { __ref: 'TemplateGalleryItem:journey-id' },
             { __ref: 'TemplateGalleryItem:other-journey' }
           ]
         },
-        'TemplateGalleryPage:page-B': {
-          __typename: 'TemplateGalleryPage',
+        'TemplateGalleryPageAdmin:page-B': {
+          __typename: 'TemplateGalleryPageAdmin',
           id: 'page-B',
           templates: [{ __ref: 'TemplateGalleryItem:journey-id' }]
         },
@@ -180,10 +180,10 @@ describe('ArchiveJourney', () => {
       })
 
       const finalSnapshot = cache.extract()
-      expect(finalSnapshot['TemplateGalleryPage:page-A']?.templates).toEqual([
+      expect(finalSnapshot['TemplateGalleryPageAdmin:page-A']?.templates).toEqual([
         { __ref: 'TemplateGalleryItem:other-journey' }
       ])
-      expect(finalSnapshot['TemplateGalleryPage:page-B']?.templates).toEqual([])
+      expect(finalSnapshot['TemplateGalleryPageAdmin:page-B']?.templates).toEqual([])
     })
 
     it('unassigns the journey from its collection after archiving', async () => {

@@ -10,7 +10,7 @@ import {
 import { TEMPLATE_GALLERY_PAGE_CREATE } from './useTemplateGalleryPageCreateMutation'
 
 const defaultCreated: Created = {
-  __typename: 'TemplateGalleryPage',
+  __typename: 'TemplateGalleryPageAdmin',
   id: 'page-1',
   title: 'My Collection',
   description: '',

@@ -10,26 +10,30 @@ import { TemplateGalleryPageCreateInput, TemplateGalleryPageStatus, TemplateGall
 // ====================================================
 
 export interface TemplateGalleryPageCreate_templateGalleryPageCreate_media {
-  __typename: "TemplateGalleryPageMedia";
+  __typename: "TemplateGalleryPageMediaAdmin";
   id: string;
   /**
-   * Discriminator for which underlying field is populated.
+   * Active selector for which payload renders.
    */
   type: TemplateGalleryPageMediaType;
   /**
-   * Server-normalized iframe URL. Populated for `link`; null for `mux`.
+   * Raw Mux video id of the stored upload payload. Authenticated-only — never exposed on the public type.
+   */
+  muxVideoId: string | null;
+  /**
+   * The stored link payload. May be retained while `type` is `mux`/`none` so the editor can offer switching back.
    */
   embedUrl: string | null;
   /**
-   * Mux playback ID, denormalized from MuxVideo at save time so public reads never cross to the media DB. Populated for `mux`; null for `link`.
+   * Mux playback ID denormalized at save time. Tracks `muxVideoId`.
    */
   muxPlaybackId: string | null;
   /**
-   * Video name, denormalized from MuxVideo at save time. Populated for `mux` when Mux has a name; null for `link`.
+   * Video name denormalized at save time. Tracks `muxVideoId`.
    */
   muxName: string | null;
   /**
-   * Video duration in seconds, denormalized from MuxVideo at save time. Populated for `mux` when Mux reports a duration; null for `link`.
+   * Video duration in seconds denormalized at save time. Tracks `muxVideoId`.
    */
   muxDuration: number | null;
 }
@@ -88,7 +92,7 @@ export interface TemplateGalleryPageCreate_templateGalleryPageCreate {
    */
   creatorImageAlt: string | null;
   /**
-   * Embedded media shown on the public page. `null` for legacy rows that predate the multi-type embed (which used the deprecated `mediaUrl` scalar).
+   * Embedded media with both retained payload slots and the raw `muxVideoId`, so the editor can restore a parked link/upload. `null` only when the page has no media row.
    */
   media: TemplateGalleryPageCreate_templateGalleryPageCreate_media | null;
   /**

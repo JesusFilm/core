@@ -19,6 +19,7 @@ export const GET_TEMPLATE_GALLERY_PAGES = gql`
       media {
         id
         type
+        muxVideoId
         embedUrl
         muxPlaybackId
         muxName

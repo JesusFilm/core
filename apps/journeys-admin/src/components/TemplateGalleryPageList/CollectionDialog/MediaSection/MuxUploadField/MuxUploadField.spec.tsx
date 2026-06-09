@@ -2,7 +2,19 @@ import { fireEvent, render, screen } from '@testing-library/react'
 
 import '../../../../../../test/i18n'
 
+import { TemplateGalleryPageMediaType } from '../../../../../../__generated__/globalTypes'
+import {
+  CollectionMediaValues,
+  EMPTY_MEDIA
+} from '../../useCollectionForm/collectionMedia'
+
 import { MuxUploadField } from './MuxUploadField'
+
+function muxMedia(
+  overrides: Partial<CollectionMediaValues> = {}
+): CollectionMediaValues {
+  return { ...EMPTY_MEDIA, type: TemplateGalleryPageMediaType.mux, ...overrides }
+}
 
 const mockGetUploadStatus = vi.fn()
 const mockAddUploadTask = vi.fn()
@@ -38,7 +50,7 @@ function renderField(
   render(
     <MuxUploadField
       uploadKey="key-1"
-      media={{ type: 'none' }}
+      media={muxMedia()}
       hasVideo={false}
       onUploadStart={onUploadStart}
       onComplete={onComplete}
@@ -56,7 +68,7 @@ function renderFieldWithRerender(): {
 } {
   const props: React.ComponentProps<typeof MuxUploadField> = {
     uploadKey: 'key-1',
-    media: { type: 'mux', muxVideoId: '' },
+    media: muxMedia(),
     hasVideo: false,
     onUploadStart: vi.fn(),
     onComplete: vi.fn(),
@@ -191,13 +203,11 @@ describe('MuxUploadField', () => {
   it('shows the attached state — thumbnail in the box, name + duration + Remove', () => {
     const { onRemove } = renderField({
       hasVideo: true,
-      media: {
-        type: 'mux',
-        muxVideoId: '',
+      media: muxMedia({
         muxPlaybackId: 'pb-1',
         muxName: 'My clip',
         muxDuration: 125
-      }
+      })
     })
     expect(screen.getByTestId('MuxUploadFieldReady')).toBeInTheDocument()
     expect(screen.getByText('My clip')).toBeInTheDocument()
@@ -218,7 +228,7 @@ describe('MuxUploadField', () => {
   it('falls back to "Video attached" when the video has no name', () => {
     renderField({
       hasVideo: true,
-      media: { type: 'mux', muxVideoId: '', muxPlaybackId: 'pb-1' }
+      media: muxMedia({ muxPlaybackId: 'pb-1' })
     })
     expect(screen.getByText('Video attached')).toBeInTheDocument()
   })

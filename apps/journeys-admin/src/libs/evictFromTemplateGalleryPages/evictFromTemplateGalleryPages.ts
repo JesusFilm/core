@@ -52,7 +52,7 @@ export function evictFromTemplateGalleryPages<TCache>(
   // this layer, so cast to a string-keyed record to enumerate cache ids.
   const snapshot = cache.extract() as Record<string, unknown>
   for (const cacheId of Object.keys(snapshot)) {
-    if (!cacheId.startsWith('TemplateGalleryPage:')) continue
+    if (!cacheId.startsWith('TemplateGalleryPageAdmin:')) continue
     cache.modify({
       id: cacheId,
       fields: {

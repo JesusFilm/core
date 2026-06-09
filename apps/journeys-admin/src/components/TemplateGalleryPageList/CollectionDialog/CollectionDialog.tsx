@@ -28,7 +28,7 @@ import { DiscardConfirmDialog } from './DiscardConfirmDialog'
 import { JourneyPickerField } from './JourneyPickerField'
 import { MEDIA_BOX_HEIGHT, MEDIA_BOX_WIDTH } from './MediaPreview'
 import { MediaSection } from './MediaSection'
-import { CollectionFormValues, useCollectionForm } from './useCollectionForm'
+import { useCollectionForm } from './useCollectionForm'
 
 export interface CollectionDialogProps {
   open: boolean
@@ -134,19 +134,15 @@ function CollectionDialogContent({
   // Discard.
   const [discardConfirmOpen, setDiscardConfirmOpen] = useState(false)
 
-  // True while the media value can't be saved: a Mux upload in flight
-  // (provider status), or a fresh upload that hasn't produced a durable id
-  // yet (also covers an errored upload sitting on an empty muxVideoId).
-  function isMediaBlocked(media: CollectionFormValues['media']): boolean {
+  // True only while a Mux upload is genuinely in flight (uploading bytes or
+  // processing). An empty mux slot is no longer blocking — under the
+  // retained-both-slots model it simply renders nothing, so a never-started or
+  // failed upload is a valid (empty) state the user can Save or switch away
+  // from. Saving mid-upload would drop the in-flight video, so that one case
+  // still blocks every submit path.
+  function isMediaBlocked(): boolean {
     const task = getUploadStatus(uploadKey)
-    const inFlight =
-      task?.status === 'uploading' || task?.status === 'processing'
-    return (
-      inFlight ||
-      (media.type === 'mux' &&
-        media.muxVideoId === '' &&
-        (media.muxPlaybackId == null || media.muxPlaybackId === ''))
-    )
+    return task?.status === 'uploading' || task?.status === 'processing'
   }
 
   return (
@@ -159,7 +155,7 @@ function CollectionDialogContent({
       // prior playbackId) would save mid-upload and close the dialog,
       // silently dropping the new video.
       onSubmit={async (vals, helpers) => {
-        if (isMediaBlocked(vals.media)) return
+        if (isMediaBlocked()) return
         await handleSubmit(vals, helpers)
       }}
     >
@@ -229,7 +225,7 @@ function CollectionDialogContent({
           .filter((j): j is Journey => j != null)
         // Blocks every submit path (footer buttons here; the Enter-key path
         // is guarded in Formik's onSubmit above with the same predicate).
-        const mediaBlocked = isMediaBlocked(values.media)
+        const mediaBlocked = isMediaBlocked()
         return (
           <>
             <Dialog

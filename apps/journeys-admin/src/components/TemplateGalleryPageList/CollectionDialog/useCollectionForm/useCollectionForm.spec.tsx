@@ -19,6 +19,10 @@ import { getTemplateGalleryPagePublishMock } from '../../../../libs/useTemplateG
 import { TEMPLATE_GALLERY_PAGE_UPDATE } from '../../../../libs/useTemplateGalleryPageUpdateMutation/useTemplateGalleryPageUpdateMutation'
 import { getTemplateGalleryPageUpdateMock } from '../../../../libs/useTemplateGalleryPageUpdateMutation/useTemplateGalleryPageUpdateMutation.mock'
 
+import {
+  CollectionMediaValues,
+  EMPTY_MEDIA
+} from './collectionMedia'
 import { CollectionFormValues, useCollectionForm } from './useCollectionForm'
 
 const mockEnqueueSnackbar = vi.fn()
@@ -32,6 +36,16 @@ vi.mock('notistack', async () => {
     })
   }
 })
+
+const NONE: CollectionMediaValues = EMPTY_MEDIA
+function linkForm(url: string): CollectionMediaValues {
+  return { ...EMPTY_MEDIA, type: TemplateGalleryPageMediaType.link, url }
+}
+function muxForm(
+  overrides: Partial<CollectionMediaValues> = {}
+): CollectionMediaValues {
+  return { ...EMPTY_MEDIA, type: TemplateGalleryPageMediaType.mux, ...overrides }
+}
 
 function wrapperWithMocks(
   mocks: ReadonlyArray<MockedResponse>
@@ -54,7 +68,7 @@ function defaultValues(
     creatorName: 'Creator',
     creatorImageSrc: '',
     creatorImageAlt: '',
-    media: { type: 'none' },
+    media: NONE,
     slug: 'my-collection',
     journeyIds: [],
     ...overrides
@@ -63,10 +77,11 @@ function defaultValues(
 
 function linkMedia(embedUrl: string): TemplateGalleryPageMedia {
   return {
-    __typename: 'TemplateGalleryPageMedia',
+    __typename: 'TemplateGalleryPageMediaAdmin',
     id: 'media-1',
     type: TemplateGalleryPageMediaType.link,
     embedUrl,
+    muxVideoId: null,
     muxPlaybackId: null,
     muxName: null,
     muxDuration: null
@@ -76,13 +91,15 @@ function linkMedia(embedUrl: string): TemplateGalleryPageMedia {
 function muxMedia(
   muxPlaybackId: string,
   muxName: string | null = null,
-  muxDuration: number | null = null
+  muxDuration: number | null = null,
+  muxVideoId: string | null = 'vid-existing'
 ): TemplateGalleryPageMedia {
   return {
-    __typename: 'TemplateGalleryPageMedia',
+    __typename: 'TemplateGalleryPageMediaAdmin',
     id: 'media-1',
     type: TemplateGalleryPageMediaType.mux,
     embedUrl: null,
+    muxVideoId,
     muxPlaybackId,
     muxName,
     muxDuration
@@ -110,7 +127,7 @@ function makeCollection(
   overrides: Partial<TemplateGalleryPage> = {}
 ): TemplateGalleryPage {
   return {
-    __typename: 'TemplateGalleryPage',
+    __typename: 'TemplateGalleryPageAdmin',
     id: 'page-1',
     title: 'Original Title',
     description: 'Original description',
@@ -151,7 +168,7 @@ describe('useCollectionForm', () => {
         creatorName: '',
         creatorImageSrc: '',
         creatorImageAlt: '',
-        media: { type: 'none' },
+        media: EMPTY_MEDIA,
         slug: '',
         journeyIds: []
       })
@@ -201,19 +218,16 @@ describe('useCollectionForm', () => {
         creatorName: 'C',
         creatorImageSrc: 'https://img/x.png',
         creatorImageAlt: 'alt',
-        media: {
-          type: 'link',
-          url: 'https://www.youtube-nocookie.com/embed/x'
-        },
+        media: linkForm('https://www.youtube-nocookie.com/embed/x'),
         slug: 'hydrate-slug',
         journeyIds: ['j1', 'j2']
       })
       expect(result.current.isPublished).toBe(true)
     })
 
-    it('hydrates an existing mux row, seeding playbackId with an empty videoId', () => {
+    it('hydrates an existing mux row, seeding the real videoId and both denormalized fields', () => {
       const collection = makeCollection({
-        media: muxMedia('pb-9', 'My clip', 125)
+        media: muxMedia('pb-9', 'My clip', 125, 'vid-9')
       })
       const { result } = renderHook(
         () =>
@@ -226,11 +240,43 @@ describe('useCollectionForm', () => {
         { wrapper: wrapperWithMocks([]) }
       )
       expect(result.current.initialValues.media).toEqual({
-        type: 'mux',
-        muxVideoId: '',
+        type: TemplateGalleryPageMediaType.mux,
+        url: '',
+        muxVideoId: 'vid-9',
         muxPlaybackId: 'pb-9',
         muxName: 'My clip',
         muxDuration: 125
+      })
+    })
+
+    it('seeds BOTH slots when the row retains a parked payload', () => {
+      const collection = makeCollection({
+        media: {
+          __typename: 'TemplateGalleryPageMediaAdmin',
+          id: 'media-1',
+          type: TemplateGalleryPageMediaType.link,
+          embedUrl: 'https://x.test/a',
+          muxVideoId: 'vid-parked',
+          muxPlaybackId: 'pb-parked',
+          muxName: null,
+          muxDuration: null
+        }
+      })
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose: vi.fn()
+          }),
+        { wrapper: wrapperWithMocks([]) }
+      )
+      expect(result.current.initialValues.media).toMatchObject({
+        type: TemplateGalleryPageMediaType.link,
+        url: 'https://x.test/a',
+        muxVideoId: 'vid-parked',
+        muxPlaybackId: 'pb-parked'
       })
     })
   })
@@ -255,7 +301,7 @@ describe('useCollectionForm', () => {
       ).resolves.toBeTruthy()
     })
 
-    it('accepts a complete media value and rejects an incomplete one', async () => {
+    it('accepts every media state, including empty active slots (they render nothing)', async () => {
       const { result } = renderHook(
         () =>
           useCollectionForm({
@@ -266,41 +312,21 @@ describe('useCollectionForm', () => {
         { wrapper: wrapperWithMocks([]) }
       )
 
-      // none, a link with a URL, and a completed mux upload all pass.
-      await expect(
-        result.current.schema.validate(defaultValues({ media: { type: 'none' } }))
-      ).resolves.toBeTruthy()
-      await expect(
-        result.current.schema.validate(
-          defaultValues({ media: { type: 'link', url: 'https://x.test/a' } })
-        )
-      ).resolves.toBeTruthy()
-      await expect(
-        result.current.schema.validate(
-          defaultValues({ media: { type: 'mux', muxVideoId: 'vid-1' } })
-        )
-      ).resolves.toBeTruthy()
-      // An existing mux row is valid via its persisted playbackId even
-      // though the form's muxVideoId is empty.
-      await expect(
-        result.current.schema.validate(
-          defaultValues({
-            media: { type: 'mux', muxVideoId: '', muxPlaybackId: 'pb-1' }
-          })
-        )
-      ).resolves.toBeTruthy()
-
-      // An empty link URL and a pending upload (no id) are rejected.
-      await expect(
-        result.current.schema.validate(
-          defaultValues({ media: { type: 'link', url: '' } })
-        )
-      ).rejects.toThrow()
-      await expect(
-        result.current.schema.validate(
-          defaultValues({ media: { type: 'mux', muxVideoId: '' } })
-        )
-      ).rejects.toThrow()
+      // No media completeness rule anymore: none, a link (with or without a
+      // URL), and a mux slot (with or without an id) all pass — the server
+      // validates real URLs and an empty active slot simply renders nothing.
+      for (const media of [
+        NONE,
+        linkForm('https://x.test/a'),
+        linkForm(''),
+        muxForm({ muxVideoId: 'vid-1' }),
+        muxForm({ muxVideoId: '', muxPlaybackId: 'pb-1' }),
+        muxForm()
+      ]) {
+        await expect(
+          result.current.schema.validate(defaultValues({ media }))
+        ).resolves.toBeTruthy()
+      }
     })
 
     it('rejects slugs with uppercase or invalid characters', async () => {
@@ -340,7 +366,7 @@ describe('useCollectionForm', () => {
   })
 
   describe('handleSubmit — create branch', () => {
-    it('fires templateGalleryPageCreate with mapped input and closes the dialog', async () => {
+    it('fires templateGalleryPageCreate with mapped input (media omitted when none) and closes', async () => {
       const onClose = vi.fn()
       const createMock = getTemplateGalleryPageCreateMock({
         input: {
@@ -350,7 +376,6 @@ describe('useCollectionForm', () => {
           creatorImageSrc: null,
           creatorImageAlt: null,
           description: null,
-          media: null,
           journeyIds: ['j1']
         }
       })
@@ -405,8 +430,6 @@ describe('useCollectionForm', () => {
         ]
       })
 
-      // Only title and journeyIds change. Other fields stay the same and
-      // must NOT appear in the input.
       const updateMock = getTemplateGalleryPageUpdateMock({
         id: 'page-7',
         input: {
@@ -434,7 +457,7 @@ describe('useCollectionForm', () => {
             creatorName: 'Old',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            media: { type: 'none' },
+            media: NONE,
             slug: 'old-slug',
             journeyIds: ['j1', 'j2']
           },
@@ -484,7 +507,7 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            media: { type: 'none' },
+            media: NONE,
             slug: collection.slug,
             journeyIds: []
           },
@@ -541,7 +564,7 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            media: { type: 'none' },
+            media: NONE,
             slug: collection.slug,
             journeyIds: ['j1', 'j2']
           },
@@ -554,12 +577,6 @@ describe('useCollectionForm', () => {
     })
 
     it('skips slug from the update input when the user cleared the field (does not rename to empty)', async () => {
-      // P0-A regression guard. yup's `excludeEmptyString` lets an empty
-      // slug pass validation (so create-mode's empty default doesn't
-      // error), but we MUST NOT send `input.slug = ''` to the server —
-      // it would rename the published page to an empty slug and break
-      // every external link. The submit diff must drop the field when
-      // the user cleared it.
       const onClose = vi.fn()
       const collection = makeCollection({
         id: 'page-7',
@@ -567,9 +584,6 @@ describe('useCollectionForm', () => {
         slug: 'old-slug',
         status: TemplateGalleryPageStatus.published
       })
-      // The mock matches ONLY when the input contains title and no slug.
-      // If the empty slug leaks through into the input, MockedProvider
-      // will not find a matching mock and the spec fails.
       const updateMock = getTemplateGalleryPageUpdateMock({
         id: 'page-7',
         input: { title: 'New title' }
@@ -594,7 +608,7 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            media: { type: 'none' },
+            media: NONE,
             slug: '',
             journeyIds: []
           },
@@ -650,7 +664,7 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            media: { type: 'none' },
+            media: NONE,
             slug: 'new-slug',
             journeyIds: []
           },
@@ -709,7 +723,7 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            media: { type: 'none' },
+            media: NONE,
             slug: collection.slug,
             journeyIds: []
           },
@@ -752,7 +766,7 @@ describe('useCollectionForm', () => {
         await result.current.handleSubmit(
           defaultValues({
             title: 'New',
-            media: { type: 'mux', muxVideoId: 'vid-1' }
+            media: muxForm({ muxVideoId: 'vid-1' })
           }),
           fakeHelpers()
         )
@@ -768,7 +782,6 @@ describe('useCollectionForm', () => {
         id: 'page-1',
         media: linkMedia('https://old.test/embed')
       })
-      // Title and link both diff; both must ride the same update input.
       const updateMock = getTemplateGalleryPageUpdateMock({
         id: 'page-1',
         input: {
@@ -799,7 +812,7 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            media: { type: 'link', url: 'https://new.test/x' },
+            media: linkForm('https://new.test/x'),
             slug: collection.slug,
             journeyIds: []
           },
@@ -807,23 +820,21 @@ describe('useCollectionForm', () => {
         )
       })
 
-      // The mock only matches title + media — if media were omitted the
-      // request wouldn't match and result would never fire.
       expect(updateMock.result).toHaveBeenCalledTimes(1)
       expect(onClose).toHaveBeenCalled()
     })
 
-    it('fires a media-only update when only the link changed (cleared here)', async () => {
+    it('sends url:null when the user clears the link field (type stays link)', async () => {
       const onClose = vi.fn()
       const collection = makeCollection({
         id: 'page-1',
         media: linkMedia('https://old.test/embed')
       })
-      // Clearing the link is a form-level change persisted by Save:
-      // media: null clears the row.
       const updateMock = getTemplateGalleryPageUpdateMock({
         id: 'page-1',
-        input: { media: null }
+        input: {
+          media: { type: TemplateGalleryPageMediaType.link, url: null }
+        }
       })
       const { result } = renderHook(
         () =>
@@ -844,7 +855,96 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            media: { type: 'none' },
+            media: linkForm(''),
+            slug: collection.slug,
+            journeyIds: []
+          },
+          fakeHelpers()
+        )
+      })
+
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
+
+    it('sends only type:none when the user toggles None on a saved link (slot retained)', async () => {
+      const onClose = vi.fn()
+      const collection = makeCollection({
+        id: 'page-1',
+        media: linkMedia('https://old.test/embed')
+      })
+      // Picking None keeps the link slot (so the user can switch back), so the
+      // url is unchanged and omitted — only the type is sent.
+      const updateMock = getTemplateGalleryPageUpdateMock({
+        id: 'page-1',
+        input: { media: { type: TemplateGalleryPageMediaType.none } }
+      })
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose
+          }),
+        { wrapper: wrapperWithMocks([updateMock]) }
+      )
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          {
+            title: collection.title,
+            description: collection.description ?? '',
+            creatorName: collection.creatorName ?? '',
+            creatorImageSrc: '',
+            creatorImageAlt: '',
+            media: {
+              ...linkForm('https://old.test/embed'),
+              type: TemplateGalleryPageMediaType.none
+            },
+            slug: collection.slug,
+            journeyIds: []
+          },
+          fakeHelpers()
+        )
+      })
+
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
+
+    it('sends muxVideoId:null when the user removes an existing upload', async () => {
+      const onClose = vi.fn()
+      const collection = makeCollection({
+        id: 'page-1',
+        media: muxMedia('pb-1', null, null, 'vid-1')
+      })
+      const updateMock = getTemplateGalleryPageUpdateMock({
+        id: 'page-1',
+        input: {
+          media: { type: TemplateGalleryPageMediaType.mux, muxVideoId: null }
+        }
+      })
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose
+          }),
+        { wrapper: wrapperWithMocks([updateMock]) }
+      )
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          {
+            title: collection.title,
+            description: collection.description ?? '',
+            creatorName: collection.creatorName ?? '',
+            creatorImageSrc: '',
+            creatorImageAlt: '',
+            media: muxForm({ muxVideoId: '', muxPlaybackId: null }),
             slug: collection.slug,
             journeyIds: []
           },
@@ -860,11 +960,8 @@ describe('useCollectionForm', () => {
       const onClose = vi.fn()
       const collection = makeCollection({
         id: 'page-1',
-        media: muxMedia('pb-1')
+        media: muxMedia('pb-1', null, null, 'vid-1')
       })
-      // The form's media matches the saved row (an untouched existing
-      // upload), so Save must not include media — the title-only mock
-      // proves it stays out of the input.
       const updateMock = getTemplateGalleryPageUpdateMock({
         id: 'page-1',
         input: { title: 'New Title' }
@@ -888,7 +985,8 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            media: { type: 'mux', muxVideoId: '', muxPlaybackId: 'pb-1' },
+            // The seeded, untouched form value: the real videoId + playbackId.
+            media: muxForm({ muxVideoId: 'vid-1', muxPlaybackId: 'pb-1' }),
             slug: collection.slug,
             journeyIds: []
           },
@@ -899,6 +997,59 @@ describe('useCollectionForm', () => {
       expect(updateMock.result).toHaveBeenCalledTimes(1)
       expect(onClose).toHaveBeenCalled()
     })
+
+    it('advances the persisted baseline so a second identical save omits media', async () => {
+      const onClose = vi.fn()
+      const collection = makeCollection({
+        id: 'page-1',
+        media: linkMedia('https://old.test/embed')
+      })
+      // Single-use mock: it matches ONLY a media-bearing update. The first save
+      // consumes it; if the baseline did NOT advance, the second save would
+      // re-send the same media input, find no matching mock, and fail.
+      const updateMock = getTemplateGalleryPageUpdateMock({
+        id: 'page-1',
+        input: {
+          media: {
+            type: TemplateGalleryPageMediaType.link,
+            url: 'https://new.test/x'
+          }
+        }
+      })
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose
+          }),
+        { wrapper: wrapperWithMocks([updateMock]) }
+      )
+
+      const values = {
+        title: collection.title,
+        description: collection.description ?? '',
+        creatorName: collection.creatorName ?? '',
+        creatorImageSrc: '',
+        creatorImageAlt: '',
+        media: linkForm('https://new.test/x'),
+        slug: collection.slug,
+        journeyIds: []
+      }
+      // First save sends the changed link.
+      await act(async () => {
+        await result.current.handleSubmit(values, fakeHelpers())
+      })
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+
+      // Second identical save: media now matches the advanced baseline, so it
+      // is omitted, the input is empty, and no further mutation fires.
+      await act(async () => {
+        await result.current.handleSubmit(values, fakeHelpers())
+      })
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+    })
   })
 
   describe('handleSubmit — publish intent', () => {
@@ -906,8 +1057,6 @@ describe('useCollectionForm', () => {
       const onClose = vi.fn()
       const onPublished = vi.fn()
       const collection = makeCollection({ id: 'page-1' })
-      // No field edits — the publish-intent submit fires only the
-      // publish mutation (no update round-trip).
       const publishMock = getTemplateGalleryPagePublishMock({ id: 'page-1' })
 
       const { result } = renderHook(
@@ -928,7 +1077,7 @@ describe('useCollectionForm', () => {
         creatorName: collection.creatorName ?? '',
         creatorImageSrc: '',
         creatorImageAlt: '',
-        media: { type: 'none' } as const,
+        media: NONE,
         slug: collection.slug,
         journeyIds: []
       }
@@ -946,9 +1095,6 @@ describe('useCollectionForm', () => {
       )
       expect(onClose).toHaveBeenCalledTimes(1)
 
-      // The intent reset to 'save': a follow-up plain submit must not
-      // publish again (the single-use publish mock would reject a second
-      // request, and the no-change input means no update fires either).
       await act(async () => {
         await result.current.handleSubmit(untouchedValues, fakeHelpers())
       })
@@ -959,8 +1105,6 @@ describe('useCollectionForm', () => {
       const onClose = vi.fn()
       const onPublished = vi.fn()
       const collection = makeCollection({ id: 'page-1' })
-      // Only an update mock is registered — if the second submit carried the
-      // stale publish intent, the unmatched publish request would error.
       const updateMock = getTemplateGalleryPageUpdateMock({
         id: 'page-1',
         input: { title: 'New Title' }
@@ -988,20 +1132,16 @@ describe('useCollectionForm', () => {
         creatorName: collection.creatorName ?? '',
         creatorImageSrc: '',
         creatorImageAlt: '',
-        media: { type: 'none' } as const,
+        media: NONE,
         slug: collection.slug,
         journeyIds: []
       }
-      // Publish click while the parent is busy: submit short-circuits with
-      // an info snackbar before reaching the mutation...
       await act(async () => {
         result.current.setSubmitIntent('publish')
         await result.current.handleSubmit(values, fakeHelpers())
       })
       expect(onPublished).not.toHaveBeenCalled()
 
-      // ...and the intent must have been consumed: a later plain Save (or
-      // Enter submit) performs an update only, never the stale publish.
       rerender({ parentBusy: false })
       await act(async () => {
         await result.current.handleSubmit(values, fakeHelpers())
@@ -1040,7 +1180,7 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            media: { type: 'none' },
+            media: NONE,
             slug: collection.slug,
             journeyIds: []
           },
@@ -1100,7 +1240,7 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            media: { type: 'link', url: 'https://youtu.be/p' },
+            media: linkForm('https://youtu.be/p'),
             slug: collection.slug,
             journeyIds: []
           },
@@ -1135,17 +1275,24 @@ describe('useCollectionForm', () => {
 
       expect(
         result.current.mediaDirty(
-          defaultValues({ media: { type: 'link', url: 'https://x.test/embed' } })
+          defaultValues({ media: linkForm('https://x.test/embed') })
         )
       ).toBe(false)
       expect(
         result.current.mediaDirty(
-          defaultValues({ media: { type: 'link', url: 'https://new.test/y' } })
+          defaultValues({ media: linkForm('https://new.test/y') })
         )
       ).toBe(true)
-      // Clearing the saved link is also unsaved until Save.
+      // Toggling None on the saved link is also unsaved until Save.
       expect(
-        result.current.mediaDirty(defaultValues({ media: { type: 'none' } }))
+        result.current.mediaDirty(
+          defaultValues({
+            media: {
+              ...linkForm('https://x.test/embed'),
+              type: TemplateGalleryPageMediaType.none
+            }
+          })
+        )
       ).toBe(true)
     })
 
@@ -1161,11 +1308,11 @@ describe('useCollectionForm', () => {
       )
 
       expect(
-        result.current.mediaDirty(defaultValues({ media: { type: 'none' } }))
+        result.current.mediaDirty(defaultValues({ media: NONE }))
       ).toBe(false)
       expect(
         result.current.mediaDirty(
-          defaultValues({ media: { type: 'mux', muxVideoId: 'vid-1' } })
+          defaultValues({ media: muxForm({ muxVideoId: 'vid-1' }) })
         )
       ).toBe(true)
     })
@@ -1182,7 +1329,6 @@ describe('useCollectionForm', () => {
           creatorImageSrc: null,
           creatorImageAlt: null,
           description: null,
-          media: null,
           journeyIds: []
         }
       })

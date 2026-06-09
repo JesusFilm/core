@@ -151,15 +151,14 @@ export function MuxUploadField({
   // (denormalized on the media read model). Fall back to a generic label when
   // Mux has no name.
   const videoName =
-    media.type === 'mux' && media.muxName != null && media.muxName !== ''
+    media.muxName != null && media.muxName !== ''
       ? media.muxName
       : t('Video attached')
   // Finite-guard: a corrupt/partial Mux metadata read could surface NaN,
   // which passes a bare null check and would render "NaN:NaN".
-  const videoDuration =
-    media.type === 'mux' && Number.isFinite(media.muxDuration ?? NaN)
-      ? media.muxDuration
-      : null
+  const videoDuration = Number.isFinite(media.muxDuration ?? NaN)
+    ? media.muxDuration
+    : null
 
   return (
     <>
@@ -298,17 +297,10 @@ export function MuxUploadField({
                       </Typography>
                     )}
                   </>
-                ) : media.type === 'mux' ? (
-                  // The form is stuck holding an incomplete upload (e.g. the
-                  // error UI was lost to a tab switch after the provider
-                  // cleaned up the failed task). Without this hint, Save is
-                  // disabled with no visible reason.
-                  <Typography variant="caption" color="error">
-                    {t(
-                      "This video didn't finish uploading. Remove it or try again."
-                    )}
-                  </Typography>
                 ) : (
+                  // Empty upload slot is valid now (renders nothing on the
+                  // public page), so there's no stuck/blocked state — just the
+                  // prompt to upload.
                   <Typography variant="caption" color="text.secondary">
                     {t('Click the box to upload a video. MP4 or MOV, up to 1 GB.')}
                   </Typography>
@@ -318,11 +310,7 @@ export function MuxUploadField({
                 size="small"
                 color="error"
                 onClick={onRemove}
-                // Enabled when there's a video to remove, and ALSO when the
-                // form is stuck holding an incomplete mux value (belt and
-                // braces: even if the error UI is gone, the user can always
-                // clear back to "no media").
-                disabled={disabled || (!hasVideo && media.type !== 'mux')}
+                disabled={disabled || !hasVideo}
                 sx={{ alignSelf: 'flex-start' }}
               >
                 {t('Remove')}

@@ -41,6 +41,7 @@ export const TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY = gql`
       media {
         id
         type
+        muxVideoId
         embedUrl
         muxPlaybackId
         muxName

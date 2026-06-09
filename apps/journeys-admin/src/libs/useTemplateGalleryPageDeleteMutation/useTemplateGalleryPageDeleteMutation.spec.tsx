@@ -10,7 +10,7 @@ import { useTemplateGalleryPageDeleteMutation } from './useTemplateGalleryPageDe
 import { getTemplateGalleryPageDeleteMock } from './useTemplateGalleryPageDeleteMutation.mock'
 
 function buildPage(id: string): {
-  __typename: 'TemplateGalleryPage'
+  __typename: 'TemplateGalleryPageAdmin'
   id: string
   title: string
   description: string
@@ -26,7 +26,7 @@ function buildPage(id: string): {
   templates: never[]
 } {
   return {
-    __typename: 'TemplateGalleryPage' as const,
+    __typename: 'TemplateGalleryPageAdmin' as const,
     id,
     title: id,
     description: '',
@@ -117,7 +117,7 @@ describe('useTemplateGalleryPageDeleteMutation', () => {
     })
 
     const entityId = cache.identify({
-      __typename: 'TemplateGalleryPage',
+      __typename: 'TemplateGalleryPageAdmin',
       id: 'page-1'
     })
     expect(entityId).toBeTruthy()

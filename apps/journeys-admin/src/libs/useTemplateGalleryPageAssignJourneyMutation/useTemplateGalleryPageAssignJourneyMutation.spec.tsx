@@ -24,7 +24,7 @@ describe('useTemplateGalleryPageAssignJourneyMutation', () => {
       data: {
         templateGalleryPages: [
           {
-            __typename: 'TemplateGalleryPage',
+            __typename: 'TemplateGalleryPageAdmin',
             // Different id from the mutation target so Apollo's entity-by-id
             // merge doesn't overwrite this row — any change here would have
             // to come from a refetch.
