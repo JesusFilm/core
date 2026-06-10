@@ -401,9 +401,7 @@ describe('CollectionCard', () => {
       // NES-1707 moved Publish into the dialog footer; Edit is the menu's
       // always-present item, which is all this assertion needs (proof the
       // click opened the menu rather than toggling collapse).
-      expect(
-        screen.getByRole('menuitem', { name: 'Edit' })
-      ).toBeInTheDocument()
+      expect(screen.getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
     })
 
     it('points aria-controls at the mounted content region when expanded and drops it when collapsed', () => {
