@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import '../../../../test/i18n'
@@ -310,5 +310,193 @@ describe('CollectionCard', () => {
       screen.queryByText('Drag templates here to add them to this collection.')
     ).not.toBeInTheDocument()
     expect(screen.getByTestId('children-payload')).toBeInTheDocument()
+  })
+
+  describe('collapse (NES-1717)', () => {
+    it('renders the header as an expanded toggle button by default', () => {
+      render(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+        >
+          <div data-testid="children-payload" />
+        </CollectionCard>
+      )
+      // Expanded → the announced action is "Collapse".
+      const toggle = screen.getByRole('button', {
+        name: 'Collapse My Collection collection'
+      })
+      expect(toggle).toHaveAttribute('aria-expanded', 'true')
+      // Expanded: the grid (children) is visible and there's no count badge.
+      expect(screen.getByTestId('children-payload')).toBeInTheDocument()
+      expect(
+        screen.queryByTestId('CollectionCardCount-page-1')
+      ).not.toBeInTheDocument()
+    })
+
+    it('hides the grid and shows a template-count badge when collapsed', () => {
+      render(
+        <CollectionCard
+          collection={makeCollection({
+            templates: [journeyRef('j1'), journeyRef('j2')]
+          })}
+          collapsed
+        >
+          <div data-testid="children-payload" />
+        </CollectionCard>
+      )
+      // Collapsed → the announced action is "Expand".
+      const toggle = screen.getByRole('button', {
+        name: 'Expand My Collection collection'
+      })
+      expect(toggle).toHaveAttribute('aria-expanded', 'false')
+      // Collapsed: grid unmounted, count badge reflects the template count.
+      expect(screen.queryByTestId('children-payload')).not.toBeInTheDocument()
+      expect(
+        screen.getByTestId('CollectionCardCount-page-1')
+      ).toHaveTextContent('2')
+    })
+
+    it('does not show a count badge for an empty collapsed collection', () => {
+      render(<CollectionCard collection={makeCollection()} collapsed />)
+      expect(
+        screen.queryByTestId('CollectionCardCount-page-1')
+      ).not.toBeInTheDocument()
+      expect(screen.getByText('Empty')).toBeInTheDocument()
+    })
+
+    it('fires onToggleCollapse when the header is clicked', async () => {
+      const onToggleCollapse = vi.fn()
+      const collection = makeCollection({ templates: [journeyRef('j1')] })
+      render(
+        <CollectionCard
+          collection={collection}
+          onToggleCollapse={onToggleCollapse}
+        />
+      )
+      await userEvent.click(screen.getByTestId('CollectionCardToggle-page-1'))
+      expect(onToggleCollapse).toHaveBeenCalledWith(collection)
+    })
+
+    it('toggles on Enter and Space for keyboard users', async () => {
+      const onToggleCollapse = vi.fn()
+      const collection = makeCollection({ templates: [journeyRef('j1')] })
+      render(
+        <CollectionCard
+          collection={collection}
+          onToggleCollapse={onToggleCollapse}
+        />
+      )
+      const toggle = screen.getByTestId('CollectionCardToggle-page-1')
+      toggle.focus()
+      await userEvent.keyboard('{Enter}')
+      await userEvent.keyboard(' ')
+      expect(onToggleCollapse).toHaveBeenCalledTimes(2)
+      expect(onToggleCollapse).toHaveBeenNthCalledWith(1, collection)
+      expect(onToggleCollapse).toHaveBeenNthCalledWith(2, collection)
+    })
+
+    it('does not collapse the actions menu trigger into the toggle button', async () => {
+      // The actions menu must stay a sibling of the toggle so it opens the
+      // menu instead of toggling collapse, and so we never nest buttons.
+      const onToggleCollapse = vi.fn()
+      render(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+          onToggleCollapse={onToggleCollapse}
+        />
+      )
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Collection actions' })
+      )
+      expect(onToggleCollapse).not.toHaveBeenCalled()
+      expect(
+        screen.getByRole('menuitem', { name: 'Publish' })
+      ).toBeInTheDocument()
+    })
+
+    it('points aria-controls at the mounted content region when expanded and drops it when collapsed', () => {
+      const { rerender } = render(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+        >
+          <div data-testid="children-payload" />
+        </CollectionCard>
+      )
+      const toggle = screen.getByTestId('CollectionCardToggle-page-1')
+      const controls = toggle.getAttribute('aria-controls')
+      expect(controls).toBe('collection-content-page-1')
+      // The referenced element must actually exist while expanded.
+      expect(document.getElementById(controls as string)).toBeInTheDocument()
+
+      // Collapsed: the region unmounts, so we must not dangle a reference.
+      rerender(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+          collapsed
+        >
+          <div data-testid="children-payload" />
+        </CollectionCard>
+      )
+      expect(
+        screen.getByTestId('CollectionCardToggle-page-1')
+      ).not.toHaveAttribute('aria-controls')
+    })
+
+    it('does not toggle while busy (a drop mutation is settling)', async () => {
+      // Collapsing mid-settle would unmount the SortableContext under dnd-kit.
+      const onToggleCollapse = vi.fn()
+      render(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+          onToggleCollapse={onToggleCollapse}
+          busy
+        />
+      )
+      const toggle = screen.getByTestId('CollectionCardToggle-page-1')
+      expect(toggle).toHaveAttribute('aria-disabled', 'true')
+      await userEvent.click(toggle)
+      toggle.focus()
+      await userEvent.keyboard('{Enter}')
+      expect(onToggleCollapse).not.toHaveBeenCalled()
+    })
+
+    it('lets Space scroll natively while busy instead of swallowing the keypress', () => {
+      // While busy the toggle is inert; it must NOT preventDefault on Space,
+      // or the user loses native page scroll for no effect.
+      render(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+          onToggleCollapse={vi.fn()}
+          busy
+        />
+      )
+      const toggle = screen.getByTestId('CollectionCardToggle-page-1')
+      // fireEvent returns false when the event was cancelled (preventDefault).
+      const notCancelledWhenBusy = fireEvent.keyDown(toggle, { key: ' ' })
+      expect(notCancelledWhenBusy).toBe(true)
+    })
+
+    it('prevents default on Space when not busy (suppresses page scroll while toggling)', () => {
+      render(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+          onToggleCollapse={vi.fn()}
+        />
+      )
+      const toggle = screen.getByTestId('CollectionCardToggle-page-1')
+      const notCancelled = fireEvent.keyDown(toggle, { key: ' ' })
+      expect(notCancelled).toBe(false)
+    })
+
+    it('does not throw when the header is toggled without an onToggleCollapse handler', async () => {
+      render(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+        />
+      )
+      await expect(
+        userEvent.click(screen.getByTestId('CollectionCardToggle-page-1'))
+      ).resolves.not.toThrow()
+    })
   })
 })
