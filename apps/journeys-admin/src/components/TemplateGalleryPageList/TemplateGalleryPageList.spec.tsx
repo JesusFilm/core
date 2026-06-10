@@ -438,4 +438,115 @@ describe('TemplateGalleryPageList', () => {
       expect(getByTestId('TemplateGalleryDndScope')).toHaveAttribute('inert')
     )
   })
+
+  // NES-1717: collapse wiring through the parent — proves collapsed /
+  // onToggleCollapse are connected to a real CollectionCard and that the
+  // state round-trips through localStorage on remount.
+  describe('collapsible collection headers (NES-1717)', () => {
+    beforeEach(() => localStorage.clear())
+
+    afterEach(() => localStorage.clear())
+
+    // page-1 holds journey-1 so the grid renders a card we can watch
+    // appear/disappear, and the count badge has something to count.
+    const collectionsMockWithTemplate: MockedResponse<GetTemplateGalleryPages> =
+      {
+        request: {
+          query: GET_TEMPLATE_GALLERY_PAGES,
+          variables: { teamId: TEAM_ID }
+        },
+        result: {
+          data: {
+            templateGalleryPages: [
+              {
+                ...(collectionsMock.result as { data: GetTemplateGalleryPages })
+                  .data.templateGalleryPages[0],
+                templates: [
+                  {
+                    __typename: 'TemplateGalleryItem',
+                    id: 'journey-1',
+                    title: 'Welcome Tour',
+                    primaryImageBlock: null
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+
+    function renderList() {
+      return render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMockWithTemplate,
+            journeysMock
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+    }
+
+    it('collapses then expands a collection from its header', async () => {
+      const { getByTestId, queryByTestId } = renderList()
+
+      await waitFor(() =>
+        expect(getByTestId('CollectionCard-page-1')).toBeInTheDocument()
+      )
+      // Expanded by default: the in-collection card is visible, no count badge.
+      expect(getByTestId('JourneyCard-journey-1')).toBeInTheDocument()
+      expect(queryByTestId('CollectionCardCount-page-1')).toBeNull()
+
+      // Collapse: grid unmounts, count badge appears.
+      fireEvent.click(getByTestId('CollectionCardToggle-page-1'))
+      await waitFor(() =>
+        expect(queryByTestId('JourneyCard-journey-1')).toBeNull()
+      )
+      expect(getByTestId('CollectionCardCount-page-1')).toHaveTextContent('1')
+      expect(getByTestId('CollectionCardToggle-page-1')).toHaveAttribute(
+        'aria-expanded',
+        'false'
+      )
+
+      // Expand again: the card returns.
+      fireEvent.click(getByTestId('CollectionCardToggle-page-1'))
+      await waitFor(() =>
+        expect(getByTestId('JourneyCard-journey-1')).toBeInTheDocument()
+      )
+    })
+
+    it('restores the collapsed state from localStorage on remount', async () => {
+      const first = renderList()
+      await waitFor(() =>
+        expect(first.getByTestId('CollectionCard-page-1')).toBeInTheDocument()
+      )
+      fireEvent.click(first.getByTestId('CollectionCardToggle-page-1'))
+      await waitFor(() =>
+        expect(
+          first.getByTestId('CollectionCardCount-page-1')
+        ).toBeInTheDocument()
+      )
+      first.unmount()
+
+      // Fresh mount, same team: the collection comes back collapsed.
+      const second = renderList()
+      await waitFor(() =>
+        expect(
+          second.getByTestId('CollectionCardCount-page-1')
+        ).toBeInTheDocument()
+      )
+      expect(second.getByTestId('CollectionCardToggle-page-1')).toHaveAttribute(
+        'aria-expanded',
+        'false'
+      )
+    })
+  })
 })

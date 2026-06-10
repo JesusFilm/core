@@ -961,6 +961,12 @@ type JourneyCustomizationField
   defaultValue: String
 }
 
+input JourneyCustomizationFieldInput {
+  id: ID!
+  key: String!
+  value: String
+}
+
 type JourneyEvent implements Event & Node
   @shareable
 {
@@ -984,6 +990,20 @@ type JourneyEvent implements Event & Node
   visitorName: String
   visitorEmail: String
   visitorPhone: String
+}
+
+type JourneyEventEdge
+  @shareable
+{
+  cursor: String!
+  node: JourneyEvent!
+}
+
+type JourneyEventsConnection
+  @shareable
+{
+  edges: [JourneyEventEdge!]!
+  pageInfo: PageInfo!
 }
 
 type JourneyEventsExportLog {
@@ -1171,6 +1191,13 @@ type JourneyVisitor
   events: [Event!]!
 }
 
+type JourneyVisitorEdge
+  @shareable
+{
+  cursor: String!
+  node: JourneyVisitor!
+}
+
 input JourneyVisitorExportSelect {
   name: Boolean
   email: Boolean
@@ -1221,6 +1248,13 @@ enum JourneyVisitorSort {
   date
   duration
   activity
+}
+
+type JourneyVisitorsConnection
+  @shareable
+{
+  edges: [JourneyVisitorEdge!]!
+  pageInfo: PageInfo!
 }
 
 type JourneysEmailPreference
@@ -1417,6 +1451,8 @@ input MultiselectSubmissionEventCreateInput {
 }
 
 type Mutation {
+  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor! @override(from: "api-journeys")
+  visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor! @override(from: "api-journeys")
   blockDelete(
     id: ID!
 
@@ -1436,6 +1472,7 @@ type Mutation {
     x: Int
     y: Int
   ): [Block!]! @override(from: "api-journeys")
+  blockRestore(id: ID!): [Block!]! @override(from: "api-journeys")
   blockOrderUpdate(
     id: ID!
     parentOrder: Int!
@@ -1575,6 +1612,9 @@ type Mutation {
   videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent! @override(from: "api-journeys")
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent! @override(from: "api-journeys")
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent! @override(from: "api-journeys")
+  hostCreate(teamId: ID!, input: HostCreateInput!): Host! @override(from: "api-journeys")
+  hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host! @override(from: "api-journeys")
+  hostDelete(id: ID!, teamId: ID!): Host! @override(from: "api-journeys")
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!): GoogleSheetsSync!
   googleSheetsSyncDelete(id: ID!): GoogleSheetsSync!
@@ -1583,15 +1623,38 @@ type Mutation {
   Triggers a backfill of the Google Sheets sync. Clears existing data and re-exports all events.
   """
   googleSheetsSyncBackfill(id: ID!): GoogleSheetsSync!
+  integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces! @override(from: "api-journeys")
+  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces! @override(from: "api-journeys")
   integrationGoogleCreate(input: IntegrationGoogleCreateInput!): IntegrationGoogle!
   integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!): IntegrationGoogle!
   integrationDelete(id: ID!): Integration!
+  journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey! @override(from: "api-journeys")
+  journeyDuplicate(id: ID!, teamId: ID!, forceNonTemplate: Boolean, duplicateAsDraft: Boolean): Journey! @override(from: "api-journeys")
+  journeyFeature(id: ID!, feature: Boolean!): Journey @override(from: "api-journeys")
+  journeyPublish(id: ID!): Journey @override(from: "api-journeys")
+  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @override(from: "api-journeys")
   journeyTransferFromAnonymous(journeyId: ID!, teamId: ID): Journey!
+  journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @override(from: "api-journeys")
+  journeysArchive(ids: [ID!]!): [Journey]! @override(from: "api-journeys")
+  journeysDelete(ids: [ID!]!): [Journey]! @override(from: "api-journeys")
+  journeysRestore(ids: [ID!]!): [Journey]! @override(from: "api-journeys")
+  journeysTrash(ids: [ID!]!): [Journey]! @override(from: "api-journeys")
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   journeyCustomizationDescriptionTranslate(input: JourneyCustomizationDescriptionTranslateInput!): Journey!
+  journeyCustomizationFieldPublisherUpdate(journeyId: ID!, string: String!): [JourneyCustomizationField!]! @override(from: "api-journeys")
+  journeyCustomizationFieldUserUpdate(journeyId: ID!, input: [JourneyCustomizationFieldInput!]!): [JourneyCustomizationField!]! @override(from: "api-journeys")
+  journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection! @override(from: "api-journeys")
+  journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection! @override(from: "api-journeys")
+  journeyCollectionDelete(id: ID!): JourneyCollection! @override(from: "api-journeys")
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
+  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification! @override(from: "api-journeys")
+  journeyProfileCreate: JourneyProfile! @override(from: "api-journeys")
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
+  updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference @override(from: "api-journeys")
+  journeyThemeCreate(input: JourneyThemeCreateInput!): JourneyTheme! @override(from: "api-journeys")
+  journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!): JourneyTheme! @override(from: "api-journeys")
+  journeyThemeDelete(id: ID!): JourneyTheme! @override(from: "api-journeys")
   journeyVisitorExportToGoogleSheet(
     journeyId: ID!
     filter: JourneyEventsFilter
@@ -1604,6 +1667,11 @@ type Mutation {
     """
     timezone: String
   ): JourneyVisitorGoogleSheetExportResult!
+  qrCodeCreate(input: QrCodeCreateInput!): QrCode! @override(from: "api-journeys")
+  qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!): QrCode! @override(from: "api-journeys")
+  qrCodeDelete(id: ID!): QrCode! @override(from: "api-journeys")
+  teamCreate(input: TeamCreateInput): Team! @override(from: "api-journeys")
+  teamUpdate(id: ID!, input: TeamUpdateInput): Team! @override(from: "api-journeys")
 
   """
   Create a new TemplateGalleryPage in `draft` status. The server generates a unique slug from `input.title`. Initial `journeyIds` are attached as templates in the order given (cross-team and non-template ids are silently filtered out).
@@ -1733,6 +1801,20 @@ type Mutation {
   ): TemplateGalleryPageAdmin!
   userDeleteJourneysCheck(userId: String!): UserDeleteJourneysCheckResult!
   userDeleteJourneysConfirm(userId: String!): UserDeleteJourneysConfirmResult!
+  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite @override(from: "api-journeys")
+  userInviteRemove(id: ID!, journeyId: ID!): UserInvite! @override(from: "api-journeys")
+  userInviteAcceptAll: [UserInvite!]! @override(from: "api-journeys")
+  userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney! @override(from: "api-journeys")
+  userJourneyApprove(id: ID!): UserJourney! @override(from: "api-journeys")
+  userJourneyPromote(id: ID!): UserJourney! @override(from: "api-journeys")
+  userJourneyRemove(id: ID!): UserJourney! @override(from: "api-journeys")
+  userJourneyRemoveAll(id: ID!): [UserJourney!]! @override(from: "api-journeys")
+  userJourneyOpen(id: ID!): UserJourney @override(from: "api-journeys")
+  userTeamUpdate(id: ID!, input: UserTeamUpdateInput): UserTeam! @override(from: "api-journeys")
+  userTeamDelete(id: ID!): UserTeam! @override(from: "api-journeys")
+  userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput): UserTeamInvite @override(from: "api-journeys")
+  userTeamInviteRemove(id: ID!): UserTeamInvite! @override(from: "api-journeys")
+  userTeamInviteAcceptAll: [UserTeamInvite!]! @override(from: "api-journeys")
 }
 
 input MutationJourneyLanguageAiDetectInput {
@@ -2021,6 +2103,16 @@ input PlausibleStatsTimeseriesFilter {
   interval: String
 }
 
+type PowerBiEmbed
+  @shareable
+{
+  reportId: String!
+  reportName: String!
+  embedUrl: String!
+  accessToken: String!
+  expiration: String!
+}
+
 type QrCode
   @shareable
 {
@@ -2053,18 +2145,32 @@ input QrCodesFilter {
 }
 
 type Query {
+  visitor(id: ID!): Visitor! @override(from: "api-journeys")
+  visitorsConnection(teamId: String, first: Int, after: String): VisitorsConnection! @override(from: "api-journeys")
   block(id: ID!): Block! @override(from: "api-journeys")
   blocks(where: BlocksFilter): [Block!]! @override(from: "api-journeys")
   customDomains(teamId: ID!): [CustomDomain!]!
   customDomain(id: ID!): CustomDomain!
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
+  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection! @override(from: "api-journeys")
+  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int! @override(from: "api-journeys")
+  hosts(teamId: ID!): [Host!]! @override(from: "api-journeys")
   journeySimpleGet(id: ID!): Json
   googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!): [GoogleSheetsSync!]!
+  integrations(teamId: ID!): [Integration!]! @override(from: "api-journeys")
   integrationGooglePickerToken(integrationId: ID!): String!
   adminJourney(id: ID!, idType: IdType = slug): Journey!
   adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]!
+  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @override(from: "api-journeys")
+  journey(id: ID!, idType: IdType = slug, options: JourneysQueryOptions): Journey @override(from: "api-journeys")
+  journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]! @override(from: "api-journeys")
+  journeyTemplateLanguageIds: [String!]! @override(from: "api-journeys")
+  journeyCollection(id: ID!): JourneyCollection! @override(from: "api-journeys")
+  journeyCollections(teamId: ID!): [JourneyCollection]! @override(from: "api-journeys")
   getJourneyProfile: JourneyProfile
+  journeysEmailPreference(email: String!): JourneysEmailPreference @override(from: "api-journeys")
+  journeyTheme(journeyId: ID!): JourneyTheme @override(from: "api-journeys")
 
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
@@ -2079,6 +2185,8 @@ type Query {
     """
     timezone: String
   ): String
+  journeyVisitorsConnection(filter: JourneyVisitorFilter!, first: Int, after: String, sort: JourneyVisitorSort): JourneyVisitorsConnection! @override(from: "api-journeys")
+  journeyVisitorCount(filter: JourneyVisitorFilter!): Int! @override(from: "api-journeys")
   journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter!, id: ID!, idType: IdType = slug): PlausibleStatsAggregateResponse!
 
   """
@@ -2123,6 +2231,10 @@ type Query {
     """
     status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!]
+  qrCode(id: ID!): QrCode! @override(from: "api-journeys")
+  qrCodes(where: QrCodesFilter!): [QrCode!]! @override(from: "api-journeys")
+  teams: [Team!]! @override(from: "api-journeys")
+  team(id: ID!): Team! @override(from: "api-journeys")
 
   """
   Read a single TemplateGalleryPage by id. Returns both `draft` and `published` rows — use this for in-team authenticated reads (e.g. an admin viewing or QA-ing their own team's drafts). Anonymous viewers must use `templateGalleryPageBySlug`, which only returns published pages.
@@ -2157,8 +2269,11 @@ type Query {
     """Owning team. Caller must be a member."""
     teamId: ID!
   ): [TemplateGalleryPageAdmin!]!
+  userInvites(journeyId: ID!): [UserInvite!] @override(from: "api-journeys")
   getUserRole: UserRole
-  visitorsConnection(teamId: String, first: Int, after: String): VisitorsConnection! @override(from: "api-journeys")
+  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]! @override(from: "api-journeys")
+  userTeam(id: ID!): UserTeam! @override(from: "api-journeys")
+  userTeamInvites(teamId: ID!): [UserTeamInvite!]! @override(from: "api-journeys")
 }
 
 type RadioOptionBlock implements Block
@@ -2475,7 +2590,7 @@ input TeamCreateInput {
 }
 
 input TeamUpdateInput {
-  title: String!
+  title: String
   publicTitle: String
 }
 
@@ -3106,7 +3221,7 @@ enum UserTeamRole {
 }
 
 input UserTeamUpdateInput {
-  role: UserTeamRole!
+  role: UserTeamRole
 }
 
 type Video
