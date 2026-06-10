@@ -63,68 +63,82 @@ export function TermsAndConditions(): ReactElement {
     if (displayName == null) return
 
     setLoading(true)
-    await journeyProfileCreate()
+    try {
+      await journeyProfileCreate()
 
-    const existingTeam = query.data?.teams?.[0]
-    const hasExistingTeam = existingTeam != null
-    let teamId: string | undefined
-    let team: typeof existingTeam | undefined
+      const existingTeam = query.data?.teams?.[0]
+      const hasExistingTeam = existingTeam != null
+      let teamId: string | undefined
+      let team: typeof existingTeam | undefined
 
-    if (hasExistingTeam) {
-      teamId = existingTeam.id
-      team = existingTeam
-    } else {
-      const { data: teamCreateData } = await teamCreate({
-        variables: {
-          input: {
-            title: t('{{ displayName }} & Team', {
-              displayName
-            }),
-            publicTitle: t('{{ displayName }} Team', {
-              displayName: displayName.charAt(0)
-            })
-          }
-        }
-      })
-
-      const newTeam = teamCreateData?.teamCreate
-      if (newTeam != null) {
-        teamId = newTeam.id
-        team = newTeam
-
-        await journeyDuplicate({
+      if (hasExistingTeam) {
+        teamId = existingTeam.id
+        team = existingTeam
+      } else {
+        const { data: teamCreateData } = await teamCreate({
           variables: {
-            id: ONBOARDING_TEMPLATE_ID,
-            teamId: newTeam.id
+            input: {
+              title: t('{{ displayName }} & Team', {
+                displayName
+              }),
+              publicTitle: t('{{ displayName }} Team', {
+                displayName: displayName.charAt(0)
+              })
+            }
           }
         })
-      }
-    }
 
-    if (teamId != null && team != null) {
-      await Promise.allSettled([
-        updateLastActiveTeamId({
+        const newTeam = teamCreateData?.teamCreate
+        if (newTeam != null) {
+          teamId = newTeam.id
+          team = newTeam
+
+          // Seeding the onboarding journey is best-effort: if it fails (e.g.
+          // the template isn't readable and journeyDuplicate throws "user is
+          // not allowed to duplicate journey"), swallow it so the user still
+          // gets a team and is moved on instead of stranded on a spinner.
+          try {
+            await journeyDuplicate({
+              variables: {
+                id: ONBOARDING_TEMPLATE_ID,
+                teamId: newTeam.id
+              }
+            })
+          } catch {
+            // Intentionally ignored — onboarding template is non-critical.
+          }
+        }
+      }
+
+      if (teamId != null && team != null) {
+        // Resolve the active team locally before navigating so the destination
+        // page reflects the new team without waiting on the background refetch.
+        setActiveTeam(team)
+
+        // Persist the last active team and refresh team data in the background.
+        // Navigation must not be coupled to these requests: if either stalled,
+        // the user would be stranded on the Terms screen with a spinning button.
+        void updateLastActiveTeamId({
           variables: {
             input: { lastActiveTeamId: teamId }
           }
-        }),
-        router.push(
+        })
+        void query.refetch()
+
+        await router.push(
           router.query.redirect != null
             ? new URL(router.query.redirect as string, window.location.origin)
             : hasExistingTeam
               ? '/'
               : '/?onboarding=true'
-        ),
-        query
-          .refetch()
-          .then(() =>
-            console.log('[TermsAndConditions] Team data refetched successfully')
-          )
-      ])
-
-      setActiveTeam(team)
+        )
+      }
+    } catch {
+      // Swallow any failure in the accept flow and let the button reset via the
+      // finally block, so the user is never stranded on a spinner.
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   return (

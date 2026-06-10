@@ -7,7 +7,7 @@ import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/J
 
 import { Items } from './Items'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))

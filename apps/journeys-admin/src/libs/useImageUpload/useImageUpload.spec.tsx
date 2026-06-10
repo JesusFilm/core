@@ -1,30 +1,31 @@
 import { act, renderHook } from '@testing-library/react'
 import { ErrorCode, useDropzone } from 'react-dropzone'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import { useCloudflareUploadByFileMutation } from '../useCloudflareUploadByFileMutation'
 
 import { useImageUpload } from './useImageUpload'
 
-jest.mock('react-dropzone', () => ({
-  ...jest.requireActual('react-dropzone'),
-  useDropzone: jest.fn()
+vi.mock('react-dropzone', async () => ({
+  ...(await vi.importActual('react-dropzone')),
+  useDropzone: vi.fn()
 }))
 
-jest.mock('../useCloudflareUploadByFileMutation', () => ({
-  useCloudflareUploadByFileMutation: jest.fn()
+vi.mock('../useCloudflareUploadByFileMutation', async () => ({
+  useCloudflareUploadByFileMutation: vi.fn()
 }))
 
-const mockUseDropzone = useDropzone as jest.MockedFunction<typeof useDropzone>
+const mockUseDropzone = useDropzone as MockedFunction<typeof useDropzone>
 const mockUseCloudflareUploadByFileMutation =
-  useCloudflareUploadByFileMutation as jest.MockedFunction<
+  useCloudflareUploadByFileMutation as MockedFunction<
     typeof useCloudflareUploadByFileMutation
   >
 
 describe('useImageUpload', () => {
   let originalEnv: NodeJS.ProcessEnv
-  const onUploadComplete = jest.fn()
-  const onUploadStart = jest.fn()
-  const onUploadError = jest.fn()
+  const onUploadComplete = vi.fn()
+  const onUploadStart = vi.fn()
+  const onUploadError = vi.fn()
   const originalFetch = global.fetch
 
   beforeEach(() => {
@@ -33,19 +34,19 @@ describe('useImageUpload', () => {
       ...originalEnv,
       NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: 'cloudflare-key'
     }
-    jest.clearAllMocks()
-    global.fetch = jest.fn()
+    vi.clearAllMocks()
+    global.fetch = vi.fn()
     mockUseDropzone.mockReturnValue({
-      getRootProps: jest.fn(),
-      getInputProps: jest.fn(),
-      open: jest.fn(),
+      getRootProps: vi.fn(),
+      getInputProps: vi.fn(),
+      open: vi.fn(),
       isDragActive: false,
       isDragAccept: false,
       isDragReject: false,
       acceptedFiles: [],
       fileRejections: []
     } as any)
-    mockUseCloudflareUploadByFileMutation.mockReturnValue([jest.fn()] as any)
+    mockUseCloudflareUploadByFileMutation.mockReturnValue([vi.fn()] as any)
   })
 
   afterEach(() => {
@@ -53,7 +54,7 @@ describe('useImageUpload', () => {
     global.fetch = originalFetch
   })
 
-  const getMockFetch = (): jest.Mock => global.fetch as jest.Mock
+  const getMockFetch = (): Mock => global.fetch as Mock
 
   it('should initialize with default state', () => {
     const { result } = renderHook(() => useImageUpload({ onUploadComplete }))
@@ -64,8 +65,8 @@ describe('useImageUpload', () => {
   })
 
   it('should handle successful upload', async () => {
-    jest.useFakeTimers()
-    const createCloudflareUploadByFile = jest.fn().mockResolvedValue({
+    vi.useFakeTimers()
+    const createCloudflareUploadByFile = vi.fn().mockResolvedValue({
       data: {
         createCloudflareUploadByFile: {
           uploadUrl: 'https://upload.url'
@@ -108,15 +109,15 @@ describe('useImageUpload', () => {
     expect(result.current.success).toBe(true)
 
     act(() => {
-      jest.advanceTimersByTime(4000)
+      vi.advanceTimersByTime(4000)
     })
 
     expect(result.current.success).toBeUndefined()
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   it('should not start a new upload if one is already in progress', async () => {
-    const createCloudflareUploadByFile = jest.fn().mockReturnValue(
+    const createCloudflareUploadByFile = vi.fn().mockReturnValue(
       new Promise((resolve) =>
         setTimeout(
           () =>
@@ -192,7 +193,7 @@ describe('useImageUpload', () => {
   })
 
   it('should handle Cloudflare error response', async () => {
-    const createCloudflareUploadByFile = jest.fn().mockResolvedValue({
+    const createCloudflareUploadByFile = vi.fn().mockResolvedValue({
       data: {
         createCloudflareUploadByFile: {
           uploadUrl: 'https://upload.url'
@@ -230,7 +231,7 @@ describe('useImageUpload', () => {
   })
 
   it('should handle numeric Cloudflare error code', async () => {
-    const createCloudflareUploadByFile = jest.fn().mockResolvedValue({
+    const createCloudflareUploadByFile = vi.fn().mockResolvedValue({
       data: {
         createCloudflareUploadByFile: {
           uploadUrl: 'https://upload.url'
@@ -269,7 +270,7 @@ describe('useImageUpload', () => {
   })
 
   it('should handle fetch exception', async () => {
-    const createCloudflareUploadByFile = jest.fn().mockResolvedValue({
+    const createCloudflareUploadByFile = vi.fn().mockResolvedValue({
       data: {
         createCloudflareUploadByFile: {
           uploadUrl: 'https://upload.url'
@@ -298,7 +299,7 @@ describe('useImageUpload', () => {
   })
 
   it('should handle failed mutation', async () => {
-    const createCloudflareUploadByFile = jest
+    const createCloudflareUploadByFile = vi
       .fn()
       .mockRejectedValueOnce(new Error('Mutation failed'))
     mockUseCloudflareUploadByFileMutation.mockReturnValue([
@@ -325,7 +326,7 @@ describe('useImageUpload', () => {
   })
 
   it('should handle missing uploadUrl in mutation response', async () => {
-    const createCloudflareUploadByFile = jest.fn().mockResolvedValue({
+    const createCloudflareUploadByFile = vi.fn().mockResolvedValue({
       data: {
         createCloudflareUploadByFile: {
           uploadUrl: null

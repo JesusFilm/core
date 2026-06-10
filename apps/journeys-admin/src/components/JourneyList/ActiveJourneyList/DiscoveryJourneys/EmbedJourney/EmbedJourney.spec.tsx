@@ -5,7 +5,7 @@ import { EmbedJourney } from '.'
 
 describe('EmbedJourney', () => {
   it('should handle click for embed journey', () => {
-    window.open = jest.fn()
+    window.open = vi.fn()
     const { getByText, getByLabelText } = render(
       <SnackbarProvider>
         <EmbedJourney slug="admin-center">

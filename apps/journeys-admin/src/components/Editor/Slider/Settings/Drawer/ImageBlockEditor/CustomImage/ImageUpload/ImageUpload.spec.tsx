@@ -2,29 +2,28 @@ import { MockedProvider } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import fetch, { Response } from 'node-fetch'
+import { type MockedFunction } from 'vitest'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE } from '../../../../../../../../libs/useCloudflareUploadByFileMutation/useCloudflareUploadByFileMutation'
 
 import { ImageUpload } from './ImageUpload'
 
-jest.mock('node-fetch', () => {
-  const originalModule = jest.requireActual('node-fetch')
+vi.mock('node-fetch', async () => {
+  const originalModule = await vi.importActual('node-fetch')
   return {
     __esModule: true,
     ...originalModule,
-    default: jest.fn()
+    default: vi.fn()
   }
 })
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+vi.mock('@next/third-parties/google', async () => ({
+  sendGTMEvent: vi.fn()
 }))
 
-const mockFetch = fetch as jest.MockedFunction<typeof fetch>
-const mockSendGTMEvent = sendGTMEvent as jest.MockedFunction<
-  typeof sendGTMEvent
->
+const mockFetch = fetch as MockedFunction<typeof fetch>
+const mockSendGTMEvent = sendGTMEvent as MockedFunction<typeof sendGTMEvent>
 
 describe('ImageUpload', () => {
   let originalEnv
@@ -75,7 +74,7 @@ describe('ImageUpload', () => {
   }
 
   it('should check if the mutations gets called', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         createCloudflareUploadByUrl: {
           id: 'uploadId',
@@ -84,7 +83,7 @@ describe('ImageUpload', () => {
         }
       }
     }))
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     render(
       <MockedProvider
         mocks={[
@@ -103,7 +102,7 @@ describe('ImageUpload', () => {
         />
       </MockedProvider>
     )
-    window.URL.createObjectURL = jest.fn().mockImplementation(() => 'url')
+    window.URL.createObjectURL = vi.fn().mockImplementation(() => 'url')
     const input = screen.getByTestId('drop zone')
     const file = new File(['file'], 'testFile.png', {
       type: 'image/png'
@@ -121,7 +120,7 @@ describe('ImageUpload', () => {
       json: async () => await Promise.resolve(cfResponse)
     } as unknown as Response)
 
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     render(
       <MockedProvider
         mocks={[
@@ -173,7 +172,7 @@ describe('ImageUpload', () => {
     render(
       <MockedProvider>
         <ImageUpload
-          onChange={jest.fn()}
+          onChange={vi.fn()}
           loading={false}
           selectedBlock={imageBlock}
         />
@@ -185,7 +184,7 @@ describe('ImageUpload', () => {
   it('should render loading state', () => {
     render(
       <MockedProvider>
-        <ImageUpload onChange={jest.fn()} loading selectedBlock={imageBlock} />
+        <ImageUpload onChange={vi.fn()} loading selectedBlock={imageBlock} />
       </MockedProvider>
     )
     expect(screen.getByTestId('Upload1Icon')).toBeInTheDocument()
@@ -196,7 +195,7 @@ describe('ImageUpload', () => {
     render(
       <MockedProvider>
         <ImageUpload
-          onChange={jest.fn()}
+          onChange={vi.fn()}
           loading={false}
           selectedBlock={imageBlock}
           error
@@ -208,7 +207,7 @@ describe('ImageUpload', () => {
   })
 
   it('should call setUploading on file drop', async () => {
-    const setUploading = jest.fn()
+    const setUploading = vi.fn()
     render(
       <MockedProvider
         mocks={[
@@ -230,7 +229,7 @@ describe('ImageUpload', () => {
         ]}
       >
         <ImageUpload
-          onChange={jest.fn()}
+          onChange={vi.fn()}
           setUploading={setUploading}
           loading
           selectedBlock={imageBlock}
@@ -252,8 +251,8 @@ describe('ImageUpload', () => {
   })
 
   it('should handle file too large error', async () => {
-    const onChange = jest.fn()
-    const setUploading = jest.fn()
+    const onChange = vi.fn()
+    const setUploading = vi.fn()
 
     render(
       <MockedProvider>
@@ -297,8 +296,8 @@ describe('ImageUpload', () => {
   })
 
   it('should reject files just over 10 MB', async () => {
-    const onChange = jest.fn()
-    const setUploading = jest.fn()
+    const onChange = vi.fn()
+    const setUploading = vi.fn()
 
     render(
       <MockedProvider>
@@ -350,7 +349,7 @@ describe('ImageUpload', () => {
       json: async () => await Promise.resolve(cfResponse)
     } as unknown as Response)
 
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     render(
       <MockedProvider
         mocks={[
@@ -397,8 +396,8 @@ describe('ImageUpload', () => {
   })
 
   it('should handle wrong file type error', async () => {
-    const onChange = jest.fn()
-    const setUploading = jest.fn()
+    const onChange = vi.fn()
+    const setUploading = vi.fn()
 
     render(
       <MockedProvider>
@@ -457,8 +456,8 @@ describe('ImageUpload', () => {
       json: async () => await Promise.resolve(cfErrorResponse)
     } as unknown as Response)
 
-    const onChange = jest.fn()
-    const setUploading = jest.fn()
+    const onChange = vi.fn()
+    const setUploading = vi.fn()
 
     render(
       <MockedProvider
@@ -519,8 +518,8 @@ describe('ImageUpload', () => {
       json: async () => await Promise.resolve(cfResponse)
     } as unknown as Response)
 
-    const onChange = jest.fn()
-    const setUploading = jest.fn()
+    const onChange = vi.fn()
+    const setUploading = vi.fn()
 
     render(
       <MockedProvider
@@ -627,7 +626,7 @@ describe('ImageUpload', () => {
         ]}
       >
         <ImageUpload
-          onChange={jest.fn()}
+          onChange={vi.fn()}
           loading={false}
           selectedBlock={imageBlock}
         />
@@ -654,7 +653,7 @@ describe('ImageUpload', () => {
     render(
       <MockedProvider>
         <ImageUpload
-          onChange={jest.fn()}
+          onChange={vi.fn()}
           loading={false}
           selectedBlock={imageBlock}
         />
@@ -708,7 +707,7 @@ describe('ImageUpload', () => {
         ]}
       >
         <ImageUpload
-          onChange={jest.fn()}
+          onChange={vi.fn()}
           loading={false}
           selectedBlock={imageBlock}
         />
@@ -754,7 +753,7 @@ describe('ImageUpload', () => {
         ]}
       >
         <ImageUpload
-          onChange={jest.fn()}
+          onChange={vi.fn()}
           loading={false}
           selectedBlock={imageBlock}
         />

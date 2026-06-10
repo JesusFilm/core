@@ -14,7 +14,7 @@ import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoI
 
 import { Color, ICON_BLOCK_COLOR_UPDATE } from './Color'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -57,7 +57,7 @@ describe('Color', () => {
         color: IconColor.secondary
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         iconBlockUpdate: {
           id: 'iconBlock.id',
@@ -78,7 +78,7 @@ describe('Color', () => {
         color: IconColor.inherit
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         iconBlockUpdate: {
           id: 'iconBlock.id',
@@ -91,7 +91,7 @@ describe('Color', () => {
     }))
   }
 
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('should change the icon color', async () => {
     const { getByRole } = render(

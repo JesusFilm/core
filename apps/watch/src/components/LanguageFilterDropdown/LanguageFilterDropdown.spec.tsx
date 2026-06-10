@@ -12,7 +12,7 @@ describe('LanguageFilterDropdown', () => {
           { value: 'spanish', englishName: 'Spanish' }
         ]}
         placeholder="Search languages..."
-        onSelect={jest.fn()}
+        onSelect={vi.fn()}
       />
     )
 
@@ -24,7 +24,7 @@ describe('LanguageFilterDropdown', () => {
       <LanguageFilterDropdown
         loading
         loadingLabel="Loading languages..."
-        onSelect={jest.fn()}
+        onSelect={vi.fn()}
       />
     )
 
@@ -32,7 +32,7 @@ describe('LanguageFilterDropdown', () => {
   })
 
   it('calls onSelect when an option is chosen', async () => {
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
     render(
       <LanguageFilterDropdown
         options={[

@@ -77,7 +77,7 @@ describe('ChatAssistant', () => {
 
   it('toggling Show AI chat on calls cardBlockUpdate with showAssistant true', async () => {
     const card = makeCard({ showAssistant: false, expandChatByDefault: false })
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         cardBlockUpdate: {
           __typename: 'CardBlock',
@@ -126,7 +126,7 @@ describe('ChatAssistant', () => {
 
   it('toggling Open chat automatically on calls cardBlockUpdate with expandChatByDefault true', async () => {
     const card = makeCard({ showAssistant: true, expandChatByDefault: false })
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         cardBlockUpdate: {
           __typename: 'CardBlock',
@@ -163,7 +163,7 @@ describe('ChatAssistant', () => {
 
   it('toggling Show AI chat off clears expandChatByDefault in the same call', async () => {
     const card = makeCard({ showAssistant: true, expandChatByDefault: true })
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         cardBlockUpdate: {
           __typename: 'CardBlock',
@@ -200,7 +200,7 @@ describe('ChatAssistant', () => {
 
   it('undo restores the prior values', async () => {
     const card = makeCard({ showAssistant: false, expandChatByDefault: false })
-    const executeResult = jest.fn(() => ({
+    const executeResult = vi.fn(() => ({
       data: {
         cardBlockUpdate: {
           __typename: 'CardBlock',
@@ -210,7 +210,7 @@ describe('ChatAssistant', () => {
         }
       }
     }))
-    const undoResult = jest.fn(() => ({
+    const undoResult = vi.fn(() => ({
       data: {
         cardBlockUpdate: {
           __typename: 'CardBlock',

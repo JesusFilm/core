@@ -27,7 +27,7 @@ describe('JourneyPickerField', () => {
       <JourneyPickerField
         availableJourneys={pool}
         journeyIds={['c', 'a']}
-        onChange={jest.fn()}
+        onChange={vi.fn()}
       />
     )
     const chips = screen.getAllByRole('button', { name: /Alpha|Charlie/ })
@@ -39,7 +39,7 @@ describe('JourneyPickerField', () => {
       <JourneyPickerField
         availableJourneys={[journey('a', 'Alpha')]}
         journeyIds={[]}
-        onChange={jest.fn()}
+        onChange={vi.fn()}
       />
     )
     expect(
@@ -48,8 +48,8 @@ describe('JourneyPickerField', () => {
   })
 
   it('fires onChange with the new id list when an option is picked, and onTouch once', async () => {
-    const onChange = jest.fn()
-    const onTouch = jest.fn()
+    const onChange = vi.fn()
+    const onTouch = vi.fn()
     render(
       <JourneyPickerField
         availableJourneys={[journey('a', 'Alpha'), journey('b', 'Bravo')]}
@@ -69,7 +69,7 @@ describe('JourneyPickerField', () => {
       <JourneyPickerField
         availableJourneys={[journey('a', 'Alpha')]}
         journeyIds={['a']}
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         disabled
       />
     )
@@ -83,7 +83,7 @@ describe('JourneyPickerField', () => {
       <JourneyPickerField
         availableJourneys={[journey('a', 'Alpha')]}
         journeyIds={['a']}
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         disabled
         disabledHelperText="Locked while syncing."
       />
@@ -96,7 +96,7 @@ describe('JourneyPickerField', () => {
       <JourneyPickerField
         availableJourneys={[journey('a', 'Alpha')]}
         journeyIds={['a', 'missing-id']}
-        onChange={jest.fn()}
+        onChange={vi.fn()}
       />
     )
     // Only 'Alpha' chip renders; the orphan id is filtered out.

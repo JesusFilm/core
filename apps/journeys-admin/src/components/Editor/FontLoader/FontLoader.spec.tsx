@@ -3,14 +3,14 @@ import { render, waitFor } from '@testing-library/react'
 import { FontLoader } from './FontLoader'
 
 const mockWebFontLoader = {
-  load: jest.fn()
+  load: vi.fn()
 }
 
-jest.mock('webfontloader', () => mockWebFontLoader)
+vi.mock('webfontloader', () => mockWebFontLoader)
 
 describe('FontLoader', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('loads fonts using webfontloader', async () => {

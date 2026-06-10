@@ -7,7 +7,7 @@ import { hostCreateMock } from './useHostCreateMutation.mock'
 
 describe('useHostCreateMutation', () => {
   it('should create host', async () => {
-    const mockResult = jest.fn().mockReturnValue(hostCreateMock.result)
+    const mockResult = vi.fn().mockReturnValue(hostCreateMock.result)
 
     const { result } = renderHook(() => useHostCreateMutation(), {
       wrapper: ({ children }) => (

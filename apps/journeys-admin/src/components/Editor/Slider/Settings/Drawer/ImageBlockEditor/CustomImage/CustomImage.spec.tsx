@@ -47,7 +47,7 @@ describe('CustomImage', () => {
   it('should render image upload', () => {
     render(
       <MockedProvider>
-        <CustomImage onChange={jest.fn()} selectedBlock={imageBlock} />
+        <CustomImage onChange={vi.fn()} selectedBlock={imageBlock} />
       </MockedProvider>
     )
 
@@ -58,7 +58,7 @@ describe('CustomImage', () => {
     render(
       <MockedProvider mocks={[myImagesMock]}>
         <FlagsProvider flags={{ mediaLibrary: false }}>
-          <CustomImage onChange={jest.fn()} selectedBlock={imageBlock} />
+          <CustomImage onChange={vi.fn()} selectedBlock={imageBlock} />
         </FlagsProvider>
       </MockedProvider>
     )
@@ -70,7 +70,7 @@ describe('CustomImage', () => {
     render(
       <MockedProvider mocks={[myImagesMock]}>
         <FlagsProvider flags={{ mediaLibrary: true }}>
-          <CustomImage onChange={jest.fn()} selectedBlock={imageBlock} />
+          <CustomImage onChange={vi.fn()} selectedBlock={imageBlock} />
         </FlagsProvider>
       </MockedProvider>
     )

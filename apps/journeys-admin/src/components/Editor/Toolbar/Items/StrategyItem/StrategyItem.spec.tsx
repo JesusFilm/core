@@ -27,7 +27,7 @@ describe('StrategyItem', () => {
       title: 'Some Title',
       slug: 'journeySlug'
     } as unknown as JourneyFields
-    const mockCloseMenu = jest.fn()
+    const mockCloseMenu = vi.fn()
 
     render(
       <MockedProvider>

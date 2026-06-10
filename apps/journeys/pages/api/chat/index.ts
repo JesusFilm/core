@@ -11,6 +11,7 @@ import { Langfuse, TextPromptClient } from 'langfuse'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
+import { getCardChatEnabled } from '../../../src/libs/getCardChatEnabled'
 import { getFlags } from '../../../src/libs/getFlags'
 import {
   APOLOGIST_PROMPT_NAME,
@@ -21,7 +22,9 @@ import { logger } from '../../../src/libs/logger'
 
 // Request bounds (NES-1579). Hard ceilings so a single chat request can't be
 // arbitrarily expensive or arbitrarily shaped.
-const MAX_MESSAGES = 20
+// Array-length cap on conversation turns. Raised 20 → 40 in NES-1663 so legit
+// deep conversations don't hit a silent reject at ~8-10 turns.
+const MAX_MESSAGES = 40
 const MAX_PARTS_PER_MESSAGE = 20
 // Applied per field — once on `content` and once on each `parts[].text` —
 // so a single message can carry more than this in aggregate. The
@@ -31,19 +34,22 @@ const MAX_PARTS_PER_MESSAGE = 20
 // caps typing/pasting at that length and the server rejects any single
 // field longer than it, so the two constants must match.
 const MAX_FIELD_CHARS = 4000
-// ~5000 input-token budget at ~4 chars/token. Buys ~8-10 turns of normal
-// conversation before the cap bites. Conversation-history management
-// (sliding window / rolling summary) is the proper fix and is tracked
-// separately under Cleanup & Tech Debt.
-const MAX_TOTAL_CHARS = 20000
+// ~10k input-token budget at ~4 chars/token (raised 20000 → 40000 in
+// NES-1663). Buys ~16-20 turns of normal conversation before the cap bites.
+// When it is still hit, the handler logs `chat_conversation_capped` and the
+// client shows a catered "start a fresh conversation" message instead of a
+// dead-end Retry. Conversation-history management (sliding window / rolling
+// summary) stays deferred — revive only if cap-hits prove frequent at volume.
+const MAX_TOTAL_CHARS = 40000
 const MAX_OUTPUT_TOKENS = 512
 
 export const config = {
   api: {
-    // Sized for the MAX_TOTAL_CHARS budget with 4-byte-per-char UTF-8 worst
-    // case (international users) + JSON wrapping. Oversized bodies are
-    // rejected by Next.js with 413 before the handler runs.
-    bodyParser: { sizeLimit: '128kb' }
+    // Scales with the MAX_TOTAL_CHARS budget: 4-byte-per-char UTF-8 worst case
+    // (international users) + JSON wrapping. Raised 128kb → 256kb in NES-1663
+    // alongside the char budget — it *must* track it or oversized bodies 413
+    // before the handler runs.
+    bodyParser: { sizeLimit: '256kb' }
   }
 }
 
@@ -69,7 +75,15 @@ const chatRequestSchema = z.object({
   messages: z.array(messageSchema).min(1).max(MAX_MESSAGES),
   language: z.string().max(64).optional(),
   sessionId: z.string().max(128).optional(),
-  journeyId: z.string().max(128).optional()
+  // Required (NES-1679): a missing journeyId is a malformed request, not a
+  // killed card. Requiring it returns 400 invalid_request instead of routing
+  // through the kill switch to a 403 chat_disabled (which would show users the
+  // "chat turned off" copy and pollute the chat_card_disabled signal). Matches
+  // the required cardId below.
+  journeyId: z.string().min(1).max(128),
+  // Required (NES-1679): the server reads the card's `showAssistant` to enforce
+  // the per-card chat kill switch, so every request must say which card it is.
+  cardId: z.string().min(1).max(128)
 })
 
 type ParsedChatMessage = z.infer<typeof messageSchema>
@@ -171,7 +185,10 @@ export default async function handler(
   const startedAt = Date.now()
   const flags = await getFlags()
   if (flags.apologistChat !== true) {
-    res.status(404).end()
+    // `code` so the client can recognise a deterministic flag-off and hide
+    // Retry (re-firing would 404 again). See the error-code contract note at
+    // the cap-hit branch below.
+    res.status(404).json({ error: 'not found', code: 'not_found' })
     return
   }
 
@@ -183,13 +200,55 @@ export default async function handler(
 
   const parsed = chatRequestSchema.safeParse(req.body)
   if (!parsed.success) {
-    res.status(400).json({ error: 'invalid request' })
+    res.status(400).json({ error: 'invalid request', code: 'invalid_request' })
     return
   }
-  const { messages, language, sessionId, journeyId } = parsed.data
+  const { messages, language, sessionId, journeyId, cardId } = parsed.data
 
-  if (totalMessageChars(messages) > MAX_TOTAL_CHARS) {
-    res.status(400).json({ error: 'request too large' })
+  const promptChars = totalMessageChars(messages)
+  if (promptChars > MAX_TOTAL_CHARS) {
+    // Expected, user-driven condition (a deep conversation outgrew the cap),
+    // not a backend fault — `warn`, not `error`, so it stays out of error
+    // alerts. Tracked with a single Datadog query
+    // (`service:journeys event:chat_conversation_capped`); the decision to
+    // revive history-windowing keys off this frequency.
+    logger.warn(
+      {
+        event: 'chat_conversation_capped',
+        sessionId,
+        journeyId,
+        language,
+        messageCount: messages.length,
+        promptChars
+      },
+      'chat conversation hit size cap'
+    )
+    // Error-code contract: AI SDK v6's transport discards the HTTP status and
+    // surfaces only the response body as `error.message`, so a structured
+    // `code` is how the client distinguishes failures. `conversation_capped`
+    // drives both the catered cap-hit message and retry-gating in
+    // libs/journeys/ui/src/components/AiChat/AiChat.tsx.
+    res
+      .status(400)
+      .json({ error: 'request too large', code: 'conversation_capped' })
+    return
+  }
+
+  // Per-card kill switch (NES-1679): the card's `showAssistant` is enforced
+  // server-side so flipping it off in the editor stops chat for tabs that are
+  // already open, on their very next message. Runs after the cheap local
+  // schema/size checks so an obviously-bad request never reaches the gateway.
+  const chatEnabled = await getCardChatEnabled({ journeyId, cardId })
+  if (!chatEnabled) {
+    logger.warn(
+      { event: 'chat_card_disabled', journeyId, cardId, sessionId },
+      '[chat] blocked: chat disabled for card'
+    )
+    // `code` keeps the client's error-code contract: a disabled card is
+    // deterministic, so the client hides Retry (re-firing would 403 again).
+    res
+      .status(403)
+      .json({ error: 'chat disabled for this card', code: 'chat_disabled' })
     return
   }
 
@@ -211,6 +270,12 @@ export default async function handler(
   // or the raw IP.
   const chatLogContext = {
     journeyId,
+    // `cardId` is recorded on every chat event (NES-1679) so the kill switch's
+    // allow path is queryable: on a "killed card still chatting" report the
+    // success/error events show which card the server actually consulted, which
+    // is the signal needed to tell a request-identity mismatch apart from a
+    // stale read — without a per-message log on the lookup itself.
+    cardId,
     language,
     ipCountry,
     sessionId,
@@ -247,7 +312,7 @@ export default async function handler(
       },
       '[chat] convertToModelMessages failed'
     )
-    res.status(400).json({ error: 'invalid request' })
+    res.status(400).json({ error: 'invalid request', code: 'invalid_request' })
     return
   }
 

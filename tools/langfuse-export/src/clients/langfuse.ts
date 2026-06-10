@@ -30,6 +30,12 @@ const DEFAULT_THROTTLE_MS = 700
 const DEFAULT_PAGE_SIZE = 100
 // Hard ceiling so a never-terminating cursor can't loop forever.
 const MAX_PAGES = 10000
+// Langfuse Cloud returns transient 502/503/429s under load; without a retry a
+// single blip mid-fetch aborts an otherwise-complete extraction (a real run hit
+// a 502 on trace 68/94). Retry idempotent GETs a few times with exponential
+// backoff before giving up; 4xx (except 429) still fail fast.
+const MAX_REQUEST_RETRIES = 4
+const RETRY_BASE_MS = 800
 
 export interface LangfuseClient {
   baseUrl: string
@@ -76,20 +82,45 @@ export function createLangfuseClient(env: ToolEnv): LangfuseClient {
   }
 }
 
+function isRetryableStatus(status: number): boolean {
+  return status === 429 || status >= 500
+}
+
 async function getJson<T>(client: LangfuseClient, path: string): Promise<T> {
-  const response = await fetch(`${client.baseUrl}${path}`, {
-    headers: {
-      Authorization: client.authHeader,
-      'Content-Type': 'application/json'
+  for (let attempt = 0; ; attempt += 1) {
+    let response: Response | undefined
+    let networkError: unknown
+    try {
+      response = await fetch(`${client.baseUrl}${path}`, {
+        headers: {
+          Authorization: client.authHeader,
+          'Content-Type': 'application/json'
+        }
+      })
+    } catch (error) {
+      // fetch rejects on DNS/connection/timeout failures — also transient.
+      networkError = error
     }
-  })
-  if (!response.ok) {
-    const body = await response.text()
+
+    if (response != null && response.ok) {
+      return (await response.json()) as T
+    }
+
+    const retryable =
+      networkError != null ||
+      (response != null && isRetryableStatus(response.status))
+    if (retryable && attempt < MAX_REQUEST_RETRIES) {
+      await sleep(RETRY_BASE_MS * 2 ** attempt)
+      continue
+    }
+
+    if (networkError != null) throw networkError
+    const failed = response as Response
+    const body = await failed.text()
     throw new Error(
-      `Langfuse ${response.status} on ${path}: ${body.slice(0, 300)}`
+      `Langfuse ${failed.status} on ${path}: ${body.slice(0, 300)}`
     )
   }
-  return (await response.json()) as T
 }
 
 function toIso(value: string | null | undefined): string {

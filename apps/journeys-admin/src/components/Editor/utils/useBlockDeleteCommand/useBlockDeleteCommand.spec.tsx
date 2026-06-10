@@ -40,10 +40,10 @@ describe('useBlockDeleteCommand', () => {
   }
 
   it('should call block delete for step block', async () => {
-    const deleteStepMockResult = jest.fn(() => ({
+    const deleteStepMockResult = vi.fn(() => ({
       ...deleteStepMock.result
     }))
-    const useBlockRestoreMutationMockResult = jest.fn(() => ({
+    const useBlockRestoreMutationMockResult = vi.fn(() => ({
       ...restoreStepMock.result
     }))
     const { result } = renderHook(() => useBlockDeleteCommand(), {
@@ -93,10 +93,10 @@ describe('useBlockDeleteCommand', () => {
   })
 
   it('should call block delete for non step block', async () => {
-    const deleteCardBlockMockResult = jest.fn(() => ({
+    const deleteCardBlockMockResult = vi.fn(() => ({
       ...deleteCardBlockMock.result
     }))
-    const useBlockRestoreMutationMockResult = jest.fn(() => ({
+    const useBlockRestoreMutationMockResult = vi.fn(() => ({
       ...useBlockRestoreMutationMock.result
     }))
 
@@ -198,7 +198,7 @@ describe('useBlockDeleteCommand', () => {
 
     // using imported document from the implementation for consistency
 
-    const blockDeleteMockResult = jest.fn(() => ({
+    const blockDeleteMockResult = vi.fn(() => ({
       data: {
         blockDelete: [
           {
@@ -209,7 +209,7 @@ describe('useBlockDeleteCommand', () => {
         ]
       }
     }))
-    const multiselectUpdateMockResult = jest.fn(() => ({
+    const multiselectUpdateMockResult = vi.fn(() => ({
       data: {
         multiselectBlockUpdate: {
           __typename: 'MultiselectBlock',
@@ -332,7 +332,7 @@ describe('useBlockDeleteCommand', () => {
       children: [card]
     }
 
-    const blockDeleteMockResult = jest.fn(() => ({
+    const blockDeleteMockResult = vi.fn(() => ({
       data: {
         blockDelete: [
           {

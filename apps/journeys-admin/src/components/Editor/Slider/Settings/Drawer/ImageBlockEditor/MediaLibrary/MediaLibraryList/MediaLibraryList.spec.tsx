@@ -10,14 +10,14 @@ const images: MediaLibraryListImage[] = [
 
 describe('MediaLibraryList', () => {
   it('should render a tile for each image', () => {
-    render(<MediaLibraryList images={images} handleSelect={jest.fn()} />)
+    render(<MediaLibraryList images={images} handleSelect={vi.fn()} />)
     expect(screen.getByTestId('media-library-image-a')).toBeInTheDocument()
     expect(screen.getByTestId('media-library-image-b')).toBeInTheDocument()
     expect(screen.getByTestId('media-library-image-c')).toBeInTheDocument()
   })
 
   it('should not render the uploading placeholder when uploading is undefined', () => {
-    render(<MediaLibraryList images={images} handleSelect={jest.fn()} />)
+    render(<MediaLibraryList images={images} handleSelect={vi.fn()} />)
     expect(
       screen.queryByTestId('media-library-image-uploading')
     ).not.toBeInTheDocument()
@@ -27,7 +27,7 @@ describe('MediaLibraryList', () => {
     render(
       <MediaLibraryList
         images={images}
-        handleSelect={jest.fn()}
+        handleSelect={vi.fn()}
         uploading={false}
       />
     )
@@ -38,7 +38,7 @@ describe('MediaLibraryList', () => {
 
   it('should render the uploading placeholder when uploading is true', () => {
     render(
-      <MediaLibraryList images={images} handleSelect={jest.fn()} uploading />
+      <MediaLibraryList images={images} handleSelect={vi.fn()} uploading />
     )
     expect(
       screen.getByTestId('media-library-image-uploading')
@@ -46,7 +46,7 @@ describe('MediaLibraryList', () => {
   })
 
   it('should call handleSelect with the clicked image', () => {
-    const handleSelect = jest.fn()
+    const handleSelect = vi.fn()
     render(<MediaLibraryList images={images} handleSelect={handleSelect} />)
     fireEvent.click(screen.getByTestId('media-library-image-b'))
     expect(handleSelect).toHaveBeenCalledWith(images[1])
@@ -57,7 +57,7 @@ describe('MediaLibraryList', () => {
       <MediaLibraryList
         images={images}
         selectedSrc="https://example.com/b/public"
-        handleSelect={jest.fn()}
+        handleSelect={vi.fn()}
       />
     )
     const tileA = screen.getByTestId('media-library-image-a')
@@ -68,7 +68,7 @@ describe('MediaLibraryList', () => {
   })
 
   it('should set lazy loading and empty alt on image tags', () => {
-    render(<MediaLibraryList images={images} handleSelect={jest.fn()} />)
+    render(<MediaLibraryList images={images} handleSelect={vi.fn()} />)
     const img = screen
       .getByTestId('media-library-image-a')
       .querySelector('img') as HTMLImageElement
@@ -80,7 +80,7 @@ describe('MediaLibraryList', () => {
 
   it('should render no tiles when images is empty and not uploading', () => {
     const { container } = render(
-      <MediaLibraryList images={[]} handleSelect={jest.fn()} />
+      <MediaLibraryList images={[]} handleSelect={vi.fn()} />
     )
     expect(
       screen.queryByTestId(/^media-library-image-/)
@@ -89,7 +89,7 @@ describe('MediaLibraryList', () => {
   })
 
   it('should still render the uploading placeholder when images is empty and uploading', () => {
-    render(<MediaLibraryList images={[]} handleSelect={jest.fn()} uploading />)
+    render(<MediaLibraryList images={[]} handleSelect={vi.fn()} uploading />)
     expect(
       screen.getByTestId('media-library-image-uploading')
     ).toBeInTheDocument()

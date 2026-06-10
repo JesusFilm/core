@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type Mock } from 'vitest'
 
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
@@ -15,30 +16,30 @@ import {
 
 import '../../../../test/i18n'
 
-jest.mock('next/router', () => ({
-  useRouter: jest.fn()
+vi.mock('next/router', () => ({
+  useRouter: vi.fn()
 }))
 
-jest.mock('../../../libs/useIntegrationQuery', () => ({
-  useIntegrationQuery: jest.fn()
+vi.mock('../../../libs/useIntegrationQuery', () => ({
+  useIntegrationQuery: vi.fn()
 }))
 
-jest.mock('../../../libs/useCurrentUserLazyQuery', () => ({
-  useCurrentUserLazyQuery: jest.fn()
+vi.mock('../../../libs/useCurrentUserLazyQuery', () => ({
+  useCurrentUserLazyQuery: vi.fn()
 }))
 
-jest.mock('../../../libs/useUserTeamsAndInvitesQuery', () => ({
-  useUserTeamsAndInvitesQuery: jest.fn()
+vi.mock('../../../libs/useUserTeamsAndInvitesQuery', () => ({
+  useUserTeamsAndInvitesQuery: vi.fn()
 }))
 
-jest.mock(
+vi.mock(
   './GoogleIntegrationRemoveDialog/GoogleIntegrationRemoveDialog',
   () => ({
     GoogleIntegrationRemoveDialog: () => <div>Remove Dialog</div>
   })
 )
 
-jest.mock(
+vi.mock(
   './GoogleIntegrationDeleteSyncDialog/GoogleIntegrationDeleteSyncDialog',
   () => ({
     GoogleIntegrationDeleteSyncDialog: () => <div>Delete Sync Dialog</div>
@@ -47,7 +48,7 @@ jest.mock(
 
 describe('GoogleIntegrationDetails', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   function setupMocks({
@@ -71,27 +72,27 @@ describe('GoogleIntegrationDetails', () => {
       user?: { id: string; __typename: 'AuthenticatedUser'; email: string }
     }>
   }): void {
-    ;(useRouter as jest.Mock).mockReturnValue({
+    ;(useRouter as Mock).mockReturnValue({
       query: {
         teamId: 'teamId',
         integrationId: 'integrationId'
       }
     })
-    ;(useIntegrationQuery as jest.Mock).mockReturnValue({
+    ;(useIntegrationQuery as Mock).mockReturnValue({
       data: {
         integrations
       },
       loading: false
     })
-    ;(useCurrentUserLazyQuery as jest.Mock).mockReturnValue({
-      loadUser: jest.fn(),
+    ;(useCurrentUserLazyQuery as Mock).mockReturnValue({
+      loadUser: vi.fn(),
       data: {
         id: 'userId',
         __typename: 'AuthenticatedUser',
         email: 'user@example.com'
       }
     })
-    ;(useUserTeamsAndInvitesQuery as jest.Mock).mockReturnValue({
+    ;(useUserTeamsAndInvitesQuery as Mock).mockReturnValue({
       data: {
         userTeams: canManageSyncs
           ? [

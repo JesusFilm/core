@@ -10,7 +10,7 @@ export const cloudflareUploadMutationMock: MockedResponse<CreateCloudflareUpload
       query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE,
       variables: {}
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         createCloudflareUploadByFile: {
           __typename: 'CloudflareImage',
@@ -18,5 +18,5 @@ export const cloudflareUploadMutationMock: MockedResponse<CreateCloudflareUpload
           id: 'cloudflare-image-id'
         }
       }
-    }))
+    })) as MockedResponse<CreateCloudflareUploadByFile>['result']
   }

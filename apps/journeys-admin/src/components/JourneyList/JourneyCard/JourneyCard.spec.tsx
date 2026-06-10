@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { useNavigationState } from '@core/journeys/ui/useNavigationState'
 
@@ -24,22 +25,22 @@ import {
 import { JourneyCard } from './JourneyCard'
 import { JourneyCardVariant } from './journeyCardVariant'
 
-jest.mock('@core/journeys/ui/useNavigationState', () => ({
-  useNavigationState: jest.fn(() => false)
+vi.mock('@core/journeys/ui/useNavigationState', () => ({
+  useNavigationState: vi.fn(() => false)
 }))
 
-const mockUseNavigationState = useNavigationState as jest.MockedFunction<
+const mockUseNavigationState = useNavigationState as MockedFunction<
   typeof useNavigationState
 >
 
 describe('JourneyCard', () => {
   beforeAll(() => {
-    jest.useFakeTimers()
-    jest.setSystemTime(new Date(fakeDate))
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    vi.setSystemTime(new Date(fakeDate))
   })
 
   afterAll(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   it('should have correct link on title', () => {

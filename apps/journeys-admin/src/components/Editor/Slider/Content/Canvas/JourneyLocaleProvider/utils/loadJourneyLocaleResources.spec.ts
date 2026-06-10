@@ -1,5 +1,5 @@
-import { jest } from '@jest/globals'
 import { Dispatch, SetStateAction } from 'react'
+import { type Mock } from 'vitest'
 
 const mockUiResourcesData = { message: 'Mock UI Resource' }
 const mockAdminResourcesData = { message: 'Mock Admin Resource' }
@@ -13,31 +13,29 @@ interface ModuleUnderTest {
 }
 
 describe('loadJourneyLocaleResources', () => {
-  let setResourcesMock: jest.Mock<
+  let setResourcesMock: Mock<
     Dispatch<SetStateAction<Record<string, Record<string, any>>>>
   >
 
   beforeEach(() => {
-    setResourcesMock = jest.fn()
+    setResourcesMock = vi.fn()
 
-    jest.resetModules()
+    vi.resetModules()
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   test('successfully loads and sets resources for a standard locale (en)', async () => {
     // Mock the specific JSON files that will be dynamically imported for the 'en' locale
-    jest.mock(
+    vi.mock(
       '../../../../../../../../../../libs/locales/en/libs-journeys-ui.json',
-      () => mockUiResourcesData,
-      { virtual: true }
+      () => ({ default: mockUiResourcesData })
     )
-    jest.mock(
+    vi.mock(
       '../../../../../../../../../../libs/locales/en/apps-journeys-admin.json',
-      () => mockAdminResourcesData,
-      { virtual: true }
+      () => ({ default: mockAdminResourcesData })
     )
 
     // Dynamically import the module under test AFTER the mocks are set up
@@ -57,15 +55,13 @@ describe('loadJourneyLocaleResources', () => {
   })
 
   test('correctly maps directoryLocale zh-Hans-CN to i18nKey zh-Hans', async () => {
-    jest.mock(
+    vi.mock(
       '../../../../../../../../../../libs/locales/zh-Hans-CN/libs-journeys-ui.json',
-      () => mockUiResourcesData,
-      { virtual: true }
+      () => ({ default: mockUiResourcesData })
     )
-    jest.mock(
+    vi.mock(
       '../../../../../../../../../../libs/locales/zh-Hans-CN/apps-journeys-admin.json',
-      () => mockAdminResourcesData,
-      { virtual: true }
+      () => ({ default: mockAdminResourcesData })
     )
 
     const { loadJourneyLocaleResources }: ModuleUnderTest = await import(
@@ -85,15 +81,13 @@ describe('loadJourneyLocaleResources', () => {
   })
 
   test('uses passed locale as key if no specific i18nLocale mapping applies', async () => {
-    jest.mock(
+    vi.mock(
       '../../../../../../../../../../libs/locales/ko-KR/libs-journeys-ui.json',
-      () => mockUiResourcesData,
-      { virtual: true }
+      () => ({ default: mockUiResourcesData })
     )
-    jest.mock(
+    vi.mock(
       '../../../../../../../../../../libs/locales/ko-KR/apps-journeys-admin.json',
-      () => mockAdminResourcesData,
-      { virtual: true }
+      () => ({ default: mockAdminResourcesData })
     )
 
     const { loadJourneyLocaleResources }: ModuleUnderTest = await import(

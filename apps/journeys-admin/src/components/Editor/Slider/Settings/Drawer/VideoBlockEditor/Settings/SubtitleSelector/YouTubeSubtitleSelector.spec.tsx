@@ -57,7 +57,7 @@ describe('YouTubeSubtitleSelector', () => {
       <YouTubeSubtitleSelector
         selectedSubtitleId={null}
         availableLanguages={mockYouTubeLanguages}
-        onChange={jest.fn()}
+        onChange={vi.fn()}
       />
     )
 
@@ -69,7 +69,7 @@ describe('YouTubeSubtitleSelector', () => {
       <YouTubeSubtitleSelector
         selectedSubtitleId="lang-ru"
         availableLanguages={mockYouTubeLanguages}
-        onChange={jest.fn()}
+        onChange={vi.fn()}
       />
     )
 
@@ -81,7 +81,7 @@ describe('YouTubeSubtitleSelector', () => {
       <YouTubeSubtitleSelector
         selectedSubtitleId={null}
         availableLanguages={mockYouTubeLanguages}
-        onChange={jest.fn()}
+        onChange={vi.fn()}
       />
     )
 
@@ -95,7 +95,7 @@ describe('YouTubeSubtitleSelector', () => {
   })
 
   it('handles language selection and calls onChange with correct ID', () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     render(
       <YouTubeSubtitleSelector
         selectedSubtitleId={null}
@@ -111,7 +111,7 @@ describe('YouTubeSubtitleSelector', () => {
   })
 
   it('handles selecting "Off" and calls onChange with null', () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     render(
       <YouTubeSubtitleSelector
         selectedSubtitleId="lang-en"
@@ -132,7 +132,7 @@ describe('YouTubeSubtitleSelector', () => {
       <YouTubeSubtitleSelector
         selectedSubtitleId={null}
         availableLanguages={[]}
-        onChange={jest.fn()}
+        onChange={vi.fn()}
       />
     )
 
@@ -146,7 +146,7 @@ describe('YouTubeSubtitleSelector', () => {
       <YouTubeSubtitleSelector
         selectedSubtitleId={null}
         availableLanguages={mockYouTubeLanguages}
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         disabled={true}
       />
     )
@@ -160,7 +160,7 @@ describe('YouTubeSubtitleSelector', () => {
       <YouTubeSubtitleSelector
         selectedSubtitleId={null}
         availableLanguages={mockYouTubeLanguages}
-        onChange={jest.fn()}
+        onChange={vi.fn()}
       />
     )
 
@@ -184,7 +184,7 @@ describe('YouTubeSubtitleSelector', () => {
       <YouTubeSubtitleSelector
         selectedSubtitleId={null}
         availableLanguages={mockYouTubeLanguages}
-        onChange={jest.fn()}
+        onChange={vi.fn()}
       />
     )
 
@@ -206,7 +206,7 @@ describe('YouTubeSubtitleSelector', () => {
       <YouTubeSubtitleSelector
         selectedSubtitleId="lang-en"
         availableLanguages={mockYouTubeLanguages}
-        onChange={jest.fn()}
+        onChange={vi.fn()}
       />
     )
 

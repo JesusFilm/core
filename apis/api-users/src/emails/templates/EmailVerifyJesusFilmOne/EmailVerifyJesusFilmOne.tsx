@@ -12,7 +12,6 @@ import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
 import {
-  ActionButton,
   ActionCard,
   BodyWrapper,
   EmailContainer,
@@ -22,7 +21,6 @@ import {
 } from '@core/yoga/email/components'
 
 interface VerifyEmailProps {
-  inviteLink: string
   token: string
   story?: boolean
   recipient: {
@@ -38,7 +36,6 @@ interface WrapperProps {
 }
 
 export const EmailVerifyJesusFilmOne = ({
-  inviteLink,
   recipient,
   token,
   story = false
@@ -66,19 +63,20 @@ export const EmailVerifyJesusFilmOne = ({
                   </Text>
                 </th>
               </Row>
-              <Row className="px-[28px]">
-                <Column align="center">
-                  <ActionButton
-                    buttonText="Verify Email Address"
-                    url={inviteLink}
-                  />
-                </Column>
+              <Row>
+                <th>
+                  <Text className="mt-0 mb-[16px] text-center text-[14px] leading-[24px] font-[400]">
+                    Enter this 6-digit verification code in the app to confirm
+                    your email address.
+                  </Text>
+                </th>
               </Row>
               <Row>
-                <Text className="mt-[24px] mb-[8px] text-center text-[14px] leading-[24px] font-[400]">
-                  Your verification code is{' '}
-                  <strong className="text-[#C52D3A]">{token}</strong>
-                </Text>
+                <Column align="center">
+                  <Text className="my-0 text-center text-[40px] leading-[48px] font-bold tracking-[8px] text-[#C52D3A]">
+                    {token}
+                  </Text>
+                </Column>
               </Row>
             </Section>
           </ActionCard>
@@ -131,8 +129,7 @@ EmailVerifyJesusFilmOne.PreviewProps = {
     email: 'joe@example.com',
     imageUrl:
       'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  inviteLink: 'https://admin.nextstep.is/users/verify'
+  }
 } satisfies VerifyEmailProps
 
 export default EmailVerifyJesusFilmOne

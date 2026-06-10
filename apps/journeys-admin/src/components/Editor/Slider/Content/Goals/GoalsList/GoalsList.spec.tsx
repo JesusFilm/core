@@ -13,9 +13,9 @@ import { Goal } from '../Goals'
 
 import { GoalsList } from './GoalsList'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('GoalsList', () => {
