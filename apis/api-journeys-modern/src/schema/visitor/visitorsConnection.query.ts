@@ -26,15 +26,17 @@ interface VisitorsConnectionShape {
   pageInfo: PageInfoShape
 }
 
-const PageInfoRef = builder.objectRef<PageInfoShape>('PageInfo').implement({
-  shareable: true,
-  fields: (t) => ({
-    hasNextPage: t.exposeBoolean('hasNextPage', { nullable: false }),
-    hasPreviousPage: t.exposeBoolean('hasPreviousPage', { nullable: false }),
-    startCursor: t.exposeString('startCursor', { nullable: true }),
-    endCursor: t.exposeString('endCursor', { nullable: true })
+export const PageInfoRef = builder
+  .objectRef<PageInfoShape>('PageInfo')
+  .implement({
+    shareable: true,
+    fields: (t) => ({
+      hasNextPage: t.exposeBoolean('hasNextPage', { nullable: false }),
+      hasPreviousPage: t.exposeBoolean('hasPreviousPage', { nullable: false }),
+      startCursor: t.exposeString('startCursor', { nullable: true }),
+      endCursor: t.exposeString('endCursor', { nullable: true })
+    })
   })
-})
 
 const VisitorEdgeRef = builder
   .objectRef<VisitorEdgeShape>('VisitorEdge')
@@ -115,9 +117,9 @@ builder.queryField('visitorsConnection', (t) =>
         pageInfo: {
           hasNextPage: result.length > first,
           hasPreviousPage: false,
-          startCursor: result.length > 0 ? result[0].id : null,
+          startCursor: sendResult.length > 0 ? sendResult[0].id : null,
           endCursor:
-            result.length > 0 ? sendResult[sendResult.length - 1].id : null
+            sendResult.length > 0 ? sendResult[sendResult.length - 1].id : null
         }
       }
     }
