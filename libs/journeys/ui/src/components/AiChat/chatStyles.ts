@@ -43,6 +43,26 @@ export const MUTED_FG = 'text.secondary'
 /** Second stop of the sparkle-avatar gradient. Darker than journeysAdmin's primary.dark, tuned to the gradient. */
 export const BRAND_RED_DARK = '#A8202C'
 
+/**
+ * Link colour for caption-level "about/legal" links on the white
+ * panel/sheet surface (mobile chat sheet header).
+ *
+ * Concrete hex rather than a `'primary.main'` theme path: the chat
+ * inherits the journey card's theme, and the base dark palette
+ * resolves `primary.main` to near-white (#FEFEFE) — invisible against
+ * the panel's white background.
+ */
+export const PANEL_LINK_FG = brandRed
+
+/**
+ * Link colour for the same caption link on the dark overlay surface
+ * (desktop ChatOverlay, below the floating input). brandRed (#C52D3A)
+ * is too dim against the ~grey.900 backdrop; a brighter
+ * brand-adjacent red keeps the affordance readable while staying in
+ * the chat surface's red/white vocabulary.
+ */
+export const OVERLAY_LINK_FG = '#FF7A85'
+
 /** Sparkle-avatar fill — brand red shaded toward BRAND_RED_DARK. */
 export const SPARKLE_GRADIENT = `linear-gradient(135deg, ${brandRed} 0%, ${BRAND_RED_DARK} 100%)`
 

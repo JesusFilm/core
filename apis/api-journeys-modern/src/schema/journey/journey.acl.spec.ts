@@ -150,12 +150,12 @@ describe('journeyAcl', () => {
       expect(can(Action.Manage, journeyUnpublishedTemplate, user)).toBe(false)
     })
 
-    it('denies template property when user is not publisher', () => {
+    it('allows team manager on template journey (manage restricts field, not whole-journey)', () => {
       const templateJourney = {
         ...journeyUserTeamManager,
         template: true
       } as unknown as Journey
-      expect(can(Action.Manage, templateJourney, user)).toBe(false)
+      expect(can(Action.Manage, templateJourney, user)).toBe(true)
     })
 
     describe('publisher', () => {

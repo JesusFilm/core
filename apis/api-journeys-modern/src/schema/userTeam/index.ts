@@ -1,2 +1,7 @@
 import './userTeam'
 import './inputs'
+import './userTeam.acl'
+import './userTeams.query'
+import './userTeam.query'
+import './userTeamUpdate.mutation'
+import './userTeamDelete.mutation'
