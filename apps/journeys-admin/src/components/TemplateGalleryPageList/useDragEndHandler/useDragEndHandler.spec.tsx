@@ -596,7 +596,11 @@ describe('useDragEndHandler', () => {
     })
 
     expect(assignMock.result).toHaveBeenCalledTimes(1)
-    expect(screen.queryByText('Added to page-B')).not.toBeInTheDocument()
+    // waitFor so the check runs after notistack has settled — a synchronous
+    // negative assertion could pass before a (wrongly) enqueued toast renders.
+    await waitFor(() =>
+      expect(screen.queryByText('Added to page-B')).not.toBeInTheDocument()
+    )
   })
 
   it('shows the rejection error (not the added toast) when a collapsed-target drop is rejected', async () => {

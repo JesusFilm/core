@@ -321,8 +321,9 @@ describe('CollectionCard', () => {
           <div data-testid="children-payload" />
         </CollectionCard>
       )
+      // Expanded → the announced action is "Collapse".
       const toggle = screen.getByRole('button', {
-        name: 'Toggle My Collection collection'
+        name: 'Collapse My Collection collection'
       })
       expect(toggle).toHaveAttribute('aria-expanded', 'true')
       // Expanded: the grid (children) is visible and there's no count badge.
@@ -343,8 +344,9 @@ describe('CollectionCard', () => {
           <div data-testid="children-payload" />
         </CollectionCard>
       )
+      // Collapsed → the announced action is "Expand".
       const toggle = screen.getByRole('button', {
-        name: 'Toggle My Collection collection'
+        name: 'Expand My Collection collection'
       })
       expect(toggle).toHaveAttribute('aria-expanded', 'false')
       // Collapsed: grid unmounted, count badge reflects the template count.

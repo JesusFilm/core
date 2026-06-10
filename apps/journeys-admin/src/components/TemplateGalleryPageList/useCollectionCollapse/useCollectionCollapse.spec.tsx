@@ -20,6 +20,14 @@ describe('collectionCollapseStorage', () => {
     expect(getCollapsedCollectionIds('team-2')).toEqual(['c'])
   })
 
+  it('removes the entry when an empty set is stored', () => {
+    // Absent and empty mean the same thing ("everything open"), so an empty
+    // write must clean up the key rather than leave `[]` behind.
+    setCollapsedCollectionIds('team-1', ['a'])
+    setCollapsedCollectionIds('team-1', [])
+    expect(localStorage.getItem('templateCollectionsCollapse:team-1')).toBeNull()
+  })
+
   it('returns an empty list for malformed stored values', () => {
     localStorage.setItem('templateCollectionsCollapse:team-1', 'not json')
     expect(getCollapsedCollectionIds('team-1')).toEqual([])

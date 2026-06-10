@@ -27,6 +27,13 @@ export function setCollapsedCollectionIds(
   ids: readonly string[]
 ): void {
   try {
+    // An empty set and an absent entry mean the same thing ("everything
+    // open"), so remove the key rather than storing `[]` — teams the user
+    // never collapses anything in leave no entry behind.
+    if (ids.length === 0) {
+      localStorage.removeItem(storageKey(teamId))
+      return
+    }
     localStorage.setItem(storageKey(teamId), JSON.stringify([...ids]))
   } catch {
     // localStorage may be unavailable (SSR, private browsing, etc.)

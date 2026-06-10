@@ -206,9 +206,13 @@ function CollectionCardImpl({
           // TemplateInfoHelper pattern). aria-expanded still conveys state.
           aria-controls={collapsed ? undefined : contentId}
           aria-disabled={busy === true}
-          aria-label={t('Toggle {{title}} collection', {
-            title: collection.title
-          })}
+          // State-aware label: screen readers announce the action before
+          // aria-expanded, so "Expand/Collapse" reads better than "Toggle".
+          aria-label={
+            collapsed
+              ? t('Expand {{title}} collection', { title: collection.title })
+              : t('Collapse {{title}} collection', { title: collection.title })
+          }
           onClick={handleToggleCollapse}
           onKeyDown={handleToggleKeyDown}
           data-testid={`CollectionCardToggle-${collection.id}`}
