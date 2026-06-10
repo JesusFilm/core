@@ -49,22 +49,6 @@ jobs:
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-  api-journeys:
-    needs: affected
-    if: contains(needs.affected.outputs.matrix, 'api-journeys')
-    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
-    with:
-      name: api-journeys
-      env: stage
-      branch: ${{ github.ref_name }}
-      endpoint_url: http://api-journeys.stage.internal:4001/graphql
-    secrets:
-      HIVE_TOKEN: ${{ secrets.HIVE_STAGE_READ_WRITE_TOKEN }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
-      JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
-      AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
-      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   api-journeys-modern:
     needs: affected
     if: contains(needs.affected.outputs.matrix, 'api-journeys-modern')

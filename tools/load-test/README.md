@@ -76,7 +76,7 @@ Implications for this tool, all running from a single machine:
 - **`sessionId`** is set to `<runId>-vu-<__VU>` — stable across a VU's iterations, distinct between VUs. This splits Langfuse traces by VU so you can inspect them separately. It is **not** seen by the firewall and does not change rate-limit behaviour.
 - **All VUs share one source IP** (yours). Adding more VUs cannot simulate "more IPs" against the firewall. Use it for concurrency, queuing, and per-conversation trace shape only.
 - **True multi-IP load** requires distributed runners — GitHub Actions matrix jobs, multiple machines, or `k6 cloud`. Out of scope for this tool today.
-- **Firebase / per-uid limits** are not in this code path. The per-uid gate (NES-1580 → NES-1584) lives on `api-journeys` (NestJS), not on `apps/journeys`'s `/api/chat`. Add a token-sending scenario only when that gate lands.
+- **Firebase / per-uid limits** are not in this code path. The per-uid gate (NES-1580 → NES-1584) lives on `api-journeys-modern`, not on `apps/journeys`'s `/api/chat`. Add a token-sending scenario only when that gate lands.
 
 ## Output
 

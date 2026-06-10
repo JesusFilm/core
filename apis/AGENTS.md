@@ -1,12 +1,11 @@
 # APIs — Convention Guide
 
-GraphQL API layer for the NextSteps platform. Three services share the Prisma journeys database and are composed via Apollo Federation.
+GraphQL API layer for the NextSteps platform, composed via Apollo Federation.
 
-| Service               | Framework                  | Role                                                                        |
-| --------------------- | -------------------------- | --------------------------------------------------------------------------- |
-| `api-journeys`        | NestJS + Apollo Federation | Legacy API — resolvers, modules, CASL auth                                  |
-| `api-journeys-modern` | GraphQL Yoga + Pothos      | Modern API — code-first schema, scope auth                                  |
-| `api-gateway`         | GraphQL Hive Gateway       | Federation gateway — composes subgraphs, JWT validation, header propagation |
+| Service               | Framework             | Role                                                                         |
+| --------------------- | --------------------- | ---------------------------------------------------------------------------- |
+| `api-journeys-modern` | GraphQL Yoga + Pothos | Journeys API — code-first schema, scope auth                                 |
+| `api-gateway`         | GraphQL Hive Gateway  | Federation gateway — composes subgraphs, JWT validation, header propagation |
 
 ## Shared conventions
 
@@ -17,11 +16,11 @@ GraphQL API layer for the NextSteps platform. Three services share the Prisma jo
 - Migrations: `libs/prisma/journeys/db/migrations/` — timestamped SQL files, one atomic change each.
 - Soft deletes via `deletedAt` field on blocks, journeys, and other entities. Always filter `where: { deletedAt: null }` in queries.
 - Generate client: `pnpm dlx nx run prisma-journeys:prisma-generate` after schema changes.
-- Both APIs import from `@core/prisma/journeys/client`.
+- Import from `@core/prisma/journeys/client`.
 
 ### GraphQL Federation
 
-- Both `api-journeys` and `api-journeys-modern` are **Federation 2.6 subgraphs**.
+- `api-journeys-modern` is a **Federation 2.6 subgraph**.
 - Use `@key` directives for entity resolution, `@shareable` for fields exposed by multiple subgraphs.
 - Gateway composes schemas at runtime — no manual stitching.
 
@@ -33,59 +32,13 @@ GraphQL API layer for the NextSteps platform. Three services share the Prisma jo
 
 ### Logging
 
-- Pino logger everywhere — `nestjs-pino` in legacy, direct Pino in modern.
+- Pino logger everywhere.
 - Pretty-print in dev, structured JSON in production.
 
 ### Testing
 
-- `api-journeys`: Jest + `jest-mock-extended` for Prisma mocking.
 - `api-journeys-modern`: Vitest + `vitest-mock-extended` for Prisma mocking.
-- `mockDeep<PrismaClient>()` or `mockDeep<PrismaService>()` for deep mocks.
-
----
-
-## api-journeys (NestJS)
-
-### Module organization
-
-```
-apis/api-journeys/src/app/
-  app.module.ts                    # Root NestJS module
-  lib/
-    prisma.service.ts              # PrismaClient wrapper (injected as provider)
-    CaslAuthModule/                # CASL-based authorization
-    decorators/                    # @CurrentUser, @FromPostgresql, etc.
-  modules/
-    journey/                       # One directory per domain entity
-      journey.module.ts            # NestJS module
-      journey.resolver.ts          # @Resolver with @Query/@Mutation
-      journey.graphql              # SDL schema file
-      journey.acl.ts               # CASL access rules
-      journey.resolver.spec.ts     # Tests
-      journeyCustomizable.service.ts  # Customizable sync logic
-    block/
-    action/                        # Action types
-    ...
-```
-
-### Key patterns
-
-- **Schema:** SDL-first (`.graphql` files) with `@Resolver` decorators.
-- **DI:** NestJS module system — providers, imports, exports.
-- **Auth:** CASL library with `@UseGuards(AppCaslGuard)` and `@CaslPolicy(entityAcl)`.
-- **Prisma access:** Through injected `PrismaService` wrapper.
-- **Async jobs:** BullMQ queues (e.g., `api-journeys-revalidate`).
-
-### Test pattern
-
-```typescript
-const module: TestingModule = await Test.createTestingModule({
-  imports: [CaslAuthModule.register(AppCaslFactory)],
-  providers: [JourneyResolver, { provide: PrismaService, useValue: mockDeep<PrismaService>() }, { provide: BlockService, useValue: mockDeep<BlockService>() }]
-}).compile()
-```
-
----
+- `mockDeep<PrismaClient>()` for deep mocks.
 
 ## api-journeys-modern (Pothos + Yoga)
 
@@ -166,14 +119,7 @@ Changes here are rare. When they happen, review for:
 
 **This is a guardrail — violations are Critical in reviews.**
 
-When adding or modifying a `customizable` field on a block or action type, the recalculation logic **must be updated in both APIs**:
-
-| API    | Location                                                                                            |
-| ------ | --------------------------------------------------------------------------------------------------- |
-| Legacy | `apis/api-journeys/src/app/modules/journey/journeyCustomizable.service.ts` → `recalculate()`        |
-| Modern | `apis/api-journeys-modern/src/lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable.ts` |
-
-These two implementations must produce identical results. The logic checks:
+When adding or modifying a `customizable` field on a block or action type, the recalculation logic in `apis/api-journeys-modern/src/lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable.ts` must be updated. The logic checks:
 
 1. **Editable text fields:** `journeyCustomizationDescription` is non-empty AND `journeyCustomizationFields` count > 0
 2. **Customizable link actions:** ButtonBlock, RadioOptionBlock, VideoBlock, or VideoTriggerBlock with `action.customizable === true` AND `action.blockId == null` (excludes NavigateToBlockAction)
@@ -184,25 +130,15 @@ Any mutation that modifies `customizable` on a block, action, or chat button **m
 
 ---
 
-## ACL parity
+## ACL
 
-Authorization logic differs in implementation but must produce the same access decisions:
-
-- **Legacy (api-journeys):** CASL library with Prisma conditions — `can(Action.Update, 'Journey', { ... })`
-- **Modern (api-journeys-modern):** Pure functions — `journeyAcl(action, journey, user): boolean`
-
-When modifying access rules, update both implementations and verify with tests.
+Authorization uses pure functions — `journeyAcl(action, journey, user): boolean`. When modifying access rules, verify with tests.
 
 ---
 
 ## Quality gates
 
 ```bash
-# api-journeys
-pnpm dlx nx run api-journeys:lint
-pnpm dlx nx run api-journeys:type-check
-pnpm dlx nx run api-journeys:test
-
 # api-journeys-modern
 pnpm dlx nx run api-journeys-modern:lint
 pnpm dlx nx run api-journeys-modern:type-check
