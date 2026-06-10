@@ -30,6 +30,13 @@ export interface UseDragEndHandlerParams {
   setDragInFlight: (next: boolean) => void
   /** Setter for the active drag id — the hook clears it on drop. */
   setActiveDragId: (next: string | null) => void
+  /**
+   * NES-1717: true when the given collection is currently collapsed. A drop
+   * onto a collapsed collection lands via its header (the only visible part),
+   * so the user can't see the template arrive — we surface a confirmation
+   * toast instead. Defaults to "never collapsed" when omitted.
+   */
+  isCollectionCollapsed?: (collectionId: string) => boolean
 }
 
 /**
@@ -52,7 +59,8 @@ export function useDragEndHandler(
     collectionsById,
     dragInFlightRef,
     setDragInFlight,
-    setActiveDragId
+    setActiveDragId,
+    isCollectionCollapsed
   } = params
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -175,6 +183,13 @@ export function useDragEndHandler(
           targetCollectionId != null
             ? collectionsById.get(targetCollectionId)
             : null
+        // Capture collapse state at drop time, before the await — the toast
+        // confirms "you dropped onto something you couldn't see", which is a
+        // fact about the moment of the drop, not about whatever the state has
+        // become by the time the network round-trip resolves (NES-1717 review).
+        const targetWasCollapsed =
+          targetCollectionId != null &&
+          isCollectionCollapsed?.(targetCollectionId) === true
         const assignResult = await templateGalleryPageAssignJourney({
           variables: { journeyId: templateId, pageId: targetCollectionId },
           // NES-1668: in production the source-page `cache.modify` below
@@ -286,6 +301,18 @@ export function useDragEndHandler(
             enqueueSnackbar(
               t("Couldn't move template — the server rejected the move."),
               { variant: 'error', preventDuplicate: true }
+            )
+          } else if (targetWasCollapsed) {
+            // The template landed in a collapsed collection the user can't
+            // see — confirm the drop so the move doesn't feel like it
+            // vanished (NES-1717). Fall back to a generic message rather than
+            // interpolating an empty name if the title can't be resolved.
+            const targetName = targetCollection?.title ?? returnedPage?.title
+            enqueueSnackbar(
+              targetName != null && targetName !== ''
+                ? t('Added to {{collection}}', { collection: targetName })
+                : t('Added to collection'),
+              { variant: 'success', preventDuplicate: true }
             )
           }
         }

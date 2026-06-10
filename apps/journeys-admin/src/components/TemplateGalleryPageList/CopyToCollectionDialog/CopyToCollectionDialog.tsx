@@ -51,8 +51,6 @@ export interface CopyToCollectionDialogProps {
   open: boolean
   loading?: boolean
   errorMessage?: string
-  done?: boolean
-  selectedCollectionTitle?: string
   journeyTitle?: string
   onClose: () => void
   onSubmit: (values: {
@@ -74,17 +72,15 @@ export interface CopyToCollectionDialogProps {
  *   `useTemplateGalleryPagesQuery({ teamId: activeTeam?.id ?? '' }, {
  *   skip: activeTeam?.id == null })`.
  * - Does NOT set `enableReinitialize` on Formik (see NES-1543 Pattern 3).
- * - Surfaces three terminal UI states driven purely by props: loading,
- *   error (`errorMessage`), and done (`done === true`). Orchestration of
- *   the underlying mutations lives in the menu item that mounts this
- *   dialog.
+ * - Surfaces two terminal UI states driven purely by props: loading and
+ *   error (`errorMessage`). Success is handled by the menu item that
+ *   mounts this dialog — it closes the dialog and shows a snackbar.
+ *   Orchestration of the underlying mutations lives there too.
  */
 export function CopyToCollectionDialog({
   open,
   loading,
   errorMessage,
-  done,
-  selectedCollectionTitle,
   journeyTitle,
   onClose,
   onSubmit,
@@ -113,19 +109,13 @@ export function CopyToCollectionDialog({
       ? t('Copy "{{title}}" to collection', { title: journeyTitle })
       : t('Copy to collection')
 
-  // Terminal states (error / done) replace the form body entirely and
-  // present a single "Done" button bound to `onClose`. Use the shared
-  // `Dialog` directly here so we can fully control the action area —
+  // Terminal error state replaces the form body entirely and presents a
+  // single "Done" button bound to `onClose`. Use the shared `Dialog`
+  // directly here so we can fully control the action area —
   // `TranslationDialogWrapper`'s action area always renders Cancel +
-  // Submit when not loading.
-  if (errorMessage != null || done === true) {
-    const statusMessage =
-      errorMessage != null
-        ? errorMessage
-        : selectedCollectionTitle != null && selectedCollectionTitle !== ''
-          ? t('Copied to {{title}}.', { title: selectedCollectionTitle })
-          : t('Copied to collection.')
-
+  // Submit when not loading. Success is not handled here: the menu item
+  // closes the dialog and confirms with a snackbar instead.
+  if (errorMessage != null) {
     return (
       <Dialog
         open={open}
@@ -150,7 +140,7 @@ export function CopyToCollectionDialog({
           sx={{ py: 2 }}
         >
           <Typography variant="body1" color="text.primary">
-            {statusMessage}
+            {errorMessage}
           </Typography>
         </Box>
       </Dialog>

@@ -1,10 +1,12 @@
 import {
+  CollisionDetection,
   DndContext,
   DragOverlay,
   DragStartEvent,
   MouseSensor,
   TouchSensor,
   closestCenter,
+  pointerWithin,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
@@ -55,12 +57,15 @@ import { CollectionPublishSuccessDialog } from './CollectionPublishSuccessDialog
 import {
   DraggableJourneysGrid,
   DroppableCollectionWrapper,
-  UnsectionedDroppable
+  UnsectionedDroppable,
+  parseDropZoneId,
+  resolveSectionDrop
 } from './Droppables'
 import {
   GalleryDialogLockContext,
   GalleryDialogLockContextValue
 } from './GalleryDialogLockContext'
+import { useCollectionCollapse } from './useCollectionCollapse'
 import { useCollectionMutations } from './useCollectionMutations'
 import { useDragEndHandler } from './useDragEndHandler'
 
@@ -278,6 +283,25 @@ export function TemplateGalleryPageList({
     () => collectionsQuery.data?.templateGalleryPages ?? [],
     [collectionsQuery.data]
   )
+
+  // NES-1717: per-collection collapse state, persisted per team in
+  // localStorage. Default is expanded; a collapsed collection hides its grid
+  // but its header stays a valid drop target. The live ids let the hook
+  // prune persisted entries for deleted collections.
+  const collectionIds = useMemo(
+    () => collections.map((collection) => collection.id),
+    [collections]
+  )
+  const { isCollapsed, toggle: toggleCollapse } = useCollectionCollapse(
+    teamId,
+    collectionIds
+  )
+  const handleToggleCollapse = useCallback(
+    (collection: TemplateGalleryPage): void => {
+      toggleCollapse(collection.id)
+    },
+    [toggleCollapse]
+  )
   // Filter the cached journeys list to the statuses this view allows.
   // The server-side query is already keyed on `status:
   // STATUS_FILTER_TO_JOURNEY_STATUSES[status]`, but Apollo's normalized
@@ -381,6 +405,51 @@ export function TemplateGalleryPageList({
     })
   )
 
+  // Pointer-based collision detection, two-level (the dnd-kit "multiple
+  // containers" pattern). `closestCenter` alone resolved the target from the
+  // *dragged card's* centre — offset from the cursor by the grab point and
+  // competing with the wide section droppables — leaving dead bands where a
+  // drop landed nowhere. `pointerWithin` keys off the real cursor instead.
+  //
+  // From the pointer collisions, `resolveSectionDrop` decides intent: moving
+  // into a section targets the whole section (so the collection is one drop
+  // zone and its highlight lights anywhere inside it); reordering within a
+  // collection targets the nearest card *within that collection* via a scoped
+  // `closestCenter`, so the slot resolves even when the cursor is in the gap
+  // between cards (where `pointerWithin` only sees the container).
+  //
+  // When the cursor is outside every droppable we fall back to the raw
+  // `closestCenter` WITHOUT promoting to a section — a drop in dead space must
+  // not silently reassign a template's collection.
+  const collisionDetection = useCallback<CollisionDetection>(
+    (args) => {
+      const pointerCollisions = pointerWithin(args)
+      if (pointerCollisions.length === 0) return closestCenter(args)
+
+      const resolution = resolveSectionDrop(
+        pointerCollisions,
+        String(args.active.id),
+        templateIdToCollection
+      )
+      if (resolution.kind === 'passthrough') return pointerCollisions
+      if (resolution.kind === 'section') return [resolution.collision]
+
+      // reorder: nearest card within the dragged card's own collection.
+      const cardCollisions = closestCenter({
+        ...args,
+        droppableContainers: args.droppableContainers.filter((container) => {
+          const id = String(container.id)
+          return (
+            parseDropZoneId(id) == null &&
+            templateIdToCollection.get(id)?.id === resolution.collectionId
+          )
+        })
+      })
+      return cardCollisions.length > 0 ? cardCollisions : pointerCollisions
+    },
+    [templateIdToCollection]
+  )
+
   // Scan existing collection titles for the "Collection N" pattern and
   // return the smallest unused N (>= 1). The match is case-sensitive
   // and ignores extra whitespace — only the exact shape this handler
@@ -463,7 +532,8 @@ export function TemplateGalleryPageList({
     collectionsById,
     dragInFlightRef,
     setDragInFlight,
-    setActiveDragId
+    setActiveDragId,
+    isCollectionCollapsed: isCollapsed
   })
 
   if (teamId == null) {
@@ -566,7 +636,7 @@ export function TemplateGalleryPageList({
           sx={{ display: 'contents' }}
         >
           <DndContext
-            collisionDetection={closestCenter}
+            collisionDetection={collisionDetection}
             sensors={sensors}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
@@ -614,6 +684,8 @@ export function TemplateGalleryPageList({
                             ? t(publishBlockedReason)
                             : null
                         }
+                        collapsed={isCollapsed(collection.id)}
+                        onToggleCollapse={handleToggleCollapse}
                       >
                         <DraggableJourneysGrid
                           journeys={

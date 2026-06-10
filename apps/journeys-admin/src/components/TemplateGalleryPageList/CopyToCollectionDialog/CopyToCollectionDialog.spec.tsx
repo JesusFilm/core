@@ -458,32 +458,6 @@ describe('CopyToCollectionDialog', () => {
     expect(onClose).toHaveBeenCalledTimes(1)
   })
 
-  it('renders the done state with success copy echoing the selected collection title', () => {
-    const onClose = vi.fn()
-    renderDialog({
-      props: {
-        onClose,
-        done: true,
-        selectedCollectionTitle: 'Featured Templates'
-      }
-    })
-
-    const status = screen.getByTestId('CopyToCollectionDialogStatus')
-    expect(status).toHaveAttribute('role', 'status')
-    expect(status).toHaveAttribute('aria-live', 'polite')
-    expect(status).toHaveTextContent('Copied to Featured Templates.')
-
-    expect(
-      screen.queryByRole('button', { name: 'Copy' })
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByRole('button', { name: 'Cancel' })
-    ).not.toBeInTheDocument()
-
-    fireEvent.click(screen.getByRole('button', { name: 'Done' }))
-    expect(onClose).toHaveBeenCalledTimes(1)
-  })
-
   it('when loading is true the submit/cancel actions are not rendered and onSubmit is not called', () => {
     const onSubmit = vi.fn()
     const onClose = vi.fn()

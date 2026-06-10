@@ -52,8 +52,6 @@ vi.mock('../CopyToCollectionDialog', () => ({
     open: boolean
     loading?: boolean
     errorMessage?: string
-    done?: boolean
-    selectedCollectionTitle?: string
     journeyTitle?: string
     onClose: () => void
     onSubmit: (values: {
@@ -70,13 +68,9 @@ vi.mock('../CopyToCollectionDialog', () => ({
         <span data-testid="DialogLoading">
           {String(props.loading ?? false)}
         </span>
-        <span data-testid="DialogDone">{String(props.done ?? false)}</span>
         <span data-testid="DialogError">{props.errorMessage ?? ''}</span>
         <span data-testid="DialogIsTranslating">
           {String(props.isTranslating ?? false)}
-        </span>
-        <span data-testid="DialogSelectedCollection">
-          {props.selectedCollectionTitle ?? ''}
         </span>
         <button
           type="button"
@@ -251,7 +245,7 @@ describe('CopyToCollectionMenuItem', () => {
     // Clicking the menu item again while the dialog is mounted still
     // re-fires setHasOpenDialog(true) — but the dialog remains open and
     // no pipeline state is touched. The semantic guarantee we test here
-    // is "still open, no error/done state, no extra mutations."
+    // is "still open, no error state, no extra mutations."
     fireEvent.click(screen.getByRole('menuitem'))
     expect(screen.getByTestId('CopyToCollectionDialogStub')).toBeInTheDocument()
     expect(duplicate).not.toHaveBeenCalled()
@@ -277,11 +271,15 @@ describe('CopyToCollectionMenuItem', () => {
         include: ['GetAdminJourneys']
       })
     )
+    // Success closes the dialog and confirms with a snackbar naming the
+    // target collection — no terminal "done" state inside the dialog.
+    expect(
+      await screen.findByText('Copied to Featured Templates.')
+    ).toBeInTheDocument()
     await waitFor(() =>
-      expect(screen.getByTestId('DialogDone')).toHaveTextContent('true')
-    )
-    expect(screen.getByTestId('DialogSelectedCollection')).toHaveTextContent(
-      'Featured Templates'
+      expect(
+        screen.queryByTestId('CopyToCollectionDialogStub')
+      ).not.toBeInTheDocument()
     )
   })
 
@@ -316,8 +314,13 @@ describe('CopyToCollectionMenuItem', () => {
         include: ['GetAdminJourneys']
       })
     )
+    expect(
+      await screen.findByText('Copied to Featured Templates.')
+    ).toBeInTheDocument()
     await waitFor(() =>
-      expect(screen.getByTestId('DialogDone')).toHaveTextContent('true')
+      expect(
+        screen.queryByTestId('CopyToCollectionDialogStub')
+      ).not.toBeInTheDocument()
     )
   })
 
@@ -441,14 +444,32 @@ describe('CopyToCollectionMenuItem', () => {
     })
   })
 
-  it('Done click — calls setHasOpenDialog(false) and handleCloseMenu', async () => {
+  it('success — auto-closes the dialog and releases the menu/DnD lock', async () => {
     const { handleCloseMenu, setHasOpenDialog } = renderItem()
     fireEvent.click(screen.getByRole('menuitem'))
+
+    handleCloseMenu.mockClear()
+    setHasOpenDialog.mockClear()
+
     fireEvent.click(screen.getByTestId('StubSubmitNoTranslation'))
 
+    // No "Done" click required — success closes the dialog itself, fires
+    // the confirmation snackbar, and releases the DnD lock.
+    expect(
+      await screen.findByText('Copied to Featured Templates.')
+    ).toBeInTheDocument()
     await waitFor(() =>
-      expect(screen.getByTestId('DialogDone')).toHaveTextContent('true')
+      expect(
+        screen.queryByTestId('CopyToCollectionDialogStub')
+      ).not.toBeInTheDocument()
     )
+    expect(setHasOpenDialog).toHaveBeenCalledWith(false)
+    expect(handleCloseMenu).toHaveBeenCalledTimes(1)
+  })
+
+  it('cancel — StubClose closes the dialog and releases the menu/DnD lock', async () => {
+    const { handleCloseMenu, setHasOpenDialog } = renderItem()
+    fireEvent.click(screen.getByRole('menuitem'))
 
     handleCloseMenu.mockClear()
     setHasOpenDialog.mockClear()
