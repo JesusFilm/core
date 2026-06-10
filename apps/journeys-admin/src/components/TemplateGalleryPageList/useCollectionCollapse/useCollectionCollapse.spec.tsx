@@ -25,7 +25,9 @@ describe('collectionCollapseStorage', () => {
     // write must clean up the key rather than leave `[]` behind.
     setCollapsedCollectionIds('team-1', ['a'])
     setCollapsedCollectionIds('team-1', [])
-    expect(localStorage.getItem('templateCollectionsCollapse:team-1')).toBeNull()
+    expect(
+      localStorage.getItem('templateCollectionsCollapse:team-1')
+    ).toBeNull()
   })
 
   it('returns an empty list for malformed stored values', () => {
