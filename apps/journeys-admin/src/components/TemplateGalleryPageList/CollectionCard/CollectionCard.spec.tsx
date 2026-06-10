@@ -398,8 +398,11 @@ describe('CollectionCard', () => {
         screen.getByRole('button', { name: 'Collection actions' })
       )
       expect(onToggleCollapse).not.toHaveBeenCalled()
+      // NES-1707 moved Publish into the dialog footer; Edit is the menu's
+      // always-present item, which is all this assertion needs (proof the
+      // click opened the menu rather than toggling collapse).
       expect(
-        screen.getByRole('menuitem', { name: 'Publish' })
+        screen.getByRole('menuitem', { name: 'Edit' })
       ).toBeInTheDocument()
     })
 
