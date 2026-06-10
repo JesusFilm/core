@@ -49,6 +49,23 @@ export function JourneyList({
   const [event, setEvent] = useState<JourneyListEvent>()
   /** Mobile-only state for the Template Info side panel drawer (NES-1538). */
   const [templateInfoDrawerOpen, setTemplateInfoDrawerOpen] = useState(false)
+  // Opt-in trial of the new folder-based templates view (NES-1695). When
+  // ON, the Team Templates tab renders PublishHero on desktop (and keeps
+  // the original chip-row design on mobile) — and the page-level
+  // Active/Last-modified/sort controls disappear from the Tabs row,
+  // because the folder system replaces them. State lives here at the
+  // shared parent of both the Tabs row (TeamMode) and the templates panel
+  // (TemplateGalleryPageList), persisted via localStorage so the user's
+  // choice survives navigation.
+  const NEW_VIEW_STORAGE_KEY = 'nes1695-templates-new-view'
+  const [newViewEnabled, setNewViewEnabled] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false
+    return window.localStorage.getItem(NEW_VIEW_STORAGE_KEY) === 'true'
+  })
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    window.localStorage.setItem(NEW_VIEW_STORAGE_KEY, String(newViewEnabled))
+  }, [newViewEnabled])
   // When the flag is on, the Team Templates tab renders the Collections
   // panel (TemplateGalleryPageList) in place of the original list.
   //
@@ -147,6 +164,7 @@ export function JourneyList({
           onOpenInfo={
             showTemplateInfoPanel ? handleOpenTemplateInfoDrawer : undefined
           }
+          newViewEnabled={newViewEnabled}
         />
       )
     }
@@ -185,6 +203,8 @@ export function JourneyList({
           setSortOrder={handleSetSortOrder}
           sortOrder={sortOrder}
           infoPanelActive={showTemplateInfoPanel}
+          newViewEnabled={newViewEnabled}
+          onNewViewEnabledChange={setNewViewEnabled}
         />
       </Box>
       {activeTab === 'active' && currentContentType === 'journeys' && (

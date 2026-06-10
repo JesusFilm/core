@@ -88,6 +88,20 @@ export interface JourneyCardMenuProps {
   hovered?: boolean
   onMenuClose?: () => void
   setHasOpenDialog?: (hasOpenDialog: boolean) => void
+  /**
+   * Visual variant. `'on-image'` (default) keeps the existing white icon
+   * with a drop shadow, designed to sit on top of the JourneyCard image.
+   * `'plain'` renders a standard secondary IconButton suitable for a
+   * row that sits on a light background (mobile list view).
+   */
+  variant?: 'on-image' | 'plain'
+  /**
+   * Optional callback invoked when the user selects "View analytics" from
+   * the menu. When provided, a "View analytics" menu item is added on
+   * template cards. The parent owns the analytics dialog state and
+   * mounts its own `TemplateBreakdownAnalyticsDialog`.
+   */
+  onAnalyticsRequest?: () => void
 }
 
 /**
@@ -118,7 +132,9 @@ export function JourneyCardMenu({
   journey,
   hovered,
   onMenuClose,
-  setHasOpenDialog
+  setHasOpenDialog,
+  variant = 'on-image',
+  onAnalyticsRequest
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [open, setOpen] = useState<boolean | null>(null)
@@ -187,8 +203,13 @@ export function JourneyCardMenu({
         data-testid="JourneyCardMenuButton"
         onClick={handleOpenMenu}
         sx={{
-          width: { xs: '44px', sm: '20px' },
-          height: { xs: '44px', sm: '30px' },
+          // `plain` (mobile list row): the visible icon button is 44px wide,
+          // but the tap area stretches to the full row height (height: 100%)
+          // so the menu is easy to hit anywhere down the row's side. The
+          // IconButton inside stays 44×44 and centers within. `on-image`
+          // keeps the original card-overlay size.
+          width: variant === 'plain' ? 44 : { xs: '44px', sm: '20px' },
+          height: variant === 'plain' ? '100%' : { xs: '44px', sm: '30px' },
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -201,21 +222,31 @@ export function JourneyCardMenu({
           aria-controls="journey-actions"
           aria-haspopup="true"
           aria-expanded={open ? 'true' : 'false'}
-          sx={{
-            color: hovered ? 'gray.400' : 'white',
-            '& svg': {
-              filter: 'drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.4))'
-            },
-            '&:hover': {
-              backgroundColor: '#FFF'
-            },
-            backgroundColor: hovered ? 'white' : 'transparent',
-            transition: 'background-color 0.3s, color 0.3s',
-            borderRadius: '10px',
-            width: '20px',
-            height: '30px',
-            pointerEvents: 'none'
-          }}
+          sx={
+            variant === 'plain'
+              ? {
+                  color: 'text.secondary',
+                  width: 44,
+                  height: 44,
+                  p: 0,
+                  pointerEvents: 'none'
+                }
+              : {
+                  color: hovered ? 'gray.400' : 'white',
+                  '& svg': {
+                    filter: 'drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.4))'
+                  },
+                  '&:hover': {
+                    backgroundColor: '#FFF'
+                  },
+                  backgroundColor: hovered ? 'white' : 'transparent',
+                  transition: 'background-color 0.3s, color 0.3s',
+                  borderRadius: '10px',
+                  width: '20px',
+                  height: '30px',
+                  pointerEvents: 'none'
+                }
+          }
         >
           <MoreIcon data-testid="MoreIcon" />
         </IconButton>
@@ -262,6 +293,7 @@ export function JourneyCardMenu({
                 setOpenTrashDialog={() => setOpenTrashDialog(true)}
                 setOpenTranslateDialog={() => setOpenTranslateDialog(true)}
                 setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
+                setOpenAnalyticsDialog={onAnalyticsRequest}
                 template={template}
                 refetch={refetch}
                 setHasOpenDialog={setHasOpenDialog}

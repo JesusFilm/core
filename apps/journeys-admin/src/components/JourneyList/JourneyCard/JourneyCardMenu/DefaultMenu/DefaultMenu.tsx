@@ -8,6 +8,7 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TemplateActionButton } from '@core/journeys/ui/TemplateView/TemplateViewHeader/TemplateActionButton'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import TranslateIcon from '@core/shared/ui/icons/Translate'
@@ -72,6 +73,14 @@ interface DefaultMenuProps {
   setOpenTrashDialog: () => void
   setOpenDetailsDialog: () => void
   setOpenTranslateDialog: () => void
+  /**
+   * Optional callback to open the template analytics breakdown dialog from
+   * within the menu. When provided AND `template === true`, renders a
+   * "View analytics" menu item. Used by the mobile list row, where the
+   * standalone analytics icon button from the desktop card does not fit
+   * inline with the row's other content.
+   */
+  setOpenAnalyticsDialog?: () => void
   handleKeepMounted?: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
@@ -112,6 +121,7 @@ export function DefaultMenu({
   setOpenTrashDialog,
   setOpenDetailsDialog,
   setOpenTranslateDialog,
+  setOpenAnalyticsDialog,
   handleKeepMounted,
   template,
   refetch,
@@ -285,6 +295,17 @@ export function DefaultMenu({
       )}
       {template === true && (
         <>
+          {setOpenAnalyticsDialog != null && (
+            <MenuItem
+              label={t('View analytics')}
+              icon={<BarGroup3Icon color="secondary" />}
+              onClick={() => {
+                setOpenAnalyticsDialog()
+                handleCloseMenu()
+                setHasOpenDialog?.(true)
+              }}
+            />
+          )}
           <TemplateActionButton
             variant="menu-item"
             handleCloseMenu={handleCloseMenu}

@@ -30,6 +30,14 @@ export interface UseDragEndHandlerParams {
   setDragInFlight: (next: boolean) => void
   /** Setter for the active drag id — the hook clears it on drop. */
   setActiveDragId: (next: string | null) => void
+  /**
+   * Optional handler for drops onto the `'create-new'` drop zone. When
+   * provided and a template is dropped on it, the hook calls this with
+   * the dropped template id and the parent is expected to create a new
+   * collection seeded with that template. When omitted (the default for
+   * variants that don't expose the zone), `'create-new'` drops no-op.
+   */
+  onCreateCollectionFromTemplate?: (templateId: string) => Promise<void> | void
 }
 
 /**
@@ -52,7 +60,8 @@ export function useDragEndHandler(
     collectionsById,
     dragInFlightRef,
     setDragInFlight,
-    setActiveDragId
+    setActiveDragId,
+    onCreateCollectionFromTemplate
   } = params
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -79,6 +88,23 @@ export function useDragEndHandler(
     let targetCollectionId: string | null
     let targetIndex: number | null
     const overZone = parseDropZoneId(overId)
+    // "Create new collection" zone (PublishHero only): hand the dropped
+    // template off to the parent's create-collection callback and bail
+    // out — no other side effects from the standard assign/reorder
+    // pipeline. Published-source guard still applies (you can't move a
+    // template out of a live collection by creating a new one).
+    if (overZone?.kind === 'create-new') {
+      if (sourceCollection?.status === TemplateGalleryPageStatus.published)
+        return
+      if (onCreateCollectionFromTemplate == null) return
+      setDragInFlight(true)
+      try {
+        await onCreateCollectionFromTemplate(templateId)
+      } finally {
+        setDragInFlight(false)
+      }
+      return
+    }
     if (overZone != null) {
       targetCollectionId = overZone.kind === 'collection' ? overZone.id : null
       targetIndex = null // dropped on the zone itself, not a specific item

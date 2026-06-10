@@ -1,10 +1,13 @@
 import {
+  CollisionDetection,
   DndContext,
   DragOverlay,
   DragStartEvent,
+  MeasuringStrategy,
+  Modifier,
   MouseSensor,
   TouchSensor,
-  closestCenter,
+  pointerWithin,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
@@ -12,9 +15,11 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
+import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
-import Stack from '@mui/material/Stack'
+import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import {
@@ -27,7 +32,6 @@ import {
 } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
-import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import {
   GetAdminJourneysVariables,
@@ -45,24 +49,73 @@ import { useTemplateGalleryPagesQuery } from '../../libs/useTemplateGalleryPages
 import { JourneyCard } from '../JourneyList/JourneyCard'
 import type { JourneyStatusFilter } from '../JourneyList/JourneyListView'
 
-import { CollectionCard } from './CollectionCard'
 import { CollectionDialog } from './CollectionDialog'
-import {
-  COLLECTION_CARD_BORDER_WIDTH,
-  COLLECTION_CARD_PADDING
-} from './collectionLayout'
+import { COLLECTION_GRID_SPACING } from './collectionLayout'
 import { CollectionPublishSuccessDialog } from './CollectionPublishSuccessDialog'
-import {
-  DraggableJourneysGrid,
-  DroppableCollectionWrapper,
-  UnsectionedDroppable
-} from './Droppables'
+import { type CollectionViewProps, PublishHero } from './DesignVariants'
+import { DraggableJourneysGrid, UnsectionedDroppable } from './Droppables'
 import {
   GalleryDialogLockContext,
   GalleryDialogLockContextValue
 } from './GalleryDialogLockContext'
+import { MobileCollectionRow } from './MobileCollectionRow'
+import { MobileFilterHeaderStrip } from './MobileFilterHeaderStrip'
+import { MobileGallerySkeleton } from './MobileGallerySkeleton'
+import { MobileTemplateList } from './MobileTemplateList'
 import { useCollectionMutations } from './useCollectionMutations'
 import { useDragEndHandler } from './useDragEndHandler'
+
+// Pointer-only collision detection for the collection gallery (both layouts).
+//
+// The draggable is a card/row, but its drop targets include the small
+// collection chips pinned at the top of the view. dnd-kit's default
+// `closestCenter` compares the *dragged element's* centre against each
+// droppable's centre and never looks at the pointer — so a wide card/row can't
+// reach a small chip, and the nearest droppable (the leftmost "All Templates"
+// chip) lights up the instant a drag starts, even when the pointer is nowhere
+// near it (NES-1696 QA).
+//
+// `pointerWithin` resolves only the droppable the pointer is actually over, and
+// returns nothing when the pointer is in dead space — so no chip highlights
+// until the user is genuinely over a drop target. There is deliberately no
+// `closestCenter` fallback: that fallback is exactly what made "All Templates"
+// highlight on every drag. (Safe here because the only sensors are
+// mouse/touch, which always report pointer coordinates — there is no keyboard
+// drag that would need a coordinate-free fallback.)
+const collectionCollisionDetection: CollisionDetection = (args) =>
+  pointerWithin(args)
+
+// Center the mobile drag overlay under the pointer.
+//
+// The mobile drag handle sits on the far right of the row, so by default the
+// ghost trails to the LEFT of the finger: the cursor is at the row's right
+// edge while the visible body extends left. Users aim the body they can see,
+// but `pointerWithin` drops at the actual cursor — so left chips needed the
+// cursor pushed off-screen right and the rightmost chips were unreachable
+// (NES-1696 QA: "only the first two are droppable"). Re-centering the ghost on
+// the pointer makes "aim the ghost" == "aim the cursor", so every chip is
+// reachable and the drop lands where the user is pointing.
+const snapCenterToPointer: Modifier = ({
+  activatorEvent,
+  draggingNodeRect,
+  transform
+}) => {
+  if (draggingNodeRect == null || activatorEvent == null) return transform
+  // activatorEvent is the mouse/touch event that started the drag.
+  const event = activatorEvent as Partial<MouseEvent> & {
+    touches?: TouchList
+  }
+  const clientX = event.touches?.[0]?.clientX ?? event.clientX
+  const clientY = event.touches?.[0]?.clientY ?? event.clientY
+  if (clientX == null || clientY == null) return transform
+  const offsetX = clientX - draggingNodeRect.left
+  const offsetY = clientY - draggingNodeRect.top
+  return {
+    ...transform,
+    x: transform.x + offsetX - draggingNodeRect.width / 2,
+    y: transform.y + offsetY - draggingNodeRect.height / 2
+  }
+}
 
 // Map the page-level status filter (active / archived / trashed) to the
 // underlying JourneyStatus enum values that useAdminJourneysQuery expects.
@@ -111,22 +164,40 @@ export interface TemplateGalleryPageListProps {
    * trigger.
    */
   onOpenInfo?: () => void
+  /**
+   * NES-1695 opt-in trial flag. When true, the Active templates panel
+   * renders the new folder-based view (PublishHero on desktop, original
+   * chip-row design on mobile). When false (the default), renders a flat
+   * grid of all active templates — matches the Archived/Trashed pattern.
+   * State + the Switch live in JourneyList / TeamMode; this prop just
+   * receives the current value.
+   */
+  newViewEnabled?: boolean
 }
 
 export function TemplateGalleryPageList({
   visible = true,
   status = 'active',
-  onOpenInfo
+  onOpenInfo,
+  newViewEnabled = false
 }: TemplateGalleryPageListProps = {}): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const { enqueueSnackbar } = useSnackbar()
   const teamId = activeTeam?.id
 
+  // Mobile = xs + sm (< md, < 900px). The Active tab gets a denser
+  // chip-row + list layout; archived/trashed already hide collections
+  // and so look the same on both layouts.
+  const isMobileLayout = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down('md')
+  )
+
   // Collections + DnD are only meaningful in the active view. In archived
   // or trashed views the user is curating those buckets, not assigning to
   // public gallery pages.
   const showCollections = status === 'active'
+  const useMobileLayout = isMobileLayout && showCollections
 
   // Custom-domain teams can't publish gallery pages — gate Publish + Preview
   // on every Collection surface (NES-1644).
@@ -204,6 +275,19 @@ export function TemplateGalleryPageList({
   const [editTargetId, setEditTargetId] = useState<string | null>(null)
   const [publishTargetId, setPublishTargetId] = useState<string | null>(null)
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
+  // Collection filter (both layouts). `null` means "All Templates" is active
+  // and the content shows unsectioned templates; a collection id filters the
+  // content to that collection's templates. Drives the chip row + the content
+  // view (list on mobile, card grid on desktop).
+  const [filterCollectionId, setFilterCollectionId] = useState<string | null>(
+    null
+  )
+  // Design-lab: which collection layout to render. `original` is the
+  // production chip-row UI; the other values are exploration prototypes
+  // (NES-1695 — Finder Sidebar, Finder Columns, Compact Pills, Folder Grid,
+  // Library Sidebar). Desktop-only — variants target desktop folder-system
+  // layouts; mobile (useMobileLayout) always renders the production layout
+  // regardless of this value.
   // `dragInFlight` drives rendering (busy chips, droppable lock); the ref
   // is the synchronous source of truth for gating a second drop that
   // arrives within the same tick as a setState batch — state would read
@@ -356,6 +440,20 @@ export function TemplateGalleryPageList({
       ? (collectionsById.get(publishTargetId) ?? null)
       : null
 
+  // Resolve the filter id into the collection (or null for "All Templates")
+  // and the templates the content view renders. When the filter points at a
+  // collection that has since been removed (e.g. user ungrouped it from
+  // another tab), fall back to "All Templates" so the header strip doesn't
+  // render with a stale title.
+  const selectedCollection =
+    filterCollectionId != null
+      ? (collectionsById.get(filterCollectionId) ?? null)
+      : null
+  const filteredJourneys = useMemo<readonly Journey[]>(() => {
+    if (selectedCollection == null) return unsectioned
+    return journeysByCollection.get(selectedCollection.id) ?? []
+  }, [selectedCollection, journeysByCollection, unsectioned])
+
   // Pool the dialog's template picker draws from. Only ungrouped templates
   // are addable, plus the templates already in the collection being
   // edited / published so the user can deselect them. Hides templates
@@ -385,11 +483,21 @@ export function TemplateGalleryPageList({
     [unsectioned, publishTarget, journeyById]
   )
 
+  // Touch activation differs by layout. The desktop card uses the whole
+  // card as the draggable, so a 200ms long-press protects vertical
+  // scrolling from accidentally turning into a drag. The mobile row
+  // binds dnd-kit listeners only to a small drag-handle column, so a
+  // distance-based activation gives immediate drag without the long-
+  // press friction — and an accidental scroll-on-handle is impossible
+  // because the handle is a narrow ~44px column.
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(TouchSensor, {
-      activationConstraint: { delay: 200, tolerance: 5 }
-    })
+    useSensor(
+      TouchSensor,
+      useMobileLayout
+        ? { activationConstraint: { distance: 8 } }
+        : { activationConstraint: { delay: 200, tolerance: 5 } }
+    )
   )
 
   // Scan existing collection titles for the "Collection N" pattern and
@@ -408,15 +516,14 @@ export function TemplateGalleryPageList({
     return `Collection ${n}`
   }
 
-  async function handleCreate(): Promise<void> {
-    // Button is only rendered after the teamId == null guard returns
-    // early, so in practice teamId is always defined here. The runtime
-    // check is also the TS narrowing — without it, `input.teamId` widens
-    // to `string | undefined`.
+  // Click-create callback for the PublishHero quick-create zone: create
+  // an empty collection (no templates). The zone doubles as a button and
+  // a drop target — clicking creates empty, dropping creates seeded.
+  async function handleCreateEmptyCollection(): Promise<void> {
     if (creatingRef.current || createLoading || teamId == null) return
     creatingRef.current = true
     try {
-      await templateGalleryPageCreate({
+      const result = await templateGalleryPageCreate({
         variables: {
           input: {
             teamId,
@@ -427,6 +534,8 @@ export function TemplateGalleryPageList({
         }
       })
       if (mountedRef.current) {
+        const newId = result.data?.templateGalleryPageCreate?.id
+        if (newId != null) setFilterCollectionId(newId)
         enqueueSnackbar(t('Collection created'), {
           variant: 'success',
           preventDuplicate: true
@@ -445,6 +554,49 @@ export function TemplateGalleryPageList({
       creatingRef.current = false
     }
   }
+
+  // Drop-target callback for the PublishHero quick-create zone: create a
+  // fresh collection seeded with the dropped template in a single
+  // `templateGalleryPageCreate` round-trip (`journeyIds: [templateId]`),
+  // then auto-select it so the user sees the result.
+  async function handleCreateCollectionFromTemplate(
+    templateId: string
+  ): Promise<void> {
+    if (creatingRef.current || createLoading || teamId == null) return
+    creatingRef.current = true
+    try {
+      const result = await templateGalleryPageCreate({
+        variables: {
+          input: {
+            teamId,
+            title: nextCollectionName(),
+            creatorName: '',
+            journeyIds: [templateId]
+          }
+        }
+      })
+      if (mountedRef.current) {
+        const newId = result.data?.templateGalleryPageCreate?.id
+        if (newId != null) setFilterCollectionId(newId)
+        enqueueSnackbar(t('Collection created'), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      }
+    } catch (error) {
+      if (mountedRef.current) {
+        enqueueSnackbar(
+          error instanceof Error
+            ? error.message
+            : t("Couldn't create collection"),
+          { variant: 'error', preventDuplicate: true }
+        )
+      }
+    } finally {
+      creatingRef.current = false
+    }
+  }
+
   function handleCloseEdit(): void {
     setEditTargetId(null)
   }
@@ -480,7 +632,8 @@ export function TemplateGalleryPageList({
     collectionsById,
     dragInFlightRef,
     setDragInFlight,
-    setActiveDragId
+    setActiveDragId,
+    onCreateCollectionFromTemplate: handleCreateCollectionFromTemplate
   })
 
   if (teamId == null) {
@@ -498,11 +651,14 @@ export function TemplateGalleryPageList({
     (journeysQuery.loading && journeysQuery.data == null)
   ) {
     return (
-      <Box
-        sx={{ p: 4, display: 'flex', justifyContent: 'center' }}
-        data-testid="TemplateGalleryPageList"
-      >
-        <CircularProgress />
+      <Box sx={{ p: { xs: 2, md: 4 } }} data-testid="TemplateGalleryPageList">
+        {useMobileLayout ? (
+          <MobileGallerySkeleton />
+        ) : (
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <CircularProgress />
+          </Box>
+        )}
       </Box>
     )
   }
@@ -510,61 +666,46 @@ export function TemplateGalleryPageList({
   const activeDragJourney =
     activeDragId != null ? (journeyById.get(activeDragId) ?? null) : null
 
+  // In the new desktop view (PublishHero), the workspace surface needs to
+  // run straight down to the page bottom — so we drop the page Box's
+  // bottom padding for that case. The mobile chip-row layout and the OFF
+  // flat-grid both keep their existing breathing room below.
+  const dropBottomPadding =
+    showCollectionsSection && newViewEnabled && !useMobileLayout
+
   return (
     <GalleryDialogLockContext.Provider value={galleryDialogLockValue}>
-      <Box sx={{ p: 4 }} data-testid="TemplateGalleryPageList">
-        {showCollectionsSection && (
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            spacing={2}
-            sx={{ mb: 3 }}
+      <Box
+        sx={{
+          pt: { xs: 2, md: 4 },
+          px: { xs: 2, md: 4 },
+          pb: dropBottomPadding ? 0 : { xs: 2, md: 4 }
+        }}
+        data-testid="TemplateGalleryPageList"
+      >
+        {/* The standalone "Collections" header + Create button used to sit
+            here, but PublishHero now owns its own Collections sidebar with
+            an inline create affordance (the quick-create drop zone above
+            All Templates). The mobile info-panel trigger that lived in this
+            header survives as a small floating control. */}
+        {showCollectionsSection && newViewEnabled && onOpenInfo != null && (
+          <Box
+            sx={{
+              display: { xs: 'flex', md: 'none' },
+              justifyContent: 'flex-end',
+              mb: 2
+            }}
           >
-            {/* min-width: 0 lets the title row shrink instead of pushing into
-              the button on narrow viewports (NES-1652). */}
-            <Stack
-              direction="row"
-              alignItems="center"
-              spacing={0.5}
-              sx={{ minWidth: 0, flex: 1 }}
-            >
-              <Typography variant="h4">{t('Collections')}</Typography>
-              {onOpenInfo != null && (
-                <IconButton
-                  data-testid="TemplateInfoPanelMobileTrigger"
-                  aria-label={t('Open template info')}
-                  onClick={onOpenInfo}
-                  size="small"
-                  sx={{
-                    display: { xs: 'inline-flex', md: 'none' },
-                    color: 'text.secondary',
-                    p: 0.5
-                  }}
-                >
-                  <InfoOutlinedIcon fontSize="small" />
-                </IconButton>
-              )}
-            </Stack>
             <IconButton
-              aria-label={t('Create Collection')}
+              data-testid="TemplateInfoPanelMobileTrigger"
+              aria-label={t('Open template info')}
+              onClick={onOpenInfo}
               size="small"
-              onClick={() => {
-                void handleCreate()
-              }}
-              disabled={createLoading}
-              sx={{
-                flexShrink: 0,
-                border: 1.5,
-                borderColor: 'text.secondary',
-                borderRadius: 2,
-                color: 'text.secondary'
-              }}
-              data-testid="CreateCollectionButton"
+              sx={{ color: 'text.secondary' }}
             >
-              <Plus2Icon fontSize="small" />
+              <InfoOutlinedIcon fontSize="small" />
             </IconButton>
-          </Stack>
+          </Box>
         )}
 
         {/* NES-1666: layer a DOM-level `inert` over the existing sensor-level
@@ -583,98 +724,188 @@ export function TemplateGalleryPageList({
           sx={{ display: 'contents' }}
         >
           <DndContext
-            collisionDetection={closestCenter}
+            collisionDetection={collectionCollisionDetection}
+            // Re-measure droppables every frame while dragging. The chip row is
+            // sticky + horizontally scrollable, so a single drag-start
+            // measurement goes stale as soon as anything scrolls — leaving
+            // chips with hit-areas offset from where they're drawn.
+            measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
             sensors={sensors}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
-            {showCollectionsSection &&
-              (collections.length === 0 ? (
-                <Alert severity="info" sx={{ mb: 3 }}>
-                  {t(
-                    "You don't have any collections yet. Create your first collection to start grouping templates."
-                  )}
-                </Alert>
-              ) : (
-                <Stack
-                  spacing={2}
-                  sx={{
-                    mb: 4,
-                    // Stretch each collection box outward by the
-                    // CollectionCard's inner horizontal padding + border, so
-                    // the card grid inside spans the same width as the All
-                    // Templates grid below and the cards column-align
-                    // (NES-1696). Both sides derive from collectionLayout.
-                    mx: (theme) =>
-                      `calc(${theme.spacing(-COLLECTION_CARD_PADDING)} - ${COLLECTION_CARD_BORDER_WIDTH}px)`
-                  }}
-                >
-                  {collections.map((collection) => (
-                    <DroppableCollectionWrapper
-                      key={collection.id}
-                      id={collection.id}
-                      disabled={
-                        collection.status ===
-                          TemplateGalleryPageStatus.published ||
-                        interactionsLocked ||
-                        busyId === collection.id
-                      }
-                    >
-                      <CollectionCard
-                        collection={collection}
-                        onEdit={handleEdit}
-                        onPublish={handleOpenPublish}
-                        onUngroup={handleUngroup}
-                        busy={busyId === collection.id || dragInFlight}
-                        canPublish={canPublish}
-                        publishBlockedReason={
-                          publishBlockedReason != null
-                            ? t(publishBlockedReason)
-                            : null
-                        }
+            {status === 'active' && !newViewEnabled ? (
+              // Trial OFF (default in active mode): flat grid of all active
+              // templates. No collections, no chip row, no DesignVariantTabs
+              // — matches the visual pattern of the Archived / Trashed
+              // panels so navigating between sub-filters feels coherent.
+              // Cards render without drag wiring (no SortableContext, no
+              // droppable underneath) — drag-and-drop only exists in the
+              // new view.
+              <Box data-testid="TemplatesFlatGrid">
+                {allTemplates.length === 0 ? (
+                  <Box
+                    sx={{ p: 4, color: 'text.disabled', textAlign: 'center' }}
+                  >
+                    <Typography variant="body2">
+                      {t('No team templates yet.')}
+                    </Typography>
+                  </Box>
+                ) : (
+                  <Grid container spacing={COLLECTION_GRID_SPACING}>
+                    {allTemplates.map((journey) => (
+                      <Grid
+                        key={journey.id}
+                        size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
                       >
-                        <DraggableJourneysGrid
-                          journeys={
-                            journeysByCollection.get(collection.id) ?? []
-                          }
-                          publishedLock={
-                            collection.status ===
-                            TemplateGalleryPageStatus.published
-                          }
-                          dragInFlight={interactionsLocked}
-                        />
-                      </CollectionCard>
-                    </DroppableCollectionWrapper>
-                  ))}
-                </Stack>
-              ))}
-
-            <UnsectionedDroppable disabled={interactionsLocked}>
-              {unsectioned.length === 0 ? (
-                <Box sx={{ p: 2, color: 'text.disabled', textAlign: 'center' }}>
-                  <Typography variant="caption">
-                    {allTemplates.length === 0
-                      ? t('No team templates yet.')
-                      : t('All templates are in collections.')}
-                  </Typography>
-                </Box>
+                        <JourneyCard journey={journey} />
+                      </Grid>
+                    ))}
+                  </Grid>
+                )}
+              </Box>
+            ) : showCollectionsSection ? (
+              useMobileLayout ? (
+                // Mobile keeps the original chip-row + filter-strip + list
+                // design for now. The new PublishHero layout is desktop-
+                // specific while we evaluate how well the folder model
+                // translates to small screens.
+                <>
+                  <MobileCollectionRow
+                    collections={collections}
+                    allTemplatesCount={allTemplates.length}
+                    selectedCollectionId={filterCollectionId}
+                    onSelect={setFilterCollectionId}
+                    dropDisabled={interactionsLocked}
+                  />
+                  <MobileFilterHeaderStrip
+                    selectedCollection={selectedCollection}
+                    count={filteredJourneys.length}
+                    onEdit={handleEdit}
+                    onPublish={handleOpenPublish}
+                    onUngroup={handleUngroup}
+                    busy={
+                      (selectedCollection != null &&
+                        busyId === selectedCollection.id) ||
+                      dragInFlight
+                    }
+                    canPublish={canPublish}
+                    publishBlockedReason={
+                      publishBlockedReason != null
+                        ? t(publishBlockedReason)
+                        : null
+                    }
+                  />
+                  {filteredJourneys.length === 0 ? (
+                    <Box
+                      sx={{
+                        p: 4,
+                        color: 'text.disabled',
+                        textAlign: 'center'
+                      }}
+                    >
+                      <Typography variant="body2">
+                        {selectedCollection != null
+                          ? t(
+                              'No templates yet — drag templates here to add them.'
+                            )
+                          : allTemplates.length === 0
+                            ? t('No team templates yet.')
+                            : t('All templates are in collections.')}
+                      </Typography>
+                    </Box>
+                  ) : (
+                    <MobileTemplateList
+                      journeys={filteredJourneys}
+                      allowReorder={selectedCollection != null}
+                      dragInFlight={interactionsLocked}
+                    />
+                  )}
+                </>
               ) : (
-                <DraggableJourneysGrid
-                  journeys={unsectioned}
-                  publishedLock={false}
-                  dragInFlight={interactionsLocked}
+                // Desktop: PublishHero owns the whole panel — sidebar of
+                // collections + quick-create drop zone + hero card with the
+                // publish CTA + templates grid. Drop targets register
+                // inside PublishHero against the same encoded drop-zone
+                // IDs the parent's drag-end handler consumes.
+                <PublishHero
+                  {...({
+                    collections,
+                    // All Templates = templates not in any collection. The
+                    // count next to it matches what the user sees when that
+                    // row is selected (the unsectioned grid below the hero),
+                    // not the total across every collection.
+                    allTemplatesCount: unsectioned.length,
+                    selectedCollectionId: filterCollectionId,
+                    onSelectCollection: setFilterCollectionId,
+                    dropDisabled: interactionsLocked,
+                    filteredJourneys,
+                    selectedCollection,
+                    dragInFlight: interactionsLocked,
+                    onEdit: handleEdit,
+                    onOpenPublish: handleOpenPublish,
+                    onUngroup: handleUngroup,
+                    busyId,
+                    canPublish,
+                    publishBlockedReason:
+                      publishBlockedReason != null
+                        ? t(publishBlockedReason)
+                        : null,
+                    onCreateEmptyCollection: () => {
+                      void handleCreateEmptyCollection()
+                    }
+                  } satisfies CollectionViewProps)}
                 />
-              )}
-            </UnsectionedDroppable>
+              )
+            ) : (
+              // Archived / Trashed: no collections — show the plain grid of all
+              // templates for that status (no chip row).
+              <UnsectionedDroppable disabled={interactionsLocked}>
+                {unsectioned.length === 0 ? (
+                  <Box
+                    sx={{ p: 2, color: 'text.disabled', textAlign: 'center' }}
+                  >
+                    <Typography variant="caption">
+                      {allTemplates.length === 0
+                        ? t('No team templates yet.')
+                        : t('All templates are in collections.')}
+                    </Typography>
+                  </Box>
+                ) : (
+                  <DraggableJourneysGrid
+                    journeys={unsectioned}
+                    publishedLock={false}
+                    dragInFlight={interactionsLocked}
+                  />
+                )}
+              </UnsectionedDroppable>
+            )}
 
             {/* Default dropAnimation snaps the card back to its origin when a
             drop is rejected (published, no-op, etc.) and runs the standard
-            "settle" animation when accepted — gives the user visual
-            feedback either way. */}
-            <DragOverlay>
+            "settle" animation when accepted — gives the user visual feedback
+            either way. A compact pill (not a full card/row) centred on the
+            pointer keeps the ghost from covering the chip being targeted. */}
+            <DragOverlay modifiers={[snapCenterToPointer]}>
               {activeDragJourney != null ? (
-                <Box sx={{ width: 280, cursor: 'grabbing', opacity: 0.95 }}>
-                  <JourneyCard journey={activeDragJourney} />
+                <Box
+                  sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    maxWidth: 220,
+                    px: 1.5,
+                    py: 1,
+                    borderRadius: 2,
+                    bgcolor: 'background.paper',
+                    boxShadow: 6,
+                    cursor: 'grabbing',
+                    opacity: 0.95,
+                    pointerEvents: 'none'
+                  }}
+                >
+                  <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>
+                    {activeDragJourney.title}
+                  </Typography>
                 </Box>
               ) : null}
             </DragOverlay>
