@@ -2163,7 +2163,7 @@ type Query {
   adminJourney(id: ID!, idType: IdType = slug): Journey!
   adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @override(from: "api-journeys")
-  journey(id: ID!, idType: IdType = slug, options: JourneysQueryOptions): Journey @override(from: "api-journeys")
+  journey(id: ID!, idType: IdType = slug, options: JourneysQueryOptions): Journey! @override(from: "api-journeys")
   journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]! @override(from: "api-journeys")
   journeyTemplateLanguageIds: [String!]! @override(from: "api-journeys")
   journeyCollection(id: ID!): JourneyCollection! @override(from: "api-journeys")

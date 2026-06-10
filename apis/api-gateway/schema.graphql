@@ -1679,7 +1679,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   integrations(teamId: ID!) : [Integration!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   adminJourneysReport(reportType: JourneysReportType!) : PowerBiEmbed @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   journeys(where: JourneysFilter, options: JourneysQueryOptions) : [Journey!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journey(id: ID!, idType: IdType = slug, options: JourneysQueryOptions) : Journey @join__field(graph: API_JOURNEYS_MODERN, type: "Journey", override: "api-journeys") 
+  journey(id: ID!, idType: IdType = slug, options: JourneysQueryOptions) : Journey! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   """
   Returns distinct language IDs from published global templates.
   Used to dynamically populate the language filter on the templates page.
