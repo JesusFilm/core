@@ -17,7 +17,6 @@ Workspaces that use Vitest (have a `vitest.config.mts` at the workspace root):
 | `libs/shared/ui-dynamic` | `libs/shared/ui-dynamic/vitest.config.mts` |
 | `libs/yoga`              | `libs/yoga/vitest.config.mts`              |
 
-For workspaces with a `jest.config.ts` (e.g. `apps/cms`), see `running-jest-tests.md`.
 
 ## Use `npx vitest run` directly — never `npx nx test`
 
