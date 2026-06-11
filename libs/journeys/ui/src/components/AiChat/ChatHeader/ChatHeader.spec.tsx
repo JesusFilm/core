@@ -33,7 +33,9 @@ describe('ChatHeader', () => {
 
   it('does not render a close button without onClose', () => {
     const { queryByRole } = render(<ChatHeader />)
-    expect(queryByRole('button', { name: 'Close chat' })).not.toBeInTheDocument()
+    expect(
+      queryByRole('button', { name: 'Close chat' })
+    ).not.toBeInTheDocument()
   })
 
   it('renders a close button that calls onClose when provided', () => {
