@@ -40,6 +40,7 @@
           "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.preview.local",
           "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.preview.local",
           "pnpm exec vercel build",
+          "pnpm exec tsx apps/watch-modern/scripts/datadog-sourcemaps.ts remove-public",
           "VERCEL_PROJECT_ID=$WATCH_MODERN_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/watch-modern/.vercel-url"
         ],
         "parallel": false
@@ -51,6 +52,7 @@
             "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.production.local",
             "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.production.local",
             "pnpm exec vercel build --prod",
+            "pnpm exec tsx apps/watch-modern/scripts/datadog-sourcemaps.ts remove-public",
             "VERCEL_PROJECT_ID=$WATCH_MODERN_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/watch-modern/.vercel-url"
           ]
         }
@@ -60,7 +62,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "pnpm dlx @datadog/datadog-ci@5.8.0 sourcemaps upload dist/apps/watch-modern/.next/static --service=watch-modern --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
+          "pnpm exec tsx apps/watch-modern/scripts/datadog-sourcemaps.ts upload"
         ],
         "parallel": false
       }
