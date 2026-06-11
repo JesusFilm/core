@@ -177,15 +177,18 @@ export function StepFooter({
             </Stack>
           )}
 
-          {chat && (
-            <Box>
-              <ChatButtons />
-            </Box>
-          )}
-          {aiChat && (
-            <Box>
-              <AiChatButton />
-            </Box>
+          {(chat || aiChat) && (
+            // One group: the AI chat button is a sibling of the
+            // MessagePlatform buttons with the same 8px spacing, not a
+            // separate box pushed out by the row's larger gap.
+            <Stack
+              direction={rtl ? 'row-reverse' : 'row'}
+              alignItems="center"
+              gap={2}
+            >
+              {chat && <ChatButtons />}
+              {aiChat && <AiChatButton />}
+            </Stack>
           )}
         </Stack>
       </Stack>

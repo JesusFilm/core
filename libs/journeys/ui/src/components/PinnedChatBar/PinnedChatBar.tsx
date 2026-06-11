@@ -5,6 +5,7 @@ import { SxProps } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
 import { ReactElement, useCallback, useState } from 'react'
 
+import { useChatOverlay } from '../../libs/ChatOverlayProvider'
 import { useJourney } from '../../libs/JourneyProvider'
 import type { AiChatSheetState } from '../AiChat/AiChat'
 import {
@@ -19,10 +20,10 @@ import {
 
 /**
  * Lightweight visual placeholder rendered while the dynamically-imported
- * AiChat chunk is loading. Mirrors the idle-state layout (handle, header
- * row, input row) so on slow devices we show a near-final shell instead
- * of an empty white box. No interactivity — the real AiChat takes over
- * once the chunk lands.
+ * AiChat chunk is loading. Mirrors the idle-state layout (header row,
+ * input row) so on slow devices we show a near-final shell instead of an
+ * empty white box. No interactivity — the real AiChat takes over once
+ * the chunk lands.
  */
 function ChatLoadingSkeleton(): ReactElement {
   return (
@@ -34,24 +35,7 @@ function ChatLoadingSkeleton(): ReactElement {
         height: '100%'
       }}
     >
-      <Box sx={{ background: HEADER_WASH, flexShrink: 0 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            py: '14px'
-          }}
-        >
-          <Box
-            sx={{
-              width: 48,
-              height: 4,
-              borderRadius: 9999,
-              bgcolor: DIVIDER
-            }}
-          />
-        </Box>
+      <Box sx={{ background: HEADER_WASH, flexShrink: 0, pt: 1 }}>
         <Box
           sx={{
             display: 'flex',
@@ -139,69 +123,67 @@ const AiChat = dynamic(
 
 interface PinnedChatBarProps {
   sx?: SxProps
-  /**
-   * Seeds the bar's initial sheet state. `true` → `'idle'` (handle +
-   * ChatHeader + input visible, ready to type). `false` → `'collapsed'`
-   * (drag handle only, ~32px). Defaults to `true` to preserve the
-   * pre-NES-1622 behaviour for callers that don't opt in. Only the
-   * mount value matters — once the user drags the handle or sends a
-   * message, the sheet state is owned by interaction.
-   */
-  initialExpanded?: boolean
 }
 
-// Pixel height for the collapsed state. 32px = the drag handle's 14px
-// top + 4px thumb + 14px bottom padding.
-const COLLAPSED_HEIGHT_PX = 32
-// Pixel height for the idle (no messages, expanded) state. Handle (32)
-// + ChatHeader (~64) + input (~68) + a little breathing room. Used so
-// the open/close animation has explicit numeric endpoints to
-// interpolate between when transitioning out of `auto` height.
-const IDLE_HEIGHT_PX = 168
+// Pixel height for the idle (no messages) state: header wash (8px pad +
+// ~70px ChatHeader) + floating input (~52px) + breathing room. Explicit
+// so the idle ⇄ active animation has numeric endpoints to interpolate
+// between rather than transitioning out of `auto` height.
+const IDLE_HEIGHT_PX = 144
 
-export function PinnedChatBar({
-  sx,
-  initialExpanded = true
-}: PinnedChatBarProps): ReactElement | null {
+/**
+ * Mobile bottom drawer for the AI chat. Open/closed state lives in
+ * `ChatOverlayProvider` — the same `open` the AiChatButton in the
+ * StepFooter toggles — so the footer button, this drawer, and the
+ * desktop overlay all agree on whether the chat is engaged.
+ *
+ * The drawer stays mounted while closed (slid off-screen) so the
+ * conversation survives close → reopen: with messages present, AiChat
+ * reports `'active'` and the sheet reopens at 80% with history intact.
+ */
+export function PinnedChatBar({ sx }: PinnedChatBarProps): ReactElement | null {
   const { variant } = useJourney()
-  const [sheetState, setSheetState] = useState<AiChatSheetState>(
-    initialExpanded ? 'idle' : 'collapsed'
-  )
+  const { open, setOpen } = useChatOverlay()
+  const [sheetState, setSheetState] = useState<AiChatSheetState>('idle')
 
   const handleSheetStateChange = useCallback((next: AiChatSheetState) => {
     setSheetState(next)
   }, [])
 
+  const handleClose = useCallback(() => {
+    setOpen(false)
+  }, [setOpen])
+
   if (variant === 'admin' || variant === 'embed') {
     return null
   }
 
-  let height: string
-  if (sheetState === 'active') {
-    height = '80%'
-  } else if (sheetState === 'collapsed') {
-    height = `${COLLAPSED_HEIGHT_PX}px`
-  } else {
-    // Idle — fixed height so the transition into 'active' interpolates.
-    height = `${IDLE_HEIGHT_PX}px`
-  }
+  const height = sheetState === 'active' ? '80%' : `${IDLE_HEIGHT_PX}px`
 
   return (
     <Box
       data-testid="PinnedChatBar"
       data-sheet-state={sheetState}
+      data-open={open}
       sx={{
         position: 'absolute',
-        zIndex: 1,
+        // Above the StepFooter (zIndex 1): while the drawer is open it
+        // deliberately covers the footer's chat buttons — the user has
+        // committed to this chat; closing reveals the buttons again.
+        zIndex: 2,
         bottom: 0,
         left: 0,
         right: 0,
         height,
-        // No maxHeight: it would clamp instantly on state change and short-
-        // circuit the height transition (collapse looked instant before this).
-        // Drag-driven collapse/expand animates between explicit numeric
-        // heights via CSS rather than position-tracking, per product spec.
-        transition: 'height 280ms cubic-bezier(0.4, 0, 0.2, 1)',
+        // Closed = slid fully off the bottom edge. The 32px overshoot
+        // clears SHEET_TOP_SHADOW's upward blur; visibility flips only
+        // after the slide-out completes so the exit still animates,
+        // while removing the off-screen drawer from the a11y tree.
+        transform: open ? 'translateY(0)' : 'translateY(calc(100% + 32px))',
+        visibility: open ? 'visible' : 'hidden',
+        transition: open
+          ? 'transform 280ms cubic-bezier(0.4, 0, 0.2, 1), height 280ms cubic-bezier(0.4, 0, 0.2, 1)'
+          : 'transform 280ms cubic-bezier(0.4, 0, 0.2, 1), height 280ms cubic-bezier(0.4, 0, 0.2, 1), visibility 0s 280ms',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
@@ -215,7 +197,7 @@ export function PinnedChatBar({
     >
       <AiChat
         onSheetStateChange={handleSheetStateChange}
-        initialCollapsed={!initialExpanded}
+        onClose={handleClose}
       />
     </Box>
   )

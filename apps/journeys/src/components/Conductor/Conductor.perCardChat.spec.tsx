@@ -29,16 +29,11 @@ vi.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
-// Capture `initialExpanded` so we can assert the mobile collapsed-vs-idle
-// mapping is forwarded from per-card `expandChatByDefault`.
+// The drawer reads its open state straight from ChatOverlayProvider —
+// Conductor only decides whether it is mounted, so a bare stub suffices.
 vi.mock('@core/journeys/ui/PinnedChatBar', () => ({
   __esModule: true,
-  PinnedChatBar: (props: { initialExpanded?: boolean }) => (
-    <div
-      data-testid="PinnedChatBar"
-      data-initial-expanded={String(props.initialExpanded ?? true)}
-    />
-  )
+  PinnedChatBar: () => <div data-testid="PinnedChatBar" />
 }))
 
 // Replace ChatOverlay with a tiny renderer that exposes `open` so we can
@@ -361,20 +356,24 @@ describe('Conductor per-card chat', () => {
     })
   })
 
-  describe('mobile sheet initial state', () => {
-    it('passes initialExpanded=true to PinnedChatBar when card.expandChatByDefault is true (idle, ready to type)', async () => {
+  describe('mobile drawer + footer coexistence (NES-1727)', () => {
+    it('renders the StepFooter alongside the PinnedChatBar when the card has chat', async () => {
       const { findByTestId } = renderConductor({
-        journey: { ...baseJourney, showAssistant: true },
+        journey: { ...baseJourney, showAssistant: null },
         blocks: buildBlocks({
           showAssistant: true,
-          expandChatByDefault: true
+          expandChatByDefault: null
         })
       })
-      const bar = await findByTestId('PinnedChatBar')
-      expect(bar.getAttribute('data-initial-expanded')).toBe('true')
+      expect(await findByTestId('PinnedChatBar')).toBeInTheDocument()
+      // Regression: the footer (host info + chat-button row, including
+      // the AiChatButton that opens the drawer) used to be hidden on
+      // mobile whenever the card had chat — the drawer now overlays it
+      // only while open instead of replacing it.
+      expect(await findByTestId('JourneysStepFooter')).toBeInTheDocument()
     })
 
-    it('passes initialExpanded=false to PinnedChatBar when card.expandChatByDefault is false (collapsed, drag handle only)', async () => {
+    it('keeps the PinnedChatBar mounted when expandChatByDefault is false (open state lives in ChatOverlayProvider)', async () => {
       const { findByTestId } = renderConductor({
         journey: { ...baseJourney, showAssistant: true },
         blocks: buildBlocks({
@@ -382,20 +381,7 @@ describe('Conductor per-card chat', () => {
           expandChatByDefault: false
         })
       })
-      const bar = await findByTestId('PinnedChatBar')
-      expect(bar.getAttribute('data-initial-expanded')).toBe('false')
-    })
-
-    it('passes initialExpanded=false to PinnedChatBar when card.expandChatByDefault is null (legacy default → collapsed)', async () => {
-      const { findByTestId } = renderConductor({
-        journey: { ...baseJourney, showAssistant: true },
-        blocks: buildBlocks({
-          showAssistant: true,
-          expandChatByDefault: null
-        })
-      })
-      const bar = await findByTestId('PinnedChatBar')
-      expect(bar.getAttribute('data-initial-expanded')).toBe('false')
+      expect(await findByTestId('PinnedChatBar')).toBeInTheDocument()
     })
   })
 })
