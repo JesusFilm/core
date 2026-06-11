@@ -3,6 +3,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { offsetLimitPagination } from '@apollo/client/utilities'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { GraphQLError } from 'graphql'
 import { type MockedFunction } from 'vitest'
 
 import { GetMyMuxVideos } from '../../../../../../../../../__generated__/GetMyMuxVideos'
@@ -295,6 +296,94 @@ describe('MyMuxVideos', () => {
       ).toBeInTheDocument()
     })
     expect(screen.getByTestId('MyMuxVideos')).toBeInTheDocument()
+  })
+
+  it('should pass teamId to the query when an active team is provided', async () => {
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_MY_MUX_VIDEOS,
+              variables: { offset: 0, limit: PEEK_LIMIT, teamId: 'team-1' }
+            },
+            result: { data: { getMyMuxVideos: [readyVideo('shared')] } }
+          }
+        ]}
+      >
+        <MyMuxVideos onSelect={vi.fn()} teamId="team-1" />
+      </MockedProvider>
+    )
+
+    // The tile only renders if the mock keyed on teamId matched the request.
+    await waitFor(() => {
+      expect(screen.getByTestId('my-mux-video-shared')).toBeInTheDocument()
+    })
+  })
+
+  it('should call onTeamForbidden when the merged query is rejected with FORBIDDEN', async () => {
+    const onTeamForbidden = vi.fn()
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_MY_MUX_VIDEOS,
+              variables: { offset: 0, limit: PEEK_LIMIT, teamId: 'team-1' }
+            },
+            result: {
+              errors: [
+                new GraphQLError('Forbidden', {
+                  extensions: { code: 'FORBIDDEN' }
+                })
+              ]
+            }
+          }
+        ]}
+      >
+        <MyMuxVideos
+          onSelect={vi.fn()}
+          teamId="team-1"
+          onTeamForbidden={onTeamForbidden}
+        />
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(onTeamForbidden).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it('should not call onTeamForbidden for personal-only errors', async () => {
+    const onTeamForbidden = vi.fn()
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_MY_MUX_VIDEOS,
+              variables: { offset: 0, limit: PEEK_LIMIT }
+            },
+            result: {
+              errors: [
+                new GraphQLError('Forbidden', {
+                  extensions: { code: 'FORBIDDEN' }
+                })
+              ]
+            }
+          }
+        ]}
+      >
+        <MyMuxVideos onSelect={vi.fn()} onTeamForbidden={onTeamForbidden} />
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Could not load your videos.')
+      ).toBeInTheDocument()
+    })
+    expect(onTeamForbidden).not.toHaveBeenCalled()
   })
 
   it('should not advance pagination when Load More fails', async () => {

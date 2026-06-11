@@ -40,19 +40,31 @@ vi.mock('../../../../../../MuxVideoUploadProvider', () => ({
   })
 }))
 
+const mockUseTeam = vi.fn(
+  () => ({ activeTeam: null, refetch: vi.fn() }) as unknown
+)
+
+vi.mock('@core/journeys/ui/TeamProvider', async () => ({
+  ...(await vi.importActual('@core/journeys/ui/TeamProvider')),
+  useTeam: () => mockUseTeam()
+}))
+
 vi.mock('./MyMuxVideos', () => ({
   __esModule: true,
   MyMuxVideos: ({
     selectedVideoId,
-    uploading
+    uploading,
+    teamId
   }: {
     selectedVideoId?: string | null
     uploading?: boolean
+    teamId?: string | null
   }) => (
     <div
       data-testid="mock-my-mux-videos"
       data-selected-video-id={selectedVideoId ?? ''}
       data-uploading={String(uploading ?? false)}
+      data-team-id={teamId ?? ''}
     />
   )
 }))
@@ -191,6 +203,7 @@ describe('VideoFromMux', () => {
     vi.clearAllMocks()
     mockValidateMuxLanguage.mockReturnValue(true)
     mockUseFlags.mockReturnValue({ mediaLibrary: false })
+    mockUseTeam.mockReturnValue({ activeTeam: null, refetch: vi.fn() })
   })
 
   it('should not render MyMuxVideos when mediaLibrary flag is off', () => {
@@ -219,6 +232,45 @@ describe('VideoFromMux', () => {
       </MockedProvider>
     )
     expect(screen.getByTestId('mock-my-mux-videos')).toBeInTheDocument()
+  })
+
+  it('should pass the active team id to MyMuxVideos', () => {
+    mockUseFlags.mockReturnValue({ mediaLibrary: true })
+    mockUseTeam.mockReturnValue({
+      activeTeam: { id: 'team-1' },
+      refetch: vi.fn()
+    })
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
+          <EditorProvider initialState={{ selectedBlock: selectedVideoBlock }}>
+            <VideoFromMux onSelect={vi.fn()} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('mock-my-mux-videos')).toHaveAttribute(
+      'data-team-id',
+      'team-1'
+    )
+  })
+
+  it('should pass an empty team id to MyMuxVideos when there is no active team', () => {
+    mockUseFlags.mockReturnValue({ mediaLibrary: true })
+    mockUseTeam.mockReturnValue({ activeTeam: null, refetch: vi.fn() })
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
+          <EditorProvider initialState={{ selectedBlock: selectedVideoBlock }}>
+            <VideoFromMux onSelect={vi.fn()} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('mock-my-mux-videos')).toHaveAttribute(
+      'data-team-id',
+      ''
+    )
   })
 
   it('should pass uploading=true to MyMuxVideos while the selected block has an active upload', () => {

@@ -23,8 +23,8 @@ import { LoadMoreButton } from '../../../ImageBlockEditor/LoadMoreButton'
 import { VideoDetails } from '../../VideoDetails'
 
 export const GET_MY_MUX_VIDEOS = gql`
-  query GetMyMuxVideos($offset: Int, $limit: Int) {
-    getMyMuxVideos(offset: $offset, limit: $limit) {
+  query GetMyMuxVideos($offset: Int, $limit: Int, $teamId: ID) {
+    getMyMuxVideos(offset: $offset, limit: $limit, teamId: $teamId) {
       id
       playbackId
       readyToStream
@@ -37,6 +37,18 @@ interface MyMuxVideosProps {
   selectedVideoId?: string | null
   onSelect: (block: VideoBlockUpdateInput, shouldCloseDrawer?: boolean) => void
   uploading?: boolean
+  /**
+   * Active team id. When provided, the grid shows a merged feed of the caller's
+   * own uploads plus videos shared with the team. When null/undefined the query
+   * omits the arg and degrades to personal-only.
+   */
+  teamId?: string | null
+  /**
+   * Called when the merged-team query is rejected with FORBIDDEN — e.g. the user
+   * was removed from the team mid-session. The caller should refresh the active
+   * team list so the grid falls back to personal-only.
+   */
+  onTeamForbidden?: () => void
 }
 
 export const PAGE_SIZE = 10
@@ -45,7 +57,9 @@ const PEEK_LIMIT = PAGE_SIZE + 1
 export function MyMuxVideos({
   selectedVideoId,
   onSelect,
-  uploading
+  uploading,
+  teamId,
+  onTeamForbidden
 }: MyMuxVideosProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const [previewVideo, setPreviewVideo] = useState<{
@@ -59,9 +73,20 @@ export function MyMuxVideos({
     GetMyMuxVideos,
     GetMyMuxVideosVariables
   >(GET_MY_MUX_VIDEOS, {
-    variables: { offset: 0, limit: PEEK_LIMIT },
+    // Omit teamId entirely when there's no active team so the resolver returns
+    // personal-only results and the cache key matches the personal entry.
+    variables: { offset: 0, limit: PEEK_LIMIT, teamId: teamId ?? undefined },
     fetchPolicy: 'cache-first',
-    notifyOnNetworkStatusChange: true
+    notifyOnNetworkStatusChange: true,
+    onError: (queryError) => {
+      const isForbidden = queryError.graphQLErrors.some(
+        (graphQLError) => graphQLError.extensions?.code === 'FORBIDDEN'
+      )
+      // User was removed from the team mid-session. Ask the caller to refresh
+      // the active-team list; once activeTeam clears, teamId becomes null and
+      // the query refetches personal-only.
+      if (isForbidden && teamId != null) onTeamForbidden?.()
+    }
   })
 
   const isFetchingMore = networkStatus === NetworkStatus.fetchMore
@@ -107,7 +132,11 @@ export function MyMuxVideos({
 
   const handleLoadMore = async (): Promise<void> => {
     const result = await fetchMore({
-      variables: { offset: pagesFetched * PAGE_SIZE, limit: PEEK_LIMIT }
+      variables: {
+        offset: pagesFetched * PAGE_SIZE,
+        limit: PEEK_LIMIT,
+        teamId: teamId ?? undefined
+      }
     }).catch(() => null)
     if (result == null) return
     setPagesFetched((prev) => prev + 1)

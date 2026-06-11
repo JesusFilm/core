@@ -14,6 +14,7 @@ interface ProcessUploadDependencies {
       generateSubtitlesInput?:
         | { languageCode: string; languageName: string }
         | undefined
+      journeyId?: string
     }
   }) => Promise<{
     data?: CreateMuxVideoUploadByFileMutation | null
@@ -61,7 +62,8 @@ export async function processUpload(
                 languageCode: task.languageCode,
                 languageName: task.languageName
               }
-            : undefined
+            : undefined,
+        journeyId: task.journeyId
       }
     })
 

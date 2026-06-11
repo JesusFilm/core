@@ -43,10 +43,12 @@ export const CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION = gql`
   mutation CreateMuxVideoUploadByFileMutation(
     $name: String!
     $generateSubtitlesInput: GenerateSubtitlesInput
+    $journeyId: ID
   ) {
     createMuxVideoUploadByFile(
       name: $name
       generateSubtitlesInput: $generateSubtitlesInput
+      journeyId: $journeyId
     ) {
       uploadUrl
       id
@@ -61,7 +63,8 @@ interface MuxVideoUploadContextType {
     file: File,
     languageCode?: string,
     languageName?: string,
-    onComplete?: (videoId: string) => void
+    onComplete?: (videoId: string) => void,
+    journeyId?: string
   ) => void
   cancelUploadForBlock: (block: TreeBlock) => void
 }
@@ -186,7 +189,8 @@ export function MuxVideoUploadProvider({
       file: File,
       languageCode?: string,
       languageName?: string,
-      onComplete?: (videoId: string) => void
+      onComplete?: (videoId: string) => void,
+      journeyId?: string
     ) => {
       addUploadTaskUtil(
         videoBlockId,
@@ -194,6 +198,7 @@ export function MuxVideoUploadProvider({
         languageCode,
         languageName,
         onComplete,
+        journeyId,
         {
           setUploadTasks
         }

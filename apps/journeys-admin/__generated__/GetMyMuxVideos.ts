@@ -22,4 +22,5 @@ export interface GetMyMuxVideos {
 export interface GetMyMuxVideosVariables {
   offset?: number | null;
   limit?: number | null;
+  teamId?: string | null;
 }
