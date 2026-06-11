@@ -32,6 +32,11 @@ describe('PublicGalleryPage', () => {
         'href',
         'https://admin.nextstep.is/?useTemplate=template-0'
       )
+      // Preview opens the public viewer route `/<slug>` (NES-1720 — the
+      // Preview button was dropped in the NES-1694 restyle and restored here).
+      expect(
+        screen.getAllByTestId('GalleryTemplateCardPreviewButton')[0]
+      ).toHaveAttribute('href', '/template-0')
     })
 
     it('features the first two items and grids the rest', () => {
@@ -289,6 +294,35 @@ describe('PublicGalleryPage', () => {
         const useLink = screen.getAllByTestId('GalleryTemplateCardUseButton')[0]
         expect(useLink).toHaveAttribute('target', '_blank')
         expect(useLink).toHaveAttribute('rel', 'noopener noreferrer')
+      })
+
+      it('carry rel="noopener noreferrer" and target="_blank" on Preview', () => {
+        render(
+          <PublicGalleryPage
+            variant="journey"
+            data={makeData({ items: makeItems(1) })}
+          />
+        )
+        const previewLink = screen.getAllByTestId(
+          'GalleryTemplateCardPreviewButton'
+        )[0]
+        expect(previewLink).toHaveAttribute('target', '_blank')
+        expect(previewLink).toHaveAttribute('rel', 'noopener noreferrer')
+      })
+
+      it('renders a Preview button beside every Use button (Explore + More)', () => {
+        render(
+          <PublicGalleryPage
+            variant="journey"
+            data={makeData({ items: makeItems(5) })}
+          />
+        )
+        // The Preview button regressed in the NES-1694 restyle: it must
+        // surface on the same cards as Use, in both the Explore featured
+        // rows and the More grid.
+        expect(
+          screen.getAllByTestId('GalleryTemplateCardPreviewButton').length
+        ).toBe(screen.getAllByTestId('GalleryTemplateCardUseButton').length)
       })
     })
 

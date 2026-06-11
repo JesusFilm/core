@@ -11,5 +11,15 @@
   "Privacy Policy": "隱私權政策",
   "NextSteps © {{year}}": "NextSteps © {{year}}",
   "Use": "使用",
-  "Preview": "預覽"
+  "Preview": "預覽",
+  "About this chat": "關於這則聊天訊息",
+  "About this chat | Next Steps": "關於本次聊天 | 後續步驟",
+  "The chat on this journey is powered by an AI assistant. To help us improve future replies, the messages you send and the assistant’s replies are saved.": "本次旅程中的聊天功能由人工智慧助理提供支援。為了協助我們改善未來的回覆，您發送的訊息以及助理的回覆都會被保存下來。",
+  "We do not save your name, email address, or any account details, and we do not link conversations to your identity.": "我們不會儲存您的姓名、電子郵件地址或任何帳戶詳細資料，也不會將對話與您的身分連結起來。",
+  "Where the messages go": "訊息的去向",
+  "Your messages and the assistant’s replies pass through two third-party services: an AI service that generates the replies, and an analytics service called Langfuse where the conversations are stored so the team can review them in aggregate to improve the experience. They are not sold and they are not used for advertising.": "您的訊息與助理的回覆會經過兩項第三方服務：一項是負責生成回覆的人工智慧服務，另一項則是名為 Langfuse 的分析服務，對話內容會儲存於此，以便團隊能彙總檢視這些對話，藉此提升使用體驗。這些資料不會被出售，也不會用於廣告用途。",
+  "If you prefer not to take part": "如果您不願參與",
+  "There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.": "目前尚無針對聊天功能的退出選項。若您不希望您的訊息被儲存，請勿使用聊天功能——其餘流程在未啟用該功能的情況下仍可正常運作。",
+  "Last updated: June 2026": "最後更新日期：2026年6月",
+  "Back to Next Steps": "返回「下一步」"
 }

@@ -3,6 +3,10 @@ import { GraphQLError } from 'graphql'
 import { Prisma, prisma } from '@core/prisma/media/client'
 import type { MuxVideo as PrismaMuxVideo } from '@core/prisma/media/client'
 
+import {
+  assertTeamMembership,
+  maybeResolveTeamId
+} from '../../../lib/journeysAccess/journeysAccess'
 import { notifyMediaSlackOfOperationFailure } from '../../../lib/slack'
 import { queue as processVideoDownloadsQueue } from '../../../workers/processVideoDownloads/queue'
 import { jobName as processVideoUploadsJobName } from '../../../workers/processVideoUploads/config'
@@ -62,22 +66,32 @@ builder.queryFields((t) => ({
     nullable: false,
     args: {
       offset: t.arg.int({ required: false }),
-      limit: t.arg.int({ required: false })
+      limit: t.arg.int({ required: false }),
+      teamId: t.arg.id({ required: false })
     },
-    resolve: async (query, _root, { offset, limit }, { user }) => {
+    resolve: async (query, _root, { offset, limit, teamId }, { user }) => {
       if (user == null)
         throw new GraphQLError('User not found', {
           extensions: { code: 'NOT_FOUND' }
         })
 
+      if (teamId != null)
+        await assertTeamMembership({ teamId, userId: user.id })
+
+      // Single merged grid: personal + team uploads interleaved by createdAt.
+      // The `userId OR teamId` predicate is served by a bitmap-OR across the
+      // `(userId, createdAt DESC)` and `(teamId, createdAt DESC)` indexes — keep
+      // both indexes (see migration) or this degrades to a full table scan.
       return await prisma.muxVideo.findMany({
         ...query,
         where: {
-          userId: user.id,
+          ...(teamId != null
+            ? { OR: [{ userId: user.id }, { teamId }] }
+            : { userId: user.id }),
           readyToStream: true,
           playbackId: { not: null }
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         take: limit ?? undefined,
         skip: offset ?? undefined
       })
@@ -396,7 +410,8 @@ builder.mutationFields((t) => ({
         generateSubtitlesInput: t.arg({
           type: GenerateSubtitlesInput,
           required: false
-        })
+        }),
+        journeyId: t.arg.id({ required: false })
       },
       resolve: async (
         query,
@@ -406,7 +421,8 @@ builder.mutationFields((t) => ({
           userGenerated,
           downloadable,
           maxResolution,
-          generateSubtitlesInput
+          generateSubtitlesInput,
+          journeyId
         },
         { user, currentRoles }
       ) => {
@@ -414,6 +430,8 @@ builder.mutationFields((t) => ({
           throw new GraphQLError('User not found', {
             extensions: { code: 'NOT_FOUND' }
           })
+
+        const teamId = await maybeResolveTeamId({ journeyId, userId: user.id })
 
         const isUserGenerated = !currentRoles.includes('publisher')
           ? true
@@ -435,7 +453,8 @@ builder.mutationFields((t) => ({
               uploadUrl,
               userId: user.id,
               name,
-              downloadable: downloadable ?? false
+              downloadable: downloadable ?? false,
+              teamId
             }
           })
         } catch (error) {
@@ -470,18 +489,21 @@ builder.mutationFields((t) => ({
         type: MaxResolutionTier,
         required: false,
         defaultValue: 'fhd'
-      })
+      }),
+      journeyId: t.arg.id({ required: false })
     },
     resolve: async (
       query,
       _root,
-      { url, userGenerated, downloadable, maxResolution },
+      { url, userGenerated, downloadable, maxResolution, journeyId },
       { user, currentRoles }
     ) => {
       if (user == null)
         throw new GraphQLError('User not found', {
           extensions: { code: 'NOT_FOUND' }
         })
+
+      const teamId = await maybeResolveTeamId({ journeyId, userId: user.id })
 
       const isUserGenerated = !currentRoles.includes('publisher')
         ? true
@@ -501,7 +523,8 @@ builder.mutationFields((t) => ({
           data: {
             assetId: id,
             userId: user.id,
-            downloadable: downloadable ?? false
+            downloadable: downloadable ?? false,
+            teamId
           }
         })
       } catch (error) {

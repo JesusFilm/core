@@ -2340,17 +2340,20 @@ export type MutationCloudflareUploadCompleteArgs = {
 
 export type MutationCreateCloudflareImageFromPromptArgs = {
   input?: InputMaybe<ImageInput>;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
   prompt: Scalars['String']['input'];
 };
 
 
 export type MutationCreateCloudflareUploadByFileArgs = {
   input?: InputMaybe<ImageInput>;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
 export type MutationCreateCloudflareUploadByUrlArgs = {
   input?: InputMaybe<ImageInput>;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
   url: Scalars['String']['input'];
 };
 
@@ -2391,6 +2394,7 @@ export type MutationCreateMuxVideoAndQueueUploadArgs = {
 export type MutationCreateMuxVideoUploadByFileArgs = {
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
   generateSubtitlesInput?: InputMaybe<GenerateSubtitlesInput>;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
   maxResolution?: InputMaybe<MaxResolutionTier>;
   name: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2399,6 +2403,7 @@ export type MutationCreateMuxVideoUploadByFileArgs = {
 
 export type MutationCreateMuxVideoUploadByUrlArgs = {
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
   maxResolution?: InputMaybe<MaxResolutionTier>;
   url: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
@@ -4168,6 +4173,7 @@ export type QueryGetMyCloudflareImagesArgs = {
   isAi?: InputMaybe<Scalars['Boolean']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  teamId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -4187,6 +4193,7 @@ export type QueryGetMyMuxVideoArgs = {
 export type QueryGetMyMuxVideosArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  teamId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
