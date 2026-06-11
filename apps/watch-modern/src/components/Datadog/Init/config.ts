@@ -9,7 +9,9 @@ const DATADOG_ALLOWED_TRACING_ORIGINS = [
 ] as const
 
 const EMAIL_PATTERN = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi
-const URL_PATTERN = /https?:\/\/[^\s'"<>]+/gi
+const ABSOLUTE_URL_PATTERN = /https?:\/\/[^\s'"<>]+/gi
+const RELATIVE_URL_PATTERN =
+  /(^|[\s(["'])(\/[A-Z0-9._~!$&'()*+,;=:@%/-]+(?:\?[^#\s'"<>]*)?(?:#[^\s'"<>]*)?)/gi
 
 type DatadogBeforeSend = NonNullable<RumInitConfiguration['beforeSend']>
 type DatadogRumEvent = Parameters<DatadogBeforeSend>[0] & {
@@ -89,7 +91,13 @@ export function redactSensitiveUrl(value: string): string {
 
 export function redactSensitiveText(value: string): string {
   return redactEmailLikeValues(
-    value.replace(URL_PATTERN, (url) => redactSensitiveUrl(url))
+    value
+      .replace(ABSOLUTE_URL_PATTERN, (url) => redactSensitiveUrl(url))
+      .replace(
+        RELATIVE_URL_PATTERN,
+        (_match, prefix: string, url: string) =>
+          `${prefix}${redactSensitiveUrl(url)}`
+      )
   )
 }
 

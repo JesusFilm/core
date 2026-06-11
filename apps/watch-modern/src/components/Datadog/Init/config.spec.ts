@@ -69,6 +69,14 @@ describe('redactSensitiveText', () => {
       )
     ).toBe('Failed for [REDACTED_EMAIL] at https://example.com/watch')
   })
+
+  it('redacts relative URL query data inside text fields', () => {
+    expect(
+      redactSensitiveText(
+        'Search failed at /watch/search?q=person@example.com#results'
+      )
+    ).toBe('Search failed at /watch/search')
+  })
 })
 
 describe('redactDatadogRumEvent', () => {
