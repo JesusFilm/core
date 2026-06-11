@@ -11,10 +11,6 @@
     "emitDecoratorMetadata": true,
     "target": "es2021"
   },
-  "exclude": [
-    "**/*.spec.ts",
-    "**/__mocks/*.ts",
-    "**/test/*.ts"
-  ],
+  "exclude": ["**/*.spec.ts", "**/__mocks/*.ts", "**/test/*.ts"],
   "include": ["**/*.ts"]
 }
