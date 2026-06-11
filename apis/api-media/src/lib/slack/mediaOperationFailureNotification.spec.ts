@@ -10,7 +10,8 @@ vi.mock('../../logger', () => ({
   logger: {
     warn: vi.fn(),
     info: vi.fn(),
-    child: vi.fn()
+    child: vi.fn(),
+    error: vi.fn()
   }
 }))
 
@@ -18,6 +19,7 @@ describe('notifyMediaSlackOfOperationFailure', () => {
   const mockFetch = fetch as MockedFunction<typeof fetch>
   const mockLoggerWarn = vi.mocked(logger.warn)
   const mockLoggerChild = vi.mocked(logger.child)
+  const mockLoggerError = vi.mocked(logger.error)
   const originalEnv = process.env
 
   const flushAsync = async (): Promise<void> => {
@@ -136,6 +138,30 @@ describe('notifyMediaSlackOfOperationFailure', () => {
 
     const body = JSON.parse(mockFetch.mock.calls[0][1]?.body as string)
     expect(body.blocks).toHaveLength(3)
+  })
+
+  it('logs and swallows notifier errors', async () => {
+    const formattingError = new Error('context formatting failed')
+
+    notifyMediaSlackOfOperationFailure({
+      operation: 'Mux video create failed',
+      error: new Error('Mux credentials are missing'),
+      context: {
+        badField: {
+          toString() {
+            throw formattingError
+          }
+        } as any
+      }
+    })
+
+    await flushAsync()
+
+    expect(mockFetch).not.toHaveBeenCalled()
+    expect(mockLoggerError).toHaveBeenCalledWith(
+      { error: formattingError },
+      'Media operation failure notifier error'
+    )
   })
 
   it('skips and warns when Slack env vars are missing', async () => {

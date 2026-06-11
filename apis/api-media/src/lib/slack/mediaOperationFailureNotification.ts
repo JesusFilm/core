@@ -23,56 +23,62 @@ export function notifyMediaSlackOfOperationFailure(
 ): void {
   void (async () => {
     const childLogger = logger.child({ slack: 'media-operation-failure' })
-    const config = getMediaDataLangSlackConfig(childLogger)
-    if (config == null) {
-      return
+
+    try {
+      const config = getMediaDataLangSlackConfig(childLogger)
+      if (config == null) {
+        return
+      }
+
+      const errorMessage = formatError(args.error)
+      const contextFields = buildContextFields(args.context ?? {})
+      const actionsBlock = buildActionsBlock(args.context?.videoId)
+
+      await slackChatPostMessage({
+        config,
+        body: {
+          text: `Media operation failed: ${args.operation} - ${errorMessage}`,
+          blocks: [
+            {
+              type: 'header',
+              text: {
+                type: 'plain_text',
+                text: 'Media operation failed',
+                emoji: true
+              }
+            },
+            {
+              type: 'section',
+              fields: [
+                {
+                  type: 'mrkdwn',
+                  text: `*Operation*\n${args.operation}`
+                },
+                {
+                  type: 'mrkdwn',
+                  text: `*Environment*\n${getEnvironmentLabel()}`
+                },
+                ...contextFields
+              ]
+            },
+            {
+              type: 'section',
+              text: {
+                type: 'mrkdwn',
+                text: `*Error*\n\`\`\`${truncate(errorMessage, 2800)}\`\`\``
+              }
+            },
+            ...(actionsBlock != null ? [actionsBlock] : [])
+          ]
+        },
+        log: childLogger,
+        failureMessage: 'Media operation failure Slack notification failed',
+        errorMessage:
+          'Media operation failure Slack notification threw an error'
+      })
+    } catch (error) {
+      childLogger.error({ error }, 'Media operation failure notifier error')
     }
-
-    const errorMessage = formatError(args.error)
-    const contextFields = buildContextFields(args.context ?? {})
-    const actionsBlock = buildActionsBlock(args.context?.videoId)
-
-    await slackChatPostMessage({
-      config,
-      body: {
-        text: `Media operation failed: ${args.operation} - ${errorMessage}`,
-        blocks: [
-          {
-            type: 'header',
-            text: {
-              type: 'plain_text',
-              text: 'Media operation failed',
-              emoji: true
-            }
-          },
-          {
-            type: 'section',
-            fields: [
-              {
-                type: 'mrkdwn',
-                text: `*Operation*\n${args.operation}`
-              },
-              {
-                type: 'mrkdwn',
-                text: `*Environment*\n${getEnvironmentLabel()}`
-              },
-              ...contextFields
-            ]
-          },
-          {
-            type: 'section',
-            text: {
-              type: 'mrkdwn',
-              text: `*Error*\n\`\`\`${truncate(errorMessage, 2800)}\`\`\``
-            }
-          },
-          ...(actionsBlock != null ? [actionsBlock] : [])
-        ]
-      },
-      log: childLogger,
-      failureMessage: 'Media operation failure Slack notification failed',
-      errorMessage: 'Media operation failure Slack notification threw an error'
-    })
   })()
 }
 
