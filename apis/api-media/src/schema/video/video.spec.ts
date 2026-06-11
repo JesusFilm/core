@@ -23,17 +23,12 @@ import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
-import { notifyVideoSlackOfMutation } from '../../lib/slack'
 
 import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
 import { getLanguageIdFromInfo } from './video'
 
 vi.mock('./lib/updateAvailableLanguages', () => ({
   updateVideoAvailableLanguages: vi.fn()
-}))
-
-vi.mock('../../lib/slack', () => ({
-  notifyVideoSlackOfMutation: vi.fn()
 }))
 
 describe('video', () => {
@@ -2591,12 +2586,6 @@ describe('video', () => {
         expect(result).toHaveProperty('data.videoCreate', {
           id: 'id'
         })
-        expect(notifyVideoSlackOfMutation).toHaveBeenCalledWith(
-          expect.objectContaining({
-            kind: 'create',
-            video: expect.objectContaining({ id: 'id', label: 'featureFilm' })
-          })
-        )
       })
 
       it('should fail if not publisher', async () => {
@@ -2741,16 +2730,9 @@ describe('video', () => {
           updatedAt: new Date()
         })
         prismaMock.video.findUnique.mockResolvedValue({
-          label: VideoLabel.shortFilm,
-          primaryLanguageId: 'oldLanguageId',
           published: false,
           publishedAt: null,
           slug: 'old-slug',
-          noIndex: false,
-          childIds: ['old-child'],
-          restrictDownloadPlatforms: [],
-          restrictViewPlatforms: [],
-          keywords: [],
           variants: [{ languageId: 'en' }]
         } as any)
         prismaMock.video.findMany.mockResolvedValue([{ id: 'id' }] as any)
@@ -2807,17 +2789,6 @@ describe('video', () => {
         expect(result).toHaveProperty('data.videoUpdate', {
           id: 'id'
         })
-        expect(notifyVideoSlackOfMutation).toHaveBeenCalledWith(
-          expect.objectContaining({
-            kind: 'update',
-            video: expect.objectContaining({ id: 'id', label: 'episode' }),
-            changes: expect.arrayContaining([
-              { field: 'Label', before: 'shortFilm', after: 'episode' },
-              { field: 'Published', before: 'false', after: 'true' },
-              { field: 'Slug', before: 'old-slug', after: 'slug' }
-            ])
-          })
-        )
       })
 
       it('should update video with child relations when childIds are provided', async () => {

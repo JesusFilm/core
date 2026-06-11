@@ -3,4 +3,4 @@ export {
   getMediaDataLangSlackConfig,
   type SlackBotChannelConfig
 } from './config'
-export { notifyVideoSlackOfMutation } from './videoMutationNotification'
+export { notifyMediaSlackOfOperationFailure } from './mediaOperationFailureNotification'

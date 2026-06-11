@@ -1,7 +1,9 @@
 import { GraphQLError } from 'graphql'
 
 import { Prisma, prisma } from '@core/prisma/media/client'
+import type { MuxVideo as PrismaMuxVideo } from '@core/prisma/media/client'
 
+import { notifyMediaSlackOfOperationFailure } from '../../../lib/slack'
 import { queue as processVideoDownloadsQueue } from '../../../workers/processVideoDownloads/queue'
 import { jobName as processVideoUploadsJobName } from '../../../workers/processVideoUploads/config'
 import { queue as processVideoUploadsQueue } from '../../../workers/processVideoUploads/queue'
@@ -271,29 +273,46 @@ builder.mutationFields((t) => ({
           extensions: { code: 'NOT_FOUND' }
         })
 
-      const muxAsset = await createVideoFromUrl(
-        r2PublicUrl,
-        false,
-        '2160p',
-        downloadable ?? true
-      )
+      let muxVideo: PrismaMuxVideo
 
-      const r2Asset = await prisma.cloudflareR2.findFirst({
-        where: { publicUrl: r2PublicUrl },
-        select: { id: true }
-      })
+      try {
+        const muxAsset = await createVideoFromUrl(
+          r2PublicUrl,
+          false,
+          '2160p',
+          downloadable ?? true
+        )
 
-      const muxVideo = await prisma.muxVideo.create({
-        ...query,
-        data: {
-          assetId: muxAsset.id,
-          userId: user.id,
-          name: originalFilename,
-          uploadUrl: r2PublicUrl,
-          uploadId: r2Asset?.id,
-          downloadable: downloadable ?? true
-        }
-      })
+        const r2Asset = await prisma.cloudflareR2.findFirst({
+          where: { publicUrl: r2PublicUrl },
+          select: { id: true }
+        })
+
+        muxVideo = await prisma.muxVideo.create({
+          ...query,
+          data: {
+            assetId: muxAsset.id,
+            userId: user.id,
+            name: originalFilename,
+            uploadUrl: r2PublicUrl,
+            uploadId: r2Asset?.id,
+            downloadable: downloadable ?? true
+          }
+        })
+      } catch (error) {
+        notifyMediaSlackOfOperationFailure({
+          operation: 'Mux video create from R2 failed',
+          error,
+          context: {
+            videoId,
+            languageId,
+            version,
+            originalFilename,
+            userId: user.id
+          }
+        })
+        throw error
+      }
 
       try {
         await processVideoUploadsQueue.add(
@@ -322,12 +341,34 @@ builder.mutationFields((t) => ({
         )
       } catch (error) {
         console.error('Failed to queue video uploads processing:', error)
+        notifyMediaSlackOfOperationFailure({
+          operation: 'Mux video upload queue failed',
+          error,
+          context: {
+            videoId,
+            languageId,
+            version,
+            muxVideoId: muxVideo.id,
+            originalFilename
+          }
+        })
         try {
           await prisma.muxVideo.delete({
             where: { id: muxVideo.id }
           })
         } catch (cleanupError) {
           console.error('Failed to cleanup orphaned mux video:', cleanupError)
+          notifyMediaSlackOfOperationFailure({
+            operation: 'Mux video queue cleanup failed',
+            error: cleanupError,
+            context: {
+              videoId,
+              languageId,
+              version,
+              muxVideoId: muxVideo.id,
+              originalFilename
+            }
+          })
         }
       }
 
@@ -398,6 +439,16 @@ builder.mutationFields((t) => ({
             }
           })
         } catch (error) {
+          notifyMediaSlackOfOperationFailure({
+            operation: 'Mux direct upload create failed',
+            error,
+            context: {
+              name,
+              userId: user.id,
+              userGenerated: isUserGenerated,
+              downloadable: downloadable ?? false
+            }
+          })
           throw new GraphQLError((error as Error).message, {
             extensions: { code: 'BAD_REQUEST' }
           })
@@ -437,21 +488,34 @@ builder.mutationFields((t) => ({
         : (userGenerated ?? true)
       const maxResolutionValue = getMaxResolutionValue(maxResolution)
 
-      const { id } = await createVideoFromUrl(
-        url,
-        isUserGenerated,
-        maxResolutionValue,
-        downloadable ?? false
-      )
+      try {
+        const { id } = await createVideoFromUrl(
+          url,
+          isUserGenerated,
+          maxResolutionValue,
+          downloadable ?? false
+        )
 
-      return await prisma.muxVideo.create({
-        ...query,
-        data: {
-          assetId: id,
-          userId: user.id,
-          downloadable: downloadable ?? false
-        }
-      })
+        return await prisma.muxVideo.create({
+          ...query,
+          data: {
+            assetId: id,
+            userId: user.id,
+            downloadable: downloadable ?? false
+          }
+        })
+      } catch (error) {
+        notifyMediaSlackOfOperationFailure({
+          operation: 'Mux URL upload create failed',
+          error,
+          context: {
+            userId: user.id,
+            userGenerated: isUserGenerated,
+            downloadable: downloadable ?? false
+          }
+        })
+        throw error
+      }
     }
   }),
   enableMuxDownload: t.withAuth({ isPublisher: true }).prismaField({

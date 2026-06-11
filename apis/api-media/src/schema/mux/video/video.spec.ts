@@ -5,6 +5,7 @@ import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
+import { notifyMediaSlackOfOperationFailure } from '../../../lib/slack'
 
 import { enableDownload } from './service'
 
@@ -53,6 +54,14 @@ vi.mock('../../../workers/processVideoDownloads/queue', () => ({
   }
 }))
 
+vi.mock('../../../lib/slack', () => ({
+  notifyMediaSlackOfOperationFailure: vi.fn()
+}))
+
+const mockedNotifyMediaSlackOfOperationFailure = vi.mocked(
+  notifyMediaSlackOfOperationFailure
+)
+
 describe('mux/video', () => {
   const client = getClient()
   const authClient = getClient({
@@ -79,6 +88,7 @@ describe('mux/video', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks()
+    mockedNotifyMediaSlackOfOperationFailure.mockClear()
     const { queue } = await vi.importMock<any>(
       '../../../workers/processVideoDownloads/queue'
     )
@@ -731,6 +741,16 @@ describe('mux/video', () => {
         expect(result.errors?.[0]?.message).toContain(
           'Invalid language code: invalid'
         )
+        expect(mockedNotifyMediaSlackOfOperationFailure).toHaveBeenCalledWith({
+          operation: 'Mux direct upload create failed',
+          error: expect.any(Error),
+          context: {
+            name: 'videoName',
+            userId: 'testUserId',
+            userGenerated: true,
+            downloadable: false
+          }
+        })
       })
     })
 
