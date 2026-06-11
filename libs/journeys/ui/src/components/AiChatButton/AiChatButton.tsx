@@ -1,9 +1,10 @@
 'use client'
 
-import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded'
 import IconButton from '@mui/material/IconButton'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useCallback } from 'react'
+
+import MessageChatStarsIcon from '@core/shared/ui/icons/MessageChatStars'
 
 import { useChatOverlay } from '../../libs/ChatOverlayProvider'
 import { useJourney } from '../../libs/JourneyProvider'
@@ -48,7 +49,7 @@ export function AiChatButton(): ReactElement | null {
           }
         }}
       >
-        <AutoAwesomeRoundedIcon sx={{ fontSize: 20 }} />
+        <MessageChatStarsIcon sx={{ fontSize: 20 }} />
       </IconButton>
       <ChatOverlay open={open} onClose={handleClose} />
     </>
