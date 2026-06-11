@@ -49,7 +49,7 @@ export function AiChatButton(): ReactElement | null {
           }
         }}
       >
-        <MessageChatStarsIcon sx={{ fontSize: 20 }} />
+        <MessageChatStarsIcon sx={{ fontSize: 30 }} />
       </IconButton>
       <ChatOverlay open={open} onClose={handleClose} />
     </>
