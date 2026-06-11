@@ -3,6 +3,7 @@ import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { PowerBIEmbed } from 'powerbi-client-react'
 import { useEffect } from 'react'
+import { type MockedClass } from 'vitest'
 
 import { JourneysReportType } from '../../../../__generated__/globalTypes'
 
@@ -10,12 +11,12 @@ import { GET_ADMIN_JOURNEYS_REPORT } from './Report'
 
 import { Report } from '.'
 
-const MockPowerBiEmbed = PowerBIEmbed as unknown as jest.MockedClass<
+const MockPowerBiEmbed = PowerBIEmbed as unknown as MockedClass<
   typeof PowerBIEmbed
 >
-jest.mock('powerbi-client-react', () => ({
+vi.mock('powerbi-client-react', () => ({
   __esModule: true,
-  PowerBIEmbed: jest.fn(() => <></>)
+  PowerBIEmbed: vi.fn(() => <></>)
 }))
 
 describe('Report', () => {
@@ -31,7 +32,7 @@ describe('Report', () => {
   })
 
   it('gets the report token', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         adminJourneysReport: {
           embedUrl: 'url',

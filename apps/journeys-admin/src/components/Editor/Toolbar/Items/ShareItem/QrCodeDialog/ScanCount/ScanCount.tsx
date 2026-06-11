@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { formatISO } from 'date-fns'
 import debounce from 'lodash/debounce'
-import { Trans, useTranslation } from 'next-i18next'
+import { Trans, useTranslation } from 'next-i18next/pages'
 import { ReactElement, useCallback, useEffect } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -14,7 +14,7 @@ import {
   GetPlausibleJourneyQrCodeScans,
   GetPlausibleJourneyQrCodeScansVariables
 } from '../../../../../../../../__generated__/GetPlausibleJourneyQrCodeScans'
-import { earliestStatsCollected } from '../../../../../Slider/JourneyFlow/AnalyticsOverlaySwitch'
+import { earliestStatsCollected } from '../../../../../Slider/JourneyFlow/AnalyticsOverlaySwitch/buildPresetDateRange'
 
 export const GET_PLAUSIBLE_JOURNEY_QR_CODE_SCANS = gql`
   query GetPlausibleJourneyQrCodeScans(

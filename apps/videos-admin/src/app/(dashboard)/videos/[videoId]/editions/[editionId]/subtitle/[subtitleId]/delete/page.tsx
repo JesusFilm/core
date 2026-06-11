@@ -3,6 +3,7 @@
 import { useMutation } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
+import { use } from 'react'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -16,16 +17,17 @@ const DELETE_VIDEO_SUBTITLE = graphql(`
 `)
 
 interface SubtitleDeletePageProps {
-  params: {
+  params: Promise<{
     videoId: string
     editionId: string
     subtitleId: string
-  }
+  }>
 }
 
 export default function SubtitleDeletePage({
-  params: { videoId, editionId, subtitleId }
+  params
 }: SubtitleDeletePageProps) {
+  const { videoId, editionId, subtitleId } = use(params)
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const [deleteSubtitle, { loading }] = useMutation(DELETE_VIDEO_SUBTITLE)

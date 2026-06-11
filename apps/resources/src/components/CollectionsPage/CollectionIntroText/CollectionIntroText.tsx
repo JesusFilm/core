@@ -35,7 +35,8 @@ export function CollectionIntroText({
   westernEasterLabel,
   orthodoxEasterLabel,
   passoverLabel,
-  locale
+  locale,
+  year
 }: CollectionIntroTextProps): ReactElement {
   return (
     <div className="padded responsive-container relative block flex w-full flex-col gap-4 pt-8 md:flex-row md:py-8">
@@ -46,6 +47,7 @@ export function CollectionIntroText({
           orthodoxEasterLabel={orthodoxEasterLabel}
           passoverLabel={passoverLabel}
           locale={locale}
+          year={year}
         />
       </div>
       <div className="into-text flex-1 space-y-6 pb-8 md:pb-0 xl:pr-20">

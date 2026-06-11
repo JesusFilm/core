@@ -1,12 +1,6 @@
 import { writeFileSync } from 'node:fs'
 
-import { PrismaClient } from '@core/prisma/media/client'
-
-const prisma = new PrismaClient()
-
-async function main(): Promise<void> {
-  await importLanguageSlugs()
-}
+import { prisma } from '@core/prisma/media/client'
 
 async function importLanguageSlugs(): Promise<void> {
   const variantSlugs = await prisma.videoVariant.findMany({
@@ -29,6 +23,14 @@ export const languageSlugs: Record<string, string> = {
 }
 `
   writeFileSync(`apis/api-languages/src/__generated__/languageSlugs.ts`, file)
+}
+
+async function main(): Promise<void> {
+  try {
+    await importLanguageSlugs()
+  } finally {
+    await prisma.$disconnect()
+  }
 }
 
 void main()

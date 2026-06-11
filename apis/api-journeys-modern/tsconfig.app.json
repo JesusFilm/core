@@ -12,15 +12,8 @@
   "exclude": [
     "**/*.spec.ts",
     "**/*.spec.tsx",
-    "jest.config.ts",
+    "vitest.config.mts",
     "test/**/*.ts"
   ],
-  "include": ["**/*.ts", "**/*.tsx"],
-  "ts-node": {
-    "transpileOnly": true,
-    "compilerOptions": {
-      "module": "commonjs",
-      "moduleResolution": "node"
-    }
-  }
+  "include": ["**/*.ts", "**/*.tsx"]
 }

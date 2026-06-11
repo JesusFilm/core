@@ -3,9 +3,9 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { FontFamily, ThemeSettings } from './ThemeSettings'
 
 describe('ThemeSettings', () => {
-  const onHeaderFontChange = jest.fn()
-  const onBodyFontChange = jest.fn()
-  const onLabelsFontChange = jest.fn()
+  const onHeaderFontChange = vi.fn()
+  const onBodyFontChange = vi.fn()
+  const onLabelsFontChange = vi.fn()
 
   it('should render theme settings', async () => {
     render(

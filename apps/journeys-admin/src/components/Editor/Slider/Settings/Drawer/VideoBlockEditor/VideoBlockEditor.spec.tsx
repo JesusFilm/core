@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -66,6 +66,7 @@ const videoInternal: TreeBlock<VideoBlock> = {
   },
   posterBlockId: null,
   customizable: null,
+  notes: null,
   children: []
 }
 
@@ -131,6 +132,7 @@ const videoYouTube: TreeBlock<VideoBlock> = {
   endEventLabel: null,
   posterBlockId: 'poster1.id',
   customizable: null,
+  notes: null,
   children: []
 }
 
@@ -141,7 +143,7 @@ describe('VideoBlockEditor', () => {
         <ThemeProvider>
           <MockedProvider mocks={mocks}>
             <SnackbarProvider>
-              <VideoBlockEditor selectedBlock={null} onChange={jest.fn()} />
+              <VideoBlockEditor selectedBlock={null} onChange={vi.fn()} />
             </SnackbarProvider>
           </MockedProvider>
         </ThemeProvider>
@@ -158,7 +160,7 @@ describe('VideoBlockEditor', () => {
             <SnackbarProvider>
               <VideoBlockEditor
                 selectedBlock={videoInternal}
-                onChange={jest.fn()}
+                onChange={vi.fn()}
               />
             </SnackbarProvider>
           </MockedProvider>
@@ -196,7 +198,7 @@ describe('VideoBlockEditor', () => {
                     ]
                   } as unknown as VideoBlock['mediaVideo']
                 }}
-                onChange={jest.fn()}
+                onChange={vi.fn()}
               />
             </SnackbarProvider>
           </MockedProvider>
@@ -252,7 +254,7 @@ describe('VideoBlockEditor', () => {
                     ...videoInternal.mediaVideo
                   } as unknown as VideoBlock['mediaVideo']
                 }}
-                onChange={jest.fn()}
+                onChange={vi.fn()}
               />
             </SnackbarProvider>
           </MockedProvider>
@@ -294,7 +296,7 @@ describe('VideoBlockEditor', () => {
                     ]
                   } as unknown as VideoBlock['mediaVideo']
                 }}
-                onChange={jest.fn()}
+                onChange={vi.fn()}
               />
             </SnackbarProvider>
           </MockedProvider>
@@ -313,7 +315,7 @@ describe('VideoBlockEditor', () => {
             <SnackbarProvider>
               <VideoBlockEditor
                 selectedBlock={videoYouTube}
-                onChange={jest.fn()}
+                onChange={vi.fn()}
               />
             </SnackbarProvider>
           </MockedProvider>
@@ -332,13 +334,15 @@ describe('VideoBlockEditor', () => {
           <SnackbarProvider>
             <VideoBlockEditor
               selectedBlock={videoInternal}
-              onChange={jest.fn()}
+              onChange={vi.fn()}
             />
           </SnackbarProvider>
         </MockedProvider>
       </ThemeProvider>
     )
-    expect(getByRole('checkbox', { name: 'Autoplay' })).toBeEnabled()
+    await waitFor(() =>
+      expect(getByRole('checkbox', { name: 'Autoplay' })).toBeEnabled()
+    )
   })
 
   it('renders VideoBlockEditorSettings when videoId is present', async () => {
@@ -348,7 +352,7 @@ describe('VideoBlockEditor', () => {
           <SnackbarProvider>
             <VideoBlockEditor
               selectedBlock={videoInternal}
-              onChange={jest.fn()}
+              onChange={vi.fn()}
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -371,7 +375,7 @@ describe('VideoBlockEditor', () => {
           <SnackbarProvider>
             <VideoBlockEditor
               selectedBlock={videoWithoutId}
-              onChange={jest.fn()}
+              onChange={vi.fn()}
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -389,7 +393,7 @@ describe('VideoBlockEditor', () => {
           <SnackbarProvider>
             <VideoBlockEditor
               selectedBlock={videoInternal}
-              onChange={jest.fn()}
+              onChange={vi.fn()}
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -399,7 +403,7 @@ describe('VideoBlockEditor', () => {
   })
 
   it('calls onChange when video properties are updated', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider mocks={mocks}>
@@ -434,7 +438,7 @@ describe('VideoBlockEditor', () => {
       <ThemeProvider>
         <MockedProvider mocks={mocks}>
           <SnackbarProvider>
-            <VideoBlockEditor selectedBlock={videoMux} onChange={jest.fn()} />
+            <VideoBlockEditor selectedBlock={videoMux} onChange={vi.fn()} />
           </SnackbarProvider>
         </MockedProvider>
       </ThemeProvider>
@@ -475,7 +479,7 @@ describe('VideoBlockEditor', () => {
           <SnackbarProvider>
             <VideoBlockEditor
               selectedBlock={videoWithPoster}
-              onChange={jest.fn()}
+              onChange={vi.fn()}
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -495,7 +499,7 @@ describe('VideoBlockEditor', () => {
             <SnackbarProvider>
               <VideoBlockEditor
                 selectedBlock={videoInternal}
-                onChange={jest.fn()}
+                onChange={vi.fn()}
               />
             </SnackbarProvider>
           </MockedProvider>
@@ -521,7 +525,7 @@ describe('VideoBlockEditor', () => {
                     <EditorProvider>
                       <VideoBlockEditor
                         selectedBlock={videoInternal}
-                        onChange={jest.fn()}
+                        onChange={vi.fn()}
                       />
                     </EditorProvider>
                   </CommandProvider>
@@ -551,7 +555,7 @@ describe('VideoBlockEditor', () => {
                     <EditorProvider>
                       <VideoBlockEditor
                         selectedBlock={videoInternal}
-                        onChange={jest.fn()}
+                        onChange={vi.fn()}
                       />
                     </EditorProvider>
                   </CommandProvider>
@@ -563,6 +567,234 @@ describe('VideoBlockEditor', () => {
       )
 
       expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
+    })
+
+    it('shows Template Adapter Notes input when customizable is true', () => {
+      const videoWithCustomizable = {
+        ...videoInternal,
+        customizable: true
+      } as TreeBlock<VideoBlock>
+
+      render(
+        <ThemeProvider>
+          <MockedProvider mocks={mocks}>
+            <SnackbarProvider>
+              <FlagsProvider flags={{ customizableMedia: true }}>
+                <JourneyProvider
+                  value={{
+                    journey: { template: true } as unknown as JourneyFields,
+                    variant: 'admin'
+                  }}
+                >
+                  <CommandProvider>
+                    <EditorProvider>
+                      <VideoBlockEditor
+                        selectedBlock={videoWithCustomizable}
+                        onChange={vi.fn()}
+                      />
+                    </EditorProvider>
+                  </CommandProvider>
+                </JourneyProvider>
+              </FlagsProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(
+        screen.getByLabelText('Template Adapter Notes')
+      ).toBeInTheDocument()
+    })
+
+    it('hides Template Adapter Notes input when customizable is false', () => {
+      const videoWithCustomizableFalse = {
+        ...videoInternal,
+        customizable: false
+      } as TreeBlock<VideoBlock>
+
+      render(
+        <ThemeProvider>
+          <MockedProvider mocks={mocks}>
+            <SnackbarProvider>
+              <FlagsProvider flags={{ customizableMedia: true }}>
+                <JourneyProvider
+                  value={{
+                    journey: { template: true } as unknown as JourneyFields,
+                    variant: 'admin'
+                  }}
+                >
+                  <CommandProvider>
+                    <EditorProvider>
+                      <VideoBlockEditor
+                        selectedBlock={videoWithCustomizableFalse}
+                        onChange={vi.fn()}
+                      />
+                    </EditorProvider>
+                  </CommandProvider>
+                </JourneyProvider>
+              </FlagsProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(
+        screen.queryByLabelText('Template Adapter Notes')
+      ).not.toBeInTheDocument()
+    })
+
+    it('commits trimmed adapter notes on blur', async () => {
+      const onChange = vi.fn().mockResolvedValue(undefined)
+      const videoWithCustomizable = {
+        ...videoInternal,
+        customizable: true,
+        notes: null
+      } as TreeBlock<VideoBlock>
+
+      render(
+        <ThemeProvider>
+          <MockedProvider mocks={mocks}>
+            <SnackbarProvider>
+              <FlagsProvider flags={{ customizableMedia: true }}>
+                <JourneyProvider
+                  value={{
+                    journey: { template: true } as unknown as JourneyFields,
+                    variant: 'admin'
+                  }}
+                >
+                  <CommandProvider>
+                    <EditorProvider>
+                      <VideoBlockEditor
+                        selectedBlock={videoWithCustomizable}
+                        onChange={onChange}
+                      />
+                    </EditorProvider>
+                  </CommandProvider>
+                </JourneyProvider>
+              </FlagsProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      const input = screen.getByLabelText('Template Adapter Notes')
+      fireEvent.change(input, { target: { value: '  trailer  ' } })
+      fireEvent.blur(input)
+      await waitFor(() =>
+        expect(onChange).toHaveBeenCalledWith({ notes: 'trailer' })
+      )
+    })
+
+    it('enforces a 100-character maximum on the notes input', () => {
+      const videoWithCustomizable = {
+        ...videoInternal,
+        customizable: true,
+        notes: null
+      } as TreeBlock<VideoBlock>
+
+      render(
+        <ThemeProvider>
+          <MockedProvider mocks={mocks}>
+            <SnackbarProvider>
+              <FlagsProvider flags={{ customizableMedia: true }}>
+                <JourneyProvider
+                  value={{
+                    journey: { template: true } as unknown as JourneyFields,
+                    variant: 'admin'
+                  }}
+                >
+                  <CommandProvider>
+                    <EditorProvider>
+                      <VideoBlockEditor
+                        selectedBlock={videoWithCustomizable}
+                        onChange={vi.fn()}
+                      />
+                    </EditorProvider>
+                  </CommandProvider>
+                </JourneyProvider>
+              </FlagsProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      const input = screen.getByLabelText('Template Adapter Notes')
+      expect(input).toHaveAttribute('maxLength', '100')
+    })
+
+    it('shows helper text when notes reach 100-character limit', () => {
+      const longNote = 'a'.repeat(100)
+      const videoWithCustomizable = {
+        ...videoInternal,
+        customizable: true,
+        notes: longNote
+      } as TreeBlock<VideoBlock>
+
+      render(
+        <ThemeProvider>
+          <MockedProvider mocks={mocks}>
+            <SnackbarProvider>
+              <FlagsProvider flags={{ customizableMedia: true }}>
+                <JourneyProvider
+                  value={{
+                    journey: { template: true } as unknown as JourneyFields,
+                    variant: 'admin'
+                  }}
+                >
+                  <CommandProvider>
+                    <EditorProvider>
+                      <VideoBlockEditor
+                        selectedBlock={videoWithCustomizable}
+                        onChange={vi.fn()}
+                      />
+                    </EditorProvider>
+                  </CommandProvider>
+                </JourneyProvider>
+              </FlagsProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(screen.getByText('Maximum 100 characters')).toBeInTheDocument()
+    })
+
+    it('does not show helper text when notes are under 100 characters', () => {
+      const videoWithCustomizable = {
+        ...videoInternal,
+        customizable: true,
+        notes: 'short note'
+      } as TreeBlock<VideoBlock>
+
+      render(
+        <ThemeProvider>
+          <MockedProvider mocks={mocks}>
+            <SnackbarProvider>
+              <FlagsProvider flags={{ customizableMedia: true }}>
+                <JourneyProvider
+                  value={{
+                    journey: { template: true } as unknown as JourneyFields,
+                    variant: 'admin'
+                  }}
+                >
+                  <CommandProvider>
+                    <EditorProvider>
+                      <VideoBlockEditor
+                        selectedBlock={videoWithCustomizable}
+                        onChange={vi.fn()}
+                      />
+                    </EditorProvider>
+                  </CommandProvider>
+                </JourneyProvider>
+              </FlagsProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(
+        screen.queryByText('Maximum 100 characters')
+      ).not.toBeInTheDocument()
     })
   })
 })

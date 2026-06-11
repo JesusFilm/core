@@ -11,7 +11,3 @@ enum Role {
   """
   publisher
 }
-
-extend type Query {
-  getUserRole: UserRole
-}

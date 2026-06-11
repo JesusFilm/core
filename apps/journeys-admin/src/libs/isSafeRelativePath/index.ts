@@ -1,0 +1,1 @@
+export { isSafeRelativePath } from './isSafeRelativePath'

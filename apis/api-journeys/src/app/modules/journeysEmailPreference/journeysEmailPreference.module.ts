@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common'
 
-import { PrismaService } from '../../lib/prisma.service'
+import { prismaServiceProvider } from '../../lib/prisma.service'
 
 import { JourneysEmailPreferenceResolver } from './journeysEmailPreference.resolver'
 
 @Module({
   imports: [],
-  providers: [JourneysEmailPreferenceResolver, PrismaService],
+  providers: [JourneysEmailPreferenceResolver, prismaServiceProvider],
   exports: []
 })
 export class JourneysEmailPreferenceModule {}

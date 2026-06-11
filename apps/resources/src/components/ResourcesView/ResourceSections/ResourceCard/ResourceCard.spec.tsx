@@ -1,14 +1,15 @@
 import { render, screen } from '@testing-library/react'
 import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 import { useHits } from 'react-instantsearch'
+import type { MockedFunction } from 'vitest'
 
 import { ResourceCard } from './ResourceCard'
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
-const mockUseHits = useHits as jest.MockedFunction<typeof useHits>
+const mockUseHits = useHits as MockedFunction<typeof useHits>
 
-describe('ResourceCard', () => {
+describe('ResourceCard', async () => {
   const item = {
     title: 'Resource Title',
     description: 'description',
@@ -20,7 +21,7 @@ describe('ResourceCard', () => {
   beforeEach(() => {
     mockUseHits.mockReturnValue({
       hits: [item],
-      sendEvent: jest.fn()
+      sendEvent: vi.fn()
     } as unknown as HitsRenderState)
   })
 

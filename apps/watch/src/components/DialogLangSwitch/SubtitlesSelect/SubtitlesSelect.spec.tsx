@@ -1,17 +1,16 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { MockedFunction } from 'vitest'
 
 import { useLanguages } from '../../../libs/useLanguages'
 
 import { SubtitlesSelect } from './SubtitlesSelect'
 
-jest.mock('../../../libs/useLanguages', () => ({
-  useLanguages: jest.fn()
+vi.mock('../../../libs/useLanguages', () => ({
+  useLanguages: vi.fn()
 }))
 
-const useLanguagesMock = useLanguages as jest.MockedFunction<
-  typeof useLanguages
->
+const useLanguagesMock = useLanguages as MockedFunction<typeof useLanguages>
 
 describe('SubtitlesSelect', () => {
   const french = {
@@ -57,7 +56,7 @@ describe('SubtitlesSelect', () => {
   const languages = [english, french, spanish, nonSubtitleLanguage]
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     useLanguagesMock.mockReturnValue({
       languages,
       isLoading: false
@@ -131,7 +130,7 @@ describe('SubtitlesSelect', () => {
     })
 
     it('should call onLanguageChange when a language is selected', async () => {
-      const onLanguageChange = jest.fn()
+      const onLanguageChange = vi.fn()
       render(
         <SubtitlesSelect
           subtitleOn
@@ -153,7 +152,7 @@ describe('SubtitlesSelect', () => {
 
   describe('switch', () => {
     it('should call updateSubtitleOn when checkbox is changed', async () => {
-      const onSubtitleToggleChange = jest.fn()
+      const onSubtitleToggleChange = vi.fn()
       render(
         <SubtitlesSelect
           subtitleOn
@@ -168,6 +167,37 @@ describe('SubtitlesSelect', () => {
       await waitFor(() => {
         expect(onSubtitleToggleChange).toHaveBeenCalledWith(false)
       })
+    })
+  })
+
+  describe('languages list', () => {
+    it('should show all languages when videoSubtitleLanguageIds is not null', async () => {
+      render(
+        <SubtitlesSelect
+          subtitleOn
+          subtitleLanguageId="529"
+          videoSubtitleLanguageIds={[
+            english.id,
+            french.id,
+            spanish.id,
+            nonSubtitleLanguage.id
+          ]}
+        />
+      )
+
+      await userEvent.click(screen.getByRole('combobox'))
+
+      const options = await screen.findAllByRole('option')
+      expect(options).toHaveLength(4)
+    })
+
+    it('should show filtered languages when videoSubtitleLanguageIds is null', async () => {
+      render(<SubtitlesSelect subtitleOn subtitleLanguageId="529" />)
+
+      await userEvent.click(screen.getByRole('combobox'))
+
+      const options = await screen.findAllByRole('option')
+      expect(options).toHaveLength(3)
     })
   })
 })

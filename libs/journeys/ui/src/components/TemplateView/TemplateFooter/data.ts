@@ -63,7 +63,9 @@ export const journey: Journey = {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
-      eventLabel: null
+      eventLabel: null,
+      showAssistant: null,
+      expandChatByDefault: null
     },
     {
       __typename: 'ButtonBlock',
@@ -124,7 +126,9 @@ export const journey: Journey = {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
-      eventLabel: null
+      eventLabel: null,
+      showAssistant: null,
+      expandChatByDefault: null
     },
     {
       id: 'signup.id',
@@ -176,5 +180,7 @@ export const journey: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  customizable: null,
+  showAssistant: null
 }

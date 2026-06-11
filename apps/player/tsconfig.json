@@ -4,7 +4,7 @@
     "jsx": "preserve",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "types": ["node", "jest"],
+    "types": ["node", "vitest/globals"],
     // Strict type checking
     "strict": true,
     "noImplicitAny": true,
@@ -63,11 +63,10 @@
     "**/*.js",
     "**/*.jsx",
     "**/*.mjs",
-    "next-env.d.ts",
     ".next/types/**/*.ts",
     "../../dist/apps/player/.next/types/**/*.ts",
     "src/app/.well-known/**/*.ts",
     "src/app/.well-known/**/*.tsx"
   ],
-  "exclude": ["node_modules", "jest.config.ts"]
+  "exclude": ["node_modules", "vitest.config.mts"]
 }

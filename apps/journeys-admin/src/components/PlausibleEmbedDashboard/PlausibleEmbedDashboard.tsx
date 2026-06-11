@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 // eslint-disable-next-line import/no-named-as-default
 import gql from 'graphql-tag'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { type ReactElement, useCallback, useRef, useState } from 'react'
 
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'

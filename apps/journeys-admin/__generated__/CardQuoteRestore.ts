@@ -124,6 +124,14 @@ export interface CardQuoteRestore_image_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardQuoteRestore_image_IconBlock {
@@ -552,6 +560,10 @@ export interface CardQuoteRestore_image_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardQuoteRestore_image_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -731,6 +743,14 @@ export interface CardQuoteRestore_subtitle_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardQuoteRestore_subtitle_IconBlock {
@@ -1159,6 +1179,10 @@ export interface CardQuoteRestore_subtitle_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1338,6 +1362,14 @@ export interface CardQuoteRestore_title_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardQuoteRestore_title_IconBlock {
@@ -1766,6 +1798,10 @@ export interface CardQuoteRestore_title_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardQuoteRestore_title_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1945,6 +1981,14 @@ export interface CardQuoteRestore_body_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardQuoteRestore_body_IconBlock {
@@ -2373,6 +2417,10 @@ export interface CardQuoteRestore_body_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardQuoteRestore_body_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -2473,6 +2521,14 @@ export interface CardQuoteRestore_cardBlockUpdate {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardQuoteRestore {

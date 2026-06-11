@@ -1,5 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen, waitFor } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { formatISO } from 'date-fns'
+import { type MockedFunction } from 'vitest'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -7,24 +16,38 @@ import { getJourneyAnalytics } from '@core/journeys/ui/useJourneyAnalyticsQuery/
 
 import { GetJourney_journey } from '../../../../../../__generated__/GetJourney'
 
-import { earliestStatsCollected } from './AnalyticsOverlaySwitch'
+import { buildPlausibleDateRange } from './buildPlausibleDateRange'
+import { earliestStatsCollected } from './buildPresetDateRange'
 
 import { AnalyticsOverlaySwitch } from '.'
+
+vi.mock('./buildPlausibleDateRange')
+
+const mockBuildPlausibleDateRange = buildPlausibleDateRange as MockedFunction<
+  typeof buildPlausibleDateRange
+>
 
 const mockCurrentDate = '2024-06-02'
 
 describe('AnalyticsOverlaySwitch', () => {
+  beforeEach(() => {
+    mockBuildPlausibleDateRange.mockClear()
+  })
+
   beforeAll(() => {
-    jest.useFakeTimers()
-    jest.setSystemTime(new Date('2024-06-02'))
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    vi.setSystemTime(new Date('2024-06-02'))
   })
 
   afterAll(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   it('toggles showAnalytics', async () => {
-    const result = jest.fn().mockReturnValue(getJourneyAnalytics.result)
+    mockBuildPlausibleDateRange.mockReturnValue(
+      `${earliestStatsCollected},${mockCurrentDate}`
+    )
+    const result = vi.fn().mockReturnValue(getJourneyAnalytics.result)
     const journey = { id: 'journeyId' } as unknown as GetJourney_journey
     const request = {
       ...getJourneyAnalytics.request,
@@ -77,5 +100,156 @@ describe('AnalyticsOverlaySwitch', () => {
     })
     screen.getByRole('checkbox').click()
     expect(showAnalytics).toHaveTextContent('false')
+  })
+
+  it('gets analytics for selected date range', async () => {
+    const selectedStartDate = new Date('2024-06-05')
+    const selectedEndDate = new Date('2024-06-10')
+    const formattedDateRange = `${formatISO(selectedStartDate, {
+      representation: 'date'
+    })},${formatISO(selectedEndDate, { representation: 'date' })}`
+
+    // Pretend the date picker has already produced our custom range
+    mockBuildPlausibleDateRange.mockReturnValue(formattedDateRange)
+
+    const result = vi.fn().mockReturnValue(getJourneyAnalytics.result)
+    const journey = { id: 'journeyId' } as unknown as GetJourney_journey
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              ...getJourneyAnalytics.request,
+              variables: {
+                ...getJourneyAnalytics.request.variables,
+                period: 'custom',
+                date: formattedDateRange
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <EditorProvider>
+            {({ state: { analytics } }) => (
+              <>
+                <div data-testid="analytics">{JSON.stringify(analytics)}</div>
+                <AnalyticsOverlaySwitch />
+              </>
+            )}
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const analyticsCheckbox = screen.getByRole('checkbox')
+    fireEvent.click(analyticsCheckbox)
+
+    // Verify the network call was made with the mocked date range
+    await waitFor(() => {
+      expect(result).toHaveBeenCalled()
+    })
+  })
+
+  it('shows filter button and date range select only when analytics are enabled', async () => {
+    mockBuildPlausibleDateRange.mockReturnValue(
+      `${earliestStatsCollected},${mockCurrentDate}`
+    )
+
+    const result = vi.fn().mockReturnValue(getJourneyAnalytics.result)
+    const journey = { id: 'journeyId' } as unknown as GetJourney_journey
+    const request = {
+      ...getJourneyAnalytics.request,
+      variables: {
+        ...getJourneyAnalytics.request.variables,
+        period: 'custom',
+        date: `${earliestStatsCollected},${mockCurrentDate}`
+      }
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request,
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <EditorProvider>{() => <AnalyticsOverlaySwitch />}</EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(
+      screen.queryByRole('button', { name: 'Filter' })
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('checkbox'))
+
+    const filterButton = await screen.findByRole('button', { name: 'Filter' })
+
+    expect(filterButton).toBeInTheDocument()
+    expect(screen.queryByLabelText('Date range preset')).not.toBeInTheDocument()
+
+    fireEvent.click(filterButton)
+
+    expect(screen.getByLabelText('Date range preset')).toBeInTheDocument()
+  })
+
+  it('shows custom date range picker when custom range is selected', async () => {
+    mockBuildPlausibleDateRange.mockReturnValue(
+      `${earliestStatsCollected},${mockCurrentDate}`
+    )
+
+    const result = vi.fn().mockReturnValue(getJourneyAnalytics.result)
+    const journey = { id: 'journeyId' } as unknown as GetJourney_journey
+    const request = {
+      ...getJourneyAnalytics.request,
+      variables: {
+        ...getJourneyAnalytics.request.variables,
+        period: 'custom',
+        date: `${earliestStatsCollected},${mockCurrentDate}`
+      }
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request,
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <EditorProvider>{() => <AnalyticsOverlaySwitch />}</EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('checkbox'))
+
+    const filterButton = await screen.findByRole('button', { name: 'Filter' })
+
+    fireEvent.click(filterButton)
+    const dateRangeSelectRoot = screen.getByLabelText('Date range preset')
+    const dateRangeCombobox = within(dateRangeSelectRoot).getByRole('combobox')
+
+    fireEvent.mouseDown(dateRangeCombobox)
+
+    const customRangeOption = await screen.findByRole('option', {
+      name: 'Custom Range'
+    })
+
+    fireEvent.click(customRangeOption)
+
+    expect(
+      screen.getAllByRole('group', { name: 'From' })[0]
+    ).toBeInTheDocument()
+    expect(screen.getAllByRole('group', { name: 'To' })[0]).toBeInTheDocument()
   })
 })

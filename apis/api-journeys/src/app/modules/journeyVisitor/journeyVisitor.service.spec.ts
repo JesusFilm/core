@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { mockDeep } from 'jest-mock-extended'
 
 import { JourneyVisitorSort } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
@@ -24,7 +25,10 @@ describe('JourneyVisitorService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [JourneyVisitorService, PrismaService]
+      providers: [
+        JourneyVisitorService,
+        { provide: PrismaService, useValue: mockDeep<PrismaService>() }
+      ]
     }).compile()
 
     service = module.get<JourneyVisitorService>(JourneyVisitorService)

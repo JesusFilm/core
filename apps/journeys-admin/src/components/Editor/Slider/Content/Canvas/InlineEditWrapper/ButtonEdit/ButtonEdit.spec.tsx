@@ -16,7 +16,7 @@ import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { BUTTON_BLOCK_UPDATE_CONTENT, ButtonEdit } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -48,7 +48,7 @@ describe('ButtonEdit', () => {
         label: 'label update'
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         buttonBlockUpdate: [
           {
@@ -69,7 +69,7 @@ describe('ButtonEdit', () => {
         label: 'label'
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         buttonBlockUpdate: [
           {
@@ -127,7 +127,7 @@ describe('ButtonEdit', () => {
     journeyCustomizationFields: []
   } as unknown as Journey
 
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('selects the input on click', () => {
     render(

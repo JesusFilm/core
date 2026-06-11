@@ -9,14 +9,14 @@ import {
 import { setBlockRestoreEditorState } from './setBlockRestoreEditorState'
 
 describe('setBlockRestoreEditorState', () => {
-  const dispatch = jest.fn()
+  const dispatch = vi.fn()
   const stepBlockMock = {
     ...stepBlock,
     __typename: 'StepBlock'
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should update editor state when current block is not a step block', () => {
@@ -39,7 +39,9 @@ describe('setBlockRestoreEditorState', () => {
         parentBlockId: 'stepId',
         parentOrder: 0,
         themeMode: null,
-        themeName: null
+        themeName: null,
+        showAssistant: null,
+        expandChatByDefault: null
       },
       selectedStep: {
         __typename: 'StepBlock',

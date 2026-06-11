@@ -6,12 +6,18 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import {
+  signOut as firebaseSignOut,
+  signInWithEmailAndPassword
+} from 'firebase/auth'
 import { Form, Formik } from 'formik'
-import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 import { InferType, object, string } from 'yup'
 
+import { getFirebaseAuth, login, loginWithCredential } from '../../../libs/auth'
+import { getPendingGuestJourney } from '../../../libs/pendingGuestJourney'
 import { PageProps } from '../types'
 
 export function PasswordPage({
@@ -19,7 +25,8 @@ export function PasswordPage({
   userPassword,
   setActivePage
 }: PageProps): ReactElement {
-  const auth = getAuth()
+  const auth = getFirebaseAuth()
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const handleClickShowPassword = (): void => setShowPassword((show) => !show)
   const handleMouseDownPassword = (
@@ -41,7 +48,28 @@ export function PasswordPage({
     { setFieldError }
   ): Promise<void> {
     try {
-      await signInWithEmailAndPassword(auth, values.email, values.password)
+      if (auth.currentUser?.isAnonymous === true) {
+        await firebaseSignOut(auth)
+      }
+
+      const credential = await signInWithEmailAndPassword(
+        auth,
+        values.email,
+        values.password
+      )
+
+      const pending = getPendingGuestJourney()
+      if (pending != null) {
+        const idToken = await credential.user.getIdToken()
+        await login(idToken)
+        const existingRedirect = router.query.redirect as string | undefined
+        const redirectUrl =
+          existingRedirect ?? `/templates/${pending.journeyId}/customize`
+        window.location.href = `/users/sign-in?redirect=${encodeURIComponent(redirectUrl)}`
+        return
+      }
+
+      await loginWithCredential(credential)
     } catch (error) {
       if (error.code === 'auth/wrong-password') {
         setFieldError(
@@ -139,10 +167,9 @@ export function PasswordPage({
                   {t('Cancel')}
                 </Button>
                 <Button
-                  variant="contained"
-                  size="large"
+                  variant="blockContained"
                   type="submit"
-                  color="secondary"
+                  color="solid"
                   fullWidth
                 >
                   {t('Sign In')}

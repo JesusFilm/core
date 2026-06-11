@@ -1,17 +1,19 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreview'
+import { OVERFLOW_PX } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/templateCardPreviewConfig'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 
 interface CardsSectionProps {
   customizableSteps: Array<TreeBlock<StepBlock>>
   selectedStep: TreeBlock<StepBlock>
   handleStepClick: (step: TreeBlock<StepBlock>) => void
+  showLabel?: boolean
 }
 
 /**
@@ -27,7 +29,8 @@ interface CardsSectionProps {
 export function CardsSection({
   customizableSteps,
   selectedStep,
-  handleStepClick
+  handleStepClick,
+  showLabel = false
 }: CardsSectionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -37,18 +40,27 @@ export function CardsSection({
       gap={4}
       data-testid="CardsSection"
       sx={{
-        width: '100%'
+        width: '100%',
+        overflow: 'visible'
       }}
     >
-      <Typography variant="h6" sx={{ color: 'text.primary' }}>
-        {t('Cards')}
-      </Typography>
-      <Box sx={{ width: '100%', px: { xs: 0, sm: 5 } }}>
+      {showLabel && (
+        <Typography variant="h6" sx={{ color: 'text.primary' }}>
+          {t('Cards')}
+        </Typography>
+      )}
+      <Box
+        sx={{
+          width: { xs: '100%', sm: `calc(100% + ${OVERFLOW_PX * 2}px)` },
+          mx: { xs: 0, sm: `-${OVERFLOW_PX}px` }
+        }}
+      >
         <TemplateCardPreview
           steps={customizableSteps}
-          variant="media"
+          variant="compact"
           onClick={handleStepClick}
           selectedStep={selectedStep}
+          cardLabel={t('Tap to preview')}
         />
       </Box>
     </Stack>

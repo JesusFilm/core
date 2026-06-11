@@ -124,6 +124,14 @@ export interface BlockRestore_blockRestore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface BlockRestore_blockRestore_IconBlock {
@@ -562,6 +570,10 @@ export interface BlockRestore_blockRestore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

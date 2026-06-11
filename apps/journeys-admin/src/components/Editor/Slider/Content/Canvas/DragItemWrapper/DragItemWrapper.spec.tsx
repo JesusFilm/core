@@ -13,7 +13,7 @@ import { TypographyFields } from '../../../../../../../__generated__/TypographyF
 
 import { DragItemWrapper } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))

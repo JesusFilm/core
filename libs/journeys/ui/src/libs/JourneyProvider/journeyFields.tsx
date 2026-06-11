@@ -54,15 +54,18 @@ export const JOURNEY_FIELDS = gql`
       openedAt
       user {
         id
-        firstName
-        lastName
-        imageUrl
+        ... on AuthenticatedUser {
+          firstName
+          lastName
+          imageUrl
+        }
       }
     }
     chatButtons {
       id
       link
       platform
+      customizable
     }
     host {
       id
@@ -117,5 +120,9 @@ export const JOURNEY_FIELDS = gql`
       defaultValue
     }
     fromTemplateId
+    customizable
+    # Deprecated. No longer consulted at runtime — chat affordance is
+    # card-level only. Field removal is tracked in NES-1624.
+    showAssistant
   }
 `

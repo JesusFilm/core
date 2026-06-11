@@ -138,7 +138,8 @@ const withRenderLogic = ({
             invisible = false
           }
           return (
-            user != null && (
+            user != null &&
+            user.__typename === 'AuthenticatedUser' && (
               <Avatar
                 apiUser={user}
                 notification={role === UserJourneyRole.inviteRequested}

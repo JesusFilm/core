@@ -22,7 +22,7 @@ const wrapper = ({ children }: { children: ReactNode }): ReactElement => (
 
 describe('MuxVideoUploadProvider', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render children', () => {
@@ -92,7 +92,7 @@ describe('MuxVideoUploadProvider', () => {
       })
 
       const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
-      const onComplete = jest.fn()
+      const onComplete = vi.fn()
 
       await act(async () => {
         result.current.addUploadTask(

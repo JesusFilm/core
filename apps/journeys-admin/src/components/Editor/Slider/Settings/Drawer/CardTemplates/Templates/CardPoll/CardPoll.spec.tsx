@@ -2,6 +2,7 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -35,17 +36,17 @@ import {
 
 import { CardPoll } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
 describe('CardPoll', () => {
   const card: TreeBlock = {
@@ -60,7 +61,9 @@ describe('CardPoll', () => {
     fullscreen: false,
     backdropBlur: null,
     eventLabel: null,
-    children: []
+    children: [],
+    showAssistant: null,
+    expandChatByDefault: null
   }
   const step: TreeBlock = {
     id: 'stepId',
@@ -287,7 +290,9 @@ describe('CardPoll', () => {
           fullscreen: true,
           backdropBlur: null,
           eventLabel: null,
-          __typename: 'CardBlock'
+          __typename: 'CardBlock',
+          showAssistant: null,
+          expandChatByDefault: null
         }
       }
     }
@@ -420,8 +425,8 @@ describe('CardPoll', () => {
       .mockReturnValueOnce('radioOption3Id')
       .mockReturnValueOnce('radioOption4Id')
       .mockReturnValueOnce('bodyId')
-    const result = jest.fn().mockResolvedValue(cardPollCreateMock.result)
-    const result2 = jest.fn().mockResolvedValue(cardPollDeleteMock.result)
+    const result = vi.fn().mockResolvedValue(cardPollCreateMock.result)
+    const result2 = vi.fn().mockResolvedValue(cardPollDeleteMock.result)
 
     const { getByRole } = render(
       <MockedProvider
@@ -460,9 +465,9 @@ describe('CardPoll', () => {
       .mockReturnValueOnce('radioOption3Id')
       .mockReturnValueOnce('radioOption4Id')
       .mockReturnValueOnce('bodyId')
-    const result = jest.fn().mockResolvedValue(cardPollCreateMock.result)
-    const result2 = jest.fn().mockResolvedValue(cardPollDeleteMock.result)
-    const result3 = jest.fn().mockResolvedValue(cardPollRestore.result)
+    const result = vi.fn().mockResolvedValue(cardPollCreateMock.result)
+    const result2 = vi.fn().mockResolvedValue(cardPollDeleteMock.result)
+    const result3 = vi.fn().mockResolvedValue(cardPollRestore.result)
 
     const { getByRole } = render(
       <MockedProvider

@@ -21,7 +21,9 @@ const card: TreeBlock<CardBlock> = {
   fullscreen: false,
   backdropBlur: null,
   eventLabel: null,
-  children: []
+  children: [],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 
 const image: TreeBlock<ImageBlock> = {
@@ -65,6 +67,7 @@ const video: TreeBlock<VideoBlock> = {
   eventLabel: null,
   endEventLabel: null,
   customizable: null,
+  notes: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',

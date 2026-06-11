@@ -2,7 +2,7 @@ import last from 'lodash/last'
 import { Play } from 'lucide-react'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import type { MouseEvent, ReactElement } from 'react'
 
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
@@ -85,6 +85,8 @@ export function VideoCard({
     variantSlug: video?.variant?.slug,
     languageId: watchState.audioLanguageId
   })
+  const isLocalThumbnailUrl =
+    thumbnailUrl?.startsWith('/watch/images/thumbnails/') === true
 
   // Generate blurhash from the actual image that will be displayed
   // Use thumbnailUrl if it's different from imageSrc (indicating local thumbnail)
@@ -164,6 +166,7 @@ export function VideoCard({
                 alt={imageAlt}
                 fill
                 sizes="100vw"
+                unoptimized={isLocalThumbnailUrl}
                 className="poster-hover-zoom"
                 data-content-id={video?.id}
                 {...(blurDataURL != null

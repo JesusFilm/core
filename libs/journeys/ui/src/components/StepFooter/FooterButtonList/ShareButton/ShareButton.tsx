@@ -1,4 +1,4 @@
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { usePlausible } from 'next-plausible'
 import { ReactElement, useState } from 'react'
 

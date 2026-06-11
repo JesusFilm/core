@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import React from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -20,7 +20,9 @@ function buildSteps(count: number): Array<TreeBlock<any>> {
         parentBlockId: `step-${i}`,
         parentOrder: 0,
         themeName: 'base',
-        themeMode: 'dark'
+        themeMode: 'dark',
+        showAssistant: null,
+        expandChatByDefault: null
       } as unknown as TreeBlock<any>
     ]
   })) as Array<TreeBlock<any>>
@@ -61,5 +63,29 @@ describe('CardsPreview', () => {
     expect(screen.getByTestId('CardsPreviewPlaceholder')).toBeInTheDocument()
     expect(screen.getByTestId('CardsPreviewSkeleton')).toBeInTheDocument()
     expect(screen.queryByTestId('CardsSwiperSlide')).toBeNull()
+  })
+
+  it('should call onCardClick with the step when a card is clicked', () => {
+    const steps = buildSteps(3)
+    const handleCardClick = vi.fn()
+    render(
+      <JourneyProvider value={{ journey: defaultJourney, variant: 'admin' }}>
+        <CardsPreview steps={steps} onCardClick={handleCardClick} />
+      </JourneyProvider>
+    )
+    const cards = screen.getAllByTestId('CardsPreviewItem')
+    fireEvent.click(cards[0])
+    expect(handleCardClick).toHaveBeenCalledTimes(1)
+    expect(handleCardClick).toHaveBeenCalledWith(steps[0])
+  })
+
+  it('should render cards with steps prop passed to each item', () => {
+    const steps = buildSteps(3)
+    render(
+      <JourneyProvider value={{ journey: defaultJourney, variant: 'admin' }}>
+        <CardsPreview steps={steps} />
+      </JourneyProvider>
+    )
+    expect(screen.getAllByTestId('CardsPreviewItem')).toHaveLength(3)
   })
 })

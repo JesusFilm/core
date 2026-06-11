@@ -1,11 +1,12 @@
-import { prisma } from '@core/prisma/media/client'
+import { Prisma, prisma } from '@core/prisma/media/client'
 
-import { builder } from '../builder'
+import { DateTimeFilter, builder, toPrismaDateTimeFilter } from '../builder'
 import { Language } from '../language'
 
 builder.prismaObject('Keyword', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     value: t.exposeString('value', { nullable: false }),
     language: t.field({
       type: Language,
@@ -15,11 +16,43 @@ builder.prismaObject('Keyword', {
   })
 })
 
+const KeywordsFilter = builder.inputType('KeywordsFilter', {
+  fields: (t) => ({
+    updatedAt: t.field({ type: DateTimeFilter, required: false })
+  })
+})
+
 builder.queryFields((t) => ({
   keywords: t.prismaField({
     type: ['Keyword'],
     nullable: false,
-    resolve: async (query) => await prisma.keyword.findMany({ ...query })
+    args: {
+      where: t.arg({ type: KeywordsFilter, required: false }),
+      offset: t.arg.int({ required: false }),
+      limit: t.arg.int({ required: false })
+    },
+    resolve: async (query, _parent, { where, offset, limit }) => {
+      const filter: Prisma.KeywordWhereInput = {}
+      filter.updatedAt = toPrismaDateTimeFilter(where?.updatedAt)
+      return await prisma.keyword.findMany({
+        ...query,
+        where: filter,
+        skip: offset ?? 0,
+        take: limit ?? undefined,
+        orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }]
+      })
+    }
+  }),
+  keywordsCount: t.int({
+    nullable: false,
+    args: {
+      where: t.arg({ type: KeywordsFilter, required: false })
+    },
+    resolve: async (_parent, { where }) => {
+      const filter: Prisma.KeywordWhereInput = {}
+      filter.updatedAt = toPrismaDateTimeFilter(where?.updatedAt)
+      return await prisma.keyword.count({ where: filter })
+    }
   })
 }))
 // createKeyword mutation

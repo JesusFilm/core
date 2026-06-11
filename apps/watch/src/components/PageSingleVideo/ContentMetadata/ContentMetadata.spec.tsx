@@ -7,8 +7,9 @@ import { videos } from '../../Videos/__generated__/testData'
 
 import { ContentMetadata } from './ContentMetadata'
 
-jest.mock('next-i18next', () => ({
-  useTranslation: jest.fn().mockReturnValue({
+vi.mock('next-i18next/pages', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('next-i18next/pages')>()),
+  useTranslation: vi.fn().mockReturnValue({
     t: (key: string) => key
   })
 }))

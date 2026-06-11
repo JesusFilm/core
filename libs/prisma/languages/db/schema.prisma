@@ -2,25 +2,17 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider      = "prisma-client-js"
-  output        = env("PRISMA_LOCATION_LANGUAGES")
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
-}
-
-generator erd {
-  provider    = "prisma-erd-generator"
-  ignoreEnums = true
-  disabled    = true
+  provider = "prisma-client"
+  output   = "../src/__generated__/client"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("PG_DATABASE_URL_LANGUAGES")
 }
 
 generator pothos {
   provider     = "prisma-pothos-types"
-  clientOutput = ".prisma/api-languages-client"
+  clientOutput = "./client"
   output       = "../src/__generated__/pothos-types.ts"
 }
 
@@ -43,6 +35,7 @@ model Language {
   @@index(bcp47(type: Hash))
   @@index(hasVideos)
   @@index(iso3(type: Hash))
+  @@index([updatedAt])
 }
 
 model LanguageName {
@@ -63,6 +56,7 @@ model LanguageName {
 
 model Country {
   id               String            @id
+  updatedAt        DateTime          @default(now()) @updatedAt
   name             CountryName[]
   population       Int?
   continentId      String?
@@ -73,6 +67,8 @@ model Country {
   languages        Language[]
   countryLanguages CountryLanguage[]
   continent        Continent?        @relation(fields: [continentId], references: [id])
+
+  @@index([updatedAt])
 }
 
 model CountryLanguage {

@@ -2,7 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import { Form, Formik } from 'formik'
 import noop from 'lodash/noop'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
@@ -19,7 +19,13 @@ export const JOURNEY_SEO_TITLE_UPDATE = gql`
   }
 `
 
-export function TitleEdit(): ReactElement {
+interface TitleEditProps {
+  hideHelperText?: boolean
+}
+
+export function TitleEdit({
+  hideHelperText = false
+}: TitleEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useMutation<JourneySeoTitleUpdate>(
     JOURNEY_SEO_TITLE_UPDATE
@@ -79,9 +85,11 @@ export function TitleEdit(): ReactElement {
                 value={values.seoTitle}
                 error={touched.seoTitle === true && Boolean(errors.seoTitle)}
                 helperText={
-                  errors.seoTitle != null
-                    ? (errors.seoTitle as string)
-                    : t('Recommended length: 5 words')
+                  hideHelperText
+                    ? undefined
+                    : errors.seoTitle != null
+                      ? (errors.seoTitle as string)
+                      : t('Recommended length: 5 words')
                 }
                 onChange={handleChange}
                 onBlur={(e) => {
@@ -102,7 +110,9 @@ export function TitleEdit(): ReactElement {
           label={t('Headline')}
           fullWidth
           disabled
-          helperText={t('Recommended length: 5 words')}
+          helperText={
+            hideHelperText ? undefined : t('Recommended length: 5 words')
+          }
           data-testid="TitleEdit"
         />
       )}

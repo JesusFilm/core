@@ -4,7 +4,7 @@ import { UnsplashSearch } from '.'
 
 describe('UnsplashSearch', () => {
   it('should call handle submit with field value', async () => {
-    const handleSubmit = jest.fn()
+    const handleSubmit = vi.fn()
     render(<UnsplashSearch handleSubmit={handleSubmit} />)
     fireEvent.change(screen.getByRole('textbox', { name: 'UnsplashSearch' }), {
       target: { value: 'Jesus' }

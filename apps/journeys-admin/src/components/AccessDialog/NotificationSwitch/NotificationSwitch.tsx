@@ -2,7 +2,7 @@ import { ApolloError } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Switch from '@mui/material/Switch'
 import Tooltip from '@mui/material/Tooltip'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ChangeEvent, ReactElement } from 'react'
 
@@ -60,16 +60,22 @@ export function NotificationSwitch({
     }
   }
 
+  const switchElement = (
+    <Box>
+      <Switch
+        inputProps={{ 'aria-checked': checked }}
+        checked={checked}
+        onChange={handleChange}
+        disabled={loading || disabled}
+      />
+    </Box>
+  )
+
+  if (name == null) return switchElement
+
   return (
     <Tooltip title={t('Only {{ name }} can change this', { name })}>
-      <Box>
-        <Switch
-          inputProps={{ 'aria-checked': checked }}
-          checked={checked}
-          onChange={handleChange}
-          disabled={loading || disabled}
-        />
-      </Box>
+      {switchElement}
     </Tooltip>
   )
 }

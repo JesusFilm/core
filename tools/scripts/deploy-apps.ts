@@ -6,7 +6,7 @@ const execAsync = promisify(exec)
 async function main() {
   const args = process.argv
   // remove args:
-  // '/workspaces/core/node_modules/.bin/ts-node',
+  // '/workspaces/core/node_modules/.bin/tsx',
   // '/workspaces/core/tools/scripts/affected-apps.ts',
   args.splice(0, 2)
 

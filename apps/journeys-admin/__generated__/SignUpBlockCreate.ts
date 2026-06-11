@@ -136,7 +136,7 @@ export interface SignUpBlockCreate_signUpBlockUpdate {
 export interface SignUpBlockCreate {
   signUpBlockCreate: SignUpBlockCreate_signUpBlockCreate;
   submitIcon: SignUpBlockCreate_submitIcon;
-  signUpBlockUpdate: SignUpBlockCreate_signUpBlockUpdate | null;
+  signUpBlockUpdate: SignUpBlockCreate_signUpBlockUpdate;
 }
 
 export interface SignUpBlockCreateVariables {

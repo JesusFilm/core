@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { screen, userEvent, waitFor } from 'storybook/test'
 
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
@@ -98,6 +98,7 @@ const videoInternal: TreeBlock<VideoBlock> = {
   eventLabel: null,
   endEventLabel: null,
   customizable: null,
+  notes: null,
   children: []
 }
 
@@ -148,6 +149,7 @@ const videoYouTube: TreeBlock<VideoBlock> = {
   endEventLabel: null,
   posterBlockId: 'poster1.id',
   customizable: null,
+  notes: null,
   children: []
 }
 

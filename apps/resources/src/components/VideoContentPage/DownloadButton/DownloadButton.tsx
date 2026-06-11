@@ -1,7 +1,7 @@
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 export interface DownloadButtonProps {

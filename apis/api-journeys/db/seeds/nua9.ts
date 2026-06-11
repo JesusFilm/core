@@ -1,15 +1,12 @@
 import { v4 as uuidv4 } from 'uuid'
 
-import { PrismaClient } from '.prisma/api-journeys-client'
-
+import { prisma } from '../../../../libs/prisma/journeys/src/client'
 import {
   JourneyStatus,
   TextResponseType,
   ThemeMode,
   ThemeName
 } from '../../src/app/__generated__/graphql'
-
-const prisma = new PrismaClient()
 
 export async function nua9(): Promise<void> {
   const slug = 'decision'

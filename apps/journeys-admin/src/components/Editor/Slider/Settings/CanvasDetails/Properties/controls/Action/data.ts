@@ -101,7 +101,9 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             settings: null,
             eventLabel: null
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -247,7 +249,9 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             settings: null,
             eventLabel: null
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -376,7 +380,9 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -511,7 +517,9 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               }
             ]
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   },
@@ -621,7 +629,9 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             settings: null,
             eventLabel: null
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   }

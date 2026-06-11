@@ -7,9 +7,9 @@ import { Card } from '../Card'
 
 import { CardWrapper } from '.'
 
-jest.mock('@core/journeys/ui/Card', () => ({
+vi.mock('@core/journeys/ui/Card', () => ({
   __esModule: true,
-  Card: jest.fn(() => <></>)
+  Card: vi.fn(() => <></>)
 }))
 
 describe('CardWrapper', () => {
@@ -56,6 +56,7 @@ describe('CardWrapper', () => {
           eventLabel: null,
           endEventLabel: null,
           customizable: null,
+          notes: null,
           children: [
             {
               id: 'image5.id',
@@ -75,7 +76,9 @@ describe('CardWrapper', () => {
             }
           ]
         }
-      ]
+      ],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <CardWrapper block={block}>
@@ -130,7 +133,8 @@ describe('CardWrapper', () => {
             showGeneratedSubtitles: null,
             eventLabel: null,
             endEventLabel: null,
-            customizable: null
+            customizable: null,
+            notes: null
           }
         ],
         coverBlockId: 'video5.id',
@@ -142,7 +146,9 @@ describe('CardWrapper', () => {
         themeMode: null,
         themeName: null,
         eventLabel: null,
-        wrappers: {}
+        wrappers: {},
+        showAssistant: null,
+        expandChatByDefault: null
       },
       undefined
     )
@@ -191,6 +197,7 @@ describe('CardWrapper', () => {
           eventLabel: null,
           endEventLabel: null,
           customizable: null,
+          notes: null,
           children: [
             {
               id: 'image5.id',
@@ -210,7 +217,9 @@ describe('CardWrapper', () => {
             }
           ]
         }
-      ]
+      ],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <CardWrapper block={block}>
@@ -265,7 +274,8 @@ describe('CardWrapper', () => {
             showGeneratedSubtitles: null,
             eventLabel: null,
             endEventLabel: null,
-            customizable: null
+            customizable: null,
+            notes: null
           }
         ],
         coverBlockId: 'video5.id',
@@ -277,7 +287,9 @@ describe('CardWrapper', () => {
         themeMode: null,
         themeName: null,
         eventLabel: null,
-        wrappers: {}
+        wrappers: {},
+        showAssistant: null,
+        expandChatByDefault: null
       },
       undefined
     )

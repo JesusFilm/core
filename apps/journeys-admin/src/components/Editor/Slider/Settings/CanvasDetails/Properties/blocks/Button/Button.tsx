@@ -1,11 +1,12 @@
 import Box from '@mui/material/Box'
 import capitalize from 'lodash/capitalize'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ActivityIcon from '@core/shared/ui/icons/Activity'
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 import AlignLeft from '@core/shared/ui/icons/AlignLeft'
@@ -48,6 +49,7 @@ export function Button({
 }: TreeBlock<ButtonBlock>): ReactElement {
   const { dispatch } = useEditor()
   const { journey } = useJourney()
+  const { editJourneyTrackingMetrics } = useFlags()
   const { t } = useTranslation('apps-journeys-admin')
 
   const startIcon = children.find(
@@ -70,7 +72,7 @@ export function Button({
 
   return (
     <Box data-testid="ButtonProperties">
-      {journey?.template && (
+      {(journey?.template || editJourneyTrackingMetrics) && (
         <Accordion
           icon={<ActivityIcon />}
           id={`${id}-event-label`}

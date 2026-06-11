@@ -1,5 +1,6 @@
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
@@ -17,9 +18,9 @@ import { TestEditorState } from '../../../libs/TestEditorState'
 
 import { Fab } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('Fab', () => {
@@ -30,9 +31,7 @@ describe('Fab', () => {
   }
 
   describe('mdUp', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => true)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => true))
 
     it('should be disabled', () => {
       const step = {
@@ -54,7 +53,9 @@ describe('Fab', () => {
                 __typename: 'VideoBlock',
                 children: []
               }
-            ]
+            ],
+            showAssistant: null,
+            expandChatByDefault: null
           }
         ]
       } as unknown as TreeBlock<StepBlock>
@@ -184,9 +185,7 @@ describe('Fab', () => {
   })
 
   describe('mdDown', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => false)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => false))
 
     it('should handle add', async () => {
       render(

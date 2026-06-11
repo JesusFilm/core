@@ -1,10 +1,9 @@
-FROM node:22-alpine3.20
+FROM node:24-alpine3.23
 
 EXPOSE 4001
 
 ARG SERVICE_VERSION=0.0.1
 ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
-ENV PRISMA_LOCATION_JOURNEYS=/app/node_modules/.prisma/api-journeys-client
 ENV PNPM_HOME="/usr/local/share/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
@@ -14,12 +13,12 @@ RUN apk upgrade --update-cache --available && \
 
 WORKDIR /app
 COPY ./dist/apps/api-journeys .
-COPY ./libs/prisma/journeys/db ./prisma
+COPY ./libs/prisma/journeys/db ./prisma/db
+COPY ./libs/prisma/journeys/prisma.config.ts ./prisma/prisma.config.ts
 
-RUN corepack enable && corepack prepare pnpm@10.15.1 --activate
+COPY ./apis/api-journeys/docker-entrypoint.sh ./docker-entrypoint.sh
+
+RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
 RUN pnpm install --prod --silent
-RUN pnpm add @prisma/client@6.18.0
-RUN pnpm add -D prisma@6.18.0
-RUN pnpm exec prisma generate --generator client --schema ./prisma/schema.prisma
 
-CMD pnpm exec prisma migrate deploy --schema ./prisma/schema.prisma && node ./main.js
+ENTRYPOINT ["./docker-entrypoint.sh"]

@@ -9,7 +9,7 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -59,23 +59,20 @@ export function GoalsList({
             >
               <Typography variant="h1">{t('The Journey Goals')}</Typography>
               <Button
-                variant="outlined"
+                variant="blockOutlined"
+                color="solid"
                 startIcon={
                   <InformationCircleContainedIcon
                     sx={{ color: 'secondary.light' }}
                   />
                 }
                 sx={{
-                  display: 'flex',
-                  color: 'secondary.main',
-                  borderColor: 'secondary.main',
-                  borderRadius: 2,
                   alignSelf: { xs: 'end', sm: 'none' },
                   mb: { xs: 4, sm: 0 }
                 }}
                 onClick={() => handleClick()}
               >
-                <Typography variant="subtitle2">{t('Learn More')}</Typography>
+                {t('Learn More')}
               </Button>
             </Box>
             <Typography>

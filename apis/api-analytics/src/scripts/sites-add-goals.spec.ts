@@ -1,22 +1,20 @@
-import { PrismaClient } from '.prisma/api-analytics-client'
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { Mock } from 'vitest'
 
+import { prisma } from '../../../../libs/prisma/analytics/src/client'
 import { addGoalsToAllSites } from '../lib/site/addGoalsToSites'
 
 import main from './sites-add-goals'
 
-jest.mock('.prisma/api-analytics-client', () => ({
+vi.mock('../../../../libs/prisma/analytics/src/client', () => ({
   __esModule: true,
-  PrismaClient: (() => {
-    const prismaInstance = { $disconnect: jest.fn() }
-    const MockPrismaClient = jest.fn().mockImplementation(() => prismaInstance)
-    ;(MockPrismaClient as any).__instance = prismaInstance
-    return MockPrismaClient
-  })()
+  prisma: { $disconnect: vi.fn() },
+  PrismaClient: vi.fn()
 }))
 
-jest.mock('../lib/site/addGoalsToSites', () => ({
+vi.mock('../lib/site/addGoalsToSites', () => ({
   __esModule: true,
-  addGoalsToAllSites: jest.fn()
+  addGoalsToAllSites: vi.fn()
 }))
 
 describe('sites-add-goals script', () => {
@@ -25,10 +23,10 @@ describe('sites-add-goals script', () => {
   const originalExitCode = process.exitCode
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env = { ...originalEnv }
     process.argv = [...originalArgv]
-    delete process.exitCode
+    process.exitCode = undefined
   })
 
   afterAll(() => {
@@ -41,42 +39,40 @@ describe('sites-add-goals script', () => {
     process.env.GOALS = 'goal1,goal2'
     process.env.BATCH_SIZE = '200'
     process.argv = ['node', 'sites-add-goals.ts']
-    ;(addGoalsToAllSites as jest.Mock).mockResolvedValue({
+    ;(addGoalsToAllSites as Mock).mockResolvedValue({
       totalAdded: 10,
       totalFailed: 0
     })
 
     await main()
 
-    const prismaInstance = (PrismaClient as any).__instance
     expect(addGoalsToAllSites).toHaveBeenCalledWith(
-      prismaInstance,
+      prisma,
       ['goal1', 'goal2'],
       expect.objectContaining({ batchSize: 200, logger: console })
     )
     expect(process.exitCode).toBeUndefined()
-    expect(prismaInstance.$disconnect).toHaveBeenCalledTimes(1)
+    expect(prisma.$disconnect).toHaveBeenCalledTimes(1)
   })
 
   it('sets process.exitCode=1 when totalFailed > 0', async () => {
     process.env.GOALS = 'goal1'
     process.argv = ['node', 'sites-add-goals.ts']
-    ;(addGoalsToAllSites as jest.Mock).mockResolvedValue({
+    ;(addGoalsToAllSites as Mock).mockResolvedValue({
       totalAdded: 0,
       totalFailed: 2
     })
 
     await main()
 
-    const prismaInstance = (PrismaClient as any).__instance
     expect(process.exitCode).toBe(1)
-    expect(prismaInstance.$disconnect).toHaveBeenCalledTimes(1)
+    expect(prisma.$disconnect).toHaveBeenCalledTimes(1)
   })
 
   it('exits with code 1 when GOALS is missing and still disconnects', async () => {
     process.argv = ['node', 'sites-add-goals.ts']
 
-    const exitSpy = jest.spyOn(process, 'exit').mockImplementation(((
+    const exitSpy = vi.spyOn(process, 'exit').mockImplementation(((
       code?: number
     ) => {
       throw new Error(`process.exit:${code ?? ''}`)
@@ -84,8 +80,7 @@ describe('sites-add-goals script', () => {
 
     await expect(main()).rejects.toThrow('process.exit:1')
 
-    const prismaInstance = (PrismaClient as any).__instance
     expect(exitSpy).toHaveBeenCalledWith(1)
-    expect(prismaInstance.$disconnect).toHaveBeenCalledTimes(1)
+    expect(prisma.$disconnect).toHaveBeenCalledTimes(1)
   })
 })

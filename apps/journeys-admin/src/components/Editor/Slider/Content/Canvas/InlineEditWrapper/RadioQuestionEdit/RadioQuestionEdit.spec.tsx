@@ -17,12 +17,12 @@ import { RADIO_OPTION_BLOCK_CREATE } from './RadioQuestionEdit'
 
 import { RadioQuestionEdit } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   v4: () => 'radioOption.id'
 }))
 
@@ -53,7 +53,7 @@ describe('RadioQuestionEdit', () => {
   }
 
   it('adds an option on click', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         radioOptionBlockCreate: {
           id: 'radioOption.id',
@@ -120,7 +120,7 @@ describe('RadioQuestionEdit', () => {
   })
 
   it('can undo an option create', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         radioOptionBlockCreate: {
           id: 'radioOption.id',
@@ -132,7 +132,7 @@ describe('RadioQuestionEdit', () => {
       }
     }))
 
-    const blockDeleteResult = jest.fn().mockReturnValue(deleteBlockMock.result)
+    const blockDeleteResult = vi.fn().mockReturnValue(deleteBlockMock.result)
 
     const { getAllByRole, getByRole } = render(
       <MockedProvider
@@ -198,7 +198,7 @@ describe('RadioQuestionEdit', () => {
   })
 
   it('can redo an option create', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         radioOptionBlockCreate: {
           id: 'radioOption.id',
@@ -210,10 +210,8 @@ describe('RadioQuestionEdit', () => {
       }
     }))
 
-    const blockDeleteResult = jest.fn().mockReturnValue(deleteBlockMock.result)
-    const blockRestoreResult = jest
-      .fn()
-      .mockReturnValue(blockRestoreMock.result)
+    const blockDeleteResult = vi.fn().mockReturnValue(deleteBlockMock.result)
+    const blockRestoreResult = vi.fn().mockReturnValue(blockRestoreMock.result)
 
     const { getAllByRole, getByRole } = render(
       <MockedProvider

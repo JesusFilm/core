@@ -3,16 +3,16 @@ import { getCookie, setCookie } from './cookieHandler'
 // Mock document object with necessary properties and methods
 const mockDocument = {
   cookie: '',
-  addEventListener: jest.fn(),
-  removeEventListener: jest.fn()
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn()
 }
 
 // Mock console methods to capture warnings/errors
 const consoleSpy = {
-  warn: jest.spyOn(console, 'warn').mockImplementation(() => {
+  warn: vi.spyOn(console, 'warn').mockImplementation(() => {
     // Intentionally empty - suppressing console output during tests
   }),
-  error: jest.spyOn(console, 'error').mockImplementation(() => {
+  error: vi.spyOn(console, 'error').mockImplementation(() => {
     // Intentionally empty - suppressing console output during tests
   })
 }
@@ -35,7 +35,7 @@ const mockCookieSetter = () => {
   return setCookieCalls
 }
 
-xdescribe('cookieHandler', () => {
+describe.skip('cookieHandler', () => {
   // disabled due to Jest v30 compatibility issues
   beforeAll(() => {
     // Mock document globally for the entire test suite
@@ -339,7 +339,7 @@ xdescribe('cookieHandler', () => {
 
       // Mock encodeURIComponent to throw an error
       const originalEncodeURIComponent = global.encodeURIComponent
-      global.encodeURIComponent = jest.fn().mockImplementation(() => {
+      global.encodeURIComponent = vi.fn().mockImplementation(() => {
         throw new Error('Encoding error')
       })
 

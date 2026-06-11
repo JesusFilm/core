@@ -138,6 +138,14 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_IconBlock {
@@ -566,6 +574,10 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -670,13 +682,20 @@ export interface GetAdminJourneyWithPlausibleToken_journey_creatorImageBlock {
   customizable: boolean | null;
 }
 
-export interface GetAdminJourneyWithPlausibleToken_journey_userJourneys_user {
+export interface GetAdminJourneyWithPlausibleToken_journey_userJourneys_user_AnonymousUser {
+  __typename: "AnonymousUser";
+  id: string;
+}
+
+export interface GetAdminJourneyWithPlausibleToken_journey_userJourneys_user_AuthenticatedUser {
   __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
   lastName: string | null;
   imageUrl: string | null;
 }
+
+export type GetAdminJourneyWithPlausibleToken_journey_userJourneys_user = GetAdminJourneyWithPlausibleToken_journey_userJourneys_user_AnonymousUser | GetAdminJourneyWithPlausibleToken_journey_userJourneys_user_AuthenticatedUser;
 
 export interface GetAdminJourneyWithPlausibleToken_journey_userJourneys {
   __typename: "UserJourney";
@@ -694,6 +713,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_chatButtons {
   id: string;
   link: string | null;
   platform: MessagePlatform | null;
+  customizable: boolean | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_host {
@@ -844,6 +864,11 @@ export interface GetAdminJourneyWithPlausibleToken_journey {
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: GetAdminJourneyWithPlausibleToken_journey_journeyCustomizationFields[];
   fromTemplateId: string | null;
+  /**
+   * used to display quick start label on customizable templates
+   */
+  customizable: boolean | null;
+  showAssistant: boolean | null;
   /**
    * used in a plausible share link to embed report
    */

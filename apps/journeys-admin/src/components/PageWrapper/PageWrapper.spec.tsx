@@ -1,12 +1,15 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { type Mock } from 'vitest'
+
+import { User } from '../../libs/auth/authContext'
 
 import { PageWrapper } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('PageWrapper', () => {
@@ -108,12 +111,25 @@ describe('PageWrapper', () => {
   })
 
   describe('Navigation', () => {
+    const user: User = {
+      id: 'userId',
+      uid: 'userId',
+      email: 'user@example.com',
+      displayName: 'Test User',
+      photoURL: null,
+      phoneNumber: null,
+      emailVerified: true,
+      token: 'mock-token',
+      isAnonymous: false,
+      providerId: 'google.com'
+    }
+
     afterEach(() => {
-      jest.resetAllMocks()
+      vi.resetAllMocks()
     })
 
     it('should show the side nav bar', () => {
-      ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+      ;(useMediaQuery as Mock).mockImplementation(() => true)
 
       const { getByTestId, getByText, queryByRole } = render(
         <MockedProvider>
@@ -127,15 +143,36 @@ describe('PageWrapper', () => {
       fireEvent.click(getByTestId('NavigationListItemToggle'))
       expect(getByText('Projects')).toBeInTheDocument()
     })
+
+    it('should show NavigationDrawer when showNavBar is true and user is provided', () => {
+      render(
+        <MockedProvider>
+          <PageWrapper title="Templates" showNavBar user={user} />
+        </MockedProvider>
+      )
+      expect(screen.getByTestId('NavigationDrawer')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('NavigationListItemTemplates')
+      ).toBeInTheDocument()
+    })
+
+    it('should not show NavigationDrawer when showNavBar is false', () => {
+      render(
+        <MockedProvider>
+          <PageWrapper title="Templates" showNavBar={false} user={user} />
+        </MockedProvider>
+      )
+      expect(screen.queryByTestId('NavigationDrawer')).not.toBeInTheDocument()
+    })
   })
 
   describe('HelpScoutBeacon', () => {
     beforeEach(() => {
-      window.Beacon = jest.fn()
+      window.Beacon = vi.fn()
     })
 
     afterEach(() => {
-      jest.resetAllMocks()
+      vi.resetAllMocks()
     })
 
     it('should render HelpScoutBeacon with fab variant when showAppHeader is true', () => {

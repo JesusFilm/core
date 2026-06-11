@@ -1,12 +1,13 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { createInstance } from 'i18next'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyLocaleProvider } from './JourneyLocaleProvider'
 import { LOCALE_MAP, loadJourneyLocaleResources } from './utils'
 
-jest.mock('./utils', () => ({
+vi.mock('./utils', () => ({
   __esModule: true,
-  loadJourneyLocaleResources: jest.fn(),
+  loadJourneyLocaleResources: vi.fn(),
   LOCALE_MAP: {
     en: 'en',
     ko: 'ko-KR',
@@ -29,28 +30,28 @@ jest.mock('./utils', () => ({
   }
 }))
 
-const init = jest.fn()
+const init = vi.fn()
 const mockI18nInstance = {
   init,
   language: 'en',
   isInitialized: true,
-  t: jest.fn((key) => key)
+  t: vi.fn((key) => key)
 }
 
-jest.mock('i18next', () => ({
+vi.mock('i18next', () => ({
   __esModule: true,
-  createInstance: jest.fn()
+  createInstance: vi.fn()
 }))
 
-const mockCreateInstance = createInstance as jest.MockedFunction<
+const mockCreateInstance = createInstance as MockedFunction<
   typeof createInstance
 >
 
 const mockedLoadJourneyLocaleResources =
-  loadJourneyLocaleResources as jest.MockedFunction<
+  loadJourneyLocaleResources as MockedFunction<
     typeof loadJourneyLocaleResources
   >
-const mockedCreateInstance = createInstance as jest.MockedFunction<
+const mockedCreateInstance = createInstance as MockedFunction<
   typeof createInstance
 >
 
@@ -59,7 +60,7 @@ describe('JourneyLocaleProvider', () => {
   const defaultNamespaces = ['libs-journeys-ui', 'apps-journeys-admin']
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockCreateInstance.mockReturnValue(mockI18nInstance as any)
 
     mockedLoadJourneyLocaleResources.mockImplementation(

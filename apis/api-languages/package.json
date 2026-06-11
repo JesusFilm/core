@@ -1,0 +1,10 @@
+{
+  "name": "api-languages",
+  "private": true,
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.0.0",
+    "@prisma/client": "^7.0.0",
+    "dotenv": "^16.3.1",
+    "prisma": "^7.0.0"
+  }
+}

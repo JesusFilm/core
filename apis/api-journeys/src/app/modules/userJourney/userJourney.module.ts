@@ -3,7 +3,7 @@ import { Global, Module } from '@nestjs/common'
 
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { CaslAuthModule } from '../../lib/CaslAuthModule'
-import { PrismaService } from '../../lib/prisma.service'
+import { prismaServiceProvider } from '../../lib/prisma.service'
 
 import { UserJourneyResolver } from './userJourney.resolver'
 import { UserJourneyService } from './userJourney.service'
@@ -14,7 +14,7 @@ import { UserJourneyService } from './userJourney.service'
     CaslAuthModule.register(AppCaslFactory),
     BullModule.registerQueue({ name: 'api-journeys-email' })
   ],
-  providers: [UserJourneyResolver, PrismaService, UserJourneyService],
+  providers: [UserJourneyResolver, prismaServiceProvider, UserJourneyService],
   exports: []
 })
 export class UserJourneyModule {}

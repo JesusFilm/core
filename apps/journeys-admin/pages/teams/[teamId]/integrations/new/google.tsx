@@ -1,10 +1,5 @@
 import Stack from '@mui/material/Stack'
-import {
-  AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
-} from 'next-firebase-auth'
+import { GetServerSidePropsContext } from 'next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 // eslint-disable-next-line no-restricted-imports
@@ -13,18 +8,24 @@ import { useTranslation } from 'react-i18next'
 import { GoogleCreateIntegration } from '../../../../../src/components/Google'
 import { HelpScoutBeacon } from '../../../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../../../src/components/PageWrapper'
+import { useAuth } from '../../../../../src/libs/auth'
+import {
+  getAuthTokens,
+  redirectToLogin,
+  toUser
+} from '../../../../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../../../../src/libs/initAndAuthApp'
 
-function GoogleConfigPage(): ReactElement {
+export default function GoogleConfigPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const user = useUser()
+  const { user } = useAuth()
 
   return (
     <>
       <NextSeo title={t('Google')} />
       <PageWrapper
         title={t('Google')}
-        user={user}
+        user={user ?? undefined}
         backHrefHistory
         mainHeaderChildren={
           <Stack
@@ -55,27 +56,23 @@ function GoogleConfigPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, locale, resolvedUrl }) => {
-  if (user == null)
-    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const tokens = await getAuthTokens(ctx)
+  if (tokens == null) return redirectToLogin(ctx)
+  const user = toUser(tokens)
 
   const { redirect, translations } = await initAndAuthApp({
     user,
-    locale,
-    resolvedUrl
+    locale: ctx.locale,
+    resolvedUrl: ctx.resolvedUrl
   })
 
   if (redirect != null) return { redirect }
 
   return {
     props: {
+      userSerialized: JSON.stringify(user),
       ...translations
     }
   }
-})
-
-export default withUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(GoogleConfigPage)
+}

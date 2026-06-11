@@ -9,5 +9,17 @@
   "Get me out of here!": "ได้ฉันออกจากที่นี่!",
   "Terms & Conditions": "ข้อกำหนดและเงื่อนไข",
   "Privacy Policy": "นโยบายความเป็นส่วนตัว",
-  "NextSteps © {{year}}": "NextSteps © {{year}}"
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Use": "ใช้",
+  "Preview": "ตัวอย่าง",
+  "About this chat": "เกี่ยวกับแชทนี้",
+  "About this chat | Next Steps": "เกี่ยวกับแชทนี้ | ขั้นตอนต่อไป",
+  "The chat on this journey is powered by an AI assistant. To help us improve future replies, the messages you send and the assistant’s replies are saved.": "การสนทนาในเส้นทางนี้ได้รับการสนับสนุนโดยผู้ช่วย AI เพื่อช่วยให้เราปรับปรุงการตอบกลับในอนาคต ข้อความที่คุณส่งและการตอบกลับของผู้ช่วยจะถูกบันทึกไว้",
+  "We do not save your name, email address, or any account details, and we do not link conversations to your identity.": "เราไม่บันทึกชื่อของคุณ, ที่อยู่อีเมล, หรือข้อมูลบัญชีใด ๆ และเราไม่เชื่อมโยงการสนทนาของคุณกับตัวตนของคุณ",
+  "Where the messages go": "ข้อความไปที่ไหน",
+  "Your messages and the assistant’s replies pass through two third-party services: an AI service that generates the replies, and an analytics service called Langfuse where the conversations are stored so the team can review them in aggregate to improve the experience. They are not sold and they are not used for advertising.": "ข้อความของคุณและคำตอบของผู้ช่วยจะผ่านบริการของบุคคลที่สามสองบริการ: บริการ AI ที่สร้างคำตอบ และบริการวิเคราะห์ที่เรียกว่า Langfuse ซึ่งบทสนทนาจะถูกเก็บไว้เพื่อให้ทีมสามารถตรวจสอบในภาพรวมเพื่อปรับปรุงประสบการณ์ ไม่มีการขายและไม่ใช้เพื่อโฆษณา",
+  "If you prefer not to take part": "หากคุณไม่ต้องการเข้าร่วม",
+  "There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.": "ขณะนี้ยังไม่มีตัวเลือกในการยกเลิกเฉพาะแชท หากคุณไม่ต้องการให้ข้อความของคุณถูกบันทึกไว้ กรุณาอย่าใช้แชท — ส่วนอื่น ๆ ของการใช้งานยังคงทำงานได้ตามปกติโดยไม่ต้องใช้แชท",
+  "Last updated: June 2026": "ปรับปรุงล่าสุด: มิถุนายน 2026",
+  "Back to Next Steps": "กลับไปยังขั้นตอนถัดไป"
 }

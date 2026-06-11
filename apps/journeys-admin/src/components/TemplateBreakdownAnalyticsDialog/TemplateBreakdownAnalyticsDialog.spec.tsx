@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { formatISO } from 'date-fns'
+import { type MockedFunction } from 'vitest'
 
 import {
   GetTemplateFamilyStatsBreakdown,
@@ -12,7 +13,7 @@ import {
   JourneyStatus,
   PlausibleEvent
 } from '../../../__generated__/globalTypes'
-import { earliestStatsCollected } from '../Editor/Slider/JourneyFlow/AnalyticsOverlaySwitch'
+import { earliestStatsCollected } from '../Editor/Slider/JourneyFlow/AnalyticsOverlaySwitch/buildPresetDateRange'
 
 import {
   GET_TEMPLATE_FAMILY_STATS_BREAKDOWN,
@@ -20,27 +21,27 @@ import {
 } from './TemplateBreakdownAnalyticsDialog'
 import { mockSingleRowData } from './TemplateBreakdownAnalyticsTable/TemplateBreakdownAnalyticsTable.mockData'
 
-jest.mock('@mui/material/useMediaQuery', () => {
-  return jest.fn(() => false)
+vi.mock('@mui/material/useMediaQuery', () => {
+  return { __esModule: true, default: vi.fn(() => false) }
 })
 
-jest.mock('date-fns', () => {
+vi.mock('date-fns', async () => {
   return {
-    ...jest.requireActual('date-fns'),
-    formatISO: jest.fn()
+    ...(await vi.importActual('date-fns')),
+    formatISO: vi.fn()
   }
 })
 
-const mockFormatISO = formatISO as jest.MockedFunction<typeof formatISO>
+const mockFormatISO = formatISO as MockedFunction<typeof formatISO>
 
 describe('TemplateBreakdownAnalyticsDialog', () => {
-  const mockHandleClose = jest.fn()
+  const mockHandleClose = vi.fn()
   const journeyId = 'test-journey-id'
   const mockCurrentDate = '2025-12-24'
   const expectedDate = `${earliestStatsCollected},${mockCurrentDate}`
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockFormatISO.mockReturnValue(mockCurrentDate)
   })
 

@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -76,6 +76,7 @@ export function NewVideoButton({
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       __typename: 'VideoBlock',
       children: []
     }

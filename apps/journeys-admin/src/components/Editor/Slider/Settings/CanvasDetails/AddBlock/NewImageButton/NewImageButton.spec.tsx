@@ -16,12 +16,12 @@ import { IMAGE_BLOCK_CREATE } from './NewImageButton'
 
 import { NewImageButton } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
   v4: () => 'imageBlockId'
 }))
@@ -48,13 +48,15 @@ describe('NewImageButton', () => {
         fullscreen: false,
         backdropBlur: null,
         eventLabel: null,
-        children: []
+        children: [],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   }
 
   it('should check if the mutation gets called', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         imageBlockCreate: {
           id: 'imageBlockId',
@@ -106,7 +108,7 @@ describe('NewImageButton', () => {
   })
 
   it('should redo if redo clicked', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         imageBlockCreate: {
           id: 'imageBlockId',
@@ -121,7 +123,7 @@ describe('NewImageButton', () => {
         }
       }
     }))
-    const deleteResult = jest.fn().mockResolvedValue({ ...deleteBlock.result })
+    const deleteResult = vi.fn().mockResolvedValue({ ...deleteBlock.result })
     const deleteBlockMock = {
       ...deleteBlock,
       request: {
@@ -133,9 +135,7 @@ describe('NewImageButton', () => {
       result: deleteResult
     }
 
-    const restoreResult = jest
-      .fn()
-      .mockResolvedValue({ ...blockRestore.result })
+    const restoreResult = vi.fn().mockResolvedValue({ ...blockRestore.result })
 
     const blockRestoreMock = {
       ...blockRestore,
@@ -196,7 +196,7 @@ describe('NewImageButton', () => {
   })
 
   it('should undo if undo clicked', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         imageBlockCreate: {
           id: 'imageBlockId',
@@ -211,7 +211,7 @@ describe('NewImageButton', () => {
         }
       }
     }))
-    const deleteResult = jest.fn().mockResolvedValue({ ...deleteBlock.result })
+    const deleteResult = vi.fn().mockResolvedValue({ ...deleteBlock.result })
     const deleteBlockMock = {
       ...deleteBlock,
       request: {
@@ -274,7 +274,7 @@ describe('NewImageButton', () => {
         __typename: 'Journey'
       }
     })
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         imageBlockCreate: {
           id: 'imageBlockId',
@@ -333,7 +333,30 @@ describe('NewImageButton', () => {
 
   it('should disable when loading', async () => {
     const { getByRole } = render(
-      <MockedProvider>
+      // The click fires ImageBlockCreate. A never-resolving mock keeps the
+      // mutation in flight (button stays disabled) and matches the operation
+      // so it does not raise an unhandled Apollo error after the test
+      // completes.
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: IMAGE_BLOCK_CREATE,
+              variables: {
+                input: {
+                  id: 'imageBlockId',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'cardId',
+                  src: null,
+                  alt: 'Default Image Icon'
+                }
+              }
+            },
+            delay: Infinity,
+            result: {}
+          }
+        ]}
+      >
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,

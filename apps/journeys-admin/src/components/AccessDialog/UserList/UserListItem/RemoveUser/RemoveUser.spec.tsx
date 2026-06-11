@@ -14,7 +14,7 @@ import { RemoveUser } from '.'
 
 describe('RemoveUser', () => {
   it('should remove user journey', async () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     const cache = new InMemoryCache()
     cache.restore({
       ROOT_QUERY: {
@@ -23,7 +23,7 @@ describe('RemoveUser', () => {
       }
     })
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         userJourneyRemove: {
           id: 'userJourneyId',
@@ -34,7 +34,7 @@ describe('RemoveUser', () => {
         }
       }
     }))
-    const inviteResult = jest.fn(() => ({
+    const inviteResult = vi.fn(() => ({
       data: {
         userInviteRemove: {
           __typename: 'UserInvite',
@@ -118,7 +118,7 @@ describe('RemoveUser', () => {
   })
 
   it('should remove user invite', async () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     const cache = new InMemoryCache()
     cache.restore({
       ROOT_QUERY: {
@@ -127,7 +127,7 @@ describe('RemoveUser', () => {
       }
     })
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         userInviteRemove: {
           __typename: 'UserInvite',

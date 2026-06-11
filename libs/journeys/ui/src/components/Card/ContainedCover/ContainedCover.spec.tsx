@@ -79,6 +79,7 @@ describe('ContainedCover', () => {
       variantLanguages: []
     },
     customizable: null,
+    notes: null,
     children: []
   }
 

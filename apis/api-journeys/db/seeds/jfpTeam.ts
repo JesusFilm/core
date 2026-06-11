@@ -1,6 +1,4 @@
-import { PrismaClient } from '.prisma/api-journeys-client'
-
-const prisma = new PrismaClient()
+import { prisma } from '../../../../libs/prisma/journeys/src/client'
 
 export async function jfpTeam(): Promise<void> {
   // create JFP team (team for seeded journeys)

@@ -144,11 +144,11 @@ describe('TeamAvatars', () => {
   ]
 
   beforeAll(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should show add button when onclick handler passed in', () => {
-    const handleOpen = jest.fn()
+    const handleOpen = vi.fn()
     const { getByTestId } = render(
       <TeamAvatars userTeams={userTeam} size="large" onClick={handleOpen} />
     )
@@ -165,7 +165,7 @@ describe('TeamAvatars', () => {
   })
 
   it('display no more than 4 avatars', async () => {
-    const handleOpen = jest.fn()
+    const handleOpen = vi.fn()
     const { getByText, getAllByTestId } = render(
       <TeamAvatars
         userTeams={userTeamOverflow}

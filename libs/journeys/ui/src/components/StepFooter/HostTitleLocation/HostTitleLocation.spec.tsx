@@ -70,7 +70,9 @@ describe('HostTitleLocation', () => {
     journeyCustomizationFields: [],
     fromTemplateId: null,
     socialNodeX: null,
-    socialNodeY: null
+    socialNodeY: null,
+    customizable: null,
+    showAssistant: null
   }
 
   const rtlLanguage = {

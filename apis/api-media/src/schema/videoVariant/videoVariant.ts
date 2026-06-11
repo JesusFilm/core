@@ -9,7 +9,7 @@ import {
   videoCacheReset,
   videoVariantCacheReset
 } from '../../lib/videoCacheReset'
-import { builder } from '../builder'
+import { builder, toPrismaDateTimeFilter } from '../builder'
 import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
 import { deleteVideo } from '../mux/video/service'
@@ -324,6 +324,7 @@ async function checkAndRemoveEmptyParentVariant(
 export const VideoVariant = builder.prismaObject('VideoVariant', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     asset: t
       .withAuth({ isPublisher: true })
       .relation('asset', { nullable: true, description: 'master video file' }),
@@ -450,15 +451,33 @@ builder.queryFields((t) => ({
     type: ['VideoVariant'],
     nullable: false,
     args: {
-      input: t.arg({ type: VideoVariantFilter, required: false })
+      input: t.arg({ type: VideoVariantFilter, required: false }),
+      offset: t.arg.int({ required: false }),
+      limit: t.arg.int({ required: false })
     },
-    resolve: async (query, _parent, { input }) =>
+    resolve: async (query, _parent, { input, offset, limit }) =>
       await prisma.videoVariant.findMany({
         ...query,
-
         where: {
           published: input?.onlyPublished === false ? undefined : true,
-          languageId: input?.languageId ?? undefined
+          languageId: input?.languageId ?? undefined,
+          updatedAt: toPrismaDateTimeFilter(input?.updatedAt)
+        },
+        skip: offset ?? undefined,
+        take: limit ?? undefined
+      })
+  }),
+  videoVariantsCount: t.int({
+    nullable: false,
+    args: {
+      input: t.arg({ type: VideoVariantFilter, required: false })
+    },
+    resolve: async (_parent, { input }) =>
+      await prisma.videoVariant.count({
+        where: {
+          published: input?.onlyPublished === false ? undefined : true,
+          languageId: input?.languageId ?? undefined,
+          updatedAt: toPrismaDateTimeFilter(input?.updatedAt)
         }
       })
   })

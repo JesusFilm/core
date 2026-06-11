@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 import {
   MuxVideo,
   Video,
@@ -10,56 +12,61 @@ import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
+import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
 import {
   videoCacheReset,
   videoVariantCacheReset
 } from '../../lib/videoCacheReset'
+import { deleteR2File } from '../cloudflare/r2/asset'
+import { deleteVideo } from '../mux/video/service'
+import {
+  addLanguageToVideo,
+  removeLanguageFromVideoIfUnused,
+  updateParentCollectionLanguages
+} from '../video/lib/updateAvailableLanguages'
 
 // Mock the cache reset functions
-jest.mock('../../lib/videoCacheReset', () => ({
-  videoCacheReset: jest.fn(),
-  videoVariantCacheReset: jest.fn()
+vi.mock('../../lib/videoCacheReset', () => ({
+  videoCacheReset: vi.fn(),
+  videoVariantCacheReset: vi.fn()
 }))
 
 // Mock the Mux video service
-jest.mock('../mux/video/service', () => ({
-  deleteVideo: jest.fn()
+vi.mock('../mux/video/service', () => ({
+  deleteVideo: vi.fn()
 }))
 
 // Mock the deleteR2File function but keep the rest
-jest.mock('../cloudflare/r2/asset', () => ({
-  ...jest.requireActual('../cloudflare/r2/asset'),
-  deleteR2File: jest.fn()
+vi.mock('../cloudflare/r2/asset', async () => ({
+  ...(await vi.importActual('../cloudflare/r2/asset')),
+  deleteR2File: vi.fn()
 }))
 
 // Mock the Algolia service
-jest.mock('../../lib/algolia/algoliaVideoVariantUpdate', () => ({
-  updateVideoVariantInAlgolia: jest.fn()
+vi.mock('../../lib/algolia/algoliaVideoVariantUpdate', () => ({
+  updateVideoVariantInAlgolia: vi.fn()
 }))
 
 // Mock the video available languages functions
-jest.mock('../video/lib/updateAvailableLanguages', () => ({
-  addLanguageToVideo: jest.fn(),
-  removeLanguageFromVideoIfUnused: jest.fn(),
-  updateParentCollectionLanguages: jest.fn()
+vi.mock('../video/lib/updateAvailableLanguages', () => ({
+  addLanguageToVideo: vi.fn(),
+  removeLanguageFromVideoIfUnused: vi.fn(),
+  updateParentCollectionLanguages: vi.fn()
 }))
 
 // Get the mocked functions for testing
-const mockedVideoCacheReset = jest.mocked(videoCacheReset)
-const mockedVideoVariantCacheReset = jest.mocked(videoVariantCacheReset)
-const { deleteVideo: mockedDeleteVideo } = jest.requireMock(
-  '../mux/video/service'
+const mockedVideoCacheReset = vi.mocked(videoCacheReset)
+const mockedVideoVariantCacheReset = vi.mocked(videoVariantCacheReset)
+const mockedDeleteVideo = vi.mocked(deleteVideo)
+const mockedDeleteR2File = vi.mocked(deleteR2File)
+const mockedUpdateVideoVariantInAlgolia = vi.mocked(updateVideoVariantInAlgolia)
+const mockedAddLanguageToVideo = vi.mocked(addLanguageToVideo)
+const mockedRemoveLanguageFromVideoIfUnused = vi.mocked(
+  removeLanguageFromVideoIfUnused
 )
-const { deleteR2File: mockedDeleteR2File } = jest.requireMock(
-  '../cloudflare/r2/asset'
+const mockedUpdateParentCollectionLanguages = vi.mocked(
+  updateParentCollectionLanguages
 )
-const { updateVideoVariantInAlgolia: mockedUpdateVideoVariantInAlgolia } =
-  jest.requireMock('../../lib/algolia/algoliaVideoVariantUpdate')
-const {
-  addLanguageToVideo: mockedAddLanguageToVideo,
-  removeLanguageFromVideoIfUnused: mockedRemoveLanguageFromVideoIfUnused,
-  updateParentCollectionLanguages: mockedUpdateParentCollectionLanguages
-} = jest.requireMock('../video/lib/updateAvailableLanguages')
 
 type VideoVariantAndIncludes = VideoVariant & {
   downloads: VideoVariantDownload[]
@@ -86,7 +93,7 @@ describe('videoVariant', () => {
   })
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockedVideoCacheReset.mockImplementation(() => Promise.resolve())
     mockedVideoVariantCacheReset.mockImplementation(() => Promise.resolve())
     mockedDeleteVideo.mockResolvedValue(undefined)
@@ -103,8 +110,10 @@ describe('videoVariant', () => {
         $languageId: ID
         $primary: Boolean
         $input: VideoVariantFilter
+        $offset: Int
+        $limit: Int
       ) {
-        videoVariants(input: $input) {
+        videoVariants(input: $input, offset: $offset, limit: $limit) {
           id
           videoId
           hls
@@ -796,6 +805,333 @@ describe('videoVariant', () => {
           }
         }
       ])
+    })
+
+    it('should query videoVariants with offset and limit', async () => {
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+        {
+          id: 'videoVariantId',
+          videoId: 'videoId',
+          hls: null,
+          dash: null,
+          share: null,
+          duration: null,
+          lengthInMilliseconds: null,
+          languageId: 'languageId',
+          masterUrl: null,
+          masterWidth: null,
+          masterHeight: null,
+          edition: 'base',
+          slug: 'videoSlug',
+          downloadable: true,
+          published: true,
+          version: 1,
+          assetId: null,
+          muxVideoId: null,
+          brightcoveId: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          videoEdition: {
+            id: 'videoEditionId',
+            videoId: 'videoId',
+            name: 'videoEditionName',
+            videoSubtitles: [],
+            _count: {
+              videoSubtitles: 0
+            }
+          },
+          muxVideo: null,
+          video: {
+            id: 'videoId',
+            published: true,
+            slug: 'video-slug',
+            label: 'shortFilm',
+            primaryLanguageId: 'languageId',
+            noIndex: false,
+            childIds: [],
+            locked: false,
+            availableLanguages: ['languageId'],
+            originId: null,
+            restrictDownloadPlatforms: [],
+            restrictViewPlatforms: [],
+            publishedAt: null
+          },
+          downloads: []
+        }
+      ] as unknown as VideoVariantAndIncludes[])
+
+      const data = await client({
+        document: VIDEO_VARIANTS_QUERY,
+        variables: {
+          offset: 10,
+          limit: 5
+        }
+      })
+
+      expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          skip: 10,
+          take: 5,
+          where: {
+            published: true
+          }
+        })
+      )
+
+      expect(data).toHaveProperty('data.videoVariants', [
+        expect.objectContaining({
+          id: 'videoVariantId'
+        })
+      ])
+    })
+
+    it('should query videoVariants without offset and limit returning all results', async () => {
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([])
+
+      await client({
+        document: VIDEO_VARIANTS_QUERY
+      })
+
+      expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            published: true
+          }
+        })
+      )
+
+      const callArgs = prismaMock.videoVariant.findMany.mock.calls[0]?.[0]
+      expect(callArgs?.skip).toBeUndefined()
+      expect(callArgs?.take).toBeUndefined()
+    })
+
+    it('should query videoVariants with zero offset', async () => {
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([])
+
+      await client({
+        document: VIDEO_VARIANTS_QUERY,
+        variables: {
+          offset: 0,
+          limit: 10
+        }
+      })
+
+      expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          skip: 0,
+          take: 10
+        })
+      )
+    })
+
+    it('should query videoVariants with only offset provided', async () => {
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([])
+
+      await client({
+        document: VIDEO_VARIANTS_QUERY,
+        variables: {
+          offset: 50
+        }
+      })
+
+      expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          skip: 50
+        })
+      )
+    })
+
+    it('should query videoVariants with only limit provided', async () => {
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([])
+
+      await client({
+        document: VIDEO_VARIANTS_QUERY,
+        variables: {
+          limit: 25
+        }
+      })
+
+      expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          take: 25
+        })
+      )
+    })
+
+    it('should query videoVariants with large offset', async () => {
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([])
+
+      await client({
+        document: VIDEO_VARIANTS_QUERY,
+        variables: {
+          offset: 100000,
+          limit: 50
+        }
+      })
+
+      expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          skip: 100000,
+          take: 50
+        })
+      )
+    })
+
+    it('should query videoVariants with large limit', async () => {
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([])
+
+      await client({
+        document: VIDEO_VARIANTS_QUERY,
+        variables: {
+          limit: 10000
+        }
+      })
+
+      expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          take: 10000
+        })
+      )
+    })
+
+    it('should query videoVariants with pagination and filters combined', async () => {
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([])
+
+      await client({
+        document: VIDEO_VARIANTS_QUERY,
+        variables: {
+          input: {
+            onlyPublished: false,
+            languageId: 'languageId1'
+          },
+          offset: 20,
+          limit: 10
+        }
+      })
+
+      expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            published: undefined,
+            languageId: 'languageId1'
+          },
+          skip: 20,
+          take: 10
+        })
+      )
+    })
+
+    it('should query videoVariants with updatedAt filter', async () => {
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([])
+
+      await client({
+        document: VIDEO_VARIANTS_QUERY,
+        variables: {
+          input: {
+            updatedAt: { gte: '2025-01-01T00:00:00.000Z' }
+          }
+        }
+      })
+
+      expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            published: true,
+            languageId: undefined,
+            updatedAt: { gte: new Date('2025-01-01T00:00:00.000Z') }
+          }
+        })
+      )
+    })
+  })
+
+  describe('videoVariantsCount', () => {
+    const VIDEO_VARIANTS_COUNT_QUERY = graphql(`
+      query videoVariantsCount($input: VideoVariantFilter) {
+        videoVariantsCount(input: $input)
+      }
+    `)
+
+    it('should return count of published videoVariants by default', async () => {
+      prismaMock.videoVariant.count.mockResolvedValueOnce(42)
+
+      const data = await client({
+        document: VIDEO_VARIANTS_COUNT_QUERY
+      })
+
+      expect(prismaMock.videoVariant.count).toHaveBeenCalledWith({
+        where: {
+          published: true
+        }
+      })
+
+      expect(data).toHaveProperty('data.videoVariantsCount', 42)
+    })
+
+    it('should return count with languageId filter', async () => {
+      prismaMock.videoVariant.count.mockResolvedValueOnce(10)
+
+      const data = await client({
+        document: VIDEO_VARIANTS_COUNT_QUERY,
+        variables: {
+          input: {
+            languageId: 'languageId1'
+          }
+        }
+      })
+
+      expect(prismaMock.videoVariant.count).toHaveBeenCalledWith({
+        where: {
+          published: true,
+          languageId: 'languageId1'
+        }
+      })
+
+      expect(data).toHaveProperty('data.videoVariantsCount', 10)
+    })
+
+    it('should return count with onlyPublished false', async () => {
+      prismaMock.videoVariant.count.mockResolvedValueOnce(100)
+
+      const data = await client({
+        document: VIDEO_VARIANTS_COUNT_QUERY,
+        variables: {
+          input: {
+            onlyPublished: false
+          }
+        }
+      })
+
+      expect(prismaMock.videoVariant.count).toHaveBeenCalledWith({
+        where: {
+          published: undefined
+        }
+      })
+
+      expect(data).toHaveProperty('data.videoVariantsCount', 100)
+    })
+
+    it('should return count with updatedAt filter', async () => {
+      prismaMock.videoVariant.count.mockResolvedValueOnce(25)
+
+      const data = await client({
+        document: VIDEO_VARIANTS_COUNT_QUERY,
+        variables: {
+          input: {
+            updatedAt: { gte: '2025-01-01T00:00:00.000Z' }
+          }
+        }
+      })
+
+      expect(prismaMock.videoVariant.count).toHaveBeenCalledWith({
+        where: {
+          published: true,
+          languageId: undefined,
+          updatedAt: { gte: new Date('2025-01-01T00:00:00.000Z') }
+        }
+      })
+
+      expect(data).toHaveProperty('data.videoVariantsCount', 25)
     })
   })
 
@@ -1602,7 +1938,8 @@ describe('videoVariant', () => {
           downloadable: false,
           createdAt: new Date(),
           readyToStream: true,
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          teamId: null
         })
 
         prismaMock.videoVariant.delete.mockResolvedValue({
@@ -1900,7 +2237,8 @@ describe('videoVariant', () => {
           downloadable: false,
           createdAt: new Date(),
           readyToStream: false,
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          teamId: null
         })
 
         prismaMock.videoVariant.delete.mockResolvedValue({
@@ -2015,12 +2353,10 @@ describe('videoVariant', () => {
     })
 
     describe('parent variant management', () => {
-      it('should have helper functions for managing parent video variants', () => {
+      it('should have helper functions for managing parent video variants', async () => {
         // Test that the helper functions exist and are exported
-        const {
-          handleParentVariantCreation,
-          handleParentVariantCleanup
-        } = require('./videoVariant')
+        const { handleParentVariantCreation, handleParentVariantCleanup } =
+          await import(/* webpackChunkName: "videoVariant" */ './videoVariant')
 
         expect(typeof handleParentVariantCreation).toBe('function')
         expect(typeof handleParentVariantCleanup).toBe('function')

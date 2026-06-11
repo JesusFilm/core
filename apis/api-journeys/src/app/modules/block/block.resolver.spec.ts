@@ -1,16 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import {
-  Block,
-  Journey,
-  Prisma,
-  UserTeamRole
-} from '@core/prisma/journeys/client'
+import { Block, Journey, UserTeamRole } from '@core/prisma/journeys/client'
 
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { CaslAuthModule } from '../../lib/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
+import { JourneyCustomizableService } from '../journey/journeyCustomizable.service'
 
 import { BlockResolver } from './block.resolver'
 import { BlockService } from './block.service'
@@ -19,6 +15,7 @@ describe('BlockResolver', () => {
   let resolver: BlockResolver,
     service: BlockService,
     prismaService: DeepMockProxy<PrismaService>,
+    journeyCustomizableService: DeepMockProxy<JourneyCustomizableService>,
     ability: AppAbility
 
   const journey = {
@@ -50,10 +47,7 @@ describe('BlockResolver', () => {
   }
   const blockService = {
     provide: BlockService,
-    PrismaService,
     useFactory: () => ({
-      duplicateBlock: jest.fn((block, _parentOrder) => [block, block]),
-      removeBlockAndChildren: jest.fn(() => []),
       reorderBlock: jest.fn((block, parentOrder) => [
         { ...block, parentOrder }
       ]),
@@ -77,6 +71,10 @@ describe('BlockResolver', () => {
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
+        },
+        {
+          provide: JourneyCustomizableService,
+          useValue: mockDeep<JourneyCustomizableService>()
         }
       ]
     }).compile()
@@ -85,6 +83,9 @@ describe('BlockResolver', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
+    journeyCustomizableService = module.get<JourneyCustomizableService>(
+      JourneyCustomizableService
+    ) as DeepMockProxy<JourneyCustomizableService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
     prismaService.$transaction.mockImplementation(
       async (callback) => await callback(prismaService)
@@ -105,231 +106,6 @@ describe('BlockResolver', () => {
       expect(resolver.__resolveType({ typename: 'VideoBlock' })).toBe(
         'VideoBlock'
       )
-    })
-  })
-
-  describe('blockOrderUpdate', () => {
-    it('updates the block order', async () => {
-      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-      expect(await resolver.blockOrderUpdate(ability, 'blockId', 2)).toEqual([
-        { ...blockWithUserTeam, parentOrder: 2 }
-      ])
-      expect(service.reorderBlock).toHaveBeenCalledWith(blockWithUserTeam, 2)
-    })
-
-    it('should update journey updatedAt on block order update', async () => {
-      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-      expect(await resolver.blockOrderUpdate(ability, 'blockId', 2)).toEqual([
-        { ...blockWithUserTeam, parentOrder: 2 }
-      ])
-      expect(prismaService.journey.update).toHaveBeenCalledWith({
-        where: {
-          id: blockWithUserTeam.journeyId
-        },
-        data: { updatedAt: updatedAt.toISOString() }
-      })
-    })
-
-    it('throws error if not found', async () => {
-      prismaService.block.findUnique.mockResolvedValueOnce(null)
-      await expect(
-        resolver.blockOrderUpdate(ability, 'blockId', 2)
-      ).rejects.toThrow('block not found')
-    })
-
-    it('throws error if not authorized', async () => {
-      prismaService.block.findUnique.mockResolvedValueOnce(block)
-      await expect(
-        resolver.blockOrderUpdate(ability, 'blockId', 2)
-      ).rejects.toThrow('user is not allowed to update block')
-    })
-  })
-
-  describe('blockDuplicate', () => {
-    it('duplicates the block and its children', async () => {
-      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-      expect(
-        await resolver.blockDuplicate(ability, 'blockId', 2, undefined, 3, 4)
-      ).toEqual([blockWithUserTeam, blockWithUserTeam])
-      expect(service.duplicateBlock).toHaveBeenCalledWith(
-        blockWithUserTeam,
-        false,
-        2,
-        undefined,
-        3,
-        4
-      )
-    })
-
-    it('should update journey updatedAt on duplication of the block and its children', async () => {
-      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-      expect(
-        await resolver.blockDuplicate(ability, 'blockId', 2, undefined, 3, 4)
-      ).toEqual([blockWithUserTeam, blockWithUserTeam])
-      expect(prismaService.journey.update).toHaveBeenCalledWith({
-        where: {
-          id: blockWithUserTeam.journeyId
-        },
-        data: { updatedAt: updatedAt.toISOString() }
-      })
-    })
-
-    it('duplicates the block and its children with custom ids', async () => {
-      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-      expect(
-        await resolver.blockDuplicate(
-          ability,
-          'blockId',
-          2,
-          [
-            { oldId: 'oldButtonId', newId: 'newButtonId' },
-            { oldId: 'oldStartIconId', newId: 'newStartIconId' },
-            { oldId: 'oldEndIconId', newId: 'newEndIconId' }
-          ],
-          3,
-          4
-        )
-      ).toEqual([blockWithUserTeam, blockWithUserTeam])
-      expect(service.duplicateBlock).toHaveBeenCalledWith(
-        blockWithUserTeam,
-        false,
-        2,
-        [
-          { oldId: 'oldButtonId', newId: 'newButtonId' },
-          { oldId: 'oldStartIconId', newId: 'newStartIconId' },
-          { oldId: 'oldEndIconId', newId: 'newEndIconId' }
-        ],
-        3,
-        4
-      )
-    })
-
-    it('throws error if not found', async () => {
-      prismaService.block.findUnique.mockResolvedValueOnce(null)
-      await expect(
-        resolver.blockDuplicate(ability, 'blockId', 2)
-      ).rejects.toThrow('block not found')
-    })
-
-    it('throws error if not authorized', async () => {
-      prismaService.block.findUnique.mockResolvedValueOnce(block)
-      await expect(
-        resolver.blockDuplicate(ability, 'blockId', 2)
-      ).rejects.toThrow('user is not allowed to update block')
-    })
-  })
-
-  describe('blockDelete', () => {
-    it('removes the block and its children', async () => {
-      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-      expect(await resolver.blockDelete(ability, 'blockId')).toEqual([])
-      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
-        blockWithUserTeam
-      )
-    })
-
-    it('throws error if not found', async () => {
-      prismaService.block.findUnique.mockResolvedValueOnce(null)
-      await expect(resolver.blockDelete(ability, 'blockId')).rejects.toThrow(
-        'block not found'
-      )
-    })
-
-    it('throws error if not authorized', async () => {
-      prismaService.block.findUnique.mockResolvedValueOnce(block)
-      await expect(resolver.blockDelete(ability, 'blockId')).rejects.toThrow(
-        'user is not allowed to delete block'
-      )
-    })
-  })
-
-  describe('block', () => {
-    it('returns block', async () => {
-      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-
-      expect(await resolver.block(ability, 'blockId')).toEqual(
-        blockWithUserTeam
-      )
-      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
-        where: { id: 'blockId', deletedAt: null },
-        include: {
-          action: true,
-          journey: {
-            include: {
-              team: { include: { userTeams: true } },
-              userJourneys: true
-            }
-          }
-        }
-      })
-    })
-
-    it('throws error if not found', async () => {
-      prismaService.block.findUnique.mockResolvedValueOnce(null)
-      await expect(resolver.block(ability, 'blockId')).rejects.toThrow(
-        'block not found'
-      )
-    })
-
-    it('throws error if not authorized', async () => {
-      prismaService.block.findUnique.mockResolvedValueOnce(block)
-      await expect(resolver.block(ability, 'blockId')).rejects.toThrow(
-        'user is not allowed to read block'
-      )
-    })
-  })
-
-  describe('blocks', () => {
-    const accessibleBlocks: Prisma.BlockWhereInput = { OR: [{}] }
-
-    it('returns blocks', async () => {
-      prismaService.block.findMany.mockResolvedValueOnce([block])
-      expect(await resolver.blocks(accessibleBlocks)).toEqual([block])
-      expect(prismaService.block.findMany).toHaveBeenCalledWith({
-        where: {
-          AND: [accessibleBlocks, { deletedAt: null }]
-        },
-        include: {
-          action: true,
-          journey: {
-            include: {
-              team: { include: { userTeams: true } },
-              userJourneys: true
-            }
-          }
-        }
-      })
-    })
-
-    it('should get filtered blocks', async () => {
-      prismaService.block.findMany.mockResolvedValueOnce([block])
-      expect(
-        await resolver.blocks(accessibleBlocks, {
-          journeyIds: ['journeyId'],
-          typenames: ['StepBlock']
-        })
-      ).toEqual([block])
-      expect(prismaService.block.findMany).toHaveBeenCalledWith({
-        where: {
-          AND: [
-            accessibleBlocks,
-            {
-              journeyId: { in: ['journeyId'] },
-              typename: { in: ['StepBlock'] },
-              deletedAt: null
-            }
-          ]
-        },
-        include: {
-          action: true,
-          journey: {
-            include: {
-              team: { include: { userTeams: true } },
-              userJourneys: true
-            }
-          }
-        }
-      })
     })
   })
 
@@ -389,6 +165,16 @@ describe('BlockResolver', () => {
         },
         data: { updatedAt: updatedAt.toISOString() }
       })
+    })
+
+    it('should call recalculate after block restore', async () => {
+      prismaService.block.findUnique.mockResolvedValue(blockWithUserTeam)
+      prismaService.block.update.mockResolvedValue(block)
+      prismaService.block.findMany.mockResolvedValue([block, block])
+      await resolver.blockRestore('1', ability)
+      expect(journeyCustomizableService.recalculate).toHaveBeenCalledWith(
+        block.journeyId
+      )
     })
 
     it('should throw error if block not found', async () => {

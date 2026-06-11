@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Event, Visitor } from '@core/prisma/journeys/client'
+import { Event, Prisma, Visitor } from '@core/prisma/journeys/client'
 
 import {
   MessagePlatform,
@@ -253,11 +253,46 @@ describe('VisitorResolver', () => {
       updatedAt: new Date()
     }
 
-    it('returns visitor events', async () => {
+    const accessibleEvents: Prisma.EventWhereInput = {
+      OR: [
+        {
+          journey: {
+            is: {
+              team: {
+                is: {
+                  userTeams: {
+                    some: {
+                      userId: 'userId',
+                      role: { in: ['manager', 'member'] }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          journey: {
+            is: {
+              userJourneys: {
+                some: { userId: 'userId', role: { in: ['owner'] } }
+              }
+            }
+          }
+        }
+      ]
+    }
+
+    it('returns visitor events filtered by accessible events', async () => {
       prismaService.event.findMany.mockResolvedValueOnce([event])
-      expect(await resolver.events({ id: 'visitorId' })).toEqual([
-        { ...event, typename: undefined, __typename: 'event' }
-      ])
+      expect(
+        await resolver.events({ id: 'visitorId' }, accessibleEvents)
+      ).toEqual([{ ...event, typename: undefined, __typename: 'event' }])
+      expect(prismaService.event.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [{ visitorId: 'visitorId' }, accessibleEvents]
+        }
+      })
     })
   })
 

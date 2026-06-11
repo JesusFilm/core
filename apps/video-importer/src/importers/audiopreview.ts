@@ -2,12 +2,19 @@ import { env } from '../env'
 import { getGraphQLClient } from '../gql/graphqlClient'
 import { CREATE_AUDIO_PREVIEW, UPDATE_AUDIO_PREVIEW } from '../gql/mutations'
 import { GET_AUDIO_PREVIEW } from '../gql/queries'
-import { uploadFileToR2Direct } from '../services/r2'
-import { type AudioPreviewInput, type ProcessingSummary } from '../types'
+import { AUDIO_PREVIEW_FILENAME_REGEX } from '../importerFilenamePatterns'
+import {
+  type AudioPreviewInput,
+  type ProcessingSummary,
+  recordProcessingFailure,
+  recordProcessingSuccess
+} from '../types'
+import { toErrorMessage } from '../utils/errorMessage'
 import { getAudioMetadata } from '../utils/fileMetadataHelpers'
 import { markFileAsCompleted } from '../utils/fileUtils'
+import { validateLanguage } from '../utils/videoEditionValidator'
 
-export const AUDIO_PREVIEW_FILENAME_REGEX = /^([^.]+)\.aac$/
+export { AUDIO_PREVIEW_FILENAME_REGEX }
 
 export async function importOrUpdateAudioPreview({
   languageId,
@@ -77,9 +84,26 @@ export async function processAudioPreviewFile(
   const match = file.match(AUDIO_PREVIEW_FILENAME_REGEX)
   if (!match) return
 
-  const [, languageId] = match
+  const [, rawLanguageId] = match
+  const languageId = rawLanguageId.trim()
 
   console.log(`Processing audio preview: Language=${languageId}`)
+
+  if (languageId.length === 0) {
+    console.error(
+      `Validation failed for ${file}: missing languageId in filename`
+    )
+    recordProcessingFailure(summary, file, 'Missing languageId in filename')
+    return
+  }
+
+  try {
+    await validateLanguage(languageId)
+  } catch (error) {
+    console.error(`Validation failed for ${file}: ${(error as Error).message}`)
+    recordProcessingFailure(summary, file, toErrorMessage(error))
+    return
+  }
 
   const contentType = 'audio/aac'
 
@@ -88,22 +112,34 @@ export async function processAudioPreviewFile(
     audioMetadata = await getAudioMetadata(filePath)
   } catch (error) {
     console.error(`Failed to extract audio metadata from ${file}:`, error)
-    summary.failed++
+    recordProcessingFailure(
+      summary,
+      file,
+      `Audio metadata / ffprobe: ${toErrorMessage(error)}`
+    )
     return
   }
 
   let publicUrl: string
 
   try {
+    const { uploadFileToR2Direct } = await import(
+      /* webpackChunkName: "video-importer-r2" */ '../services/r2'
+    )
     publicUrl = await uploadFileToR2Direct({
       bucket: env.CLOUDFLARE_R2_BUCKET,
       key: `audiopreview/${languageId}.aac`,
       filePath,
-      contentType
+      contentType,
+      contentLength
     })
   } catch (error) {
     console.error(`Failed to upload audio preview to R2:`, error)
-    summary.failed++
+    recordProcessingFailure(
+      summary,
+      file,
+      `R2 upload: ${toErrorMessage(error)}`
+    )
     return
   }
 
@@ -118,14 +154,22 @@ export async function processAudioPreviewFile(
     })
 
     if (result === 'failed') {
-      summary.failed++
+      recordProcessingFailure(
+        summary,
+        file,
+        'GraphQL audio preview create/update returned failure'
+      )
     } else {
       await markFileAsCompleted(filePath)
-      summary.successful++
+      recordProcessingSuccess(summary, file)
       console.log(`Successfully processed audio preview ${file}`)
     }
   } catch (error) {
     console.error(`Failed to import/update audio preview:`, error)
-    summary.failed++
+    recordProcessingFailure(
+      summary,
+      file,
+      `GraphQL audio preview: ${toErrorMessage(error)}`
+    )
   }
 }

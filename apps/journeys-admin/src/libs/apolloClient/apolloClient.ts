@@ -12,13 +12,19 @@ import {
 } from '@apollo/client'
 import { EntityStore, StoreObject } from '@apollo/client/cache'
 import { setContext } from '@apollo/client/link/context'
+import { onError } from '@apollo/client/link/error'
 import { getMainDefinition } from '@apollo/client/utilities'
 import DebounceLink from 'apollo-link-debounce'
 import { getApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
+import { print } from 'graphql'
 import { createClient } from 'graphql-sse'
 import { useMemo } from 'react'
 import { Observable } from 'zen-observable-ts'
+
+import { isDevHost } from '@core/shared/dev-hosts'
+
+import { logout } from '../auth/firebase'
 
 import { cache } from './cache'
 
@@ -27,40 +33,83 @@ let apolloClient: ApolloClient<NormalizedCacheObject>
 
 const DEFAULT_DEBOUNCE_TIMEOUT = 500
 
-// Custom Apollo Link for Server-Sent Events using graphql-sse
-class SSELink extends ApolloLink {
-  private url: string
-  private options: any
+interface GatewayUrlLocation {
+  hostname: string
+  protocol: 'http:' | 'https:'
+}
 
-  constructor(url: string, options?: any) {
+function getDefaultLocation(): GatewayUrlLocation | undefined {
+  if (typeof window === 'undefined') return undefined
+  return {
+    hostname: window.location.hostname,
+    protocol: window.location.protocol as 'http:' | 'https:'
+  }
+}
+
+/**
+ * Resolves the api-gateway URL for the Apollo HTTP + SSE links.
+ *
+ * 1. Explicit override: `NEXT_PUBLIC_GATEWAY_URL` always wins.
+ * 2. Browser dev with a hostname listed in `NEXT_PUBLIC_DEV_HOSTS`
+ *    (Doppler dev config): derive the gateway URL from the current
+ *    window so a phone / tablet loading the bundle over the tailnet
+ *    hits the dev machine's gateway port (4000) at the same hostname,
+ *    not `localhost`. The secret is only set in dev's Doppler config,
+ *    so `isDevHost` returns false everywhere else — absence of the
+ *    secret IS the gate.
+ * 3. Fallback: `http://localhost:4000` (today's behavior — preserves
+ *    SSR and non-dev hosts).
+ *
+ * See docs/development/tailscale-dev-access.md.
+ *
+ * `location` is injectable for tests; defaults to `window.location` when
+ * available, otherwise `undefined` (SSR).
+ */
+export function resolveGatewayUrl(
+  location: GatewayUrlLocation | undefined = getDefaultLocation()
+): string {
+  if (
+    process.env.NEXT_PUBLIC_GATEWAY_URL != null &&
+    process.env.NEXT_PUBLIC_GATEWAY_URL !== ''
+  )
+    return process.env.NEXT_PUBLIC_GATEWAY_URL
+
+  if (location != null && isDevHost(location.hostname))
+    return `${location.protocol}//${location.hostname}:4000`
+
+  return 'http://localhost:4000'
+}
+
+// Custom Apollo Link for Server-Sent Events using graphql-sse.
+// A new graphql-sse Client is created per request so each subscription
+// captures its own auth headers in a closure, avoiding race conditions
+// between concurrent subscriptions sharing mutable state.
+export class SSELink extends ApolloLink {
+  private url: string
+
+  constructor(url: string) {
     super()
     this.url = url
-    this.options = options || {}
   }
 
   public request(
     operation: Operation,
-    forward?: NextLink
+    _forward?: NextLink
   ): Observable<FetchResult> | null {
-    return new Observable<FetchResult>((observer) => {
-      // Get headers from operation context
-      const context = operation.getContext()
-      const headers = context.headers || {}
-
-      // Create a new client instance with current headers
-      const client = createClient({
-        url: this.url,
-        ...this.options,
-        headers: {
-          ...headers,
-          'Content-Type': 'application/json',
-          Accept: 'text/event-stream'
-        }
+    const headers = operation.getContext().headers ?? {}
+    const client = createClient({
+      url: this.url,
+      headers: () => ({
+        ...headers,
+        'Content-Type': 'application/json',
+        Accept: 'text/event-stream'
       })
+    })
 
+    return new Observable<FetchResult>((observer) => {
       const unsubscribe = client.subscribe(
         {
-          query: operation.query.loc?.source?.body || '',
+          query: print(operation.query),
           variables: operation.variables,
           operationName: operation.operationName
         },
@@ -87,11 +136,29 @@ class SSELink extends ApolloLink {
   }
 }
 
+// Creates the error link that handles UNAUTHENTICATED errors by logging the
+// user out and propagating a settled error observable.
+export function createErrorLink(): ApolloLink {
+  return onError(({ graphQLErrors }) => {
+    if (
+      !ssrMode &&
+      graphQLErrors?.some((e) => e.extensions?.code === 'UNAUTHENTICATED') ===
+        true
+    ) {
+      void logout()
+      // Propagate a settled error so any awaiting promise rejects cleanly
+      // while logout() clears the Firebase token and redirects to sign-in
+      return new Observable((observer) => {
+        observer.error(new Error('Session expired'))
+      })
+    }
+  })
+}
+
 export function createApolloClient(
   token?: string
 ): ApolloClient<NormalizedCacheObject> {
-  const gatewayUrl =
-    process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:4000'
+  const gatewayUrl = resolveGatewayUrl()
 
   // Create HTTP link for queries and mutations
   const httpLink = new HttpLink({
@@ -118,6 +185,8 @@ export function createApolloClient(
     }
   })
 
+  const errorLink = createErrorLink()
+
   const mutationQueueLink = new MutationQueueLink()
   const debounceLink = new DebounceLink(DEFAULT_DEBOUNCE_TIMEOUT)
 
@@ -134,7 +203,13 @@ export function createApolloClient(
     httpLink
   )
 
-  const link = from([debounceLink, mutationQueueLink, authLink, splitLink])
+  const link = from([
+    errorLink,
+    debounceLink,
+    mutationQueueLink,
+    authLink,
+    splitLink
+  ])
 
   return new ApolloClient({
     ssrMode,

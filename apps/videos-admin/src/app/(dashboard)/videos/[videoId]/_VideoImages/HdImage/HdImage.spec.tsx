@@ -1,21 +1,23 @@
+import { useSuspenseQuery as apolloClientModule_useSuspenseQuery } from '@apollo/client'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
+import { type Mock } from 'vitest'
 
 import { ImageAspectRatio } from '../../../constants'
 
 import { HdImage } from './HdImage'
 
 // Mock Apollo Client
-jest.mock('@apollo/client', () => {
-  const originalModule = jest.requireActual('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const originalModule = await vi.importActual('@apollo/client')
   return {
     ...originalModule,
-    useSuspenseQuery: jest.fn()
+    useSuspenseQuery: vi.fn()
   }
 })
 
 // Mock the ImageDisplay component
-jest.mock('../_ImageDisplay/ImageDisplay', () => ({
+vi.mock('../_ImageDisplay/ImageDisplay', () => ({
   ImageDisplay: ({ src, alt, title, aspectRatio, videoId }) => (
     <div data-testid="image-display-mock">
       <div data-testid="src">{String(src || '')}</div>
@@ -32,7 +34,7 @@ describe('VideoHd', () => {
 
   // Setup useSuspenseQuery mock for each test
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders the ImageDisplay with the correct props when image URL is available', () => {
@@ -52,7 +54,9 @@ describe('VideoHd', () => {
     }
 
     // Mock the hook
-    const { useSuspenseQuery } = require('@apollo/client')
+    const useSuspenseQuery = vi.mocked(
+      apolloClientModule_useSuspenseQuery as unknown as Mock
+    )
     useSuspenseQuery.mockReturnValue({ data: mockData })
 
     render(<HdImage videoId={mockVideoId} />)
@@ -82,7 +86,9 @@ describe('VideoHd', () => {
     }
 
     // Mock the hook
-    const { useSuspenseQuery } = require('@apollo/client')
+    const useSuspenseQuery = vi.mocked(
+      apolloClientModule_useSuspenseQuery as unknown as Mock
+    )
     useSuspenseQuery.mockReturnValue({ data: mockData })
 
     render(<HdImage videoId={mockVideoId} />)
@@ -107,7 +113,9 @@ describe('VideoHd', () => {
     }
 
     // Mock the hook
-    const { useSuspenseQuery } = require('@apollo/client')
+    const useSuspenseQuery = vi.mocked(
+      apolloClientModule_useSuspenseQuery as unknown as Mock
+    )
     useSuspenseQuery.mockReturnValue({ data: mockData })
 
     render(<HdImage videoId={mockVideoId} />)

@@ -107,8 +107,10 @@ describe('UserListItem', () => {
       </SnackbarProvider>
     )
 
+    const ownerUser =
+      owner.user?.__typename === 'AuthenticatedUser' ? owner.user : undefined
     expect(getByRole('img').getAttribute('alt')).toBe(
-      `${owner.user?.firstName ?? ''} ${owner.user?.lastName ?? ''}`
+      `${ownerUser?.firstName ?? ''} ${ownerUser?.lastName ?? ''}`
     )
     expect(getByRole('img').getAttribute('src')).toBe('imageSrc')
   })
@@ -285,7 +287,7 @@ describe('UserListItem', () => {
 
   describe('menu actions', () => {
     it('should handle on promote action', async () => {
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           userJourneyPromote: {
             __typename: 'UserJourney',
@@ -339,7 +341,7 @@ describe('UserListItem', () => {
     })
 
     it('should handle approve action', async () => {
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           userJourneyApprove: {
             __typename: 'UserJourney',
@@ -380,7 +382,7 @@ describe('UserListItem', () => {
     })
 
     it('should handle remove action', async () => {
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           userInviteRemove: {
             __typename: 'UserInvite',

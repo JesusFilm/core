@@ -1,1 +1,7 @@
 import './userJourney'
+import './userJourneyRequest.mutation'
+import './userJourneyApprove.mutation'
+import './userJourneyPromote.mutation'
+import './userJourneyRemove.mutation'
+import './userJourneyRemoveAll.mutation'
+import './userJourneyOpen.mutation'

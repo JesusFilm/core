@@ -1,4 +1,4 @@
-import { TFunction } from 'next-i18next'
+import { TFunction } from 'next-i18next/pages'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
@@ -13,10 +13,10 @@ import { eventLabelOptions } from '../eventLabels'
 import { getFilteredEventLabels } from './getFilteredEventLabels'
 
 describe('getFilteredEventLabels', () => {
-  const t = jest.fn((key) => key) as unknown as TFunction
+  const t = vi.fn((key) => key) as unknown as TFunction
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should return all event label options when selectedBlock is null', () => {
@@ -27,7 +27,9 @@ describe('getFilteredEventLabels', () => {
   it('should return filtered event labels for CardBlock', () => {
     const cardBlock = {
       __typename: 'CardBlock',
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     } as unknown as TreeBlock<CardBlock>
 
     const result = getFilteredEventLabels(t, cardBlock)

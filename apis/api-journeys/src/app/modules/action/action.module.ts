@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common'
 
 import { DateTimeScalar } from '../../lib/dateTime/dateTime.provider'
-import { PrismaService } from '../../lib/prisma.service'
+import { prismaServiceProvider } from '../../lib/prisma.service'
 
 import { ActionResolver } from './action.resolver'
 
 @Module({
   imports: [],
-  providers: [ActionResolver, DateTimeScalar, PrismaService],
+  providers: [ActionResolver, DateTimeScalar, prismaServiceProvider],
   exports: []
 })
 export class ActionModule {}

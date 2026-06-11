@@ -10,16 +10,16 @@ import { GET_TEMPLATE_FAMILY_STATS_AGGREGATE } from '../../../../libs/useTemplat
 
 import { TemplateAggregateAnalytics } from './TemplateAggregateAnalytics'
 
-jest.mock('next-i18next', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
     i18n: { language: 'en' }
   })
 }))
 
-const mockEnqueueSnackbar = jest.fn()
+const mockEnqueueSnackbar = vi.fn()
 
-jest.mock('notistack', () => ({
+vi.mock('notistack', () => ({
   useSnackbar: () => ({
     enqueueSnackbar: mockEnqueueSnackbar
   })
@@ -27,7 +27,7 @@ jest.mock('notistack', () => ({
 
 describe('TemplateAggregateAnalytics', () => {
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render icons for each metric button', async () => {
@@ -57,7 +57,7 @@ describe('TemplateAggregateAnalytics', () => {
           where: {}
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           templateFamilyStatsAggregate: {
             __typename: 'TemplateFamilyStatsAggregateResponse',
@@ -66,7 +66,10 @@ describe('TemplateAggregateAnalytics', () => {
             totalJourneysResponses: 50
           }
         }
-      }))
+      })) as MockedResponse<
+        GetTemplateFamilyStatsAggregate,
+        GetTemplateFamilyStatsAggregateVariables
+      >['result']
     }
 
     render(

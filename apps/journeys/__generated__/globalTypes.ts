@@ -141,6 +141,7 @@ export enum MessagePlatform {
   checkBroken = "checkBroken",
   checkContained = "checkContained",
   custom = "custom",
+  discord = "discord",
   facebook = "facebook",
   globe2 = "globe2",
   globe3 = "globe3",
@@ -165,12 +166,14 @@ export enum MessagePlatform {
   send2 = "send2",
   settings = "settings",
   shieldCheck = "shieldCheck",
+  signal = "signal",
   skype = "skype",
   snapchat = "snapchat",
   telegram = "telegram",
   tikTok = "tikTok",
   viber = "viber",
   vk = "vk",
+  weChat = "weChat",
   whatsApp = "whatsApp",
 }
 
@@ -289,6 +292,17 @@ export interface ChatOpenEventCreateInput {
   value?: MessagePlatform | null;
 }
 
+export interface DateTimeFilter {
+  gte?: any | null;
+  lte?: any | null;
+}
+
+export interface JourneyCustomizationDescriptionTranslateInput {
+  journeyId: string;
+  sourceLanguageName: string;
+  targetLanguageName: string;
+}
+
 export interface JourneyProfileUpdateInput {
   lastActiveTeamId?: string | null;
   journeyFlowBackButtonClicked?: boolean | null;
@@ -320,12 +334,14 @@ export interface JourneysQueryOptions {
   embedded?: boolean | null;
   journeyCollection?: boolean | null;
   skipRoutingFilter?: boolean | null;
+  status?: JourneyStatus[] | null;
 }
 
 export interface LanguagesFilter {
   ids?: string[] | null;
   bcp47?: string[] | null;
   iso3?: string[] | null;
+  updatedAt?: DateTimeFilter | null;
 }
 
 export interface MultiselectSubmissionEventCreateInput {
@@ -433,9 +449,9 @@ export interface VideoProgressEventCreateInput {
   blockId: string;
   stepId?: string | null;
   position?: number | null;
-  progress: number;
   label?: string | null;
   value?: VideoBlockSource | null;
+  progress: number;
 }
 
 export interface VideoStartEventCreateInput {

@@ -10,7 +10,7 @@ import { VideoFields } from './__generated__/VideoFields'
 
 import { Video } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -63,6 +63,7 @@ const block: TreeBlock<VideoFields> = {
     variantLanguages: []
   },
   customizable: null,
+  notes: null,
   children: [
     {
       id: 'posterBlockId',
@@ -85,7 +86,7 @@ const block: TreeBlock<VideoFields> = {
 
 describe('Video', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render internal video', () => {
@@ -279,7 +280,9 @@ describe.skip('Admin Video', () => {
               fullscreen: false,
               backdropBlur: null,
               eventLabel: null,
-              children: [block]
+              children: [block],
+              showAssistant: null,
+              expandChatByDefault: null
             }
           }}
         >

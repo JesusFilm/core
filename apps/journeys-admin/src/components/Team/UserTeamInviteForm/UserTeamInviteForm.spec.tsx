@@ -18,18 +18,21 @@ import { USER_TEAM_INVITE_CREATE } from './UserTeamInviteForm'
 
 import { UserTeamInviteForm } from '.'
 
-jest.mock('../../../libs/useCurrentUserLazyQuery', () => ({
+vi.mock('../../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
-  useCurrentUserLazyQuery: jest.fn().mockReturnValue({
-    loadUser: jest.fn(),
+  useCurrentUserLazyQuery: vi.fn().mockReturnValue({
+    loadUser: vi.fn(),
     data: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       ...user1
     }
   })
 }))
 
-const user1 = { id: 'userId', email: 'siyangguccigang@example.com' }
+const user1 = vi.hoisted(() => ({
+  id: 'userId',
+  email: 'siyangguccigang@example.com'
+}))
 
 describe('UserTeamInviteForm', () => {
   const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {

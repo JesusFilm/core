@@ -27,6 +27,7 @@ import {
 
 interface UseWatchHeroCarouselOptions {
   locale?: string
+  languageId?: string
 }
 
 interface UseWatchHeroCarouselResult {
@@ -261,14 +262,15 @@ function createVideoContentFromMux(
 }
 
 export function useWatchHeroCarousel({
-  locale
+  locale,
+  languageId
 }: UseWatchHeroCarouselOptions = {}): UseWatchHeroCarouselResult {
   const {
     slides: rawSlides,
     loading,
     moveToNext,
     jumpToVideo
-  } = useCarouselVideos(locale)
+  } = useCarouselVideos({ locale, languageId })
   const { state: playerState } = usePlayer()
 
   const [slides, setSlides] = useState<VideoCarouselSlide[]>(rawSlides)

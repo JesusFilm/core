@@ -12,6 +12,7 @@ import {
   useInstantSearch,
   useSearchBox
 } from 'react-instantsearch'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
@@ -31,18 +32,18 @@ import { videoItems } from './Slider/Settings/Drawer/VideoLibrary/data'
 
 import { Editor } from '.'
 
-jest.mock('next/compat/router', () => ({
+vi.mock('next/compat/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('next-firebase-auth', () => ({
-  useUser: jest.fn().mockReturnValue({
+vi.mock('next-firebase-auth', () => ({
+  useUser: vi.fn().mockReturnValue({
     user: {
       id: '1',
       email: 'test@test.com',
@@ -51,29 +52,27 @@ jest.mock('next-firebase-auth', () => ({
   })
 }))
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
-jest.mock('../AiChat', () => ({
-  AiChat: jest.fn()
+vi.mock('../AiChat', () => ({
+  AiChat: vi.fn()
 }))
 
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
-  typeof useSearchBox
->
-const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
+const mockUseInstantSearch = useInstantSearch as MockedFunction<
   typeof useInstantSearch
 >
-const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
+const mockUseInfiniteHits = useInfiniteHits as MockedFunction<
   typeof useInfiniteHits
 >
 
 const searchBox = {
-  refine: jest.fn()
+  refine: vi.fn()
 } as unknown as SearchBoxRenderState
 
 const infiniteHits = {
   items: videoItems,
-  showMore: jest.fn(),
+  showMore: vi.fn(),
   isLastPage: false
 } as unknown as InfiniteHitsRenderState
 
@@ -85,7 +84,7 @@ const instantSearch = {
   }
 } as unknown as InstantSearchApi
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('Editor', () => {
   const journey: Journey = {
@@ -157,7 +156,9 @@ describe('Editor', () => {
     journeyCustomizationFields: [],
     fromTemplateId: null,
     socialNodeX: null,
-    socialNodeY: null
+    socialNodeY: null,
+    customizable: null,
+    showAssistant: null
   }
 
   beforeEach(() => {
@@ -199,7 +200,7 @@ describe('Editor', () => {
   })
 
   it('should render the Fab', async () => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
 
     render(
       <MockedProvider>
@@ -254,7 +255,9 @@ describe('Editor', () => {
           themeName: ThemeName.base,
           fullscreen: false,
           backdropBlur: null,
-          eventLabel: null
+          eventLabel: null,
+          showAssistant: null,
+          expandChatByDefault: null
         },
         {
           __typename: 'TypographyBlock',

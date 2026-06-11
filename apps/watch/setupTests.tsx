@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom/vitest'
 import 'isomorphic-fetch'
 import { configure } from '@testing-library/react'
 
@@ -6,11 +6,18 @@ import { server } from './test/mswServer'
 import './test/i18n'
 
 configure({ asyncUtilTimeout: 2500 })
+;(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true
 
-jest.mock('next/image', () => ({
+vi.mock('next/image', () => ({
   __esModule: true,
-  // eslint-disable-next-line @next/next/no-img-element
-  default: ({ src, alt }) => <img src={src} alt={alt} />
+  default: ({ src, alt, unoptimized }) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={alt}
+      data-unoptimized={unoptimized === true ? 'true' : undefined}
+    />
+  )
 }))
 
 Object.defineProperty(
@@ -26,7 +33,10 @@ Object.defineProperty(
   }))(window.navigator.userAgent)
 )
 
-jest.mock('next/router', () => require('next-router-mock'))
+vi.mock(
+  'next/router',
+  () => import(/* webpackChunkName: "next-router-mock" */ 'next-router-mock')
+)
 
 // Mock ResizeObserver for components that use it
 class ResizeObserverMock {
@@ -48,12 +58,9 @@ if (
   Object.defineProperty(window.HTMLElement.prototype, 'scrollIntoView', {
     configurable: true,
     writable: true,
-    value: jest.fn()
+    value: vi.fn()
   })
 }
-
-if (process.env.CI === 'true')
-  jest.retryTimes(3, { logErrorsBeforeRetry: true })
 
 // Start/stop MSW for node test env
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))

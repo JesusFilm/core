@@ -22,7 +22,9 @@ const mockJourney = {
       id: 'card0id',
       __typename: 'CardBlock',
       parentBlockId: 'step0id',
-      parentOrder: 0
+      parentOrder: 0,
+      showAssistant: null,
+      expandChatByDefault: null
     },
     {
       id: 'step1id',
@@ -36,14 +38,16 @@ const mockJourney = {
       id: 'card0id',
       __typename: 'CardBlock',
       parentBlockId: 'step1id',
-      parentOrder: 0
+      parentOrder: 0,
+      showAssistant: null,
+      expandChatByDefault: null
     }
   ] as unknown as TreeBlock[]
 }
 
 describe('LanguageScreenCardPreview', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders BlockRenderer with first step', async () => {

@@ -1,6 +1,6 @@
 import { MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryFn, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryFn, StoryObj } from '@storybook/nextjs-vite'
 import { ReactElement } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -52,7 +52,13 @@ const getLanguagesMock: MockedResponse<GetLanguages, GetLanguagesVariables> = {
   }
 }
 
-const JourneyDetailsComponent = (): ReactElement => {
+interface JourneyDetailsComponentProps {
+  template?: boolean
+}
+
+const JourneyDetailsComponent = ({
+  template = false
+}: JourneyDetailsComponentProps): ReactElement => {
   return (
     <JourneyProvider
       value={{
@@ -61,7 +67,8 @@ const JourneyDetailsComponent = (): ReactElement => {
           title:
             'Some extra long title where it will cause ellipsis to appear I hope this is long enough',
           description:
-            'Some extra long description where it will cause ellipsis to appear I hope this is long enough'
+            'Some extra long description where it will cause ellipsis to appear I hope this is long enough',
+          template
         },
         variant: 'admin'
       }}
@@ -110,6 +117,15 @@ export const Ellipsis = {
       <Box width={400}>{Story(context.args, context)}</Box>
     )
   ]
+}
+
+export const TemplateBadge: StoryObj<typeof JourneyDetails> = {
+  render: () => <JourneyDetailsComponent template />,
+  parameters: {
+    apolloClient: {
+      mocks: [getLanguagesMock]
+    }
+  }
 }
 
 export default JourneyDetailsStory

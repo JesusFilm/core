@@ -11,6 +11,22 @@ export type CustomizationScreen =
   | 'media'
   | 'social'
   | 'done'
+  | 'guestPreview'
+
+/**
+ * Screens that are not represented as steps in the progress stepper.
+ * Add a screen here to exclude it from the step dot count.
+ * For screens that should also hide the stepper entirely, add to STEPPER_HIDDEN_SCREENS too.
+ */
+export const STEPPER_EXCLUDED_SCREENS: ReadonlySet<CustomizationScreen> =
+  new Set(['done', 'guestPreview'])
+
+/**
+ * Screens where the progress stepper is hidden entirely (must be a subset of STEPPER_EXCLUDED_SCREENS).
+ */
+export const STEPPER_HIDDEN_SCREENS: ReadonlySet<CustomizationScreen> = new Set(
+  ['done']
+)
 
 export interface CustomizeFlowConfig {
   screens: CustomizationScreen[]
@@ -23,6 +39,8 @@ export interface CustomizeFlowConfig {
 
 export interface CustomizeFlowOptions {
   customizableMedia?: boolean
+  /** When true, the guestPreview screen is included (e.g. user not signed in). Pass from useAuth().user. */
+  isGuest?: boolean
 }
 
 /**
@@ -56,7 +74,8 @@ export function getCustomizeFlowConfig(
   options: CustomizeFlowOptions = {}
 ): CustomizeFlowConfig {
   // Default false: outage-safe; when flag is missing/undefined, hide media step (new feature off).
-  const { customizableMedia: customizableMediaFlag = false } = options
+  const { customizableMedia: customizableMediaFlag = false, isGuest = false } =
+    options
 
   // Always include language, social, and done screens
   const baseScreens: CustomizationScreen[] = ['language', 'social', 'done']
@@ -93,6 +112,12 @@ export function getCustomizeFlowConfig(
     screens.splice(socialIndex, 0, 'links')
   }
 
+  if (isGuest) {
+    // Insert guest preview screen before social screen
+    const socialIndex = screens.indexOf('social')
+    screens.splice(socialIndex, 0, 'guestPreview')
+  }
+
   if (hasCustomizableMedia && customizableMediaFlag) {
     // Insert media screen before social screen
     const socialIndex = screens.indexOf('social')
@@ -101,7 +126,9 @@ export function getCustomizeFlowConfig(
 
   return {
     screens,
-    totalSteps: screens.length,
+    totalSteps:
+      screens.length -
+      screens.filter((s) => STEPPER_EXCLUDED_SCREENS.has(s)).length,
     hasEditableText,
     hasCustomizableLinks,
     hasCustomizableMedia,

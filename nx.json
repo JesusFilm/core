@@ -59,10 +59,6 @@
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
     },
-    "@nx/vite:test": {
-      "cache": true,
-      "inputs": ["default", "^production"]
-    },
     "build-storybook": {
       "inputs": [
         "default",
@@ -91,6 +87,10 @@
     "type-check": {
       "cache": true,
       "inputs": ["default"]
+    },
+    "@nx/vitest:test": {
+      "cache": true,
+      "inputs": ["default", "^production"]
     }
   },
   "namedInputs": {
@@ -121,5 +121,6 @@
   ],
   "tui": {
     "enabled": false
-  }
+  },
+  "analytics": false
 }

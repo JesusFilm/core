@@ -1,0 +1,1 @@
+export { isJourneyNotFoundError } from './isJourneyNotFoundError'

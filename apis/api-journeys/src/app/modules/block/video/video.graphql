@@ -117,4 +117,8 @@ type VideoBlock implements Block @key(fields: "id") @shareable {
   subtitleLanguage: Language @shareable
   showGeneratedSubtitles: Boolean @shareable
   customizable: Boolean @shareable
+  """
+  Publisher notes for template adapters (e.g. trailer, intro).
+  """
+  notes: String
 }

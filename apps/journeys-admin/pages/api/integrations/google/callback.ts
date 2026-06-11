@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+import { isSafeRelativePath } from '../../../../src/libs/isSafeRelativePath'
+
 interface OAuthState {
   teamId?: string
   returnTo?: string
@@ -9,14 +11,6 @@ function getOrigin(req: NextApiRequest): string {
   const proto = (req.headers['x-forwarded-proto'] as string) ?? 'http'
   const host = req.headers.host ?? 'localhost'
   return `${proto}://${host}`
-}
-
-function isSafeRelativePath(path: string | undefined): path is string {
-  if (path == null) return false
-  if (!path.startsWith('/')) return false
-  // very basic check to avoid protocol-relative or absolute URLs
-  if (path.startsWith('//')) return false
-  return true
 }
 
 export default async function handler(

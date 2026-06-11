@@ -18,13 +18,15 @@ const block: CardBlock = {
   themeName: null,
   fullscreen: false,
   backdropBlur: null,
-  eventLabel: null
+  eventLabel: null,
+  showAssistant: null,
+  expandChatByDefault: null
 }
-const execute = jest.fn().mockResolvedValue(block)
+const execute = vi.fn().mockResolvedValue(block)
 
 describe('useBlockCreateCommand', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should run the execute command and return a block', async () => {

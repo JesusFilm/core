@@ -8,7 +8,7 @@ import { NotificationSwitch } from '.'
 
 describe('NotificationSwitch', () => {
   it('updates event email notifications on click', async () => {
-    const result = jest
+    const result = vi
       .fn()
       .mockReturnValueOnce(useJourneyNotifcationUpdateMock.result)
     render(
@@ -52,6 +52,21 @@ describe('NotificationSwitch', () => {
       expect(
         screen.getByRole('tooltip', { name: 'Only username can change this' })
       ).toBeVisible()
+    )
+  })
+
+  it('renders without Tooltip when name is not provided', async () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <NotificationSwitch journeyId="journeyId" />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.mouseOver(screen.getByRole('checkbox'))
+    await waitFor(() =>
+      expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
     )
   })
 

@@ -1,11 +1,16 @@
+import { useMutation, useSuspenseQuery } from '@apollo/client'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { useRouter } from 'next/navigation'
 import { SnackbarProvider } from 'notistack'
+import { type Mock } from 'vitest'
+
+import { resolvedParams } from '../../../../../../test/utils/resolvedParams'
 
 import StudyQuestionDialog from './page'
 
 // Mock the StudyQuestionForm component
-jest.mock('../_StudyQuestionForm/StudyQuestionForm', () => ({
+vi.mock('../_StudyQuestionForm/StudyQuestionForm', () => ({
   StudyQuestionForm: ({ variant, initialValues, onSubmit, loading }) => (
     <div data-testid="study-question-form">
       <div data-testid="form-variant">{variant}</div>
@@ -24,9 +29,9 @@ jest.mock('../_StudyQuestionForm/StudyQuestionForm', () => ({
 }))
 
 // Mock the Apollo Client hooks
-jest.mock('@apollo/client', () => ({
-  useMutation: jest.fn(() => [jest.fn(), { loading: false }]),
-  useSuspenseQuery: jest.fn(() => ({
+vi.mock('@apollo/client', () => ({
+  useMutation: vi.fn(() => [vi.fn(), { loading: false }]),
+  useSuspenseQuery: vi.fn(() => ({
     data: {
       adminVideo: {
         id: 'video-123',
@@ -46,14 +51,26 @@ jest.mock('@apollo/client', () => ({
 }))
 
 // Mock the next/navigation
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(() => ({
-    push: jest.fn()
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
   }))
 }))
 
+// Mock notistack (hoisted so the factory can reference the mock)
+const { mockEnqueueSnackbar } = vi.hoisted(() => ({
+  mockEnqueueSnackbar: vi.fn()
+}))
+
+vi.mock('notistack', async () => ({
+  ...(await vi.importActual('notistack')),
+  useSnackbar: () => ({
+    enqueueSnackbar: mockEnqueueSnackbar
+  })
+}))
+
 // Mock Dialog component
-jest.mock('@core/shared/ui/Dialog', () => ({
+vi.mock('@core/shared/ui/Dialog', () => ({
   Dialog: ({ children, onClose, dialogTitle }) => (
     <div data-testid="mock-dialog">
       <div data-testid="dialog-title">{dialogTitle.title}</div>
@@ -73,10 +90,10 @@ describe('StudyQuestionDialog', () => {
     render(
       <SnackbarProvider>
         <StudyQuestionDialog
-          params={{
+          params={resolvedParams({
             videoId: mockVideoId,
             studyQuestionId: mockStudyQuestionId
-          }}
+          })}
         />
       </SnackbarProvider>
     )
@@ -103,8 +120,8 @@ describe('StudyQuestionDialog', () => {
   })
 
   it('redirects when close button is clicked', async () => {
-    const mockRouter = { push: jest.fn() }
-    require('next/navigation').useRouter.mockReturnValue(mockRouter)
+    const mockRouter = { push: vi.fn() }
+    vi.mocked(useRouter as unknown as Mock).mockReturnValue(mockRouter)
 
     renderComponent()
 
@@ -115,31 +132,20 @@ describe('StudyQuestionDialog', () => {
   })
 
   it('calls the update mutation when form is submitted', async () => {
-    const mockUpdateMutation = jest
-      .fn()
-      .mockImplementation(({ onCompleted }) => {
-        onCompleted?.()
-        return Promise.resolve()
-      })
-    const mockRouter = { push: jest.fn() }
-    const mockEnqueueSnackbar = jest.fn()
+    const mockUpdateMutation = vi.fn().mockImplementation(({ onCompleted }) => {
+      onCompleted?.()
+      return Promise.resolve()
+    })
+    const mockRouter = { push: vi.fn() }
 
     // Mock the Apollo useMutation hook
-    require('@apollo/client').useMutation.mockReturnValue([
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
       mockUpdateMutation,
       { loading: false }
     ])
 
     // Mock the router
-    require('next/navigation').useRouter.mockReturnValue(mockRouter)
-
-    // Mock the snackbar
-    jest.mock('notistack', () => ({
-      ...jest.requireActual('notistack'),
-      useSnackbar: () => ({
-        enqueueSnackbar: mockEnqueueSnackbar
-      })
-    }))
+    vi.mocked(useRouter as unknown as Mock).mockReturnValue(mockRouter)
 
     renderComponent()
 
@@ -165,11 +171,11 @@ describe('StudyQuestionDialog', () => {
   })
 
   it('redirects to video page when study question is not found', () => {
-    const mockRouter = { push: jest.fn() }
-    require('next/navigation').useRouter.mockReturnValue(mockRouter)
+    const mockRouter = { push: vi.fn() }
+    vi.mocked(useRouter as unknown as Mock).mockReturnValue(mockRouter)
 
     // Mock the data to not include the requested study question
-    require('@apollo/client').useSuspenseQuery.mockReturnValue({
+    vi.mocked(useSuspenseQuery as unknown as Mock).mockReturnValue({
       data: {
         adminVideo: {
           id: 'video-123',
@@ -194,7 +200,7 @@ describe('StudyQuestionDialog', () => {
     const errorMessage = 'Failed to update study question'
 
     // Reset the query mock to provide valid data
-    require('@apollo/client').useSuspenseQuery.mockReturnValue({
+    vi.mocked(useSuspenseQuery as unknown as Mock).mockReturnValue({
       data: {
         adminVideo: {
           id: 'video-123',
@@ -209,14 +215,14 @@ describe('StudyQuestionDialog', () => {
     })
 
     // Mock useMutation before rendering component
-    const mockUpdateMutation = jest.fn().mockImplementation((options) => {
+    const mockUpdateMutation = vi.fn().mockImplementation((options) => {
       if (options && options.onError) {
         options.onError({ message: errorMessage })
       }
       return Promise.resolve()
     })
 
-    require('@apollo/client').useMutation.mockReturnValue([
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
       mockUpdateMutation,
       { loading: false }
     ])

@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
+import { type MockedFunction } from 'vitest'
 
 import { BlockEventLabel } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
@@ -19,31 +20,30 @@ import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 
 import { RADIO_QUESTION_SUBMISSION_EVENT_CREATE, RadioQuestion } from '.'
 
-jest.mock('../../libs/action', () => {
-  const originalModule = jest.requireActual('../../libs/action')
+vi.mock('../../libs/action', async () => {
+  const originalModule =
+    await vi.importActual<typeof import('../../libs/action')>(
+      '../../libs/action'
+    )
   return {
     __esModule: true,
     ...originalModule,
-    handleAction: jest.fn()
+    handleAction: vi.fn()
   }
 })
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+vi.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: vi.fn()
 }))
 
-const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
-  typeof sendGTMEvent
->
+const mockedSendGTMEvent = sendGTMEvent as MockedFunction<typeof sendGTMEvent>
 
-jest.mock('next-plausible', () => ({
+vi.mock('next-plausible', () => ({
   __esModule: true,
-  usePlausible: jest.fn()
+  usePlausible: vi.fn()
 }))
 
-const mockUsePlausible = usePlausible as jest.MockedFunction<
-  typeof usePlausible
->
+const mockUsePlausible = usePlausible as MockedFunction<typeof usePlausible>
 
 const block: TreeBlock<RadioQuestionFields> = {
   __typename: 'RadioQuestionBlock',
@@ -96,7 +96,7 @@ describe('RadioQuestion', () => {
   it('should display the correct options', () => {
     const { getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
-        <RadioQuestion {...block} addOption={jest.fn()} />
+        <RadioQuestion {...block} addOption={vi.fn()} />
       </MockedProvider>
     )
     expect(getByText('Option 1')).toBeInTheDocument()
@@ -107,7 +107,7 @@ describe('RadioQuestion', () => {
   it('should select an option onClick', async () => {
     blockHistoryVar([activeBlock])
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         radioQuestionSubmissionEventCreate: {
           id: 'uuid'
@@ -297,7 +297,7 @@ describe('RadioQuestion', () => {
   it('should add radio submission to plausible', async () => {
     blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
     const { getAllByRole } = render(
@@ -370,7 +370,7 @@ describe('RadioQuestion', () => {
   it('should call plausible with eventLabel for radioQuestionSubmit events', async () => {
     blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
     const blockWithEventLabel: TreeBlock<RadioQuestionFields> = {
@@ -441,30 +441,31 @@ describe('RadioQuestion', () => {
         expect.any(Object)
       )
     )
-    expect(mockPlausible).toHaveBeenCalledWith(BlockEventLabel.custom1, {
-      u: expect.stringContaining(`/journey.id/RadioQuestion1`),
+    expect(mockPlausible).toHaveBeenCalledWith('custom1Capture', {
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
-        blockId: 'RadioQuestion1',
+        blockId: 'RadioOption1',
         label: 'Step {{number}}',
         radioOptionBlockId: 'RadioOption1',
         stepId: 'step.id',
         value: 'Option 1',
         key: keyify({
           stepId: 'step.id',
-          event: BlockEventLabel.custom1,
+          event: 'custom1Capture',
           blockId: 'RadioOption1',
           target: null,
           journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
-          event: BlockEventLabel.custom1,
+          event: 'custom1Capture',
           blockId: 'RadioOption1',
           journeyId: 'journey.id'
         }),
         templateKey: templateKeyify({
-          event: BlockEventLabel.custom1,
+          event: 'custom1Capture',
+          target: null,
           journeyId: 'journey.id'
         })
       }

@@ -13,7 +13,11 @@ import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCaro
 import { ContainerHero } from '../../ContainerHero'
 import { OtherCollectionsCarousel } from '../../OtherCollectionsCarousel'
 
-export function CollectionsPage(): ReactElement {
+interface CollectionsPageProps {
+  year: number
+}
+
+export function CollectionsPage({ year }: CollectionsPageProps): ReactElement {
   const [mutePage, setMutePage] = useState(true)
 
   // Content items data with contentId that will match the CollectionsVideoContent IDs
@@ -77,8 +81,9 @@ export function CollectionsPage(): ReactElement {
         <ContainerHero
           title="Easter"
           descriptionBeforeYear="Easter"
-          descriptionAfterYear="videos & resources about Lent, Holy Week, Resurrection"
+          descriptionAfterYear="resurrection story videos in 2,000+ languages"
           feedbackButtonLabel="Give Feedback"
+          year={year}
         />
       }
       hideHeader
@@ -87,7 +92,7 @@ export function CollectionsPage(): ReactElement {
       <CollectionsPageContent>
         <CollectionNavigationCarousel contentItems={navigationContentItems} />
         <CollectionIntroText
-          title="The Real Easter story"
+          title="What Is the True Meaning of Easter?"
           subtitle="Questioning? Searching? Discover the true power of Easter."
           firstParagraph={{
             beforeHighlight: 'Beyond eggs and bunnies lies the story of ',
@@ -103,6 +108,7 @@ Because the greatest celebration in human history is about far more than traditi
           orthodoxEasterLabel="Orthodox"
           passoverLabel="Jewish Passover"
           locale="en-US"
+          year={year}
         />
         <CollectionsVideoContent
           contentId="easter-explained/english"
@@ -114,7 +120,7 @@ Because the greatest celebration in human history is about far more than traditi
           mutePage={mutePage}
           setMutePage={setMutePage}
           showDivider={false}
-          questionsTitle="Related questions"
+          questionsTitle="Frequently asked questions about Easter"
           askButtonText="Ask yours"
           bibleQuotesTitle="Bible quotes"
           quizButtonText="What's your next step of faith?"

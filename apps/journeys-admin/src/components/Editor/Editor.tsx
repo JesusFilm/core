@@ -1,4 +1,3 @@
-import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 
@@ -10,6 +9,7 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { User } from '../../libs/auth'
 import { MuxVideoUploadProvider } from '../MuxVideoUploadProvider'
 
 import { AiEditButton } from './AiEditButton'
@@ -23,7 +23,7 @@ interface EditorProps {
   journey?: Journey
   selectedStepId?: string
   initialState?: Partial<EditorState>
-  user?: User
+  user?: User | null
 }
 
 /**

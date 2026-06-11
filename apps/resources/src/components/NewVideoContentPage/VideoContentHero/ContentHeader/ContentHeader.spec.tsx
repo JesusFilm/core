@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
-import { userEvent } from 'storybook/test'
+import userEvent from '@testing-library/user-event'
 
 import {
   PlayerProvider,
@@ -13,7 +13,7 @@ import { ContentHeader } from './ContentHeader'
 
 describe('ContentHeader', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders the header with a logo', () => {

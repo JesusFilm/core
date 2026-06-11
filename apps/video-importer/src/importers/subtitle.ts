@@ -2,13 +2,19 @@ import { env } from '../env'
 import { getGraphQLClient } from '../gql/graphqlClient'
 import { CREATE_VIDEO_SUBTITLE, UPDATE_VIDEO_SUBTITLE } from '../gql/mutations'
 import { GET_VIDEO_SUBTITLES_BY_EDITION } from '../gql/queries'
-import { createR2Asset, uploadToR2 } from '../services/r2'
-import type { ProcessingSummary, R2Asset, VideoSubtitleInput } from '../types'
+import { SUBTITLE_FILENAME_REGEX } from '../importerFilenamePatterns'
+import {
+  type ProcessingSummary,
+  type R2Asset,
+  type VideoSubtitleInput,
+  recordProcessingFailure,
+  recordProcessingSuccess
+} from '../types'
+import { toErrorMessage } from '../utils/errorMessage'
 import { markFileAsCompleted } from '../utils/fileUtils'
 import { validateVideoAndEdition } from '../utils/videoEditionValidator'
 
-export const SUBTITLE_FILENAME_REGEX =
-  /^([^.]+?)---([^.]+?)---([^-]+)(?:---([^-]+))*\.(srt|vtt)$/
+export { SUBTITLE_FILENAME_REGEX }
 
 export async function processSubtitleFile(
   file: string,
@@ -20,7 +26,9 @@ export async function processSubtitleFile(
   if (!match) return
 
   // Parse file properly - extension is captured in match[5], extraFields in match[4]
-  const [, videoId, editionName, languageId, extraField, fileExtension] = match
+  const [, videoId, editionName, rawLanguageId, extraField, fileExtension] =
+    match
+  const languageId = rawLanguageId.trim()
   const edition = editionName.toLowerCase()
 
   // Filter out the extension and empty values from extraFields
@@ -32,11 +40,20 @@ export async function processSubtitleFile(
   if (extraFields.length > 0) {
     console.log(`Extra fields: ${extraFields.join(', ')}`)
   }
+
+  if (languageId.length === 0) {
+    console.error(
+      `Validation failed for ${file}: missing languageId in filename`
+    )
+    recordProcessingFailure(summary, file, 'Missing languageId in filename')
+    return
+  }
+
   try {
-    await validateVideoAndEdition(videoId, edition)
+    await validateVideoAndEdition(videoId, edition, languageId)
   } catch (error) {
-    console.error(`Validation failed:`, error)
-    summary.failed++
+    console.error(`Validation failed for ${file}: ${(error as Error).message}`)
+    recordProcessingFailure(summary, file, toErrorMessage(error))
     return
   }
 
@@ -44,6 +61,26 @@ export async function processSubtitleFile(
   const originalFilename = file
   const subtitleVariantId = `${languageId}_${edition}_${videoId}`
   const fileName = `${videoId}/editions/${edition}/subtitles/${subtitleVariantId}.${fileExtension}`
+
+  let createR2Asset: typeof import('../services/r2').createR2Asset
+  let formatR2AssetDiagnostic: typeof import('../services/r2').formatR2AssetDiagnostic
+  let uploadToR2: typeof import('../services/r2').uploadToR2
+  try {
+    const r2 = await import(
+      /* webpackChunkName: "video-importer-r2" */ '../services/r2'
+    )
+    createR2Asset = r2.createR2Asset
+    formatR2AssetDiagnostic = r2.formatR2AssetDiagnostic
+    uploadToR2 = r2.uploadToR2
+  } catch (error) {
+    console.error(`Failed to load R2 module for subtitle ${file}:`, error)
+    recordProcessingFailure(
+      summary,
+      file,
+      `Load R2 module: ${toErrorMessage(error)}`
+    )
+    return
+  }
 
   let r2Asset
   try {
@@ -56,7 +93,11 @@ export async function processSubtitleFile(
     })
   } catch (error) {
     console.error(`Failed to create R2 asset for subtitle:`, error)
-    summary.failed++
+    recordProcessingFailure(
+      summary,
+      file,
+      `R2 create asset: ${toErrorMessage(error)}`
+    )
     return
   }
 
@@ -70,7 +111,11 @@ export async function processSubtitleFile(
     })
   } catch (error) {
     console.error(`Failed to upload subtitle to R2:`, error)
-    summary.failed++
+    recordProcessingFailure(
+      summary,
+      file,
+      `R2 upload: ${toErrorMessage(error)}${formatR2AssetDiagnostic(r2Asset)}`
+    )
     return
   }
 
@@ -83,11 +128,15 @@ export async function processSubtitleFile(
       r2Asset
     })
     await markFileAsCompleted(filePath)
-    summary.successful++
+    recordProcessingSuccess(summary, file)
     console.log(`Successfully processed subtitle ${file}`)
   } catch (error) {
     console.error(`Failed to import/update subtitle:`, error)
-    summary.failed++
+    recordProcessingFailure(
+      summary,
+      file,
+      `GraphQL subtitle import: ${toErrorMessage(error)}`
+    )
   }
 }
 

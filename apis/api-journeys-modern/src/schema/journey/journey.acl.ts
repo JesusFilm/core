@@ -5,7 +5,6 @@ import {
   UserTeamRole
 } from '@core/prisma/journeys/client'
 import { User as BaseUser } from '@core/yoga/firebaseClient'
-import { DefaultArgs } from '@prisma/client/runtime/library'
 
 import { Action } from '../../lib/auth/ability'
 
@@ -25,12 +24,37 @@ export type Journey = Prisma.JourneyGetPayload<{
   }
 }>
 
-export const INCLUDE_JOURNEY_ACL: Prisma.BlockInclude<DefaultArgs> = {
+export const INCLUDE_JOURNEY_ACL: Prisma.BlockInclude = {
   journey: {
     include: {
       team: { include: { userTeams: true } },
       userJourneys: true
     }
+  }
+}
+
+export function journeyReadAccessWhere(
+  userId: string,
+  user: { roles?: string[] }
+): Prisma.JourneyWhereInput {
+  const isPublisher = user.roles?.includes('publisher') === true
+  return {
+    OR: [
+      {
+        team: {
+          userTeams: { some: { userId, role: UserTeamRole.manager } }
+        }
+      },
+      {
+        team: {
+          userTeams: { some: { userId, role: UserTeamRole.member } }
+        }
+      },
+      { userJourneys: { some: { userId, role: UserJourneyRole.owner } } },
+      { userJourneys: { some: { userId, role: UserJourneyRole.editor } } },
+      { template: true, status: JourneyStatus.published },
+      ...(isPublisher ? [{ template: true }] : [])
+    ]
   }
 }
 
@@ -88,15 +112,6 @@ export function journeyAcl(
     }
   }
 
-  // Non-publishers cannot manage templates
-  if (
-    action === Action.Manage &&
-    'template' in journey &&
-    journey.template === true
-  ) {
-    return false
-  }
-
   switch (action) {
     case Action.Create:
       return create(journey, user)
@@ -116,7 +131,8 @@ export function journeyAcl(
   }
 }
 
-// team managers and journeys owners can manage the journey
+// team managers and journey owners can manage any journey;
+// team members and journey editors can also manage local templates
 function manage(journey: Partial<Journey>, user: User): boolean {
   const userJourney = journey?.userJourneys?.find(
     (userJourney) => userJourney.userId === user.id
@@ -127,10 +143,19 @@ function manage(journey: Partial<Journey>, user: User): boolean {
   )
 
   const isUserRoleOwner = userJourney?.role === UserJourneyRole.owner
-
   const isTeamManager = userTeam?.role === UserTeamRole.manager
 
-  return isUserRoleOwner || isTeamManager
+  if (isUserRoleOwner || isTeamManager) return true
+
+  const isLocalTemplate =
+    journey.template === true && journey.teamId !== 'jfp-team'
+  if (isLocalTemplate) {
+    const isTeamMember = userTeam?.role === UserTeamRole.member
+    const isJourneyEditor = userJourney?.role === UserJourneyRole.editor
+    if (isTeamMember || isJourneyEditor) return true
+  }
+
+  return false
 }
 
 // team managers and team members can create a journey
@@ -154,8 +179,13 @@ function read(journey: Partial<Journey>, user: User): boolean {
   const userTeam = journey?.team?.userTeams.find(
     (userTeam) => userTeam.userId === user.id
   )
-
-  return userTeam != null || userJourney != null
+  const hasJourneyReadAccess =
+    userJourney?.role === UserJourneyRole.owner ||
+    userJourney?.role === UserJourneyRole.editor
+  const hasTeamReadAccess =
+    userTeam?.role === UserTeamRole.manager ||
+    userTeam?.role === UserTeamRole.member
+  return hasJourneyReadAccess || hasTeamReadAccess
 }
 
 // team managers/members and journeys owners/editors can update the journey
@@ -188,4 +218,34 @@ function extract(journey: Partial<Journey>, user: User): boolean {
     userTeam?.role === UserTeamRole.manager ||
     userTeam?.role === UserTeamRole.member
   return hasJourneyUpdateAccess || hasTeamUpdateAccess
+}
+
+// field-level 'template' permission — mirrors the CASL
+// cannot(Manage, 'Journey', 'template') + conditional can() overrides
+export function canManageTemplateField(
+  journey: Partial<Journey>,
+  user: User
+): boolean {
+  const userJourney = journey?.userJourneys?.find((uj) => uj.userId === user.id)
+  const userTeam = journey?.team?.userTeams.find((ut) => ut.userId === user.id)
+
+  const hasJourneyRole =
+    userJourney?.role === UserJourneyRole.owner ||
+    userJourney?.role === UserJourneyRole.editor
+  const hasTeamRole =
+    userTeam?.role === UserTeamRole.manager ||
+    userTeam?.role === UserTeamRole.member
+
+  const isLocalTemplate =
+    journey.template === true && journey.teamId !== 'jfp-team'
+
+  if (isLocalTemplate && (hasJourneyRole || hasTeamRole)) return true
+
+  if (
+    user.roles?.includes('publisher') === true &&
+    (hasJourneyRole || hasTeamRole)
+  )
+    return true
+
+  return false
 }

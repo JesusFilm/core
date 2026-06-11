@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SWRConfig } from 'swr'
+import { type Mock } from 'vitest'
 
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { mswServer } from '../../../../../../../../../test/mswServer'
@@ -11,45 +12,46 @@ import {
 
 import { YouTubeDetails } from '.'
 
-jest.mock('@core/journeys/ui/useYouTubeClosedCaptions', () => ({
-  useYouTubeClosedCaptions: jest.fn()
+vi.mock('@core/journeys/ui/useYouTubeClosedCaptions', () => ({
+  useYouTubeClosedCaptions: vi.fn()
 }))
 
-jest.mock('video.js', () => {
+vi.mock('video.js', () => {
   const mockPlayer = {
-    on: jest.fn(),
-    off: jest.fn(),
-    dispose: jest.fn(),
+    on: vi.fn(),
+    off: vi.fn(),
+    dispose: vi.fn(),
     tech_: {
       ytPlayer: {
-        loadModule: jest.fn(),
-        setOption: jest.fn(),
-        unloadModule: jest.fn()
+        loadModule: vi.fn(),
+        setOption: vi.fn(),
+        unloadModule: vi.fn()
       }
     }
   }
-  return jest.fn(() => mockPlayer)
+  return { __esModule: true, default: vi.fn(() => mockPlayer) }
 })
 
-jest.mock('notistack', () => ({
-  useSnackbar: jest.fn(),
-  closeSnackbar: jest.fn()
+vi.mock('notistack', () => ({
+  useSnackbar: vi.fn(),
+  closeSnackbar: vi.fn()
 }))
 
-const mockUseYouTubeClosedCaptions = jest.requireMock(
-  '@core/journeys/ui/useYouTubeClosedCaptions'
-).useYouTubeClosedCaptions
+const mockUseYouTubeClosedCaptions = (
+  await vi.importMock('@core/journeys/ui/useYouTubeClosedCaptions')
+).useYouTubeClosedCaptions as Mock
 
-const mockVideoJs = jest.requireMock('video.js')
+const mockVideoJs = (await vi.importMock('video.js')).default as Mock
 
-const mockUseSnackbar = jest.requireMock('notistack').useSnackbar
-const mockCloseSnackbar = jest.requireMock('notistack').closeSnackbar
+const mockUseSnackbar = (await vi.importMock('notistack')).useSnackbar as Mock
+const mockCloseSnackbar = (await vi.importMock('notistack'))
+  .closeSnackbar as Mock
 
 describe('YouTubeDetails', () => {
-  const mockEnqueueSnackbar = jest.fn()
+  const mockEnqueueSnackbar = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockUseYouTubeClosedCaptions.mockReturnValue({
       languages: [],
       loading: false,
@@ -66,7 +68,7 @@ describe('YouTubeDetails', () => {
     const { getByTestId } = render(
       <MockedProvider mocks={[]}>
         <SWRConfig value={{ provider: () => new Map() }}>
-          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={vi.fn()} />
         </SWRConfig>
       </MockedProvider>
     )
@@ -79,7 +81,7 @@ describe('YouTubeDetails', () => {
     const { getByText, getByRole } = render(
       <MockedProvider mocks={[]}>
         <SWRConfig value={{ provider: () => new Map() }}>
-          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={vi.fn()} />
         </SWRConfig>
       </MockedProvider>
     )
@@ -100,7 +102,7 @@ describe('YouTubeDetails', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SWRConfig value={{ provider: () => new Map() }}>
-          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={vi.fn()} />
         </SWRConfig>
       </MockedProvider>
     )
@@ -143,7 +145,7 @@ describe('YouTubeDetails', () => {
     const { getByText } = render(
       <MockedProvider mocks={[]}>
         <SWRConfig value={{ provider: () => new Map() }}>
-          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={vi.fn()} />
         </SWRConfig>
       </MockedProvider>
     )
@@ -153,7 +155,7 @@ describe('YouTubeDetails', () => {
 
   it('should call onSelect on select click', async () => {
     mswServer.use(getVideosWithOffsetAndUrl)
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SWRConfig value={{ provider: () => new Map() }}>
@@ -183,7 +185,7 @@ describe('YouTubeDetails', () => {
     render(
       <MockedProvider mocks={[]}>
         <SWRConfig value={{ provider: () => new Map() }}>
-          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={vi.fn()} />
         </SWRConfig>
       </MockedProvider>
     )
@@ -237,6 +239,7 @@ describe('YouTubeDetails', () => {
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       children: []
     }
 
@@ -246,7 +249,7 @@ describe('YouTubeDetails', () => {
           <YouTubeDetails
             id="jQaeIJOA6J0"
             open
-            onSelect={jest.fn()}
+            onSelect={vi.fn()}
             activeVideoBlock={activeVideoBlock}
           />
         </SWRConfig>
@@ -295,7 +298,7 @@ describe('YouTubeDetails', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SWRConfig value={{ provider: () => new Map() }}>
-          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={vi.fn()} />
         </SWRConfig>
       </MockedProvider>
     )
@@ -333,7 +336,7 @@ describe('YouTubeDetails', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SWRConfig value={{ provider: () => new Map() }}>
-          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={vi.fn()} />
         </SWRConfig>
       </MockedProvider>
     )
@@ -389,6 +392,7 @@ describe('YouTubeDetails', () => {
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       children: []
     }
 
@@ -398,7 +402,7 @@ describe('YouTubeDetails', () => {
           <YouTubeDetails
             id="jQaeIJOA6J0"
             open
-            onSelect={jest.fn()}
+            onSelect={vi.fn()}
             activeVideoBlock={activeVideoBlock}
           />
         </SWRConfig>
@@ -443,7 +447,7 @@ describe('YouTubeDetails', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SWRConfig value={{ provider: () => new Map() }}>
-          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={vi.fn()} />
         </SWRConfig>
       </MockedProvider>
     )
@@ -476,7 +480,7 @@ describe('YouTubeDetails', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SWRConfig value={{ provider: () => new Map() }}>
-          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={vi.fn()} />
         </SWRConfig>
       </MockedProvider>
     )
@@ -490,7 +494,7 @@ describe('YouTubeDetails', () => {
     const { getByTestId } = render(
       <MockedProvider mocks={[]}>
         <SWRConfig value={{ provider: () => new Map() }}>
-          <YouTubeDetails id="jQaeIJOA6J0" open={false} onSelect={jest.fn()} />
+          <YouTubeDetails id="jQaeIJOA6J0" open={false} onSelect={vi.fn()} />
         </SWRConfig>
       </MockedProvider>
     )
@@ -513,7 +517,7 @@ describe('YouTubeDetails', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SWRConfig value={{ provider: () => new Map() }}>
-          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={vi.fn()} />
         </SWRConfig>
       </MockedProvider>
     )
@@ -545,7 +549,7 @@ describe('YouTubeDetails', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SWRConfig value={{ provider: () => new Map() }}>
-          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={vi.fn()} />
         </SWRConfig>
       </MockedProvider>
     )
@@ -600,6 +604,7 @@ describe('YouTubeDetails', () => {
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       children: []
     }
 
@@ -609,7 +614,7 @@ describe('YouTubeDetails', () => {
           <YouTubeDetails
             id="jQaeIJOA6J0"
             open
-            onSelect={jest.fn()}
+            onSelect={vi.fn()}
             activeVideoBlock={activeVideoBlock}
           />
         </SWRConfig>
@@ -638,7 +643,7 @@ describe('YouTubeDetails', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SWRConfig value={{ provider: () => new Map() }}>
-          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={vi.fn()} />
         </SWRConfig>
       </MockedProvider>
     )
@@ -707,10 +712,11 @@ describe('YouTubeDetails', () => {
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       children: []
     }
 
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SWRConfig value={{ provider: () => new Map() }}>
@@ -769,10 +775,11 @@ describe('YouTubeDetails', () => {
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       children: []
     }
 
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SWRConfig value={{ provider: () => new Map() }}>
@@ -847,10 +854,11 @@ describe('YouTubeDetails', () => {
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       children: []
     }
 
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SWRConfig value={{ provider: () => new Map() }}>

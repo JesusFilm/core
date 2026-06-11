@@ -1,18 +1,16 @@
 generator client {
-  provider      = "prisma-client-js"
-  output        = env("PRISMA_LOCATION_ANALYTICS")
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  provider = "prisma-client"
+  output   = "../src/__generated__/client"
 }
 
 generator pothos {
   provider     = "prisma-pothos-types"
   output       = "../src/__generated__/pothos-types.ts"
-  clientOutput = ".prisma/api-analytics-client"
+  clientOutput = "./client"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("PG_DATABASE_URL_ANALYTICS")
 }
 
 model api_keys {

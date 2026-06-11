@@ -226,7 +226,9 @@ export function useCreateStepFromAction(): (
       coverBlockId: null,
       backgroundColor: null,
       parentOrder: 0,
-      eventLabel: null
+      eventLabel: null,
+      showAssistant: null,
+      expandChatByDefault: null
     }
     add({
       parameters: { execute: {}, undo: { stepBeforeDelete: selectedStep } },

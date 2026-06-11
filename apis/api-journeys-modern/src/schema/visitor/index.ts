@@ -1,4 +1,8 @@
 import './visitor'
+import './visitor.query'
+import './visitorsConnection.query'
+import './visitorUpdate.mutation'
+import './visitorUpdateForCurrentUser.mutation'
 import './inputs'
 import './enums'
 import './userAgent'

@@ -5,10 +5,7 @@
     "jsxImportSource": "@emotion/react",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "types": [
-      "node",
-      "jest"
-    ],
+    "types": ["node", "vitest/globals"],
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
@@ -16,6 +13,9 @@
     "isolatedModules": true,
     "incremental": true,
     "tsBuildInfoFile": "../../.cache/journeys-admin/tsc/.tsbuildinfo",
+    "target": "es2021",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "plugins": [
       {
         "name": "next"
@@ -27,13 +27,15 @@
     "**/*.jsx",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
     "eslint.config.mjs",
-    "next-env.d.ts",
     "../../dist/apps/journeys-admin/.next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
-    "jest.config.ts"
+    "vitest.config.mts",
+    "**/*.stories.ts",
+    "**/*.stories.tsx",
+    "**/*.stories.js",
+    "**/*.stories.jsx"
   ]
 }

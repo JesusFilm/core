@@ -20,7 +20,7 @@ describe('LanguageButton', () => {
   })
 
   it('should call handleClick on language button click', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
 
     render(<LanguageButton content="English" handleClick={handleClick} />)
 

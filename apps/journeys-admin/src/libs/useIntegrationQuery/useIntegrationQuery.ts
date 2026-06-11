@@ -26,9 +26,12 @@ export const GET_INTEGRATION = gql`
       ... on IntegrationGoogle {
         id
         type
+        userId
         user {
           id
-          email # to force federation for user id
+          ... on AuthenticatedUser {
+            email
+          }
         }
         accountEmail
       }

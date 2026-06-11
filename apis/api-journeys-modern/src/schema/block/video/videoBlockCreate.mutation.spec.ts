@@ -1,16 +1,19 @@
+import { type MockedFunction, vi } from 'vitest'
+
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { Action, ability } from '../../../lib/auth/ability'
+import { fetchJourneyWithAclIncludes } from '../../../lib/auth/fetchJourneyWithAclIncludes'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
-jest.mock('../../../lib/auth/ability', () => ({
+vi.mock('../../../lib/auth/ability', () => ({
   Action: { Update: 'update' },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-jest.mock('../../../lib/auth/fetchJourneyWithAclIncludes', () => ({
-  fetchJourneyWithAclIncludes: jest.fn()
+vi.mock('../../../lib/auth/fetchJourneyWithAclIncludes', () => ({
+  fetchJourneyWithAclIncludes: vi.fn()
 }))
 
 describe('videoBlockCreate', () => {
@@ -41,14 +44,11 @@ describe('videoBlockCreate', () => {
         fullsize
         posterBlockId
         showGeneratedSubtitles
+        notes
       }
     }
   `)
-
-  const {
-    fetchJourneyWithAclIncludes
-  } = require('../../../lib/auth/fetchJourneyWithAclIncludes')
-  const mockAbility = ability as jest.MockedFunction<typeof ability>
+  const mockAbility = ability as MockedFunction<typeof ability>
 
   const input = {
     journeyId: 'journeyId',
@@ -66,31 +66,32 @@ describe('videoBlockCreate', () => {
     muted: true,
     autoplay: true,
     fullsize: false,
-    posterBlockId: 'posterId'
+    posterBlockId: 'posterId',
+    notes: 'intro video'
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     prismaMock.block.findMany.mockResolvedValue([] as any)
   })
 
   it('creates video block when authorized', async () => {
-    fetchJourneyWithAclIncludes.mockResolvedValue({ id: 'journeyId' })
+    ;(fetchJourneyWithAclIncludes as any).mockResolvedValue({ id: 'journeyId' })
     mockAbility.mockReturnValue(true)
 
     const tx = {
       block: {
-        create: jest.fn().mockResolvedValue({
+        create: vi.fn().mockResolvedValue({
           id: 'blockId',
           ...input,
           typename: 'VideoBlock',
           parentOrder: 0,
           journey: { id: 'journeyId' }
         }),
-        findFirst: jest.fn().mockResolvedValue(null),
-        findMany: jest.fn().mockResolvedValue([])
+        findFirst: vi.fn().mockResolvedValue(null),
+        findMany: vi.fn().mockResolvedValue([])
       },
-      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 
@@ -120,14 +121,15 @@ describe('videoBlockCreate', () => {
       data: {
         videoBlockCreate: expect.objectContaining({
           id: 'blockId',
-          journeyId: 'journeyId'
+          journeyId: 'journeyId',
+          notes: 'intro video'
         })
       }
     })
   })
 
   it('returns FORBIDDEN if unauthorized', async () => {
-    fetchJourneyWithAclIncludes.mockResolvedValue({ id: 'journeyId' })
+    ;(fetchJourneyWithAclIncludes as any).mockResolvedValue({ id: 'journeyId' })
     mockAbility.mockReturnValue(false)
 
     const result = await authClient({

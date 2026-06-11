@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
@@ -13,18 +14,18 @@ import { CREATE_JOURNEY } from '../../../../libs/useJourneyCreateMutation'
 
 import { AddJourneyButton } from '.'
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('AddJourneyButton', () => {
   const variables = {
@@ -81,7 +82,9 @@ describe('AddJourneyButton', () => {
     },
     cardBlockCreate: {
       id: variables.cardId,
-      __typename: 'CardBlock'
+      __typename: 'CardBlock',
+      showAssistant: null,
+      expandChatByDefault: null
     },
     imageBlockCreate: {
       id: variables.imageId,
@@ -135,10 +138,10 @@ describe('AddJourneyButton', () => {
     mockUuidv4.mockReturnValueOnce(variables.cardId)
     mockUuidv4.mockReturnValueOnce(variables.imageId)
 
-    const push = jest.fn()
+    const push = vi.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
 
-    const result = jest.fn(() => ({ data }))
+    const result = vi.fn(() => ({ data }))
     const { getByRole } = render(
       <MockedProvider
         mocks={[
@@ -189,7 +192,7 @@ describe('AddJourneyButton', () => {
   })
 
   it('should not show add journey button when no active team', async () => {
-    const result = jest.fn().mockReturnValueOnce({
+    const result = vi.fn().mockReturnValueOnce({
       data: {
         teams: []
       }
@@ -208,7 +211,7 @@ describe('AddJourneyButton', () => {
   })
 
   it('should show add journey button when active team', async () => {
-    const result = jest.fn().mockReturnValueOnce({
+    const result = vi.fn().mockReturnValueOnce({
       data: {
         teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
         getJourneyProfile: {

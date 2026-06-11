@@ -1,24 +1,36 @@
+import { type MockedFunction, vi } from 'vitest'
+
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { Action, ability } from '../../../lib/auth/ability'
+import { fetchBlockWithJourneyAcl } from '../../../lib/auth/fetchBlockWithJourneyAcl'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
+import { recalculateJourneyCustomizable } from '../../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 
-jest.mock('../../../lib/auth/ability', () => ({
+vi.mock(
+  '../../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
+)
+
+vi.mock('../../../lib/auth/ability', () => ({
   Action: { Update: 'update' },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-jest.mock('../../../lib/auth/fetchBlockWithJourneyAcl', () => ({
-  fetchBlockWithJourneyAcl: jest.fn()
+vi.mock('../../../lib/auth/fetchBlockWithJourneyAcl', () => ({
+  fetchBlockWithJourneyAcl: vi.fn()
 }))
 
-jest.mock('./service', () => {
+vi.mock('./service', async () => {
   return {
-    ...jest.requireActual('./service'),
-    fetchFieldsFromYouTube: jest.fn()
+    ...(await vi.importActual('./service')),
+    fetchFieldsFromYouTube: vi.fn()
   }
 })
+
+type VideoBlockUpdateResult = {
+  data?: { videoBlockUpdate: { notes: string | null } }
+}
 
 describe('videoBlockUpdate', () => {
   const mockUser = { id: 'userId' }
@@ -47,17 +59,14 @@ describe('videoBlockUpdate', () => {
         posterBlockId
         parentBlockId
         showGeneratedSubtitles
+        notes
         subtitleLanguage {
           id
         }
       }
     }
   `)
-
-  const {
-    fetchBlockWithJourneyAcl
-  } = require('../../../lib/auth/fetchBlockWithJourneyAcl')
-  const mockAbility = ability as jest.MockedFunction<typeof ability>
+  const mockAbility = ability as MockedFunction<typeof ability>
 
   const id = 'blockId'
   const input = {
@@ -78,12 +87,12 @@ describe('videoBlockUpdate', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     prismaMock.block.findMany.mockResolvedValue([] as any)
   })
 
   it('updates video block when authorized', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue({
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
       id,
       journeyId: 'journeyId',
       journey: { id: 'journeyId' }
@@ -92,15 +101,16 @@ describe('videoBlockUpdate', () => {
 
     const tx = {
       block: {
-        update: jest.fn().mockResolvedValue({
+        update: vi.fn().mockResolvedValue({
           id,
           journeyId: 'journeyId',
           typename: 'VideoBlock',
           subtitleLanguage: null,
+          notes: null,
           ...input
         })
       },
-      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
     }
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 
@@ -124,6 +134,8 @@ describe('videoBlockUpdate', () => {
       })
     )
 
+    expect(recalculateJourneyCustomizable).toHaveBeenCalledWith('journeyId')
+
     expect(result).toEqual({
       data: {
         videoBlockUpdate: expect.objectContaining({
@@ -135,7 +147,7 @@ describe('videoBlockUpdate', () => {
   })
 
   it('returns FORBIDDEN if unauthorized', async () => {
-    fetchBlockWithJourneyAcl.mockResolvedValue({
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
       id,
       journeyId: 'journeyId',
       journey: { id: 'journeyId' }
@@ -155,5 +167,84 @@ describe('videoBlockUpdate', () => {
         })
       ]
     })
+  })
+
+  it('updates and returns notes when notes is set', async () => {
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
+      id,
+      journeyId: 'journeyId',
+      journey: { id: 'journeyId' }
+    })
+    mockAbility.mockReturnValue(true)
+
+    const notesInput = { notes: 'test trailer note' }
+    const tx = {
+      block: {
+        update: vi.fn().mockResolvedValue({
+          id,
+          journeyId: 'journeyId',
+          typename: 'VideoBlock',
+          subtitleLanguage: null,
+          ...input,
+          ...notesInput
+        })
+      },
+      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
+    }
+    prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
+
+    const result = await authClient({
+      document: VIDEO_BLOCK_UPDATE,
+      variables: { id, input: { ...input, ...notesInput } }
+    })
+
+    expect(
+      (result as VideoBlockUpdateResult).data?.videoBlockUpdate.notes
+    ).toBe('test trailer note')
+    expect(tx.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id },
+        data: expect.objectContaining({ notes: 'test trailer note' })
+      })
+    )
+  })
+
+  it('clears notes when notes is set to empty string', async () => {
+    ;(fetchBlockWithJourneyAcl as any).mockResolvedValue({
+      id,
+      journeyId: 'journeyId',
+      journey: { id: 'journeyId' }
+    })
+    mockAbility.mockReturnValue(true)
+
+    const tx = {
+      block: {
+        update: vi.fn().mockResolvedValue({
+          id,
+          journeyId: 'journeyId',
+          typename: 'VideoBlock',
+          subtitleLanguage: null,
+          notes: null,
+          ...input
+        })
+      },
+      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
+    }
+    prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
+
+    const result = await authClient({
+      document: VIDEO_BLOCK_UPDATE,
+      variables: { id, input: { ...input, notes: '' } }
+    })
+
+    expect(
+      (result as VideoBlockUpdateResult).data?.videoBlockUpdate.notes
+    ).toBeNull()
+    expect(tx.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id },
+        data: expect.objectContaining({ notes: null })
+      })
+    )
   })
 })

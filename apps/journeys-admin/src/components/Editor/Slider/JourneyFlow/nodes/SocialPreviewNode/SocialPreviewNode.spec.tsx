@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { ReactFlowProvider } from 'reactflow'
+import { ReactFlowProvider } from '@xyflow/react'
 
 import { EditorState } from '@core/journeys/ui/EditorProvider'
 import {
@@ -99,7 +99,9 @@ describe('SocialPreviewNode', () => {
     journeyCustomizationFields: [],
     fromTemplateId: null,
     socialNodeX: null,
-    socialNodeY: null
+    socialNodeY: null,
+    customizable: null,
+    showAssistant: null
   }
 
   const blankSeoJourney: Journey = {

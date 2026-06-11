@@ -33,13 +33,13 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public \"bash -c 'pnpm exec prisma migrate dev --schema libs/prisma/journeys/db/schema.prisma --name `date +\\\"%Y%m%d%H%M%S\\\"`'\""
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public \"bash -c 'pnpm exec prisma migrate dev --config libs/prisma/journeys/prisma.config.ts --name `date +\\\"%Y%m%d%H%M%S\\\"`'\""
         ]
       },
       "configurations": {
         "production": {
           "commands": [
-            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public \"pnpm exec prisma migrate deploy --schema libs/prisma/journeys/db/schema.prisma\""
+            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public \"pnpm exec prisma migrate deploy --config libs/prisma/journeys/prisma.config.ts\""
           ]
         }
       }
@@ -48,7 +48,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public \"pnpm exec prisma migrate reset --schema libs/prisma/journeys/db/schema.prisma --force\""
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public \"pnpm exec prisma migrate reset --config libs/prisma/journeys/prisma.config.ts --force\""
         ]
       }
     },
@@ -56,7 +56,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "pnpm exec prisma migrate resolve --schema libs/prisma/journeys/db/schema.prisma --applied 000000000000_squashed_migrations"
+          "pnpm exec prisma migrate resolve --config libs/prisma/journeys/prisma.config.ts --applied 000000000000_squashed_migrations"
         ]
       }
     },
@@ -64,7 +64,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "pnpm exec prisma studio --schema libs/prisma/journeys/db/schema.prisma"
+          "pnpm exec prisma studio --config libs/prisma/journeys/prisma.config.ts"
         ]
       }
     },

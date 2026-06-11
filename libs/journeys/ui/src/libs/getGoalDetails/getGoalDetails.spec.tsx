@@ -1,4 +1,4 @@
-import { TFunction } from 'next-i18next'
+import { TFunction } from 'next-i18next/pages'
 
 import BibleIcon from '@core/shared/ui/icons/Bible'
 import EmailIcon from '@core/shared/ui/icons/Email'
@@ -11,7 +11,7 @@ import { GoalType } from '../../components/Button/utils/getLinkActionGoal'
 import { getGoalDetails } from '.'
 
 describe('getGoalDetails', () => {
-  const t = jest.fn((value: string): string => value) as unknown as TFunction
+  const t = vi.fn((value: string): string => value) as unknown as TFunction
 
   it('should return website details by default', () => {
     const details = getGoalDetails(GoalType.Website, t)

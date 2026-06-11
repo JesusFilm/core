@@ -1,12 +1,9 @@
-import { PrismaClient } from '.prisma/api-journeys-client'
-
+import { prisma } from '../../../../libs/prisma/journeys/src/client'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../src/app/__generated__/graphql'
-
-const prisma = new PrismaClient()
 
 export async function onboarding(action?: 'reset'): Promise<void> {
   // reset should only be used for dev and stage, using it on production will overwrite the existing onboarding journey

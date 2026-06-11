@@ -1,0 +1,16 @@
+---
+paths:
+  - 'apis/api-journeys/src/app/modules/block/**/*.ts'
+  - 'apis/api-journeys/src/app/modules/action/**/*.ts'
+  - 'apis/api-journeys-modern/src/schema/action/**/*.ts'
+  - 'apis/api-journeys-modern/src/schema/block/**/*.ts'
+---
+
+When adding a `customizable` field to a new block type or action type, you must also:
+
+1. Update the detection logic in **both** recalculation implementations:
+   - Legacy API: `JourneyCustomizableService.recalculate()` in `apis/api-journeys/src/app/modules/journey/journeyCustomizable.service.ts`
+   - Modern API: `recalculateJourneyCustomizable()` in `apis/api-journeys-modern/src/lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable.ts`
+2. Ensure that any new mutation that modifies `customizable` on a block or action calls the appropriate recalculation function after the database write.
+
+These two implementations must stay in sync — any change to the detection logic in one must be mirrored in the other.

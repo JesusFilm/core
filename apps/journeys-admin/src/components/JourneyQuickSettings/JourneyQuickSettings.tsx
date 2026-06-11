@@ -4,7 +4,7 @@ import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 

@@ -1,7 +1,7 @@
 import { formatTimeRanges } from './formatTimeRanges'
 
 // Mock the formatTime function
-jest.mock('../formatTime', () => ({
+vi.mock('../formatTime', () => ({
   formatTime: (seconds: number) => {
     const minutes = Math.floor(seconds / 60)
     const remainingSeconds = Math.floor(seconds % 60)
@@ -28,8 +28,8 @@ describe('formatTimeRanges', () => {
   it('should handle empty TimeRanges', () => {
     const mockEmptyTimeRanges = {
       length: 0,
-      start: jest.fn(),
-      end: jest.fn()
+      start: vi.fn(),
+      end: vi.fn()
     } as unknown as TimeRanges
 
     expect(formatTimeRanges(mockEmptyTimeRanges, 0, 60)).toBe('-')

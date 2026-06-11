@@ -1,3 +1,4 @@
+import { gql, useMutation } from '@apollo/client'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import Button from '@mui/material/Button'
@@ -7,19 +8,31 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import {
+  EmailAuthProvider,
   createUserWithEmailAndPassword,
-  getAuth,
+  linkWithCredential,
   signInWithEmailAndPassword,
   updateProfile
 } from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import React, { ReactElement } from 'react'
 import { InferType, object, string } from 'yup'
 
+import { getFirebaseAuth, login, loginWithCredential } from '../../../libs/auth'
+import { getPendingGuestJourney } from '../../../libs/pendingGuestJourney'
 import { useHandleNewAccountRedirect } from '../../../libs/useRedirectNewAccount'
 import { PageProps } from '../types'
+import { getJourneyIdFromRedirect } from '../utils'
+
+export const JOURNEY_PUBLISH = gql`
+  mutation JourneyPublish($id: ID!) {
+    journeyPublish(id: $id) {
+      id
+    }
+  }
+`
 
 export function RegisterPage({
   setActivePage,
@@ -28,6 +41,7 @@ export function RegisterPage({
   const { t } = useTranslation('apps-journeys-admin')
   const [showPassword, setShowPassword] = React.useState(false)
   const router = useRouter()
+  const [journeyPublish] = useMutation(JOURNEY_PUBLISH)
 
   useHandleNewAccountRedirect()
 
@@ -60,7 +74,7 @@ export function RegisterPage({
     name: string,
     password: string
   ): Promise<void> {
-    const auth = getAuth()
+    const auth = getFirebaseAuth()
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -69,7 +83,52 @@ export function RegisterPage({
     await updateProfile(userCredential.user, {
       displayName: name
     })
-    await signInWithEmailAndPassword(auth, email, password)
+    const credential = await signInWithEmailAndPassword(auth, email, password)
+    await loginWithCredential(credential)
+  }
+
+  async function convertAnonymousAccountToPermanent(
+    email: string,
+    name: string,
+    password: string
+  ): Promise<void> {
+    const auth = getFirebaseAuth()
+    const currentUser = auth.currentUser
+    if (currentUser == null || !currentUser.isAnonymous) return
+
+    const credential = EmailAuthProvider.credential(email, password)
+    const userCredential = await linkWithCredential(currentUser, credential)
+    await updateProfile(userCredential.user, { displayName: name })
+
+    const journeyId = getJourneyIdFromRedirect(
+      router.query.redirect as string | undefined
+    )
+    if (journeyId != null) {
+      await journeyPublish({ variables: { id: journeyId } })
+    }
+
+    const pending = getPendingGuestJourney()
+    if (pending != null) {
+      const signInCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      )
+      const idToken = await signInCredential.user.getIdToken()
+      await login(idToken)
+      const existingRedirect = router.query.redirect as string | undefined
+      const redirectUrl =
+        existingRedirect ?? `/templates/${pending.journeyId}/customize`
+      window.location.href = `/users/sign-in?redirect=${encodeURIComponent(redirectUrl)}`
+      return
+    }
+
+    const signInCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    )
+    await loginWithCredential(signInCredential)
   }
 
   async function handleCreateAccount(
@@ -77,9 +136,48 @@ export function RegisterPage({
     { setFieldError }
   ): Promise<void> {
     try {
-      await createAccountAndSignIn(values.email, values.name, values.password)
+      const auth = getFirebaseAuth()
+      const currentUser = auth.currentUser
+
+      if (currentUser?.isAnonymous === true) {
+        await convertAnonymousAccountToPermanent(
+          values.email,
+          values.name,
+          values.password
+        )
+      } else {
+        await createAccountAndSignIn(values.email, values.name, values.password)
+      }
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
+        const auth = getFirebaseAuth()
+        if (auth.currentUser?.isAnonymous === true) {
+          try {
+            const credential = await signInWithEmailAndPassword(
+              auth,
+              values.email,
+              values.password
+            )
+            const idToken = await credential.user.getIdToken()
+            await login(idToken)
+
+            const pending = getPendingGuestJourney()
+            if (pending != null) {
+              const existingRedirect = router.query.redirect as
+                | string
+                | undefined
+              const redirectUrl =
+                existingRedirect ?? `/templates/${pending.journeyId}/customize`
+              window.location.href = `/users/sign-in?redirect=${encodeURIComponent(redirectUrl)}`
+              return
+            }
+
+            window.location.reload()
+            return
+          } catch {
+            // Password incorrect - show original error
+          }
+        }
         setFieldError(
           'email',
           t('The email address is already used by another account')
@@ -189,9 +287,8 @@ export function RegisterPage({
                   {t('Cancel')}
                 </Button>
                 <Button
-                  variant="contained"
-                  size="large"
-                  color="secondary"
+                  variant="blockContained"
+                  color="solid"
                   type="submit"
                   fullWidth
                   disabled={!isValid || isSubmitting}

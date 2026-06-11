@@ -1,6 +1,7 @@
 import { ReactElement, useCallback, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
+import { getEasterCampaignYear } from '../../../libs/easterDates'
 import { ContainerHeroVideo } from '../ContainerHeroVideo'
 
 import { CollectionsHeader } from './CollectionsHeader'
@@ -15,19 +16,20 @@ export interface ContainerHeroProps {
   descriptionAfterYear: string
   /** Label for the feedback button */
   feedbackButtonLabel: string
+  /** Year displayed in the hero description */
+  year?: number
 }
 
 export function ContainerHero({
   title,
   descriptionBeforeYear,
   descriptionAfterYear,
-  feedbackButtonLabel
+  feedbackButtonLabel,
+  year = getEasterCampaignYear()
 }: ContainerHeroProps): ReactElement {
   const [playerRef, setPlayerRef] = useState<Player | null>(null)
   const [isMuted, setIsMuted] = useState(true)
   const [hasUnmutedOnce, setHasUnmutedOnce] = useState(false)
-  const currentYear = new Date().getFullYear()
-
   const handlePlayerReady = useCallback((player: Player): void => {
     setPlayerRef(player)
   }, [])
@@ -92,7 +94,7 @@ export function ContainerHero({
               className="text-secondary-contrast z-[2] tracking-widest text-white uppercase opacity-50 mix-blend-screen"
               data-testid="ContainerHeroDescription"
             >
-              {`${descriptionBeforeYear} ${currentYear} ${descriptionAfterYear}`}
+              {`${descriptionBeforeYear} ${year} ${descriptionAfterYear}`}
             </h1>
           </div>
         </div>

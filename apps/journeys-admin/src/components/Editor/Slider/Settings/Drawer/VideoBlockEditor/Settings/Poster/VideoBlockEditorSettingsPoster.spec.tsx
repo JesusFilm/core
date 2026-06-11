@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { type Mock } from 'vitest'
 
 import {
   BlockFields_ImageBlock as ImageBlock,
@@ -12,9 +13,9 @@ import { ThemeProvider } from '../../../../../../../ThemeProvider'
 
 import { VideoBlockEditorSettingsPoster } from './VideoBlockEditorSettingsPoster'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 const video: VideoBlock = {
@@ -64,6 +65,7 @@ const video: VideoBlock = {
     variantLanguages: []
   },
   customizable: null,
+  notes: null,
   posterBlockId: null
 }
 
@@ -84,7 +86,7 @@ const image: ImageBlock = {
 }
 
 describe('VideoBlockEditorSettingsPoster', () => {
-  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+  beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => true))
 
   it('shows edit poster image dialog', async () => {
     const { getByTestId } = render(

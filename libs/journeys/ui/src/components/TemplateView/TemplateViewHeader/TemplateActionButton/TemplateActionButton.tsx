@@ -1,9 +1,6 @@
 import Skeleton from '@mui/material/Skeleton'
 import { ReactElement } from 'react'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
-
-import { isJourneyCustomizable } from '../../../../libs/isJourneyCustomizable'
 import { useJourney } from '../../../../libs/JourneyProvider'
 import {
   CreateJourneyButton,
@@ -30,12 +27,8 @@ export function TemplateActionButton({
 }: TemplateActionButtonProps): ReactElement {
   const { journey: journeyFromContext } = useJourney()
   const journeyData = journey ?? journeyFromContext
-  const { customizableMedia } = useFlags()
 
-  if (
-    journeyData != null &&
-    isJourneyCustomizable(journeyData, customizableMedia)
-  ) {
+  if (journeyData != null && journeyData.customizable === true) {
     return (
       <UseThisTemplateButton
         variant={variant}

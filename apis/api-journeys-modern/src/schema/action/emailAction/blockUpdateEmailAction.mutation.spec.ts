@@ -1,7 +1,14 @@
+import { vi } from 'vitest'
+
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
+import { recalculateJourneyCustomizable } from '../../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 import { ACTION_UPDATE_RESET } from '../blockUpdateAction.mutation'
+
+vi.mock(
+  '../../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
+)
 
 describe('blockUpdateEmailAction mutation', () => {
   const authClient = getClient({
@@ -31,12 +38,13 @@ describe('blockUpdateEmailAction mutation', () => {
     id: '1',
     typename: 'RadioOptionBlock',
     parentBlockId: 'parent-step-id',
+    journeyId: 'journeyId',
     journey: journeyWithAccess,
     action: null
   } as any
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('success', () => {
@@ -70,6 +78,8 @@ describe('blockUpdateEmailAction mutation', () => {
           gtmEventName: null
         }
       })
+
+      expect(recalculateJourneyCustomizable).toHaveBeenCalledWith('journeyId')
 
       expect(result).toEqual({
         data: {

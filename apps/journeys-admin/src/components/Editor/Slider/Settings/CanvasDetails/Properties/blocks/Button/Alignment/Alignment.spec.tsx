@@ -13,7 +13,7 @@ import { BUTTON_BLOCK_UPDATE } from './Alignment'
 
 import { Alignment } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -50,7 +50,7 @@ describe('Button alignment selector', () => {
         }
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         buttonBlockUpdate: {
           id: 'id',
@@ -72,7 +72,7 @@ describe('Button alignment selector', () => {
         }
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         buttonBlockUpdate: {
           id: 'id',
@@ -84,7 +84,7 @@ describe('Button alignment selector', () => {
     }))
   }
 
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('should show button alignment properties', () => {
     render(

@@ -6,9 +6,9 @@ import { Video } from '../Video'
 
 import { VideoWrapper } from '.'
 
-jest.mock('@core/journeys/ui/Video', () => ({
+vi.mock('@core/journeys/ui/Video', () => ({
   __esModule: true,
-  Video: jest.fn(() => <></>)
+  Video: vi.fn(() => <></>)
 }))
 
 describe('VideoWrapper', () => {
@@ -39,6 +39,7 @@ describe('VideoWrapper', () => {
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       children: [
         {
           id: 'image5.id',
@@ -107,7 +108,8 @@ describe('VideoWrapper', () => {
         showGeneratedSubtitles: null,
         eventLabel: null,
         endEventLabel: null,
-        customizable: null
+        customizable: null,
+        notes: null
       },
       undefined
     )
@@ -140,6 +142,7 @@ describe('VideoWrapper', () => {
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       children: [
         {
           id: 'image5.id',
@@ -208,7 +211,8 @@ describe('VideoWrapper', () => {
         showGeneratedSubtitles: null,
         eventLabel: null,
         endEventLabel: null,
-        customizable: null
+        customizable: null,
+        notes: null
       },
       undefined
     )

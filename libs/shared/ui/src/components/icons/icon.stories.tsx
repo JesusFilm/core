@@ -1,6 +1,6 @@
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 // import CircularProgress from '@mui/material/CircularProgress'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
@@ -75,6 +75,7 @@ const iconNames: IconName[] = [
   'Dash',
   'Data1',
   'Diamond',
+  'Discord',
   'DotVertical',
   'DownArrowSm',
   'DownArrow',
@@ -164,6 +165,7 @@ const iconNames: IconName[] = [
   'MessageText1',
   'MessageText2',
   'MessageTyping',
+  'Metaverse',
   'Minimise1',
   'Minimise2',
   'MinusCircleContained',
@@ -185,6 +187,7 @@ const iconNames: IconName[] = [
   'Plus2',
   'Plus3',
   'Presentation1',
+  'QrCode2',
   'Search1',
   'Search2',
   'Send1',
@@ -192,6 +195,7 @@ const iconNames: IconName[] = [
   'Settings',
   'Share',
   'ShieldCheck',
+  'Signal',
   'Skype',
   'SmileyNeutral',
   'Snapchat',
@@ -232,6 +236,7 @@ const iconNames: IconName[] = [
   'VideoOn',
   'Vk',
   'Web',
+  'WeChat',
   'WhatsApp',
   'X1',
   'X2',

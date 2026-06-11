@@ -1,13 +1,17 @@
 import { render } from '@testing-library/react'
+import { useRouter } from 'next/navigation'
+import { type Mock } from 'vitest'
+
+import { resolvedParams } from '../../../../../../../../test/utils/resolvedParams'
 
 // Import the component under test
 import DownloadPage from './page'
 
 // Mock the router
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: jest.fn()
-  })
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
+  }))
 }))
 
 describe('DownloadPage with downloadId', () => {
@@ -15,27 +19,25 @@ describe('DownloadPage with downloadId', () => {
   const mockVariantId = 'variant-456'
 
   // Mock router push function
-  const mockRouterPush = jest.fn()
+  const mockRouterPush = vi.fn()
 
   // Reset mocks before each test
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Mock router.push
-    jest
-      .spyOn(require('next/navigation'), 'useRouter')
-      .mockImplementation(() => ({
-        push: mockRouterPush
-      }))
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
   })
 
   it('redirects to the variant page', () => {
     render(
       <DownloadPage
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId
-        }}
+        })}
       />
     )
 
@@ -49,10 +51,10 @@ describe('DownloadPage with downloadId', () => {
   it('renders an empty fragment', () => {
     const { container } = render(
       <DownloadPage
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId
-        }}
+        })}
       />
     )
 

@@ -124,6 +124,14 @@ export interface CardPollRestore_imageRestore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardPollRestore_imageRestore_IconBlock {
@@ -552,6 +560,10 @@ export interface CardPollRestore_imageRestore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardPollRestore_imageRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -731,6 +743,14 @@ export interface CardPollRestore_subtitleRestore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardPollRestore_subtitleRestore_IconBlock {
@@ -1159,6 +1179,10 @@ export interface CardPollRestore_subtitleRestore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardPollRestore_subtitleRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1338,6 +1362,14 @@ export interface CardPollRestore_titleRestore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardPollRestore_titleRestore_IconBlock {
@@ -1766,6 +1798,10 @@ export interface CardPollRestore_titleRestore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardPollRestore_titleRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1945,6 +1981,14 @@ export interface CardPollRestore_radioQuestionRestore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardPollRestore_radioQuestionRestore_IconBlock {
@@ -2373,6 +2417,10 @@ export interface CardPollRestore_radioQuestionRestore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardPollRestore_radioQuestionRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -2552,6 +2600,14 @@ export interface CardPollRestore_radioOption1Restore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardPollRestore_radioOption1Restore_IconBlock {
@@ -2980,6 +3036,10 @@ export interface CardPollRestore_radioOption1Restore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardPollRestore_radioOption1Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -3159,6 +3219,14 @@ export interface CardPollRestore_radioOption2Restore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardPollRestore_radioOption2Restore_IconBlock {
@@ -3587,6 +3655,10 @@ export interface CardPollRestore_radioOption2Restore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardPollRestore_radioOption2Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -3766,6 +3838,14 @@ export interface CardPollRestore_radioOption3Restore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardPollRestore_radioOption3Restore_IconBlock {
@@ -4194,6 +4274,10 @@ export interface CardPollRestore_radioOption3Restore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardPollRestore_radioOption3Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -4373,6 +4457,14 @@ export interface CardPollRestore_radioOption4Restore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardPollRestore_radioOption4Restore_IconBlock {
@@ -4801,6 +4893,10 @@ export interface CardPollRestore_radioOption4Restore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardPollRestore_radioOption4Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -4980,6 +5076,14 @@ export interface CardPollRestore_bodyRestore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardPollRestore_bodyRestore_IconBlock {
@@ -5408,6 +5512,10 @@ export interface CardPollRestore_bodyRestore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardPollRestore_bodyRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

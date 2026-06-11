@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import fscreen from 'fscreen'
+import type { Mock } from 'vitest'
 
 import { VideoProvider } from '../../../libs/videoContext'
 import { WatchProvider } from '../../../libs/watchContext'
@@ -8,12 +9,29 @@ import { videos } from '../../Videos/__generated__/testData'
 
 import { VideoContentHero } from './VideoContentHero'
 
-jest.mock('fscreen')
+vi.mock('fscreen', async () => ({
+  default: {
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    requestFullscreen: vi.fn(),
+    exitFullscreen: vi.fn(),
+    fullscreenElement: null
+  }
+}))
 
-jest.mock('next-i18next', () => ({
-  useTranslation: jest.fn().mockReturnValue({
+vi.mock('next-i18next/pages', async () => ({
+  ...(await vi.importActual<typeof import('next-i18next/pages')>(
+    'next-i18next/pages'
+  )),
+  useTranslation: vi.fn().mockReturnValue({
     t: (key: string) => key
   })
+}))
+
+vi.mock('./HeroVideo', () => ({
+  HeroVideo: ({ isFullscreen }: { isFullscreen: boolean }) => (
+    <div data-testid="HeroVideo" data-is-fullscreen={isFullscreen} />
+  )
 }))
 
 const mockedFscreen = fscreen
@@ -21,16 +39,16 @@ const mockedFscreen = fscreen
 const originalScrollTo = window.scrollTo
 
 describe('VideoContentHero', () => {
-  const setIsFullscreen = jest.fn()
+  const setIsFullscreen = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    window.scrollTo = jest.fn()
+    vi.clearAllMocks()
+    window.scrollTo = vi.fn()
   })
 
   afterEach(() => {
     window.scrollTo = originalScrollTo
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('adds and removes fullscreenchange event listener', () => {
@@ -54,14 +72,66 @@ describe('VideoContentHero', () => {
       expect.any(Function)
     )
 
-    const listener = (mockedFscreen.addEventListener as jest.Mock).mock
-      .calls[0][1]
+    const listener = (mockedFscreen.addEventListener as Mock).mock.calls[0][1]
 
     unmount()
     expect(mockedFscreen.removeEventListener).toHaveBeenCalledWith(
       'fullscreenchange',
       listener
     )
+  })
+
+  it('remounts HeroVideo when variant id changes and HLS stays the same', () => {
+    const firstContent = videos[0]
+    const firstVariant = firstContent.variant
+
+    if (firstVariant == null) throw new Error('Expected test video variant')
+
+    const secondContent = {
+      ...firstContent,
+      variant: {
+        ...firstVariant,
+        id: 'duplicate-language-variant',
+        slug: 'jesus/duplicate-language',
+        hls: firstVariant.hls
+      }
+    }
+
+    const { rerender, getByTestId } = render(
+      <MockedProvider>
+        <VideoProvider value={{ content: firstContent }}>
+          <WatchProvider
+            initialState={{
+              audioLanguageId: '529',
+              subtitleLanguageId: '529',
+              subtitleOn: false
+            }}
+          >
+            <VideoContentHero isFullscreen={false} />
+          </WatchProvider>
+        </VideoProvider>
+      </MockedProvider>
+    )
+
+    const firstHeroVideo = getByTestId('HeroVideo')
+
+    rerender(
+      <MockedProvider>
+        <VideoProvider value={{ content: secondContent }}>
+          <WatchProvider
+            initialState={{
+              audioLanguageId: '529',
+              subtitleLanguageId: '529',
+              subtitleOn: false
+            }}
+          >
+            <VideoContentHero isFullscreen={false} />
+          </WatchProvider>
+        </VideoProvider>
+      </MockedProvider>
+    )
+
+    expect(getByTestId('HeroVideo')).not.toBe(firstHeroVideo)
   })
 
   describe('fullscreenchange handler', () => {
@@ -84,9 +154,8 @@ describe('VideoContentHero', () => {
           </VideoProvider>
         </MockedProvider>
       )
-      const fullscreenchangeCallback = (
-        mockedFscreen.addEventListener as jest.Mock
-      ).mock.calls[0][1]
+      const fullscreenchangeCallback = (mockedFscreen.addEventListener as Mock)
+        .mock.calls[0][1]
 
       ;(mockedFscreen as any).fullscreenElement = document.createElement('div')
       fullscreenchangeCallback()
@@ -117,9 +186,8 @@ describe('VideoContentHero', () => {
           </VideoProvider>
         </MockedProvider>
       )
-      const fullscreenchangeCallback = (
-        mockedFscreen.addEventListener as jest.Mock
-      ).mock.calls[0][1]
+      const fullscreenchangeCallback = (mockedFscreen.addEventListener as Mock)
+        .mock.calls[0][1]
 
       ;(mockedFscreen as any).fullscreenElement = document.createElement('div')
       fullscreenchangeCallback()
@@ -150,9 +218,8 @@ describe('VideoContentHero', () => {
           </VideoProvider>
         </MockedProvider>
       )
-      const fullscreenchangeCallback = (
-        mockedFscreen.addEventListener as jest.Mock
-      ).mock.calls[0][1]
+      const fullscreenchangeCallback = (mockedFscreen.addEventListener as Mock)
+        .mock.calls[0][1]
 
       ;(mockedFscreen as any).fullscreenElement = null
       fullscreenchangeCallback()

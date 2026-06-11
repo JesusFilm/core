@@ -1,7 +1,8 @@
 import { MutationResult } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
-import { Edge, OnSelectionChangeParams, useKeyPress } from 'reactflow'
+import { Edge, OnSelectionChangeParams, useKeyPress } from '@xyflow/react'
+import { type MockedFunction } from 'vitest'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import {
@@ -20,36 +21,35 @@ import { useDeleteEdge } from '../useDeleteEdge'
 
 import { useDeleteOnKeyPress } from './useDeleteOnKeyPress'
 
-jest.mock('reactflow', () => {
-  const originalModule = jest.requireActual('reactflow')
+vi.mock('@xyflow/react', async () => {
+  const originalModule = await vi.importActual('@xyflow/react')
   return {
     __esModule: true,
     ...originalModule,
-    useKeyPress: jest.fn()
+    useKeyPress: vi.fn()
   }
 })
-const mockUseKeyPress = useKeyPress as jest.MockedFunction<typeof useKeyPress>
-jest.mock('../useDeleteEdge', () => {
+const mockUseKeyPress = useKeyPress as MockedFunction<typeof useKeyPress>
+vi.mock('../useDeleteEdge', async () => {
   return {
-    useDeleteEdge: jest.fn()
+    useDeleteEdge: vi.fn()
   }
 })
-const mockUseDeleteEdge = useDeleteEdge as jest.MockedFunction<
-  typeof useDeleteEdge
+const mockUseDeleteEdge = useDeleteEdge as MockedFunction<typeof useDeleteEdge>
+
+vi.mock('../../../../../../libs/useBlockDeleteMutation', async () => {
+  return {
+    useBlockDeleteMutation: vi.fn()
+  }
+})
+
+const mockUseBlockDeleteMutation = useBlockDeleteMutation as MockedFunction<
+  typeof useBlockDeleteMutation
 >
 
-jest.mock('../../../../../../libs/useBlockDeleteMutation', () => {
-  return {
-    useBlockDeleteMutation: jest.fn()
-  }
-})
-
-const mockUseBlockDeleteMutation =
-  useBlockDeleteMutation as jest.MockedFunction<typeof useBlockDeleteMutation>
-
 describe('useDeleteOnKeyPress', () => {
-  const deleteBlock = jest.fn()
-  const deleteEdge = jest.fn()
+  const deleteBlock = vi.fn()
+  const deleteEdge = vi.fn()
   const deleteResult = {} as unknown as MutationResult<BlockDelete>
 
   beforeEach(() => {

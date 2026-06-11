@@ -1,1 +1,1 @@
-export { firebaseClient } from './firebaseClient'
+export { firebaseAuth, firebaseClient } from './firebaseClient'

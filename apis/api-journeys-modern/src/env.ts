@@ -27,8 +27,35 @@ export const env = createEnv({
     PLAUSIBLE_URL: z.url().refine((url) => !url.endsWith('/'), {
       message: 'PLAUSIBLE_URL must not end with a trailing slash'
     }),
+    CLOUDFLARE_ACCOUNT_ID: z.string().trim().min(1),
+    CLOUDFLARE_IMAGES_TOKEN: z.string().trim().min(1),
+    MUX_UGC_ACCESS_TOKEN_ID: z.string().trim().min(1),
+    MUX_UGC_SECRET_KEY: z.string().trim().min(1),
+    OPENROUTER_API_KEY: z.string().trim().min(1),
     REDIS_PORT: z.coerce.number().int().positive().default(6379),
     REDIS_URL: z.string().trim().min(1).default('redis'),
-    SERVICE_VERSION: z.string().trim().default('')
+    SERVICE_VERSION: z.string().trim().default(''),
+    IMAGE_DESCRIPTION_AI_MODELS: z
+      .string()
+      .trim()
+      .default('google/gemma-4-26b-a4b-it,google/gemini-2.5-flash')
+      .transform((val) =>
+        val
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+      )
+      .pipe(z.array(z.string().min(1)).min(1)),
+    TRANSLATION_AI_MODELS: z
+      .string()
+      .trim()
+      .default('google/gemma-4-26b-a4b-it,google/gemini-2.5-flash')
+      .transform((val) =>
+        val
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+      )
+      .pipe(z.array(z.string().min(1)).min(1))
   }
 })

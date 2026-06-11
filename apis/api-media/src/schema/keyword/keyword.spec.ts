@@ -41,7 +41,11 @@ describe('Keyword', () => {
       const data = await client({
         document: KEYWORDS_QUERY
       })
-      expect(prismaMock.keyword.findMany).toHaveBeenCalledWith({})
+      expect(prismaMock.keyword.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { updatedAt: undefined }
+        })
+      )
       expect(data).toHaveProperty('data.keywords', [
         {
           id: 'keywordId',
@@ -49,6 +53,67 @@ describe('Keyword', () => {
           language: { id: 'languageId' }
         }
       ])
+    })
+
+    it('should query keywords with updatedAt filter', async () => {
+      prismaMock.keyword.findMany.mockResolvedValue([
+        {
+          id: 'keywordId',
+          value: 'value',
+          languageId: 'languageId',
+          createdAt: new Date(),
+          updatedAt: new Date('2025-06-01T00:00:00.000Z')
+        }
+      ])
+
+      const KEYWORDS_FILTER_QUERY = graphql(`
+        query KeywordsWithFilter($where: KeywordsFilter) {
+          keywords(where: $where) {
+            id
+            updatedAt
+          }
+        }
+      `)
+
+      const data = await client({
+        document: KEYWORDS_FILTER_QUERY,
+        variables: {
+          where: { updatedAt: { gte: '2025-01-01T00:00:00.000Z' } }
+        }
+      })
+
+      expect(prismaMock.keyword.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            updatedAt: { gte: new Date('2025-01-01T00:00:00.000Z') }
+          }
+        })
+      )
+      expect(data).toHaveProperty('data.keywords', [
+        {
+          id: 'keywordId',
+          updatedAt: '2025-06-01T00:00:00.000Z'
+        }
+      ])
+    })
+  })
+
+  describe('keywordsCount', () => {
+    const KEYWORDS_COUNT_QUERY = graphql(`
+      query KeywordsCount {
+        keywordsCount
+      }
+    `)
+
+    it('should return keywords count', async () => {
+      prismaMock.keyword.count.mockResolvedValue(10)
+      const result = await client({ document: KEYWORDS_COUNT_QUERY })
+      expect(prismaMock.keyword.count).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { updatedAt: undefined }
+        })
+      )
+      expect(result).toHaveProperty('data.keywordsCount', 10)
     })
   })
 

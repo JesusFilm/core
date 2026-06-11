@@ -13,17 +13,20 @@ import { GET_USER_TEAMS_AND_INVITES } from '../../../../libs/useUserTeamsAndInvi
 
 import { TeamManageWrapper } from './TeamManageWrapper'
 
-jest.mock('../../../../libs/useCurrentUserLazyQuery', () => ({
+vi.mock('../../../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
-  useCurrentUserLazyQuery: jest.fn().mockReturnValue({
-    loadUser: jest.fn(),
+  useCurrentUserLazyQuery: vi.fn().mockReturnValue({
+    loadUser: vi.fn(),
     data: {
-      __typename: 'User',
       ...user1
     }
   })
 }))
-const user1 = { id: 'userId', email: 'miguelohara@example.com' }
+const user1 = vi.hoisted(() => ({
+  id: 'userId',
+  email: 'miguelohara@example.com',
+  __typename: 'AuthenticatedUser'
+}))
 
 describe('TeamMembersList', () => {
   const getUserTeamMock1: MockedResponse<GetUserTeamsAndInvites> = {

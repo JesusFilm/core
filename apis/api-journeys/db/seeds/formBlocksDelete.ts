@@ -1,6 +1,4 @@
-import { PrismaClient } from '.prisma/api-journeys-client'
-
-const prisma = new PrismaClient()
+import { prisma } from '../../../../libs/prisma/journeys/src/client'
 
 export async function formBlocksDelete(): Promise<void> {
   const blocks = await prisma.block.findMany({

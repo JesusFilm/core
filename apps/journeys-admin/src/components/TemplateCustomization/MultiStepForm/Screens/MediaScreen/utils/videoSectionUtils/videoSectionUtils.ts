@@ -5,6 +5,36 @@ import {
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 import { getJourneyMedia } from '../../../../../utils/getJourneyMedia'
 
+const YOUTUBE_ID_REGEX = /^[0-9A-Za-z_-]{11}$/
+const YOUTUBE_HOST_REGEX =
+  /(^|\.)youtube\.com$|(^|\.)youtu\.be$|(^|\.)youtube-nocookie\.com$/
+
+/**
+ * Extracts an 11-character YouTube video ID from a URL.
+ *
+ * Validates the hostname belongs to a known YouTube domain before extracting.
+ * Supports standard watch URLs, youtu.be short links, shorts, and embed URLs.
+ * Returns null when no valid ID can be found or the host is not YouTube.
+ */
+export function extractYouTubeVideoId(url: string): string | null {
+  try {
+    const parsed = new URL(url.trim())
+    const host = parsed.hostname.toLowerCase()
+    if (!YOUTUBE_HOST_REGEX.test(host)) return null
+
+    const candidate = host.endsWith('youtu.be')
+      ? parsed.pathname.split('/').filter(Boolean)[0]
+      : (parsed.searchParams.get('v') ??
+        parsed.pathname.split('/').filter(Boolean).at(-1))
+
+    return candidate != null && YOUTUBE_ID_REGEX.test(candidate)
+      ? candidate
+      : null
+  } catch {
+    return null
+  }
+}
+
 /**
  * Returns the first customizable video block that belongs to the given card.
  *
@@ -47,26 +77,6 @@ export function showVideosSection(
   cardBlockId: string | null
 ): boolean {
   return getCustomizableCardVideoBlock(journey, cardBlockId) != null
-}
-
-/**
- * Returns a display title for the video block.
- * - YouTube/Mux: uses block-level `title`.
- * - Internal/Cloudflare: uses first title from `mediaVideo.title[]` (block-level title is not populated).
- */
-export function getVideoBlockDisplayTitle(block: VideoBlock): string {
-  if (block.title != null && block.title.trim() !== '') {
-    return block.title
-  }
-  if (
-    (block.source === VideoBlockSource.internal ||
-      block.source === VideoBlockSource.cloudflare) &&
-    block.mediaVideo?.__typename === 'Video' &&
-    block.mediaVideo.title?.length
-  ) {
-    return block.mediaVideo.title[0].value ?? ''
-  }
-  return ''
 }
 
 /**

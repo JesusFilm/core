@@ -1,9 +1,13 @@
+import { decode } from 'blurhash'
+
 import { blurImage } from './blurImage'
 
 // Mock blurhash decode function
-jest.mock('blurhash', () => ({
-  decode: jest.fn()
+vi.mock('blurhash', () => ({
+  decode: vi.fn()
 }))
+
+const mockDecode = vi.mocked(decode)
 
 describe('blurImage', () => {
   // Mock canvas and context before each test
@@ -13,20 +17,20 @@ describe('blurImage', () => {
       createImageData: () => ({
         data: new Uint8ClampedArray(32 * 32 * 4)
       }),
-      putImageData: jest.fn(),
+      putImageData: vi.fn(),
       fillStyle: '',
-      fillRect: jest.fn()
+      fillRect: vi.fn()
     }
 
     // Create a mock canvas element
     const mockCanvas = {
       getContext: () => mockContext,
-      setAttribute: jest.fn(),
+      setAttribute: vi.fn(),
       toDataURL: () => 'data:image/png;base64,mockImageData'
     }
 
     // Mock document.createElement
-    document.createElement = jest.fn((tagName) => {
+    document.createElement = vi.fn((tagName) => {
       if (tagName === 'canvas') {
         return mockCanvas as unknown as HTMLCanvasElement
       }
@@ -48,8 +52,7 @@ describe('blurImage', () => {
   }
 
   it('returns url of blurred image', () => {
-    const { decode } = require('blurhash')
-    decode.mockReturnValue(new Uint8ClampedArray(32 * 32 * 4).fill(128))
+    mockDecode.mockReturnValue(new Uint8ClampedArray(32 * 32 * 4).fill(128))
 
     expect(
       blurImage(image.blurhash, '#000000')?.startsWith('data:image/png;base64,')
@@ -58,18 +61,17 @@ describe('blurImage', () => {
 
   it('returns undefined as fallback', () => {
     // Override the mock to return null context
-    document.createElement = jest.fn((tagName) => {
+    document.createElement = vi.fn((tagName) => {
       if (tagName === 'canvas') {
         return {
           getContext: () => null,
-          setAttribute: jest.fn()
+          setAttribute: vi.fn()
         } as unknown as HTMLCanvasElement
       }
       return {} as HTMLElement
     })
 
-    const { decode } = require('blurhash')
-    decode.mockReturnValue(new Uint8ClampedArray(32 * 32 * 4).fill(128))
+    mockDecode.mockReturnValue(new Uint8ClampedArray(32 * 32 * 4).fill(128))
 
     expect(blurImage(image.blurhash, '#000000')).toBeUndefined()
   })
@@ -79,8 +81,7 @@ describe('blurImage', () => {
   })
 
   it('handles decode errors gracefully', () => {
-    const { decode } = require('blurhash')
-    decode.mockImplementation(() => {
+    mockDecode.mockImplementation(() => {
       throw new Error('Invalid blurhash')
     })
 
@@ -88,9 +89,8 @@ describe('blurImage', () => {
   })
 
   it('pads small pixel arrays with background color', () => {
-    const { decode } = require('blurhash')
     // Return array smaller than expected
-    decode.mockReturnValue(new Uint8ClampedArray(16 * 16 * 4).fill(128))
+    mockDecode.mockReturnValue(new Uint8ClampedArray(16 * 16 * 4).fill(128))
 
     expect(
       blurImage(image.blurhash, '#FF0000')?.startsWith('data:image/png;base64,')
@@ -98,9 +98,8 @@ describe('blurImage', () => {
   })
 
   it('crops large pixel arrays to fit', () => {
-    const { decode } = require('blurhash')
     // Return array larger than expected
-    decode.mockReturnValue(new Uint8ClampedArray(64 * 64 * 4).fill(128))
+    mockDecode.mockReturnValue(new Uint8ClampedArray(64 * 64 * 4).fill(128))
 
     expect(
       blurImage(image.blurhash, '#00FF00')?.startsWith('data:image/png;base64,')
@@ -108,9 +107,8 @@ describe('blurImage', () => {
   })
 
   it('handles exact size pixel arrays', () => {
-    const { decode } = require('blurhash')
     // Return array of exact expected size
-    decode.mockReturnValue(new Uint8ClampedArray(32 * 32 * 4).fill(128))
+    mockDecode.mockReturnValue(new Uint8ClampedArray(32 * 32 * 4).fill(128))
 
     expect(
       blurImage(image.blurhash, '#0000FF')?.startsWith('data:image/png;base64,')

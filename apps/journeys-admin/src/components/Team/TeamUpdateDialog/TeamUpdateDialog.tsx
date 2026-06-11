@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useMemo } from 'react'
 import { object, string } from 'yup'
@@ -54,9 +54,15 @@ export function TeamUpdateDialog({
   }, [loadUser])
 
   const currentUserTeamRole: UserTeamRole | undefined = useMemo(() => {
-    return activeTeam?.userTeams?.find(({ user: { email } }) => {
-      return email === currentUser?.email
-    })?.role
+    if (currentUser?.__typename === 'AuthenticatedUser') {
+      return activeTeam?.userTeams?.find(({ user }) => {
+        return (
+          user.__typename === 'AuthenticatedUser' &&
+          user.email === currentUser.email
+        )
+      })?.role
+    }
+    return undefined
   }, [activeTeam, currentUser])
 
   async function handleSubmit(

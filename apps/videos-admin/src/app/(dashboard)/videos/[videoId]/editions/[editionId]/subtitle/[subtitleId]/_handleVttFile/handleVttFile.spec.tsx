@@ -9,7 +9,7 @@ describe('handleVttFile', () => {
   const mockUploadUrl = 'https://example.com/upload'
   const mockPublicUrl = 'https://example.com/public/test.vtt'
 
-  const mockCreateR2Asset = jest.fn().mockResolvedValue({
+  const mockCreateR2Asset = vi.fn().mockResolvedValue({
     data: {
       cloudflareR2Create: {
         uploadUrl: mockUploadUrl,
@@ -18,10 +18,10 @@ describe('handleVttFile', () => {
     }
   })
 
-  const mockUploadAssetFile = jest.fn().mockResolvedValue(undefined)
+  const mockUploadAssetFile = vi.fn().mockResolvedValue(undefined)
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should upload a VTT file and return the public URL, upload URL, and r2AssetId', async () => {

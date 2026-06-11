@@ -5,7 +5,7 @@ import { MessagePlatform } from '../../../../../__generated__/globalTypes'
 import { ChatButton } from '.'
 
 describe('ChatButton', () => {
-  window.open = jest.fn()
+  window.open = vi.fn()
 
   it('should handle click for facebook', () => {
     const { getByRole } = render(

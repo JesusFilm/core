@@ -3,7 +3,8 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
-import { generateCacheKey, getWithStaleCache } from '../../../../../lib/cache'
+import { generateCacheKey } from '../../../../../lib/cache'
+import { getWithStaleCacheForRequest } from '../../../../../lib/cacheBypass'
 import { findBestMatchingName } from '../lib'
 
 const GET_TAXONOMY = graphql(`
@@ -95,7 +96,7 @@ taxonomiesWithCategory.openapi(getTaxonomyByCategoryRoute, async (c) => {
     ...metadataLanguageTags
   ])
 
-  const response = await getWithStaleCache(cacheKey, async () => {
+  const response = await getWithStaleCacheForRequest(c, cacheKey, async () => {
     const { data } = await getApolloClient().query<
       ResultOf<typeof GET_TAXONOMY>
     >({
@@ -132,7 +133,10 @@ taxonomiesWithCategory.openapi(getTaxonomyByCategoryRoute, async (c) => {
       if (taxonomy.name.length === 0) return
 
       const matchingName = findBestMatchingName(
-        taxonomy.name as Array<{ label: string; language: { bcp47: string } }>,
+        taxonomy.name as Array<{
+          label: string
+          language: { bcp47: string }
+        }>,
         metadataLanguageTags
       )
 

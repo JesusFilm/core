@@ -138,6 +138,14 @@ export interface JourneyFields_blocks_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface JourneyFields_blocks_IconBlock {
@@ -566,6 +574,10 @@ export interface JourneyFields_blocks_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -670,13 +682,20 @@ export interface JourneyFields_creatorImageBlock {
   customizable: boolean | null;
 }
 
-export interface JourneyFields_userJourneys_user {
+export interface JourneyFields_userJourneys_user_AnonymousUser {
+  __typename: "AnonymousUser";
+  id: string;
+}
+
+export interface JourneyFields_userJourneys_user_AuthenticatedUser {
   __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
   lastName: string | null;
   imageUrl: string | null;
 }
+
+export type JourneyFields_userJourneys_user = JourneyFields_userJourneys_user_AnonymousUser | JourneyFields_userJourneys_user_AuthenticatedUser;
 
 export interface JourneyFields_userJourneys {
   __typename: "UserJourney";
@@ -694,6 +713,7 @@ export interface JourneyFields_chatButtons {
   id: string;
   link: string | null;
   platform: MessagePlatform | null;
+  customizable: boolean | null;
 }
 
 export interface JourneyFields_host {
@@ -844,4 +864,9 @@ export interface JourneyFields {
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: JourneyFields_journeyCustomizationFields[];
   fromTemplateId: string | null;
+  /**
+   * used to display quick start label on customizable templates
+   */
+  customizable: boolean | null;
+  showAssistant: boolean | null;
 }

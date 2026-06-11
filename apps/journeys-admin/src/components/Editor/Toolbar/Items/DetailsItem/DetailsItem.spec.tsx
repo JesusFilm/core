@@ -1,27 +1,32 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import {
+  defaultJourney,
+  publishedLocalTemplate
+} from '@core/journeys/ui/TemplateView/data'
 
 import { DetailsItem } from './DetailsItem'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('DetailsItem', () => {
-  const push = jest.fn()
-  const on = jest.fn()
+  const push = vi.fn()
+  const on = vi.fn()
 
   beforeEach(() => {
     mockedUseRouter.mockReturnValue({
@@ -31,7 +36,7 @@ describe('DetailsItem', () => {
         on
       }
     } as unknown as NextRouter)
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should open journey details dialog', async () => {
@@ -67,5 +72,30 @@ describe('DetailsItem', () => {
       undefined,
       { shallow: true }
     )
+  })
+
+  it('opens LocalTemplateDetailsDialog and sets templateDetails param for a local template', async () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: publishedLocalTemplate }}>
+            <DetailsItem variant="menu-item" />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByText('Edit Details'))
+    expect(push).toHaveBeenCalledWith(
+      { query: { param: 'templateDetails' } },
+      undefined,
+      { shallow: true }
+    )
+    await waitFor(() =>
+      expect(
+        screen.getByTestId('LocalTemplateDetailsDialog')
+      ).toBeInTheDocument()
+    )
+    expect(screen.queryByTestId('JourneyDetailsDialog')).not.toBeInTheDocument()
   })
 })

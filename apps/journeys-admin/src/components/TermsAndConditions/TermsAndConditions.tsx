@@ -1,7 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
-import CircularProgress from '@mui/material/CircularProgress'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
@@ -9,8 +8,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
-import { useUser } from 'next-firebase-auth'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
@@ -23,6 +21,7 @@ import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
 import { UpdateLastActiveTeamId } from '../../../__generated__/UpdateLastActiveTeamId'
+import { useAuth } from '../../libs/auth'
 import { useTeamCreateMutation } from '../../libs/useTeamCreateMutation'
 import { ONBOARDING_TEMPLATE_ID } from '../Team/TeamOnboarding/TeamOnboarding'
 
@@ -42,7 +41,7 @@ export function TermsAndConditions(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [accepted, setAccepted] = useState(false)
   const [loading, setLoading] = useState(false)
-  const user = useUser()
+  const { user } = useAuth()
   const [teamCreate] = useTeamCreateMutation()
   const [journeyProfileCreate] = useMutation<JourneyProfileCreate>(
     JOURNEY_PROFILE_CREATE
@@ -64,53 +63,82 @@ export function TermsAndConditions(): ReactElement {
     if (displayName == null) return
 
     setLoading(true)
-    await journeyProfileCreate()
+    try {
+      await journeyProfileCreate()
 
-    const { data: teamCreateData } = await teamCreate({
-      variables: {
-        input: {
-          title: t('{{ displayName }} & Team', {
-            displayName
-          }),
-          publicTitle: t('{{ displayName }} Team', {
-            displayName: displayName.charAt(0)
-          })
-        }
-      }
-    })
+      const existingTeam = query.data?.teams?.[0]
+      const hasExistingTeam = existingTeam != null
+      let teamId: string | undefined
+      let team: typeof existingTeam | undefined
 
-    if (teamCreateData?.teamCreate != null) {
-      await Promise.allSettled([
-        journeyDuplicate({
-          variables: {
-            id: ONBOARDING_TEMPLATE_ID,
-            teamId: teamCreateData.teamCreate.id
-          }
-        }),
-        updateLastActiveTeamId({
+      if (hasExistingTeam) {
+        teamId = existingTeam.id
+        team = existingTeam
+      } else {
+        const { data: teamCreateData } = await teamCreate({
           variables: {
             input: {
-              lastActiveTeamId: teamCreateData.teamCreate.id
+              title: t('{{ displayName }} & Team', {
+                displayName
+              }),
+              publicTitle: t('{{ displayName }} Team', {
+                displayName: displayName.charAt(0)
+              })
             }
           }
-        }),
-        router.push(
-          router.query.redirect != null
-            ? new URL(
-                `${window.location.origin}${router.query.redirect as string}`
-              )
-            : '/?onboarding=true'
-        ),
-        query
-          .refetch()
-          .then(() =>
-            console.log('[TermsAndConditions] Team data refetched successfully')
-          )
-      ])
+        })
 
-      setActiveTeam(teamCreateData.teamCreate)
+        const newTeam = teamCreateData?.teamCreate
+        if (newTeam != null) {
+          teamId = newTeam.id
+          team = newTeam
+
+          // Seeding the onboarding journey is best-effort: if it fails (e.g.
+          // the template isn't readable and journeyDuplicate throws "user is
+          // not allowed to duplicate journey"), swallow it so the user still
+          // gets a team and is moved on instead of stranded on a spinner.
+          try {
+            await journeyDuplicate({
+              variables: {
+                id: ONBOARDING_TEMPLATE_ID,
+                teamId: newTeam.id
+              }
+            })
+          } catch {
+            // Intentionally ignored — onboarding template is non-critical.
+          }
+        }
+      }
+
+      if (teamId != null && team != null) {
+        // Resolve the active team locally before navigating so the destination
+        // page reflects the new team without waiting on the background refetch.
+        setActiveTeam(team)
+
+        // Persist the last active team and refresh team data in the background.
+        // Navigation must not be coupled to these requests: if either stalled,
+        // the user would be stranded on the Terms screen with a spinning button.
+        void updateLastActiveTeamId({
+          variables: {
+            input: { lastActiveTeamId: teamId }
+          }
+        })
+        void query.refetch()
+
+        await router.push(
+          router.query.redirect != null
+            ? new URL(router.query.redirect as string, window.location.origin)
+            : hasExistingTeam
+              ? '/'
+              : '/?onboarding=true'
+        )
+      }
+    } catch {
+      // Swallow any failure in the accept flow and let the button reset via the
+      // finally block, so the user is never stranded on a spinner.
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   return (
@@ -167,23 +195,18 @@ export function TermsAndConditions(): ReactElement {
       </List>
       <Button
         data-testid="TermsAndConditionsNextButton"
-        variant="contained"
+        variant="blockContained"
+        color="solid"
         disabled={!accepted || loading}
+        loading={loading}
         onClick={handleJourneyProfileCreate}
         sx={{
           height: 54,
-          width: '100%',
-          borderRadius: '12px',
-          bgcolor: 'secondary.dark',
-          py: 3.25,
-          color: 'secondary.contrastText',
-          '&:hover': {
-            bgcolor: 'secondary.dark'
-          }
+          width: '100%'
         }}
-        endIcon={!loading && <ArrowRightSmIcon />}
+        endIcon={<ArrowRightSmIcon />}
       >
-        {loading ? <CircularProgress size={20} /> : t('Next')}
+        {t('Next')}
       </Button>
     </>
   )

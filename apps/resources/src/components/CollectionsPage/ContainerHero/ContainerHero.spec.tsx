@@ -1,14 +1,15 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
+import type { Mock, MockedFunction } from 'vitest'
 
 import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { useVideo } from '../../../libs/videoContext'
 
 import { ContainerHero, ContainerHeroProps } from './ContainerHero'
 
-jest.mock('../../../libs/videoContext', () => ({
-  useVideo: jest.fn()
+vi.mock('../../../libs/videoContext', async () => ({
+  useVideo: vi.fn()
 }))
 
 const mockVideoData = {
@@ -27,26 +28,30 @@ const mockVideoData = {
   slug: 'easter-collection'
 }
 
-jest.mock('next-i18next', () => ({
-  useTranslation: jest.fn().mockReturnValue({
-    t: jest.fn()
+vi.mock('next-i18next/pages', async () => ({
+  ...(await vi.importActual<typeof import('next-i18next/pages')>(
+    'next-i18next/pages'
+  )),
+  useTranslation: vi.fn().mockReturnValue({
+    t: vi.fn()
   })
 }))
 
-jest.mock('video.js', () => {
-  const originalModule = jest.requireActual('video.js')
+vi.mock('video.js', async () => {
+  const originalModule =
+    await vi.importActual<typeof import('video.js')>('video.js')
 
   const mockPlayer = {
-    on: jest.fn(),
-    play: jest.fn().mockReturnValue(Promise.resolve()),
-    pause: jest.fn(),
-    muted: jest.fn(),
-    currentTime: jest.fn(),
-    dispose: jest.fn(),
-    src: jest.fn()
+    on: vi.fn(),
+    play: vi.fn().mockReturnValue(Promise.resolve()),
+    pause: vi.fn(),
+    muted: vi.fn(),
+    currentTime: vi.fn(),
+    dispose: vi.fn(),
+    src: vi.fn()
   }
 
-  const mockVideoJs = jest.fn(() => mockPlayer)
+  const mockVideoJs = vi.fn(() => mockPlayer)
 
   return {
     ...originalModule,
@@ -55,10 +60,10 @@ jest.mock('video.js', () => {
   }
 })
 
-const mockVideoJs = videojs as jest.MockedFunction<typeof videojs>
+const mockVideoJs = videojs as MockedFunction<typeof videojs>
 
 // Mock the ContainerHeroMuteButton to have English aria-labels for testing
-jest.mock('./ContainerHeroMuteButton', () => ({
+vi.mock('./ContainerHeroMuteButton', async () => ({
   ContainerHeroMuteButton: ({ isMuted, onClick }) => (
     <button
       onClick={onClick}
@@ -76,33 +81,33 @@ jest.mock('./ContainerHeroMuteButton', () => ({
 
 describe('ContainerHero', () => {
   let mockPlayer: Partial<Player>
-  const currentYear = new Date().getFullYear()
   const defaultProps: ContainerHeroProps = {
     title: 'Easter',
     descriptionBeforeYear: 'Easter',
     descriptionAfterYear:
       'videos & resources about Lent, Holy Week, Resurrection',
-    feedbackButtonLabel: 'Feedback'
+    feedbackButtonLabel: 'Feedback',
+    year: 2026
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    ;(useVideo as jest.Mock).mockReturnValue(mockVideoData)
+    vi.clearAllMocks()
+    ;(useVideo as Mock).mockReturnValue(mockVideoData)
 
     mockPlayer = {
-      on: jest.fn(),
-      play: jest.fn().mockReturnValue(Promise.resolve()),
-      pause: jest.fn(),
-      muted: jest.fn(),
-      currentTime: jest.fn(),
-      dispose: jest.fn(),
-      src: jest.fn()
+      on: vi.fn(),
+      play: vi.fn().mockReturnValue(Promise.resolve()),
+      pause: vi.fn(),
+      muted: vi.fn(),
+      currentTime: vi.fn(),
+      dispose: vi.fn(),
+      src: vi.fn()
     }
     mockVideoJs.mockImplementation(() => mockPlayer as Player)
   })
 
   afterEach(() => {
-    jest.restoreAllMocks()
+    vi.restoreAllMocks()
   })
 
   it('renders the muted button with correct state and icon', () => {
@@ -127,14 +132,15 @@ describe('ContainerHero', () => {
 
     expect(screen.getByText('Easter')).toBeInTheDocument()
 
-    const expectedDescription = `Easter ${currentYear} videos & resources about Lent, Holy Week, Resurrection`
+    const expectedDescription =
+      'Easter 2026 videos & resources about Lent, Holy Week, Resurrection'
     expect(screen.getByTestId('ContainerHeroDescription')).toHaveTextContent(
       expectedDescription
     )
   })
 
   it('should toggle mute state when the mute button is clicked', () => {
-    mockPlayer.muted = jest.fn().mockImplementation((state?: boolean) => {
+    mockPlayer.muted = vi.fn().mockImplementation((state?: boolean) => {
       if (state !== undefined) {
         return state
       }
@@ -149,7 +155,7 @@ describe('ContainerHero', () => {
 
     expect(mockPlayer.muted).toHaveBeenCalledWith(false)
 
-    mockPlayer.muted = jest.fn().mockImplementation((state?: boolean) => {
+    mockPlayer.muted = vi.fn().mockImplementation((state?: boolean) => {
       if (state !== undefined) {
         return state
       }
@@ -165,7 +171,7 @@ describe('ContainerHero', () => {
   })
 
   it('should properly initialize the player and set the player reference', () => {
-    mockPlayer.muted = jest.fn().mockReturnValue(true)
+    mockPlayer.muted = vi.fn().mockReturnValue(true)
 
     render(<ContainerHero {...defaultProps} />)
 
@@ -178,7 +184,7 @@ describe('ContainerHero', () => {
   })
 
   it('should restart the video when unmuting for the first time', () => {
-    mockPlayer.muted = jest.fn().mockImplementation((state?: boolean) => {
+    mockPlayer.muted = vi.fn().mockImplementation((state?: boolean) => {
       if (state !== undefined) {
         return state
       }

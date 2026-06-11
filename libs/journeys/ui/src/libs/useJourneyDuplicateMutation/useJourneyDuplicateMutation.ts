@@ -15,11 +15,13 @@ export const JOURNEY_DUPLICATE = gql`
     $id: ID!
     $teamId: ID!
     $forceNonTemplate: Boolean
+    $duplicateAsDraft: Boolean
   ) {
     journeyDuplicate(
       id: $id
       teamId: $teamId
       forceNonTemplate: $forceNonTemplate
+      duplicateAsDraft: $duplicateAsDraft
     ) {
       id
       template
