@@ -1,4 +1,5 @@
 import './integration'
+import './integrations.query'
 import './growthSpaces'
 import './google'
 import './integrationDelete.mutation'

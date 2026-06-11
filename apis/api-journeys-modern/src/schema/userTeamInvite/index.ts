@@ -1,2 +1,7 @@
 import './userTeamInvite'
 import './inputs'
+import './userTeamInvite.acl'
+import './userTeamInvites.query'
+import './userTeamInviteCreate.mutation'
+import './userTeamInviteRemove.mutation'
+import './userTeamInviteAcceptAll.mutation'

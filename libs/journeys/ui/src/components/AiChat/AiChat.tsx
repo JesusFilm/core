@@ -18,6 +18,7 @@ import {
 } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { getCardChild, useBlocks } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 import { Actions } from '../Actions'
 import { Conversation } from '../Conversation'
@@ -107,10 +108,19 @@ function parseChatErrorCode(error: Error | undefined): string | undefined {
 const NON_RETRIABLE_CHAT_ERROR_CODES = new Set([
   'conversation_capped',
   'invalid_request',
-  'not_found'
+  'not_found',
+  // A card with chat disabled (NES-1679) is deterministic — re-firing 403s again.
+  'chat_disabled'
 ])
 
 const CONVERSATION_CAPPED_CODE = 'conversation_capped'
+// The card's chat was turned off server-side (NES-1679). We swap the generic
+// "try again" copy for an honest "turned off" message and hide Retry (it would
+// 403 again). The input deliberately stays usable: per the kill-switch design a
+// stale tab still shows the input and each send fails closed with a visible
+// message, and locking it would strand the user if they navigate to a card
+// where chat is still enabled (the error persists in the mounted chat).
+const CHAT_DISABLED_CODE = 'chat_disabled'
 
 const TYPEWRITER_CHARS_PER_SEC = 280
 
@@ -251,6 +261,15 @@ export function AiChat({
   const journeyIdRef = useRef(journeyId)
   journeyIdRef.current = journeyId
 
+  // The active card id (NES-1679) lets the server enforce the per-card chat
+  // kill switch. Read from the same global block history the rest of the viewer
+  // uses (Conductor, StepFooter), so it tracks card navigation without
+  // threading a prop through PinnedChatBar / ChatOverlay.
+  const { blockHistory } = useBlocks()
+  const cardId = getCardChild(blockHistory[blockHistory.length - 1])?.id
+  const cardIdRef = useRef(cardId)
+  cardIdRef.current = cardId
+
   const [sessionId, setSessionId] = useState<string | undefined>(() => {
     if (typeof window === 'undefined') return undefined
     // sessionStorage can throw in Safari private mode, sandboxed
@@ -276,7 +295,8 @@ export function AiChat({
         body: () => ({
           language: languageRef.current,
           sessionId: sessionIdRef.current,
-          journeyId: journeyIdRef.current
+          journeyId: journeyIdRef.current,
+          cardId: cardIdRef.current
         })
       }),
     []
@@ -311,6 +331,7 @@ export function AiChat({
 
   const errorCode = useMemo(() => parseChatErrorCode(error), [error])
   const isConversationCapped = errorCode === CONVERSATION_CAPPED_CODE
+  const isChatDisabled = errorCode === CHAT_DISABLED_CODE
   // Retriable by default so transient failures (network/5xx/mid-stream, which
   // carry no code) keep their Retry; hidden only for known deterministic codes.
   const canRetry =
@@ -581,7 +602,11 @@ export function AiChat({
                     ? t(
                         "This conversation's gotten long. Start a new one to keep chatting — this clears the current session."
                       )
-                    : t('Something went wrong. Please try again.')}
+                    : isChatDisabled
+                      ? t(
+                          'Chat has been turned off for this part of the journey.'
+                        )
+                      : t('Something went wrong. Please try again.')}
                 </Box>
               </Message>
               {isConversationCapped ? (

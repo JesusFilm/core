@@ -1,6 +1,7 @@
 // Developers must add an import for every resolver
 // and object type in the schema
 
+import './visitor'
 import './action'
 import './block'
 import './chatButton'
@@ -33,7 +34,6 @@ import './userJourney'
 import './userRole'
 import './userTeam'
 import './userTeamInvite'
-import './visitor'
 
 import { builder } from './builder'
 
