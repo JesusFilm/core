@@ -179,12 +179,6 @@
       "options": {
         "commands": ["pnpm exec tsx apis/api-media/db/seed.ts"]
       }
-    },
-    "fake-video-import-slack-test": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/run-fake-video-import-slack-test.ts"
-      }
     }
   }
 }
