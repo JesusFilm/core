@@ -1,13 +1,14 @@
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { GetStaticProps } from 'next'
+import { GetServerSideProps } from 'next'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next/pages'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
+import { getLocaleRTL } from '@core/shared/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
@@ -15,7 +16,12 @@ import i18nConfig from '../../../next-i18next.config'
 import logo from '../../../public/logo.svg'
 
 function AboutChatPage(): ReactElement {
-  const { t } = useTranslation('apps-journeys')
+  const { t, i18n } = useTranslation('apps-journeys')
+  // Flip layout direction for RTL languages (ar, ur, fa, …) so translated
+  // copy reads correctly. `i18n.language` is the locale resolved by
+  // getServerSideProps below; it can be undefined when the component renders
+  // outside appWithTranslation (tests), so default to LTR.
+  const dir = getLocaleRTL(i18n.language ?? '') ? 'rtl' : 'ltr'
 
   return (
     <>
@@ -23,7 +29,7 @@ function AboutChatPage(): ReactElement {
           page title here — the template appends the site name centrally. */}
       <NextSeo title={t('About this chat')} nofollow noindex />
       <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
-        <Container maxWidth="sm">
+        <Container maxWidth="sm" dir={dir} data-testid="AboutChatPage">
           <Stack spacing={5} py={{ xs: 5, sm: 7 }}>
             <Image
               src={logo}
@@ -83,14 +89,34 @@ function AboutChatPage(): ReactElement {
   )
 }
 
-export const getStaticProps: GetStaticProps = async (context) => ({
-  props: {
-    ...(await serverSideTranslations(
-      context.locale ?? 'en',
-      ['apps-journeys', 'libs-journeys-ui'],
-      i18nConfig
-    ))
+// The journey viewer translates its UI by `journey.language.bcp47`, not by
+// URL locale — and the chat surfaces link here without a locale prefix, so
+// `context.locale` is always `en`. The links carry the journey language as
+// `?lang=<bcp47>` instead (NES-1724); resolve translations from it exactly
+// the way the journey page does, with the i18n config's `fallbackLng`
+// mapping short codes (es → es-ES) and falling back to English for
+// languages without translation files.
+//
+// `lang` is untrusted query input that ends up in i18next's filesystem
+// loader, so only accept values shaped like a BCP-47 tag.
+const LANG_PARAM_PATTERN = /^[a-z]{2,3}(-[a-z0-9]{2,8}){0,4}$/i
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const langParam = context.query.lang
+  const lang =
+    typeof langParam === 'string' && LANG_PARAM_PATTERN.test(langParam)
+      ? langParam
+      : undefined
+
+  return {
+    props: {
+      ...(await serverSideTranslations(
+        lang ?? context.locale ?? 'en',
+        ['apps-journeys', 'libs-journeys-ui'],
+        i18nConfig
+      ))
+    }
   }
-})
+}
 
 export default AboutChatPage
