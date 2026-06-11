@@ -116,6 +116,18 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
         }
       }
     })
+    if (data.journey == null)
+      return {
+        props: {
+          ...(await serverSideTranslations(
+            context.locale ?? 'en',
+            ['apps-journeys', 'libs-journeys-ui'],
+            i18nConfig
+          ))
+        },
+        notFound: true,
+        revalidate: 1
+      }
     const { rtl, locale } = getJourneyRTL(data.journey)
 
     return {

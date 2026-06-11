@@ -27,6 +27,11 @@ export default async function Handler(
       }
     })
 
+    if (data.journey == null) {
+      res.status(404).send('journey not found')
+      return
+    }
+
     // this should match apps/journeys-admin/src/components/Editor/Properties/JourneyLink/EmbedJourneyDialog/EmbedJourneyDialog.tsx
     const providerUrl = `https://${
       process.env.NEXT_PUBLIC_VERCEL_URL ?? 'your.nextstep.is'
