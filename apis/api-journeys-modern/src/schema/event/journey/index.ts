@@ -1,4 +1,5 @@
 import './journeyEvent'
 import './journeyViewEvent'
 import './journeyViewEventCreate.mutation'
+import './journeyEventsConnection.query'
 import './inputs'

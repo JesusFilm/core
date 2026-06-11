@@ -73,9 +73,10 @@ Each translation must be the plain translated text only — do NOT wrap in quote
 ${numberedValues}`
 
   const { output } = await withOpenrouterFallback(
-    (model) =>
+    (model, abortSignal) =>
       generateText({
         model,
+        abortSignal,
         messages: [
           { role: 'system', content: CUSTOMIZATION_SYSTEM_PROMPT },
           {
@@ -275,9 +276,10 @@ Description:
 ${hardenPrompt(description)}`
 
   const { output } = await withOpenrouterFallback(
-    (model) =>
+    (model, abortSignal) =>
       generateText({
         model,
+        abortSignal,
         messages: [
           { role: 'system', content: CUSTOMIZATION_SYSTEM_PROMPT },
           {

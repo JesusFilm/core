@@ -116,6 +116,43 @@ export const yoga = createYoga<
             // unpublish→republish cycles serve a stale 404. One indexed
             // slug lookup per request is trivial.
             'Query.templateGalleryPageBySlug': 0,
+            // Per-user / ACL-scoped reads overridden from api-journeys. These
+            // share two hazards under the default Infinity TTL on a global
+            // (session: () => null) cache:
+            //   1. Stale empty/null lists. When a read returns [] or null, the
+            //      cached entry carries no entity IDs, so mutation-based
+            //      invalidation can never match it — a subsequent create appears
+            //      to "disappear" until the cache is flushed (same class as
+            //      NES-1648 above; surfaced for userInvites: inviting an editor
+            //      did not show until a full refresh).
+            //   2. Cross-user contamination. The cache is keyed without a
+            //      session, so one user's ACL-filtered result could be served to
+            //      another. TTL 0 disables caching for these private reads
+            //      entirely, which is the only safe option here.
+            'Query.adminJourneysReport': 0,
+            'Query.block': 0,
+            'Query.blocks': 0,
+            'Query.hosts': 0,
+            'Query.integrations': 0,
+            'Query.journey': 0,
+            'Query.journeyCollection': 0,
+            'Query.journeyCollections': 0,
+            'Query.journeyEventsConnection': 0,
+            'Query.journeyTemplateLanguageIds': 0,
+            'Query.journeyTheme': 0,
+            'Query.journeyVisitorsConnection': 0,
+            'Query.journeys': 0,
+            'Query.journeysEmailPreference': 0,
+            'Query.qrCode': 0,
+            'Query.qrCodes': 0,
+            'Query.team': 0,
+            'Query.teams': 0,
+            'Query.userInvites': 0,
+            'Query.userTeam': 0,
+            'Query.userTeamInvites': 0,
+            'Query.userTeams': 0,
+            'Query.visitor': 0,
+            'Query.visitorsConnection': 0,
             'Query.journeysPlausibleStatsAggregate': 5000,
             'Query.journeysPlausibleStatsBreakdown': 5000,
             'Query.journeysPlausibleStatsRealtimeVisitors': 5000,

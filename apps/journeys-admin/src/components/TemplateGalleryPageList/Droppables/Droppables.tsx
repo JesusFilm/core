@@ -1,4 +1,4 @@
-import { useDroppable } from '@dnd-kit/core'
+import { Collision, useDroppable } from '@dnd-kit/core'
 import {
   SortableContext,
   rectSortingStrategy,
@@ -34,6 +34,62 @@ export function parseDropZoneId(raw: string): DropZoneId | null {
     return { kind: 'collection', id: raw.slice(COLLECTION_PREFIX.length) }
   }
   return null
+}
+
+/**
+ * The drop intent for a pointer position, decoded from the section under the
+ * cursor and the dragged card's origin:
+ *  - `reorder`  — the dragged card already belongs to the collection under the
+ *    cursor; the caller should target the nearest card *within that collection*
+ *    so the drop lands at a slot (works even when the cursor is in the gap
+ *    between cards, where `pointerWithin` only sees the container).
+ *  - `section`  — moving into a different section (or the unsectioned pool);
+ *    the whole section is the drop zone, so target its container.
+ *  - `passthrough` — the cursor isn't over any section container; the caller
+ *    keeps the raw collision result.
+ */
+export type SectionDropResolution =
+  | { kind: 'reorder'; collectionId: string }
+  | { kind: 'section'; collision: Collision }
+  | { kind: 'passthrough' }
+
+/**
+ * Decides, from the pointer collisions, how to target the gallery's nested
+ * droppables so a whole collection acts as one drop zone without breaking
+ * intra-collection reorder. Pure and dnd-kit-geometry-free so it's unit
+ * testable; the caller runs the real collision strategies and applies the
+ * decision (notably a collection-scoped `closestCenter` for `reorder`).
+ *
+ * Only pointer-derived collisions should be passed in. A drop in dead space
+ * (cursor outside every droppable) must NOT be promoted to a section — that
+ * would silently reassign membership on a missed drop — so the caller handles
+ * the empty case before calling this.
+ */
+export function resolveSectionDrop(
+  pointerCollisions: Collision[],
+  activeId: string,
+  templateIdToCollection: ReadonlyMap<string, { id: string }>
+): SectionDropResolution {
+  // The section container under the cursor (collection or unsectioned). Cards
+  // carry raw journey ids, which parse to null.
+  const sectionCollision = pointerCollisions.find(
+    (collision) => parseDropZoneId(String(collision.id)) != null
+  )
+  if (sectionCollision == null) return { kind: 'passthrough' }
+
+  const zone = parseDropZoneId(String(sectionCollision.id))
+  const sectionCollectionId = zone?.kind === 'collection' ? zone.id : null
+  const sourceCollectionId = templateIdToCollection.get(activeId)?.id ?? null
+
+  // Dragging a card around its own collection → reorder within it.
+  if (
+    sectionCollectionId != null &&
+    sectionCollectionId === sourceCollectionId
+  ) {
+    return { kind: 'reorder', collectionId: sectionCollectionId }
+  }
+
+  return { kind: 'section', collision: sectionCollision }
 }
 
 interface DroppableCollectionWrapperProps {

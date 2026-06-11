@@ -1,4 +1,5 @@
 export {
+  AiRequestTimeoutError,
   createOpenrouterFallbackSession,
   withOpenrouterFallback
 } from './openrouterModel'

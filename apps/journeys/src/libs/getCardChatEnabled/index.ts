@@ -1,0 +1,1 @@
+export { getCardChatEnabled } from './getCardChatEnabled'
