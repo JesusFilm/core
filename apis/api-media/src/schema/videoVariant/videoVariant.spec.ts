@@ -1938,7 +1938,8 @@ describe('videoVariant', () => {
           downloadable: false,
           createdAt: new Date(),
           readyToStream: true,
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          teamId: null
         })
 
         prismaMock.videoVariant.delete.mockResolvedValue({
@@ -2236,7 +2237,8 @@ describe('videoVariant', () => {
           downloadable: false,
           createdAt: new Date(),
           readyToStream: false,
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          teamId: null
         })
 
         prismaMock.videoVariant.delete.mockResolvedValue({

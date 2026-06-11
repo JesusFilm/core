@@ -309,9 +309,9 @@ enum MediaRole {
 }
 
 type Mutation {
-  createCloudflareUploadByFile(input: ImageInput): CloudflareImage!
-  createCloudflareUploadByUrl(url: String!, input: ImageInput): CloudflareImage!
-  createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
+  createCloudflareUploadByFile(input: ImageInput, journeyId: ID): CloudflareImage!
+  createCloudflareUploadByUrl(url: String!, input: ImageInput, journeyId: ID): CloudflareImage!
+  createCloudflareImageFromPrompt(prompt: String!, input: ImageInput, journeyId: ID): CloudflareImage!
   deleteCloudflareImage(id: ID!): Boolean!
   cloudflareUploadComplete(id: ID!): Boolean!
 
@@ -333,8 +333,8 @@ type Mutation {
   bibleCitationDelete(id: ID!): Boolean
   createKeyword(value: String!, languageId: String!): Keyword!
   createMuxVideoAndQueueUpload(videoId: ID!, edition: String!, languageId: ID!, version: Int!, r2PublicUrl: String!, originalFilename: String!, durationMs: Int!, duration: Int!, width: Int!, height: Int!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = fhd): MuxVideo!
-  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd, generateSubtitlesInput: GenerateSubtitlesInput): MuxVideo!
-  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
+  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd, generateSubtitlesInput: GenerateSubtitlesInput, journeyId: ID): MuxVideo!
+  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd, journeyId: ID): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
   playlistCreate(input: PlaylistCreateInput!): MutationPlaylistCreateResult
@@ -715,7 +715,7 @@ input PlaylistUpdateInput {
 }
 
 type Query {
-  getMyCloudflareImages(offset: Int, limit: Int, isAi: Boolean): [CloudflareImage!]!
+  getMyCloudflareImages(offset: Int, limit: Int, isAi: Boolean, teamId: ID): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
   videoImages(where: VideoImagesFilter, offset: Int, limit: Int): [CloudflareImage!]!
   videoImagesCount(where: VideoImagesFilter): Int!
@@ -726,7 +726,7 @@ type Query {
   bibleCitation(id: ID!): BibleCitation!
   keywords(where: KeywordsFilter, offset: Int, limit: Int): [Keyword!]!
   keywordsCount(where: KeywordsFilter): Int!
-  getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
+  getMyMuxVideos(offset: Int, limit: Int, teamId: ID): [MuxVideo!]!
   getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!
   getMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo
   getMyGeneratedMuxSubtitleTrack(muxVideoId: ID!, bcp47: String!, userGenerated: Boolean): QueryGetMyGeneratedMuxSubtitleTrackResult!
