@@ -230,7 +230,7 @@ export function PromptInput({
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         onPaste={handlePaste}
-        placeholder={t('Ask anything…')}
+        placeholder={t('Ask your questions about faith')}
         disabled={isLoading || disabled}
         inputProps={{
           'aria-label': t('Chat message input'),
