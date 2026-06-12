@@ -4,6 +4,10 @@ export const GET_VIDEO_CHILDREN_FOR_PUBLISH = graphql(`
   query GetVideoChildrenForPublish($id: ID!) {
     adminVideo(id: $id) {
       id
+      variants(input: { onlyPublished: false }) {
+        id
+        published
+      }
       children {
         id
         published
