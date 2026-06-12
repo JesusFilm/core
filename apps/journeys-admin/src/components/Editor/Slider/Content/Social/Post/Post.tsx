@@ -10,8 +10,8 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { useEditorLayout } from '../../../../EditorLayoutContext'
 import { Tooltip } from '../../../../../Tooltip'
+import { useEditorLayout } from '../../../../EditorLayoutContext'
 
 export function Post(): ReactElement {
   const { journey } = useJourney()

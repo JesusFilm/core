@@ -10,8 +10,8 @@ import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { useCustomDomainsQuery } from '../../../../../../libs/useCustomDomainsQuery'
-import { useEditorLayout } from '../../../../EditorLayoutContext'
 import { Tooltip } from '../../../../../Tooltip'
+import { useEditorLayout } from '../../../../EditorLayoutContext'
 
 interface MessageBubbleProps {
   height?: number
