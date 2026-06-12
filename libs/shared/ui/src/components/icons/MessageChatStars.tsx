@@ -3,14 +3,6 @@ import { createSvgIcon } from '@mui/material/utils'
 // Authored on a 100x100 grid; scaled to the 24x24 SvgIcon viewBox.
 export default createSvgIcon(
   <g transform="scale(0.24)">
-    <circle
-      cx="50"
-      cy="50"
-      r="46.3"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={3.4}
-    />
     <g transform="translate(5.6,18.2) scale(1.15)">
       <path
         d="M 52 31 V 33 A 11 11 0 0 1 41 44 H 28 L 18 52 L 24 44 H 23 A 11 11 0 0 1 12 33 V 29 A 11 11 0 0 1 23 18 H 37"
