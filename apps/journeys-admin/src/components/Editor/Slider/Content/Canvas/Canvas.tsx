@@ -84,7 +84,9 @@ export function Canvas(): ReactElement {
     handleResize()
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [])
+    // recalculate when the slide changes as the canvas container resizes
+    // without a window resize (e.g. the layered view drawer opening)
+  }, [activeSlide])
 
   function handleJourneyAppearanceClick(): void {
     dispatch({
