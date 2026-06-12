@@ -496,94 +496,94 @@ describe('videoPublishChildren', () => {
     })
   })
 
-    it('excludes variants on unpublished children that fail validation', async () => {
-      prismaMock.userMediaRole.findUnique.mockResolvedValue({
-        id: 'userId',
-        userId: 'userId',
-        roles: ['publisher'],
-        createdAt: new Date(),
-        updatedAt: new Date()
-      })
-      prismaMock.video.findUnique.mockResolvedValue({
+  it('excludes variants on unpublished children that fail validation', async () => {
+    prismaMock.userMediaRole.findUnique.mockResolvedValue({
+      id: 'userId',
+      userId: 'userId',
+      roles: ['publisher'],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    })
+    prismaMock.video.findUnique.mockResolvedValue({
+      id: 'parent',
+      label: 'series',
+      published: true,
+      publishedAt: new Date('2024-01-01T00:00:00.000Z'),
+      children: [
+        { id: 'valid-child', published: false },
+        { id: 'invalid-child', published: false },
+        { id: 'published-child', published: true }
+      ]
+    } as any)
+    prismaMock.video.findMany.mockResolvedValue([
+      {
         id: 'parent',
         label: 'series',
-        published: true,
-        publishedAt: new Date('2024-01-01T00:00:00.000Z'),
-        children: [
-          { id: 'valid-child', published: false },
-          { id: 'invalid-child', published: false },
-          { id: 'published-child', published: true }
-        ]
-      } as any)
-      prismaMock.video.findMany.mockResolvedValue([
-        {
-          id: 'parent',
-          label: 'series',
-          title: [{ value: 'Parent title' }],
-          snippet: [{ value: 'Parent snippet' }],
-          description: [{ value: 'Parent description' }],
-          imageAlt: [{ value: 'Parent image alt' }],
-          images: [{ id: 'parent-banner' }],
-          variants: []
-        },
-        {
-          id: 'valid-child',
-          label: 'featureFilm',
-          title: [{ value: 'Valid child title' }],
-          snippet: [{ value: 'Valid child snippet' }],
-          description: [{ value: 'Valid child description' }],
-          imageAlt: [{ value: 'Valid child image alt' }],
-          images: [{ id: 'valid-child-banner' }],
-          variants: [{ id: 'valid-child-draft-variant' }]
-        },
-        {
-          id: 'invalid-child',
-          label: 'featureFilm',
-          title: [{ value: 'Invalid child title' }],
-          snippet: [],
-          description: [{ value: 'Invalid child description' }],
-          imageAlt: [{ value: 'Invalid child image alt' }],
-          images: [{ id: 'invalid-child-banner' }],
-          variants: [{ id: 'invalid-child-draft-variant' }]
-        }
-      ] as any)
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-        { id: 'valid-child-draft-variant', videoId: 'valid-child' },
-        { id: 'published-child-draft-variant', videoId: 'published-child' }
-      ] as any)
+        title: [{ value: 'Parent title' }],
+        snippet: [{ value: 'Parent snippet' }],
+        description: [{ value: 'Parent description' }],
+        imageAlt: [{ value: 'Parent image alt' }],
+        images: [{ id: 'parent-banner' }],
+        variants: []
+      },
+      {
+        id: 'valid-child',
+        label: 'featureFilm',
+        title: [{ value: 'Valid child title' }],
+        snippet: [{ value: 'Valid child snippet' }],
+        description: [{ value: 'Valid child description' }],
+        imageAlt: [{ value: 'Valid child image alt' }],
+        images: [{ id: 'valid-child-banner' }],
+        variants: [{ id: 'valid-child-draft-variant' }]
+      },
+      {
+        id: 'invalid-child',
+        label: 'featureFilm',
+        title: [{ value: 'Invalid child title' }],
+        snippet: [],
+        description: [{ value: 'Invalid child description' }],
+        imageAlt: [{ value: 'Invalid child image alt' }],
+        images: [{ id: 'invalid-child-banner' }],
+        variants: [{ id: 'invalid-child-draft-variant' }]
+      }
+    ] as any)
+    prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+      { id: 'valid-child-draft-variant', videoId: 'valid-child' },
+      { id: 'published-child-draft-variant', videoId: 'published-child' }
+    ] as any)
 
-      const res = await authClient({
-        document: VIDEO_PUBLISH_CHILDREN,
-        variables: {
-          id: 'parent',
-          mode: 'childrenVideosAndVariants',
-          dryRun: true
-        }
-      })
-
-      expect(
-        (res as any).data.videoPublishChildren.videosFailedValidation
-      ).toEqual([
-        {
-          videoId: 'invalid-child',
-          missingFields: ['Short Description'],
-          message: 'invalid-child not published, missing: Short Description'
-        }
-      ])
-      expect(
-        (res as any).data.videoPublishChildren.publishedVideoIds
-      ).toEqual(['valid-child'])
-      expect(
-        (res as any).data.videoPublishChildren.publishedVariantIds.sort()
-      ).toEqual(['published-child-draft-variant', 'valid-child-draft-variant'])
-      expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
-        where: {
-          videoId: { in: ['parent', 'valid-child', 'published-child'] },
-          published: false
-        },
-        select: { id: true }
-      })
+    const res = await authClient({
+      document: VIDEO_PUBLISH_CHILDREN,
+      variables: {
+        id: 'parent',
+        mode: 'childrenVideosAndVariants',
+        dryRun: true
+      }
     })
+
+    expect(
+      (res as any).data.videoPublishChildren.videosFailedValidation
+    ).toEqual([
+      {
+        videoId: 'invalid-child',
+        missingFields: ['Short Description'],
+        message: 'invalid-child not published, missing: Short Description'
+      }
+    ])
+    expect((res as any).data.videoPublishChildren.publishedVideoIds).toEqual([
+      'valid-child'
+    ])
+    expect(
+      (res as any).data.videoPublishChildren.publishedVariantIds.sort()
+    ).toEqual(['published-child-draft-variant', 'valid-child-draft-variant'])
+    expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
+      where: {
+        videoId: { in: ['parent', 'valid-child', 'published-child'] },
+        published: false
+      },
+      select: { id: true }
+    })
+  })
 
   describe('variantsOnly mode', () => {
     it('publishes only unpublished variants of the given video without touching children', async () => {
