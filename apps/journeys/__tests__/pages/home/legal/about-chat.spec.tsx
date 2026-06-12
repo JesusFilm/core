@@ -96,6 +96,33 @@ describe('about-chat getServerSideProps', () => {
     )
   })
 
+  it('resolves dialect tags by prefix to their base-language folder (NES-1731)', async () => {
+    // Real Arabic journeys carry dialect codes — Gulf (ar-afb), Saidi
+    // (ar-aec), MSA Egyptian (ar-arb-EG) — and all must reach the Arabic
+    // translations, not fall back to English.
+    for (const dialect of ['ar-afb', 'ar-aec', 'ar-arb-EG']) {
+      mockServerSideTranslations.mockClear()
+      await getServerSideProps(makeContext({ query: { lang: dialect } }))
+
+      expect(mockServerSideTranslations).toHaveBeenCalledWith(
+        'ar-SA',
+        ['apps-journeys', 'libs-journeys-ui'],
+        expect.anything()
+      )
+    }
+
+    // The longer zh-Hant key must win over the bare zh prefix — Traditional
+    // must never resolve to the Simplified folder.
+    mockServerSideTranslations.mockClear()
+    await getServerSideProps(makeContext({ query: { lang: 'zh-Hant-TW' } }))
+
+    expect(mockServerSideTranslations).toHaveBeenCalledWith(
+      'zh-Hant-TW',
+      ['apps-journeys', 'libs-journeys-ui'],
+      expect.anything()
+    )
+  })
+
   it('passes valid-but-unmapped tags through for i18next fallback', async () => {
     await getServerSideProps(makeContext({ query: { lang: 'fa' } }))
 

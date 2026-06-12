@@ -156,16 +156,27 @@ const LANG_FOLDER_BY_LANGUAGE: Record<string, string> = {
   'zh-Hant': 'zh-Hant-TW'
 }
 
+// Real journey languages are mostly dialect tags — the languages API has 24
+// Arabic entries and only one is plain `ar`; the rest look like `ar-afb`
+// (Gulf), `ar-aec` (Saidi), `ar-arb-EG` (MSA Egyptian). Walk the tag from
+// most- to least-specific so every `ar-*` dialect resolves to the Arabic
+// translations (and `zh-Hant-TW` still hits `zh-Hant` before `zh`).
+function resolveLangFolder(canonical: string): string {
+  const subtags = canonical.split('-')
+  for (let length = subtags.length; length >= 1; length--) {
+    const folder = LANG_FOLDER_BY_LANGUAGE[subtags.slice(0, length).join('-')]
+    if (folder != null) return folder
+  }
+  return canonical
+}
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const langParam = context.query.lang
   const canonical =
     typeof langParam === 'string' && LANG_PARAM_PATTERN.test(langParam)
       ? canonicalizeLangParam(langParam)
       : undefined
-  const lang =
-    canonical != null
-      ? (LANG_FOLDER_BY_LANGUAGE[canonical] ?? canonical)
-      : undefined
+  const lang = canonical != null ? resolveLangFolder(canonical) : undefined
 
   return {
     props: {
