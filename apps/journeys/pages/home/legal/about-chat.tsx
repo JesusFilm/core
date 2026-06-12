@@ -128,34 +128,16 @@ function canonicalizeLangParam(value: string): string {
 // Journeys store short language codes (`ar`, `pt`) while the translation
 // folders in libs/locales are named with full region tags (`ar-SA`, `pt-BR`)
 // — resolve every short code to the folder that actually holds its files
-// (NES-1731). Tags not listed here pass through unchanged and either match a
-// folder directly (`ar-SA`) or fall back to English. The journeys i18n
-// config's own fallbackLng only covers 9 of these, so this map is the single
-// source of resolution for the `lang` param.
-const LANG_FOLDER_BY_LANGUAGE: Record<string, string> = {
-  am: 'am-ET',
-  ar: 'ar-SA',
-  bn: 'bn-BD',
-  de: 'de-DE',
-  es: 'es-ES',
-  fr: 'fr-FR',
-  hi: 'hi-IN',
-  id: 'id-ID',
-  ja: 'ja-JP',
-  ko: 'ko-KR',
-  ms: 'ms-MY',
-  my: 'my-MM',
-  ne: 'ne-NP',
-  pt: 'pt-BR',
-  ru: 'ru-RU',
-  th: 'th-TH',
-  tl: 'tl-PH',
-  tr: 'tr-TR',
-  ur: 'ur-PK',
-  vi: 'vi-VN',
-  zh: 'zh-Hans-CN',
-  'zh-Hant': 'zh-Hant-TW'
-}
+// (NES-1731). The i18n config's `fallbackLng` is the single source of that
+// mapping (one entry per libs/locales folder) — derive the lookup from it so
+// the two can't drift. `default` is i18next's catch-all, not a language tag.
+// Tags not in the map pass through unchanged and either match a folder
+// directly (`ar-SA`) or fall back to English.
+const LANG_FOLDER_BY_LANGUAGE: Record<string, string> = Object.fromEntries(
+  Object.entries(i18nConfig.fallbackLng as Record<string, string[]>)
+    .filter(([language]) => language !== 'default')
+    .map(([language, folders]) => [language, folders[0]] as const)
+)
 
 // Real journey languages are mostly dialect tags — the languages API has 24
 // Arabic entries and only one is plain `ar`; the rest look like `ar-afb`

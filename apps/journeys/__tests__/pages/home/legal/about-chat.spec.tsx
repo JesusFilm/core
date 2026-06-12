@@ -1,8 +1,12 @@
+import { readdirSync } from 'node:fs'
+import path from 'node:path'
+
 import { render, screen } from '@testing-library/react'
 import { GetServerSidePropsContext } from 'next'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { type Mock } from 'vitest'
 
+import i18nConfig from '../../../../next-i18next.config'
 import HostnameAboutChatPage, {
   getServerSideProps as hostnameGetServerSideProps
 } from '../../../../pages/[hostname]/legal/about-chat'
@@ -115,6 +119,44 @@ describe('about-chat getServerSideProps', () => {
       ['apps-journeys', 'libs-journeys-ui'],
       expect.anything()
     )
+  })
+
+  it('derives the folder lookup from the i18n config fallbackLng', async () => {
+    // The page's map is built from next-i18next.config.js (PR #9292 review) —
+    // every entry there must round-trip through ?lang to its folder.
+    const fallbackLng = i18nConfig.fallbackLng as Record<string, string[]>
+
+    for (const [language, [folder]] of Object.entries(fallbackLng)) {
+      if (language === 'default') continue
+      mockServerSideTranslations.mockClear()
+      await getServerSideProps(makeContext({ query: { lang: language } }))
+
+      expect(mockServerSideTranslations).toHaveBeenCalledWith(
+        folder,
+        ['apps-journeys', 'libs-journeys-ui'],
+        expect.anything()
+      )
+    }
+  })
+
+  it('maps every libs/locales translation folder in the config fallbackLng', () => {
+    // The sync the single-sourcing buys (PR #9292 review): a new locale
+    // folder without a fallbackLng entry would silently render English for
+    // that language's short code — fail here instead.
+    // cwd is apps/journeys whenever this suite runs at all (setupTests.ts
+    // resolves relative to it), so the locales root is two levels up.
+    const localesDir = path.resolve(process.cwd(), '../../libs/locales')
+    const folders = readdirSync(localesDir, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && entry.name !== 'en')
+      .map((entry) => entry.name)
+    const mappedFolders = Object.values(
+      i18nConfig.fallbackLng as Record<string, string[]>
+    ).map(([folder]) => folder)
+
+    expect(folders.length).toBeGreaterThan(0)
+    for (const folder of folders) {
+      expect(mappedFolders).toContain(folder)
+    }
   })
 
   it('passes valid-but-unmapped tags through for i18next fallback', async () => {
