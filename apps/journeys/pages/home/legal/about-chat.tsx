@@ -18,23 +18,24 @@ import logo from '../../../public/logo.svg'
 function AboutChatPage(): ReactElement {
   const { t, i18n } = useTranslation('apps-journeys')
   // Direction must follow the words actually rendered, not the requested
-  // language: a requested-but-untranslated RTL language (e.g. `fa`) falls
-  // back to English text and must therefore render LTR — never RTL-aligned
-  // English (NES-1731). Walk i18next's fallback chain to the first language
-  // whose translation bundle actually loaded.
-  const renderedLanguage =
-    i18n.languages?.find(
-      (language) =>
-        Object.keys(i18n.getResourceBundle(language, 'apps-journeys') ?? {})
-          .length > 0
-    ) ?? ''
-  const dir = getLocaleRTL(renderedLanguage) ? 'rtl' : 'ltr'
+  // language (NES-1731): an untranslated RTL language falls back to English
+  // text and must render LTR — never RTL-aligned English. Bundle-level
+  // checks aren't enough: a partially translated locale (e.g. ur-PK before
+  // its Crowdin round-trip) has a non-empty bundle while this page's strings
+  // still fall back to their English keys. The page title is the sentinel —
+  // keys ARE the English source strings, so t() returning the key verbatim
+  // means the page is rendering the English fallback.
+  const title = t('About this chat')
+  const dir =
+    title !== 'About this chat' && getLocaleRTL(i18n.language ?? '')
+      ? 'rtl'
+      : 'ltr'
 
   return (
     <>
       {/* `_app.tsx` sets titleTemplate '%s | Next Steps', so pass the bare
           page title here — the template appends the site name centrally. */}
-      <NextSeo title={t('About this chat')} nofollow noindex />
+      <NextSeo title={title} nofollow noindex />
       <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
         <Container maxWidth="sm" dir={dir} data-testid="AboutChatPage">
           <Stack spacing={5} py={{ xs: 5, sm: 7 }}>
@@ -52,7 +53,7 @@ function AboutChatPage(): ReactElement {
             <Stack spacing={4} component="article">
               <Stack spacing={2}>
                 <Typography variant="h4" component="h1">
-                  {t('About this chat')}
+                  {title}
                 </Typography>
                 <Typography variant="body1">
                   {t(

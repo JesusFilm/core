@@ -14,29 +14,23 @@ vi.mock('next-i18next/pages/serverSideTranslations', () => ({
   serverSideTranslations: vi.fn().mockResolvedValue({ _nextI18Next: {} })
 }))
 
-// Mutable i18n state lets the dir tests model which translation bundles
-// actually loaded (the component walks the fallback chain) without
-// re-mocking the module per test.
+// Mutable i18n state lets the dir tests model the resolved language and
+// which strings actually have translations (the component keys direction
+// off whether its own copy translated) without re-mocking per test.
 const i18nState = vi.hoisted(() => ({
-  languages: ['en'],
-  bundles: { en: { loaded: 'yes' } } as Record<
-    string,
-    Record<string, string> | undefined
-  >
+  language: 'en',
+  translations: {} as Record<string, string>
 }))
 
 function resetI18nState(): void {
-  i18nState.languages = ['en']
-  i18nState.bundles = { en: { loaded: 'yes' } }
+  i18nState.language = 'en'
+  i18nState.translations = {}
 }
 
 vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
-    t: (key: string) => key,
-    i18n: {
-      languages: i18nState.languages,
-      getResourceBundle: (language: string) => i18nState.bundles[language]
-    }
+    t: (key: string) => i18nState.translations[key] ?? key,
+    i18n: { language: i18nState.language }
   })
 }))
 
@@ -210,12 +204,9 @@ describe('AboutChatPage', () => {
     expect(screen.getByTestId('AboutChatPage')).toHaveAttribute('dir', 'ltr')
   })
 
-  it('renders right-to-left when an RTL translation bundle loaded', () => {
-    i18nState.languages = ['ar-SA', 'ar', 'en']
-    i18nState.bundles = {
-      'ar-SA': { loaded: 'yes' },
-      en: { loaded: 'yes' }
-    }
+  it('renders right-to-left when the page copy is translated into an RTL language', () => {
+    i18nState.language = 'ar-SA'
+    i18nState.translations = { 'About this chat': 'حول هذه المحادثة' }
 
     render(<AboutChatPage />)
 
@@ -223,14 +214,23 @@ describe('AboutChatPage', () => {
   })
 
   it('renders left-to-right when a requested RTL language has no translations (NES-1731)', () => {
-    // `fa` was requested but no Farsi bundle exists — the text falls back to
-    // English, so the layout must NOT be right-aligned. Empty bundles (i18next
-    // marks failed loads as {}) must be skipped, not counted as loaded.
-    i18nState.languages = ['fa', 'en']
-    i18nState.bundles = {
-      fa: {},
-      en: { loaded: 'yes' }
-    }
+    // `fa` was requested but no Farsi files exist — the text falls back to
+    // English, so the layout must NOT be right-aligned.
+    i18nState.language = 'fa'
+    i18nState.translations = {}
+
+    render(<AboutChatPage />)
+
+    expect(screen.getByTestId('AboutChatPage')).toHaveAttribute('dir', 'ltr')
+  })
+
+  it('renders left-to-right for a partially translated RTL locale (NES-1731)', () => {
+    // ur-PK has translation files with other strings in them, but this
+    // page's copy is still untranslated (pending Crowdin) — the rendered
+    // text is the English fallback, so direction must stay LTR even though
+    // the locale resolved and its files loaded.
+    i18nState.language = 'ur-PK'
+    i18nState.translations = { 'Some other string': 'کچھ اور' }
 
     render(<AboutChatPage />)
 
