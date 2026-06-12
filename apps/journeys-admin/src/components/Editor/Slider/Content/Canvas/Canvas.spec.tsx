@@ -23,8 +23,8 @@ import {
   TypographyVariant
 } from '../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../libs/TestEditorState'
-import { EditorLayoutProvider } from '../../../EditorLayoutContext'
 import { ThemeProvider } from '../../../../ThemeProvider'
+import { EditorLayoutProvider } from '../../../EditorLayoutContext'
 
 import { Canvas } from '.'
 

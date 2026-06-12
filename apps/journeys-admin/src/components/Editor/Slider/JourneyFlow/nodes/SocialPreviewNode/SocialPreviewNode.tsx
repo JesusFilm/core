@@ -18,9 +18,9 @@ import {
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { isIOSTouchScreen } from '@core/shared/ui/deviceUtils'
 
-import { useEditorLayout } from '../../../../EditorLayoutContext'
 import { Tooltip } from '../../../../../Tooltip'
 import { getReactflowTooltipOffset } from '../../../../../Tooltip/utils/getReactflowTooltipOffset'
+import { useEditorLayout } from '../../../../EditorLayoutContext'
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
 import { BaseNode, HandleVariant } from '../BaseNode'
 

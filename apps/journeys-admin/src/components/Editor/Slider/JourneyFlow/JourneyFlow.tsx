@@ -46,7 +46,6 @@ import type {
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
-
 import { useEditorLayout } from '../../EditorLayoutContext'
 
 import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'

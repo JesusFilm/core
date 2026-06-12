@@ -12,8 +12,8 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 
 import { TestEditorState } from '../../../../../libs/TestEditorState'
-import { EditorLayoutProvider } from '../../../EditorLayoutContext'
 import { ThemeProvider } from '../../../../ThemeProvider'
+import { EditorLayoutProvider } from '../../../EditorLayoutContext'
 
 import { SocialPreview } from '.'
 
