@@ -10,6 +10,7 @@ import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { useCustomDomainsQuery } from '../../../../../../libs/useCustomDomainsQuery'
+import { useEditorLayout } from '../../../../EditorLayoutContext'
 import { Tooltip } from '../../../../../Tooltip'
 
 interface MessageBubbleProps {
@@ -85,11 +86,14 @@ export function Message(): ReactElement {
     skip: journey?.team?.id == null
   })
   const { t } = useTranslation('apps-journeys-admin')
+  const { isLayered } = useEditorLayout()
   return (
     <Box maxWidth={256} data-testid="SocialPreviewMessage">
       <Stack direction="column" justifyContent="start">
         <Typography
           variant="caption"
+          // the layered desktop view floats over a dark backdrop
+          color={isLayered ? 'white' : undefined}
           pb={4}
           textAlign="center"
           sx={{ fontSize: 16 }}

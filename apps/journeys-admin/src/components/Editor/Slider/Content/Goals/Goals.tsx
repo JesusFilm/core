@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -9,6 +10,8 @@ import {
 } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
+import { useEditorLayout } from '../../../EditorLayoutContext'
 
 import { GoalsBanner } from './GoalsBanner'
 import { GoalsList } from './GoalsList'
@@ -23,6 +26,7 @@ export function Goals(): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { journey } = useJourney()
   const { dispatch } = useEditor()
+  const { isLayered } = useEditorLayout()
 
   const goals = useMemo((): Goal[] => {
     const blocks = (journey?.blocks ?? []) as unknown as Array<{
@@ -52,22 +56,56 @@ export function Goals(): ReactElement {
     return goals
   }, [journey?.blocks, dispatch, smUp])
 
+  const hasGoals = goals != null && goals.length > 0
+
+  // in the layered desktop view the goals float over the journey map, so
+  // they need their own paper panel instead of the slide's plain background
+  if (isLayered) {
+    if (journey == null) return <></>
+    return hasGoals ? (
+      <Stack
+        width="670px"
+        direction="column"
+        data-testid="Goals"
+        sx={{
+          height: '100%',
+          mr: 5,
+          backgroundColor: 'background.paper',
+          borderRadius: 3,
+          overflow: 'hidden'
+        }}
+      >
+        <Stack direction="column" sx={{ height: '100%', py: 6 }}>
+          <GoalsList goals={goals} />
+        </Stack>
+      </Stack>
+    ) : (
+      <Box
+        width="670px"
+        data-testid="Goals"
+        sx={{
+          mr: 5,
+          backgroundColor: 'background.paper',
+          borderRadius: 3,
+          alignSelf: 'center',
+          py: 10
+        }}
+      >
+        <GoalsBanner />
+      </Box>
+    )
+  }
+
   return (
     <Stack
       gap={2}
-      justifyContent={
-        goals != null && goals.length > 0 ? 'flex-start' : 'center'
-      }
+      justifyContent={hasGoals ? 'flex-start' : 'center'}
       py={6}
       flexGrow={1}
       data-testid="Goals"
     >
       {journey != null &&
-        (goals != null && goals.length > 0 ? (
-          <GoalsList goals={goals} />
-        ) : (
-          <GoalsBanner />
-        ))}
+        (hasGoals ? <GoalsList goals={goals} /> : <GoalsBanner />)}
     </Stack>
   )
 }
