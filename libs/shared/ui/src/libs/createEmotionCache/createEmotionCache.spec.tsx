@@ -40,10 +40,12 @@ describe('createEmotionCache', () => {
 
   it('keeps the workspace stylis pinned to the version @emotion/cache bundles', () => {
     const requireModule = createRequire(import.meta.url)
-    const workspaceStylisVersion: string =
-      requireModule('stylis/package.json').version
-    const emotionBundledStylisVersion: string =
-      requireModule('@emotion/cache/package.json').dependencies.stylis
+    const workspaceStylisVersion: string = requireModule(
+      'stylis/package.json'
+    ).version
+    const emotionBundledStylisVersion: string = requireModule(
+      '@emotion/cache/package.json'
+    ).dependencies.stylis
 
     expect(
       workspaceStylisVersion,
