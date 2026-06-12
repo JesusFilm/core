@@ -26,7 +26,7 @@ const InputWithPseudoRules = styled('input')({
 })
 
 function getInsertedCss(): string {
-  return Array.from(document.head.querySelectorAll('style'))
+  return Array.from(document.head.querySelectorAll('style[data-emotion]'))
     .map((style) => style.textContent)
     .join('\n')
 }
