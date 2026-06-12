@@ -245,7 +245,9 @@ describe('AiChat', () => {
 
       render(<AiChat variant="overlay" collapsible={false} />)
 
-      expect(screen.getByTestId('overlay-hero')).toBeInTheDocument()
+      const hero = screen.getByTestId('overlay-hero')
+      expect(hero).toBeInTheDocument()
+      expect(hero).toHaveTextContent('Ask your questions about faith')
     })
 
     it('hides while a request is in flight (submitted)', () => {
