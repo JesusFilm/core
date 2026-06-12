@@ -1,3 +1,5 @@
+import { createRequire } from 'node:module'
+
 import { CacheProvider } from '@emotion/react'
 import styled from '@emotion/styled'
 import { render } from '@testing-library/react'
@@ -34,6 +36,22 @@ describe('createEmotionCache', () => {
     document.head
       .querySelectorAll('style[data-emotion]')
       .forEach((style) => style.remove())
+  })
+
+  it('keeps the workspace stylis pinned to the version @emotion/cache bundles', () => {
+    const requireModule = createRequire(import.meta.url)
+    const workspaceStylisVersion: string =
+      requireModule('stylis/package.json').version
+    const emotionBundledStylisVersion: string =
+      requireModule('@emotion/cache/package.json').dependencies.stylis
+
+    expect(
+      workspaceStylisVersion,
+      'The workspace stylis (root package.json) must exactly match the ' +
+        'version @emotion/cache depends on. Mixing versions crashes every ' +
+        'RTL-language journey (NES-1728). If an @emotion upgrade changed ' +
+        'its bundled stylis, re-align the root package.json pin.'
+    ).toBe(emotionBundledStylisVersion)
   })
 
   it('compiles ::placeholder and :read-only rules in RTL mode without crashing', () => {
