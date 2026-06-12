@@ -76,12 +76,14 @@ describe('LayeredView', () => {
     )
   }
 
-  it('renders journey flow with drawer hidden on journey flow slide', () => {
+  it('renders journey flow with drawer closed on journey flow slide', () => {
     renderLayeredView(state)
 
     expect(screen.getByTestId('LayeredView')).toBeInTheDocument()
     expect(screen.getByTestId('JourneyFlow')).toBeInTheDocument()
-    expect(screen.getByTestId('LayeredViewDrawer')).not.toBeVisible()
+    expect(
+      screen.queryByTestId('LayeredViewDrawerContent')
+    ).not.toBeInTheDocument()
   })
 
   it('opens drawer with content and settings on content slide', () => {

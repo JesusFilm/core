@@ -7,6 +7,7 @@ import { SnackbarProvider } from 'notistack'
 import { type Mock, type MockedFunction } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider'
 
 import type { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import type { GetStepBlocksWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
@@ -162,14 +163,17 @@ describe('Editor', () => {
     expect(screen.queryByTestId('Slider')).not.toBeInTheDocument()
   })
 
-  it('should render the Fab', async () => {
+  it('should render the Fab when the drawer is open', async () => {
     ;(useMediaQuery as Mock).mockImplementation(() => true)
 
     render(
       <MockedProvider>
         <SnackbarProvider>
           <ThemeProvider>
-            <Editor journey={journey} />
+            <Editor
+              journey={journey}
+              initialState={{ activeSlide: ActiveSlide.Content }}
+            />
           </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>

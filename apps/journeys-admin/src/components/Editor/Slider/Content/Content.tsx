@@ -4,6 +4,8 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 
+import { useEditorLayout } from '../../EditorLayoutContext'
+
 import { Canvas } from './Canvas'
 import { Goals } from './Goals'
 import { SocialPreview } from './Social'
@@ -12,6 +14,7 @@ export function Content(): ReactElement {
   const {
     state: { activeContent }
   } = useEditor()
+  const { isLayered } = useEditorLayout()
   let content: ReactElement
   const nodeRef = useRef(null)
   switch (activeContent) {
@@ -24,6 +27,27 @@ export function Content(): ReactElement {
     default:
       content = <Canvas />
       break
+  }
+
+  // in the layered desktop view the content sits in the drawer's row layout,
+  // so it must contribute intrinsic width (the slider's absolutely-positioned
+  // transition wrapper would collapse to zero width here)
+  if (isLayered) {
+    return (
+      <Box sx={{ width: '100%', height: '100%', position: 'relative' }}>
+        <Box
+          data-testid="Content"
+          sx={{
+            userSelect: 'none',
+            display: 'flex',
+            justifyContent: 'space-between',
+            height: '100%'
+          }}
+        >
+          {content}
+        </Box>
+      </Box>
+    )
   }
 
   return (

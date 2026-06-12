@@ -10,6 +10,7 @@ import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields as StepBlock } from '../../../../../../../__generated__/BlockFields'
+import { useEditorLayout } from '../../../../EditorLayoutContext'
 import { DrawerTitle } from '../../Drawer'
 import { CardTemplates } from '../../Drawer/CardTemplates/CardTemplates'
 
@@ -120,6 +121,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
   const selectedStep = step ?? state.selectedStep
 
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
+  const { isLayered } = useEditorLayout()
 
   let component: ReactNode | undefined
   let title: string | undefined
@@ -215,8 +217,11 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       sx={{
         height: '100%',
         borderRadius: 3,
-        borderBottomLeftRadius: 0,
-        borderBottomRightRadius: 0,
+        // the layered view's settings panel floats, so keep all corners
+        // rounded; the slider's panel is anchored to the bottom edge
+        ...(isLayered
+          ? {}
+          : { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }),
         overflow: 'hidden'
       }}
       border={1}

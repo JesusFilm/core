@@ -44,7 +44,6 @@ export function LayeredView(): ReactElement {
         anchor="right"
         open={drawerOpen}
         onClose={handleDrawerClose}
-        ModalProps={{ keepMounted: true }}
         data-testid="LayeredViewDrawer"
         sx={{
           '& .MuiDrawer-paper': {
@@ -53,7 +52,8 @@ export function LayeredView(): ReactElement {
             top: '50%',
             transform: 'translateY(-50%) !important',
             backgroundColor: 'transparent',
-            boxShadow: 'none'
+            boxShadow: 'none',
+            overflow: 'hidden'
           }
         }}
       >
