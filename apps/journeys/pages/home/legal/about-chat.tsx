@@ -17,11 +17,18 @@ import logo from '../../../public/logo.svg'
 
 function AboutChatPage(): ReactElement {
   const { t, i18n } = useTranslation('apps-journeys')
-  // Flip layout direction for RTL languages (ar, ur, fa, …) so translated
-  // copy reads correctly. `i18n.language` is the locale resolved by
-  // getServerSideProps below; it can be undefined when the component renders
-  // outside appWithTranslation (tests), so default to LTR.
-  const dir = getLocaleRTL(i18n.language ?? '') ? 'rtl' : 'ltr'
+  // Direction must follow the words actually rendered, not the requested
+  // language: a requested-but-untranslated RTL language (e.g. `fa`) falls
+  // back to English text and must therefore render LTR — never RTL-aligned
+  // English (NES-1731). Walk i18next's fallback chain to the first language
+  // whose translation bundle actually loaded.
+  const renderedLanguage =
+    i18n.languages?.find(
+      (language) =>
+        Object.keys(i18n.getResourceBundle(language, 'apps-journeys') ?? {})
+          .length > 0
+    ) ?? ''
+  const dir = getLocaleRTL(renderedLanguage) ? 'rtl' : 'ltr'
 
   return (
     <>
@@ -101,11 +108,63 @@ function AboutChatPage(): ReactElement {
 // loader, so only accept values shaped like a BCP-47 tag.
 const LANG_PARAM_PATTERN = /^[a-z]{2,3}(-[a-z0-9]{2,8}){0,4}$/i
 
+// Language tags are case-insensitive by spec, but the folder lookup below is
+// case-exact — canonicalize before resolving: 'ES' → 'es', 'AR-sa' → 'ar-SA',
+// 'zh-hans-cn' → 'zh-Hans-CN' (NES-1729).
+function canonicalizeLangParam(value: string): string {
+  const [language, ...subtags] = value.split('-')
+  return [
+    language.toLowerCase(),
+    ...subtags.map((subtag) => {
+      if (subtag.length === 2) return subtag.toUpperCase()
+      if (subtag.length === 4)
+        return subtag[0].toUpperCase() + subtag.slice(1).toLowerCase()
+      return subtag.toLowerCase()
+    })
+  ].join('-')
+}
+
+// Journeys store short language codes (`ar`, `pt`) while the translation
+// folders in libs/locales are named with full region tags (`ar-SA`, `pt-BR`)
+// — resolve every short code to the folder that actually holds its files
+// (NES-1731). Tags not listed here pass through unchanged and either match a
+// folder directly (`ar-SA`) or fall back to English. The journeys i18n
+// config's own fallbackLng only covers 9 of these, so this map is the single
+// source of resolution for the `lang` param.
+const LANG_FOLDER_BY_LANGUAGE: Record<string, string> = {
+  am: 'am-ET',
+  ar: 'ar-SA',
+  bn: 'bn-BD',
+  de: 'de-DE',
+  es: 'es-ES',
+  fr: 'fr-FR',
+  hi: 'hi-IN',
+  id: 'id-ID',
+  ja: 'ja-JP',
+  ko: 'ko-KR',
+  ms: 'ms-MY',
+  my: 'my-MM',
+  ne: 'ne-NP',
+  pt: 'pt-BR',
+  ru: 'ru-RU',
+  th: 'th-TH',
+  tl: 'tl-PH',
+  tr: 'tr-TR',
+  ur: 'ur-PK',
+  vi: 'vi-VN',
+  zh: 'zh-Hans-CN',
+  'zh-Hant': 'zh-Hant-TW'
+}
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const langParam = context.query.lang
-  const lang =
+  const canonical =
     typeof langParam === 'string' && LANG_PARAM_PATTERN.test(langParam)
-      ? langParam
+      ? canonicalizeLangParam(langParam)
+      : undefined
+  const lang =
+    canonical != null
+      ? (LANG_FOLDER_BY_LANGUAGE[canonical] ?? canonical)
       : undefined
 
   return {

@@ -14,14 +14,29 @@ vi.mock('next-i18next/pages/serverSideTranslations', () => ({
   serverSideTranslations: vi.fn().mockResolvedValue({ _nextI18Next: {} })
 }))
 
-// Mutable i18n state lets the dir tests flip the resolved language without
+// Mutable i18n state lets the dir tests model which translation bundles
+// actually loaded (the component walks the fallback chain) without
 // re-mocking the module per test.
-const i18nState = vi.hoisted(() => ({ language: 'en' }))
+const i18nState = vi.hoisted(() => ({
+  languages: ['en'],
+  bundles: { en: { loaded: 'yes' } } as Record<
+    string,
+    Record<string, string> | undefined
+  >
+}))
+
+function resetI18nState(): void {
+  i18nState.languages = ['en']
+  i18nState.bundles = { en: { loaded: 'yes' } }
+}
 
 vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
-    i18n: { language: i18nState.language }
+    i18n: {
+      languages: i18nState.languages,
+      getResourceBundle: (language: string) => i18nState.bundles[language]
+    }
   })
 }))
 
@@ -40,14 +55,52 @@ function makeContext(
 describe('about-chat getServerSideProps', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    i18nState.language = 'en'
+    resetI18nState()
   })
 
-  it('translates by ?lang when it is shaped like a BCP-47 tag', async () => {
+  it('resolves short language codes to their translation folder (NES-1731)', async () => {
     await getServerSideProps(makeContext({ query: { lang: 'es' } }))
 
     expect(mockServerSideTranslations).toHaveBeenCalledWith(
-      'es',
+      'es-ES',
+      ['apps-journeys', 'libs-journeys-ui'],
+      expect.anything()
+    )
+
+    mockServerSideTranslations.mockClear()
+    await getServerSideProps(makeContext({ query: { lang: 'ar' } }))
+
+    expect(mockServerSideTranslations).toHaveBeenCalledWith(
+      'ar-SA',
+      ['apps-journeys', 'libs-journeys-ui'],
+      expect.anything()
+    )
+  })
+
+  it('canonicalizes letter case before resolving (NES-1729)', async () => {
+    await getServerSideProps(makeContext({ query: { lang: 'ES' } }))
+
+    expect(mockServerSideTranslations).toHaveBeenCalledWith(
+      'es-ES',
+      ['apps-journeys', 'libs-journeys-ui'],
+      expect.anything()
+    )
+
+    mockServerSideTranslations.mockClear()
+    await getServerSideProps(makeContext({ query: { lang: 'AR-sa' } }))
+
+    expect(mockServerSideTranslations).toHaveBeenCalledWith(
+      'ar-SA',
+      ['apps-journeys', 'libs-journeys-ui'],
+      expect.anything()
+    )
+  })
+
+  it('passes valid-but-unmapped tags through for i18next fallback', async () => {
+    await getServerSideProps(makeContext({ query: { lang: 'fa' } }))
+
+    expect(mockServerSideTranslations).toHaveBeenCalledWith(
+      'fa',
       ['apps-journeys', 'libs-journeys-ui'],
       expect.anything()
     )
@@ -118,7 +171,7 @@ describe('about-chat getServerSideProps', () => {
 
 describe('AboutChatPage', () => {
   beforeEach(() => {
-    i18nState.language = 'en'
+    resetI18nState()
   })
 
   it('renders the notice content left-to-right by default', () => {
@@ -130,11 +183,30 @@ describe('AboutChatPage', () => {
     expect(screen.getByTestId('AboutChatPage')).toHaveAttribute('dir', 'ltr')
   })
 
-  it('renders right-to-left for RTL languages', () => {
-    i18nState.language = 'ar'
+  it('renders right-to-left when an RTL translation bundle loaded', () => {
+    i18nState.languages = ['ar-SA', 'ar', 'en']
+    i18nState.bundles = {
+      'ar-SA': { loaded: 'yes' },
+      en: { loaded: 'yes' }
+    }
 
     render(<AboutChatPage />)
 
     expect(screen.getByTestId('AboutChatPage')).toHaveAttribute('dir', 'rtl')
+  })
+
+  it('renders left-to-right when a requested RTL language has no translations (NES-1731)', () => {
+    // `fa` was requested but no Farsi bundle exists — the text falls back to
+    // English, so the layout must NOT be right-aligned. Empty bundles (i18next
+    // marks failed loads as {}) must be skipped, not counted as loaded.
+    i18nState.languages = ['fa', 'en']
+    i18nState.bundles = {
+      fa: {},
+      en: { loaded: 'yes' }
+    }
+
+    render(<AboutChatPage />)
+
+    expect(screen.getByTestId('AboutChatPage')).toHaveAttribute('dir', 'ltr')
   })
 })
