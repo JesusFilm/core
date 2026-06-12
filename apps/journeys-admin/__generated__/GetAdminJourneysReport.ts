@@ -11,13 +11,7 @@ import { JourneysReportType } from "./globalTypes";
 
 export interface GetAdminJourneysReport_adminJourneysReport {
   __typename: "PowerBiEmbed";
-  /**
-   * The embed URL of the report
-   */
   embedUrl: string;
-  /**
-   * The embed token
-   */
   accessToken: string;
 }
 

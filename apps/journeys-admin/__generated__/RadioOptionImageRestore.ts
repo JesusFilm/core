@@ -46,9 +46,6 @@ export interface RadioOptionImageRestore_radioOptionBlockUpdate {
 }
 
 export interface RadioOptionImageRestore {
-  /**
-   * blockRestore is used for redo/undo
-   */
   blockRestore: RadioOptionImageRestore_blockRestore[];
   radioOptionBlockUpdate: RadioOptionImageRestore_radioOptionBlockUpdate;
 }
