@@ -432,7 +432,7 @@ export function AiChat({
   // greeting wave-lifts as one unit — still on-tone.
   const heroWords = useMemo(
     () =>
-      t('Ask me anything')
+      t('Ask your questions about faith')
         .split(/\s+/)
         .filter((w) => w.length > 0),
     [t]
