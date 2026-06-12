@@ -1,4 +1,4 @@
-import { readdirSync } from 'node:fs'
+import { existsSync, readdirSync } from 'node:fs'
 import path from 'node:path'
 
 import { render, screen } from '@testing-library/react'
@@ -143,9 +143,16 @@ describe('about-chat getServerSideProps', () => {
     // The sync the single-sourcing buys (PR #9292 review): a new locale
     // folder without a fallbackLng entry would silently render English for
     // that language's short code — fail here instead.
-    // cwd is apps/journeys whenever this suite runs at all (setupTests.ts
-    // resolves relative to it), so the locales root is two levels up.
-    const localesDir = path.resolve(process.cwd(), '../../libs/locales')
+    // The runner's cwd varies (apps/journeys locally, the repo root in CI)
+    // — walk up from it to wherever libs/locales actually lives.
+    let repoDir = process.cwd()
+    while (!existsSync(path.join(repoDir, 'libs/locales'))) {
+      const parent = path.dirname(repoDir)
+      if (parent === repoDir)
+        throw new Error('libs/locales not found above cwd')
+      repoDir = parent
+    }
+    const localesDir = path.join(repoDir, 'libs/locales')
     const folders = readdirSync(localesDir, { withFileTypes: true })
       .filter((entry) => entry.isDirectory() && entry.name !== 'en')
       .map((entry) => entry.name)
