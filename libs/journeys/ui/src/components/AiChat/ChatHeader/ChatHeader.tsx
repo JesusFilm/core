@@ -135,7 +135,7 @@ export function ChatHeader({
             letterSpacing: 0
           }}
         >
-          {t('Ask a question')}
+          {t('Ask your questions about faith')}
         </Typography>
         <Typography
           variant="caption"
