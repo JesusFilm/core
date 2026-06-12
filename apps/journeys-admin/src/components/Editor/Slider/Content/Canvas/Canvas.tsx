@@ -22,6 +22,7 @@ import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
+import { useEditorLayout } from '../../../EditorLayoutContext'
 import { Hotkeys } from '../../../Hotkeys'
 
 import { CanvasFooter } from './CanvasFooter'
@@ -68,9 +69,11 @@ export function Canvas(): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const router = useRouter()
+  const { isLayered } = useEditorLayout()
 
   const showSlugEdit =
-    journey?.website === true && activeSlide === ActiveSlide.Content
+    journey?.website === true &&
+    (isLayered || activeSlide === ActiveSlide.Content)
 
   const initialScale =
     typeof window !== 'undefined' && window.innerWidth <= 600 ? 0 : 1
@@ -90,7 +93,7 @@ export function Canvas(): ReactElement {
     })
     dispatch({
       type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.Content
+      activeSlide: isLayered ? ActiveSlide.Drawer : ActiveSlide.Content
     })
     dispatch({
       type: 'SetSelectedAttributeIdAction',
@@ -133,6 +136,14 @@ export function Canvas(): ReactElement {
       type: 'SetSelectedBlockAction',
       selectedBlock: selectedStep
     })
+    if (isLayered) {
+      // in the layered desktop view, selecting the card reveals the settings
+      // panel rather than navigating to the content slide
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: ActiveSlide.Drawer
+      })
+    }
     dispatch({
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
@@ -177,7 +188,10 @@ export function Canvas(): ReactElement {
         alignItems: 'center',
         alignSelf: 'center',
         justifyContent: 'center',
-        flexGrow: { xs: 1, md: activeSlide === ActiveSlide.Content ? 1 : 0 },
+        flexGrow: {
+          xs: 1,
+          md: isLayered || activeSlide === ActiveSlide.Content ? 1 : 0
+        },
         transition: (theme) =>
           theme.transitions.create('flex-grow', { duration: 300 })
       }}
@@ -208,7 +222,10 @@ export function Canvas(): ReactElement {
               transform: `scale(${scale})`,
               transformOrigin: {
                 xs: 'center',
-                md: activeSlide === ActiveSlide.JourneyFlow ? 'right' : 'center'
+                md:
+                  !isLayered && activeSlide === ActiveSlide.JourneyFlow
+                    ? 'right'
+                    : 'center'
               },
               my: `${calculateScaledMargin(CARD_HEIGHT, scale)}`,
               mx: `${calculateScaledMargin(CARD_WIDTH, scale)}`,

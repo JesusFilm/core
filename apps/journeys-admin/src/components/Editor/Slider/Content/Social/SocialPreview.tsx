@@ -9,6 +9,8 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
+import { useEditorLayout } from '../../../EditorLayoutContext'
+
 import { Message } from './Message/Message'
 import { Post } from './Post/Post'
 
@@ -18,11 +20,14 @@ export function SocialPreview(): ReactElement {
     state: { activeSlide },
     dispatch
   } = useEditor()
+  const { isLayered } = useEditorLayout()
+
+  const contentActive = isLayered || activeSlide === ActiveSlide.Content
 
   function handleSelect(): void {
     dispatch({
       type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.Content
+      activeSlide: isLayered ? ActiveSlide.Drawer : ActiveSlide.Content
     })
   }
 
@@ -31,7 +36,7 @@ export function SocialPreview(): ReactElement {
       {mdUp ? (
         <Stack
           height={736}
-          width={activeSlide === ActiveSlide.JourneyFlow ? 387 : '100%'}
+          width={contentActive ? '100%' : 387}
           data-testid="OuterStack"
           justifyContent="space-between"
           alignSelf="center"
@@ -48,11 +53,8 @@ export function SocialPreview(): ReactElement {
               flexGrow={1}
               alignItems="center"
               sx={{
-                cursor:
-                  activeSlide === ActiveSlide.JourneyFlow
-                    ? 'pointer'
-                    : undefined,
-                flexGrow: activeSlide === ActiveSlide.Content ? 1 : 0,
+                cursor: contentActive ? undefined : 'pointer',
+                flexGrow: contentActive ? 1 : 0,
                 minWidth: 387,
                 transition: (theme) =>
                   theme.transitions.create('flex-grow', { duration: 300 })
@@ -66,7 +68,7 @@ export function SocialPreview(): ReactElement {
               alignItems="center"
               sx={{
                 flexGrow: 1,
-                opacity: activeSlide === ActiveSlide.Content ? 1 : 0,
+                opacity: contentActive ? 1 : 0,
                 transition: (theme) =>
                   theme.transitions.create(['flex-grow', 'opacity'], {
                     duration: 300

@@ -1,3 +1,5 @@
+import type { Theme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 
@@ -11,9 +13,11 @@ import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney
 import { User } from '../../libs/auth'
 import { MuxVideoUploadProvider } from '../MuxVideoUploadProvider'
 
+import { EditorLayoutProvider } from './EditorLayoutContext'
 import { Fab } from './Fab'
 import { FontLoader } from './FontLoader/FontLoader'
 import { Hotkeys } from './Hotkeys'
+import { LayeredView } from './LayeredView'
 import { Slider } from './Slider'
 import { Toolbar } from './Toolbar'
 
@@ -35,6 +39,7 @@ export function Editor({
   initialState,
   user
 }: EditorProps): ReactElement {
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
@@ -55,17 +60,19 @@ export function Editor({
       >
         <MuxVideoUploadProvider>
           <HotkeysProvider>
-            <FontLoader
-              fonts={[
-                journey?.journeyTheme?.headerFont ?? '',
-                journey?.journeyTheme?.bodyFont ?? '',
-                journey?.journeyTheme?.labelFont ?? ''
-              ]}
-            />
-            <Hotkeys />
-            <Toolbar user={user} />
-            <Slider />
-            <Fab variant="mobile" />
+            <EditorLayoutProvider value={mdUp ? 'layered' : 'slider'}>
+              <FontLoader
+                fonts={[
+                  journey?.journeyTheme?.headerFont ?? '',
+                  journey?.journeyTheme?.bodyFont ?? '',
+                  journey?.journeyTheme?.labelFont ?? ''
+                ]}
+              />
+              <Hotkeys />
+              <Toolbar user={user} />
+              {mdUp ? <LayeredView /> : <Slider />}
+              <Fab variant="mobile" />
+            </EditorLayoutProvider>
           </HotkeysProvider>
         </MuxVideoUploadProvider>
       </EditorProvider>

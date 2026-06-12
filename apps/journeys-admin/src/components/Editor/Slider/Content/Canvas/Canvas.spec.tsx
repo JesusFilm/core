@@ -23,6 +23,7 @@ import {
   TypographyVariant
 } from '../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../libs/TestEditorState'
+import { EditorLayoutProvider } from '../../../EditorLayoutContext'
 import { ThemeProvider } from '../../../../ThemeProvider'
 
 import { Canvas } from '.'
@@ -142,6 +143,43 @@ describe('Canvas', () => {
     expect(
       getByText('selectedAttributeId: step0.id-next-block')
     ).toBeInTheDocument()
+  })
+
+  it('should open the settings drawer on card click in the layered layout', () => {
+    const { getByTestId, getByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journeyId',
+                  themeMode: ThemeMode.dark,
+                  themeName: ThemeName.base,
+                  language: {
+                    __typename: 'Language',
+                    id: '529',
+                    bcp47: 'en',
+                    iso3: 'eng'
+                  }
+                } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <EditorProvider initialState={initialState}>
+                <EditorLayoutProvider value="layered">
+                  <TestEditorState />
+                  <Canvas />
+                </EditorLayoutProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByTestId('CanvasContainer'))
+    expect(getByText('selectedBlock: step0.id')).toBeInTheDocument()
+    expect(getByText('activeSlide: 2')).toBeInTheDocument()
   })
 
   it('should not select step if mouse down target element is not the card', async () => {

@@ -47,6 +47,8 @@ import type {
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
+import { useEditorLayout } from '../../EditorLayoutContext'
+
 import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
 import { Controls } from './Controls'
 import { CustomEdge } from './edges/CustomEdge'
@@ -109,6 +111,7 @@ export function JourneyFlow(): ReactElement {
     state: { steps, activeSlide, showAnalytics, analytics },
     dispatch
   } = useEditor()
+  const { isLayered } = useEditorLayout()
   const { journey } = useJourney()
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
@@ -645,7 +648,7 @@ export function JourneyFlow(): ReactElement {
         }}
         elevateEdgesOnSelect
       >
-        {activeSlide === ActiveSlide.JourneyFlow && (
+        {(isLayered || activeSlide === ActiveSlide.JourneyFlow) && (
           <>
             <Panel position="top-right">
               {showAnalytics !== true && (

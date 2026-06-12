@@ -23,7 +23,9 @@ import { RadioQuestionFields } from '../../../../../../../__generated__/RadioQue
 import { SignUpFields } from '../../../../../../../__generated__/SignUpFields'
 import { StepFields } from '../../../../../../../__generated__/StepFields'
 import { TypographyFields } from '../../../../../../../__generated__/TypographyFields'
+import { TestEditorState } from '../../../../../../libs/TestEditorState'
 import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
+import { EditorLayoutProvider } from '../../../../EditorLayoutContext'
 
 import { SelectableWrapper } from '.'
 
@@ -258,6 +260,35 @@ describe('SelectableWrapper', () => {
     })
 
     expect(push).not.toHaveBeenCalled()
+  })
+
+  it('should open the settings drawer on block click in the layered layout', async () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step([typographyBlock])]
+            }}
+          >
+            <MuxVideoUploadProvider>
+              <EditorLayoutProvider value="layered">
+                <TestEditorState />
+                <SelectableWrapper block={typographyBlock}>
+                  <Typography {...typographyBlock} />
+                </SelectableWrapper>
+              </EditorLayoutProvider>
+            </MuxVideoUploadProvider>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByText('typography content'))
+    expect(getByText('activeSlide: 2')).toBeInTheDocument()
+    expect(
+      getByText(`selectedBlock: ${typographyBlock.id}`)
+    ).toBeInTheDocument()
   })
 
   it('should select radio question on radio option click', async () => {

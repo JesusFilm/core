@@ -130,7 +130,9 @@ describe('Editor', () => {
     expect(screen.getByTestId('Toolbar')).toBeInTheDocument()
   })
 
-  it('should render the Slider', async () => {
+  it('should render the Slider on mobile', async () => {
+    ;(useMediaQuery as Mock).mockImplementation(() => false)
+
     render(
       <MockedProvider>
         <SnackbarProvider>
@@ -141,6 +143,23 @@ describe('Editor', () => {
       </MockedProvider>
     )
     expect(screen.getByTestId('Slider')).toBeInTheDocument()
+    expect(screen.queryByTestId('LayeredView')).not.toBeInTheDocument()
+  })
+
+  it('should render the LayeredView on desktop', async () => {
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <Editor journey={journey} />
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('LayeredView')).toBeInTheDocument()
+    expect(screen.queryByTestId('Slider')).not.toBeInTheDocument()
   })
 
   it('should render the Fab', async () => {
