@@ -36,7 +36,7 @@ export function SocialPreview(): ReactElement {
       {mdUp ? (
         <Stack
           height={736}
-          width={contentActive ? '100%' : 387}
+          width={isLayered ? 'auto' : contentActive ? '100%' : 387}
           data-testid="OuterStack"
           justifyContent="space-between"
           alignSelf="center"

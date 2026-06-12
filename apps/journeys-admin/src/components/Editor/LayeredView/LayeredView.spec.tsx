@@ -104,7 +104,7 @@ describe('LayeredView', () => {
     renderLayeredView({ ...state, activeSlide: ActiveSlide.Content })
 
     expect(screen.getByTestId('LayeredViewDrawerContent')).toHaveStyle(
-      'transform: translateX(calc(328px + 16px))'
+      'transform: translateX(calc(328px + 32px))'
     )
   })
 

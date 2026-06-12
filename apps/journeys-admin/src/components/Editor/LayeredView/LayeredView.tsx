@@ -61,17 +61,26 @@ export function LayeredView(): ReactElement {
           direction="row"
           data-testid="LayeredViewDrawerContent"
           sx={{
-            width: '100%',
+            // size to the content so panel widths never depend on each
+            // other's minimum content width
+            width: 'max-content',
             height: '100%',
             transform: settingsVisible
               ? 'translateX(0)'
-              : `translateX(calc(${DRAWER_WIDTH}px + ${DRAWER_GAP}px))`,
+              : `translateX(calc(${DRAWER_WIDTH}px + ${DRAWER_GAP * 2}px))`,
             opacity: drawerOpen ? 1 : 0,
             transition: 'transform 200ms ease-in-out, opacity 500ms ease-in-out'
           }}
         >
           <Content />
-          <Box sx={{ mr: `${DRAWER_GAP}px`, width: DRAWER_WIDTH }}>
+          <Box
+            sx={{
+              ml: `${DRAWER_GAP}px`,
+              mr: `${DRAWER_GAP}px`,
+              width: DRAWER_WIDTH,
+              flexShrink: 0
+            }}
+          >
             <Settings />
           </Box>
         </Stack>

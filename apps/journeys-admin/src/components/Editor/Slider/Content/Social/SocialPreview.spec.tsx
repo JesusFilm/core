@@ -80,7 +80,7 @@ describe('SocialPreview', () => {
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
   })
 
-  it('should render full width and dispatch drawer slide on click in the layered layout', () => {
+  it('should render natural width and dispatch drawer slide on click in the layered layout', () => {
     const state: EditorState = {
       activeSlide: ActiveSlide.JourneyFlow,
       activeContent: ActiveContent.Social,
@@ -100,7 +100,7 @@ describe('SocialPreview', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByTestId('OuterStack')).toHaveStyle('width: 100%')
+    expect(screen.getByTestId('OuterStack')).toHaveStyle('width: auto')
     fireEvent.click(screen.getByTestId('SocialPreview'))
     expect(screen.getByText('activeSlide: 2')).toBeInTheDocument()
   })

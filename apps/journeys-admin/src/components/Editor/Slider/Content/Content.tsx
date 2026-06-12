@@ -34,7 +34,7 @@ export function Content(): ReactElement {
   // transition wrapper would collapse to zero width here)
   if (isLayered) {
     return (
-      <Box sx={{ width: '100%', height: '100%', position: 'relative' }}>
+      <Box sx={{ height: '100%', position: 'relative' }}>
         <Box
           data-testid="Content"
           sx={{
