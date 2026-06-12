@@ -24,8 +24,33 @@ export function simplifyJourney(
     )
 
     // --- VIDEO BLOCK HANDLING ---
-    const videoBlock = childBlocks.find(
+    const youtubeBlock = childBlocks.find(
       (block) => block.typename === 'VideoBlock' && block.source === 'youTube'
+    )
+    if (youtubeBlock) {
+      const card: JourneySimpleCard = {
+        id: `card-${index + 1}`,
+        x: stepBlock.x ?? 0,
+        y: stepBlock.y ?? 0,
+        video: {
+          src: `https://youtube.com/watch?v=${youtubeBlock.videoId}`,
+          startAt: youtubeBlock.startAt ?? undefined,
+          endAt: youtubeBlock.endAt ?? undefined,
+          source: 'youTube'
+        }
+      }
+      if (stepBlock.nextBlockId) {
+        const nextStepBlockIndex = stepBlocks.findIndex(
+          (s) => s.id === stepBlock.nextBlockId
+        )
+        if (nextStepBlockIndex >= 0) {
+          card.defaultNextCard = `card-${nextStepBlockIndex + 1}`
+        }
+      }
+      return card
+    }
+    const videoBlock = childBlocks.find(
+      (block) => block.typename === 'VideoBlock' && block.source === 'internal'
     )
     if (videoBlock) {
       const card: JourneySimpleCard = {
@@ -33,9 +58,10 @@ export function simplifyJourney(
         x: stepBlock.x ?? 0,
         y: stepBlock.y ?? 0,
         video: {
-          url: `https://youtube.com/watch?v=${videoBlock.videoId}`,
+          src: videoBlock.src ?? '',
           startAt: videoBlock.startAt ?? undefined,
-          endAt: videoBlock.endAt ?? undefined
+          endAt: videoBlock.endAt ?? undefined,
+          source: 'internal'
         }
       }
       if (stepBlock.nextBlockId) {

@@ -37,6 +37,10 @@ const nextConfig = {
   })(),
   images: {
     remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**'
+      },
       { protocol: 'http', hostname: 'localhost' },
       { protocol: 'https', hostname: 'unsplash.com' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
@@ -128,7 +132,14 @@ const nextConfig = {
       'node_modules/esbuild-linux-64/bin'
     ]
   },
-  reactCompiler: true
+  reactCompiler: true,
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.md$/,
+      use: 'raw-loader'
+    })
+    return config
+  }
 }
 const plugins = [withNx]
 if (process.env.ANALYZE === 'true') {

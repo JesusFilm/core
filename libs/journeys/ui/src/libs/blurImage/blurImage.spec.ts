@@ -1,9 +1,13 @@
+import { decode } from 'blurhash'
+
 import { blurImage } from './blurImage'
 
 // Mock blurhash decode function
 vi.mock('blurhash', () => ({
-  decode: () => new Uint8ClampedArray(32 * 32 * 4).fill(128)
+  decode: vi.fn()
 }))
+
+const mockDecode = vi.mocked(decode)
 
 describe('blurImage', () => {
   // Mock canvas and context before each test
@@ -48,6 +52,8 @@ describe('blurImage', () => {
   }
 
   it('returns url of blurred image', () => {
+    mockDecode.mockReturnValue(new Uint8ClampedArray(32 * 32 * 4).fill(128))
+
     expect(
       blurImage(image.blurhash, '#000000')?.startsWith('data:image/png;base64,')
     ).toBeTruthy()
@@ -65,10 +71,47 @@ describe('blurImage', () => {
       return {} as HTMLElement
     })
 
+    mockDecode.mockReturnValue(new Uint8ClampedArray(32 * 32 * 4).fill(128))
+
     expect(blurImage(image.blurhash, '#000000')).toBeUndefined()
   })
 
   it('returns undefined if blurhash is empty string', () => {
     expect(blurImage('', '#00000088')).toBeUndefined()
+  })
+
+  it('handles decode errors gracefully', () => {
+    mockDecode.mockImplementation(() => {
+      throw new Error('Invalid blurhash')
+    })
+
+    expect(blurImage(image.blurhash, '#000000')).toBeUndefined()
+  })
+
+  it('pads small pixel arrays with background color', () => {
+    // Return array smaller than expected
+    mockDecode.mockReturnValue(new Uint8ClampedArray(16 * 16 * 4).fill(128))
+
+    expect(
+      blurImage(image.blurhash, '#FF0000')?.startsWith('data:image/png;base64,')
+    ).toBeTruthy()
+  })
+
+  it('crops large pixel arrays to fit', () => {
+    // Return array larger than expected
+    mockDecode.mockReturnValue(new Uint8ClampedArray(64 * 64 * 4).fill(128))
+
+    expect(
+      blurImage(image.blurhash, '#00FF00')?.startsWith('data:image/png;base64,')
+    ).toBeTruthy()
+  })
+
+  it('handles exact size pixel arrays', () => {
+    // Return array of exact expected size
+    mockDecode.mockReturnValue(new Uint8ClampedArray(32 * 32 * 4).fill(128))
+
+    expect(
+      blurImage(image.blurhash, '#0000FF')?.startsWith('data:image/png;base64,')
+    ).toBeTruthy()
   })
 })
