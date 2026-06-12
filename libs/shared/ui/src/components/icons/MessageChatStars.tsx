@@ -11,7 +11,7 @@ export default createSvgIcon(
       stroke="currentColor"
       strokeWidth={3.4}
     />
-    <g transform="translate(3.4,20.7) scale(1.15)">
+    <g transform="translate(5.6,18.2) scale(1.15)">
       <path
         d="M 52 31 V 33 A 11 11 0 0 1 41 44 H 28 L 18 52 L 24 44 H 23 A 11 11 0 0 1 12 33 V 29 A 11 11 0 0 1 23 18 H 37"
         fill="none"
