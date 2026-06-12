@@ -1,4 +1,4 @@
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useCallback } from 'react'
 
 import type { AddToolResultArg, LegacyToolInvocationPart } from '../MessageList'
