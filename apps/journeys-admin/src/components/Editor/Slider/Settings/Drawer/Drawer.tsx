@@ -12,8 +12,8 @@ import type { ReactElement, ReactNode } from 'react'
 
 import X2Icon from '@core/shared/ui/icons/X2'
 
-import { useEditorLayout } from '../../../EditorLayoutContext'
 import { DRAWER_WIDTH } from '../../../constants'
+import { useEditorLayout } from '../../../EditorLayoutContext'
 
 interface DrawerTitleProps {
   title?: string
