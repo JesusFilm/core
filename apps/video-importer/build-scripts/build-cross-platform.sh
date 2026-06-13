@@ -35,6 +35,11 @@ if ! command -v curl >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! command -v unzip >/dev/null 2>&1; then
+  echo "unzip is required to extract Windows runtime archives." >&2
+  exit 1
+fi
+
 if [ ! -f "$ENTRYPOINT" ]; then
   echo "Entrypoint not found: $ENTRYPOINT" >&2
   exit 1
