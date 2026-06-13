@@ -49,11 +49,20 @@ export async function refreshToken(): Promise<string | null> {
   }
 
   // Fallback for cases where the browser Firebase user is unavailable.
-  await fetch('/api/refresh-token', {
+  const refreshResponse = await fetch('/api/refresh-token', {
     method: 'GET',
     headers: {},
-    cache: 'no-store'
+    cache: 'no-store',
+    credentials: 'same-origin'
   })
 
-  return null
+  if (!refreshResponse.ok) return null
+
+  try {
+    const { idToken } = (await refreshResponse.json()) as { idToken?: unknown }
+
+    return typeof idToken === 'string' ? idToken : null
+  } catch {
+    return null
+  }
 }
