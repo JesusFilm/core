@@ -48,7 +48,6 @@ Both must be set. If they are missing, the importer exits with a configuration e
 
 The bot needs the `chat:write` scope (and access to the chosen channel).
 
-
 ---
 
 ## Supported File Types & Formatting
