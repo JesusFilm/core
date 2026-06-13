@@ -11,8 +11,9 @@ export function isSingleExecutableApplication(): boolean {
 export function getPackagedAppDir(): string | undefined {
   const configuredAppDir = process.env.VIDEO_IMPORTER_APP_DIR
 
-  if (configuredAppDir != null && configuredAppDir.trim().length > 0) {
-    return configuredAppDir
+  if (configuredAppDir != null) {
+    const normalizedAppDir = configuredAppDir.trim()
+    if (normalizedAppDir.length > 0) return normalizedAppDir
   }
 
   if (isSingleExecutableApplication()) {

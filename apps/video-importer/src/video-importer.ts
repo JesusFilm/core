@@ -22,7 +22,7 @@ const program = new Command()
 program
   .option(
     '-f, --folder <path>',
-    "Folder containing video files. Defaults to the executable's directory."
+    "Folder containing video files. Defaults to process.cwd() in source runs and the executable's directory in packaged SEA runs."
   )
   .option('--dry-run', 'Print actions without uploading', false)
   .option('--no-slack', 'Do not post a Slack summary after the run')

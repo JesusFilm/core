@@ -11,6 +11,15 @@ import { R2Asset } from '../types'
 const MULTIPART_PART_SIZE = 20 * 1024 * 1024
 const MULTIPART_QUEUE_SIZE = 2
 
+type UploadFileStreamParams = {
+  r2BucketClient: S3Client
+  bucket: string
+  key: string
+  filePath: string
+  contentType: string
+  contentLength: number
+}
+
 function getR2BucketClient(): S3Client {
   return new S3Client({
     endpoint: env.CLOUDFLARE_R2_ENDPOINT,
@@ -113,14 +122,7 @@ async function uploadFileStream({
   filePath,
   contentType,
   contentLength
-}: {
-  r2BucketClient: S3Client
-  bucket: string
-  key: string
-  filePath: string
-  contentType: string
-  contentLength: number
-}): Promise<void> {
+}: UploadFileStreamParams): Promise<void> {
   const upload = new Upload({
     client: r2BucketClient,
     params: {
