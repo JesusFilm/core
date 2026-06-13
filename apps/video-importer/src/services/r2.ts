@@ -1,18 +1,24 @@
-import { S3Client } from 'bun'
+import { createReadStream } from 'fs'
+
+import { HeadObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { Upload } from '@aws-sdk/lib-storage'
 
 import { env } from '../env'
 import { getGraphQLClient } from '../gql/graphqlClient'
 import { CREATE_CLOUDFLARE_R2_ASSET } from '../gql/mutations'
 import { R2Asset } from '../types'
 
-function getR2BucketClient(bucket: string): S3Client {
+const MULTIPART_PART_SIZE = 20 * 1024 * 1024
+const MULTIPART_QUEUE_SIZE = 2
+
+function getR2BucketClient(): S3Client {
   return new S3Client({
-    accessKeyId: env.CLOUDFLARE_R2_ACCESS_KEY_ID,
-    secretAccessKey: env.CLOUDFLARE_R2_SECRET_ACCESS_KEY,
     endpoint: env.CLOUDFLARE_R2_ENDPOINT,
-    // Cloudflare R2 uses "auto" region in most S3-compatible SDKs
     region: 'auto',
-    bucket
+    credentials: {
+      accessKeyId: env.CLOUDFLARE_R2_ACCESS_KEY_ID,
+      secretAccessKey: env.CLOUDFLARE_R2_SECRET_ACCESS_KEY
+    }
   })
 }
 
@@ -83,30 +89,70 @@ export async function uploadToR2({
     `[R2 Service] Uploading ${(contentLength / 1024 / 1024).toFixed(1)}MB to R2 using multipart...`
   )
 
-  const r2BucketClient = getR2BucketClient(bucket)
-  const bytesWritten = await r2BucketClient.write(key, Bun.file(filePath), {
-    type: contentType,
-    // Match prior behavior (20MB parts, queueSize=2) for large files
-    partSize: 20 * 1024 * 1024,
-    queueSize: 2
+  const r2BucketClient = getR2BucketClient()
+  await uploadFileStream({
+    r2BucketClient,
+    bucket,
+    key,
+    filePath,
+    contentType,
+    contentLength
   })
 
-  console.log(`[R2 Service] Upload completed (${bytesWritten} bytes written)`)
+  console.log(`[R2 Service] Upload completed (${contentLength} bytes written)`)
 
   // Verify R2 has the exact object before handing the public URL to downstream consumers.
-  await verifyFileUpload(r2BucketClient, key, contentLength)
+  await verifyFileUpload(r2BucketClient, bucket, key, contentLength)
   console.log('[R2 Service] File verification completed')
+}
+
+async function uploadFileStream({
+  r2BucketClient,
+  bucket,
+  key,
+  filePath,
+  contentType,
+  contentLength
+}: {
+  r2BucketClient: S3Client
+  bucket: string
+  key: string
+  filePath: string
+  contentType: string
+  contentLength: number
+}): Promise<void> {
+  const upload = new Upload({
+    client: r2BucketClient,
+    params: {
+      Bucket: bucket,
+      Key: key,
+      Body: createReadStream(filePath),
+      ContentType: contentType,
+      ContentLength: contentLength
+    },
+    partSize: MULTIPART_PART_SIZE,
+    queueSize: MULTIPART_QUEUE_SIZE
+  })
+
+  await upload.done()
 }
 
 async function verifyFileUpload(
   r2BucketClient: S3Client,
+  bucket: string,
   key: string,
   expectedContentLength: number
 ): Promise<void> {
   console.log('[R2 Service] Verifying uploaded file...')
 
   try {
-    const uploadedSize = await r2BucketClient.size(key)
+    const head = await r2BucketClient.send(
+      new HeadObjectCommand({
+        Bucket: bucket,
+        Key: key
+      })
+    )
+    const uploadedSize = head.ContentLength ?? 0
     if (uploadedSize !== expectedContentLength) {
       throw new Error(
         `File verification failed: Expected ${expectedContentLength} bytes, got ${uploadedSize} bytes`
@@ -148,12 +194,19 @@ export async function uploadFileToR2Direct({
   contentLength: number
 }): Promise<string> {
   console.log(`[R2 Service] Uploading file to R2: ${key}`)
-  const r2BucketClient = getR2BucketClient(bucket)
-  await r2BucketClient.write(key, Bun.file(filePath), { type: contentType })
+  const r2BucketClient = getR2BucketClient()
+  await uploadFileStream({
+    r2BucketClient,
+    bucket,
+    key,
+    filePath,
+    contentType,
+    contentLength
+  })
 
   console.log(`[R2 Service] Direct upload completed: ${key}`)
 
-  await verifyFileUpload(r2BucketClient, key, contentLength)
+  await verifyFileUpload(r2BucketClient, bucket, key, contentLength)
 
   return `${env.CLOUDFLARE_R2_CUSTOM_DOMAIN.replace(/\/$/, '')}/${key}`
 }

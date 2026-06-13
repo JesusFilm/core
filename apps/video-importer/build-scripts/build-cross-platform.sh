@@ -1,55 +1,123 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
+NODE_VERSION="v22.16.0"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-DIST_DIR="$PROJECT_DIR/../../dist/apps/video-importer-executable"
+REPO_ROOT="$(cd "$PROJECT_DIR/../.." && pwd)"
+DIST_DIR="$REPO_ROOT/dist/apps/video-importer-executable"
+BUNDLE_DIR="$REPO_ROOT/dist/apps/video-importer"
+ENTRYPOINT="$PROJECT_DIR/src/video-importer.ts"
+BUNDLE="$BUNDLE_DIR/video-importer-bundled.cjs"
+SEA_BLOB="$PROJECT_DIR/sea-prep.blob"
+SEA_CONFIG="$PROJECT_DIR/sea-config.json"
+POSTJECT_SENTINEL="NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2"
 
-echo "Cross-platform build for video-importer"
+echo "Node SEA cross-platform build for video-importer"
+echo "Node.js runtime version: $NODE_VERSION"
 echo "Project dir: $PROJECT_DIR"
 
-# Create output directory
-mkdir -p "$DIST_DIR"
+mkdir -p "$DIST_DIR" "$BUNDLE_DIR"
+rm -f "$DIST_DIR/video-importer" "$DIST_DIR/video-importer.cmd" "$DIST_DIR/video-importer.cjs"
 
-export BUN_INSTALL="${BUN_INSTALL:-$HOME/.bun}"
-export PATH="$BUN_INSTALL/bin:$PATH"
-
-if ! command -v bun >/dev/null 2>&1; then
-  echo "❌ Bun is required to build the standalone executables. Please install Bun and retry." >&2
-  echo "   Install: https://bun.sh" >&2
+if ! command -v node >/dev/null 2>&1; then
+  echo "Node.js is required to build the video-importer SEA executables." >&2
   exit 1
 fi
 
-ENTRYPOINT="$PROJECT_DIR/src/video-importer.ts"
+if ! command -v pnpm >/dev/null 2>&1; then
+  echo "pnpm is required to build the video-importer SEA executables." >&2
+  exit 1
+fi
+
+if ! command -v curl >/dev/null 2>&1; then
+  echo "curl is required to download Node.js runtime binaries." >&2
+  exit 1
+fi
 
 if [ ! -f "$ENTRYPOINT" ]; then
-  echo "❌ Entrypoint not found: $ENTRYPOINT" >&2
+  echo "Entrypoint not found: $ENTRYPOINT" >&2
   exit 1
 fi
 
-# Build for Linux x64
-echo "Building for Linux x64..."
-bun build --compile "$ENTRYPOINT" --target=bun-linux-x64 --outfile="$DIST_DIR/video-importer-linux"
+echo "Bundling Node CLI..."
+(cd "$REPO_ROOT" && pnpm exec esbuild "$ENTRYPOINT" \
+  --bundle \
+  --platform=node \
+  --target=node22 \
+  --format=cjs \
+  --outfile="$BUNDLE")
+
+download_node_binary() (
+  local platform=$1
+  local arch=$2
+  local filename="node-${NODE_VERSION}-${platform}-${arch}"
+  local url="https://nodejs.org/dist/${NODE_VERSION}/${filename}.tar.gz"
+  local binary_path="$DIST_DIR/${filename}/bin/node"
+
+  if [ "$platform" = "win" ]; then
+    url="https://nodejs.org/dist/${NODE_VERSION}/${filename}.zip"
+    binary_path="$DIST_DIR/${filename}/node.exe"
+  fi
+
+  if [ ! -f "$binary_path" ]; then
+    echo "Downloading Node.js for $platform-$arch..." >&2
+    cd "$DIST_DIR"
+
+    if [ "$platform" = "win" ]; then
+      curl -s -L "$url" -o "${filename}.zip"
+      unzip -q "${filename}.zip"
+      rm "${filename}.zip"
+    else
+      curl -s -L "$url" -o "${filename}.tar.gz"
+      tar -xzf "${filename}.tar.gz"
+      rm "${filename}.tar.gz"
+    fi
+  fi
+
+  echo "$binary_path"
+)
+
+inject_sea_blob() {
+  local binary=$1
+  shift
+
+  pnpm exec postject "$binary" NODE_SEA_BLOB "$SEA_BLOB" \
+    --sentinel-fuse "$POSTJECT_SENTINEL" \
+    "$@"
+}
+
+echo "Preparing Node.js linux-x64 runtime for SEA blob generation..."
+linux_binary=$(download_node_binary "linux" "x64")
+
+echo "Generating SEA blob..."
+(cd "$PROJECT_DIR" && "$linux_binary" --experimental-sea-config "$SEA_CONFIG")
+
+echo "Building Linux x64 executable..."
+cp "$linux_binary" "$DIST_DIR/video-importer-linux"
+inject_sea_blob "$DIST_DIR/video-importer-linux"
 chmod +x "$DIST_DIR/video-importer-linux"
-echo "✅ Linux executable created"
+echo "Linux executable created: $DIST_DIR/video-importer-linux"
 
-# Build for macOS x64
-echo "Building for macOS x64..."
-bun build --compile "$ENTRYPOINT" --target=bun-darwin-x64 --outfile="$DIST_DIR/video-importer-macos"
+echo "Building macOS x64 executable..."
+macos_binary=$(download_node_binary "darwin" "x64")
+cp "$macos_binary" "$DIST_DIR/video-importer-macos"
+inject_sea_blob "$DIST_DIR/video-importer-macos" --macho-segment-name NODE_SEA
 chmod +x "$DIST_DIR/video-importer-macos"
-echo "✅ macOS executable created"
+echo "macOS executable created: $DIST_DIR/video-importer-macos"
 
-# Build for Windows x64
-echo "Building for Windows x64..."
-bun build --compile "$ENTRYPOINT" --target=bun-windows-x64 --outfile="$DIST_DIR/video-importer.exe"
-echo "✅ Windows executable created"
+echo "Building Windows x64 executable..."
+windows_binary=$(download_node_binary "win" "x64")
+cp "$windows_binary" "$DIST_DIR/video-importer.exe"
+inject_sea_blob "$DIST_DIR/video-importer.exe"
+echo "Windows executable created: $DIST_DIR/video-importer.exe"
 
 echo ""
-echo "🎉 Cross-platform build complete!"
+echo "Node SEA build complete."
 echo "Executables created:"
 echo "  Linux:   $DIST_DIR/video-importer-linux"
-echo "  macOS:   $DIST_DIR/video-importer-macos" 
+echo "  macOS:   $DIST_DIR/video-importer-macos"
 echo "  Windows: $DIST_DIR/video-importer.exe"
 echo ""
-echo "Note: macOS and Windows binaries may be unsigned."
+echo "Note: macOS and Windows binaries are unsigned."
 echo "For distribution, sign them on their respective platforms."

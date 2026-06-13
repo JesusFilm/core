@@ -8,6 +8,7 @@ import {
   SUBTITLE_FILENAME_REGEX,
   VIDEO_FILENAME_REGEX
 } from './importerFilenamePatterns'
+import { getPackagedAppDir } from './runtime'
 import { checkStartupEnvironment } from './startupPreflight'
 import {
   type ProcessingSummary,
@@ -32,13 +33,11 @@ const options = program.opts()
 // Regex patterns are imported from the respective importers
 
 function getDefaultFolderPath(): string {
-  const runningAsStandaloneExecutable =
-    typeof Bun !== 'undefined' && Bun.embeddedFiles.length > 0
+  const packagedAppDir = getPackagedAppDir()
 
-  if (!runningAsStandaloneExecutable) return process.cwd()
+  if (packagedAppDir != null) return path.resolve(packagedAppDir)
 
-  // In Bun standalone executable mode, `process.execPath` is the path to the compiled binary.
-  return path.dirname(process.execPath)
+  return process.cwd()
 }
 
 async function main() {

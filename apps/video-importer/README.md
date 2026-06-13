@@ -2,13 +2,13 @@
 
 ## Overview
 
-The Video Importer packaged binary is a command-line tool for batch importing video files, subtitles, and audio previews into the Jesus Film Media platform. It uploads assets to Cloudflare R2, creates Mux video assets, and updates the backend via GraphQL. This tool is designed for non-developers and requires no Node.js or npm setup—just run the binary!
+The Video Importer packaged executable is a command-line tool for batch importing video files, subtitles, and audio previews into the Jesus Film Media platform. It uploads assets to Cloudflare R2, creates Mux video assets, and updates the backend via GraphQL. This tool is designed for non-developers and requires no Node.js or npm setup on the target machine.
 
 ---
 
 ## Requirements
 
-Before you can use the Video Importer binary, make sure you have the following:
+Before you can use the Video Importer executable, make sure you have the following:
 
 ### 1. .env File (Environment Variables)
 
@@ -48,7 +48,7 @@ Both must be set. If they are missing, the importer exits with a configuration e
 
 The bot needs the `chat:write` scope (and access to the chosen channel).
 
-### 5. Slack notifications (optional)
+### 6. Slack notifications (optional)
 
 After a real run (not `--dry-run`), the importer can post a summary to Slack using a bot token and the Web API (`chat.postMessage`).
 
@@ -123,7 +123,7 @@ The bot needs the `chat:write` scope (and access to the chosen channel).
    - Ensure all files follow the naming conventions and use the correct file extensions.
 
 2. **Run the Executable**
-   - Open a terminal in the folder containing the binary or specify the folder with your files.
+   - Open a terminal in the folder containing the executable or specify the folder with your files.
    - Run the binary:
      ```sh
      ./video-importer
