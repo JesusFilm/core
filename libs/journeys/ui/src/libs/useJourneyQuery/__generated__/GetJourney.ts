@@ -818,7 +818,7 @@ export interface GetJourney_journey {
 }
 
 export interface GetJourney {
-  journey: GetJourney_journey | null;
+  journey: GetJourney_journey;
 }
 
 export interface GetJourneyVariables {

@@ -1357,7 +1357,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
     useLastActiveTeamId: Boolean
   ): [Journey!]! @join__field(graph: API_JOURNEYS_MODERN) 
   adminJourneysReport(reportType: JourneysReportType!) : PowerBiEmbed @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journey(id: ID!, idType: IdType = slug, options: JourneysQueryOptions) : Journey @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  journey(id: ID!, idType: IdType = slug, options: JourneysQueryOptions) : Journey! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   journeys(where: JourneysFilter, options: JourneysQueryOptions) : [Journey!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   journeyTemplateLanguageIds: [String!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   journeyCollection(id: ID!) : JourneyCollection! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 

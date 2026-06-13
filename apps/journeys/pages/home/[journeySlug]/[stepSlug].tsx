@@ -121,19 +121,6 @@ export const getStaticProps: GetStaticProps<StepPageProps> = async (
       }
     })
 
-    if (data.journey == null)
-      return {
-        props: {
-          ...(await serverSideTranslations(
-            context.locale ?? 'en',
-            ['apps-journeys', 'libs-journeys-ui'],
-            i18nConfig
-          ))
-        },
-        notFound: true,
-        revalidate: 1
-      }
-
     if (data.journey.website !== true) {
       return {
         redirect: {

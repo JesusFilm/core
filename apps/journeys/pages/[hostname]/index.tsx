@@ -20,7 +20,7 @@ import JourneysPage, { GET_JOURNEYS } from '../home'
 import ImportedHostJourneyPage from './[journeySlug]'
 
 interface HostJourneyPageProps {
-  journey: NonNullable<GetJourney['journey']>
+  journey: GetJourney['journey']
   host: string | undefined
 }
 
