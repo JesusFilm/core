@@ -92,13 +92,31 @@ inject_sea_blob() {
     "$@"
 }
 
-echo "Preparing Node.js linux-x64 runtime for SEA blob generation..."
-linux_binary=$(download_node_binary "linux" "x64")
+host_os="$(uname -s)"
+case "$host_os" in
+  Linux*)
+    host_platform="linux"
+    ;;
+  Darwin*)
+    host_platform="darwin"
+    ;;
+  MINGW*|MSYS*|CYGWIN*)
+    host_platform="win"
+    ;;
+  *)
+    echo "Unsupported host OS for SEA blob generation: $host_os" >&2
+    exit 1
+    ;;
+esac
+
+echo "Preparing Node.js ${host_platform}-x64 runtime for SEA blob generation..."
+host_binary=$(download_node_binary "$host_platform" "x64")
 
 echo "Generating SEA blob..."
-(cd "$PROJECT_DIR" && "$linux_binary" --experimental-sea-config "$SEA_CONFIG")
+(cd "$PROJECT_DIR" && "$host_binary" --experimental-sea-config "$SEA_CONFIG")
 
 echo "Building Linux x64 executable..."
+linux_binary=$(download_node_binary "linux" "x64")
 cp "$linux_binary" "$DIST_DIR/video-importer-linux"
 inject_sea_blob "$DIST_DIR/video-importer-linux"
 chmod +x "$DIST_DIR/video-importer-linux"
