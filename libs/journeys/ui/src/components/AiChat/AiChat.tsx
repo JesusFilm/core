@@ -37,6 +37,7 @@ import {
   SHEET_BOTTOM_FADE
 } from './chatStyles'
 import { DragHandle } from './DragHandle'
+import { getAboutChatHref } from './getAboutChatHref'
 
 interface AiChatProps {
   /** When provided, this message is sent automatically on first render */
@@ -721,7 +722,7 @@ export function AiChat({
             {t('Replies may not be perfect')}
             {' · '}
             <Link
-              href="/legal/about-chat"
+              href={getAboutChatHref(languageBcp47)}
               target="_blank"
               rel="noopener noreferrer"
               underline="always"
