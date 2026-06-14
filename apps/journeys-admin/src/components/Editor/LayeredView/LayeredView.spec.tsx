@@ -129,9 +129,9 @@ describe('LayeredView', () => {
 
     // the transparent paper is pointer-events: none so empty areas around the
     // card reach the dimmed backdrop (which closes the drawer)...
-    expect(
-      document.querySelector('.MuiDrawer-paper') as Element
-    ).toHaveStyle('pointer-events: none')
+    expect(document.querySelector('.MuiDrawer-paper') as Element).toHaveStyle(
+      'pointer-events: none'
+    )
     // ...while the settings panel re-enables clicks so it stays interactive
     expect(screen.getByTestId('SettingsDrawer').parentElement).toHaveStyle(
       'pointer-events: auto'
