@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
+import { useJourney } from '../../../libs/JourneyProvider'
 import {
   ASSISTANT_FG,
   DIVIDER,
@@ -15,6 +16,7 @@ import {
   SPARKLE_GRADIENT,
   TEXT_SECONDARY
 } from '../chatStyles'
+import { getAboutChatHref } from '../getAboutChatHref'
 
 interface ChatHeaderProps {
   /**
@@ -36,6 +38,7 @@ export function ChatHeader({
   onClose
 }: ChatHeaderProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
+  const { journey } = useJourney()
 
   return (
     <Box
@@ -156,7 +159,7 @@ export function ChatHeader({
           {t('Replies may not be perfect')}
           {' · '}
           <Link
-            href="/legal/about-chat"
+            href={getAboutChatHref(journey?.language?.bcp47)}
             target="_blank"
             rel="noopener noreferrer"
             underline="always"

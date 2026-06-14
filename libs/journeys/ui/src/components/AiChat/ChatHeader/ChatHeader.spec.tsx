@@ -1,5 +1,8 @@
 import { fireEvent, render } from '@testing-library/react'
 
+import { JourneyProvider } from '../../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+
 import { ChatHeader } from './ChatHeader'
 
 vi.mock('next-i18next/pages', () => ({
@@ -15,6 +18,19 @@ describe('ChatHeader', () => {
     expect(link).toHaveAttribute('href', '/legal/about-chat')
     expect(link).toHaveAttribute('target', '_blank')
     expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+  })
+
+  it('carries the journey language as ?lang on the about-this-chat link (NES-1724)', () => {
+    const journey = { language: { bcp47: 'es' } } as unknown as Journey
+    const { getByRole } = render(
+      <JourneyProvider value={{ journey, variant: 'default' }}>
+        <ChatHeader />
+      </JourneyProvider>
+    )
+    expect(getByRole('link', { name: 'About this chat' })).toHaveAttribute(
+      'href',
+      '/legal/about-chat?lang=es'
+    )
   })
 
   it('renders the animated mark in both states', () => {
