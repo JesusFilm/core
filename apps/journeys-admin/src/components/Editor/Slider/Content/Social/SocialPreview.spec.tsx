@@ -101,6 +101,13 @@ describe('SocialPreview', () => {
     )
 
     expect(screen.getByTestId('OuterStack')).toHaveStyle('width: auto')
+    // the preview re-enables pointer events so it stays interactive while the
+    // drawer paper is pointer-events: none (empty areas close the drawer)
+    expect(screen.getByTestId('OuterStack')).toHaveStyle('pointer-events: auto')
+    expect(screen.getByTestId('SocialPostColumn')).toHaveStyle('width: 300px')
+    expect(screen.getByTestId('SocialMessageColumn')).toHaveStyle(
+      'width: 387px'
+    )
     fireEvent.click(screen.getByTestId('SocialPreview'))
     expect(screen.getByText('activeSlide: 2')).toBeInTheDocument()
   })

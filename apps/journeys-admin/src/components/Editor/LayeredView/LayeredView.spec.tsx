@@ -123,4 +123,29 @@ describe('LayeredView', () => {
     fireEvent.click(document.querySelector('.MuiBackdrop-root') as Element)
     expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
   })
+
+  it('lets clicks on the paper empty areas fall through to the backdrop', () => {
+    renderLayeredView({ ...state, activeSlide: ActiveSlide.Drawer })
+
+    // the transparent paper is pointer-events: none so empty areas around the
+    // card reach the dimmed backdrop (which closes the drawer)...
+    expect(
+      document.querySelector('.MuiDrawer-paper') as Element
+    ).toHaveStyle('pointer-events: none')
+    // ...while the settings panel re-enables clicks so it stays interactive
+    expect(screen.getByTestId('SettingsDrawer').parentElement).toHaveStyle(
+      'pointer-events: auto'
+    )
+  })
+
+  it('keeps the off-screen settings panel inert on the content slide', () => {
+    renderLayeredView({ ...state, activeSlide: ActiveSlide.Content })
+
+    // on the content slide the settings panel is slid off-screen; it must stay
+    // pointer-events: none so it cannot intercept clicks meant for the backdrop
+    // while it is transitioning in/out
+    expect(screen.getByTestId('SettingsDrawer').parentElement).toHaveStyle(
+      'pointer-events: none'
+    )
+  })
 })

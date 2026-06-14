@@ -146,7 +146,7 @@ describe('Canvas', () => {
   })
 
   it('should open the settings drawer on card click in the layered layout', () => {
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, container } = render(
       <MockedProvider>
         <SnackbarProvider>
           <ThemeProvider>
@@ -176,6 +176,11 @@ describe('Canvas', () => {
           </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
+    )
+    // the card column re-enables pointer events so it stays interactive while
+    // the drawer paper is pointer-events: none (empty areas close the drawer)
+    expect(container.querySelector('.CanvasStack')).toHaveStyle(
+      'pointer-events: auto'
     )
     fireEvent.click(getByTestId('CanvasContainer'))
     expect(getByText('selectedBlock: step0.id')).toBeInTheDocument()

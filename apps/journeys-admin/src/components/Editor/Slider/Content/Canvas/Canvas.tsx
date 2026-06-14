@@ -209,15 +209,24 @@ export function Canvas(): ReactElement {
             height: { xs: '100%', md: 'auto' },
             pb: { xs: 5, md: 0 },
             px: { xs: 3, md: 5 },
-            justifyContent: 'center'
+            justifyContent: 'center',
+            // in the layered view the drawer paper is pointer-events: none so
+            // empty areas around the card close the drawer; the card column
+            // itself stays interactive
+            pointerEvents: isLayered ? 'auto' : undefined
           }}
         >
           <CardSlugEdit visible={showSlugEdit} />
           <Box
             data-testId="CanvasContainer"
             sx={{
+              // the layered view's card starts entering immediately (no
+              // pre-delay) and completes its motion in ~500ms; the slider
+              // keeps its slower staggered entrance
               animation: (theme) =>
-                `${fadeIn} ${theme.transitions.duration.standard}ms ${theme.transitions.easing.easeInOut} 0.5s backwards`,
+                isLayered
+                  ? `${fadeIn} 500ms ${theme.transitions.easing.easeInOut} 0s backwards`
+                  : `${fadeIn} ${theme.transitions.duration.standard}ms ${theme.transitions.easing.easeInOut} 0.5s backwards`,
               position: 'relative',
               maxHeight: CARD_HEIGHT,
               width: CARD_WIDTH,

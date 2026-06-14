@@ -5,13 +5,11 @@ import { ReactElement } from 'react'
 
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
-import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
+import { DRAWER_GAP, DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { Content } from '../Slider/Content'
-import { CARD_HEIGHT } from '../Slider/Content/Canvas/utils/calculateDimensions'
+import { LAYERED_DRAWER_HEIGHT } from '../Slider/Content/Canvas/utils/calculateDimensions'
 import { JourneyFlow } from '../Slider/JourneyFlow'
 import { Settings } from '../Slider/Settings'
-
-const DRAWER_GAP = 16
 
 export function LayeredView(): ReactElement {
   const {
@@ -45,15 +43,22 @@ export function LayeredView(): ReactElement {
         open={drawerOpen}
         onClose={handleDrawerClose}
         data-testid="LayeredViewDrawer"
+        // media libraries portal outside this drawer (see Settings/Drawer),
+        // so the focus trap must not wrestle focus away from their inputs
+        ModalProps={{ disableEnforceFocus: true }}
         sx={{
           '& .MuiDrawer-paper': {
-            height: `calc(${CARD_HEIGHT}px + 200px)`,
+            height: LAYERED_DRAWER_HEIGHT,
             maxHeight: '100%',
             top: '50%',
             transform: 'translateY(-50%) !important',
             backgroundColor: 'transparent',
             boxShadow: 'none',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            // the transparent paper overlaps the dimmed backdrop; let clicks on
+            // its empty areas fall through to the backdrop (which closes the
+            // drawer). The card and settings re-enable pointer events below.
+            pointerEvents: 'none'
           }
         }}
       >
@@ -69,7 +74,7 @@ export function LayeredView(): ReactElement {
               ? 'translateX(0)'
               : `translateX(calc(${DRAWER_WIDTH}px + ${DRAWER_GAP * 2}px))`,
             opacity: drawerOpen ? 1 : 0,
-            transition: 'transform 200ms ease-in-out, opacity 500ms ease-in-out'
+            transition: 'transform 200ms ease-in-out, opacity 250ms ease-in-out'
           }}
         >
           <Content />
@@ -78,7 +83,13 @@ export function LayeredView(): ReactElement {
               ml: `${DRAWER_GAP}px`,
               mr: `${DRAWER_GAP}px`,
               width: DRAWER_WIDTH,
-              flexShrink: 0
+              flexShrink: 0,
+              // re-enable clicks on the settings panel (the paper is
+              // pointer-events: none so empty areas close the drawer), but
+              // only while it is the on-screen target — when it is slid
+              // off-screen on the content slide it must stay inert so it can't
+              // intercept clicks mid-transition
+              pointerEvents: settingsVisible ? 'auto' : 'none'
             }}
           >
             <Settings />

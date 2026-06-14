@@ -59,7 +59,9 @@ export function Goals(): ReactElement {
   const hasGoals = goals != null && goals.length > 0
 
   // in the layered desktop view the goals float over the journey map, so
-  // they need their own paper panel instead of the slide's plain background
+  // they need their own paper panel instead of the slide's plain background.
+  // The drawer paper is pointer-events: none (empty areas close the drawer),
+  // so the panel re-enables pointer events for itself.
   if (isLayered) {
     if (journey == null) return <></>
     return hasGoals ? (
@@ -72,7 +74,8 @@ export function Goals(): ReactElement {
           mr: 5,
           backgroundColor: 'background.paper',
           borderRadius: 3,
-          overflow: 'hidden'
+          overflow: 'hidden',
+          pointerEvents: 'auto'
         }}
       >
         <Stack direction="column" sx={{ height: '100%', py: 6 }}>
@@ -88,7 +91,8 @@ export function Goals(): ReactElement {
           backgroundColor: 'background.paper',
           borderRadius: 3,
           alignSelf: 'center',
-          py: 10
+          py: 10,
+          pointerEvents: 'auto'
         }}
       >
         <GoalsBanner />
