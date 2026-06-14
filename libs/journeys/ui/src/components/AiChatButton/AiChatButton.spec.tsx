@@ -101,6 +101,11 @@ describe('AiChatButton', () => {
     expect(getByRole('button', { name: 'Open AI chat' })).toBeInTheDocument()
   })
 
+  it('renders the chat bubble with stars icon', () => {
+    const { getByTestId } = renderButton()
+    expect(getByTestId('MessageChatStarsIcon')).toBeInTheDocument()
+  })
+
   it('opens the overlay via the lifted state when clicked', async () => {
     const user = userEvent.setup()
     const { getByRole, queryByTestId, getByTestId } = renderButton()
