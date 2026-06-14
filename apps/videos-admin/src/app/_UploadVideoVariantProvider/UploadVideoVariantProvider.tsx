@@ -271,9 +271,16 @@ export function UploadVideoVariantProvider({
   const syncUploadAuthToken = async () => {
     const refreshedToken = await refreshToken()
 
-    if (refreshedToken == null) return
+    if (refreshedToken == null) return false
 
     apolloClient.defaultContext.token = refreshedToken
+    return true
+  }
+
+  const requireUploadAuthToken = async () => {
+    if (await syncUploadAuthToken()) return
+
+    throw new Error('Unable to refresh authentication for video upload')
   }
 
   const startUploadAuthRefresh = () => {
@@ -382,6 +389,8 @@ export function UploadVideoVariantProvider({
     })
 
     try {
+      await requireUploadAuthToken()
+
       const result = await createVideoVariant({
         variables: {
           input: variantInput
@@ -495,6 +504,7 @@ export function UploadVideoVariantProvider({
         ...logContext,
         r2FileName: fileName
       })
+      await requireUploadAuthToken()
       const r2Response = await prepareR2Multipart({
         variables: {
           input: {
@@ -705,6 +715,7 @@ export function UploadVideoVariantProvider({
         r2FileName: multipartData.fileName,
         r2UploadId: multipartData.uploadId
       })
+      await requireUploadAuthToken()
       await completeR2Multipart({
         variables: {
           input: {
@@ -721,6 +732,7 @@ export function UploadVideoVariantProvider({
         r2UploadId: multipartData.uploadId
       })
 
+      await requireUploadAuthToken()
       const muxResponse = await createMuxVideo({
         variables: {
           url: multipartData.publicUrl,
@@ -749,6 +761,7 @@ export function UploadVideoVariantProvider({
       })
 
       // Start polling for Mux video status
+      await requireUploadAuthToken()
       void getMyMuxVideo({
         variables: {
           id: muxResponse.data.createMuxVideoUploadByUrl.id,
