@@ -1845,6 +1845,20 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   Owning team. Caller must be a member.
   """
   teamId: ID!) : [TemplateGalleryPageAdmin!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Resolve a pasted embed URL to its normalized iframe `embedUrl` without saving — for the collection media link-field preview. Runs the same validation and normalization as the create/update `media` link path (https check, host allowlist, provider normalization for Canva/YouTube/Google Slides). Authenticated callers only.
+  
+  Errors (same reason codes as the save path):
+  - BAD_USER_INPUT (field: `url`): URL is not https.
+  - BAD_USER_INPUT / EMBED_HOST_NOT_ALLOWED: host is not in the embed allowlist.
+  - BAD_USER_INPUT / CANVA_UNAVAILABLE, GOOGLE_SLIDES_NOT_PUBLISHED, etc.: provider normalization failed.
+  """
+  templateGalleryPageEmbedPreview(
+    """
+    The pasted embed URL to validate and normalize. Must be https and on an allowlisted host; provider URLs (Canva, YouTube, Google Slides) are normalized to their iframe form, and a canva.link short link is resolved to its design URL.
+    """
+    url: String!
+  ): String! @join__field(graph: API_JOURNEYS_MODERN) 
   getUserRole: UserRole @join__field(graph: API_JOURNEYS_MODERN) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
