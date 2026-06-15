@@ -4,6 +4,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
@@ -12,6 +13,7 @@ import {
   ImageBlockUpdateInput,
   SegmindModel
 } from '../../../../../../../../__generated__/globalTypes'
+import { useAuth } from '../../../../../../../libs/auth'
 import { MediaLibrary } from '../MediaLibrary'
 import { prependCloudflareImage } from '../MediaLibrary/prependCloudflareImage'
 
@@ -41,7 +43,9 @@ export function AIGallery({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { mediaLibrary } = useFlags()
+  const { activeTeam } = useTeam()
   const { cache } = useApolloClient()
+  const { user } = useAuth()
   const [createAiImage] = useMutation<CreateAiImage>(CREATE_AI_IMAGE)
   const [galleryKey, setGalleryKey] = useState(0)
 
@@ -63,11 +67,16 @@ export function AIGallery({
         cloudflareUploadKey !== ''
       ) {
         const url = `https://imagedelivery.net/${cloudflareUploadKey}/${cloudflareId}`
-        prependCloudflareImage(
-          cache,
-          { id: cloudflareId, url, blurhash: null },
-          true
-        )
+        // Only prepend optimistically when the uploader is known. Writing a
+        // placeholder userId would later compare unequal to the resolved user
+        // id and mislabel the caller's own upload as a teammate's "Team" tile.
+        if (user?.id != null) {
+          prependCloudflareImage(
+            cache,
+            { id: cloudflareId, url, blurhash: null, userId: user.id },
+            true
+          )
+        }
         setGalleryKey((k) => k + 1)
         await onChange({
           src: `${url}/public`,
@@ -117,6 +126,7 @@ export function AIGallery({
           onSelect={onChange}
           isAi={true}
           uploading={loading}
+          teamId={activeTeam?.id ?? null}
         />
       )}
     </Box>

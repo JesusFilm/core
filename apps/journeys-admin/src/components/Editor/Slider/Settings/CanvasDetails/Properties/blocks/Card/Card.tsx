@@ -91,7 +91,7 @@ export function Card({
   } = useEditor()
   const { rtl, locale } = getJourneyRTL(journey)
   const { t } = useTranslation('apps-journeys-admin')
-  const { apologistChat, editJourneyTrackingMetrics } = useFlags()
+  const { aiChatEditor, editJourneyTrackingMetrics } = useFlags()
 
   const coverBlock = children.find((block) => block.id === coverBlockId)
 
@@ -172,7 +172,7 @@ export function Card({
       >
         <CardLayout disableExpanded={disableExpanded} />
       </Accordion>
-      {apologistChat === true && (
+      {aiChatEditor === true && (
         <Accordion
           icon={<MessageChat1Icon />}
           id={`${id}-chat-assistant`}

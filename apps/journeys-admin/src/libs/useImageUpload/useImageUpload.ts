@@ -8,6 +8,8 @@ import {
   useDropzone
 } from 'react-dropzone'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { useCloudflareUploadByFileMutation } from '../useCloudflareUploadByFileMutation'
 
 /**
@@ -61,6 +63,7 @@ export function useImageUpload(
   useImageUploadOptions: UseImageUploadOptions
 ): UseImageUploadReturn {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
   const {
     onUploadComplete,
     onUploadStart,
@@ -136,7 +139,9 @@ export function useImageUpload(
     onUploadStart?.()
 
     try {
-      const { data } = await createCloudflareUploadByFile({})
+      const { data } = await createCloudflareUploadByFile({
+        variables: { journeyId: journey?.id }
+      })
 
       if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
         const file = acceptedFiles[0]

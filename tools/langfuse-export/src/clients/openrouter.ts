@@ -3,7 +3,8 @@
 // Two responsibilities, both content-bearing and therefore network/trust-
 // boundary crossing:
 //   - synthesizeThemes: theme LABELS + group assignments only (never excerpt
-//     text — report.ts renders quotes verbatim from the sanitised records).
+//     text — the explorer renders message text verbatim from the sanitised
+//     records).
 //   - createLlmScrub: the optional --llm-scrub primitive, injected into
 //     sanitize.ts by run.ts.
 // Both accept only SanitisedConversation / already-scrubbed text.
@@ -100,7 +101,9 @@ export async function synthesizeThemes(
     'You group user questions from a Christian apologetics chat into themes. ' +
     'Return ONLY JSON of the form {"themes":[{"label":"short theme name",' +
     '"sessionIds":["id1","id2"]}]}. Use the exact ids given. Do NOT quote, ' +
-    'paraphrase, or invent any message text — only labels and id groupings.'
+    'paraphrase, or invent any message text — only labels and id groupings. ' +
+    'Write every theme label in English, even when the conversations are in ' +
+    'another language — the report is read by English speakers.'
 
   const { text } = await generateText({
     model,

@@ -94,4 +94,38 @@ describe('MediaLibraryList', () => {
       screen.getByTestId('media-library-image-uploading')
     ).toBeInTheDocument()
   })
+
+  it('should render a Team tag only on teammate uploads', () => {
+    const taggedImages: MediaLibraryListImage[] = [
+      { id: 'a', src: 'https://example.com/a/public', blurhash: null },
+      {
+        id: 'b',
+        src: 'https://example.com/b/public',
+        blurhash: null,
+        isTeamUpload: true
+      }
+    ]
+    render(<MediaLibraryList images={taggedImages} handleSelect={vi.fn()} />)
+    expect(
+      screen.queryByTestId('media-library-team-tag-a')
+    ).not.toBeInTheDocument()
+    const tag = screen.getByTestId('media-library-team-tag-b')
+    expect(tag).toBeInTheDocument()
+    expect(tag).toHaveTextContent('Team')
+  })
+
+  it('should give teammate-upload tiles a distinct accessible name', () => {
+    const taggedImages: MediaLibraryListImage[] = [
+      {
+        id: 'b',
+        src: 'https://example.com/b/public',
+        blurhash: null,
+        isTeamUpload: true
+      }
+    ]
+    render(<MediaLibraryList images={taggedImages} handleSelect={vi.fn()} />)
+    expect(
+      screen.getByTestId('media-library-image-b').getAttribute('aria-label')
+    ).toBe('Select image uploaded by a teammate')
+  })
 })

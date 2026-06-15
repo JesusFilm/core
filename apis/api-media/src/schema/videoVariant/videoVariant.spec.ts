@@ -13,6 +13,7 @@ import { graphql } from '@core/shared/gql'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
+import { notifyMediaSlackOfOperationFailure } from '../../lib/slack'
 import {
   videoCacheReset,
   videoVariantCacheReset
@@ -29,6 +30,10 @@ import {
 vi.mock('../../lib/videoCacheReset', () => ({
   videoCacheReset: vi.fn(),
   videoVariantCacheReset: vi.fn()
+}))
+
+vi.mock('../../lib/slack', () => ({
+  notifyMediaSlackOfOperationFailure: vi.fn()
 }))
 
 // Mock the Mux video service
@@ -55,6 +60,9 @@ vi.mock('../video/lib/updateAvailableLanguages', () => ({
 }))
 
 // Get the mocked functions for testing
+const mockedNotifyMediaSlackOfOperationFailure = vi.mocked(
+  notifyMediaSlackOfOperationFailure
+)
 const mockedVideoCacheReset = vi.mocked(videoCacheReset)
 const mockedVideoVariantCacheReset = vi.mocked(videoVariantCacheReset)
 const mockedDeleteVideo = vi.mocked(deleteVideo)
@@ -1251,6 +1259,53 @@ describe('videoVariant', () => {
         // Verify cache reset functions were called
         expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('id')
         expect(mockedVideoCacheReset).toHaveBeenCalledWith('videoId')
+      })
+
+      it('notifies Slack when video variant creation fails', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoVariant.create.mockRejectedValueOnce(
+          new Error('variant create failed')
+        )
+
+        const result = (await authClient({
+          document: VIDEO_VARIANT_CREATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              hls: 'hls',
+              dash: 'dash',
+              duration: 1024,
+              lengthInMilliseconds: 123456,
+              languageId: 'languageId',
+              edition: 'base',
+              slug: 'videoSlug',
+              videoId: 'videoId',
+              share: 'share',
+              downloadable: true,
+              muxVideoId: 'muxVideoId',
+              version: 3
+            }
+          }
+        })) as { errors?: { message: string }[] }
+
+        expect(result.errors?.[0].message).toBe('variant create failed')
+        expect(mockedNotifyMediaSlackOfOperationFailure).toHaveBeenCalledWith({
+          operation: 'Video variant create failed',
+          error: expect.any(Error),
+          context: {
+            videoId: 'videoId',
+            languageId: 'languageId',
+            edition: 'base',
+            version: 3,
+            muxVideoId: 'muxVideoId'
+          }
+        })
       })
 
       it('should continue even if cache reset functions throw', async () => {

@@ -70,7 +70,9 @@ export function SocialScreenSocialImage({
     if (journey == null || file == null) return
     setLoading(true)
 
-    const { data } = await createCloudflareUploadByFile({})
+    const { data } = await createCloudflareUploadByFile({
+      variables: { journeyId: journey?.id }
+    })
     if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
       const formData = new FormData()
       formData.append('file', file)

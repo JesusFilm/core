@@ -2,7 +2,14 @@ import { useChat } from '@ai-sdk/react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { type Mock } from 'vitest'
 
+import { type TreeBlock, blockHistoryVar } from '../../libs/block'
+
 import { AiChat } from './AiChat'
+
+const { mockTransportConstructor, mockUseJourney } = vi.hoisted(() => ({
+  mockTransportConstructor: vi.fn(),
+  mockUseJourney: vi.fn()
+}))
 
 vi.mock('@ai-sdk/react', () => ({
   useChat: vi.fn()
@@ -10,9 +17,14 @@ vi.mock('@ai-sdk/react', () => ({
 
 // `ai` transitively loads streaming machinery that needs `TransformStream`
 // (absent in jsdom). `useChat` is mocked, so the transport is never
-// exercised — stub it to a constructable no-op.
+// exercised — stub it to a constructable no-op that records its options so
+// tests can assert the request body (NES-1679).
 vi.mock('ai', () => ({
-  DefaultChatTransport: class DefaultChatTransport {}
+  DefaultChatTransport: class DefaultChatTransport {
+    constructor(options: unknown) {
+      mockTransportConstructor(options)
+    }
+  }
 }))
 
 vi.mock('next-i18next/pages', () => ({
@@ -20,7 +32,7 @@ vi.mock('next-i18next/pages', () => ({
 }))
 
 vi.mock('../../libs/JourneyProvider', () => ({
-  useJourney: () => ({ journey: undefined })
+  useJourney: mockUseJourney
 }))
 
 // Conversation owns scroll/ResizeObserver machinery that jsdom lacks; the
@@ -77,13 +89,17 @@ function codedError(code: string): Error {
 describe('AiChat', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    // `clearAllMocks` clears calls but not return values — reset the journey
+    // explicitly so a per-test `mockReturnValue` can't leak across tests.
+    mockUseJourney.mockReturnValue({ journey: undefined })
+    blockHistoryVar([])
   })
 
   describe('error states — catered message + retry-gating (NES-1663)', () => {
     it('shows the catered cap-hit message + reset action, disables input, and hides Retry when capped', () => {
       setChatState({ error: codedError('conversation_capped') })
 
-      render(<AiChat variant="overlay" collapsible={false} />)
+      render(<AiChat variant="overlay" />)
 
       // Catered, session-specific copy that mentions clearing the session.
       expect(
@@ -109,7 +125,7 @@ describe('AiChat', () => {
     it('resets the conversation in place when the cap-hit action is clicked', () => {
       setChatState({ error: codedError('conversation_capped') })
 
-      render(<AiChat variant="overlay" collapsible={false} />)
+      render(<AiChat variant="overlay" />)
 
       fireEvent.click(
         screen.getByRole('button', { name: 'Start a new conversation' })
@@ -126,7 +142,7 @@ describe('AiChat', () => {
       // code → retriable.
       setChatState({ error: new Error('stream failed') })
 
-      render(<AiChat variant="overlay" collapsible={false} />)
+      render(<AiChat variant="overlay" />)
 
       expect(screen.getByText(/Something went wrong/i)).toBeInTheDocument()
       const retry = screen.getByRole('button', { name: 'Retry' })
@@ -154,7 +170,7 @@ describe('AiChat', () => {
         )
       })
 
-      render(<AiChat variant="overlay" collapsible={false} />)
+      render(<AiChat variant="overlay" />)
 
       expect(screen.getByText(/Something went wrong/i)).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument()
@@ -163,7 +179,7 @@ describe('AiChat', () => {
     it('hides Retry for a deterministic invalid_request error', () => {
       setChatState({ error: codedError('invalid_request') })
 
-      render(<AiChat variant="overlay" collapsible={false} />)
+      render(<AiChat variant="overlay" />)
 
       // Not the cap-hit, so the generic message is shown…
       expect(screen.getByText(/Something went wrong/i)).toBeInTheDocument()
@@ -176,11 +192,34 @@ describe('AiChat', () => {
     it('hides Retry for a deterministic not_found (flag-off) error', () => {
       setChatState({ error: codedError('not_found') })
 
-      render(<AiChat variant="overlay" collapsible={false} />)
+      render(<AiChat variant="overlay" />)
 
       expect(
         screen.queryByRole('button', { name: 'Retry' })
       ).not.toBeInTheDocument()
+    })
+
+    it('shows the catered "turned off" message and hides Retry when chat is disabled', () => {
+      setChatState({ error: codedError('chat_disabled') })
+
+      render(<AiChat variant="overlay" />)
+
+      // Honest copy instead of the misleading "try again" generic.
+      expect(screen.getByText(/chat has been turned off/i)).toBeInTheDocument()
+      expect(
+        screen.queryByText(/Something went wrong/i)
+      ).not.toBeInTheDocument()
+      // Retry is hidden (re-firing 403s again)…
+      expect(
+        screen.queryByRole('button', { name: 'Retry' })
+      ).not.toBeInTheDocument()
+      // …but the input stays usable: the kill-switch floor keeps the stale tab
+      // interactive, and locking it would strand a user who navigates to a card
+      // where chat is still enabled.
+      expect(screen.getByTestId('prompt-input')).toHaveAttribute(
+        'data-disabled',
+        'false'
+      )
     })
 
     it('does not render the error block while a request is still in flight', () => {
@@ -189,7 +228,7 @@ describe('AiChat', () => {
         error: codedError('conversation_capped')
       })
 
-      render(<AiChat variant="overlay" collapsible={false} />)
+      render(<AiChat variant="overlay" />)
 
       expect(
         screen.queryByText(/start a new one to keep chatting/i)
@@ -208,15 +247,17 @@ describe('AiChat', () => {
     it('shows when overlay variant is idle with no messages, error, or in-flight request', () => {
       setChatState({ messages: [], status: 'ready', error: undefined })
 
-      render(<AiChat variant="overlay" collapsible={false} />)
+      render(<AiChat variant="overlay" />)
 
-      expect(screen.getByTestId('overlay-hero')).toBeInTheDocument()
+      const hero = screen.getByTestId('overlay-hero')
+      expect(hero).toBeInTheDocument()
+      expect(hero).toHaveTextContent('Ask your questions about faith')
     })
 
     it('hides while a request is in flight (submitted)', () => {
       setChatState({ messages: [], status: 'submitted', error: undefined })
 
-      render(<AiChat variant="overlay" collapsible={false} />)
+      render(<AiChat variant="overlay" />)
 
       expect(screen.queryByTestId('overlay-hero')).not.toBeInTheDocument()
     })
@@ -224,7 +265,7 @@ describe('AiChat', () => {
     it('hides while a response is streaming', () => {
       setChatState({ messages: [], status: 'streaming', error: undefined })
 
-      render(<AiChat variant="overlay" collapsible={false} />)
+      render(<AiChat variant="overlay" />)
 
       expect(screen.queryByTestId('overlay-hero')).not.toBeInTheDocument()
     })
@@ -242,7 +283,7 @@ describe('AiChat', () => {
         error: undefined
       })
 
-      render(<AiChat variant="overlay" collapsible={false} />)
+      render(<AiChat variant="overlay" />)
 
       expect(screen.queryByTestId('overlay-hero')).not.toBeInTheDocument()
     })
@@ -254,7 +295,7 @@ describe('AiChat', () => {
         error: new Error('boom')
       })
 
-      render(<AiChat variant="overlay" collapsible={false} />)
+      render(<AiChat variant="overlay" />)
 
       expect(screen.queryByTestId('overlay-hero')).not.toBeInTheDocument()
     })
@@ -262,9 +303,118 @@ describe('AiChat', () => {
     it('does not render on the panel variant', () => {
       setChatState({ messages: [], status: 'ready', error: undefined })
 
-      render(<AiChat variant="panel" collapsible={false} />)
+      render(<AiChat variant="panel" />)
 
       expect(screen.queryByTestId('overlay-hero')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('about-this-chat disclosure link (NES-1588)', () => {
+    // The disclosure link lives on exactly one surface per variant: the
+    // ChatHeader in panel mode, the floating-input footer caption in overlay
+    // mode (`showHeader = isPanel`). These guard both the safe external-link
+    // attributes and the no-duplication invariant across the two surfaces.
+
+    it('renders one disclosure link with safe external-link attributes in overlay mode', () => {
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="overlay" />)
+
+      // Overlay suppresses ChatHeader, so the footer caption is the sole copy.
+      const links = screen.getAllByRole('link', { name: 'About this chat' })
+      expect(links).toHaveLength(1)
+      expect(links[0]).toHaveAttribute('href', '/legal/about-chat')
+      expect(links[0]).toHaveAttribute('target', '_blank')
+      expect(links[0]).toHaveAttribute('rel', 'noopener noreferrer')
+    })
+
+    it('renders the disclosure link only in the header in panel mode', () => {
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="panel" />)
+
+      // Panel shows the ChatHeader link; the overlay-only footer caption is
+      // suppressed, so again exactly one copy renders.
+      expect(
+        screen.getAllByRole('link', { name: 'About this chat' })
+      ).toHaveLength(1)
+    })
+
+    it('carries the journey language as ?lang on the disclosure link (NES-1724)', () => {
+      mockUseJourney.mockReturnValue({
+        journey: { language: { bcp47: 'es' } }
+      })
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="overlay" />)
+
+      expect(
+        screen.getByRole('link', { name: 'About this chat' })
+      ).toHaveAttribute('href', '/legal/about-chat?lang=es')
+    })
+  })
+
+  describe('close button (NES-1727)', () => {
+    it('renders a close button in panel mode that calls onClose', () => {
+      setChatState({ messages: [], status: 'ready', error: undefined })
+      const onClose = vi.fn()
+
+      render(<AiChat variant="panel" onClose={onClose} />)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Close chat' }))
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not render a close button in panel mode without onClose', () => {
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="panel" />)
+
+      expect(
+        screen.queryByRole('button', { name: 'Close chat' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('does not render a close button in overlay mode (ChatOverlay owns its own)', () => {
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="overlay" onClose={vi.fn()} />)
+
+      expect(
+        screen.queryByRole('button', { name: 'Close chat' })
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('chat request body (NES-1679)', () => {
+    it('includes the active card id in the chat request body', () => {
+      blockHistoryVar([
+        {
+          __typename: 'StepBlock',
+          id: 'step-1',
+          children: [{ __typename: 'CardBlock', id: 'card-1', children: [] }]
+        }
+      ] as unknown as TreeBlock[])
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="overlay" />)
+
+      const options = mockTransportConstructor.mock.calls[0]?.[0] as {
+        body: () => Record<string, unknown>
+      }
+      expect(options.body()).toMatchObject({ cardId: 'card-1' })
+    })
+
+    it('sends an undefined cardId when no card is active', () => {
+      blockHistoryVar([])
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="overlay" />)
+
+      const options = mockTransportConstructor.mock.calls[0]?.[0] as {
+        body: () => Record<string, unknown>
+      }
+      expect(options.body().cardId).toBeUndefined()
     })
   })
 })

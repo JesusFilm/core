@@ -1,1 +1,0 @@
-export { DragHandle } from './DragHandle'

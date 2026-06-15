@@ -100,7 +100,7 @@ export function ChatOverlay({
           minHeight: 0
         }}
       >
-        <AiChat collapsible={false} variant="overlay" />
+        <AiChat variant="overlay" />
       </Box>
     </Box>
   )
