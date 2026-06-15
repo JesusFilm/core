@@ -16,8 +16,9 @@ const teamTagSx: SxProps<Theme> = {
   px: 2,
   py: 1,
   borderRadius: 1.5,
+  fontWeight: 600,
   pointerEvents: 'none',
-  color: 'common.white',
+  color: 'background.paper',
   backgroundColor: (theme) => alpha(theme.palette.grey[900], 0.72),
   backdropFilter: 'blur(2px)'
 }
@@ -114,7 +115,7 @@ export function MediaLibraryList({
             </ButtonBase>
             {img.isTeamUpload === true && (
               <Typography
-                variant="subtitle2"
+                variant="body2"
                 component="span"
                 aria-hidden
                 data-testid={`media-library-team-tag-${img.id}`}
