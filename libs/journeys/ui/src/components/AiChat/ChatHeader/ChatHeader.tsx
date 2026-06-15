@@ -187,7 +187,6 @@ export function ChatHeader({
         <IconButton
           onClick={onClose}
           aria-label={t('Close chat')}
-          tabIndex={0}
           sx={{
             width: 32,
             height: 32,
