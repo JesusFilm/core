@@ -93,7 +93,8 @@ export function embedAttrs(embedUrl: string): EmbedIframeAttrs | null {
       // channel / end-screen links all open via target=_blank, which a sandbox
       // without allow-popups blocks — so a click can't navigate the viewer off
       // to youtube.com. In-frame playback (play/seek/fullscreen) is unaffected.
-      sandbox: 'allow-scripts allow-same-origin allow-presentation allow-fullscreen',
+      sandbox:
+        'allow-scripts allow-same-origin allow-presentation allow-fullscreen',
       aspectRatioPaddingTop: RATIO_16_9
     }
   }
