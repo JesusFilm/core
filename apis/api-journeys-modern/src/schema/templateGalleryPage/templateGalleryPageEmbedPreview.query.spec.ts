@@ -50,15 +50,17 @@ describe('templateGalleryPageEmbedPreview', () => {
       embedUrl: 'https://www.youtube-nocookie.com/embed/abc'
     })
 
-    const result = (await authClient({
+    const result = await authClient({
       document: EMBED_PREVIEW,
       variables: { url: 'https://www.youtube.com/watch?v=abc' }
-    })) as any
+    })
 
-    expect(result.errors).toBeUndefined()
-    expect(result.data.templateGalleryPageEmbedPreview).toBe(
-      'https://www.youtube-nocookie.com/embed/abc'
-    )
+    expect(result).toEqual({
+      data: {
+        templateGalleryPageEmbedPreview:
+          'https://www.youtube-nocookie.com/embed/abc'
+      }
+    })
     expect(mockLinkValidate).toHaveBeenCalledWith(
       'https://www.youtube.com/watch?v=abc'
     )

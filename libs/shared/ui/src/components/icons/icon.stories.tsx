@@ -158,6 +158,7 @@ const iconNames: IconName[] = [
   'Menu1',
   'MessageChat1',
   'MessageChat2',
+  'MessageChatStars',
   'MessageCircle',
   'MessageNotifyCircle',
   'MessageNotifySquare',

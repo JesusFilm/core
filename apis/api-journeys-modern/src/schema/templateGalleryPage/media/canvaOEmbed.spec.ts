@@ -1,4 +1,10 @@
+import { logger } from '../../logger'
+
 import { canvaSpec } from './canvaOEmbed'
+
+vi.mock('../../logger', () => ({
+  logger: { warn: vi.fn(), info: vi.fn(), error: vi.fn(), debug: vi.fn() }
+}))
 
 const fetchMock = vi.fn()
 vi.stubGlobal('fetch', fetchMock)
@@ -72,7 +78,26 @@ describe('canvaSpec.normalize', () => {
     })
   })
 
-  it('falls back to a /view?embed rewrite for a canonical URL when oEmbed fails', async () => {
+  it('fails closed when the oEmbed src carries embedded credentials (userinfo)', async () => {
+    // `https://evil.com@canva.com/…` has hostname `canva.com` and would pass the
+    // host pin, but userinfo must be rejected so an attacker-shaped string can't
+    // be stored as a public iframe src.
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        html: '<iframe src="https://evil.example.com@www.canva.com/design/DAF123/abc/view?embed"></iframe>'
+      })
+    })
+
+    await expect(
+      canvaSpec.normalize('https://www.canva.com/design/DAF123/abc/edit')
+    ).rejects.toMatchObject({
+      extensions: { reason: 'CANVA_UNAVAILABLE' }
+    })
+  })
+
+  it('logs and falls back to a /view?embed rewrite when oEmbed returns a 5xx', async () => {
     fetchMock.mockResolvedValue({ ok: false, status: 503 })
 
     await expect(
@@ -80,15 +105,54 @@ describe('canvaSpec.normalize', () => {
     ).resolves.toEqual({
       embedUrl: 'https://www.canva.com/design/DAF123/my-slug/view?embed'
     })
+    // a 5xx is an outage signal, logged distinct from a normal no-iframe fallback
+    expect(logger.warn).toHaveBeenCalled()
   })
 
-  it('falls back when the fetch throws (timeout/network)', async () => {
+  it('falls back when the fetch throws (timeout/network) and logs the outage', async () => {
     fetchMock.mockRejectedValue(new Error('aborted'))
 
     await expect(
       canvaSpec.normalize('https://www.canva.com/design/DAF123/my-slug/view')
     ).resolves.toEqual({
       embedUrl: 'https://www.canva.com/design/DAF123/my-slug/view?embed'
+    })
+    // a network/timeout failure is logged so a Canva outage is diagnosable
+    expect(logger.warn).toHaveBeenCalled()
+  })
+
+  it('does NOT log on a normal 2xx-no-iframe fallback (avoids noise)', async () => {
+    // oEmbed 200 with no iframe is an expected fallback, not an outage — must
+    // not log, or every odd paste would spam warnings.
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({ html: '<div>no iframe</div>' })
+    })
+
+    await expect(
+      canvaSpec.normalize('https://www.canva.com/design/DAF123/my-slug/view')
+    ).resolves.toEqual({
+      embedUrl: 'https://www.canva.com/design/DAF123/my-slug/view?embed'
+    })
+    expect(logger.warn).not.toHaveBeenCalled()
+  })
+
+  it('falls through to the canonical fallback when the iframe uses srcdoc (no src)', async () => {
+    // The `\ssrc=` anchor must not match `srcdoc`; with no real src, oEmbed
+    // yields null and the canonical-path fallback handles the canonical URL.
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        html: '<iframe srcdoc="<p>hi</p>"></iframe>'
+      })
+    })
+
+    await expect(
+      canvaSpec.normalize('https://www.canva.com/design/DAF123/abc/view')
+    ).resolves.toEqual({
+      embedUrl: 'https://www.canva.com/design/DAF123/abc/view?embed'
     })
   })
 
@@ -184,6 +248,72 @@ describe('canvaSpec.normalize', () => {
       expect(fetchMock).toHaveBeenCalledTimes(1)
     })
 
+    it('fails closed when a redirect hop carries embedded credentials (userinfo)', async () => {
+      // `https://evil.com@www.canva.com/…` has hostname `www.canva.com` and
+      // would pass the host check, but userinfo must be rejected before the
+      // design URL is returned/forwarded to oEmbed.
+      fetchMock.mockResolvedValueOnce(
+        redirectTo(
+          'https://evil.example.com@www.canva.com/design/DAF123/abc/view'
+        )
+      )
+
+      await expect(canvaSpec.normalize(SHARE_LINK)).rejects.toMatchObject({
+        extensions: { reason: 'CANVA_UNAVAILABLE' }
+      })
+      // rejected at the hop — the design URL is never forwarded to oEmbed
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('resolves through an intermediate canva.link hop to a design host', async () => {
+      // canva.link → canva.link → design host: the intermediate canva.link hop
+      // is followed (currentUrl advances), the design host is returned from the
+      // location header, then oEmbed resolves.
+      fetchMock
+        .mockResolvedValueOnce(redirectTo('https://canva.link/second'))
+        .mockResolvedValueOnce(redirectTo(RESOLVED))
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: async () => ({
+            html: `<iframe src="${RESOLVED}?embed"></iframe>`
+          })
+        })
+
+      await expect(canvaSpec.normalize(SHARE_LINK)).resolves.toEqual({
+        embedUrl: `${RESOLVED}?embed`
+      })
+      // 2 redirect hops + oEmbed; the design page is never re-fetched
+      expect(fetchMock).toHaveBeenCalledTimes(3)
+    })
+
+    it('follows a relative location header against the current hop', async () => {
+      fetchMock
+        .mockResolvedValueOnce(redirectTo('/design/DAF123/abc/view'))
+        .mockResolvedValueOnce({ ok: false, status: 503 })
+
+      // The relative location resolves against canva.link, which is NOT a design
+      // host, so the loop continues to fetch it (canva.link hop), then fails the
+      // host check downstream — i.e. a relative redirect off canva.link cannot
+      // smuggle a design URL. It must redirect to an absolute design host.
+      await expect(canvaSpec.normalize(SHARE_LINK)).rejects.toMatchObject({
+        extensions: { reason: 'CANVA_UNAVAILABLE' }
+      })
+    })
+
+    it('fails closed when a design-host redirect lands on a non-design path', async () => {
+      // canva.link → canva.com/login (design host, but not a /design/ path).
+      // Returned from the location header, oEmbed yields nothing, and the
+      // canonical-path fallback rejects the non-design path.
+      fetchMock
+        .mockResolvedValueOnce(redirectTo('https://www.canva.com/login'))
+        .mockResolvedValueOnce({ ok: false, status: 503 })
+
+      await expect(canvaSpec.normalize(SHARE_LINK)).rejects.toMatchObject({
+        extensions: { reason: 'CANVA_UNAVAILABLE' }
+      })
+    })
+
     it('fails closed when the redirect chain exceeds MAX_REDIRECTS', async () => {
       // every hop redirects again — the chain never terminates
       fetchMock.mockResolvedValue(redirectTo('https://canva.link/next'))
@@ -203,12 +333,32 @@ describe('canvaSpec.normalize', () => {
       })
     })
 
-    it('fails closed when the redirect resolution fetch fails', async () => {
+    it('fails closed when canva.link responds 2xx without redirecting (dead/expired link)', async () => {
+      fetchMock.mockResolvedValueOnce({ status: 200, headers: new Headers() })
+
+      await expect(canvaSpec.normalize(SHARE_LINK)).rejects.toMatchObject({
+        extensions: { reason: 'CANVA_UNAVAILABLE' }
+      })
+      // never resolved to a design URL → oEmbed must not run
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('fails closed when canva.link returns a non-redirect error status (e.g. 404)', async () => {
+      fetchMock.mockResolvedValueOnce({ status: 404, headers: new Headers() })
+
+      await expect(canvaSpec.normalize(SHARE_LINK)).rejects.toMatchObject({
+        extensions: { reason: 'CANVA_UNAVAILABLE' }
+      })
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('fails closed and logs when the redirect resolution fetch fails', async () => {
       fetchMock.mockRejectedValueOnce(new Error('network'))
 
       await expect(canvaSpec.normalize(SHARE_LINK)).rejects.toMatchObject({
         extensions: { reason: 'CANVA_UNAVAILABLE' }
       })
+      expect(logger.warn).toHaveBeenCalled()
     })
   })
 })

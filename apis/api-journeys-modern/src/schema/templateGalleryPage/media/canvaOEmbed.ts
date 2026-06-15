@@ -1,5 +1,6 @@
 import { GraphQLError } from 'graphql'
 
+import { logger } from '../../logger'
 import { assertHttpsUrl } from '../assertHttpsUrl'
 
 import { EmbedNormalizerSpec } from './types'
@@ -63,7 +64,19 @@ async function fetchOEmbedSrc(url: string): Promise<string | null> {
       `${CANVA_OEMBED_ENDPOINT}?url=${encodeURIComponent(url)}`,
       { signal: controller.signal }
     )
-    if (!response.ok) return null
+    if (!response.ok) {
+      // A 5xx is a Canva oEmbed outage signal (distinct from a normal
+      // no-iframe/4xx that just routes to the canonical fallback). Log it so
+      // an outage is diagnosable rather than surfacing as a generic
+      // CANVA_UNAVAILABLE indistinguishable from bad user input.
+      if (response.status >= 500) {
+        logger.warn(
+          { status: response.status },
+          'canva oEmbed returned a server error'
+        )
+      }
+      return null
+    }
     const data: unknown = await response.json()
     const html =
       typeof data === 'object' &&
@@ -73,7 +86,10 @@ async function fetchOEmbedSrc(url: string): Promise<string | null> {
         ? (data as { html: string }).html
         : undefined
     return extractIframeSrc(html)
-  } catch {
+  } catch (error) {
+    // Network error or 5s timeout reaching api.canva.com — an outage/slowness
+    // signal, logged so it is distinguishable from a bad-URL fallback.
+    logger.warn({ error }, 'canva oEmbed fetch failed (network/timeout)')
     return null
   } finally {
     clearTimeout(timeout)
@@ -138,24 +154,22 @@ async function resolveShareLink(url: string): Promise<string> {
     let response: Response
     try {
       response = await fetchHop(currentUrl)
-    } catch {
+    } catch (error) {
+      // Network error or timeout reaching the share-link host — an outage
+      // signal, distinct from a well-formed link that resolves to a bad target.
+      logger.warn(
+        { error },
+        'canva.link redirect fetch failed (network/timeout)'
+      )
       throw canvaUnavailable()
     }
 
-    // A 2xx here means a canva.link URL responded without redirecting — it
-    // never resolved to a design URL, so fail closed. (A design host is
-    // returned straight from the redirect `location` below and is NEVER
-    // fetched, so this branch only ever sees the un-redirected canva.link
-    // host, which is not a design host.)
+    // A 2xx means canva.link responded without redirecting — it never resolved
+    // to a design URL, so fail closed. (currentUrl here is always the canva.link
+    // host: a design host is returned straight from the `location` header below
+    // and is never fetched.)
     if (response.status >= 200 && response.status < 300) {
-      const finalParsed = new URL(currentUrl)
-      if (
-        finalParsed.protocol !== 'https:' ||
-        !CANVA_DESIGN_HOSTS.has(finalParsed.hostname.toLowerCase())
-      ) {
-        throw canvaUnavailable()
-      }
-      return currentUrl
+      throw canvaUnavailable()
     }
 
     if (!REDIRECT_STATUSES.has(response.status)) throw canvaUnavailable()
@@ -171,6 +185,12 @@ async function resolveShareLink(url: string): Promise<string> {
     const nextHost = next.hostname.toLowerCase()
     if (
       next.protocol !== 'https:' ||
+      // Reject embedded credentials (https://anything@canva.com/…): `.hostname`
+      // strips the userinfo, so a `user@host` redirect target would otherwise
+      // pass the host check yet carry an attacker-shaped string into the stored
+      // embedUrl. A real Canva redirect never carries userinfo.
+      next.username !== '' ||
+      next.password !== '' ||
       (nextHost !== CANVA_LINK_HOST && !CANVA_DESIGN_HOSTS.has(nextHost))
     ) {
       throw canvaUnavailable()
@@ -207,6 +227,13 @@ async function normalize(url: string): Promise<{ embedUrl: string }> {
       throw canvaUnavailable()
     }
     if (!isCanvaHost(srcParsed.hostname)) throw canvaUnavailable()
+    // Reject embedded credentials: `https://evil.com@canva.com/…` has
+    // `hostname === 'canva.com'` and would otherwise pass the host pin, then be
+    // stored verbatim as a public iframe src. A real Canva oEmbed src never
+    // carries userinfo.
+    if (srcParsed.username !== '' || srcParsed.password !== '') {
+      throw canvaUnavailable()
+    }
     return { embedUrl: src }
   }
   return canvaRegexFallback(resolvedUrl)

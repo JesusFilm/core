@@ -61,6 +61,7 @@ describe('segmind', () => {
         videoId: null,
         blurhash: null,
         blurhashAttemptedAt: null,
+        teamId: null,
         isAi: true
       })
       const result = await authClient({
