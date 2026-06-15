@@ -8,6 +8,9 @@ describe('embedAttrs', () => {
     expect(attrs?.allowFullScreen).toBe(true)
     expect(attrs?.referrerPolicy).toBe('strict-origin-when-cross-origin')
     expect(attrs?.sandbox).toContain('allow-presentation')
+    // No allow-popups: the embed's target=_blank links (Watch on YouTube /
+    // title / channel / end-screen) can't open a new tab to youtube.com.
+    expect(attrs?.sandbox).not.toContain('allow-popups')
     expect(attrs?.aspectRatioPaddingTop).toBe('56.25%')
   })
 
@@ -27,6 +30,9 @@ describe('embedAttrs', () => {
     expect(attrs?.aspectRatioPaddingTop).toBe('56.2225%')
     // Slides does not need Canva's allow-forms token.
     expect(attrs?.sandbox).not.toContain('allow-forms')
+    // No allow-popups: blocks the right-click "Open speaker notes" presenter
+    // popup (which can expose private notes) on the public embed.
+    expect(attrs?.sandbox).not.toContain('allow-popups')
   })
 
   it('renders an unknown https host with a script-isolated default (no allow-same-origin)', () => {

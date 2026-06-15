@@ -89,8 +89,11 @@ export function embedAttrs(embedUrl: string): EmbedIframeAttrs | null {
         'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share',
       allowFullScreen: true,
       referrerPolicy: 'strict-origin-when-cross-origin',
-      sandbox:
-        'allow-scripts allow-same-origin allow-popups allow-presentation allow-fullscreen',
+      // No `allow-popups`: the player's "Watch on YouTube" / video title /
+      // channel / end-screen links all open via target=_blank, which a sandbox
+      // without allow-popups blocks — so a click can't navigate the viewer off
+      // to youtube.com. In-frame playback (play/seek/fullscreen) is unaffected.
+      sandbox: 'allow-scripts allow-same-origin allow-presentation allow-fullscreen',
       aspectRatioPaddingTop: RATIO_16_9
     }
   }
@@ -109,7 +112,13 @@ export function embedAttrs(embedUrl: string): EmbedIframeAttrs | null {
     return {
       allow: 'fullscreen',
       allowFullScreen: true,
-      sandbox: 'allow-scripts allow-same-origin allow-popups allow-fullscreen',
+      // No `allow-popups`: the published slideshow's right-click menu can open
+      // the presenter "speaker notes" window (which may hold private notes) in
+      // a popup — dropping allow-popups blocks that. In-frame slide navigation
+      // and fullscreen are unaffected. (The ephemeral laser-pointer/pen toggles
+      // render inside Google's cross-origin frame and can't be removed via
+      // iframe attributes — see the right-click menu note for NES-1707.)
+      sandbox: 'allow-scripts allow-same-origin allow-fullscreen',
       aspectRatioPaddingTop: RATIO_CANVA
     }
   }
