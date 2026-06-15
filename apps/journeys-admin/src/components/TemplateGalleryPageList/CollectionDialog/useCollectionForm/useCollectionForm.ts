@@ -26,7 +26,7 @@ import {
   formMediaToInput,
   mediaDirty as mediaDiffers
 } from './collectionMedia'
-import { mediaErrorMessage } from './mediaErrorMessage'
+import { mediaErrorMessage, mediaErrorReason } from './mediaErrorMessage'
 
 export interface CollectionFormValues {
   title: string
@@ -376,11 +376,10 @@ export function useCollectionForm({
         const gqlErrors = error.graphQLErrors ?? []
         // Media validation errors carry a structured `extensions.reason`
         // (BAD_USER_INPUT) rather than a `field` — surface them inline on the
-        // media field with a human-readable, translated message.
-        const rawReason = gqlErrors.find(
-          (e) => typeof e.extensions?.reason === 'string'
-        )?.extensions?.reason
-        const reason = typeof rawReason === 'string' ? rawReason : undefined
+        // media field with a human-readable, translated message. The live
+        // preview reads the same reason via `mediaErrorReason` so the two
+        // can't drift.
+        const reason = mediaErrorReason(gqlErrors)
         if (reason != null) {
           await helpers.setFieldTouched('media', true, false)
           helpers.setFieldError('media', mediaErrorMessage(reason, t))

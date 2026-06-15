@@ -1,4 +1,3 @@
-import { ApolloError } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
@@ -13,7 +12,10 @@ import {
 import { TemplateGalleryPageMediaType } from '../../../../../__generated__/globalTypes'
 import { useTemplateGalleryPageEmbedPreview } from '../../../../libs/useTemplateGalleryPageEmbedPreview'
 import { CollectionMediaValues } from '../useCollectionForm/collectionMedia'
-import { mediaErrorMessage } from '../useCollectionForm/mediaErrorMessage'
+import {
+  mediaErrorMessage,
+  mediaErrorReason
+} from '../useCollectionForm/mediaErrorMessage'
 
 // Field box dimensions, shared with the Creator Details image box so the two
 // fields line up. Gently landscape (≈8:7), and tall enough that the right-hand
@@ -60,6 +62,14 @@ export function MediaPreview({
   const [debouncedUrl, setDebouncedUrl] = useState(url)
 
   useEffect(() => {
+    // Clearing the field reverts the preview immediately — debouncing an empty
+    // value would leave the old embed (or its error) on screen for the full
+    // 500ms, which reads as a bug. Only a non-empty edit needs the debounce so
+    // the query doesn't fire on every keystroke.
+    if (url === '') {
+      setDebouncedUrl('')
+      return
+    }
     const handle = setTimeout(() => setDebouncedUrl(url), 500)
     return () => clearTimeout(handle)
   }, [url])
@@ -111,9 +121,10 @@ export function MediaPreview({
   }
 
   if (media.type === TemplateGalleryPageMediaType.link) {
-    // Resolved → render the embed. key resets the loaded state when the URL
-    // changes, so editing the link re-shimmers instead of showing the stale
-    // embed's last frame.
+    // Resolved → render the embed. `key` is the resolved URL, so a *different*
+    // resolved embed re-mounts (re-shimmers) instead of flashing the previous
+    // embed's last frame. (Mid-edit, the debounce above keeps the prior embed
+    // until the new URL settles — only an empty field clears immediately.)
     if (resolvedEmbedUrl != null) {
       return (
         <LinkPreview
@@ -140,10 +151,11 @@ export function MediaPreview({
     // plain box; the field-level save error still covers the compact field).
     if (error != null) {
       if (compact) return <MediaPreviewPlaceholder dark sizeSx={sizeSx} />
+      // Read the reason the same way the save path does (mediaErrorReason),
+      // falling back to the generic message when none is present.
+      const reason = mediaErrorReason(error.graphQLErrors)
       return (
-        <MediaPreviewPlaceholder
-          label={mediaErrorMessage(embedPreviewReason(error), t)}
-        />
+        <MediaPreviewPlaceholder label={mediaErrorMessage(reason ?? '', t)} />
       )
     }
     // else (skipped: empty or non-https) → the placeholder below.
@@ -177,19 +189,6 @@ export function MediaPreview({
       ? t('Preview appears once you add the link')
       : t('Paste a link to see a preview')
   return <MediaPreviewPlaceholder label={label} />
-}
-
-/**
- * Pulls the structured `reason` off the preview query's GraphQLError, mirroring
- * the save path's error reader so the same `mediaErrorMessage` map applies.
- * Falls back to an empty string (→ the generic message) when no reason is
- * present (e.g. a not-https `BAD_USER_INPUT`).
- */
-function embedPreviewReason(error: ApolloError): string {
-  const raw = error.graphQLErrors.find(
-    (e) => typeof e.extensions?.reason === 'string'
-  )?.extensions?.reason
-  return typeof raw === 'string' ? raw : ''
 }
 
 /**
