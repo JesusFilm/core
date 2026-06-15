@@ -114,14 +114,16 @@ async function fetchHop(url: string): Promise<Response> {
 }
 
 // Resolves a canva.link short share link to its underlying canva.com design
-// URL by following HTTP redirects manually (capped at MAX_REDIRECTS), then
-// validates the destination is an https canva.com host before handing it to
-// the normal oEmbed + fallback path. Every intermediate hop must be https and
-// stay on a Canva host (canva.link or a design host) — a chain that bounces
-// through http: or a foreign host fails closed without being fetched.
-// Non-share hosts pass through unchanged. Fails closed (CANVA_UNAVAILABLE)
-// when the link can't be resolved or resolves somewhere unexpected — the
-// canonical fallback can't rescue a bare canva.link URL.
+// URL by following HTTP redirects manually (capped at MAX_REDIRECTS). The
+// design URL is taken straight from the redirect `location` header the moment a
+// hop points at a Canva design host — the destination is NOT fetched, because
+// Canva returns 403 to server-side requests for design pages (re-fetching it
+// would make every share link fail closed). Every intermediate hop must be
+// https and stay on a Canva host (canva.link or a design host) — a chain that
+// bounces through http: or a foreign host fails closed without being followed.
+// Non-share hosts pass through unchanged. Fails closed (CANVA_UNAVAILABLE) when
+// the link can't be resolved or resolves somewhere unexpected. The resolved
+// URL is validated downstream by oEmbed + the canonical-path fallback.
 async function resolveShareLink(url: string): Promise<string> {
   let parsed: URL
   try {
@@ -140,6 +142,11 @@ async function resolveShareLink(url: string): Promise<string> {
       throw canvaUnavailable()
     }
 
+    // A 2xx here means a canva.link URL responded without redirecting — it
+    // never resolved to a design URL, so fail closed. (A design host is
+    // returned straight from the redirect `location` below and is NEVER
+    // fetched, so this branch only ever sees the un-redirected canva.link
+    // host, which is not a design host.)
     if (response.status >= 200 && response.status < 300) {
       const finalParsed = new URL(currentUrl)
       if (
@@ -168,6 +175,12 @@ async function resolveShareLink(url: string): Promise<string> {
     ) {
       throw canvaUnavailable()
     }
+    // Resolved: the redirect points at a Canva design host. Return it straight
+    // from the `location` header WITHOUT fetching the destination — Canva
+    // returns 403 to server-side requests for design pages, so re-fetching it
+    // to confirm a 2xx would fail closed and break every share link. The design
+    // is validated downstream by oEmbed + the canonical-path fallback.
+    if (CANVA_DESIGN_HOSTS.has(nextHost)) return next.toString()
     currentUrl = next.toString()
   }
 
