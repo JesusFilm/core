@@ -16,6 +16,9 @@ export function createEmotionCache({
   return createEmotionCacheNext({
     key: 'css',
     prepend,
+    // prefixer and rtlPlugin must come from the same stylis version emotion
+    // bundles, or RTL compilation crashes — enforced by
+    // createEmotionCache.spec.tsx (NES-1728)
     stylisPlugins: rtl === true ? [prefixer, rtlPlugin] : []
   })
 }

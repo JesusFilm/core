@@ -1,4 +1,5 @@
 {
+  "About this chat": "حول هذه المحادثة",
   "Copy message": "نسخ الرسالة",
   "Copy": "نسخ",
   "Assistant is typing": "المساعد يقوم بالطباعة",
@@ -117,6 +118,7 @@
   "A short description of your collection will appear here.": "سيظهر هنا وصف موجز لمجموعتك.",
   "Creator name": "اسم المنشئ",
   "Ask anything…": "اسأل أي شيء…",
+  "Ask your questions about faith": "اطرح أسئلتك حول الإيمان",
   "Scroll to latest message": "قم بالتمرير إلى آخر رسالة",
   "Use {{title}}": "استخدم {{title}}",
   "Preview {{title}}": "معاينة {{title}}",

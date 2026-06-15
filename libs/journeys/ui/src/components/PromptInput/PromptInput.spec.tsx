@@ -154,6 +154,22 @@ describe('PromptInput', () => {
     })
   })
 
+  describe('placeholder copy (NES-1725)', () => {
+    it('prompts visitors to ask their questions about faith', () => {
+      render(
+        <PromptInput
+          input=""
+          onInputChange={noop}
+          onSubmit={noop}
+          isLoading={false}
+        />
+      )
+      expect(
+        screen.getByPlaceholderText('Ask your questions about faith')
+      ).toBeInTheDocument()
+    })
+  })
+
   describe('disabled state (NES-1663)', () => {
     it('disables the textarea and the send button when disabled', () => {
       render(

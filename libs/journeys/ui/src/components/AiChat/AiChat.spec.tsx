@@ -6,8 +6,9 @@ import { type TreeBlock, blockHistoryVar } from '../../libs/block'
 
 import { AiChat } from './AiChat'
 
-const { mockTransportConstructor } = vi.hoisted(() => ({
-  mockTransportConstructor: vi.fn()
+const { mockTransportConstructor, mockUseJourney } = vi.hoisted(() => ({
+  mockTransportConstructor: vi.fn(),
+  mockUseJourney: vi.fn()
 }))
 
 vi.mock('@ai-sdk/react', () => ({
@@ -31,7 +32,7 @@ vi.mock('next-i18next/pages', () => ({
 }))
 
 vi.mock('../../libs/JourneyProvider', () => ({
-  useJourney: () => ({ journey: undefined })
+  useJourney: mockUseJourney
 }))
 
 // Conversation owns scroll/ResizeObserver machinery that jsdom lacks; the
@@ -88,6 +89,9 @@ function codedError(code: string): Error {
 describe('AiChat', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    // `clearAllMocks` clears calls but not return values — reset the journey
+    // explicitly so a per-test `mockReturnValue` can't leak across tests.
+    mockUseJourney.mockReturnValue({ journey: undefined })
     blockHistoryVar([])
   })
 
@@ -245,7 +249,9 @@ describe('AiChat', () => {
 
       render(<AiChat variant="overlay" collapsible={false} />)
 
-      expect(screen.getByTestId('overlay-hero')).toBeInTheDocument()
+      const hero = screen.getByTestId('overlay-hero')
+      expect(hero).toBeInTheDocument()
+      expect(hero).toHaveTextContent('Ask your questions about faith')
     })
 
     it('hides while a request is in flight (submitted)', () => {
@@ -332,6 +338,19 @@ describe('AiChat', () => {
       expect(
         screen.getAllByRole('link', { name: 'About this chat' })
       ).toHaveLength(1)
+    })
+
+    it('carries the journey language as ?lang on the disclosure link (NES-1724)', () => {
+      mockUseJourney.mockReturnValue({
+        journey: { language: { bcp47: 'es' } }
+      })
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="overlay" collapsible={false} />)
+
+      expect(
+        screen.getByRole('link', { name: 'About this chat' })
+      ).toHaveAttribute('href', '/legal/about-chat?lang=es')
     })
   })
 
