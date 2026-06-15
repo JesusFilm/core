@@ -100,7 +100,12 @@ export function MediaLibrary({
   >(GET_MY_CLOUDFLARE_IMAGES, {
     // Omit teamId entirely when there is no active team so the query (and its
     // cache entry) falls back to personal-only.
-    variables: { offset: 0, limit: PEEK_LIMIT, isAi, teamId: teamId ?? undefined },
+    variables: {
+      offset: 0,
+      limit: PEEK_LIMIT,
+      isAi,
+      teamId: teamId ?? undefined
+    },
     notifyOnNetworkStatusChange: true
   })
 
