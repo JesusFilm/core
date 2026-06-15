@@ -91,7 +91,7 @@ describe('CustomImage', () => {
   })
 
   it('should forward the active team id into the uploads query', async () => {
-    mockUseTeam.mockReturnValueOnce({
+    mockUseTeam.mockReturnValue({
       activeTeam: { id: 'team-1', title: 'Team 1' }
     })
     const teamImagesMock: MockedResponse = {
