@@ -67,10 +67,10 @@ interface AiChatProps {
    */
   onSheetStateChange?: (state: 'idle' | 'active' | 'collapsed') => void
   /**
-   * Seeds the internal `collapsed` state on mount. Used by per-card
-   * `expandChatByDefault: false / null` to land the user in the
-   * drag-handle-only state instead of the default idle (input visible)
-   * state. Only the initial mount value matters — subsequent changes
+   * Seeds the internal `collapsed` state on mount. Used by the per-card
+   * "collapse chat" setting (legacy `expandChatByDefault === false`) to land
+   * the user in the drag-handle-only state instead of the default idle (input
+   * visible) state. Only the initial mount value matters — subsequent changes
    * are ignored, drag interactions own the state from there.
    */
   initialCollapsed?: boolean

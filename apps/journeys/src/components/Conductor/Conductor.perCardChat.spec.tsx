@@ -243,12 +243,23 @@ describe('Conductor per-card chat', () => {
       expect(await findByTestId('ChatOverlay-open')).toBeInTheDocument()
     })
 
-    it('does not auto-open the overlay when card.expandChatByDefault is null', async () => {
-      const { findByTestId, queryByTestId } = renderConductor({
+    it('auto-opens the desktop ChatOverlay when card.expandChatByDefault is null (new pop-open default)', async () => {
+      const { findByTestId } = renderConductor({
         journey: { ...baseJourney, showAssistant: null },
         blocks: buildBlocks({
           showAssistant: true,
           expandChatByDefault: null
+        })
+      })
+      expect(await findByTestId('ChatOverlay-open')).toBeInTheDocument()
+    })
+
+    it('does not auto-open the overlay when card.expandChatByDefault is false (collapse opt-in)', async () => {
+      const { findByTestId, queryByTestId } = renderConductor({
+        journey: { ...baseJourney, showAssistant: null },
+        blocks: buildBlocks({
+          showAssistant: true,
+          expandChatByDefault: false
         })
       })
       // Wait for Conductor's per-card derivation to settle.
@@ -386,7 +397,7 @@ describe('Conductor per-card chat', () => {
       expect(bar.getAttribute('data-initial-expanded')).toBe('false')
     })
 
-    it('passes initialExpanded=false to PinnedChatBar when card.expandChatByDefault is null (legacy default → collapsed)', async () => {
+    it('passes initialExpanded=true to PinnedChatBar when card.expandChatByDefault is null (new pop-open default)', async () => {
       const { findByTestId } = renderConductor({
         journey: { ...baseJourney, showAssistant: true },
         blocks: buildBlocks({
@@ -395,7 +406,7 @@ describe('Conductor per-card chat', () => {
         })
       })
       const bar = await findByTestId('PinnedChatBar')
-      expect(bar.getAttribute('data-initial-expanded')).toBe('false')
+      expect(bar.getAttribute('data-initial-expanded')).toBe('true')
     })
   })
 })

@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
+import { toAiChatSettings } from '@core/journeys/ui/aiChatSettings'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   getOpacityFromHex,
@@ -145,12 +146,18 @@ export function Card({
 
   const selectedEventLabel = getEventLabelOption(t, eventLabel).label
 
-  const chatAssistantValue =
-    showAssistant === true
-      ? expandChatByDefault === true
-        ? t('On, auto-open')
-        : t('On')
-      : t('Off')
+  // `showAssistant` / `expandChatByDefault` are the legacy GraphQL fields;
+  // the mapper exposes them as `enableAiChat` / `collapseChat`. Remove with
+  // NES-1735.
+  const { enableAiChat, collapseChat } = toAiChatSettings({
+    showAssistant,
+    expandChatByDefault
+  })
+  const chatAssistantValue = !enableAiChat
+    ? t('Off')
+    : collapseChat
+      ? t('On, collapsed')
+      : t('On')
 
   return (
     <Box data-testid="CardProperties">

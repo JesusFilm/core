@@ -7,6 +7,7 @@ import { ReactElement, useEffect } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import { v4 as uuidv4 } from 'uuid'
 
+import { toAiChatSettings } from '@core/journeys/ui/aiChatSettings'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   blockHistoryVar,
@@ -85,20 +86,26 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     apologistChatEnabled &&
     hasAiChatButton({ journey, variant, card: activeCard })
 
-  // Mobile: per-card `expandChatByDefault === true` lands the bar in
-  // `'idle'` (header + input visible, ready). Otherwise the bar starts
-  // `'collapsed'` (drag handle only) so creators who haven't opted in
-  // do not get the chat surface eating screen real estate. Sticky after
-  // mount — drag interactions own the state from there. So on mobile,
-  // `expandChatByDefault` only seeds the first card a visitor lands on;
-  // subsequent card navigations preserve whatever sheet state the user
-  // (or the previous card's seed) produced. Mobile per-card re-seeding
-  // is tracked as follow-up work.
-  const initialChatExpanded = activeCard?.expandChatByDefault === true
+  // Mobile: the per-card "collapse chat" setting (legacy
+  // `expandChatByDefault === false`) lands the bar in `'collapsed'` (drag
+  // handle only). Off by default → the bar starts `'idle'` (header + input
+  // visible, ready) so the chat pops open. Sticky after mount — drag
+  // interactions own the state from there. So on mobile, this only seeds the
+  // first card a visitor lands on; subsequent card navigations preserve
+  // whatever sheet state the user (or the previous card's seed) produced.
+  // Mobile per-card re-seeding is tracked as follow-up work.
+  //
+  // `collapseChat` is bridged via the temporary aiChatSettings mapper;
+  // remove with NES-1735.
+  const collapseChat =
+    activeCard != null && toAiChatSettings(activeCard).collapseChat
+  const initialChatExpanded = !collapseChat
 
   const { setOpen, shouldAutoOpen, markAutoOpened } = useChatOverlay()
 
-  // Desktop overlay auto-open on `expandChatByDefault`. Lives at the
+  // Desktop overlay auto-open. Pops open by default; only the per-card
+  // "collapse chat" opt-in (legacy `expandChatByDefault === false`)
+  // suppresses it. Lives at the
   // navigation chokepoint so prefetched neighbours mounted off-screen by
   // DynamicCardList do not trigger it. Mobile is handled separately via
   // `initialChatExpanded` → `<PinnedChatBar initialExpanded=…>` (declared
@@ -121,7 +128,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   // dismiss is not overridden by a later re-evaluation in the same tab.
   useEffect(() => {
     if (!apologistChatEnabled) return
-    if (activeCard == null || activeCard.expandChatByDefault !== true) return
+    if (activeCard == null || toAiChatSettings(activeCard).collapseChat) return
     if (!hasAiChatButton({ journey, variant, card: activeCard })) return
     if (!shouldAutoOpen(activeCard.id)) return
     markAutoOpened(activeCard.id)
