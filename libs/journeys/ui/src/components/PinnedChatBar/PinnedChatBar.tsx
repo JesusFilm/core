@@ -150,10 +150,6 @@ export function PinnedChatBar({ sx }: PinnedChatBarProps): ReactElement | null {
     setSheetState(next)
   }, [])
 
-  const handleClose = useCallback(() => {
-    setOpen(false)
-  }, [setOpen])
-
   if (variant === 'admin' || variant === 'embed') {
     return null
   }
@@ -197,7 +193,7 @@ export function PinnedChatBar({ sx }: PinnedChatBarProps): ReactElement | null {
     >
       <AiChat
         onSheetStateChange={handleSheetStateChange}
-        onClose={handleClose}
+        onClose={() => setOpen(false)}
       />
     </Box>
   )
