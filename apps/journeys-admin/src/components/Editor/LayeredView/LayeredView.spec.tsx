@@ -124,15 +124,17 @@ describe('LayeredView', () => {
     expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
   })
 
-  it('lets clicks on the paper empty areas fall through to the backdrop', () => {
+  it('makes the paper pointer-transparent while keeping the settings panel interactive', () => {
     renderLayeredView({ ...state, activeSlide: ActiveSlide.Drawer })
 
-    // the transparent paper is pointer-events: none so empty areas around the
-    // card reach the dimmed backdrop (which closes the drawer)...
+    // The close behaviour itself is covered by the backdrop-close test above.
+    // jsdom does not hit-test pointer-events, so a click cannot actually route
+    // through the paper to the backdrop here; this test pins the mechanism that
+    // lets a real click reach it: the transparent paper is pointer-events:none
+    // (empty areas fall through) while the settings panel re-enables them.
     expect(document.querySelector('.MuiDrawer-paper') as Element).toHaveStyle(
       'pointer-events: none'
     )
-    // ...while the settings panel re-enables clicks so it stays interactive
     expect(screen.getByTestId('SettingsDrawer').parentElement).toHaveStyle(
       'pointer-events: auto'
     )
