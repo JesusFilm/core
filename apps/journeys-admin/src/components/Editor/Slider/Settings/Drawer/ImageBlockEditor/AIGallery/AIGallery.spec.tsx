@@ -11,11 +11,14 @@ import {
   CreateAiImageVariables
 } from '../../../../../../../../__generated__/CreateAiImage'
 import { SegmindModel } from '../../../../../../../../__generated__/globalTypes'
+import { AuthContext, User } from '../../../../../../../libs/auth'
 import { GET_MY_CLOUDFLARE_IMAGES } from '../MediaLibrary/MediaLibrary'
 
 import { CREATE_AI_IMAGE } from './AIGallery'
 
 import { AIGallery } from '.'
+
+const authUser = { id: 'me', uid: 'me' } as unknown as User
 
 describe('AIGallery', () => {
   let originalEnv
@@ -174,13 +177,15 @@ describe('AIGallery', () => {
       }
     }
     render(
-      <MockedProvider mocks={[myAiImagesMock, getAIImage]}>
-        <SnackbarProvider>
-          <FlagsProvider flags={{ mediaLibrary: true }}>
-            <AIGallery onChange={vi.fn()} />
-          </FlagsProvider>
-        </SnackbarProvider>
-      </MockedProvider>
+      <AuthContext.Provider value={{ user: authUser }}>
+        <MockedProvider mocks={[myAiImagesMock, getAIImage]}>
+          <SnackbarProvider>
+            <FlagsProvider flags={{ mediaLibrary: true }}>
+              <AIGallery onChange={vi.fn()} />
+            </FlagsProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      </AuthContext.Provider>
     )
     await waitFor(() =>
       expect(
@@ -229,16 +234,18 @@ describe('AIGallery', () => {
       }
     })
     render(
-      <MockedProvider
-        mocks={[firstPage, secondPage, getAIImage]}
-        cache={paginatedCache}
-      >
-        <SnackbarProvider>
-          <FlagsProvider flags={{ mediaLibrary: true }}>
-            <AIGallery onChange={vi.fn()} />
-          </FlagsProvider>
-        </SnackbarProvider>
-      </MockedProvider>
+      <AuthContext.Provider value={{ user: authUser }}>
+        <MockedProvider
+          mocks={[firstPage, secondPage, getAIImage]}
+          cache={paginatedCache}
+        >
+          <SnackbarProvider>
+            <FlagsProvider flags={{ mediaLibrary: true }}>
+              <AIGallery onChange={vi.fn()} />
+            </FlagsProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      </AuthContext.Provider>
     )
     await screen.findByTestId('media-library-image-ai-0')
     fireEvent.click(screen.getByRole('button', { name: 'Load More' }))

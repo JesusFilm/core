@@ -135,11 +135,16 @@ export function ImageUpload({
           return
         }
         const url = `https://imagedelivery.net/${cloudflareUploadKey}/${cloudflareId}`
-        prependCloudflareImage(
-          cache,
-          { id: cloudflareId, url, blurhash: null, userId: user?.id ?? '' },
-          false
-        )
+        // Only prepend optimistically when the uploader is known. Writing a
+        // placeholder userId would later compare unequal to the resolved user
+        // id and mislabel the caller's own upload as a teammate's "Team" tile.
+        if (user?.id != null) {
+          prependCloudflareImage(
+            cache,
+            { id: cloudflareId, url, blurhash: null, userId: user.id },
+            false
+          )
+        }
         onUploaded?.()
         onChange({
           src: `${url}/public`,

@@ -67,11 +67,16 @@ export function AIGallery({
         cloudflareUploadKey !== ''
       ) {
         const url = `https://imagedelivery.net/${cloudflareUploadKey}/${cloudflareId}`
-        prependCloudflareImage(
-          cache,
-          { id: cloudflareId, url, blurhash: null, userId: user?.id ?? '' },
-          true
-        )
+        // Only prepend optimistically when the uploader is known. Writing a
+        // placeholder userId would later compare unequal to the resolved user
+        // id and mislabel the caller's own upload as a teammate's "Team" tile.
+        if (user?.id != null) {
+          prependCloudflareImage(
+            cache,
+            { id: cloudflareId, url, blurhash: null, userId: user.id },
+            true
+          )
+        }
         setGalleryKey((k) => k + 1)
         await onChange({
           src: `${url}/public`,

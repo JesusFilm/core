@@ -8,6 +8,15 @@ import { GET_MY_CLOUDFLARE_IMAGES } from '../MediaLibrary/MediaLibrary'
 
 import { CustomImage } from '.'
 
+const mockActiveTeam: { id: string; title: string } | null = null
+const mockUseTeam = vi.fn<
+  () => { activeTeam: { id: string; title: string } | null }
+>(() => ({ activeTeam: mockActiveTeam }))
+
+vi.mock('@core/journeys/ui/TeamProvider', () => ({
+  useTeam: () => mockUseTeam()
+}))
+
 describe('CustomImage', () => {
   const imageBlock: ImageBlock = {
     id: 'imageBlockId',
@@ -79,5 +88,42 @@ describe('CustomImage', () => {
       expect(screen.getByTestId('MediaLibrary')).toBeInTheDocument()
     })
     expect(screen.getByText('Uploads')).toBeInTheDocument()
+  })
+
+  it('should forward the active team id into the uploads query', async () => {
+    mockUseTeam.mockReturnValueOnce({
+      activeTeam: { id: 'team-1', title: 'Team 1' }
+    })
+    const teamImagesMock: MockedResponse = {
+      request: {
+        query: GET_MY_CLOUDFLARE_IMAGES,
+        variables: { offset: 0, limit: 11, isAi: false, teamId: 'team-1' }
+      },
+      result: {
+        data: {
+          getMyCloudflareImages: [
+            {
+              __typename: 'CloudflareImage',
+              id: 'a',
+              url: 'https://imagedelivery.net/key/a',
+              blurhash: null,
+              userId: 'me'
+            }
+          ]
+        }
+      }
+    }
+    render(
+      <MockedProvider mocks={[teamImagesMock]}>
+        <FlagsProvider flags={{ mediaLibrary: true }}>
+          <CustomImage onChange={vi.fn()} selectedBlock={imageBlock} />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    // The mock only matches when teamId is sent, so rendering the tile proves
+    // CustomImage forwarded activeTeam.id into the query.
+    expect(
+      await screen.findByTestId('media-library-image-a')
+    ).toBeInTheDocument()
   })
 })

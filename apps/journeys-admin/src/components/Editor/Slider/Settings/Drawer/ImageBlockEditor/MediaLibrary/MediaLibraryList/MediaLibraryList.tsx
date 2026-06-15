@@ -3,8 +3,28 @@ import ButtonBase from '@mui/material/ButtonBase'
 import CircularProgress from '@mui/material/CircularProgress'
 import ImageList from '@mui/material/ImageList'
 import ImageListItem from '@mui/material/ImageListItem'
+import { SxProps, Theme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
+
+const teamTagSx: SxProps<Theme> = {
+  position: 'absolute',
+  right: 6,
+  bottom: 6,
+  zIndex: 2,
+  px: '9px',
+  py: '5px',
+  borderRadius: '6px',
+  pointerEvents: 'none',
+  fontSize: 12,
+  fontWeight: 600,
+  lineHeight: 1,
+  letterSpacing: '0.04em',
+  color: 'common.white',
+  backgroundColor: 'rgba(24, 24, 32, 0.72)',
+  backdropFilter: 'blur(2px)'
+}
 
 export interface MediaLibraryListImage {
   id: string
@@ -12,8 +32,9 @@ export interface MediaLibraryListImage {
   blurhash: string | null
   /**
    * True when the upload belongs to a teammate rather than the current user.
-   * Drives the corner "Team" tag. The ownership signal is derived server-side
-   * (see follow-up ticket); until it is supplied the tag never renders.
+   * Computed client-side by comparing the image's `userId` (firebase uid from
+   * the API) against the authenticated user's id. Drives the corner "Team" tag;
+   * when undefined (e.g. no authenticated user) the tag never renders.
    */
   isTeamUpload?: boolean
 }
@@ -96,30 +117,14 @@ export function MediaLibraryList({
               />
             </ButtonBase>
             {img.isTeamUpload === true && (
-              <Box
+              <Typography
+                component="span"
                 aria-hidden
                 data-testid={`media-library-team-tag-${img.id}`}
-                sx={{
-                  position: 'absolute',
-                  right: 6,
-                  bottom: 6,
-                  zIndex: 2,
-                  px: '9px',
-                  py: '5px',
-                  borderRadius: '6px',
-                  pointerEvents: 'none',
-                  fontFamily: 'inherit',
-                  fontSize: 12,
-                  fontWeight: 600,
-                  lineHeight: 1,
-                  letterSpacing: '0.04em',
-                  color: 'common.white',
-                  backgroundColor: 'rgba(24, 24, 32, 0.72)',
-                  backdropFilter: 'blur(2px)'
-                }}
+                sx={teamTagSx}
               >
                 {t('Team')}
-              </Box>
+              </Typography>
             )}
           </ImageListItem>
         )
