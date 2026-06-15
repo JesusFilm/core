@@ -1,7 +1,10 @@
 import { UpChunk } from '@mux/upchunk'
 import { Dispatch, RefObject, SetStateAction } from 'react'
 
-import { CreateMuxVideoUploadByFileMutation } from '../../../../../__generated__/CreateMuxVideoUploadByFileMutation'
+import {
+  CreateMuxVideoUploadByFileMutation,
+  CreateMuxVideoUploadByFileMutationVariables
+} from '../../../../../__generated__/CreateMuxVideoUploadByFileMutation'
 import type { UploadTask } from '../types'
 
 import { cleanupUploadTask } from './cleanupUploadTask'
@@ -9,13 +12,7 @@ import { cleanupUploadTask } from './cleanupUploadTask'
 interface ProcessUploadDependencies {
   setUploadTasks: Dispatch<SetStateAction<Map<string, UploadTask>>>
   createMuxVideoUploadByFile: (options: {
-    variables: {
-      name: string
-      generateSubtitlesInput?:
-        | { languageCode: string; languageName: string }
-        | undefined
-      journeyId?: string
-    }
+    variables: CreateMuxVideoUploadByFileMutationVariables
   }) => Promise<{
     data?: CreateMuxVideoUploadByFileMutation | null
   }>

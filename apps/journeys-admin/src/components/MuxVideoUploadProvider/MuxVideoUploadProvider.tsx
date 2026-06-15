@@ -14,7 +14,10 @@ import {
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
-import { CreateMuxVideoUploadByFileMutation } from '../../../__generated__/CreateMuxVideoUploadByFileMutation'
+import {
+  CreateMuxVideoUploadByFileMutation,
+  CreateMuxVideoUploadByFileMutationVariables
+} from '../../../__generated__/CreateMuxVideoUploadByFileMutation'
 import { GetMyMuxVideoQuery } from '../../../__generated__/GetMyMuxVideoQuery'
 import { prependMuxVideo } from '../../libs/apolloClient/prependMuxVideo'
 import { useAuth } from '../../libs/auth'
@@ -103,7 +106,10 @@ export function MuxVideoUploadProvider({
   )
 
   const [createMuxVideoUploadByFile] =
-    useMutation<CreateMuxVideoUploadByFileMutation>(
+    useMutation<
+      CreateMuxVideoUploadByFileMutation,
+      CreateMuxVideoUploadByFileMutationVariables
+    >(
       CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION
     )
 
@@ -126,14 +132,18 @@ export function MuxVideoUploadProvider({
       // Surgical cache prepend — mirrors prependCloudflareImage in the image
       // picker. Avoids the offsetLimitPagination refetch-stomp where an
       // offset:0 refetch would overwrite accumulated later pages.
-      prependMuxVideo(apolloClient.cache, {
-        id: videoId,
-        playbackId,
-        readyToStream: true,
-        // A freshly-uploaded video always belongs to the current user, so the
-        // grid never tags it as a teammate upload.
-        userId: user?.id ?? ''
-      })
+      //
+      // Only prepend optimistically when the uploader is known. Writing a
+      // placeholder userId would later compare unequal to the resolved user
+      // id and mislabel the caller's own upload as a teammate's "Team" tile.
+      if (user?.id != null) {
+        prependMuxVideo(apolloClient.cache, {
+          id: videoId,
+          playbackId,
+          readyToStream: true,
+          userId: user.id
+        })
+      }
     },
     [showSnackbar, t, pollingTasks, pollingIntervalsRef, apolloClient, user]
   )
