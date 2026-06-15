@@ -8,13 +8,15 @@ describe('aiChatSettings mapper', () => {
 
     it('maps showAssistant null/false to enableAiChat false', () => {
       expect(toAiChatSettings({ showAssistant: null }).enableAiChat).toBe(false)
-      expect(toAiChatSettings({ showAssistant: false }).enableAiChat).toBe(false)
+      expect(toAiChatSettings({ showAssistant: false }).enableAiChat).toBe(
+        false
+      )
     })
 
     it('treats expandChatByDefault === false as collapseChat true', () => {
-      expect(toAiChatSettings({ expandChatByDefault: false }).collapseChat).toBe(
-        true
-      )
+      expect(
+        toAiChatSettings({ expandChatByDefault: false }).collapseChat
+      ).toBe(true)
     })
 
     it('treats expandChatByDefault true/null/undefined as collapseChat false (pop open)', () => {
