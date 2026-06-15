@@ -21,6 +21,7 @@ import {
 import { useAuth } from '../../../../../../../../libs/auth'
 import { sendVideoSelectEvent } from '../../../../../../../../libs/sendMediaSelectEvent'
 import { LoadMoreButton } from '../../../ImageBlockEditor/LoadMoreButton'
+import { MediaLibraryTeamTag } from '../../../ImageBlockEditor/MediaLibraryTeamTag'
 import { VideoDetails } from '../../VideoDetails'
 
 export const GET_MY_MUX_VIDEOS = gql`
@@ -201,30 +202,9 @@ export function MyMuxVideos({
                 />
               </ButtonBase>
               {isTeamUpload && (
-                <Box
-                  aria-hidden
+                <MediaLibraryTeamTag
                   data-testid={`my-mux-video-team-tag-${video.id}`}
-                  sx={{
-                    position: 'absolute',
-                    right: 6,
-                    bottom: 6,
-                    zIndex: 2,
-                    px: '7px',
-                    py: '4px',
-                    borderRadius: '5px',
-                    pointerEvents: 'none',
-                    fontFamily: 'inherit',
-                    fontSize: 10,
-                    fontWeight: 600,
-                    lineHeight: 1,
-                    letterSpacing: '0.04em',
-                    color: 'common.white',
-                    backgroundColor: 'rgba(24, 24, 32, 0.72)',
-                    backdropFilter: 'blur(2px)'
-                  }}
-                >
-                  {t('Team')}
-                </Box>
+                />
               )}
             </ImageListItem>
           )
