@@ -8,7 +8,8 @@ import { prependMuxVideo } from './prependMuxVideo'
 const NEW_VIDEO = {
   id: 'new-video-id',
   playbackId: 'new-playback-id',
-  readyToStream: true
+  readyToStream: true,
+  userId: 'me'
 }
 
 function buildCache(): InMemoryCache {
@@ -31,6 +32,7 @@ function seedCache(
     playbackId: string
     readyToStream: boolean
     duration: number | null
+    userId: string
   }>
 ): void {
   cache.writeQuery({
@@ -76,14 +78,16 @@ describe('prependMuxVideo', () => {
         id: 'existing-1',
         playbackId: 'pb-1',
         readyToStream: true,
-        duration: null
+        duration: null,
+        userId: 'me'
       },
       {
         __typename: 'MuxVideo',
         id: 'existing-2',
         playbackId: 'pb-2',
         readyToStream: true,
-        duration: null
+        duration: null,
+        userId: 'me'
       }
     ])
 
@@ -101,14 +105,16 @@ describe('prependMuxVideo', () => {
         id: NEW_VIDEO.id,
         playbackId: NEW_VIDEO.playbackId,
         readyToStream: NEW_VIDEO.readyToStream,
-        duration: null
+        duration: null,
+        userId: 'me'
       },
       {
         __typename: 'MuxVideo',
         id: 'existing-1',
         playbackId: 'pb-1',
         readyToStream: true,
-        duration: null
+        duration: null,
+        userId: 'me'
       }
     ])
 

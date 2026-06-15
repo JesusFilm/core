@@ -16,6 +16,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 
 import { CreateMuxVideoUploadByFileMutation } from '../../../__generated__/CreateMuxVideoUploadByFileMutation'
 import { GetMyMuxVideoQuery } from '../../../__generated__/GetMyMuxVideoQuery'
+import { useAuth } from '../../libs/auth'
 import { prependMuxVideo } from '../../libs/apolloClient/prependMuxVideo'
 
 import { addUploadToQueue as addUploadTaskUtil } from './utils/addUploadToQueue'
@@ -85,6 +86,7 @@ export function MuxVideoUploadProvider({
     new Map()
   )
   const { t } = useTranslation('apps-journeys-admin')
+  const { user } = useAuth()
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
   const [getMyMuxVideo] = useLazyQuery<GetMyMuxVideoQuery>(
     GET_MY_MUX_VIDEO_QUERY,
@@ -127,10 +129,13 @@ export function MuxVideoUploadProvider({
       prependMuxVideo(apolloClient.cache, {
         id: videoId,
         playbackId,
-        readyToStream: true
+        readyToStream: true,
+        // A freshly-uploaded video always belongs to the current user, so the
+        // grid never tags it as a teammate upload.
+        userId: user?.id ?? ''
       })
     },
-    [showSnackbar, t, pollingTasks, pollingIntervalsRef, apolloClient]
+    [showSnackbar, t, pollingTasks, pollingIntervalsRef, apolloClient, user]
   )
 
   const handlePollingErrorCallback = useCallback(

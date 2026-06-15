@@ -18,6 +18,7 @@ import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../../../../../__generated__/globalTypes'
+import { useAuth } from '../../../../../../../../libs/auth'
 import { sendVideoSelectEvent } from '../../../../../../../../libs/sendMediaSelectEvent'
 import { LoadMoreButton } from '../../../ImageBlockEditor/LoadMoreButton'
 import { VideoDetails } from '../../VideoDetails'
@@ -29,6 +30,7 @@ export const GET_MY_MUX_VIDEOS = gql`
       playbackId
       readyToStream
       duration
+      userId
     }
   }
 `
@@ -43,12 +45,6 @@ interface MyMuxVideosProps {
    * omits the arg and degrades to personal-only.
    */
   teamId?: string | null
-  /**
-   * Called when the merged-team query is rejected with FORBIDDEN — e.g. the user
-   * was removed from the team mid-session. The caller should refresh the active
-   * team list so the grid falls back to personal-only.
-   */
-  onTeamForbidden?: () => void
 }
 
 export const PAGE_SIZE = 10
@@ -58,10 +54,10 @@ export function MyMuxVideos({
   selectedVideoId,
   onSelect,
   uploading,
-  teamId,
-  onTeamForbidden
+  teamId
 }: MyMuxVideosProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
+  const { user } = useAuth()
   const [previewVideo, setPreviewVideo] = useState<{
     id: string
     playbackId: string
@@ -77,16 +73,7 @@ export function MyMuxVideos({
     // personal-only results and the cache key matches the personal entry.
     variables: { offset: 0, limit: PEEK_LIMIT, teamId: teamId ?? undefined },
     fetchPolicy: 'cache-first',
-    notifyOnNetworkStatusChange: true,
-    onError: (queryError) => {
-      const isForbidden = queryError.graphQLErrors.some(
-        (graphQLError) => graphQLError.extensions?.code === 'FORBIDDEN'
-      )
-      // User was removed from the team mid-session. Ask the caller to refresh
-      // the active-team list; once activeTeam clears, teamId becomes null and
-      // the query refetches personal-only.
-      if (isForbidden && teamId != null) onTeamForbidden?.()
-    }
+    notifyOnNetworkStatusChange: true
   })
 
   const isFetchingMore = networkStatus === NetworkStatus.fetchMore
@@ -168,6 +155,10 @@ export function MyMuxVideos({
         )}
         {videos.map((video) => {
           const selected = selectedVideoId === video.id
+          // A tile belongs to a teammate when its uploader differs from the
+          // current user. video.userId and the auth-context id are both the
+          // firebase uid, so they compare directly. Drives the "Team" tag.
+          const isTeamUpload = user?.id != null && video.userId !== user.id
           return (
             <ImageListItem
               key={video.id}
@@ -185,7 +176,11 @@ export function MyMuxVideos({
             >
               <ButtonBase
                 data-testid={`my-mux-video-${video.id}`}
-                aria-label={t('Select uploaded video')}
+                aria-label={
+                  isTeamUpload
+                    ? t('Select video uploaded by a teammate')
+                    : t('Select uploaded video')
+                }
                 aria-pressed={selected}
                 onClick={() => handleClick(video)}
                 disableRipple
@@ -205,6 +200,32 @@ export function MyMuxVideos({
                   }}
                 />
               </ButtonBase>
+              {isTeamUpload && (
+                <Box
+                  aria-hidden
+                  data-testid={`my-mux-video-team-tag-${video.id}`}
+                  sx={{
+                    position: 'absolute',
+                    right: 6,
+                    bottom: 6,
+                    zIndex: 2,
+                    px: '7px',
+                    py: '4px',
+                    borderRadius: '5px',
+                    pointerEvents: 'none',
+                    fontFamily: 'inherit',
+                    fontSize: 10,
+                    fontWeight: 600,
+                    lineHeight: 1,
+                    letterSpacing: '0.04em',
+                    color: 'common.white',
+                    backgroundColor: 'rgba(24, 24, 32, 0.72)',
+                    backdropFilter: 'blur(2px)'
+                  }}
+                >
+                  {t('Team')}
+                </Box>
+              )}
             </ImageListItem>
           )
         })}

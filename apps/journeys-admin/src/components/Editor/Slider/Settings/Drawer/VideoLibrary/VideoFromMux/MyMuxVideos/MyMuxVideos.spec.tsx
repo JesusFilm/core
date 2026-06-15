@@ -6,6 +6,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { type MockedFunction } from 'vitest'
 
+import { AuthContext, User } from '../../../../../../../../libs/auth'
+
 import { GetMyMuxVideos } from '../../../../../../../../../__generated__/GetMyMuxVideos'
 
 import { GET_MY_MUX_VIDEOS, MyMuxVideos, PAGE_SIZE } from './MyMuxVideos'
@@ -57,13 +59,15 @@ const buildMock = (
 
 const readyVideo = (
   id: string,
-  duration: number | null = 9
+  duration: number | null = 9,
+  userId = 'me'
 ): GetMyMuxVideos['getMyMuxVideos'][number] => ({
   __typename: 'MuxVideo',
   id,
   playbackId: `${id}-playback`,
   readyToStream: true,
-  duration
+  duration,
+  userId
 })
 
 describe('MyMuxVideos', () => {
@@ -321,8 +325,7 @@ describe('MyMuxVideos', () => {
     })
   })
 
-  it('should call onTeamForbidden when the merged query is rejected with FORBIDDEN', async () => {
-    const onTeamForbidden = vi.fn()
+  it('should surface the generic error banner when the team query is rejected with FORBIDDEN', async () => {
     render(
       <MockedProvider
         mocks={[
@@ -333,7 +336,7 @@ describe('MyMuxVideos', () => {
             },
             result: {
               errors: [
-                new GraphQLError('Forbidden', {
+                new GraphQLError('Not a member of this team', {
                   extensions: { code: 'FORBIDDEN' }
                 })
               ]
@@ -341,49 +344,49 @@ describe('MyMuxVideos', () => {
           }
         ]}
       >
-        <MyMuxVideos
-          onSelect={vi.fn()}
-          teamId="team-1"
-          onTeamForbidden={onTeamForbidden}
-        />
+        <MyMuxVideos onSelect={vi.fn()} teamId="team-1" />
       </MockedProvider>
     )
 
-    await waitFor(() => {
-      expect(onTeamForbidden).toHaveBeenCalledTimes(1)
-    })
+    expect(
+      await screen.findByText('Could not load your videos.')
+    ).toBeInTheDocument()
   })
 
-  it('should not call onTeamForbidden for personal-only errors', async () => {
-    const onTeamForbidden = vi.fn()
+  it('should tag a teammate upload with a Team tag and leave the caller’s own untagged', async () => {
+    const user = { id: 'me', uid: 'me' } as unknown as User
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_MY_MUX_VIDEOS,
-              variables: { offset: 0, limit: PEEK_LIMIT }
-            },
-            result: {
-              errors: [
-                new GraphQLError('Forbidden', {
-                  extensions: { code: 'FORBIDDEN' }
-                })
-              ]
+      <AuthContext.Provider value={{ user }}>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_MY_MUX_VIDEOS,
+                variables: { offset: 0, limit: PEEK_LIMIT, teamId: 'team-1' }
+              },
+              result: {
+                data: {
+                  getMyMuxVideos: [
+                    readyVideo('mine', 9, 'me'),
+                    readyVideo('theirs', 9, 'teammate')
+                  ]
+                }
+              }
             }
-          }
-        ]}
-      >
-        <MyMuxVideos onSelect={vi.fn()} onTeamForbidden={onTeamForbidden} />
-      </MockedProvider>
+          ]}
+        >
+          <MyMuxVideos onSelect={vi.fn()} teamId="team-1" />
+        </MockedProvider>
+      </AuthContext.Provider>
     )
 
-    await waitFor(() => {
-      expect(
-        screen.getByText('Could not load your videos.')
-      ).toBeInTheDocument()
-    })
-    expect(onTeamForbidden).not.toHaveBeenCalled()
+    await screen.findByTestId('my-mux-video-mine')
+    expect(
+      screen.queryByTestId('my-mux-video-team-tag-mine')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId('my-mux-video-team-tag-theirs')
+    ).toBeInTheDocument()
   })
 
   it('should not advance pagination when Load More fails', async () => {

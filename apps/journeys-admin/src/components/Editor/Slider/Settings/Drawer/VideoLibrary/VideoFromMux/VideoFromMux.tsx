@@ -29,7 +29,7 @@ export function VideoFromMux({
   videoBlock
 }: VideoFromMuxProps): ReactElement {
   const { journey } = useJourney()
-  const { activeTeam, refetch: refetchTeams } = useTeam()
+  const { activeTeam } = useTeam()
   const {
     state: { selectedBlock }
   } = useEditor()
@@ -72,9 +72,6 @@ export function VideoFromMux({
           onSelect={onSelect}
           uploading={uploading}
           teamId={activeTeam?.id ?? null}
-          onTeamForbidden={() => {
-            void refetchTeams()
-          }}
         />
       )}
     </Stack>
