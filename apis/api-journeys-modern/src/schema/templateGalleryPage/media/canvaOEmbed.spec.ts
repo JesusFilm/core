@@ -127,13 +127,14 @@ describe('canvaSpec.normalize', () => {
       return { status: 302, headers: new Headers({ location }) }
     }
 
-    it('resolves the redirect, then returns the oEmbed src', async () => {
+    it('resolves the redirect from the location header without re-fetching the design page', async () => {
       fetchMock
-        // 1) share-link hop: 302 to the canonical design URL
+        // 1) share-link hop: 302 to the canonical design URL. The design URL is
+        //    taken straight from the location header — Canva returns 403 to
+        //    server-side requests for design pages, so re-fetching it to
+        //    confirm a 2xx would fail closed and break every share link.
         .mockResolvedValueOnce(redirectTo(RESOLVED))
-        // 2) design URL responds 2xx — redirect resolution complete
-        .mockResolvedValueOnce({ status: 200, headers: new Headers() })
-        // 3) oEmbed on the resolved URL
+        // 2) oEmbed on the resolved URL
         .mockResolvedValueOnce({
           ok: true,
           status: 200,
@@ -145,12 +146,15 @@ describe('canvaSpec.normalize', () => {
       await expect(canvaSpec.normalize(SHARE_LINK)).resolves.toEqual({
         embedUrl: `${RESOLVED}?embed`
       })
+      // Exactly two fetches: the canva.link hop + oEmbed. A third call would
+      // mean the design page was re-fetched — the bug that 403'd against real
+      // Canva even though the unit test (mocking a 2xx) passed.
+      expect(fetchMock).toHaveBeenCalledTimes(2)
     })
 
     it('falls back to /view?embed on the resolved URL when oEmbed fails', async () => {
       fetchMock
         .mockResolvedValueOnce(redirectTo(RESOLVED))
-        .mockResolvedValueOnce({ status: 200, headers: new Headers() })
         .mockResolvedValueOnce({ ok: false, status: 503 })
 
       await expect(canvaSpec.normalize(SHARE_LINK)).resolves.toEqual({

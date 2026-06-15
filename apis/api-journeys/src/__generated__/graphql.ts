@@ -4017,6 +4017,15 @@ export type Query = {
   /** Public, unauthenticated read by slug. Returns the TemplateGalleryPage with the given slug, but ONLY if the page is currently `published`. Returns null for: unknown slug, draft slug, malformed slug (does not match `^[a-z0-9]+(-[a-z0-9]+)*$`), or slug exceeding 200 characters. Authenticated readers fetching their own team's drafts should use `templateGalleryPage(id)` or `templateGalleryPages(teamId)` instead. */
   templateGalleryPageBySlug?: Maybe<TemplateGalleryPage>;
   /**
+   * Resolve a pasted embed URL to its normalized iframe `embedUrl` without saving — for the collection media link-field preview. Runs the same validation and normalization as the create/update `media` link path (https check, host allowlist, provider normalization for Canva/YouTube/Google Slides). Authenticated callers only.
+   *
+   * Errors (same reason codes as the save path):
+   * - BAD_USER_INPUT (field: `url`): URL is not https.
+   * - BAD_USER_INPUT / EMBED_HOST_NOT_ALLOWED: host is not in the embed allowlist.
+   * - BAD_USER_INPUT / CANVA_UNAVAILABLE, GOOGLE_SLIDES_NOT_PUBLISHED, etc.: provider normalization failed.
+   */
+  templateGalleryPageEmbedPreview: Scalars['String']['output'];
+  /**
    * List all TemplateGalleryPages owned by a team — both `draft` and `published` rows — ordered by `createdAt` descending.
    *
    * Auth: caller must be a member of the requested team.
@@ -4461,6 +4470,11 @@ export type QueryTemplateGalleryPageArgs = {
 
 export type QueryTemplateGalleryPageBySlugArgs = {
   slug: Scalars['String']['input'];
+};
+
+
+export type QueryTemplateGalleryPageEmbedPreviewArgs = {
+  url: Scalars['String']['input'];
 };
 
 
