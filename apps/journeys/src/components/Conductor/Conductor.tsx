@@ -86,31 +86,15 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     apologistChatEnabled &&
     hasAiChatButton({ journey, variant, card: activeCard })
 
-  // Mobile: the per-card "collapse chat" setting (legacy
-  // `expandChatByDefault === false`) lands the bar in `'collapsed'` (drag
-  // handle only). Off by default → the bar starts `'idle'` (header + input
-  // visible, ready) so the chat pops open. Sticky after mount — drag
-  // interactions own the state from there. So on mobile, this only seeds the
-  // first card a visitor lands on; subsequent card navigations preserve
-  // whatever sheet state the user (or the previous card's seed) produced.
-  // Mobile per-card re-seeding is tracked as follow-up work.
-  //
-  // `collapseChat` is bridged via the temporary aiChatSettings mapper;
-  // remove with NES-1735.
-  const collapseChat =
-    activeCard != null && toAiChatSettings(activeCard).collapseChat
-  const initialChatExpanded = !collapseChat
-
   const { setOpen, shouldAutoOpen, markAutoOpened } = useChatOverlay()
 
-  // Desktop overlay auto-open. Pops open by default; only the per-card
-  // "collapse chat" opt-in (legacy `expandChatByDefault === false`)
-  // suppresses it. Lives at the
+  // Chat auto-open. Pops open by default; only the per-card "collapse chat"
+  // opt-in (legacy `expandChatByDefault === false`) suppresses it. Bridged via
+  // the temporary aiChatSettings mapper — remove with NES-1735. Lives at the
   // navigation chokepoint so prefetched neighbours mounted off-screen by
-  // DynamicCardList do not trigger it. Mobile is handled separately via
-  // `initialChatExpanded` → `<PinnedChatBar initialExpanded=…>` (declared
-  // above); `setOpen` here only drives the desktop overlay. After mount
-  // the pinned bar's local state machine owns mobile sheet state.
+  // DynamicCardList do not trigger it. `open` is shared via
+  // ChatOverlayProvider: on sm+ it shows the ChatOverlay, on xs it
+  // slides up the PinnedChatBar drawer — one effect seeds both.
   //
   // Deps include `apologistChatEnabled` so a late-arriving LD flag still
   // triggers the auto-open after activeBlock has settled (the original
@@ -288,38 +272,29 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 variant={rtl ? 'previous' : 'next'}
                 alignment="right"
               />
-              {showPinnedChat ? (
+              <StepFooter
+                selectedStep={activeBlock}
+                sx={{
+                  ...mobileNotchStyling,
+                  display: {
+                    xs: showHeaderFooter ? 'flex' : 'none',
+                    lg: 'flex'
+                  }
+                }}
+              />
+              {/* Mobile chat drawer. Rendered alongside (not instead of)
+                  the StepFooter: closed it sits off-screen and the
+                  footer's chat-button row — including the AiChatButton
+                  that opens it — stays visible; open it slides up over
+                  the footer. Stays mounted so the conversation survives
+                  close → reopen. */}
+              {showPinnedChat && (
                 <PinnedChatBar
-                  initialExpanded={initialChatExpanded}
                   sx={{
                     ...mobileNotchStyling,
                     display: {
                       xs: showHeaderFooter ? 'flex' : 'none',
                       sm: 'none'
-                    }
-                  }}
-                />
-              ) : (
-                <StepFooter
-                  selectedStep={activeBlock}
-                  sx={{
-                    ...mobileNotchStyling,
-                    display: {
-                      xs: showHeaderFooter ? 'flex' : 'none',
-                      lg: 'flex'
-                    }
-                  }}
-                />
-              )}
-              {/* On sm+, show StepFooter (with AiChatButton → ChatOverlay) when pinned chat is active on mobile */}
-              {showPinnedChat && (
-                <StepFooter
-                  selectedStep={activeBlock}
-                  sx={{
-                    ...mobileNotchStyling,
-                    display: {
-                      xs: 'none',
-                      sm: 'flex'
                     }
                   }}
                 />
