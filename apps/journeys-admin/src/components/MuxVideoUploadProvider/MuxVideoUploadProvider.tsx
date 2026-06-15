@@ -16,8 +16,8 @@ import { TreeBlock } from '@core/journeys/ui/block'
 
 import { CreateMuxVideoUploadByFileMutation } from '../../../__generated__/CreateMuxVideoUploadByFileMutation'
 import { GetMyMuxVideoQuery } from '../../../__generated__/GetMyMuxVideoQuery'
-import { useAuth } from '../../libs/auth'
 import { prependMuxVideo } from '../../libs/apolloClient/prependMuxVideo'
+import { useAuth } from '../../libs/auth'
 
 import { addUploadToQueue as addUploadTaskUtil } from './utils/addUploadToQueue'
 import { cancelUploadForBlock as cancelUploadForBlockUtil } from './utils/cancelUploadForBlock'

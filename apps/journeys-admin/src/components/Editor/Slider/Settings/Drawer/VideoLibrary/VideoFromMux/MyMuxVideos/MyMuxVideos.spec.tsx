@@ -6,9 +6,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { type MockedFunction } from 'vitest'
 
-import { AuthContext, User } from '../../../../../../../../libs/auth'
-
 import { GetMyMuxVideos } from '../../../../../../../../../__generated__/GetMyMuxVideos'
+import { AuthContext, User } from '../../../../../../../../libs/auth'
 
 import { GET_MY_MUX_VIDEOS, MyMuxVideos, PAGE_SIZE } from './MyMuxVideos'
 
