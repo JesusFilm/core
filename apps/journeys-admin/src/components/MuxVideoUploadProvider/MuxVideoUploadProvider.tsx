@@ -105,13 +105,10 @@ export function MuxVideoUploadProvider({
     new Map()
   )
 
-  const [createMuxVideoUploadByFile] =
-    useMutation<
-      CreateMuxVideoUploadByFileMutation,
-      CreateMuxVideoUploadByFileMutationVariables
-    >(
-      CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION
-    )
+  const [createMuxVideoUploadByFile] = useMutation<
+    CreateMuxVideoUploadByFileMutation,
+    CreateMuxVideoUploadByFileMutationVariables
+  >(CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION)
 
   const showSnackbar = useCallback(
     createShowSnackbar(enqueueSnackbar, closeSnackbar),
