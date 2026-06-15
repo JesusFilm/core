@@ -150,6 +150,7 @@ import MediaStrip1 from './MediaStrip1'
 import Menu1 from './Menu1'
 import MessageChat1 from './MessageChat1'
 import MessageChat2 from './MessageChat2'
+import MessageChatStars from './MessageChatStars'
 import MessageCircle from './MessageCircle'
 import MessageNotifyCircle from './MessageNotifyCircle'
 import MessageNotifySquare from './MessageNotifySquare'
@@ -387,6 +388,7 @@ export type IconName =
   | 'Menu1'
   | 'MessageChat1'
   | 'MessageChat2'
+  | 'MessageChatStars'
   | 'MessageCircle'
   | 'MessageNotifyCircle'
   | 'MessageNotifySquare'
@@ -627,6 +629,7 @@ const iconComponents: IconComponents = {
   Menu1,
   MessageChat1,
   MessageChat2,
+  MessageChatStars,
   MessageCircle,
   MessageNotifyCircle,
   MessageNotifySquare,
