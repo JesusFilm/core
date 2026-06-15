@@ -595,7 +595,9 @@ describe('Conductor', () => {
         blockHistoryVar([])
         window.sessionStorage.clear()
         const second = renderConductor({ journey, blocks })
-        expect(await second.findByTestId('ChatOverlay-open')).toBeInTheDocument()
+        expect(
+          await second.findByTestId('ChatOverlay-open')
+        ).toBeInTheDocument()
       })
 
       it('does not auto-open when the apologistChat flag is off, even if expandChatByDefault is true', async () => {
