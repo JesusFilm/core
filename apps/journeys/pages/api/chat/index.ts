@@ -74,6 +74,10 @@ const messageSchema = z
 const chatRequestSchema = z.object({
   messages: z.array(messageSchema).min(1).max(MAX_MESSAGES),
   language: z.string().max(64).optional(),
+  // Raw BCP-47 code for the journey language, sent alongside `language` for
+  // diagnostics only (NES-1736). Lets the server record which codes don't
+  // resolve to a usable language name client-side.
+  languageBcp47: z.string().max(64).optional(),
   sessionId: z.string().max(128).optional(),
   // Required (NES-1679): a missing journeyId is a malformed request, not a
   // killed card. Requiring it returns 400 invalid_request instead of routing
@@ -203,7 +207,8 @@ export default async function handler(
     res.status(400).json({ error: 'invalid request', code: 'invalid_request' })
     return
   }
-  const { messages, language, sessionId, journeyId, cardId } = parsed.data
+  const { messages, language, languageBcp47, sessionId, journeyId, cardId } =
+    parsed.data
 
   const promptChars = totalMessageChars(messages)
   if (promptChars > MAX_TOTAL_CHARS) {
@@ -283,6 +288,22 @@ export default async function handler(
     modelId,
     turn: messages.filter((m) => m.role === 'user').length,
     promptChars: totalMessageChars(messages)
+  }
+
+  // When the value reaching the prompt's {{language}} variable is only the raw
+  // BCP-47 code, the journey's language name didn't resolve client-side (the
+  // prompt still needs *something*, so the code is the last-resort fill). Record
+  // the code so we can spot which languages lack a usable name (NES-1736).
+  // Datadog: service:journeys event:chat_language_unresolved.
+  if (
+    languageBcp47 != null &&
+    languageBcp47.length > 0 &&
+    language === languageBcp47
+  ) {
+    logger.warn(
+      { event: 'chat_language_unresolved', ...chatLogContext, languageBcp47 },
+      'chat: journey language name unresolved; sent BCP-47 code to prompt'
+    )
   }
 
   const langfuse = getLangfuse()

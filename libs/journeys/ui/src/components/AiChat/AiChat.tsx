@@ -272,6 +272,12 @@ export function AiChat({
   const languageRef = useRef(language)
   languageRef.current = language
 
+  // Also send the raw code so the server can warn (and record in Datadog) when
+  // the value reaching the prompt is only the code — i.e. the name didn't
+  // resolve — so we can spot which codes lack a usable name (NES-1736).
+  const languageBcp47Ref = useRef(languageBcp47)
+  languageBcp47Ref.current = languageBcp47
+
   const journeyId = journey?.id
   const journeyIdRef = useRef(journeyId)
   journeyIdRef.current = journeyId
@@ -309,6 +315,7 @@ export function AiChat({
         api: '/api/chat',
         body: () => ({
           language: languageRef.current,
+          languageBcp47: languageBcp47Ref.current,
           sessionId: sessionIdRef.current,
           journeyId: journeyIdRef.current,
           cardId: cardIdRef.current

@@ -411,14 +411,15 @@ describe('/api/chat handler', () => {
       mockGetFlags.mockResolvedValue({ apologistChat: true })
     })
 
-    function postReq(language?: string): NextApiRequest {
+    function postReq(language?: string, languageBcp47?: string): NextApiRequest {
       return {
         method: 'POST',
         body: {
           messages: [{ role: 'user', content: 'hi' }],
           journeyId: 'journey-1',
           cardId: 'card-1',
-          ...(language != null && { language })
+          ...(language != null && { language }),
+          ...(languageBcp47 != null && { languageBcp47 })
         },
         headers: {}
       } as unknown as NextApiRequest
@@ -502,6 +503,32 @@ describe('/api/chat handler', () => {
       await handler(postReq(), makeRes().res)
 
       expect(fake.compile).toHaveBeenCalledWith({ translation: 'ESV' })
+    })
+
+    it('warns chat_language_unresolved when only the bcp47 code reaches the prompt (NES-1736)', async () => {
+      mockGetLangfuse.mockReturnValue(null)
+
+      await handler(postReq('ur', 'ur'), makeRes().res)
+
+      expect(mockLoggerWarn).toHaveBeenCalledWith(
+        expect.objectContaining({
+          event: 'chat_language_unresolved',
+          languageBcp47: 'ur',
+          journeyId: 'journey-1'
+        }),
+        expect.stringContaining('language name unresolved')
+      )
+    })
+
+    it('does not warn chat_language_unresolved when a resolved name reaches the prompt (NES-1736)', async () => {
+      mockGetLangfuse.mockReturnValue(null)
+
+      await handler(postReq('Urdu', 'ur'), makeRes().res)
+
+      expect(mockLoggerWarn).not.toHaveBeenCalledWith(
+        expect.objectContaining({ event: 'chat_language_unresolved' }),
+        expect.anything()
+      )
     })
 
     it('forwards the active prompt label from getActivePromptLabel', async () => {

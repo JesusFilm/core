@@ -407,6 +407,25 @@ describe('AiChat', () => {
       expect(getRequestLanguage()).toBe('Urdu')
     })
 
+    it('also sends the raw bcp47 code alongside the resolved name', () => {
+      mockUseJourney.mockReturnValue({
+        journey: {
+          language: { bcp47: 'ur', name: [{ value: 'Urdu', primary: true }] }
+        }
+      })
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="overlay" collapsible={false} />)
+
+      const options = mockTransportConstructor.mock.calls[0]?.[0] as {
+        body: () => Record<string, unknown>
+      }
+      expect(options.body()).toMatchObject({
+        language: 'Urdu',
+        languageBcp47: 'ur'
+      })
+    })
+
     it('prefers the localized (non-primary) name when both names exist', () => {
       mockUseJourney.mockReturnValue({
         journey: {
