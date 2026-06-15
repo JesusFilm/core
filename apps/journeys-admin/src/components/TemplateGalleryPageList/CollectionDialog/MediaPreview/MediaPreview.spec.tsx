@@ -96,7 +96,9 @@ describe('MediaPreview', () => {
 
     it("maps the provider's error reason to the inline message (full variant)", async () => {
       const url = 'https://youtu.be/Xprivate1A'
-      renderPreview(linkMedia(url), { mocks: [errorMock(url, 'YOUTUBE_PRIVATE')] })
+      renderPreview(linkMedia(url), {
+        mocks: [errorMock(url, 'YOUTUBE_PRIVATE')]
+      })
       expect(
         await screen.findByText(/this youtube video is private/i)
       ).toBeInTheDocument()
@@ -146,10 +148,9 @@ describe('MediaPreview', () => {
   describe('mux (no query)', () => {
     it('renders the thumbnail for an existing upload', () => {
       renderPreview(muxMedia({ muxPlaybackId: 'pb-1' }))
-      expect(screen.getByTestId('GalleryMediaPreviewThumbnail')).toHaveAttribute(
-        'src',
-        'https://image.mux.com/pb-1/thumbnail.jpg'
-      )
+      expect(
+        screen.getByTestId('GalleryMediaPreviewThumbnail')
+      ).toHaveAttribute('src', 'https://image.mux.com/pb-1/thumbnail.jpg')
     })
 
     it('shows a processing placeholder for a fresh upload without a playbackId', () => {

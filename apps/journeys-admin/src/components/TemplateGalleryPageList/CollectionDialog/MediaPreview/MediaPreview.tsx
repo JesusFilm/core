@@ -116,7 +116,11 @@ export function MediaPreview({
     // embed's last frame.
     if (resolvedEmbedUrl != null) {
       return (
-        <LinkPreview key={resolvedEmbedUrl} embedUrl={resolvedEmbedUrl} fill={fill} />
+        <LinkPreview
+          key={resolvedEmbedUrl}
+          embedUrl={resolvedEmbedUrl}
+          fill={fill}
+        />
       )
     }
     // Resolving → a wave shimmer (compact keeps the plain box; the card reads
