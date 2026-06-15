@@ -3,7 +3,7 @@ import ButtonBase from '@mui/material/ButtonBase'
 import CircularProgress from '@mui/material/CircularProgress'
 import ImageList from '@mui/material/ImageList'
 import ImageListItem from '@mui/material/ImageListItem'
-import { SxProps, Theme } from '@mui/material/styles'
+import { SxProps, Theme, alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
@@ -13,16 +13,12 @@ const teamTagSx: SxProps<Theme> = {
   right: 6,
   bottom: 6,
   zIndex: 2,
-  px: '9px',
-  py: '5px',
-  borderRadius: '6px',
+  px: 2,
+  py: 1,
+  borderRadius: 1.5,
   pointerEvents: 'none',
-  fontSize: 12,
-  fontWeight: 600,
-  lineHeight: 1,
-  letterSpacing: '0.04em',
   color: 'common.white',
-  backgroundColor: 'rgba(24, 24, 32, 0.72)',
+  backgroundColor: (theme) => alpha(theme.palette.grey[900], 0.72),
   backdropFilter: 'blur(2px)'
 }
 
@@ -118,6 +114,7 @@ export function MediaLibraryList({
             </ButtonBase>
             {img.isTeamUpload === true && (
               <Typography
+                variant="subtitle2"
                 component="span"
                 aria-hidden
                 data-testid={`media-library-team-tag-${img.id}`}
