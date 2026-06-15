@@ -36,46 +36,35 @@ import {
   OVERLAY_LINK_FG,
   SHEET_BOTTOM_FADE
 } from './chatStyles'
-import { DragHandle } from './DragHandle'
+import { getAboutChatHref } from './getAboutChatHref'
 
 interface AiChatProps {
   /** When provided, this message is sent automatically on first render */
   initialMessage?: string
   /**
-   * When true (default) the chat shows inline collapse controls — a drag
-   * handle on mobile. Callers that wrap AiChat in their own dismissible
-   * container (e.g. a Drawer with its own close button) should pass false.
-   */
-  collapsible?: boolean
-  /**
    * `panel` (default) renders the bubble layout for the pinned mobile bar
-   * (header + drag handle + bubbles + capsule input). `overlay` renders
-   * plain assistant prose and a floating capsule input for the desktop
-   * ambient overlay.
+   * (header + bubbles + capsule input). `overlay` renders plain assistant
+   * prose and a floating capsule input for the desktop ambient overlay.
    */
   variant?: 'panel' | 'overlay'
   /**
    * Notifies the parent when the sheet's logical state changes:
-   *  - 'idle' — no messages yet, sheet expanded; show header + input.
-   *  - 'active' — messages present, sheet expanded; full conversation.
-   *  - 'collapsed' — user has dragged the sheet down; only the drag
-   *    handle is shown over the journey card. Reachable from either
-   *    idle or active.
+   *  - 'idle' — no messages yet; show header + input.
+   *  - 'active' — messages present; full conversation.
    *
    * The pinned sheet uses this to choose the right height + animation.
    */
-  onSheetStateChange?: (state: 'idle' | 'active' | 'collapsed') => void
+  onSheetStateChange?: (state: 'idle' | 'active') => void
   /**
-   * Seeds the internal `collapsed` state on mount. Used by per-card
-   * `expandChatByDefault: false / null` to land the user in the
-   * drag-handle-only state instead of the default idle (input visible)
-   * state. Only the initial mount value matters — subsequent changes
-   * are ignored, drag interactions own the state from there.
+   * When provided, the panel variant renders a close (X) button in the
+   * ChatHeader. The pinned mobile drawer uses this to dismiss the whole
+   * sheet; the desktop overlay omits it (ChatOverlay owns its own corner
+   * close button).
    */
-  initialCollapsed?: boolean
+  onClose?: () => void
 }
 
-export type AiChatSheetState = 'idle' | 'active' | 'collapsed'
+export type AiChatSheetState = 'idle' | 'active'
 
 function getTextFromMessage(message: UIMessage): string {
   return message.parts
@@ -232,26 +221,16 @@ function TypingIndicator(): ReactElement {
 
 export function AiChat({
   initialMessage,
-  collapsible = true,
   variant = 'panel',
   onSheetStateChange,
-  initialCollapsed = false
+  onClose
 }: AiChatProps): ReactElement {
   const isOverlay = variant === 'overlay'
   const isPanel = !isOverlay
   const { t } = useTranslation('libs-journeys-ui')
   const { journey } = useJourney()
   const [input, setInput] = useState('')
-  const [collapsed, setCollapsed] = useState(initialCollapsed)
   const initialMessageSent = useRef(false)
-
-  const handleCollapse = useCallback(() => {
-    setCollapsed(true)
-  }, [])
-
-  const handleExpand = useCallback(() => {
-    setCollapsed(false)
-  }, [])
 
   const languageBcp47 = journey?.language?.bcp47 ?? undefined
   const languageRef = useRef(languageBcp47)
@@ -325,7 +304,6 @@ export function AiChat({
   const isLoading = status === 'submitted' || status === 'streaming'
 
   const handleRetry = useCallback(() => {
-    setCollapsed(false)
     void regenerate()
   }, [regenerate])
 
@@ -337,17 +315,16 @@ export function AiChat({
   const canRetry =
     error != null && !NON_RETRIABLE_CHAT_ERROR_CODES.has(errorCode ?? '')
 
-  // Cap-hit is a terminal state with no usable "close" control on mobile (the
-  // pinned bar only collapses — it never unmounts AiChat), so reset the
-  // conversation in place instead: clear the resent history (which clears the
-  // server-side size cap), drop the error, and rotate the sessionId so the
-  // next turn is a clean Langfuse session. Works identically on the desktop
-  // overlay and the mobile pinned bar.
+  // Cap-hit is a terminal state — closing the mobile drawer keeps AiChat
+  // mounted (the capped conversation would still be there on reopen), so
+  // reset the conversation in place instead: clear the resent history (which
+  // clears the server-side size cap), drop the error, and rotate the
+  // sessionId so the next turn is a clean Langfuse session. Works
+  // identically on the desktop overlay and the mobile drawer.
   const handleStartNewConversation = useCallback(() => {
     setMessages([])
     clearError()
     setInput('')
-    setCollapsed(false)
     const fresh = uuidv4()
     try {
       window.sessionStorage.setItem('aiChat.sessionId', fresh)
@@ -364,7 +341,6 @@ export function AiChat({
       !initialMessageSent.current
     ) {
       initialMessageSent.current = true
-      setCollapsed(false)
       void sendMessage({ text: initialMessage })
     }
   }, [initialMessage, sendMessage])
@@ -373,7 +349,6 @@ export function AiChat({
     (e: FormEvent) => {
       e.preventDefault()
       if (input.trim().length === 0 || isLoading || isConversationCapped) return
-      setCollapsed(false)
       void sendMessage({ text: input })
       setInput('')
     },
@@ -388,18 +363,11 @@ export function AiChat({
   }, [messages])
 
   const hasMessages = messages.length > 0
-  // Collapse wins over message presence so the user can dismiss the
-  // sheet from idle (empty chat) as well as from active.
-  const sheetState: AiChatSheetState = collapsed
-    ? 'collapsed'
-    : hasMessages
-      ? 'active'
-      : 'idle'
+  const sheetState: AiChatSheetState = hasMessages ? 'active' : 'idle'
   useEffect(() => {
     onSheetStateChange?.(sheetState)
   }, [sheetState, onSheetStateChange])
 
-  const showDragHandle = isPanel && collapsible
   const showHeader = isPanel
   // Empty-state hero is overlay-only: gives the user a clear "this is
   // the chat" signal when the overlay auto-opens with no messages yet
@@ -436,12 +404,6 @@ export function AiChat({
         .filter((w) => w.length > 0),
     [t]
   )
-  // We keep header/conversation/input mounted in every state and rely on
-  // the parent sheet's height transition + overflow:hidden to clip them
-  // as the sheet collapses. Hiding via display:none would short-circuit
-  // the animation — the content would vanish instantly while only the
-  // empty box height transitioned, which reads as "no animation at all".
-
   return (
     <Box
       sx={{
@@ -452,16 +414,11 @@ export function AiChat({
         position: 'relative'
       }}
     >
-      {(showDragHandle || showHeader) && (
-        <Box sx={{ background: HEADER_WASH, flexShrink: 0 }}>
-          {showDragHandle && (
-            <DragHandle
-              collapsed={collapsed}
-              onCollapse={handleCollapse}
-              onExpand={handleExpand}
-            />
-          )}
-          {showHeader && <ChatHeader thinking={isLoading} />}
+      {showHeader && (
+        // pt compensates for the removed drag handle so the header
+        // doesn't sit flush against the sheet's rounded top edge.
+        <Box sx={{ background: HEADER_WASH, flexShrink: 0, pt: 1 }}>
+          <ChatHeader thinking={isLoading} onClose={onClose} />
         </Box>
       )}
 
@@ -660,9 +617,7 @@ export function AiChat({
             height: 140,
             pointerEvents: 'none',
             zIndex: 1,
-            background: SHEET_BOTTOM_FADE,
-            opacity: sheetState === 'collapsed' ? 0 : 1,
-            transition: 'opacity 200ms ease-out'
+            background: SHEET_BOTTOM_FADE
           }}
         />
       )}
@@ -679,16 +634,7 @@ export function AiChat({
           alignItems: 'stretch',
           gap: 0.75,
           mx: 'auto',
-          maxWidth: { xs: 'none', sm: '48rem' },
-          // Slide the floating input out the bottom when the sheet is
-          // collapsed. Synced to the same 280ms cubic-bezier as the
-          // PinnedChatBar height transition so they animate together.
-          transform:
-            sheetState === 'collapsed' ? 'translateY(140%)' : 'translateY(0)',
-          opacity: sheetState === 'collapsed' ? 0 : 1,
-          pointerEvents: sheetState === 'collapsed' ? 'none' : 'auto',
-          transition:
-            'transform 280ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease-out'
+          maxWidth: { xs: 'none', sm: '48rem' }
         }}
       >
         <PromptInput
@@ -721,7 +667,7 @@ export function AiChat({
             {t('Replies may not be perfect')}
             {' · '}
             <Link
-              href="/legal/about-chat"
+              href={getAboutChatHref(languageBcp47)}
               target="_blank"
               rel="noopener noreferrer"
               underline="always"

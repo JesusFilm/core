@@ -1,4 +1,7 @@
-import { render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
+
+import { JourneyProvider } from '../../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 
 import { ChatHeader } from './ChatHeader'
 
@@ -17,6 +20,19 @@ describe('ChatHeader', () => {
     expect(link).toHaveAttribute('rel', 'noopener noreferrer')
   })
 
+  it('carries the journey language as ?lang on the about-this-chat link (NES-1724)', () => {
+    const journey = { language: { bcp47: 'es' } } as unknown as Journey
+    const { getByRole } = render(
+      <JourneyProvider value={{ journey, variant: 'default' }}>
+        <ChatHeader />
+      </JourneyProvider>
+    )
+    expect(getByRole('link', { name: 'About this chat' })).toHaveAttribute(
+      'href',
+      '/legal/about-chat?lang=es'
+    )
+  })
+
   it('renders the animated mark in both states', () => {
     // Visual verification of the actual animation belongs in the
     // browser — emotion's keyframe stylesheet doesn't surface
@@ -29,5 +45,20 @@ describe('ChatHeader', () => {
     rerender(<ChatHeader thinking />)
     expect(container.querySelector('.jfp-mark-top')).not.toBeNull()
     expect(container.querySelector('.jfp-mark-bottom')).not.toBeNull()
+  })
+
+  it('does not render a close button without onClose', () => {
+    const { queryByRole } = render(<ChatHeader />)
+    expect(
+      queryByRole('button', { name: 'Close chat' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('renders a close button that calls onClose when provided', () => {
+    const onClose = vi.fn()
+    const { getByRole } = render(<ChatHeader onClose={onClose} />)
+
+    fireEvent.click(getByRole('button', { name: 'Close chat' }))
+    expect(onClose).toHaveBeenCalledTimes(1)
   })
 })

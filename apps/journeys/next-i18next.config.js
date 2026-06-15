@@ -29,17 +29,35 @@ const i18nConfig = {
     ],
     localeDetection: false
   },
+  // One entry per translation folder in libs/locales, mapping the language
+  // (or language-script) code to the folder that holds its files. URL locales
+  // only ever activate a few of these, but legal/about-chat resolves journey
+  // languages (?lang=<bcp47>) through this same map (NES-1724/NES-1731) —
+  // when adding a locale folder, add its language here too.
   fallbackLng: {
     default: ['en'],
+    am: ['am-ET'],
+    ar: ['ar-SA'],
+    bn: ['bn-BD'],
+    de: ['de-DE'],
     es: ['es-ES'],
     fr: ['fr-FR'],
+    hi: ['hi-IN'],
     id: ['id-ID'],
-    th: ['th-TH'],
     ja: ['ja-JP'],
     ko: ['ko-KR'],
+    ms: ['ms-MY'],
+    my: ['my-MM'],
+    ne: ['ne-NP'],
+    pt: ['pt-BR'],
     ru: ['ru-RU'],
+    th: ['th-TH'],
+    tl: ['tl-PH'],
     tr: ['tr-TR'],
-    zh: ['zh-Hans-CN']
+    ur: ['ur-PK'],
+    vi: ['vi-VN'],
+    zh: ['zh-Hans-CN'],
+    'zh-Hant': ['zh-Hant-TW']
   },
   localePath
 }
