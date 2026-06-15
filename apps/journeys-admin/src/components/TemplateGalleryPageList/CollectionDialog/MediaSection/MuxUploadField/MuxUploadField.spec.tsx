@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 
 import '../../../../../../test/i18n'
@@ -52,16 +53,20 @@ function renderField(
   const onCancel = vi.fn()
   const onRemove = vi.fn()
   render(
-    <MuxUploadField
-      uploadKey="key-1"
-      media={muxMedia()}
-      hasVideo={false}
-      onUploadStart={onUploadStart}
-      onComplete={onComplete}
-      onCancel={onCancel}
-      onRemove={onRemove}
-      {...props}
-    />
+    // MediaPreview (rendered inside the field for the attached thumbnail) calls
+    // the embed-preview query; a mux slot skips it, so no mocks are needed.
+    <MockedProvider mocks={[]}>
+      <MuxUploadField
+        uploadKey="key-1"
+        media={muxMedia()}
+        hasVideo={false}
+        onUploadStart={onUploadStart}
+        onComplete={onComplete}
+        onCancel={onCancel}
+        onRemove={onRemove}
+        {...props}
+      />
+    </MockedProvider>
   )
   return { onUploadStart, onComplete, onCancel, onRemove }
 }
@@ -79,9 +84,18 @@ function renderFieldWithRerender(): {
     onCancel: vi.fn(),
     onRemove: vi.fn()
   }
-  const { rerender } = render(<MuxUploadField {...props} />)
+  const { rerender } = render(
+    <MockedProvider mocks={[]}>
+      <MuxUploadField {...props} />
+    </MockedProvider>
+  )
   return {
-    rerender: (next) => rerender(<MuxUploadField {...next} />),
+    rerender: (next) =>
+      rerender(
+        <MockedProvider mocks={[]}>
+          <MuxUploadField {...next} />
+        </MockedProvider>
+      ),
     props
   }
 }

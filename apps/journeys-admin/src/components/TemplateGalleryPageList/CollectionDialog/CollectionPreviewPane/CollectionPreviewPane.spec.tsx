@@ -1,16 +1,40 @@
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 
 import '../../../../../test/i18n'
 
 import { TemplateGalleryPageMediaType } from '../../../../../__generated__/globalTypes'
+import { TEMPLATE_GALLERY_PAGE_EMBED_PREVIEW } from '../../../../libs/useTemplateGalleryPageEmbedPreview'
 import {
   CollectionMediaValues,
   EMPTY_MEDIA
 } from '../useCollectionForm/collectionMedia'
 
 import { CollectionPreviewPane } from './CollectionPreviewPane'
+
+// A mock for the link preview-resolve query (the server normalizer that the
+// preview now calls). `result` for a resolved embedUrl, or pass `errors`.
+function embedPreviewMock(
+  url: string,
+  result: { embedUrl: string } | { reason: string }
+): MockedResponse {
+  return {
+    request: { query: TEMPLATE_GALLERY_PAGE_EMBED_PREVIEW, variables: { url } },
+    result:
+      'embedUrl' in result
+        ? { data: { templateGalleryPageEmbedPreview: result.embedUrl } }
+        : {
+            errors: [
+              new GraphQLError('preview failed', {
+                extensions: { code: 'BAD_USER_INPUT', reason: result.reason }
+              })
+            ]
+          }
+  }
+}
 
 function linkMedia(url: string): CollectionMediaValues {
   return { ...EMPTY_MEDIA, type: TemplateGalleryPageMediaType.link, url }
@@ -48,18 +72,21 @@ describe('CollectionPreviewPane', () => {
   }
 
   function renderPane(
-    overrides: Partial<React.ComponentProps<typeof CollectionPreviewPane>> = {}
+    overrides: Partial<React.ComponentProps<typeof CollectionPreviewPane>> = {},
+    mocks: MockedResponse[] = []
   ): void {
     render(
-      <SnackbarProvider>
-        <CollectionPreviewPane
-          values={baseValues}
-          selectedJourneysOrdered={[]}
-          publicUrl="https://your.nextstep.is/template-gallery/my-collection"
-          slug="my-collection"
-          {...overrides}
-        />
-      </SnackbarProvider>
+      <MockedProvider mocks={mocks}>
+        <SnackbarProvider>
+          <CollectionPreviewPane
+            values={baseValues}
+            selectedJourneysOrdered={[]}
+            publicUrl="https://your.nextstep.is/template-gallery/my-collection"
+            slug="my-collection"
+            {...overrides}
+          />
+        </SnackbarProvider>
+      </MockedProvider>
     )
   }
 
@@ -103,68 +130,28 @@ describe('CollectionPreviewPane', () => {
   })
 
   describe('media preview', () => {
-    it('normalizes a YouTube watch URL and renders an iframe', () => {
-      renderPane({
-        values: {
-          ...baseValues,
-          media: linkMedia('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
-        }
-      })
-      expect(screen.getByTestId('GalleryMediaPreviewIframe')).toHaveAttribute(
-        'src',
-        'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ'
-      )
+    it('renders the server-resolved embed iframe for a link', async () => {
+      // The preview calls templateGalleryPageEmbedPreview (the same normalizer
+      // as save) and iframes whatever embedUrl it returns — incl. a canva.link
+      // short link the client can't resolve itself.
+      const url = 'https://canva.link/0fi14tc9momlpe8'
+      const embedUrl = 'https://www.canva.com/design/DAF/my-slug/view?embed'
+      renderPane({ values: { ...baseValues, media: linkMedia(url) } }, [
+        embedPreviewMock(url, { embedUrl })
+      ])
+      expect(
+        await screen.findByTestId('GalleryMediaPreviewIframe')
+      ).toHaveAttribute('src', embedUrl)
     })
 
-    it('shows a placeholder for a RAW Canva URL still being typed (needs server normalization)', () => {
-      renderPane({
-        values: {
-          ...baseValues,
-          media: linkMedia('https://www.canva.com/design/DA/view')
-        }
-      })
+    it('shows the provider error inline when the link cannot be resolved', async () => {
+      const url = 'https://youtu.be/Xprivate1A'
+      renderPane({ values: { ...baseValues, media: linkMedia(url) } }, [
+        embedPreviewMock(url, { reason: 'YOUTUBE_PRIVATE' })
+      ])
       expect(
-        screen.queryByTestId('GalleryMediaPreviewIframe')
-      ).not.toBeInTheDocument()
-      expect(
-        screen.getByText('Preview appears once you add the link')
+        await screen.findByText(/this youtube video is private/i)
       ).toBeInTheDocument()
-    })
-
-    it('renders an iframe for an already server-normalized Canva ?embed URL', () => {
-      renderPane({
-        values: {
-          ...baseValues,
-          media: linkMedia(
-            'https://www.canva.com/design/DAF/my-slug/view?embed'
-          )
-        }
-      })
-      expect(screen.getByTestId('GalleryMediaPreviewIframe')).toHaveAttribute(
-        'src',
-        'https://www.canva.com/design/DAF/my-slug/view?embed'
-      )
-    })
-
-    it('renders an iframe for an already server-normalized Google Slides /embed URL', () => {
-      const url =
-        'https://docs.google.com/presentation/d/e/2PACX-abc/embed?start=false'
-      renderPane({
-        values: { ...baseValues, media: linkMedia(url) }
-      })
-      expect(screen.getByTestId('GalleryMediaPreviewIframe')).toHaveAttribute(
-        'src',
-        url
-      )
-    })
-
-    it('does not iframe a non-allowlisted or non-https URL', () => {
-      renderPane({
-        values: {
-          ...baseValues,
-          media: linkMedia('http://evil.example/x')
-        }
-      })
       expect(
         screen.queryByTestId('GalleryMediaPreviewIframe')
       ).not.toBeInTheDocument()

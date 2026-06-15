@@ -1,3 +1,4 @@
+import { ApolloError } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
@@ -10,8 +11,9 @@ import {
 } from '@core/journeys/ui/TemplateGalleryMedia'
 
 import { TemplateGalleryPageMediaType } from '../../../../../__generated__/globalTypes'
-import { previewEmbedUrl } from '../CollectionPreviewPane/previewEmbedUrl'
+import { useTemplateGalleryPageEmbedPreview } from '../../../../libs/useTemplateGalleryPageEmbedPreview'
 import { CollectionMediaValues } from '../useCollectionForm/collectionMedia'
+import { mediaErrorMessage } from '../useCollectionForm/mediaErrorMessage'
 
 // Field box dimensions, shared with the Creator Details image box so the two
 // fields line up. Gently landscape (≈8:7), and tall enough that the right-hand
@@ -41,11 +43,12 @@ interface MediaPreviewProps {
 /**
  * 16:9 media preview shared by the collection preview card and the media
  * field's left box, so the two can't drift. `mux` shows a letterboxed
- * thumbnail from the persisted playbackId; `link` shows an iframe for any URL
- * `previewEmbedUrl` accepts (YouTube normalized client-side, or an already
- * server-normalized Canva / Slides embed). Anything not yet previewable falls
- * back to a placeholder. The link URL is debounced so the iframe doesn't
- * reflow on every keystroke.
+ * thumbnail from the persisted playbackId; `link` resolves the pasted URL on
+ * the server (`templateGalleryPageEmbedPreview`, the same normalizer the save
+ * path runs) and shows the returned embed — a wave shimmer while it resolves,
+ * and the inline `mediaErrorMessage` for the provider's reason on failure, so
+ * the preview matches exactly what a save would store. The URL is debounced so
+ * the query doesn't fire on every keystroke.
  */
 export function MediaPreview({
   media,
@@ -60,6 +63,16 @@ export function MediaPreview({
     const handle = setTimeout(() => setDebouncedUrl(url), 500)
     return () => clearTimeout(handle)
   }, [url])
+
+  // Resolve the pasted link to its embed URL on the server — the SAME
+  // validation + normalization the save path runs (linkValidate) — so the
+  // preview can never diverge from what a save would store, and provider
+  // errors (private YouTube, unavailable Canva, unpublished Slides, disallowed
+  // host) surface inline before saving. Skipped for non-link / empty /
+  // non-https input (see the hook).
+  const { data, loading, error } =
+    useTemplateGalleryPageEmbedPreview(debouncedUrl)
+  const resolvedEmbedUrl = data?.templateGalleryPageEmbedPreview ?? null
 
   // Fill the parent box (fixed-size field) vs render at intrinsic 16:9 (card).
   const sizeSx = fill ? { height: '100%' } : { aspectRatio: '16 / 9' }
@@ -98,12 +111,38 @@ export function MediaPreview({
   }
 
   if (media.type === TemplateGalleryPageMediaType.link) {
-    const embedUrl = previewEmbedUrl(debouncedUrl)
-    if (embedUrl != null) {
-      // key resets the loaded state when the URL changes, so editing the
-      // link re-shimmers instead of showing the stale embed's last frame.
-      return <LinkPreview key={embedUrl} embedUrl={embedUrl} fill={fill} />
+    // Resolved → render the embed. key resets the loaded state when the URL
+    // changes, so editing the link re-shimmers instead of showing the stale
+    // embed's last frame.
+    if (resolvedEmbedUrl != null) {
+      return (
+        <LinkPreview key={resolvedEmbedUrl} embedUrl={resolvedEmbedUrl} fill={fill} />
+      )
     }
+    // Resolving → a wave shimmer (compact keeps the plain box; the card reads
+    // as "working", not broken).
+    if (loading) {
+      if (compact) return <MediaPreviewPlaceholder dark sizeSx={sizeSx} />
+      return (
+        <Skeleton
+          data-testid="GalleryMediaPreviewResolving"
+          variant="rectangular"
+          animation="wave"
+          sx={{ width: '100%', ...sizeSx, borderRadius: 1 }}
+        />
+      )
+    }
+    // Failed validation → the provider's inline message (compact keeps the
+    // plain box; the field-level save error still covers the compact field).
+    if (error != null) {
+      if (compact) return <MediaPreviewPlaceholder dark sizeSx={sizeSx} />
+      return (
+        <MediaPreviewPlaceholder
+          label={mediaErrorMessage(embedPreviewReason(error), t)}
+        />
+      )
+    }
+    // else (skipped: empty or non-https) → the placeholder below.
   }
 
   // Compact (field box): a plain darker-grey box for every not-yet-previewable
@@ -134,6 +173,19 @@ export function MediaPreview({
       ? t('Preview appears once you add the link')
       : t('Paste a link to see a preview')
   return <MediaPreviewPlaceholder label={label} />
+}
+
+/**
+ * Pulls the structured `reason` off the preview query's GraphQLError, mirroring
+ * the save path's error reader so the same `mediaErrorMessage` map applies.
+ * Falls back to an empty string (→ the generic message) when no reason is
+ * present (e.g. a not-https `BAD_USER_INPUT`).
+ */
+function embedPreviewReason(error: ApolloError): string {
+  const raw = error.graphQLErrors.find(
+    (e) => typeof e.extensions?.reason === 'string'
+  )?.extensions?.reason
+  return typeof raw === 'string' ? raw : ''
 }
 
 /**

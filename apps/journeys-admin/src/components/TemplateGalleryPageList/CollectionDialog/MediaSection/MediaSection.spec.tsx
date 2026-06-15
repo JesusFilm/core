@@ -33,6 +33,16 @@ vi.mock('./MuxUploadField', () => ({
   )
 }))
 
+// MediaPreview renders the server-resolved embed via an Apollo query; stub it
+// so MediaSection's toggle/onChange tests don't need a GraphQL provider. Keep
+// the box-size constants the section imports from the same module.
+vi.mock('../MediaPreview', async () => ({
+  ...(await vi.importActual('../MediaPreview')),
+  MediaPreview: ({ media }: { media: CollectionMediaValues }) => (
+    <div data-testid="MediaPreviewStub" data-media-type={media.type} />
+  )
+}))
+
 function media(
   overrides: Partial<CollectionMediaValues> = {}
 ): CollectionMediaValues {
@@ -188,10 +198,12 @@ describe('MediaSection', () => {
           muxPlaybackId: 'pb-1'
         })
       )
-      // Link tab is active: a parked mux playbackId must not surface here.
-      expect(
-        screen.queryByTestId('GalleryMediaPreviewThumbnail')
-      ).not.toBeInTheDocument()
+      // Link tab is active: the preview gets the link-typed media (so it
+      // resolves the link), not the parked mux slot.
+      expect(screen.getByTestId('MediaPreviewStub')).toHaveAttribute(
+        'data-media-type',
+        'link'
+      )
     })
   })
 
