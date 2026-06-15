@@ -385,4 +385,56 @@ describe('AiChat', () => {
       expect(options.body().cardId).toBeUndefined()
     })
   })
+
+  describe('language in chat request body (NES-1736)', () => {
+    function getRequestLanguage(): unknown {
+      const options = mockTransportConstructor.mock.calls[0]?.[0] as {
+        body: () => Record<string, unknown>
+      }
+      return options.body().language
+    }
+
+    it('sends the human-readable language name, not the bcp47 code', () => {
+      mockUseJourney.mockReturnValue({
+        journey: {
+          language: { bcp47: 'ur', name: [{ value: 'Urdu', primary: true }] }
+        }
+      })
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="overlay" collapsible={false} />)
+
+      expect(getRequestLanguage()).toBe('Urdu')
+    })
+
+    it('prefers the localized (non-primary) name when both names exist', () => {
+      mockUseJourney.mockReturnValue({
+        journey: {
+          language: {
+            bcp47: 'ur',
+            name: [
+              { value: 'Urdu', primary: false },
+              { value: 'اردو', primary: true }
+            ]
+          }
+        }
+      })
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="overlay" collapsible={false} />)
+
+      expect(getRequestLanguage()).toBe('Urdu')
+    })
+
+    it('falls back to the bcp47 code when no language name is available', () => {
+      mockUseJourney.mockReturnValue({
+        journey: { language: { bcp47: 'es' } }
+      })
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="overlay" collapsible={false} />)
+
+      expect(getRequestLanguage()).toBe('es')
+    })
+  })
 })

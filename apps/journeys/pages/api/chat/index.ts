@@ -459,6 +459,11 @@ export default async function handler(
   }
 }
 
+// Bible translation compiled into the Langfuse prompt's {{translation}} variable
+// (and named in the local fallback). Hardcoded for now and centralised here so
+// we can swap translations later without touching the prompt (NES-1736).
+const BIBLE_TRANSLATION = 'ESV'
+
 async function resolveSystemMessage({
   language,
   langfuse
@@ -480,8 +485,13 @@ async function resolveSystemMessage({
       )
       return { system: fallback, promptClient: null }
     }
-    const variables: Record<string, string> =
-      language != null && language.length > 0 ? { language } : {}
+    // Always supply `translation` so the prompt's {{translation}} variable
+    // resolves (otherwise Langfuse leaves the literal placeholder in the
+    // compiled prompt). `language` is only added when known.
+    const variables: Record<string, string> = { translation: BIBLE_TRANSLATION }
+    if (language != null && language.length > 0) {
+      variables.language = language
+    }
     const compiled = promptClient.compile(variables)
     return { system: compiled, promptClient }
   } catch (error) {
@@ -503,11 +513,18 @@ function buildFallbackSystemMessage({
     'You are a helpful Christian apologist and spiritual guide.',
     'Be warm, empathetic, and conversational.',
     'Support your answers with relevant Bible passages when appropriate.',
+    `Quote from the ${BIBLE_TRANSLATION} Bible.`,
     'Keep responses concise but thorough.'
   ]
 
   if (language != null && language.length > 0) {
-    parts.push(`Respond in the following language: ${language}`)
+    // Default to the journey's language, but if the user writes in a different
+    // language, answer in that language instead (NES-1736). Mirrors the
+    // Langfuse system prompt's language instruction so the fallback behaves the
+    // same when Langfuse is unavailable.
+    parts.push(
+      `Default to responding in ${language}. If the user writes in a different language, respond in that language instead.`
+    )
   }
 
   return parts.join('\n')

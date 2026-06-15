@@ -433,16 +433,17 @@ describe('/api/chat handler', () => {
       const system = lastStreamConfig?.system
       expect(system).toContain('You are a helpful Christian apologist')
       expect(system).toContain('Be warm, empathetic, and conversational.')
-      expect(system).not.toContain('Respond in the following language')
+      expect(system).toContain('Quote from the ESV Bible.')
+      expect(system).not.toContain('Default to responding in')
     })
 
-    it('appends the language line to the fallback prompt when language is present', async () => {
+    it('appends the default-language line to the fallback prompt when language is present', async () => {
       mockGetLangfuse.mockReturnValue(null)
 
       await handler(postReq('Spanish'), makeRes().res)
 
       expect(lastStreamConfig?.system).toContain(
-        'Respond in the following language: Spanish'
+        'Default to responding in Spanish. If the user writes in a different language, respond in that language instead.'
       )
     })
 
@@ -487,17 +488,20 @@ describe('/api/chat handler', () => {
         undefined,
         { label: 'development' }
       )
-      expect(fake.compile).toHaveBeenCalledWith({ language: 'French' })
+      expect(fake.compile).toHaveBeenCalledWith({
+        language: 'French',
+        translation: 'ESV'
+      })
       expect(lastStreamConfig?.system).toBe('compiled-system[lang=French]')
     })
 
-    it('omits the language variable from compile when none is supplied', async () => {
+    it('compiles with only the ESV translation variable when no language is supplied', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
 
       await handler(postReq(), makeRes().res)
 
-      expect(fake.compile).toHaveBeenCalledWith({})
+      expect(fake.compile).toHaveBeenCalledWith({ translation: 'ESV' })
     })
 
     it('forwards the active prompt label from getActivePromptLabel', async () => {

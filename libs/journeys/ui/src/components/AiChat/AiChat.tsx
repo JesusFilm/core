@@ -18,6 +18,8 @@ import {
 } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { extractLanguageNames } from '@core/shared/ui/extractLanguageNames'
+
 import { getCardChild, useBlocks } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 import { Actions } from '../Actions'
@@ -254,9 +256,21 @@ export function AiChat({
     setCollapsed(false)
   }, [])
 
+  // The BCP-47 code (e.g. "ur") drives the about-this-chat disclosure link,
+  // which loads locale copy from libs/locales/<bcp47>/ (NES-1724).
   const languageBcp47 = journey?.language?.bcp47 ?? undefined
-  const languageRef = useRef(languageBcp47)
-  languageRef.current = languageBcp47
+
+  // Send the journey's language to the assistant as a human-readable name
+  // (e.g. "Urdu"), not the BCP-47 code: the model resolves a language name far
+  // more reliably than a code. The system prompt defaults to this language but
+  // still answers in whatever language the user actually types (NES-1736).
+  // Prefer the localized name, then the native name, then the code.
+  const { localName, nativeName } = extractLanguageNames(
+    journey?.language?.name ?? []
+  )
+  const language = localName ?? nativeName ?? languageBcp47 ?? undefined
+  const languageRef = useRef(language)
+  languageRef.current = language
 
   const journeyId = journey?.id
   const journeyIdRef = useRef(journeyId)
