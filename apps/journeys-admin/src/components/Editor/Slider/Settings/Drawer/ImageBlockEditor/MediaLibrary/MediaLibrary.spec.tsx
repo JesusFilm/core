@@ -412,8 +412,7 @@ describe('MediaLibrary', () => {
     ).toBeInTheDocument()
   })
 
-  it('should call onForbidden and suppress the error when the team query is rejected with FORBIDDEN', async () => {
-    const onForbidden = vi.fn()
+  it('should surface the generic error banner when the team query is rejected with FORBIDDEN', async () => {
     const forbiddenMock: MockedResponse = {
       request: {
         query: GET_MY_CLOUDFLARE_IMAGES,
@@ -434,14 +433,12 @@ describe('MediaLibrary', () => {
           onSelect={vi.fn()}
           isAi={false}
           teamId="team-1"
-          onForbidden={onForbidden}
         />
       </MockedProvider>
     )
-    await waitFor(() => expect(onForbidden).toHaveBeenCalledTimes(1))
     expect(
-      screen.queryByText('Could not load your images.')
-    ).not.toBeInTheDocument()
+      await screen.findByText('Could not load your images.')
+    ).toBeInTheDocument()
   })
 
   it('should tag a teammate upload with a Team tag and leave the caller’s own untagged', async () => {

@@ -2,7 +2,7 @@ import { NetworkStatus, gql, useQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import {
   GetMyCloudflareImages_getMyCloudflareImages as CloudflareImage,
@@ -48,12 +48,6 @@ interface MediaLibraryProps {
    * this team. When null/undefined the query falls back to personal-only.
    */
   teamId?: string | null
-  /**
-   * Called when the team-scoped query is rejected with FORBIDDEN (e.g. the user
-   * was removed from the team mid-session) so the caller can refresh the active
-   * team and fall back to personal-only.
-   */
-  onForbidden?: () => void
 }
 
 const PAGE_SIZE = 10
@@ -87,8 +81,7 @@ export function MediaLibrary({
   onSelect,
   isAi,
   uploading,
-  teamId,
-  onForbidden
+  teamId
 }: MediaLibraryProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const { user } = useAuth()
@@ -110,20 +103,6 @@ export function MediaLibrary({
   })
 
   const isFetchingMore = networkStatus === NetworkStatus.fetchMore
-
-  const isForbidden =
-    error?.graphQLErrors.some(
-      (graphQLError) => graphQLError.extensions?.code === 'FORBIDDEN'
-    ) ?? false
-
-  // Recover gracefully when the team-scoped query is rejected (e.g. the user was
-  // removed from the team mid-session): ask the caller to refresh the active
-  // team, which drops teamId back to personal-only and refetches.
-  const onForbiddenRef = useRef(onForbidden)
-  onForbiddenRef.current = onForbidden
-  useEffect(() => {
-    if (isForbidden) onForbiddenRef.current?.()
-  }, [isForbidden])
 
   const allImages = toRenderedImages(
     data?.getMyCloudflareImages ?? [],
@@ -165,7 +144,7 @@ export function MediaLibrary({
   return (
     <Stack sx={{ p: 6, gap: 2 }} data-testid="MediaLibrary">
       <Typography variant="overline">{title}</Typography>
-      {error != null && !isForbidden && (
+      {error != null && (
         <Typography color="error" variant="body2" sx={{ pb: 1 }}>
           {t('Could not load your images.')}
         </Typography>

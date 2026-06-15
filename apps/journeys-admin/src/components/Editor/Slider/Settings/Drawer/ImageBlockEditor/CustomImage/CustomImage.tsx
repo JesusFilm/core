@@ -28,7 +28,7 @@ export function CustomImage({
 }: CustomImageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { mediaLibrary } = useFlags()
-  const { activeTeam, refetch } = useTeam()
+  const { activeTeam } = useTeam()
   const [galleryKey, setGalleryKey] = useState(0)
 
   return (
@@ -59,7 +59,6 @@ export function CustomImage({
           isAi={false}
           uploading={loading}
           teamId={activeTeam?.id ?? null}
-          onForbidden={refetch}
         />
       )}
     </Stack>

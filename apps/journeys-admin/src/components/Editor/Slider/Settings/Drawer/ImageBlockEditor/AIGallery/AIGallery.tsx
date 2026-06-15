@@ -43,7 +43,7 @@ export function AIGallery({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { mediaLibrary } = useFlags()
-  const { activeTeam, refetch } = useTeam()
+  const { activeTeam } = useTeam()
   const { cache } = useApolloClient()
   const { user } = useAuth()
   const [createAiImage] = useMutation<CreateAiImage>(CREATE_AI_IMAGE)
@@ -122,7 +122,6 @@ export function AIGallery({
           isAi={true}
           uploading={loading}
           teamId={activeTeam?.id ?? null}
-          onForbidden={refetch}
         />
       )}
     </Box>
