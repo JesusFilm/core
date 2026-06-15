@@ -12,6 +12,7 @@ export interface GetMyCloudflareImages_getMyCloudflareImages {
   id: string;
   url: string | null;
   blurhash: string | null;
+  userId: string;
 }
 
 export interface GetMyCloudflareImages {

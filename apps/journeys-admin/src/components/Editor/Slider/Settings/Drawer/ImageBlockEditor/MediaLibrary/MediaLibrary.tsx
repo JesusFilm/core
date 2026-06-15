@@ -10,6 +10,7 @@ import {
   GetMyCloudflareImagesVariables
 } from '../../../../../../../../__generated__/GetMyCloudflareImages'
 import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
+import { useAuth } from '../../../../../../../libs/auth'
 import { sendImageSelectEvent } from '../../../../../../../libs/sendMediaSelectEvent'
 import { LoadMoreButton } from '../LoadMoreButton'
 
@@ -31,6 +32,7 @@ export const GET_MY_CLOUDFLARE_IMAGES = gql`
       id
       url
       blurhash
+      userId
     }
   }
 `
@@ -58,7 +60,8 @@ const PAGE_SIZE = 10
 const PEEK_LIMIT = PAGE_SIZE + 1
 
 function toRenderedImages(
-  images: readonly CloudflareImage[]
+  images: readonly CloudflareImage[],
+  currentUserId?: string | null
 ): MediaLibraryListImage[] {
   return images.flatMap((image) =>
     image.url == null
@@ -67,7 +70,12 @@ function toRenderedImages(
           {
             id: image.id,
             src: `${image.url}/public`,
-            blurhash: image.blurhash
+            blurhash: image.blurhash,
+            // A tile belongs to a teammate when its uploader differs from the
+            // current user. image.userId and the auth-context id are both the
+            // firebase uid, so they compare directly. Drives the "Team" tag.
+            isTeamUpload:
+              currentUserId != null && image.userId !== currentUserId
           }
         ]
   )
@@ -83,6 +91,7 @@ export function MediaLibrary({
   onForbidden
 }: MediaLibraryProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
+  const { user } = useAuth()
   const [pagesFetched, setPagesFetched] = useState(1)
 
   const { data, loading, error, fetchMore, networkStatus } = useQuery<
@@ -111,7 +120,10 @@ export function MediaLibrary({
     if (isForbidden) onForbiddenRef.current?.()
   }, [isForbidden])
 
-  const allImages = toRenderedImages(data?.getMyCloudflareImages ?? [])
+  const allImages = toRenderedImages(
+    data?.getMyCloudflareImages ?? [],
+    user?.id
+  )
   const images = allImages.slice(0, pagesFetched * PAGE_SIZE)
 
   const hasMore = allImages.length > pagesFetched * PAGE_SIZE

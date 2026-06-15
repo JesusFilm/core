@@ -13,6 +13,7 @@ import {
   ImageBlockUpdateInput,
   SegmindModel
 } from '../../../../../../../../__generated__/globalTypes'
+import { useAuth } from '../../../../../../../libs/auth'
 import { MediaLibrary } from '../MediaLibrary'
 import { prependCloudflareImage } from '../MediaLibrary/prependCloudflareImage'
 
@@ -44,6 +45,7 @@ export function AIGallery({
   const { mediaLibrary } = useFlags()
   const { activeTeam, refetch } = useTeam()
   const { cache } = useApolloClient()
+  const { user } = useAuth()
   const [createAiImage] = useMutation<CreateAiImage>(CREATE_AI_IMAGE)
   const [galleryKey, setGalleryKey] = useState(0)
 
@@ -67,7 +69,7 @@ export function AIGallery({
         const url = `https://imagedelivery.net/${cloudflareUploadKey}/${cloudflareId}`
         prependCloudflareImage(
           cache,
-          { id: cloudflareId, url, blurhash: null },
+          { id: cloudflareId, url, blurhash: null, userId: user?.id ?? '' },
           true
         )
         setGalleryKey((k) => k + 1)

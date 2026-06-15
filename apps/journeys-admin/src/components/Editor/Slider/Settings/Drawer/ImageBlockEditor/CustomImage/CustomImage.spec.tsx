@@ -37,7 +37,8 @@ describe('CustomImage', () => {
             __typename: 'CloudflareImage',
             id: 'a',
             url: 'https://imagedelivery.net/key/a',
-            blurhash: null
+            blurhash: null,
+            userId: 'me'
           }
         ]
       }

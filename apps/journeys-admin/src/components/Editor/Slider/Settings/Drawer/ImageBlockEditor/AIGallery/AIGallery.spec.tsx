@@ -132,7 +132,8 @@ describe('AIGallery', () => {
               __typename: 'CloudflareImage',
               id: 'g1',
               url: 'https://imagedelivery.net/key/g1',
-              blurhash: null
+              blurhash: null,
+              userId: 'me'
             }
           ]
         }
@@ -165,7 +166,8 @@ describe('AIGallery', () => {
               __typename: 'CloudflareImage',
               id: 'existing',
               url: 'https://imagedelivery.net/cloudflare-key/existing',
-              blurhash: null
+              blurhash: null,
+              userId: 'me'
             }
           ]
         }
@@ -202,7 +204,8 @@ describe('AIGallery', () => {
         __typename: 'CloudflareImage' as const,
         id: `ai-${offset + i}`,
         url: `https://imagedelivery.net/cloudflare-key/ai-${offset + i}`,
-        blurhash: null
+        blurhash: null,
+        userId: 'me'
       }))
     const firstPage: MockedResponse = {
       request: {

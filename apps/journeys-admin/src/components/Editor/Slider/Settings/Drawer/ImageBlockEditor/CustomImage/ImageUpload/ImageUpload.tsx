@@ -15,6 +15,7 @@ import Upload1IconIcon from '@core/shared/ui/icons/Upload1'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
+import { useAuth } from '../../../../../../../../libs/auth'
 import {
   sendImageUploadFailureEvent,
   sendImageUploadSuccessEvent
@@ -44,6 +45,7 @@ export function ImageUpload({
   const { t } = useTranslation('apps-journeys-admin')
   const { cache } = useApolloClient()
   const { journey } = useJourney()
+  const { user } = useAuth()
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
   const [success, setSuccess] = useState<boolean | undefined>(undefined)
   const [errorCode, setErrorCode] = useState<ErrorCode>()
@@ -135,7 +137,7 @@ export function ImageUpload({
         const url = `https://imagedelivery.net/${cloudflareUploadKey}/${cloudflareId}`
         prependCloudflareImage(
           cache,
-          { id: cloudflareId, url, blurhash: null },
+          { id: cloudflareId, url, blurhash: null, userId: user?.id ?? '' },
           false
         )
         onUploaded?.()

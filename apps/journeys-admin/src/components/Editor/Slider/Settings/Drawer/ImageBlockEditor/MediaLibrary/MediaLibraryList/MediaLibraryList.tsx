@@ -10,6 +10,12 @@ export interface MediaLibraryListImage {
   id: string
   src: string
   blurhash: string | null
+  /**
+   * True when the upload belongs to a teammate rather than the current user.
+   * Drives the corner "Team" tag. The ownership signal is derived server-side
+   * (see follow-up ticket); until it is supplied the tag never renders.
+   */
+  isTeamUpload?: boolean
 }
 
 interface MediaLibraryListProps {
@@ -65,7 +71,11 @@ export function MediaLibraryList({
           >
             <ButtonBase
               data-testid={`media-library-image-${img.id}`}
-              aria-label={t('Select image')}
+              aria-label={
+                img.isTeamUpload === true
+                  ? t('Select image uploaded by a teammate')
+                  : t('Select image')
+              }
               aria-pressed={selected}
               onClick={() => handleSelect(img)}
               disableRipple
@@ -85,6 +95,32 @@ export function MediaLibraryList({
                 }}
               />
             </ButtonBase>
+            {img.isTeamUpload === true && (
+              <Box
+                aria-hidden
+                data-testid={`media-library-team-tag-${img.id}`}
+                sx={{
+                  position: 'absolute',
+                  right: 6,
+                  bottom: 6,
+                  zIndex: 2,
+                  px: '7px',
+                  py: '4px',
+                  borderRadius: '5px',
+                  pointerEvents: 'none',
+                  fontFamily: 'inherit',
+                  fontSize: 10,
+                  fontWeight: 600,
+                  lineHeight: 1,
+                  letterSpacing: '0.04em',
+                  color: 'common.white',
+                  backgroundColor: 'rgba(24, 24, 32, 0.72)',
+                  backdropFilter: 'blur(2px)'
+                }}
+              >
+                {t('Team')}
+              </Box>
+            )}
           </ImageListItem>
         )
       })}
