@@ -1,9 +1,9 @@
 {
   "AI chat": "Trò chuyện bằng trí tuệ nhân tạo",
-  "Show AI chat": "Hiển thị trò chuyện AI",
-  "Open chat automatically": "Tự động mở cửa sổ trò chuyện",
+  "Enable AI chat": "Bật tính năng trò chuyện bằng AI",
+  "Collapse chat": "Thu gọn cửa sổ trò chuyện",
   "On": "Vào",
-  "On, auto-open": "Bật, tự động mở",
+  "On, collapsed": "Bật, tắt",
   "%s | Next Steps": "%s | Next Steps",
   "Admin | Next Steps": "Admin | Next Steps",
   "Email Preferences Updated.": "Email Preferences Updated.",
