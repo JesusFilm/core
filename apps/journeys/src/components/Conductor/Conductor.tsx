@@ -7,6 +7,7 @@ import { ReactElement, useEffect } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import { v4 as uuidv4 } from 'uuid'
 
+import { toAiChatSettings } from '@core/journeys/ui/aiChatSettings'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   blockHistoryVar,
@@ -87,8 +88,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   const { setOpen, shouldAutoOpen, markAutoOpened } = useChatOverlay()
 
-  // Chat auto-open on `expandChatByDefault`. Lives at the navigation
-  // chokepoint so prefetched neighbours mounted off-screen by
+  // Chat auto-open. Pops open by default; only the per-card "collapse chat"
+  // opt-in (legacy `expandChatByDefault === false`) suppresses it. Bridged via
+  // the temporary aiChatSettings mapper — remove with NES-1735. Lives at the
+  // navigation chokepoint so prefetched neighbours mounted off-screen by
   // DynamicCardList do not trigger it. `open` is shared via
   // ChatOverlayProvider: on sm+ it shows the ChatOverlay, on xs it
   // slides up the PinnedChatBar drawer — one effect seeds both.
@@ -109,7 +112,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   // dismiss is not overridden by a later re-evaluation in the same tab.
   useEffect(() => {
     if (!apologistChatEnabled) return
-    if (activeCard == null || activeCard.expandChatByDefault !== true) return
+    if (activeCard == null || toAiChatSettings(activeCard).collapseChat) return
     if (!hasAiChatButton({ journey, variant, card: activeCard })) return
     if (!shouldAutoOpen(activeCard.id)) return
     markAutoOpened(activeCard.id)
