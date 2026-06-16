@@ -1,9 +1,9 @@
 {
   "AI chat": "Obrolan AI",
-  "Show AI chat": "Menampilkan obrolan AI",
-  "Open chat automatically": "Membuka obrolan secara otomatis",
+  "Enable AI chat": "Aktifkan obrolan AI",
+  "Collapse chat": "Tutup obrolan",
   "On": "Pada",
-  "On, auto-open": "Aktif, buka otomatis",
+  "On, collapsed": "On, runtuh",
   "%s | Next Steps": "%s | Langkah Selanjutnya",
   "Admin | Next Steps": "Admin | Langkah Selanjutnya",
   "Email Preferences Updated.": "Preferensi Email Diperbarui.",
