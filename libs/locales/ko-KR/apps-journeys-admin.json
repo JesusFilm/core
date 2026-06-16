@@ -1,9 +1,9 @@
 {
   "AI chat": "AI 채팅",
-  "Show AI chat": "AI 채팅 표시",
-  "Open chat automatically": "자동으로 채팅 열기",
+  "Enable AI chat": "AI 채팅 활성화",
+  "Collapse chat": "채팅 축소",
   "On": "켜짐",
-  "On, auto-open": "켜기, 자동 열기",
+  "On, collapsed": "켜짐, 꺼짐",
   "%s | Next Steps": "%s | 다음 단계",
   "Admin | Next Steps": "관리자 | 다음 단계",
   "Email Preferences Updated.": "이메일 환경설정이 업데이트되었습니다.",
