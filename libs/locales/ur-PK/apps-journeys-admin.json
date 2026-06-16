@@ -1,9 +1,9 @@
 {
   "AI chat": "AI چیٹ",
-  "Show AI chat": "AI چیٹ دکھائیں",
-  "Open chat automatically": "چیٹ خود بخود کھولیں",
+  "Enable AI chat": "AI چیٹ کو فعال کریں",
+  "Collapse chat": "چٹ بند کریں",
   "On": "آن",
-  "On, auto-open": "آن، خودکار طور پر کھلنے والا",
+  "On, collapsed": "آن، گر گیا",
   "%s | Next Steps": "%s | Next Steps",
   "Admin | Next Steps": "Admin | Next Steps",
   "Email Preferences Updated.": "Email Preferences Updated.",
