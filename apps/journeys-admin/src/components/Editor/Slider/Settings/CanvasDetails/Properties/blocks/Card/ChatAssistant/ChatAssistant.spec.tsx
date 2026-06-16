@@ -197,6 +197,46 @@ describe('ChatAssistant', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
+  it('re-enabling a previously-collapsed card preserves expandChatByDefault false (stays collapsed, not pop-open)', async () => {
+    // showAssistant false + expandChatByDefault false → the "collapseChat: true"
+    // cohort. Re-enabling preserves the explicit collapse opt-in rather than
+    // reverting to the pop-open default.
+    const card = makeCard({ showAssistant: false, expandChatByDefault: false })
+    const result = vi.fn(() => ({
+      data: {
+        cardBlockUpdate: {
+          __typename: 'CardBlock',
+          id: 'card1.id',
+          showAssistant: true,
+          expandChatByDefault: false
+        }
+      }
+    }))
+    render(
+      <MockedProvider
+        cache={cacheWithCard()}
+        mocks={[
+          {
+            request: {
+              query: CARD_BLOCK_CHAT_ASSISTANT_UPDATE,
+              variables: {
+                id: 'card1.id',
+                input: { showAssistant: true, expandChatByDefault: false }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <EditorProvider initialState={{ selectedBlock: card }}>
+          <ChatAssistant />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByLabelText('Enable AI chat'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
   it('undo restores the prior values', async () => {
     const card = makeCard({ showAssistant: false, expandChatByDefault: null })
     const executeResult = vi.fn(() => ({
