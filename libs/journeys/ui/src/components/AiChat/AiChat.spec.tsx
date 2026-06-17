@@ -418,9 +418,9 @@ describe('AiChat', () => {
       // OVERLAY_LINK_FG (#FF7A85) is the dark-surface link; PANEL_LINK_FG
       // (brandRed) is the light one. Asserting the dark token confirms the
       // prop reached the header.
-      expect(
-        screen.getByRole('link', { name: 'About this chat' })
-      ).toHaveStyle({ color: '#FF7A85' })
+      expect(screen.getByRole('link', { name: 'About this chat' })).toHaveStyle(
+        { color: '#FF7A85' }
+      )
     })
 
     it('keeps the light link colour on the panel without onDark (mobile sheet)', () => {
@@ -429,9 +429,9 @@ describe('AiChat', () => {
       render(<AiChat variant="panel" />)
 
       // brandRed (#C52D3A) — the white-sheet link colour must not regress.
-      expect(
-        screen.getByRole('link', { name: 'About this chat' })
-      ).toHaveStyle({ color: '#C52D3A' })
+      expect(screen.getByRole('link', { name: 'About this chat' })).toHaveStyle(
+        { color: '#C52D3A' }
+      )
     })
 
     it('renders assistant prose with the dark token when onDark', () => {
