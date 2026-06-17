@@ -75,7 +75,14 @@ export function ChatOverlay({
           // (near-opaque 98%, no blur); only the size now tracks the sheet.
           height,
           transition: HEIGHT_TRANSITION,
-          bgcolor: (theme) => alpha(theme.palette.grey[900], 0.98)
+          bgcolor: (theme) => alpha(theme.palette.grey[900], 0.98),
+          // Rounded top + a 1px translucent-white top border on the FULL-WIDTH
+          // background overlay (not the centred chat panel) so its top edge
+          // reads as a distinct surface against the dark journey backdrop —
+          // same hairline the overlay input pill uses (NES-1738 feedback).
+          borderTopLeftRadius: 16,
+          borderTopRightRadius: 16,
+          borderTop: `1px solid ${OVERLAY_INPUT_BORDER}`
         }}
       />
       <Box
@@ -94,15 +101,7 @@ export function ChatOverlay({
           transition: HEIGHT_TRANSITION,
           display: 'flex',
           flexDirection: 'column',
-          minHeight: 0,
-          // Rounded top + a 1px translucent-white top border so the panel's
-          // top edge reads as a distinct surface against the dark backdrop
-          // (NES-1738 feedback). `overflow: hidden` clips the AiChat content
-          // to the rounded corners.
-          borderTopLeftRadius: 16,
-          borderTopRightRadius: 16,
-          borderTop: `1px solid ${OVERLAY_INPUT_BORDER}`,
-          overflow: 'hidden'
+          minHeight: 0
         }}
       >
         <AiChat

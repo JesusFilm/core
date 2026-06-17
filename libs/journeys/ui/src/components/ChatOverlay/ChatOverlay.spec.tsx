@@ -55,10 +55,12 @@ describe('ChatOverlay', () => {
     )
   })
 
-  it('gives the panel a rounded top + contrasting top border', () => {
+  it('gives the background overlay a rounded top + contrasting top border', () => {
     render(<ChatOverlay open onClose={vi.fn()} />)
-    const panel = screen.getByTestId('ChatOverlayPanel')
-    expect(panel).toHaveStyle({
+    const backdrop = screen
+      .getByTestId('ChatOverlay')
+      .querySelector('[aria-hidden]') as HTMLElement
+    expect(backdrop).toHaveStyle({
       borderTopLeftRadius: '16px',
       borderTopRightRadius: '16px',
       borderTop: '1px solid rgba(255, 255, 255, 0.12)'
