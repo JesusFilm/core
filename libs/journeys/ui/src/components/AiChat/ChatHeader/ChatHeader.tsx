@@ -2,6 +2,7 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Link from '@mui/material/Link'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
@@ -204,19 +205,24 @@ export function ChatHeader({
         </Typography>
       </Box>
       {onClose != null && (
-        <IconButton
-          onClick={onClose}
-          aria-label={t('Close chat')}
-          sx={{
-            width: 32,
-            height: 32,
-            p: 0,
-            flexShrink: 0,
-            color: closeColor
-          }}
-        >
-          <CloseRoundedIcon fontSize="small" />
-        </IconButton>
+        // arrow + placement="top" matches the lib's existing tooltip style
+        // (e.g. SearchBar RefinementGroup). Title is translated via the same
+        // `t` as the aria-label so hover and screen-reader labels stay in sync.
+        <Tooltip title={t('Close chat')} arrow placement="top">
+          <IconButton
+            onClick={onClose}
+            aria-label={t('Close chat')}
+            sx={{
+              width: 32,
+              height: 32,
+              p: 0,
+              flexShrink: 0,
+              color: closeColor
+            }}
+          >
+            <CloseRoundedIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
       )}
     </Box>
   )

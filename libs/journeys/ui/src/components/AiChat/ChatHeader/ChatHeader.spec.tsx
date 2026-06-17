@@ -80,4 +80,11 @@ describe('ChatHeader', () => {
     fireEvent.click(getByRole('button', { name: 'Close chat' }))
     expect(onClose).toHaveBeenCalledTimes(1)
   })
+
+  it('shows a translated "Close chat" tooltip on hover over the close button', async () => {
+    const { getByRole, findByRole } = render(<ChatHeader onClose={vi.fn()} />)
+
+    fireEvent.mouseOver(getByRole('button', { name: 'Close chat' }))
+    expect(await findByRole('tooltip')).toHaveTextContent('Close chat')
+  })
 })
