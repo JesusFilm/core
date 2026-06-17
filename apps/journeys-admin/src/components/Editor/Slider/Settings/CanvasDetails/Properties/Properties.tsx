@@ -1,7 +1,5 @@
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
-import { Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, ReactNode } from 'react'
@@ -120,7 +118,6 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
   const selectedBlock = block ?? state.selectedBlock
   const selectedStep = step ?? state.selectedStep
 
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const { isLayered } = useEditorLayout()
 
   let component: ReactNode | undefined
@@ -203,7 +200,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
     } else {
       dispatch({
         type: 'SetActiveSlideAction',
-        activeSlide: mdUp ? ActiveSlide.JourneyFlow : ActiveSlide.Content
+        activeSlide: isLayered ? ActiveSlide.JourneyFlow : ActiveSlide.Content
       })
     }
   }

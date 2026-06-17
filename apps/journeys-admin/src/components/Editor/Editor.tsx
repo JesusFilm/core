@@ -39,7 +39,12 @@ export function Editor({
   initialState,
   user
 }: EditorProps): ReactElement {
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
+  // noSsr defers the match to the client so the editor renders the correct
+  // surface on first paint instead of mounting <Slider /> then remounting
+  // <LayeredView /> (which would flash and remount React Flow) on desktop
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'), {
+    noSsr: true
+  })
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
