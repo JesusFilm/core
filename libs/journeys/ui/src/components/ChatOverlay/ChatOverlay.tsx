@@ -8,7 +8,11 @@ import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
-import { OVERLAY_CLOSE_BG, OVERLAY_CLOSE_BG_HOVER } from '../AiChat/chatStyles'
+import {
+  OVERLAY_CLOSE_BG,
+  OVERLAY_CLOSE_BG_HOVER,
+  OVERLAY_INPUT_BORDER
+} from '../AiChat/chatStyles'
 
 const AiChat = dynamic(
   async () =>
@@ -58,7 +62,15 @@ export function ChatOverlay({
           // Colour/opacity unchanged from NES-1654 (near-opaque 98%, no blur);
           // only the size changed.
           height: '80%',
-          bgcolor: (theme) => alpha(theme.palette.grey[900], 0.98)
+          bgcolor: (theme) => alpha(theme.palette.grey[900], 0.98),
+          // The dark surface is the same colour as the journey backdrop behind
+          // it, so its top edge would vanish. Round the top corners (16, the
+          // same radius as the mobile sheet in PinnedChatBar) and draw the same
+          // 1px hairline the overlay input pill uses (OVERLAY_INPUT_BORDER) so
+          // the chat surface reads as a distinct, delineated panel.
+          borderTopLeftRadius: 16,
+          borderTopRightRadius: 16,
+          borderTop: `1px solid ${OVERLAY_INPUT_BORDER}`
         }}
       />
       <IconButton
@@ -67,8 +79,13 @@ export function ChatOverlay({
         disableRipple
         sx={{
           position: 'absolute',
-          top: 'calc(env(safe-area-inset-top) + 24px)',
-          right: 24,
+          // Attach the close control to the dark chat surface, not the viewport
+          // (NES-1738 Option A feedback): the surface starts 20% down the
+          // screen, so anchor just below that top edge and inside the rounded
+          // top-right corner. This reads as "close the chat" rather than
+          // "close the page" (which the old viewport-top placement implied).
+          top: 'calc(20% + 12px)',
+          right: 12,
           zIndex: 1,
           // Matches PromptInput's submit/stop icon button (32×32) so the
           // two affordances at opposite corners of the overlay feel
