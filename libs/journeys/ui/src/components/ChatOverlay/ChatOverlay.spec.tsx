@@ -82,7 +82,9 @@ describe('ChatOverlay', () => {
       .querySelector('[aria-hidden]') as HTMLElement
     expect(backdrop).toHaveStyle({ height: '144px' })
 
-    fireEvent.click(await screen.findByRole('button', { name: 'mock-activate' }))
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'mock-activate' })
+    )
     expect(backdrop).toHaveStyle({ height: '80%' })
   })
 
