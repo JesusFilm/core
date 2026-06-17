@@ -56,8 +56,12 @@ export function ChatOverlay({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'flex-end',
-        px: 2,
-        pb: { xs: 2, sm: 3 }
+        px: 2
+        // No bottom padding: the chat sheet sits flush to the screen bottom so
+        // its top edge aligns exactly with the bordered dark overlay (otherwise
+        // the panel floats ~24px above the border and the header reads as
+        // jammed against it). Mirrors the mobile drawer's flush-to-bottom
+        // sheet (NES-1738 feedback).
       }}
     >
       <Box

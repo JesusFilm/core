@@ -429,16 +429,18 @@ export function AiChat({
       }}
     >
       {showHeader && (
-        // pt compensates for the removed drag handle so the header
-        // doesn't sit flush against the sheet's rounded top edge. On the
-        // dark overlay (Option B) the red HEADER_WASH would read as a red
-        // bar, so the wrapper goes transparent and the dark layer shows
-        // through.
+        // pt compensates for the removed drag handle so the header doesn't
+        // sit flush against the sheet's rounded top edge. The dark overlay
+        // (Option B) has a visible top border, so it gets a larger inset
+        // (matching the 16px corner radius) for clear separation between the
+        // border and the header; the white mobile sheet keeps the smaller
+        // inset. On dark the red HEADER_WASH would read as a red bar, so the
+        // wrapper goes transparent and the dark layer shows through.
         <Box
           sx={{
             background: onDark ? 'transparent' : HEADER_WASH,
             flexShrink: 0,
-            pt: 1
+            pt: onDark ? 2 : 1
           }}
         >
           <ChatHeader thinking={isLoading} onClose={onClose} onDark={onDark} />
