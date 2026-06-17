@@ -3,7 +3,10 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { offsetLimitPagination } from '@apollo/client/utilities'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { GraphQLError } from 'graphql'
 import { type MockedFunction } from 'vitest'
+
+import { AuthContext, User } from '../../../../../../../libs/auth'
 
 import { GET_MY_CLOUDFLARE_IMAGES, MediaLibrary } from './MediaLibrary'
 import { prependCloudflareImage } from './prependCloudflareImage'
@@ -16,18 +19,21 @@ const mockSendGTMEvent = sendGTMEvent as MockedFunction<typeof sendGTMEvent>
 
 function makeImages(
   count: number,
-  offset = 0
+  offset = 0,
+  userId = 'me'
 ): Array<{
   __typename: 'CloudflareImage'
   id: string
   url: string
   blurhash: string | null
+  userId: string
 }> {
   return Array.from({ length: count }, (_, i) => ({
     __typename: 'CloudflareImage' as const,
     id: `img-${offset + i}`,
     url: `https://imagedelivery.net/key/img-${offset + i}`,
-    blurhash: null
+    blurhash: null,
+    userId
   }))
 }
 
@@ -306,7 +312,8 @@ describe('MediaLibrary', () => {
       {
         id: 'local-1',
         url: 'https://imagedelivery.net/key/local-1',
-        blurhash: null
+        blurhash: null,
+        userId: 'me'
       },
       false
     )
@@ -332,7 +339,8 @@ describe('MediaLibrary', () => {
       {
         id: 'img-0',
         url: 'https://imagedelivery.net/key/img-0',
-        blurhash: null
+        blurhash: null,
+        userId: 'me'
       },
       false
     )
@@ -361,6 +369,112 @@ describe('MediaLibrary', () => {
     )
     expect(
       await screen.findByTestId('media-library-image-img-0')
+    ).toBeInTheDocument()
+  })
+
+  it('should forward teamId to the query variables when set', async () => {
+    const teamMock: MockedResponse = {
+      request: {
+        query: GET_MY_CLOUDFLARE_IMAGES,
+        variables: { offset: 0, limit: 11, isAi: false, teamId: 'team-1' }
+      },
+      result: { data: { getMyCloudflareImages: makeImages(2) } }
+    }
+    render(
+      <MockedProvider mocks={[teamMock]}>
+        <MediaLibrary
+          title="Uploads"
+          onSelect={vi.fn()}
+          isAi={false}
+          teamId="team-1"
+        />
+      </MockedProvider>
+    )
+    expect(
+      await screen.findByTestId('media-library-image-img-0')
+    ).toBeInTheDocument()
+  })
+
+  it('should omit teamId and fall back to personal-only when teamId is null', async () => {
+    render(
+      <MockedProvider mocks={[firstShortPageMock]}>
+        <MediaLibrary
+          title="Uploads"
+          onSelect={vi.fn()}
+          isAi={false}
+          teamId={null}
+        />
+      </MockedProvider>
+    )
+    // firstShortPageMock has no teamId variable, so a match proves teamId was omitted
+    expect(
+      await screen.findByTestId('media-library-image-img-0')
+    ).toBeInTheDocument()
+  })
+
+  it('should surface the generic error banner when the team query is rejected with FORBIDDEN', async () => {
+    const forbiddenMock: MockedResponse = {
+      request: {
+        query: GET_MY_CLOUDFLARE_IMAGES,
+        variables: { offset: 0, limit: 11, isAi: false, teamId: 'team-1' }
+      },
+      result: {
+        errors: [
+          new GraphQLError('Not a member of this team', {
+            extensions: { code: 'FORBIDDEN' }
+          })
+        ]
+      }
+    }
+    render(
+      <MockedProvider mocks={[forbiddenMock]}>
+        <MediaLibrary
+          title="Uploads"
+          onSelect={vi.fn()}
+          isAi={false}
+          teamId="team-1"
+        />
+      </MockedProvider>
+    )
+    expect(
+      await screen.findByText('Could not load your images.')
+    ).toBeInTheDocument()
+  })
+
+  it('should tag a teammate upload with a Team tag and leave the caller’s own untagged', async () => {
+    const mixedMock: MockedResponse = {
+      request: {
+        query: GET_MY_CLOUDFLARE_IMAGES,
+        variables: { offset: 0, limit: 11, isAi: false, teamId: 'team-1' }
+      },
+      result: {
+        data: {
+          getMyCloudflareImages: [
+            ...makeImages(1, 0, 'me'),
+            ...makeImages(1, 1, 'teammate')
+          ]
+        }
+      }
+    }
+    const user = { id: 'me', uid: 'me' } as unknown as User
+    render(
+      <AuthContext.Provider value={{ user }}>
+        <MockedProvider mocks={[mixedMock]}>
+          <MediaLibrary
+            title="Uploads"
+            onSelect={vi.fn()}
+            isAi={false}
+            teamId="team-1"
+          />
+        </MockedProvider>
+      </AuthContext.Provider>
+    )
+    await screen.findByTestId('media-library-image-img-0')
+    expect(
+      screen.queryByTestId('media-library-team-tag-img-0')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId('media-library-team-tag-img-1')
     ).toBeInTheDocument()
   })
 })

@@ -12,6 +12,7 @@ export interface GetMyCloudflareImages_getMyCloudflareImages {
   id: string;
   url: string | null;
   blurhash: string | null;
+  userId: string;
 }
 
 export interface GetMyCloudflareImages {
@@ -22,4 +23,5 @@ export interface GetMyCloudflareImagesVariables {
   offset?: number | null;
   limit?: number | null;
   isAi?: boolean | null;
+  teamId?: string | null;
 }
