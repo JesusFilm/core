@@ -1,8 +1,0 @@
-type CustomDomain @shareable {
-  id: ID!
-  team: Team!
-  name: String!
-  apexName: String!
-  journeyCollection: JourneyCollection
-  routeAllTeamJourneys: Boolean!
-}

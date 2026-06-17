@@ -100,9 +100,6 @@ export enum IconColor {
   secondary = "secondary",
 }
 
-/**
- * IconName is equivalent to the icons found in @mui/icons-material
- */
 export enum IconName {
   ArrowBackRounded = "ArrowBackRounded",
   ArrowForwardRounded = "ArrowForwardRounded",
@@ -372,11 +369,6 @@ export enum VideoBlockSource {
   youTube = "youTube",
 }
 
-/**
- * The status of a visitor according to team members interacting with the
- * visitor admin interface. This enum should map to an emoji when displayed
- * (names here match Apple's emoji name)
- */
 export enum VisitorStatus {
   checkMarkSymbol = "checkMarkSymbol",
   partyPopper = "partyPopper",
@@ -664,14 +656,14 @@ export interface JourneyTemplateInput {
 
 export interface JourneyThemeCreateInput {
   journeyId: string;
-  headerFont?: string | null;
   bodyFont?: string | null;
+  headerFont?: string | null;
   labelFont?: string | null;
 }
 
 export interface JourneyThemeUpdateInput {
-  headerFont?: string | null;
   bodyFont?: string | null;
+  headerFont?: string | null;
   labelFont?: string | null;
 }
 
@@ -701,6 +693,7 @@ export interface JourneyUpdateInput {
   showLogo?: boolean | null;
   showMenu?: boolean | null;
   showDisplayTitle?: boolean | null;
+  showAssistant?: boolean | null;
   menuButtonIcon?: JourneyMenuButtonIcon | null;
   menuStepBlockId?: string | null;
   logoImageBlockId?: string | null;
@@ -949,7 +942,7 @@ export interface TeamCreateInput {
 }
 
 export interface TeamUpdateInput {
-  title: string;
+  title?: string | null;
   publicTitle?: string | null;
 }
 
@@ -1046,7 +1039,7 @@ export interface UserTeamInviteCreateInput {
 }
 
 export interface UserTeamUpdateInput {
-  role: UserTeamRole;
+  role?: UserTeamRole | null;
 }
 
 export interface VideoBlockCreateInput {
@@ -1164,14 +1157,11 @@ export interface VideoStartEventCreateInput {
   value?: VideoBlockSource | null;
 }
 
-/**
- * A list of fields to update a visitor when calling the visitorUpdate mutation
- */
 export interface VisitorUpdateInput {
   email?: string | null;
-  messagePlatformId?: string | null;
-  messagePlatform?: MessagePlatform | null;
   name?: string | null;
+  messagePlatform?: MessagePlatform | null;
+  messagePlatformId?: string | null;
   notes?: string | null;
   status?: VisitorStatus | null;
   countryCode?: string | null;

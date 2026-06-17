@@ -72,9 +72,6 @@ export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_VideoB
 export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_VideoBlock {
   __typename: "VideoBlock";
   id: string;
-  /**
-   * action that should be performed when the video ends
-   */
   action: StepBlockDeleteFromActionWithoutAction_blockDeleteAction_VideoBlock_action | null;
 }
 

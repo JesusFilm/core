@@ -53,7 +53,7 @@ Before writing any code, read **all** unresolved threads and the surrounding sou
 **How to challenge well:**
 - Be respectful but direct. Cite project conventions, existing patterns, or technical reasoning.
 - If the suggestion is partially valid, acknowledge what's useful and explain what you'd keep/change.
-- Example: _"This pattern is consistent with how we handle X in `api-journeys/src/...`. Changing it here would diverge from the established convention without clear benefit."_
+- Example: _"This pattern is consistent with how we handle X in `api-journeys-modern/src/...`. Changing it here would diverge from the established convention without clear benefit."_
 
 Present the triage to the user for confirmation before proceeding. Format:
 

@@ -15,7 +15,7 @@ import { JourneyRef } from './journey'
 builder.queryField('journey', (t) =>
   t.prismaField({
     type: JourneyRef,
-    nullable: true,
+    nullable: false,
     override: { from: 'api-journeys' },
     args: {
       id: t.arg({ type: 'ID', required: true }),
@@ -30,7 +30,9 @@ builder.queryField('journey', (t) =>
       }
 
       if (options.embedded === true && options.hostname != null) {
-        return null
+        throw new GraphQLError('journey not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
       }
 
       const filter: Prisma.JourneyWhereUniqueInput =
