@@ -37,7 +37,9 @@ describe('ChatOverlay', () => {
   it('calls onClose when the backdrop is clicked', () => {
     const onClose = vi.fn()
     render(<ChatOverlay open onClose={onClose} />)
-    const backdrop = screen.getByTestId('ChatOverlay').querySelector('[aria-hidden]')
+    const backdrop = screen
+      .getByTestId('ChatOverlay')
+      .querySelector('[aria-hidden]')
     expect(backdrop).not.toBeNull()
     fireEvent.click(backdrop as Element)
     expect(onClose).toHaveBeenCalledTimes(1)
