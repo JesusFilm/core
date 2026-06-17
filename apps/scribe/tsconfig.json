@@ -1,0 +1,29 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "target": "es2022",
+    "lib": ["es2022"],
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "noImplicitOverride": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "types": ["node"],
+    "noEmit": true,
+    "plugins": [
+      {
+        "name": "gql.tada/ts-plugin",
+        "schema": "../../apis/api-gateway/schema.graphql",
+        "tadaOutputLocation": "../../libs/shared/gql/src/__generated__/graphql-env.d.ts"
+      }
+    ]
+  },
+  "include": ["src/**/*", "types/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}
