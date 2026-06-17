@@ -1,14 +1,11 @@
 'use client'
 
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
 import { alpha } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
-import { useTranslation } from 'next-i18next/pages'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
-import { OVERLAY_CLOSE_BG, OVERLAY_CLOSE_BG_HOVER } from '../AiChat/chatStyles'
+import type { AiChatSheetState } from '../AiChat/AiChat'
 
 const AiChat = dynamic(
   async () =>
@@ -23,12 +20,30 @@ interface ChatOverlayProps {
   onClose: () => void
 }
 
+// Idle (no messages) height for the compact desktop bar. Mirrors the mobile
+// drawer's IDLE_HEIGHT_PX in PinnedChatBar.tsx: header wash (8px pad +
+// ~70px ChatHeader) + floating input (~52px) + breathing room. Explicit so
+// the idle ⇄ active animation interpolates between numeric endpoints rather
+// than transitioning out of `auto` height. Kept in sync with mobile so
+// desktop Option B (NES-1738) matches the mobile grow-from-bottom behaviour.
+const IDLE_HEIGHT_PX = 144
+
+// Same easing + duration as the mobile drawer's height transition
+// (PinnedChatBar.tsx) so the compact → 80% grow feels identical on desktop.
+const HEIGHT_TRANSITION = 'height 280ms cubic-bezier(0.4, 0, 0.2, 1)'
+
 export function ChatOverlay({
   open,
   onClose
 }: ChatOverlayProps): ReactElement | null {
-  const { t } = useTranslation('libs-journeys-ui')
+  const [sheetState, setSheetState] = useState<AiChatSheetState>('idle')
+
   if (!open) return null
+
+  // Option B (NES-1738): open compact and grow on the first message, mirroring
+  // the mobile drawer. Idle is the 144px bar (ChatHeader + inline input);
+  // active is 80% once AiChat reports messages exist.
+  const height = sheetState === 'active' ? '80%' : `${IDLE_HEIGHT_PX}px`
 
   return (
     <Box
@@ -55,52 +70,35 @@ export function ChatOverlay({
           // Fully opaque (100%) read as a flat slab; 98% gives a hint of
           // depth without compromising legibility. No backdrop blur — at
           // this opacity the 2% bleed-through doesn't justify the GPU
-          // cost. Tune-in-place value (NES-1654 iter).
+          // cost. Tune-in-place value (NES-1654 iter). Backdrop is held
+          // unchanged for Option B (NES-1738) — backdrop tweaks come later.
           bgcolor: (theme) => alpha(theme.palette.grey[900], 0.98)
         }}
       />
-      <IconButton
-        onClick={onClose}
-        aria-label={t('Close chat')}
-        disableRipple
-        sx={{
-          position: 'absolute',
-          top: 'calc(env(safe-area-inset-top) + 24px)',
-          right: 24,
-          zIndex: 1,
-          // Matches PromptInput's submit/stop icon button (32×32) so the
-          // two affordances at opposite corners of the overlay feel
-          // proportionate.
-          width: 32,
-          height: 32,
-          p: 0,
-          color: 'common.white',
-          bgcolor: OVERLAY_CLOSE_BG,
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: 'none',
-          backgroundClip: 'padding-box',
-          '&:hover': { bgcolor: OVERLAY_CLOSE_BG_HOVER }
-        }}
-      >
-        <CloseRoundedIcon fontSize="small" />
-      </IconButton>
       <Box
+        data-testid="ChatOverlayPanel"
+        data-sheet-state={sheetState}
         sx={{
           position: 'relative',
           width: '100%',
           maxWidth: '48rem',
-          // Full-height panel so the AiChat flex column has real height
-          // for the conversation-container (flex:1) to fill — that gives
-          // the absolutely-positioned empty-state hero proper space to
-          // centre within the viewport rather than collapsing to the
-          // bottom (NES-1654 iteration).
-          height: '100%',
+          // Compact-then-grow height (Option B). The panel variant's
+          // ChatHeader + inline input fill the 144px idle bar exactly like
+          // the mobile drawer; on the first message AiChat reports 'active'
+          // and the bar grows to 80%, revealing the card's CTA while the
+          // bar sits idle.
+          height,
+          transition: HEIGHT_TRANSITION,
           display: 'flex',
           flexDirection: 'column',
           minHeight: 0
         }}
       >
-        <AiChat variant="overlay" />
+        <AiChat
+          variant="panel"
+          onSheetStateChange={setSheetState}
+          onClose={onClose}
+        />
       </Box>
     </Box>
   )
