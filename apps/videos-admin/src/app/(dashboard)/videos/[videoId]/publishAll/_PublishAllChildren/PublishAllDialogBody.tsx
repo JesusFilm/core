@@ -2,6 +2,7 @@
 
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
@@ -31,6 +32,9 @@ export function PublishAllDialogBody({
     latestResult != null ? (
       <PublishAllResultPanel latestResult={latestResult} />
     ) : null
+  const canPublishVideosOnly = unpublishedChildrenCount > 0
+  const canPublishVideosAndLanguages =
+    unpublishedChildrenCount > 0 || allUnpublishedVariantsCount > 0
 
   return (
     <Stack spacing={2} sx={{ mt: 1 }}>
@@ -58,46 +62,82 @@ export function PublishAllDialogBody({
 
       <Stack spacing={1.5} sx={{ pt: 1 }}>
         <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
-          <Button
-            onClick={onPublishVideosOnly}
-            color="primary"
-            variant="outlined"
-            disabled={isSubmitting}
-            sx={{ whiteSpace: 'nowrap' }}
+          <Tooltip
+            title={canPublishVideosOnly ? '' : 'No videos to publish'}
+            describeChild
           >
-            Publish Videos Only
-          </Button>
-          <Button
-            onClick={() => void onDryRun('childrenVideosOnly')}
-            color="primary"
-            variant="text"
-            disabled={isSubmitting}
-            sx={{ whiteSpace: 'nowrap' }}
+            <span>
+              <Button
+                onClick={onPublishVideosOnly}
+                color="primary"
+                variant="outlined"
+                disabled={isSubmitting || !canPublishVideosOnly}
+                sx={{ whiteSpace: 'nowrap' }}
+              >
+                Publish Videos Only
+              </Button>
+            </span>
+          </Tooltip>
+          <Tooltip
+            title={canPublishVideosOnly ? '' : 'No videos to publish'}
+            describeChild
           >
-            Dry Run
-          </Button>
+            <span>
+              <Button
+                onClick={() => void onDryRun('childrenVideosOnly')}
+                color="primary"
+                variant="text"
+                disabled={isSubmitting || !canPublishVideosOnly}
+                sx={{ whiteSpace: 'nowrap' }}
+              >
+                Dry Run
+              </Button>
+            </span>
+          </Tooltip>
         </Stack>
 
         <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
-          <Button
-            onClick={onPublishVideosAndLanguages}
-            color="primary"
-            variant="contained"
-            disabled={isSubmitting}
-            autoFocus
-            sx={{ whiteSpace: 'nowrap' }}
+          <Tooltip
+            title={
+              canPublishVideosAndLanguages
+                ? ''
+                : 'No videos or audio languages to publish'
+            }
+            describeChild
           >
-            Publish Videos and Audio Languages
-          </Button>
-          <Button
-            onClick={() => void onDryRun('childrenVideosAndVariants')}
-            color="primary"
-            variant="text"
-            disabled={isSubmitting}
-            sx={{ whiteSpace: 'nowrap' }}
+            <span>
+              <Button
+                onClick={onPublishVideosAndLanguages}
+                color="primary"
+                variant="contained"
+                disabled={isSubmitting || !canPublishVideosAndLanguages}
+                autoFocus
+                sx={{ whiteSpace: 'nowrap' }}
+              >
+                Publish Videos and Audio Languages
+              </Button>
+            </span>
+          </Tooltip>
+          <Tooltip
+            title={
+              canPublishVideosAndLanguages
+                ? ''
+                : 'No videos or audio languages to publish'
+            }
+            describeChild
           >
-            Dry Run
-          </Button>
+            <span>
+              <Button
+                onClick={() => void onDryRun('childrenVideosAndVariants')}
+                color="primary"
+                variant="text"
+                disabled={isSubmitting || !canPublishVideosAndLanguages}
+                sx={{ whiteSpace: 'nowrap' }}
+              >
+                Dry Run
+              </Button>
+            </span>
+          </Tooltip>
         </Stack>
 
         <Stack direction="row" justifyContent="flex-end">
