@@ -17,10 +17,7 @@ export interface TrashArchivedJourneys_journeysTrash {
 }
 
 export interface TrashArchivedJourneys {
-  /**
-   * Sets journeys statuses to trashed
-   */
-  journeysTrash: (TrashArchivedJourneys_journeysTrash | null)[] | null;
+  journeysTrash: (TrashArchivedJourneys_journeysTrash | null)[];
 }
 
 export interface TrashArchivedJourneysVariables {

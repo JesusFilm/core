@@ -68,6 +68,12 @@
         ]
       }
     },
+    "prisma-seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["pnpm exec tsx libs/prisma/journeys/db/seed.ts"]
+      }
+    },
     "prisma-validate": {
       "executor": "nx:run-commands",
       "options": {
