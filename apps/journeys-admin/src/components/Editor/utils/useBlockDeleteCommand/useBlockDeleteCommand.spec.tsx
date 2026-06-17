@@ -13,6 +13,7 @@ import {
   BlockFields_MultiselectOptionBlock as MultiselectOptionBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../__generated__/BlockFields'
+import { TestEditorState } from '../../../../libs/TestEditorState'
 import { BLOCK_DELETE } from '../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation'
 import {
   deleteCardBlockMock,
@@ -24,9 +25,8 @@ import {
   restoreStepMock,
   useBlockRestoreMutationMock
 } from '../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
-import { TestEditorState } from '../../../../libs/TestEditorState'
-import { EditorLayoutProvider } from '../../EditorLayoutContext'
 import { MuxVideoUploadProvider } from '../../../MuxVideoUploadProvider'
+import { EditorLayoutProvider } from '../../EditorLayoutContext'
 import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
 
 import {
@@ -398,7 +398,9 @@ describe('useBlockDeleteCommand', () => {
     const { result } = renderHook(() => useBlockDeleteCommand(), {
       wrapper: ({ children }) => (
         <MockedProvider
-          mocks={[{ ...deleteCardBlockMock, result: deleteCardBlockMockResult }]}
+          mocks={[
+            { ...deleteCardBlockMock, result: deleteCardBlockMockResult }
+          ]}
         >
           <EditorProvider
             initialState={{

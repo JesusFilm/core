@@ -10,8 +10,8 @@ import {
   BlockOrderUpdate,
   BlockOrderUpdateVariables
 } from '../../../../../../../../__generated__/BlockOrderUpdate'
-import { blockOrderUpdateMock } from '../../../../../../../libs/useBlockOrderUpdateMutation/useBlockOrderUpdateMutation.mock'
 import { TestEditorState } from '../../../../../../../libs/TestEditorState'
+import { blockOrderUpdateMock } from '../../../../../../../libs/useBlockOrderUpdateMutation/useBlockOrderUpdateMutation.mock'
 import { EditorLayoutProvider } from '../../../../../EditorLayoutContext'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'

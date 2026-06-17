@@ -19,8 +19,8 @@ import {
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
-import { EditorLayoutProvider } from '../../../../EditorLayoutContext'
 import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
+import { EditorLayoutProvider } from '../../../../EditorLayoutContext'
 
 import { Properties } from '.'
 
