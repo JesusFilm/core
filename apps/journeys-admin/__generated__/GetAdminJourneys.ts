@@ -40,9 +40,6 @@ export interface GetAdminJourneys_journeys_userJourneys {
   __typename: "UserJourney";
   id: string;
   role: UserJourneyRole;
-  /**
-   * Date time of when the journey was first opened
-   */
   openedAt: any | null;
   user: GetAdminJourneys_journeys_userJourneys_user | null;
 }
@@ -107,9 +104,6 @@ export interface GetAdminJourneys_journeys {
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: GetAdminJourneys_journeys_journeyCustomizationFields[];
   website: boolean | null;
-  /**
-   * used to display quick start label on customizable templates
-   */
   customizable: boolean | null;
 }
 

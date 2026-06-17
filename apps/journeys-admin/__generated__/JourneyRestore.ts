@@ -17,10 +17,7 @@ export interface JourneyRestore_journeysRestore {
 }
 
 export interface JourneyRestore {
-  /**
-   * Sets journeys statuses to last active status
-   */
-  journeysRestore: (JourneyRestore_journeysRestore | null)[] | null;
+  journeysRestore: (JourneyRestore_journeysRestore | null)[];
 }
 
 export interface JourneyRestoreVariables {
