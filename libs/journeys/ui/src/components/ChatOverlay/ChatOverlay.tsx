@@ -89,12 +89,12 @@ export function ChatOverlay({
           position: 'relative',
           width: '100%',
           maxWidth: '48rem',
-          // Full-height panel so the AiChat flex column has real height
-          // for the conversation-container (flex:1) to fill — that gives
-          // the absolutely-positioned empty-state hero proper space to
-          // centre within the viewport rather than collapsing to the
-          // bottom (NES-1654 iteration).
-          height: '100%',
+          // 80%-height panel, bottom-aligned, so the top 20% stays the
+          // dark backdrop — revealing more of the journey card behind and
+          // signalling the chat is closeable by tapping above it (NES-1738
+          // Option A). The AiChat flex column still gets real height for the
+          // conversation-container (flex:1) to fill.
+          height: '80%',
           display: 'flex',
           flexDirection: 'column',
           minHeight: 0
