@@ -49,13 +49,15 @@ export function ChatOverlay({
         aria-hidden
         sx={{
           position: 'absolute',
-          inset: 0,
-          // Near-opaque (98%) — Lucinda's original feedback was that the
-          // previous 88% + 6px blur showed too much of the journey card.
-          // Fully opaque (100%) read as a flat slab; 98% gives a hint of
-          // depth without compromising legibility. No backdrop blur — at
-          // this opacity the 2% bleed-through doesn't justify the GPU
-          // cost. Tune-in-place value (NES-1654 iter).
+          left: 0,
+          right: 0,
+          bottom: 0,
+          // Dark surface scales WITH the chat (NES-1738 Option A): it covers
+          // only the bottom 80% — the same height as the panel — so the freed
+          // top 20% reveals the journey card instead of a full-screen slab.
+          // Colour/opacity unchanged from NES-1654 (near-opaque 98%, no blur);
+          // only the size changed.
+          height: '80%',
           bgcolor: (theme) => alpha(theme.palette.grey[900], 0.98)
         }}
       />
@@ -89,11 +91,11 @@ export function ChatOverlay({
           position: 'relative',
           width: '100%',
           maxWidth: '48rem',
-          // 80%-height panel, bottom-aligned, so the top 20% stays the
-          // dark backdrop — revealing more of the journey card behind and
-          // signalling the chat is closeable by tapping above it (NES-1738
-          // Option A). The AiChat flex column still gets real height for the
-          // conversation-container (flex:1) to fill.
+          // 80%-height panel, bottom-aligned. The dark surface behind is now
+          // sized to match (also 80%), so the freed top 20% reveals the
+          // journey card — signalling the chat is closeable to reach the card's
+          // CTA (NES-1738 Option A). The AiChat flex column still gets real
+          // height for the conversation-container (flex:1) to fill.
           height: '80%',
           display: 'flex',
           flexDirection: 'column',

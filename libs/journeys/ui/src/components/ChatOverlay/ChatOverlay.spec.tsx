@@ -34,6 +34,14 @@ describe('ChatOverlay', () => {
     expect(panel).toHaveStyle({ height: '80%' })
   })
 
+  it('scales the dark backdrop to 80% so the card shows above (not full-screen)', () => {
+    render(<ChatOverlay open onClose={vi.fn()} />)
+    const backdrop = screen
+      .getByTestId('ChatOverlay')
+      .querySelector('[aria-hidden]') as HTMLElement
+    expect(backdrop).toHaveStyle({ height: '80%' })
+  })
+
   it('calls onClose when the backdrop is clicked', () => {
     const onClose = vi.fn()
     render(<ChatOverlay open onClose={onClose} />)
