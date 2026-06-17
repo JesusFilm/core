@@ -309,9 +309,7 @@ describe('PublishAllChildrenDialog (route)', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Publish Videos Only' }))
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Publish Valid Videos?')
-      ).toBeInTheDocument()
+      expect(screen.getByText('Publish Valid Videos?')).toBeInTheDocument()
       expect(screen.getByText(/Could not publish:/)).toBeInTheDocument()
     })
     expect(mockPublishChildren).toHaveBeenCalledTimes(1)
@@ -371,9 +369,7 @@ describe('PublishAllChildrenDialog (route)', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Publish Videos Only' }))
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Publish Valid Videos?')
-      ).toBeInTheDocument()
+      expect(screen.getByText('Publish Valid Videos?')).toBeInTheDocument()
     })
 
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
@@ -437,7 +433,9 @@ describe('PublishAllChildrenDialog (route)', () => {
     )
 
     expect(
-      screen.getByText(/0 unpublished child video\(s\) and 1 unpublished variant\(s\)/)
+      screen.getByText(
+        /0 unpublished child video\(s\) and 1 unpublished variant\(s\)/
+      )
     ).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: 'Publish Videos Only' })
