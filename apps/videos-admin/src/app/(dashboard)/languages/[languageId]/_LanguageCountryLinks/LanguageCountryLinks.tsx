@@ -12,11 +12,11 @@ import CircularProgress from '@mui/material/CircularProgress'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
-import TableContainer from '@mui/material/TableContainer'
 import Stack from '@mui/material/Stack'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import TextField from '@mui/material/TextField'
@@ -150,7 +150,7 @@ function valuesAreValid(values: RowValues): boolean {
     (values.displaySpeakers.trim().length === 0 ||
       (Number.isFinite(optionalNumber(values.displaySpeakers)) &&
         optionalNumber(values.displaySpeakers) != null &&
-        optionalNumber(values.displaySpeakers)! >= 0)) &&
+        optionalNumber(values.displaySpeakers) >= 0)) &&
     (values.order.trim().length === 0 ||
       (Number.isFinite(optionalNumber(values.order)) &&
         optionalNumber(values.order) != null))
