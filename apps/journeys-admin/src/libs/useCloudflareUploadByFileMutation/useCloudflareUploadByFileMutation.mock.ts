@@ -7,9 +7,11 @@ import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE } from './useCloudflareUploadByFileMut
 export const cloudflareUploadMutationMock: MockedResponse<CreateCloudflareUploadByFile> =
   {
     request: {
-      query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE,
-      variables: {}
+      query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE
     },
+    // Match regardless of the journeyId variable so this shared mock works for
+    // both personal (no journey) and team-tagged (journeyId present) uploads.
+    variableMatcher: () => true,
     result: vi.fn(() => ({
       data: {
         createCloudflareUploadByFile: {

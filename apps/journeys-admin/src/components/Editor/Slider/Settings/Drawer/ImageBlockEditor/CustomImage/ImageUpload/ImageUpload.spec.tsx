@@ -4,6 +4,9 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import fetch, { Response } from 'node-fetch'
 import { type MockedFunction } from 'vitest'
 
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE } from '../../../../../../../../libs/useCloudflareUploadByFileMutation/useCloudflareUploadByFileMutation'
 
@@ -111,6 +114,47 @@ describe('ImageUpload', () => {
       value: [file]
     })
     fireEvent.drop(input)
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should thread the active journeyId into the upload mutation', async () => {
+    const result = vi.fn(() => ({
+      data: {
+        createCloudflareUploadByFile: {
+          id: 'uploadId',
+          uploadUrl: 'uploadUrl',
+          __typename: 'CloudflareImage'
+        }
+      }
+    }))
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE,
+              variables: { journeyId: 'journeyId' }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        >
+          <ImageUpload
+            onChange={vi.fn()}
+            loading={false}
+            selectedBlock={imageBlock}
+          />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const input = screen.getByTestId('drop zone')
+    const file = new File(['file'], 'testFile.png', { type: 'image/png' })
+    Object.defineProperty(input, 'files', { value: [file] })
+    fireEvent.drop(input)
+    // The mock only matches when journeyId is sent, so being called proves it threaded
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 

@@ -539,12 +539,23 @@ describe('Conductor', () => {
         expect(await findByTestId('ChatOverlay-open')).toBeInTheDocument()
       })
 
-      it('does not auto-open the overlay when card.expandChatByDefault is null', async () => {
-        const { findByTestId, queryByTestId } = renderConductor({
+      it('auto-opens the overlay when card.expandChatByDefault is null (new pop-open default)', async () => {
+        const { findByTestId } = renderConductor({
           journey: { ...perCardJourney, showAssistant: null },
           blocks: buildBlocks({
             showAssistant: true,
             expandChatByDefault: null
+          })
+        })
+        expect(await findByTestId('ChatOverlay-open')).toBeInTheDocument()
+      })
+
+      it('does not auto-open the overlay when card.expandChatByDefault is false (collapse opt-in)', async () => {
+        const { findByTestId, queryByTestId } = renderConductor({
+          journey: { ...perCardJourney, showAssistant: null },
+          blocks: buildBlocks({
+            showAssistant: true,
+            expandChatByDefault: false
           })
         })
         // Wait for Conductor's per-card derivation to settle.
