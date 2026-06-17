@@ -2,7 +2,7 @@ import { brandRed } from '@core/shared/ui/themes/base/tokens/colors'
 
 /**
  * Single source of truth for chat-surface styling. Consumers
- * (`Message`, `ChatHeader`, `DragHandle`, `PromptInput`,
+ * (`Message`, `ChatHeader`, `PromptInput`,
  * `Conversation`, `PinnedChatBar`, `AiChat`) import from here
  * instead of inlining colour/shadow values in `sx` blocks — so a
  * design tweak only touches one file.

@@ -2,6 +2,7 @@ import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
@@ -27,6 +28,7 @@ export function CustomImage({
 }: CustomImageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { mediaLibrary } = useFlags()
+  const { activeTeam } = useTeam()
   const [galleryKey, setGalleryKey] = useState(0)
 
   return (
@@ -56,6 +58,7 @@ export function CustomImage({
           onSelect={onChange}
           isAi={false}
           uploading={loading}
+          teamId={activeTeam?.id ?? null}
         />
       )}
     </Stack>

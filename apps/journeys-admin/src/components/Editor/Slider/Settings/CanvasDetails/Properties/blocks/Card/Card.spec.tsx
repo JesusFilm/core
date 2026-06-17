@@ -646,10 +646,10 @@ describe('Card', () => {
       ).toBeInTheDocument()
     })
 
-    it('shows On when showAssistant is true and expandChatByDefault is false', () => {
+    it('shows "On" when showAssistant is true and the card pops open (expandChatByDefault null)', () => {
       const card = createCard({
         showAssistant: true,
-        expandChatByDefault: false
+        expandChatByDefault: null
       })
       renderWithProviders(<Card {...card} />, {
         flags: { aiChatEditor: true }
@@ -660,17 +660,17 @@ describe('Card', () => {
       ).toBeInTheDocument()
     })
 
-    it('shows "On, auto-open" when showAssistant and expandChatByDefault are both true', () => {
+    it('shows "On, collapsed" when showAssistant is true and expandChatByDefault is false', () => {
       const card = createCard({
         showAssistant: true,
-        expandChatByDefault: true
+        expandChatByDefault: false
       })
       renderWithProviders(<Card {...card} />, {
         flags: { aiChatEditor: true }
       })
 
       expect(
-        screen.getByRole('button', { name: 'AI chat On, auto-open' })
+        screen.getByRole('button', { name: 'AI chat On, collapsed' })
       ).toBeInTheDocument()
     })
   })

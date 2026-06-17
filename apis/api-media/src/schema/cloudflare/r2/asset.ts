@@ -11,6 +11,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 import { prisma } from '@core/prisma/media/client'
 
+import { notifyMediaSlackOfOperationFailure } from '../../../lib/slack'
 import { builder } from '../../builder'
 
 import {
@@ -279,21 +280,38 @@ builder.mutationFields((t) => ({
         throw new Error('Content length must be non-negative')
       }
 
-      const uploadUrl = await getPresignedUrl(input.fileName, input.contentType)
-      return await prisma.cloudflareR2.create({
-        ...query,
-        data: {
-          id: input.id ?? undefined,
-          videoId: input.videoId,
-          userId: user.id,
-          fileName: input.fileName,
-          originalFilename: input.originalFilename,
-          uploadUrl,
-          publicUrl: `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${input.fileName}`,
-          contentType: input.contentType,
-          contentLength: input.contentLength
-        }
-      })
+      try {
+        const uploadUrl = await getPresignedUrl(
+          input.fileName,
+          input.contentType
+        )
+        return await prisma.cloudflareR2.create({
+          ...query,
+          data: {
+            id: input.id ?? undefined,
+            videoId: input.videoId,
+            userId: user.id,
+            fileName: input.fileName,
+            originalFilename: input.originalFilename,
+            uploadUrl,
+            publicUrl: `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${input.fileName}`,
+            contentType: input.contentType,
+            contentLength: input.contentLength
+          }
+        })
+      } catch (error) {
+        notifyMediaSlackOfOperationFailure({
+          operation: 'R2 asset create failed',
+          error,
+          context: {
+            videoId: input.videoId,
+            fileName: input.fileName,
+            contentType: input.contentType,
+            userId: user.id
+          }
+        })
+        throw error
+      }
     }
   }),
   cloudflareR2MultipartPrepare: t.withAuth({ isPublisher: true }).field({
@@ -316,42 +334,57 @@ builder.mutationFields((t) => ({
       )
       const totalParts = Math.ceil(contentLengthNumber / partSize)
 
-      const uploadId = await createMultipartUpload(
-        input.fileName,
-        input.contentType
-      )
-
-      const parts: Array<{ partNumber: number; uploadUrl: string }> = []
-      for (let partNumber = 1; partNumber <= totalParts; partNumber += 1) {
-        const uploadUrl = await getMultipartPartUrl(
+      try {
+        const uploadId = await createMultipartUpload(
           input.fileName,
-          uploadId,
-          partNumber
+          input.contentType
         )
-        parts.push({ partNumber, uploadUrl })
-      }
 
-      const asset = await prisma.cloudflareR2.create({
-        data: {
-          id: input.id ?? undefined,
-          videoId: input.videoId,
-          userId: user.id,
-          fileName: input.fileName,
-          originalFilename: input.originalFilename,
-          uploadUrl: null,
-          publicUrl: `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${input.fileName}`,
-          contentType: input.contentType,
-          contentLength: input.contentLength
+        const parts: Array<{ partNumber: number; uploadUrl: string }> = []
+        for (let partNumber = 1; partNumber <= totalParts; partNumber += 1) {
+          const uploadUrl = await getMultipartPartUrl(
+            input.fileName,
+            uploadId,
+            partNumber
+          )
+          parts.push({ partNumber, uploadUrl })
         }
-      })
 
-      return {
-        id: asset.id,
-        uploadId,
-        fileName: asset.fileName,
-        publicUrl: asset.publicUrl,
-        partSize,
-        parts
+        const asset = await prisma.cloudflareR2.create({
+          data: {
+            id: input.id ?? undefined,
+            videoId: input.videoId,
+            userId: user.id,
+            fileName: input.fileName,
+            originalFilename: input.originalFilename,
+            uploadUrl: null,
+            publicUrl: `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${input.fileName}`,
+            contentType: input.contentType,
+            contentLength: input.contentLength
+          }
+        })
+
+        return {
+          id: asset.id,
+          uploadId,
+          fileName: asset.fileName,
+          publicUrl: asset.publicUrl,
+          partSize,
+          parts
+        }
+      } catch (error) {
+        notifyMediaSlackOfOperationFailure({
+          operation: 'R2 multipart prepare failed',
+          error,
+          context: {
+            videoId: input.videoId,
+            fileName: input.fileName,
+            contentType: input.contentType,
+            totalParts,
+            userId: user.id
+          }
+        })
+        throw error
       }
     }
   }),
@@ -370,19 +403,33 @@ builder.mutationFields((t) => ({
       if (input.parts.length === 0)
         throw new Error('At least one part is required to complete upload')
 
-      await completeMultipartUpload(input.fileName, input.uploadId, [
-        ...input.parts
-      ])
-
       if (input.id == null) {
         throw new Error('Multipart upload record id is required to complete')
       }
 
-      return await prisma.cloudflareR2.update({
-        ...query,
-        where: { id: input.id },
-        data: {}
-      })
+      try {
+        await completeMultipartUpload(input.fileName, input.uploadId, [
+          ...input.parts
+        ])
+
+        return await prisma.cloudflareR2.update({
+          ...query,
+          where: { id: input.id },
+          data: {}
+        })
+      } catch (error) {
+        notifyMediaSlackOfOperationFailure({
+          operation: 'R2 multipart complete failed',
+          error,
+          context: {
+            assetId: input.id,
+            fileName: input.fileName,
+            uploadId: input.uploadId,
+            partCount: input.parts.length
+          }
+        })
+        throw error
+      }
     }
   }),
   cloudflareR2Delete: t.withAuth({ isPublisher: true }).prismaField({

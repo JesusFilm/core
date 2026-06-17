@@ -1,6 +1,7 @@
 'use client'
 
 import { useMutation, useSuspenseQuery } from '@apollo/client'
+import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, use, useCallback, useMemo, useState } from 'react'
@@ -32,6 +33,8 @@ export default function PublishAllChildrenDialog({
   const [latestResult, setLatestResult] = useState<PublishSummaryEntry | null>(
     null
   )
+  const [pendingPartialPublishMode, setPendingPartialPublishMode] =
+    useState<VideoPublishMode | null>(null)
 
   const { data } = useSuspenseQuery(GET_VIDEO_CHILDREN_FOR_PUBLISH, {
     variables: { id: videoId }
@@ -40,87 +43,148 @@ export default function PublishAllChildrenDialog({
   const [publishChildren] = useMutation(PUBLISH_CHILDREN)
 
   const { unpublishedChildren, allUnpublishedVariants } = useMemo(() => {
-    const children = data?.adminVideo?.children ?? []
+    const video = data?.adminVideo
+    const children = video?.children ?? []
+    const parentVariants = video?.variants ?? []
     const unpublished = children.filter((child) => !child.published)
-    const unpublishedVariants = children.flatMap(
-      (child) => child.variants?.filter((v) => !v.published) ?? []
-    )
+    const unpublishedVariants = [
+      ...parentVariants.filter((variant) => !variant.published),
+      ...children.flatMap(
+        (child) => child.variants?.filter((v) => !v.published) ?? []
+      )
+    ]
     return {
       unpublishedChildren: unpublished,
       allUnpublishedVariants: unpublishedVariants
     }
-  }, [data?.adminVideo?.children])
+  }, [data?.adminVideo])
 
   const replaceLatestResult = useCallback((entry: PublishSummaryEntry) => {
     setLatestResult(entry)
   }, [])
 
-  if ((unpublishedChildren?.length ?? 0) === 0) {
-    enqueueSnackbar('No unpublished children to publish', { variant: 'info' })
-    router.push(`/videos/${videoId}`, { scroll: false })
-    return <></>
-  }
-
   const handleClose = useCallback(() => {
     router.push(`/videos/${videoId}`, { scroll: false })
   }, [router, videoId])
 
-  const handlePublishChildren = useCallback(async () => {
-    if (unpublishedChildren.length === 0) {
-      handleClose()
-      return
-    }
-    setIsSubmitting(true)
-    try {
+  const resultToSummaryEntry = useCallback(
+    (
+      result: NonNullable<
+        Awaited<ReturnType<typeof publishChildren>>['data']
+      >['videoPublishChildren']
+    ): PublishSummaryEntry => ({
+      dryRun: result.dryRun === true,
+      publishedVideoIds: result.publishedVideoIds ?? [],
+      publishedVariantIds: result.publishedVariantIds ?? [],
+      videosFailedValidation: result.videosFailedValidation ?? []
+    }),
+    []
+  )
+
+  const runPublishMutation = useCallback(
+    async (mode: VideoPublishMode, dryRun: boolean) => {
       const { data: mutationData, errors } = await publishChildren({
         variables: {
           id: videoId,
-          mode: 'childrenVideosOnly',
-          dryRun: false
+          mode,
+          dryRun
         }
       })
       if (errors != null && errors.length > 0) {
-        throw new Error('Failed to publish children')
+        throw new Error('Failed to publish')
       }
       const result = mutationData?.videoPublishChildren
       if (result == null) {
         throw new Error('No publish result')
       }
-      replaceLatestResult({
-        dryRun: false,
-        publishedVideoIds: result.publishedVideoIds ?? [],
-        publishedVariantIds: result.publishedVariantIds ?? [],
-        videosFailedValidation: result.videosFailedValidation ?? []
-      })
-      const failures = result.videosFailedValidation ?? []
-      if (failures.length > 0) {
+      return result
+    },
+    [publishChildren, videoId]
+  )
+
+  const executePublish = useCallback(
+    async (mode: VideoPublishMode) => {
+      setIsSubmitting(true)
+      try {
+        const result = await runPublishMutation(mode, false)
+        replaceLatestResult(resultToSummaryEntry(result))
+
         enqueueSnackbar(
-          `${failures.length} video(s) could not be published. Fix issues using the links below, then try again.`,
-          { variant: 'warning' }
+          mode === 'childrenVideosOnly'
+            ? `Successfully published ${result.publishedVideoCount} videos`
+            : `Successfully published ${result.publishedVideoCount} videos and ${result.publishedVariantsCount} audio language variant(s)`,
+          { variant: 'success' }
+        )
+        router.refresh()
+        handleClose()
+      } catch {
+        enqueueSnackbar(
+          mode === 'childrenVideosOnly'
+            ? 'Failed to publish children'
+            : 'Failed to publish children and languages',
+          { variant: 'error' }
         )
         setIsSubmitting(false)
-        router.refresh()
-        return
       }
-      enqueueSnackbar(
-        `Successfully published ${result.publishedVideoCount} videos`,
-        { variant: 'success' }
-      )
-      router.refresh()
-      handleClose()
-    } catch {
-      enqueueSnackbar('Failed to publish children', { variant: 'error' })
-      setIsSubmitting(false)
-    }
-  }, [
-    replaceLatestResult,
-    enqueueSnackbar,
-    handleClose,
-    publishChildren,
-    router,
-    unpublishedChildren.length,
-    videoId
-  ])
+    },
+    [
+      enqueueSnackbar,
+      handleClose,
+      replaceLatestResult,
+      resultToSummaryEntry,
+      router,
+      runPublishMutation
+    ]
+  )
+
+  const requestPublish = useCallback(
+    async (mode: VideoPublishMode) => {
+      setIsSubmitting(true)
+      try {
+        const dryRunResult = await runPublishMutation(mode, true)
+        replaceLatestResult(resultToSummaryEntry(dryRunResult))
+
+        const failures = dryRunResult.videosFailedValidation ?? []
+        const publishableCount =
+          (dryRunResult.publishedVideoIds?.length ?? 0) +
+          (dryRunResult.publishedVariantIds?.length ?? 0)
+
+        if (failures.length > 0) {
+          if (publishableCount > 0) {
+            setPendingPartialPublishMode(mode)
+          } else {
+            enqueueSnackbar(
+              `${failures.length} video(s) could not be published. Fix issues using the links below, then try again.`,
+              { variant: 'warning' }
+            )
+          }
+          setIsSubmitting(false)
+          return
+        }
+
+        await executePublish(mode)
+      } catch {
+        enqueueSnackbar(
+          mode === 'childrenVideosOnly'
+            ? 'Failed to publish children'
+            : 'Failed to publish children and languages',
+          { variant: 'error' }
+        )
+        setIsSubmitting(false)
+      }
+    },
+    [
+      enqueueSnackbar,
+      executePublish,
+      replaceLatestResult,
+      resultToSummaryEntry,
+      runPublishMutation
+    ]
+  )
+
+  const handlePublishChildren = useCallback(() => {
+    void requestPublish('childrenVideosOnly')
+  }, [requestPublish])
 
   const handleDryRun = useCallback(
     async (mode: VideoPublishMode) => {
@@ -155,83 +219,59 @@ export default function PublishAllChildrenDialog({
     [replaceLatestResult, enqueueSnackbar, publishChildren, videoId]
   )
 
-  const handlePublishChildrenAndLanguages = useCallback(async () => {
-    if (unpublishedChildren.length === 0) {
-      handleClose()
+  const handlePublishChildrenAndLanguages = useCallback(() => {
+    void requestPublish('childrenVideosAndVariants')
+  }, [requestPublish])
+
+  const handleConfirmPartialPublish = useCallback(() => {
+    if (pendingPartialPublishMode == null) {
       return
     }
-    setIsSubmitting(true)
-    try {
-      const { data: mutationData, errors } = await publishChildren({
-        variables: {
-          id: videoId,
-          mode: 'childrenVideosAndVariants',
-          dryRun: false
-        }
-      })
-      if (errors != null && errors.length > 0) {
-        throw new Error('Failed to publish children and languages')
-      }
-      const result = mutationData?.videoPublishChildren
-      if (result == null) {
-        throw new Error('No publish result')
-      }
-      replaceLatestResult({
-        dryRun: false,
-        publishedVideoIds: result.publishedVideoIds ?? [],
-        publishedVariantIds: result.publishedVariantIds ?? [],
-        videosFailedValidation: result.videosFailedValidation ?? []
-      })
-      const failures = result.videosFailedValidation ?? []
-      if (failures.length > 0) {
-        enqueueSnackbar(
-          `${failures.length} video(s) could not be published. Fix issues using the links below, then try again.`,
-          { variant: 'warning' }
-        )
-        setIsSubmitting(false)
-        router.refresh()
-        return
-      }
-      enqueueSnackbar(
-        `Successfully published ${result.publishedVideoCount} videos and ${result.publishedVariantsCount} audio language variant(s)`,
-        { variant: 'success' }
-      )
-      router.refresh()
-      handleClose()
-    } catch {
-      enqueueSnackbar('Failed to publish children and languages', {
-        variant: 'error'
-      })
-      setIsSubmitting(false)
-    }
-  }, [
-    replaceLatestResult,
-    enqueueSnackbar,
-    handleClose,
-    publishChildren,
-    router,
-    unpublishedChildren.length,
-    videoId
-  ])
+    const mode = pendingPartialPublishMode
+    setPendingPartialPublishMode(null)
+    void executePublish(mode)
+  }, [executePublish, pendingPartialPublishMode])
+
+  const handleCancelPartialPublish = useCallback(() => {
+    setPendingPartialPublishMode(null)
+  }, [])
 
   return (
-    <Dialog
-      open={true}
-      onClose={handleClose}
-      dialogTitle={{ title: 'Publish All Children', closeButton: true }}
-      divider
-      loading={isSubmitting}
-    >
-      <PublishAllDialogBody
-        unpublishedChildrenCount={unpublishedChildren.length}
-        allUnpublishedVariantsCount={allUnpublishedVariants.length}
-        isSubmitting={isSubmitting}
-        latestResult={latestResult}
-        onPublishVideosOnly={handlePublishChildren}
-        onDryRun={handleDryRun}
-        onPublishVideosAndLanguages={handlePublishChildrenAndLanguages}
+    <>
+      <Dialog
+        open={true}
         onClose={handleClose}
-      />
-    </Dialog>
+        dialogTitle={{ title: 'Publish All Children', closeButton: true }}
+        divider
+        loading={isSubmitting}
+      >
+        <PublishAllDialogBody
+          unpublishedChildrenCount={unpublishedChildren.length}
+          allUnpublishedVariantsCount={allUnpublishedVariants.length}
+          isSubmitting={isSubmitting}
+          latestResult={latestResult}
+          onPublishVideosOnly={handlePublishChildren}
+          onDryRun={handleDryRun}
+          onPublishVideosAndLanguages={handlePublishChildrenAndLanguages}
+          onClose={handleClose}
+        />
+      </Dialog>
+      <Dialog
+        open={pendingPartialPublishMode != null}
+        onClose={handleCancelPartialPublish}
+        dialogTitle={{ title: 'Publish Valid Videos?', closeButton: true }}
+        dialogAction={{
+          onSubmit: handleConfirmPartialPublish,
+          submitLabel: 'Publish Valid Videos',
+          closeLabel: 'Cancel'
+        }}
+        loading={isSubmitting}
+      >
+        <Typography variant="body1">
+          Some videos cannot be published yet. Publish the valid videos and
+          audio languages listed in the dry run anyway?
+        </Typography>
+      </Dialog>
+    </>
   )
 }

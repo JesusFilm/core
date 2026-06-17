@@ -9,7 +9,6 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useParams, useRouter, useSelectedLayoutSegment } from 'next/navigation'
-import { useSnackbar } from 'notistack'
 import { ReactNode, useCallback } from 'react'
 
 import { graphql } from '@core/shared/gql'
@@ -46,29 +45,6 @@ const GET_TAB_DATA = graphql(`
   }
 `)
 
-const GET_VIDEO_CHILDREN_FOR_PUBLISH = graphql(`
-  query GetVideoChildrenForPublish($id: ID!) {
-    adminVideo(id: $id) {
-      id
-      label
-      children {
-        id
-        published
-        variants(input: { onlyPublished: false }) {
-          id
-          published
-          language {
-            id
-            name(primary: true) {
-              value
-            }
-          }
-        }
-      }
-    }
-  }
-`)
-
 interface VideoViewLayoutProps {
   children: ReactNode
   studyQuestions: ReactNode
@@ -79,7 +55,6 @@ export default function VideoViewLayout({
   studyQuestions
 }: VideoViewLayoutProps): ReactNode {
   const router = useRouter()
-  const { enqueueSnackbar } = useSnackbar()
   const { videoId } = useParams<{ videoId: string }>()
   // keep metadata visible when modal is open
   const availableTabs = [
@@ -90,8 +65,9 @@ export default function VideoViewLayout({
     'troubleshooting'
   ]
   const segment = useSelectedLayoutSegment() ?? 'metadata'
-  const currentTab = availableTabs.includes(segment ?? '')
-    ? segment
+  const tabSegment = segment === 'publishAll' ? 'children' : segment
+  const currentTab = availableTabs.includes(tabSegment ?? '')
+    ? tabSegment
     : 'metadata'
 
   const { data } = useSuspenseQuery(GET_TAB_DATA, {
@@ -100,13 +76,6 @@ export default function VideoViewLayout({
       languageId: DEFAULT_VIDEO_LANGUAGE_ID
     }
   })
-
-  const { data: childrenData } = useSuspenseQuery(
-    GET_VIDEO_CHILDREN_FOR_PUBLISH,
-    {
-      variables: { id: videoId }
-    }
-  )
 
   if (data.adminVideo == null) {
     return <VideoViewFallback />
@@ -128,20 +97,9 @@ export default function VideoViewLayout({
     video.label === 'series' ||
     video.label === 'featureFilm'
 
-  // Get unpublished children for publish all functionality
-  const unpublishedChildren =
-    childrenData?.adminVideo?.children?.filter((child) => !child.published) ??
-    []
-
   const handlePublishAllClick = useCallback(() => {
-    if (unpublishedChildren.length === 0) {
-      enqueueSnackbar('No unpublished children to publish', {
-        variant: 'info'
-      })
-      return
-    }
     router.push(`/videos/${videoId}/publishAll`, { scroll: false })
-  }, [enqueueSnackbar, router, unpublishedChildren.length, videoId])
+  }, [router, videoId])
 
   return (
     <Stack
