@@ -131,8 +131,7 @@ describe('countries', () => {
         countryLanguages: {
           include: {
             language: true
-          },
-          where: { language: { hasVideos: true } }
+          }
         },
         name: {
           include: {
@@ -267,8 +266,7 @@ describe('countries', () => {
         countryLanguages: {
           include: {
             language: true
-          },
-          where: { language: { hasVideos: true } }
+          }
         },
         name: {
           include: {
@@ -292,14 +290,19 @@ describe('countries', () => {
         }
       },
       where: {
-        name: {
-          some: {
-            value: {
-              contains: 'test',
-              mode: 'insensitive'
+        OR: [
+          { id: { startsWith: 'test' } },
+          {
+            name: {
+              some: {
+                value: {
+                  contains: 'test',
+                  mode: 'insensitive'
+                }
+              }
             }
           }
-        }
+        ]
       }
     })
     expect(data).toHaveProperty('data.countries', [

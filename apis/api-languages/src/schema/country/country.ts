@@ -1,6 +1,5 @@
 import { Prisma, prisma } from '@core/prisma/languages/client'
 
-import { parseFullTextSearch } from '../../lib/parseFullTextSearch'
 import { DateTimeFilter, builder, toPrismaDateTimeFilter } from '../builder'
 import { Language } from '../language/language'
 
@@ -43,14 +42,7 @@ const Country = builder.prismaObject('Country', {
     }),
     continent: t.relation('continent', { nullable: false, onNull: 'error' }),
     countryLanguages: t.relation('countryLanguages', {
-      nullable: false,
-      query: {
-        where: {
-          language: {
-            hasVideos: true
-          }
-        }
-      }
+      nullable: false
     }),
     languageCount: t.relationCount('countryLanguages', {
       nullable: false,
@@ -97,15 +89,21 @@ builder.queryFields((t) => ({
     },
     resolve: async (query, _parent, { term, ids, where }) => {
       const filter: Prisma.CountryWhereInput = {}
-      if (term != null) {
-        filter.name = {
-          some: {
-            value: {
-              contains: parseFullTextSearch(term),
-              mode: 'insensitive'
+      const searchTerm = term?.trim()
+      if (searchTerm != null && searchTerm.length > 0) {
+        filter.OR = [
+          { id: { startsWith: searchTerm } },
+          {
+            name: {
+              some: {
+                value: {
+                  contains: searchTerm,
+                  mode: 'insensitive'
+                }
+              }
             }
           }
-        }
+        ]
       }
       if (ids != null) {
         filter.id = { in: ids }

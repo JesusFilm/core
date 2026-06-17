@@ -1,6 +1,5 @@
 import { Prisma, prisma } from '@core/prisma/languages/client'
 
-import { parseFullTextSearch } from '../../lib/parseFullTextSearch'
 import { DateTimeFilter, builder, toPrismaDateTimeFilter } from '../builder'
 
 enum LanguageIdType {
@@ -21,17 +20,75 @@ const LanguagesFilter = builder.inputType('LanguagesFilter', {
     iso3: t.field({
       type: ['String']
     }),
+    hasVideos: t.boolean({ required: false }),
     updatedAt: t.field({ type: DateTimeFilter, required: false })
   })
 })
 
 builder.prismaObject('LanguageName', {
   fields: (t) => ({
+    id: t.exposeID('id', { nullable: false }),
     value: t.exposeString('value', { nullable: false }),
+    languageId: t.exposeString('languageId', { nullable: false }),
     primary: t.exposeBoolean('primary', { nullable: false }),
     language: t.relation('language', { nullable: false })
   })
 })
+
+const LanguageNameUpdateInput = builder.inputType('LanguageNameUpdateInput', {
+  fields: (t) => ({
+    languageId: t.id({ required: true }),
+    nameLanguageId: t.id({ required: false }),
+    value: t.string({ required: true })
+  })
+})
+
+const LanguageUpdateInput = builder.inputType('LanguageUpdateInput', {
+  fields: (t) => ({
+    id: t.id({ required: true }),
+    bcp47: t.string({ required: false }),
+    iso3: t.string({ required: false })
+  })
+})
+
+function optionalString(
+  value: string | null | undefined
+): string | null | undefined {
+  if (value === undefined) return undefined
+  const trimmed = value?.trim() ?? ''
+  return trimmed.length > 0 ? trimmed : null
+}
+
+function languageWhereInput(
+  where: typeof LanguagesFilter.$inferInput | null | undefined,
+  term: string | null | undefined
+): Prisma.LanguageWhereInput {
+  const filter: Prisma.LanguageWhereInput = {}
+  if (where?.ids != null) filter.id = { in: where.ids }
+  if (where?.bcp47 != null) filter.bcp47 = { in: where.bcp47 }
+  if (where?.iso3 != null) filter.iso3 = { in: where.iso3 }
+  if (where?.hasVideos != null) filter.hasVideos = where.hasVideos
+  filter.updatedAt = toPrismaDateTimeFilter(where?.updatedAt)
+
+  const searchTerm = term?.trim()
+  if (searchTerm != null && searchTerm.length > 0) {
+    filter.OR = [
+      { id: { startsWith: searchTerm } },
+      {
+        name: {
+          some: {
+            value: {
+              contains: searchTerm,
+              mode: 'insensitive'
+            }
+          }
+        }
+      }
+    ]
+  }
+
+  return filter
+}
 
 export const Language = builder.prismaObject('Language', {
   fields: (t) => ({
@@ -40,6 +97,7 @@ export const Language = builder.prismaObject('Language', {
     bcp47: t.exposeString('bcp47'),
     iso3: t.exposeString('iso3'),
     slug: t.exposeString('slug'),
+    hasVideos: t.exposeBoolean('hasVideos', { nullable: false }),
     name: t.relation('name', {
       nullable: false,
       args: {
@@ -104,27 +162,9 @@ builder.queryFields((t) => ({
       term: t.arg.string({ required: false })
     },
     resolve: async (query, _parent, { offset, limit, where, term }) => {
-      const filter: Prisma.LanguageWhereInput = {
-        hasVideos: true
-      }
-      if (where?.ids != null) filter.id = { in: where.ids }
-      if (where?.bcp47 != null) filter.bcp47 = { in: where.bcp47 }
-      if (where?.iso3 != null) filter.iso3 = { in: where.iso3 }
-      filter.updatedAt = toPrismaDateTimeFilter(where?.updatedAt)
-      if (term != null) {
-        const searchQuery = parseFullTextSearch(term)
-        filter.name = {
-          some: {
-            value: {
-              contains: searchQuery,
-              mode: 'insensitive'
-            }
-          }
-        }
-      }
       return await prisma.language.findMany({
         ...query,
-        where: filter,
+        where: languageWhereInput(where, term),
         skip: offset ?? undefined,
         take: limit ?? undefined
       })
@@ -138,26 +178,67 @@ builder.queryFields((t) => ({
       term: t.arg.string({ required: false })
     },
     resolve: async (_parent, { where, term }) => {
-      const filter: Prisma.LanguageWhereInput = {
-        hasVideos: true
-      }
-      if (where?.ids != null) filter.id = { in: where.ids }
-      if (where?.bcp47 != null) filter.bcp47 = { in: where.bcp47 }
-      if (where?.iso3 != null) filter.iso3 = { in: where.iso3 }
-      filter.updatedAt = toPrismaDateTimeFilter(where?.updatedAt)
-      if (term != null) {
-        const searchQuery = parseFullTextSearch(term)
-        filter.name = {
-          some: {
-            value: {
-              contains: searchQuery,
-              mode: 'insensitive'
-            }
-          }
-        }
-      }
       return await prisma.language.count({
-        where: filter
+        where: languageWhereInput(where, term)
+      })
+    }
+  })
+}))
+
+builder.mutationFields((t) => ({
+  languageUpdate: t.withAuth({ isPublisher: true }).prismaField({
+    type: 'Language',
+    nullable: false,
+    args: {
+      input: t.arg({ type: LanguageUpdateInput, required: true })
+    },
+    resolve: async (query, _parent, { input }) =>
+      await prisma.language.update({
+        ...query,
+        where: { id: input.id },
+        data: {
+          bcp47: optionalString(input.bcp47),
+          iso3: optionalString(input.iso3)
+        }
+      })
+  }),
+  languageNameUpdate: t.withAuth({ isPublisher: true }).prismaField({
+    type: 'Language',
+    nullable: false,
+    args: {
+      input: t.arg({ type: LanguageNameUpdateInput, required: true })
+    },
+    resolve: async (query, _parent, { input }) => {
+      const languageId = input.nameLanguageId ?? input.languageId
+      const primary = input.nameLanguageId == null
+      const existingName = await prisma.languageName.findFirst({
+        where: {
+          parentLanguageId: input.languageId,
+          languageId,
+          primary
+        },
+        select: { id: true }
+      })
+
+      if (existingName != null) {
+        await prisma.languageName.update({
+          where: { id: existingName.id },
+          data: { value: input.value.trim() }
+        })
+      } else {
+        await prisma.languageName.create({
+          data: {
+            parentLanguageId: input.languageId,
+            languageId,
+            primary,
+            value: input.value.trim()
+          }
+        })
+      }
+
+      return await prisma.language.findUniqueOrThrow({
+        ...query,
+        where: { id: input.languageId }
       })
     }
   })
