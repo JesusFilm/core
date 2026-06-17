@@ -64,14 +64,16 @@ export function ChatOverlay({
         aria-hidden
         sx={{
           position: 'absolute',
-          inset: 0,
-          // Near-opaque (98%) — Lucinda's original feedback was that the
-          // previous 88% + 6px blur showed too much of the journey card.
-          // Fully opaque (100%) read as a flat slab; 98% gives a hint of
-          // depth without compromising legibility. No backdrop blur — at
-          // this opacity the 2% bleed-through doesn't justify the GPU
-          // cost. Tune-in-place value (NES-1654 iter). Backdrop is held
-          // unchanged for Option B (NES-1738) — backdrop tweaks come later.
+          left: 0,
+          right: 0,
+          bottom: 0,
+          // Dark surface scales WITH the chat (NES-1738 Option B): it grows
+          // from the 144px idle bar to 80% in lockstep with the panel, so the
+          // journey card is revealed above the chat instead of being hidden by
+          // a full-screen layer. Colour/opacity unchanged from NES-1654
+          // (near-opaque 98%, no blur); only the size now tracks the sheet.
+          height,
+          transition: HEIGHT_TRANSITION,
           bgcolor: (theme) => alpha(theme.palette.grey[900], 0.98)
         }}
       />

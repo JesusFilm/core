@@ -75,6 +75,17 @@ describe('ChatOverlay', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('scales the dark backdrop with the chat (144px idle → 80% active)', async () => {
+    render(<ChatOverlay open onClose={vi.fn()} />)
+    const backdrop = screen
+      .getByTestId('ChatOverlay')
+      .querySelector('[aria-hidden]') as HTMLElement
+    expect(backdrop).toHaveStyle({ height: '144px' })
+
+    fireEvent.click(await screen.findByRole('button', { name: 'mock-activate' }))
+    expect(backdrop).toHaveStyle({ height: '80%' })
+  })
+
   it('closes when the backdrop is clicked', () => {
     const onClose = vi.fn()
     render(<ChatOverlay open onClose={onClose} />)
