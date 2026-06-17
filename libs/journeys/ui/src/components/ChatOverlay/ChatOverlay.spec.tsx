@@ -12,13 +12,19 @@ vi.mock('../AiChat', () => ({
   AiChat: ({
     variant,
     onClose,
-    onSheetStateChange
+    onSheetStateChange,
+    onDark
   }: {
     variant?: 'panel' | 'overlay'
     onClose?: () => void
     onSheetStateChange?: (state: 'idle' | 'active') => void
+    onDark?: boolean
   }) => (
-    <div data-testid="AiChatMock" data-variant={variant}>
+    <div
+      data-testid="AiChatMock"
+      data-variant={variant}
+      data-on-dark={String(onDark === true)}
+    >
       <button onClick={onClose}>mock-close</button>
       <button onClick={() => onSheetStateChange?.('active')}>
         mock-activate
@@ -39,6 +45,24 @@ describe('ChatOverlay', () => {
       'data-variant',
       'panel'
     )
+  })
+
+  it('themes the panel for the dark backdrop (onDark)', async () => {
+    render(<ChatOverlay open onClose={vi.fn()} />)
+    expect(await screen.findByTestId('AiChatMock')).toHaveAttribute(
+      'data-on-dark',
+      'true'
+    )
+  })
+
+  it('gives the panel a rounded top + contrasting top border', () => {
+    render(<ChatOverlay open onClose={vi.fn()} />)
+    const panel = screen.getByTestId('ChatOverlayPanel')
+    expect(panel).toHaveStyle({
+      borderTopLeftRadius: '16px',
+      borderTopRightRadius: '16px',
+      borderTop: '1px solid rgba(255, 255, 255, 0.12)'
+    })
   })
 
   it('opens compact at 144px in the idle state', () => {

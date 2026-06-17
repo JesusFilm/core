@@ -47,6 +47,25 @@ describe('ChatHeader', () => {
     expect(container.querySelector('.jfp-mark-bottom')).not.toBeNull()
   })
 
+  it('lightens the title + caption for the dark overlay (onDark)', () => {
+    const { getByText } = render(<ChatHeader onDark />)
+    // OVERLAY_HERO_FG / OVERLAY_FG_MUTED are raw rgba strings, so MUI emits
+    // them as inline colour — assert the dark tokens are applied.
+    expect(getByText('Ask your questions about faith')).toHaveStyle({
+      color: 'rgba(255, 255, 255, 0.85)'
+    })
+    expect(getByText(/Replies may not be perfect/)).toHaveStyle({
+      color: 'rgba(255, 255, 255, 0.6)'
+    })
+  })
+
+  it('uses the brighter overlay link colour for the about link on dark', () => {
+    const { getByRole } = render(<ChatHeader onDark />)
+    expect(getByRole('link', { name: 'About this chat' })).toHaveStyle({
+      color: '#FF7A85'
+    })
+  })
+
   it('does not render a close button without onClose', () => {
     const { queryByRole } = render(<ChatHeader />)
     expect(

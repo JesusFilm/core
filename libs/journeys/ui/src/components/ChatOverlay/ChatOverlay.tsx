@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
 import type { AiChatSheetState } from '../AiChat/AiChat'
+import { OVERLAY_INPUT_BORDER } from '../AiChat/chatStyles'
 
 const AiChat = dynamic(
   async () =>
@@ -93,11 +94,20 @@ export function ChatOverlay({
           transition: HEIGHT_TRANSITION,
           display: 'flex',
           flexDirection: 'column',
-          minHeight: 0
+          minHeight: 0,
+          // Rounded top + a 1px translucent-white top border so the panel's
+          // top edge reads as a distinct surface against the dark backdrop
+          // (NES-1738 feedback). `overflow: hidden` clips the AiChat content
+          // to the rounded corners.
+          borderTopLeftRadius: 16,
+          borderTopRightRadius: 16,
+          borderTop: `1px solid ${OVERLAY_INPUT_BORDER}`,
+          overflow: 'hidden'
         }}
       >
         <AiChat
           variant="panel"
+          onDark
           onSheetStateChange={setSheetState}
           onClose={onClose}
         />
