@@ -411,7 +411,10 @@ describe('/api/chat handler', () => {
       mockGetFlags.mockResolvedValue({ apologistChat: true })
     })
 
-    function postReq(language?: string, languageBcp47?: string): NextApiRequest {
+    function postReq(
+      language?: string,
+      languageBcp47?: string
+    ): NextApiRequest {
       return {
         method: 'POST',
         body: {
