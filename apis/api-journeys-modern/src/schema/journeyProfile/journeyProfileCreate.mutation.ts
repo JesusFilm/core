@@ -52,7 +52,6 @@ builder.mutationField('journeyProfileCreate', (t) =>
     .prismaField({
       type: JourneyProfileRef,
       nullable: false,
-      override: { from: 'api-journeys' },
       resolve: async (query, _parent, _args, context) => {
         const existing = await prisma.journeyProfile.findUnique({
           where: { userId: context.user.id }

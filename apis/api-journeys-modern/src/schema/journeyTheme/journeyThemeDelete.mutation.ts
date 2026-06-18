@@ -16,7 +16,6 @@ builder.mutationField('journeyThemeDelete', (t) =>
     .prismaField({
       type: JourneyThemeRef,
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         id: t.arg({ type: 'ID', required: true })
       },
