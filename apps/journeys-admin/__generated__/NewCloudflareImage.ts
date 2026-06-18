@@ -12,4 +12,5 @@ export interface NewCloudflareImage {
   id: string;
   url: string | null;
   blurhash: string | null;
+  userId: string;
 }
