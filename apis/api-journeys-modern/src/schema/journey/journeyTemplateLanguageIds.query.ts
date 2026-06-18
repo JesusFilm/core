@@ -6,7 +6,6 @@ builder.queryField('journeyTemplateLanguageIds', (t) =>
   t.field({
     type: ['String'],
     nullable: false,
-    override: { from: 'api-journeys' },
     resolve: async () => {
       const results = await prisma.journey.findMany({
         where: {

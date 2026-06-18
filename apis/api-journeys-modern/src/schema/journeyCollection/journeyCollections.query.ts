@@ -10,7 +10,6 @@ builder.queryField('journeyCollections', (t) =>
     .prismaField({
       type: [JourneyCollectionRef],
       nullable: { list: false, items: true },
-      override: { from: 'api-journeys' },
       args: {
         teamId: t.arg({ type: 'ID', required: true })
       },

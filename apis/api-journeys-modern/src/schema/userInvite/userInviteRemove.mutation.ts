@@ -17,7 +17,6 @@ builder.mutationField('userInviteRemove', (t) =>
     .prismaField({
       type: UserInviteRef,
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         id: t.arg({ type: 'ID', required: true }),
         journeyId: t.arg({ type: 'ID', required: true })

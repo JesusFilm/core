@@ -113,8 +113,8 @@ type Error implements BaseError @join__type(graph: API_ANALYTICS)  @join__type(g
 
 type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
   siteCreate(input: SiteCreateInput!) : MutationSiteCreateResult! @join__field(graph: API_ANALYTICS) 
-  visitorUpdate(id: ID!, input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  visitorUpdateForCurrentUser(input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  visitorUpdate(id: ID!, input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS_MODERN) 
+  visitorUpdateForCurrentUser(input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS_MODERN) 
   blockDelete(
     id: ID!
     """
@@ -125,7 +125,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     parentBlockId: ID
-  ): [Block!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  ): [Block!]! @join__field(graph: API_JOURNEYS_MODERN) 
   blockDuplicate(
     id: ID!
     parentOrder: Int
@@ -136,8 +136,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     journeyId: ID
     x: Int
     y: Int
-  ): [Block!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  blockRestore(id: ID!) : [Block!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  ): [Block!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  blockRestore(id: ID!) : [Block!]! @join__field(graph: API_JOURNEYS_MODERN) 
   blockOrderUpdate(
     id: ID!
     parentOrder: Int!
@@ -145,7 +145,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): [Block!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  ): [Block!]! @join__field(graph: API_JOURNEYS_MODERN) 
   buttonBlockCreate(input: ButtonBlockCreateInput!) : ButtonBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   buttonBlockUpdate(
     id: ID!
@@ -223,7 +223,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   spacerBlockCreate(input: SpacerBlockCreateInput!) : SpacerBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!) : SpacerBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   stepBlockCreate(input: StepBlockCreateInput!) : StepBlock! @join__field(graph: API_JOURNEYS_MODERN) 
-  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!) : [StepBlock!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!) : [StepBlock!]! @join__field(graph: API_JOURNEYS_MODERN) 
   stepBlockUpdate(
     id: ID!
     input: StepBlockUpdateInput!
@@ -275,24 +275,24 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   customDomainCreate(input: CustomDomainCreateInput!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN) 
   buttonClickEventCreate(input: ButtonClickEventCreateInput!) : ButtonClickEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   chatOpenEventCreate(input: ChatOpenEventCreateInput!) : ChatOpenEvent! @join__field(graph: API_JOURNEYS_MODERN) 
-  journeyViewEventCreate(input: JourneyViewEventCreateInput!) : JourneyViewEvent @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  stepViewEventCreate(input: StepViewEventCreateInput!) : StepViewEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  stepNextEventCreate(input: StepNextEventCreateInput!) : StepNextEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  stepPreviousEventCreate(input: StepPreviousEventCreateInput!) : StepPreviousEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!) : JourneyViewEvent @join__field(graph: API_JOURNEYS_MODERN) 
+  stepViewEventCreate(input: StepViewEventCreateInput!) : StepViewEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  stepNextEventCreate(input: StepNextEventCreateInput!) : StepNextEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  stepPreviousEventCreate(input: StepPreviousEventCreateInput!) : StepPreviousEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!) : RadioQuestionSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!) : MultiselectSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!) : SignUpSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!) : TextResponseSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN) 
-  videoStartEventCreate(input: VideoStartEventCreateInput!) : VideoStartEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  videoPlayEventCreate(input: VideoPlayEventCreateInput!) : VideoPlayEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  videoPauseEventCreate(input: VideoPauseEventCreateInput!) : VideoPauseEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!) : VideoCompleteEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  videoExpandEventCreate(input: VideoExpandEventCreateInput!) : VideoExpandEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!) : VideoCollapseEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  videoProgressEventCreate(input: VideoProgressEventCreateInput!) : VideoProgressEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  hostCreate(teamId: ID!, input: HostCreateInput!) : Host! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput) : Host! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  hostDelete(id: ID!, teamId: ID!) : Host! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  videoStartEventCreate(input: VideoStartEventCreateInput!) : VideoStartEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  videoPlayEventCreate(input: VideoPlayEventCreateInput!) : VideoPlayEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  videoPauseEventCreate(input: VideoPauseEventCreateInput!) : VideoPauseEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!) : VideoCompleteEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  videoExpandEventCreate(input: VideoExpandEventCreateInput!) : VideoExpandEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!) : VideoCollapseEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  videoProgressEventCreate(input: VideoProgressEventCreateInput!) : VideoProgressEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  hostCreate(teamId: ID!, input: HostCreateInput!) : Host! @join__field(graph: API_JOURNEYS_MODERN) 
+  hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput) : Host! @join__field(graph: API_JOURNEYS_MODERN) 
+  hostDelete(id: ID!, teamId: ID!) : Host! @join__field(graph: API_JOURNEYS_MODERN) 
   journeySimpleUpdate(id: ID!, journey: Json!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!) : GoogleSheetsSync! @join__field(graph: API_JOURNEYS_MODERN) 
   googleSheetsSyncDelete(id: ID!) : GoogleSheetsSync! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -300,38 +300,38 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Triggers a backfill of the Google Sheets sync. Clears existing data and re-exports all events.
   """
   googleSheetsSyncBackfill(id: ID!) : GoogleSheetsSync! @join__field(graph: API_JOURNEYS_MODERN) 
-  integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!) : IntegrationGrowthSpaces! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!) : IntegrationGrowthSpaces! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!) : IntegrationGrowthSpaces! @join__field(graph: API_JOURNEYS_MODERN) 
+  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!) : IntegrationGrowthSpaces! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGoogleCreate(input: IntegrationGoogleCreateInput!) : IntegrationGoogle! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!) : IntegrationGoogle! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationDelete(id: ID!) : Integration! @join__field(graph: API_JOURNEYS_MODERN) 
-  journeyCreate(input: JourneyCreateInput!, teamId: ID!) : Journey! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeyDuplicate(id: ID!, teamId: ID!, forceNonTemplate: Boolean, duplicateAsDraft: Boolean) : Journey! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeyFeature(id: ID!, feature: Boolean!) : Journey @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeyPublish(id: ID!) : Journey @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeyTemplate(id: ID!, input: JourneyTemplateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  journeyCreate(input: JourneyCreateInput!, teamId: ID!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyDuplicate(id: ID!, teamId: ID!, forceNonTemplate: Boolean, duplicateAsDraft: Boolean) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyFeature(id: ID!, feature: Boolean!) : Journey @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyPublish(id: ID!) : Journey @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyTemplate(id: ID!, input: JourneyTemplateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyTransferFromAnonymous(journeyId: ID!, teamId: ID) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
-  journeyUpdate(id: ID!, input: JourneyUpdateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeysArchive(ids: [ID!]!) : [Journey]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeysDelete(ids: [ID!]!) : [Journey]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeysRestore(ids: [ID!]!) : [Journey]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeysTrash(ids: [ID!]!) : [Journey]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  journeyUpdate(id: ID!, input: JourneyUpdateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeysArchive(ids: [ID!]!) : [Journey]! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeysDelete(ids: [ID!]!) : [Journey]! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeysRestore(ids: [ID!]!) : [Journey]! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeysTrash(ids: [ID!]!) : [Journey]! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyCustomizationDescriptionTranslate(input: JourneyCustomizationDescriptionTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
-  journeyCustomizationFieldPublisherUpdate(journeyId: ID!, string: String!) : [JourneyCustomizationField!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeyCustomizationFieldUserUpdate(journeyId: ID!, input: [JourneyCustomizationFieldInput!]!) : [JourneyCustomizationField!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeyCollectionCreate(input: JourneyCollectionCreateInput!) : JourneyCollection! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!) : JourneyCollection! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeyCollectionDelete(id: ID!) : JourneyCollection! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  journeyCustomizationFieldPublisherUpdate(journeyId: ID!, string: String!) : [JourneyCustomizationField!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyCustomizationFieldUserUpdate(journeyId: ID!, input: [JourneyCustomizationFieldInput!]!) : [JourneyCustomizationField!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyCollectionCreate(input: JourneyCollectionCreateInput!) : JourneyCollection! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!) : JourneyCollection! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyCollectionDelete(id: ID!) : JourneyCollection! @join__field(graph: API_JOURNEYS_MODERN) 
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!) : JourneyEventsExportLog! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
-  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!) : JourneyNotification! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeyProfileCreate: JourneyProfile! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!) : JourneyNotification! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyProfileCreate: JourneyProfile! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyProfileUpdate(input: JourneyProfileUpdateInput!) : JourneyProfile! @join__field(graph: API_JOURNEYS_MODERN) 
-  updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!) : JourneysEmailPreference @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeyThemeCreate(input: JourneyThemeCreateInput!) : JourneyTheme! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!) : JourneyTheme! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeyThemeDelete(id: ID!) : JourneyTheme! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!) : JourneysEmailPreference @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyThemeCreate(input: JourneyThemeCreateInput!) : JourneyTheme! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!) : JourneyTheme! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyThemeDelete(id: ID!) : JourneyTheme! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyVisitorExportToGoogleSheet(
     journeyId: ID!
     filter: JourneyEventsFilter
@@ -343,11 +343,11 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     """
     timezone: String
   ): JourneyVisitorGoogleSheetExportResult! @join__field(graph: API_JOURNEYS_MODERN) 
-  qrCodeCreate(input: QrCodeCreateInput!) : QrCode! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!) : QrCode! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  qrCodeDelete(id: ID!) : QrCode! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  teamCreate(input: TeamCreateInput) : Team! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  teamUpdate(id: ID!, input: TeamUpdateInput) : Team! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  qrCodeCreate(input: QrCodeCreateInput!) : QrCode! @join__field(graph: API_JOURNEYS_MODERN) 
+  qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!) : QrCode! @join__field(graph: API_JOURNEYS_MODERN) 
+  qrCodeDelete(id: ID!) : QrCode! @join__field(graph: API_JOURNEYS_MODERN) 
+  teamCreate(input: TeamCreateInput) : Team! @join__field(graph: API_JOURNEYS_MODERN) 
+  teamUpdate(id: ID!, input: TeamUpdateInput) : Team! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Create a new TemplateGalleryPage in `draft` status. The server generates a unique slug from `input.title`. Initial `journeyIds` are attached as templates in the order given (cross-team and non-template ids are silently filtered out).
   
@@ -471,20 +471,20 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   id: ID!) : TemplateGalleryPage! @join__field(graph: API_JOURNEYS_MODERN) 
   userDeleteJourneysCheck(userId: String!) : UserDeleteJourneysCheckResult! @join__field(graph: API_JOURNEYS_MODERN) 
   userDeleteJourneysConfirm(userId: String!) : UserDeleteJourneysConfirmResult! @join__field(graph: API_JOURNEYS_MODERN) 
-  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput) : UserInvite @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  userInviteRemove(id: ID!, journeyId: ID!) : UserInvite! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  userInviteAcceptAll: [UserInvite!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  userJourneyRequest(journeyId: ID!, idType: IdType) : UserJourney! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  userJourneyApprove(id: ID!) : UserJourney! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  userJourneyPromote(id: ID!) : UserJourney! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  userJourneyRemove(id: ID!) : UserJourney! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  userJourneyRemoveAll(id: ID!) : [UserJourney!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  userJourneyOpen(id: ID!) : UserJourney @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  userTeamUpdate(id: ID!, input: UserTeamUpdateInput) : UserTeam! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  userTeamDelete(id: ID!) : UserTeam! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput) : UserTeamInvite @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  userTeamInviteRemove(id: ID!) : UserTeamInvite! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  userTeamInviteAcceptAll: [UserTeamInvite!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput) : UserInvite @join__field(graph: API_JOURNEYS_MODERN) 
+  userInviteRemove(id: ID!, journeyId: ID!) : UserInvite! @join__field(graph: API_JOURNEYS_MODERN) 
+  userInviteAcceptAll: [UserInvite!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  userJourneyRequest(journeyId: ID!, idType: IdType) : UserJourney! @join__field(graph: API_JOURNEYS_MODERN) 
+  userJourneyApprove(id: ID!) : UserJourney! @join__field(graph: API_JOURNEYS_MODERN) 
+  userJourneyPromote(id: ID!) : UserJourney! @join__field(graph: API_JOURNEYS_MODERN) 
+  userJourneyRemove(id: ID!) : UserJourney! @join__field(graph: API_JOURNEYS_MODERN) 
+  userJourneyRemoveAll(id: ID!) : [UserJourney!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  userJourneyOpen(id: ID!) : UserJourney @join__field(graph: API_JOURNEYS_MODERN) 
+  userTeamUpdate(id: ID!, input: UserTeamUpdateInput) : UserTeam! @join__field(graph: API_JOURNEYS_MODERN) 
+  userTeamDelete(id: ID!) : UserTeam! @join__field(graph: API_JOURNEYS_MODERN) 
+  userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput) : UserTeamInvite @join__field(graph: API_JOURNEYS_MODERN) 
+  userTeamInviteRemove(id: ID!) : UserTeamInvite! @join__field(graph: API_JOURNEYS_MODERN) 
+  userTeamInviteAcceptAll: [UserTeamInvite!]! @join__field(graph: API_JOURNEYS_MODERN) 
   languageUpdate(input: LanguageUpdateInput!) : Language! @join__field(graph: API_LANGUAGES) 
   languageNameUpdate(input: LanguageNameUpdateInput!) : Language! @join__field(graph: API_LANGUAGES) 
   audioPreviewCreate(input: MutationAudioPreviewCreateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
@@ -1340,20 +1340,20 @@ type QrCode @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
-  visitor(id: ID!) : Visitor! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  visitorsConnection(teamId: String, first: Int, after: String) : VisitorsConnection! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  block(id: ID!) : Block! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  blocks(where: BlocksFilter) : [Block!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  visitor(id: ID!) : Visitor! @join__field(graph: API_JOURNEYS_MODERN) 
+  visitorsConnection(teamId: String, first: Int, after: String) : VisitorsConnection! @join__field(graph: API_JOURNEYS_MODERN) 
+  block(id: ID!) : Block! @join__field(graph: API_JOURNEYS_MODERN) 
+  blocks(where: BlocksFilter) : [Block!]! @join__field(graph: API_JOURNEYS_MODERN) 
   customDomains(teamId: ID!) : [CustomDomain!]! @join__field(graph: API_JOURNEYS_MODERN) 
   customDomain(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN) 
   node(id: ID!) : Node @join__field(graph: API_JOURNEYS_MODERN) 
   nodes(ids: [ID!]!) : [Node]! @join__field(graph: API_JOURNEYS_MODERN) 
-  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String) : JourneyEventsConnection! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter) : Int! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  hosts(teamId: ID!) : [Host!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String) : JourneyEventsConnection! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter) : Int! @join__field(graph: API_JOURNEYS_MODERN) 
+  hosts(teamId: ID!) : [Host!]! @join__field(graph: API_JOURNEYS_MODERN) 
   journeySimpleGet(id: ID!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!) : [GoogleSheetsSync!]! @join__field(graph: API_JOURNEYS_MODERN) 
-  integrations(teamId: ID!) : [Integration!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  integrations(teamId: ID!) : [Integration!]! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGooglePickerToken(integrationId: ID!) : String! @join__field(graph: API_JOURNEYS_MODERN) 
   adminJourney(id: ID!, idType: IdType = slug) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   adminJourneys(
@@ -1362,15 +1362,15 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
     teamId: ID
     useLastActiveTeamId: Boolean
   ): [Journey!]! @join__field(graph: API_JOURNEYS_MODERN) 
-  adminJourneysReport(reportType: JourneysReportType!) : PowerBiEmbed @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journey(id: ID!, idType: IdType = slug, options: JourneysQueryOptions) : Journey! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeys(where: JourneysFilter, options: JourneysQueryOptions) : [Journey!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeyTemplateLanguageIds: [String!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeyCollection(id: ID!) : JourneyCollection! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeyCollections(teamId: ID!) : [JourneyCollection]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  adminJourneysReport(reportType: JourneysReportType!) : PowerBiEmbed @join__field(graph: API_JOURNEYS_MODERN) 
+  journey(id: ID!, idType: IdType = slug, options: JourneysQueryOptions) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeys(where: JourneysFilter, options: JourneysQueryOptions) : [Journey!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyTemplateLanguageIds: [String!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyCollection(id: ID!) : JourneyCollection! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyCollections(teamId: ID!) : [JourneyCollection]! @join__field(graph: API_JOURNEYS_MODERN) 
   getJourneyProfile: JourneyProfile @join__field(graph: API_JOURNEYS_MODERN) 
-  journeysEmailPreference(email: String!) : JourneysEmailPreference @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeyTheme(journeyId: ID!) : JourneyTheme @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  journeysEmailPreference(email: String!) : JourneysEmailPreference @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyTheme(journeyId: ID!) : JourneyTheme @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
   """
@@ -1388,8 +1388,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
     first: Int
     after: String
     sort: JourneyVisitorSort
-  ): JourneyVisitorsConnection! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  journeyVisitorCount(filter: JourneyVisitorFilter!) : Int! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  ): JourneyVisitorsConnection! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyVisitorCount(filter: JourneyVisitorFilter!) : Int! @join__field(graph: API_JOURNEYS_MODERN) 
   journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter!, id: ID!, idType: IdType = slug) : PlausibleStatsAggregateResponse! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   This endpoint allows you to break down your stats by some property.
@@ -1430,10 +1430,10 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
     """
     status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
-  qrCode(id: ID!) : QrCode! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  qrCodes(where: QrCodesFilter!) : [QrCode!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  teams: [Team!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  team(id: ID!) : Team! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  qrCode(id: ID!) : QrCode! @join__field(graph: API_JOURNEYS_MODERN) 
+  qrCodes(where: QrCodesFilter!) : [QrCode!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  teams: [Team!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  team(id: ID!) : Team! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Read a single TemplateGalleryPage by id. Returns both `draft` and `published` rows — use this for in-team authenticated reads (e.g. an admin viewing or QA-ing their own team's drafts). Anonymous viewers must use `templateGalleryPageBySlug`, which only returns published pages.
   
@@ -1465,11 +1465,11 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   Owning team. Caller must be a member.
   """
   teamId: ID!) : [TemplateGalleryPage!]! @join__field(graph: API_JOURNEYS_MODERN) 
-  userInvites(journeyId: ID!) : [UserInvite!] @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  userInvites(journeyId: ID!) : [UserInvite!] @join__field(graph: API_JOURNEYS_MODERN) 
   getUserRole: UserRole @join__field(graph: API_JOURNEYS_MODERN) 
-  userTeams(teamId: ID!, where: UserTeamFilterInput) : [UserTeam!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  userTeam(id: ID!) : UserTeam! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  userTeamInvites(teamId: ID!) : [UserTeamInvite!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  userTeams(teamId: ID!, where: UserTeamFilterInput) : [UserTeam!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  userTeam(id: ID!) : UserTeam! @join__field(graph: API_JOURNEYS_MODERN) 
+  userTeamInvites(teamId: ID!) : [UserTeamInvite!]! @join__field(graph: API_JOURNEYS_MODERN) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
