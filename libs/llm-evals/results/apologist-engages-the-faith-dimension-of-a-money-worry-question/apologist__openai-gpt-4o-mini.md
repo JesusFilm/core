@@ -18,7 +18,7 @@ _Last run: 2026-06-18T04:02:11.889Z_
 
 ## Output
 
-> It's understandable to feel anxious about money, as financial concerns can weigh heavily on us. Worrying about money doesn't automatically mean you lack trust in God; it often reflects our human nature and the pressures of life. However, the Bible encourages us to cast our anxieties on God (1 Peter 5:7) and to seek His kingdom first (Matthew 6:33). 
+> It's understandable to feel anxious about money, as financial concerns can weigh heavily on us. Worrying about money doesn't automatically mean you lack trust in God; it often reflects our human nature and the pressures of life. However, the Bible encourages us to cast our anxieties on God (1 Peter 5:7) and to seek His kingdom first (Matthew 6:33).
 >
 > Trusting God with our finances involves recognizing His provision and sovereignty, even in uncertain times. It can be helpful to pray about your worries and seek wisdom in managing your resources. Would you like to explore specific ways to cultivate trust in God regarding your finances?
 

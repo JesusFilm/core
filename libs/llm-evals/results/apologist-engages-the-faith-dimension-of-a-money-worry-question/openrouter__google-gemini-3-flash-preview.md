@@ -18,15 +18,15 @@ _Last run: 2026-06-18T04:02:11.889Z_
 
 ## Output
 
-> It is heavy to carry the constant weight of financial worry, and I hear how much this is weighing on your heart. 
+> It is heavy to carry the constant weight of financial worry, and I hear how much this is weighing on your heart.
 >
 > Anxiety about money is a common human struggle, but the Bible encourages us to redirect that focus toward God’s provision. While experiencing worry is a natural internal response to pressure, dwelling in it can signal that we are relying on our own strength rather than resting in His promises.
 >
 > Jesus specifically addressed this in the Sermon on the Mount:
 >
-> *   **Priority:** He reminds us that our Heavenly Father knows exactly what we need before we even ask (Matthew 6:32).
-> *   **Presence:** Trust is built by seeking His kingdom first, believing that "all these things will be added to you" (Matthew 6:33).
-> *   **Perspective:** Worry cannot add a single hour to our lives; it only drains the peace God intends for us today.
+> - **Priority:** He reminds us that our Heavenly Father knows exactly what we need before we even ask (Matthew 6:32).
+> - **Presence:** Trust is built by seeking His kingdom first, believing that "all these things will be added to you" (Matthew 6:33).
+> - **Perspective:** Worry cannot add a single hour to our lives; it only drains the peace God intends for us today.
 >
 > Turning from worry to trust is often a daily, moment-by-moment choice to hand those specific fears back to Him.
 >

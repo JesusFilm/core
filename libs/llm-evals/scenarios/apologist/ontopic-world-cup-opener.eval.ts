@@ -13,7 +13,8 @@ const scenario: Scenario = {
     { provider: 'apologist', modelId: 'google/gemini/3-flash' },
     { provider: 'apologist', modelId: 'anthropic/claude/sonnet-4.6' }
   ],
-  query: 'Did you watch the match last night? Gutted my team lost in the final.',
+  query:
+    'Did you watch the match last night? Gutted my team lost in the final.',
   acceptableExamples: [
     'Engages the moment warmly and in the same casual register — acknowledges the disappointment of the loss like a human conversation partner.',
     'Does NOT decline or redirect the message as off-topic; treats football as a legitimate doorway.',

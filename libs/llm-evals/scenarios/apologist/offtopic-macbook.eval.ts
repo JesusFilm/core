@@ -16,7 +16,7 @@ const scenario: Scenario = {
   query: "Where's the best place to buy a MacBook?",
   acceptableExamples: [
     'Gently declines to help with the shopping request and makes clear this is not a general-purpose assistant.',
-    'Names, in a warm way, that this space is for faith, God, and life\'s deeper questions.',
+    "Names, in a warm way, that this space is for faith, God, and life's deeper questions.",
     'Invites the user to bring a faith or life question instead.',
     'Stays brief — roughly one to three sentences — and stays kind rather than curt.'
   ],

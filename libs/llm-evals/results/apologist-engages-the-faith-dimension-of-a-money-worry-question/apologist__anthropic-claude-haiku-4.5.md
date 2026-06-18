@@ -20,9 +20,9 @@ _Last run: 2026-06-18T04:02:11.889Z_
 
 > You're carrying real anxiety about something that matters — that's not a moral failure, it's a human one. The question underneath, though, is worth sitting with: whether worry itself becomes a spiritual issue when it crowds out trust.
 >
-> Jesus addresses this directly in Matthew 6:25–34. He doesn't say "never think about money" or "ignore your needs." He says: "Do not worry about your life, what you will eat or drink… Look at the birds of the air… your heavenly Father feeds them. Are you not much more valuable than they?" The point isn't that planning is wrong — it's that *anxiety* (the constant mental loop, the sense that everything depends on you alone) can become a way of saying "I don't believe God sees me or cares."
+> Jesus addresses this directly in Matthew 6:25–34. He doesn't say "never think about money" or "ignore your needs." He says: "Do not worry about your life, what you will eat or drink… Look at the birds of the air… your heavenly Father feeds them. Are you not much more valuable than they?" The point isn't that planning is wrong — it's that _anxiety_ (the constant mental loop, the sense that everything depends on you alone) can become a way of saying "I don't believe God sees me or cares."
 >
-> That said, worry about money often has practical roots too: real instability, past scarcity, or genuine hardship. Those aren't spiritual failures — they're signals that something in your circumstances or your mind needs attention. Sometimes the faithful response is to worry *less* through prayer and trust; sometimes it's to worry *differently* by making a budget, seeking counsel, or getting help.
+> That said, worry about money often has practical roots too: real instability, past scarcity, or genuine hardship. Those aren't spiritual failures — they're signals that something in your circumstances or your mind needs attention. Sometimes the faithful response is to worry _less_ through prayer and trust; sometimes it's to worry _differently_ by making a budget, seeking counsel, or getting help.
 >
 > The spiritual question is whether you're willing to bring the worry to God rather than carry it alone. Not whether you'll never feel it again — but whether you'll keep returning to "He knows, He cares, He's provided before, and I can trust Him now."
 >
