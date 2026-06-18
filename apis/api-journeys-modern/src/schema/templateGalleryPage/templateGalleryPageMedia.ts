@@ -47,7 +47,8 @@ export const TemplateGalleryPageMediaRef = builder.prismaObject(
       }),
       muxName: t.exposeString('muxName', {
         nullable: true,
-        description: 'Video name denormalized at save time. Tracks `muxVideoId`.'
+        description:
+          'Video name denormalized at save time. Tracks `muxVideoId`.'
       }),
       muxDuration: t.exposeInt('muxDuration', {
         nullable: true,
