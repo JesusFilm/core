@@ -10,7 +10,7 @@ import { TemplateGalleryPageStatus, TemplateGalleryPageMediaType } from "./globa
 // ====================================================
 
 export interface GetTemplateGalleryPages_templateGalleryPages_media {
-  __typename: "TemplateGalleryPageMediaAdmin";
+  __typename: "TemplateGalleryPageMedia";
   id: string;
   /**
    * Active selector for which payload renders.

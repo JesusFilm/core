@@ -10,7 +10,7 @@ import { TemplateGalleryPageUpdateInput, TemplateGalleryPageStatus, TemplateGall
 // ====================================================
 
 export interface TemplateGalleryPageUpdate_templateGalleryPageUpdate_media {
-  __typename: "TemplateGalleryPageMediaAdmin";
+  __typename: "TemplateGalleryPageMedia";
   id: string;
   /**
    * Active selector for which payload renders.

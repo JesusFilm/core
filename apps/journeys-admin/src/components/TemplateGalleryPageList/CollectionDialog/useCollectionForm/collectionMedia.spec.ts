@@ -13,7 +13,7 @@ function row(
   overrides: Partial<TemplateGalleryPageMedia>
 ): TemplateGalleryPageMedia {
   return {
-    __typename: 'TemplateGalleryPageMediaAdmin',
+    __typename: 'TemplateGalleryPageMedia',
     id: 'media-1',
     type: TemplateGalleryPageMediaType.none,
     embedUrl: null,

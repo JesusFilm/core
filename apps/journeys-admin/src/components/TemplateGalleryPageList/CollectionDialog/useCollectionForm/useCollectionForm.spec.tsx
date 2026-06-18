@@ -78,7 +78,7 @@ function defaultValues(
 
 function linkMedia(embedUrl: string): TemplateGalleryPageMedia {
   return {
-    __typename: 'TemplateGalleryPageMediaAdmin',
+    __typename: 'TemplateGalleryPageMedia',
     id: 'media-1',
     type: TemplateGalleryPageMediaType.link,
     embedUrl,
@@ -96,7 +96,7 @@ function muxMedia(
   muxVideoId: string | null = 'vid-existing'
 ): TemplateGalleryPageMedia {
   return {
-    __typename: 'TemplateGalleryPageMediaAdmin',
+    __typename: 'TemplateGalleryPageMedia',
     id: 'media-1',
     type: TemplateGalleryPageMediaType.mux,
     embedUrl: null,
@@ -253,7 +253,7 @@ describe('useCollectionForm', () => {
     it('seeds BOTH slots when the row retains a parked payload', () => {
       const collection = makeCollection({
         media: {
-          __typename: 'TemplateGalleryPageMediaAdmin',
+          __typename: 'TemplateGalleryPageMedia',
           id: 'media-1',
           type: TemplateGalleryPageMediaType.link,
           embedUrl: 'https://x.test/a',
