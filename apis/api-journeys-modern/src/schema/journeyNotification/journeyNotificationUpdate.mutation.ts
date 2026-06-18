@@ -13,7 +13,6 @@ builder.mutationField('journeyNotificationUpdate', (t) =>
     .prismaField({
       type: JourneyNotificationRef,
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         input: t.arg({ type: JourneyNotificationUpdateInput, required: true })
       },

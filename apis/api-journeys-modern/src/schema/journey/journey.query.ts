@@ -20,7 +20,6 @@ builder.queryField('journey', (t) =>
     // non-null result (apps/journeys, resources, journeys-admin templates) —
     // a break masked on main by stale nx codegen cache replay.
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       id: t.arg({ type: 'ID', required: true }),
       idType: t.arg({ type: IdType, required: false, defaultValue: 'slug' }),

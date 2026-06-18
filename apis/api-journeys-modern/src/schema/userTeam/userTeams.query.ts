@@ -11,7 +11,6 @@ builder.queryField('userTeams', (t) =>
     .prismaField({
       type: [UserTeamRef],
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         teamId: t.arg({ type: 'ID', required: true }),
         where: t.arg({ type: UserTeamFilterInput, required: false })
