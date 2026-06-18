@@ -1,9 +1,9 @@
 {
   "AI chat": "KI-Chat",
-  "Show AI chat": "KI-Chat anzeigen",
-  "Open chat automatically": "Chat automatisch öffnen",
+  "Enable AI chat": "KI-Chat aktivieren",
+  "Collapse chat": "Chat zusammenklappen",
   "On": "Auf",
-  "On, auto-open": "Ein, automatisch öffnen",
+  "On, collapsed": "Ein, zusammengebrochen",
   "%s | Next Steps": "%s | Nächste Schritte",
   "Admin | Next Steps": "Admin | Nächste Schritte",
   "Email Preferences Updated.": "E-Mail-Einstellungen aktualisiert.",

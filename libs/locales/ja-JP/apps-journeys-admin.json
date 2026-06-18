@@ -1,9 +1,9 @@
 {
   "AI chat": "AIチャット",
-  "Show AI chat": "AIチャットを表示",
-  "Open chat automatically": "自動的にチャットを開く",
+  "Enable AI chat": "AIチャットを有効にする",
+  "Collapse chat": "崩壊チャット",
   "On": "オン",
-  "On, auto-open": "オン、オートオープン",
+  "On, collapsed": "オン、ダウン",
   "%s | Next Steps": "%s | 次のステップ",
   "Admin | Next Steps": "管理者｜次のステップ",
   "Email Preferences Updated.": "Eメール設定を更新しました。",

@@ -1,4 +1,5 @@
 {
+  "About this chat": "เกี่ยวกับแชทนี้",
   "Copy message": "คัดลอกข้อความ",
   "Copy": "คัดลอก",
   "Assistant is typing": "ผู้ช่วยกำลังพิมพ์",
@@ -117,7 +118,7 @@
   "A short description of your collection will appear here.": "คำอธิบายสั้น ๆ ของคอลเล็กชันของคุณจะปรากฏที่นี่",
   "Creator name": "ชื่อผู้สร้าง",
   "Ask anything…": "ถามอะไรก็ได้…",
-  "Ask your questions about faith": "ถามคำถามเกี่ยวกับความเชื่อได้เลย",
+  "Ask your questions about faith": "ถามคำถามของคุณเกี่ยวกับศรัทธา",
   "Scroll to latest message": "เลื่อนไปที่ข้อความล่าสุด",
   "Use {{title}}": "ใช้ {{title}}",
   "Preview {{title}}": "ตัวอย่าง {{title}}",

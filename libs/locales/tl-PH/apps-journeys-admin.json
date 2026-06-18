@@ -1,9 +1,9 @@
 {
   "AI chat": "AI na pag-uusap",
-  "Show AI chat": "Ipakita ang AI chat",
-  "Open chat automatically": "Buksan ang chat nang awtomatiko",
+  "Enable AI chat": "I-aktiba ang AI chat",
+  "Collapse chat": "Isara ang chat",
   "On": "Sa",
-  "On, auto-open": "Sa, awtomatikong pagbubukas",
+  "On, collapsed": "On, gumuho",
   "%s | Next Steps": "%s | ",
   "Admin | Next Steps": "Admin | ",
   "Email Preferences Updated.": "Email Preferences Updated.",
