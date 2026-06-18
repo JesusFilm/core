@@ -71,7 +71,7 @@ export function VideoFromMux({
           selectedVideoId={selectedVideoId}
           onSelect={onSelect}
           uploading={uploading}
-          teamId={activeTeam?.id ?? null}
+          teamId={activeTeam?.id}
         />
       )}
     </Stack>

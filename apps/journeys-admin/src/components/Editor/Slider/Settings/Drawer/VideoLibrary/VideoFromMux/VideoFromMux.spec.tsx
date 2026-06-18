@@ -4,6 +4,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
@@ -40,8 +41,17 @@ vi.mock('../../../../../../MuxVideoUploadProvider', () => ({
   })
 }))
 
-const mockUseTeam = vi.fn(
-  () => ({ activeTeam: null, refetch: vi.fn() }) as unknown
+type UseTeamResult = ReturnType<typeof useTeam>
+
+// useTeam's Context type has more fields (query, setActiveTeam) than these
+// tests exercise, so partial fixtures are widened to the full type here.
+const asTeamResult = (value: {
+  activeTeam: { id: string } | null
+  refetch: () => void
+}): UseTeamResult => value as UseTeamResult
+
+const mockUseTeam = vi.fn<() => UseTeamResult>(() =>
+  asTeamResult({ activeTeam: null, refetch: vi.fn() })
 )
 
 vi.mock('@core/journeys/ui/TeamProvider', async () => ({
@@ -203,7 +213,9 @@ describe('VideoFromMux', () => {
     vi.clearAllMocks()
     mockValidateMuxLanguage.mockReturnValue(true)
     mockUseFlags.mockReturnValue({ mediaLibrary: false })
-    mockUseTeam.mockReturnValue({ activeTeam: null, refetch: vi.fn() })
+    mockUseTeam.mockReturnValue(
+      asTeamResult({ activeTeam: null, refetch: vi.fn() })
+    )
   })
 
   it('should not render MyMuxVideos when mediaLibrary flag is off', () => {
@@ -236,10 +248,9 @@ describe('VideoFromMux', () => {
 
   it('should pass the active team id to MyMuxVideos', () => {
     mockUseFlags.mockReturnValue({ mediaLibrary: true })
-    mockUseTeam.mockReturnValue({
-      activeTeam: { id: 'team-1' },
-      refetch: vi.fn()
-    })
+    mockUseTeam.mockReturnValue(
+      asTeamResult({ activeTeam: { id: 'team-1' }, refetch: vi.fn() })
+    )
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
@@ -257,7 +268,9 @@ describe('VideoFromMux', () => {
 
   it('should pass an empty team id to MyMuxVideos when there is no active team', () => {
     mockUseFlags.mockReturnValue({ mediaLibrary: true })
-    mockUseTeam.mockReturnValue({ activeTeam: null, refetch: vi.fn() })
+    mockUseTeam.mockReturnValue(
+      asTeamResult({ activeTeam: null, refetch: vi.fn() })
+    )
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>

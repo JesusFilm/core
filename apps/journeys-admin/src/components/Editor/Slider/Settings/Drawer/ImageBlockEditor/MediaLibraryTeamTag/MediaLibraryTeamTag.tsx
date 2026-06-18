@@ -1,22 +1,24 @@
-import { SxProps, Theme, alpha } from '@mui/material/styles'
+import { alpha, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
-const teamTagSx: SxProps<Theme> = {
+const TeamTag = styled(Typography)<{ component?: string }>(({ theme }) => ({
   position: 'absolute',
   right: 6,
   bottom: 6,
   zIndex: 2,
-  px: 2,
-  py: 1,
-  borderRadius: 1.5,
+  paddingLeft: theme.spacing(2),
+  paddingRight: theme.spacing(2),
+  paddingTop: theme.spacing(1),
+  paddingBottom: theme.spacing(1),
+  borderRadius: Number(theme.shape.borderRadius) * 1.5,
   fontWeight: 600,
   pointerEvents: 'none',
-  color: 'background.paper',
-  backgroundColor: (theme) => alpha(theme.palette.grey[900], 0.72),
+  color: theme.palette.background.paper,
+  backgroundColor: alpha(theme.palette.grey[900], 0.72),
   backdropFilter: 'blur(2px)'
-}
+}))
 
 interface MediaLibraryTeamTagProps {
   'data-testid'?: string
@@ -35,14 +37,13 @@ export function MediaLibraryTeamTag({
 }: MediaLibraryTeamTagProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
-    <Typography
+    <TeamTag
       variant="body2"
       component="span"
       aria-hidden
       data-testid={dataTestId}
-      sx={teamTagSx}
     >
       {t('Team')}
-    </Typography>
+    </TeamTag>
   )
 }

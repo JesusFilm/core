@@ -17,7 +17,9 @@ function buildCache(): InMemoryCache {
     typePolicies: {
       Query: {
         fields: {
-          getMyMuxVideos: offsetLimitPagination()
+          // Mirror production cache.ts which keys this field on teamId so each
+          // team (and the personal feed) gets its own partition.
+          getMyMuxVideos: offsetLimitPagination(['teamId'])
         }
       }
     }
@@ -95,6 +97,71 @@ describe('prependMuxVideo', () => {
 
     const ids = readVideos(cache).map((v) => v.id)
     expect(ids).toEqual([NEW_VIDEO.id, 'existing-1', 'existing-2'])
+  })
+
+  it('should prepend into every teamId-keyed partition', () => {
+    // Intentional parity with the image picker: prependMuxVideo writes to the
+    // unkeyed `getMyMuxVideos` field via cache.modify, so the new video lands at
+    // the head of BOTH the personal partition and every team partition. This is
+    // the accepted cross-partition behavior (finding #1 was deliberately kept),
+    // codified here as a tested contract.
+    const cache = buildCache()
+    cache.writeQuery({
+      query: GET_MY_MUX_VIDEOS,
+      variables: { offset: 0, limit: 11 },
+      data: {
+        getMyMuxVideos: [
+          {
+            __typename: 'MuxVideo',
+            id: 'personal-1',
+            playbackId: 'pb-personal',
+            readyToStream: true,
+            duration: null,
+            userId: 'me'
+          }
+        ]
+      }
+    })
+    cache.writeQuery({
+      query: GET_MY_MUX_VIDEOS,
+      variables: { offset: 0, limit: 11, teamId: 'team-1' },
+      data: {
+        getMyMuxVideos: [
+          {
+            __typename: 'MuxVideo',
+            id: 'team-1-video',
+            playbackId: 'pb-team',
+            readyToStream: true,
+            duration: null,
+            userId: 'teammate'
+          }
+        ]
+      }
+    })
+
+    prependMuxVideo(cache, NEW_VIDEO)
+
+    const personal = cache.readQuery<{
+      getMyMuxVideos: Array<{ id: string }>
+    }>({
+      query: GET_MY_MUX_VIDEOS,
+      variables: { offset: 0, limit: 11 }
+    })
+    const team = cache.readQuery<{
+      getMyMuxVideos: Array<{ id: string }>
+    }>({
+      query: GET_MY_MUX_VIDEOS,
+      variables: { offset: 0, limit: 11, teamId: 'team-1' }
+    })
+
+    expect(personal?.getMyMuxVideos.map((v) => v.id)).toEqual([
+      NEW_VIDEO.id,
+      'personal-1'
+    ])
+    expect(team?.getMyMuxVideos.map((v) => v.id)).toEqual([
+      NEW_VIDEO.id,
+      'team-1-video'
+    ])
   })
 
   it('should dedup by id so a re-prepend of the same video does not duplicate', () => {

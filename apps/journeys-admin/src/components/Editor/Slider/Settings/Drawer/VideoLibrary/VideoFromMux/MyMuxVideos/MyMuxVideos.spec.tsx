@@ -47,7 +47,7 @@ vi.mock('../../VideoDetails', () => ({
 
 const buildMock = (
   videos: GetMyMuxVideos['getMyMuxVideos'],
-  variables: { offset: number; limit: number } = {
+  variables: { offset: number; limit: number; teamId?: string } = {
     offset: 0,
     limit: PEEK_LIMIT
   }
@@ -242,6 +242,44 @@ describe('MyMuxVideos', () => {
     })
   })
 
+  it('should pass teamId in the fetchMore variables when loading more', async () => {
+    const firstPage = Array.from({ length: PEEK_LIMIT }, (_, i) =>
+      readyVideo(`v${i}`)
+    )
+    const secondPage = [readyVideo(`v${PEEK_LIMIT}`)]
+
+    render(
+      <MockedProvider
+        cache={buildCache()}
+        mocks={[
+          buildMock(firstPage, {
+            offset: 0,
+            limit: PEEK_LIMIT,
+            teamId: 'team-1'
+          }),
+          buildMock(secondPage, {
+            offset: PAGE_SIZE,
+            limit: PEEK_LIMIT,
+            teamId: 'team-1'
+          })
+        ]}
+      >
+        <MyMuxVideos onSelect={vi.fn()} teamId="team-1" />
+      </MockedProvider>
+    )
+
+    const loadMore = await screen.findByRole('button', { name: 'Load More' })
+    fireEvent.click(loadMore)
+
+    // The page-2 tile only renders if the fetchMore request matched the mock
+    // keyed on { offset: PAGE_SIZE, limit: PEEK_LIMIT, teamId: 'team-1' }.
+    await waitFor(() => {
+      expect(
+        screen.getByTestId(`my-mux-video-v${PEEK_LIMIT}`)
+      ).toBeInTheDocument()
+    })
+  })
+
   it('should hide the Load More button when no more results', async () => {
     const firstPage = Array.from({ length: 3 }, (_, i) => readyVideo(`v${i}`))
 
@@ -353,7 +391,18 @@ describe('MyMuxVideos', () => {
   })
 
   it('should tag a teammate upload with a Team tag and leave the caller’s own untagged', async () => {
-    const user = { id: 'me', uid: 'me' } as unknown as User
+    const user: User = {
+      id: 'me',
+      uid: 'me',
+      displayName: null,
+      email: null,
+      phoneNumber: null,
+      photoURL: null,
+      providerId: 'firebase',
+      emailVerified: true,
+      token: 'token',
+      isAnonymous: false
+    }
     render(
       <AuthContext.Provider value={{ user }}>
         <MockedProvider

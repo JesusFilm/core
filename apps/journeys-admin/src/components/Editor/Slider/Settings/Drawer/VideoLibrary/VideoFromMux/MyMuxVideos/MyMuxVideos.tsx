@@ -42,10 +42,10 @@ interface MyMuxVideosProps {
   uploading?: boolean
   /**
    * Active team id. When provided, the grid shows a merged feed of the caller's
-   * own uploads plus videos shared with the team. When null/undefined the query
+   * own uploads plus videos shared with the team. When undefined the query
    * omits the arg and degrades to personal-only.
    */
-  teamId?: string | null
+  teamId?: string
 }
 
 export const PAGE_SIZE = 10
@@ -72,7 +72,7 @@ export function MyMuxVideos({
   >(GET_MY_MUX_VIDEOS, {
     // Omit teamId entirely when there's no active team so the resolver returns
     // personal-only results and the cache key matches the personal entry.
-    variables: { offset: 0, limit: PEEK_LIMIT, teamId: teamId ?? undefined },
+    variables: { offset: 0, limit: PEEK_LIMIT, teamId },
     fetchPolicy: 'cache-first',
     notifyOnNetworkStatusChange: true
   })
@@ -123,7 +123,7 @@ export function MyMuxVideos({
       variables: {
         offset: pagesFetched * PAGE_SIZE,
         limit: PEEK_LIMIT,
-        teamId: teamId ?? undefined
+        teamId
       }
     }).catch(() => null)
     if (result == null) return

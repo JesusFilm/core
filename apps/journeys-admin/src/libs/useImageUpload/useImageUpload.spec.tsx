@@ -50,7 +50,9 @@ describe('useImageUpload', () => {
       acceptedFiles: [],
       fileRejections: []
     } as any)
-    mockUseCloudflareUploadByFileMutation.mockReturnValue([vi.fn()] as any)
+    mockUseCloudflareUploadByFileMutation.mockReturnValue([
+      vi.fn()
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
   })
 
   afterEach(() => {
@@ -79,7 +81,7 @@ describe('useImageUpload', () => {
     })
     mockUseCloudflareUploadByFileMutation.mockReturnValue([
       createCloudflareUploadByFile
-    ] as any)
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
 
     getMockFetch().mockResolvedValueOnce({
       ok: true,
@@ -138,7 +140,7 @@ describe('useImageUpload', () => {
     )
     mockUseCloudflareUploadByFileMutation.mockReturnValue([
       createCloudflareUploadByFile
-    ] as any)
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
 
     const { result } = renderHook(() => useImageUpload({ onUploadComplete }))
 
@@ -206,7 +208,7 @@ describe('useImageUpload', () => {
     })
     mockUseCloudflareUploadByFileMutation.mockReturnValue([
       createCloudflareUploadByFile
-    ] as any)
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
 
     getMockFetch().mockResolvedValueOnce({
       ok: true,
@@ -244,7 +246,7 @@ describe('useImageUpload', () => {
     })
     mockUseCloudflareUploadByFileMutation.mockReturnValue([
       createCloudflareUploadByFile
-    ] as any)
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
 
     getMockFetch().mockResolvedValueOnce({
       ok: true,
@@ -283,7 +285,7 @@ describe('useImageUpload', () => {
     })
     mockUseCloudflareUploadByFileMutation.mockReturnValue([
       createCloudflareUploadByFile
-    ] as any)
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
 
     getMockFetch().mockRejectedValueOnce(new Error('Network error'))
 
@@ -308,7 +310,7 @@ describe('useImageUpload', () => {
       .mockRejectedValueOnce(new Error('Mutation failed'))
     mockUseCloudflareUploadByFileMutation.mockReturnValue([
       createCloudflareUploadByFile
-    ] as any)
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
 
     const { result } = renderHook(() =>
       useImageUpload({ onUploadComplete, onUploadError })
@@ -339,7 +341,7 @@ describe('useImageUpload', () => {
     })
     mockUseCloudflareUploadByFileMutation.mockReturnValue([
       createCloudflareUploadByFile
-    ] as any)
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
 
     getMockFetch().mockResolvedValueOnce({
       ok: true,
@@ -381,7 +383,7 @@ describe('useImageUpload', () => {
     })
     mockUseCloudflareUploadByFileMutation.mockReturnValue([
       createCloudflareUploadByFile
-    ] as any)
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
 
     const { result } = renderHook(() =>
       useImageUpload({ onUploadComplete, onUploadError })
