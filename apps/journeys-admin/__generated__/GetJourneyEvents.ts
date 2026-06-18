@@ -15,14 +15,8 @@ export interface GetJourneyEvents_journeyEventsConnection_edges_node {
   visitorId: string | null;
   label: string | null;
   value: string | null;
-  /**
-   * database fields from table, not explicitly surfaced from any other types
-   */
   typename: string | null;
   progress: number | null;
-  /**
-   * Related fields queried from relevant ids in the events table
-   */
   journeySlug: string | null;
   visitorName: string | null;
   visitorEmail: string | null;
@@ -38,21 +32,9 @@ export interface GetJourneyEvents_journeyEventsConnection_edges {
 
 export interface GetJourneyEvents_journeyEventsConnection_pageInfo {
   __typename: "PageInfo";
-  /**
-   * When paginating forwards, the cursor to continue.
-   */
   endCursor: string | null;
-  /**
-   * When paginating forwards, are there more items?
-   */
   hasNextPage: boolean;
-  /**
-   * When paginating backwards, are there more items?
-   */
   hasPreviousPage: boolean;
-  /**
-   * When paginating backwards, the cursor to continue.
-   */
   startCursor: string | null;
 }
 

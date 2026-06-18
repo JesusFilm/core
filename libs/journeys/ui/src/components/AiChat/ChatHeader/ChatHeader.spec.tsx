@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
@@ -45,5 +45,20 @@ describe('ChatHeader', () => {
     rerender(<ChatHeader thinking />)
     expect(container.querySelector('.jfp-mark-top')).not.toBeNull()
     expect(container.querySelector('.jfp-mark-bottom')).not.toBeNull()
+  })
+
+  it('does not render a close button without onClose', () => {
+    const { queryByRole } = render(<ChatHeader />)
+    expect(
+      queryByRole('button', { name: 'Close chat' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('renders a close button that calls onClose when provided', () => {
+    const onClose = vi.fn()
+    const { getByRole } = render(<ChatHeader onClose={onClose} />)
+
+    fireEvent.click(getByRole('button', { name: 'Close chat' }))
+    expect(onClose).toHaveBeenCalledTimes(1)
   })
 })

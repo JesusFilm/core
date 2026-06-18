@@ -65,7 +65,6 @@ This creates a SQL migration file with a timestamped name and runs it against yo
 
 This differs by API:
 
-- **api-journeys (SDL-first):** Edit the relevant `.graphql` file in `apis/api-journeys/src/app/modules/<module>/` (e.g., `apis/api-journeys/src/app/modules/journeyProfile/journeyProfile.graphql`, NOT `schema.graphql`). Also update the resolver and its spec file if needed.
 - **api-journeys-modern (Pothos):** Edit the Pothos schema code in `apis/api-journeys-modern/src/schema/`. The types are defined in TypeScript.
 - **Other APIs (Pothos):** Edit the Pothos schema code in `apis/<api>/src/schema/`.
 
@@ -77,14 +76,11 @@ Run `generate-graphql` for **every API whose GraphQL type definitions you update
 nx generate-graphql <api-name>
 ```
 
-For example, if you changed the journeys schema and both APIs expose the change:
+For example, if you changed the journeys schema:
 
 ```bash
-nx generate-graphql api-journeys
 nx generate-graphql api-journeys-modern
 ```
-
-> **api-journeys requires a running server.** It uses Apollo Rover introspection on port 4001. Start the server first with `nf start` or `nx serve api-journeys`. All other APIs use static generation and do **not** need a running server.
 
 **Step 6: Recompose the gateway schema**
 
@@ -102,7 +98,7 @@ This uses Hive to compose all subgraph schemas into `apis/api-gateway/schema.gra
 nx run-many -t codegen
 ```
 
-This regenerates TypeScript types for all frontend projects that depend on the gateway schema: `journeys-admin`, `journeys`, `watch`, `resources`, `journeys-ui`, `shared-gql`, and `api-journeys`.
+This regenerates TypeScript types for all frontend projects that depend on the gateway schema: `journeys-admin`, `journeys`, `watch`, `resources`, `journeys-ui`, and `shared-gql`.
 
 ## Troubleshooting
 
@@ -148,25 +144,9 @@ If the migration succeeds but prisma generate fails, run it separately:
 nx prisma-generate prisma-<domain>
 ```
 
-### GraphQL generation fails for api-journeys
-
-Ensure the api-journeys server is running on port 4001. Start it with:
-
-```bash
-nf start
-```
-
-Or individually:
-
-```bash
-nx serve api-journeys
-```
-
-Then retry `nx generate-graphql api-journeys`.
-
 ### `nx codegen` serves stale output (cache hit)
 
-If `nx run-many -t codegen` logs "read the output from the cache" and the generated types (`apis/api-journeys/src/__generated__/graphql.ts`, `libs/shared/gql/src/__generated__/graphql-env.d.ts`) are missing a field that **is** present in `apis/api-gateway/schema.graphql`, the codegen cache key didn't capture the upstream gateway-schema change. Re-run with the cache disabled:
+If `nx run-many -t codegen` logs "read the output from the cache" and the generated types (e.g. `libs/shared/gql/src/__generated__/graphql-env.d.ts`) are missing a field that **is** present in `apis/api-gateway/schema.graphql`, the codegen cache key didn't capture the upstream gateway-schema change. Re-run with the cache disabled:
 
 ```bash
 nx run-many -t codegen --skip-nx-cache
@@ -176,13 +156,12 @@ See `docs/solutions/workflow-issues/prisma7-migrate-and-nx-codegen-schema-change
 
 ### `codegen` fails at schema load: `Directive "deprecated" may not be used on INPUT_FIELD_DEFINITION`
 
-The 5 frontend codegen targets that use the legacy `apollo client:codegen` CLI (`journeys`, `journeys-admin`, `journeys-ui`, `resources`, `watch`) reject `@deprecated` on input fields and arguments — their bundled validator predates graphql-js 15.5, and the failure is all-or-nothing at schema load. `generate-graphql` and the gateway compose (Steps 5–6) pass; only Step 7 fails. Do not add `deprecationReason` to Pothos **input** fields — express the deprecation in the field `description` text instead, and keep `@deprecated` on output fields (legal in every consumer).
+The frontend codegen targets that use the legacy `apollo client:codegen` CLI (`journeys`, `journeys-admin`, `journeys-ui`, `resources`, `watch`) reject `@deprecated` on input fields and arguments — their bundled validator predates graphql-js 15.5, and the failure is all-or-nothing at schema load. `generate-graphql` and the gateway compose (Steps 5–6) pass; only Step 7 fails. Do not add `deprecationReason` to Pothos **input** fields — express the deprecation in the field `description` text instead, and keep `@deprecated` on output fields (legal in every consumer).
 
 See `docs/solutions/build-errors/apollo-codegen-deprecated-directive-input-field-2026-06-08.md`.
-
 ## Common Mistakes to Avoid
 
-- **Do NOT edit `schema.graphql` directly** in any API — it is auto-generated. Edit the `.graphql` SDL files (api-journeys) or Pothos schema code (all other APIs).
+- **Do NOT edit `schema.graphql` directly** in any API — it is auto-generated. Edit the Pothos schema code instead.
 - **Do NOT forget `generate-graphql api-gateway`** after updating any subgraph schema — the gateway supergraph must be recomposed.
 - **Do NOT forget `nx run-many -t codegen`** — frontend TypeScript types will be stale until codegen runs.
 - **Do NOT skip generating for all APIs that share a prisma domain** — e.g., both `api-journeys` and `api-journeys-modern` share `prisma-journeys`.
