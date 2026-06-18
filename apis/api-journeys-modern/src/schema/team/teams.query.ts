@@ -10,7 +10,6 @@ builder.queryField('teams', (t) =>
     .prismaField({
       type: [TeamRef],
       nullable: false,
-      override: { from: 'api-journeys' },
       resolve: async (query, _parent, _args, context) => {
         return prisma.team.findMany({
           ...query,

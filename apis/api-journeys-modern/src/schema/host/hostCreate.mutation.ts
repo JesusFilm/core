@@ -14,7 +14,6 @@ builder.mutationField('hostCreate', (t) =>
     .prismaField({
       type: HostRef,
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         teamId: t.arg({ type: 'ID', required: true }),
         input: t.arg({ type: HostCreateInput, required: true })

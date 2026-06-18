@@ -13,7 +13,6 @@ builder.mutationField('journeyPublish', (t) =>
     .prismaField({
       type: JourneyRef,
       nullable: true,
-      override: { from: 'api-journeys' },
       args: {
         id: t.arg({ type: 'ID', required: true })
       },

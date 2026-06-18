@@ -13,7 +13,6 @@ builder.queryField('visitor', (t) =>
     .prismaField({
       type: VisitorRef,
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         id: t.arg({ type: 'ID', required: true })
       },

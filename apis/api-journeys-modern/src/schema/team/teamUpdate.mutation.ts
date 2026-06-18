@@ -14,7 +14,6 @@ builder.mutationField('teamUpdate', (t) =>
     .prismaField({
       type: TeamRef,
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         id: t.arg({ type: 'ID', required: true }),
         input: t.arg({ type: TeamUpdateInput, required: false })

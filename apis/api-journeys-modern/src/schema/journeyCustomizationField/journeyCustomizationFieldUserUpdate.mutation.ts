@@ -12,7 +12,6 @@ builder.mutationField('journeyCustomizationFieldUserUpdate', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: [JourneyCustomizationFieldRef],
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       journeyId: t.arg({ type: 'ID', required: true }),
       input: t.arg({ type: [JourneyCustomizationFieldInput], required: true })
