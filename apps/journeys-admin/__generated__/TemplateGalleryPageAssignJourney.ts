@@ -3,11 +3,40 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TemplateGalleryPageStatus } from "./globalTypes";
+import { TemplateGalleryPageStatus, TemplateGalleryPageMediaType } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: TemplateGalleryPageAssignJourney
 // ====================================================
+
+export interface TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_media {
+  __typename: "TemplateGalleryPageMedia";
+  id: string;
+  /**
+   * Active selector for which payload renders.
+   */
+  type: TemplateGalleryPageMediaType;
+  /**
+   * Raw Mux video id of the stored upload payload. Authenticated-only — never exposed on the public type.
+   */
+  muxVideoId: string | null;
+  /**
+   * The stored link payload. May be retained while `type` is `mux`/`none` so the editor can offer switching back.
+   */
+  embedUrl: string | null;
+  /**
+   * Mux playback ID denormalized at save time. Tracks `muxVideoId`.
+   */
+  muxPlaybackId: string | null;
+  /**
+   * Video name denormalized at save time. Tracks `muxVideoId`.
+   */
+  muxName: string | null;
+  /**
+   * Video duration in seconds denormalized at save time. Tracks `muxVideoId`.
+   */
+  muxDuration: number | null;
+}
 
 export interface TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_templates_primaryImageBlock {
   __typename: "ImageBlock";
@@ -58,9 +87,9 @@ export interface TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourn
    */
   creatorImageAlt: string | null;
   /**
-   * Optional https URL of a hero/cover media asset shown on the public page. https-only on write.
+   * Embedded media with both retained payload slots and the raw `muxVideoId`, so the editor can restore a parked link/upload. `null` only when the page has no media row.
    */
-  mediaUrl: string | null;
+  media: TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_media | null;
   /**
    * Timestamp of the first publish event. Monotonic — never re-set on subsequent unpublish/republish, and never cleared. Null while the page has not yet been published.
    */

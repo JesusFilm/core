@@ -1,9 +1,9 @@
 {
   "AI chat": "Chat AI",
-  "Show AI chat": "Tunjukkan sembang AI",
-  "Open chat automatically": "Buka sembang secara automatik",
+  "Enable AI chat": "Aktifkan sembang AI",
+  "Collapse chat": "Tutup sembang",
   "On": "Pada",
-  "On, auto-open": "Pada, buka secara automatik",
+  "On, collapsed": "On, runtuh",
   "%s | Next Steps": "%s | Langkah Seterusnya",
   "Admin | Next Steps": "Pentadbir | Langkah Seterusnya",
   "Email Preferences Updated.": "Keutamaan E-mel Dikemas Kini.",

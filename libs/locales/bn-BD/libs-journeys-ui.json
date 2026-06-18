@@ -1,4 +1,5 @@
 {
+  "About this chat": "এই চ্যাট সম্পর্কে",
   "Copy message": "বার্তা অনুলিপি করুন",
   "Copy": "Copy",
   "Assistant is typing": "সহকারী টাইপ করছে",
@@ -117,6 +118,7 @@
   "A short description of your collection will appear here.": "আপনার সংগ্রহের একটি সংক্ষিপ্ত বিবরণ এখানে প্রদর্শিত হবে।",
   "Creator name": "স্রষ্টার নাম",
   "Ask anything…": "যেকোনো কিছু জিজ্ঞাসা করুন…",
+  "Ask your questions about faith": "বিশ্বাস সম্পর্কে আপনার প্রশ্নগুলো জিজ্ঞাসা করুন",
   "Scroll to latest message": "সর্বশেষ বার্তায় স্ক্রোল করুন",
   "Use {{title}}": "ব্যবহার করুন {{title}}",
   "Preview {{title}}": "প্রিভিউ {{title}}",

@@ -105,7 +105,7 @@ function JourneyViewBody({ data }: JourneyViewProps): ReactElement {
   // the shared module so this view and the AdminView preview can't drift.
   const { featured, rest } = splitFeatured(data.items)
   const hasTemplates = data.items.length > 0
-  const hasMedia = data.mediaUrl != null && data.mediaUrl !== ''
+  const hasMedia = data.media != null
 
   // Nav links mirror the sections that actually render, in scroll order, and
   // reuse each section's own label. The cover is always first — so there's
@@ -122,7 +122,7 @@ function JourneyViewBody({ data }: JourneyViewProps): ReactElement {
       sections.push({ id: SECTION_IDS.featured, label: t('Explore') })
     if (rest.length > 0)
       sections.push({ id: SECTION_IDS.set, label: t('More') })
-    if (hasMedia) sections.push({ id: SECTION_IDS.media, label: t('Strategy') })
+    if (hasMedia) sections.push({ id: SECTION_IDS.media, label: t('Media') })
     return sections
   }, [featured.length, rest.length, hasMedia, t])
 
@@ -272,7 +272,8 @@ function JourneyViewBody({ data }: JourneyViewProps): ReactElement {
           }}
         >
           <Container maxWidth="lg">
-            <JourneyViewMedia mediaUrl={data.mediaUrl} />
+            <SectionLabel>{t('Media')}</SectionLabel>
+            <JourneyViewMedia media={data.media} />
           </Container>
         </Box>
       )}

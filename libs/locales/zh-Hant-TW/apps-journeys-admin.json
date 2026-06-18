@@ -1,9 +1,9 @@
 {
   "AI chat": "AI 聊天",
-  "Show AI chat": "顯示 AI 聊天",
-  "Open chat automatically": "自動開啟聊天",
+  "Enable AI chat": "啟用 AI 聊天功能",
+  "Collapse chat": "折疊聊天",
   "On": "關於",
-  "On, auto-open": "開啟、自動開啟",
+  "On, collapsed": "開啟、關閉",
   "%s | Next Steps": "%s |",
   "Admin | Next Steps": "管理員 |",
   "Email Preferences Updated.": "電子郵件偏好設定已更新。",

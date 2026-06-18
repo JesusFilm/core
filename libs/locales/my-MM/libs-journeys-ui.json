@@ -1,4 +1,5 @@
 {
+  "About this chat": "ဒီစကားပြောအကြောင်း",
   "Copy message": "မက်ဆေ့ခ်ျကို ကူးယူပါ",
   "Copy": "Copy",
   "Assistant is typing": "အကူက ရိုက်နေသည်။",
@@ -117,6 +118,7 @@
   "A short description of your collection will appear here.": "သင့်စုဆောင်းမှုအကြောင်း အကျဉ်းပြန်ဖော်ပြချက်ကို ဒီမှာ ပြသမည်။",
   "Creator name": "ဖန်တီးသူအမည်",
   "Ask anything…": "ဘာမေးမေးမေးပါ…",
+  "Ask your questions about faith": "ယုံကြည်ခြင်းအကြောင်း မေးခွန်းများ မေးပါ။",
   "Scroll to latest message": "နောက်ဆုံးမက်ဆေ့ခ်ျသို့ ရွေ့လျားပါ။",
   "Use {{title}}": "အသုံးပြုပါ {{title}}",
   "Preview {{title}}": "ကြိုကြည့် {{title}}",

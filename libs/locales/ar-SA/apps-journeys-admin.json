@@ -1,9 +1,9 @@
 {
   "AI chat": "دردشة الذكاء الاصطناعي",
-  "Show AI chat": "عرض دردشة الذكاء الاصطناعي",
-  "Open chat automatically": "فتح الدردشة تلقائياً",
+  "Enable AI chat": "تمكين الدردشة بالذكاء الاصطناعي",
+  "Collapse chat": "انهيار الدردشة",
   "On": "على",
-  "On, auto-open": "تشغيل، فتح تلقائي",
+  "On, collapsed": "أون، انهار",
   "%s | Next Steps": "%s | الخطوات التالية",
   "Admin | Next Steps": "المسؤول | الخطوات التالية",
   "Email Preferences Updated.": "تم تحديث تفضيلات البريد الإلكتروني.",

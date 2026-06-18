@@ -53,7 +53,7 @@ function makeCollection(
     creatorName: 'Creator',
     creatorImageSrc: null,
     creatorImageAlt: null,
-    mediaUrl: null,
+    media: null,
     publishedAt: null,
     createdAt: '2026-04-01T00:00:00Z',
     updatedAt: '2026-04-01T00:00:00Z',

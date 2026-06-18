@@ -1,9 +1,9 @@
 {
   "AI chat": "Chat sur l'IA",
-  "Show AI chat": "Afficher le chat de l'IA",
-  "Open chat automatically": "Ouvre automatiquement le chat",
+  "Enable AI chat": "Activer le chat IA",
+  "Collapse chat": "Effondrer le chat",
   "On": "Sur",
-  "On, auto-open": "Activé, ouverture automatique",
+  "On, collapsed": "Oh, ça s'est effondré",
   "%s | Next Steps": "%s | Les prochaines étapes",
   "Admin | Next Steps": "Admin | Prochaines étapes",
   "Email Preferences Updated.": "Préférences de messagerie mises à jour.",

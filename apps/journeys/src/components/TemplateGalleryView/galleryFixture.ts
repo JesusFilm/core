@@ -1,7 +1,29 @@
 import {
+  GetTemplateGalleryPage_templateGalleryPageBySlug_media as GalleryMedia,
   GetTemplateGalleryPage_templateGalleryPageBySlug_templates as GalleryTemplate,
   GetTemplateGalleryPage_templateGalleryPageBySlug as TemplateGalleryPage
 } from '../../../__generated__/GetTemplateGalleryPage'
+import { TemplateGalleryPageMediaType } from '../../../__generated__/globalTypes'
+
+export function makeLinkMedia(embedUrl: string): GalleryMedia {
+  return {
+    __typename: 'TemplateGalleryPageMedia',
+    id: 'media-1',
+    type: TemplateGalleryPageMediaType.link,
+    embedUrl,
+    muxPlaybackId: null
+  }
+}
+
+export function makeMuxMedia(muxPlaybackId: string): GalleryMedia {
+  return {
+    __typename: 'TemplateGalleryPageMedia',
+    id: 'media-1',
+    type: TemplateGalleryPageMediaType.mux,
+    embedUrl: null,
+    muxPlaybackId
+  }
+}
 
 export const mockTemplate: GalleryTemplate = {
   __typename: 'TemplateGalleryItem',
@@ -40,13 +62,13 @@ export function makeGallery(
   overrides: Partial<TemplateGalleryPage> = {}
 ): TemplateGalleryPage {
   return {
-    __typename: 'TemplateGalleryPage',
+    __typename: 'TemplateGalleryPagePublic',
     id: 'gallery-1',
     slug: 'easter-2026',
     title: 'Easter Gallery 2026',
     description: 'A curated set of Easter outreach templates.',
     creatorName: 'Jane Doe',
-    mediaUrl: null,
+    media: null,
     publishedAt: '2026-04-01T00:00:00.000Z',
     creatorImageSrc: 'https://example.com/avatar.jpg',
     creatorImageAlt: 'Jane Doe avatar',

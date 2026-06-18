@@ -2,6 +2,7 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Link from '@mui/material/Link'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
@@ -10,6 +11,10 @@ import { useJourney } from '../../../libs/JourneyProvider'
 import {
   ASSISTANT_FG,
   DIVIDER,
+  OVERLAY_FG_MUTED,
+  OVERLAY_HERO_FG,
+  OVERLAY_INPUT_BORDER,
+  OVERLAY_LINK_FG,
   PANEL_LINK_FG,
   PRIMARY_ON,
   SPARKLE_AVATAR_SHADOW,
@@ -31,14 +36,28 @@ interface ChatHeaderProps {
    * desktop overlay's corner close button.
    */
   onClose?: () => void
+  /**
+   * Re-themes the header for the dark backdrop of the desktop ChatOverlay
+   * (NES-1738 Option B): title/caption/close use the light overlay tokens
+   * and the divider switches to the translucent-white border so the dark
+   * layer reads through. The mobile sheet leaves it false (stays light).
+   */
+  onDark?: boolean
 }
 
 export function ChatHeader({
   thinking = false,
-  onClose
+  onClose,
+  onDark = false
 }: ChatHeaderProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { journey } = useJourney()
+
+  const titleColor = onDark ? OVERLAY_HERO_FG : ASSISTANT_FG
+  const captionColor = onDark ? OVERLAY_FG_MUTED : TEXT_SECONDARY
+  const linkColor = onDark ? OVERLAY_LINK_FG : PANEL_LINK_FG
+  const borderColor = onDark ? OVERLAY_INPUT_BORDER : DIVIDER
+  const closeColor = onDark ? OVERLAY_FG_MUTED : TEXT_SECONDARY
 
   return (
     <Box
@@ -51,7 +70,7 @@ export function ChatHeader({
         pb: 1.5,
         px: 1.75,
         borderBottom: '1px solid',
-        borderBottomColor: DIVIDER,
+        borderBottomColor: borderColor,
         flexShrink: 0
       }}
     >
@@ -137,7 +156,7 @@ export function ChatHeader({
         <Typography
           variant="subtitle1"
           sx={{
-            color: ASSISTANT_FG,
+            color: titleColor,
             fontSize: 16,
             fontWeight: 600,
             lineHeight: '22px',
@@ -150,7 +169,7 @@ export function ChatHeader({
           variant="caption"
           sx={{
             display: 'block',
-            color: TEXT_SECONDARY,
+            color: captionColor,
             fontSize: 12,
             lineHeight: '20px',
             letterSpacing: 0
@@ -172,8 +191,10 @@ export function ChatHeader({
               // tokenised so longer translations of "About this chat"
               // don't break mid-word; the surrounding Typography still
               // wraps the bullet and link to a new line when the whole
-              // line overflows.
-              color: PANEL_LINK_FG,
+              // line overflows. On the dark overlay (Option B) PANEL_LINK_FG
+              // (brandRed) is too dim, so it swaps to the brighter
+              // OVERLAY_LINK_FG that the overlay variant already uses.
+              color: linkColor,
               fontSize: 'inherit',
               fontWeight: 600,
               whiteSpace: 'nowrap'
@@ -184,19 +205,24 @@ export function ChatHeader({
         </Typography>
       </Box>
       {onClose != null && (
-        <IconButton
-          onClick={onClose}
-          aria-label={t('Close chat')}
-          sx={{
-            width: 32,
-            height: 32,
-            p: 0,
-            flexShrink: 0,
-            color: TEXT_SECONDARY
-          }}
-        >
-          <CloseRoundedIcon fontSize="small" />
-        </IconButton>
+        // arrow + placement="top" matches the lib's existing tooltip style
+        // (e.g. SearchBar RefinementGroup). Title is translated via the same
+        // `t` as the aria-label so hover and screen-reader labels stay in sync.
+        <Tooltip title={t('Close chat')} arrow placement="top">
+          <IconButton
+            onClick={onClose}
+            aria-label={t('Close chat')}
+            sx={{
+              width: 32,
+              height: 32,
+              p: 0,
+              flexShrink: 0,
+              color: closeColor
+            }}
+          >
+            <CloseRoundedIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
       )}
     </Box>
   )

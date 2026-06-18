@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 import {
   GALLERY_ACCENT,
@@ -13,10 +13,17 @@ import {
 import { FeaturedRow } from '../JourneyView/FeaturedRow'
 import { JourneyViewCard } from '../JourneyView/JourneyViewCard'
 import { JourneyViewHeader } from '../JourneyView/JourneyViewHeader'
-import { JourneyViewMedia } from '../JourneyView/JourneyViewMedia'
 
 interface AdminViewProps {
   data: PublicGalleryPageData
+  /**
+   * Admin-supplied renderer for the media section. The dialog previews
+   * *form state* (a link still being typed, an upload still processing, a
+   * mux thumbnail instead of a live player), which the public
+   * `JourneyViewMedia` deliberately can't render — so the consumer injects
+   * its own preview here. Null/omitted hides the media section.
+   */
+  mediaSlot?: ReactNode
 }
 
 // Sections are separated by padding (and the journey's divider border)
@@ -54,11 +61,10 @@ function SectionLabel({ children }: { children: string }): ReactElement {
  * wrapper supplied by the consumer. Empty fields fall back to placeholder
  * copy so the dialog reads well before the publisher has filled them in.
  */
-export function AdminView({ data }: AdminViewProps): ReactElement {
+export function AdminView({ data, mediaSlot }: AdminViewProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
 
   const hasItems = data.items.length > 0
-  const hasMedia = data.mediaUrl != null && data.mediaUrl !== ''
   // Same shared split as the journey view — kept in lockstep via splitFeatured.
   const { featured, rest } = splitFeatured(data.items)
 
@@ -152,9 +158,10 @@ export function AdminView({ data }: AdminViewProps): ReactElement {
         </Box>
       )}
 
-      {hasMedia && (
+      {mediaSlot != null && (
         <Box component="section" sx={sectionSx}>
-          <JourneyViewMedia mediaUrl={data.mediaUrl} />
+          <SectionLabel>{t('Media')}</SectionLabel>
+          {mediaSlot}
         </Box>
       )}
     </Box>

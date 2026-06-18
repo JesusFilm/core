@@ -13,6 +13,8 @@ export interface GetMyMuxVideoQuery_getMyMuxVideo {
   assetId: string | null;
   playbackId: string | null;
   readyToStream: boolean;
+  name: string | null;
+  duration: number | null;
 }
 
 export interface GetMyMuxVideoQuery {

@@ -13,7 +13,12 @@ export const GET_TEMPLATE_GALLERY_PAGE = gql`
       title
       description
       creatorName
-      mediaUrl
+      media {
+        id
+        type
+        embedUrl
+        muxPlaybackId
+      }
       publishedAt
       creatorImageSrc
       creatorImageAlt
