@@ -9,7 +9,6 @@ builder.queryField('journeys', (t) =>
   t.prismaField({
     type: [JourneyRef],
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       where: t.arg({ type: JourneysFilter, required: false }),
       options: t.arg({ type: JourneysQueryOptions, required: false })

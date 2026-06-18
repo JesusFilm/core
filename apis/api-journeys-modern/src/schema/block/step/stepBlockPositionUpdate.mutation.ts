@@ -16,7 +16,6 @@ builder.mutationField('stepBlockPositionUpdate', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: [StepBlock],
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       input: t.arg({
         type: [StepBlockPositionUpdateInput],

@@ -10,7 +10,6 @@ builder.queryField('adminJourneysReport', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: PowerBiEmbedRef,
     nullable: true,
-    override: { from: 'api-journeys' },
     args: {
       reportType: t.arg({
         type: JourneysReportTypeEnum,

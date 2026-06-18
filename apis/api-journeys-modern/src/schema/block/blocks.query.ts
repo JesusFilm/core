@@ -10,7 +10,6 @@ builder.queryField('blocks', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: [Block],
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       where: t.arg({ type: BlocksFilterInput, required: false })
     },

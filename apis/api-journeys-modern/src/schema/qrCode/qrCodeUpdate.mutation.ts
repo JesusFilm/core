@@ -15,7 +15,6 @@ builder.mutationField('qrCodeUpdate', (t) =>
     .prismaField({
       type: QrCodeRef,
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         id: t.arg({ type: 'ID', required: true }),
         input: t.arg({ type: QrCodeUpdateInput, required: true })
