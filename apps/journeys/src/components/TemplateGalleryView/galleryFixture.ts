@@ -62,7 +62,7 @@ export function makeGallery(
   overrides: Partial<TemplateGalleryPage> = {}
 ): TemplateGalleryPage {
   return {
-    __typename: 'TemplateGalleryPage',
+    __typename: 'TemplateGalleryPagePublic',
     id: 'gallery-1',
     slug: 'easter-2026',
     title: 'Easter Gallery 2026',

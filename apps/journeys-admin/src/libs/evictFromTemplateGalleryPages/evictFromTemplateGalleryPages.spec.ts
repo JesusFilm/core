@@ -5,16 +5,16 @@ import { evictFromTemplateGalleryPages } from './evictFromTemplateGalleryPages'
 function seedCache(): InMemoryCache {
   const cache = new InMemoryCache()
   cache.restore({
-    'TemplateGalleryPageAdmin:page-A': {
-      __typename: 'TemplateGalleryPageAdmin',
+    'TemplateGalleryPage:page-A': {
+      __typename: 'TemplateGalleryPage',
       id: 'page-A',
       templates: [
         { __ref: 'TemplateGalleryItem:journey-1' },
         { __ref: 'TemplateGalleryItem:journey-other' }
       ]
     },
-    'TemplateGalleryPageAdmin:page-B': {
-      __typename: 'TemplateGalleryPageAdmin',
+    'TemplateGalleryPage:page-B': {
+      __typename: 'TemplateGalleryPage',
       id: 'page-B',
       templates: [{ __ref: 'TemplateGalleryItem:journey-1' }]
     },
@@ -39,10 +39,10 @@ describe('evictFromTemplateGalleryPages', () => {
     const cache = seedCache()
     evictFromTemplateGalleryPages(cache, ['journey-1'])
     const snapshot = cache.extract()
-    expect(snapshot['TemplateGalleryPageAdmin:page-A']?.templates).toEqual([
+    expect(snapshot['TemplateGalleryPage:page-A']?.templates).toEqual([
       { __ref: 'TemplateGalleryItem:journey-other' }
     ])
-    expect(snapshot['TemplateGalleryPageAdmin:page-B']?.templates).toEqual([])
+    expect(snapshot['TemplateGalleryPage:page-B']?.templates).toEqual([])
   })
 
   it('evicts both Journey and TemplateGalleryItem entities by default', () => {
@@ -62,7 +62,7 @@ describe('evictFromTemplateGalleryPages', () => {
     expect(snapshot['Journey:journey-1']).toBeDefined()
     expect(snapshot['TemplateGalleryItem:journey-1']).toBeUndefined()
     // List filtering still applies.
-    expect(snapshot['TemplateGalleryPageAdmin:page-A']?.templates).toEqual([
+    expect(snapshot['TemplateGalleryPage:page-A']?.templates).toEqual([
       { __ref: 'TemplateGalleryItem:journey-other' }
     ])
   })

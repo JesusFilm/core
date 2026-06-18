@@ -41,7 +41,7 @@ describe('useTemplateGalleryPageCreateMutation', () => {
       data: {
         templateGalleryPages: [
           {
-            __typename: 'TemplateGalleryPageAdmin',
+            __typename: 'TemplateGalleryPage',
             id: 'page-1',
             title: 'Existing',
             description: '',
@@ -102,7 +102,7 @@ describe('useTemplateGalleryPageCreateMutation', () => {
       data: {
         templateGalleryPages: [
           {
-            __typename: 'TemplateGalleryPageAdmin',
+            __typename: 'TemplateGalleryPage',
             id: 'other-1',
             title: 'Other team',
             description: '',

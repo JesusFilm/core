@@ -9,7 +9,7 @@ import { filterToTeamTemplates } from './filterToTeamTemplates'
 import { generateUniqueSlug } from './generateUniqueSlug'
 import { TemplateGalleryPageCreateInput } from './inputs'
 import { mediaCreateData, resolveMediaInput } from './media/resolveMediaInput'
-import { TemplateGalleryPageAdminRef } from './templateGalleryPage'
+import { TemplateGalleryPageRef } from './templateGalleryPage'
 
 type CreateInput = typeof TemplateGalleryPageCreateInput.$inferInput
 
@@ -24,7 +24,7 @@ builder.mutationField('templateGalleryPageCreate', (t) =>
     .prismaField({
       description:
         'Create a new TemplateGalleryPage in `draft` status. The server generates a unique slug from `input.title`. Initial `journeyIds` are attached as templates in the order given (cross-team and non-template ids are silently filtered out).\n\nAuth: caller must be authenticated and a member of `input.teamId`.\n\nErrors:\n- BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.\n- BAD_USER_INPUT (field: `slug`): the title normalizes to empty or to a reserved word.',
-      type: TemplateGalleryPageAdminRef,
+      type: TemplateGalleryPageRef,
       nullable: false,
       args: {
         input: t.arg({ type: TemplateGalleryPageCreateInput, required: true })

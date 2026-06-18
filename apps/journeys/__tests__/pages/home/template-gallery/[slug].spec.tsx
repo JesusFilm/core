@@ -82,7 +82,7 @@ describe('template-gallery [slug] getServerSideProps', () => {
     mockQuery.mockResolvedValueOnce({
       data: {
         templateGalleryPageBySlug: {
-          __typename: 'TemplateGalleryPage',
+          __typename: 'TemplateGalleryPagePublic',
           id: 'g1',
           slug: 'cached',
           title: 'T',
@@ -210,7 +210,7 @@ describe('template-gallery [slug] getServerSideProps', () => {
 
   it('returns gallery props when the resolver returns data', async () => {
     const gallery = {
-      __typename: 'TemplateGalleryPage',
+      __typename: 'TemplateGalleryPagePublic',
       id: 'g1',
       slug: 'easter-2026',
       title: 'Easter Gallery',

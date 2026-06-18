@@ -10,7 +10,7 @@ import {
 import { TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE } from './useTemplateGalleryPageReorderTemplateMutation'
 
 const defaultReordered: Reordered = {
-  __typename: 'TemplateGalleryPageAdmin',
+  __typename: 'TemplateGalleryPage',
   id: 'page-1',
   title: 'Collection',
   description: '',
