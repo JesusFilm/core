@@ -56,6 +56,25 @@ vi.mock('../Response', () => ({
   Response: ({ content }: { content: string }) => <div>{content}</div>
 }))
 
+// Mock Message so the dark-panel tests can assert on the `surface` prop
+// (light vs dark) directly, instead of depending on emotion's colour-class
+// emission. Renders children + the surface as a data attribute.
+vi.mock('../Message', () => ({
+  Message: ({
+    children,
+    surface
+  }: {
+    children: React.ReactNode
+    surface?: 'light' | 'dark'
+    role?: string
+    plain?: boolean
+  }) => (
+    <div data-testid="message" data-surface={surface ?? 'light'}>
+      {children}
+    </div>
+  )
+}))
+
 const mockUseChat = useChat as unknown as Mock
 
 const mockRegenerate = vi.fn()
@@ -383,6 +402,81 @@ describe('AiChat', () => {
       expect(
         screen.queryByRole('button', { name: 'Close chat' })
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('dark panel theming (NES-1738 Option B)', () => {
+    // The panel variant is shared with the mobile PinnedChatBar (white
+    // sheet). `onDark` re-themes only the desktop overlay's panel; the
+    // mobile sheet leaves it false and stays light.
+
+    it('threads onDark to ChatHeader → brighter overlay link colour', () => {
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="panel" onDark />)
+
+      // OVERLAY_LINK_FG (#FF7A85) is the dark-surface link; PANEL_LINK_FG
+      // (brandRed) is the light one. Asserting the dark token confirms the
+      // prop reached the header.
+      expect(screen.getByRole('link', { name: 'About this chat' })).toHaveStyle(
+        { color: '#FF7A85' }
+      )
+    })
+
+    it('keeps the light link colour on the panel without onDark (mobile sheet)', () => {
+      setChatState({ messages: [], status: 'ready', error: undefined })
+
+      render(<AiChat variant="panel" />)
+
+      // brandRed (#C52D3A) — the white-sheet link colour must not regress.
+      expect(screen.getByRole('link', { name: 'About this chat' })).toHaveStyle(
+        { color: '#C52D3A' }
+      )
+    })
+
+    it('renders assistant prose with the dark token when onDark', () => {
+      setChatState({
+        messages: [
+          {
+            id: 'a1',
+            role: 'assistant',
+            parts: [{ type: 'text', text: 'Hello there' }]
+          }
+        ],
+        status: 'ready',
+        error: undefined
+      })
+
+      render(<AiChat variant="panel" onDark />)
+
+      // The plain-assistant Message receives surface="dark", which maps to
+      // PLAIN_ASSISTANT_FG_ON_DARK so the reply reads on the dark backdrop.
+      expect(screen.getByTestId('message')).toHaveAttribute(
+        'data-surface',
+        'dark'
+      )
+    })
+
+    it('renders assistant prose with the light surface on the panel without onDark', () => {
+      setChatState({
+        messages: [
+          {
+            id: 'a1',
+            role: 'assistant',
+            parts: [{ type: 'text', text: 'Hello there' }]
+          }
+        ],
+        status: 'ready',
+        error: undefined
+      })
+
+      render(<AiChat variant="panel" />)
+
+      // The light panel (mobile sheet) keeps the light prose token.
+      expect(screen.getByTestId('message')).toHaveAttribute(
+        'data-surface',
+        'light'
+      )
     })
   })
 
