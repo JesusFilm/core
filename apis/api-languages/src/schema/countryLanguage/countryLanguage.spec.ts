@@ -4,8 +4,8 @@ import { CountryLanguage, LanguageRole } from '@core/prisma/languages/client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
-import { language } from '../language/language.mock'
 import { country, countryLanguage } from '../country/country.mock'
+import { language } from '../language/language.mock'
 
 const COUNTRY_LANGUAGE_CREATE_MUTATION = parse(`
   mutation CountryLanguageCreate($input: CountryLanguageCreateInput!) {

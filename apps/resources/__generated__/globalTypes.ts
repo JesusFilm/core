@@ -337,6 +337,7 @@ export interface LanguagesFilter {
   ids?: string[] | null;
   bcp47?: string[] | null;
   iso3?: string[] | null;
+  hasVideos?: boolean | null;
   updatedAt?: DateTimeFilter | null;
 }
 
