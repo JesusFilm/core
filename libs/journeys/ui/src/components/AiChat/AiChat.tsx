@@ -18,6 +18,8 @@ import {
 } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { extractLanguageNames } from '@core/shared/ui/extractLanguageNames'
+
 import { getCardChild, useBlocks } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 import { Actions } from '../Actions'
@@ -246,9 +248,30 @@ export function AiChat({
   const [input, setInput] = useState('')
   const initialMessageSent = useRef(false)
 
+  // The BCP-47 code (e.g. "ur") drives the about-this-chat disclosure link,
+  // which loads locale copy from libs/locales/<bcp47>/ (NES-1724).
   const languageBcp47 = journey?.language?.bcp47 ?? undefined
-  const languageRef = useRef(languageBcp47)
-  languageRef.current = languageBcp47
+
+  // Send the journey's language to the assistant as a human-readable name
+  // (e.g. "Urdu"), not the BCP-47 code: the model resolves a language name far
+  // more reliably than a code. The system prompt defaults to this language but
+  // still answers in whatever language the user actually types (NES-1736).
+  // The journey language is queried without a languageId filter, so this is
+  // the first non-primary translation in API order, then the native (primary)
+  // name, then the BCP-47 code — any human-readable name resolves better than
+  // a code.
+  const { localName, nativeName } = extractLanguageNames(
+    journey?.language?.name ?? []
+  )
+  const language = localName ?? nativeName ?? languageBcp47 ?? undefined
+  const languageRef = useRef(language)
+  languageRef.current = language
+
+  // Also send the raw code so the server can warn (and record in Datadog) when
+  // the value reaching the prompt is only the code — i.e. the name didn't
+  // resolve — so we can spot which codes lack a usable name (NES-1736).
+  const languageBcp47Ref = useRef(languageBcp47)
+  languageBcp47Ref.current = languageBcp47
 
   const journeyId = journey?.id
   const journeyIdRef = useRef(journeyId)
@@ -287,6 +310,7 @@ export function AiChat({
         api: '/api/chat',
         body: () => ({
           language: languageRef.current,
+          languageBcp47: languageBcp47Ref.current,
           sessionId: sessionIdRef.current,
           journeyId: journeyIdRef.current,
           cardId: cardIdRef.current
