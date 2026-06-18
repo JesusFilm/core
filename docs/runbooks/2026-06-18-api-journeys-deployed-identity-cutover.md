@@ -15,14 +15,14 @@ PR 1 renamed the **codebase/build** identity (`api-journeys-modern` → `api-jou
 | Task def / log group / target group | `*api-journeys-modern*` | `*api-journeys*` |
 | Service-discovery DNS | `api-journeys-modern.{service,stage}.internal` | `api-journeys.{service,stage}.internal` |
 | Hive subgraph | `api-journeys-modern` | `api-journeys` |
-| Terraform module address | `module.api-journeys-modern` | `module.api-journeys` |
+| OpenTofu module address | `module.api-journeys-modern` | `module.api-journeys` |
 | In-image runtime strings | Pino `service`, `x-graphql-client-name`, worker `lockKey` | renamed to `api-journeys` |
 
 ## Why a plain merge is unsafe
 
-1. **Terraform is applied out-of-band** (no terraform workflow in `.github/workflows/`). Merging code does **not** create the new AWS resources.
+1. **OpenTofu is applied out-of-band** (no tofu workflow in `.github/workflows/`). Merging code does **not** create the new AWS resources.
 2. **`api-deploy-{prod,stage}.yml` runs on push** and, after this PR, builds `api-journeys` and deploys to ECR/ECS/Hive named `api-journeys` + endpoint `api-journeys.{service,stage}.internal`. If those resources don't exist yet, the deploy fails.
-3. **`service_config.name` feeds immutable AWS resource names** (ECS service, task-def family, target group, log group, Route53 record). A single `terraform apply` of the rename **destroys** the `api-journeys-modern` resources and **creates** `api-journeys` ones. The production gateway routes to the journeys subgraph via the Hive-published URL (`api-journeys-modern.service.internal`); if that DNS/service is destroyed before the new one is live and Hive has recomposed, **journeys queries fail** for the cutover window.
+3. **`service_config.name` feeds immutable AWS resource names** (ECS service, task-def family, target group, log group, Route53 record). A single `tofu apply` of the rename **destroys** the `api-journeys-modern` resources and **creates** `api-journeys` ones. The production gateway routes to the journeys subgraph via the Hive-published URL (`api-journeys-modern.service.internal`); if that DNS/service is destroyed before the new one is live and Hive has recomposed, **journeys queries fail** for the cutover window.
 4. **Hive composition:** publishing subgraph `api-journeys` while `api-journeys-modern` still exists produces two subgraphs with identical types → **composition conflict** → the gateway keeps serving the last good supergraph. The old subgraph must be removed for the new one to take effect.
 
 ## Recommended rollout — zero downtime (expand → cutover → contract)
@@ -33,46 +33,49 @@ PR 1 renamed the **codebase/build** identity (`api-journeys-modern` → `api-jou
 
 Goal: `api-journeys.{service,stage}.internal:4004` is healthy **before** any Hive change, while `api-journeys-modern` keeps serving.
 
-Because this PR *renames* the module (it does not duplicate it), the expand uses a **temporary parallel module**:
+Because the cutover *renames* the journeys module (it does not duplicate it), the expand stands up a **second, short-lived module instance**. This PR makes that possible by parameterizing the module:
 
-> 🛑 **The current module cannot be instantiated twice as-is.** Before authoring the parallel module, understand these three collision points (verified against `apis/api-journeys/infrastructure` and `infrastructure/modules/aws/ecs-task`):
+> ✅ **The module is now parameterizable** (`apis/api-journeys/infrastructure/variables.tf`): `service_name` (default `"api-journeys"`) and `port_override` (default `null` → 4004). Defaults reproduce the canonical service exactly, so the parameterization is a **no-op at defaults** — confirm this with `tofu plan` (it should show no change to the canonical `api-journeys` resources). The expand instance overrides both.
 >
-> 1. **`service_config.name` is hardcoded** in `locals.tf` (not a variable). Two instances from the same source would both be named `api-journeys` → every named AWS resource collides. The module must be temporarily parameterized (add a `service_name` variable, default `"api-journeys"`, and use it in `locals.tf`).
-> 2. **Routing is host-header on a per-service ALB listener bound to the container port (4004).** The `alb-listener` module creates an `aws_alb_listener` on port 4004; the listener *rule* matches host `api-journeys.<internal-zone>` (derived from the service name). A second journeys service on **the same port 4004 collides on the listener.** The parallel service must use a temporary distinct listener port (e.g. 4014) — the gateway then reaches it at `api-journeys.<service|stage>.internal:4014` during Phase 1/2, and only lands on 4004 after contract.
-> 3. **Target-group / listener-rule priority is shared** via `var.ecs_config.alb_target_group.priority`. The parallel instance needs a distinct, unused priority.
+> Two collision points remain that the overrides exist to solve (verified against `apis/api-journeys/infrastructure` and `infrastructure/modules/aws/ecs-task`):
 >
-> Because of (2) the final-state port is 4004 but the parallel port is temporary, this expand is genuinely fiddly. **Strongly consider the maintenance-window alternative below instead** unless a zero-downtime journeys cutover is a hard requirement.
+> 1. **Routing is host-header on a per-service ALB listener bound to the container port (4004).** The `alb-listener` module creates an `aws_alb_listener` on port 4004; the listener *rule* matches host `<service_name>.<internal-zone>`. A second journeys service on **the same port 4004 collides on the listener** → the expand instance uses a temporary port (`port_override = 4014`); the gateway reaches it at `api-journeys.<service|stage>.internal:4014` during Phase 1/2 and only lands on 4004 after contract.
+> 2. **Target-group / listener-rule priority is shared** via `var.ecs_config.alb_target_group.priority`. The expand instance needs a distinct, unused priority — pass an `ecs_config` whose `alb_target_group.priority` is a free value.
+>
+> Because the final-state port is 4004 but the expand port is temporary, the move back to 4004 in Phase 3 is the one fiddly step. **Consider the maintenance-window alternative below** if a fully zero-downtime journeys cutover is not a hard requirement.
 
-1. Temporarily parameterize the module name (scratch branch off this one): add a `service_name` variable to `apis/api-journeys/infrastructure/variables.tf` and a `port_override`, wire both into `locals.tf` (`name = var.service_name`, `port = var.port_override`). **Removed again in Phase 3.**
-2. Add a temporary parallel module alongside the existing one. **UNTESTED skeleton — validate every value with `terraform plan` before apply:**
+1. On a scratch branch off this one, add a temporary parallel module alongside the canonical journeys module. **Validate every value with `tofu plan` before apply:**
    ```hcl
    # infrastructure/environments/<env>/main.tf — TEMPORARY, removed in Phase 3.
-   # Keep the existing `module "api-journeys"` (renamed in this PR) block in place; this adds a SECOND, short-lived instance.
+   # Keep the canonical `module "api-journeys"` block in place; this adds a SECOND, short-lived instance.
    module "api-journeys-expand" {
-     source        = "../../../apis/api-journeys/infrastructure"
-     ecs_config    = local.internal_ecs_config   # override priority below to a free value
+     source     = "../../../apis/api-journeys/infrastructure"
+     # Pass an ecs_config copy whose alb_target_group.priority is a free, unused value:
+     ecs_config = merge(local.internal_ecs_config, {
+       alb_target_group = merge(local.internal_ecs_config.alb_target_group, { priority = <FREE_PRIORITY> })
+     })
      env           = "<env>"
-     service_name  = "api-journeys"               # requires the variable from step 1
-     port_override = 4014                          # temporary: avoid the 4004 listener collision
+     service_name  = "api-journeys"   # same final name; distinct from legacy api-journeys-modern
+     port_override = 4014             # temporary port to avoid the 4004 listener collision
      doppler_token = data.aws_ssm_parameter.doppler_api_journeys_<env>_token.value
      alb = { arn = module.<env>.internal_alb.arn, dns_name = module.<env>.internal_alb.dns_name }
    }
    ```
-   > The original `module "api-journeys"` in this PR keeps `service_config.name = "api-journeys"` on port 4004 — but it isn't applied until the cutover. During expand, the live state still has the legacy `api-journeys-modern` resources (from `main`); this temporary `api-journeys-expand` instance is what serves the new name on the temporary port.
-3. `terraform plan` / `apply`. Confirm the legacy `api-journeys-modern` service is untouched and the new `api-journeys` service is healthy on its temporary port.
-4. Seed the image into the new ECR repo and force a deployment:
+   > During expand the live state still has the legacy `api-journeys-modern` resources (from `main`, before this PR's cutover is applied). This temporary `api-journeys-expand` instance is what serves the new `api-journeys` name on the temporary port 4014.
+2. `tofu plan` / `tofu apply`. Confirm the legacy `api-journeys-modern` service is **untouched** and the new `api-journeys` service is created healthy on port 4014.
+3. Seed the image into the new ECR repo and force a deployment:
    ```bash
    # build + push to jfp-api-journeys-<env>, then:
    aws ecs update-service --force-new-deployment \
      --service api-journeys-<env>-service --cluster jfp-ecs-cluster-<env>
    ```
-5. Health-check directly: `curl http://api-journeys.<service|stage>.internal:4014/graphql` from inside the VPC returns a valid GraphQL response.
+4. Health-check directly: `curl http://api-journeys.<service|stage>.internal:4014/graphql` from inside the VPC returns a valid GraphQL response.
 
 **Do not publish the Hive subgraph yet.**
 
 ### Phase 2 — Cutover (flip Hive routing atomically)
 
-6. Publish the new subgraph at the **temporary port** **and** remove the old one so composition has exactly one journeys subgraph:
+5. Publish the new subgraph at the **temporary port** **and** remove the old one so composition has exactly one journeys subgraph:
    ```bash
    pnpm exec hive schema:publish apis/api-journeys/schema.graphql \
      --service api-journeys \
@@ -81,21 +84,21 @@ Because this PR *renames* the module (it does not duplicate it), the expand uses
    # then delete the stale subgraph (Hive UI or CLI):
    pnpm exec hive schema:delete api-journeys-modern --registry.accessToken $HIVE_TOKEN
    ```
-7. The gateway recomposes and routes journeys to `api-journeys.*.internal:4014` (healthy from Phase 1). **Verify journeys queries through the public gateway** (a real query + a `templateGalleryPage` public query). Watch error rates / Datadog for the journeys service.
+6. The gateway recomposes and routes journeys to `api-journeys.*.internal:4014` (healthy from Phase 1). **Verify journeys queries through the public gateway** (a real query + a `templateGalleryPage` public query). Watch error rates / Datadog for the journeys service.
 
 > Rollback point: if anything is wrong, re-publish `api-journeys-modern` and delete `api-journeys` in Hive — the old service is still running, so the gateway returns to it. No data migration is involved.
 
 ### Phase 3 — Contract (merge + move to the final port + remove the old)
 
-8. Remove the **old `api-journeys-modern` module** and `terraform apply` to destroy the legacy ECS service, target group, log group, ECR repo, and the `api-journeys-modern.*.internal` record. This frees **port 4004**.
-9. **Merge this PR**, then remove the **temporary `service_name`/`port_override` parameterization and the `api-journeys-expand` module** so the canonical `module "api-journeys"` (port 4004) is the only journeys module. `terraform apply`. This recreates the journeys service on the final port 4004 — there is a brief re-register window here, so do it in a low-traffic slot (or, for true zero-downtime, run a second mini expand/contract from 4014 → 4004).
-10. Re-publish the subgraph at the final URL and force a deploy:
+7. Remove the **old `api-journeys-modern` module** and `tofu apply` to destroy the legacy ECS service, target group, log group, ECR repo, and the `api-journeys-modern.*.internal` record. This frees **port 4004**.
+8. **Merge this PR**, then remove the temporary `api-journeys-expand` module block so the canonical `module "api-journeys"` (default port 4004) is the only journeys module, and `tofu apply`. (The `service_name`/`port_override` variables are permanent and stay at their defaults — nothing to revert in the module.) This moves the journeys service onto the final port 4004 — there is a brief re-register window here, so do it in a low-traffic slot (or, for true zero-downtime, run a second mini expand/contract from 4014 → 4004).
+9. Re-publish the subgraph at the final URL and force a deploy:
     ```bash
     pnpm exec hive schema:publish apis/api-journeys/schema.graphql --service api-journeys \
       --url http://api-journeys.<service|stage>.internal:4004/graphql --registry.accessToken $HIVE_TOKEN
     ```
     (The on-merge deploy already targets `:4004` via `endpoint_url`, so this is usually a no-op republish.)
-11. Confirm `api-journeys-modern` is gone from ECS, ECR, Route53, and Hive, and journeys serves on `:4004`.
+10. Confirm `api-journeys-modern` is gone from ECS, ECR, Route53, and Hive, and journeys serves on `:4004`.
 
 ### ⚠️ Worker `lockKey` caveat
 
@@ -110,7 +113,7 @@ Pick one:
 
 If a short, scheduled journeys outage is acceptable:
 1. Merge PR 1 (safe) first.
-2. In a maintenance window: `terraform apply` the rename (one shot — destroys old, creates new), merge PR 2 to trigger the deploy, then publish `api-journeys` + delete `api-journeys-modern` in Hive.
+2. In a maintenance window: `tofu apply` the rename (one shot — destroys old, creates new), merge PR 2 to trigger the deploy, then publish `api-journeys` + delete `api-journeys-modern` in Hive.
 3. Expect journeys to be unavailable through the gateway from when the old DNS/service is destroyed until the new service is healthy and Hive has recomposed (typically a few minutes).
 
 ## Post-cutover checklist
@@ -120,4 +123,4 @@ If a short, scheduled journeys outage is acceptable:
 - [ ] Public gateway journeys queries succeed (incl. a public `templateGalleryPage` query)
 - [ ] Datadog/logs show `service: api-journeys`; error rate nominal
 - [ ] Workers: exactly one leader; no duplicate shortlink/email runs (see lockKey caveat)
-- [ ] Temporary parallel terraform module removed
+- [ ] Temporary parallel OpenTofu module removed
