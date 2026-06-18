@@ -130,7 +130,7 @@ const httpLink = createHttpLink({
   fetch,
   headers: {
     Authorization: `Bearer ${env.PLAUSIBLE_API_KEY}`,
-    'x-graphql-client-name': 'api-journeys-modern',
+    'x-graphql-client-name': 'api-journeys',
     'x-graphql-client-version': env.SERVICE_VERSION
   }
 })

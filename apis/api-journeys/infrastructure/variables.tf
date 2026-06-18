@@ -32,7 +32,7 @@ variable "env" {
 
 variable "doppler_token" {
   type        = string
-  description = "Doppler token for API Journeys Modern"
+  description = "Doppler token for API Journeys"
   sensitive   = true
 }
 

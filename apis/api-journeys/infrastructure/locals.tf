@@ -59,7 +59,7 @@ locals {
     "VERCEL_TOKEN"
   ]
   service_config = {
-    name                              = "api-journeys-modern"
+    name                              = "api-journeys"
     doppler_project_name              = "api-journeys"
     is_public                         = false
     container_port                    = local.port

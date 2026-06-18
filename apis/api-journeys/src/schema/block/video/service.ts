@@ -70,7 +70,7 @@ export async function fetchFieldsFromMux(videoId: string): Promise<
   const httpLink = createHttpLink({
     uri: env.GATEWAY_URL,
     headers: {
-      'x-graphql-client-name': 'api-journeys-modern',
+      'x-graphql-client-name': 'api-journeys',
       'x-graphql-client-version': env.SERVICE_VERSION
     }
   })

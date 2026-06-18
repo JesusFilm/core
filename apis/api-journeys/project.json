@@ -64,7 +64,7 @@
     "subgraph-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec hive schema:check apis/api-journeys/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-journeys-modern"
+        "command": "pnpm exec hive schema:check apis/api-journeys/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-journeys"
       }
     },
     "fetch-secrets": {
