@@ -12,7 +12,6 @@ builder.mutationField('userInviteAcceptAll', (t) =>
     .prismaField({
       type: [UserInviteRef],
       nullable: false,
-      override: { from: 'api-journeys' },
       resolve: async (query, _parent, _args, context) => {
         const user = context.user
 

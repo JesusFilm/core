@@ -10,7 +10,6 @@ builder.mutationField('videoCollapseEventCreate', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: VideoCollapseEventRef,
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       input: t.arg({ type: VideoCollapseEventCreateInput, required: true })
     },

@@ -13,7 +13,6 @@ builder.mutationField('visitorUpdateForCurrentUser', (t) =>
     .prismaField({
       type: VisitorRef,
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         input: t.arg({ type: VisitorUpdateInput, required: true })
       },

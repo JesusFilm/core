@@ -98,7 +98,6 @@ builder.queryField('journeyVisitorsConnection', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: JourneyVisitorsConnectionRef,
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       filter: t.arg({
         type: JourneyVisitorFilter,
@@ -197,7 +196,6 @@ builder.queryField('journeyVisitorCount', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: 'Int',
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       filter: t.arg({
         type: JourneyVisitorFilter,

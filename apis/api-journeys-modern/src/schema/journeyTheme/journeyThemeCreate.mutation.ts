@@ -14,7 +14,6 @@ builder.mutationField('journeyThemeCreate', (t) =>
     .prismaField({
       type: JourneyThemeRef,
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         input: t.arg({ type: JourneyThemeCreateInput, required: true })
       },
