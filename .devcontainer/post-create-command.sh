@@ -27,10 +27,7 @@ corepack enable && corepack prepare pnpm@10.33.2 --activate
 
 # install global CLIs
 echo "Installing global CLIs..."
-npm i -g nx @nestjs/cli@^8.1.5 foreman apollo graphql
-
-echo "Installing rover..."
-curl -sSL https://rover.apollo.dev/nix/v0.23.0 | sh
+npm i -g nx foreman apollo graphql
 
 # install all dependencies
 echo "Installing project dependencies..."

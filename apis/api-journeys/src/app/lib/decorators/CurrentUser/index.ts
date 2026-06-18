@@ -1,1 +1,0 @@
-export { CurrentUser } from './CurrentUser'

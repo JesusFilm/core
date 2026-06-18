@@ -7,6 +7,11 @@ import Switch from '@mui/material/Switch'
 import { useTranslation } from 'next-i18next/pages'
 import { ChangeEvent, ReactElement } from 'react'
 
+import {
+  AiChatSettings,
+  toAiChatSettings,
+  toCardBlockAiChatInput
+} from '@core/journeys/ui/aiChatSettings'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import {
@@ -34,11 +39,6 @@ export const CARD_BLOCK_CHAT_ASSISTANT_UPDATE = gql`
   }
 `
 
-interface ChatAssistantValues {
-  showAssistant: boolean
-  expandChatByDefault: boolean
-}
-
 export function ChatAssistant(): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const {
@@ -61,10 +61,12 @@ export function ChatAssistant(): ReactElement | null {
 
   if (cardBlock == null) return null
 
-  const currentShowAssistant = cardBlock.showAssistant === true
-  const currentExpandChatByDefault = cardBlock.expandChatByDefault === true
+  // The editor speaks in `enableAiChat` / `collapseChat`; the mapper bridges
+  // to the legacy `showAssistant` / `expandChatByDefault` GraphQL fields.
+  // Remove once NES-1735 renames the backend fields.
+  const current = toAiChatSettings(cardBlock)
 
-  function applyUpdate(values: ChatAssistantValues): void {
+  function applyUpdate(settings: AiChatSettings): void {
     if (cardBlock == null) return
     dispatch({
       type: 'SetEditorFocusAction',
@@ -72,61 +74,49 @@ export function ChatAssistant(): ReactElement | null {
       selectedStep,
       activeContent: ActiveContent.Canvas
     })
+    const input = toCardBlockAiChatInput(settings)
     void cardBlockUpdate({
       variables: {
         id: cardBlock.id,
-        input: {
-          showAssistant: values.showAssistant,
-          expandChatByDefault: values.expandChatByDefault
-        }
+        input
       },
       optimisticResponse: {
         cardBlockUpdate: {
           id: cardBlock.id,
           __typename: 'CardBlock',
-          showAssistant: values.showAssistant,
-          expandChatByDefault: values.expandChatByDefault
+          ...input
         }
       }
     })
   }
 
-  function handleShowAssistantChange(
+  function handleEnableAiChatChange(
     _: ChangeEvent<HTMLInputElement>,
     checked: boolean
   ): void {
-    const nextExpand = checked ? currentExpandChatByDefault : false
-    const execute: ChatAssistantValues = {
-      showAssistant: checked,
-      expandChatByDefault: nextExpand
-    }
-    const undo: ChatAssistantValues = {
-      showAssistant: currentShowAssistant,
-      expandChatByDefault: currentExpandChatByDefault
+    const execute: AiChatSettings = {
+      enableAiChat: checked,
+      collapseChat: current.collapseChat
     }
     add({
-      parameters: { execute, undo },
-      execute(values: ChatAssistantValues) {
+      parameters: { execute, undo: current },
+      execute(values: AiChatSettings) {
         applyUpdate(values)
       }
     })
   }
 
-  function handleExpandChatByDefaultChange(
+  function handleCollapseChatChange(
     _: ChangeEvent<HTMLInputElement>,
     checked: boolean
   ): void {
-    const execute: ChatAssistantValues = {
-      showAssistant: currentShowAssistant,
-      expandChatByDefault: checked
-    }
-    const undo: ChatAssistantValues = {
-      showAssistant: currentShowAssistant,
-      expandChatByDefault: currentExpandChatByDefault
+    const execute: AiChatSettings = {
+      enableAiChat: current.enableAiChat,
+      collapseChat: checked
     }
     add({
-      parameters: { execute, undo },
-      execute(values: ChatAssistantValues) {
+      parameters: { execute, undo: current },
+      execute(values: AiChatSettings) {
         applyUpdate(values)
       }
     })
@@ -138,22 +128,22 @@ export function ChatAssistant(): ReactElement | null {
         <FormControlLabel
           control={
             <Switch
-              checked={currentShowAssistant}
-              onChange={handleShowAssistantChange}
+              checked={current.enableAiChat}
+              onChange={handleEnableAiChatChange}
             />
           }
-          label={t('Show AI chat')}
+          label={t('Enable AI chat')}
         />
-        <Collapse in={currentShowAssistant} unmountOnExit>
+        <Collapse in={current.enableAiChat} unmountOnExit>
           <Box sx={{ pl: 4 }}>
             <FormControlLabel
               control={
                 <Switch
-                  checked={currentExpandChatByDefault}
-                  onChange={handleExpandChatByDefaultChange}
+                  checked={current.collapseChat}
+                  onChange={handleCollapseChatChange}
                 />
               }
-              label={t('Open chat automatically')}
+              label={t('Collapse chat')}
             />
           </Box>
         </Collapse>
