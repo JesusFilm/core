@@ -242,7 +242,10 @@ export function AiChat({
   // (e.g. "Urdu"), not the BCP-47 code: the model resolves a language name far
   // more reliably than a code. The system prompt defaults to this language but
   // still answers in whatever language the user actually types (NES-1736).
-  // Prefer the localized name, then the native name, then the code.
+  // The journey language is queried without a languageId filter, so this is
+  // the first non-primary translation in API order, then the native (primary)
+  // name, then the BCP-47 code — any human-readable name resolves better than
+  // a code.
   const { localName, nativeName } = extractLanguageNames(
     journey?.language?.name ?? []
   )
