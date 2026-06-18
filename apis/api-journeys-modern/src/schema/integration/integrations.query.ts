@@ -11,7 +11,6 @@ builder.queryField('integrations', (t) =>
     .prismaField({
       type: [IntegrationRef],
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         teamId: t.arg({ type: 'ID', required: true })
       },

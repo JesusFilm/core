@@ -15,7 +15,6 @@ builder.mutationField('journeyCollectionCreate', (t) =>
     .prismaField({
       type: JourneyCollectionRef,
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         input: t.arg({ type: JourneyCollectionCreateInput, required: true })
       },

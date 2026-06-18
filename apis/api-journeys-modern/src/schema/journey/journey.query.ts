@@ -16,7 +16,6 @@ builder.queryField('journey', (t) =>
   t.prismaField({
     type: JourneyRef,
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       id: t.arg({ type: 'ID', required: true }),
       idType: t.arg({ type: IdType, required: false, defaultValue: 'slug' }),

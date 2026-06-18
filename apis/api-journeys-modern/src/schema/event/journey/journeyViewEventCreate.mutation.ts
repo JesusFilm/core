@@ -12,7 +12,6 @@ builder.mutationField('journeyViewEventCreate', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: JourneyViewEventRef,
     nullable: true,
-    override: { from: 'api-journeys' },
     args: {
       input: t.arg({ type: JourneyViewEventCreateInput, required: true })
     },

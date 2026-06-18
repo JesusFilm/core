@@ -11,7 +11,6 @@ builder.queryField('hosts', (t) =>
     .prismaField({
       type: [HostRef],
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         teamId: t.arg({ type: 'ID', required: true })
       },

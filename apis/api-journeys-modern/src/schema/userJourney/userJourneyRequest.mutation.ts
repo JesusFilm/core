@@ -21,7 +21,6 @@ builder.mutationField('userJourneyRequest', (t) =>
     .prismaField({
       type: UserJourneyRef,
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         journeyId: t.arg({ type: 'ID', required: true }),
         idType: t.arg({ type: IdType, required: false })
