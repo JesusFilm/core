@@ -18,7 +18,7 @@ export const getTemplateGalleryPageUnpublishMock = (
   result: vi.fn(() => ({
     data: {
       templateGalleryPageUnpublish: {
-        __typename: 'TemplateGalleryPageAdmin',
+        __typename: 'TemplateGalleryPage',
         id: variables.id,
         status: TemplateGalleryPageStatus.draft,
         publishedAt: null,

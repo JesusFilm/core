@@ -17,5 +17,5 @@ import './templateGalleryPageDelete.mutation'
 
 export {
   TemplateGalleryPageRef,
-  TemplateGalleryPageAdminRef
+  TemplateGalleryPagePublicRef
 } from './templateGalleryPage'

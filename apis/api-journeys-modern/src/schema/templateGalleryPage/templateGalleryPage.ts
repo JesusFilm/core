@@ -3,14 +3,32 @@ import { builder } from '../builder'
 import { TemplateGalleryPageStatus } from './enums'
 import { TemplateGalleryItemRef } from './templateGalleryItem'
 import {
-  TemplateGalleryPageMediaAdminRef,
+  TemplateGalleryPageMediaPublicRef,
   TemplateGalleryPageMediaRef
 } from './templateGalleryPageMedia'
 
-// `shareable` is intentionally omitted: TemplateGalleryPage is owned
-// exclusively by api-journeys-modern and is not federated with the legacy
-// api-journeys subgraph. Setting `shareable: true` (the sibling default)
-// would falsely advertise that another subgraph may also resolve this type.
+// FULL projection — the DEFAULT, unsuffixed `TemplateGalleryPage` type, returned
+// by the authenticated, team-scoped read paths (`templateGalleryPage`,
+// `templateGalleryPages`) and every page mutation.
+//
+// DELIBERATE NAMING INVERSION: conventionally the unsuffixed type is the public
+// one and the privileged projection takes a suffix. We invert that here on
+// purpose. This full projection keeps the unsuffixed `TemplateGalleryPage` name
+// because it is the type the production journeys-admin app already consumes;
+// renaming it would change its GraphQL `__typename` (Apollo's cache key) and force
+// coordinated cache-layer changes in journeys-admin (eviction prefix scans,
+// optimistic responses) plus a risky deploy-skew window on a prod-live feature.
+// The restricted projection takes the *new* `TemplateGalleryPagePublic` name
+// instead — its only consumer is the read-only public renderer, which does no
+// typename-keyed cache work, so naming it is low-risk.
+//
+// `shareable` is intentionally omitted: TemplateGalleryPage is owned exclusively
+// by api-journeys-modern and is not federated with the legacy api-journeys
+// subgraph. Setting `shareable: true` (the sibling default) would falsely
+// advertise that another subgraph may also resolve this type.
+//
+// Keep the shared fields in sync with `TemplateGalleryPagePublicRef` below; only
+// the `media` field is meant to differ (full row here vs. gated there).
 export const TemplateGalleryPageRef = builder.prismaObject(
   'TemplateGalleryPage',
   {
@@ -130,44 +148,32 @@ export const TemplateGalleryPageRef = builder.prismaObject(
             .filter((tpt) => tpt.journey.teamId === page.teamId)
             .map((tpt) => tpt.journey)
       }),
-      // PUBLIC media: collapses to `null` whenever nothing should render — when
-      // there is no media row, `type` is `none`, or the active slot is empty
-      // (e.g. `type: link` with no stored `embedUrl`). All of these read
-      // identically to "no embed" for anonymous viewers. The full row is
-      // selected so the public media type's per-field `type` gating can still
-      // null out the parked slot. Admin reads use `TemplateGalleryPageAdminRef`
-      // to see the parked payloads.
-      media: t.field({
+      // FULL media: the entire row with both retained payloads + raw
+      // `muxVideoId`, no public collapse. `t.relation` threads the Pothos
+      // `query` so nested selections resolve. Null only when there is no row.
+      media: t.relation('media', {
         type: TemplateGalleryPageMediaRef,
         nullable: true,
-        select: { media: true },
         description:
-          'Embedded media shown on the public page, or `null` when nothing renders (no media, `type: none`, or the active slot is empty). Only the active payload is ever exposed; parked payloads are not.',
-        resolve: (page) => {
-          const media = page.media
-          if (media == null) return null
-          if (media.type === 'link' && media.embedUrl != null) return media
-          if (media.type === 'mux' && media.muxPlaybackId != null) return media
-          return null
-        }
+          'Embedded media with both retained payload slots and the raw `muxVideoId`, so the editor can restore a parked link/upload. `null` only when the page has no media row.'
       })
     })
   }
 )
 
-// ADMIN page variant — returned by the authenticated, team-scoped read paths
-// (`templateGalleryPage`, `templateGalleryPages`, and the page mutations). It is
-// field-for-field identical to the public `TemplateGalleryPageRef` EXCEPT the
-// `media` field, which returns the full `TemplateGalleryPageMediaAdminRef`
-// (both retained payload slots + raw `muxVideoId`) with no public collapse, so
-// the editor can restore a parked link/upload. Keep the shared fields in sync
-// with `TemplateGalleryPageRef` above; only `media` is meant to differ.
-export const TemplateGalleryPageAdminRef = builder.prismaObject(
+// PUBLIC projection — the `TemplateGalleryPagePublic` variant, returned by the
+// unauthenticated `templateGalleryPageBySlug` read path. Field-for-field
+// identical to the full `TemplateGalleryPageRef` above EXCEPT the `media` field,
+// which returns the gated `TemplateGalleryPageMediaPublicRef` and collapses to
+// `null` whenever nothing should render — so parked payloads never reach
+// anonymous viewers. Keep the shared fields in sync with `TemplateGalleryPageRef`;
+// only `media` is meant to differ.
+export const TemplateGalleryPagePublicRef = builder.prismaObject(
   'TemplateGalleryPage',
   {
-    variant: 'TemplateGalleryPageAdmin',
+    variant: 'TemplateGalleryPagePublic',
     description:
-      'Authenticated projection of a TemplateGalleryPage, returned by team-scoped reads and mutations. Identical to the public type except `media` exposes the full row (both retained payload slots + raw `muxVideoId`) so the editor can restore a parked payload.',
+      'Public projection of a TemplateGalleryPage, returned by the unauthenticated slug read. Identical to the full type except `media` exposes only the active payload (parked payloads and the raw `muxVideoId` are never emitted).',
     fields: (t) => ({
       id: t.exposeID('id', {
         nullable: false,
@@ -257,14 +263,25 @@ export const TemplateGalleryPageAdminRef = builder.prismaObject(
             .filter((tpt) => tpt.journey.teamId === page.teamId)
             .map((tpt) => tpt.journey)
       }),
-      // ADMIN media: the full row with both retained payloads + raw
-      // `muxVideoId`, no public collapse. `t.relation` threads the Pothos
-      // `query` so nested selections resolve. Null only when there is no row.
-      media: t.relation('media', {
-        type: TemplateGalleryPageMediaAdminRef,
+      // PUBLIC media: collapses to `null` whenever nothing should render — when
+      // there is no media row, `type` is `none`, or the active slot is empty
+      // (e.g. `type: link` with no stored `embedUrl`). All of these read
+      // identically to "no embed" for anonymous viewers. The full row is
+      // selected so the public media type's per-field `type` gating can still
+      // null out the parked slot.
+      media: t.field({
+        type: TemplateGalleryPageMediaPublicRef,
         nullable: true,
+        select: { media: true },
         description:
-          'Embedded media with both retained payload slots and the raw `muxVideoId`, so the editor can restore a parked link/upload. `null` only when the page has no media row.'
+          'Embedded media shown on the public page, or `null` when nothing renders (no media, `type: none`, or the active slot is empty). Only the active payload is ever exposed; parked payloads are not.',
+        resolve: (page) => {
+          const media = page.media
+          if (media == null) return null
+          if (media.type === 'link' && media.embedUrl != null) return media
+          if (media.type === 'mux' && media.muxPlaybackId != null) return media
+          return null
+        }
       })
     })
   }

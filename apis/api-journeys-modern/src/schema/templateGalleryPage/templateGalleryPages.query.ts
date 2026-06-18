@@ -2,7 +2,7 @@ import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 
-import { TemplateGalleryPageAdminRef } from './templateGalleryPage'
+import { TemplateGalleryPageRef } from './templateGalleryPage'
 
 builder.queryField('templateGalleryPages', (t) =>
   t
@@ -15,7 +15,7 @@ builder.queryField('templateGalleryPages', (t) =>
     .prismaField({
       description:
         'List all TemplateGalleryPages owned by a team — both `draft` and `published` rows — ordered by `createdAt` descending.\n\nAuth: caller must be a member of the requested team.',
-      type: [TemplateGalleryPageAdminRef],
+      type: [TemplateGalleryPageRef],
       nullable: false,
       args: {
         teamId: t.arg({

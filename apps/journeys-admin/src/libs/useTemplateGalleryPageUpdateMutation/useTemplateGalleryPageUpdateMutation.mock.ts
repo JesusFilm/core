@@ -10,7 +10,7 @@ import {
 import { TEMPLATE_GALLERY_PAGE_UPDATE } from './useTemplateGalleryPageUpdateMutation'
 
 const defaultUpdated: Updated = {
-  __typename: 'TemplateGalleryPageAdmin',
+  __typename: 'TemplateGalleryPage',
   id: 'page-1',
   title: 'My Collection',
   description: '',
