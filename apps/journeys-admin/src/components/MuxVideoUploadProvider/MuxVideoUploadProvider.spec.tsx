@@ -1,14 +1,13 @@
-import { UpChunk } from '@mux/upchunk'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { UpChunk } from '@mux/upchunk'
 import { act, render, renderHook, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, ReactNode } from 'react'
 import { type Mock } from 'vitest'
 
+import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { prependMuxVideo } from '../../libs/apolloClient/prependMuxVideo'
 import { useAuth } from '../../libs/auth'
-
-import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 
 import {
   CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION,
