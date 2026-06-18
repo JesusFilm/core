@@ -280,6 +280,65 @@ describe('MyMuxVideos', () => {
     })
   })
 
+  it('should reset pagination when the team scope changes so Load More stays available', async () => {
+    const teamKeyedCache = new InMemoryCache({
+      typePolicies: {
+        Query: { fields: { getMyMuxVideos: offsetLimitPagination(['teamId']) } }
+      }
+    })
+    const team1FirstPage = Array.from({ length: PEEK_LIMIT }, (_, i) =>
+      readyVideo(`t1-v${i}`)
+    )
+    const team1SecondPage = [readyVideo(`t1-v${PEEK_LIMIT}`)]
+    const team2FirstPage = Array.from({ length: PEEK_LIMIT }, (_, i) =>
+      readyVideo(`t2-v${i}`)
+    )
+    const mocks = [
+      buildMock(team1FirstPage, {
+        offset: 0,
+        limit: PEEK_LIMIT,
+        teamId: 'team-1'
+      }),
+      buildMock(team1SecondPage, {
+        offset: PAGE_SIZE,
+        limit: PEEK_LIMIT,
+        teamId: 'team-1'
+      }),
+      buildMock(team2FirstPage, {
+        offset: 0,
+        limit: PEEK_LIMIT,
+        teamId: 'team-2'
+      })
+    ]
+
+    const { rerender } = render(
+      <MockedProvider cache={teamKeyedCache} mocks={mocks}>
+        <MyMuxVideos onSelect={vi.fn()} teamId="team-1" />
+      </MockedProvider>
+    )
+
+    // Paginate team-1 so pagesFetched advances past 1.
+    fireEvent.click(await screen.findByRole('button', { name: 'Load More' }))
+    await waitFor(() => {
+      expect(
+        screen.getByTestId(`my-mux-video-t1-v${PEEK_LIMIT}`)
+      ).toBeInTheDocument()
+    })
+
+    // Switch to team-2 (component does not remount). Without the reset,
+    // pagesFetched would stay at 2 and hide Load More for team-2's first page.
+    rerender(
+      <MockedProvider cache={teamKeyedCache} mocks={mocks}>
+        <MyMuxVideos onSelect={vi.fn()} teamId="team-2" />
+      </MockedProvider>
+    )
+
+    await screen.findByTestId('my-mux-video-t2-v0')
+    expect(
+      screen.getByRole('button', { name: 'Load More' })
+    ).toBeInTheDocument()
+  })
+
   it('should hide the Load More button when no more results', async () => {
     const firstPage = Array.from({ length: 3 }, (_, i) => readyVideo(`v${i}`))
 

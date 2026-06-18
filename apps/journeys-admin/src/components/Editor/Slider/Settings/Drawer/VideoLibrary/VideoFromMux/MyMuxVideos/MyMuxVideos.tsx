@@ -7,7 +7,7 @@ import ImageListItem from '@mui/material/ImageListItem'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import {
   GetMyMuxVideos,
@@ -65,6 +65,13 @@ export function MyMuxVideos({
     duration: number | null
   } | null>(null)
   const [pagesFetched, setPagesFetched] = useState(1)
+
+  // Reset pagination when the team scope changes. The component does not remount
+  // on a team switch, so a stale pagesFetched would compute hasMore against the
+  // new team's first page and hide Load More for teams with more results.
+  useEffect(() => {
+    setPagesFetched(1)
+  }, [teamId])
 
   const { data, loading, error, fetchMore, networkStatus } = useQuery<
     GetMyMuxVideos,
