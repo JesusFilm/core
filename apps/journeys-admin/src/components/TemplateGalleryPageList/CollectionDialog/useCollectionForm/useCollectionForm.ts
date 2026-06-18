@@ -4,7 +4,7 @@ import { TFunction } from 'i18next'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { useMemo, useRef, useState } from 'react'
-import { ObjectSchema, array, object, string } from 'yup'
+import { ObjectSchema, array, mixed, object, string } from 'yup'
 
 import { TEMPLATE_GALLERY_SLUG_RE } from '@core/journeys/ui/templateGallerySlug'
 
@@ -19,19 +19,28 @@ import { useTemplateGalleryPagePublishMutation } from '../../../../libs/useTempl
 import { useTemplateGalleryPageUnpublishMutation } from '../../../../libs/useTemplateGalleryPageUnpublishMutation'
 import { useTemplateGalleryPageUpdateMutation } from '../../../../libs/useTemplateGalleryPageUpdateMutation'
 
+import {
+  CollectionMediaValues,
+  EMPTY_MEDIA,
+  collectionMediaToFormValues,
+  formMediaToInput,
+  mediaDirty as mediaDiffers
+} from './collectionMedia'
+import { mediaErrorMessage, mediaErrorReason } from './mediaErrorMessage'
+
 export interface CollectionFormValues {
   title: string
   description: string
   creatorName: string
   creatorImageSrc: string
   creatorImageAlt: string
-  mediaUrl: string
+  media: CollectionMediaValues
   slug: string
   journeyIds: string[]
 }
 
 export interface UseCollectionFormParams {
-  mode: 'create' | 'edit' | 'publish'
+  mode: 'create' | 'edit'
   teamId: string
   collection?: TemplateGalleryPage
   /** When true, submit is short-circuited with a snackbar — a sibling
@@ -40,8 +49,8 @@ export interface UseCollectionFormParams {
   /** Called once on a successful create or update. */
   onClose: () => void
   /**
-   * Called after a successful publish (mode === 'publish') with the
-   * just-published collection so the parent can open the success
+   * Called after a successful publish (a 'publish'-intent submit) with
+   * the just-published collection so the parent can open the success
    * dialog with the live public URL.
    */
   onPublished?: (collection: TemplateGalleryPage) => void
@@ -56,9 +65,9 @@ export interface UseCollectionFormResult {
   /**
    * Formik onSubmit. Branches on mode + intent:
    *  - create → templateGalleryPageCreate, then onClose
-   *  - edit, or publish + intent 'draft' → diff vs original, send
-   *    only changed fields to templateGalleryPageUpdate, then onClose
-   *  - publish + intent 'publish' → diffed update (if any), then
+   *  - edit (default 'save' intent) → diff vs original, send only
+   *    changed fields to templateGalleryPageUpdate, then onClose
+   *  - edit + intent 'publish' → diffed update (if any), then
    *    templateGalleryPagePublish, then onClose
    * On ApolloError, maps `extensions.field` back to a Formik field error
    * for slug / mediaUrl / creatorImageSrc / title; falls back to a
@@ -69,12 +78,14 @@ export interface UseCollectionFormResult {
     helpers: FormikHelpers<CollectionFormValues>
   ) => Promise<void>
   /**
-   * Set the next submit's intent. Only meaningful in publish mode where
-   * the dialog renders both Save Draft and Publish buttons backed by a
-   * single Formik onSubmit. Call this synchronously before triggering
-   * `submitForm` so handleSubmit reads the right branch.
+   * Set the next submit's intent. The edit dialog renders both Save and
+   * (for drafts) Publish backed by a single Formik onSubmit — the
+   * Publish button calls this synchronously before triggering
+   * `submitForm` so handleSubmit reads the right branch. The intent
+   * resets to 'save' after every submit, so a plain Save (or Enter)
+   * never inherits a stale publish intent.
    */
-  setSubmitIntent: (intent: 'publish' | 'draft') => void
+  setSubmitIntent: (intent: 'publish' | 'save') => void
   /**
    * Runs the unpublish mutation against the underlying collection and
    * closes the dialog on success. Used by the Unpublish secondary
@@ -82,26 +93,33 @@ export interface UseCollectionFormResult {
    * Formik entirely — any pending field edits are discarded, on the
    * assumption that "unpublish" is a deliberate action distinct from
    * "save".
-   * No-op when called from create or publish mode, or when no
-   * collection is attached.
+   * No-op when called from create mode, or when no collection is
+   * attached.
    */
   handleUnpublishAction: () => Promise<void>
   /**
    * True only while handleUnpublishAction is in flight. Disjoint from
-   * Formik's `isSubmitting`, which still tracks the Save / Save Draft /
-   * Publish paths. Callers should OR the two together when binding the
+   * Formik's `isSubmitting`, which still tracks the Save / Publish
+   * paths. Callers should OR the two together when binding the
    * footer's `disabled` so neither path can fire a duplicate while the
    * other is mid-mutation.
    */
   isUnpublishing: boolean
+  /**
+   * Dirtiness of every field EXCEPT media. Callers OR this with
+   * `mediaDirty` when guarding close paths.
+   */
+  nonMediaDirty: (values: CollectionFormValues) => boolean
+  /**
+   * True when the form's media differs from what the collection has saved
+   * (or, in create mode, from empty). All media — link or upload — stays
+   * unsaved until the dialog's Save, so any pending value trips the
+   * discard prompt.
+   */
+  mediaDirty: (values: CollectionFormValues) => boolean
 }
 
-const FIELD_ERROR_KEYS = new Set([
-  'slug',
-  'mediaUrl',
-  'creatorImageSrc',
-  'title'
-])
+const FIELD_ERROR_KEYS = new Set(['slug', 'creatorImageSrc', 'title', 'media'])
 
 function buildSchema(t: TFunction): ObjectSchema<CollectionFormValues> {
   return object({
@@ -112,13 +130,12 @@ function buildSchema(t: TFunction): ObjectSchema<CollectionFormValues> {
     creatorName: string().max(100, t('Max 100 characters')).default(''),
     creatorImageSrc: string().default(''),
     creatorImageAlt: string().default(''),
-    // NES-1682: the Canva / Google Slides URL validation was removed
-    // alongside the embed textbox UI in CollectionDialog. The field
-    // still exists in the form so existing values round-trip on save,
-    // but there is no editing surface and no validation rule to assert
-    // against. We keep the length cap as a defensive bound for the
-    // round-tripped value.
-    mediaUrl: string().max(2048, t('URL too long')).default(''),
+    // Both-slots media value (NES-1706/1707). No completeness rule: an empty
+    // active slot is valid and renders nothing (the server is the source of
+    // truth for URL validation/normalization). The only Save-time media gate
+    // is an in-flight/incomplete Mux upload, enforced separately in
+    // CollectionDialog (`mediaBlocked`), not here.
+    media: mixed<CollectionMediaValues>().required().default(EMPTY_MEDIA),
     slug: string()
       .max(200, t('Max 200 characters'))
       .matches(TEMPLATE_GALLERY_SLUG_RE, {
@@ -155,6 +172,14 @@ export function useCollectionForm({
   const [templateGalleryPageUnpublish] =
     useTemplateGalleryPageUnpublishMutation()
   const [unpublishing, setUnpublishing] = useState(false)
+  // The media currently persisted on the server (both slots). Seeded from the
+  // collection so submitting an untouched value is a no-op (media stays out of
+  // the update input) and so `formMediaToInput` can diff each slot. Advanced
+  // after a successful update that included media so a retried submit doesn't
+  // resend it.
+  const persistedMediaRef = useRef<CollectionMediaValues>(
+    collectionMediaToFormValues(collection?.media)
+  )
 
   // Memoize so identity is stable across re-renders. Formik uses
   // initialValues identity to compute `dirty`; a fresh literal each
@@ -166,7 +191,7 @@ export function useCollectionForm({
       creatorName: collection?.creatorName ?? '',
       creatorImageSrc: collection?.creatorImageSrc ?? '',
       creatorImageAlt: collection?.creatorImageAlt ?? '',
-      mediaUrl: collection?.mediaUrl ?? '',
+      media: collectionMediaToFormValues(collection?.media),
       slug: collection?.slug ?? '',
       journeyIds: collection?.templates.map((tpl) => tpl.id) ?? []
     }),
@@ -183,16 +208,17 @@ export function useCollectionForm({
   // same JS tick that fires the mutation, so the second invocation
   // returns immediately.
   const submittingRef = useRef(false)
-  // The dialog in publish mode renders both "Save Draft" and "Publish"
-  // buttons backed by a single Formik submitForm. Each button flips
-  // this ref before triggering submit so handleSubmit can branch
+  // The edit dialog renders both "Save" and (for drafts) "Publish"
+  // buttons backed by a single Formik submitForm. The Publish button
+  // flips this ref before triggering submit so handleSubmit can branch
   // without needing two different form `onSubmit` handlers (which
   // would split validation + error mapping in two).
-  // Default 'publish' so an edit-mode submit (which doesn't read this
-  // ref) and a publish-mode submit triggered by Enter both land on the
-  // intended action.
-  const submitIntentRef = useRef<'publish' | 'draft'>('publish')
-  const setSubmitIntent = (intent: 'publish' | 'draft'): void => {
+  // Default 'save' — a plain Save or an Enter-key submit must never
+  // publish; handleSubmit resets the ref after every run so a stale
+  // publish intent (e.g. from a failed publish attempt) can't leak
+  // into the next submit.
+  const submitIntentRef = useRef<'publish' | 'save'>('save')
+  const setSubmitIntent = (intent: 'publish' | 'save'): void => {
     submitIntentRef.current = intent
   }
 
@@ -200,6 +226,12 @@ export function useCollectionForm({
     values: CollectionFormValues,
     helpers: FormikHelpers<CollectionFormValues>
   ): Promise<void> {
+    // Read-and-consume the intent FIRST — before the early-return guards
+    // below. A Publish click that short-circuits (double-submit, parent
+    // busy) must not leave a stale 'publish' behind for a later plain
+    // Save or Enter-key submit to inherit.
+    const intent = submitIntentRef.current
+    submitIntentRef.current = 'save'
     if (submittingRef.current) return
     if (parentBusy) {
       // A DnD mutation is still in flight on the parent. Bail rather than
@@ -222,8 +254,14 @@ export function useCollectionForm({
           creatorImageAlt:
             values.creatorImageAlt === '' ? null : values.creatorImageAlt,
           description: values.description === '' ? null : values.description,
-          mediaUrl: values.mediaUrl === '' ? null : values.mediaUrl,
           journeyIds: values.journeyIds
+        }
+        // Include media only when the user set a slot. An empty (none) create
+        // omits it entirely — symmetric with the update branch, no `{ type:
+        // none }` noise for a media-less collection. Diff against empty so each
+        // set slot is sent.
+        if (mediaDiffers(values.media, EMPTY_MEDIA)) {
+          input.media = formMediaToInput(values.media, EMPTY_MEDIA)
         }
         await templateGalleryPageCreate({ variables: { input } })
         enqueueSnackbar(t('Collection created'), {
@@ -247,8 +285,15 @@ export function useCollectionForm({
           input.creatorImageAlt =
             values.creatorImageAlt === '' ? null : values.creatorImageAlt
         }
-        if (values.mediaUrl !== (collection.mediaUrl ?? '')) {
-          input.mediaUrl = values.mediaUrl === '' ? null : values.mediaUrl
+        // Media: diff each slot against the last server-persisted value and
+        // send the tri-state input (omit unchanged / null cleared / value
+        // set). All media — a pasted link, a completed upload, a removal, a
+        // None toggle — stays in the form until this Save.
+        if (mediaDiffers(values.media, persistedMediaRef.current)) {
+          input.media = formMediaToInput(
+            values.media,
+            persistedMediaRef.current
+          )
         }
         // Skip the slug field when the user cleared it. yup's
         // `excludeEmptyString` lets an empty value pass validation (so
@@ -264,18 +309,24 @@ export function useCollectionForm({
         if (initialIds !== nextIds) {
           input.journeyIds = values.journeyIds
         }
-        const shouldPublish =
-          mode === 'publish' && submitIntentRef.current === 'publish'
+        // 'publish' only ever holds when the footer's Publish button set
+        // it synchronously before this submit (drafts only — published
+        // collections don't render the button).
+        const shouldPublish = intent === 'publish'
         // Only fire the update when at least one field actually changed.
-        // In publish mode the dialog opens pre-filled and the user may
-        // submit without edits — an empty-input update is a wasted
-        // round-trip and would still emit the "Collection updated"
-        // snackbar, which is confusing when the only action they took
-        // was publish.
+        // The dialog opens pre-filled and the user may hit Publish
+        // without edits — an empty-input update is a wasted round-trip
+        // and would still emit the "Collection updated" snackbar, which
+        // is confusing when the only action they took was publish.
         if (Object.keys(input).length > 0) {
           await templateGalleryPageUpdate({
             variables: { id: collection.id, input }
           })
+          // The update persisted the form's media — advance the baseline so a
+          // retry after a later failure (e.g. publish) doesn't resend it.
+          if (input.media !== undefined) {
+            persistedMediaRef.current = values.media
+          }
           // Suppress the update snackbar when we're about to fire publish
           // — the success dialog covers it, and stacking two toasts
           // (Updated + Published) reads as noise.
@@ -320,14 +371,43 @@ export function useCollectionForm({
       onClose()
     } catch (error) {
       if (error instanceof ApolloError) {
+        // Scan every GraphQL error, not just [0] — a batched response can
+        // carry the actionable extension at any index.
+        const gqlErrors = error.graphQLErrors ?? []
+        // Media validation errors carry a structured `extensions.reason`
+        // (BAD_USER_INPUT) rather than a `field` — surface them inline on the
+        // media field with a human-readable, translated message. The live
+        // preview reads the same reason via `mediaErrorReason` so the two
+        // can't drift.
+        const reason = mediaErrorReason(gqlErrors)
+        if (reason != null) {
+          await helpers.setFieldTouched('media', true, false)
+          helpers.setFieldError('media', mediaErrorMessage(reason, t))
+          return
+        }
         // Map field-scoped errors back to Formik fields when possible.
-        const rawField = error.graphQLErrors?.[0]?.extensions?.field
-        const fieldError = typeof rawField === 'string' ? rawField : undefined
-        if (fieldError != null && FIELD_ERROR_KEYS.has(fieldError)) {
+        const fieldErrorSource = gqlErrors.find(
+          (e) =>
+            typeof e.extensions?.field === 'string' &&
+            FIELD_ERROR_KEYS.has(e.extensions.field)
+        )
+        const fieldError = fieldErrorSource?.extensions?.field as
+          | string
+          | undefined
+        if (fieldError != null) {
           // Mark the field as touched so the error renders even if the
-          // user submitted without focusing it first.
+          // user submitted without focusing it first. Fall back to the
+          // ApolloError's combined message when the individual error's
+          // message is empty — an empty field error renders as nothing,
+          // which would make the failed save look like a silent no-op.
           await helpers.setFieldTouched(fieldError, true, false)
-          helpers.setFieldError(fieldError, error.message)
+          helpers.setFieldError(
+            fieldError,
+            fieldErrorSource?.message !== undefined &&
+              fieldErrorSource.message !== ''
+              ? fieldErrorSource.message
+              : error.message
+          )
           return
         }
       }
@@ -388,6 +468,22 @@ export function useCollectionForm({
     }
   }
 
+  function nonMediaDirty(values: CollectionFormValues): boolean {
+    return (
+      values.title !== initialValues.title ||
+      values.description !== initialValues.description ||
+      values.creatorName !== initialValues.creatorName ||
+      values.creatorImageSrc !== initialValues.creatorImageSrc ||
+      values.creatorImageAlt !== initialValues.creatorImageAlt ||
+      values.slug !== initialValues.slug ||
+      values.journeyIds.join(',') !== initialValues.journeyIds.join(',')
+    )
+  }
+
+  function mediaDirty(values: CollectionFormValues): boolean {
+    return mediaDiffers(values.media, persistedMediaRef.current)
+  }
+
   return {
     initialValues,
     schema,
@@ -395,6 +491,8 @@ export function useCollectionForm({
     handleSubmit,
     setSubmitIntent,
     handleUnpublishAction,
-    isUnpublishing: unpublishing
+    isUnpublishing: unpublishing,
+    nonMediaDirty,
+    mediaDirty
   }
 }

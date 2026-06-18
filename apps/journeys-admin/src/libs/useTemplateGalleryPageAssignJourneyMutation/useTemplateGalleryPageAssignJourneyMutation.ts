@@ -38,7 +38,15 @@ export const TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY = gql`
       creatorName
       creatorImageSrc
       creatorImageAlt
-      mediaUrl
+      media {
+        id
+        type
+        muxVideoId
+        embedUrl
+        muxPlaybackId
+        muxName
+        muxDuration
+      }
       publishedAt
       createdAt
       updatedAt
