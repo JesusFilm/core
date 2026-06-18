@@ -23,7 +23,8 @@ export default defineConfig({
     setupFiles: [
       './test/crowdinMock.ts',
       './test/bullmqMock.ts',
-      './test/prismaMock.ts'
+      './test/prismaMock.ts',
+      './test/journeysPrismaMock.ts'
     ],
     coverage: {
       enabled: true,

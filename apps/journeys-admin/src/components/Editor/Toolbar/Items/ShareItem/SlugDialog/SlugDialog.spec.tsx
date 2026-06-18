@@ -9,7 +9,7 @@ import { JOURNEY_SLUG_UPDATE, SlugDialog } from '.'
 
 describe('JourneyView/Properties/SlugDialog', () => {
   it('should not set journey slug on close', async () => {
-    const onClose = jest.fn()
+    const onClose = vi.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
@@ -34,7 +34,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
   })
 
   it('should update journey slug on submit', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeyUpdate: {
           id: defaultJourney.id,
@@ -120,7 +120,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
   })
 
   it('is a required field', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeyUpdate: {
           id: defaultJourney.id,

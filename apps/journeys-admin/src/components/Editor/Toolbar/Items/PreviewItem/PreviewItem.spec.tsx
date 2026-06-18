@@ -20,11 +20,11 @@ describe('PreviewItem', () => {
   } as unknown as JourneyFields
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should call onclick', async () => {
-    const mockOnClick = jest.fn()
+    const mockOnClick = vi.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[getCustomDomainMock]}>
         <SnackbarProvider>
@@ -40,7 +40,7 @@ describe('PreviewItem', () => {
   })
 
   it('should not call onclick when no journey id', async () => {
-    const mockOnClick = jest.fn()
+    const mockOnClick = vi.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[getCustomDomainMock]}>
         <SnackbarProvider>
@@ -73,7 +73,7 @@ describe('PreviewItem', () => {
   })
 
   it('should provide customDomain hostname to preview button', async () => {
-    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
+    const result = vi.fn().mockReturnValue(getCustomDomainMock.result)
     const { getByRole } = render(
       <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
         <SnackbarProvider>

@@ -1,2 +1,7 @@
 import './team'
 import './inputs'
+import './team.acl'
+import './teams.query'
+import './team.query'
+import './teamCreate.mutation'
+import './teamUpdate.mutation'

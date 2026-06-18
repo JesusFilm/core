@@ -35,7 +35,7 @@ export const getTemplateGalleryPageCreateMock = (
   TemplateGalleryPageCreateVariables
 > => ({
   request: { query: TEMPLATE_GALLERY_PAGE_CREATE, variables },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       templateGalleryPageCreate: { ...defaultCreated, ...overrides }
     }

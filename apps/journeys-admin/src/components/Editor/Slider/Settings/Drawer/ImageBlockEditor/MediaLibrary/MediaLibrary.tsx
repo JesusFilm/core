@@ -10,16 +10,29 @@ import {
   GetMyCloudflareImagesVariables
 } from '../../../../../../../../__generated__/GetMyCloudflareImages'
 import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
+import { useAuth } from '../../../../../../../libs/auth'
+import { sendImageSelectEvent } from '../../../../../../../libs/sendMediaSelectEvent'
 import { LoadMoreButton } from '../LoadMoreButton'
 
 import { MediaLibraryList, MediaLibraryListImage } from './MediaLibraryList'
 
 export const GET_MY_CLOUDFLARE_IMAGES = gql`
-  query GetMyCloudflareImages($offset: Int, $limit: Int, $isAi: Boolean) {
-    getMyCloudflareImages(offset: $offset, limit: $limit, isAi: $isAi) {
+  query GetMyCloudflareImages(
+    $offset: Int
+    $limit: Int
+    $isAi: Boolean
+    $teamId: ID
+  ) {
+    getMyCloudflareImages(
+      offset: $offset
+      limit: $limit
+      isAi: $isAi
+      teamId: $teamId
+    ) {
       id
       url
       blurhash
+      userId
     }
   }
 `
@@ -30,13 +43,19 @@ interface MediaLibraryProps {
   onSelect: (input: ImageBlockUpdateInput) => void
   isAi: boolean
   uploading?: boolean
+  /**
+   * When set, the grid merges the caller's own uploads with assets shared by
+   * this team. When null/undefined the query falls back to personal-only.
+   */
+  teamId?: string | null
 }
 
 const PAGE_SIZE = 10
 const PEEK_LIMIT = PAGE_SIZE + 1
 
 function toRenderedImages(
-  images: readonly CloudflareImage[]
+  images: readonly CloudflareImage[],
+  currentUserId?: string | null
 ): MediaLibraryListImage[] {
   return images.flatMap((image) =>
     image.url == null
@@ -45,7 +64,12 @@ function toRenderedImages(
           {
             id: image.id,
             src: `${image.url}/public`,
-            blurhash: image.blurhash
+            blurhash: image.blurhash,
+            // A tile belongs to a teammate when its uploader differs from the
+            // current user. image.userId and the auth-context id are both the
+            // firebase uid, so they compare directly. Drives the "Team" tag.
+            isTeamUpload:
+              currentUserId != null && image.userId !== currentUserId
           }
         ]
   )
@@ -56,22 +80,34 @@ export function MediaLibrary({
   selectedSrc,
   onSelect,
   isAi,
-  uploading
+  uploading,
+  teamId
 }: MediaLibraryProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
+  const { user } = useAuth()
   const [pagesFetched, setPagesFetched] = useState(1)
 
   const { data, loading, error, fetchMore, networkStatus } = useQuery<
     GetMyCloudflareImages,
     GetMyCloudflareImagesVariables
   >(GET_MY_CLOUDFLARE_IMAGES, {
-    variables: { offset: 0, limit: PEEK_LIMIT, isAi },
+    // Omit teamId entirely when there is no active team so the query (and its
+    // cache entry) falls back to personal-only.
+    variables: {
+      offset: 0,
+      limit: PEEK_LIMIT,
+      isAi,
+      teamId: teamId ?? undefined
+    },
     notifyOnNetworkStatusChange: true
   })
 
   const isFetchingMore = networkStatus === NetworkStatus.fetchMore
 
-  const allImages = toRenderedImages(data?.getMyCloudflareImages ?? [])
+  const allImages = toRenderedImages(
+    data?.getMyCloudflareImages ?? [],
+    user?.id
+  )
   const images = allImages.slice(0, pagesFetched * PAGE_SIZE)
 
   const hasMore = allImages.length > pagesFetched * PAGE_SIZE
@@ -81,6 +117,7 @@ export function MediaLibrary({
   if (isEmpty) return null
 
   function handleSelect(img: MediaLibraryListImage): void {
+    sendImageSelectEvent({ isAi })
     onSelect({
       src: img.src,
       blurhash: img.blurhash,
@@ -96,7 +133,8 @@ export function MediaLibrary({
       variables: {
         offset: pagesFetched * PAGE_SIZE,
         limit: PEEK_LIMIT,
-        isAi
+        isAi,
+        teamId: teamId ?? undefined
       }
     }).catch(() => null)
     if (result == null) return

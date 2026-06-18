@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import '../../../../test/i18n'
@@ -44,7 +44,7 @@ describe('CollectionCard', () => {
     expect(screen.getByText('Empty')).toBeInTheDocument()
   })
 
-  it('shows a Published chip when the collection is published', () => {
+  it('shows a Live chip when the collection is published', () => {
     render(
       <CollectionCard
         collection={makeCollection({
@@ -54,11 +54,11 @@ describe('CollectionCard', () => {
         })}
       />
     )
-    expect(screen.getByText('Published')).toBeInTheDocument()
+    expect(screen.getByText('Live')).toBeInTheDocument()
     expect(screen.queryByText('Empty')).not.toBeInTheDocument()
   })
 
-  it('renders Edit / Publish / Remove menu items for a draft with templates', async () => {
+  it('renders Publish (not Edit) / Preview / Remove menu items for a draft with templates', async () => {
     render(
       <CollectionCard
         collection={makeCollection({ templates: [journeyRef('j1')] })}
@@ -67,7 +67,11 @@ describe('CollectionCard', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Collection actions' })
     )
-    expect(screen.getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
+    // Drafts surface "Publish" as the single entry point into the
+    // dialog; Edit only shows up on published collections.
+    expect(
+      screen.queryByRole('menuitem', { name: 'Edit' })
+    ).not.toBeInTheDocument()
     expect(
       screen.getByRole('menuitem', { name: 'Publish' })
     ).toBeInTheDocument()
@@ -79,18 +83,20 @@ describe('CollectionCard', () => {
     ).toBeInTheDocument()
   })
 
-  it('disables Publish for an empty draft collection', async () => {
+  it('keeps the Publish menu item enabled for an empty draft so the user can still open the dialog', async () => {
+    // The dialog's own Publish button is what gates emptiness — the
+    // menu item is the user's only way to access metadata, so it
+    // stays clickable even before any templates have been added.
     render(<CollectionCard collection={makeCollection()} />)
     await userEvent.click(
       screen.getByRole('button', { name: 'Collection actions' })
     )
-    expect(screen.getByRole('menuitem', { name: 'Publish' })).toHaveAttribute(
-      'aria-disabled',
-      'true'
-    )
+    expect(
+      screen.getByRole('menuitem', { name: 'Publish' })
+    ).not.toHaveAttribute('aria-disabled', 'true')
   })
 
-  it('replaces Publish with Unpublish for a published collection', async () => {
+  it('replaces Publish with Edit for a published collection (Unpublish now lives inside the dialog)', async () => {
     render(
       <CollectionCard
         collection={makeCollection({
@@ -106,19 +112,22 @@ describe('CollectionCard', () => {
     expect(
       screen.queryByRole('menuitem', { name: 'Publish' })
     ).not.toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
+    // Unpublish was promoted into CollectionDialog's footer so the card
+    // menu has a single state-aware entry point.
     expect(
-      screen.getByRole('menuitem', { name: 'Unpublish' })
-    ).toBeInTheDocument()
+      screen.queryByRole('menuitem', { name: 'Unpublish' })
+    ).not.toBeInTheDocument()
   })
 
-  it('fires onEdit / onPublish / onUnpublish with the collection', async () => {
-    const onEdit = jest.fn()
-    const onPublish = jest.fn()
-    const collection = makeCollection({ templates: [journeyRef('j1')] })
+  it('fires onPublish on a draft and onEdit on a published collection', async () => {
+    const onEdit = vi.fn()
+    const onPublish = vi.fn()
+    const draft = makeCollection({ templates: [journeyRef('j1')] })
 
     const { rerender } = render(
       <CollectionCard
-        collection={collection}
+        collection={draft}
         onEdit={onEdit}
         onPublish={onPublish}
       />
@@ -126,33 +135,25 @@ describe('CollectionCard', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Collection actions' })
     )
-    await userEvent.click(screen.getByRole('menuitem', { name: 'Edit' }))
-    expect(onEdit).toHaveBeenCalledWith(collection)
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Collection actions' })
-    )
     await userEvent.click(screen.getByRole('menuitem', { name: 'Publish' }))
-    expect(onPublish).toHaveBeenCalledWith(collection)
+    expect(onPublish).toHaveBeenCalledWith(draft)
+    expect(onEdit).not.toHaveBeenCalled()
 
-    const onUnpublish = jest.fn()
     const published = makeCollection({
       templates: [journeyRef('j1')],
       status: TemplateGalleryPageStatus.published,
       publishedAt: '2026-05-06T00:00:00Z'
     })
-    rerender(
-      <CollectionCard collection={published} onUnpublish={onUnpublish} />
-    )
+    rerender(<CollectionCard collection={published} onEdit={onEdit} />)
     await userEvent.click(
       screen.getByRole('button', { name: 'Collection actions' })
     )
-    await userEvent.click(screen.getByRole('menuitem', { name: 'Unpublish' }))
-    expect(onUnpublish).toHaveBeenCalledWith(published)
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Edit' }))
+    expect(onEdit).toHaveBeenCalledWith(published)
   })
 
   it('opens the ungroup confirmation dialog from the menu and fires onUngroup on confirm', async () => {
-    const onUngroup = jest.fn()
+    const onUngroup = vi.fn()
     const collection = makeCollection({ templates: [journeyRef('j1')] })
     render(<CollectionCard collection={collection} onUngroup={onUngroup} />)
     await userEvent.click(
@@ -198,7 +199,7 @@ describe('CollectionCard', () => {
 
   it('renders a Preview menu item that opens the proxy URL in a new tab when published', async () => {
     const originalOpen = window.open
-    window.open = jest.fn() as unknown as typeof window.open
+    window.open = vi.fn() as unknown as typeof window.open
     try {
       render(
         <CollectionCard
@@ -309,5 +310,193 @@ describe('CollectionCard', () => {
       screen.queryByText('Drag templates here to add them to this collection.')
     ).not.toBeInTheDocument()
     expect(screen.getByTestId('children-payload')).toBeInTheDocument()
+  })
+
+  describe('collapse (NES-1717)', () => {
+    it('renders the header as an expanded toggle button by default', () => {
+      render(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+        >
+          <div data-testid="children-payload" />
+        </CollectionCard>
+      )
+      // Expanded → the announced action is "Collapse".
+      const toggle = screen.getByRole('button', {
+        name: 'Collapse My Collection collection'
+      })
+      expect(toggle).toHaveAttribute('aria-expanded', 'true')
+      // Expanded: the grid (children) is visible and there's no count badge.
+      expect(screen.getByTestId('children-payload')).toBeInTheDocument()
+      expect(
+        screen.queryByTestId('CollectionCardCount-page-1')
+      ).not.toBeInTheDocument()
+    })
+
+    it('hides the grid and shows a template-count badge when collapsed', () => {
+      render(
+        <CollectionCard
+          collection={makeCollection({
+            templates: [journeyRef('j1'), journeyRef('j2')]
+          })}
+          collapsed
+        >
+          <div data-testid="children-payload" />
+        </CollectionCard>
+      )
+      // Collapsed → the announced action is "Expand".
+      const toggle = screen.getByRole('button', {
+        name: 'Expand My Collection collection'
+      })
+      expect(toggle).toHaveAttribute('aria-expanded', 'false')
+      // Collapsed: grid unmounted, count badge reflects the template count.
+      expect(screen.queryByTestId('children-payload')).not.toBeInTheDocument()
+      expect(
+        screen.getByTestId('CollectionCardCount-page-1')
+      ).toHaveTextContent('2')
+    })
+
+    it('does not show a count badge for an empty collapsed collection', () => {
+      render(<CollectionCard collection={makeCollection()} collapsed />)
+      expect(
+        screen.queryByTestId('CollectionCardCount-page-1')
+      ).not.toBeInTheDocument()
+      expect(screen.getByText('Empty')).toBeInTheDocument()
+    })
+
+    it('fires onToggleCollapse when the header is clicked', async () => {
+      const onToggleCollapse = vi.fn()
+      const collection = makeCollection({ templates: [journeyRef('j1')] })
+      render(
+        <CollectionCard
+          collection={collection}
+          onToggleCollapse={onToggleCollapse}
+        />
+      )
+      await userEvent.click(screen.getByTestId('CollectionCardToggle-page-1'))
+      expect(onToggleCollapse).toHaveBeenCalledWith(collection)
+    })
+
+    it('toggles on Enter and Space for keyboard users', async () => {
+      const onToggleCollapse = vi.fn()
+      const collection = makeCollection({ templates: [journeyRef('j1')] })
+      render(
+        <CollectionCard
+          collection={collection}
+          onToggleCollapse={onToggleCollapse}
+        />
+      )
+      const toggle = screen.getByTestId('CollectionCardToggle-page-1')
+      toggle.focus()
+      await userEvent.keyboard('{Enter}')
+      await userEvent.keyboard(' ')
+      expect(onToggleCollapse).toHaveBeenCalledTimes(2)
+      expect(onToggleCollapse).toHaveBeenNthCalledWith(1, collection)
+      expect(onToggleCollapse).toHaveBeenNthCalledWith(2, collection)
+    })
+
+    it('does not collapse the actions menu trigger into the toggle button', async () => {
+      // The actions menu must stay a sibling of the toggle so it opens the
+      // menu instead of toggling collapse, and so we never nest buttons.
+      const onToggleCollapse = vi.fn()
+      render(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+          onToggleCollapse={onToggleCollapse}
+        />
+      )
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Collection actions' })
+      )
+      expect(onToggleCollapse).not.toHaveBeenCalled()
+      expect(
+        screen.getByRole('menuitem', { name: 'Publish' })
+      ).toBeInTheDocument()
+    })
+
+    it('points aria-controls at the mounted content region when expanded and drops it when collapsed', () => {
+      const { rerender } = render(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+        >
+          <div data-testid="children-payload" />
+        </CollectionCard>
+      )
+      const toggle = screen.getByTestId('CollectionCardToggle-page-1')
+      const controls = toggle.getAttribute('aria-controls')
+      expect(controls).toBe('collection-content-page-1')
+      // The referenced element must actually exist while expanded.
+      expect(document.getElementById(controls as string)).toBeInTheDocument()
+
+      // Collapsed: the region unmounts, so we must not dangle a reference.
+      rerender(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+          collapsed
+        >
+          <div data-testid="children-payload" />
+        </CollectionCard>
+      )
+      expect(
+        screen.getByTestId('CollectionCardToggle-page-1')
+      ).not.toHaveAttribute('aria-controls')
+    })
+
+    it('does not toggle while busy (a drop mutation is settling)', async () => {
+      // Collapsing mid-settle would unmount the SortableContext under dnd-kit.
+      const onToggleCollapse = vi.fn()
+      render(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+          onToggleCollapse={onToggleCollapse}
+          busy
+        />
+      )
+      const toggle = screen.getByTestId('CollectionCardToggle-page-1')
+      expect(toggle).toHaveAttribute('aria-disabled', 'true')
+      await userEvent.click(toggle)
+      toggle.focus()
+      await userEvent.keyboard('{Enter}')
+      expect(onToggleCollapse).not.toHaveBeenCalled()
+    })
+
+    it('lets Space scroll natively while busy instead of swallowing the keypress', () => {
+      // While busy the toggle is inert; it must NOT preventDefault on Space,
+      // or the user loses native page scroll for no effect.
+      render(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+          onToggleCollapse={vi.fn()}
+          busy
+        />
+      )
+      const toggle = screen.getByTestId('CollectionCardToggle-page-1')
+      // fireEvent returns false when the event was cancelled (preventDefault).
+      const notCancelledWhenBusy = fireEvent.keyDown(toggle, { key: ' ' })
+      expect(notCancelledWhenBusy).toBe(true)
+    })
+
+    it('prevents default on Space when not busy (suppresses page scroll while toggling)', () => {
+      render(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+          onToggleCollapse={vi.fn()}
+        />
+      )
+      const toggle = screen.getByTestId('CollectionCardToggle-page-1')
+      const notCancelled = fireEvent.keyDown(toggle, { key: ' ' })
+      expect(notCancelled).toBe(false)
+    })
+
+    it('does not throw when the header is toggled without an onToggleCollapse handler', async () => {
+      render(
+        <CollectionCard
+          collection={makeCollection({ templates: [journeyRef('j1')] })}
+        />
+      )
+      await expect(
+        userEvent.click(screen.getByTestId('CollectionCardToggle-page-1'))
+      ).resolves.not.toThrow()
+    })
   })
 })

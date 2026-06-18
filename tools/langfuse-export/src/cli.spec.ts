@@ -10,7 +10,6 @@ describe('parseArgs', () => {
       '--environment',
       'preview',
       '--llm-scrub',
-      '--pdf',
       '--model',
       'google/gemini-2.5-flash',
       '--debug'
@@ -20,7 +19,6 @@ describe('parseArgs', () => {
       discriminator: 'none',
       environment: 'preview',
       llmScrub: true,
-      pdf: true,
       model: 'google/gemini-2.5-flash',
       debug: true
     })
@@ -32,9 +30,19 @@ describe('parseArgs', () => {
       discriminator: 'default',
       environment: 'production',
       llmScrub: false,
-      pdf: false,
       debug: false
     })
+  })
+
+  it('defaults fixture to undefined and parses --fixture', () => {
+    expect(parseArgs([]).fixture).toBeUndefined()
+    expect(parseArgs(['--fixture', 'fixtures/sample.json']).fixture).toBe(
+      'fixtures/sample.json'
+    )
+  })
+
+  it('throws when --fixture is missing its value', () => {
+    expect(() => parseArgs(['--fixture'])).toThrow(/--fixture requires a value/)
   })
 
   it('accepts "all" as the env-filter bypass', () => {
@@ -73,8 +81,8 @@ describe('parseArgs', () => {
   })
 
   it('throws when --throttle swallows the next flag as its value', () => {
-    // requireValue rejects '--pdf' before it can be NaN-parsed as a number.
-    expect(() => parseArgs(['--throttle', '--pdf'])).toThrow(
+    // requireValue rejects '--debug' before it can be NaN-parsed as a number.
+    expect(() => parseArgs(['--throttle', '--debug'])).toThrow(
       /--throttle requires a value/
     )
   })

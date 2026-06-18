@@ -12,7 +12,18 @@ import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated
 
 import { AiChatButton } from './AiChatButton'
 
-jest.mock('../ChatOverlay', () => ({
+const { mockUseMediaQuery } = vi.hoisted(() => ({
+  mockUseMediaQuery: vi.fn(() => true)
+}))
+
+// The desktop ChatOverlay surface only mounts on sm+ — xs is owned by the
+// PinnedChatBar drawer (rendered by the Conductor, not this button).
+vi.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: mockUseMediaQuery
+}))
+
+vi.mock('../ChatOverlay', () => ({
   __esModule: true,
   ChatOverlay: ({ open }: { open: boolean }) =>
     open ? <div data-testid="ChatOverlay-open" /> : null
@@ -82,11 +93,17 @@ function renderButton(variant: 'default' | 'admin' | 'embed' = 'default') {
 describe('AiChatButton', () => {
   beforeEach(() => {
     window.sessionStorage.clear()
+    mockUseMediaQuery.mockReturnValue(true)
   })
 
   it('renders a button with an accessible label', () => {
     const { getByRole } = renderButton()
     expect(getByRole('button', { name: 'Open AI chat' })).toBeInTheDocument()
+  })
+
+  it('renders the chat bubble with stars icon', () => {
+    const { getByTestId } = renderButton()
+    expect(getByTestId('MessageChatStarsIcon')).toBeInTheDocument()
   })
 
   it('opens the overlay via the lifted state when clicked', async () => {
@@ -96,6 +113,18 @@ describe('AiChatButton', () => {
     expect(queryByTestId('ChatOverlay-open')).not.toBeInTheDocument()
     await user.click(getByRole('button', { name: 'Open AI chat' }))
     expect(getByTestId('ChatOverlay-open')).toBeInTheDocument()
+  })
+
+  it('does not mount the overlay surface on mobile — the drawer owns xs', async () => {
+    mockUseMediaQuery.mockReturnValue(false)
+    const user = userEvent.setup()
+    const { getByRole, queryByTestId } = renderButton()
+
+    // The click still lifts `open` into ChatOverlayProvider (the
+    // Conductor-rendered PinnedChatBar consumes it); only the desktop
+    // overlay surface must stay unmounted at xs.
+    await user.click(getByRole('button', { name: 'Open AI chat' }))
+    expect(queryByTestId('ChatOverlay-open')).not.toBeInTheDocument()
   })
 
   it('renders nothing in admin variant', () => {

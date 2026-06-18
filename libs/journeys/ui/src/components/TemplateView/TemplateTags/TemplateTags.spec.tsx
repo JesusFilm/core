@@ -6,9 +6,9 @@ import { GET_TAGS } from '../../../libs/useTagsQuery'
 import { parentTags, tags } from './data'
 import { TemplateTags } from './TemplateTags'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('TemplateTags', () => {
@@ -22,7 +22,7 @@ describe('TemplateTags', () => {
   })
 
   it('should show tags', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         tags: [...parentTags, ...tags]
       }

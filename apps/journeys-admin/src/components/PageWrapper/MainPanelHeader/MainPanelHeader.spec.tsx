@@ -1,14 +1,15 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import { MainPanelHeader } from '.'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('MainPanelHeader', () => {
   it('should show back button with correct link', () => {
@@ -20,7 +21,7 @@ describe('MainPanelHeader', () => {
   })
 
   it('should show back button with backHrefHistory', async () => {
-    const back = jest.fn()
+    const back = vi.fn()
     mockUseRouter.mockReturnValue({ back } as unknown as NextRouter)
     const { getByTestId, getByText } = render(
       <MainPanelHeader title="Page title" backHrefHistory />

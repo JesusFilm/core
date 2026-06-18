@@ -28,7 +28,7 @@ describe('useJourneyImageBlockCreateMutation', () => {
           }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           imageBlockCreate: {
             __typename: 'ImageBlock',
@@ -46,7 +46,7 @@ describe('useJourneyImageBlockCreateMutation', () => {
             customizable: null
           }
         }
-      }))
+      })) as MockedResponse<JourneyImageBlockCreate>['result']
     }
 
   it('should create image block', async () => {

@@ -1,2 +1,6 @@
 import './host'
+import './hosts.query'
+import './hostCreate.mutation'
+import './hostUpdate.mutation'
+import './hostDelete.mutation'
 import './inputs'

@@ -23,8 +23,9 @@ interface TemplateInfoAccordionProps {
  * Generic single-row accordion used by `TemplateInfoPanel`. The component is
  * fully controlled: the parent owns `expanded` so it can enforce single-expand
  * semantics across the panel's sections. Visual styling matches Figma
- * `39653-66422` and its expanded-state siblings (Subtitle/1 token, 20px padding,
- * 1px `#DEDFE0` divider beneath every row except the last).
+ * `39653-66422` and its expanded-state siblings (Subtitle/1 token, 1px `#DEDFE0`
+ * divider beneath every row except the last). Horizontal padding was widened
+ * to 18px per NES-1696.
  */
 export function TemplateInfoAccordion({
   id,
@@ -60,28 +61,21 @@ export function TemplateInfoAccordion({
         aria-controls={`template-info-accordion-content-${id}`}
         expandIcon={<ExpandMoreIcon sx={{ color: 'text.primary' }} />}
         sx={{
-          p: 2.5,
+          px: 4.5,
+          py: 2.5,
           minHeight: 0,
           '&.Mui-expanded': { minHeight: 0 },
           '.MuiAccordionSummary-content': { m: 0 },
           '.MuiAccordionSummary-content.Mui-expanded': { m: 0 }
         }}
       >
-        <Typography
-          sx={{
-            fontFamily: 'Montserrat, sans-serif',
-            fontWeight: 600,
-            fontSize: 18,
-            lineHeight: '24px',
-            color: 'text.primary'
-          }}
-        >
+        <Typography variant="subtitle2" color="text.primary">
           {title}
         </Typography>
       </AccordionSummary>
       <AccordionDetails
         id={`template-info-accordion-content-${id}`}
-        sx={{ px: 2.5, pt: 0, pb: 2.5 }}
+        sx={{ px: 4.5, pt: 0, pb: 2.5 }}
       >
         {children}
       </AccordionDetails>

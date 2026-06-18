@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, useState } from 'react'
+import { type Mock } from 'vitest'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { publishedLocalTemplate } from '@core/journeys/ui/TemplateView/data'
@@ -12,12 +13,12 @@ import { TITLE_DESC_LANGUAGE_UPDATE } from '../../../../../libs/useTitleDescLang
 
 import { LocalTemplateDetailsDialog } from './LocalTemplateDetailsDialog'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-const onClose = jest.fn()
+const onClose = vi.fn()
 
 const getLanguagesMock = {
   request: {
@@ -73,14 +74,14 @@ function makeTitleDescLanguageMock(input: {
       input: typeof input
     }
   }
-  result: jest.Mock
+  result: Mock
 } {
   return {
     request: {
       query: TITLE_DESC_LANGUAGE_UPDATE,
       variables: { id: publishedLocalTemplate.id, input }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         journeyUpdate: {
           __typename: 'Journey',
@@ -96,7 +97,7 @@ function makeTitleDescLanguageMock(input: {
 }
 
 describe('LocalTemplateDetailsDialog', () => {
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('renders the dialog with "Template Details" title', () => {
     render(
@@ -172,7 +173,7 @@ describe('LocalTemplateDetailsDialog', () => {
       description: publishedLocalTemplate.description ?? null,
       languageId: publishedLocalTemplate.language.id
     })
-    const customizationResult = jest.fn(() => ({
+    const customizationResult = vi.fn(() => ({
       data: {
         journeyCustomizationFieldPublisherUpdate: {
           __typename: 'JourneyCustomizationField',

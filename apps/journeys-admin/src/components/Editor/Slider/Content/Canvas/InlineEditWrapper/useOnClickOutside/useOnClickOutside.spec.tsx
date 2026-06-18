@@ -4,7 +4,7 @@ import { ReactElement, RefObject } from 'react'
 import { useOnClickOutside } from '.'
 
 describe('useClickOutside', () => {
-  const onClickOutside = jest
+  const onClickOutside = vi
     .fn()
     .mockImplementation(async () => await Promise.resolve())
 
@@ -22,7 +22,7 @@ describe('useClickOutside', () => {
   }
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   // E2E test needed to properly catch browser differences in rendering the ref element. See react issue.

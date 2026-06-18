@@ -11,11 +11,14 @@ import {
   CreateAiImageVariables
 } from '../../../../../../../../__generated__/CreateAiImage'
 import { SegmindModel } from '../../../../../../../../__generated__/globalTypes'
+import { AuthContext, User } from '../../../../../../../libs/auth'
 import { GET_MY_CLOUDFLARE_IMAGES } from '../MediaLibrary/MediaLibrary'
 
 import { CREATE_AI_IMAGE } from './AIGallery'
 
 import { AIGallery } from '.'
+
+const authUser = { id: 'me', uid: 'me' } as unknown as User
 
 describe('AIGallery', () => {
   let originalEnv
@@ -51,7 +54,7 @@ describe('AIGallery', () => {
   }
 
   it('should submit prompt successfully', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     render(
       <MockedProvider mocks={[getAIImage]}>
         <SnackbarProvider>
@@ -90,7 +93,7 @@ describe('AIGallery', () => {
     render(
       <MockedProvider mocks={[emptyResultMock]}>
         <SnackbarProvider>
-          <AIGallery onChange={jest.fn()} />
+          <AIGallery onChange={vi.fn()} />
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -110,7 +113,7 @@ describe('AIGallery', () => {
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ mediaLibrary: false }}>
-            <AIGallery onChange={jest.fn()} />
+            <AIGallery onChange={vi.fn()} />
           </FlagsProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -132,7 +135,8 @@ describe('AIGallery', () => {
               __typename: 'CloudflareImage',
               id: 'g1',
               url: 'https://imagedelivery.net/key/g1',
-              blurhash: null
+              blurhash: null,
+              userId: 'me'
             }
           ]
         }
@@ -142,7 +146,7 @@ describe('AIGallery', () => {
       <MockedProvider mocks={[myAiImagesMock]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ mediaLibrary: true }}>
-            <AIGallery onChange={jest.fn()} />
+            <AIGallery onChange={vi.fn()} />
           </FlagsProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -165,20 +169,23 @@ describe('AIGallery', () => {
               __typename: 'CloudflareImage',
               id: 'existing',
               url: 'https://imagedelivery.net/cloudflare-key/existing',
-              blurhash: null
+              blurhash: null,
+              userId: 'me'
             }
           ]
         }
       }
     }
     render(
-      <MockedProvider mocks={[myAiImagesMock, getAIImage]}>
-        <SnackbarProvider>
-          <FlagsProvider flags={{ mediaLibrary: true }}>
-            <AIGallery onChange={jest.fn()} />
-          </FlagsProvider>
-        </SnackbarProvider>
-      </MockedProvider>
+      <AuthContext.Provider value={{ user: authUser }}>
+        <MockedProvider mocks={[myAiImagesMock, getAIImage]}>
+          <SnackbarProvider>
+            <FlagsProvider flags={{ mediaLibrary: true }}>
+              <AIGallery onChange={vi.fn()} />
+            </FlagsProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      </AuthContext.Provider>
     )
     await waitFor(() =>
       expect(
@@ -202,7 +209,8 @@ describe('AIGallery', () => {
         __typename: 'CloudflareImage' as const,
         id: `ai-${offset + i}`,
         url: `https://imagedelivery.net/cloudflare-key/ai-${offset + i}`,
-        blurhash: null
+        blurhash: null,
+        userId: 'me'
       }))
     const firstPage: MockedResponse = {
       request: {
@@ -226,16 +234,18 @@ describe('AIGallery', () => {
       }
     })
     render(
-      <MockedProvider
-        mocks={[firstPage, secondPage, getAIImage]}
-        cache={paginatedCache}
-      >
-        <SnackbarProvider>
-          <FlagsProvider flags={{ mediaLibrary: true }}>
-            <AIGallery onChange={jest.fn()} />
-          </FlagsProvider>
-        </SnackbarProvider>
-      </MockedProvider>
+      <AuthContext.Provider value={{ user: authUser }}>
+        <MockedProvider
+          mocks={[firstPage, secondPage, getAIImage]}
+          cache={paginatedCache}
+        >
+          <SnackbarProvider>
+            <FlagsProvider flags={{ mediaLibrary: true }}>
+              <AIGallery onChange={vi.fn()} />
+            </FlagsProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      </AuthContext.Provider>
     )
     await screen.findByTestId('media-library-image-ai-0')
     fireEvent.click(screen.getByRole('button', { name: 'Load More' }))
@@ -255,7 +265,7 @@ describe('AIGallery', () => {
     render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
-          <AIGallery onChange={jest.fn()} />
+          <AIGallery onChange={vi.fn()} />
         </SnackbarProvider>
       </MockedProvider>
     )

@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
@@ -57,17 +58,17 @@ let mockUser: {
   providerId: string
 } = defaultMockUser
 
-jest.mock('../../../../../libs/auth', () => ({
+vi.mock('../../../../../libs/auth', () => ({
   __esModule: true,
   useAuth: () => ({ user: mockUser })
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 const mockGetLastActiveTeamIdAndTeams: MockedResponse<GetLastActiveTeamIdAndTeams> =
   {
@@ -213,14 +214,14 @@ const mockUpdateLastActiveTeamId = {
 }
 
 describe('LanguageScreen', () => {
-  let handleNext: jest.Mock
-  let push: jest.Mock
+  let handleNext: Mock
+  let push: Mock
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    push = jest.fn()
+    vi.clearAllMocks()
+    push = vi.fn()
     mockUser = defaultMockUser
-    handleNext = jest.fn(async (overrideJourneyId?: string) => {
+    handleNext = vi.fn(async (overrideJourneyId?: string) => {
       const id = overrideJourneyId ?? 'journeyId'
       push(`/templates/${id}/customize`, undefined, { shallow: true })
     })
@@ -276,7 +277,7 @@ describe('LanguageScreen', () => {
   })
 
   it('should show loading state on the Next button after clicking', async () => {
-    const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
+    const mockGetLastActiveTeamIdAndTeamsResult = vi.fn(() => ({
       ...mockGetLastActiveTeamIdAndTeams.result
     }))
 
@@ -319,11 +320,11 @@ describe('LanguageScreen', () => {
   })
 
   it('duplicates journey to selected team and navigates to customize', async () => {
-    const mockJourneyDuplicateMockResult = jest
+    const mockJourneyDuplicateMockResult = vi
       .fn()
       .mockReturnValue({ ...mockJourneyDuplicate.result })
 
-    const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
+    const mockGetLastActiveTeamIdAndTeamsResult = vi.fn(() => ({
       ...mockGetLastActiveTeamIdAndTeams.result
     }))
 
@@ -368,7 +369,7 @@ describe('LanguageScreen', () => {
   })
 
   it('duplicates the journey and triggers AI translation when a different language is selected', async () => {
-    const mockJourneyDuplicateMockResult = jest
+    const mockJourneyDuplicateMockResult = vi
       .fn()
       .mockReturnValue({ ...mockJourneyDuplicate.result })
 
@@ -461,10 +462,10 @@ describe('LanguageScreen', () => {
       }
     }
 
-    const mockTeamCreateResult = jest.fn(() => ({
+    const mockTeamCreateResult = vi.fn(() => ({
       ...mockTeamCreate.result
     }))
-    const mockJourneyDuplicateForGuestResult = jest.fn(() => ({
+    const mockJourneyDuplicateForGuestResult = vi.fn(() => ({
       ...mockJourneyDuplicateForGuest.result
     }))
 
@@ -592,10 +593,10 @@ describe('LanguageScreen', () => {
       }
     }
 
-    const mockJourneyDuplicateForExistingGuestResult = jest.fn(() => ({
+    const mockJourneyDuplicateForExistingGuestResult = vi.fn(() => ({
       ...mockJourneyDuplicateForExistingGuest.result
     }))
-    const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
+    const mockGetLastActiveTeamIdAndTeamsResult = vi.fn(() => ({
       ...mockGetLastActiveTeamIdAndTeams.result
     }))
 
@@ -708,7 +709,7 @@ describe('LanguageScreen', () => {
       }
     }
 
-    const mockDuplicateResult = jest.fn(() => ({
+    const mockDuplicateResult = vi.fn(() => ({
       ...mockDuplicateForGuestStaleTeam.result
     }))
 
@@ -749,12 +750,12 @@ describe('LanguageScreen', () => {
   })
 
   it('shows error snackbar when duplicate fails', async () => {
-    const mockJourneyDuplicateMockResult = jest.fn().mockReturnValue({
+    const mockJourneyDuplicateMockResult = vi.fn().mockReturnValue({
       ...mockJourneyDuplicate.result,
       data: { journeyDuplicate: null }
     })
 
-    const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
+    const mockGetLastActiveTeamIdAndTeamsResult = vi.fn(() => ({
       ...mockGetLastActiveTeamIdAndTeams.result
     }))
 
@@ -932,15 +933,15 @@ describe('LanguageScreen', () => {
   })
 
   it('calls updateLastActiveTeamId after successful duplication', async () => {
-    const mockJourneyDuplicateMockResult = jest
+    const mockJourneyDuplicateMockResult = vi
       .fn()
       .mockReturnValue({ ...mockJourneyDuplicate.result })
 
-    const mockUpdateLastActiveTeamIdResult = jest.fn().mockReturnValue({
+    const mockUpdateLastActiveTeamIdResult = vi.fn().mockReturnValue({
       data: { journeyProfileUpdate: { id: 'profile-id' } }
     })
 
-    const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
+    const mockGetLastActiveTeamIdAndTeamsResult = vi.fn(() => ({
       ...mockGetLastActiveTeamIdAndTeams.result
     }))
 
@@ -986,7 +987,7 @@ describe('LanguageScreen', () => {
   })
 
   it('shows error snackbar and resets loading on network error', async () => {
-    const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
+    const mockGetLastActiveTeamIdAndTeamsResult = vi.fn(() => ({
       ...mockGetLastActiveTeamIdAndTeams.result
     }))
 
@@ -1145,7 +1146,7 @@ describe('LanguageScreen', () => {
       }
     }
 
-    const mockDuplicateResult = jest
+    const mockDuplicateResult = vi
       .fn()
       .mockReturnValue({ ...mockDuplicateToTeam2.result })
 
@@ -1261,7 +1262,7 @@ describe('LanguageScreen', () => {
       }
     }
 
-    const mockDuplicateResult = jest
+    const mockDuplicateResult = vi
       .fn()
       .mockReturnValue({ ...mockDuplicateToTeam2.result })
 
@@ -1325,15 +1326,15 @@ describe('LanguageScreen', () => {
       locale: 'es'
     } as unknown as NextRouter)
 
-    const mockJourneyDuplicateMockResult = jest
+    const mockJourneyDuplicateMockResult = vi
       .fn()
       .mockReturnValue({ ...mockJourneyDuplicate.result })
 
-    const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
+    const mockGetLastActiveTeamIdAndTeamsResult = vi.fn(() => ({
       ...mockGetLastActiveTeamIdAndTeams.result
     }))
 
-    const mockDescriptionTranslateResult = jest.fn().mockReturnValue({
+    const mockDescriptionTranslateResult = vi.fn().mockReturnValue({
       data: {
         journeyCustomizationDescriptionTranslate: {
           id: 'new-journey-id',
@@ -1409,15 +1410,15 @@ describe('LanguageScreen', () => {
       locale: 'en'
     } as unknown as NextRouter)
 
-    const mockJourneyDuplicateMockResult = jest
+    const mockJourneyDuplicateMockResult = vi
       .fn()
       .mockReturnValue({ ...mockJourneyDuplicate.result })
 
-    const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
+    const mockGetLastActiveTeamIdAndTeamsResult = vi.fn(() => ({
       ...mockGetLastActiveTeamIdAndTeams.result
     }))
 
-    const mockDescriptionTranslateResult = jest.fn().mockReturnValue({
+    const mockDescriptionTranslateResult = vi.fn().mockReturnValue({
       data: {
         journeyCustomizationDescriptionTranslate: {
           id: 'new-journey-id',

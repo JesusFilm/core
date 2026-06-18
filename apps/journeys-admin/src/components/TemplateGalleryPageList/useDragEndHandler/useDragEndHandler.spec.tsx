@@ -1,7 +1,7 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { DragEndEvent } from '@dnd-kit/core'
-import { act, renderHook } from '@testing-library/react'
+import { act, renderHook, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactNode } from 'react'
 
@@ -110,8 +110,8 @@ describe('useDragEndHandler', () => {
       journeyId: 'j1',
       order: 2
     })
-    const setDragInFlight = jest.fn()
-    const setActiveDragId = jest.fn()
+    const setDragInFlight = vi.fn()
+    const setActiveDragId = vi.fn()
 
     const { result } = renderHook(
       () =>
@@ -148,8 +148,8 @@ describe('useDragEndHandler', () => {
       journeyId: 'j1',
       pageId: 'page-B'
     })
-    const setDragInFlight = jest.fn()
-    const setActiveDragId = jest.fn()
+    const setDragInFlight = vi.fn()
+    const setActiveDragId = vi.fn()
 
     const { result } = renderHook(
       () =>
@@ -206,8 +206,8 @@ describe('useDragEndHandler', () => {
         useDragEndHandler({
           ...indexes,
           dragInFlightRef: { current: false },
-          setDragInFlight: jest.fn(),
-          setActiveDragId: jest.fn()
+          setDragInFlight: vi.fn(),
+          setActiveDragId: vi.fn()
         }),
       { wrapper: wrapperWithMocks([assignMock], cache) }
     )
@@ -249,8 +249,8 @@ describe('useDragEndHandler', () => {
       journeyId: 'j1',
       pageId: null
     })
-    const setDragInFlight = jest.fn()
-    const setActiveDragId = jest.fn()
+    const setDragInFlight = vi.fn()
+    const setActiveDragId = vi.fn()
 
     const { result } = renderHook(
       () =>
@@ -287,7 +287,7 @@ describe('useDragEndHandler', () => {
       journeyId: 'j1',
       pageId: 'page-B'
     })
-    const setDragInFlight = jest.fn()
+    const setDragInFlight = vi.fn()
 
     const { result } = renderHook(
       () =>
@@ -295,7 +295,7 @@ describe('useDragEndHandler', () => {
           ...indexes,
           dragInFlightRef: { current: false },
           setDragInFlight,
-          setActiveDragId: jest.fn()
+          setActiveDragId: vi.fn()
         }),
       { wrapper: wrapperWithMocks([assignMock]) }
     )
@@ -326,7 +326,7 @@ describe('useDragEndHandler', () => {
       journeyId: 'j1',
       pageId: 'page-B'
     })
-    const setDragInFlight = jest.fn()
+    const setDragInFlight = vi.fn()
 
     const { result } = renderHook(
       () =>
@@ -334,7 +334,7 @@ describe('useDragEndHandler', () => {
           ...indexes,
           dragInFlightRef: { current: false },
           setDragInFlight,
-          setActiveDragId: jest.fn()
+          setActiveDragId: vi.fn()
         }),
       { wrapper: wrapperWithMocks([assignMock]) }
     )
@@ -363,7 +363,7 @@ describe('useDragEndHandler', () => {
       journeyId: 'j1',
       order: 0
     })
-    const setDragInFlight = jest.fn()
+    const setDragInFlight = vi.fn()
 
     const { result } = renderHook(
       () =>
@@ -371,7 +371,7 @@ describe('useDragEndHandler', () => {
           ...indexes,
           dragInFlightRef: { current: false },
           setDragInFlight,
-          setActiveDragId: jest.fn()
+          setActiveDragId: vi.fn()
         }),
       { wrapper: wrapperWithMocks([reorderMock]) }
     )
@@ -397,8 +397,8 @@ describe('useDragEndHandler', () => {
       journeyId: 'j1',
       order: 0
     })
-    const setDragInFlight = jest.fn()
-    const setActiveDragId = jest.fn()
+    const setDragInFlight = vi.fn()
+    const setActiveDragId = vi.fn()
 
     const { result } = renderHook(
       () =>
@@ -435,7 +435,7 @@ describe('useDragEndHandler', () => {
       journeyId: 'j1',
       pageId: 'page-B'
     })
-    const setDragInFlight = jest.fn()
+    const setDragInFlight = vi.fn()
 
     const { result } = renderHook(
       () =>
@@ -443,7 +443,7 @@ describe('useDragEndHandler', () => {
           ...indexes,
           dragInFlightRef: { current: true },
           setDragInFlight,
-          setActiveDragId: jest.fn()
+          setActiveDragId: vi.fn()
         }),
       { wrapper: wrapperWithMocks([assignMock]) }
     )
@@ -496,8 +496,8 @@ describe('useDragEndHandler', () => {
         useDragEndHandler({
           ...indexes,
           dragInFlightRef: { current: false },
-          setDragInFlight: jest.fn(),
-          setActiveDragId: jest.fn()
+          setDragInFlight: vi.fn(),
+          setActiveDragId: vi.fn()
         }),
       { wrapper: wrapperWithMocks([assignMock], cache) }
     )
@@ -520,5 +520,164 @@ describe('useDragEndHandler', () => {
       (p) => p.id === 'page-A'
     )
     expect(sourceAfter?.templates.map((t) => t.id)).toEqual(['j1'])
+  })
+
+  // NES-1717: dropping onto a collapsed collection lands the template out of
+  // sight, so the handler surfaces an "Added to {collection}" toast.
+  it('toasts when a template is added to a collapsed collection', async () => {
+    const j1 = journey('j1', 'A')
+    const source = makeCollection('page-A', [j1])
+    const target = makeCollection('page-B', [])
+    const indexes = buildIndexes({
+      collections: [source, target],
+      journeys: [j1]
+    })
+
+    // Server confirms the move (target now contains j1) so `accepted` is true.
+    const assignMock = getTemplateGalleryPageAssignJourneyMock(
+      { journeyId: 'j1', pageId: 'page-B' },
+      { id: 'page-B', title: 'page-B', templates: [templateRef(j1)] }
+    )
+
+    const { result } = renderHook(
+      () =>
+        useDragEndHandler({
+          ...indexes,
+          dragInFlightRef: { current: false },
+          setDragInFlight: vi.fn(),
+          setActiveDragId: vi.fn(),
+          isCollectionCollapsed: (id) => id === 'page-B'
+        }),
+      { wrapper: wrapperWithMocks([assignMock]) }
+    )
+
+    await act(async () => {
+      await result.current(
+        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
+      )
+    })
+
+    expect(assignMock.result).toHaveBeenCalledTimes(1)
+    await waitFor(() =>
+      expect(screen.getByText('Added to page-B')).toBeInTheDocument()
+    )
+  })
+
+  it('does not toast when the target collection is expanded', async () => {
+    const j1 = journey('j1', 'A')
+    const source = makeCollection('page-A', [j1])
+    const target = makeCollection('page-B', [])
+    const indexes = buildIndexes({
+      collections: [source, target],
+      journeys: [j1]
+    })
+
+    const assignMock = getTemplateGalleryPageAssignJourneyMock(
+      { journeyId: 'j1', pageId: 'page-B' },
+      { id: 'page-B', title: 'page-B', templates: [templateRef(j1)] }
+    )
+
+    const { result } = renderHook(
+      () =>
+        useDragEndHandler({
+          ...indexes,
+          dragInFlightRef: { current: false },
+          setDragInFlight: vi.fn(),
+          setActiveDragId: vi.fn(),
+          isCollectionCollapsed: () => false
+        }),
+      { wrapper: wrapperWithMocks([assignMock]) }
+    )
+
+    await act(async () => {
+      await result.current(
+        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
+      )
+    })
+
+    expect(assignMock.result).toHaveBeenCalledTimes(1)
+    // waitFor so the check runs after notistack has settled — a synchronous
+    // negative assertion could pass before a (wrongly) enqueued toast renders.
+    await waitFor(() =>
+      expect(screen.queryByText('Added to page-B')).not.toBeInTheDocument()
+    )
+  })
+
+  it('shows the rejection error (not the added toast) when a collapsed-target drop is rejected', async () => {
+    const j1 = journey('j1', 'A')
+    const source = makeCollection('page-A', [j1])
+    const target = makeCollection('page-B', [])
+    const indexes = buildIndexes({
+      collections: [source, target],
+      journeys: [j1]
+    })
+
+    // Server returns the target WITHOUT j1 → silent rejection (accepted false).
+    const assignMock = getTemplateGalleryPageAssignJourneyMock(
+      { journeyId: 'j1', pageId: 'page-B' },
+      { id: 'page-B', title: 'page-B', templates: [] }
+    )
+
+    const { result } = renderHook(
+      () =>
+        useDragEndHandler({
+          ...indexes,
+          dragInFlightRef: { current: false },
+          setDragInFlight: vi.fn(),
+          setActiveDragId: vi.fn(),
+          isCollectionCollapsed: () => true
+        }),
+      { wrapper: wrapperWithMocks([assignMock]) }
+    )
+
+    await act(async () => {
+      await result.current(
+        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
+      )
+    })
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(
+          "Couldn't move template — the server rejected the move."
+        )
+      ).toBeInTheDocument()
+    )
+    expect(screen.queryByText('Added to page-B')).not.toBeInTheDocument()
+  })
+
+  it('uses a generic confirmation when the collapsed target has no resolvable name', async () => {
+    const j1 = journey('j1', 'A')
+    const source = makeCollection('page-A', [j1])
+    // page-B is a collapsed drop target that is NOT in collectionsById and the
+    // server returns an empty title → the toast must not interpolate a blank.
+    const indexes = buildIndexes({ collections: [source], journeys: [j1] })
+
+    const assignMock = getTemplateGalleryPageAssignJourneyMock(
+      { journeyId: 'j1', pageId: 'page-B' },
+      { id: 'page-B', title: '', templates: [templateRef(j1)] }
+    )
+
+    const { result } = renderHook(
+      () =>
+        useDragEndHandler({
+          ...indexes,
+          dragInFlightRef: { current: false },
+          setDragInFlight: vi.fn(),
+          setActiveDragId: vi.fn(),
+          isCollectionCollapsed: () => true
+        }),
+      { wrapper: wrapperWithMocks([assignMock]) }
+    )
+
+    await act(async () => {
+      await result.current(
+        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
+      )
+    })
+
+    await waitFor(() =>
+      expect(screen.getByText('Added to collection')).toBeInTheDocument()
+    )
   })
 })

@@ -7,17 +7,17 @@ import { ThemeProvider } from '../ThemeProvider'
 
 import { UserDeleteWithErrorBoundary } from './UserDelete'
 
-const mockPush = jest.fn()
+const mockPush = vi.fn()
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', async () => ({
   useRouter: () => ({
     push: mockPush,
     query: {}
   })
 }))
 
-const mockEnqueueSnackbar = jest.fn()
-jest.mock('notistack', () => ({
+const mockEnqueueSnackbar = vi.fn()
+vi.mock('notistack', async () => ({
   useSnackbar: () => ({
     enqueueSnackbar: mockEnqueueSnackbar
   }),
@@ -26,12 +26,12 @@ jest.mock('notistack', () => ({
   )
 }))
 
-const mockUseSuspenseQuery = jest.fn()
-const mockUseMutation = jest.fn()
-const mockUseSubscription = jest.fn()
+const mockUseSuspenseQuery = vi.fn()
+const mockUseMutation = vi.fn()
+const mockUseSubscription = vi.fn()
 
-jest.mock('@apollo/client', () => {
-  const actual = jest.requireActual('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const actual = await vi.importActual('@apollo/client')
   return {
     ...actual,
     useSuspenseQuery: (...args: unknown[]) => mockUseSuspenseQuery(...args),
@@ -40,9 +40,9 @@ jest.mock('@apollo/client', () => {
   }
 })
 
-const mockCheckMutate = jest.fn()
-const mockJourneysCheckMutate = jest.fn()
-const mockJourneysConfirmMutate = jest.fn()
+const mockCheckMutate = vi.fn()
+const mockJourneysCheckMutate = vi.fn()
+const mockJourneysConfirmMutate = vi.fn()
 
 function getOperationName(doc: unknown): string {
   return (doc as any)?.definitions?.[0]?.name?.value ?? ''
@@ -79,7 +79,7 @@ const renderComponent = (): ReturnType<typeof render> =>
 
 describe('UserDeleteWithErrorBoundary', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockUseSuspenseQuery.mockReturnValue(superAdminData)
     setupMutations()
   })

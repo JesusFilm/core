@@ -48,7 +48,7 @@ function cacheWithCard(): InMemoryCache {
 }
 
 describe('ChatAssistant', () => {
-  it('renders Show AI chat switch off when showAssistant is null', () => {
+  it('renders Enable AI chat switch off when showAssistant is null', () => {
     const card = makeCard({ showAssistant: null })
     render(
       <MockedProvider>
@@ -57,12 +57,12 @@ describe('ChatAssistant', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    const parentSwitch = screen.getByLabelText('Show AI chat')
+    const parentSwitch = screen.getByLabelText('Enable AI chat')
     expect(parentSwitch).not.toBeChecked()
   })
 
-  it('hides Open chat automatically when showAssistant is false', () => {
-    const card = makeCard({ showAssistant: false, expandChatByDefault: false })
+  it('hides Collapse chat when Enable AI chat is off', () => {
+    const card = makeCard({ showAssistant: false })
     render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock: card }}>
@@ -70,63 +70,12 @@ describe('ChatAssistant', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    expect(
-      screen.queryByLabelText('Open chat automatically')
-    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Collapse chat')).not.toBeInTheDocument()
   })
 
-  it('toggling Show AI chat on calls cardBlockUpdate with showAssistant true', async () => {
-    const card = makeCard({ showAssistant: false, expandChatByDefault: false })
-    const result = jest.fn(() => ({
-      data: {
-        cardBlockUpdate: {
-          __typename: 'CardBlock',
-          id: 'card1.id',
-          showAssistant: true,
-          expandChatByDefault: false
-        }
-      }
-    }))
-    render(
-      <MockedProvider
-        cache={cacheWithCard()}
-        mocks={[
-          {
-            request: {
-              query: CARD_BLOCK_CHAT_ASSISTANT_UPDATE,
-              variables: {
-                id: 'card1.id',
-                input: { showAssistant: true, expandChatByDefault: false }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <EditorProvider initialState={{ selectedBlock: card }}>
-          <ChatAssistant />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(screen.getByLabelText('Show AI chat'))
-    await waitFor(() => expect(result).toHaveBeenCalled())
-  })
-
-  it('shows the Open chat automatically switch when showAssistant is true', () => {
-    const card = makeCard({ showAssistant: true, expandChatByDefault: false })
-    render(
-      <MockedProvider>
-        <EditorProvider initialState={{ selectedBlock: card }}>
-          <ChatAssistant />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    expect(screen.getByLabelText('Open chat automatically')).toBeInTheDocument()
-  })
-
-  it('toggling Open chat automatically on calls cardBlockUpdate with expandChatByDefault true', async () => {
-    const card = makeCard({ showAssistant: true, expandChatByDefault: false })
-    const result = jest.fn(() => ({
+  it('toggling Enable AI chat on saves showAssistant true + expandChatByDefault true (pops open by default)', async () => {
+    const card = makeCard({ showAssistant: null, expandChatByDefault: null })
+    const result = vi.fn(() => ({
       data: {
         cardBlockUpdate: {
           __typename: 'CardBlock',
@@ -157,13 +106,63 @@ describe('ChatAssistant', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.click(screen.getByLabelText('Open chat automatically'))
+    fireEvent.click(screen.getByLabelText('Enable AI chat'))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
-  it('toggling Show AI chat off clears expandChatByDefault in the same call', async () => {
-    const card = makeCard({ showAssistant: true, expandChatByDefault: true })
-    const result = jest.fn(() => ({
+  it('shows the Collapse chat switch when Enable AI chat is on', () => {
+    const card = makeCard({ showAssistant: true })
+    render(
+      <MockedProvider>
+        <EditorProvider initialState={{ selectedBlock: card }}>
+          <ChatAssistant />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByLabelText('Collapse chat')).toBeInTheDocument()
+  })
+
+  it('toggling Collapse chat on saves expandChatByDefault false', async () => {
+    const card = makeCard({ showAssistant: true, expandChatByDefault: null })
+    const result = vi.fn(() => ({
+      data: {
+        cardBlockUpdate: {
+          __typename: 'CardBlock',
+          id: 'card1.id',
+          showAssistant: true,
+          expandChatByDefault: false
+        }
+      }
+    }))
+    render(
+      <MockedProvider
+        cache={cacheWithCard()}
+        mocks={[
+          {
+            request: {
+              query: CARD_BLOCK_CHAT_ASSISTANT_UPDATE,
+              variables: {
+                id: 'card1.id',
+                input: { showAssistant: true, expandChatByDefault: false }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <EditorProvider initialState={{ selectedBlock: card }}>
+          <ChatAssistant />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByLabelText('Collapse chat'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('toggling Enable AI chat off preserves the collapse setting', async () => {
+    // expandChatByDefault false → Collapse chat is on; disabling keeps it on.
+    const card = makeCard({ showAssistant: true, expandChatByDefault: false })
+    const result = vi.fn(() => ({
       data: {
         cardBlockUpdate: {
           __typename: 'CardBlock',
@@ -194,28 +193,21 @@ describe('ChatAssistant', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.click(screen.getByLabelText('Show AI chat'))
+    fireEvent.click(screen.getByLabelText('Enable AI chat'))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
-  it('undo restores the prior values', async () => {
+  it('re-enabling a previously-collapsed card preserves expandChatByDefault false (stays collapsed, not pop-open)', async () => {
+    // showAssistant false + expandChatByDefault false → the "collapseChat: true"
+    // cohort. Re-enabling preserves the explicit collapse opt-in rather than
+    // reverting to the pop-open default.
     const card = makeCard({ showAssistant: false, expandChatByDefault: false })
-    const executeResult = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         cardBlockUpdate: {
           __typename: 'CardBlock',
           id: 'card1.id',
           showAssistant: true,
-          expandChatByDefault: false
-        }
-      }
-    }))
-    const undoResult = jest.fn(() => ({
-      data: {
-        cardBlockUpdate: {
-          __typename: 'CardBlock',
-          id: 'card1.id',
-          showAssistant: false,
           expandChatByDefault: false
         }
       }
@@ -232,6 +224,53 @@ describe('ChatAssistant', () => {
                 input: { showAssistant: true, expandChatByDefault: false }
               }
             },
+            result
+          }
+        ]}
+      >
+        <EditorProvider initialState={{ selectedBlock: card }}>
+          <ChatAssistant />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByLabelText('Enable AI chat'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('undo restores the prior values', async () => {
+    const card = makeCard({ showAssistant: false, expandChatByDefault: null })
+    const executeResult = vi.fn(() => ({
+      data: {
+        cardBlockUpdate: {
+          __typename: 'CardBlock',
+          id: 'card1.id',
+          showAssistant: true,
+          expandChatByDefault: true
+        }
+      }
+    }))
+    const undoResult = vi.fn(() => ({
+      data: {
+        cardBlockUpdate: {
+          __typename: 'CardBlock',
+          id: 'card1.id',
+          showAssistant: false,
+          expandChatByDefault: true
+        }
+      }
+    }))
+    render(
+      <MockedProvider
+        cache={cacheWithCard()}
+        mocks={[
+          {
+            request: {
+              query: CARD_BLOCK_CHAT_ASSISTANT_UPDATE,
+              variables: {
+                id: 'card1.id',
+                input: { showAssistant: true, expandChatByDefault: true }
+              }
+            },
             result: executeResult
           },
           {
@@ -239,7 +278,7 @@ describe('ChatAssistant', () => {
               query: CARD_BLOCK_CHAT_ASSISTANT_UPDATE,
               variables: {
                 id: 'card1.id',
-                input: { showAssistant: false, expandChatByDefault: false }
+                input: { showAssistant: false, expandChatByDefault: true }
               }
             },
             result: undoResult
@@ -252,7 +291,7 @@ describe('ChatAssistant', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.click(screen.getByLabelText('Show AI chat'))
+    fireEvent.click(screen.getByLabelText('Enable AI chat'))
     await waitFor(() => expect(executeResult).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(undoResult).toHaveBeenCalled())

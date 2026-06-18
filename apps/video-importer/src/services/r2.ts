@@ -93,7 +93,7 @@ export async function uploadToR2({
 
   console.log(`[R2 Service] Upload completed (${bytesWritten} bytes written)`)
 
-  // Verify the uploaded file is retrievable
+  // Verify R2 has the exact object before handing the public URL to downstream consumers.
   await verifyFileUpload(r2BucketClient, key, contentLength)
   console.log('[R2 Service] File verification completed')
 }
@@ -124,16 +124,28 @@ async function verifyFileUpload(
   }
 }
 
+export function formatR2AssetDiagnostic(r2Asset: R2Asset): string {
+  const parts = [
+    r2Asset.id != null ? `assetId=${r2Asset.id}` : undefined,
+    r2Asset.fileName != null ? `fileName=${r2Asset.fileName}` : undefined,
+    r2Asset.publicUrl != null ? `publicUrl=${r2Asset.publicUrl}` : undefined
+  ].filter((part): part is string => part != null && part.length > 0)
+
+  return parts.length > 0 ? ` (${parts.join(', ')})` : ''
+}
+
 export async function uploadFileToR2Direct({
   bucket,
   key,
   filePath,
-  contentType
+  contentType,
+  contentLength
 }: {
   bucket: string
   key: string
   filePath: string
   contentType: string
+  contentLength: number
 }): Promise<string> {
   console.log(`[R2 Service] Uploading file to R2: ${key}`)
   const r2BucketClient = getR2BucketClient(bucket)
@@ -141,7 +153,7 @@ export async function uploadFileToR2Direct({
 
   console.log(`[R2 Service] Direct upload completed: ${key}`)
 
-  const publicBaseUrl = `https://${bucket}.${new URL(env.CLOUDFLARE_R2_ENDPOINT).hostname}`
+  await verifyFileUpload(r2BucketClient, key, contentLength)
 
-  return `${publicBaseUrl.replace(/\/$/, '')}/${key}`
+  return `${env.CLOUDFLARE_R2_CUSTOM_DOMAIN.replace(/\/$/, '')}/${key}`
 }

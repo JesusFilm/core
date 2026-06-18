@@ -8,9 +8,5 @@
 // ====================================================
 
 export interface GetJourneyTemplateLanguageIds {
-  /**
-   * Returns distinct language IDs from published global templates.
-   * Used to dynamically populate the language filter on the templates page.
-   */
   journeyTemplateLanguageIds: string[];
 }

@@ -97,7 +97,7 @@ describe('Summary', () => {
       }
     })
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         chatButtonCreate: {
           __typename: 'ChatButton',
@@ -174,7 +174,7 @@ describe('Summary', () => {
       }
     })
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         chatButtonRemove: {
           __typename: 'ChatButton',
@@ -224,7 +224,7 @@ describe('Summary', () => {
   })
 
   it('undo after toggle ON removes the created chat button', async () => {
-    const createResult = jest.fn(() => ({
+    const createResult = vi.fn(() => ({
       data: {
         chatButtonCreate: {
           __typename: 'ChatButton' as const,
@@ -236,7 +236,7 @@ describe('Summary', () => {
       }
     }))
 
-    const removeResult = jest.fn(() => ({
+    const removeResult = vi.fn(() => ({
       data: {
         chatButtonRemove: {
           __typename: 'ChatButton' as const,
@@ -290,7 +290,7 @@ describe('Summary', () => {
   })
 
   it('undo after toggle OFF recreates the chat button', async () => {
-    const removeResult = jest.fn(() => ({
+    const removeResult = vi.fn(() => ({
       data: {
         chatButtonRemove: {
           __typename: 'ChatButton' as const,
@@ -299,7 +299,7 @@ describe('Summary', () => {
       }
     }))
 
-    const createResult = jest.fn(() => ({
+    const createResult = vi.fn(() => ({
       data: {
         chatButtonCreate: {
           __typename: 'ChatButton' as const,

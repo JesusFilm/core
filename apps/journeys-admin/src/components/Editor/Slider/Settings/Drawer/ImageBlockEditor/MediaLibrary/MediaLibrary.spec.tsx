@@ -1,25 +1,39 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { offsetLimitPagination } from '@apollo/client/utilities'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { GraphQLError } from 'graphql'
+import { type MockedFunction } from 'vitest'
+
+import { AuthContext, User } from '../../../../../../../libs/auth'
 
 import { GET_MY_CLOUDFLARE_IMAGES, MediaLibrary } from './MediaLibrary'
 import { prependCloudflareImage } from './prependCloudflareImage'
 
+vi.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: vi.fn()
+}))
+
+const mockSendGTMEvent = sendGTMEvent as MockedFunction<typeof sendGTMEvent>
+
 function makeImages(
   count: number,
-  offset = 0
+  offset = 0,
+  userId = 'me'
 ): Array<{
   __typename: 'CloudflareImage'
   id: string
   url: string
   blurhash: string | null
+  userId: string
 }> {
   return Array.from({ length: count }, (_, i) => ({
     __typename: 'CloudflareImage' as const,
     id: `img-${offset + i}`,
     url: `https://imagedelivery.net/key/img-${offset + i}`,
-    blurhash: null
+    blurhash: null,
+    userId
   }))
 }
 
@@ -66,10 +80,14 @@ function paginatedCache(): InMemoryCache {
 }
 
 describe('MediaLibrary', () => {
+  beforeEach(() => {
+    mockSendGTMEvent.mockClear()
+  })
+
   it('should render images returned by the query', async () => {
     render(
       <MockedProvider mocks={[firstFullPageMock]}>
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     await waitFor(() => {
@@ -83,7 +101,7 @@ describe('MediaLibrary', () => {
   it('should render only PAGE_SIZE tiles when the server returns a full peek', async () => {
     render(
       <MockedProvider mocks={[firstFullPageMock]}>
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     await screen.findByTestId('media-library-image-img-0')
@@ -103,7 +121,7 @@ describe('MediaLibrary', () => {
     }
     const { container } = render(
       <MockedProvider mocks={[emptyMock]}>
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     await waitFor(() => {
@@ -121,7 +139,7 @@ describe('MediaLibrary', () => {
     }
     render(
       <MockedProvider mocks={[errorMock]}>
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     await waitFor(() => {
@@ -132,7 +150,7 @@ describe('MediaLibrary', () => {
   })
 
   it('should invoke onSelect with imagedelivery src when a tile is clicked', async () => {
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
     render(
       <MockedProvider mocks={[firstFullPageMock]}>
         <MediaLibrary title="Your uploads" onSelect={onSelect} isAi={false} />
@@ -150,12 +168,47 @@ describe('MediaLibrary', () => {
     })
   })
 
+  it('should send image_select event when a tile is clicked', async () => {
+    render(
+      <MockedProvider mocks={[firstFullPageMock]}>
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
+      </MockedProvider>
+    )
+    const tile = await screen.findByTestId('media-library-image-img-0')
+    fireEvent.click(tile)
+    expect(mockSendGTMEvent).toHaveBeenCalledWith({
+      event: 'image_select',
+      isAi: false
+    })
+  })
+
+  it('should send image_select with isAi true when rendered as AI', async () => {
+    const aiMock: MockedResponse = {
+      request: {
+        query: GET_MY_CLOUDFLARE_IMAGES,
+        variables: { offset: 0, limit: 11, isAi: true }
+      },
+      result: { data: { getMyCloudflareImages: makeImages(2) } }
+    }
+    render(
+      <MockedProvider mocks={[aiMock]}>
+        <MediaLibrary title="Your generations" onSelect={vi.fn()} isAi />
+      </MockedProvider>
+    )
+    const tile = await screen.findByTestId('media-library-image-img-0')
+    fireEvent.click(tile)
+    expect(mockSendGTMEvent).toHaveBeenCalledWith({
+      event: 'image_select',
+      isAi: true
+    })
+  })
+
   it('should render the uploading tile when uploading is true', () => {
     render(
       <MockedProvider mocks={[firstFullPageMock]}>
         <MediaLibrary
           title="Your uploads"
-          onSelect={jest.fn()}
+          onSelect={vi.fn()}
           isAi={false}
           uploading
         />
@@ -172,7 +225,7 @@ describe('MediaLibrary', () => {
         mocks={[firstFullPageMock, secondShortPageMock]}
         cache={paginatedCache()}
       >
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     await screen.findByTestId('media-library-image-img-0')
@@ -195,22 +248,22 @@ describe('MediaLibrary', () => {
     expect(screen.getByTestId('media-library-image-img-9')).toBeInTheDocument()
   })
 
-  it('should disable Load More with "No more to load" when a short page is returned', async () => {
+  it('should hide the Load More button when a short page is returned', async () => {
     render(
       <MockedProvider mocks={[firstShortPageMock]}>
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     await screen.findByTestId('media-library-image-img-0')
     expect(
-      screen.getByRole('button', { name: 'No more to load' })
-    ).toBeDisabled()
+      screen.queryByRole('button', { name: 'Load More' })
+    ).not.toBeInTheDocument()
   })
 
   it('should show the Load More button in a loading state while the initial query is in flight', () => {
     render(
       <MockedProvider mocks={[firstFullPageMock]}>
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     const button = screen.getByRole('button', { name: 'Loading...' })
@@ -231,7 +284,7 @@ describe('MediaLibrary', () => {
         mocks={[firstFullPageMock, failingSecondPage]}
         cache={paginatedCache()}
       >
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     await screen.findByTestId('media-library-image-img-0')
@@ -250,7 +303,7 @@ describe('MediaLibrary', () => {
     const cache = paginatedCache()
     render(
       <MockedProvider mocks={[firstFullPageMock]} cache={cache}>
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     await screen.findByTestId('media-library-image-img-0')
@@ -259,7 +312,8 @@ describe('MediaLibrary', () => {
       {
         id: 'local-1',
         url: 'https://imagedelivery.net/key/local-1',
-        blurhash: null
+        blurhash: null,
+        userId: 'me'
       },
       false
     )
@@ -275,7 +329,7 @@ describe('MediaLibrary', () => {
     const cache = paginatedCache()
     render(
       <MockedProvider mocks={[firstFullPageMock]} cache={cache}>
-        <MediaLibrary title="Your uploads" onSelect={jest.fn()} isAi={false} />
+        <MediaLibrary title="Your uploads" onSelect={vi.fn()} isAi={false} />
       </MockedProvider>
     )
     await screen.findByTestId('media-library-image-img-0')
@@ -285,7 +339,8 @@ describe('MediaLibrary', () => {
       {
         id: 'img-0',
         url: 'https://imagedelivery.net/key/img-0',
-        blurhash: null
+        blurhash: null,
+        userId: 'me'
       },
       false
     )
@@ -309,11 +364,117 @@ describe('MediaLibrary', () => {
     }
     render(
       <MockedProvider mocks={[aiMock]}>
-        <MediaLibrary title="Your generations" onSelect={jest.fn()} isAi />
+        <MediaLibrary title="Your generations" onSelect={vi.fn()} isAi />
       </MockedProvider>
     )
     expect(
       await screen.findByTestId('media-library-image-img-0')
+    ).toBeInTheDocument()
+  })
+
+  it('should forward teamId to the query variables when set', async () => {
+    const teamMock: MockedResponse = {
+      request: {
+        query: GET_MY_CLOUDFLARE_IMAGES,
+        variables: { offset: 0, limit: 11, isAi: false, teamId: 'team-1' }
+      },
+      result: { data: { getMyCloudflareImages: makeImages(2) } }
+    }
+    render(
+      <MockedProvider mocks={[teamMock]}>
+        <MediaLibrary
+          title="Uploads"
+          onSelect={vi.fn()}
+          isAi={false}
+          teamId="team-1"
+        />
+      </MockedProvider>
+    )
+    expect(
+      await screen.findByTestId('media-library-image-img-0')
+    ).toBeInTheDocument()
+  })
+
+  it('should omit teamId and fall back to personal-only when teamId is null', async () => {
+    render(
+      <MockedProvider mocks={[firstShortPageMock]}>
+        <MediaLibrary
+          title="Uploads"
+          onSelect={vi.fn()}
+          isAi={false}
+          teamId={null}
+        />
+      </MockedProvider>
+    )
+    // firstShortPageMock has no teamId variable, so a match proves teamId was omitted
+    expect(
+      await screen.findByTestId('media-library-image-img-0')
+    ).toBeInTheDocument()
+  })
+
+  it('should surface the generic error banner when the team query is rejected with FORBIDDEN', async () => {
+    const forbiddenMock: MockedResponse = {
+      request: {
+        query: GET_MY_CLOUDFLARE_IMAGES,
+        variables: { offset: 0, limit: 11, isAi: false, teamId: 'team-1' }
+      },
+      result: {
+        errors: [
+          new GraphQLError('Not a member of this team', {
+            extensions: { code: 'FORBIDDEN' }
+          })
+        ]
+      }
+    }
+    render(
+      <MockedProvider mocks={[forbiddenMock]}>
+        <MediaLibrary
+          title="Uploads"
+          onSelect={vi.fn()}
+          isAi={false}
+          teamId="team-1"
+        />
+      </MockedProvider>
+    )
+    expect(
+      await screen.findByText('Could not load your images.')
+    ).toBeInTheDocument()
+  })
+
+  it('should tag a teammate upload with a Team tag and leave the caller’s own untagged', async () => {
+    const mixedMock: MockedResponse = {
+      request: {
+        query: GET_MY_CLOUDFLARE_IMAGES,
+        variables: { offset: 0, limit: 11, isAi: false, teamId: 'team-1' }
+      },
+      result: {
+        data: {
+          getMyCloudflareImages: [
+            ...makeImages(1, 0, 'me'),
+            ...makeImages(1, 1, 'teammate')
+          ]
+        }
+      }
+    }
+    const user = { id: 'me', uid: 'me' } as unknown as User
+    render(
+      <AuthContext.Provider value={{ user }}>
+        <MockedProvider mocks={[mixedMock]}>
+          <MediaLibrary
+            title="Uploads"
+            onSelect={vi.fn()}
+            isAi={false}
+            teamId="team-1"
+          />
+        </MockedProvider>
+      </AuthContext.Provider>
+    )
+    await screen.findByTestId('media-library-image-img-0')
+    expect(
+      screen.queryByTestId('media-library-team-tag-img-0')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId('media-library-team-tag-img-1')
     ).toBeInTheDocument()
   })
 })

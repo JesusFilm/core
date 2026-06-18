@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -9,21 +10,21 @@ import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
 
 import { TemplateSettingsItem } from './TemplateSettingsItem'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
 describe('TemplateSettingsItem', () => {
-  const push = jest.fn()
-  const on = jest.fn()
+  const push = vi.fn()
+  const on = vi.fn()
 
   beforeEach(() => {
     mockedUseRouter.mockReturnValue({
@@ -33,7 +34,7 @@ describe('TemplateSettingsItem', () => {
         on
       }
     } as unknown as NextRouter)
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should open title dialog', async () => {

@@ -1,20 +1,21 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
 import type { FocusEvent } from 'react'
+import type { Mock } from 'vitest'
 
 import { useFloatingSearchOverlay } from './useFloatingSearchOverlay'
 
-let mockUseTrendingSearches: jest.Mock
-let mockUseSearchBox: jest.Mock
+let mockUseTrendingSearches: Mock
+let mockUseSearchBox: Mock
 
-jest.mock('../../../libs/useTrendingSearches', () => ({
+vi.mock('../../../libs/useTrendingSearches', () => ({
   useTrendingSearches: (...args: unknown[]) => mockUseTrendingSearches(...args)
 }))
 
-jest.mock('react-instantsearch', () => ({
+vi.mock('react-instantsearch', () => ({
   useSearchBox: (...args: unknown[]) => mockUseSearchBox(...args)
 }))
 
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) => {
       if (key === 'popularSearches' && options?.returnObjects === true) {
@@ -27,15 +28,15 @@ jest.mock('next-i18next/pages', () => ({
 
 describe('useFloatingSearchOverlay', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
-    mockUseSearchBox = jest.fn()
-    mockUseTrendingSearches = jest.fn()
-    mockUseSearchBox.mockReturnValue({ refine: jest.fn() })
+    vi.clearAllMocks()
+    mockUseSearchBox = vi.fn()
+    mockUseTrendingSearches = vi.fn()
+    mockUseSearchBox.mockReturnValue({ refine: vi.fn() })
     mockUseTrendingSearches.mockReturnValue({
       trendingSearches: [],
       isLoading: false,
       error: null,
-      fetchTrendingSearches: jest.fn()
+      fetchTrendingSearches: vi.fn()
     })
   })
 
@@ -81,7 +82,7 @@ describe('useFloatingSearchOverlay', () => {
   })
 
   it('requests trending searches when the overlay opens', async () => {
-    const fetchTrendingSearches = jest.fn()
+    const fetchTrendingSearches = vi.fn()
     mockUseTrendingSearches.mockReturnValue({
       trendingSearches: [],
       isLoading: false,
@@ -105,7 +106,7 @@ describe('useFloatingSearchOverlay', () => {
       trendingSearches: ['api'],
       isLoading: false,
       error: new Error('fail'),
-      fetchTrendingSearches: jest.fn()
+      fetchTrendingSearches: vi.fn()
     })
 
     const { result } = renderHook(() => useFloatingSearchOverlay())
@@ -115,8 +116,8 @@ describe('useFloatingSearchOverlay', () => {
   })
 
   it('clears search query and focuses input', () => {
-    const refine = jest.fn()
-    const focus = jest.fn()
+    const refine = vi.fn()
+    const focus = vi.fn()
     mockUseSearchBox.mockReturnValue({ refine })
 
     const originalRaf = window.requestAnimationFrame

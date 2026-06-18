@@ -3,6 +3,6 @@ import { UserTeamRole } from '../enums'
 
 export const UserTeamUpdateInput = builder.inputType('UserTeamUpdateInput', {
   fields: (t) => ({
-    role: t.field({ type: UserTeamRole, required: true })
+    role: t.field({ type: UserTeamRole, required: false })
   })
 })

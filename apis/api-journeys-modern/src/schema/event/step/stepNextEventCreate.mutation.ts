@@ -10,7 +10,6 @@ builder.mutationField('stepNextEventCreate', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: StepNextEventRef,
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       input: t.arg({ type: StepNextEventCreateInput, required: true })
     },

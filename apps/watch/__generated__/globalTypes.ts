@@ -70,9 +70,6 @@ export enum IconColor {
   secondary = "secondary",
 }
 
-/**
- * IconName is equivalent to the icons found in @mui/icons-material
- */
 export enum IconName {
   ArrowBackRounded = "ArrowBackRounded",
   ArrowForwardRounded = "ArrowForwardRounded",

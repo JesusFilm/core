@@ -34,12 +34,9 @@ export function canAccessJourneyCollection(
     return userTeam?.role === UserTeamRole.manager
   }
 
-  // Team managers and members can read journey collections
+  // Only team managers can access journey collections (Manage implies all actions)
   if (action === Action.Read) {
-    return (
-      userTeam?.role === UserTeamRole.manager ||
-      userTeam?.role === UserTeamRole.member
-    )
+    return userTeam?.role === UserTeamRole.manager
   }
 
   return false

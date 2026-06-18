@@ -15,7 +15,7 @@ import { ApproveUser } from '.'
 
 describe('ApproveUser', () => {
   it('should approve user journey', async () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     const cache = new InMemoryCache()
     cache.restore({
       ROOT_QUERY: {
@@ -24,7 +24,7 @@ describe('ApproveUser', () => {
       }
     })
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         userJourneyApprove: {
           id: 'userId',
@@ -32,7 +32,7 @@ describe('ApproveUser', () => {
         }
       }
     }))
-    const inviteResult = jest.fn(() => ({
+    const inviteResult = vi.fn(() => ({
       data: {
         userInviteRemove: {
           __typename: 'UserInvite',

@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
@@ -23,18 +24,18 @@ import { JOURNEY_PROFILE_CREATE } from './TermsAndConditions'
 
 import { TermsAndConditions } from '.'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseAuth = jest.fn()
-jest.mock('../../libs/auth', () => ({
+const mockUseAuth = vi.fn()
+vi.mock('../../libs/auth', () => ({
   __esModule: true,
   useAuth: (...args: unknown[]) => mockUseAuth(...args)
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 const journeyProfileCreateMock: MockedResponse<JourneyProfileCreate> = {
   request: {
@@ -131,7 +132,7 @@ const journeyDuplicateMock: MockedResponse<JourneyDuplicate> = {
 }
 
 describe('TermsAndConditions', () => {
-  const push = jest.fn()
+  const push = vi.fn()
 
   const mockUser: User = {
     id: 'userId',
@@ -147,12 +148,12 @@ describe('TermsAndConditions', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockUseAuth.mockReturnValue({ user: mockUser })
   })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   it('should enable next button when box is checked', async () => {
@@ -182,23 +183,21 @@ describe('TermsAndConditions', () => {
       query: { redirect: null }
     } as unknown as NextRouter)
 
-    const journeyProfileCreateMockResult = jest
+    const journeyProfileCreateMockResult = vi
       .fn()
       .mockReturnValue(journeyProfileCreateMock.result)
 
-    const journeyDuplicateMockResult = jest
+    const journeyDuplicateMockResult = vi
       .fn()
       .mockReturnValue(journeyDuplicateMock.result)
 
-    const teamCreateMockResult = jest
-      .fn()
-      .mockReturnValue(teamCreateMock.result)
+    const teamCreateMockResult = vi.fn().mockReturnValue(teamCreateMock.result)
 
-    const updateLastActiveTeamIdMockResult = jest
+    const updateLastActiveTeamIdMockResult = vi
       .fn()
       .mockReturnValue(updateLastActiveTeamIdMock.result)
 
-    const getTeamsMockResult = jest.fn().mockReturnValue(getTeams.result)
+    const getTeamsMockResult = vi.fn().mockReturnValue(getTeams.result)
 
     const { getByRole, queryByRole } = render(
       <MockedProvider
@@ -266,29 +265,115 @@ describe('TermsAndConditions', () => {
     })
   })
 
+  it('should navigate and clear loading even if the team refetch never resolves', async () => {
+    // Regression: the post-accept flow must not couple navigation or the
+    // button's loading state to the background team refetch / persistence.
+    // If the refetch stalls (e.g. a slow gateway), the user must still be
+    // taken to the destination instead of being stranded on a spinner.
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null }
+    } as unknown as NextRouter)
+
+    const { getByRole, queryByRole } = render(
+      <MockedProvider
+        mocks={[
+          journeyProfileCreateMock,
+          teamCreateMock,
+          getTeams, // initial TeamProvider query
+          { ...getTeams, delay: Infinity }, // query.refetch() never resolves
+          updateLastActiveTeamIdMock,
+          journeyDuplicateMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <TermsAndConditions />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('checkbox'))
+    fireEvent.click(getByRole('button', { name: 'Next' }))
+
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/?onboarding=true'))
+    await waitFor(() =>
+      expect(queryByRole('progressbar')).not.toBeInTheDocument()
+    )
+  })
+
+  it('should swallow a forbidden journey duplicate and still move the user on', async () => {
+    // Regression: a rejected journeyDuplicate (e.g. throwing "user is not
+    // allowed to duplicate journey") must not strand the user on a spinner.
+    // The onboarding template is best-effort — the user still gets a team and
+    // is navigated to the destination, and the button resets.
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null }
+    } as unknown as NextRouter)
+
+    const journeyDuplicateErrorMock: MockedResponse<JourneyDuplicate> = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: ONBOARDING_TEMPLATE_ID,
+          teamId: 'teamId1'
+        }
+      },
+      error: new Error('user is not allowed to duplicate journey')
+    }
+
+    const { getByRole, queryByRole } = render(
+      <MockedProvider
+        mocks={[
+          journeyProfileCreateMock,
+          teamCreateMock,
+          getTeams, // initial TeamProvider query
+          getTeams, // query.refetch()
+          updateLastActiveTeamIdMock,
+          journeyDuplicateErrorMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <TermsAndConditions />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('checkbox'))
+    fireEvent.click(getByRole('button', { name: 'Next' }))
+
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/?onboarding=true'))
+    await waitFor(() =>
+      expect(queryByRole('progressbar')).not.toBeInTheDocument()
+    )
+    expect(getByRole('button', { name: 'Next' })).not.toBeDisabled()
+  })
+
   it('should pass redirect query location to next page', async () => {
     mockUseRouter.mockReturnValue({
       push,
       query: { redirect: '/custom-location' }
     } as unknown as NextRouter)
 
-    const journeyProfileCreateMockResult = jest
+    const journeyProfileCreateMockResult = vi
       .fn()
       .mockReturnValue(journeyProfileCreateMock.result)
 
-    const journeyDuplicateMockResult = jest
+    const journeyDuplicateMockResult = vi
       .fn()
       .mockReturnValue(journeyDuplicateMock.result)
 
-    const teamCreateMockResult = jest
-      .fn()
-      .mockReturnValue(teamCreateMock.result)
+    const teamCreateMockResult = vi.fn().mockReturnValue(teamCreateMock.result)
 
-    const updateLastActiveTeamIdMockResult = jest
+    const updateLastActiveTeamIdMockResult = vi
       .fn()
       .mockReturnValue(updateLastActiveTeamIdMock.result)
 
-    const getTeamsMockResult = jest.fn().mockReturnValue(getTeams.result)
+    const getTeamsMockResult = vi.fn().mockReturnValue(getTeams.result)
 
     const { getByRole, queryByRole } = render(
       <MockedProvider
@@ -452,11 +537,11 @@ describe('TermsAndConditions', () => {
       }
     }
 
-    const journeyProfileCreateMockResult = jest
+    const journeyProfileCreateMockResult = vi
       .fn()
       .mockReturnValue(journeyProfileCreateMock.result)
 
-    const teamCreateMockResult = jest
+    const teamCreateMockResult = vi
       .fn()
       .mockReturnValue(teamCreateMockWithEmailUsername.result)
 
@@ -506,7 +591,7 @@ describe('TermsAndConditions', () => {
       } as User
     })
 
-    const journeyProfileCreateMockResult = jest
+    const journeyProfileCreateMockResult = vi
       .fn()
       .mockReturnValue(journeyProfileCreateMock.result)
 
@@ -590,19 +675,17 @@ describe('TermsAndConditions', () => {
         }
       }
 
-    const journeyProfileCreateMockResult = jest
+    const journeyProfileCreateMockResult = vi
       .fn()
       .mockReturnValue(journeyProfileCreateMock.result)
 
-    const teamCreateMockResult = jest
-      .fn()
-      .mockReturnValue(teamCreateMock.result)
+    const teamCreateMockResult = vi.fn().mockReturnValue(teamCreateMock.result)
 
-    const journeyDuplicateMockResult = jest
+    const journeyDuplicateMockResult = vi
       .fn()
       .mockReturnValue(journeyDuplicateMock.result)
 
-    const updateLastActiveTeamIdMockResult = jest
+    const updateLastActiveTeamIdMockResult = vi
       .fn()
       .mockReturnValue(updateLastActiveTeamIdForExistingTeamMock.result)
 

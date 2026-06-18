@@ -68,7 +68,7 @@ describe('HostSelection', () => {
   }
 
   it('should render default host selection', async () => {
-    const handleSelection = jest.fn()
+    const handleSelection = vi.fn()
     const { getByRole } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -91,7 +91,7 @@ describe('HostSelection', () => {
   })
 
   it('should render host details', () => {
-    const handleSelection = jest.fn()
+    const handleSelection = vi.fn()
     const { getByText, getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -114,7 +114,7 @@ describe('HostSelection', () => {
   })
 
   it('should disable editing hosts if no team on journey', async () => {
-    const handleSelection = jest.fn()
+    const handleSelection = vi.fn()
     const { getByRole } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -140,7 +140,7 @@ describe('HostSelection', () => {
   })
 
   it('should disable editing hosts if current user does not have access', async () => {
-    const handleSelection = jest.fn()
+    const handleSelection = vi.fn()
     const { getByRole, getByText } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -167,7 +167,7 @@ describe('HostSelection', () => {
   })
 
   it('should disable editing hosts if no users have access in team', async () => {
-    const handleSelection = jest.fn()
+    const handleSelection = vi.fn()
     const { getByRole, getByText } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -194,7 +194,7 @@ describe('HostSelection', () => {
   })
 
   it('should call handleselection on list', async () => {
-    const handleSelection = jest.fn()
+    const handleSelection = vi.fn()
     const { getByRole } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -218,7 +218,7 @@ describe('HostSelection', () => {
   })
 
   it('should call handleselection on form', async () => {
-    const handleSelection = jest.fn()
+    const handleSelection = vi.fn()
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>

@@ -1,10 +1,12 @@
 import compact from 'lodash/compact'
 
 import { Platform, prisma } from '@core/prisma/media/client'
+import type { VideoVariant as PrismaVideoVariant } from '@core/prisma/media/client'
 
 import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
 import { ensureLanguageHasVideosTrue } from '../../lib/languages/ensureLanguageHasVideos'
+import { notifyMediaSlackOfOperationFailure } from '../../lib/slack'
 import {
   videoCacheReset,
   videoVariantCacheReset
@@ -497,15 +499,31 @@ builder.mutationFields((t) => ({
           select: { id: true }
         })) != null
 
-      const newVariant = await prisma.videoVariant.create({
-        ...query,
-        data: {
-          ...input,
-          muxVideoId: input.muxVideoId ?? undefined,
-          published: input.published ?? true,
-          version: input.version ?? undefined
-        }
-      })
+      let newVariant: PrismaVideoVariant
+      try {
+        newVariant = await prisma.videoVariant.create({
+          ...query,
+          data: {
+            ...input,
+            muxVideoId: input.muxVideoId ?? undefined,
+            published: input.published ?? true,
+            version: input.version ?? undefined
+          }
+        })
+      } catch (error) {
+        notifyMediaSlackOfOperationFailure({
+          operation: 'Video variant create failed',
+          error,
+          context: {
+            videoId: input.videoId,
+            languageId: input.languageId,
+            edition: input.edition,
+            version: input.version,
+            muxVideoId: input.muxVideoId
+          }
+        })
+        throw error
+      }
       // Update video's availableLanguages and cascade to parent collections only for published variants
       if (newVariant.published) {
         await addLanguageToVideo(newVariant.videoId, newVariant.languageId)
@@ -534,6 +552,15 @@ builder.mutationFields((t) => ({
         )
       } catch (error) {
         console.error('Parent variant creation error:', error)
+        notifyMediaSlackOfOperationFailure({
+          operation: 'Video variant parent creation failed',
+          error,
+          context: {
+            videoId: newVariant.videoId,
+            languageId: newVariant.languageId,
+            variantId: newVariant.id
+          }
+        })
       }
 
       // Save the videoId before the try/catch block
@@ -581,27 +608,44 @@ builder.mutationFields((t) => ({
           })) != null
         : true
 
-      const updated = await prisma.videoVariant.update({
-        ...query,
-        where: { id: input.id },
-        data: {
-          hls: input.hls ?? undefined,
-          dash: input.dash ?? undefined,
-          share: input.share ?? undefined,
-          duration: input.duration ?? undefined,
-          lengthInMilliseconds: input.lengthInMilliseconds ?? undefined,
-          languageId: input.languageId ?? undefined,
-          slug: input.slug ?? undefined,
-          videoId: input.videoId ?? undefined,
-          edition: input.edition ?? undefined,
-          downloadable: input.downloadable ?? undefined,
-          published: input.published ?? undefined,
-          muxVideoId: input.muxVideoId ?? undefined,
-          assetId: input.assetId ?? undefined,
-          version: input.version ?? undefined,
-          brightcoveId: input.brightcoveId ?? undefined
-        }
-      })
+      let updated: PrismaVideoVariant
+      try {
+        updated = await prisma.videoVariant.update({
+          ...query,
+          where: { id: input.id },
+          data: {
+            hls: input.hls ?? undefined,
+            dash: input.dash ?? undefined,
+            share: input.share ?? undefined,
+            duration: input.duration ?? undefined,
+            lengthInMilliseconds: input.lengthInMilliseconds ?? undefined,
+            languageId: input.languageId ?? undefined,
+            slug: input.slug ?? undefined,
+            videoId: input.videoId ?? undefined,
+            edition: input.edition ?? undefined,
+            downloadable: input.downloadable ?? undefined,
+            published: input.published ?? undefined,
+            muxVideoId: input.muxVideoId ?? undefined,
+            assetId: input.assetId ?? undefined,
+            version: input.version ?? undefined,
+            brightcoveId: input.brightcoveId ?? undefined
+          }
+        })
+      } catch (error) {
+        notifyMediaSlackOfOperationFailure({
+          operation: 'Video variant update failed',
+          error,
+          context: {
+            variantId: input.id,
+            videoId: input.videoId ?? currentVariant.videoId,
+            languageId: input.languageId ?? currentVariant.languageId,
+            edition: input.edition,
+            version: input.version,
+            muxVideoId: input.muxVideoId
+          }
+        })
+        throw error
+      }
 
       // Handle parent variant changes if published status changed
       const wasPublished = currentVariant.published
@@ -624,6 +668,16 @@ builder.mutationFields((t) => ({
           }
         } catch (error) {
           console.error('Parent variant update error:', error)
+          notifyMediaSlackOfOperationFailure({
+            operation: 'Video variant parent update failed',
+            error,
+            context: {
+              variantId: input.id,
+              videoId: currentVariant.videoId,
+              languageId: currentVariant.languageId,
+              published: isNowPublished
+            }
+          })
         }
 
         // Update availableLanguages array based on published status change
@@ -651,6 +705,16 @@ builder.mutationFields((t) => ({
           }
         } catch (error) {
           console.error('Language management update error:', error)
+          notifyMediaSlackOfOperationFailure({
+            operation: 'Video variant language update failed',
+            error,
+            context: {
+              variantId: input.id,
+              videoId: currentVariant.videoId,
+              languageId: currentVariant.languageId,
+              published: isNowPublished
+            }
+          })
         }
       }
 
@@ -750,6 +814,16 @@ builder.mutationFields((t) => ({
         } catch (error) {
           // Log error but continue with other deletions
           console.error(`Failed to delete R2 asset ${assetId}:`, error)
+          notifyMediaSlackOfOperationFailure({
+            operation: 'Video variant R2 cleanup failed',
+            error,
+            context: {
+              variantId: id,
+              videoId,
+              languageId,
+              assetId
+            }
+          })
         }
       }
 
@@ -771,20 +845,54 @@ builder.mutationFields((t) => ({
             `Failed to delete Mux video ${variant.muxVideoId}:`,
             error
           )
+          notifyMediaSlackOfOperationFailure({
+            operation: 'Video variant Mux cleanup failed',
+            error,
+            context: {
+              variantId: id,
+              videoId,
+              languageId,
+              muxVideoId: variant.muxVideoId,
+              muxAssetId: variant.muxVideo.assetId
+            }
+          })
         }
       }
 
       // Delete the video variant
-      const deleted = await prisma.videoVariant.delete({
-        ...query,
-        where: { id }
-      })
+      let deleted: PrismaVideoVariant
+      try {
+        deleted = await prisma.videoVariant.delete({
+          ...query,
+          where: { id }
+        })
+      } catch (error) {
+        notifyMediaSlackOfOperationFailure({
+          operation: 'Video variant delete failed',
+          error,
+          context: {
+            variantId: id,
+            videoId,
+            languageId
+          }
+        })
+        throw error
+      }
 
       // Handle parent variant cleanup for child videos
       try {
         await handleParentVariantCleanup(videoId, languageId)
       } catch (error) {
         console.error('Parent variant cleanup error:', error)
+        notifyMediaSlackOfOperationFailure({
+          operation: 'Video variant parent cleanup failed',
+          error,
+          context: {
+            variantId: id,
+            videoId,
+            languageId
+          }
+        })
       }
 
       // Update availableLanguages array when variant is deleted
@@ -802,6 +910,15 @@ builder.mutationFields((t) => ({
         }
       } catch (error) {
         console.error('Language management cleanup error:', error)
+        notifyMediaSlackOfOperationFailure({
+          operation: 'Video variant language cleanup failed',
+          error,
+          context: {
+            variantId: id,
+            videoId,
+            languageId
+          }
+        })
       }
 
       try {

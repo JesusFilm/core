@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography'
 import { Trans, useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
-import { bodySx, mediaSlotSx } from '../styles'
+import { mediaSlotSx } from '../styles'
 
 /**
  * SharingAndPublishingSection — Section 4 of TemplateInfoPanel (NES-1538).
@@ -17,22 +17,22 @@ export function SharingAndPublishingSection(): ReactElement {
 
   return (
     <Stack gap={1} data-testid="SharingAndPublishingSection">
-      <Typography sx={bodySx}>
+      <Typography variant="body2">
         {t(
           'When your template is ready (you set trackable and customizable items) you can publish it.'
         )}
       </Typography>
-      <Typography sx={bodySx}>
+      <Typography variant="body2">
         <Trans
           t={t}
           i18nKey="Select <0>Publish</0> in the three dots menu to get a link to share. Anyone with the link can use your project as template, and you can track its impact."
           components={[<strong key="emphasis" />]}
         />
       </Typography>
-      <Typography sx={bodySx}>
+      <Typography variant="body2">
         {t('You can add as many templates as you want!')}
       </Typography>
-      <Typography sx={bodySx}>
+      <Typography variant="body2">
         <Trans
           t={t}
           i18nKey="You also can use your template with any team you have access to. No publishing needed in this case. Select <0>Use in a team</0> in the three dots menu."

@@ -25,7 +25,7 @@ export const textResponseWithButtonRestoreMock: MockedResponse<
       endIconId: 'endIcon.id'
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       textResponse: [
         {
@@ -85,5 +85,8 @@ export const textResponseWithButtonRestoreMock: MockedResponse<
         }
       ]
     }
-  }))
+  })) as MockedResponse<
+    TextResponseWithButtonRestore,
+    TextResponseWithButtonRestoreVariables
+  >['result']
 }

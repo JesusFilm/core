@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import '../../../../test/i18n'
 
@@ -8,9 +9,9 @@ import { copyToClipboard } from '../../../libs/copyToClipboard'
 
 import { CollectionPublishSuccessDialog } from './CollectionPublishSuccessDialog'
 
-jest.mock('../../../libs/copyToClipboard')
+vi.mock('../../../libs/copyToClipboard')
 
-const mockCopyToClipboard = copyToClipboard as jest.MockedFunction<
+const mockCopyToClipboard = copyToClipboard as MockedFunction<
   typeof copyToClipboard
 >
 
@@ -20,7 +21,7 @@ describe('CollectionPublishSuccessDialog', () => {
   beforeEach(() => {
     mockCopyToClipboard.mockReset()
     originalOpen = window.open
-    window.open = jest.fn()
+    window.open = vi.fn()
   })
 
   afterEach(() => {
@@ -32,9 +33,9 @@ describe('CollectionPublishSuccessDialog', () => {
       React.ComponentProps<typeof CollectionPublishSuccessDialog>
     > = {}
   ): {
-    onClose: jest.Mock
+    onClose: Mock
   } {
-    const onClose = jest.fn()
+    const onClose = vi.fn()
     render(
       <SnackbarProvider>
         <CollectionPublishSuccessDialog
@@ -98,29 +99,23 @@ describe('CollectionPublishSuccessDialog', () => {
     expect(onClose).toHaveBeenCalledTimes(1)
   })
 
-  it('does not open a new tab when slug is null', async () => {
-    const { onClose } = renderDialog({ slug: null })
-    await userEvent.click(screen.getByRole('button', { name: 'View the page' }))
-    expect(window.open).not.toHaveBeenCalled()
-    expect(onClose).not.toHaveBeenCalled()
+  it('disables "View the page" when slug is null', () => {
+    renderDialog({ slug: null })
+    expect(screen.getByRole('button', { name: 'View the page' })).toBeDisabled()
   })
 
-  it('does not open a new tab if publicUrl is null', async () => {
-    const { onClose } = renderDialog({ publicUrl: null })
-    await userEvent.click(screen.getByRole('button', { name: 'View the page' }))
-    expect(window.open).not.toHaveBeenCalled()
-    expect(onClose).not.toHaveBeenCalled()
+  it('disables "View the page" when publicUrl is null', () => {
+    renderDialog({ publicUrl: null })
+    expect(screen.getByRole('button', { name: 'View the page' })).toBeDisabled()
   })
 
-  it('does not open a new tab and surfaces the gate copy when canPublish is false', async () => {
-    const { onClose } = renderDialog({
+  it('disables "View the page" and surfaces the gate copy when canPublish is false', () => {
+    renderDialog({
       slug: 'my-collection',
       canPublish: false,
       publishBlockedReason: 'gate copy'
     })
     expect(screen.getByText('gate copy')).toBeInTheDocument()
-    await userEvent.click(screen.getByRole('button', { name: 'View the page' }))
-    expect(window.open).not.toHaveBeenCalled()
-    expect(onClose).not.toHaveBeenCalled()
+    expect(screen.getByRole('button', { name: 'View the page' })).toBeDisabled()
   })
 })
