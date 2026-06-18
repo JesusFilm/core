@@ -158,6 +158,7 @@ See `docs/solutions/workflow-issues/prisma7-migrate-and-nx-codegen-schema-change
 The frontend codegen targets that use the legacy `apollo client:codegen` CLI (`journeys`, `journeys-admin`, `journeys-ui`, `resources`, `watch`) reject `@deprecated` on input fields and arguments — their bundled validator predates graphql-js 15.5, and the failure is all-or-nothing at schema load. `generate-graphql` and the gateway compose (Steps 5–6) pass; only Step 7 fails. Do not add `deprecationReason` to Pothos **input** fields — express the deprecation in the field `description` text instead, and keep `@deprecated` on output fields (legal in every consumer).
 
 See `docs/solutions/build-errors/apollo-codegen-deprecated-directive-input-field-2026-06-08.md`.
+
 ## Common Mistakes to Avoid
 
 - **Do NOT edit `schema.graphql` directly** in any API — it is auto-generated. Edit the Pothos schema code instead.
