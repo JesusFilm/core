@@ -14,7 +14,6 @@ builder.mutationField('hostUpdate', (t) =>
     .prismaField({
       type: HostRef,
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         id: t.arg({ type: 'ID', required: true }),
         teamId: t.arg({ type: 'ID', required: true }),

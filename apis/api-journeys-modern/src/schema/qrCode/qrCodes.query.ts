@@ -11,7 +11,6 @@ builder.queryField('qrCodes', (t) =>
     .prismaField({
       type: [QrCodeRef],
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         where: t.arg({ type: QrCodesFilter, required: true })
       },

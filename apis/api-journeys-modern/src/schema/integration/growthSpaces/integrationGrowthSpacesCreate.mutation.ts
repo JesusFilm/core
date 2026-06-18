@@ -43,7 +43,6 @@ builder.mutationField('integrationGrowthSpacesCreate', (t) =>
     .prismaField({
       type: IntegrationGrowthSpacesRef,
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         input: t.arg({
           type: IntegrationGrowthSpacesCreateInput,

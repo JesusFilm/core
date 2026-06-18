@@ -13,7 +13,6 @@ builder.queryField('userTeam', (t) =>
     .prismaField({
       type: UserTeamRef,
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         id: t.arg({ type: 'ID', required: true })
       },

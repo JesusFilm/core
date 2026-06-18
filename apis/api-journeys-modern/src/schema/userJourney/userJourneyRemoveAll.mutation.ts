@@ -11,7 +11,6 @@ builder.mutationField('userJourneyRemoveAll', (t) =>
     .prismaField({
       type: [UserJourneyRef],
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         id: t.arg({ type: 'ID', required: true })
       },
