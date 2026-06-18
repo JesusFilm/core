@@ -6,7 +6,7 @@ import { SLUG_MAX_LENGTH, SLUG_PATTERN } from './generateUniqueSlug'
 import { TemplateGalleryPageRef } from './templateGalleryPage'
 
 // Public, unauthenticated query. This is the first resolver in
-// api-journeys-modern that serves PublicContext requests — there is no
+// api-journeys that serves PublicContext requests — there is no
 // `withAuth` block and no type-level scope on TemplateGalleryPage to opt
 // out of. The `where: { status: 'published' }` filter is the actual
 // gatekeeper: drafts and unknown slugs return null (frontend interprets

@@ -15,7 +15,7 @@ paths:
 
 | Domain    | Nx Project         | Schema Path                              | DB URL Env Var              | APIs Using This Domain                                                        |
 | --------- | ------------------ | ---------------------------------------- | --------------------------- | ----------------------------------------------------------------------------- |
-| journeys  | `prisma-journeys`  | `libs/prisma/journeys/db/schema.prisma`  | `PG_DATABASE_URL_JOURNEYS`  | `api-journeys`, `api-journeys-modern`                                         |
+| journeys  | `prisma-journeys`  | `libs/prisma/journeys/db/schema.prisma`  | `PG_DATABASE_URL_JOURNEYS`  | `api-journeys`                                         |
 | users     | `prisma-users`     | `libs/prisma/users/db/schema.prisma`     | `PG_DATABASE_URL_USERS`     | `api-users`                                                                   |
 | analytics | `prisma-analytics` | `libs/prisma/analytics/db/schema.prisma` | `PG_DATABASE_URL_ANALYTICS` | `api-analytics` (uses `prisma-introspect`, not `prisma-migrate` — see Step 3) |
 | languages | `prisma-languages` | `libs/prisma/languages/db/schema.prisma` | `PG_DATABASE_URL_LANGUAGES` | `api-languages`                                                               |
@@ -64,7 +64,7 @@ This creates a SQL migration file with a timestamped name and runs it against yo
 
 This differs by API:
 
-- **api-journeys-modern (Pothos):** Edit the Pothos schema code in `apis/api-journeys-modern/src/schema/`. The types are defined in TypeScript.
+- **api-journeys (Pothos):** Edit the Pothos schema code in `apis/api-journeys/src/schema/`. The types are defined in TypeScript.
 - **Other APIs (Pothos):** Edit the Pothos schema code in `apis/<api>/src/schema/`.
 
 **Step 5: Generate GraphQL schema for each affected API**
@@ -78,7 +78,7 @@ nx generate-graphql <api-name>
 For example, if you changed the journeys schema:
 
 ```bash
-nx generate-graphql api-journeys-modern
+nx generate-graphql api-journeys
 ```
 
 **Step 6: Recompose the gateway schema**
@@ -136,4 +136,4 @@ nx prisma-generate prisma-<domain>
 - **Do NOT edit `schema.graphql` directly** in any API — it is auto-generated. Edit the Pothos schema code instead.
 - **Do NOT forget `generate-graphql api-gateway`** after updating any subgraph schema — the gateway supergraph must be recomposed.
 - **Do NOT forget `nx run-many -t codegen`** — frontend TypeScript types will be stale until codegen runs.
-- **Do NOT skip generating for all APIs that share a prisma domain** — e.g., both `api-journeys` and `api-journeys-modern` share `prisma-journeys`.
+- **Do NOT skip generating for all APIs that share a prisma domain** — when multiple APIs share one Prisma schema, regenerate GraphQL for each of them.

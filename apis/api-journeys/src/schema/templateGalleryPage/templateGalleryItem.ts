@@ -4,7 +4,7 @@ import { Language } from '../language'
 
 // Narrow public DTO for the templates assigned to a TemplateGalleryPage.
 // Intentionally NOT the full Journey type: `templateGalleryPageBySlug` is
-// the first PublicContext-serving resolver in api-journeys-modern, and
+// the first PublicContext-serving resolver in api-journeys, and
 // returning `JourneyRef` here would expose Journey's full federated surface
 // — including transitively-reachable fields like `userJourneys` and
 // `team.userTeams` that the modern subgraph's Pothos `t.relation`

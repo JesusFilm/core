@@ -4,7 +4,7 @@ import { TemplateGalleryPageStatus } from './enums'
 import { TemplateGalleryItemRef } from './templateGalleryItem'
 
 // `shareable` is intentionally omitted: TemplateGalleryPage is owned
-// exclusively by api-journeys-modern and is not federated with the legacy
+// exclusively by api-journeys and is not federated with the legacy
 // api-journeys subgraph. Setting `shareable: true` (the sibling default)
 // would falsely advertise that another subgraph may also resolve this type.
 export const TemplateGalleryPageRef = builder.prismaObject(
