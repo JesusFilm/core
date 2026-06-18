@@ -16,7 +16,6 @@ builder.queryField('block', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: Block,
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       id: t.arg({ type: 'ID', required: true })
     },

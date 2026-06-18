@@ -14,7 +14,6 @@ builder.queryField('journeyCollection', (t) =>
     .prismaField({
       type: JourneyCollectionRef,
       nullable: false,
-      override: { from: 'api-journeys' },
       args: {
         id: t.arg({ type: 'ID', required: true })
       },

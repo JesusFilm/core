@@ -9,7 +9,6 @@ builder.mutationField('updateJourneysEmailPreference', (t) =>
   t.prismaField({
     type: JourneysEmailPreferenceRef,
     nullable: true,
-    override: { from: 'api-journeys' },
     args: {
       input: t.arg({ type: JourneysEmailPreferenceUpdateInput, required: true })
     },

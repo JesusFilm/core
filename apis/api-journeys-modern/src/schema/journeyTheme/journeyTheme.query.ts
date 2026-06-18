@@ -12,7 +12,6 @@ builder.queryField('journeyTheme', (t) =>
     .prismaField({
       type: JourneyThemeRef,
       nullable: true,
-      override: { from: 'api-journeys' },
       args: {
         journeyId: t.arg({ type: 'ID', required: true })
       },

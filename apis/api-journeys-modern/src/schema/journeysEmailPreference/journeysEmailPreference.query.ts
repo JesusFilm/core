@@ -8,7 +8,6 @@ builder.queryField('journeysEmailPreference', (t) =>
   t.prismaField({
     type: JourneysEmailPreferenceRef,
     nullable: true,
-    override: { from: 'api-journeys' },
     args: {
       email: t.arg.string({ required: true })
     },

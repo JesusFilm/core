@@ -74,7 +74,6 @@ builder.queryField('visitorsConnection', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: VisitorsConnectionRef,
     nullable: false,
-    override: { from: 'api-journeys' },
     args: {
       teamId: t.arg.string({ required: false }),
       first: t.arg.int({ required: false }),
