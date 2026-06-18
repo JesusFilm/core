@@ -64,6 +64,14 @@ interface AiChatProps {
    * close button).
    */
   onClose?: () => void
+  /**
+   * Re-themes the `panel` variant for a dark backdrop (NES-1738 Option B:
+   * the desktop ChatOverlay renders the compact bar over a dark layer).
+   * It drops the header's red wash, lightens the header + assistant text
+   * to the overlay tokens, and is otherwise a no-op. The mobile
+   * `PinnedChatBar` leaves it false so its white sheet stays light.
+   */
+  onDark?: boolean
 }
 
 export type AiChatSheetState = 'idle' | 'active'
@@ -225,10 +233,16 @@ export function AiChat({
   initialMessage,
   variant = 'panel',
   onSheetStateChange,
-  onClose
+  onClose,
+  onDark = false
 }: AiChatProps): ReactElement {
   const isOverlay = variant === 'overlay'
   const isPanel = !isOverlay
+  // Both the desktop overlay variant and the dark-themed panel (Option B)
+  // sit on a dark backdrop, so assistant prose and surface tints use the
+  // dark tokens in either case.
+  const isDarkSurface = isOverlay || onDark
+  const messageSurface: 'light' | 'dark' = isDarkSurface ? 'dark' : 'light'
   const { t } = useTranslation('libs-journeys-ui')
   const { journey } = useJourney()
   const [input, setInput] = useState('')
@@ -439,10 +453,21 @@ export function AiChat({
       }}
     >
       {showHeader && (
-        // pt compensates for the removed drag handle so the header
-        // doesn't sit flush against the sheet's rounded top edge.
-        <Box sx={{ background: HEADER_WASH, flexShrink: 0, pt: 1 }}>
-          <ChatHeader thinking={isLoading} onClose={onClose} />
+        // pt compensates for the removed drag handle so the header doesn't
+        // sit flush against the sheet's rounded top edge. The dark overlay
+        // (Option B) has a visible top border, so it gets a larger inset
+        // (matching the 16px corner radius) for clear separation between the
+        // border and the header; the white mobile sheet keeps the smaller
+        // inset. On dark the red HEADER_WASH would read as a red bar, so the
+        // wrapper goes transparent and the dark layer shows through.
+        <Box
+          sx={{
+            background: onDark ? 'transparent' : HEADER_WASH,
+            flexShrink: 0,
+            pt: onDark ? 2 : 1
+          }}
+        >
+          <ChatHeader thinking={isLoading} onClose={onClose} onDark={onDark} />
         </Box>
       )}
 
@@ -552,7 +577,7 @@ export function AiChat({
                     text={text}
                     animate={isLast}
                     isStreaming={isLast && isLoading}
-                    surface={isOverlay ? 'dark' : 'light'}
+                    surface={messageSurface}
                   />
                 ) : (
                   <Message role="user">{text}</Message>
@@ -563,21 +588,13 @@ export function AiChat({
           {isLoading &&
             (messages.length === 0 ||
               messages[messages.length - 1]?.role === 'user') && (
-              <Message
-                role="assistant"
-                plain
-                surface={isOverlay ? 'dark' : 'light'}
-              >
+              <Message role="assistant" plain surface={messageSurface}>
                 <TypingIndicator />
               </Message>
             )}
           {error != null && !isLoading && (
             <Box>
-              <Message
-                role="assistant"
-                plain
-                surface={isOverlay ? 'dark' : 'light'}
-              >
+              <Message role="assistant" plain surface={messageSurface}>
                 <Box component="span" sx={{ opacity: 0.7 }}>
                   {isConversationCapped
                     ? t(
@@ -600,7 +617,7 @@ export function AiChat({
                     aria-label={t('Start a new conversation')}
                     sx={{
                       fontSize: 12,
-                      color: isOverlay ? OVERLAY_FG_RETRY : MUTED_FG,
+                      color: isDarkSurface ? OVERLAY_FG_RETRY : MUTED_FG,
                       minWidth: 0
                     }}
                   >
@@ -616,7 +633,7 @@ export function AiChat({
                       aria-label={t('Retry')}
                       sx={{
                         fontSize: 12,
-                        color: isOverlay ? OVERLAY_FG_RETRY : MUTED_FG,
+                        color: isDarkSurface ? OVERLAY_FG_RETRY : MUTED_FG,
                         minWidth: 0
                       }}
                     >
