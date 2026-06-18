@@ -1,10 +1,12 @@
 import './enums'
 import './inputs'
 import './templateGalleryItem'
+import './templateGalleryPageMedia'
 import './templateGalleryPage'
 import './templateGalleryPage.query'
 import './templateGalleryPageBySlug.query'
 import './templateGalleryPages.query'
+import './templateGalleryPageEmbedPreview.query'
 import './templateGalleryPageCreate.mutation'
 import './templateGalleryPageUpdate.mutation'
 import './templateGalleryPagePublish.mutation'
@@ -13,4 +15,7 @@ import './templateGalleryPageAssignJourney.mutation'
 import './templateGalleryPageReorderTemplate.mutation'
 import './templateGalleryPageDelete.mutation'
 
-export { TemplateGalleryPageRef } from './templateGalleryPage'
+export {
+  TemplateGalleryPageRef,
+  TemplateGalleryPagePublicRef
+} from './templateGalleryPage'

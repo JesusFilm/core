@@ -49,7 +49,7 @@ export interface GetTemplateGalleryPage_templateGalleryPageBySlug_templates {
 }
 
 export interface GetTemplateGalleryPage_templateGalleryPageBySlug {
-  __typename: "TemplateGalleryPage";
+  __typename: "TemplateGalleryPagePublic";
   /**
    * Stable UUID identifier.
    */
@@ -87,7 +87,7 @@ export interface GetTemplateGalleryPage_templateGalleryPageBySlug {
    */
   creatorImageAlt: string | null;
   /**
-   * Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.
+   * Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only. Each item is the narrow `TemplateGalleryItem` DTO, NOT the full `Journey` type.
    */
   templates: GetTemplateGalleryPage_templateGalleryPageBySlug_templates[];
 }
