@@ -2,10 +2,10 @@
 
 GraphQL API layer for the NextSteps platform, composed via Apollo Federation.
 
-| Service               | Framework             | Role                                                                        |
-| --------------------- | --------------------- | --------------------------------------------------------------------------- |
+| Service        | Framework             | Role                                                                        |
+| -------------- | --------------------- | --------------------------------------------------------------------------- |
 | `api-journeys` | GraphQL Yoga + Pothos | Journeys API — code-first schema, scope auth                                |
-| `api-gateway`         | GraphQL Hive Gateway  | Federation gateway — composes subgraphs, JWT validation, header propagation |
+| `api-gateway`  | GraphQL Hive Gateway  | Federation gateway — composes subgraphs, JWT validation, header propagation |
 
 ## Shared conventions
 
