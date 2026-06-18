@@ -115,6 +115,19 @@ describe('AiChatButton', () => {
     expect(getByTestId('ChatOverlay-open')).toBeInTheDocument()
   })
 
+  it('hides the floating trigger button while the chat is open', async () => {
+    const user = userEvent.setup()
+    const { getByRole, queryByRole } = renderButton()
+
+    expect(getByRole('button', { name: 'Open AI chat' })).toBeInTheDocument()
+    await user.click(getByRole('button', { name: 'Open AI chat' }))
+    // Once open, the panel covers the footer — the trigger unmounts so it
+    // doesn't float over the open chat. The overlay itself stays mounted.
+    expect(
+      queryByRole('button', { name: 'Open AI chat' })
+    ).not.toBeInTheDocument()
+  })
+
   it('does not mount the overlay surface on mobile — the drawer owns xs', async () => {
     mockUseMediaQuery.mockReturnValue(false)
     const user = userEvent.setup()
