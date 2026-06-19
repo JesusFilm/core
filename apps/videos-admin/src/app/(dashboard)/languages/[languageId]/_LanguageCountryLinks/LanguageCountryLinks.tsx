@@ -30,7 +30,7 @@ const DEFAULT_LANGUAGE_ID = '529'
 
 export const SEARCH_COUNTRIES = gql`
   query SearchCountriesForLanguageAdmin($term: String, $nameLanguageId: ID) {
-    countries(term: $term) {
+    adminCountries(term: $term) {
       id
       name(languageId: $nameLanguageId) {
         value
@@ -335,7 +335,7 @@ export function LanguageCountryLinks({
 
   const [searchCountries, { data: countriesData, loading: countriesLoading }] =
     useLazyQuery<
-      { countries: CountryOption[] },
+      { adminCountries: CountryOption[] },
       { term?: string; nameLanguageId: string }
     >(SEARCH_COUNTRIES)
   const [createCountryLanguage, { loading: createLoading }] = useMutation(
@@ -353,7 +353,7 @@ export function LanguageCountryLinks({
     }
   }, [])
 
-  const countries = countriesData?.countries ?? []
+  const countries = countriesData?.adminCountries ?? []
   const linkedCountryIds = useMemo(
     () =>
       new Set(
