@@ -143,17 +143,20 @@ function requiredNumber(value: string): number {
 }
 
 function valuesAreValid(values: RowValues): boolean {
+  const speakers = requiredNumber(values.speakers)
+  const displaySpeakers = optionalNumber(values.displaySpeakers)
+  const order = optionalNumber(values.order)
+
   return (
     values.speakers.trim().length > 0 &&
-    Number.isFinite(requiredNumber(values.speakers)) &&
-    requiredNumber(values.speakers) >= 0 &&
+    Number.isFinite(speakers) &&
+    speakers >= 0 &&
     (values.displaySpeakers.trim().length === 0 ||
-      (Number.isFinite(optionalNumber(values.displaySpeakers)) &&
-        optionalNumber(values.displaySpeakers) != null &&
-        optionalNumber(values.displaySpeakers) >= 0)) &&
+      (displaySpeakers != null &&
+        Number.isFinite(displaySpeakers) &&
+        displaySpeakers >= 0)) &&
     (values.order.trim().length === 0 ||
-      (Number.isFinite(optionalNumber(values.order)) &&
-        optionalNumber(values.order) != null))
+      (order != null && Number.isFinite(order)))
   )
 }
 

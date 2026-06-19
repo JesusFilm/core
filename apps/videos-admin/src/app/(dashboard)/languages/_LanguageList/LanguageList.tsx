@@ -36,10 +36,10 @@ export const GET_LANGUAGES = gql`
     $limit: Int
     $offset: Int
     $term: String
-    $where: LanguagesFilter
+    $where: AdminLanguagesFilter
     $nameLanguageId: ID
   ) {
-    languages(limit: $limit, offset: $offset, term: $term, where: $where) {
+    adminLanguages(limit: $limit, offset: $offset, term: $term, where: $where) {
       id
       bcp47
       iso3
@@ -58,7 +58,7 @@ export const GET_LANGUAGES = gql`
         primary
       }
     }
-    languagesCount(term: $term, where: $where)
+    adminLanguagesCount(term: $term, where: $where)
   }
 `
 
@@ -80,11 +80,11 @@ interface Language {
 }
 
 interface GetLanguagesData {
-  languages: Language[]
-  languagesCount: number
+  adminLanguages: Language[]
+  adminLanguagesCount: number
 }
 
-interface LanguagesFilter {
+interface AdminLanguagesFilter {
   hasVideos?: boolean
 }
 
@@ -92,7 +92,7 @@ interface GetLanguagesVariables {
   limit: number
   offset: number
   term?: string
-  where?: LanguagesFilter
+  where?: AdminLanguagesFilter
   nameLanguageId: string
 }
 
@@ -147,7 +147,7 @@ export function LanguageList(): ReactElement {
     return () => clearTimeout(timeout)
   }, [searchTerm])
 
-  const where = useMemo<LanguagesFilter | undefined>(() => {
+  const where = useMemo<AdminLanguagesFilter | undefined>(() => {
     if (hasVideosFilter === 'all') return undefined
     return { hasVideos: hasVideosFilter === 'yes' }
   }, [hasVideosFilter])
@@ -188,7 +188,7 @@ export function LanguageList(): ReactElement {
 
   const rows: GridRowsProp<LanguageRow> = useMemo(
     () =>
-      data?.languages.map((language) => {
+      data?.adminLanguages.map((language) => {
         const primaryName = getPrimaryName(language.nativeName)
         const localizedName = getLocalizedName(language.name)
 
@@ -206,7 +206,7 @@ export function LanguageList(): ReactElement {
           hasVideos: language.hasVideos
         }
       }) ?? [],
-    [data?.languages]
+    [data?.adminLanguages]
   )
 
   const columns: GridColDef<LanguageRow>[] = [
@@ -329,7 +329,7 @@ export function LanguageList(): ReactElement {
               sx={{ height: '100%', minHeight: { xs: 360, sm: 420 } }}
               rows={rows}
               columns={columns}
-              rowCount={data?.languagesCount ?? 0}
+              rowCount={data?.adminLanguagesCount ?? 0}
               loading={loading}
               paginationMode="server"
               disableColumnFilter
