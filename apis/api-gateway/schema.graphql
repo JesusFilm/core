@@ -1477,6 +1477,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   adminLanguagesCount(where: AdminLanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES)
   country(id: ID!) : Country @join__field(graph: API_LANGUAGES) 
   countries(term: String, ids: [ID!], where: CountriesFilter) : [Country!]! @join__field(graph: API_LANGUAGES) 
+  adminCountries(term: String, ids: [ID!], where: CountriesFilter) : [Country!]! @join__field(graph: API_LANGUAGES)
   getMyCloudflareImages(offset: Int, limit: Int, isAi: Boolean, teamId: ID) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   getMyCloudflareImage(id: ID!) : CloudflareImage! @join__field(graph: API_MEDIA) 
   videoImages(where: VideoImagesFilter, offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
