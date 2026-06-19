@@ -117,6 +117,11 @@ youTube source: videoId, title, description, and duration present`,
     }),
     customizable: t.exposeBoolean('customizable', {
       nullable: true
+    }),
+    notes: t.exposeString('notes', {
+      nullable: true,
+      description:
+        'Publisher notes for template adapters (e.g. trailer, intro).'
     })
   })
 })

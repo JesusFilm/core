@@ -1,39 +1,40 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+import type { MockedFunction } from 'vitest'
 
 import { useThumbnailUrl } from '../../libs/thumbnail'
 import { videos } from '../Videos/__generated__/testData'
 
 import { VideoCard } from '.'
 
-jest.mock('../../libs/blurhash', () => ({
-  useBlurhash: jest.fn(() => ({
+vi.mock('../../libs/blurhash', () => ({
+  useBlurhash: vi.fn(() => ({
     blurhash: 'test-blurhash',
     dominantColor: '#000000',
     isLoading: false,
     error: null
   })),
-  blurImage: jest.fn(() => 'data:image/webp;base64,test')
+  blurImage: vi.fn(() => 'data:image/webp;base64,test')
 }))
-jest.mock('../../libs/thumbnail', () => ({
-  useThumbnailUrl: jest.fn(() => ({
+vi.mock('../../libs/thumbnail', () => ({
+  useThumbnailUrl: vi.fn(() => ({
     thumbnailUrl: null,
     isLoading: false,
     error: null
   }))
 }))
-jest.mock('../../libs/watchContext', () => ({
-  useWatch: jest.fn(() => ({
+vi.mock('../../libs/watchContext', () => ({
+  useWatch: vi.fn(() => ({
     state: { audioLanguageId: '529' }
   }))
 }))
 
-const useThumbnailUrlMock = useThumbnailUrl as jest.MockedFunction<
+const useThumbnailUrlMock = useThumbnailUrl as MockedFunction<
   typeof useThumbnailUrl
 >
 
 describe('VideoCard', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('displays image', () => {
@@ -46,6 +47,23 @@ describe('VideoCard', () => {
     const img = getByRole('img')
     expect(img).toHaveAttribute('src', videos[0].images[0].mobileCinematicHigh)
     expect(img).toHaveAttribute('alt', videos[0].title[0].value)
+    expect(img).not.toHaveAttribute('data-unoptimized')
+  })
+
+  it('bypasses Next image optimization for local thumbnail overrides', () => {
+    const thumbnailUrl =
+      '/watch/images/thumbnails/1_jf-0-0-vertical.png?v=1540000000000'
+    useThumbnailUrlMock.mockReturnValue({
+      thumbnailUrl,
+      isLoading: false,
+      error: null
+    })
+
+    const { getByRole } = render(<VideoCard video={videos[0]} />)
+    const img = getByRole('img')
+
+    expect(img).toHaveAttribute('src', thumbnailUrl)
+    expect(img).toHaveAttribute('data-unoptimized', 'true')
   })
 
   it('sets link to video url', () => {
@@ -169,7 +187,7 @@ describe('VideoCard', () => {
 
   describe('hover functionality', () => {
     it('should call onHoverImageChange with image data object on mouse enter', () => {
-      const onHoverImageChange = jest.fn()
+      const onHoverImageChange = vi.fn()
       render(
         <VideoCard video={videos[0]} onHoverImageChange={onHoverImageChange} />
       )
@@ -185,7 +203,7 @@ describe('VideoCard', () => {
     })
 
     it('should call onHoverImageChange with null on mouse leave', () => {
-      const onHoverImageChange = jest.fn()
+      const onHoverImageChange = vi.fn()
       render(
         <VideoCard video={videos[0]} onHoverImageChange={onHoverImageChange} />
       )
@@ -197,7 +215,7 @@ describe('VideoCard', () => {
     })
 
     it('should not call onHoverImageChange when no video data', () => {
-      const onHoverImageChange = jest.fn()
+      const onHoverImageChange = vi.fn()
       render(<VideoCard onHoverImageChange={onHoverImageChange} />)
 
       const button = screen.getByRole('button')

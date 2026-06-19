@@ -15,7 +15,7 @@ import { useAdminJourneysQuery } from '.'
 
 describe('useAdminJourneysQuery', () => {
   it('should get journeys', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeys: [
           {
@@ -125,5 +125,49 @@ describe('useAdminJourneysQuery', () => {
         }
       ])
     })
+  })
+
+  it('should skip query when skip option is true', async () => {
+    const result = vi.fn(() => ({
+      data: {
+        journeys: []
+      }
+    }))
+
+    const { result: hookResult } = renderHook(
+      () =>
+        useAdminJourneysQuery(
+          {
+            status: [JourneyStatus.draft],
+            template: true
+          },
+          { skip: true }
+        ),
+      {
+        wrapper: ({ children }) => (
+          <MockedProvider
+            mocks={[
+              {
+                request: {
+                  query: GET_ADMIN_JOURNEYS,
+                  variables: {
+                    status: [JourneyStatus.draft],
+                    template: true
+                  }
+                },
+                result
+              }
+            ]}
+          >
+            {children}
+          </MockedProvider>
+        )
+      }
+    )
+
+    // Query should not have loading state when skipped
+    expect(hookResult.current.loading).toBe(false)
+    expect(hookResult.current.data).toBeUndefined()
+    expect(result).not.toHaveBeenCalled()
   })
 })

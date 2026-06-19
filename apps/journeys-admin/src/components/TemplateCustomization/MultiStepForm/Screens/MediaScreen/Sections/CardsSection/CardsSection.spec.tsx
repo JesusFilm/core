@@ -6,7 +6,7 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../..
 
 import { CardsSection } from './CardsSection'
 
-jest.mock('next-i18next', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
@@ -29,10 +29,10 @@ describe('CardsSection', () => {
   const step1 = createStepBlock('step1.id', 0)
   const step2 = createStepBlock('step2.id', 1)
   const customizableSteps = [step1, step2]
-  const handleStepClick = jest.fn()
+  const handleStepClick = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render with CardsSection', () => {
@@ -44,7 +44,29 @@ describe('CardsSection', () => {
       />
     )
     expect(screen.getByTestId('CardsSection')).toBeInTheDocument()
+  })
+
+  it('should show Cards label when showLabel is true', () => {
+    render(
+      <CardsSection
+        customizableSteps={customizableSteps}
+        selectedStep={step1}
+        handleStepClick={handleStepClick}
+        showLabel
+      />
+    )
     expect(screen.getByText('Cards')).toBeInTheDocument()
+  })
+
+  it('should hide Cards label when showLabel is false', () => {
+    render(
+      <CardsSection
+        customizableSteps={customizableSteps}
+        selectedStep={step1}
+        handleStepClick={handleStepClick}
+      />
+    )
+    expect(screen.queryByText('Cards')).not.toBeInTheDocument()
   })
 
   it('should render step cards via TemplateCardPreview', () => {

@@ -1,4 +1,5 @@
 import { format } from 'date-fns'
+import { type MockedFunction, vi } from 'vitest'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
@@ -9,40 +10,40 @@ import { getIntegrationGoogleAccessToken } from '../../lib/google/googleAuth'
 import { createSpreadsheet, ensureSheet } from '../../lib/google/sheets'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
-jest.mock('@core/yoga/firebaseClient', () => ({
-  getUserFromPayload: jest.fn()
+vi.mock('@core/yoga/firebaseClient', () => ({
+  getUserFromPayload: vi.fn()
 }))
 
-jest.mock('../../lib/auth/ability', () => ({
+vi.mock('../../lib/auth/ability', () => ({
   Action: {
     Export: 'export'
   },
-  ability: jest.fn(),
-  subject: jest.fn((type, object) => ({ subject: type, object }))
+  ability: vi.fn(),
+  subject: vi.fn((type, object) => ({ subject: type, object }))
 }))
 
-jest.mock('../../lib/google/googleAuth', () => ({
-  getIntegrationGoogleAccessToken: jest.fn()
+vi.mock('../../lib/google/googleAuth', () => ({
+  getIntegrationGoogleAccessToken: vi.fn()
 }))
 
-jest.mock('../../lib/google/sheets', () => ({
-  createSpreadsheet: jest.fn(),
-  ensureSheet: jest.fn()
+vi.mock('../../lib/google/sheets', () => ({
+  createSpreadsheet: vi.fn(),
+  ensureSheet: vi.fn()
 }))
 
-const mockGetUserFromPayload = getUserFromPayload as jest.MockedFunction<
+const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
-const mockAbility = ability as jest.MockedFunction<typeof ability>
+const mockAbility = ability as MockedFunction<typeof ability>
 const mockGetIntegrationGoogleAccessToken =
-  getIntegrationGoogleAccessToken as jest.MockedFunction<
+  getIntegrationGoogleAccessToken as MockedFunction<
     typeof getIntegrationGoogleAccessToken
   >
-const mockCreateSpreadsheet = createSpreadsheet as jest.MockedFunction<
+const mockCreateSpreadsheet = createSpreadsheet as MockedFunction<
   typeof createSpreadsheet
 >
-const mockEnsureSheet = ensureSheet as jest.MockedFunction<typeof ensureSheet>
+const mockEnsureSheet = ensureSheet as MockedFunction<typeof ensureSheet>
 
 describe('journeyVisitorExportToGoogleSheet', () => {
   const mockUser = {
@@ -95,11 +96,13 @@ describe('journeyVisitorExportToGoogleSheet', () => {
 
   const mockIntegration = {
     id: 'integration-id',
+    userId: 'userId',
+    teamId: 'team-id',
     accountEmail: 'test@example.com'
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockAbility.mockReturnValue(true)
     mockGetUserFromPayload.mockReturnValue(mockUser)
     prismaMock.userRole.findUnique.mockResolvedValue({
@@ -559,6 +562,70 @@ describe('journeyVisitorExportToGoogleSheet', () => {
         })
       ]
     })
+  })
+
+  it('should throw error when user does not own the integration', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
+    prismaMock.integration.findUnique.mockResolvedValue({
+      id: 'integration-id',
+      userId: 'other-user-id',
+      teamId: 'team-id',
+      accountEmail: 'other@example.com'
+    } as any)
+
+    const result = await authClient({
+      document: JOURNEY_VISITOR_EXPORT_TO_GOOGLE_SHEET_MUTATION,
+      variables: {
+        journeyId: 'journey-id',
+        integrationId: 'integration-id',
+        destination: {
+          mode: 'create',
+          spreadsheetTitle: 'Test'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'You can only create syncs using your own Google account'
+        })
+      ]
+    })
+    expect(mockGetIntegrationGoogleAccessToken).not.toHaveBeenCalled()
+  })
+
+  it('should throw error when integration belongs to a different team', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
+    prismaMock.integration.findUnique.mockResolvedValue({
+      id: 'integration-id',
+      userId: 'userId',
+      teamId: 'other-team-id',
+      accountEmail: 'test@example.com'
+    } as any)
+
+    const result = await authClient({
+      document: JOURNEY_VISITOR_EXPORT_TO_GOOGLE_SHEET_MUTATION,
+      variables: {
+        journeyId: 'journey-id',
+        integrationId: 'integration-id',
+        destination: {
+          mode: 'create',
+          spreadsheetTitle: 'Test'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: "Integration does not belong to this journey's team"
+        })
+      ]
+    })
+    expect(mockGetIntegrationGoogleAccessToken).not.toHaveBeenCalled()
   })
 
   it('should use provided timezone', async () => {

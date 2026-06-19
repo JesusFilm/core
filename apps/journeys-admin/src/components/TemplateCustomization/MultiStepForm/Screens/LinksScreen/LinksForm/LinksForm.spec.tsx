@@ -1,8 +1,16 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 import { Formik, FormikProvider } from 'formik'
 
-import { ContactActionType } from '../../../../../../../__generated__/globalTypes'
+import {
+  ContactActionType,
+  MessagePlatform
+} from '../../../../../../../__generated__/globalTypes'
 import { JourneyLink } from '../../../../utils/getJourneyLinks/getJourneyLinks'
 
 import { LinksForm } from './LinksForm'
@@ -30,18 +38,19 @@ describe('LinksForm', () => {
         id: 'chat-1',
         linkType: 'chatButtons',
         url: 'wa.me/123',
-        label: 'Chat Link'
+        label: 'Chat Link',
+        platform: MessagePlatform.whatsApp
       }
     ]
 
     render(
       <Formik
         initialValues={{ 'url-1': '', 'email-1': '', 'chat-1': '' }}
-        onSubmit={jest.fn()}
+        onSubmit={vi.fn()}
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -75,12 +84,12 @@ describe('LinksForm', () => {
       }
     ]
 
-    const setFieldValue = jest.fn()
+    const setFieldValue = vi.fn()
     render(
-      <Formik initialValues={{ 'url-1': '' }} onSubmit={jest.fn()}>
+      <Formik initialValues={{ 'url-1': '' }} onSubmit={vi.fn()}>
         {(formik) => (
           <FormikProvider value={{ ...formik, setFieldValue }}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -106,12 +115,12 @@ describe('LinksForm', () => {
       }
     ]
 
-    const setFieldValue = jest.fn()
+    const setFieldValue = vi.fn()
     render(
-      <Formik initialValues={{ 'url-1': '' }} onSubmit={jest.fn()}>
+      <Formik initialValues={{ 'url-1': '' }} onSubmit={vi.fn()}>
         {(formik) => (
           <FormikProvider value={{ ...formik, setFieldValue }}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -136,13 +145,13 @@ describe('LinksForm', () => {
         customizable: null
       }
     ]
-    const openSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn())
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(vi.fn())
 
     render(
-      <Formik initialValues={{ 'url-1': 'example.com' }} onSubmit={jest.fn()}>
+      <Formik initialValues={{ 'url-1': 'example.com' }} onSubmit={vi.fn()}>
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -159,6 +168,245 @@ describe('LinksForm', () => {
     openSpy.mockRestore()
   })
 
+  it('should not add https:// to email fields on blur', () => {
+    const links: JourneyLink[] = [
+      {
+        id: 'email-1',
+        linkType: 'email',
+        url: '',
+        label: 'Email Link',
+        parentStepId: null,
+        customizable: null
+      }
+    ]
+
+    const setFieldValue = vi.fn()
+    render(
+      <Formik initialValues={{ 'email-1': '' }} onSubmit={vi.fn()}>
+        {(formik) => (
+          <FormikProvider value={{ ...formik, setFieldValue }}>
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
+          </FormikProvider>
+        )}
+      </Formik>
+    )
+
+    const input = within(screen.getByLabelText('Edit Email Link')).getByRole(
+      'textbox'
+    )
+    fireEvent.change(input, { target: { value: 'info@church.com' } })
+    fireEvent.blur(input)
+    expect(setFieldValue).toHaveBeenCalledWith('email-1', 'info@church.com')
+  })
+
+  it('should strip mailto: prefix from email fields on blur', () => {
+    const links: JourneyLink[] = [
+      {
+        id: 'email-1',
+        linkType: 'email',
+        url: '',
+        label: 'Email Link',
+        parentStepId: null,
+        customizable: null
+      }
+    ]
+
+    const setFieldValue = vi.fn()
+    render(
+      <Formik initialValues={{ 'email-1': '' }} onSubmit={vi.fn()}>
+        {(formik) => (
+          <FormikProvider value={{ ...formik, setFieldValue }}>
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
+          </FormikProvider>
+        )}
+      </Formik>
+    )
+
+    const input = within(screen.getByLabelText('Edit Email Link')).getByRole(
+      'textbox'
+    )
+    fireEvent.change(input, {
+      target: { value: 'mailto:info@church.com' }
+    })
+    fireEvent.blur(input)
+    expect(setFieldValue).toHaveBeenCalledWith('email-1', 'info@church.com')
+  })
+
+  it('should not call setFieldValue on blur when email field is empty', () => {
+    const links: JourneyLink[] = [
+      {
+        id: 'email-1',
+        linkType: 'email',
+        url: '',
+        label: 'Email Link',
+        parentStepId: null,
+        customizable: null
+      }
+    ]
+
+    const setFieldValue = vi.fn()
+    render(
+      <Formik initialValues={{ 'email-1': '' }} onSubmit={vi.fn()}>
+        {(formik) => (
+          <FormikProvider value={{ ...formik, setFieldValue }}>
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
+          </FormikProvider>
+        )}
+      </Formik>
+    )
+
+    const input = within(screen.getByLabelText('Edit Email Link')).getByRole(
+      'textbox'
+    )
+    fireEvent.blur(input)
+    expect(setFieldValue).not.toHaveBeenCalled()
+  })
+
+  it('should add https:// to chat button fields on blur', () => {
+    const links: JourneyLink[] = [
+      {
+        id: 'chat-1',
+        linkType: 'chatButtons',
+        url: '',
+        label: 'Chat Link',
+        platform: MessagePlatform.whatsApp
+      }
+    ]
+
+    const setFieldValue = vi.fn()
+    render(
+      <Formik initialValues={{ 'chat-1': '' }} onSubmit={vi.fn()}>
+        {(formik) => (
+          <FormikProvider value={{ ...formik, setFieldValue }}>
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
+          </FormikProvider>
+        )}
+      </Formik>
+    )
+
+    const input = within(screen.getByLabelText('Edit Chat Link')).getByRole(
+      'textbox'
+    )
+    fireEvent.change(input, { target: { value: 'wa.me/123' } })
+    fireEvent.blur(input)
+    expect(setFieldValue).toHaveBeenCalledWith('chat-1', 'https://wa.me/123')
+  })
+
+  it('should show email placeholder for email fields', () => {
+    const links: JourneyLink[] = [
+      {
+        id: 'email-1',
+        linkType: 'email',
+        url: '',
+        label: 'Email Link',
+        parentStepId: null,
+        customizable: null
+      }
+    ]
+
+    render(
+      <Formik initialValues={{ 'email-1': '' }} onSubmit={vi.fn()}>
+        {(formik) => (
+          <FormikProvider value={formik}>
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
+          </FormikProvider>
+        )}
+      </Formik>
+    )
+
+    expect(screen.getByPlaceholderText('email@example.com')).toBeInTheDocument()
+  })
+
+  it('should show URL placeholder for URL fields', () => {
+    const links: JourneyLink[] = [
+      {
+        id: 'url-1',
+        linkType: 'url',
+        url: '',
+        label: 'URL Link',
+        parentStepId: null,
+        customizable: null
+      }
+    ]
+
+    const { container } = render(
+      <Formik initialValues={{ 'url-1': '' }} onSubmit={vi.fn()}>
+        {(formik) => (
+          <FormikProvider value={formik}>
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
+          </FormikProvider>
+        )}
+      </Formik>
+    )
+
+    const input = container.querySelector('input[name="url-1"]')
+    expect(input).toHaveAttribute('placeholder', 'https://example.com')
+  })
+
+  it('should not call setFieldValue when value is only whitespace', () => {
+    const links: JourneyLink[] = [
+      {
+        id: 'email-1',
+        linkType: 'email',
+        url: '',
+        label: 'Email Link',
+        parentStepId: null,
+        customizable: null
+      }
+    ]
+
+    const setFieldValue = vi.fn()
+    render(
+      <Formik initialValues={{ 'email-1': '' }} onSubmit={vi.fn()}>
+        {(formik) => (
+          <FormikProvider value={{ ...formik, setFieldValue }}>
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
+          </FormikProvider>
+        )}
+      </Formik>
+    )
+
+    const input = within(screen.getByLabelText('Edit Email Link')).getByRole(
+      'textbox'
+    )
+    fireEvent.change(input, { target: { value: '   ' } })
+    fireEvent.blur(input)
+    expect(setFieldValue).not.toHaveBeenCalled()
+  })
+
+  it('should strip mailto: from email with surrounding whitespace', () => {
+    const links: JourneyLink[] = [
+      {
+        id: 'email-1',
+        linkType: 'email',
+        url: '',
+        label: 'Email Link',
+        parentStepId: null,
+        customizable: null
+      }
+    ]
+
+    const setFieldValue = vi.fn()
+    render(
+      <Formik initialValues={{ 'email-1': '' }} onSubmit={vi.fn()}>
+        {(formik) => (
+          <FormikProvider value={{ ...formik, setFieldValue }}>
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
+          </FormikProvider>
+        )}
+      </Formik>
+    )
+
+    const input = within(screen.getByLabelText('Edit Email Link')).getByRole(
+      'textbox'
+    )
+    fireEvent.change(input, {
+      target: { value: ' mailto:info@church.com ' }
+    })
+    fireEvent.blur(input)
+    expect(setFieldValue).toHaveBeenCalledWith('email-1', 'info@church.com')
+  })
+
   it('should open email via mailto:', () => {
     const links: JourneyLink[] = [
       {
@@ -170,16 +418,16 @@ describe('LinksForm', () => {
         customizable: null
       }
     ]
-    const openSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn())
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(vi.fn())
 
     render(
       <Formik
         initialValues={{ 'email-1': 'test@example.com' }}
-        onSubmit={jest.fn()}
+        onSubmit={vi.fn()}
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -207,16 +455,16 @@ describe('LinksForm', () => {
         customizable: null
       }
     ]
-    const openSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn())
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(vi.fn())
 
     render(
       <Formik
         initialValues={{ 'email-1': 'mailto:test@example.com' }}
-        onSubmit={jest.fn()}
+        onSubmit={vi.fn()}
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -239,16 +487,17 @@ describe('LinksForm', () => {
         id: 'chat-1',
         linkType: 'chatButtons',
         url: '',
-        label: 'Chat Link'
+        label: 'Chat Link',
+        platform: MessagePlatform.whatsApp
       }
     ]
-    const openSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn())
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(vi.fn())
 
     render(
-      <Formik initialValues={{ 'chat-1': 'wa.me/123' }} onSubmit={jest.fn()}>
+      <Formik initialValues={{ 'chat-1': 'wa.me/123' }} onSubmit={vi.fn()}>
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -266,7 +515,7 @@ describe('LinksForm', () => {
   })
 
   it('should open phone link with tel: protocol', () => {
-    const openSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn())
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(vi.fn())
     const links: JourneyLink[] = [
       {
         id: 'phone-1',
@@ -281,11 +530,11 @@ describe('LinksForm', () => {
     render(
       <Formik
         initialValues={{ 'phone-1__cc': '+1', 'phone-1__local': '5551234' }}
-        onSubmit={jest.fn()}
+        onSubmit={vi.fn()}
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -302,7 +551,7 @@ describe('LinksForm', () => {
   })
 
   it('should open phone link with sms: protocol', () => {
-    const openSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn())
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(vi.fn())
     const links: JourneyLink[] = [
       {
         id: 'phone-2',
@@ -317,11 +566,11 @@ describe('LinksForm', () => {
     render(
       <Formik
         initialValues={{ 'phone-2__cc': '+1', 'phone-2__local': '5559876' }}
-        onSubmit={jest.fn()}
+        onSubmit={vi.fn()}
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -349,12 +598,12 @@ describe('LinksForm', () => {
       }
     ]
 
-    const setFieldValue = jest.fn()
+    const setFieldValue = vi.fn()
     render(
-      <Formik initialValues={{ 'url-1': '' }} onSubmit={jest.fn()}>
+      <Formik initialValues={{ 'url-1': '' }} onSubmit={vi.fn()}>
         {(formik) => (
           <FormikProvider value={{ ...formik, setFieldValue }}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -396,11 +645,11 @@ describe('LinksForm', () => {
           'phone-1__local': '3333',
           'url-1': ''
         }}
-        onSubmit={jest.fn()}
+        onSubmit={vi.fn()}
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={vi.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -415,5 +664,103 @@ describe('LinksForm', () => {
 
     const phoneNumberInput = screen.getByLabelText('Phone Number')
     expect(document.activeElement).toBe(phoneNumberInput)
+  })
+
+  describe('chat button icon dropdown', () => {
+    const chatLink: JourneyLink = {
+      id: 'chat-1',
+      linkType: 'chatButtons',
+      url: 'https://wa.me/123',
+      label: 'Chat Widget',
+      platform: MessagePlatform.whatsApp
+    }
+
+    it('should render icon select dropdown for chat button links', () => {
+      render(
+        <Formik
+          initialValues={{ 'chat-1': 'https://wa.me/123' }}
+          onSubmit={vi.fn()}
+        >
+          {(formik) => (
+            <FormikProvider value={formik}>
+              <LinksForm links={[chatLink]} onPlatformChange={vi.fn()} />
+            </FormikProvider>
+          )}
+        </Formik>
+      )
+
+      expect(screen.getByLabelText('Select chat icon')).toBeInTheDocument()
+    })
+
+    it('should render Chat URL placeholder for chat button links', () => {
+      render(
+        <Formik initialValues={{ 'chat-1': '' }} onSubmit={vi.fn()}>
+          {(formik) => (
+            <FormikProvider value={formik}>
+              <LinksForm links={[chatLink]} onPlatformChange={vi.fn()} />
+            </FormikProvider>
+          )}
+        </Formik>
+      )
+
+      expect(screen.getByPlaceholderText('Chat URL')).toBeInTheDocument()
+    })
+
+    it('should display icon for legacy platform value not in dropdown options', () => {
+      const legacyLink: JourneyLink = {
+        id: 'chat-legacy',
+        linkType: 'chatButtons',
+        url: 'https://vk.com/123',
+        label: 'Legacy Chat',
+        platform: MessagePlatform.vk
+      }
+
+      render(
+        <Formik
+          initialValues={{ 'chat-legacy': 'https://vk.com/123' }}
+          onSubmit={vi.fn()}
+        >
+          {(formik) => (
+            <FormikProvider value={formik}>
+              <LinksForm links={[legacyLink]} onPlatformChange={vi.fn()} />
+            </FormikProvider>
+          )}
+        </Formik>
+      )
+
+      expect(screen.getByLabelText('Select chat icon')).toBeInTheDocument()
+      expect(screen.getByTestId('VkIcon')).toBeInTheDocument()
+    })
+
+    it('should call onPlatformChange when a new platform is selected', async () => {
+      const onPlatformChange = vi.fn()
+
+      render(
+        <Formik
+          initialValues={{ 'chat-1': 'https://wa.me/123' }}
+          onSubmit={vi.fn()}
+        >
+          {(formik) => (
+            <FormikProvider value={formik}>
+              <LinksForm
+                links={[chatLink]}
+                onPlatformChange={onPlatformChange}
+              />
+            </FormikProvider>
+          )}
+        </Formik>
+      )
+
+      fireEvent.mouseDown(screen.getByRole('combobox'))
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument()
+      })
+      fireEvent.click(within(screen.getByRole('listbox')).getByText('Telegram'))
+
+      expect(onPlatformChange).toHaveBeenCalledWith(
+        'chat-1',
+        MessagePlatform.telegram
+      )
+    })
   })
 })

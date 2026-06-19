@@ -2,25 +2,17 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider      = "prisma-client-js"
-  output        = env("PRISMA_LOCATION_USERS")
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
-}
-
-generator erd {
-  provider    = "prisma-erd-generator"
-  ignoreEnums = true
-  disabled    = true
+  provider = "prisma-client"
+  output   = "../src/__generated__/client"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("PG_DATABASE_URL_USERS")
 }
 
 generator pothos {
   provider     = "prisma-pothos-types"
-  clientOutput = ".prisma/api-users-client"
+  clientOutput = "./client"
   output       = "../src/__generated__/pothos-types.ts"
 }
 
@@ -34,4 +26,24 @@ model User {
   createdAt     DateTime @default(now())
   superAdmin    Boolean  @default(false)
   emailVerified Boolean  @default(true)
+}
+
+model UserDeleteAuditLog {
+  id                      String   @id @default(uuid())
+  deletedUserId           String
+  deletedUserFirebaseUid  String?
+  callerUserId            String
+  callerEmail             String?
+  deletedJourneyIds       String[]
+  deletedTeamIds          String[]
+  deletedUserJourneyIds   String[]
+  deletedUserTeamIds      String[]
+  success                 Boolean   @default(false)
+  errorMessage            String?
+  completedAt             DateTime?
+  createdAt               DateTime  @default(now())
+
+  @@index(deletedUserId)
+  @@index(callerUserId)
+  @@index(createdAt)
 }

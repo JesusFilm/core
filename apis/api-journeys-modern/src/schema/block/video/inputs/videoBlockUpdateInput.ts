@@ -30,7 +30,12 @@ export const VideoBlockUpdateInput = builder.inputType(
   youTube source: videoId required`
       }),
       showGeneratedSubtitles: t.boolean({ required: false }),
-      customizable: t.boolean({ required: false })
+      customizable: t.boolean({ required: false }),
+      notes: t.string({
+        required: false,
+        description:
+          'Publisher notes for template adapters (e.g. trailer, intro). Pass an empty string to clear.'
+      })
     })
   }
 )

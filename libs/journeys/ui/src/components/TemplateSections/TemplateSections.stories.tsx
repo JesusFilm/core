@@ -1,6 +1,6 @@
 import { MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
@@ -72,7 +72,8 @@ const defaultTemplate: Journey = {
   website: false,
   journeyCustomizationDescription: null,
   journeyCustomizationFields: [],
-  userJourneys: []
+  userJourneys: [],
+  customizable: null
 }
 
 const acceptance: Tag = {

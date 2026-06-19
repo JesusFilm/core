@@ -126,7 +126,9 @@ describe('getStepHeading', () => {
               color: null
             }
           }
-        ]
+        ],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
 
@@ -154,7 +156,7 @@ describe('getStepHeading', () => {
         'step.id',
         children,
         steps,
-        jest.fn((str) => 'Step 1')
+        vi.fn((str) => 'Step 1')
       )
     ).toBe('Step 1')
   })
@@ -174,7 +176,7 @@ describe('getStepHeading', () => {
   })
 
   it('calls translate function', () => {
-    const t = jest.fn((str: string) => str)
+    const t = vi.fn((str: string) => str)
     const children: TreeBlock[] = []
     const steps: TreeBlock[] = [
       {

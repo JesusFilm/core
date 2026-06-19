@@ -1,13 +1,14 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import {
   GetAdminJourneys,
   GetAdminJourneysVariables
 } from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { User } from '../../../libs/auth/authContext'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { ThemeProvider } from '../../ThemeProvider'
@@ -20,25 +21,27 @@ import { SortOrder } from '../JourneySort'
 
 import { TrashedJourneyList } from '.'
 
-jest.mock('@core/journeys/ui/useNavigationState', () => ({
-  useNavigationState: jest.fn(() => false)
+vi.mock('@core/journeys/ui/useNavigationState', async () => ({
+  useNavigationState: vi.fn(() => false)
 }))
 
-jest.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
-  useTemplateFamilyStatsAggregateLazyQuery: jest.fn(),
-  extractTemplateIdsFromJourneys: jest.requireActual(
-    '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
+vi.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', async () => ({
+  useTemplateFamilyStatsAggregateLazyQuery: vi.fn(),
+  extractTemplateIdsFromJourneys: (
+    await vi.importActual(
+      '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
+    )
   ).extractTemplateIdsFromJourneys
 }))
 
 const mockedUseTemplateFamilyStatsAggregateLazyQuery =
-  useTemplateFamilyStatsAggregateLazyQuery as jest.MockedFunction<
+  useTemplateFamilyStatsAggregateLazyQuery as MockedFunction<
     typeof useTemplateFamilyStatsAggregateLazyQuery
   >
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', async () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+  useRouter: vi.fn(() => ({ query: { tab: 'active' } }))
 }))
 
 const trashedJourneysMock: MockedResponse<
@@ -89,14 +92,14 @@ const noJourneysMock: MockedResponse<
 }
 
 describe('TrashedJourneyList', () => {
-  const refetchTemplateStats = jest.fn()
+  const refetchTemplateStats = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     refetchTemplateStats.mockClear()
     mockedUseTemplateFamilyStatsAggregateLazyQuery.mockReturnValue({
       query: [
-        jest.fn(),
+        vi.fn(),
         {
           data: undefined,
           loading: false,
@@ -108,12 +111,12 @@ describe('TrashedJourneyList', () => {
   })
 
   beforeAll(() => {
-    jest.useFakeTimers()
-    jest.setSystemTime(new Date(fakeDate))
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    vi.setSystemTime(new Date(fakeDate))
   })
 
   afterAll(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   it('should render journeys in descending updatedAt date by default', async () => {
@@ -224,7 +227,7 @@ describe('TrashedJourneyList', () => {
   })
 
   describe('Restore All', () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeysRestore: [
           {
@@ -275,7 +278,17 @@ describe('TrashedJourneyList', () => {
             <SnackbarProvider>
               <TrashedJourneyList
                 event="restoreAllTrashed"
-                user={{ id: 'user-id1' } as unknown as User}
+                user={
+                  {
+                    id: 'user-id1',
+                    email: null,
+                    displayName: null,
+                    photoURL: null,
+                    phoneNumber: null,
+                    emailVerified: false,
+                    token: 'mock-token'
+                  } as unknown as User
+                }
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -301,7 +314,17 @@ describe('TrashedJourneyList', () => {
               <SnackbarProvider>
                 <TrashedJourneyList
                   event="restoreAllTrashed"
-                  user={{ id: 'user-id1' } as unknown as User}
+                  user={
+                    {
+                      id: 'user-id1',
+                      email: null,
+                      displayName: null,
+                      photoURL: null,
+                      phoneNumber: null,
+                      emailVerified: false,
+                      token: 'mock-token'
+                    } as unknown as User
+                  }
                 />
               </SnackbarProvider>
             </ThemeProvider>
@@ -324,7 +347,17 @@ describe('TrashedJourneyList', () => {
             <SnackbarProvider>
               <TrashedJourneyList
                 event="restoreAllTrashed"
-                user={{ id: 'user-id1' } as unknown as User}
+                user={
+                  {
+                    id: 'user-id1',
+                    email: null,
+                    displayName: null,
+                    photoURL: null,
+                    phoneNumber: null,
+                    emailVerified: false,
+                    token: 'mock-token'
+                  } as unknown as User
+                }
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -345,7 +378,7 @@ describe('TrashedJourneyList', () => {
   })
 
   describe('Delete All', () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: [{ id: defaultJourney.id, status: 'deleted' }]
     }))
     const deleteJourneysMock = {
@@ -382,7 +415,17 @@ describe('TrashedJourneyList', () => {
             <SnackbarProvider>
               <TrashedJourneyList
                 event="deleteAllTrashed"
-                user={{ id: 'user-id1' } as unknown as User}
+                user={
+                  {
+                    id: 'user-id1',
+                    email: null,
+                    displayName: null,
+                    photoURL: null,
+                    phoneNumber: null,
+                    emailVerified: false,
+                    token: 'mock-token'
+                  } as unknown as User
+                }
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -408,7 +451,17 @@ describe('TrashedJourneyList', () => {
               <SnackbarProvider>
                 <TrashedJourneyList
                   event="deleteAllTrashed"
-                  user={{ id: 'user-id1' } as unknown as User}
+                  user={
+                    {
+                      id: 'user-id1',
+                      email: null,
+                      displayName: null,
+                      photoURL: null,
+                      phoneNumber: null,
+                      emailVerified: false,
+                      token: 'mock-token'
+                    } as unknown as User
+                  }
                 />
               </SnackbarProvider>
             </ThemeProvider>

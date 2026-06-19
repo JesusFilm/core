@@ -92,7 +92,10 @@ builder.mutationField('videoBlockUpdate', (t) =>
       }
 
       return await update(id, {
-        ...input
+        ...input,
+        ...(input.notes !== undefined
+          ? { notes: input.notes === '' ? null : input.notes }
+          : {})
       })
     }
   })

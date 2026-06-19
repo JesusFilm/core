@@ -17,12 +17,47 @@ import { validateMuxLanguage } from '../../../../../../../libs/validateMuxLangua
 
 import { VideoFromMux } from './VideoFromMux'
 
-jest.mock('../../../../../../../libs/validateMuxLanguage', () => ({
+vi.mock('../../../../../../../libs/validateMuxLanguage', () => ({
   __esModule: true,
-  validateMuxLanguage: jest.fn()
+  validateMuxLanguage: vi.fn()
 }))
 
-jest.mock('./AddByFile', () => {
+const mockUseFlags = vi.fn()
+
+vi.mock('@core/shared/ui/FlagsProvider', async () => ({
+  ...(await vi.importActual('@core/shared/ui/FlagsProvider')),
+  useFlags: () => mockUseFlags()
+}))
+
+const mockGetUploadStatus = vi.fn(() => null as null | { status: string })
+
+vi.mock('../../../../../../MuxVideoUploadProvider', () => ({
+  __esModule: true,
+  useMuxVideoUpload: () => ({
+    getUploadStatus: mockGetUploadStatus,
+    addUploadTask: vi.fn(),
+    cancelUploadForBlock: vi.fn()
+  })
+}))
+
+vi.mock('./MyMuxVideos', () => ({
+  __esModule: true,
+  MyMuxVideos: ({
+    selectedVideoId,
+    uploading
+  }: {
+    selectedVideoId?: string | null
+    uploading?: boolean
+  }) => (
+    <div
+      data-testid="mock-my-mux-videos"
+      data-selected-video-id={selectedVideoId ?? ''}
+      data-uploading={String(uploading ?? false)}
+    />
+  )
+}))
+
+vi.mock('./AddByFile', () => {
   const Button = require('@mui/material/Button').default
 
   return {
@@ -45,7 +80,7 @@ jest.mock('./AddByFile', () => {
   }
 })
 
-const mockValidateMuxLanguage = jest.mocked(validateMuxLanguage)
+const mockValidateMuxLanguage = vi.mocked(validateMuxLanguage)
 
 const selectedVideoBlock: TreeBlock<VideoBlock> = {
   id: 'videoBlockId',
@@ -73,6 +108,7 @@ const selectedVideoBlock: TreeBlock<VideoBlock> = {
   eventLabel: null,
   endEventLabel: null,
   customizable: null,
+  notes: null,
   children: []
 }
 
@@ -128,7 +164,9 @@ const mockJourneyWithValidLanguage: Journey = {
   journeyTheme: null,
   journeyCustomizationDescription: null,
   journeyCustomizationFields: [],
-  fromTemplateId: null
+  fromTemplateId: null,
+  customizable: null,
+  showAssistant: null
 }
 
 const mockJourneyWithInvalidLanguage: Journey = {
@@ -150,12 +188,114 @@ const mockJourneyWithInvalidLanguage: Journey = {
 
 describe('VideoFromMux', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockValidateMuxLanguage.mockReturnValue(true)
+    mockUseFlags.mockReturnValue({ mediaLibrary: false })
+  })
+
+  it('should not render MyMuxVideos when mediaLibrary flag is off', () => {
+    mockUseFlags.mockReturnValue({ mediaLibrary: false })
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
+          <EditorProvider initialState={{ selectedBlock: selectedVideoBlock }}>
+            <VideoFromMux onSelect={vi.fn()} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(screen.queryByTestId('mock-my-mux-videos')).not.toBeInTheDocument()
+  })
+
+  it('should render MyMuxVideos when mediaLibrary flag is on', () => {
+    mockUseFlags.mockReturnValue({ mediaLibrary: true })
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
+          <EditorProvider initialState={{ selectedBlock: selectedVideoBlock }}>
+            <VideoFromMux onSelect={vi.fn()} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('mock-my-mux-videos')).toBeInTheDocument()
+  })
+
+  it('should pass uploading=true to MyMuxVideos while the selected block has an active upload', () => {
+    mockUseFlags.mockReturnValue({ mediaLibrary: true })
+    mockGetUploadStatus.mockReturnValue({ status: 'processing' })
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
+          <EditorProvider initialState={{ selectedBlock: selectedVideoBlock }}>
+            <VideoFromMux onSelect={vi.fn()} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('mock-my-mux-videos')).toHaveAttribute(
+      'data-uploading',
+      'true'
+    )
+    mockGetUploadStatus.mockReset()
+  })
+
+  it('should pass selectedVideoId from the videoBlock prop when block source is mux', () => {
+    mockUseFlags.mockReturnValue({ mediaLibrary: true })
+    const muxVideoBlock: TreeBlock<VideoBlock> = {
+      ...selectedVideoBlock,
+      videoId: 'mux-video-1',
+      source: VideoBlockSource.mux
+    }
+    const cardLikeEditorBlock = {
+      ...selectedVideoBlock,
+      __typename: 'CardBlock',
+      videoId: null,
+      source: null
+    } as unknown as TreeBlock<VideoBlock>
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
+          <EditorProvider initialState={{ selectedBlock: cardLikeEditorBlock }}>
+            <VideoFromMux onSelect={vi.fn()} videoBlock={muxVideoBlock} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('mock-my-mux-videos')).toHaveAttribute(
+      'data-selected-video-id',
+      'mux-video-1'
+    )
+  })
+
+  it('should pass empty selectedVideoId when videoBlock source is not mux', () => {
+    mockUseFlags.mockReturnValue({ mediaLibrary: true })
+    const internalVideoBlock: TreeBlock<VideoBlock> = {
+      ...selectedVideoBlock,
+      videoId: 'internal-1',
+      source: VideoBlockSource.internal
+    }
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
+          <EditorProvider initialState={{ selectedBlock: selectedVideoBlock }}>
+            <VideoFromMux onSelect={vi.fn()} videoBlock={internalVideoBlock} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('mock-my-mux-videos')).toHaveAttribute(
+      'data-selected-video-id',
+      ''
+    )
   })
 
   it('renders AddByFile trigger', () => {
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
 
     render(
       <MockedProvider>
@@ -176,7 +316,7 @@ describe('VideoFromMux', () => {
   })
 
   it('invokes onSelect with subtitle language when validation succeeds', () => {
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
 
     render(
       <MockedProvider>
@@ -208,7 +348,7 @@ describe('VideoFromMux', () => {
 
   it('omits subtitle language when validation fails', () => {
     mockValidateMuxLanguage.mockReturnValue(false)
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
 
     render(
       <MockedProvider>
@@ -238,7 +378,7 @@ describe('VideoFromMux', () => {
   })
 
   it('omits subtitle language when journey is missing', () => {
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
 
     render(
       <MockedProvider>
@@ -268,7 +408,7 @@ describe('VideoFromMux', () => {
   })
 
   it('should call onSelect with correct block data when valid language', () => {
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
 
     render(
       <MockedProvider>
@@ -300,7 +440,7 @@ describe('VideoFromMux', () => {
 
   it('should handle invalid language by not including subtitleLanguageId', () => {
     mockValidateMuxLanguage.mockReturnValue(false)
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
 
     render(
       <MockedProvider>
@@ -330,7 +470,7 @@ describe('VideoFromMux', () => {
   })
 
   it('should handle missing journey', () => {
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
 
     render(
       <MockedProvider>
@@ -362,7 +502,7 @@ describe('VideoFromMux', () => {
 
   it('should create correct block update input with valid language', () => {
     mockValidateMuxLanguage.mockReturnValue(true)
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
 
     render(
       <MockedProvider>
@@ -404,7 +544,7 @@ describe('VideoFromMux', () => {
 
   it('should create correct block update input without subtitleLanguageId for invalid language', () => {
     mockValidateMuxLanguage.mockReturnValue(false)
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
 
     render(
       <MockedProvider>

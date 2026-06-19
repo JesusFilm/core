@@ -57,11 +57,12 @@ describe('OnboardingTemplateCard', () => {
     updatedAt: '2023-08-14T04:24:24.392Z',
     website: false,
     journeyCustomizationDescription: null,
-    journeyCustomizationFields: []
+    journeyCustomizationFields: [],
+    customizable: null
   }
 
   it('should render OnboardingTemplateCard', async () => {
-    const result = jest.fn(() => ({ data: { journey } }))
+    const result = vi.fn(() => ({ data: { journey } }))
 
     render(
       <MockedProvider

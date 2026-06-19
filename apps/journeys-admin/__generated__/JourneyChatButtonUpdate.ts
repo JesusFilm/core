@@ -14,6 +14,7 @@ export interface JourneyChatButtonUpdate_chatButtonUpdate {
   id: string;
   link: string | null;
   platform: MessagePlatform | null;
+  customizable: boolean | null;
 }
 
 export interface JourneyChatButtonUpdate {

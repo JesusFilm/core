@@ -9,14 +9,13 @@ import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
 import Globe from '@core/shared/ui/icons/Globe'
 import Lightning2 from '@core/shared/ui/icons/Lightning2'
 
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
-import { isTemplateCustomizable } from '../../libs/isTemplateCustomizable'
 import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 import { useNavigationState } from '../../libs/useNavigationState'
 
@@ -156,7 +155,7 @@ export function TemplateGalleryCard({
                 zIndex: 3
               }}
             >
-              {isTemplateCustomizable(journey) && (
+              {journey.customizable === true && (
                 <Box
                   data-testid="TemplateGalleryCardQuickStartBadge"
                   sx={{

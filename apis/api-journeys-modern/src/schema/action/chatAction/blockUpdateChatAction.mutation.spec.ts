@@ -1,7 +1,14 @@
+import { vi } from 'vitest'
+
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
+import { recalculateJourneyCustomizable } from '../../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 import { ACTION_UPDATE_RESET } from '../blockUpdateAction.mutation'
+
+vi.mock(
+  '../../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
+)
 
 describe('blockUpdateChatAction mutation', () => {
   const authClient = getClient({
@@ -32,12 +39,13 @@ describe('blockUpdateChatAction mutation', () => {
   const actionableBlock = {
     id: '1',
     typename: 'ButtonBlock',
+    journeyId: 'journeyId',
     journey: journeyWithAccess,
     action: null
   } as any
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('creates a new chat action', async () => {
@@ -84,6 +92,8 @@ describe('blockUpdateChatAction mutation', () => {
         parentStepId: null
       }
     })
+
+    expect(recalculateJourneyCustomizable).toHaveBeenCalledWith('journeyId')
 
     expect(result).toEqual({
       data: {
@@ -152,6 +162,8 @@ describe('blockUpdateChatAction mutation', () => {
         parentStepId: 'step-123'
       }
     })
+
+    expect(recalculateJourneyCustomizable).toHaveBeenCalledWith('journeyId')
 
     expect(result).toEqual({
       data: {

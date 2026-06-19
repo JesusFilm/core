@@ -7,27 +7,20 @@ export function useHandleNewAccountRedirect(): void {
   useEffect(() => {
     const redirectUrl = router.query.redirect as string
 
-    let updatedRedirectUrl
+    if (
+      redirectUrl == null ||
+      !redirectUrl.includes('/customize') ||
+      redirectUrl.includes('newAccount')
+    )
+      return
 
-    const containsNewAccount = redirectUrl?.includes('newAccount')
-    const containsCreateNew = redirectUrl?.includes('createNew')
+    const separator = redirectUrl.includes('?') ? '&' : '?'
+    const updatedRedirectUrl = `${redirectUrl}${separator}newAccount=true`
 
-    if (!containsNewAccount) {
-      if (redirectUrl != null) {
-        updatedRedirectUrl = `${redirectUrl ?? ''}${
-          containsCreateNew ? '&newAccount=true' : '?newAccount=true'
-        }`
-      } else {
-        updatedRedirectUrl = `?newAccount=true`
-      }
-    }
-
-    if (updatedRedirectUrl != null) {
-      void router.push({
-        pathname: router.pathname,
-        query: { redirect: updatedRedirectUrl }
-      })
-    }
+    void router.push({
+      pathname: router.pathname,
+      query: { redirect: updatedRedirectUrl }
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 }

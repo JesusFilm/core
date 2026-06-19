@@ -1,12 +1,18 @@
-import { prisma } from '@core/prisma/journeys/client'
+import {
+  UserJourneyRole,
+  UserTeamRole,
+  prisma
+} from '@core/prisma/journeys/client'
 import { journeySimpleSchema } from '@core/shared/ai/journeySimpleTypes'
 
+import { Block } from '../block/block'
 import { ThemeMode } from '../block/card/enums/themeMode'
 import { ThemeName } from '../block/card/enums/themeName'
 import { ImageBlock } from '../block/image'
 import { StepBlock } from '../block/step'
 import { builder } from '../builder'
 import { Language } from '../language'
+import { UserJourneyRef } from '../userJourney/userJourney'
 
 import { JourneyMenuButtonIcon } from './enums'
 import { Action, journeyAcl } from './journey.acl'
@@ -54,8 +60,42 @@ export const JourneyRef = builder.prismaObject('Journey', {
       nullable: false,
       resolve: (journey) => ({ id: journey.languageId ?? '529' })
     }),
-    blocks: t.relation('blocks', {
-      nullable: true
+    blocks: t.field({
+      type: [Block],
+      nullable: true,
+      resolve: async (journey) => {
+        const excludeIds: string[] = []
+        if (journey.primaryImageBlockId != null)
+          excludeIds.push(journey.primaryImageBlockId)
+        if (journey.creatorImageBlockId != null)
+          excludeIds.push(journey.creatorImageBlockId)
+        if (journey.logoImageBlockId != null)
+          excludeIds.push(journey.logoImageBlockId)
+
+        const blocks = await prisma.block.findMany({
+          where: {
+            journeyId: journey.id,
+            deletedAt: null,
+            ...(excludeIds.length > 0
+              ? { id: { notIn: excludeIds } }
+              : undefined)
+          },
+          orderBy: { parentOrder: 'asc' },
+          include: { action: true }
+        })
+
+        let filtered = blocks
+        let prevLength: number
+        do {
+          prevLength = filtered.length
+          const ids = new Set(filtered.map((b) => b.id))
+          filtered = filtered.filter(
+            (b) => b.parentBlockId == null || ids.has(b.parentBlockId)
+          )
+        } while (filtered.length !== prevLength)
+
+        return filtered
+      }
     }),
     chatButtons: t.relation('chatButtons', {
       nullable: false
@@ -164,6 +204,11 @@ export const JourneyRef = builder.prismaObject('Journey', {
       nullable: true
     }),
     showAssistant: t.exposeBoolean('showAssistant', {
+      nullable: true,
+      deprecationReason:
+        'Use CardBlock.showAssistant. Removal tracked in NES-1624.'
+    }),
+    customizable: t.exposeBoolean('customizable', {
       nullable: true
     }),
 
@@ -195,8 +240,43 @@ export const JourneyRef = builder.prismaObject('Journey', {
         return journeyTags.map((jt) => ({ id: jt.tagId }))
       }
     }),
-    userJourneys: t.relation('userJourneys', {
-      nullable: true
+    userJourneys: t.field({
+      type: [UserJourneyRef],
+      nullable: true,
+      resolve: async (journey, _args, context) => {
+        if (context.type !== 'authenticated') return []
+
+        const userJourneys = await prisma.userJourney.findMany({
+          where: { journeyId: journey.id },
+          include: {
+            journey: {
+              include: {
+                userJourneys: true,
+                team: { include: { userTeams: true } }
+              }
+            }
+          }
+        })
+
+        const userId = context.user.id
+        return userJourneys.filter((uj) => {
+          const isTeamMember = uj.journey?.team?.userTeams.some(
+            (ut) =>
+              ut.userId === userId &&
+              (ut.role === UserTeamRole.manager ||
+                ut.role === UserTeamRole.member)
+          )
+          if (isTeamMember === true) return true
+
+          const isJourneyOwnerOrEditor = uj.journey?.userJourneys?.some(
+            (j) =>
+              j.userId === userId &&
+              (j.role === UserJourneyRole.owner ||
+                j.role === UserJourneyRole.editor)
+          )
+          return isJourneyOwnerOrEditor === true
+        })
+      }
     }),
     // journeyCollections field will be added via extension in journeyCollection module
     strategySlug: t.exposeString('strategySlug', {
@@ -206,12 +286,37 @@ export const JourneyRef = builder.prismaObject('Journey', {
       nullable: true,
       description: 'used to see if a template has a site created for it'
     }),
-    plausibleToken: t.exposeString('plausibleToken', {
+    plausibleToken: t.field({
+      type: 'String',
       nullable: true,
-      description: 'used in a plausible share link to embed report'
+      description: 'used in a plausible share link to embed report',
+      resolve: async (journey, _args, context) => {
+        if (journey.plausibleToken == null) return null
+        if (context.type !== 'authenticated') return null
+
+        const journeyWithAcl = await prisma.journey.findUnique({
+          where: { id: journey.id },
+          include: {
+            userJourneys: true,
+            team: { include: { userTeams: true } }
+          }
+        })
+        if (journeyWithAcl == null) return null
+        if (!journeyAcl(Action.Update, journeyWithAcl, context.user))
+          return null
+
+        return journey.plausibleToken
+      }
     }),
     fromTemplateId: t.exposeString('fromTemplateId', {
       nullable: true
+    }),
+    journeyCustomizationDescription: t.exposeString(
+      'journeyCustomizationDescription',
+      { nullable: true }
+    ),
+    journeyCustomizationFields: t.relation('journeyCustomizationFields', {
+      nullable: false
     }),
     journeyTheme: t.relation('journeyTheme', {
       nullable: true

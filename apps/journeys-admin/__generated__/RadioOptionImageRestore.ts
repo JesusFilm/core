@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface RadioOptionImageRestore_blockRestore_StepBlock {
-  __typename: "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 
@@ -46,9 +46,6 @@ export interface RadioOptionImageRestore_radioOptionBlockUpdate {
 }
 
 export interface RadioOptionImageRestore {
-  /**
-   * blockRestore is used for redo/undo
-   */
   blockRestore: RadioOptionImageRestore_blockRestore[];
   radioOptionBlockUpdate: RadioOptionImageRestore_radioOptionBlockUpdate;
 }

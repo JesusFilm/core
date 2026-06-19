@@ -17,10 +17,17 @@
         "mtxr.sqltools",
         "mtxr.sqltools-driver-pg",
         "prisma.prisma",
-        "firsttris.vscode-jest-runner",
-        "redhat.vscode-yaml"
+        "vitest.explorer",
+        "redhat.vscode-yaml",
+        "anthropic.claude-code"
       ]
     }
+  },
+
+  // Forward Claude Code auth tokens from host environment
+  "remoteEnv": {
+    "CLAUDE_CODE_OAUTH_TOKEN": "${localEnv:CLAUDE_CODE_OAUTH_TOKEN:}",
+    "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY:}"
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -41,11 +48,6 @@
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/aws-cli:1": {},
     "ghcr.io/devcontainers/features/python:1": {},
-    "ghcr.io/devcontainers/features/terraform:1": {
-      "version": "latest",
-      "tflint": "0.46.1",
-      "terragrunt": "latest"
-    },
     "ghcr.io/devcontainers/features/node:1": {
       "nodeGypDependencies": true,
       "version": "lts"

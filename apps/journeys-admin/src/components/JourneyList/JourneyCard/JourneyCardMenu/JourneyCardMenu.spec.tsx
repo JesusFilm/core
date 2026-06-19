@@ -44,7 +44,7 @@ const teamMock = {
                 lastName: 'User',
                 imageUrl: null,
                 email: 'test@example.com',
-                __typename: 'User'
+                __typename: 'AuthenticatedUser'
               },
               role: UserTeamRole.manager,
               __typename: 'UserTeam'
@@ -313,7 +313,7 @@ describe('JourneyCardMenu', () => {
   })
 
   it('should call setHasOpenDialog when opening and closing edit details dialog', async () => {
-    const setHasOpenDialog = jest.fn()
+    const setHasOpenDialog = vi.fn()
 
     render(
       <MockedProvider mocks={[teamMock]}>
@@ -342,7 +342,7 @@ describe('JourneyCardMenu', () => {
     await waitFor(() => expect(setHasOpenDialog).toHaveBeenCalledWith(true))
     expect(setHasOpenDialog).toHaveBeenCalledTimes(1)
 
-    const cancelButton = screen.getByRole('button', { name: 'Cancel' })
+    const cancelButton = await screen.findByRole('button', { name: 'Cancel' })
     fireEvent.click(cancelButton)
 
     await waitFor(() => expect(setHasOpenDialog).toHaveBeenCalledWith(false))
@@ -350,7 +350,7 @@ describe('JourneyCardMenu', () => {
   })
 
   it('should call setHasOpenDialog when opening and closing access dialog', async () => {
-    const setHasOpenDialog = jest.fn()
+    const setHasOpenDialog = vi.fn()
 
     render(
       <MockedProvider mocks={[teamMock]}>
@@ -386,7 +386,7 @@ describe('JourneyCardMenu', () => {
   })
 
   it('should call setHasOpenDialog when opening and closing translate dialog', async () => {
-    const setHasOpenDialog = jest.fn()
+    const setHasOpenDialog = vi.fn()
 
     render(
       <MockedProvider mocks={[teamMock]}>
@@ -422,7 +422,7 @@ describe('JourneyCardMenu', () => {
   })
 
   it('should call setHasOpenDialog when opening and closing trash dialog', async () => {
-    const setHasOpenDialog = jest.fn()
+    const setHasOpenDialog = vi.fn()
 
     render(
       <MockedProvider mocks={[teamMock]}>

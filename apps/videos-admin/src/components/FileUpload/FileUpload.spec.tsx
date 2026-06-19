@@ -4,8 +4,8 @@ import { FileUpload } from './FileUpload'
 
 describe('FileUpload', () => {
   it('should upload a file', async () => {
-    const mockOnDrop = jest.fn()
-    const onUploadComplete = jest.fn()
+    const mockOnDrop = vi.fn()
+    const onUploadComplete = vi.fn()
 
     render(
       <FileUpload
@@ -31,8 +31,8 @@ describe('FileUpload', () => {
   })
 
   it('should still call on upload complete if no files are dropped', async () => {
-    const mockOnDrop = jest.fn()
-    const onUploadComplete = jest.fn()
+    const mockOnDrop = vi.fn()
+    const onUploadComplete = vi.fn()
 
     render(
       <FileUpload
@@ -52,8 +52,8 @@ describe('FileUpload', () => {
   })
 
   it('should show loading state', async () => {
-    const mockOnDrop = jest.fn()
-    const onUploadComplete = jest.fn()
+    const mockOnDrop = vi.fn()
+    const onUploadComplete = vi.fn()
 
     render(
       <FileUpload

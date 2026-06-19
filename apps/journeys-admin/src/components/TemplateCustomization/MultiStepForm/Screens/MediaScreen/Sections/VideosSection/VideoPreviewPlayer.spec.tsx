@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import type { GetJourney_journey_blocks_VideoBlock } from '../../../../../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
@@ -6,23 +7,24 @@ import { getVideoPoster } from '../../utils/videoSectionUtils'
 
 import { VideoPreviewPlayer } from './VideoPreviewPlayer'
 
-const mockVideojsDispose = jest.fn()
-jest.mock('video.js', () =>
-  jest.fn(() => ({
+const mockVideojsDispose = vi.hoisted(() => vi.fn())
+vi.mock('video.js', () => ({
+  __esModule: true,
+  default: vi.fn(() => ({
     isDisposed: () => false,
     dispose: mockVideojsDispose
   }))
-)
-
-jest.mock('videojs-mux', () => ({}))
-jest.mock('videojs-youtube', () => ({}))
-
-jest.mock('../../utils/videoSectionUtils', () => ({
-  getVideoPoster: jest.fn()
 }))
 
-const mockVideojs = jest.requireMock('video.js')
-const mockGetVideoPoster = getVideoPoster as jest.MockedFunction<
+vi.mock('videojs-mux', () => ({}))
+vi.mock('videojs-youtube', () => ({}))
+
+vi.mock('../../utils/videoSectionUtils', () => ({
+  getVideoPoster: vi.fn()
+}))
+
+const mockVideojs = (await vi.importMock('video.js')).default as Mock
+const mockGetVideoPoster = getVideoPoster as MockedFunction<
   typeof getVideoPoster
 >
 
@@ -55,6 +57,7 @@ function createBaseVideoBlock(
     eventLabel: null,
     endEventLabel: null,
     customizable: null,
+    notes: null,
     ...overrides
   }
 }
@@ -63,7 +66,7 @@ describe('VideoPreviewPlayer', () => {
   let container: HTMLElement
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockGetVideoPoster.mockReturnValue(undefined)
     container = document.createElement('div')
     document.body.appendChild(container)
@@ -256,7 +259,7 @@ describe('VideoPreviewPlayer', () => {
   })
 
   it('calls dispose exactly once on unmount when player is not disposed', () => {
-    const mockDispose = jest.fn()
+    const mockDispose = vi.fn()
     mockVideojs.mockImplementationOnce(() => ({
       isDisposed: () => false,
       dispose: mockDispose
@@ -277,7 +280,7 @@ describe('VideoPreviewPlayer', () => {
   })
 
   it('does not call dispose when player is already disposed', () => {
-    const mockDispose = jest.fn()
+    const mockDispose = vi.fn()
     mockVideojs.mockImplementationOnce(() => ({
       isDisposed: () => true,
       dispose: mockDispose

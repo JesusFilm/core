@@ -1,3 +1,5 @@
+import { type Mock, type MockedFunction } from 'vitest'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   BlockFields_StepBlock as StepBlock,
@@ -10,44 +12,44 @@ import type { UploadTask } from '../types'
 
 import { cancelUploadForBlock } from './cancelUploadForBlock'
 
-jest.mock('../clearPollingInterval')
+vi.mock('../clearPollingInterval')
 
-const mockClearPollingInterval = clearPollingInterval as jest.MockedFunction<
+const mockClearPollingInterval = clearPollingInterval as MockedFunction<
   typeof clearPollingInterval
 >
 
 describe('cancelUploadForBlock', () => {
   let uploadTasks: Map<string, UploadTask>
-  let setUploadTasks: jest.Mock
-  let setPollingTasks: jest.Mock
-  let uploadInstanceRefs: { current: Map<string, { abort: jest.Mock }> }
+  let setUploadTasks: Mock
+  let setPollingTasks: Mock
+  let uploadInstanceRefs: { current: Map<string, { abort: Mock }> }
   let pollingIntervalsRef: { current: Map<string, NodeJS.Timeout> }
   let hasShownStartNotification: { current: Set<string> }
   let dependencies: {
     uploadTasks: Map<string, UploadTask>
-    setUploadTasks: jest.Mock
-    setPollingTasks: jest.Mock
-    uploadInstanceRefs: { current: Map<string, { abort: jest.Mock }> }
+    setUploadTasks: Mock
+    setPollingTasks: Mock
+    uploadInstanceRefs: { current: Map<string, { abort: Mock }> }
     pollingIntervalsRef: { current: Map<string, NodeJS.Timeout> }
     hasShownStartNotification: { current: Set<string> }
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     uploadTasks = new Map<string, UploadTask>()
-    setUploadTasks = jest.fn((updater) => {
+    setUploadTasks = vi.fn((updater) => {
       if (typeof updater === 'function') {
         uploadTasks = updater(uploadTasks)
       } else {
         uploadTasks = updater
       }
     })
-    setPollingTasks = jest.fn((updater) => {
+    setPollingTasks = vi.fn((updater) => {
       // Mock implementation for setPollingTasks
     })
     uploadInstanceRefs = {
-      current: new Map<string, { abort: jest.Mock }>()
+      current: new Map<string, { abort: Mock }>()
     }
     pollingIntervalsRef = {
       current: new Map<string, NodeJS.Timeout>()
@@ -93,6 +95,7 @@ describe('cancelUploadForBlock', () => {
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       children: []
     }
 
@@ -105,7 +108,7 @@ describe('cancelUploadForBlock', () => {
 
     uploadTasks.set('video-block-1', uploadTask)
 
-    const mockAbort = jest.fn()
+    const mockAbort = vi.fn()
     uploadInstanceRefs.current.set('video-block-1', { abort: mockAbort })
 
     cancelUploadForBlock(videoBlock, dependencies)
@@ -145,6 +148,7 @@ describe('cancelUploadForBlock', () => {
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       children: []
     }
 
@@ -197,6 +201,7 @@ describe('cancelUploadForBlock', () => {
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       children: []
     }
 
@@ -233,6 +238,7 @@ describe('cancelUploadForBlock', () => {
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       children: []
     }
 
@@ -280,6 +286,7 @@ describe('cancelUploadForBlock', () => {
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       children: []
     }
 

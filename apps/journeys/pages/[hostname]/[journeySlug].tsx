@@ -1,7 +1,7 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
@@ -18,6 +18,9 @@ import i18nConfig from '../../next-i18next.config'
 import { JourneyPageWrapper } from '../../src/components/JourneyPageWrapper'
 import { JourneyRenderer } from '../../src/components/JourneyRenderer'
 import { createApolloClient } from '../../src/libs/apolloClient'
+import { getFlags } from '../../src/libs/getFlags'
+import { isJourneyNotFoundError } from '../../src/libs/isJourneyNotFoundError'
+import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
 
 interface HostJourneyPageProps {
   host: string
@@ -94,13 +97,15 @@ export const getStaticProps: GetStaticProps<HostJourneyPageProps> = async (
         id: context.params?.journeySlug?.toString() ?? '',
         idType: IdType.slug,
         options: {
-          hostname: context.params?.hostname?.toString() ?? ''
+          hostname: context.params?.hostname?.toString() ?? '',
+          status: JOURNEY_STATUS_EXCLUDE_DRAFT
         }
       }
     })
     const { rtl, locale } = getJourneyRTL(data.journey)
     return {
       props: {
+        flags: await getFlags(),
         hostname: context.params?.hostname?.toString() ?? '',
         host: context.params?.host?.toString() ?? '',
         ...(await serverSideTranslations(
@@ -115,7 +120,7 @@ export const getStaticProps: GetStaticProps<HostJourneyPageProps> = async (
       revalidate: 60
     }
   } catch (e) {
-    if (e.message === 'journey not found') {
+    if (isJourneyNotFoundError(e)) {
       return {
         props: {
           ...(await serverSideTranslations(

@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 import {
   Event,
   JourneyStatus,
@@ -17,7 +19,7 @@ import { JourneyWithTeamAndUserJourney } from './prisma.types'
 
 describe('fetchEmailDetails', () => {
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   const userJourneys = [
@@ -131,7 +133,8 @@ describe('fetchEmailDetails', () => {
     fromTemplateId: null,
     journeyCustomizationDescription: null,
     showAssistant: null,
-    templateSite: null
+    templateSite: null,
+    customizable: null
   }
 
   const event: Event = {

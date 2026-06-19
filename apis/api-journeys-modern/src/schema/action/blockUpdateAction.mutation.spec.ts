@@ -1,8 +1,15 @@
+import { vi } from 'vitest'
+
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
+import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 
 import { ACTION_UPDATE_RESET } from './blockUpdateAction.mutation'
+
+vi.mock(
+  '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
+)
 
 describe('blockUpdateAction mutation', () => {
   const authClient = getClient({
@@ -53,11 +60,12 @@ describe('blockUpdateAction mutation', () => {
     id: '1',
     typename: 'RadioOptionBlock',
     parentBlockId: 'parent-step-id',
+    journeyId: 'journeyId',
     journey: journeyWithAccess
   } as any
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('success cases', () => {
@@ -94,6 +102,8 @@ describe('blockUpdateAction mutation', () => {
           gtmEventName: null
         })
       })
+
+      expect(recalculateJourneyCustomizable).toHaveBeenCalledWith('journeyId')
 
       expect(result).toEqual({
         data: {
@@ -144,6 +154,8 @@ describe('blockUpdateAction mutation', () => {
         })
       })
 
+      expect(recalculateJourneyCustomizable).toHaveBeenCalledWith('journeyId')
+
       expect(result).toEqual({
         data: {
           blockUpdateAction: {
@@ -189,6 +201,8 @@ describe('blockUpdateAction mutation', () => {
         })
       })
 
+      expect(recalculateJourneyCustomizable).toHaveBeenCalledWith('journeyId')
+
       expect(result).toEqual({
         data: {
           blockUpdateAction: {
@@ -231,6 +245,8 @@ describe('blockUpdateAction mutation', () => {
           gtmEventName: null
         })
       })
+
+      expect(recalculateJourneyCustomizable).toHaveBeenCalledWith('journeyId')
 
       expect(result).toEqual({
         data: {
@@ -280,6 +296,8 @@ describe('blockUpdateAction mutation', () => {
           gtmEventName: null
         })
       })
+
+      expect(recalculateJourneyCustomizable).toHaveBeenCalledWith('journeyId')
 
       expect(result).toEqual({
         data: {

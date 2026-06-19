@@ -2,13 +2,14 @@ import { useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
-import { useUser, withUser } from 'next-firebase-auth'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { NextSeo } from 'next-seo'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TemplateGallery } from '@core/journeys/ui/TemplateGallery'
+import { GET_JOURNEY_TEMPLATE_LANGUAGE_IDS } from '@core/journeys/ui/TemplateGallery/HeaderAndLanguageFilter'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
@@ -26,21 +27,39 @@ import { GetTags } from '../../__generated__/GetTags'
 import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
+import { JOURNEY_NOT_FOUND_ERROR } from '../../src/components/TemplateCustomization/utils/customizationRoutes/customizationRoutes'
+import { useAuth } from '../../src/libs/auth'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function TemplateIndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const user = useUser()
+  const { user } = useAuth()
   const router = useRouter()
+  const { enqueueSnackbar } = useSnackbar()
   const { data } = useQuery<GetMe>(GET_ME)
   const { query } = useTeam()
-  if (data?.me?.id != null && !data?.me?.emailVerified) {
+  if (
+    data?.me?.__typename === 'AuthenticatedUser' &&
+    data.me.id != null &&
+    data.me.emailVerified === false
+  ) {
     void router.push('/users/verify?redirect=/templates')
   }
 
   useEffect(() => {
     void query.refetch()
-  }, [user.id, query])
+  }, [user?.id, query])
+
+  useEffect(() => {
+    if (!router.isReady || router.query.error !== JOURNEY_NOT_FOUND_ERROR)
+      return
+    enqueueSnackbar(t('Journey not found. Redirected to templates.'), {
+      variant: 'error',
+      preventDuplicate: true
+    })
+    // Clear the error query param so the URL is clean and refresh won't re-show the message
+    void router.replace('/templates', undefined, { shallow: true })
+  }, [router.isReady, router.query.error, router, enqueueSnackbar, t])
 
   const userSignedIn = user?.id != null
 
@@ -90,50 +109,34 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
     locale
   })
 
+  // Fetch dynamic template language IDs first (sequential — result feeds into GET_LANGUAGES)
+  const { data: languageIdsData } = await apolloClient.query<{
+    journeyTemplateLanguageIds: string[]
+  }>({
+    query: GET_JOURNEY_TEMPLATE_LANGUAGE_IDS
+  })
+  const templateLanguageIds = languageIdsData?.journeyTemplateLanguageIds
+  if (templateLanguageIds == null || templateLanguageIds.length === 0) {
+    console.warn(
+      'journeyTemplateLanguageIds returned empty or null — language dropdown will be empty'
+    )
+  }
+
+  // Then fetch languages, tags, and journeys in parallel
   await Promise.all([
     apolloClient.query<GetLanguages, GetLanguagesVariables>({
-      // from /workspaces/core/apps/journeys-admin/src/components/TemplateGallery/HeaderAndLanguageFilter/HeaderAndLanguageFilter.tsx useLanguagesQuery
       query: GET_LANGUAGES,
       variables: {
         languageId: '529',
         where: {
-          // make sure theese variables are the same as in HeaderAndLanguageFilter.tsx
-          ids: [
-            '529', // English
-            '4415', // Italiano, Italian
-            '1106', // Deutsch, German, Standard
-            '4451', // polski, Polish
-            '496', // Français, French
-            '20526', // Shqip, Albanian
-            '584', // Português, Portuguese, Brazil
-            '21028', // Español, Spanish, Latin American
-            '20615', // 普通話, Chinese, Mandarin
-            '3934', // Русский, Russian
-            '22658', // Arabic Modern
-            '7083', // Japanese
-            '16639', // Bahasa Indonesia
-            '3887', // Vietnamese
-            '13169', // Thai
-            '6464', // Hindi
-            '12876', // Ukrainian
-            '53441', // Arabic, Egyptian Modern Standard
-            '1942', // Türkçe, Turkish
-            '5541', // Serbian
-            '6788', // Farsi, Western
-            '3804', // Korean
-            '1927', // Malay
-            '1370', // Nepali
-            '1254' // Myanmar (Burmese)
-          ]
+          ids: templateLanguageIds ?? []
         }
       }
     }),
     apolloClient.query<GetTags>({
-      // from apps/journeys-admin/src/components/TemplateGallery/TagsFilter/TagsFilter.tsx useJourneysQuery
       query: GET_TAGS
     }),
     apolloClient.query<GetJourneys, GetJourneysVariables>({
-      // from apps/journeys-admin/src/components/TemplateSections/TemplateSections.tsx useJourneysQuery
       query: GET_JOURNEYS,
       variables: {
         where: {
@@ -156,4 +159,4 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
   }
 }
 
-export default withUser()(TemplateIndexPage)
+export default TemplateIndexPage

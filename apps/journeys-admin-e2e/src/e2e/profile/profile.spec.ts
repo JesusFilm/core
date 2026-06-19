@@ -43,7 +43,6 @@ test.describe('verify profile page functionalities', () => {
     const profilePage = new ProfilePage(page)
     await profilePage.clickProfileIconInNavBar() // clicking the profile icon in navigation list Item
     await profilePage.clickLogout() // clicking the logout button
-    await profilePage.verifyLogoutToastMsg() // verifying the toast message
     await profilePage.verifyloggedOut() // verifying the user is logged out and the login page is displayed
   })
 

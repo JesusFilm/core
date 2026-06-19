@@ -32,7 +32,7 @@ describe('useBlockRestoreMutation', () => {
         id: stepBlock.id
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         blockRestore: [stepBlockRes]
       }

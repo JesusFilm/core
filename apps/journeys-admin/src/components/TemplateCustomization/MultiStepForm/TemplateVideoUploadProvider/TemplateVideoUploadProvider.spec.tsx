@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { UpChunk } from '@mux/upchunk'
 import { act, render, renderHook, waitFor } from '@testing-library/react'
 import { ReactElement, ReactNode } from 'react'
+import { type Mock } from 'vitest'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey as mockJourneyBase } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
@@ -15,18 +16,18 @@ import {
   useTemplateVideoUpload
 } from './TemplateVideoUploadProvider'
 
-jest.mock('@mux/upchunk', () => ({
+vi.mock('@mux/upchunk', () => ({
   UpChunk: {
-    createUpload: jest.fn()
+    createUpload: vi.fn()
   }
 }))
 
-jest.mock('next-i18next', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
-const mockEnqueueSnackbar = jest.fn()
-jest.mock('notistack', () => ({
+const mockEnqueueSnackbar = vi.fn()
+vi.mock('notistack', () => ({
   useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
 }))
 
@@ -134,7 +135,7 @@ function createWrapper(mocks: MockedResponse[] = []): React.FC<{
 
 describe('TemplateVideoUploadProvider', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders children', () => {
@@ -194,10 +195,10 @@ describe('TemplateVideoUploadProvider', () => {
   describe('startUpload', () => {
     it('adds upload task with uploading status and hasActiveUploads becomes true', async () => {
       const mockUpload = {
-        on: jest.fn(),
-        abort: jest.fn()
+        on: vi.fn(),
+        abort: vi.fn()
       }
-      ;(UpChunk.createUpload as jest.Mock).mockReturnValue(mockUpload)
+      ;(UpChunk.createUpload as Mock).mockReturnValue(mockUpload)
 
       const Wrapper = createWrapper([
         createMuxVideoUploadByFileMock,
@@ -223,10 +224,10 @@ describe('TemplateVideoUploadProvider', () => {
 
     it('does not start duplicate upload for same videoBlockId when one is active', async () => {
       const mockUpload = {
-        on: jest.fn(),
-        abort: jest.fn()
+        on: vi.fn(),
+        abort: vi.fn()
       }
-      ;(UpChunk.createUpload as jest.Mock).mockReturnValue(mockUpload)
+      ;(UpChunk.createUpload as Mock).mockReturnValue(mockUpload)
 
       const Wrapper = createWrapper([
         createMuxVideoUploadByFileMock,
@@ -239,26 +240,31 @@ describe('TemplateVideoUploadProvider', () => {
       const file = new File([''], 'video.mp4', { type: 'video/mp4' })
 
       await act(async () => {
-        result.current.startUpload('video-block-1', file)
+        await result.current.startUpload('video-block-1', file)
       })
 
-      const createUploadCallCountBefore = (UpChunk.createUpload as jest.Mock)
-        .mock.calls.length
+      await waitFor(() => {
+        expect(result.current.getUploadStatus('video-block-1')?.status).toBe(
+          'uploading'
+        )
+      })
+
+      const listenerRegistrationCallCountBefore =
+        mockUpload.on.mock.calls.length
 
       await act(async () => {
-        result.current.startUpload('video-block-1', file)
+        await result.current.startUpload('video-block-1', file)
       })
 
-      const createUploadCallCountAfter = (UpChunk.createUpload as jest.Mock)
-        .mock.calls.length
-
-      expect(createUploadCallCountAfter).toBe(createUploadCallCountBefore)
+      expect(mockUpload.on.mock.calls.length).toBe(
+        listenerRegistrationCallCountBefore
+      )
     })
 
     it('allows concurrent uploads for different video blocks', async () => {
-      const mockUpload1 = { on: jest.fn(), abort: jest.fn() }
-      const mockUpload2 = { on: jest.fn(), abort: jest.fn() }
-      ;(UpChunk.createUpload as jest.Mock)
+      const mockUpload1 = { on: vi.fn(), abort: vi.fn() }
+      const mockUpload2 = { on: vi.fn(), abort: vi.fn() }
+      ;(UpChunk.createUpload as Mock)
         .mockReturnValueOnce(mockUpload1)
         .mockReturnValueOnce(mockUpload2)
 
@@ -368,12 +374,12 @@ describe('TemplateVideoUploadProvider', () => {
 
   it('shows error snackbar when UpChunk emits error', async () => {
     const mockUpload = {
-      on: jest.fn((event: string, cb: () => void) => {
+      on: vi.fn((event: string, cb: () => void) => {
         if (event === 'error') setTimeout(cb, 0)
       }),
-      abort: jest.fn()
+      abort: vi.fn()
     }
-    ;(UpChunk.createUpload as jest.Mock).mockReturnValue(mockUpload)
+    ;(UpChunk.createUpload as Mock).mockReturnValue(mockUpload)
 
     const Wrapper = createWrapper([createMuxVideoUploadByFileMock])
     const { result } = renderHook(() => useTemplateVideoUpload(), {

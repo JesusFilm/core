@@ -1,8 +1,8 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-import { User, useUser } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
@@ -16,6 +16,7 @@ import { JourneyDuplicate } from '../../../__generated__/JourneyDuplicate'
 import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
 import { TeamCreate } from '../../../__generated__/TeamCreate'
 import { UpdateLastActiveTeamId } from '../../../__generated__/UpdateLastActiveTeamId'
+import { User } from '../../libs/auth/authContext'
 import { TEAM_CREATE } from '../../libs/useTeamCreateMutation/useTeamCreateMutation'
 import { ONBOARDING_TEMPLATE_ID } from '../Team/TeamOnboarding/TeamOnboarding'
 
@@ -23,20 +24,18 @@ import { JOURNEY_PROFILE_CREATE } from './TermsAndConditions'
 
 import { TermsAndConditions } from '.'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-jest.mock('next-firebase-auth', () => ({
+const mockUseAuth = vi.fn()
+vi.mock('../../libs/auth', () => ({
   __esModule: true,
-  useUser: jest.fn().mockReturnValue({
-    displayName: 'Test User'
-  })
+  useAuth: (...args: unknown[]) => mockUseAuth(...args)
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-const mockUseUser = useUser as jest.MockedFunction<typeof useUser>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 const journeyProfileCreateMock: MockedResponse<JourneyProfileCreate> = {
   request: {
@@ -133,17 +132,28 @@ const journeyDuplicateMock: MockedResponse<JourneyDuplicate> = {
 }
 
 describe('TermsAndConditions', () => {
-  const push = jest.fn()
+  const push = vi.fn()
+
+  const mockUser: User = {
+    id: 'userId',
+    uid: 'userId',
+    email: 'test@example.com',
+    displayName: 'Test User',
+    photoURL: null,
+    phoneNumber: null,
+    emailVerified: true,
+    token: 'mock-token',
+    isAnonymous: false,
+    providerId: ''
+  }
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    mockUseUser.mockReturnValue({
-      displayName: 'Test User'
-    } as unknown as User)
+    vi.clearAllMocks()
+    mockUseAuth.mockReturnValue({ user: mockUser })
   })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   it('should enable next button when box is checked', async () => {
@@ -173,23 +183,21 @@ describe('TermsAndConditions', () => {
       query: { redirect: null }
     } as unknown as NextRouter)
 
-    const journeyProfileCreateMockResult = jest
+    const journeyProfileCreateMockResult = vi
       .fn()
       .mockReturnValue(journeyProfileCreateMock.result)
 
-    const journeyDuplicateMockResult = jest
+    const journeyDuplicateMockResult = vi
       .fn()
       .mockReturnValue(journeyDuplicateMock.result)
 
-    const teamCreateMockResult = jest
-      .fn()
-      .mockReturnValue(teamCreateMock.result)
+    const teamCreateMockResult = vi.fn().mockReturnValue(teamCreateMock.result)
 
-    const updateLastActiveTeamIdMockResult = jest
+    const updateLastActiveTeamIdMockResult = vi
       .fn()
       .mockReturnValue(updateLastActiveTeamIdMock.result)
 
-    const getTeamsMockResult = jest.fn().mockReturnValue(getTeams.result)
+    const getTeamsMockResult = vi.fn().mockReturnValue(getTeams.result)
 
     const { getByRole, queryByRole } = render(
       <MockedProvider
@@ -257,29 +265,115 @@ describe('TermsAndConditions', () => {
     })
   })
 
+  it('should navigate and clear loading even if the team refetch never resolves', async () => {
+    // Regression: the post-accept flow must not couple navigation or the
+    // button's loading state to the background team refetch / persistence.
+    // If the refetch stalls (e.g. a slow gateway), the user must still be
+    // taken to the destination instead of being stranded on a spinner.
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null }
+    } as unknown as NextRouter)
+
+    const { getByRole, queryByRole } = render(
+      <MockedProvider
+        mocks={[
+          journeyProfileCreateMock,
+          teamCreateMock,
+          getTeams, // initial TeamProvider query
+          { ...getTeams, delay: Infinity }, // query.refetch() never resolves
+          updateLastActiveTeamIdMock,
+          journeyDuplicateMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <TermsAndConditions />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('checkbox'))
+    fireEvent.click(getByRole('button', { name: 'Next' }))
+
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/?onboarding=true'))
+    await waitFor(() =>
+      expect(queryByRole('progressbar')).not.toBeInTheDocument()
+    )
+  })
+
+  it('should swallow a forbidden journey duplicate and still move the user on', async () => {
+    // Regression: a rejected journeyDuplicate (e.g. throwing "user is not
+    // allowed to duplicate journey") must not strand the user on a spinner.
+    // The onboarding template is best-effort — the user still gets a team and
+    // is navigated to the destination, and the button resets.
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null }
+    } as unknown as NextRouter)
+
+    const journeyDuplicateErrorMock: MockedResponse<JourneyDuplicate> = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: ONBOARDING_TEMPLATE_ID,
+          teamId: 'teamId1'
+        }
+      },
+      error: new Error('user is not allowed to duplicate journey')
+    }
+
+    const { getByRole, queryByRole } = render(
+      <MockedProvider
+        mocks={[
+          journeyProfileCreateMock,
+          teamCreateMock,
+          getTeams, // initial TeamProvider query
+          getTeams, // query.refetch()
+          updateLastActiveTeamIdMock,
+          journeyDuplicateErrorMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <TermsAndConditions />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('checkbox'))
+    fireEvent.click(getByRole('button', { name: 'Next' }))
+
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/?onboarding=true'))
+    await waitFor(() =>
+      expect(queryByRole('progressbar')).not.toBeInTheDocument()
+    )
+    expect(getByRole('button', { name: 'Next' })).not.toBeDisabled()
+  })
+
   it('should pass redirect query location to next page', async () => {
     mockUseRouter.mockReturnValue({
       push,
       query: { redirect: '/custom-location' }
     } as unknown as NextRouter)
 
-    const journeyProfileCreateMockResult = jest
+    const journeyProfileCreateMockResult = vi
       .fn()
       .mockReturnValue(journeyProfileCreateMock.result)
 
-    const journeyDuplicateMockResult = jest
+    const journeyDuplicateMockResult = vi
       .fn()
       .mockReturnValue(journeyDuplicateMock.result)
 
-    const teamCreateMockResult = jest
-      .fn()
-      .mockReturnValue(teamCreateMock.result)
+    const teamCreateMockResult = vi.fn().mockReturnValue(teamCreateMock.result)
 
-    const updateLastActiveTeamIdMockResult = jest
+    const updateLastActiveTeamIdMockResult = vi
       .fn()
       .mockReturnValue(updateLastActiveTeamIdMock.result)
 
-    const getTeamsMockResult = jest.fn().mockReturnValue(getTeams.result)
+    const getTeamsMockResult = vi.fn().mockReturnValue(getTeams.result)
 
     const { getByRole, queryByRole } = render(
       <MockedProvider
@@ -402,10 +496,17 @@ describe('TermsAndConditions', () => {
   })
 
   it('should use email username as displayName fallback when displayName is null', async () => {
-    mockUseUser.mockReturnValue({
-      displayName: null,
-      email: 'testuser@example.com'
-    } as unknown as User)
+    mockUseAuth.mockReturnValue({
+      user: {
+        id: 'userId',
+        email: 'testuser@example.com',
+        displayName: null,
+        photoURL: null,
+        phoneNumber: null,
+        emailVerified: false,
+        token: 'mock-token'
+      } as User
+    })
 
     mockUseRouter.mockReturnValue({
       push,
@@ -436,11 +537,11 @@ describe('TermsAndConditions', () => {
       }
     }
 
-    const journeyProfileCreateMockResult = jest
+    const journeyProfileCreateMockResult = vi
       .fn()
       .mockReturnValue(journeyProfileCreateMock.result)
 
-    const teamCreateMockResult = jest
+    const teamCreateMockResult = vi
       .fn()
       .mockReturnValue(teamCreateMockWithEmailUsername.result)
 
@@ -478,12 +579,19 @@ describe('TermsAndConditions', () => {
   })
 
   it('should return early when displayName and email are both null', async () => {
-    mockUseUser.mockReturnValue({
-      displayName: null,
-      email: null
-    } as unknown as User)
+    mockUseAuth.mockReturnValue({
+      user: {
+        id: 'userId',
+        email: null,
+        displayName: null,
+        photoURL: null,
+        phoneNumber: null,
+        emailVerified: false,
+        token: 'mock-token'
+      } as User
+    })
 
-    const journeyProfileCreateMockResult = jest
+    const journeyProfileCreateMockResult = vi
       .fn()
       .mockReturnValue(journeyProfileCreateMock.result)
 
@@ -510,6 +618,136 @@ describe('TermsAndConditions', () => {
     // Wait a bit to ensure no mutations are called
     await waitFor(() => {
       expect(journeyProfileCreateMockResult).not.toHaveBeenCalled()
+    })
+  })
+
+  it('should skip team creation and journey duplication when user already has a team', async () => {
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null }
+    } as unknown as NextRouter)
+
+    const existingTeamId = 'existingTeamId'
+
+    const getTeamsWithExistingTeam: MockedResponse<GetLastActiveTeamIdAndTeams> =
+      {
+        request: {
+          query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+        },
+        result: {
+          data: {
+            teams: [
+              {
+                id: existingTeamId,
+                title: 'Existing Team',
+                publicTitle: 'E Team',
+                __typename: 'Team',
+                userTeams: [],
+                customDomains: []
+              }
+            ],
+            getJourneyProfile: {
+              __typename: 'JourneyProfile',
+              id: 'journeyProfileId',
+              lastActiveTeamId: null
+            }
+          }
+        }
+      }
+
+    const updateLastActiveTeamIdForExistingTeamMock: MockedResponse<UpdateLastActiveTeamId> =
+      {
+        request: {
+          query: UPDATE_LAST_ACTIVE_TEAM_ID,
+          variables: {
+            input: {
+              lastActiveTeamId: existingTeamId
+            }
+          }
+        },
+        result: {
+          data: {
+            journeyProfileUpdate: {
+              __typename: 'JourneyProfile',
+              id: existingTeamId
+            }
+          }
+        }
+      }
+
+    const journeyProfileCreateMockResult = vi
+      .fn()
+      .mockReturnValue(journeyProfileCreateMock.result)
+
+    const teamCreateMockResult = vi.fn().mockReturnValue(teamCreateMock.result)
+
+    const journeyDuplicateMockResult = vi
+      .fn()
+      .mockReturnValue(journeyDuplicateMock.result)
+
+    const updateLastActiveTeamIdMockResult = vi
+      .fn()
+      .mockReturnValue(updateLastActiveTeamIdForExistingTeamMock.result)
+
+    const { getByRole, queryByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            ...journeyProfileCreateMock,
+            result: journeyProfileCreateMockResult
+          },
+          {
+            ...teamCreateMock,
+            result: teamCreateMockResult
+          },
+          {
+            ...getTeamsWithExistingTeam
+          },
+          {
+            ...getTeamsWithExistingTeam
+          },
+          {
+            ...updateLastActiveTeamIdForExistingTeamMock,
+            result: updateLastActiveTeamIdMockResult
+          },
+          {
+            ...journeyDuplicateMock,
+            result: journeyDuplicateMockResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <TermsAndConditions />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    // Wait for TeamProvider query to resolve with existing team data
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    fireEvent.click(getByRole('checkbox'))
+    fireEvent.click(getByRole('button', { name: 'Next' }))
+
+    await waitFor(() => {
+      expect(journeyProfileCreateMockResult).toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(updateLastActiveTeamIdMockResult).toHaveBeenCalled()
+    })
+
+    expect(teamCreateMockResult).not.toHaveBeenCalled()
+    expect(journeyDuplicateMockResult).not.toHaveBeenCalled()
+    expect(push).toHaveBeenCalledWith('/')
+
+    await act(async () => {
+      await waitFor(() => {
+        expect(queryByRole('progressbar')).not.toBeInTheDocument()
+      })
     })
   })
 

@@ -1,5 +1,5 @@
-import { ApolloClient, ApolloQueryResult } from '@apollo/client'
 import { Job } from 'bullmq'
+import { vi } from 'vitest'
 
 import {
   Team,
@@ -21,12 +21,23 @@ import {
 } from './prisma.types'
 import { service } from './service'
 
-jest.mock('@apollo/client')
+vi.mock('@core/prisma/users/client', () => ({
+  prisma: {
+    user: {
+      findUnique: vi.fn(),
+      findMany: vi.fn()
+    }
+  }
+}))
+
+const { prisma: mockPrismaUsers } = await vi.importMock<any>(
+  '@core/prisma/users/client'
+)
 
 let args = {}
-jest.mock('@core/yoga/email', () => ({
+vi.mock('@core/yoga/email', () => ({
   __esModule: true,
-  sendEmail: jest.fn().mockImplementation(async (callArgs) => {
+  sendEmail: vi.fn().mockImplementation(async (callArgs) => {
     args = callArgs
     await Promise.resolve()
   })
@@ -177,22 +188,17 @@ const journeyEditJob: Job<JourneyEditInviteJob, unknown, string> = {
 
 describe('EmailConsumer', () => {
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('teamRemovedEmail', () => {
     it('should send an email', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              user: {
-                id: 'userid',
-                email: 'jsmith@exmaple.com'
-              }
-            }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
+      mockPrismaUsers.user.findUnique.mockResolvedValueOnce({
+        id: 'userid',
+        email: 'jsmith@exmaple.com',
+        firstName: 'John',
+        imageUrl: null
+      })
       await service(teamRemoved)
       expect(sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
@@ -210,17 +216,12 @@ describe('EmailConsumer', () => {
         accountNotifications: false
       })
 
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              user: {
-                id: 'userid',
-                email: 'jsmith@exmaple.com'
-              }
-            }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
+      mockPrismaUsers.user.findUnique.mockResolvedValueOnce({
+        id: 'userid',
+        email: 'jsmith@exmaple.com',
+        firstName: 'John',
+        imageUrl: null
+      })
       await service(teamRemoved)
       expect(sendEmail).not.toHaveBeenCalled()
     })
@@ -228,17 +229,12 @@ describe('EmailConsumer', () => {
 
   describe('teamInviteEmail', () => {
     it('should send an email if user exists', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              user: {
-                id: 'userid',
-                email: 'jsmith@exmaple.com'
-              }
-            }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
+      mockPrismaUsers.user.findUnique.mockResolvedValueOnce({
+        id: 'userid',
+        email: 'jsmith@exmaple.com',
+        firstName: 'John',
+        imageUrl: null
+      })
       await service(teamInviteJob)
       expect(sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
@@ -250,14 +246,7 @@ describe('EmailConsumer', () => {
     })
 
     it('should send an email if user does not exist', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              user: undefined
-            }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
+      mockPrismaUsers.user.findUnique.mockResolvedValueOnce(null)
       await service(teamInviteJob)
       expect(sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
@@ -282,18 +271,24 @@ describe('EmailConsumer', () => {
 
   describe('teamInviteAcceptedEmail', () => {
     it('should send an email', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementation(
-        async () =>
-          await Promise.resolve({
-            data: {
-              user: {
-                id: 'userid',
-                email: 'jsmith@exmaple.com'
-              }
-            }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
+      mockPrismaUsers.user.findMany.mockResolvedValue([
+        {
+          id: 'userid',
+          userId: 'userId',
+          email: 'jsmith@exmaple.com',
+          firstName: 'John',
+          imageUrl: null
+        },
+        {
+          id: 'userid2',
+          userId: 'userId2',
+          email: 'jsmith@exmaple.com',
+          firstName: 'Jane',
+          imageUrl: null
+        }
+      ])
       await service(teamInviteAccepted)
+      expect(mockPrismaUsers.user.findMany).toHaveBeenCalledTimes(1)
       expect(sendEmail).toHaveBeenCalledTimes(2)
       expect(args).toEqual({
         to: 'jsmith@exmaple.com',
@@ -310,35 +305,36 @@ describe('EmailConsumer', () => {
         accountNotifications: false
       })
 
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              user: {
-                id: 'userid',
-                email: 'jsmith@exmaple.com'
-              }
-            }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
+      mockPrismaUsers.user.findMany.mockResolvedValueOnce([
+        {
+          id: 'userid',
+          userId: 'userId',
+          email: 'jsmith@exmaple.com',
+          firstName: 'John',
+          imageUrl: null
+        },
+        {
+          id: 'userid2',
+          userId: 'userId2',
+          email: 'jsmith@exmaple.com',
+          firstName: 'Jane',
+          imageUrl: null
+        }
+      ])
       await service(teamInviteAccepted)
+      expect(mockPrismaUsers.user.findMany).toHaveBeenCalledTimes(1)
       expect(sendEmail).not.toHaveBeenCalled()
     })
   })
 
   describe('journeyAccessRequest', () => {
     it('should send an email', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              user: {
-                id: 'userid',
-                email: 'jsmith@exmaple.com'
-              }
-            }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
+      mockPrismaUsers.user.findUnique.mockResolvedValueOnce({
+        id: 'userid',
+        email: 'jsmith@exmaple.com',
+        firstName: 'John',
+        imageUrl: null
+      })
       await service(journeyAccessRequest)
       expect(sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
@@ -356,17 +352,12 @@ describe('EmailConsumer', () => {
         accountNotifications: false
       })
 
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              user: {
-                id: 'userid',
-                email: 'jsmith@exmaple.com'
-              }
-            }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
+      mockPrismaUsers.user.findUnique.mockResolvedValueOnce({
+        id: 'userid',
+        email: 'jsmith@exmaple.com',
+        firstName: 'John',
+        imageUrl: null
+      })
       await service(journeyAccessRequest)
       expect(sendEmail).not.toHaveBeenCalled()
     })
@@ -374,17 +365,12 @@ describe('EmailConsumer', () => {
 
   describe('journeyRequestApproved', () => {
     it('should send an email', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              user: {
-                id: 'userid',
-                email: 'jsmith@exmaple.com'
-              }
-            }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
+      mockPrismaUsers.user.findUnique.mockResolvedValueOnce({
+        id: 'userid',
+        email: 'jsmith@exmaple.com',
+        firstName: 'John',
+        imageUrl: null
+      })
       await service(journeyRequestApproved)
       expect(sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
@@ -402,17 +388,12 @@ describe('EmailConsumer', () => {
         accountNotifications: false
       })
 
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              user: {
-                id: 'userid',
-                email: 'jsmith@exmaple.com'
-              }
-            }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
+      mockPrismaUsers.user.findUnique.mockResolvedValueOnce({
+        id: 'userid',
+        email: 'jsmith@exmaple.com',
+        firstName: 'John',
+        imageUrl: null
+      })
       await service(journeyRequestApproved)
       expect(sendEmail).not.toHaveBeenCalled()
     })
@@ -420,36 +401,24 @@ describe('EmailConsumer', () => {
 
   describe('journeyEditInvite', () => {
     it('should send an email if user exists', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              user: {
-                id: 'userid',
-                email: 'jsmith@exmaple.com'
-              }
-            }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
+      mockPrismaUsers.user.findUnique.mockResolvedValueOnce({
+        id: 'userid',
+        email: 'jsmith@exmaple.com',
+        firstName: 'John',
+        imageUrl: null
+      })
       await service(journeyEditJob)
       expect(sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
         to: journeyEditJob.data.email,
-        subject: 'Journey Title has been shared with you',
+        subject: 'Journey Title has been shared with you on NextSteps',
         html: expect.any(String),
         text: expect.any(String)
       })
     })
 
     it('should send an email if user does not exist', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              user: undefined
-            }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
+      mockPrismaUsers.user.findUnique.mockResolvedValueOnce(null)
       await service(journeyEditJob)
       expect(sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
@@ -467,17 +436,12 @@ describe('EmailConsumer', () => {
         accountNotifications: false
       })
 
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              user: {
-                id: 'userid',
-                email: 'jsmith@exmaple.com'
-              }
-            }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
+      mockPrismaUsers.user.findUnique.mockResolvedValueOnce({
+        id: 'userid',
+        email: 'jsmith@exmaple.com',
+        firstName: 'John',
+        imageUrl: null
+      })
       await service(journeyEditJob)
       expect(sendEmail).not.toHaveBeenCalled()
     })

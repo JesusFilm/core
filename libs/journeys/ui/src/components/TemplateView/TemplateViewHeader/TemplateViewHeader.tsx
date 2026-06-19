@@ -4,9 +4,9 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, parseISO } from 'date-fns'
-import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 
+import { AuthUser as User } from '../../../libs/auth/types'
 import { useJourney } from '../../../libs/JourneyProvider'
 
 import { PreviewTemplateButton } from './PreviewTemplateButton'
@@ -17,7 +17,7 @@ import { TemplateEditButton } from './TemplateEditButton/TemplateEditButton'
 
 interface TemplateViewHeaderProps {
   isPublisher: boolean | undefined
-  authUser: User | undefined
+  authUser?: User | null
 }
 
 export function TemplateViewHeader({
@@ -151,7 +151,7 @@ export function TemplateViewHeader({
             }}
           >
             <TemplateActionButton
-              signedIn={authUser?.id != null}
+              signedIn={authUser?.email != null}
               openTeamDialogOnSignIn
             />
             <PreviewTemplateButton slug={journey?.slug} />
@@ -162,7 +162,7 @@ export function TemplateViewHeader({
         </Stack>
       </Stack>
       <Box sx={{ display: { xs: 'flex', sm: 'none' }, pt: 6 }} gap={2}>
-        <TemplateActionButton signedIn={authUser?.id != null} />
+        <TemplateActionButton signedIn={authUser?.email != null} />
         <PreviewTemplateButton slug={journey?.slug} />
         {journey != null && isPublisher === true && (
           <TemplateEditButton journeyId={journey.id} />

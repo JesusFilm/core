@@ -2,13 +2,14 @@
 
 import { useSuspenseQuery } from '@apollo/client'
 import DeleteIcon from '@mui/icons-material/Delete'
+import PublishIcon from '@mui/icons-material/Publish'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useParams, useRouter, useSelectedLayoutSegment } from 'next/navigation'
-import { ReactNode } from 'react'
+import { ReactNode, useCallback } from 'react'
 
 import { graphql } from '@core/shared/gql'
 
@@ -35,6 +36,7 @@ const GET_TAB_DATA = graphql(`
       locked
       published
       publishedAt
+      label
       title(languageId: $languageId) {
         id
         value
@@ -63,8 +65,9 @@ export default function VideoViewLayout({
     'troubleshooting'
   ]
   const segment = useSelectedLayoutSegment() ?? 'metadata'
-  const currentTab = availableTabs.includes(segment ?? '')
-    ? segment
+  const tabSegment = segment === 'publishAll' ? 'children' : segment
+  const currentTab = availableTabs.includes(tabSegment ?? '')
+    ? tabSegment
     : 'metadata'
 
   const { data } = useSuspenseQuery(GET_TAB_DATA, {
@@ -87,6 +90,16 @@ export default function VideoViewLayout({
 
   // Show delete button only for videos that have never been published
   const canDelete = video.publishedAt == null
+
+  // Check if video has children (collections, series, feature films)
+  const hasChildren =
+    video.label === 'collection' ||
+    video.label === 'series' ||
+    video.label === 'featureFilm'
+
+  const handlePublishAllClick = useCallback(() => {
+    router.push(`/videos/${videoId}/publishAll`, { scroll: false })
+  }, [router, videoId])
 
   return (
     <Stack
@@ -113,24 +126,39 @@ export default function VideoViewLayout({
           <Typography variant="h4">{videoTitle}</Typography>
           <PublishedChip published={video.published} />
         </Stack>
-        {canDelete && (
-          <Button
-            variant="outlined"
-            color="error"
-            startIcon={<DeleteIcon />}
-            onClick={() => {
-              router.push(`/videos/${videoId}/delete`, {
-                scroll: false
-              })
-            }}
-            sx={{
-              alignSelf: { xs: 'stretch', sm: 'center' },
-              whiteSpace: 'nowrap'
-            }}
-          >
-            Delete Video
-          </Button>
-        )}
+        <Stack direction="row" spacing={1}>
+          {hasChildren && (
+            <Button
+              variant="outlined"
+              startIcon={<PublishIcon />}
+              onClick={handlePublishAllClick}
+              sx={{
+                alignSelf: { xs: 'stretch', sm: 'center' },
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Publish All
+            </Button>
+          )}
+          {canDelete && (
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={() => {
+                router.push(`/videos/${videoId}/delete`, {
+                  scroll: false
+                })
+              }}
+              sx={{
+                alignSelf: { xs: 'stretch', sm: 'center' },
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Delete Video
+            </Button>
+          )}
+        </Stack>
       </Stack>
 
       <Stack gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>

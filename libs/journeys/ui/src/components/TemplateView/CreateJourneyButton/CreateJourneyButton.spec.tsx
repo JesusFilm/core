@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import {
   JourneyStatus,
@@ -22,15 +23,15 @@ import {
 
 import { CreateJourneyButton, JourneyForTemplate } from './CreateJourneyButton'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+vi.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: vi.fn()
 }))
 
 const journey: Journey = {
@@ -90,10 +91,12 @@ const journey: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  customizable: null,
+  showAssistant: null
 }
 
-const teamResult = jest.fn(() => ({
+const teamResult = vi.fn(() => ({
   data: {
     teams: [
       {
@@ -223,12 +226,12 @@ const createJourneyButton = (journeyProps?: JourneyForTemplate | undefined) => (
 )
 
 describe('CreateJourneyButton', () => {
-  const prefetch = jest.fn()
-  const push = jest.fn().mockResolvedValue('')
+  const prefetch = vi.fn()
+  const push = vi.fn().mockResolvedValue('')
   const originalEnv = process.env
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     teamResult.mockClear()
     // Reset teamResult implementation to ensure it returns data
     teamResult.mockImplementation(() => ({
@@ -436,7 +439,7 @@ describe('CreateJourneyButton', () => {
       mockUseRouter.mockReturnValue({
         query: { createNew: false },
         push,
-        replace: jest.fn(),
+        replace: vi.fn(),
         pathname: '/templates/journeyId'
       } as unknown as NextRouter)
 
@@ -492,7 +495,7 @@ describe('CreateJourneyButton', () => {
       })
 
       afterEach(() => {
-        jest.resetAllMocks()
+        vi.resetAllMocks()
       })
 
       it('should pre-render sign in page', async () => {
@@ -520,8 +523,7 @@ describe('CreateJourneyButton', () => {
               query: {
                 redirect: expect.stringContaining(
                   '/templates/journeyId?createNew=true'
-                ),
-                login: true
+                )
               }
             },
             undefined,
@@ -547,8 +549,7 @@ describe('CreateJourneyButton', () => {
               query: {
                 redirect: expect.stringContaining(
                   '/templates/journeyId?createNew=true'
-                ),
-                login: false
+                )
               }
             },
             undefined,
@@ -593,8 +594,7 @@ describe('CreateJourneyButton', () => {
               query: {
                 redirect: expect.stringContaining(
                   '/templates/journeyId?createNew=true'
-                ),
-                login: true
+                )
               }
             },
             undefined,
@@ -619,8 +619,7 @@ describe('CreateJourneyButton', () => {
               pathname: 'http://localhost:4200/users/sign-in',
               query: {
                 redirect:
-                  'http://localhost:4200/templates/journeyId?createNew=true',
-                login: false
+                  'http://localhost:4200/templates/journeyId?createNew=true'
               }
             },
             undefined,
@@ -665,8 +664,7 @@ describe('CreateJourneyButton', () => {
               query: {
                 redirect: expect.stringContaining(
                   '/templates/journeyId?createNew=true'
-                ),
-                login: true
+                )
               }
             },
             undefined,
@@ -691,8 +689,7 @@ describe('CreateJourneyButton', () => {
               pathname: 'http://localhost:4200/users/sign-in',
               query: {
                 redirect:
-                  'http://localhost:4200/templates/journeyId?createNew=true',
-                login: false
+                  'http://localhost:4200/templates/journeyId?createNew=true'
               }
             },
             undefined,
@@ -737,7 +734,7 @@ describe('CreateJourneyButton', () => {
     })
 
     it('should call refetchTemplateStats with journey id when duplicating from a template', async () => {
-      const refetchTemplateStats = jest.fn()
+      const refetchTemplateStats = vi.fn()
       const journeyDuplicateMockWithFromTemplateId = {
         request: {
           query: JOURNEY_DUPLICATE,
@@ -747,7 +744,7 @@ describe('CreateJourneyButton', () => {
             forceNonTemplate: true
           }
         },
-        result: jest.fn(() => ({
+        result: vi.fn(() => ({
           data: {
             journeyDuplicate: {
               id: 'duplicatedJourneyId',
@@ -761,7 +758,7 @@ describe('CreateJourneyButton', () => {
       mockUseRouter.mockReturnValue({
         query: { createNew: false },
         push,
-        replace: jest.fn(),
+        replace: vi.fn(),
         pathname: '/templates/journeyId'
       } as unknown as NextRouter)
 
@@ -812,7 +809,7 @@ describe('CreateJourneyButton', () => {
     })
 
     it('should call refetchTemplateStats with fromTemplateId when duplicating from a non-template journey', async () => {
-      const refetchTemplateStats = jest.fn()
+      const refetchTemplateStats = vi.fn()
       const nonTemplateJourney: Journey = {
         ...journey,
         template: false,
@@ -827,7 +824,7 @@ describe('CreateJourneyButton', () => {
             forceNonTemplate: true
           }
         },
-        result: jest.fn(() => ({
+        result: vi.fn(() => ({
           data: {
             journeyDuplicate: {
               id: 'duplicatedJourneyId',
@@ -841,7 +838,7 @@ describe('CreateJourneyButton', () => {
       mockUseRouter.mockReturnValue({
         query: { createNew: false },
         push,
-        replace: jest.fn(),
+        replace: vi.fn(),
         pathname: '/templates/journeyId'
       } as unknown as NextRouter)
 
@@ -894,7 +891,7 @@ describe('CreateJourneyButton', () => {
       mockUseRouter.mockReturnValue({
         query: { createNew: false },
         push,
-        replace: jest.fn(),
+        replace: vi.fn(),
         pathname: '/templates/journeyId'
       } as unknown as NextRouter)
 
@@ -965,7 +962,7 @@ describe('CreateJourneyButton', () => {
       mockUseRouter.mockReturnValue({
         query: { createNew: false },
         push,
-        replace: jest.fn(),
+        replace: vi.fn(),
         pathname: '/publisher'
       } as unknown as NextRouter)
 
@@ -1016,6 +1013,108 @@ describe('CreateJourneyButton', () => {
           { shallow: true }
         )
       })
+    })
+  })
+
+  describe('defaultToActiveTeam wiring', () => {
+    function renderWithJourney(journeyForTemplate: JourneyForTemplate) {
+      mockUseRouter.mockReturnValue({
+        query: { createNew: false },
+        push,
+        prefetch
+      } as unknown as NextRouter)
+      const multiTeamMock = {
+        request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+        result: {
+          data: {
+            teams: [
+              {
+                id: 'team-a',
+                title: 'Team A',
+                __typename: 'Team',
+                publicTitle: 'Team A',
+                userTeams: [],
+                customDomains: []
+              },
+              {
+                id: 'team-b',
+                title: 'Team B',
+                __typename: 'Team',
+                publicTitle: 'Team B',
+                userTeams: [],
+                customDomains: []
+              }
+            ],
+            getJourneyProfile: {
+              id: 'profileId',
+              __typename: 'JourneyProfile',
+              lastActiveTeamId: 'team-b'
+            }
+          }
+        }
+      }
+      return render(
+        <MockedProvider mocks={[multiTeamMock, getLanguagesMock]}>
+          <SnackbarProvider>
+            <TeamProvider>
+              <JourneyProvider value={{ journey }}>
+                <CreateJourneyButton
+                  signedIn
+                  journeyData={journeyForTemplate}
+                />
+              </JourneyProvider>
+            </TeamProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+    }
+
+    it('pre-fills the team dropdown with the active team when the source is a team template', async () => {
+      renderWithJourney({
+        ...journey,
+        team: { id: 'team-a' }
+      } as unknown as JourneyForTemplate)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+      await waitFor(() =>
+        expect(
+          screen.getByRole('combobox', { name: 'Select Team' })
+        ).toHaveTextContent('Team B')
+      )
+    })
+
+    it('leaves the team dropdown empty when the source is a global JFP template', async () => {
+      renderWithJourney({
+        ...journey,
+        team: { id: 'jfp-team' }
+      } as unknown as JourneyForTemplate)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+      await waitFor(() =>
+        expect(
+          screen.getByRole('combobox', { name: 'Select Team' })
+        ).toBeInTheDocument()
+      )
+      const teamSelect = screen.getByRole('combobox', { name: 'Select Team' })
+      expect(teamSelect).not.toHaveTextContent('Team A')
+      expect(teamSelect).not.toHaveTextContent('Team B')
+    })
+
+    it('leaves the team dropdown empty when the source has no team set', async () => {
+      renderWithJourney({
+        ...journey,
+        team: null
+      } as unknown as JourneyForTemplate)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+      await waitFor(() =>
+        expect(
+          screen.getByRole('combobox', { name: 'Select Team' })
+        ).toBeInTheDocument()
+      )
+      const teamSelect = screen.getByRole('combobox', { name: 'Select Team' })
+      expect(teamSelect).not.toHaveTextContent('Team A')
+      expect(teamSelect).not.toHaveTextContent('Team B')
     })
   })
 })

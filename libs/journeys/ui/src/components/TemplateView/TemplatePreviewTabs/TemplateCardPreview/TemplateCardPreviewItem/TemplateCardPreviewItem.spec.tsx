@@ -1,5 +1,5 @@
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { fireEvent, render } from '@testing-library/react'
+import { act, fireEvent, render } from '@testing-library/react'
 import { ReactElement } from 'react'
 
 import {
@@ -43,31 +43,40 @@ describe('TemplateCardPreviewItem', () => {
         themeName: ThemeName.base,
         fullscreen: false,
         eventLabel: null,
-        children: []
+        children: [],
+        showAssistant: null,
+        expandChatByDefault: null
       }
     ]
   } as TreeBlock<StepBlock>
 
   it('should render preview variant', () => {
     const { getByTestId } = renderWithProviders(
-      <TemplateCardPreviewItem step={step} variant="preview" />
+      <TemplateCardPreviewItem step={step} variant="standard" />
     )
     expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
   })
 
   it('should render media variant', () => {
     const { getByTestId } = renderWithProviders(
-      <TemplateCardPreviewItem step={step} variant="media" />
+      <TemplateCardPreviewItem step={step} variant="compact" />
+    )
+    expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
+  })
+
+  it('should render guestPreview variant', () => {
+    const { getByTestId } = renderWithProviders(
+      <TemplateCardPreviewItem step={step} variant="guestPreview" />
     )
     expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
   })
 
   it('should call onClick with step when clicked', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     const { getByTestId } = renderWithProviders(
       <TemplateCardPreviewItem
         step={step}
-        variant="preview"
+        variant="standard"
         onClick={handleClick}
       />
     )
@@ -80,7 +89,7 @@ describe('TemplateCardPreviewItem', () => {
     const { getByTestId } = renderWithProviders(
       <TemplateCardPreviewItem
         step={step}
-        variant="preview"
+        variant="standard"
         selectedStep={step}
       />
     )
@@ -91,10 +100,108 @@ describe('TemplateCardPreviewItem', () => {
     const { getByTestId } = renderWithProviders(
       <TemplateCardPreviewItem
         step={step}
-        variant="preview"
+        variant="standard"
         selectedStep={null}
       />
     )
     expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
+  })
+
+  it('should scale up the selected compact card', () => {
+    const { getByTestId } = renderWithProviders(
+      <TemplateCardPreviewItem
+        step={step}
+        variant="compact"
+        selectedStep={step}
+      />
+    )
+    expect(getByTestId('TemplateCardPreviewItem')).toHaveStyle({
+      transform: 'scale(1.25)'
+    })
+  })
+
+  it('should dim non-selected compact cards', () => {
+    const otherStep = { ...step, id: 'other' } as TreeBlock<StepBlock>
+    const { getByTestId } = renderWithProviders(
+      <TemplateCardPreviewItem
+        step={step}
+        variant="compact"
+        selectedStep={otherStep}
+      />
+    )
+    expect(getByTestId('TemplateCardPreviewItem')).toHaveStyle({
+      opacity: 0.75
+    })
+  })
+
+  it('should render with steps prop for StepHeader and StepFooter', () => {
+    const { getByTestId } = renderWithProviders(
+      <TemplateCardPreviewItem step={step} variant="standard" steps={[step]} />
+    )
+    expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
+  })
+
+  describe('iframe tab focus prevention', () => {
+    it('should set tabIndex -1 on iframe for guestPreview variant', () => {
+      const { container } = renderWithProviders(
+        <TemplateCardPreviewItem step={step} variant="guestPreview" />
+      )
+      const iframe = container.querySelector('iframe')
+      expect(iframe).toHaveAttribute('tabindex', '-1')
+    })
+
+    it('should not set tabIndex on iframe for standard variant', () => {
+      const { container } = renderWithProviders(
+        <TemplateCardPreviewItem step={step} variant="standard" />
+      )
+      const iframe = container.querySelector('iframe')
+      expect(iframe).not.toHaveAttribute('tabindex')
+    })
+
+    it('should not set tabIndex on iframe for compact variant', () => {
+      const { container } = renderWithProviders(
+        <TemplateCardPreviewItem step={step} variant="compact" />
+      )
+      const iframe = container.querySelector('iframe')
+      expect(iframe).not.toHaveAttribute('tabindex')
+    })
+
+    it('should disable focusable elements inside iframe for guestPreview', () => {
+      vi.useFakeTimers()
+
+      const { container } = renderWithProviders(
+        <TemplateCardPreviewItem step={step} variant="guestPreview" />
+      )
+
+      const iframe = container.querySelector('iframe')
+      if (iframe?.contentDocument?.body != null) {
+        const button = iframe.contentDocument.createElement('button')
+        button.textContent = 'Click me'
+        iframe.contentDocument.body.appendChild(button)
+
+        act(() => {
+          vi.advanceTimersByTime(100)
+        })
+
+        expect(button.getAttribute('tabindex')).toBe('-1')
+      }
+
+      vi.useRealTimers()
+    })
+
+    it('should clean up interval and observer on unmount', () => {
+      vi.useFakeTimers()
+      const clearIntervalSpy = vi.spyOn(global, 'clearInterval')
+
+      const { unmount } = renderWithProviders(
+        <TemplateCardPreviewItem step={step} variant="guestPreview" />
+      )
+
+      unmount()
+      expect(clearIntervalSpy).toHaveBeenCalled()
+
+      clearIntervalSpy.mockRestore()
+      vi.useRealTimers()
+    })
   })
 })

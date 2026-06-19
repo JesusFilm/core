@@ -9,5 +9,17 @@
   "Get me out of here!": "Keluarkan aku dari sini!",
   "Terms & Conditions": "Syarat & Ketentuan",
   "Privacy Policy": "Kebijakan Privasi",
-  "NextSteps © {{year}}": "NextSteps © {{year}}"
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Use": "Gunakan",
+  "Preview": "Pratinjau",
+  "About this chat": "Tentang obrolan ini",
+  "About this chat | Next Steps": "Tentang obrolan ini | Langkah Selanjutnya",
+  "The chat on this journey is powered by an AI assistant. To help us improve future replies, the messages you send and the assistant’s replies are saved.": "Obrolan dalam perjalanan ini didukung oleh asisten AI. Untuk membantu kami meningkatkan kualitas balasan di masa mendatang, pesan yang Anda kirimkan dan balasan dari asisten tersebut akan disimpan.",
+  "We do not save your name, email address, or any account details, and we do not link conversations to your identity.": "Kami tidak menyimpan nama, alamat email, atau detail akun Anda apa pun, dan kami tidak mengaitkan percakapan dengan identitas Anda.",
+  "Where the messages go": "Ke mana pesan-pesan itu dikirim",
+  "Your messages and the assistant’s replies pass through two third-party services: an AI service that generates the replies, and an analytics service called Langfuse where the conversations are stored so the team can review them in aggregate to improve the experience. They are not sold and they are not used for advertising.": "Pesan Anda dan balasan dari asisten tersebut melewati dua layanan pihak ketiga: layanan AI yang menghasilkan balasan tersebut, serta layanan analitik bernama Langfuse tempat percakapan-percakapan tersebut disimpan agar tim dapat meninjaunya secara keseluruhan guna meningkatkan pengalaman pengguna. Data tersebut tidak dijual dan tidak digunakan untuk keperluan periklanan.",
+  "If you prefer not to take part": "Jika Anda memilih untuk tidak ikut serta",
+  "There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.": "Saat ini belum tersedia opsi untuk menonaktifkan fitur obrolan. Jika Anda tidak ingin pesan Anda disimpan, mohon jangan gunakan fitur obrolan — bagian lain dari layanan ini tetap dapat digunakan tanpa fitur tersebut.",
+  "Last updated: June 2026": "Diperbarui terakhir: Juni 2026",
+  "Back to Next Steps": "Kembali ke Langkah Selanjutnya"
 }

@@ -38,10 +38,7 @@ describe('TextScreen', () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
-          <TextScreen
-            handleNext={jest.fn()}
-            handleScreenNavigation={jest.fn()}
-          />
+          <TextScreen handleNext={vi.fn()} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -55,10 +52,7 @@ describe('TextScreen', () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
-          <TextScreen
-            handleNext={jest.fn()}
-            handleScreenNavigation={jest.fn()}
-          />
+          <TextScreen handleNext={vi.fn()} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -77,7 +71,7 @@ describe('TextScreen', () => {
   })
 
   it('submits only when values changed and calls handleNext', async () => {
-    const handleNext = jest.fn()
+    const handleNext = vi.fn().mockResolvedValue(undefined)
     const journeyCustomizationFieldUpdate: MockedResponse<
       JourneyCustomizationFieldUpdate,
       JourneyCustomizationFieldUpdateVariables
@@ -92,7 +86,7 @@ describe('TextScreen', () => {
           ]
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           journeyCustomizationFieldUserUpdate: [
             {
@@ -109,16 +103,16 @@ describe('TextScreen', () => {
             }
           ]
         }
-      }))
+      })) as MockedResponse<
+        JourneyCustomizationFieldUpdate,
+        JourneyCustomizationFieldUpdateVariables
+      >['result']
     }
 
     render(
       <MockedProvider mocks={[journeyCustomizationFieldUpdate]}>
         <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
-          <TextScreen
-            handleNext={handleNext}
-            handleScreenNavigation={jest.fn()}
-          />
+          <TextScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -142,15 +136,31 @@ describe('TextScreen', () => {
     )
   })
 
-  it('does not submit when no changes and still calls handleNext', () => {
-    const handleNext = jest.fn()
+  it('should show loading state on the Next button after clicking', () => {
+    const handleNext = vi.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
-          <TextScreen
-            handleNext={handleNext}
-            handleScreenNavigation={jest.fn()}
-          />
+          <TextScreen handleNext={handleNext} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const nextButton = screen.getByTestId('CustomizeFlowNextButton')
+    expect(nextButton).not.toBeDisabled()
+
+    fireEvent.click(nextButton)
+
+    expect(nextButton).toBeDisabled()
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+  })
+
+  it('does not submit when no changes and still calls handleNext', () => {
+    const handleNext = vi.fn().mockResolvedValue(undefined)
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
+          <TextScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>
     )

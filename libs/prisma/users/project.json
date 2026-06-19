@@ -33,13 +33,13 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_USERS=postgresql://postgres:postgres@db:5432/users?schema=public \"bash -c 'pnpm exec prisma migrate dev --schema libs/prisma/users/db/schema.prisma --name `date +\\\"%Y%m%d%H%M%S\\\"`'\""
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_USERS=postgresql://postgres:postgres@db:5432/users?schema=public \"bash -c 'pnpm exec prisma migrate dev --config libs/prisma/users/prisma.config.ts --name `date +\\\"%Y%m%d%H%M%S\\\"`'\""
         ]
       },
       "configurations": {
         "production": {
           "commands": [
-            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_USERS=postgresql://postgres:postgres@db:5432/users?schema=public \"pnpm exec prisma migrate deploy --schema libs/prisma/users/db/schema.prisma\""
+            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_USERS=postgresql://postgres:postgres@db:5432/users?schema=public \"pnpm exec prisma migrate deploy --config libs/prisma/users/prisma.config.ts\""
           ]
         }
       }
@@ -48,7 +48,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_USERS=postgresql://postgres:postgres@db:5432/users?schema=public \"pnpm exec prisma migrate reset --schema libs/prisma/users/db/schema.prisma --force\""
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_USERS=postgresql://postgres:postgres@db:5432/users?schema=public \"pnpm exec prisma migrate reset --config libs/prisma/users/prisma.config.ts --force\""
         ]
       }
     },
@@ -56,7 +56,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "pnpm exec prisma studio --schema libs/prisma/users/db/schema.prisma"
+          "pnpm exec prisma studio --config libs/prisma/users/prisma.config.ts"
         ]
       }
     },

@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography'
 import last from 'lodash/last'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ComponentProps, ReactElement, SyntheticEvent, useState } from 'react'
 

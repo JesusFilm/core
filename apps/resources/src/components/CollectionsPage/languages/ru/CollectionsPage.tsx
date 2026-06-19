@@ -9,7 +9,11 @@ import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCaro
 import { ContainerHero } from '../../ContainerHero'
 import { OtherCollectionsCarousel } from '../../OtherCollectionsCarousel'
 
-export function CollectionsPage(): ReactElement {
+interface CollectionsPageProps {
+  year: number
+}
+
+export function CollectionsPage({ year }: CollectionsPageProps): ReactElement {
   const [mutePage, setMutePage] = useState(true)
 
   const shareDataTitle =
@@ -21,8 +25,9 @@ export function CollectionsPage(): ReactElement {
         <ContainerHero
           title="Пасха"
           descriptionBeforeYear="Пасха"
-          descriptionAfterYear="видео и ресурсы о Великом посте, Страстной неделе, Воскресении"
+          descriptionAfterYear="видео об истории воскресения более чем на 2 000 языках"
           feedbackButtonLabel="Оставить отзыв"
+          year={year}
         />
       }
       hideHeader
@@ -31,7 +36,7 @@ export function CollectionsPage(): ReactElement {
       <CollectionsPageContent>
         {/* <CollectionNavigationCarousel contentItems={navigationContentItems} /> */}
         <CollectionIntroText
-          title="Настоящая история Пасхи"
+          title="В чем истинный смысл Пасхи?"
           subtitle="Есть вопросы? В поиске? Откройте для себя истинную силу Пасхи."
           firstParagraph={{
             beforeHighlight:
@@ -48,6 +53,7 @@ export function CollectionsPage(): ReactElement {
           orthodoxEasterLabel="Православная"
           passoverLabel="Еврейская Пасха"
           locale="ru-RU"
+          year={year}
         />
         <CollectionsVideoContent
           contentId="easter-explained/russian"
@@ -57,7 +63,7 @@ export function CollectionsPage(): ReactElement {
           mutePage={mutePage}
           setMutePage={setMutePage}
           showDivider={false}
-          questionsTitle="Связанные вопросы"
+          questionsTitle="Часто задаваемые вопросы о Пасхе"
           askButtonText="Задайте свой"
           bibleQuotesTitle="Цитаты из Библии"
           quizButtonText="Какой ваш следующий шаг веры?"

@@ -3,6 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { IntegrationType } from '../../../../__generated__/globalTypes'
 
@@ -11,18 +12,18 @@ import {
   INTEGRATION_GROWTH_SPACES_CREATE
 } from './GrowthSpacesCreateIntegration'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('GrowthSpacesCreateIntegration', () => {
   it('should create a new integration', async () => {
     const cache = new InMemoryCache()
 
-    const push = jest.fn()
+    const push = vi.fn()
     mockedUseRouter.mockReturnValue({
       push,
       query: {
@@ -30,7 +31,7 @@ describe('GrowthSpacesCreateIntegration', () => {
       }
     } as unknown as NextRouter)
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         integrationGrowthSpacesCreate: {
           __typename: 'IntegrationGrowthSpaces',
@@ -106,7 +107,7 @@ describe('GrowthSpacesCreateIntegration', () => {
   })
 
   it('should show notistack error on network error', async () => {
-    const push = jest.fn()
+    const push = vi.fn()
     mockedUseRouter.mockReturnValue({
       push,
       query: {
@@ -114,7 +115,7 @@ describe('GrowthSpacesCreateIntegration', () => {
       }
     } as unknown as NextRouter)
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         integrationGrowthSpacesCreate: {
           id: null
@@ -178,7 +179,7 @@ describe('GrowthSpacesCreateIntegration', () => {
   })
 
   it('should show error snackbar on request failure', async () => {
-    const push = jest.fn()
+    const push = vi.fn()
     mockedUseRouter.mockReturnValue({
       push,
       query: {

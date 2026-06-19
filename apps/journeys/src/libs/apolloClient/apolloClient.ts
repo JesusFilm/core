@@ -4,10 +4,10 @@ import {
   createHttpLink
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
-import { UserCredential, getAuth, signInAnonymously } from 'firebase/auth'
+import { User, onAuthStateChanged, signInAnonymously } from 'firebase/auth'
 import { useMemo } from 'react'
 
-import { firebaseClient } from '../firebaseClient'
+import { firebaseAuth } from '../firebaseClient'
 
 import { cache } from './cache'
 
@@ -20,14 +20,39 @@ const httpLink = createHttpLink({
   }
 })
 
-let signInPromise: Promise<UserCredential>
+/**
+ * Waits for Firebase Auth to finish loading persisted state (localStorage)
+ * before deciding whether to create a new anonymous user. This prevents
+ * minting a new UID on every page load and creating duplicate Visitors.
+ */
+function getOrCreateAnonymousUser(): Promise<User> {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
+      unsubscribe()
+      if (user != null) {
+        resolve(user)
+        return
+      }
+      signInAnonymously(firebaseAuth).then(
+        (credential) => resolve(credential.user),
+        reject
+      )
+    })
+  })
+}
+
+let userPromise: Promise<User> | null = null
 
 const authLink = setContext(async (_, { headers }) => {
-  const auth = getAuth(firebaseClient)
-  if (signInPromise == null) signInPromise = signInAnonymously(auth)
-  const userCredential = await signInPromise
+  if (userPromise == null) {
+    userPromise = getOrCreateAnonymousUser().catch((error) => {
+      userPromise = null
+      throw error
+    })
+  }
+  const user = await userPromise
 
-  const token = await userCredential.user.getIdToken()
+  const token = await user.getIdToken()
 
   return {
     headers: {

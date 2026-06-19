@@ -175,4 +175,16 @@ describe('messagePlatformToLabel', () => {
   it('returns Settings', () => {
     expect(messagePlatformToLabel(MessagePlatform.settings, t)).toBe('Settings')
   })
+
+  it('returns Discord', () => {
+    expect(messagePlatformToLabel(MessagePlatform.discord, t)).toBe('Discord')
+  })
+
+  it('returns Signal', () => {
+    expect(messagePlatformToLabel(MessagePlatform.signal, t)).toBe('Signal')
+  })
+
+  it('returns WeChat', () => {
+    expect(messagePlatformToLabel(MessagePlatform.weChat, t)).toBe('WeChat')
+  })
 })

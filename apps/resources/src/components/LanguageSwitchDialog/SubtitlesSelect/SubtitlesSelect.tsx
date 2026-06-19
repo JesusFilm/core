@@ -3,7 +3,7 @@ import Autocomplete from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ChangeEvent, ReactElement, useMemo } from 'react'
 
 import { SUBTITLE_LANGUAGE_IDS } from '../../../libs/localeMapping'
@@ -25,7 +25,9 @@ export function SubtitlesSelect({
   const { t } = useTranslation()
   const { updateSubtitleLanguage, updateSubtitlesOn } = useLanguageActions()
   const { languages: allLanguages, isLoading } = useLanguages()
+  const hasVideo = videoSubtitleLanguageIds != null
   const languages = useMemo(() => {
+    if (hasVideo) return allLanguages
     return allLanguages.filter((language) =>
       SUBTITLE_LANGUAGE_IDS.includes(language.id)
     )
@@ -37,12 +39,11 @@ export function SubtitlesSelect({
     [languages, subtitleLanguageId]
   )
   const options = useMemo(() => {
-    if (videoSubtitleLanguageIds == null) return languages
-    return [
-      ...languages.filter((language) =>
+    if (hasVideo)
+      return languages.filter((language) =>
         videoSubtitleLanguageIds.includes(language.id)
       )
-    ]
+    return languages
   }, [languages, videoSubtitleLanguageIds])
   const helperText = useMemo(() => {
     if (isLoading) return t('Loading...')

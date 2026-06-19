@@ -1,17 +1,18 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import { videos } from './data'
 
 import { VideoList } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('../VideoDetails', () => ({
+vi.mock('../VideoDetails', () => ({
   __esModule: true,
   VideoDetails: ({
     onSelect,
@@ -40,7 +41,7 @@ jest.mock('../VideoDetails', () => ({
 }))
 
 describe('VideoList', () => {
-  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+  beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => true))
 
   it('should render a video list items', () => {
     const { getByText } = render(
@@ -48,9 +49,9 @@ describe('VideoList', () => {
         <VideoList
           videos={videos}
           loading={false}
-          fetchMore={jest.fn()}
+          fetchMore={vi.fn()}
           hasMore
-          onSelect={jest.fn()}
+          onSelect={vi.fn()}
         />
       </MockedProvider>
     )
@@ -59,13 +60,13 @@ describe('VideoList', () => {
   })
 
   it('should call onSelect when Video is clicked', async () => {
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
     const { getByRole } = render(
       <MockedProvider>
         <VideoList
           videos={videos}
           loading={false}
-          fetchMore={jest.fn()}
+          fetchMore={vi.fn()}
           hasMore
           onSelect={onSelect}
         />
@@ -83,7 +84,7 @@ describe('VideoList', () => {
   })
 
   it('should call fetchMore when Load More is clicked', () => {
-    const fetchMore = jest.fn()
+    const fetchMore = vi.fn()
     const { getByRole } = render(
       <MockedProvider>
         <VideoList
@@ -91,7 +92,7 @@ describe('VideoList', () => {
           loading={false}
           fetchMore={fetchMore}
           hasMore
-          onSelect={jest.fn()}
+          onSelect={vi.fn()}
         />
       </MockedProvider>
     )
@@ -105,9 +106,9 @@ describe('VideoList', () => {
         <VideoList
           videos={videos}
           loading={false}
-          fetchMore={jest.fn()}
+          fetchMore={vi.fn()}
           hasMore={false}
-          onSelect={jest.fn()}
+          onSelect={vi.fn()}
         />
       </MockedProvider>
     )
@@ -120,9 +121,9 @@ describe('VideoList', () => {
         <VideoList
           videos={[]}
           loading={false}
-          fetchMore={jest.fn()}
+          fetchMore={vi.fn()}
           hasMore
-          onSelect={jest.fn()}
+          onSelect={vi.fn()}
         />
       </MockedProvider>
     )

@@ -30,6 +30,16 @@ export async function cli(argv = process.argv): Promise<void> {
       queue = new Queue(queueName, { connection })
       break
     }
+    case 'anonymous-journey-cleanup': {
+      const config = await import(
+        /* webpackChunkName: "anonymousJourneyCleanupConfig" */
+        './anonymousJourneyCleanup/config'
+      )
+      queueName = config.queueName
+      jobName = config.jobName
+      queue = new Queue(queueName, { connection })
+      break
+    }
     default:
       throw new Error('unknown queue')
   }
@@ -41,6 +51,11 @@ export async function cli(argv = process.argv): Promise<void> {
   if (argv[2] === 'shortlink-updater') {
     // Default to updating all shortlinks - no options needed
     options.__typename = 'updateAllShortlinks'
+  }
+
+  // For anonymous-journey-cleanup
+  if (argv[2] === 'anonymous-journey-cleanup') {
+    options.__typename = 'anonymousJourneyCleanup'
   }
 
   // For e2e-cleanup, parse command line options

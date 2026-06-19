@@ -25,7 +25,7 @@ describe('JourneyCardInfo', () => {
           id: 'userJourney4.id',
           role: UserJourneyRole.inviteRequested,
           user: {
-            __typename: 'User',
+            __typename: 'AuthenticatedUser',
             id: 'user4.id',
             firstName: 'Four',
             lastName: 'LastName',
@@ -60,7 +60,7 @@ describe('JourneyCardInfo', () => {
           id: 'userJourney4.id',
           role: UserJourneyRole.inviteRequested,
           user: {
-            __typename: 'User',
+            __typename: 'AuthenticatedUser',
             id: 'user4.id',
             firstName: 'Four',
             lastName: 'LastName',
@@ -72,7 +72,7 @@ describe('JourneyCardInfo', () => {
           id: 'userJourney5.id',
           role: UserJourneyRole.inviteRequested,
           user: {
-            __typename: 'User',
+            __typename: 'AuthenticatedUser',
             id: 'user5.id',
             firstName: 'Five',
             lastName: 'LastName',

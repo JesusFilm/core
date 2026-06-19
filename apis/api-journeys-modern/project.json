@@ -49,17 +49,16 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/apis/api-journeys-modern"],
       "options": {
-        "jestConfig": "apis/api-journeys-modern/jest.config.ts",
-        "runInBand": true
+        "configFile": "apis/api-journeys-modern/vitest.config.mts"
       }
     },
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "GENERATE_SCHEMA=true pnpm exec ts-node -P apis/api-journeys-modern/tsconfig.app.json -r tsconfig-paths/register apis/api-journeys-modern/src/schema/index.ts"
+        "command": "GENERATE_SCHEMA=true pnpm exec tsx --tsconfig apis/api-journeys-modern/tsconfig.app.json -r tsconfig-paths/register apis/api-journeys-modern/src/schema/index.ts"
       }
     },
     "subgraph-check": {
@@ -99,14 +98,20 @@
     "update-shortlinks": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec ts-node -P apis/api-journeys-modern/tsconfig.app.json apis/api-journeys-modern/src/workers/cli.ts shortlink-updater"
+        "command": "pnpm exec tsx --tsconfig apis/api-journeys-modern/tsconfig.app.json apis/api-journeys-modern/src/workers/cli.ts shortlink-updater"
       }
     },
     "playwright-cleanup": {
       "executor": "nx:run-commands",
       "dependsOn": ["prisma-generate-ci"],
       "options": {
-        "command": "pnpm exec ts-node -P apis/api-journeys-modern/tsconfig.app.json -r tsconfig-paths/register apis/api-journeys-modern/src/workers/cli.ts e2e-cleanup"
+        "command": "pnpm exec tsx --tsconfig apis/api-journeys-modern/tsconfig.app.json -r tsconfig-paths/register apis/api-journeys-modern/src/workers/cli.ts e2e-cleanup"
+      }
+    },
+    "fix-cross-team-visitors": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-journeys-modern/tsconfig.app.json -r tsconfig-paths/register apis/api-journeys-modern/src/scripts/fix-cross-team-visitors.ts"
       }
     }
   }

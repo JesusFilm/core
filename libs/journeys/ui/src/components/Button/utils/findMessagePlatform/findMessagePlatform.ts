@@ -6,7 +6,8 @@ export function findMessagePlatform(
 ): MessagePlatform | undefined {
   if (buttonAction?.__typename !== 'LinkAction') return undefined
 
-  const link = buttonAction?.url
+  const link = buttonAction.url
+  if (link == null) return undefined
   const platform = messagePlatforms.find(({ url }) => link.includes(url))
 
   return platform?.messagePlatform
@@ -88,5 +89,45 @@ export const messagePlatforms = [
   {
     url: 'tiktok.com/@',
     messagePlatform: MessagePlatform.tikTok
+  },
+  {
+    url: 'discord.gg/',
+    messagePlatform: MessagePlatform.discord
+  },
+  {
+    url: 'discord.com/invite/',
+    messagePlatform: MessagePlatform.discord
+  },
+  {
+    url: 'discord.com/users/',
+    messagePlatform: MessagePlatform.discord
+  },
+  {
+    url: 'discord.com/channels/',
+    messagePlatform: MessagePlatform.discord
+  },
+  {
+    url: 'discord://',
+    messagePlatform: MessagePlatform.discord
+  },
+  {
+    url: 'signal.me/',
+    messagePlatform: MessagePlatform.signal
+  },
+  {
+    url: 'signal.group/',
+    messagePlatform: MessagePlatform.signal
+  },
+  {
+    url: 'sgnl://',
+    messagePlatform: MessagePlatform.signal
+  },
+  {
+    url: 'weixin://',
+    messagePlatform: MessagePlatform.weChat
+  },
+  {
+    url: 'u.wechat.com/',
+    messagePlatform: MessagePlatform.weChat
   }
 ]

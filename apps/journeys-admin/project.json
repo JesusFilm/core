@@ -66,7 +66,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "pnpm dlx @datadog/datadog-ci@3.20.0 sourcemaps upload dist/apps/journeys-admin/.next/static --service=journeys-admin --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
+          "pnpm dlx @datadog/datadog-ci@5.8.0 sourcemaps upload dist/apps/journeys-admin/.next/static --service=journeys-admin --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
         ],
         "parallel": false
       }
@@ -122,10 +122,10 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/apps/journeys-admin"],
       "options": {
-        "jestConfig": "apps/journeys-admin/jest.config.ts"
+        "configFile": "apps/journeys-admin/vitest.config.mts"
       }
     },
     "lint": {
@@ -186,7 +186,7 @@
       "options": {
         "commands": [
           {
-            "command": "pnpm exec i18next --config apps/journeys-admin/i18next-parser.config.js"
+            "command": "pnpm exec i18next-cli extract --config apps/journeys-admin/i18next.config.js"
           }
         ]
       }

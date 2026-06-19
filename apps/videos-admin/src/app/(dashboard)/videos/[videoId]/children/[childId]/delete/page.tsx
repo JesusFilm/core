@@ -3,6 +3,7 @@
 import { useMutation, useSuspenseQuery } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { enqueueSnackbar } from 'notistack'
+import { use } from 'react'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -42,15 +43,14 @@ const GET_VIDEO_CHILDREN = graphql(`
 `)
 
 interface DeleteChildProps {
-  params: {
+  params: Promise<{
     videoId: string
     childId: string
-  }
+  }>
 }
 
-export default function DeleteChild({
-  params: { videoId, childId }
-}: DeleteChildProps) {
+export default function DeleteChild({ params }: DeleteChildProps) {
+  const { videoId, childId } = use(params)
   const router = useRouter()
   const { data } = useSuspenseQuery(GET_VIDEO_CHILDREN, {
     variables: { id: videoId }

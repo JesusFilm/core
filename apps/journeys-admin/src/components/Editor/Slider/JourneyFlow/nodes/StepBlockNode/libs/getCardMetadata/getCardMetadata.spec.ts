@@ -80,6 +80,7 @@ const video: TreeBlock<VideoBlock> = {
   eventLabel: null,
   endEventLabel: null,
   customizable: null,
+  notes: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
   source: VideoBlockSource.internal,
@@ -173,7 +174,9 @@ const card: TreeBlock<CardBlock> = {
   themeName: null,
   fullscreen: false,
   backdropBlur: null,
-  children: [image, typography, button1, radioQuestionBlock]
+  children: [image, typography, button1, radioQuestionBlock],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 
 describe('getCardMetadata', () => {

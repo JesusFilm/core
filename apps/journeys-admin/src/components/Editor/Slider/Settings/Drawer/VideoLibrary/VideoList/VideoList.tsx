@@ -5,7 +5,7 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import Skeleton from '@mui/material/Skeleton'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { Fragment, ReactElement } from 'react'
 
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
@@ -16,7 +16,7 @@ import { VideoListItem } from './VideoListItem'
 import { VideoListItemProps } from './VideoListItem/VideoListItem'
 
 export interface VideoListProps {
-  onSelect: (block: VideoBlockUpdateInput) => void
+  onSelect: (block: VideoBlockUpdateInput, shouldCloseDrawer?: boolean) => void
   loading: boolean
   videos?: Array<
     Pick<

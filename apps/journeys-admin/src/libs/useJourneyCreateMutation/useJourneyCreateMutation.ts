@@ -52,9 +52,11 @@ export const CREATE_JOURNEY = gql`
         id
         user {
           id
-          firstName
-          lastName
-          imageUrl
+          ... on AuthenticatedUser {
+            firstName
+            lastName
+            imageUrl
+          }
         }
       }
     }

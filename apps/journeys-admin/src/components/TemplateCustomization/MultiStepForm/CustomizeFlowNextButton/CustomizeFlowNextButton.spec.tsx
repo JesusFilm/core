@@ -8,7 +8,7 @@ describe('CustomizeFlowNextButton', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render the button with default props', () => {
@@ -54,14 +54,10 @@ describe('CustomizeFlowNextButton', () => {
 
     const button = screen.getByTestId('CustomizeFlowNextButton')
     expect(button).toBeInTheDocument()
-
-    const typography = button.querySelector('.MuiTypography-root')
-    expect(typography).toBeInTheDocument()
-    expect(typography).toHaveTextContent('')
   })
 
   it('should call onClick handler when clicked', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     render(<CustomizeFlowNextButton {...defaultProps} onClick={handleClick} />)
 
     const button = screen.getByTestId('CustomizeFlowNextButton')
@@ -70,7 +66,7 @@ describe('CustomizeFlowNextButton', () => {
   })
 
   it('should not call onClick when disabled', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     render(
       <CustomizeFlowNextButton
         {...defaultProps}
@@ -85,7 +81,7 @@ describe('CustomizeFlowNextButton', () => {
   })
 
   it('should not call onClick when loading', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     render(
       <CustomizeFlowNextButton
         {...defaultProps}

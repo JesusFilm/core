@@ -1,9 +1,9 @@
 'use client'
 
-import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import { gql, useApolloClient, useLazyQuery, useMutation } from '@apollo/client'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
-import { ReactNode, createContext, useContext, useReducer } from 'react'
+import { ReactNode, createContext, useContext, useReducer, useRef } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { graphql } from '@core/shared/gql'
@@ -250,11 +250,47 @@ export function UploadVideoVariantProvider({
   children: ReactNode
 }) {
   const [state, dispatch] = useReducer(uploadReducer, initialState)
+  const apolloClient = useApolloClient()
   const { enqueueSnackbar } = useSnackbar()
+  const authRefreshIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
+    null
+  )
 
   const dispatchError = (errorMessage: string) => {
     dispatch({ type: 'SET_ERROR', error: errorMessage })
     enqueueSnackbar(errorMessage, { variant: 'error' })
+  }
+
+  const stopUploadAuthRefresh = () => {
+    if (authRefreshIntervalRef.current == null) return
+
+    clearInterval(authRefreshIntervalRef.current)
+    authRefreshIntervalRef.current = null
+  }
+
+  const syncUploadAuthToken = async () => {
+    const refreshedToken = await refreshToken()
+
+    if (refreshedToken == null) return false
+
+    apolloClient.defaultContext.token = refreshedToken
+    return true
+  }
+
+  const requireUploadAuthToken = async () => {
+    if (await syncUploadAuthToken()) return
+
+    throw new Error('Unable to refresh authentication for video upload')
+  }
+
+  const startUploadAuthRefresh = () => {
+    stopUploadAuthRefresh()
+
+    authRefreshIntervalRef.current = setInterval(() => {
+      void syncUploadAuthToken().catch((error) => {
+        console.warn('Failed to refresh upload auth token', { error })
+      })
+    }, 45000)
   }
 
   const [prepareR2Multipart] = useMutation(PREPARE_R2_MULTIPART)
@@ -287,6 +323,7 @@ export function UploadVideoVariantProvider({
     },
     onError: (error) => {
       stopPolling()
+      stopUploadAuthRefresh()
       const errorMessage = error.message || 'Failed to get Mux video status'
       dispatchError(errorMessage)
     }
@@ -352,6 +389,8 @@ export function UploadVideoVariantProvider({
     })
 
     try {
+      await requireUploadAuthToken()
+
       const result = await createVideoVariant({
         variables: {
           input: variantInput
@@ -409,9 +448,11 @@ export function UploadVideoVariantProvider({
         ...variantContext,
         variantId: variantInput.id
       })
+      stopUploadAuthRefresh()
       dispatch({ type: 'COMPLETE' })
       enqueueSnackbar('Audio Language Added', { variant: 'success' })
     } catch (error) {
+      stopUploadAuthRefresh()
       const errorMessage = `Failed to create video variant: ${error instanceof Error ? error.message : 'Unknown error'}`
       console.error(errorMessage, { ...variantContext, error })
       dispatchError(errorMessage)
@@ -437,9 +478,13 @@ export function UploadVideoVariantProvider({
       fileName: file.name,
       fileSize: file.size
     }
+    let isPollingMuxVideo = false
 
     try {
       console.info('Starting video upload', logContext)
+      await syncUploadAuthToken()
+      startUploadAuthRefresh()
+
       dispatch({
         type: 'START_UPLOAD',
         videoId,
@@ -459,6 +504,7 @@ export function UploadVideoVariantProvider({
         ...logContext,
         r2FileName: fileName
       })
+      await requireUploadAuthToken()
       const r2Response = await prepareR2Multipart({
         variables: {
           input: {
@@ -507,11 +553,6 @@ export function UploadVideoVariantProvider({
       }
 
       const abortController = new AbortController()
-
-      const keepAliveInterval = setInterval(() => {
-        void refreshToken().catch(() => undefined)
-      }, 45000)
-
       const uploadedParts: Array<{ partNumber: number; eTag: string }> = []
       const totalSize = file.size
       let uploadedBytes = 0
@@ -657,7 +698,6 @@ export function UploadVideoVariantProvider({
           })
         }
       } finally {
-        clearInterval(keepAliveInterval)
         abortController.abort()
       }
 
@@ -675,6 +715,7 @@ export function UploadVideoVariantProvider({
         r2FileName: multipartData.fileName,
         r2UploadId: multipartData.uploadId
       })
+      await requireUploadAuthToken()
       await completeR2Multipart({
         variables: {
           input: {
@@ -691,6 +732,7 @@ export function UploadVideoVariantProvider({
         r2UploadId: multipartData.uploadId
       })
 
+      await requireUploadAuthToken()
       const muxResponse = await createMuxVideo({
         variables: {
           url: multipartData.publicUrl,
@@ -719,17 +761,24 @@ export function UploadVideoVariantProvider({
       })
 
       // Start polling for Mux video status
+      await requireUploadAuthToken()
       void getMyMuxVideo({
         variables: {
           id: muxResponse.data.createMuxVideoUploadByUrl.id,
           userGenerated: false
         }
       })
+      isPollingMuxVideo = true
     } catch (error) {
+      stopUploadAuthRefresh()
       const errorMessage =
         (error instanceof Error && error.message) || 'Failed to upload video'
       console.error('Video upload failed', { ...logContext, error })
       dispatchError(errorMessage)
+    } finally {
+      if (!isPollingMuxVideo) {
+        stopUploadAuthRefresh()
+      }
     }
   }
 

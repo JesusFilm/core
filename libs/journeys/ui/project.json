@@ -22,10 +22,10 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/libs/journeys/ui"],
       "options": {
-        "jestConfig": "libs/journeys/ui/jest.config.ts"
+        "configFile": "libs/journeys/ui/vitest.config.mts"
       }
     },
     "demo": {
@@ -61,7 +61,7 @@
       "options": {
         "commands": [
           {
-            "command": "pnpm exec i18next --config libs/journeys/ui/i18next-parser.config.js"
+            "command": "pnpm exec i18next-cli extract --config libs/journeys/ui/i18next.config.js"
           }
         ]
       }

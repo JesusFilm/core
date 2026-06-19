@@ -4,6 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/compat/router'
 import { NextRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
@@ -21,17 +22,17 @@ import { GET_STEP_BLOCKS_WITH_POSITION } from './Slider/JourneyFlow/JourneyFlow'
 
 import { Editor } from '.'
 
-jest.mock('next/compat/router', () => ({
+vi.mock('next/compat/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('Editor', () => {
   const journey: Journey = {
@@ -103,7 +104,9 @@ describe('Editor', () => {
     journeyCustomizationFields: [],
     fromTemplateId: null,
     socialNodeX: null,
-    socialNodeY: null
+    socialNodeY: null,
+    customizable: null,
+    showAssistant: null
   }
 
   beforeEach(() => {
@@ -141,7 +144,7 @@ describe('Editor', () => {
   })
 
   it('should render the Fab', async () => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
 
     render(
       <MockedProvider>
@@ -180,7 +183,9 @@ describe('Editor', () => {
           themeName: ThemeName.base,
           fullscreen: false,
           backdropBlur: null,
-          eventLabel: null
+          eventLabel: null,
+          showAssistant: null,
+          expandChatByDefault: null
         },
         {
           __typename: 'TypographyBlock',

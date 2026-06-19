@@ -9,12 +9,12 @@ import {
 
 import { CommandUndoItem } from './CommandUndoItem'
 
-jest.mock('@core/shared/ui/icons/FlipLeft', () => ({
+vi.mock('@core/shared/ui/icons/FlipLeft', () => ({
   __esModule: true,
   default: () => null
 }))
 
-jest.mock('../Item/Item', () => ({
+vi.mock('../Item/Item', () => ({
   __esModule: true,
   Item: ({ label, onClick, ButtonProps }: any) => (
     <button
@@ -33,7 +33,7 @@ describe('Hotkeys', () => {
       parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       execute: () => {},
-      undo: jest.fn()
+      undo: vi.fn()
     }
     const wrapper = ({ children }: { children: ReactNode }): ReactNode => (
       <CommandProvider>

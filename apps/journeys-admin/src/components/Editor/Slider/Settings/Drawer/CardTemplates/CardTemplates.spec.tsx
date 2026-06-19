@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -14,17 +15,17 @@ import { CARD_VIDEO_CREATE } from './Templates/CardVideo/CardVideo'
 
 import { CardTemplates } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
 describe('CardTemplates', () => {
   it('changes content of card to match template', async () => {
@@ -41,7 +42,9 @@ describe('CardTemplates', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const step: TreeBlock = {
       id: 'stepId',

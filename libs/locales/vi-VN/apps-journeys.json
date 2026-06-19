@@ -9,5 +9,17 @@
   "Get me out of here!": "Get me out of here!",
   "Terms & Conditions": "Terms & Conditions",
   "Privacy Policy": "Privacy Policy",
-  "NextSteps © {{year}}": "NextSteps © {{year}}"
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Use": "Sử dụng",
+  "Preview": "Preview",
+  "About this chat": "Giới thiệu về cuộc trò chuyện này",
+  "About this chat | Next Steps": "Giới thiệu về cuộc trò chuyện này | Các bước tiếp theo",
+  "The chat on this journey is powered by an AI assistant. To help us improve future replies, the messages you send and the assistant’s replies are saved.": "Chức năng trò chuyện trong hành trình này được hỗ trợ bởi một trợ lý AI. Để giúp chúng tôi cải thiện các câu trả lời trong tương lai, các tin nhắn bạn gửi và câu trả lời của trợ lý sẽ được lưu lại.",
+  "We do not save your name, email address, or any account details, and we do not link conversations to your identity.": "Chúng tôi không lưu trữ tên, địa chỉ email hay bất kỳ thông tin tài khoản nào của bạn, và chúng tôi không liên kết các cuộc trò chuyện với danh tính của bạn.",
+  "Where the messages go": "Các tin nhắn được gửi đi đâu",
+  "Your messages and the assistant’s replies pass through two third-party services: an AI service that generates the replies, and an analytics service called Langfuse where the conversations are stored so the team can review them in aggregate to improve the experience. They are not sold and they are not used for advertising.": "Các tin nhắn của bạn và các câu trả lời từ trợ lý sẽ được xử lý qua hai dịch vụ của bên thứ ba: một dịch vụ trí tuệ nhân tạo (AI) chịu trách nhiệm tạo ra các câu trả lời, và một dịch vụ phân tích có tên Langfuse, nơi lưu trữ các cuộc trò chuyện để đội ngũ có thể xem xét tổng hợp nhằm cải thiện trải nghiệm người dùng. Các dữ liệu này không bị bán và cũng không được sử dụng cho mục đích quảng cáo.",
+  "If you prefer not to take part": "Nếu bạn không muốn tham gia",
+  "There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.": "Hiện tại chưa có tùy chọn từ chối dành riêng cho tính năng trò chuyện. Nếu bạn không muốn tin nhắn của mình được lưu lại, vui lòng không sử dụng tính năng trò chuyện — các phần còn lại của hành trình vẫn hoạt động bình thường mà không cần tính năng này.",
+  "Last updated: June 2026": "Cập nhật lần cuối: Tháng 6 năm 2026",
+  "Back to Next Steps": "Quay lại các bước tiếp theo"
 }

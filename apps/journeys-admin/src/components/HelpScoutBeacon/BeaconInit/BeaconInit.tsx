@@ -77,7 +77,8 @@ export function BeaconInit({
       </Script>
       <style>{`
         #beacon-container {
-          z-index: ${zIndex.modal + 2} !important;
+          /* Above drawers (1200/1201) but below modals (1300) — NES-1474 */
+          z-index: ${zIndex.drawer + 2} !important;
           position: sticky;
         }
         .BeaconFabButtonFrame {

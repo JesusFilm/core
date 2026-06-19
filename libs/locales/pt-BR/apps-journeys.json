@@ -9,5 +9,17 @@
   "Get me out of here!": "Tire-me daqui!",
   "Terms & Conditions": "Termos e condições",
   "Privacy Policy": "Política de privacidade",
-  "NextSteps © {{year}}": "NextSteps © {{year}}"
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Use": "Use",
+  "Preview": "Prévia",
+  "About this chat": "Sobre este chat",
+  "About this chat | Next Steps": "Sobre este bate-papo | Próximos passos",
+  "The chat on this journey is powered by an AI assistant. To help us improve future replies, the messages you send and the assistant’s replies are saved.": "O chat desta jornada é alimentado por um assistente de IA. Para nos ajudar a melhorar as respostas futuras, as mensagens que você envia e as respostas do assistente são salvas.",
+  "We do not save your name, email address, or any account details, and we do not link conversations to your identity.": "Não guardamos seu nome, endereço de e-mail nem quaisquer detalhes da conta, e não associamos as conversas à sua identidade.",
+  "Where the messages go": "Para onde vão as mensagens",
+  "Your messages and the assistant’s replies pass through two third-party services: an AI service that generates the replies, and an analytics service called Langfuse where the conversations are stored so the team can review them in aggregate to improve the experience. They are not sold and they are not used for advertising.": "Tuas mensagens e as respostas do assistente passam por dois serviços de terceiros: um serviço de IA que gera as respostas e um serviço de análise chamado Langfuse, onde as conversas são armazenadas para que a equipe possa analisá-las de forma agregada e melhorar a experiência. Elas não são vendidas nem usadas para fins publicitários.",
+  "If you prefer not to take part": "Se preferires não participar",
+  "There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.": "No momento, não há uma opção específica para desativar o chat. Se preferires que as tuas mensagens não sejam guardadas, por favor, não uses o chat — o resto da experiência funciona mesmo sem ele.",
+  "Last updated: June 2026": "Última atualização: junho de 2026",
+  "Back to Next Steps": "Voltar para os próximos passos"
 }

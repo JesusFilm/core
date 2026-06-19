@@ -4,6 +4,7 @@ import omit from 'lodash/omit'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../../lib/auth/ability'
+import { recalculateJourneyCustomizable } from '../../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 import { builder } from '../../builder'
 import { ACTION_UPDATE_RESET } from '../blockUpdateAction.mutation'
 import { canBlockHaveAction } from '../canBlockHaveAction'
@@ -81,6 +82,8 @@ builder.mutationField('blockUpdateNavigateToBlockAction', (t) =>
           block: { connect: { id: input.blockId } }
         }
       })
+
+      await recalculateJourneyCustomizable(block.journeyId)
 
       return action
     }

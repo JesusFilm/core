@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
-import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
+import { User } from '../../../../libs/auth/authContext'
 import { ThemeProvider } from '../../../ThemeProvider'
 import { SortOrder } from '../../JourneySort'
 
@@ -17,18 +17,26 @@ import '../../../../../test/i18n'
 
 describe('ActivePriorityList', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should show journeyCard in default priority for owners', () => {
-    const user = { id: 'user1.id' } as unknown as User
+    const user = {
+      id: 'user1.id',
+      email: null,
+      displayName: null,
+      photoURL: null,
+      phoneNumber: null,
+      emailVerified: false,
+      token: 'mock-token'
+    } as unknown as User
     const { getAllByLabelText } = render(
       <MockedProvider>
         <ThemeProvider>
           <SnackbarProvider>
             <ActivePriorityList
               journeys={[defaultJourney, newJourney, pendingActionJourney]}
-              refetch={jest.fn()}
+              refetch={vi.fn()}
               user={user}
             />
           </SnackbarProvider>
@@ -48,7 +56,15 @@ describe('ActivePriorityList', () => {
   })
 
   it('should order journeyCards by alphabetical order', () => {
-    const user = { id: 'user1.id' } as unknown as User
+    const user = {
+      id: 'user1.id',
+      email: null,
+      displayName: null,
+      photoURL: null,
+      phoneNumber: null,
+      emailVerified: false,
+      token: 'mock-token'
+    } as unknown as User
     const { getAllByLabelText } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -61,7 +77,7 @@ describe('ActivePriorityList', () => {
                 pendingActionJourney
               ]}
               sortOrder={SortOrder.TITLE}
-              refetch={jest.fn()}
+              refetch={vi.fn()}
               user={user}
             />
           </SnackbarProvider>

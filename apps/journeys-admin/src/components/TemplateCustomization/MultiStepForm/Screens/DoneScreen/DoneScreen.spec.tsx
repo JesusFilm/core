@@ -1,27 +1,37 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type Mock, type MockInstance, type MockedFunction } from 'vitest'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
-import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../__generated__/BlockFields'
 import {
   ThemeMode,
   ThemeName
 } from '../../../../../../__generated__/globalTypes'
 import { GET_CUSTOM_DOMAINS } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
 import { GET_JOURNEY_FOR_SHARING } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
+import { useJourneyNotifcationUpdateMock } from '../../../../../libs/useJourneyNotificationUpdate/useJourneyNotificationUpdate.mock'
 
-import { DoneScreen } from './DoneScreen'
+import {
+  DoneScreen,
+  GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN
+} from './DoneScreen'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-jest.mock('react-i18next', () => ({
+vi.mock('../../../../../libs/auth', () => ({
+  __esModule: true,
+  useAuth: () => ({ user: null })
+}))
+
+vi.mock('react-i18next', () => ({
   __esModule: true,
   useTranslation: () => {
     return {
@@ -30,7 +40,7 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 const getCustomDomainsMock = {
   request: {
@@ -45,9 +55,34 @@ const getCustomDomainsMock = {
           id: 'customDomainId',
           name: 'custom.domain.com',
           apexName: 'custom.domain.com',
+          routeAllTeamJourneys: false,
           journeyCollection: null
         }
       ]
+    }
+  }
+}
+
+const googleSheetsSyncsNoActiveMock: MockedResponse = {
+  request: {
+    query: GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN,
+    variables: { filter: { journeyId: 'journeyId' } }
+  },
+  result: {
+    data: {
+      googleSheetsSyncs: []
+    }
+  }
+}
+
+const googleSheetsSyncsWithActiveMock: MockedResponse = {
+  request: {
+    query: GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN,
+    variables: { filter: { journeyId: 'journeyId' } }
+  },
+  result: {
+    data: {
+      googleSheetsSyncs: [{ id: 'syncId', deletedAt: null }]
     }
   }
 }
@@ -94,25 +129,25 @@ const journeyForSharingMock = {
 }
 
 describe('DoneScreen', () => {
-  let push: jest.Mock
-  let writeTextSpy: jest.SpyInstance
+  let push: Mock
+  let writeTextSpy: MockInstance
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    push = jest.fn()
+    vi.clearAllMocks()
+    push = vi.fn()
 
     if (!navigator.clipboard) {
-      Object.assign(navigator, { clipboard: { writeText: jest.fn() } })
+      Object.assign(navigator, { clipboard: { writeText: vi.fn() } })
     }
 
-    writeTextSpy = jest
+    writeTextSpy = vi
       .spyOn(navigator.clipboard, 'writeText')
-      .mockImplementation(jest.fn())
+      .mockImplementation(vi.fn())
 
     mockUseRouter.mockReturnValue({
       push,
       query: { redirect: null },
-      events: { on: jest.fn() }
+      events: { on: vi.fn() }
     } as unknown as NextRouter)
   })
 
@@ -122,101 +157,37 @@ describe('DoneScreen', () => {
 
   it('renders the completion message', () => {
     render(
-      <MockedProvider mocks={[getCustomDomainsMock]}>
+      <MockedProvider
+        mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+      >
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
       </MockedProvider>
     )
 
-    expect(screen.getAllByText("It's Ready!")).toHaveLength(2)
+    expect(screen.getAllByText('Ready to share!')).toHaveLength(2)
   })
 
-  it('renders journey preview card with title and description', () => {
-    const journeyWithContent = {
-      ...journey,
-      seoTitle: 'Test Journey Title',
-      seoDescription: 'This is a test journey description for testing purposes',
-      title: 'Display Title'
-    }
-
+  it('renders first card of journey as preview', async () => {
     render(
-      <MockedProvider mocks={[getCustomDomainsMock]}>
-        <JourneyProvider
-          value={{ journey: journeyWithContent, variant: 'admin' }}
-        >
+      <MockedProvider
+        mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+      >
+        <JourneyProvider value={{ journey: journey, variant: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
       </MockedProvider>
     )
 
-    expect(screen.getByText('Test Journey Title')).toBeInTheDocument()
-    expect(
-      screen.getByText(
-        'This is a test journey description for testing purposes'
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('renders GridEmptyIcon when no primary image is available', () => {
-    const journeyWithoutImage = {
-      ...journey,
-      primaryImageBlock: null
-    }
-
-    render(
-      <MockedProvider mocks={[getCustomDomainsMock]}>
-        <JourneyProvider
-          value={{ journey: journeyWithoutImage, variant: 'admin' }}
-        >
-          <DoneScreen />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('GridEmptyIcon')).toBeInTheDocument()
-  })
-
-  it('renders journey image when primary image is available', async () => {
-    const journeyWithImage = {
-      ...journey,
-      primaryImageBlock: {
-        __typename: 'ImageBlock' as const,
-        id: 'image-block-id',
-        src: 'https://example.com/test-image.jpg',
-        alt: 'Test Image Alt',
-        width: 300,
-        height: 200,
-        parentBlockId: null,
-        parentOrder: 0,
-        blurhash: 'test-blurhash',
-        scale: 1,
-        focalTop: null,
-        focalLeft: null,
-        customizable: null
-      } satisfies ImageBlock
-    }
-
-    render(
-      <MockedProvider mocks={[getCustomDomainsMock]}>
-        <JourneyProvider
-          value={{ journey: journeyWithImage, variant: 'admin' }}
-        >
-          <DoneScreen />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() => {
-      const image = screen.getByRole('img', { name: 'Test Image Alt' })
-      expect(image).toBeInTheDocument()
-      expect(image).toHaveAttribute('src', 'https://example.com/test-image.jpg')
-    })
+    expect(screen.getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
   })
 
   it('renders all action buttons', () => {
     render(
-      <MockedProvider mocks={[getCustomDomainsMock]}>
+      <MockedProvider
+        mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+      >
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
@@ -224,10 +195,8 @@ describe('DoneScreen', () => {
     )
 
     expect(screen.getByTestId('DoneScreenPreviewButton')).toBeInTheDocument()
-    expect(
-      screen.getByTestId('DoneScreenContinueEditingButton')
-    ).toBeInTheDocument()
     expect(screen.getByTestId('ShareItem')).toBeInTheDocument()
+    expect(screen.getByTestId('ProjectsDashboardButton')).toBeInTheDocument()
   })
 
   it('renders preview button as link when journey has slug', () => {
@@ -237,7 +206,9 @@ describe('DoneScreen', () => {
     }
 
     render(
-      <MockedProvider mocks={[getCustomDomainsMock]}>
+      <MockedProvider
+        mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+      >
         <JourneyProvider value={{ journey: journeyWithSlug, variant: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
@@ -252,50 +223,165 @@ describe('DoneScreen', () => {
     expect(previewButton).toHaveAttribute('target', '_blank')
   })
 
-  it('navigates to journey edit page when continue editing is clicked', () => {
+  it('navigates to projects dashboard when projects dashboard button is clicked', () => {
     const journeyWithId = {
       ...journey,
       id: 'test-journey-id'
     }
 
+    const syncsForTestJourneyMock: MockedResponse = {
+      request: {
+        query: GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN,
+        variables: { filter: { journeyId: 'test-journey-id' } }
+      },
+      result: { data: { googleSheetsSyncs: [] } }
+    }
+
     render(
-      <MockedProvider mocks={[getCustomDomainsMock]}>
+      <MockedProvider mocks={[getCustomDomainsMock, syncsForTestJourneyMock]}>
         <JourneyProvider value={{ journey: journeyWithId, variant: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
       </MockedProvider>
     )
 
-    const continueEditingButton = screen.getByRole('button', {
-      name: 'Keep Editing'
+    const dashboardButton = screen.getByRole('button', {
+      name: 'Go To Projects Dashboard'
     })
-    fireEvent.click(continueEditingButton)
+    fireEvent.click(dashboardButton)
 
-    expect(push).toHaveBeenCalledWith('/journeys/test-journey-id')
+    expect(push).toHaveBeenCalledWith('/')
   })
 
-  it('does not navigate when journey has no id', () => {
-    const journeyWithoutId = {
+  it('should show loading state on the dashboard button after clicking', () => {
+    const journeyWithId = {
       ...journey,
-      id: null as unknown as string
+      id: 'test-journey-id'
+    }
+
+    const syncsForTestJourneyMock: MockedResponse = {
+      request: {
+        query: GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN,
+        variables: { filter: { journeyId: 'test-journey-id' } }
+      },
+      result: { data: { googleSheetsSyncs: [] } }
     }
 
     render(
-      <MockedProvider mocks={[getCustomDomainsMock]}>
-        <JourneyProvider
-          value={{ journey: journeyWithoutId, variant: 'admin' }}
-        >
+      <MockedProvider mocks={[getCustomDomainsMock, syncsForTestJourneyMock]}>
+        <JourneyProvider value={{ journey: journeyWithId, variant: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
       </MockedProvider>
     )
 
-    const continueEditingButton = screen.getByRole('button', {
-      name: 'Keep Editing'
-    })
-    fireEvent.click(continueEditingButton)
+    const dashboardButton = screen.getByTestId('ProjectsDashboardButton')
+    expect(dashboardButton).not.toBeDisabled()
 
-    expect(push).not.toHaveBeenCalled()
+    fireEvent.click(dashboardButton)
+
+    expect(dashboardButton).toBeDisabled()
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+  })
+
+  it('should show notification section heading and email label when emailResponseToggle is true', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+        >
+          <FlagsProvider flags={{ emailResponseToggle: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <DoneScreen />
+            </JourneyProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByText('Choose where responses go:')).toBeInTheDocument()
+    expect(screen.getByText('Send to my email')).toBeInTheDocument()
+  })
+
+  it('should hide email toggle when emailResponseToggle is false', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+        >
+          <FlagsProvider flags={{ emailResponseToggle: false }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <DoneScreen />
+            </JourneyProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByText('Collect your responses:')).toBeInTheDocument()
+    expect(screen.queryByText('Send to my email')).not.toBeInTheDocument()
+  })
+
+  it('should hide email toggle when emailResponseToggle flag is not set', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+        >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <DoneScreen />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByText('Collect your responses:')).toBeInTheDocument()
+    expect(screen.queryByText('Send to my email')).not.toBeInTheDocument()
+  })
+
+  it('should render notification switch unchecked by default when emailResponseToggle is true', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+        >
+          <FlagsProvider flags={{ emailResponseToggle: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <DoneScreen />
+            </JourneyProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const checkbox = screen.getByRole('checkbox')
+    expect(checkbox).not.toBeChecked()
+  })
+
+  it('should fire notification update mutation when switch is toggled', async () => {
+    const result = vi
+      .fn()
+      .mockReturnValueOnce(useJourneyNotifcationUpdateMock.result)
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            getCustomDomainsMock,
+            googleSheetsSyncsNoActiveMock,
+            { ...useJourneyNotifcationUpdateMock, result }
+          ]}
+        >
+          <FlagsProvider flags={{ emailResponseToggle: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <DoneScreen />
+            </JourneyProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(screen.getByRole('checkbox'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
   it('opens the share dialog when clicked', async () => {
@@ -311,7 +397,13 @@ describe('DoneScreen', () => {
 
     render(
       <SnackbarProvider>
-        <MockedProvider mocks={[getCustomDomainsMock, journeyForSharingMock]}>
+        <MockedProvider
+          mocks={[
+            getCustomDomainsMock,
+            googleSheetsSyncsNoActiveMock,
+            journeyForSharingMock
+          ]}
+        >
           <JourneyProvider
             value={{ journey: journeyWithTeam, variant: 'admin' }}
           >
@@ -352,6 +444,67 @@ describe('DoneScreen', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Link copied')).toBeInTheDocument()
+    })
+  })
+
+  it('renders Sync to Google Sheets row with Sync button when no active syncs', async () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+        >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <DoneScreen />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByText('Sync to Google Sheets')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByTestId('GoogleSheetsSyncButton')).toHaveTextContent(
+        'Sync'
+      )
+    })
+  })
+
+  it('renders Edit button when active syncs exist', async () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[getCustomDomainsMock, googleSheetsSyncsWithActiveMock]}
+        >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <DoneScreen />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('GoogleSheetsSyncButton')).toHaveTextContent(
+        'Edit'
+      )
+    })
+  })
+
+  it('opens GoogleSheetsSyncDialog when Sync button is clicked', async () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+        >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <DoneScreen />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(screen.getByTestId('GoogleSheetsSyncButton'))
+
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
     })
   })
 })

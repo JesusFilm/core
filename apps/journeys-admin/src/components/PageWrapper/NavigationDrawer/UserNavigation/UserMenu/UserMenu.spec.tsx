@@ -2,8 +2,8 @@ import { ApolloClient, useApolloClient } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
@@ -11,30 +11,37 @@ import {
 } from '@core/journeys/ui/TeamProvider'
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
 
+import { User } from '../../../../../libs/auth/authContext'
+
 import { UserMenu } from '.'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', async () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-jest.mock('@apollo/client', () => ({
+vi.mock('@apollo/client', async () => ({
   __esModule: true,
-  ...jest.requireActual('@apollo/client'),
-  useApolloClient: jest.fn()
+  ...(await vi.importActual('@apollo/client')),
+  useApolloClient: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-const mockUseApolloClient = useApolloClient as jest.MockedFunction<
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
+const mockUseApolloClient = useApolloClient as MockedFunction<
   typeof useApolloClient
 >
 
+const mockLogout = vi.fn()
+vi.mock('../../../../../libs/auth/firebase', async () => ({
+  __esModule: true,
+  logout: (...args: unknown[]) => mockLogout(...args)
+}))
+
 describe('UserMenu', () => {
-  const handleProfileClose = jest.fn()
-  const signOut = jest.fn()
+  const handleProfileClose = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render the menu', () => {
@@ -57,10 +64,13 @@ describe('UserMenu', () => {
             handleProfileClose={handleProfileClose}
             user={
               {
+                id: 'userId',
                 displayName: 'Amin One',
                 photoURL: 'https://bit.ly/3Gth4Yf',
                 email: 'amin@email.com',
-                signOut
+                phoneNumber: null,
+                emailVerified: true,
+                token: 'mock-token'
               } as unknown as User
             }
           />
@@ -78,7 +88,7 @@ describe('UserMenu', () => {
   })
 
   it('should redirect user to email preferences page', async () => {
-    const push = jest.fn()
+    const push = vi.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
 
     const { getByText } = render(
@@ -100,10 +110,13 @@ describe('UserMenu', () => {
             handleProfileClose={handleProfileClose}
             user={
               {
+                id: 'userId',
                 displayName: 'Amin One',
                 photoURL: 'https://bit.ly/3Gth4Yf',
                 email: 'amin@email.com',
-                signOut
+                phoneNumber: null,
+                emailVerified: true,
+                token: 'mock-token'
               } as unknown as User
             }
           />
@@ -117,8 +130,8 @@ describe('UserMenu', () => {
     )
   })
 
-  it('should call signOut on logout click', async () => {
-    const clearStore = jest.fn()
+  it('should call logout on logout click', async () => {
+    const clearStore = vi.fn()
     mockUseApolloClient.mockReturnValue({
       clearStore
     } as unknown as ApolloClient<object>)
@@ -126,7 +139,7 @@ describe('UserMenu', () => {
       request: {
         query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           teams: [
             {
@@ -144,7 +157,7 @@ describe('UserMenu', () => {
             lastActiveTeamId: 'teamId'
           }
         }
-      }))
+      })) as MockedResponse<GetLastActiveTeamIdAndTeams>['result']
     }
     const { getByRole, getByText } = render(
       <MockedProvider mocks={[getTeams]}>
@@ -166,10 +179,13 @@ describe('UserMenu', () => {
               handleProfileClose={handleProfileClose}
               user={
                 {
+                  id: 'userId',
                   displayName: 'Amin One',
                   photoURL: 'https://bit.ly/3Gth4Yf',
                   email: 'amin@email.com',
-                  signOut
+                  phoneNumber: null,
+                  emailVerified: true,
+                  token: 'mock-token'
                 } as unknown as User
               }
             />
@@ -180,7 +196,7 @@ describe('UserMenu', () => {
 
     expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
     fireEvent.click(getByRole('menuitem', { name: 'Logout' }))
-    await waitFor(() => expect(signOut).toHaveBeenCalled())
+    await waitFor(() => expect(mockLogout).toHaveBeenCalled())
     await waitFor(() =>
       expect(getByText('Logout successful')).toBeInTheDocument()
     )
@@ -208,10 +224,13 @@ describe('UserMenu', () => {
             handleProfileClose={handleProfileClose}
             user={
               {
+                id: 'userId',
                 displayName: 'Amin One',
                 photoURL: 'https://bit.ly/3Gth4Yf',
                 email: 'amin@email.com',
-                signOut
+                phoneNumber: null,
+                emailVerified: true,
+                token: 'mock-token'
               } as unknown as User
             }
           />

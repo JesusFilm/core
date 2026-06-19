@@ -35,17 +35,25 @@ export interface GetIntegration_integrations_IntegrationGoogle_team {
   id: string;
 }
 
-export interface GetIntegration_integrations_IntegrationGoogle_user {
+export interface GetIntegration_integrations_IntegrationGoogle_user_AnonymousUser {
+  __typename: "AnonymousUser";
+  id: string;
+}
+
+export interface GetIntegration_integrations_IntegrationGoogle_user_AuthenticatedUser {
   __typename: "AuthenticatedUser";
   id: string;
   email: string;
 }
+
+export type GetIntegration_integrations_IntegrationGoogle_user = GetIntegration_integrations_IntegrationGoogle_user_AnonymousUser | GetIntegration_integrations_IntegrationGoogle_user_AuthenticatedUser;
 
 export interface GetIntegration_integrations_IntegrationGoogle {
   __typename: "IntegrationGoogle";
   id: string;
   team: GetIntegration_integrations_IntegrationGoogle_team;
   type: IntegrationType;
+  userId: string | null;
   user: GetIntegration_integrations_IntegrationGoogle_user | null;
   accountEmail: string | null;
 }

@@ -21,7 +21,7 @@ describe('UserTeamListItem', () => {
     }
   }
 
-  const result = jest.fn(() => ({
+  const result = vi.fn(() => ({
     data: {
       userTeamUpdate: {
         id: 'userTeamId',

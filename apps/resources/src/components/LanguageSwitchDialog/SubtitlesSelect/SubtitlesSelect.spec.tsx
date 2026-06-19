@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { MockedFunction } from 'vitest'
 
 import { useLanguages } from '../../../libs/useLanguages'
 import { WatchProvider } from '../../../libs/watchContext'
@@ -8,23 +9,23 @@ import { WatchProvider } from '../../../libs/watchContext'
 import { SubtitlesSelect } from './SubtitlesSelect'
 
 // Mock useLanguageActions hook specifically for testing onChange behavior
-const mockUpdateSubtitleLanguage = jest.fn()
-const mockUpdateSubtitlesOn = jest.fn()
-jest.mock('../../../libs/watchContext', () => ({
-  ...jest.requireActual('../../../libs/watchContext'),
+const mockUpdateSubtitleLanguage = vi.fn()
+const mockUpdateSubtitlesOn = vi.fn()
+vi.mock('../../../libs/watchContext', async () => ({
+  ...(await vi.importActual<typeof import('../../../libs/watchContext')>(
+    '../../../libs/watchContext'
+  )),
   useLanguageActions: () => ({
     updateSubtitleLanguage: mockUpdateSubtitleLanguage,
     updateSubtitlesOn: mockUpdateSubtitlesOn
   })
 }))
 
-jest.mock('../../../libs/useLanguages', () => ({
-  useLanguages: jest.fn()
+vi.mock('../../../libs/useLanguages', async () => ({
+  useLanguages: vi.fn()
 }))
 
-const useLanguagesMock = useLanguages as jest.MockedFunction<
-  typeof useLanguages
->
+const useLanguagesMock = useLanguages as MockedFunction<typeof useLanguages>
 
 describe('SubtitlesSelect', () => {
   const french = {
@@ -70,7 +71,7 @@ describe('SubtitlesSelect', () => {
   const languages = [english, french, spanish, nonSubtitleLanguage]
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     useLanguagesMock.mockReturnValue({
       languages,
       isLoading: false
@@ -271,6 +272,47 @@ describe('SubtitlesSelect', () => {
       await waitFor(() => {
         expect(mockUpdateSubtitlesOn).toHaveBeenCalledWith(false)
       })
+    })
+  })
+
+  describe('languages list', () => {
+    it('should show all languages when videoSubtitleLanguageIds is not null', async () => {
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider>
+            <SubtitlesSelect
+              subtitleOn
+              subtitleLanguageId="529"
+              videoSubtitleLanguageIds={[
+                english.id,
+                french.id,
+                spanish.id,
+                nonSubtitleLanguage.id
+              ]}
+            />
+          </WatchProvider>
+        </MockedProvider>
+      )
+
+      await userEvent.click(screen.getByRole('combobox'))
+
+      const options = await screen.findAllByRole('option')
+      expect(options).toHaveLength(4)
+    })
+
+    it('should show filtered languages when videoSubtitleLanguageIds is null', async () => {
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider>
+            <SubtitlesSelect subtitleOn subtitleLanguageId="529" />
+          </WatchProvider>
+        </MockedProvider>
+      )
+
+      await userEvent.click(screen.getByRole('combobox'))
+
+      const options = await screen.findAllByRole('option')
+      expect(options).toHaveLength(3)
     })
   })
 })

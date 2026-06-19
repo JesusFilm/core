@@ -67,6 +67,7 @@ import CursorPointer from './CursorPointer'
 import Dash from './Dash'
 import Data1 from './Data1'
 import Diamond from './Diamond'
+import Discord from './Discord'
 import DotVertical from './DotVertical'
 import DownArrow from './DownArrow'
 import DownArrowSm from './DownArrowSm'
@@ -149,6 +150,7 @@ import MediaStrip1 from './MediaStrip1'
 import Menu1 from './Menu1'
 import MessageChat1 from './MessageChat1'
 import MessageChat2 from './MessageChat2'
+import MessageChatStars from './MessageChatStars'
 import MessageCircle from './MessageCircle'
 import MessageNotifyCircle from './MessageNotifyCircle'
 import MessageNotifySquare from './MessageNotifySquare'
@@ -156,6 +158,7 @@ import MessageSquare from './MessageSquare'
 import MessageText1 from './MessageText1'
 import MessageText2 from './MessageText2'
 import MessageTyping from './MessageTyping'
+import Metaverse from './Metaverse'
 import Minimise1 from './Minimise1'
 import Minimise2 from './Minimise2'
 import MinusCircleContained from './MinusCircleContained'
@@ -175,6 +178,7 @@ import Plus1 from './Plus1'
 import Plus2 from './Plus2'
 import Plus3 from './Plus3'
 import Presentation1 from './Presentation1'
+import QrCode2 from './QrCode2'
 import Search1 from './Search1'
 import Search2 from './Search2'
 import Send1 from './Send1'
@@ -182,6 +186,7 @@ import Send2 from './Send2'
 import Settings from './Settings'
 import Share from './Share'
 import ShieldCheck from './ShieldCheck'
+import Signal from './Signal'
 import Skype from './Skype'
 import SmileyNeutral from './SmileyNeutral'
 import Snapchat from './Snapchat'
@@ -224,6 +229,7 @@ import Vk from './Vk'
 import Volume5 from './Volume5'
 import VolumeOff from './VolumeOff'
 import Web from './Web'
+import WeChat from './WeChat'
 import WhatsApp from './WhatsApp'
 import X1 from './X1'
 import X2 from './X2'
@@ -299,6 +305,7 @@ export type IconName =
   | 'Dash'
   | 'Data1'
   | 'Diamond'
+  | 'Discord'
   | 'DotVertical'
   | 'DownArrowSm'
   | 'DownArrow'
@@ -381,6 +388,7 @@ export type IconName =
   | 'Menu1'
   | 'MessageChat1'
   | 'MessageChat2'
+  | 'MessageChatStars'
   | 'MessageCircle'
   | 'MessageNotifyCircle'
   | 'MessageNotifySquare'
@@ -388,6 +396,7 @@ export type IconName =
   | 'MessageText1'
   | 'MessageText2'
   | 'MessageTyping'
+  | 'Metaverse'
   | 'Minimise1'
   | 'Minimise2'
   | 'MinusCircleContained'
@@ -407,6 +416,7 @@ export type IconName =
   | 'Plus2'
   | 'Plus3'
   | 'Presentation1'
+  | 'QrCode2'
   | 'Search1'
   | 'Search2'
   | 'Send1'
@@ -414,6 +424,7 @@ export type IconName =
   | 'Settings'
   | 'Share'
   | 'ShieldCheck'
+  | 'Signal'
   | 'Skype'
   | 'SmileyNeutral'
   | 'Snapchat'
@@ -456,6 +467,7 @@ export type IconName =
   | 'VolumeOff'
   | 'Volume5'
   | 'Web'
+  | 'WeChat'
   | 'WhatsApp'
   | 'X1'
   | 'X2'
@@ -535,6 +547,7 @@ const iconComponents: IconComponents = {
   Dash,
   Data1,
   Diamond,
+  Discord,
   DotVertical,
   DownArrowSm,
   DownArrow,
@@ -616,6 +629,7 @@ const iconComponents: IconComponents = {
   Menu1,
   MessageChat1,
   MessageChat2,
+  MessageChatStars,
   MessageCircle,
   MessageNotifyCircle,
   MessageNotifySquare,
@@ -623,6 +637,7 @@ const iconComponents: IconComponents = {
   MessageText1,
   MessageText2,
   MessageTyping,
+  Metaverse,
   Minimise1,
   Minimise2,
   MediaStrip1,
@@ -643,6 +658,7 @@ const iconComponents: IconComponents = {
   Plus2,
   Plus3,
   Presentation1,
+  QrCode2,
   Search1,
   Search2,
   Send1,
@@ -650,6 +666,7 @@ const iconComponents: IconComponents = {
   Settings,
   Share,
   ShieldCheck,
+  Signal,
   Skype,
   SmileyNeutral,
   Snapchat,
@@ -692,6 +709,7 @@ const iconComponents: IconComponents = {
   VolumeOff,
   Volume5,
   Web,
+  WeChat,
   WhatsApp,
   X1,
   X2,

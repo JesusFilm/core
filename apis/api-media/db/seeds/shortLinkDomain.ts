@@ -1,8 +1,6 @@
-import { PrismaClient, Service } from '.prisma/api-media-client'
-
+import { Service, prisma } from '../../../../libs/prisma/media/src/client'
 import { addVercelDomain } from '../../src/schema/shortLink/shortLinkDomain/shortLinkDomain.service'
 
-const prisma = new PrismaClient()
 export async function shortLinkDomain(): Promise<void> {
   const id = '898626fa-6204-4b53-ae9d-12093831c61d'
 

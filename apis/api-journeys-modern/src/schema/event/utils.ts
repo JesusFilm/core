@@ -1,4 +1,5 @@
 import { GraphQLError } from 'graphql'
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   Block,
@@ -84,36 +85,22 @@ export async function validateBlockEvent(
     })
   }
 
-  // Get visitor by userId and check if they have access to this journey
-  const visitor = await prisma.visitor.findFirst({
-    where: { userId }
-  })
+  // Upsert visitor + journeyVisitor so block events (e.g. stepViewEventCreate)
+  // can succeed even if they race ahead of journeyViewEventCreate, which would
+  // otherwise be the only path that creates the visitor record.
+  const visitorAndJourneyVisitor = await getByUserIdAndJourneyId(
+    userId,
+    journeyId,
+    journey.teamId
+  )
 
-  if (visitor == null) {
-    throw new GraphQLError('Visitor does not exist', {
+  if (visitorAndJourneyVisitor == null) {
+    throw new GraphQLError('Journey does not exist', {
       extensions: { code: 'NOT_FOUND' }
     })
   }
 
-  // Get or create journey visitor
-  let journeyVisitor = await prisma.journeyVisitor.findUnique({
-    where: {
-      journeyId_visitorId: {
-        journeyId,
-        visitorId: visitor.id
-      }
-    }
-  })
-
-  if (journeyVisitor == null) {
-    // Create journey visitor if it doesn't exist
-    journeyVisitor = await prisma.journeyVisitor.create({
-      data: {
-        journeyId,
-        visitorId: visitor.id
-      }
-    })
-  }
+  const { visitor, journeyVisitor } = visitorAndJourneyVisitor
 
   // Validate step if provided
   if (stepId != null) {
@@ -145,33 +132,32 @@ export async function validateBlock(
   return block != null ? block[type] === value : false
 }
 
+// Atomic Postgres upsert. `INSERT ... ON CONFLICT DO UPDATE ... RETURNING *`
+// executes as a single row-locked statement, so two concurrent calls cannot
+// both reach the insert step and race — Postgres serializes them on the
+// unique-key tuple. No retries needed, and both rows are guaranteed in the
+// result set. Caller must supply `teamId` (resolved from a prior journey
+// lookup), so the helper never has to verify the journey itself.
 export async function getByUserIdAndJourneyId(
   userId: string,
-  journeyId: string
-): Promise<{
-  visitor: Visitor
-  journeyVisitor: JourneyVisitor
-} | null> {
-  const visitor = await prisma.visitor.findFirst({
-    where: { userId }
-  })
+  journeyId: string,
+  teamId: string
+): Promise<{ visitor: Visitor; journeyVisitor: JourneyVisitor }> {
+  const [visitor] = await prisma.$queryRaw<Visitor[]>`
+    INSERT INTO "Visitor" ("id", "teamId", "userId", "createdAt", "updatedAt")
+    VALUES (${uuidv4()}, ${teamId}, ${userId}, NOW(), NOW())
+    ON CONFLICT ("teamId", "userId") DO UPDATE
+      SET "updatedAt" = NOW()
+    RETURNING *
+  `
 
-  if (visitor == null) {
-    return null
-  }
-
-  const journeyVisitor = await prisma.journeyVisitor.findUnique({
-    where: {
-      journeyId_visitorId: {
-        journeyId,
-        visitorId: visitor.id
-      }
-    }
-  })
-
-  if (journeyVisitor == null) {
-    return null
-  }
+  const [journeyVisitor] = await prisma.$queryRaw<JourneyVisitor[]>`
+    INSERT INTO "JourneyVisitor" ("id", "journeyId", "visitorId", "createdAt", "updatedAt")
+    VALUES (${uuidv4()}, ${journeyId}, ${visitor.id}, NOW(), NOW())
+    ON CONFLICT ("journeyId", "visitorId") DO UPDATE
+      SET "updatedAt" = NOW()
+    RETURNING *
+  `
 
   return { visitor, journeyVisitor }
 }

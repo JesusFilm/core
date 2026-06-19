@@ -6,9 +6,9 @@ import { defaultJourney } from '../TemplateView/data'
 
 import { StepHeader } from '.'
 
-jest.mock('next/legacy/image', () => ({
+vi.mock('next/legacy/image', () => ({
   __esModule: true,
-  default: jest.fn(
+  default: vi.fn(
     ({ priority, blurDataURL, objectFit, objectPosition, ...props }) => {
       return <img {...props} />
     }
@@ -17,7 +17,7 @@ jest.mock('next/legacy/image', () => ({
 
 describe('StepHeader', () => {
   it('should handleClick', () => {
-    const onHeaderClick = jest.fn()
+    const onHeaderClick = vi.fn()
     render(<StepHeader onHeaderClick={onHeaderClick} />)
 
     fireEvent.click(screen.getByTestId('JourneysStepHeader'))

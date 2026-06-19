@@ -14,12 +14,12 @@ import {
 
 import { MediaScreen } from './MediaScreen'
 
-const mockHasActiveUploads = jest.fn()
-jest.mock('../../TemplateVideoUploadProvider', () => ({
-  ...jest.requireActual('../../TemplateVideoUploadProvider'),
+const mockHasActiveUploads = vi.fn()
+vi.mock('../../TemplateVideoUploadProvider', async () => ({
+  ...(await vi.importActual('../../TemplateVideoUploadProvider')),
   useTemplateVideoUpload: () => ({
-    startUpload: jest.fn(),
-    getUploadStatus: jest.fn(),
+    startUpload: vi.fn(),
+    getUploadStatus: vi.fn(),
     hasActiveUploads: mockHasActiveUploads()
   })
 }))
@@ -48,7 +48,9 @@ const baseJourney = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
-      backdropBlur: null
+      backdropBlur: null,
+      showAssistant: null,
+      expandChatByDefault: null
     } as CardBlock,
     {
       id: 'image1.id',
@@ -90,7 +92,9 @@ const baseJourney = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
-      backdropBlur: null
+      backdropBlur: null,
+      showAssistant: null,
+      expandChatByDefault: null
     } as CardBlock,
     {
       id: 'image2.id',
@@ -110,15 +114,15 @@ const baseJourney = {
   ]
 } as unknown as Journey
 
-jest.mock('./Sections/VideosSection/VideoPreviewPlayer', () => ({
+vi.mock('./Sections/VideosSection/VideoPreviewPlayer', async () => ({
   VideoPreviewPlayer: () => <div data-testid="VideoPreviewPlayer" />
 }))
 
 describe('MediaScreen', () => {
-  const handleNext = jest.fn()
+  const handleNext = vi.fn().mockResolvedValue(undefined)
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockHasActiveUploads.mockReturnValue(false)
   })
 
@@ -140,9 +144,9 @@ describe('MediaScreen', () => {
   it('should render the MediaScreen', () => {
     renderMediaScreen()
 
-    expect(screen.getByText('Media')).toBeInTheDocument()
+    expect(screen.getAllByText('Media')[0]).toBeInTheDocument()
     expect(
-      screen.getByText('Personalize and manage your media assets')
+      screen.getAllByText('Personalize and manage your media assets')[0]
     ).toBeInTheDocument()
     expect(screen.getByTestId('ImagesSection')).toBeInTheDocument()
     expect(screen.getByTestId('VideosSection')).toBeInTheDocument()
@@ -183,7 +187,9 @@ describe('MediaScreen', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
-          backdropBlur: null
+          backdropBlur: null,
+          showAssistant: null,
+          expandChatByDefault: null
         } as CardBlock,
         {
           id: 'image3.id',
@@ -240,6 +246,18 @@ describe('MediaScreen', () => {
     expect(nextButton).not.toBeDisabled()
     fireEvent.click(nextButton)
     expect(handleNext).toHaveBeenCalledTimes(1)
+  })
+
+  it('should show loading state on the Next button after clicking', () => {
+    renderMediaScreen()
+
+    const nextButton = screen.getByTestId('CustomizeFlowNextButton')
+    expect(nextButton).not.toBeDisabled()
+
+    fireEvent.click(nextButton)
+
+    expect(nextButton).toBeDisabled()
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
   it('should hide LogoSection when logoImageBlock is not customizable', () => {

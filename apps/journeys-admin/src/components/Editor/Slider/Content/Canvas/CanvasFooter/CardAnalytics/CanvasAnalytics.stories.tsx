@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentPropsWithRef } from 'react'
 
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
@@ -75,13 +75,15 @@ export const Filled = {
         __typename: 'ChatButtonBlock',
         id: 'chatButton1.id',
         link: 'https://chatButton1.com',
-        platform: MessagePlatform.facebook
+        platform: MessagePlatform.facebook,
+        customizable: null
       },
       {
         __typename: 'ChatButtonBlock',
         id: 'chatButton2.id',
         link: 'https://chatButton2.com',
-        platform: MessagePlatform.custom
+        platform: MessagePlatform.custom,
+        customizable: null
       }
     ]
   }

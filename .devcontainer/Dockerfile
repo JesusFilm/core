@@ -41,12 +41,23 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 # install global node modules
 RUN su node -c "npm install -g npm@latest"
 
+# Install Claude Code CLI (as node user so binary lands in /home/node/.local/bin)
+USER node
+RUN curl -fsSL https://claude.ai/install.sh | bash
+USER root
+
 WORKDIR /home/node
 
 # install github action runner
 RUN curl https://raw.githubusercontent.com/nektos/act/master/install.sh | bash
 RUN mv bin/act /usr/bin/
 RUN rm -rf bin
+
+# install OpenTofu (replaces terraform — see infrastructure/*.tf)
+RUN curl -fsSL https://get.opentofu.org/install-opentofu.sh -o /tmp/install-opentofu.sh \
+    && chmod +x /tmp/install-opentofu.sh \
+    && /tmp/install-opentofu.sh --install-method standalone \
+    && rm /tmp/install-opentofu.sh
 
 RUN mkdir /home/node/.doppler \
     && chown -R node /home/node/.doppler

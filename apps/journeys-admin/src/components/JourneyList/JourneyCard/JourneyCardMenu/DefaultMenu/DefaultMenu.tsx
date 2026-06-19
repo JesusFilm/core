@@ -1,12 +1,13 @@
 import { ApolloQueryResult, gql, useQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useMemo } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TemplateActionButton } from '@core/journeys/ui/TemplateView/TemplateViewHeader/TemplateActionButton'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import TranslateIcon from '@core/shared/ui/icons/Translate'
@@ -36,6 +37,7 @@ import { CreateTemplateItem } from '../../../../Editor/Toolbar/Items/CreateTempl
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
+import { CopyToCollectionMenuItem } from '../../../../TemplateGalleryPageList/CopyToCollectionMenuItem'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 
 import { ArchiveJourney } from './ArchiveJourney'
@@ -49,7 +51,9 @@ export const GET_JOURNEY_WITH_USER_ROLES = gql`
         role
         user {
           id
-          email
+          ... on AuthenticatedUser {
+            email
+          }
         }
       }
     }
@@ -115,6 +119,7 @@ export function DefaultMenu({
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
+  const { teamTemplateCollection } = useFlags()
   const { data: userRoleData } = useUserRoleQuery()
   const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
   const { hostname } = useCustomDomainsQuery({
@@ -123,6 +128,14 @@ export function DefaultMenu({
   })
 
   const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
+
+  const hasCurrentUser = currentUser != null
+  const isAnonymousUser =
+    hasCurrentUser && currentUser.__typename !== 'AuthenticatedUser'
+  const currentUserEmail =
+    hasCurrentUser && currentUser.__typename === 'AuthenticatedUser'
+      ? currentUser.email
+      : undefined
 
   // Lazy query for journey data if context is missing
   const [loadJourney, { data: journeyFromLazyQuery }] =
@@ -142,9 +155,13 @@ export function DefaultMenu({
       ),
     [journeyWithUserRoles?.journey?.userJourneys]
   )
+  const ownerEmail =
+    owner?.user?.__typename === 'AuthenticatedUser'
+      ? owner.user.email
+      : undefined
   const isOwner = useMemo(
-    () => owner?.user?.email === currentUser?.email,
-    [currentUser?.email, owner?.user?.email]
+    () => ownerEmail === currentUserEmail,
+    [currentUserEmail, ownerEmail]
   )
 
   useEffect(() => {
@@ -157,15 +174,17 @@ export function DefaultMenu({
 
   // Determine the current user's role in the team
   const teamRole = useMemo<UserTeamRole | undefined>(() => {
-    if (activeTeam?.userTeams == null || currentUser?.email == null)
+    if (activeTeam?.userTeams == null || currentUserEmail == null)
       return undefined
 
     const userTeam = activeTeam.userTeams.find(
-      (userTeam) => userTeam.user.email === currentUser.email
+      (userTeam) =>
+        userTeam.user.__typename === 'AuthenticatedUser' &&
+        userTeam.user.email === currentUserEmail
     )
 
     return userTeam?.role
-  }, [activeTeam?.userTeams, currentUser?.email])
+  }, [activeTeam?.userTeams, currentUserEmail])
 
   const isPublisher =
     userRoleData?.getUserRole?.roles?.includes(Role.publisher) === true
@@ -179,6 +198,10 @@ export function DefaultMenu({
 
   const isLocalTemplate =
     journey?.template === true && journey?.team?.id !== 'jfp-team'
+
+  if (hasCurrentUser && isAnonymousUser) {
+    return <></>
+  }
 
   return (
     <>
@@ -277,6 +300,15 @@ export function DefaultMenu({
           handleCloseMenu={handleCloseMenu}
           handleKeepMounted={handleKeepMounted}
           journey={journey}
+          setHasOpenDialog={setHasOpenDialog}
+        />
+      )}
+      {teamTemplateCollection === true && template === true && (
+        <CopyToCollectionMenuItem
+          id={id}
+          journey={journey}
+          handleCloseMenu={handleCloseMenu}
+          handleKeepMounted={handleKeepMounted}
           setHasOpenDialog={setHasOpenDialog}
         />
       )}

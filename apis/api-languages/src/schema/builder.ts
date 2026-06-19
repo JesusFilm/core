@@ -9,9 +9,11 @@ import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import WithInputPlugin from '@pothos/plugin-with-input'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
+import { DateTimeResolver } from 'graphql-scalars'
 
 import type PrismaTypes from '@core/prisma/languages/__generated__/pothos-types'
-import { LanguageRole, Prisma, prisma } from '@core/prisma/languages/client'
+import { getDatamodel } from '@core/prisma/languages/__generated__/pothos-types'
+import { LanguageRole, prisma } from '@core/prisma/languages/client'
 import { User } from '@core/yoga/firebaseClient'
 import { InteropContext } from '@core/yoga/interop'
 
@@ -56,6 +58,7 @@ export const builder = new SchemaBuilder<{
   }
   PrismaTypes: PrismaTypes
   Scalars: {
+    DateTime: { Input: Date; Output: Date }
     ID: { Input: string; Output: number | string }
   }
 }>({
@@ -100,10 +103,28 @@ export const builder = new SchemaBuilder<{
   },
   prisma: {
     client: prisma,
-    dmmf: Prisma.dmmf,
+    dmmf: getDatamodel(),
     onUnusedQuery: process.env.NODE_ENV === 'production' ? null : 'warn'
   }
 })
+
+builder.addScalarType('DateTime', DateTimeResolver)
+
+export const DateTimeFilter = builder.inputType('DateTimeFilter', {
+  fields: (t) => ({
+    gte: t.field({ type: 'DateTime', required: false }),
+    lte: t.field({ type: 'DateTime', required: false })
+  })
+})
+
+type DateTimeFilterInput = typeof DateTimeFilter.$inferInput
+
+export function toPrismaDateTimeFilter(
+  filter: DateTimeFilterInput | null | undefined
+): { gte?: Date; lte?: Date } | undefined {
+  if (filter == null) return undefined
+  return { gte: filter.gte ?? undefined, lte: filter.lte ?? undefined }
+}
 
 builder.queryType({})
 

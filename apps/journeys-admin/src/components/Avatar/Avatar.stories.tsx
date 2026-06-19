@@ -1,6 +1,6 @@
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
@@ -36,7 +36,7 @@ export const Default = {
   ...Template,
   args: {
     apiUser: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: '1',
       firstName: 'Person',
       lastName: 'One',
@@ -49,7 +49,7 @@ export const Notifications = {
   ...Template,
   args: {
     apiUser: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: '3',
       firstName: 'Person',
       lastName: 'Three',

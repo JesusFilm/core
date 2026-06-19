@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useMemo } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
@@ -50,9 +50,15 @@ export function CustomDomainDialog({
   }, [activeTeam, refetch, loadUser])
   const customDomain = data?.customDomains[0]
   const currentUserTeamRole: UserTeamRole | undefined = useMemo(() => {
-    return activeTeam?.userTeams?.find(({ user: { email } }) => {
-      return email === currentUser?.email
-    })?.role
+    if (currentUser?.__typename === 'AuthenticatedUser') {
+      return activeTeam?.userTeams?.find(({ user }) => {
+        return (
+          user.__typename === 'AuthenticatedUser' &&
+          user.email === currentUser?.email
+        )
+      })?.role
+    }
+    return undefined
   }, [activeTeam, currentUser])
 
   return (

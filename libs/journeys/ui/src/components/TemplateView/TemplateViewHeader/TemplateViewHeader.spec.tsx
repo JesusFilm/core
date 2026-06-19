@@ -1,12 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
-import { isJourneyCustomizable } from '../../../libs/isJourneyCustomizable'
+import { AuthUser as User } from '../../../libs/auth/types'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import {
   JourneyFields as Journey,
@@ -16,24 +14,19 @@ import { journey } from '../TemplateFooter/data'
 
 import { TemplateViewHeader } from './TemplateViewHeader'
 
-jest.mock('../../../libs/isJourneyCustomizable', () => ({
-  isJourneyCustomizable: jest.fn()
-}))
+const customizableJourney = { ...journey, customizable: true }
+const nonCustomizableJourney = { ...journey, customizable: false }
 
-const mockIsJourneyCustomizable = isJourneyCustomizable as jest.MockedFunction<
-  typeof isJourneyCustomizable
->
-
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('TemplateViewHeader', () => {
-  const push = jest.fn().mockResolvedValue('')
-  const prefetch = jest.fn()
+  const push = vi.fn().mockResolvedValue('')
+  const prefetch = vi.fn()
 
   beforeEach(() => {
     mockUseRouter.mockReturnValue({
@@ -42,7 +35,7 @@ describe('TemplateViewHeader', () => {
       query: { createNew: false }
     } as unknown as NextRouter)
 
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render the social image', () => {
@@ -339,14 +332,14 @@ describe('TemplateViewHeader', () => {
   })
 
   it('should push signed in user to customization flow page if template is customizable', async () => {
-    mockIsJourneyCustomizable.mockReturnValue(true)
-
     const { getAllByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey: customizableJourney }}>
           <TemplateViewHeader
             isPublisher
-            authUser={{ id: '123' } as unknown as User}
+            authUser={
+              { id: '123', email: 'user@example.com' } as unknown as User
+            }
           />
         </JourneyProvider>
       </MockedProvider>
@@ -364,14 +357,14 @@ describe('TemplateViewHeader', () => {
   })
 
   it('should open legacy copy to team dialog if journey is not customizable', async () => {
-    mockIsJourneyCustomizable.mockReturnValue(false)
-
     const { getAllByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey: nonCustomizableJourney }}>
           <TemplateViewHeader
             isPublisher
-            authUser={{ id: '123' } as unknown as User}
+            authUser={
+              { id: '123', email: 'user@example.com' } as unknown as User
+            }
           />
         </JourneyProvider>
       </MockedProvider>
@@ -384,9 +377,31 @@ describe('TemplateViewHeader', () => {
     })
   })
 
-  it('should show use this template loading skeleton if journey is undefined', async () => {
-    mockIsJourneyCustomizable.mockReturnValue(false)
+  it('should open account check dialog for anonymous user on non-customizable journey', async () => {
+    const { getAllByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: nonCustomizableJourney }}>
+            <TemplateViewHeader
+              isPublisher
+              authUser={{ id: '123' } as unknown as User}
+            />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
 
+    fireEvent.click(getAllByRole('button', { name: 'Use This Template' })[0])
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: 'Login with my account' })
+      ).toBeInTheDocument()
+    })
+    expect(screen.queryByTestId('CopyToTeamDialog')).not.toBeInTheDocument()
+  })
+
+  it('should show use this template loading skeleton if journey is undefined', async () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: undefined }}>

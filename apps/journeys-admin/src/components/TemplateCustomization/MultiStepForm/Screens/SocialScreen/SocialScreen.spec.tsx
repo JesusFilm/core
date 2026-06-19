@@ -10,8 +10,7 @@ import { JOURNEY_SEO_TITLE_UPDATE } from '../../../../Editor/Slider/Settings/Soc
 import { SocialScreen } from './SocialScreen'
 
 describe('SocialScreen', () => {
-  const handleNext = jest.fn()
-  const handleScreenNavigation = jest.fn()
+  const handleNext = vi.fn().mockResolvedValue(undefined)
 
   const baseJourney = {
     ...journey,
@@ -21,9 +20,8 @@ describe('SocialScreen', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     handleNext.mockClear()
-    handleScreenNavigation.mockClear()
   })
 
   const renderSocialScreen = (
@@ -32,10 +30,7 @@ describe('SocialScreen', () => {
     return render(
       <MockedProvider mocks={mocks}>
         <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
-          <SocialScreen
-            handleNext={handleNext}
-            handleScreenNavigation={handleScreenNavigation}
-          />
+          <SocialScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -50,7 +45,7 @@ describe('SocialScreen', () => {
   })
 
   it('should update SEO title and make correct network call', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeyUpdate: {
           __typename: 'Journey',
@@ -87,7 +82,7 @@ describe('SocialScreen', () => {
   })
 
   it('should update SEO description and make correct network call', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeyUpdate: {
           __typename: 'Journey',
@@ -131,7 +126,7 @@ describe('SocialScreen', () => {
   })
 
   it('should update both title and description, then call handleNext when Done button is clicked', async () => {
-    const titleResult = jest.fn(() => ({
+    const titleResult = vi.fn(() => ({
       data: {
         journeyUpdate: {
           __typename: 'Journey',
@@ -141,7 +136,7 @@ describe('SocialScreen', () => {
       }
     }))
 
-    const descriptionResult = jest.fn(() => ({
+    const descriptionResult = vi.fn(() => ({
       data: {
         journeyUpdate: {
           __typename: 'Journey',
@@ -204,6 +199,18 @@ describe('SocialScreen', () => {
     fireEvent.click(doneButton)
 
     expect(handleNext).toHaveBeenCalledTimes(1)
+  })
+
+  it('should show loading state on the Done button after clicking', () => {
+    renderSocialScreen()
+
+    const doneButton = screen.getByTestId('CustomizeFlowNextButton')
+    expect(doneButton).not.toBeDisabled()
+
+    fireEvent.click(doneButton)
+
+    expect(doneButton).toBeDisabled()
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
   it('should render with correct initial values from journey context', () => {

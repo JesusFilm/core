@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 
 import { EmailUsedPage } from '.'
@@ -5,10 +6,12 @@ import { EmailUsedPage } from '.'
 describe('EmailUsedPage', () => {
   it('should render if account has been registered with Google', () => {
     const { getByText, getByRole } = render(
-      <EmailUsedPage
-        userEmail="test@exampleemail.com"
-        activePage="google.com"
-      />
+      <MockedProvider>
+        <EmailUsedPage
+          userEmail="test@exampleemail.com"
+          activePage="google.com"
+        />
+      </MockedProvider>
     )
 
     expect(getByText('You already have an account')).toBeInTheDocument()
@@ -25,10 +28,12 @@ describe('EmailUsedPage', () => {
 
   it('should render if account has been registered with Facebook', () => {
     const { getByText, getByRole } = render(
-      <EmailUsedPage
-        userEmail="test@exampleemail.com"
-        activePage="facebook.com"
-      />
+      <MockedProvider>
+        <EmailUsedPage
+          userEmail="test@exampleemail.com"
+          activePage="facebook.com"
+        />
+      </MockedProvider>
     )
 
     expect(getByText('You already have an account')).toBeInTheDocument()

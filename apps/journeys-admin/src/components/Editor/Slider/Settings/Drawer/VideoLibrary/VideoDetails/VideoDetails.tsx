@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -26,9 +26,11 @@ export interface VideoDetailsProps {
   open: boolean
   id: string
   onClose: (closeParent?: boolean) => void
-  onSelect: (block: VideoBlockUpdateInput) => void
+  onSelect: (block: VideoBlockUpdateInput, shouldCloseDrawer?: boolean) => void
   source: VideoBlockSource
   activeVideoBlock?: TreeBlock<VideoBlock>
+  /** Mux playbackId for the previewed video. Avoids a redundant fetch when the caller already has it. */
+  playbackId?: string | null
 }
 
 export const BLOCK_DELETE_FOR_COVER_IMAGE = gql`
@@ -54,7 +56,8 @@ export function VideoDetails({
   onClose,
   onSelect,
   source,
-  activeVideoBlock
+  activeVideoBlock,
+  playbackId
 }: VideoDetailsProps): ReactElement {
   const [blockDeleteForCoverImage] = useMutation<BlockDeleteForCoverImage>(
     BLOCK_DELETE_FOR_COVER_IMAGE
@@ -62,30 +65,11 @@ export function VideoDetails({
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
 
-  let Details: (
-    props: Pick<
-      VideoDetailsProps,
-      'id' | 'open' | 'onSelect' | 'activeVideoBlock'
-    >
-  ) => ReactElement
-
-  switch (source) {
-    case VideoBlockSource.internal:
-      Details = LocalDetails
-      break
-    case VideoBlockSource.mux:
-      Details = MuxDetails
-      break
-    case VideoBlockSource.youTube:
-      Details = YouTubeDetails
-      break
-    default:
-      Details = LocalDetails
-      break
-  }
-
-  const handleSelect = (block: VideoBlockUpdateInput): void => {
-    onSelect(block)
+  const handleSelect = (
+    block: VideoBlockUpdateInput,
+    shouldCloseDrawer?: boolean
+  ): void => {
+    onSelect(block, shouldCloseDrawer)
   }
 
   const handleClearVideo = async (): Promise<void> => {
@@ -101,14 +85,41 @@ export function VideoDetails({
         }
       })
     }
-    onSelect({
-      videoId: null,
-      videoVariantLanguageId: null,
-      posterBlockId: null,
-      source: VideoBlockSource.internal,
-      startAt: null,
-      endAt: null
-    })
+    onSelect(
+      {
+        videoId: null,
+        videoVariantLanguageId: null,
+        posterBlockId: null,
+        source: VideoBlockSource.internal,
+        startAt: null,
+        endAt: null
+      },
+      false
+    )
+  }
+
+  // playbackId is a Mux-only concern, so it is forwarded exclusively into the
+  // MuxDetails branch. LocalDetails and YouTubeDetails receive a narrower prop
+  // set that omits playbackId entirely.
+  const sharedDetailsProps: Pick<
+    VideoDetailsProps,
+    'id' | 'open' | 'onSelect' | 'activeVideoBlock'
+  > = {
+    id,
+    open,
+    onSelect: handleSelect,
+    activeVideoBlock
+  }
+
+  function renderDetails(): ReactElement {
+    const key = activeVideoBlock?.videoId
+    if (source === VideoBlockSource.mux)
+      return (
+        <MuxDetails key={key} {...sharedDetailsProps} playbackId={playbackId} />
+      )
+    if (source === VideoBlockSource.youTube)
+      return <YouTubeDetails key={key} {...sharedDetailsProps} />
+    return <LocalDetails key={key} {...sharedDetailsProps} />
   }
 
   return (
@@ -154,16 +165,7 @@ export function VideoDetails({
           }}
         >
           {/* render conditional to unmount details content if not open */}
-          {open && (
-            <Details
-              data-testid="DetailsContent"
-              key={activeVideoBlock?.videoId}
-              id={id}
-              open={open}
-              onSelect={handleSelect}
-              activeVideoBlock={activeVideoBlock}
-            />
-          )}
+          {open && renderDetails()}
         </Box>
       </Stack>
     </Drawer>

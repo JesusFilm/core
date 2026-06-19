@@ -3,8 +3,12 @@ import { fireEvent, render } from '@testing-library/react'
 import { AccountCheckDialog } from './AccountCheckDialog'
 
 describe('AccountCheckDialog', () => {
-  const onClose = jest.fn()
-  const handleSignIn = jest.fn()
+  const onClose = vi.fn()
+  const handleSignIn = vi.fn()
+
+  beforeEach(() => {
+    handleSignIn.mockClear()
+  })
 
   it('should call handleSignIn when login is clicked', () => {
     const { getByRole } = render(
@@ -12,7 +16,7 @@ describe('AccountCheckDialog', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Login with my account' }))
-    expect(handleSignIn).toHaveBeenCalled()
+    expect(handleSignIn).toHaveBeenCalledTimes(1)
   })
 
   it('should call handleSignIn when create account is clicked', () => {
@@ -21,6 +25,6 @@ describe('AccountCheckDialog', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Create a new account' }))
-    expect(handleSignIn).toHaveBeenCalled()
+    expect(handleSignIn).toHaveBeenCalledTimes(1)
   })
 })

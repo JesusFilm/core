@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import { apiUsersConfig } from '../../lib/apiUsersConfig/apiUsersConfig'
 import { EmailVerifyJesusFilmOne } from '../templates/EmailVerifyJesusFilmOne'
@@ -14,7 +14,6 @@ const Template: StoryObj<typeof EmailVerifyJesusFilmOne> = {
     <EmailVerifyJesusFilmOne
       recipient={args.recipient}
       token={args.token}
-      inviteLink="https://admin.nextstep.is/"
       story
     />
   )

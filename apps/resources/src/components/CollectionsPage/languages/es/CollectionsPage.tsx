@@ -13,7 +13,11 @@ import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCaro
 import { ContainerHero } from '../../ContainerHero'
 import { OtherCollectionsCarousel } from '../../OtherCollectionsCarousel'
 
-export function CollectionsPage(): ReactElement {
+interface CollectionsPageProps {
+  year: number
+}
+
+export function CollectionsPage({ year }: CollectionsPageProps): ReactElement {
   const [mutePage, setMutePage] = useState(true)
 
   // Content items data with contentId that will match the CollectionsVideoContent IDs
@@ -78,8 +82,9 @@ export function CollectionsPage(): ReactElement {
         <ContainerHero
           title="Pascua"
           descriptionBeforeYear="Pascua"
-          descriptionAfterYear="videos y recursos sobre la Cuaresma, la Semana Santa, la Resurrección"
+          descriptionAfterYear="videos sobre la historia de la resurrección en más de 2.000 idiomas"
           feedbackButtonLabel="Dar Comentarios"
+          year={year}
         />
       }
       hideHeader
@@ -88,7 +93,7 @@ export function CollectionsPage(): ReactElement {
       <CollectionsPageContent>
         <CollectionNavigationCarousel contentItems={navigationContentItems} />
         <CollectionIntroText
-          title="La verdadera historia de la Pascua"
+          title="¿Cuál es el verdadero significado de la Pascua?"
           subtitle="¿Cuestionando? ¿Buscando? Descubre el verdadero poder de la Pascua."
           firstParagraph={{
             beforeHighlight:
@@ -105,6 +110,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
           orthodoxEasterLabel="Ortodoxa"
           passoverLabel="Pascua Judía"
           locale="es-ES"
+          year={year}
         />
         <CollectionsVideoContent
           contentId="easter-explained/spanish-latin-american"
@@ -116,7 +122,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
           mutePage={mutePage}
           setMutePage={setMutePage}
           showDivider={false}
-          questionsTitle="Preguntas relacionadas"
+          questionsTitle="Preguntas frecuentes sobre la Pascua"
           askButtonText="Haz la tuya"
           bibleQuotesTitle="Citas bíblicas"
           quizButtonText="¿Cuál es tu próximo paso de fe?"

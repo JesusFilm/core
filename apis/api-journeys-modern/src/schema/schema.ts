@@ -1,6 +1,7 @@
 // Developers must add an import for every resolver
 // and object type in the schema
 
+import './visitor'
 import './action'
 import './block'
 import './chatButton'
@@ -11,6 +12,7 @@ import './googleSheetsSync'
 import './integration'
 import './journey'
 import './journeyAiTranslate'
+import './journeyCustomizationField'
 import './journeyCollection'
 import './journeyEventsExportLog'
 import './journeyLanguageAiDetect'
@@ -24,13 +26,14 @@ import './mediaVideo'
 import './plausible'
 import './qrCode'
 import './team'
+import './templateGalleryPage'
 import './user'
+import './userDelete'
 import './userInvite'
 import './userJourney'
 import './userRole'
 import './userTeam'
 import './userTeamInvite'
-import './visitor'
 
 import { builder } from './builder'
 

@@ -3,6 +3,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
@@ -37,40 +38,40 @@ import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoI
 
 import { BackgroundMedia } from './BackgroundMedia'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', async () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('../../../../../../../../MuxVideoUploadProvider', () => ({
-  ...jest.requireActual('../../../../../../../../MuxVideoUploadProvider'),
-  useMuxVideoUpload: jest.fn(() => ({
-    getUploadStatus: jest.fn(),
-    addUploadTask: jest.fn(),
-    cancelUploadForBlock: jest.fn()
+vi.mock('../../../../../../../../MuxVideoUploadProvider', async () => ({
+  ...(await vi.importActual('../../../../../../../../MuxVideoUploadProvider')),
+  useMuxVideoUpload: vi.fn(() => ({
+    getUploadStatus: vi.fn(),
+    addUploadTask: vi.fn(),
+    cancelUploadForBlock: vi.fn()
   }))
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', async () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({
+  useRouter: vi.fn(() => ({
     query: { tab: 'active' },
-    push: jest.fn(),
+    push: vi.fn(),
     events: {
-      on: jest.fn()
+      on: vi.fn()
     }
   }))
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
-const mockUseMuxVideoUpload = useMuxVideoUpload as jest.MockedFunction<
+const mockUseMuxVideoUpload = useMuxVideoUpload as MockedFunction<
   typeof useMuxVideoUpload
 >
 
-const mockGetUploadStatus = jest.fn()
-const mockCancelUploadForBlock = jest.fn()
-const mockAddUploadTask = jest.fn()
+const mockGetUploadStatus = vi.fn()
+const mockCancelUploadForBlock = vi.fn()
+const mockAddUploadTask = vi.fn()
 
 const journey = { id: 'journeyId' } as unknown as Journey
 
@@ -86,7 +87,9 @@ const card: TreeBlock<CardBlock> = {
   fullscreen: false,
   backdropBlur: null,
   eventLabel: null,
-  children: []
+  children: [],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 const video: TreeBlock<VideoBlock> = {
   id: 'video1.id',
@@ -112,6 +115,7 @@ const video: TreeBlock<VideoBlock> = {
   eventLabel: null,
   endEventLabel: null,
   customizable: null,
+  notes: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -267,7 +271,7 @@ describe('BackgroundMedia', () => {
       addUploadTask: mockAddUploadTask,
       cancelUploadForBlock: mockCancelUploadForBlock
     })
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('shows Video selected on null cover', () => {
@@ -435,8 +439,8 @@ describe('BackgroundMedia', () => {
   })
 
   it('updates the url parameters', async () => {
-    const push = jest.fn()
-    const on = jest.fn()
+    const push = vi.fn()
+    const on = vi.fn()
 
     mockedUseRouter.mockReturnValue({
       query: { param: null },
@@ -487,8 +491,8 @@ describe('BackgroundMedia', () => {
   })
 
   it('should cancel video upload when changing to different video source', async () => {
-    const push = jest.fn()
-    const on = jest.fn()
+    const push = vi.fn()
+    const on = vi.fn()
 
     mockedUseRouter.mockReturnValue({
       query: { param: null },

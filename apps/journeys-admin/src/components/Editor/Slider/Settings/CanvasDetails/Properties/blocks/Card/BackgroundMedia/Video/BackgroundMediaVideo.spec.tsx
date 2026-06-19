@@ -11,6 +11,7 @@ import {
   useSearchBox
 } from 'react-instantsearch'
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
@@ -61,48 +62,46 @@ import {
 
 import { BackgroundMediaVideo } from '.'
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
 // Silence video.js in JSDOM and avoid player init errors
-jest.mock('video.js', () => {
+vi.mock('video.js', () => {
   const mockPlayer = {
-    src: jest.fn(),
-    dispose: jest.fn(),
-    on: jest.fn(),
-    ready: jest.fn((cb?: () => void) => (cb?.(), undefined)),
-    controls: jest.fn(),
-    paused: jest.fn(),
-    play: jest.fn(),
-    pause: jest.fn(),
-    error: jest.fn(),
-    currentTime: jest.fn(),
-    aspectRatio: jest.fn(),
-    autoresize: jest.fn(),
-    preload: jest.fn(),
-    muted: jest.fn(),
-    volume: jest.fn(),
-    poster: jest.fn()
+    src: vi.fn(),
+    dispose: vi.fn(),
+    on: vi.fn(),
+    ready: vi.fn((cb?: () => void) => (cb?.(), undefined)),
+    controls: vi.fn(),
+    paused: vi.fn(),
+    play: vi.fn(),
+    pause: vi.fn(),
+    error: vi.fn(),
+    currentTime: vi.fn(),
+    aspectRatio: vi.fn(),
+    autoresize: vi.fn(),
+    preload: vi.fn(),
+    muted: vi.fn(),
+    volume: vi.fn(),
+    poster: vi.fn()
   }
-  const videojs = jest.fn(() => mockPlayer)
+  const videojs = vi.fn(() => mockPlayer)
   ;(videojs as any).getPlayers = () => ({})
-  ;(videojs as any).log = { warn: jest.fn(), error: jest.fn() }
-  return videojs
+  ;(videojs as any).log = { warn: vi.fn(), error: vi.fn() }
+  return { __esModule: true, default: videojs }
 })
 
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
-  typeof useSearchBox
->
-const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
+const mockUseInstantSearch = useInstantSearch as MockedFunction<
   typeof useInstantSearch
 >
-const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
+const mockUseInfiniteHits = useInfiniteHits as MockedFunction<
   typeof useInfiniteHits
 >
 
@@ -120,7 +119,9 @@ const card: TreeBlock<CardBlock> = {
   fullscreen: false,
   backdropBlur: null,
   eventLabel: null,
-  children: []
+  children: [],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 
 const video: TreeBlock<VideoBlock> = {
@@ -147,6 +148,7 @@ const video: TreeBlock<VideoBlock> = {
   eventLabel: null,
   endEventLabel: null,
   customizable: null,
+  notes: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -399,12 +401,12 @@ const coverBlockRestoreMock: MockedResponse<
 
 describe('BackgroundMediaVideo', () => {
   const searchBox = {
-    refine: jest.fn()
+    refine: vi.fn()
   } as unknown as SearchBoxRenderState
 
   const infiniteHits = {
     items: videoItems,
-    showMore: jest.fn(),
+    showMore: vi.fn(),
     isLastPage: false
   } as unknown as InfiniteHitsRenderState
 
@@ -420,7 +422,7 @@ describe('BackgroundMediaVideo', () => {
     mockUseSearchBox.mockReturnValue(searchBox)
     mockUseInfiniteHits.mockReturnValue(infiniteHits)
     mockUseInstantSearch.mockReturnValue(instantSearch)
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('creates a new video cover block', async () => {
@@ -434,7 +436,7 @@ describe('BackgroundMediaVideo', () => {
       },
       'CardBlock:cardId': { ...card }
     })
-    const getVideoResult = jest.fn().mockReturnValue(getVideoMock.result)
+    const getVideoResult = vi.fn().mockReturnValue(getVideoMock.result)
     render(
       <MockedProvider
         cache={cache}
@@ -508,7 +510,7 @@ describe('BackgroundMediaVideo', () => {
     }
 
     it('updates video cover block', async () => {
-      const getVideoResult = jest.fn().mockReturnValue(getVideoMock.result)
+      const getVideoResult = vi.fn().mockReturnValue(getVideoMock.result)
       const response: CoverVideoBlockUpdate = {
         videoBlockUpdate: {
           ...video
@@ -536,13 +538,13 @@ describe('BackgroundMediaVideo', () => {
           data: response
         }
       }
-      const updateResult = jest.fn(() => ({
+      const updateResult = vi.fn(() => ({
         data: response
       }))
-      const undoResult = jest.fn(() => ({
+      const undoResult = vi.fn(() => ({
         data: response
       }))
-      const redoResult = jest.fn(() => ({
+      const redoResult = vi.fn(() => ({
         data: response
       }))
       render(

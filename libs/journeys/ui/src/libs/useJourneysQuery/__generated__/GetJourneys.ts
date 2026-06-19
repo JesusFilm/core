@@ -30,7 +30,12 @@ export interface GetJourneys_journeys_journeyCustomizationFields {
   defaultValue: string | null;
 }
 
-export interface GetJourneys_journeys_userJourneys_user {
+export interface GetJourneys_journeys_userJourneys_user_AnonymousUser {
+  __typename: "AnonymousUser";
+  id: string;
+}
+
+export interface GetJourneys_journeys_userJourneys_user_AuthenticatedUser {
   __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
@@ -38,13 +43,12 @@ export interface GetJourneys_journeys_userJourneys_user {
   imageUrl: string | null;
 }
 
+export type GetJourneys_journeys_userJourneys_user = GetJourneys_journeys_userJourneys_user_AnonymousUser | GetJourneys_journeys_userJourneys_user_AuthenticatedUser;
+
 export interface GetJourneys_journeys_userJourneys {
   __typename: "UserJourney";
   id: string;
   role: UserJourneyRole;
-  /**
-   * Date time of when the journey was first opened
-   */
   openedAt: any | null;
   user: GetJourneys_journeys_userJourneys_user | null;
 }
@@ -108,6 +112,7 @@ export interface GetJourneys_journeys {
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;
+  customizable: boolean | null;
   website: boolean | null;
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: GetJourneys_journeys_journeyCustomizationFields[];

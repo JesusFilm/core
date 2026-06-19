@@ -1,5 +1,7 @@
 import omit from 'lodash/omit'
+import { MockedFunction, vi } from 'vitest'
 
+import { Prisma } from '@core/prisma/users/client'
 import { graphql } from '@core/shared/gql'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
@@ -10,11 +12,11 @@ import { findOrFetchUser } from './findOrFetchUser'
 import { user } from './user.mock'
 import { verifyUser } from './verifyUser'
 
-jest.mock('@core/yoga/firebaseClient', () => {
+vi.mock('@core/yoga/firebaseClient', () => {
   return {
     __esModule: true,
-    getUserIdFromPayload: jest.fn().mockReturnValue('testUserId'),
-    getUserFromPayload: jest.fn().mockReturnValue({
+    getUserIdFromPayload: vi.fn().mockReturnValue('testUserId'),
+    getUserFromPayload: vi.fn().mockReturnValue({
       id: 'testUserId',
       firstName: 'Test',
       lastName: 'User',
@@ -22,16 +24,16 @@ jest.mock('@core/yoga/firebaseClient', () => {
       emailVerified: true,
       imageUrl: null
     }),
-    impersonateUser: jest.fn().mockResolvedValue('1234')
+    impersonateUser: vi.fn().mockResolvedValue('1234')
   }
 })
 
-const getUserFromPayloadMock = getUserFromPayload as jest.MockedFunction<
+const getUserFromPayloadMock = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
-jest.mock('./findOrFetchUser', () => ({
-  findOrFetchUser: jest.fn().mockResolvedValue({
+vi.mock('./findOrFetchUser', () => ({
+  findOrFetchUser: vi.fn().mockResolvedValue({
     id: '1',
     userId: '1',
     createdAt: new Date('2021-01-01T00:00:00.000Z'),
@@ -44,14 +46,14 @@ jest.mock('./findOrFetchUser', () => ({
   })
 }))
 
-jest.mock('./validateEmail', () => ({
+vi.mock('./validateEmail', () => ({
   __esModule: true,
-  validateEmail: jest.fn().mockResolvedValue(true)
+  validateEmail: vi.fn().mockResolvedValue(true)
 }))
 
-jest.mock('./verifyUser', () => ({
+vi.mock('./verifyUser', () => ({
   __esModule: true,
-  verifyUser: jest.fn().mockResolvedValue(true)
+  verifyUser: vi.fn().mockResolvedValue(true)
 }))
 
 describe('api-users', () => {
@@ -61,13 +63,18 @@ describe('api-users', () => {
     const ME_QUERY = graphql(`
       query Me($input: MeInput) {
         me(input: $input) {
-          id
-          firstName
-          lastName
-          email
-          imageUrl
-          superAdmin
-          emailVerified
+          ... on AuthenticatedUser {
+            id
+            firstName
+            lastName
+            email
+            imageUrl
+            superAdmin
+            emailVerified
+          }
+          ... on AnonymousUser {
+            id
+          }
         }
       }
     `)
@@ -128,6 +135,196 @@ describe('api-users', () => {
         })
         expect(data).toHaveProperty('data.me', null)
       })
+    })
+
+    it('should send verification email when guest converts to authenticated', async () => {
+      const findOrFetchUserMock = findOrFetchUser as MockedFunction<
+        typeof findOrFetchUser
+      >
+      findOrFetchUserMock.mockResolvedValueOnce({
+        id: '1',
+        userId: 'testUserId',
+        firstName: 'Test',
+        lastName: null,
+        email: null,
+        imageUrl: null,
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: false
+      })
+      prismaMock.user.update.mockResolvedValueOnce({
+        id: '1',
+        userId: 'testUserId',
+        firstName: 'Test',
+        lastName: 'User',
+        email: 'test@example.com',
+        imageUrl: null,
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: false
+      })
+
+      await authClient({ document: ME_QUERY })
+
+      expect(verifyUser).toHaveBeenCalledWith(
+        'testUserId',
+        'test@example.com',
+        undefined,
+        'NextSteps'
+      )
+    })
+
+    it('should include imageUrl in update when guest converts via Google', async () => {
+      getUserFromPayloadMock.mockReturnValueOnce({
+        id: 'testUserId',
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: 'jane@gmail.com',
+        emailVerified: true,
+        imageUrl: 'https://lh3.googleusercontent.com/photo.jpg'
+      })
+      const findOrFetchUserMock = findOrFetchUser as MockedFunction<
+        typeof findOrFetchUser
+      >
+      findOrFetchUserMock.mockResolvedValueOnce({
+        id: '1',
+        userId: 'testUserId',
+        firstName: 'Unknown User',
+        lastName: null,
+        email: null,
+        imageUrl: null,
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: true
+      })
+      prismaMock.user.update.mockResolvedValueOnce({
+        id: '1',
+        userId: 'testUserId',
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: 'jane@gmail.com',
+        imageUrl: 'https://lh3.googleusercontent.com/photo.jpg',
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: true
+      })
+
+      await authClient({ document: ME_QUERY })
+
+      expect(prismaMock.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            imageUrl: 'https://lh3.googleusercontent.com/photo.jpg'
+          })
+        })
+      )
+    })
+
+    it('should not send verification email when guest converts via verified provider', async () => {
+      const findOrFetchUserMock = findOrFetchUser as MockedFunction<
+        typeof findOrFetchUser
+      >
+      findOrFetchUserMock.mockResolvedValueOnce({
+        id: '1',
+        userId: 'testUserId',
+        firstName: 'Test',
+        lastName: null,
+        email: null,
+        imageUrl: null,
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: true
+      })
+      prismaMock.user.update.mockResolvedValueOnce({
+        id: '1',
+        userId: 'testUserId',
+        firstName: 'Test',
+        lastName: 'User',
+        email: 'test@example.com',
+        imageUrl: null,
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: true
+      })
+
+      const verifyUserMock = verifyUser as MockedFunction<typeof verifyUser>
+      verifyUserMock.mockClear()
+
+      await authClient({ document: ME_QUERY })
+
+      expect(verifyUser).not.toHaveBeenCalled()
+    })
+
+    it('should still return user when verification email enqueue fails', async () => {
+      const findOrFetchUserMock = findOrFetchUser as MockedFunction<
+        typeof findOrFetchUser
+      >
+      findOrFetchUserMock.mockResolvedValueOnce({
+        id: '1',
+        userId: 'testUserId',
+        firstName: 'Test',
+        lastName: null,
+        email: null,
+        imageUrl: null,
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: false
+      })
+      const updatedUser = {
+        id: '1',
+        userId: 'testUserId',
+        firstName: 'Test',
+        lastName: 'User',
+        email: 'test@example.com',
+        imageUrl: null,
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: false
+      }
+      prismaMock.user.update.mockResolvedValueOnce(updatedUser)
+      const verifyUserMock = verifyUser as MockedFunction<typeof verifyUser>
+      verifyUserMock.mockRejectedValueOnce(new Error('Queue unavailable'))
+
+      const data = await authClient({ document: ME_QUERY })
+
+      expect(data).toHaveProperty('data.me.email', 'test@example.com')
+      expect(data).not.toHaveProperty('errors')
+    })
+
+    it('should return error when email is already in use', async () => {
+      const findOrFetchUserMock = findOrFetchUser as MockedFunction<
+        typeof findOrFetchUser
+      >
+      findOrFetchUserMock.mockResolvedValueOnce({
+        id: '1',
+        userId: 'testUserId',
+        firstName: 'Test',
+        lastName: null,
+        email: null,
+        imageUrl: null,
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: false
+      })
+      prismaMock.user.update.mockRejectedValueOnce(
+        new Prisma.PrismaClientKnownRequestError(
+          'Unique constraint failed on the fields: (`email`)',
+          { code: 'P2002', clientVersion: 'prismaVersion' }
+        )
+      )
+
+      const data = await authClient({
+        document: ME_QUERY
+      })
+
+      expect(data).toHaveProperty(
+        'errors',
+        expect.arrayContaining([
+          expect.objectContaining({
+            message: 'Email already in use'
+          })
+        ])
+      )
     })
   })
 

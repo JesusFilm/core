@@ -10,9 +10,6 @@ import { JourneyVisitorFilter } from "./globalTypes";
 // ====================================================
 
 export interface GetJourneyVisitorsCountWithTextResponses {
-  /**
-   * Get a JourneyVisitor count by JourneyVisitorFilter
-   */
   journeyVisitorCount: number;
 }
 

@@ -1,34 +1,64 @@
 import { GraphQLError } from 'graphql'
 
-import { prisma } from '@core/prisma/users/client'
+import { Prisma, prisma } from '@core/prisma/users/client'
 import { impersonateUser } from '@core/yoga/firebaseClient'
 
 import { builder } from '../builder'
 
 import { findOrFetchUser } from './findOrFetchUser'
-import {
-  CreateVerificationRequestInput,
-  MeInput,
-  UpdateMeInput
-} from './inputs'
+import { CreateVerificationRequestInput, MeInput } from './inputs'
 import { AnonymousUser, AuthenticatedUser, User } from './objects'
 import { validateEmail } from './validateEmail'
 import { verifyUser } from './verifyUser'
+
+function isFirebaseNotFound(error: unknown): boolean {
+  return (
+    error != null &&
+    typeof error === 'object' &&
+    'code' in error &&
+    (error as { code: string }).code === 'auth/user-not-found'
+  )
+}
+
+builder.asEntity(User, {
+  key: builder.selection<{ id: string }>('id'),
+  resolveReference: async ({ id }) => {
+    try {
+      const user = await findOrFetchUser({}, id, undefined)
+
+      if (user == null) {
+        return { id }
+      }
+
+      if (user.firstName == null || user.firstName.trim() === '') {
+        return {
+          ...user,
+          firstName: 'Unknown User'
+        }
+      }
+
+      return user
+    } catch (error) {
+      console.error(
+        `Federation: Error resolving User entity for userId: ${id}`,
+        error
+      )
+      return { id }
+    }
+  }
+})
 
 builder.asEntity(AuthenticatedUser, {
   key: builder.selection<{ id: string }>('id'),
   resolveReference: async ({ id }) => {
     try {
-      const user = await prisma.user.findUnique({ where: { userId: id } })
+      const user = await findOrFetchUser({}, id, undefined)
 
-      // Handle cases where user doesn't exist
       if (user == null) {
         console.warn(`Federation: User not found for userId: ${id}`)
         return null
       }
 
-      // Handle cases where firstName is null or empty (data integrity issue)
-      // This provides a fallback to prevent GraphQL federation errors
       if (user.firstName == null || user.firstName.trim() === '') {
         console.warn(
           `Federation: User ${id} has null/empty firstName, using fallback`
@@ -60,8 +90,8 @@ builder.asEntity(AnonymousUser, {
 })
 
 builder.queryFields((t) => ({
-  me: t.withAuth({ isAuthenticated: true }).prismaField({
-    type: AuthenticatedUser,
+  me: t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
+    type: User,
     nullable: true,
     args: {
       input: t.arg({
@@ -69,13 +99,77 @@ builder.queryFields((t) => ({
         required: false
       })
     },
-    resolve: async (query, _parent, { input }, ctx) => {
-      return await findOrFetchUser(
-        query,
-        ctx.currentUser.id,
-        input?.redirect ?? undefined,
-        input?.app ?? 'NextSteps'
-      )
+    resolve: async (_parent, { input }, ctx) => {
+      let user
+      try {
+        user = await findOrFetchUser(
+          {},
+          ctx.currentUser.id,
+          input?.redirect ?? undefined,
+          input?.app ?? 'NextSteps'
+        )
+      } catch (error) {
+        if (isFirebaseNotFound(error)) {
+          throw new GraphQLError('User account has been deleted', {
+            extensions: { code: 'UNAUTHENTICATED' }
+          })
+        }
+        throw error
+      }
+      if (user == null) return null
+
+      // Return appropriate type based on whether user has email
+      if (user.email != null) {
+        return user
+      } else if (
+        // if the user has been converted from anonymous to authenticated, return the user with the new email and first name
+        ctx.currentUser.email != null &&
+        ctx.currentUser.firstName != null
+      ) {
+        try {
+          const updatedUser = await prisma.user.update({
+            where: { userId: ctx.currentUser.id },
+            data: {
+              firstName: ctx.currentUser.firstName.trim(),
+              email: ctx.currentUser.email.trim().toLowerCase(),
+              ...(ctx.currentUser.imageUrl != null && {
+                imageUrl: ctx.currentUser.imageUrl
+              }),
+              ...(ctx.currentUser.lastName != null && {
+                lastName: ctx.currentUser.lastName.trim() || null
+              })
+            }
+          })
+          if (!updatedUser.emailVerified) {
+            try {
+              await verifyUser(
+                ctx.currentUser.id,
+                ctx.currentUser.email,
+                input?.redirect ?? undefined,
+                input?.app ?? 'NextSteps'
+              )
+            } catch (verifyError) {
+              console.error(
+                `Failed to enqueue verification email for userId: ${ctx.currentUser.id}`,
+                verifyError
+              )
+            }
+          }
+          return updatedUser
+        } catch (error) {
+          if (
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === 'P2002'
+          ) {
+            throw new GraphQLError('Email already in use', {
+              extensions: { code: 'BAD_USER_INPUT' }
+            })
+          }
+          throw error
+        }
+      }
+      // Anonymous user - only return id
+      return { id: user.id }
     }
   }),
   user: t.withAuth({ isValidInterop: true }).prismaField({

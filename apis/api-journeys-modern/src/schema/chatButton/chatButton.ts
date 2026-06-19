@@ -9,6 +9,7 @@ export const ChatButtonRef = builder.prismaObject('ChatButton', {
     platform: t.field({
       type: MessagePlatform,
       resolve: (chatButton) => chatButton.platform
-    })
+    }),
+    customizable: t.exposeBoolean('customizable')
   })
 })

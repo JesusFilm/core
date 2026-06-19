@@ -1,6 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
+import { type MockedFunction } from 'vitest'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 
@@ -8,47 +9,43 @@ import { ThemeProvider } from '../../ThemeProvider'
 
 import { JourneyListView } from '.'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => {
+  useRouter: vi.fn(() => {
     return {
       query: {
         status: 'active',
         type: 'journeys'
       },
-      push: jest.fn()
+      push: vi.fn()
     }
   })
 }))
 
-jest.mock('next-i18next', () => ({
-  useTranslation: jest.fn(() => ({
+vi.mock('next-i18next/pages', () => ({
+  useTranslation: vi.fn(() => ({
     t: (key: string) => key
   }))
 }))
 
-jest.mock('@core/journeys/ui/TeamProvider', () => ({
+vi.mock('@core/journeys/ui/TeamProvider', () => ({
   __esModule: true,
-  useTeam: jest.fn(() => ({
+  useTeam: vi.fn(() => ({
     activeTeam: { id: 'teamId', title: 'Test Team' }
   }))
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-const mockedUseTranslation = useTranslation as jest.MockedFunction<
-  typeof useTranslation
->
-const mockedUseTeam = useTeam as jest.MockedFunction<typeof useTeam>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
+const mockedUseTranslation = vi.mocked(useTranslation)
+const mockedUseTeam = useTeam as MockedFunction<typeof useTeam>
 
-const mockRenderList = jest.fn(() => (
-  <div data-testid="rendered-list">List</div>
-))
-const mockSetActiveEvent = jest.fn()
-const mockSetSortOrder = jest.fn()
+const mockRenderList = vi.fn(() => <div data-testid="rendered-list">List</div>)
+const mockSetActiveEvent = vi.fn()
+const mockSetSortOrder = vi.fn()
 
 describe('JourneyListView', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockedUseTranslation.mockReturnValue({
       t: (key: string) => key,
       i18n: {} as never,
@@ -119,7 +116,7 @@ describe('JourneyListView', () => {
         status: 'active',
         type: 'templates'
       },
-      push: jest.fn()
+      push: vi.fn()
     } as unknown as NextRouter)
 
     render(
@@ -141,7 +138,7 @@ describe('JourneyListView', () => {
         status: 'archived',
         type: 'journeys'
       },
-      push: jest.fn()
+      push: vi.fn()
     } as unknown as NextRouter)
 
     render(
@@ -158,7 +155,7 @@ describe('JourneyListView', () => {
   })
 
   it('should switch tabs and update router when clicking on templates tab', () => {
-    const pushMock = jest.fn()
+    const pushMock = vi.fn()
     mockedUseRouter.mockReturnValue({
       query: {
         status: 'active',
@@ -194,7 +191,7 @@ describe('JourneyListView', () => {
   })
 
   it('should change status filter and update router', () => {
-    const pushMock = jest.fn()
+    const pushMock = vi.fn()
     mockedUseRouter.mockReturnValue({
       query: {
         status: 'active',
@@ -232,7 +229,7 @@ describe('JourneyListView', () => {
   })
 
   it('should sync with router query params when they change externally', () => {
-    const pushMock = jest.fn()
+    const pushMock = vi.fn()
     mockedUseRouter.mockReturnValue({
       query: {
         status: 'trashed',

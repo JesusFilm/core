@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
@@ -14,17 +15,17 @@ import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvites
 
 import { TeamManageDialog } from './TeamManageDialog'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('apps/journeys-admin/src/libs/useCurrentUserLazyQuery', () => ({
+vi.mock('apps/journeys-admin/src/libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
-  useCurrentUserLazyQuery: jest.fn().mockReturnValue({
-    loadUser: jest.fn(),
+  useCurrentUserLazyQuery: vi.fn().mockReturnValue({
+    loadUser: vi.fn(),
     data: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'userId',
       email: 'miguelohara@example.com'
     }
@@ -32,11 +33,11 @@ jest.mock('apps/journeys-admin/src/libs/useCurrentUserLazyQuery', () => ({
 }))
 
 describe('TeamManageDialog', () => {
-  const handleClose = jest.fn()
+  const handleClose = vi.fn()
 
   beforeEach(() => {
     handleClose.mockClear()
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
   })
 
   const getUserTeamMock1: MockedResponse<GetUserTeamsAndInvites> = {

@@ -1,4 +1,4 @@
-import clsx from 'clsx'
+import { clsx } from 'clsx'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 
 import { usePlayer } from '../../libs/playerContext/PlayerContext'
@@ -72,7 +72,9 @@ export function VideoBlock({
         onMuxInsertComplete={onMuxInsertComplete}
         onSkip={onSkipActiveVideo}
         wasUnmuted={wasUnmuted}
-        key={currentMuxInsert ? currentMuxInsert.id : variant?.hls}
+        key={
+          currentMuxInsert ? currentMuxInsert.id : (variant?.id ?? variant?.hls)
+        }
       />
     </div>
   )

@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider, enqueueSnackbar } from 'notistack'
+import { type Mock } from 'vitest'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -19,19 +20,19 @@ import {
 } from './ThemeBuilderDialog'
 import { FontFamily } from './ThemeSettings'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', async () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 // Mock notistack
-jest.mock('notistack', () => ({
-  ...jest.requireActual('notistack'),
-  enqueueSnackbar: jest.fn()
+vi.mock('notistack', async () => ({
+  ...(await vi.importActual('notistack')),
+  enqueueSnackbar: vi.fn()
 }))
 
 describe('ThemeBuilderDialog', () => {
-  const handleClose = jest.fn()
+  const handleClose = vi.fn()
 
   const mockJourney: JourneyFields = {
     __typename: 'Journey',
@@ -85,7 +86,9 @@ describe('ThemeBuilderDialog', () => {
     },
     journeyCustomizationDescription: null,
     journeyCustomizationFields: [],
-    fromTemplateId: null
+    fromTemplateId: null,
+    customizable: null,
+    showAssistant: null
   }
 
   const mockJourneyWithoutTheme: JourneyFields = {
@@ -105,7 +108,7 @@ describe('ThemeBuilderDialog', () => {
         }
       }
     },
-    result: jest.fn(() => {
+    result: vi.fn(() => {
       return {
         data: {
           journeyThemeUpdate: {
@@ -133,7 +136,7 @@ describe('ThemeBuilderDialog', () => {
         }
       }
     },
-    result: jest.fn(() => {
+    result: vi.fn(() => {
       return {
         data: {
           journeyThemeCreate: {
@@ -150,8 +153,8 @@ describe('ThemeBuilderDialog', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    vi.clearAllMocks()
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
   })
 
   it('should render correctly when open', () => {
@@ -363,7 +366,7 @@ describe('ThemeBuilderDialog', () => {
           }
         }
       },
-      result: jest.fn(() => {
+      result: vi.fn(() => {
         return {
           data: {
             journeyThemeUpdate: {

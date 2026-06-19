@@ -5,8 +5,8 @@ import {
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 
 import {
+  extractYouTubeVideoId,
   getCustomizableCardVideoBlock,
-  getVideoBlockDisplayTitle,
   getVideoPoster,
   showVideosSection
 } from './videoSectionUtils'
@@ -38,11 +38,94 @@ function createBaseVideoBlock(overrides: Partial<VideoBlock> = {}): VideoBlock {
     eventLabel: null,
     endEventLabel: null,
     customizable: null,
+    notes: null,
     ...overrides
   } as VideoBlock
 }
 
 describe('videoSectionUtils', () => {
+  describe('extractYouTubeVideoId', () => {
+    it('extracts ID from standard youtube.com watch URL', () => {
+      expect(
+        extractYouTubeVideoId('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+      ).toBe('dQw4w9WgXcQ')
+    })
+
+    it('extracts ID from youtube.com watch URL with extra params', () => {
+      expect(
+        extractYouTubeVideoId(
+          'https://www.youtube.com/watch?v=JHdB1dYAteA&pp=ygUKam9obiBwaXBlcg%3D%3D'
+        )
+      ).toBe('JHdB1dYAteA')
+    })
+
+    it('extracts ID from youtu.be short link', () => {
+      expect(extractYouTubeVideoId('https://youtu.be/dQw4w9WgXcQ')).toBe(
+        'dQw4w9WgXcQ'
+      )
+    })
+
+    it('extracts ID from youtube.com shorts URL', () => {
+      expect(
+        extractYouTubeVideoId('https://www.youtube.com/shorts/dQw4w9WgXcQ')
+      ).toBe('dQw4w9WgXcQ')
+    })
+
+    it('extracts ID from youtube.com embed URL', () => {
+      expect(
+        extractYouTubeVideoId('https://www.youtube.com/embed/dQw4w9WgXcQ')
+      ).toBe('dQw4w9WgXcQ')
+    })
+
+    it('extracts ID from youtube-nocookie.com embed URL', () => {
+      expect(
+        extractYouTubeVideoId(
+          'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ'
+        )
+      ).toBe('dQw4w9WgXcQ')
+    })
+
+    it('extracts ID from m.youtube.com watch URL', () => {
+      expect(
+        extractYouTubeVideoId('https://m.youtube.com/watch?v=dQw4w9WgXcQ')
+      ).toBe('dQw4w9WgXcQ')
+    })
+
+    it('returns null for non-YouTube host', () => {
+      expect(
+        extractYouTubeVideoId('https://example.com/watch?v=dQw4w9WgXcQ')
+      ).toBeNull()
+    })
+
+    it('returns null for host spoofing YouTube in path', () => {
+      expect(
+        extractYouTubeVideoId(
+          'https://evil.com/youtube.com/watch?v=dQw4w9WgXcQ'
+        )
+      ).toBeNull()
+    })
+
+    it('returns null for invalid URL string', () => {
+      expect(extractYouTubeVideoId('not-a-valid-url')).toBeNull()
+    })
+
+    it('returns null for empty string', () => {
+      expect(extractYouTubeVideoId('')).toBeNull()
+    })
+
+    it('returns null when video ID is not 11 characters', () => {
+      expect(
+        extractYouTubeVideoId('https://www.youtube.com/watch?v=short')
+      ).toBeNull()
+    })
+
+    it('trims whitespace before parsing', () => {
+      expect(
+        extractYouTubeVideoId('  https://www.youtube.com/watch?v=dQw4w9WgXcQ  ')
+      ).toBe('dQw4w9WgXcQ')
+    })
+  })
+
   describe('getCustomizableCardVideoBlock', () => {
     it('returns null when journey is null', () => {
       expect(getCustomizableCardVideoBlock(undefined, 'card-1')).toBeNull()
@@ -116,116 +199,6 @@ describe('videoSectionUtils', () => {
       } as unknown as Journey
 
       expect(showVideosSection(journey, 'card-1')).toBe(true)
-    })
-  })
-
-  describe('getVideoBlockDisplayTitle', () => {
-    it('returns block.title when it is non-empty', () => {
-      const block = {
-        __typename: 'VideoBlock' as const,
-        title: 'My Video Title',
-        source: VideoBlockSource.internal
-      } as unknown as VideoBlock
-
-      expect(getVideoBlockDisplayTitle(block)).toBe('My Video Title')
-    })
-
-    it('returns empty string when block.title is null', () => {
-      const block = {
-        __typename: 'VideoBlock' as const,
-        title: null,
-        source: VideoBlockSource.internal
-      } as unknown as VideoBlock
-
-      expect(getVideoBlockDisplayTitle(block)).toBe('')
-    })
-
-    it('returns empty string when block.title is whitespace only', () => {
-      const block = {
-        __typename: 'VideoBlock' as const,
-        title: '   ',
-        source: VideoBlockSource.internal
-      } as unknown as VideoBlock
-
-      expect(getVideoBlockDisplayTitle(block)).toBe('')
-    })
-
-    it('returns first mediaVideo.title value for internal source when block.title is empty', () => {
-      const block = {
-        __typename: 'VideoBlock' as const,
-        title: '',
-        source: VideoBlockSource.internal,
-        mediaVideo: {
-          __typename: 'Video' as const,
-          title: [{ value: 'Internal Video Title' }]
-        }
-      } as unknown as VideoBlock
-
-      expect(getVideoBlockDisplayTitle(block)).toBe('Internal Video Title')
-    })
-
-    it('returns first mediaVideo.title value for cloudflare source when block.title is empty', () => {
-      const block = {
-        __typename: 'VideoBlock' as const,
-        title: '',
-        source: VideoBlockSource.cloudflare,
-        mediaVideo: {
-          __typename: 'Video' as const,
-          title: [{ value: 'Cloudflare Video Title' }]
-        }
-      } as unknown as VideoBlock
-
-      expect(getVideoBlockDisplayTitle(block)).toBe('Cloudflare Video Title')
-    })
-
-    it('returns empty string when mediaVideo is missing', () => {
-      const block = {
-        __typename: 'VideoBlock' as const,
-        title: '',
-        source: VideoBlockSource.internal,
-        mediaVideo: null
-      } as unknown as VideoBlock
-
-      expect(getVideoBlockDisplayTitle(block)).toBe('')
-    })
-
-    it('returns empty string when mediaVideo is not Video typename', () => {
-      const block = {
-        __typename: 'VideoBlock' as const,
-        title: '',
-        source: VideoBlockSource.internal,
-        mediaVideo: { __typename: 'OtherType' }
-      } as unknown as VideoBlock
-
-      expect(getVideoBlockDisplayTitle(block)).toBe('')
-    })
-
-    it('returns empty string when mediaVideo.title is empty array', () => {
-      const block = {
-        __typename: 'VideoBlock' as const,
-        title: '',
-        source: VideoBlockSource.internal,
-        mediaVideo: {
-          __typename: 'Video' as const,
-          title: []
-        }
-      } as unknown as VideoBlock
-
-      expect(getVideoBlockDisplayTitle(block)).toBe('')
-    })
-
-    it('returns empty string when mediaVideo.title[0].value is null', () => {
-      const block = {
-        __typename: 'VideoBlock' as const,
-        title: '',
-        source: VideoBlockSource.internal,
-        mediaVideo: {
-          __typename: 'Video' as const,
-          title: [{ value: null }]
-        }
-      } as unknown as VideoBlock
-
-      expect(getVideoBlockDisplayTitle(block)).toBe('')
     })
   })
 

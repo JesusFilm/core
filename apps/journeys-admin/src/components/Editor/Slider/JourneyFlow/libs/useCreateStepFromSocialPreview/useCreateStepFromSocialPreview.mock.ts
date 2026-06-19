@@ -57,7 +57,9 @@ export const mockNewCardBlock: TreeBlock<CardBlock> = {
   fullscreen: false,
   backdropBlur: null,
   eventLabel: null,
-  children: []
+  children: [],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 
 export const mockStepBlockCreateFromSocialPreview: MockedResponse<

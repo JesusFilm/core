@@ -67,12 +67,13 @@ const videoBlock: TreeBlock<VideoBlock> = {
   eventLabel: null,
   endEventLabel: null,
   customizable: false,
+  notes: null,
   children: []
 }
 
 describe('BlockCustomizationToggle', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('rendering', () => {
@@ -223,7 +224,7 @@ describe('BlockCustomizationToggle', () => {
 
   describe('mutations', () => {
     it('ImageBlock: toggling on calls imageBlockUpdate with customizable true', async () => {
-      const imageBlockUpdateResult = jest.fn(() => ({
+      const imageBlockUpdateResult = vi.fn(() => ({
         data: {
           imageBlockUpdate: { ...imageBlock, customizable: true }
         }
@@ -268,7 +269,7 @@ describe('BlockCustomizationToggle', () => {
 
     it('ImageBlock: toggling off calls imageBlockUpdate with customizable false', async () => {
       const blockWithCustomizable = { ...imageBlock, customizable: true }
-      const imageBlockUpdateResult = jest.fn(() => ({
+      const imageBlockUpdateResult = vi.fn(() => ({
         data: {
           imageBlockUpdate: { ...blockWithCustomizable, customizable: false }
         }
@@ -312,7 +313,7 @@ describe('BlockCustomizationToggle', () => {
     })
 
     it('VideoBlock: toggling on calls videoBlockUpdate with customizable true', async () => {
-      const videoBlockUpdateResult = jest.fn(() => ({
+      const videoBlockUpdateResult = vi.fn(() => ({
         data: {
           videoBlockUpdate: { ...videoBlock, customizable: true }
         }
@@ -351,7 +352,7 @@ describe('BlockCustomizationToggle', () => {
 
     it('VideoBlock: toggling off calls videoBlockUpdate with customizable false', async () => {
       const blockWithCustomizable = { ...videoBlock, customizable: true }
-      const videoBlockUpdateResult = jest.fn(() => ({
+      const videoBlockUpdateResult = vi.fn(() => ({
         data: {
           videoBlockUpdate: { ...blockWithCustomizable, customizable: false }
         }
@@ -391,10 +392,10 @@ describe('BlockCustomizationToggle', () => {
 
   describe('undo / redo', () => {
     it('undo after toggling ImageBlock customizable calls imageBlockUpdate with customizable false', async () => {
-      const executeResult = jest.fn(() => ({
+      const executeResult = vi.fn(() => ({
         data: { imageBlockUpdate: { ...imageBlock, customizable: true } }
       }))
-      const undoResult = jest.fn(() => ({
+      const undoResult = vi.fn(() => ({
         data: { imageBlockUpdate: { ...imageBlock, customizable: false } }
       }))
       const executeMock: MockedResponse<
@@ -455,13 +456,13 @@ describe('BlockCustomizationToggle', () => {
     })
 
     it('redo after undo for ImageBlock calls imageBlockUpdate with customizable true', async () => {
-      const executeResult = jest.fn(() => ({
+      const executeResult = vi.fn(() => ({
         data: { imageBlockUpdate: { ...imageBlock, customizable: true } }
       }))
-      const undoResult = jest.fn(() => ({
+      const undoResult = vi.fn(() => ({
         data: { imageBlockUpdate: { ...imageBlock, customizable: false } }
       }))
-      const redoResult = jest.fn(() => ({
+      const redoResult = vi.fn(() => ({
         data: { imageBlockUpdate: { ...imageBlock, customizable: true } }
       }))
       const executeMock: MockedResponse<
@@ -545,10 +546,10 @@ describe('BlockCustomizationToggle', () => {
     })
 
     it('undo after toggling VideoBlock customizable calls videoBlockUpdate with customizable false', async () => {
-      const executeResult = jest.fn(() => ({
+      const executeResult = vi.fn(() => ({
         data: { videoBlockUpdate: { ...videoBlock, customizable: true } }
       }))
-      const undoResult = jest.fn(() => ({
+      const undoResult = vi.fn(() => ({
         data: { videoBlockUpdate: { ...videoBlock, customizable: false } }
       }))
       const executeMock: MockedResponse<
@@ -597,13 +598,13 @@ describe('BlockCustomizationToggle', () => {
     })
 
     it('redo after undo for VideoBlock calls videoBlockUpdate with customizable true', async () => {
-      const executeResult = jest.fn(() => ({
+      const executeResult = vi.fn(() => ({
         data: { videoBlockUpdate: { ...videoBlock, customizable: true } }
       }))
-      const undoResult = jest.fn(() => ({
+      const undoResult = vi.fn(() => ({
         data: { videoBlockUpdate: { ...videoBlock, customizable: false } }
       }))
-      const redoResult = jest.fn(() => ({
+      const redoResult = vi.fn(() => ({
         data: { videoBlockUpdate: { ...videoBlock, customizable: true } }
       }))
       const executeMock: MockedResponse<

@@ -70,7 +70,7 @@ describe('useUploadTaskMap', () => {
 
     result.current.activeBlocksRef.current.add('video-block-1')
     result.current.uploadInstancesRef.current.set('video-block-1', {
-      abort: jest.fn()
+      abort: vi.fn()
     })
 
     act(() => {

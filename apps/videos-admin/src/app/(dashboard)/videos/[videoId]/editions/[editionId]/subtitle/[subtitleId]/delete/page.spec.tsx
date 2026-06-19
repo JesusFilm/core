@@ -1,23 +1,28 @@
+import { useMutation } from '@apollo/client'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { useRouter } from 'next/navigation'
 import { SnackbarProvider } from 'notistack'
+import { type Mock } from 'vitest'
+
+import { resolvedParams } from '../../../../../../../../../test/utils/resolvedParams'
 
 import SubtitleDeletePage from './page'
 
 // Mock the Apollo Client hooks
-jest.mock('@apollo/client', () => ({
-  useMutation: jest.fn(() => [jest.fn(), { loading: false }])
+vi.mock('@apollo/client', () => ({
+  useMutation: vi.fn(() => [vi.fn(), { loading: false }])
 }))
 
 // Mock the next/navigation
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(() => ({
-    push: jest.fn()
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
   }))
 }))
 
 // Mock Dialog component
-jest.mock('@core/shared/ui/Dialog', () => ({
+vi.mock('@core/shared/ui/Dialog', () => ({
   Dialog: ({ children, onClose, dialogTitle, dialogAction, loading }) => (
     <div data-testid="mock-dialog">
       <div data-testid="dialog-title">{dialogTitle.title}</div>
@@ -41,11 +46,11 @@ describe('SubtitleDeletePage', () => {
     render(
       <SnackbarProvider>
         <SubtitleDeletePage
-          params={{
+          params={resolvedParams({
             videoId: 'video-123',
             editionId: 'edition-123',
             subtitleId: 'subtitle-123'
-          }}
+          })}
         />
       </SnackbarProvider>
     )
@@ -66,24 +71,24 @@ describe('SubtitleDeletePage', () => {
   })
 
   it('calls the mutation and redirects when confirmed', async () => {
-    const mockDeleteMutation = jest.fn()
-    const mockRouter = { push: jest.fn() }
+    const mockDeleteMutation = vi.fn()
+    const mockRouter = { push: vi.fn() }
 
-    require('@apollo/client').useMutation.mockReturnValue([
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
       mockDeleteMutation,
       { loading: false }
     ])
 
-    require('next/navigation').useRouter.mockReturnValue(mockRouter)
+    vi.mocked(useRouter as unknown as Mock).mockReturnValue(mockRouter)
 
     render(
       <SnackbarProvider>
         <SubtitleDeletePage
-          params={{
+          params={resolvedParams({
             videoId: 'video-123',
             editionId: 'edition-123',
             subtitleId: 'subtitle-123'
-          }}
+          })}
         />
       </SnackbarProvider>
     )
@@ -101,17 +106,17 @@ describe('SubtitleDeletePage', () => {
   })
 
   it('redirects when dialog is closed', async () => {
-    const mockRouter = { push: jest.fn() }
-    require('next/navigation').useRouter.mockReturnValue(mockRouter)
+    const mockRouter = { push: vi.fn() }
+    vi.mocked(useRouter as unknown as Mock).mockReturnValue(mockRouter)
 
     render(
       <SnackbarProvider>
         <SubtitleDeletePage
-          params={{
+          params={resolvedParams({
             videoId: 'video-123',
             editionId: 'edition-123',
             subtitleId: 'subtitle-123'
-          }}
+          })}
         />
       </SnackbarProvider>
     )

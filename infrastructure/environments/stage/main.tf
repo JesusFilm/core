@@ -99,17 +99,6 @@ module "api-analytics" {
   }
 }
 
-module "api-journeys" {
-  source        = "../../../apis/api-journeys/infrastructure"
-  ecs_config    = local.internal_ecs_config
-  env           = "stage"
-  doppler_token = data.aws_ssm_parameter.doppler_api_journeys_stage_token.value
-  alb = {
-    arn      = module.stage.internal_alb.arn
-    dns_name = module.stage.internal_alb.dns_name
-  }
-}
-
 module "api-journeys-modern" {
   source        = "../../../apis/api-journeys-modern/infrastructure"
   ecs_config    = local.internal_ecs_config
@@ -152,21 +141,6 @@ module "api-media" {
     arn      = module.stage.internal_alb.arn
     dns_name = module.stage.internal_alb.dns_name
   }
-}
-
-module "cms" {
-  source = "../../../apps/cms/infrastructure"
-  ecs_config = merge(local.public_ecs_config, {
-    alb_target_group = merge(local.alb_target_group, {
-      health_check_path = "/_health"
-      health_check_port = "1337"
-    })
-  })
-  env              = "stage"
-  doppler_token    = data.aws_ssm_parameter.doppler_cms_stage_token.value
-  alb_listener_arn = module.stage.public_alb.alb_listener.arn
-  alb_dns_name     = module.stage.public_alb.dns_name
-  host_name        = "cms.stage.central.jesusfilm.org"
 }
 
 module "arclight" {
@@ -228,21 +202,6 @@ module "redis" {
   security_group_id = module.stage.ecs.internal_ecs_security_group_id
   cidr              = module.stage.cidr
   vpc_id            = module.stage.vpc.id
-}
-
-module "journeys-admin" {
-  source = "../../../apps/journeys-admin/infrastructure"
-  ecs_config = merge(local.public_ecs_config, {
-    alb_target_group = merge(local.alb_target_group, {
-      health_check_path = "/api/health"
-      health_check_port = "3000"
-    })
-  })
-  env              = "stage"
-  doppler_token    = data.aws_ssm_parameter.doppler_journeys_admin_stage_token.value
-  alb_listener_arn = module.stage.public_alb.alb_listener.arn
-  alb_dns_name     = module.stage.public_alb.dns_name
-  host_name        = "admin-stage.nextstep.is"
 }
 
 module "postgresql" {

@@ -1,17 +1,22 @@
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom/vitest'
 import 'isomorphic-fetch'
 import './test/createMatchMedia'
 import crypto from 'crypto'
+import { ReadableStream, TransformStream, WritableStream } from 'stream/web'
 
 import { configure } from '@testing-library/react'
 
 import { mswServer } from './test/mswServer'
 import './test/i18n'
 
+if (typeof globalThis.TransformStream === 'undefined') {
+  Object.assign(globalThis, { ReadableStream, TransformStream, WritableStream })
+}
+
 configure({ asyncUtilTimeout: 2500 })
 ;(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true
 
-jest.mock('next/image', () => ({
+vi.mock('next/image', () => ({
   __esModule: true,
   default: ({ src, alt, priority, className }) => (
     // eslint-disable-next-line @next/next/no-img-element
@@ -25,9 +30,16 @@ jest.mock('next/image', () => ({
   )
 }))
 
-jest.setTimeout(10000)
+Element.prototype.scrollIntoView = vi.fn()
 
-Element.prototype.scrollIntoView = jest.fn()
+// jsdom does not implement these URL helpers; provide stubs so components and
+// tests that create/revoke object URLs (and spy on them) work under vitest.
+if (typeof URL.createObjectURL === 'undefined') {
+  URL.createObjectURL = vi.fn(() => 'blob:mock-url')
+}
+if (typeof URL.revokeObjectURL === 'undefined') {
+  URL.revokeObjectURL = vi.fn()
+}
 
 // getRandomValues is required for powerBi unit tests, see issue:
 // https://community.powerbi.com/t5/Developer/TypeError-cryptoObj-getRandomValues-is-not-a-function-unrelated/m-p/1963294
@@ -47,14 +59,17 @@ Object.defineProperty(document, 'visibilityState', {
 Object.defineProperty(document, 'clearImmediate', {
   writable: true,
   configurable: true,
-  value: jest.fn()
+  value: vi.fn()
 })
 
 beforeAll(() => mswServer.listen())
-afterEach(() => mswServer.resetHandlers())
+afterEach(() => {
+  mswServer.resetHandlers()
+  sessionStorage.clear()
+})
 afterAll(() => mswServer.close())
 
-jest.mock('next/router', () => require('next-router-mock'))
-
-if (process.env.CI === 'true')
-  jest.retryTimes(3, { logErrorsBeforeRetry: true })
+vi.mock(
+  'next/router',
+  () => import(/* webpackChunkName: "next-router-mock" */ 'next-router-mock')
+)

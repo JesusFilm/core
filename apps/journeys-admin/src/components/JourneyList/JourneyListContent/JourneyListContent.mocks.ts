@@ -1,11 +1,11 @@
 import { MockedResponse } from '@apollo/client/testing'
-import { User } from 'next-firebase-auth'
 
 import {
   GetAdminJourneys,
   GetAdminJourneysVariables
 } from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { User } from '../../../libs/auth/authContext'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { defaultJourney, oldJourney } from '../journeyListData'
 
@@ -21,8 +21,14 @@ import {
 export const user: User = {
   id: 'user-id1',
   displayName: 'Test User',
-  email: 'test@example.com'
+  email: 'test@example.com',
+  photoURL: null,
+  phoneNumber: null,
+  emailVerified: true,
+  token: 'mock-token'
 } as unknown as User
+
+export const mockTeamId = 'team-id1'
 
 export const activeJourneysMock: MockedResponse<
   GetAdminJourneys,
@@ -33,7 +39,7 @@ export const activeJourneysMock: MockedResponse<
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
       template: false,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -52,7 +58,7 @@ export const noJourneysMock: MockedResponse<
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
       template: false,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -71,7 +77,7 @@ export const templatesMock: MockedResponse<
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
       template: true,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -95,7 +101,7 @@ export const archivedJourneysMock: MockedResponse<
     variables: {
       status: [JourneyStatus.archived],
       template: false,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -119,7 +125,7 @@ export const trashedJourneysMock: MockedResponse<
     variables: {
       status: [JourneyStatus.trashed],
       template: false,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -144,7 +150,7 @@ export const noTemplatesMock: MockedResponse<
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
       template: true,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -163,7 +169,7 @@ export const noArchivedMock: MockedResponse<
     variables: {
       status: [JourneyStatus.archived],
       template: false,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -182,7 +188,7 @@ export const noTrashedMock: MockedResponse<
     variables: {
       status: [JourneyStatus.trashed],
       template: false,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -201,7 +207,7 @@ export const archivedTemplatesMock: MockedResponse<
     variables: {
       status: [JourneyStatus.archived],
       template: true,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -226,7 +232,7 @@ export const noArchivedTemplatesMock: MockedResponse<
     variables: {
       status: [JourneyStatus.archived],
       template: true,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -245,7 +251,7 @@ export const trashedTemplatesMock: MockedResponse<
     variables: {
       status: [JourneyStatus.trashed],
       template: true,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {
@@ -271,7 +277,7 @@ export const noTrashedTemplatesMock: MockedResponse<
     variables: {
       status: [JourneyStatus.trashed],
       template: true,
-      useLastActiveTeamId: true
+      teamId: mockTeamId
     }
   },
   result: {

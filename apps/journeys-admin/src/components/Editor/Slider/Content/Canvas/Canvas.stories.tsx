@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -584,6 +584,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             fullsize: null,
             action: null,
             customizable: null,
+            notes: null,
             children: []
           }
         ]
@@ -886,13 +887,15 @@ export const JourneyAppearanceEdit = {
           __typename: 'ChatButton',
           id: '1',
           link: 'https://m.me/',
-          platform: MessagePlatform.tikTok
+          platform: MessagePlatform.tikTok,
+          customizable: null
         },
         {
           __typename: 'ChatButton',
           id: '1',
           link: 'https://m.me/',
-          platform: MessagePlatform.snapchat
+          platform: MessagePlatform.snapchat,
+          customizable: null
         }
       ]
     }

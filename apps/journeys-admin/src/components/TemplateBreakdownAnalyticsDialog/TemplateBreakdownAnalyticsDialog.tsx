@@ -8,7 +8,7 @@ import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { formatISO } from 'date-fns'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -22,7 +22,7 @@ import {
   JourneyStatus,
   PlausibleEvent
 } from '../../../__generated__/globalTypes'
-import { earliestStatsCollected } from '../Editor/Slider/JourneyFlow/AnalyticsOverlaySwitch'
+import { earliestStatsCollected } from '../Editor/Slider/JourneyFlow/AnalyticsOverlaySwitch/buildPresetDateRange'
 
 import { InfoIcon } from './InfoIcon'
 import { TemplateBreakdownAnalyticsTable } from './TemplateBreakdownAnalyticsTable'

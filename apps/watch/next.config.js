@@ -11,6 +11,7 @@ const { i18n } = require('./next-i18next.config')
  **/
 const nextConfig = {
   images: {
+    localPatterns: [{ pathname: '/watch/images/**' }],
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
       { protocol: 'https', hostname: 'unsplash.com' },
@@ -38,9 +39,7 @@ const nextConfig = {
     minimumCacheTTL: 31536000
   },
   i18n,
-  experimental: {
-    reactCompiler: true
-  },
+  reactCompiler: true,
   modularizeImports: {
     lodash: {
       transform: 'lodash/{{member}}'
@@ -53,10 +52,6 @@ const nextConfig = {
   typescript: {
     // handled by github actions
     ignoreBuildErrors: process.env.CI === 'true'
-  },
-  eslint: {
-    // handled by github actions
-    ignoreDuringBuilds: process.env.CI === 'true'
   },
   transpilePackages: ['shared-ui', 'ui-modern'],
   outputFileTracingExcludes: {

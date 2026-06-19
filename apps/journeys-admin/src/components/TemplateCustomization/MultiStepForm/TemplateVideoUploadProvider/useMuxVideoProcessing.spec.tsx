@@ -12,12 +12,12 @@ import { createInitialTask } from './types'
 import { useMuxVideoProcessing } from './useMuxVideoProcessing'
 import { useUploadTaskMap } from './useUploadTaskMap'
 
-jest.mock('next-i18next', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
-const mockEnqueueSnackbar = jest.fn()
-jest.mock('notistack', () => {
+const mockEnqueueSnackbar = vi.fn()
+vi.mock('notistack', () => {
   return {
     useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
   }
@@ -127,12 +127,12 @@ function createWrapper(mocks: MockedResponse[] = []): React.FC<{
 
 describe('useMuxVideoProcessing', () => {
   beforeEach(() => {
-    jest.useFakeTimers()
-    jest.clearAllMocks()
+    vi.useFakeTimers()
+    vi.clearAllMocks()
   })
 
   afterEach(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   it('startPolling sets status to processing', async () => {
@@ -180,7 +180,7 @@ describe('useMuxVideoProcessing', () => {
     })
 
     await act(async () => {
-      await jest.runAllTimersAsync()
+      await vi.runAllTimersAsync()
     })
 
     expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
@@ -218,7 +218,7 @@ describe('useMuxVideoProcessing', () => {
     })
 
     await act(async () => {
-      await jest.runAllTimersAsync()
+      await vi.runAllTimersAsync()
     })
 
     expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
@@ -255,7 +255,7 @@ describe('useMuxVideoProcessing', () => {
     })
 
     await act(async () => {
-      await jest.advanceTimersByTimeAsync(100)
+      await vi.advanceTimersByTimeAsync(100)
     })
 
     expect(result.current.getUploadStatus('video-block-1')).toMatchObject({
@@ -283,7 +283,7 @@ describe('useMuxVideoProcessing', () => {
     })
 
     await act(async () => {
-      await jest.runAllTimersAsync()
+      await vi.runAllTimersAsync()
     })
 
     expect(mockEnqueueSnackbar).toHaveBeenCalledWith(

@@ -20,7 +20,7 @@ import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoI
 
 import { CARD_BLOCK_THEME_MODE_UPDATE, CardStyling } from './CardStyling'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -37,7 +37,9 @@ const initialBlock: TreeBlock<CardBlock> = {
   fullscreen: false,
   backdropBlur: null,
   eventLabel: null,
-  children: []
+  children: [],
+  showAssistant: null,
+  expandChatByDefault: null
 }
 
 const journey: Journey = {
@@ -92,7 +94,9 @@ const journey: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  customizable: null,
+  showAssistant: null
 }
 
 describe('CardStyling', () => {
@@ -122,7 +126,9 @@ describe('CardStyling', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <MockedProvider>
@@ -152,7 +158,9 @@ describe('CardStyling', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const step: TreeBlock<StepBlock> = {
       id: 'step1.id',
@@ -192,7 +200,9 @@ describe('CardStyling', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <MockedProvider>
@@ -218,13 +228,15 @@ describe('CardStyling', () => {
         __typename: 'Journey'
       }
     })
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         cardBlockUpdate: {
           id: 'card1.id',
           themeMode: ThemeMode.dark,
           themeName: ThemeName.base,
-          __typename: 'CardBlock'
+          __typename: 'CardBlock',
+          showAssistant: null,
+          expandChatByDefault: null
         }
       }
     }))
@@ -268,13 +280,15 @@ describe('CardStyling', () => {
         __typename: 'Journey'
       }
     })
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         cardBlockUpdate: {
           id: 'card1.id',
           themeMode: ThemeMode.dark,
           themeName: ThemeName.base,
-          __typename: 'CardBlock'
+          __typename: 'CardBlock',
+          showAssistant: null,
+          expandChatByDefault: null
         }
       }
     }))

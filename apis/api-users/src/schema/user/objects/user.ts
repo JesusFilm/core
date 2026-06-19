@@ -57,3 +57,10 @@ export const AnonymousUser = builder.objectType(AnonymousUserRef, {
     id: t.exposeID('id', { nullable: false })
   })
 })
+
+// Type guard for use in resolvers
+export function isAuthenticatedUser(
+  user: PrismaUser | AnonymousUserShape
+): user is PrismaUser {
+  return 'email' in user && user.email != null
+}

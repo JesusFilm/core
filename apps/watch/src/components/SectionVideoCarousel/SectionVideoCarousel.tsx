@@ -1,5 +1,5 @@
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import {
   ReactElement,
   useCallback,

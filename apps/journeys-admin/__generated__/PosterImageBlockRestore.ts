@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface PosterImageBlockRestore_blockRestore_StepBlock {
-  __typename: "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 
@@ -37,18 +37,10 @@ export type PosterImageBlockRestore_blockRestore = PosterImageBlockRestore_block
 export interface PosterImageBlockRestore_videoBlockUpdate {
   __typename: "VideoBlock";
   id: string;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId: string | null;
 }
 
 export interface PosterImageBlockRestore {
-  /**
-   * blockRestore is used for redo/undo
-   */
   blockRestore: PosterImageBlockRestore_blockRestore[];
   videoBlockUpdate: PosterImageBlockRestore_videoBlockUpdate;
 }

@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentPropsWithoutRef } from 'react'
 import { fn } from 'storybook/test'
 
@@ -59,6 +59,7 @@ const defaultVideo: TreeBlock<VideoBlock> = {
   eventLabel: null,
   endEventLabel: null,
   customizable: null,
+  notes: null,
   children: []
 }
 

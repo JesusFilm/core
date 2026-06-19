@@ -3,7 +3,8 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
+import { useSnackbar } from 'notistack'
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
@@ -17,6 +18,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../__generated__/BlockFields'
 import { VideoBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
 import { useMuxVideoUpload } from '../../../../../MuxVideoUploadProvider'
+import { isUploadActive } from '../../../../../MuxVideoUploadProvider/utils/isUploadActive'
 import { Drawer } from '../Drawer'
 
 import { VideoFromLocal } from './VideoFromLocal'
@@ -32,7 +34,7 @@ const VideoDetails = dynamic(
 const VideoFromMux = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/VideoLibrary/VideoFromCMux/VideoFromMux" */ './VideoFromMux'
+      /* webpackChunkName: "Editor/VideoLibrary/VideoFromMux/VideoFromMux" */ './VideoFromMux'
     ).then((mod) => mod.VideoFromMux),
   { ssr: false }
 )
@@ -73,6 +75,7 @@ export function VideoLibrary({
 
   const { getUploadStatus, cancelUploadForBlock } = useMuxVideoUpload()
   const uploadStatus = getUploadStatus(selectedBlock?.id ?? '')
+  const { enqueueSnackbar } = useSnackbar()
 
   const [activeTab, setActiveTab] = useState(
     uploadStatus != null ? UPLOAD_TAB : LIBRARY_TAB
@@ -116,10 +119,29 @@ export function VideoLibrary({
     const shouldFocus = shouldCloseDrawer
 
     // use editor provider selected block as this accounts for background videos where the video block does not yet exist, hence the selectedBlock prop is null
-    if (editorSelectedBlock != null) cancelUploadForBlock(editorSelectedBlock)
+    if (editorSelectedBlock != null) {
+      const activeUpload = getUploadStatus(editorSelectedBlock.id)
+      const isActive = isUploadActive(activeUpload)
+      // Only announce a cancellation for user-driven selects (Select / Apply,
+      // which pass shouldCloseDrawer=true). A natural upload completion calls
+      // onSelect with shouldCloseDrawer=false while the task is still mid-flight
+      // (onComplete fires before the 'completed' status commits), so without
+      // this guard a successful upload would show a false "cancelled" message.
+      if (isActive && shouldCloseDrawer) {
+        enqueueSnackbar(t('Video upload cancelled'), {
+          variant: 'info',
+          preventDuplicate: true
+        })
+      }
+      cancelUploadForBlock(editorSelectedBlock)
+    }
 
     if (handleSelect != null) handleSelect(block, shouldFocus)
     setOpenVideoDetails(false)
+    // close the outer Video Library drawer when the select originated from a
+    // user-driven commit (Select / Apply). Background paths such as MUX upload
+    // completion pass shouldCloseDrawer=false to keep the library open.
+    if (shouldCloseDrawer) onClose?.()
   }
 
   const handleVideoDetailsClose = (closeParent?: boolean): void => {
@@ -210,7 +232,7 @@ export function VideoLibrary({
             sx={{ flexGrow: 1, overflow: 'auto' }}
             unmountUntilVisible
           >
-            <VideoFromMux onSelect={onSelect} />
+            <VideoFromMux onSelect={onSelect} videoBlock={selectedBlock} />
           </TabPanel>
         </Box>
       </Drawer>

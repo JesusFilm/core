@@ -1,5 +1,8 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
+
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 import '../../../../test/i18n'
 
@@ -11,6 +14,7 @@ import {
   archivedTemplatesMock,
   deleteTrashedJourneysMutationMock,
   deleteTrashedTemplatesMutationMock,
+  mockTeamId,
   noArchivedMock,
   noArchivedTemplatesMock,
   noJourneysMock,
@@ -32,24 +36,43 @@ import {
 } from './JourneyListContent.mocks'
 import { renderJourneyListContent } from './JourneyListContent.testUtils'
 
-jest.mock('@core/journeys/ui/useNavigationState', () => ({
-  useNavigationState: jest.fn(() => false)
+vi.mock('@core/journeys/ui/useNavigationState', () => ({
+  useNavigationState: vi.fn(() => false)
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('@core/journeys/ui/TeamProvider', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useTeam: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+vi.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: vi.fn()
+}))
+
+const mockUseTeam = useTeam as MockedFunction<typeof useTeam>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('JourneyListContent', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockUseRouter.mockReturnValue({
       query: {},
-      replace: jest.fn()
+      replace: vi.fn()
     } as any)
+    mockUseTeam.mockReturnValue({
+      activeTeam: {
+        __typename: 'Team',
+        id: mockTeamId,
+        title: 'Test Team',
+        publicTitle: null,
+        userTeams: [],
+        customDomains: []
+      },
+      setActiveTeam: vi.fn(),
+      refetch: vi.fn(),
+      query: {} as any
+    })
   })
 
   describe('Learn more button visibility', () => {
@@ -854,7 +877,7 @@ describe('JourneyListContent', () => {
 
   describe('Refresh Query Param', () => {
     it('should refetch and remove refresh param when refresh query param is present', async () => {
-      const replace = jest.fn()
+      const replace = vi.fn()
       const pathname = '/'
       mockUseRouter.mockReturnValue({
         query: { refresh: 'true' },
@@ -883,7 +906,7 @@ describe('JourneyListContent', () => {
     })
 
     it('should preserve other query params when removing refresh param', async () => {
-      const replace = jest.fn()
+      const replace = vi.fn()
       const pathname = '/'
       mockUseRouter.mockReturnValue({
         query: { refresh: 'true', type: 'journeys', status: 'active' },
@@ -912,7 +935,7 @@ describe('JourneyListContent', () => {
     })
 
     it('should not call replace when refresh param is not present', async () => {
-      const replace = jest.fn()
+      const replace = vi.fn()
       mockUseRouter.mockReturnValue({
         query: { type: 'journeys' },
         pathname: '/',
@@ -933,6 +956,30 @@ describe('JourneyListContent', () => {
 
       // Replace should not be called since refresh param is not present
       expect(replace).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Loading State', () => {
+    it('should show loading skeleton when activeTeam is undefined', () => {
+      mockUseTeam.mockReturnValue({
+        activeTeam: undefined,
+        setActiveTeam: vi.fn(),
+        refetch: vi.fn(),
+        query: {} as any
+      })
+
+      renderJourneyListContent({
+        mocks: [],
+        contentType: 'journeys',
+        status: 'active',
+        user
+      })
+
+      // Query is skipped when activeTeam is undefined (loading),
+      // so data is null and the loading skeleton should render
+      expect(
+        screen.queryByText('Default Journey Heading')
+      ).not.toBeInTheDocument()
     })
   })
 })

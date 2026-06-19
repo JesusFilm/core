@@ -1,5 +1,5 @@
 import Stack from '@mui/material/Stack'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import Menu1 from '@core/shared/ui/icons/Menu1'

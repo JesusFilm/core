@@ -13,7 +13,9 @@ export const journeyVideoBlocks: Blocks[] = [
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
-    eventLabel: null
+    eventLabel: null,
+    showAssistant: null,
+    expandChatByDefault: null
   },
   {
     __typename: 'VideoBlock',
@@ -62,7 +64,8 @@ export const journeyVideoBlocks: Blocks[] = [
     action: null,
     eventLabel: null,
     endEventLabel: null,
-    customizable: null
+    customizable: null,
+    notes: null
   },
   {
     __typename: 'VideoBlock',
@@ -111,7 +114,8 @@ export const journeyVideoBlocks: Blocks[] = [
     action: null,
     eventLabel: null,
     endEventLabel: null,
-    customizable: null
+    customizable: null,
+    notes: null
   },
   {
     __typename: 'VideoBlock',
@@ -160,7 +164,8 @@ export const journeyVideoBlocks: Blocks[] = [
     action: null,
     eventLabel: null,
     endEventLabel: null,
-    customizable: null
+    customizable: null,
+    notes: null
   },
   {
     __typename: 'VideoBlock',
@@ -188,7 +193,8 @@ export const journeyVideoBlocks: Blocks[] = [
     action: null,
     eventLabel: null,
     endEventLabel: null,
-    customizable: null
+    customizable: null,
+    notes: null
   },
   {
     __typename: 'CardBlock',
@@ -201,7 +207,9 @@ export const journeyVideoBlocks: Blocks[] = [
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
-    eventLabel: null
+    eventLabel: null,
+    showAssistant: null,
+    expandChatByDefault: null
   },
   {
     __typename: 'StepBlock',
@@ -259,7 +267,8 @@ export const journeyVideoBlocks: Blocks[] = [
     },
     eventLabel: null,
     endEventLabel: null,
-    customizable: null
+    customizable: null,
+    notes: null
   },
   {
     __typename: 'CardBlock',
@@ -272,7 +281,9 @@ export const journeyVideoBlocks: Blocks[] = [
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
-    eventLabel: null
+    eventLabel: null,
+    showAssistant: null,
+    expandChatByDefault: null
   },
   {
     __typename: 'CardBlock',
@@ -285,7 +296,9 @@ export const journeyVideoBlocks: Blocks[] = [
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
-    eventLabel: null
+    eventLabel: null,
+    showAssistant: null,
+    expandChatByDefault: null
   },
   {
     __typename: 'CardBlock',
@@ -298,7 +311,9 @@ export const journeyVideoBlocks: Blocks[] = [
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
-    eventLabel: null
+    eventLabel: null,
+    showAssistant: null,
+    expandChatByDefault: null
   },
   {
     __typename: 'StepBlock',
@@ -372,7 +387,8 @@ export const videoBlocksFiltered = [
     },
     eventLabel: null,
     endEventLabel: null,
-    customizable: null
+    customizable: null,
+    notes: null
   },
   {
     __typename: 'VideoBlock',
@@ -422,7 +438,8 @@ export const videoBlocksFiltered = [
     },
     eventLabel: null,
     endEventLabel: null,
-    customizable: null
+    customizable: null,
+    notes: null
   },
   {
     __typename: 'VideoBlock',
@@ -457,7 +474,8 @@ export const videoBlocksFiltered = [
     },
     eventLabel: null,
     endEventLabel: null,
-    customizable: null
+    customizable: null,
+    notes: null
   },
   {
     __typename: 'VideoBlock',
@@ -509,7 +527,8 @@ export const videoBlocksFiltered = [
     },
     eventLabel: null,
     endEventLabel: null,
-    customizable: null
+    customizable: null,
+    notes: null
   },
   {
     __typename: 'VideoBlock',
@@ -611,6 +630,7 @@ export const videoBlocksFiltered = [
       parentBlockId: '7190f7be-00f1-406b-8e54-e8ca3cbbb7ce',
       gtmEventName: 'NavigateToBlockAction'
     },
-    eventLabel: null
+    eventLabel: null,
+    notes: null
   }
 ]

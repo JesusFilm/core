@@ -1,5 +1,5 @@
 import Stack from '@mui/material/Stack'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentProps } from 'react'
 
 import {
@@ -79,7 +79,9 @@ const journey: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  customizable: null,
+  showAssistant: null
 }
 
 const Template: StoryObj<ComponentProps<typeof HostAvatars>> = {

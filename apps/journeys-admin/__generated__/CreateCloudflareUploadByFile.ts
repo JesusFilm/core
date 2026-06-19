@@ -16,3 +16,7 @@ export interface CreateCloudflareUploadByFile_createCloudflareUploadByFile {
 export interface CreateCloudflareUploadByFile {
   createCloudflareUploadByFile: CreateCloudflareUploadByFile_createCloudflareUploadByFile;
 }
+
+export interface CreateCloudflareUploadByFileVariables {
+  journeyId?: string | null;
+}

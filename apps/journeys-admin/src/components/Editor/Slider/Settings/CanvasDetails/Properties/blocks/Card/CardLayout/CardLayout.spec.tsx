@@ -21,7 +21,7 @@ import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoI
 
 import { CARD_BLOCK_LAYOUT_UPDATE, CardLayout } from './CardLayout'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -78,7 +78,9 @@ const journey: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  customizable: null,
+  showAssistant: null
 }
 
 describe('CardLayout', () => {
@@ -95,7 +97,9 @@ describe('CardLayout', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <MockedProvider>
@@ -125,7 +129,9 @@ describe('CardLayout', () => {
       fullscreen: true,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <MockedProvider>
@@ -155,7 +161,9 @@ describe('CardLayout', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const step: TreeBlock<StepBlock> = {
       id: 'step1.id',
@@ -191,7 +199,7 @@ describe('CardLayout', () => {
         __typename: 'Journey'
       }
     })
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         cardBlockUpdate: { id: 'card1.id', fullscreen: true }
       }
@@ -208,7 +216,9 @@ describe('CardLayout', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <MockedProvider
@@ -246,12 +256,12 @@ describe('CardLayout', () => {
         __typename: 'Journey'
       }
     })
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         cardBlockUpdate: { id: 'card1.id', fullscreen: true }
       }
     }))
-    const result2 = jest.fn(() => ({
+    const result2 = vi.fn(() => ({
       data: {
         cardBlockUpdate: { id: 'card1.id', fullscreen: false }
       }
@@ -268,7 +278,9 @@ describe('CardLayout', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     render(
       <MockedProvider
@@ -316,10 +328,12 @@ describe('CardLayout', () => {
       id: 'card1.id',
       __typename: 'CardBlock',
       fullscreen: false,
-      children: [videoBlock]
+      children: [videoBlock],
+      showAssistant: null,
+      expandChatByDefault: null
     } as unknown as TreeBlock<CardBlock>
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         cardBlockUpdate: { id: 'card1.id', fullscreen: true }
       }

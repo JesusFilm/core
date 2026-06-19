@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
+import { type MockedFunction } from 'vitest'
 
 import {
   JourneyStatus,
@@ -19,14 +20,12 @@ import { keyify, templateKeyify } from '../../../libs/plausibleHelpers'
 
 import { CHAT_BUTTON_EVENT_CREATE, ChatButtons } from './ChatButtons'
 
-jest.mock('next-plausible', () => ({
+vi.mock('next-plausible', () => ({
   __esModule: true,
-  usePlausible: jest.fn()
+  usePlausible: vi.fn()
 }))
 
-const mockUsePlausible = usePlausible as jest.MockedFunction<
-  typeof usePlausible
->
+const mockUsePlausible = usePlausible as MockedFunction<typeof usePlausible>
 
 describe('ChatButtons', () => {
   const chatButtons: ChatButton[] = [
@@ -34,13 +33,15 @@ describe('ChatButtons', () => {
       __typename: 'ChatButton',
       id: '1',
       link: 'https://m.me/',
-      platform: MessagePlatform.facebook
+      platform: MessagePlatform.facebook,
+      customizable: null
     },
     {
       __typename: 'ChatButton',
       id: '2',
       link: 'https://other.messagingplatform/',
-      platform: MessagePlatform.telegram
+      platform: MessagePlatform.telegram,
+      customizable: null
     }
   ]
 
@@ -107,10 +108,12 @@ describe('ChatButtons', () => {
     journeyCustomizationFields: [],
     fromTemplateId: null,
     socialNodeX: null,
-    socialNodeY: null
+    socialNodeY: null,
+    customizable: null,
+    showAssistant: null
   }
 
-  const result = jest.fn(() => ({
+  const result = vi.fn(() => ({
     data: {
       chatOpenEventCreate: {
         __typename: 'ChatOpenEvent',
@@ -136,7 +139,7 @@ describe('ChatButtons', () => {
   ]
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders chat buttons', () => {
@@ -155,9 +158,9 @@ describe('ChatButtons', () => {
   })
 
   it('handles button click and sends a mutation', async () => {
-    window.open = jest.fn()
+    window.open = vi.fn()
     blockHistoryVar([stepBlock])
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
     const { getAllByRole } = render(
@@ -202,7 +205,7 @@ describe('ChatButtons', () => {
   })
 
   it('does not open a new window or send a mutation for admin user', async () => {
-    window.open = jest.fn()
+    window.open = vi.fn()
 
     const { getAllByRole } = render(
       <MockedProvider mocks={mocks}>

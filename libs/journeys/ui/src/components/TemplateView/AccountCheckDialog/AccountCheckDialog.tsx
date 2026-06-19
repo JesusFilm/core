@@ -2,7 +2,7 @@ import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import Key2 from '@core/shared/ui/icons/Key2'
@@ -11,7 +11,7 @@ import UserProfileCircle from '@core/shared/ui/icons/UserProfileCircle'
 interface AccountCheckDialogProps {
   open: boolean
   onClose: () => void
-  handleSignIn: (login: boolean) => void
+  handleSignIn: () => void
 }
 
 export function AccountCheckDialog({
@@ -56,7 +56,7 @@ export function AccountCheckDialog({
             variant="outlined"
             size="large"
             color="secondary"
-            onClick={() => handleSignIn(true)}
+            onClick={handleSignIn}
           >
             {t('Login with my account')}
           </Button>
@@ -65,7 +65,7 @@ export function AccountCheckDialog({
             variant="outlined"
             size="large"
             color="secondary"
-            onClick={() => handleSignIn(false)}
+            onClick={handleSignIn}
           >
             {t('Create a new account')}
           </Button>
