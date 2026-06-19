@@ -389,6 +389,7 @@ describe('languages', () => {
     })
 
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
+      orderBy: { id: 'asc' },
       where: {
         updatedAt: { gte: new Date(updatedSince) }
       }
@@ -410,6 +411,7 @@ describe('languages', () => {
     })
 
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
+      orderBy: { id: 'asc' },
       where: {
         hasVideos: true,
         updatedAt: undefined
@@ -426,6 +428,7 @@ describe('languages', () => {
     })
 
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
+      orderBy: { id: 'asc' },
       where: {
         updatedAt: undefined,
         OR: [

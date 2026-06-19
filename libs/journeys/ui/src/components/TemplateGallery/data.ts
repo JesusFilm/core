@@ -289,6 +289,7 @@ export const getLanguagesMock: MockedResponse<GetLanguages> = {
     variables: {
       languageId: '529',
       where: {
+        hasVideos: true,
         ids: ['529', '496', '1106']
       }
     }
