@@ -1,5 +1,6 @@
 import { Prisma, prisma } from '@core/prisma/languages/client'
 
+import { parseFullTextSearch } from '../../lib/parseFullTextSearch'
 import { DateTimeFilter, builder, toPrismaDateTimeFilter } from '../builder'
 import { Language } from '../language/language'
 
@@ -42,7 +43,14 @@ const Country = builder.prismaObject('Country', {
     }),
     continent: t.relation('continent', { nullable: false, onNull: 'error' }),
     countryLanguages: t.relation('countryLanguages', {
-      nullable: false
+      nullable: false,
+      query: {
+        where: {
+          language: {
+            hasVideos: true
+          }
+        }
+      }
     }),
     languageCount: t.relationCount('countryLanguages', {
       nullable: false,
@@ -80,6 +88,37 @@ builder.queryFields((t) => ({
       })
   }),
   countries: t.prismaField({
+    type: ['Country'],
+    nullable: false,
+    args: {
+      term: t.arg.string({ required: false }),
+      ids: t.arg.idList({ required: false }),
+      where: t.arg({ type: CountriesFilter, required: false })
+    },
+    resolve: async (query, _parent, { term, ids, where }) => {
+      const filter: Prisma.CountryWhereInput = {}
+      const searchTerm = term?.trim()
+      if (searchTerm != null && searchTerm.length > 0) {
+        filter.name = {
+          some: {
+            value: {
+              contains: parseFullTextSearch(searchTerm),
+              mode: 'insensitive'
+            }
+          }
+        }
+      }
+      if (ids != null) {
+        filter.id = { in: ids }
+      }
+      filter.updatedAt = toPrismaDateTimeFilter(where?.updatedAt)
+      return await prisma.country.findMany({
+        ...query,
+        where: filter
+      })
+    }
+  }),
+  adminCountries: t.withAuth({ isPublisher: true }).prismaField({
     type: ['Country'],
     nullable: false,
     args: {

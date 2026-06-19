@@ -30,7 +30,7 @@ const DEFAULT_LANGUAGE_ID = '529'
 
 export const SEARCH_COUNTRIES = gql`
   query SearchCountriesForLanguageAdmin($term: String, $nameLanguageId: ID) {
-    countries(term: $term) {
+    adminCountries(term: $term) {
       id
       name(languageId: $nameLanguageId) {
         value
@@ -143,17 +143,20 @@ function requiredNumber(value: string): number {
 }
 
 function valuesAreValid(values: RowValues): boolean {
+  const speakers = requiredNumber(values.speakers)
+  const displaySpeakers = optionalNumber(values.displaySpeakers)
+  const order = optionalNumber(values.order)
+
   return (
     values.speakers.trim().length > 0 &&
-    Number.isFinite(requiredNumber(values.speakers)) &&
-    requiredNumber(values.speakers) >= 0 &&
+    Number.isFinite(speakers) &&
+    speakers >= 0 &&
     (values.displaySpeakers.trim().length === 0 ||
-      (Number.isFinite(optionalNumber(values.displaySpeakers)) &&
-        optionalNumber(values.displaySpeakers) != null &&
-        optionalNumber(values.displaySpeakers) >= 0)) &&
+      (displaySpeakers != null &&
+        Number.isFinite(displaySpeakers) &&
+        displaySpeakers >= 0)) &&
     (values.order.trim().length === 0 ||
-      (Number.isFinite(optionalNumber(values.order)) &&
-        optionalNumber(values.order) != null))
+      (order != null && Number.isFinite(order)))
   )
 }
 
@@ -332,7 +335,7 @@ export function LanguageCountryLinks({
 
   const [searchCountries, { data: countriesData, loading: countriesLoading }] =
     useLazyQuery<
-      { countries: CountryOption[] },
+      { adminCountries: CountryOption[] },
       { term?: string; nameLanguageId: string }
     >(SEARCH_COUNTRIES)
   const [createCountryLanguage, { loading: createLoading }] = useMutation(
@@ -350,7 +353,7 @@ export function LanguageCountryLinks({
     }
   }, [])
 
-  const countries = countriesData?.countries ?? []
+  const countries = countriesData?.adminCountries ?? []
   const linkedCountryIds = useMemo(
     () =>
       new Set(

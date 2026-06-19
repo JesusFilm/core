@@ -35,7 +35,7 @@ const searchCountriesMock: MockedResponse = {
   },
   result: {
     data: {
-      countries: [
+      adminCountries: [
         {
           id: 'US',
           name: [
@@ -59,7 +59,7 @@ const searchChinaMock: MockedResponse = {
   },
   result: {
     data: {
-      countries: [countryLanguages[0].country]
+      adminCountries: [countryLanguages[0].country]
     }
   }
 }

@@ -27,7 +27,7 @@ const getLanguagesMock = {
   },
   result: {
     data: {
-      languages: [
+      adminLanguages: [
         {
           id: '20615',
           bcp47: 'zh',
@@ -65,7 +65,7 @@ const getLanguagesMock = {
           __typename: 'Language'
         }
       ],
-      languagesCount: 2
+      adminLanguagesCount: 2
     }
   }
 }
@@ -83,7 +83,7 @@ const searchLanguagesMock = {
   },
   result: {
     data: {
-      languages: [
+      adminLanguages: [
         {
           id: '529',
           bcp47: 'en',
@@ -111,7 +111,7 @@ const searchLanguagesMock = {
           __typename: 'Language'
         }
       ],
-      languagesCount: 1
+      adminLanguagesCount: 1
     }
   }
 }
@@ -129,8 +129,8 @@ const searchLanguageIdMock = {
   },
   result: {
     data: {
-      languages: [getLanguagesMock.result.data.languages[1]],
-      languagesCount: 1
+      adminLanguages: [getLanguagesMock.result.data.adminLanguages[1]],
+      adminLanguagesCount: 1
     }
   }
 }
@@ -148,8 +148,8 @@ const hasVideosLanguagesMock = {
   },
   result: {
     data: {
-      languages: [getLanguagesMock.result.data.languages[0]],
-      languagesCount: 1
+      adminLanguages: [getLanguagesMock.result.data.adminLanguages[0]],
+      adminLanguagesCount: 1
     }
   }
 }
