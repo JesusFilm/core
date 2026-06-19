@@ -158,7 +158,6 @@ input LanguagesFilter {
   ids: [ID!]
   bcp47: [String!]
   iso3: [String!]
-  hasVideos: Boolean
   updatedAt: DateTimeFilter
 }
 
