@@ -14,7 +14,10 @@ export const getLanguagesMock: MockedResponse<
   request: {
     query: GET_LANGUAGES,
     variables: {
-      languageId: '529'
+      languageId: '529',
+      where: {
+        hasVideos: true
+      }
     }
   },
   result: {
