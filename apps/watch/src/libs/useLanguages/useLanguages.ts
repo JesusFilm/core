@@ -4,7 +4,13 @@ import useSWR from 'swr'
 
 import { transformData } from './util/transformData'
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
+const fetcher = async (url: string) => {
+  const res = await fetch(url)
+  // Treat a non-ok response (e.g. a 500 `{ error: '...' }`) as a SWR error so
+  // the error body never reaches transformData and isLoading resolves.
+  if (!res.ok) throw new Error(`Failed to load languages: ${res.status}`)
+  return res.json()
+}
 
 export interface LanguageName {
   id: string
