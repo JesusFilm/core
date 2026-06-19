@@ -73,7 +73,10 @@ describe('useLanguagesQuery', () => {
                 request: {
                   query: GET_LANGUAGES,
                   variables: {
-                    languageId: '529'
+                    languageId: '529',
+                    where: {
+                      hasVideos: true
+                    }
                   }
                 },
                 result
@@ -116,6 +119,7 @@ describe('useLanguagesQuery', () => {
                   variables: {
                     languageId: '529',
                     where: {
+                      hasVideos: true,
                       ids: ['529', '496']
                     }
                   }
