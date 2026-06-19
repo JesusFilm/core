@@ -204,7 +204,6 @@ export function HeaderAndLanguageFilter({
     variables: {
       languageId: '529',
       where: {
-        hasVideos: true,
         ids: templateLanguageIds
       }
     },

@@ -136,7 +136,6 @@ const getLanguagesMock = {
     variables: {
       languageId: '529',
       where: {
-        hasVideos: true,
         ids: [...SUPPORTED_LANGUAGE_IDS]
       }
     }
