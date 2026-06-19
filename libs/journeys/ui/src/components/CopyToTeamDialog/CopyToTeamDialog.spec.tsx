@@ -5,8 +5,6 @@ import { SnackbarProvider } from 'notistack'
 import { type Mock } from 'vitest'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { GET_LANGUAGES } from '../../libs/useLanguagesQuery'
-import { SUPPORTED_LANGUAGE_IDS } from '../../libs/useJourneyAiTranslateSubscription/supportedLanguages'
 import { GetJourney_journey as Journey } from '../../libs/useJourneyQuery/__generated__/GetJourney'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
 import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
@@ -20,22 +18,6 @@ import { CopyToTeamDialog } from './CopyToTeamDialog'
 describe('CopyToTeamDialog', () => {
   const handleCloseMenuMock = vi.fn()
   const handleSubmitActionMock = vi.fn()
-  const getLanguagesMock = {
-    request: {
-      query: GET_LANGUAGES,
-      variables: {
-        languageId: '529',
-        where: {
-            ids: [...SUPPORTED_LANGUAGE_IDS]
-        }
-      }
-    },
-    result: {
-      data: {
-        languages: []
-      }
-    }
-  }
 
   afterEach(() => {
     handleCloseMenuMock.mockClear()
@@ -58,7 +40,6 @@ describe('CopyToTeamDialog', () => {
       const { getByRole } = render(
         <MockedProvider
           mocks={[
-            getLanguagesMock,
             {
               request: {
                 query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -139,7 +120,6 @@ describe('CopyToTeamDialog', () => {
       const { getByRole, getByText } = render(
         <MockedProvider
           mocks={[
-            getLanguagesMock,
             updateLastActiveTeamIdMock,
             {
               request: {
@@ -224,7 +204,6 @@ describe('CopyToTeamDialog', () => {
       const { getByRole, getByText } = render(
         <MockedProvider
           mocks={[
-            getLanguagesMock,
             updateLastActiveTeamIdMock,
             {
               request: {
@@ -283,7 +262,6 @@ describe('CopyToTeamDialog', () => {
       const { getByTestId } = render(
         <MockedProvider
           mocks={[
-            getLanguagesMock,
             {
               request: {
                 query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -329,7 +307,7 @@ describe('CopyToTeamDialog', () => {
 
     it('should validate if no option is selected', async () => {
       const { getByText } = render(
-        <MockedProvider mocks={[getLanguagesMock]}>
+        <MockedProvider mocks={[]}>
           <SnackbarProvider>
             <JourneyProvider
               value={{
@@ -370,7 +348,6 @@ describe('CopyToTeamDialog', () => {
       const { getByText } = render(
         <MockedProvider
           mocks={[
-            getLanguagesMock,
             {
               request: {
                 query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -406,7 +383,7 @@ describe('CopyToTeamDialog', () => {
 
     it('should not close dialog if loading', async () => {
       const { getByTestId } = render(
-        <MockedProvider mocks={[getLanguagesMock]}>
+        <MockedProvider mocks={[]}>
           <SnackbarProvider>
             <JourneyProvider
               value={{
@@ -435,7 +412,7 @@ describe('CopyToTeamDialog', () => {
 
     it('should not close dialog if escape key is pressed', async () => {
       const { getByTestId } = render(
-        <MockedProvider mocks={[getLanguagesMock]}>
+        <MockedProvider mocks={[]}>
           <SnackbarProvider>
             <JourneyProvider
               value={{
@@ -464,7 +441,7 @@ describe('CopyToTeamDialog', () => {
 
     it('should not close dialog if backdrop is clicked during translation', async () => {
       const { getByTestId } = render(
-        <MockedProvider mocks={[getLanguagesMock]}>
+        <MockedProvider mocks={[]}>
           <SnackbarProvider>
             <JourneyProvider
               value={{
@@ -493,7 +470,7 @@ describe('CopyToTeamDialog', () => {
 
     it('should not close dialog if escape key is pressed during translation', async () => {
       const { getByTestId } = render(
-        <MockedProvider mocks={[getLanguagesMock]}>
+        <MockedProvider mocks={[]}>
           <SnackbarProvider>
             <JourneyProvider
               value={{
@@ -522,7 +499,7 @@ describe('CopyToTeamDialog', () => {
 
     it('should show language autocomplete if translation is checked', async () => {
       render(
-        <MockedProvider mocks={[getLanguagesMock]}>
+        <MockedProvider mocks={[]}>
           <SnackbarProvider>
             <JourneyProvider
               value={{
@@ -553,7 +530,7 @@ describe('CopyToTeamDialog', () => {
 
     it('should not submit if no language is selected and translation is checked', async () => {
       render(
-        <MockedProvider mocks={[getLanguagesMock]}>
+        <MockedProvider mocks={[]}>
           <SnackbarProvider>
             <JourneyProvider
               value={{
@@ -624,7 +601,6 @@ describe('CopyToTeamDialog', () => {
       const { getByRole } = render(
         <MockedProvider
           mocks={[
-            getLanguagesMock,
             {
               request: {
                 query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -705,7 +681,6 @@ describe('CopyToTeamDialog', () => {
       const utils = render(
         <MockedProvider
           mocks={[
-            getLanguagesMock,
             {
               request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
               result: queryResult
