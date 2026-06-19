@@ -199,6 +199,7 @@ type Query {
   adminLanguagesCount(where: AdminLanguagesFilter, term: String): Int!
   country(id: ID!): Country
   countries(term: String, ids: [ID!], where: CountriesFilter): [Country!]!
+  adminCountries(term: String, ids: [ID!], where: CountriesFilter): [Country!]!
 }
 
 interface User {
