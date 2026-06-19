@@ -1,6 +1,14 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key"])
 
+input AdminLanguagesFilter {
+  ids: [ID!]
+  bcp47: [String!]
+  iso3: [String!]
+  hasVideos: Boolean
+  updatedAt: DateTimeFilter
+}
+
 type AudioPreview
   @key(fields: "languageId")
 {
@@ -187,6 +195,8 @@ type Query {
   language(id: ID!, idType: LanguageIdType = databaseId): Language
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String): [Language!]!
   languagesCount(where: LanguagesFilter, term: String): Int!
+  adminLanguages(offset: Int, limit: Int, where: AdminLanguagesFilter, term: String): [Language!]!
+  adminLanguagesCount(where: AdminLanguagesFilter, term: String): Int!
   country(id: ID!): Country
   countries(term: String, ids: [ID!], where: CountriesFilter): [Country!]!
 }
