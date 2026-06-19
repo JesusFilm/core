@@ -151,10 +151,13 @@ export class TemplatePage {
   }
 
   async selectTeamInAddJourneyToTeamPopup() {
+    // Historically two CopyToTeamDialog roots were rendered (hidden + visible)
+    // and the selector keyed on adjacency. The current admin shell renders
+    // exactly one Dialog, so locate the open one directly and click its
+    // select. `.last()` keeps the prior intent of preferring the most
+    // recently mounted dialog if MUI ever portals a second instance.
     await this.page
-      .locator(
-        'div[data-testid="CopyToTeamDialog"][aria-hidden="true"] + div[data-testid="CopyToTeamDialog"]'
-      )
+      .locator('div[data-testid="CopyToTeamDialog"]')
       .last()
       .locator(
         'div[data-testid="team-duplicate-select"] div[aria-haspopup="listbox"]'
@@ -173,20 +176,44 @@ export class TemplatePage {
 
   async clickAddBtnInPopup() {
     await this.page
-      .locator(
-        'div[data-testid="CopyToTeamDialog"][aria-hidden="true"] + div[data-testid="CopyToTeamDialog"]'
-      )
+      .locator('div[data-testid="CopyToTeamDialog"]')
       .last()
       .locator('div[data-testid="dialog-action"] button', { hasText: 'Add' })
       .click()
   }
 
   async verifySelectedTemplateInCustomJourneyPage() {
+    const detailsTitle = this.page.locator(
+      'div[data-testid="JourneyDetails"] button[type="button"] p',
+      { hasText: this.selecetdTemplated }
+    )
+    const editorTitle = this.page.locator(
+      'button[aria-label="Click to edit"] p',
+      { hasText: this.selecetdTemplated }
+    )
+    const listCard = this.page
+      .locator('div[aria-label="journey-card"]', {
+        hasText: this.selecetdTemplated
+      })
+      .first()
+
+    // Wait up to 60s for whichever landing surface the flow produces — the
+    // 3s probe we used before was too short for /templates → Edit → editor
+    // navigation to finish.
     await expect(
-      this.page.locator(
-        'div[data-testid="JourneyDetails"] button[type="button"] p',
-        { hasText: this.selecetdTemplated }
-      )
+      detailsTitle.or(editorTitle).or(listCard)
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
+
+    if (
+      (await listCard.isVisible()) &&
+      !(await detailsTitle.isVisible().catch(() => false)) &&
+      !(await editorTitle.isVisible().catch(() => false))
+    ) {
+      await listCard.click()
+    }
+
+    await expect(
+      detailsTitle.or(editorTitle).first()
     ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
 
@@ -295,11 +322,13 @@ export class TemplatePage {
   }
 
   async clickDropDownOpenIconForFilters(filterOption: string) {
+    // MUI Grid v2 dropped the `MuiGrid-item` class, so scope by the
+    // Autocomplete's own label text rather than the now-absent grid wrapper.
     await this.page
-      .locator(
-        'div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]',
-        { hasText: filterOption }
-      )
+      .locator('div[class*="MuiAutocomplete-root"]', {
+        hasText: filterOption
+      })
+      .first()
       .locator('button[aria-label="Open"]')
       .click()
   }
@@ -319,10 +348,10 @@ export class TemplatePage {
 
   async clickDropDownCloseIconForFilters(filterOption: string) {
     await this.page
-      .locator(
-        'div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]',
-        { hasText: filterOption }
-      )
+      .locator('div[class*="MuiAutocomplete-root"]', {
+        hasText: filterOption
+      })
+      .first()
       .locator('button[aria-label="Close"]')
       .click()
   }
@@ -351,9 +380,10 @@ export class TemplatePage {
 
   async hoverTheTopicFilterField() {
     await this.page
-      .locator('div[class*="MuiGrid-item"]', {
+      .locator('div[class*="MuiAutocomplete-root"]', {
         hasText: 'Topics, holidays, felt needs, collections'
       })
+      .first()
       .hover()
   }
 
@@ -374,9 +404,7 @@ export class TemplatePage {
   async selectSlideFilters(slideFilter: string) {
     this.selectedFilterOption = slideFilter
     await this.page
-      .locator('div[aria-live="polite"] div[class*="swiper-slide"] h3', {
-        hasText: slideFilter
-      })
+      .getByRole('button', { name: new RegExp(`${slideFilter} tag`, 'i') })
       .click()
   }
 

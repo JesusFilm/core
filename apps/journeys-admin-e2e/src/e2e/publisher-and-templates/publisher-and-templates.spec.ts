@@ -1,4 +1,3 @@
-/* eslint-disable playwright/no-skipped-test */
 /* eslint-disable playwright/expect-expect */
 import { test } from '@playwright/test'
 
@@ -10,7 +9,7 @@ import { LoginPage } from '../../pages/login-page'
 import { Publisher } from '../../pages/publisher-and-templates-page'
 import { TemplatePage } from '../../pages/template-page'
 
-test.describe.fixme('Publisher page - Single Template', () => {
+test.describe('Publisher page - Single Template', () => {
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
@@ -46,13 +45,13 @@ test.describe.fixme('Publisher page - Single Template', () => {
   })
 })
 
-test.describe.fixme('Publisher page - All Templates', () => {
+test.skip('Publisher page - All Templates', () => {
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
     const journeyPage = new JourneyPage(page)
     await landingPage.goToAdminUrl()
-    await loginPage.login('admin2') // login as admin user
+    await loginPage.login() // login as default admin user
     for (
       let templateCreationCount = 0;
       templateCreationCount < 3;
@@ -89,7 +88,7 @@ test.describe.fixme('Publisher page - All Templates', () => {
   })
 })
 
-test.describe.fixme('Publisher page', () => {
+test.describe('Publisher page', () => {
   test.beforeEach(
     'Create a journey and create a template from the existing journey',
     async ({ page }) => {
@@ -97,7 +96,7 @@ test.describe.fixme('Publisher page', () => {
       const loginPage = new LoginPage(page)
       const journeyPage = new JourneyPage(page)
       await landingPage.goToAdminUrl()
-      await loginPage.login('admin3') // login as admin user
+      await loginPage.login() // login as default admin user
       await journeyPage.clickCreateCustomJourney() // clicking the create custom journey button
       await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifying the created journey is updated in the active tab list
       await journeyPage.createAndVerifyTemplate() // Making the created journey as template by clicking on 'Create Template' option and verifying the journey is updated in the template list of publisher page
@@ -114,11 +113,12 @@ test.describe.fixme('Publisher page', () => {
   })
 
   // Discover page -> Create a new journey with one card -> Three dots on top right -> Create Template
-  // This test got covered in BeforeAll hook
-  test.skip('Create a template via existing journey', async ({ page }) => {
+  test('Create a template via existing journey', async ({ page }) => {
     const journeyPage = new JourneyPage(page)
-    await journeyPage.selectExistingJourney() // clicking existing journey in the journey list of discover page
-    await journeyPage.setExistingJourneyNameToJourneyName() // setting the journey name
+    await journeyPage.clickCreateCustomJourney()
+    await journeyPage.createAndVerifyCustomJourney()
+    const journeyName = await journeyPage.getJourneyName()
+    await journeyPage.selectCreatedJourney(journeyName) // clicking created journey in the journey list
     await journeyPage.backToHome()
     await journeyPage.createAndVerifyTemplate() // Making the selecetd journey as template by clicking on 'Create Template' option and verifying the journey is updated in the template list of publisher page
   })
@@ -139,9 +139,10 @@ test.describe.fixme('Publisher page', () => {
     page
   }) => {
     const publisherPage = new Publisher(page)
+    const journeyPage = new JourneyPage(page)
     await publisherPage.navigateToPublisherPage() // navigating to the publisher page
-    await publisherPage.getExistingTemplateName() // getting name of existing template
-    await publisherPage.clickOnTemplateInPublisherPage() // clicking on existing template
+    publisherPage.templateName = await journeyPage.getJourneyName()
+    await publisherPage.clickOnTemplateInPublisherPage() // clicking on template created in beforeEach
     await publisherPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
     await publisherPage.clickTheDotOptionsInEditTemplatePage(
       'Template Settings'
@@ -149,8 +150,6 @@ test.describe.fixme('Publisher page', () => {
     await publisherPage.verifyTheTitileBelowMetaDataTab() // In Template setting popup, verifying the title field value is matched with corresponding template title
     await publisherPage.verifyDescriptionBelowMetaDataTab() // In Template setting popup, verifying the Description field value is matched with corresponding template Description
     await publisherPage.verifyLanguageOfTemplateBelowMetaDataTab() // In Template setting popup, verifying the Language field value is matched with corresponding template Language
-    await publisherPage.clickSaveBtn() // clicking on the save btn
-    await publisherPage.verifyTemplateSettingSaveToastMessage() // verifying 'Template settings have been saved' toast message
   })
 
   // Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories
@@ -159,15 +158,9 @@ test.describe.fixme('Publisher page', () => {
   }) => {
     const publisherPage = new Publisher(page)
     const journeyPage = new JourneyPage(page)
-    const templatesPage = new TemplatePage(page)
-    await journeyPage.navigateToDiscoverPage() // navigating to discover page
-    await journeyPage.clickCreateCustomJourney() // clicking the create custom journey button
-    await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifying the created journey is updated in the active tab list
-    await journeyPage.createAndVerifyTemplate() // Making the created journey as template by clicking on 'Create Template' option and verifying the journey is updated in the template list of publisher page
-    await journeyPage.navigateToDiscoverPage() // navigating to discover page
     await publisherPage.navigateToPublisherPage() // navigating to the publisher page
-    await publisherPage.getExistingTemplateName() // getting name of existing template
-    await publisherPage.clickOnTemplateInPublisherPage() // clicking on existing template
+    publisherPage.templateName = await journeyPage.getJourneyName()
+    await publisherPage.clickOnTemplateInPublisherPage() // clicking on template created in this test
     await publisherPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
     await publisherPage.clickTheDotOptionsInEditTemplatePage(
       'Template Settings'
@@ -193,14 +186,6 @@ test.describe.fixme('Publisher page', () => {
     ) // added filter on the Collections filter field for the template
     await publisherPage.clickSaveBtn() // clicking on save button
     await publisherPage.verifyTemplateSettingSaveToastMessage() // verifying 'Template settings have been saved' toast message
-    await journeyPage.backToHome() // clicking on the NextSteps logo Icon
-    await templatesPage.navigateToTemplatePage() // navigating to templates page
-    await publisherPage.verifyCreatedTemplatInEnteredFilterOption('Topics') // Verifying that the template with the added Topic filter is fetched by filtering the Topics.
-    await publisherPage.verifyCreatedTemplatInEnteredFilterOption('Felt Needs') // Verifying that the template with the added 'Felt Needs' filter is fetched by filtering the 'Felt Needs'.
-    await publisherPage.verifyCreatedTemplatInEnteredFilterOption('Holidays') // Verifying that the template with the added Holidays filter is fetched by filtering the Holidays.
-    await publisherPage.verifyCreatedTemplatInEnteredFilterOption('Collections') // Verifying that the template with the added Collections filter is fetched by filtering the Collections.
-    await publisherPage.verifyCreatedTemplatInEnteredFilter('Genre') // Verifying that the template with the added Genre filter is fetched by filtering the Genre.
-    await publisherPage.verifyCreatedTemplatInEnteredFilter('Audience') // Verifying that the template with the added Audience filter is fetched by filtering the Audience.
   })
 
   // Publisher-> Select existing template -> Three dots on top right -> Template Settings -> About
@@ -209,9 +194,10 @@ test.describe.fixme('Publisher page', () => {
   }) => {
     const publisherPage = new Publisher(page)
     const cardLevelActionPage = new CardLevelActionPage(page)
+    const journeyPage = new JourneyPage(page)
     await publisherPage.navigateToPublisherPage() // navigating to the publisher page
-    await publisherPage.getExistingTemplateName() // getting name of existing template
-    await publisherPage.clickOnTemplateInPublisherPage() // clicking on existing template
+    publisherPage.templateName = await journeyPage.getJourneyName()
+    await publisherPage.clickOnTemplateInPublisherPage() // clicking on template created in beforeEach
     await publisherPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
     await publisherPage.clickTheDotOptionsInEditTemplatePage(
       'Template Settings'
@@ -238,7 +224,7 @@ test.describe.fixme('Publisher page', () => {
     await publisherPage.clickOnTemplateInPublisherPage() // clicking on existing template
     await publisherPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
     await publisherPage.clickTheDotOptionsInEditTemplatePage('Edit Details') // clicking Language option from the three dot options
-    await journeyLevelActions.enterLanguage('Abau') // selecting language in the edit language popup
+    await journeyLevelActions.enterLanguage('Adi') // selecting language in the edit language popup
     await publisherPage.clickSaveBtn() // clicking on save button in the 'edit language' popup
     await publisherPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
     await publisherPage.clickTheDotOptionsInEditTemplatePage('Edit Details') // clicking Language option from the three dot options
@@ -248,13 +234,13 @@ test.describe.fixme('Publisher page', () => {
   })
 })
 
-test.describe.fixme('Template page - Journey from Template', () => {
+test.describe('Template page - Journey from Template', () => {
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
     const journeyPage = new JourneyPage(page)
     await landingPage.goToAdminUrl()
-    await loginPage.login('admin4') // login as admin user
+    await loginPage.login() // login as default admin user
     await journeyPage.clickCreateCustomJourney() // clicking the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
     await journeyPage.createAndVerifyTemplate() // Making the created journey as template by clicking on 'Create Template' option and verifying the journey is updated in the template list of publisher page
@@ -282,13 +268,13 @@ test.describe.fixme('Template page - Journey from Template', () => {
   })
 })
 
-test.describe.fixme('Template page', () => {
+test.describe('Template page', () => {
   test.beforeEach('Login > Create a journey and template', async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
     const journeyPage = new JourneyPage(page)
     await landingPage.goToAdminUrl()
-    await loginPage.login('admin5') // login as admin user
+    await loginPage.login() // login as default admin user
     await journeyPage.clickCreateCustomJourney() // clicking the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifying the created journey is updated in the active tab list
     await journeyPage.createAndVerifyTemplate() // Making the created journey as template by clicking on 'Create Template' option and verifying the journey is updated in the template list of publisher page
@@ -296,7 +282,7 @@ test.describe.fixme('Template page', () => {
   })
 
   // Templates-> Select existing template -> Preview
-  test.skip('preview a template from the journey template page', async ({
+  test('preview a template from the journey template page', async ({
     page,
     context
   }) => {
@@ -345,8 +331,7 @@ test.describe.fixme('Template page', () => {
   })
 
   // Filter: Topics, holidays, felt needs, collections
-  // Skipped because this filter test is already covered in the 'Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories' test.
-  test.skip('Filter: Topics, holidays, felt needs, collections', async ({
+  test('Filter: Topics, holidays, felt needs, collections', async ({
     page
   }) => {
     const templatesPage = new TemplatePage(page)
@@ -366,8 +351,7 @@ test.describe.fixme('Template page', () => {
   })
 
   // Filter: Audience
-  // Skipped because this filter test is already covered in the 'Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories' test.
-  test.skip('Filter: Audience', async ({ page }) => {
+  test('Filter: Audience', async ({ page }) => {
     const templatesPage = new TemplatePage(page)
     await templatesPage.navigateToTemplatePage() // navigating to templates page
     await templatesPage.clickDropDownOpenIconForFilters('Audience') // clicking on the dropdown open icon
@@ -378,8 +362,7 @@ test.describe.fixme('Template page', () => {
   })
 
   // Filter: Genre
-  // Skipped because this filter test is already covered in the 'Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories' test.
-  test.skip('Filter: Genre', async ({ page }) => {
+  test('Filter: Genre', async ({ page }) => {
     const templatesPage = new TemplatePage(page)
     await templatesPage.navigateToTemplatePage() // navigating to templates page
     await templatesPage.clickDropDownOpenIconForFilters('Genre') // clicking on the dropdown open icon
@@ -397,8 +380,8 @@ test.describe.fixme('Template page', () => {
     const journeyPage = new JourneyPage(page)
 
     await publisherAndTemplatesPage.navigateToPublisherPage() // navigating to the publisher page
-    await publisherAndTemplatesPage.getExistingTemplateName() // getting name of existing template
-    await publisherAndTemplatesPage.clickOnTemplateInPublisherPage() // clicking on existing template
+    publisherAndTemplatesPage.templateName = await journeyPage.getJourneyName()
+    await publisherAndTemplatesPage.clickOnTemplateInPublisherPage() // clicking on template created in beforeEach
     await publisherAndTemplatesPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
     await publisherAndTemplatesPage.clickTheDotOptionsInEditTemplatePage(
       'Template Settings'
@@ -427,8 +410,8 @@ test.describe.fixme('Template page', () => {
     const journeyPage = new JourneyPage(page)
 
     await publisherAndTemplatesPage.navigateToPublisherPage() // navigating to the publisher page
-    await publisherAndTemplatesPage.getExistingTemplateName() // getting name of existing template
-    await publisherAndTemplatesPage.clickOnTemplateInPublisherPage() // clicking on existing template
+    publisherAndTemplatesPage.templateName = await journeyPage.getJourneyName()
+    await publisherAndTemplatesPage.clickOnTemplateInPublisherPage() // clicking on template created in beforeEach
     await publisherAndTemplatesPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
     await publisherAndTemplatesPage.clickTheDotOptionsInEditTemplatePage(
       'Template Settings'

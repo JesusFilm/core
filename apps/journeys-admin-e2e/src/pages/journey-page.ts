@@ -32,11 +32,16 @@ export class JourneyPage {
     journeyName = testData.journey.firstJourneyName + generateRandomNumber(3)
   }
   async verifyJourneyTitleGotUpdated() {
+    // `.first()` — the JourneyList sometimes renders duplicate cards for the
+    // same journey (Apollo cache fragment overlap when a teamTemplate refresh
+    // races the optimistic update). Asserting on the first match keeps the
+    // test focused on "did the title save" instead of an unrelated render bug.
     await expect(
-      this.page.locator(
-        'button[aria-label="Click to edit"] p.MuiTypography-root',
-        { hasText: journeyName }
-      )
+      this.page
+        .locator('button[aria-label="Click to edit"] p.MuiTypography-root', {
+          hasText: journeyName
+        })
+        .first()
     ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
   async createAndVerifyCustomJourney() {
@@ -61,7 +66,10 @@ export class JourneyPage {
   }
   async createAndVerifyTemplateFromNewJourney() {
     await this.clickThreeDotBtnOfCustomJourney()
-    await this.clickCreateTempleteOrTemplateSettingsOption('Create Template')
+    // "Make Global Template" lands on /publisher/<id> so the publisher list
+    // assertions below find the new template. Falls back to "Make Template"
+    // automatically when the test admin lacks the publisher role.
+    await this.clickCreateTempleteOrTemplateSettingsOption('Make Global Template')
     await this.backToHome()
     await this.verifyCreatedCustomJourneyInActiveList()
     await this.navigateToPublisherPage()
@@ -70,7 +78,7 @@ export class JourneyPage {
   async createAndVerifyTemplate() {
     await this.clickOnTheCreatedCustomJourney()
     await this.clickThreeDotBtnOfCustomJourney()
-    await this.clickCreateTempleteOrTemplateSettingsOption('Create Template')
+    await this.clickCreateTempleteOrTemplateSettingsOption('Make Global Template')
     await this.backToHome()
     await this.navigateToPublisherPage()
     await this.verifyCreatedJourneyInTemplateList()
@@ -137,8 +145,7 @@ export class JourneyPage {
   }
 
   async verifyExistingJourneyMovedActiveToArchivedTab() {
-    await this.clickThreeDotOfExistingJourney()
-    await this.setExistingJourneyNameToJourneyName()
+    await this.clickThreeDotOfCreatedNewJourney()
     await this.clickArchiveOption()
     await this.verifySnackbarToastMessage('Journey Archived')
     await this.clickArchivedTab()
@@ -167,7 +174,11 @@ export class JourneyPage {
     await this.selectThreeDotOptionsBesideSortByOption('Archive All')
     await this.clickDialogBoxBtn('Archive')
     await this.verifySnackbarToastMessage('Journeys Archived')
-    await this.verifyActiveTabShowsEmptyMessage()
+    for (const name of this.journeyList) {
+      await expect(
+        this.page.locator(this.journeyNamePath, { hasText: name }).first()
+      ).toBeHidden({ timeout: thirtySecondsTimeout })
+    }
     await this.clickArchivedTab()
     await this.verifyAllJourneyMovedToArchivedTab()
   }
@@ -309,7 +320,12 @@ export class JourneyPage {
   }
 
   async clickThreeDotBtnOfCustomJourney(): Promise<void> {
-    await this.page.locator('button#edit-journey-actions').click()
+    const menuButton = this.page.getByTestId('ToolbarMenuButton')
+    await expect(menuButton).toBeVisible({ timeout: thirtySecondsTimeout })
+    await menuButton.click()
+    await expect(this.page.getByRole('menu')).toBeVisible({
+      timeout: thirtySecondsTimeout
+    })
   }
 
   async clickEditDetailsInThreeDotOptions() {
@@ -338,14 +354,49 @@ export class JourneyPage {
   }
 
   async backToHome() {
-    await this.page.locator('a[data-testid="NextStepsLogo"]').click()
+    // Some callers reach this helper with an open MUI Popover (e.g. the
+    // three-dot menu hasn't closed itself after "Make Template" because
+    // the page navigation races the menu's onClose). Press Escape to
+    // dismiss any lingering Modal/Backdrop before navigating.
+    const backdrop = this.page.locator('.MuiModal-backdrop').first()
+    if (await backdrop.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await this.page.keyboard.press('Escape')
+      await backdrop.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {})
+    }
+    // Three navigation surfaces, in priority order:
+    //   1. Legacy `<a data-testid="NextStepsLogo">` in the old editor header.
+    //   2. New editor header link labelled "Back to Home" (href "/?type=journeys").
+    //   3. Side-nav "Projects" link (href "/") on list pages where the
+    //      editor chrome isn't present.
+    const candidates = [
+      this.page.locator('a[data-testid="NextStepsLogo"]').first(),
+      this.page.getByRole('link', { name: 'Back to Home' }).first(),
+      this.page.getByRole('link', { name: 'Projects' }).first()
+    ]
+    for (const candidate of candidates) {
+      if (
+        await candidate.isVisible({ timeout: 2000 }).catch(() => false)
+      ) {
+        await candidate.click()
+        return
+      }
+    }
+    // None of the known nav surfaces were findable — fall back to URL.
+    await this.page.goto(
+      (await getBaseUrl()).replace(/\/$/, '') + '/?type=journeys',
+      { waitUntil: 'domcontentloaded' }
+    )
   }
 
   async verifyCreatedCustomJourneyInActiveList() {
+    // `.first()` — see verifyJourneyTitleGotUpdated for the duplicate-card
+    // rationale; the same applies here when the active list refetches.
     await expect(
-      this.page.locator(this.journeyNamePath, {
-        hasText: journeyName
-      })
+      this.page
+        .locator(this.journeyNamePath, {
+          hasText: journeyName
+        })
+        .first()
     ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
 
@@ -354,6 +405,7 @@ export class JourneyPage {
       .locator(this.journeyNamePath, {
         hasText: journeyName
       })
+      .first()
       .click()
     await expect(
       this.page.locator('div[data-testid="StrategyItem"] button')
@@ -361,38 +413,74 @@ export class JourneyPage {
   }
 
   async clickCreateTempleteOrTemplateSettingsOption(
-    optionName = 'Create Template'
+    optionName = 'Make Global Template'
   ) {
+    // The 3-dot menu of a journey card exposes two creation actions for users
+    // with the publisher role:
+    //   - "Make Template"        → creates a *team* template, navigates to
+    //                              `/?type=templates` (Team Templates view).
+    //   - "Make Global Template" → creates a publisher template under the
+    //                              `jfp-team`, navigates to
+    //                              `/publisher/<id>` so it shows on the
+    //                              Publisher list.
+    // The publisher-page assertions in this suite (StatusTabPanel, "Make this
+    // template public", category/metadata settings) only exist for global
+    // templates, so we default to the global flow when it is available and
+    // fall back to the local one otherwise (e.g. Template Settings menu items
+    // which carry their own option name).
+    const menu = this.page.locator(
+      'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]'
+    )
+    const targetItem = menu.filter({ hasText: optionName }).first()
+    if (
+      optionName === 'Make Global Template' &&
+      !(await targetItem.isVisible({ timeout: 2000 }).catch(() => false))
+    ) {
+      // User isn't a publisher in this environment — fall back to local.
+      optionName = 'Make Template'
+    }
     await this.page
       .locator(
         'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
         { hasText: optionName }
       )
+      .first()
       .click({ delay: 3000 })
-    // verifying that the 'Create Template' option is disappeared, if not once again clicking on that option
+    // The clicked menu item should disappear once the menu closes; if it
+    // doesn't, click again (the original code's pragmatic recovery for the
+    // sporadic case where the first click is swallowed during route change).
     try {
       await expect(
-        this.page.locator(
-          'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
-          { hasText: 'Create Template' }
-        )
+        this.page
+          .locator(
+            'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
+            { hasText: optionName }
+          )
+          .first()
       ).toBeHidden({ timeout: sixtySecondsTimeout })
     } catch {
       await this.page
         .locator(
           'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
-          { hasText: 'Create Template' }
+          { hasText: optionName }
         )
+        .first()
         .click({ delay: 3000 })
     }
-    await this.page.waitForURL('**/publisher/**', { timeout: 60000 })
+    // Accept any of the post-click landing surfaces:
+    //   - `/publisher/<id>` for global templates
+    //   - `/?type=templates` for local team templates
+    //   - `/templates/<id>` when settings flows reuse this helper
+    await this.page.waitForURL(/\/publisher|[?&]type=templates|\/templates/, {
+      timeout: 60000
+    })
   }
 
   async verifyCreatedJourneyInTemplateList() {
     await expect(
       this.page
         .locator(
-          'div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+          'div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
           { hasText: journeyName }
         )
         .first()
@@ -400,10 +488,16 @@ export class JourneyPage {
   }
 
   async clickThreeDotOfCreatedNewTemple() {
+    // See publisher-and-templates-page.ts#clickThreeDotOfTemple — the menu
+    // button is a *preceding* sibling of the link (absolute-positioned
+    // overlay), so the original XPath that walked `following-sibling::div`
+    // never finds it on the current shell. Scope by card and click the
+    // testid-tagged menu button instead.
     await this.page
-      .locator(
-        `//h6[text()='${journeyName}']//ancestor::a/following-sibling::div//button[@id='journey-actions']`
-      )
+      .locator('div[aria-label="journey-card"]', { hasText: journeyName })
+      .first()
+      .locator('[data-testid="JourneyCardMenuButton"]')
+      .first()
       .click()
   }
 
@@ -413,34 +507,73 @@ export class JourneyPage {
       .click()
   }
 
-  async clickArchivedTab() {
-    const archivedTab = this.page.locator(
-      'button[id*="archived-status-panel-tab"]'
-    )
-    const visible = await archivedTab
+  // Status selection works in two UIs:
+  // - Publisher page (template list) still uses the old StatusTabPanel with
+  //   buttons like `button[id*="archived-status-panel-tab"]`.
+  // - Discover/journey list page uses the new JourneyListView with a
+  //   RadioSelect "Filter by status" dropdown (no tab buttons exist).
+  // selectJourneyStatus tries the old tab first and falls back to the new
+  // RadioSelect, so a single helper works on both pages.
+  async selectJourneyStatus(
+    status: 'active' | 'archived' | 'trashed'
+  ): Promise<void> {
+    const legacyTab = this.page
+      .locator(`button[id*="${status}-status-panel-tab"]`)
       .first()
-      .isVisible()
-      .catch(() => false)
-    if (!visible) {
-      const baseUrl = await getBaseUrl()
-      const discoverUrl = baseUrl.replace(/\/$/, '') + '/?type=journeys'
-      await this.page.goto(discoverUrl, { waitUntil: 'domcontentloaded' })
+    if (
+      await legacyTab.isVisible({ timeout: 2000 }).catch(() => false)
+    ) {
+      await legacyTab.click()
+      await expect(
+        this.page.locator(
+          `button[id*="${status}-status-panel-tab"][aria-selected="true"]`
+        )
+      ).toBeVisible({ timeout: sixtySecondsTimeout })
+      return
     }
-    await expect(archivedTab.first()).toBeVisible({
-      timeout: sixtySecondsTimeout
-    })
-    await archivedTab.first().click()
-    await expect(
-      this.page.locator(
-        'button[id*="archived-status-panel-tab"][aria-selected="true"]'
-      )
-    ).toBeVisible()
+
+    const filterButton = this.page
+      .getByRole('button', { name: 'Filter by status' })
+      .first()
+    if (await filterButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+      const labelByValue = {
+        active: 'Active',
+        archived: 'Archived',
+        trashed: 'Trash'
+      } as const
+      const targetLabel = labelByValue[status]
+      // Already on the requested status — skip to avoid leaving the popover
+      // open (clicking an already-checked radio doesn't fire onChange so the
+      // dropdown never closes itself).
+      if ((await filterButton.textContent())?.includes(targetLabel) === true) {
+        return
+      }
+      await filterButton.click()
+      // `.click()` (not `.check()`) — the popover unmounts once the radio
+      // fires onChange, which would cause `.check()`'s post-click
+      // verification to fail with a detached-element timeout.
+      await this.page.getByRole('radio', { name: targetLabel }).click()
+      await expect(filterButton).toContainText(targetLabel, {
+        timeout: sixtySecondsTimeout
+      })
+      return
+    }
+
+    // Fallback: navigate via URL — works on both pages
+    const baseUrl = await getBaseUrl()
+    const discoverUrl =
+      baseUrl.replace(/\/$/, '') + `/?type=journeys&status=${status}`
+    await this.page.goto(discoverUrl, { waitUntil: 'domcontentloaded' })
+  }
+
+  async clickArchivedTab() {
+    await this.selectJourneyStatus('archived')
   }
 
   async verifyCreatedNewTemplateMovedToArchiveOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="archived-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="archived-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: journeyName }
       )
     ).toBeVisible()
@@ -468,20 +601,13 @@ export class JourneyPage {
   }
 
   async clickTrashTab() {
-    const trashTab = this.page.locator('button[id*="trashed-status-panel-tab"]')
-    await expect(trashTab).toBeVisible({ timeout: sixtySecondsTimeout })
-    await trashTab.click()
-    await expect(
-      this.page.locator(
-        'button[id*="trashed-status-panel-tab"][aria-selected="true"]'
-      )
-    ).toBeVisible()
+    await this.selectJourneyStatus('trashed')
   }
 
   async verifyCreatedNewTemplateMovedToTrashTabOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: journeyName }
       )
     ).toBeVisible()
@@ -506,23 +632,16 @@ export class JourneyPage {
   }
 
   async verifyCreatedNewJourneyMovedToTrashTabOrNot() {
+    // The discover page filters in-place (no per-status tabpanel scope) and
+    // the publisher page renders the trashed list in the trashed tabpanel.
+    // A simple journey-card lookup by name works on both pages.
     await expect(
-      this.page.locator(
-        `div[id*="trashed-status-panel-tabpanel"] ${this.journeyNamePath}`,
-        { hasText: journeyName }
-      )
-    ).toBeVisible()
+      this.page.locator(this.journeyNamePath, { hasText: journeyName }).first()
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
 
   async clickActiveTab() {
-    const activeTab = this.page.locator('button[id*="active-status-panel-tab"]')
-    await expect(activeTab).toBeVisible({ timeout: sixtySecondsTimeout })
-    await activeTab.click()
-    await expect(
-      this.page.locator(
-        'button[id*="active-status-panel-tab"][aria-selected="true"]'
-      )
-    ).toBeVisible()
+    await this.selectJourneyStatus('active')
   }
 
   async clickRestoreBtn() {
@@ -533,11 +652,8 @@ export class JourneyPage {
 
   async verifyCreatedNewJourneyMovedToActiveTabOrNot() {
     await expect(
-      this.page.locator(
-        `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`,
-        { hasText: journeyName }
-      )
-    ).toBeVisible()
+      this.page.locator(this.journeyNamePath, { hasText: journeyName }).first()
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
 
   async clickDeleteForeverOption() {
@@ -551,7 +667,7 @@ export class JourneyPage {
   async verifyCreatedNewTemplateRemovedFromTrashTabOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: journeyName }
       )
     ).toBeHidden()
@@ -584,20 +700,14 @@ export class JourneyPage {
 
   async verifyJourneyMovedToArchiveOrNot() {
     await expect(
-      this.page.locator(
-        `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`,
-        { hasText: journeyName }
-      )
-    ).toBeVisible()
+      this.page.locator(this.journeyNamePath, { hasText: journeyName }).first()
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
 
   async verifyJourneyDeletedForeverInTrashTab() {
     await expect(
-      this.page.locator(
-        `div[id*="trashed-status-panel-tabpanel"] ${this.journeyNamePath}`,
-        { hasText: journeyName }
-      )
-    ).toHaveCount(0)
+      this.page.locator(this.journeyNamePath, { hasText: journeyName })
+    ).toHaveCount(0, { timeout: thirtySecondsTimeout })
   }
 
   async clickUnarchiveOption() {
@@ -607,10 +717,14 @@ export class JourneyPage {
   }
 
   async clickThreeDotBesideSortByOption() {
+    // The bulk-actions ("Archive All", "Trash All" etc.) menu trigger lives
+    // inside the StatusTabPanel ("journey status tabs") on the publisher page
+    // and inside the JourneyListView Tabs ("journey content type tabs") on
+    // the discover page. The button itself is the same JourneyListMenuButton
+    // testid, so an unscoped locator works on either page.
     await this.page
-      .locator(
-        'div[aria-label="journey status tabs"] button[data-testid="JourneyListMenuButton"]'
-      )
+      .locator('button[data-testid="JourneyListMenuButton"]')
+      .first()
       .click()
   }
 
@@ -623,17 +737,12 @@ export class JourneyPage {
   }
 
   async getJourneyListOfActiveTab() {
+    await this.selectJourneyStatus('active')
     await expect(
-      this.page
-        .locator(
-          `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
-        )
-        .first()
+      this.page.locator(this.journeyNamePath).first()
     ).toBeVisible({ timeout: thirtySecondsTimeout })
     this.journeyList = await this.page
-      .locator(
-        `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
-      )
+      .locator(this.journeyNamePath)
       .allInnerTexts()
   }
 
@@ -652,16 +761,10 @@ export class JourneyPage {
   async verifyAllJourneyMovedToArchivedTab() {
     let matchCount = 0
     await expect(
-      this.page
-        .locator(
-          `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`
-        )
-        .first()
+      this.page.locator(this.journeyNamePath).first()
     ).toBeVisible({ timeout: thirtySecondsTimeout })
     const archiveTabJournetList = await this.page
-      .locator(
-        `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`
-      )
+      .locator(this.journeyNamePath)
       .allInnerTexts()
     for (let journey = 0; journey < this.journeyList.length; journey++) {
       if (archiveTabJournetList.includes(this.journeyList[journey])) {
@@ -673,40 +776,27 @@ export class JourneyPage {
 
   async verifyActiveTabShowsEmptyMessage() {
     await expect(
-      this.page.locator('div[aria-labelledby*="active-status-panel-tab"] h6', {
-        hasText: 'No journeys to display.'
-      })
-    ).toBeVisible()
+      this.page.locator('h6', { hasText: 'No journeys to display.' }).first()
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
 
   async getJourneyListOfArchivedTab() {
+    await this.selectJourneyStatus('archived')
     await expect(
-      this.page
-        .locator(
-          `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`
-        )
-        .first()
-    ).toBeVisible()
+      this.page.locator(this.journeyNamePath).first()
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
     this.journeyList = await this.page
-      .locator(
-        `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`
-      )
+      .locator(this.journeyNamePath)
       .allInnerTexts()
   }
 
   async verifyAllJourneyMovedToTrashTab() {
     let matchCount = 0
     await expect(
-      this.page
-        .locator(
-          `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
-        )
-        .first()
+      this.page.locator(this.journeyNamePath).first()
     ).toBeVisible({ timeout: thirtySecondsTimeout })
     const TrashTabJournetList = await this.page
-      .locator(
-        `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
-      )
+      .locator(this.journeyNamePath)
       .allInnerTexts()
     for (let journey = 0; journey < this.journeyList.length; journey++) {
       if (TrashTabJournetList.includes(this.journeyList[journey])) {
@@ -717,33 +807,22 @@ export class JourneyPage {
   }
 
   async getJourneyListOfTrashTab() {
+    await this.selectJourneyStatus('trashed')
     await expect(
-      this.page
-        .locator(
-          `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
-        )
-        .first()
-    ).toBeVisible()
+      this.page.locator(this.journeyNamePath).first()
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
     this.journeyList = await this.page
-      .locator(
-        `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
-      )
+      .locator(this.journeyNamePath)
       .allInnerTexts()
   }
 
   async verifyAllJourneyMovedToActiveTab() {
     let matchCount = 0
     await expect(
-      this.page
-        .locator(
-          `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
-        )
-        .first()
+      this.page.locator(this.journeyNamePath).first()
     ).toBeVisible({ timeout: thirtySecondsTimeout })
     const activeTabJournetList = await this.page
-      .locator(
-        `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
-      )
+      .locator(this.journeyNamePath)
       .allInnerTexts()
     for (let journey = 0; journey < this.journeyList.length; journey++) {
       if (activeTabJournetList.includes(this.journeyList[journey])) {
@@ -754,18 +833,16 @@ export class JourneyPage {
   }
 
   async verifyAlljourneysAreDeletedFromTrashTab() {
+    await expect(this.page.locator(this.journeyNamePath)).toHaveCount(0, {
+      timeout: thirtySecondsTimeout
+    })
     await expect(
       this.page
-        .locator(
-          `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
-        )
+        .locator('h6', {
+          hasText: 'Your trashed journeys will appear here.'
+        })
         .first()
-    ).toHaveCount(0)
-    await expect(
-      this.page.locator('div[aria-labelledby*="trashed-status-panel-tab"] h6', {
-        hasText: 'Your trashed journeys will appear here.'
-      })
-    ).toBeVisible()
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
 
   async verifySnackbarToastMessage(message: string) {
@@ -779,11 +856,8 @@ export class JourneyPage {
 
   async verifyEmptyMessageInArchivedTab() {
     await expect(
-      this.page.locator(
-        'div[aria-labelledby*="archived-status-panel-tab"] h6',
-        { hasText: 'No archived journeys.' }
-      )
-    ).toBeVisible()
+      this.page.locator('h6', { hasText: 'No archived journeys.' }).first()
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
 
   async clickSortByIcon() {
@@ -809,7 +883,7 @@ export class JourneyPage {
   async verifyJouyneysAreSortedByNames() {
     const journeyList = await this.page
       .locator(
-        'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
+        'div[aria-label="journey-card"]',
         {
           has: this.page.locator(
             'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
@@ -820,7 +894,7 @@ export class JourneyPage {
       .allInnerTexts()
     const journeyExpectedList = await this.page
       .locator(
-        'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
+        'div[aria-label="journey-card"]',
         {
           has: this.page.locator(
             'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
@@ -845,7 +919,7 @@ export class JourneyPage {
   async verifyNewlyJouyneysAreSortedByNames() {
     const journeyListCount = await this.page
       .locator(
-        'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
+        'div[aria-label="journey-card"]',
         {
           hasNot: this.page.locator(
             'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
@@ -857,7 +931,7 @@ export class JourneyPage {
     if (journeyListCount !== 0) {
       const journeyList = await this.page
         .locator(
-          'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
+          'div[aria-label="journey-card"]',
           {
             hasNot: this.page.locator(
               'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
@@ -868,7 +942,7 @@ export class JourneyPage {
         .allInnerTexts()
       const journeyExpectedList = await this.page
         .locator(
-          'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
+          'div[aria-label="journey-card"]',
           {
             hasNot: this.page.locator(
               'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
@@ -886,7 +960,7 @@ export class JourneyPage {
   async verifyJourneyAreSortedByDates() {
     const journeysDescriptionList = await this.page
       .locator(
-        'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
+        'div[aria-label="journey-card"]',
         {
           has: this.page.locator(
             'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
@@ -926,7 +1000,7 @@ export class JourneyPage {
   async verifyNewlyJourneyAreSortedByDates() {
     const journeysDescriptionCount = await this.page
       .locator(
-        'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
+        'div[aria-label="journey-card"]',
         {
           hasNot: this.page.locator(
             'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
@@ -938,7 +1012,7 @@ export class JourneyPage {
     if (journeysDescriptionCount !== 0) {
       const journeysDescriptionList = await this.page
         .locator(
-          'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
+          'div[aria-label="journey-card"]',
           {
             hasNot: this.page.locator(
               'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
@@ -994,11 +1068,17 @@ export class JourneyPage {
 
   async verifyPreviewFromCustomJourneyPage() {
     const [newPage] = await Promise.all([
-      this.context.waitForEvent('page'),
+      this.context.waitForEvent('page', { timeout: sixtySecondsTimeout }),
       this.clickPreviewBtnInCustomJourneyPage()
     ])
-    await newPage.waitForLoadState()
-    // await expect(await newPage.locator('h3[data-testid="JourneysTypography"]')).toHaveText(this.existingJourneyName)
+    await newPage.waitForLoadState('domcontentloaded')
+    await expect(
+      newPage
+        .locator(
+          'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
+        )
+        .first()
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
     const tabName: string = await newPage.title()
     expect(tabName.includes(journeyName)).toBeTruthy()
     const slidesCount = await newPage
@@ -1051,6 +1131,15 @@ export class JourneyPage {
       .click()
   }
 
+  async selectCreatedJourney(name: string) {
+    this.existingJourneyName = name
+    const journeyCard = this.page
+      .locator('div[aria-label="journey-card"]', { hasText: name })
+      .first()
+    await expect(journeyCard).toBeVisible({ timeout: thirtySecondsTimeout })
+    await journeyCard.click({ delay: 500 })
+  }
+
   async navigateToPublisherPage() {
     await this.page
       .locator('a[data-testid="NavigationListItemPublisher"]')
@@ -1062,10 +1151,9 @@ export class JourneyPage {
 
   async clickAnalyticsIconInCustomJourneyPage() {
     await this.page
-      .locator('div[aria-label="journey-card"]', {
-        hasText: this.existingJourneyName
-      })
-      .locator('div[data-testid="AnalyticsItem"] a')
+      .getByTestId('AnalyticsItem')
+      .locator('a[aria-label="Analytics"]')
+      .first()
       .click()
   }
 

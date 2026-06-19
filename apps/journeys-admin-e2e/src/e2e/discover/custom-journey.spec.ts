@@ -5,27 +5,13 @@ import { CardLevelActionPage } from '../../pages/card-level-actions'
 import { JourneyPage } from '../../pages/journey-page'
 import { LandingPage } from '../../pages/landing-page'
 import { LoginPage } from '../../pages/login-page'
-import { Register } from '../../pages/register-Page'
-
-let userEmail = ''
 
 test.describe('verify custom journey page', () => {
-  test.beforeAll('Register new account', async ({ browser }) => {
-    const page = await browser.newPage()
-    const landingPage = new LandingPage(page)
-    const register = new Register(page)
-    await landingPage.goToAdminUrl()
-    await register.registerNewAccount() // registering new user account
-    userEmail = await register.getUserEmailId() // storing the registered user email id
-    console.log(`userEamil : ${userEmail}`)
-    await page.close()
-  })
-
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
     await landingPage.goToAdminUrl()
-    await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
+    await loginPage.login()
   })
 
   // Verify the user able to create a journey with 'Create custom journey' button

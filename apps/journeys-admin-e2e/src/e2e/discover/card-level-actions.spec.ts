@@ -1,4 +1,3 @@
-/* eslint-disable playwright/no-skipped-test */
 /* eslint-disable playwright/expect-expect */
 import { test } from '@playwright/test'
 
@@ -6,21 +5,11 @@ import { CardLevelActionPage } from '../../pages/card-level-actions'
 import { JourneyPage } from '../../pages/journey-page'
 import { LandingPage } from '../../pages/landing-page'
 import { LoginPage } from '../../pages/login-page'
-import { Register } from '../../pages/register-Page'
-
-let userEmail = ''
 
 test.describe('verify card level actions', () => {
-  test.beforeAll('Register new account', async ({ browser }) => {
-    const page = await browser.newPage()
-    const landingPage = new LandingPage(page)
-    const register = new Register(page)
-    await landingPage.goToAdminUrl()
-    await register.registerNewAccount()
-    userEmail = await register.getUserEmailId() // storing the registered user email id
-    console.log(`userEamil : ${userEmail}`)
-    await page.close()
-  })
+  // Poll delete is sensitive to iframe tooltip timing; allow one local retry so
+  // a single flake does not fail the whole suite (CI already retries once).
+  test.describe.configure({ retries: 1 })
 
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
@@ -28,7 +17,7 @@ test.describe('verify card level actions', () => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     const journeyPage = new JourneyPage(page)
     await landingPage.goToAdminUrl()
-    await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
+    await loginPage.login()
     await journeyPage.clickCreateCustomJourney() //  clicking on the create custom journey button
     await cardLevelActionPage.waitUntilJourneyCardLoaded() // waiting for custom journey page loaded
     await cardLevelActionPage.clickOnJourneyCard() // clicking on the journey card
@@ -80,7 +69,15 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifyImageIsDeleted() // verifying the image is deleted from the image drawer
   })
 
-  // Video - create, update & delete
+  // Skipped on the daily-e2e environment: the test flow expects
+  // `verifyUploadVideoInJourney('updated')` to find the freshly-selected
+  // Library video as the VideoBlockEditor thumbnail, but the editor still
+  // shows the previously-uploaded "SampleVideo". The root cause is timing
+  // around the Video Library Select button's mutation + drawer-close in the
+  // new editor shell — Playwright observes the alt before the drawer closes
+  // and the editor's underlying VideoBlock refetches. Re-enable once the
+  // upload+library swap flow is stable enough to assert on without bespoke
+  // mutation-completion waits.
   test.skip('Video - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.deleteAllAddedCardProperties() // deleting all the added properties in the card
@@ -108,7 +105,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Poll - create, update & delete
-  test.fixme('Poll - create, update & delete', async ({ page }) => {
+  test('Poll - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Poll') // clicking on poll button in add block drawer

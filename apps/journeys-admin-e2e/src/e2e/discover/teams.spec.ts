@@ -6,28 +6,14 @@ import { JourneyLevelActions } from '../../pages/journey-level-actions-page'
 import { JourneyPage } from '../../pages/journey-page'
 import { LandingPage } from '../../pages/landing-page'
 import { LoginPage } from '../../pages/login-page'
-import { Register } from '../../pages/register-Page'
 import { TeamsPage } from '../../pages/teams-page'
 
-let userEmail = ''
-
 test.describe('Teams', () => {
-  test.beforeAll('Register new account', async ({ browser }) => {
-    const page = await browser.newPage()
-    const landingPage = new LandingPage(page)
-    const register = new Register(page)
-    await landingPage.goToAdminUrl()
-    await register.registerNewAccount() // registering new user account
-    userEmail = await register.getUserEmailId() // storing the registered user email id
-    console.log(`userName : ${userEmail}`)
-    await page.close()
-  })
-
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
     await landingPage.goToAdminUrl()
-    await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
+    await loginPage.login()
   })
 
   /*
@@ -62,6 +48,7 @@ test.describe('Teams', () => {
     const teamPage = new TeamsPage(page)
 
     await journeyLevelActions.setBrowserContext(context) // setting the context
+    await teamPage.createNewTeamAndVerifyCreatedTeam() // manager team avoids readonly custom-domain / disabled member fields
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
     const journeyName = await journeyPage.getJourneyName() // getting the journey name
@@ -89,9 +76,11 @@ test.describe('Teams', () => {
     await journeyPage.validateUrlFieldInShareDialog(domainName) //Validate that the URL field from Share dialog contains the custom domain
   })
 
-  // ISSUE: The Growth Spaces card on /integrations/new is only rendered when the teamIntegrations
-  // feature flag is on. When the flag is off, the test fails because the Growth Spaces link/button
-  // is missing (0 elements). Re-enable this test when the flag is available in the test environment.
+  // Skipped on the daily-e2e environment because the "Growth Spaces" integration
+  // is gated behind the `teamIntegrations` feature flag. The flag is currently
+  // off in the daily-e2e Vercel deployment, so the link this test asserts on
+  // never renders. Re-enable once the flag is on in daily-e2e (or once the
+  // feature flag dependency is removed from the integrations list).
   test.skip('Verify Integrations option from Three dot menu', async ({
     page
   }) => {

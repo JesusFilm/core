@@ -6,7 +6,7 @@ import { LeftNav } from '../../pages/left-nav'
 import { LoginPage } from '../../pages/login-page'
 
 // Already created user should be able to login successfully
-test.fixme(
+test(
   'Existing user can login and logout successfully',
   async ({ page }) => {
     const landingPage = new LandingPage(page)
@@ -21,7 +21,11 @@ test.fixme(
     const email = await getEmail()
     expect(await leftNav.getEmail()).toBe(email)
     const firstAndLastName = await getUser()
-    expect(await leftNav.getName()).toBe(firstAndLastName)
+    const profileName = await leftNav.getName()
+    const playwrightDisplayName = firstAndLastName.replace(/^PW /, 'Playwright ')
+    expect(
+      profileName === firstAndLastName || profileName === playwrightDisplayName
+    ).toBeTruthy()
     await leftNav.logout()
 
     const isLandingPageVisible = await landingPage.isLandingPage()

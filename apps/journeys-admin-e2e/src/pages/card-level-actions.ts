@@ -9,6 +9,7 @@ import type { Page } from 'playwright-core'
 import testData from '../utils/testData.json'
 
 const sixtySecondsTimeout = 60000
+const thirtySecondsTimeout = 30000
 export class CardLevelActionPage {
   readonly page: Page
   randomNumber: string
@@ -179,12 +180,19 @@ export class CardLevelActionPage {
   async clickDeleteBtnInToolTipBar() {
     const iframes = this.page.locator(this.journeyCardFrame)
     const frame = await iframes.first().contentFrame()
-    await expect(
-      frame.locator('div[role="tooltip"] button[id="delete-block-actions"]')
-    ).toHaveCount(1, { timeout: 10000 })
-    await frame
-      .locator('div[role="tooltip"] button[id="delete-block-actions"]')
-      .click({ timeout: sixtySecondsTimeout, delay: 3000 })
+    const deleteBtn = frame
+      .getByRole('button', { name: 'Delete Block Actions' })
+      .first()
+    await expect(deleteBtn).toBeVisible({ timeout: 10000 })
+    // DeleteBlock wires deletion to onMouseUp (not onClick). A plain Playwright
+    // click is occasionally swallowed inside the iframe tooltip, so synthesize
+    // the mouse-up directly on the button centre.
+    const box = await deleteBtn.boundingBox()
+    if (box != null) {
+      await this.page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)
+    } else {
+      await deleteBtn.dispatchEvent('mouseup')
+    }
   }
 
   async verifyAddedTextDeletedFromJourneyCard() {
@@ -655,17 +663,46 @@ export class CardLevelActionPage {
   async selectWholePollOptions() {
     const iframes = this.page.locator(this.journeyCardFrame)
     const frame = await iframes.first().contentFrame()
+    // Deselect anything that may already be focused (e.g. the option that
+    // was renamed earlier in the test) — otherwise the next click can land
+    // inside the inner option wrapper and select that instead of the outer
+    // poll block.
+    await this.page.keyboard.press('Escape')
+    await this.page.waitForTimeout(300)
+    // Click the SelectableWrapper that contains the entire RadioQuestionList
+    // (not an inner "Add Option" button or a single option wrapper). The
+    // `:has()` filter scopes us to the outer wrapper. `force: true` skips
+    // the "stable / not covered" actionability check, which can fail when a
+    // floating tooltip or animation overlaps the wrapper but doesn't block
+    // the click semantically.
     await frame
       .locator(
-        'div[data-testid*="JourneysRadioQuestionList"] div[role="group"] div:not([data-testid*="SelectableWrapper"])',
-        { hasText: 'Add New Option' }
+        'div[data-testid*="SelectableWrapper"]:has(div[data-testid*="JourneysRadioQuestionList"])'
       )
-      .click()
+      .first()
+      // eslint-disable-next-line playwright/no-force-option
+      .click({ force: true })
+    // Wait for the editor's selection tooltip ("delete-block-actions") to
+    // appear before continuing — its presence is the signal that the block
+    // is actually selected and the next deleteAllThePollOptions() will hit
+    // the right button.
+    await expect(
+      frame
+        .locator('div[role="tooltip"] button[id="delete-block-actions"]')
+        .first()
+    ).toBeVisible({ timeout: 10000 })
   }
 
   async deleteAllThePollOptions() {
     await this.selectWholePollOptions()
     await this.clickDeleteBtnInToolTipBar()
+    const iframes = this.page.locator(this.journeyCardFrame)
+    const frame = await iframes.first().contentFrame()
+    const pollBlock = frame.locator('div[data-testid*="JourneysRadioQuestionList"]')
+    if (await pollBlock.isVisible().catch(() => false)) {
+      await this.selectWholePollOptions()
+      await this.clickDeleteBtnInToolTipBar()
+    }
   }
 
   async verifyPollOptionsDeletedFromCard() {
@@ -675,7 +712,7 @@ export class CardLevelActionPage {
       frame.locator(
         'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestionList"]'
       )
-    ).toBeHidden()
+    ).toBeHidden({ timeout: thirtySecondsTimeout })
   }
 
   async verifyFeedBackAddedToCard() {

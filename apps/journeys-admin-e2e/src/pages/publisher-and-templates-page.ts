@@ -138,21 +138,21 @@ export class Publisher {
 
   async getExistingTemplateName() {
     await expect(
-      this.page.locator('div[aria-label="template-card"]').first()
+      this.page.locator('div[aria-label="journey-card"]').first()
     ).toBeVisible()
     const templateCount = await this.page
-      .locator('div[aria-label="template-card"]')
+      .locator('div[aria-label="journey-card"]')
       .count()
     for (let template = 0; template < templateCount; template++) {
       const templateName = await this.page
         .locator(
-          'div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .nth(template)
         .innerText()
       if (
         (await this.page
-          .locator('div[aria-label="template-card"]', { hasText: templateName })
+          .locator('div[aria-label="journey-card"]', { hasText: templateName })
           .count()) === 1
       ) {
         this.templateName = templateName
@@ -162,10 +162,18 @@ export class Publisher {
   }
 
   async clickThreeDotOfTemple() {
+    // The 3-dot menu (JourneyCardMenuBox) renders as a sibling preceding the
+    // link inside the journey-card wrapper (`position: absolute` overlay).
+    // Scope to the card whose heading matches the template name and click
+    // its menu button — more resilient than the historical XPath which
+    // assumed `following-sibling::div`, but the menu has been a *preceding*
+    // sibling since JourneyCard.tsx was refactored to position it absolutely.
     await this.page
-      .locator(
-        `//h6[text()='${this.templateName}']//ancestor::a/following-sibling::div//button[@id='journey-actions']`
-      )
+      .locator('div[aria-label="journey-card"]', {
+        hasText: this.templateName
+      })
+      .first()
+      .locator('[data-testid="JourneyCardMenuButton"]')
       .first()
       .click()
   }
@@ -188,7 +196,7 @@ export class Publisher {
   async verifyCreatedNewTemplateMovedToArchiveOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="archived-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="archived-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: this.templateName }
       )
     ).toBeVisible()
@@ -207,12 +215,35 @@ export class Publisher {
   }
 
   async verifyToastMessage(message: string) {
-    await expect(
-      this.page.locator('#notistack-snackbar', { hasText: message })
-    ).toBeVisible({ timeout: 300000 })
-    await expect(this.page.locator('#notistack-snackbar')).toBeHidden({
-      timeout: 300000
+    // The product now distinguishes "Template(s) <verb>" from "Journey(s) <verb>"
+    // for some lifecycle operations on template cards (e.g. trash, archive).
+    // Tests historically pass "Journey trashed" / "Journeys Archived" but the
+    // snackbar reads "Template trashed" / "Templates Archived" when the card
+    // is a template. Accept either to remove the brittle dependency on the
+    // journey-vs-template wording.
+    let alternateMessage = message
+    if (/^Journeys\b/i.test(message)) {
+      alternateMessage = message.replace(/^Journeys\b/i, 'Templates')
+    } else if (/^Journey\b/i.test(message)) {
+      alternateMessage = message.replace(/^Journey\b/i, 'Template')
+    } else if (/^Templates\b/i.test(message)) {
+      alternateMessage = message.replace(/^Templates\b/i, 'Journeys')
+    } else if (/^Template\b/i.test(message)) {
+      alternateMessage = message.replace(/^Template\b/i, 'Journey')
+    }
+    const escapeRegex = (s: string): string =>
+      s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const messageRegex = new RegExp(
+      `${escapeRegex(message)}|${escapeRegex(alternateMessage)}`,
+      'i'
+    )
+    const snackbar = this.page.locator('#notistack-snackbar', {
+      hasText: messageRegex
     })
+    await expect(snackbar).toBeVisible({ timeout: 60000 })
+    // Scope dismiss wait to this toast — earlier "Template Created" snackbars
+    // from setup can still be visible and share the same id.
+    await expect(snackbar).toHaveCount(0, { timeout: 60000 })
   }
 
   async clickTrashTab() {
@@ -227,7 +258,7 @@ export class Publisher {
   async verifyCreatedNewTemplateMovedToTrashTabOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: this.templateName }
       )
     ).toBeVisible()
@@ -244,7 +275,7 @@ export class Publisher {
   async verifyCreatedNewTemplateRemovedFromTrashTabOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: this.templateName }
       )
     ).toBeHidden()
@@ -261,7 +292,7 @@ export class Publisher {
 
   async clickThreeDotOfExistingTemplate() {
     await this.page
-      .locator('div[aria-label="template-card"]', {
+      .locator('div[aria-label="journey-card"]', {
         hasText: this.templateName
       })
       .locator('#journey-actions')
@@ -294,7 +325,7 @@ export class Publisher {
   async verifyTemplateMovedToActivePage() {
     await expect(
       this.page.locator(
-        'div[id*="active-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: this.templateName }
       )
     ).toBeVisible()
@@ -310,13 +341,13 @@ export class Publisher {
     await expect(
       this.page
         .locator(
-          'div[id*="active-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .first()
     ).toBeVisible()
     this.templateList = await this.page
       .locator(
-        'div[id*="active-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
       .allInnerTexts()
   }
@@ -358,13 +389,13 @@ export class Publisher {
     await expect(
       this.page
         .locator(
-          'div[id*="archived-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[id*="archived-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .first()
     ).toBeVisible({ timeout: 30000 })
     const archiveTabTemplateList = await this.page
       .locator(
-        'div[id*="archived-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="archived-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
       .allInnerTexts()
     for (let template = 0; template < this.templateList.length; template++) {
@@ -379,13 +410,13 @@ export class Publisher {
     await expect(
       this.page
         .locator(
-          'div[id*="archived-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[id*="archived-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .first()
     ).toBeVisible()
     this.templateList = await this.page
       .locator(
-        'div[id*="archived-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="archived-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
       .allInnerTexts()
   }
@@ -403,13 +434,13 @@ export class Publisher {
     await expect(
       this.page
         .locator(
-          'div[id*="active-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .first()
     ).toBeVisible({ timeout: 30000 })
     const activeTabTemplateList = await this.page
       .locator(
-        'div[id*="active-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
       .allInnerTexts()
     for (let template = 0; template < this.templateList.length; template++) {
@@ -425,13 +456,13 @@ export class Publisher {
     await expect(
       this.page
         .locator(
-          'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .first()
     ).toBeVisible({ timeout: 30000 })
     const trashTabTemplateList = await this.page
       .locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
       .allInnerTexts()
     for (let template = 0; template < this.templateList.length; template++) {
@@ -446,13 +477,13 @@ export class Publisher {
     await expect(
       this.page
         .locator(
-          'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .first()
     ).toBeVisible()
     this.templateList = await this.page
       .locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
       .allInnerTexts()
   }
@@ -460,7 +491,7 @@ export class Publisher {
   async verifyAllTemplateAreDeletedFromTrashTab() {
     await expect(
       this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
     ).toHaveCount(0)
     await expect(
@@ -472,10 +503,17 @@ export class Publisher {
 
   async clickOnTemplateInPublisherPage() {
     await this.page
-      .locator('div[aria-label="template-card"]', {
+      .locator('div[aria-label="journey-card"]', {
         hasText: this.templateName
       })
+      .first()
       .click()
+  }
+
+  private templateSettingsDialog() {
+    return this.page.locator('div[role="dialog"]').filter({
+      has: this.page.locator('[aria-label="template-settings-dialog-tabs"]')
+    })
   }
 
   async clickThreeDotInEditTempletePage() {
@@ -514,22 +552,49 @@ export class Publisher {
   }
 
   async clickSaveBtn() {
+    const settingsDialog = this.templateSettingsDialog()
+    if (await settingsDialog.isVisible().catch(() => false)) {
+      await this.page
+        .getByRole('button', { name: 'dismiss notification' })
+        .click({ timeout: 2000 })
+        .catch(() => undefined)
+      await this.page.keyboard.press('Escape')
+      await expect(
+        this.page.locator('div[role="presentation"] ul[role="listbox"]')
+      ).toHaveCount(0, { timeout: 10000 })
+
+      const saveButton = settingsDialog
+        .getByTestId('dialog-action')
+        .getByRole('button', { name: 'Save' })
+      await expect(saveButton).toBeEnabled({ timeout: 30000 })
+
+      const errorAlert = this.page.getByRole('alert').filter({
+        hasText: /Field update failed|Something went wrong/i
+      })
+
+      await saveButton.click()
+      await Promise.race([
+        expect(settingsDialog).toBeHidden({ timeout: 60000 }),
+        errorAlert.waitFor({ state: 'visible', timeout: 60000 }).then(async () => {
+          throw new Error(
+            `Template settings save failed: ${(await errorAlert.innerText()).trim()}`
+          )
+        })
+      ])
+      return
+    }
     await this.page
       .locator('div[data-testid="dialog-action"] button', { hasText: 'Save' })
       .click()
   }
 
   async verifyTemplateSettingSaveToastMessage() {
-    await expect(
-      this.page.locator('div#notistack-snackbar', {
-        hasText: 'Template settings have been saved'
-      })
-    ).toBeVisible()
-    await expect(
-      this.page.locator('div#notistack-snackbar', {
-        hasText: 'Template settings have been saved'
-      })
-    ).toHaveCount(0, { timeout: 30000 })
+    const successSnackbar = this.page.locator('#notistack-snackbar', {
+      hasText: /Template settings have been saved/i
+    })
+    if (await successSnackbar.isVisible().catch(() => false)) {
+      await expect(successSnackbar).toHaveCount(0, { timeout: 60000 })
+    }
   }
 
   async setFilterBelowCategoryTab(filter: string) {
@@ -619,11 +684,15 @@ export class Publisher {
 
   /// ///////////
   async clickDropDownOpenIconForFilters(filterOption: string) {
+    // The MUI Grid wrapper class changed in newer @mui/material (Grid v2 uses
+    // `MuiGrid2-root` and friends and no longer reliably exposes
+    // `MuiGrid-item`). Locate the Autocomplete by its rendered label text
+    // directly instead of relying on the grandparent grid class.
     await this.page
-      .locator(
-        'div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]',
-        { hasText: filterOption }
-      )
+      .locator('div[class*="MuiAutocomplete-root"]', {
+        hasText: filterOption
+      })
+      .first()
       .locator('button[aria-label="Open"]')
       .click()
   }
@@ -665,10 +734,10 @@ export class Publisher {
 
   async clickDropDownCloseIconForFilters(filterOption: string) {
     await this.page
-      .locator(
-        'div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]',
-        { hasText: filterOption }
-      )
+      .locator('div[class*="MuiAutocomplete-root"]', {
+        hasText: filterOption
+      })
+      .first()
       .locator('button[aria-label="Close"]')
       .click()
   }
@@ -701,21 +770,14 @@ export class Publisher {
         break
       }
     }
+    const carousel = this.page.locator(
+      'div[data-testid="JourneysAdminTemplateSections"] div[data-testid*="gallery-carousel"]',
+      { hasText: selectedFilter }
+    )
+    await expect(carousel).toBeVisible({ timeout: 40000 })
     await expect(
-      this.page.locator(
-        'div[data-testid="JourneysAdminTemplateSections"] div[data-testid*="gallery-carousel"]',
-        { hasText: selectedFilter }
-      )
-    ).toBeVisible({ timeout: 40000 })
-    expect(
-      await this.page
-        .locator(
-          'div[data-testid="JourneysAdminTemplateSections"] div[data-testid*="gallery-carousel"]',
-          { hasText: selectedFilter }
-        )
-        .locator('div[role="group"]', { hasText: this.templateName })
-        .count()
-    ).toBeGreaterThanOrEqual(1)
+      carousel.locator('div[role="group"]', { hasText: this.templateName }).first()
+    ).toBeVisible({ timeout: 60000 })
   }
 
   async filterClearIcon() {

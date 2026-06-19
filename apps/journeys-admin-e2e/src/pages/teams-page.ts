@@ -28,9 +28,6 @@ export class TeamsPage {
     await this.clickCreateBtn()
     await this.verifyTeamCreatedSnackbarMsg()
     await this.clickDiaLogBoxCloseBtn()
-    await this.clickTeamSelectionDropDown()
-    // await this.selectLastTeam() // due to bug
-    // await this.clickTeamSelectionDropDown()
     await this.selectCreatedNewTeam()
     await this.verifyTeamNameUpdatedInTeamSelectDropdown()
   }
@@ -113,11 +110,38 @@ export class TeamsPage {
       .locator('div[aria-haspopup="listbox"]')
   }
 
-  async clickTeamSelectionDropDown() {
+  /** Close dialogs/menus so TeamSelect clicks are not intercepted by MUI backdrops. */
+  async dismissOpenOverlays(): Promise<void> {
+    const backdrop = this.page.locator('.MuiModal-backdrop').first()
+    if (await backdrop.isVisible({ timeout: 500 }).catch(() => false)) {
+      await this.page.keyboard.press('Escape')
+      await backdrop.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {})
+    }
+    const openListbox = this.page.locator('ul[role="listbox"]')
+    if (await openListbox.first().isVisible({ timeout: 500 }).catch(() => false)) {
+      await this.page.keyboard.press('Escape')
+      await openListbox
+        .first()
+        .waitFor({ state: 'hidden', timeout: 5000 })
+        .catch(() => {})
+    }
+  }
+
+  async clickTeamSelectionDropDown(): Promise<void> {
+    await this.dismissOpenOverlays()
     const dropdown = this.getTeamSelectDropdown()
     await expect(dropdown).toHaveCount(1)
     await expect(dropdown).toBeVisible()
+    if ((await dropdown.getAttribute('aria-expanded')) === 'true') {
+      await expect(this.page.locator('ul[role="listbox"]').first()).toBeVisible({
+        timeout: thirtySecondsTimeout
+      })
+      return
+    }
     await dropdown.click()
+    await expect(this.page.locator('ul[role="listbox"]').first()).toBeVisible({
+      timeout: thirtySecondsTimeout
+    })
   }
 
   async selectLastTeam() {
@@ -130,11 +154,22 @@ export class TeamsPage {
   }
 
   async selectCreatedNewTeam() {
-    await this.page
-      .locator('ul[role="listbox"] li[role="option"]', {
-        hasText: this.teamName
-      })
-      .click()
+    await this.selectTeamFromDropdown(this.teamName)
+  }
+
+  async selectTeamFromDropdown(teamName: string): Promise<void> {
+    await this.clickTeamSelectionDropDown()
+    const teamOption = this.page.locator('ul[role="listbox"] li[role="option"]', {
+      hasText: teamName
+    })
+    await expect(teamOption.first()).toBeVisible({ timeout: thirtySecondsTimeout })
+    await teamOption.first().click()
+    await expect(this.page.locator('ul[role="listbox"]').first()).toBeHidden({
+      timeout: thirtySecondsTimeout
+    })
+    await expect(this.getTeamSelectDropdown()).toHaveText(teamName, {
+      timeout: thirtySecondsTimeout
+    })
   }
 
   async verifyTeamNameUpdatedInTeamSelectDropdown() {
@@ -174,7 +209,9 @@ export class TeamsPage {
 
   async enterTeamMember() {
     this.memberEmail = 'playwright' + randomNumber + '@example.com'
-    await this.page.locator('input[name="email"]').fill(this.memberEmail)
+    const emailInput = this.page.locator('input[name="email"]')
+    await expect(emailInput).toBeEnabled({ timeout: thirtySecondsTimeout })
+    await emailInput.fill(this.memberEmail)
   }
 
   async clickPlusMemberInMemberPopup() {
@@ -197,10 +234,20 @@ export class TeamsPage {
 
   //Custom Domain option in Three dot menu
 
-  async enterCustomDomainName(domainName) {
-    await this.page
-      .locator('div.MuiDialogContent-root input#name')
-      .fill(domainName)
+  async enterCustomDomainName(domainName: string): Promise<void> {
+    const domainInput = this.page.locator('div.MuiDialogContent-root input#name')
+    await expect(domainInput).toBeVisible({ timeout: thirtySecondsTimeout })
+
+    if (await domainInput.getAttribute('readonly')) {
+      const disconnectButton = this.page
+        .locator('div.MuiDialogContent-root')
+        .getByRole('button', { name: 'Disconnect' })
+      await expect(disconnectButton).toBeEnabled({ timeout: thirtySecondsTimeout })
+      await disconnectButton.click()
+      await expect(domainInput).toBeEditable({ timeout: thirtySecondsTimeout })
+    }
+
+    await domainInput.fill(domainName)
   }
 
   async clickConnectBtn() {
