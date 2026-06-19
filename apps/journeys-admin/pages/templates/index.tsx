@@ -129,6 +129,7 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
       variables: {
         languageId: '529',
         where: {
+          hasVideos: true,
           ids: templateLanguageIds ?? []
         }
       }

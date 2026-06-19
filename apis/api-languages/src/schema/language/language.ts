@@ -165,6 +165,7 @@ builder.queryFields((t) => ({
       return await prisma.language.findMany({
         ...query,
         where: languageWhereInput(where, term),
+        orderBy: { id: 'asc' },
         skip: offset ?? undefined,
         take: limit ?? undefined
       })
