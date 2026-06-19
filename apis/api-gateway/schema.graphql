@@ -4700,7 +4700,6 @@ input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
   ids: [ID!]
   bcp47: [String!]
   iso3: [String!]
-  hasVideos: Boolean
   updatedAt: DateTimeFilter
 }
 

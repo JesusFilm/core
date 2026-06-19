@@ -1,5 +1,6 @@
 import { Prisma, prisma } from '@core/prisma/languages/client'
 
+import { parseFullTextSearch } from '../../lib/parseFullTextSearch'
 import { DateTimeFilter, builder, toPrismaDateTimeFilter } from '../builder'
 
 enum LanguageIdType {
@@ -20,7 +21,6 @@ const LanguagesFilter = builder.inputType('LanguagesFilter', {
     iso3: t.field({
       type: ['String']
     }),
-    hasVideos: t.boolean({ required: false }),
     updatedAt: t.field({ type: DateTimeFilter, required: false })
   })
 })
@@ -76,19 +76,39 @@ function optionalString(
 }
 
 function languageWhereInput(
-  where:
-    | typeof LanguagesFilter.$inferInput
-    | typeof AdminLanguagesFilter.$inferInput
-    | null
-    | undefined,
-  term: string | null | undefined,
-  defaultHasVideos?: boolean
+  where: typeof LanguagesFilter.$inferInput | null | undefined,
+  term: string | null | undefined
+): Prisma.LanguageWhereInput {
+  const filter: Prisma.LanguageWhereInput = { hasVideos: true }
+  if (where?.ids != null) filter.id = { in: where.ids }
+  if (where?.bcp47 != null) filter.bcp47 = { in: where.bcp47 }
+  if (where?.iso3 != null) filter.iso3 = { in: where.iso3 }
+  filter.updatedAt = toPrismaDateTimeFilter(where?.updatedAt)
+
+  if (term != null) {
+    const searchQuery = parseFullTextSearch(term)
+    filter.name = {
+      some: {
+        value: {
+          contains: searchQuery,
+          mode: 'insensitive'
+        }
+      }
+    }
+  }
+
+  return filter
+}
+
+function adminLanguageWhereInput(
+  where: typeof AdminLanguagesFilter.$inferInput | null | undefined,
+  term: string | null | undefined
 ): Prisma.LanguageWhereInput {
   const filter: Prisma.LanguageWhereInput = {}
   if (where?.ids != null) filter.id = { in: where.ids }
   if (where?.bcp47 != null) filter.bcp47 = { in: where.bcp47 }
   if (where?.iso3 != null) filter.iso3 = { in: where.iso3 }
-  filter.hasVideos = where?.hasVideos ?? defaultHasVideos
+  if (where?.hasVideos != null) filter.hasVideos = where.hasVideos
   filter.updatedAt = toPrismaDateTimeFilter(where?.updatedAt)
 
   const searchTerm = term?.trim()
@@ -185,8 +205,7 @@ builder.queryFields((t) => ({
     resolve: async (query, _parent, { offset, limit, where, term }) => {
       return await prisma.language.findMany({
         ...query,
-        where: languageWhereInput(where, term, true),
-        orderBy: { id: 'asc' },
+        where: languageWhereInput(where, term),
         skip: offset ?? undefined,
         take: limit ?? undefined
       })
@@ -201,7 +220,7 @@ builder.queryFields((t) => ({
     },
     resolve: async (_parent, { where, term }) => {
       return await prisma.language.count({
-        where: languageWhereInput(where, term, true)
+        where: languageWhereInput(where, term)
       })
     }
   }),
@@ -218,7 +237,7 @@ builder.queryFields((t) => ({
     resolve: async (query, _parent, { offset, limit, where, term }) => {
       return await prisma.language.findMany({
         ...query,
-        where: languageWhereInput(where, term),
+        where: adminLanguageWhereInput(where, term),
         orderBy: { id: 'asc' },
         skip: offset ?? undefined,
         take: limit ?? undefined
@@ -234,7 +253,7 @@ builder.queryFields((t) => ({
     },
     resolve: async (_parent, { where, term }) => {
       return await prisma.language.count({
-        where: languageWhereInput(where, term)
+        where: adminLanguageWhereInput(where, term)
       })
     }
   })

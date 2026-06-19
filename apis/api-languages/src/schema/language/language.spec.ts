@@ -403,7 +403,6 @@ describe('languages', () => {
     })
 
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
-      orderBy: { id: 'asc' },
       where: {
         hasVideos: true,
         updatedAt: undefined
@@ -423,7 +422,6 @@ describe('languages', () => {
     })
 
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
-      orderBy: { id: 'asc' },
       where: {
         hasVideos: true,
         updatedAt: { gte: new Date(updatedSince) }
@@ -435,23 +433,6 @@ describe('languages', () => {
         updatedAt: language.updatedAt.toISOString()
       }
     ])
-  })
-
-  it('should query languages with hasVideos filter', async () => {
-    prismaMock.language.findMany.mockResolvedValue([language])
-
-    await client({
-      document: LANGUAGES_QUERY,
-      variables: { where: { hasVideos: true } }
-    })
-
-    expect(prismaMock.language.findMany).toHaveBeenCalledWith({
-      orderBy: { id: 'asc' },
-      where: {
-        hasVideos: true,
-        updatedAt: undefined
-      }
-    })
   })
 
   it('should query languages with ids, bcp47, and iso3 filters while preserving default hasVideos filter', async () => {
@@ -469,7 +450,6 @@ describe('languages', () => {
     })
 
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
-      orderBy: { id: 'asc' },
       where: {
         id: { in: ['529'] },
         bcp47: { in: ['en'] },
@@ -480,7 +460,7 @@ describe('languages', () => {
     })
   })
 
-  it('should query languages by language name or id prefix search term', async () => {
+  it('should query languages by language name search term', async () => {
     prismaMock.language.findMany.mockResolvedValue([language])
 
     await client({
@@ -489,20 +469,14 @@ describe('languages', () => {
     })
 
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
-      orderBy: { id: 'asc' },
       where: {
         hasVideos: true,
         updatedAt: undefined,
-        OR: [
-          { id: { startsWith: 'eng' } },
-          {
-            name: {
-              some: {
-                value: { contains: 'eng', mode: 'insensitive' }
-              }
-            }
+        name: {
+          some: {
+            value: { contains: 'eng', mode: 'insensitive' }
           }
-        ]
+        }
       }
     })
   })
@@ -535,23 +509,7 @@ describe('languagesCount', () => {
     expect(data).toHaveProperty('data.languagesCount', 5)
   })
 
-  it('should count languages with hasVideos filter', async () => {
-    prismaMock.language.count.mockResolvedValue(3)
-
-    await client({
-      document: LANGUAGES_COUNT_QUERY,
-      variables: { where: { hasVideos: false } }
-    })
-
-    expect(prismaMock.language.count).toHaveBeenCalledWith({
-      where: {
-        hasVideos: false,
-        updatedAt: undefined
-      }
-    })
-  })
-
-  it('should count languages by numeric id prefix search term', async () => {
+  it('should count languages by language name search term', async () => {
     prismaMock.language.count.mockResolvedValue(5)
 
     await client({
@@ -563,16 +521,11 @@ describe('languagesCount', () => {
       where: {
         hasVideos: true,
         updatedAt: undefined,
-        OR: [
-          { id: { startsWith: '123' } },
-          {
-            name: {
-              some: {
-                value: { contains: '123', mode: 'insensitive' }
-              }
-            }
+        name: {
+          some: {
+            value: { contains: '123', mode: 'insensitive' }
           }
-        ]
+        }
       }
     })
   })
@@ -607,7 +560,6 @@ describe('adminLanguages', () => {
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
       orderBy: { id: 'asc' },
       where: {
-        hasVideos: undefined,
         updatedAt: undefined
       }
     })
@@ -641,7 +593,6 @@ describe('adminLanguages', () => {
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
       orderBy: { id: 'asc' },
       where: {
-        hasVideos: undefined,
         updatedAt: undefined,
         OR: [
           { id: { startsWith: 'eng' } },
@@ -666,7 +617,6 @@ describe('adminLanguages', () => {
 
     expect(prismaMock.language.count).toHaveBeenCalledWith({
       where: {
-        hasVideos: undefined,
         updatedAt: undefined
       }
     })
