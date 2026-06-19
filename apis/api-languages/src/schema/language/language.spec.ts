@@ -54,6 +54,24 @@ const LANGUAGES_COUNT_QUERY = graphql(`
   }
 `)
 
+const ADMIN_LANGUAGES_QUERY = graphql(`
+  query AdminLanguages($where: AdminLanguagesFilter, $term: String) {
+    adminLanguages(where: $where, term: $term) {
+      id
+      updatedAt
+      bcp47
+      iso3
+      slug
+    }
+  }
+`)
+
+const ADMIN_LANGUAGES_COUNT_QUERY = graphql(`
+  query AdminLanguagesCount($where: AdminLanguagesFilter, $term: String) {
+    adminLanguagesCount(where: $where, term: $term)
+  }
+`)
+
 const LANGUAGE_UPDATE_MUTATION = parse(`
   mutation LanguageUpdate($input: LanguageUpdateInput!) {
     languageUpdate(input: $input) {
@@ -377,6 +395,22 @@ describe('languages', () => {
     await cache.invalidate([{ typename: 'Language' }])
   })
 
+  it('should query languages with default hasVideos filter', async () => {
+    prismaMock.language.findMany.mockResolvedValue([language])
+
+    await client({
+      document: LANGUAGES_QUERY
+    })
+
+    expect(prismaMock.language.findMany).toHaveBeenCalledWith({
+      orderBy: { id: 'asc' },
+      where: {
+        hasVideos: true,
+        updatedAt: undefined
+      }
+    })
+  })
+
   it('should query languages with updatedAt filter', async () => {
     prismaMock.language.findMany.mockResolvedValue([language])
 
@@ -391,6 +425,7 @@ describe('languages', () => {
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
       orderBy: { id: 'asc' },
       where: {
+        hasVideos: true,
         updatedAt: { gte: new Date(updatedSince) }
       }
     })
@@ -419,6 +454,32 @@ describe('languages', () => {
     })
   })
 
+  it('should query languages with ids, bcp47, and iso3 filters while preserving default hasVideos filter', async () => {
+    prismaMock.language.findMany.mockResolvedValue([language])
+
+    await client({
+      document: LANGUAGES_QUERY,
+      variables: {
+        where: {
+          ids: ['529'],
+          bcp47: ['en'],
+          iso3: ['eng']
+        }
+      }
+    })
+
+    expect(prismaMock.language.findMany).toHaveBeenCalledWith({
+      orderBy: { id: 'asc' },
+      where: {
+        id: { in: ['529'] },
+        bcp47: { in: ['en'] },
+        iso3: { in: ['eng'] },
+        hasVideos: true,
+        updatedAt: undefined
+      }
+    })
+  })
+
   it('should query languages by language name or id prefix search term', async () => {
     prismaMock.language.findMany.mockResolvedValue([language])
 
@@ -430,6 +491,7 @@ describe('languages', () => {
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
       orderBy: { id: 'asc' },
       where: {
+        hasVideos: true,
         updatedAt: undefined,
         OR: [
           { id: { startsWith: 'eng' } },
@@ -466,6 +528,7 @@ describe('languagesCount', () => {
 
     expect(prismaMock.language.count).toHaveBeenCalledWith({
       where: {
+        hasVideos: true,
         updatedAt: { gte: new Date(updatedSince) }
       }
     })
@@ -498,6 +561,7 @@ describe('languagesCount', () => {
 
     expect(prismaMock.language.count).toHaveBeenCalledWith({
       where: {
+        hasVideos: true,
         updatedAt: undefined,
         OR: [
           { id: { startsWith: '123' } },
@@ -511,5 +575,128 @@ describe('languagesCount', () => {
         ]
       }
     })
+  })
+})
+
+describe('adminLanguages', () => {
+  const authClient = getClient({
+    headers: {
+      authorization: 'token'
+    }
+  })
+
+  beforeEach(() => {
+    prismaMock.userLanguageRole.findUnique.mockResolvedValue({
+      id: 'roleId',
+      userId: 'id',
+      roles: [LanguageRole.publisher]
+    })
+  })
+
+  afterEach(async () => {
+    await cache.invalidate([{ typename: 'Language' }])
+  })
+
+  it('should query admin languages without default hasVideos filter', async () => {
+    prismaMock.language.findMany.mockResolvedValue([language])
+
+    await authClient({
+      document: ADMIN_LANGUAGES_QUERY
+    })
+
+    expect(prismaMock.language.findMany).toHaveBeenCalledWith({
+      orderBy: { id: 'asc' },
+      where: {
+        hasVideos: undefined,
+        updatedAt: undefined
+      }
+    })
+  })
+
+  it('should query admin languages with hasVideos filter', async () => {
+    prismaMock.language.findMany.mockResolvedValue([language])
+
+    await authClient({
+      document: ADMIN_LANGUAGES_QUERY,
+      variables: { where: { hasVideos: false } }
+    })
+
+    expect(prismaMock.language.findMany).toHaveBeenCalledWith({
+      orderBy: { id: 'asc' },
+      where: {
+        hasVideos: false,
+        updatedAt: undefined
+      }
+    })
+  })
+
+  it('should query admin languages by language name or id prefix search term', async () => {
+    prismaMock.language.findMany.mockResolvedValue([language])
+
+    await authClient({
+      document: ADMIN_LANGUAGES_QUERY,
+      variables: { term: 'eng' }
+    })
+
+    expect(prismaMock.language.findMany).toHaveBeenCalledWith({
+      orderBy: { id: 'asc' },
+      where: {
+        hasVideos: undefined,
+        updatedAt: undefined,
+        OR: [
+          { id: { startsWith: 'eng' } },
+          {
+            name: {
+              some: {
+                value: { contains: 'eng', mode: 'insensitive' }
+              }
+            }
+          }
+        ]
+      }
+    })
+  })
+
+  it('should count admin languages without default hasVideos filter', async () => {
+    prismaMock.language.count.mockResolvedValue(5)
+
+    await authClient({
+      document: ADMIN_LANGUAGES_COUNT_QUERY
+    })
+
+    expect(prismaMock.language.count).toHaveBeenCalledWith({
+      where: {
+        hasVideos: undefined,
+        updatedAt: undefined
+      }
+    })
+  })
+
+  it('should count admin languages with hasVideos filter', async () => {
+    prismaMock.language.count.mockResolvedValue(3)
+
+    await authClient({
+      document: ADMIN_LANGUAGES_COUNT_QUERY,
+      variables: { where: { hasVideos: true } }
+    })
+
+    expect(prismaMock.language.count).toHaveBeenCalledWith({
+      where: {
+        hasVideos: true,
+        updatedAt: undefined
+      }
+    })
+  })
+
+  it('should reject unauthenticated admin language query', async () => {
+    const client = getClient()
+    const data = (await client({
+      document: ADMIN_LANGUAGES_QUERY
+    })) as { data: null; errors?: Array<{ message: string }> }
+
+    expect(data).toHaveProperty('data', null)
+    expect(data.errors?.[0].message).toBe(
+      'Not authorized to resolve Query.adminLanguages'
+    )
   })
 })
