@@ -1,7 +1,7 @@
 {
-  "name": "api-journeys-modern",
+  "name": "api-journeys",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apis/api-journeys-modern/src",
+  "sourceRoot": "apis/api-journeys/src",
   "projectType": "application",
   "tags": [],
   "targets": {
@@ -10,12 +10,12 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "development",
       "options": {
-        "outputPath": "dist/apps/api-journeys-modern",
-        "main": "apis/api-journeys-modern/src/index.ts",
-        "tsConfig": "apis/api-journeys-modern/tsconfig.app.json",
+        "outputPath": "dist/apps/api-journeys",
+        "main": "apis/api-journeys/src/index.ts",
+        "tsConfig": "apis/api-journeys/tsconfig.app.json",
         "compiler": "tsc",
         "target": "node",
-        "webpackConfig": "apis/api-journeys-modern/webpack.config.js"
+        "webpackConfig": "apis/api-journeys/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -29,13 +29,13 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "nx _serve api-journeys-modern | pnpm exec pino-pretty --config .pino-prettyrc.js"
+        "command": "nx _serve api-journeys | pnpm exec pino-pretty --config .pino-prettyrc.js"
       }
     },
     "_serve": {
       "executor": "@nx/js:node",
       "options": {
-        "buildTarget": "api-journeys-modern:build",
+        "buildTarget": "api-journeys:build",
         "inspect": false
       }
     },
@@ -44,45 +44,45 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "cache": true,
-        "cacheLocation": ".cache/api-journeys-modern/eslint",
+        "cacheLocation": ".cache/api-journeys/eslint",
         "cacheStrategy": "content"
       }
     },
     "test": {
       "executor": "@nx/vitest:test",
-      "outputs": ["{workspaceRoot}/coverage/apis/api-journeys-modern"],
+      "outputs": ["{workspaceRoot}/coverage/apis/api-journeys"],
       "options": {
-        "configFile": "apis/api-journeys-modern/vitest.config.mts"
+        "configFile": "apis/api-journeys/vitest.config.mts"
       }
     },
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "GENERATE_SCHEMA=true pnpm exec tsx --tsconfig apis/api-journeys-modern/tsconfig.app.json -r tsconfig-paths/register apis/api-journeys-modern/src/schema/index.ts"
+        "command": "GENERATE_SCHEMA=true pnpm exec tsx --tsconfig apis/api-journeys/tsconfig.app.json -r tsconfig-paths/register apis/api-journeys/src/schema/index.ts"
       }
     },
     "subgraph-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec hive schema:check apis/api-journeys-modern/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-journeys-modern"
+        "command": "pnpm exec hive schema:check apis/api-journeys/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-journeys-modern"
       }
     },
     "fetch-secrets": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "DOPPLER_TOKEN=$DOPPLER_API_JOURNEYS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-journeys > apis/api-journeys-modern/.env"
+        "command": "DOPPLER_TOKEN=$DOPPLER_API_JOURNEYS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-journeys > apis/api-journeys/.env"
       }
     },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsc -b apis/api-journeys-modern/tsconfig.json"
+        "command": "pnpm exec tsc -b apis/api-journeys/tsconfig.json"
       }
     },
     "codecov": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "codecov -f coverage/apis/api-journeys-modern/cobertura-coverage.xml -F apps.api-journeys-modern"
+        "command": "codecov -f coverage/apis/api-journeys/cobertura-coverage.xml -F apps.api-journeys"
       }
     },
     "email": {
@@ -91,27 +91,27 @@
         "parallel": false,
         "commands": [
           "if lsof -Pi :4601 -sTCP:LISTEN -t>/dev/null; then\nkill -9 $(lsof -Pi :4601 -sTCP:LISTEN -t)\nfi",
-          "email dev --dir apis/api-journeys-modern/src/emails/templates --port 4601"
+          "email dev --dir apis/api-journeys/src/emails/templates --port 4601"
         ]
       }
     },
     "update-shortlinks": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsx --tsconfig apis/api-journeys-modern/tsconfig.app.json apis/api-journeys-modern/src/workers/cli.ts shortlink-updater"
+        "command": "pnpm exec tsx --tsconfig apis/api-journeys/tsconfig.app.json apis/api-journeys/src/workers/cli.ts shortlink-updater"
       }
     },
     "playwright-cleanup": {
       "executor": "nx:run-commands",
       "dependsOn": ["prisma-generate-ci"],
       "options": {
-        "command": "pnpm exec tsx --tsconfig apis/api-journeys-modern/tsconfig.app.json -r tsconfig-paths/register apis/api-journeys-modern/src/workers/cli.ts e2e-cleanup"
+        "command": "pnpm exec tsx --tsconfig apis/api-journeys/tsconfig.app.json -r tsconfig-paths/register apis/api-journeys/src/workers/cli.ts e2e-cleanup"
       }
     },
     "fix-cross-team-visitors": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsx --tsconfig apis/api-journeys-modern/tsconfig.app.json -r tsconfig-paths/register apis/api-journeys-modern/src/scripts/fix-cross-team-visitors.ts"
+        "command": "pnpm exec tsx --tsconfig apis/api-journeys/tsconfig.app.json -r tsconfig-paths/register apis/api-journeys/src/scripts/fix-cross-team-visitors.ts"
       }
     }
   }

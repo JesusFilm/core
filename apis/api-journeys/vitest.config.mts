@@ -34,7 +34,7 @@ export default defineConfig({
       enabled: true,
       provider: 'v8',
       reporter: ['cobertura'],
-      reportsDirectory: '../../coverage/apis/api-journeys-modern'
+      reportsDirectory: '../../coverage/apis/api-journeys'
     },
     pool: 'forks',
     passWithNoTests: true,

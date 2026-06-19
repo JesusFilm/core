@@ -49,12 +49,13 @@ jobs:
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-  api-journeys-modern:
+  api-journeys:
     needs: affected
-    if: contains(needs.affected.outputs.matrix, 'api-journeys-modern')
+    if: contains(needs.affected.outputs.matrix, 'api-journeys')
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
     with:
-      name: api-journeys-modern
+      name: api-journeys
+      service: api-journeys-modern
       env: prod
       branch: ${{ github.ref_name }}
       endpoint_url: http://api-journeys-modern.service.internal:4004/graphql
