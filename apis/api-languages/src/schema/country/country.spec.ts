@@ -108,7 +108,8 @@ describe('country', () => {
           }
         },
         countryLanguages: {
-          include: { language: true }
+          include: { language: true },
+          where: { language: { hasVideos: true } }
         },
         name: {
           include: {
