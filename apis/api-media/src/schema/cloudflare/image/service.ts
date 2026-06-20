@@ -1,15 +1,14 @@
-import 'cloudflare/shims/node'
-
 import Cloudflare from 'cloudflare'
-import fetch, { Response } from 'node-fetch'
 
+// Use Node's native global `fetch` (undici) rather than node-fetch@2, whose gzip
+// stream handling throws "Premature close" on the alpine/musl prod runtime. The
+// Cloudflare SDK defaults to the global fetch when none is supplied. [QA-530]
 export function getClient(): Cloudflare {
   if (process.env.CLOUDFLARE_IMAGES_TOKEN == null)
     throw new Error('Missing CLOUDFLARE_IMAGES_TOKEN')
 
   return new Cloudflare({
-    apiToken: process.env.CLOUDFLARE_IMAGES_TOKEN,
-    fetch
+    apiToken: process.env.CLOUDFLARE_IMAGES_TOKEN
   })
 }
 

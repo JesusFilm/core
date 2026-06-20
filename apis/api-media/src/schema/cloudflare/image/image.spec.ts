@@ -1,4 +1,3 @@
-import { Response } from 'node-fetch'
 import { type Mocked, type MockedFunction, vi } from 'vitest'
 
 import { CloudflareImage, ImageAspectRatio } from '@core/prisma/media/client'
