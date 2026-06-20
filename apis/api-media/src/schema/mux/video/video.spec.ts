@@ -756,7 +756,7 @@ describe('mux/video', () => {
         )
       })
 
-      it('should not create a row when caller lacks access to the journey team', async () => {
+      it('should create the asset without a teamId when caller lacks access to the journey team', async () => {
         ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -766,6 +766,9 @@ describe('mux/video', () => {
           teamId: 'teamId',
           team: { userTeams: [] }
         } as never)
+        ;(prismaMock.muxVideo.create as Mock).mockResolvedValue({
+          id: 'videoId'
+        })
 
         const result = (await authClient({
           document: CREATE_BY_FILE_WITH_JOURNEY,
@@ -775,8 +778,12 @@ describe('mux/video', () => {
           errors?: { extensions?: { code?: string } }[]
         }
 
-        expect(result.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
-        expect(prismaMock.muxVideo.create).not.toHaveBeenCalled()
+        expect(result.errors).toBeUndefined()
+        expect(prismaMock.muxVideo.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ teamId: null })
+          })
+        )
       })
 
       it('should create video with generated subtitles when generateSubtitlesInput is provided', async () => {
@@ -993,7 +1000,7 @@ describe('mux/video', () => {
         )
       })
 
-      it('should not create a row when caller lacks access to the journey team', async () => {
+      it('should create the asset without a teamId when caller lacks access to the journey team', async () => {
         ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -1003,6 +1010,9 @@ describe('mux/video', () => {
           teamId: 'teamId',
           team: { userTeams: [] }
         } as never)
+        ;(prismaMock.muxVideo.create as Mock).mockResolvedValue({
+          id: 'videoId'
+        })
 
         const result = (await authClient({
           document: CREATE_BY_URL_WITH_JOURNEY,
@@ -1015,8 +1025,12 @@ describe('mux/video', () => {
           errors?: { extensions?: { code?: string } }[]
         }
 
-        expect(result.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
-        expect(prismaMock.muxVideo.create).not.toHaveBeenCalled()
+        expect(result.errors).toBeUndefined()
+        expect(prismaMock.muxVideo.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ teamId: null })
+          })
+        )
       })
     })
 
