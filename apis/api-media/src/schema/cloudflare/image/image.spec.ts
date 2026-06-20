@@ -539,11 +539,18 @@ describe('cloudflareImage', () => {
         )
       })
 
-      it('should not create a row when caller lacks access to the journey team', async () => {
+      it('should create the asset without a teamId when caller lacks access to the journey team', async () => {
+        mockCreateImageByDirectUpload.mockResolvedValue({
+          id: 'id',
+          uploadURL: 'testUrl'
+        })
         journeysPrismaMock.journey.findUnique.mockResolvedValue({
           teamId: 'teamId',
           team: { userTeams: [] }
         } as never)
+        prismaMock.cloudflareImage.create.mockResolvedValue({
+          id: 'id'
+        } as unknown as CloudflareImage)
 
         const result = (await authClient({
           document: CREATE_BY_FILE_WITH_JOURNEY_MUTATION,
@@ -553,8 +560,12 @@ describe('cloudflareImage', () => {
           errors?: { extensions?: { code?: string } }[]
         }
 
-        expect(result.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
-        expect(prismaMock.cloudflareImage.create).not.toHaveBeenCalled()
+        expect(result.errors).toBeUndefined()
+        expect(prismaMock.cloudflareImage.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ teamId: null })
+          })
+        )
       })
     })
 
@@ -662,11 +673,15 @@ describe('cloudflareImage', () => {
         )
       })
 
-      it('should not create a row when caller lacks access to the journey team', async () => {
+      it('should create the asset without a teamId when caller lacks access to the journey team', async () => {
+        mockCreateImageFromUrl.mockResolvedValue({ id: 'id' })
         journeysPrismaMock.journey.findUnique.mockResolvedValue({
           teamId: 'teamId',
           team: { userTeams: [] }
         } as never)
+        prismaMock.cloudflareImage.create.mockResolvedValue({
+          id: 'id'
+        } as unknown as CloudflareImage)
 
         const result = (await authClient({
           document: CREATE_BY_URL_WITH_JOURNEY_MUTATION,
@@ -676,8 +691,12 @@ describe('cloudflareImage', () => {
           errors?: { extensions?: { code?: string } }[]
         }
 
-        expect(result.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
-        expect(prismaMock.cloudflareImage.create).not.toHaveBeenCalled()
+        expect(result.errors).toBeUndefined()
+        expect(prismaMock.cloudflareImage.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ teamId: null })
+          })
+        )
       })
     })
 
@@ -790,11 +809,16 @@ describe('cloudflareImage', () => {
         )
       })
 
-      it('should not create a row when caller lacks access to the journey team', async () => {
+      it('should create the asset without a teamId when caller lacks access to the journey team', async () => {
+        mockCreateImageFromText.mockResolvedValue(new Response())
+        mockCreateImageFromResponse.mockResolvedValue({ id: 'id' })
         journeysPrismaMock.journey.findUnique.mockResolvedValue({
           teamId: 'teamId',
           team: { userTeams: [] }
         } as never)
+        prismaMock.cloudflareImage.create.mockResolvedValue({
+          id: 'id'
+        } as unknown as CloudflareImage)
 
         const result = (await authClient({
           document: CREATE_FROM_PROMPT_WITH_JOURNEY_MUTATION,
@@ -804,8 +828,12 @@ describe('cloudflareImage', () => {
           errors?: { extensions?: { code?: string } }[]
         }
 
-        expect(result.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
-        expect(prismaMock.cloudflareImage.create).not.toHaveBeenCalled()
+        expect(result.errors).toBeUndefined()
+        expect(prismaMock.cloudflareImage.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ teamId: null })
+          })
+        )
       })
     })
 
