@@ -29,10 +29,10 @@ tags: [prisma, sql-null, nullable-column, graphql-resolver, cloudflare-image, me
 
 ## What Didn't Work
 
-- **Backfilling the data + hardening the column** (`UPDATE "CloudflareImage" SET "isAi" = false WHERE "isAi" IS NULL` then `ALTER COLUMN "isAi" SET DEFAULT false, SET NOT NULL`). This *is* correct SQL and passed locally, but was abandoned because:
+- **Backfilling the data + hardening the column** (`UPDATE "CloudflareImage" SET "isAi" = false WHERE "isAi" IS NULL` then `ALTER COLUMN "isAi" SET DEFAULT false, SET NOT NULL`). This _is_ correct SQL and passed locally, but was abandoned because:
   - A full-table `UPDATE` plus `SET NOT NULL` takes an `ACCESS EXCLUSIVE` lock + validation scan on the production table — risky under load.
   - It did not reliably apply on **stage**: api-media runs `prisma migrate deploy` in `docker-entrypoint.sh` under `set -e`. A migration that errors (lock/timeout) aborts the entrypoint, ECS rolls back to the previous image, and the rows are left un-backfilled — while the app still serves, so the bug silently persists. (The symptom "only post-deploy uploads show" is identical whether the migration never applied or a userId mismatch exists — don't assume which without checking `_prisma_migrations` / a row's `userId`.)
-- **Assuming the existing `...(isAi != null ? { isAi } : {})` already handled null.** It checks the *argument*, not the *column*. The frontend always sends a concrete boolean (`false`/`true`), so the `{}` (no-filter) branch never fires for the picker, and the column-null rows stay excluded.
+- **Assuming the existing `...(isAi != null ? { isAi } : {})` already handled null.** It checks the _argument_, not the _column_. The frontend always sends a concrete boolean (`false`/`true`), so the `{}` (no-filter) branch never fires for the picker, and the column-null rows stay excluded.
 
 ## Solution
 
