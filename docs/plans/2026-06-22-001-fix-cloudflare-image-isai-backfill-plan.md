@@ -179,3 +179,40 @@ Root cause (diagnosed): migration `20260506045451_add_is_ai_to_cloudflare_image`
 - Workflow rule: `.claude/rules/backend/database-schema-changes.md`
 - Learning: `docs/solutions/workflow-issues/prisma7-migrate-and-nx-codegen-schema-change-gotchas-2026-06-02.md`
 - Code: `apis/api-media/src/schema/cloudflare/image/image.ts`, `libs/prisma/media/db/schema.prisma`
+
+---
+
+## Outcome — Final Solution (supersedes the backfill plan above)
+
+> The backfill + `NOT NULL` plan above was implemented first, then **abandoned**. The sections above are kept for context; this section is the solution that actually shipped.
+
+### What changed
+
+The fix was moved from the **data** to the **read path**. Instead of backfilling `NULL → false` and hardening the column, `getMyCloudflareImages` now treats a `null` `isAi` as "not AI" at query time:
+
+- **Custom tab** (`isAi: false`) → matches `false` **or** `null`: `OR [{ isAi: false }, { isAi: null }]`
+- **AI tab** (`isAi: true`) → matches `true`
+- arg omitted → no `isAi` filter
+
+The `where` is reshaped to a top-level `AND` so the null-tolerant `isAi` predicate composes with the existing `userId`/`teamId` `OR` predicate without an `OR`-key collision.
+
+`isAi` stays `Boolean?` — **no migration, no schema change, no codegen.** Net diff vs `main`: only `image.ts` (resolver) + `image.spec.ts` (tests).
+
+### Why we abandoned the backfill
+
+- A full-table `UPDATE` + `SET NOT NULL` takes an `ACCESS EXCLUSIVE` lock on the production `CloudflareImage` table — risky, and it did **not** reliably apply on stage (the entrypoint runs `prisma migrate deploy` under `set -e`; a failed migration silently rolls back to the old image, leaving rows un-backfilled).
+- For this product, "a `null` upload is just a non-AI upload" is permanently true, so resolving `null` in the query is a complete fix, not a patch — with zero data-mutation risk.
+
+### Reverted from the first cut
+
+- Deleted the backfill migration; reverted `schema.prisma` to `isAi Boolean?`; reverted the generated client and the `video.spec.ts` / `image.spec.ts` `null → false` mock edits.
+
+### Verified
+
+- All 84 api-media tests pass; added a case proving a `null`-isAi historical row is returned under the Custom tab.
+- Confirmed on stage: a user with both pre- and post-feature uploads now sees their historical images in the Custom tab.
+
+### Tracking
+
+- PR: [#9323](https://github.com/JesusFilm/core/pull/9323) — "fix(api-media): surface historical uploads in the media library picker"
+- Linear: NES-1744
