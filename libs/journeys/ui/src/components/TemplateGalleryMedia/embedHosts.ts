@@ -7,7 +7,7 @@ import { KNOWN_EMBED_HOSTS } from './embedAttrs'
  *
  *   { "canva": "canva.com", "youtube": "youtube-nocookie.com" }
  *
- * Mirrors `apis/api-journeys-modern/src/parseEmbedHostsEnv.ts` so the one
+ * Mirrors `apis/api-journeys/src/parseEmbedHostsEnv.ts` so the one
  * Doppler value parses identically on both sides. The two should eventually
  * share one module in a common lib; until then keep the JSON shape in lockstep.
  *

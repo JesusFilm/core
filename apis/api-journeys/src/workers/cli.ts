@@ -116,7 +116,7 @@ export async function cli(argv = process.argv): Promise<void> {
   console.log(
     chalk.cyan(
       'you must start the worker by using',
-      chalk.bold('nx run api-journeys-modern:serve'),
+      chalk.bold('nx run api-journeys:serve'),
       'or',
       chalk.bold('nf start')
     )

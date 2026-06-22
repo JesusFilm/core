@@ -7,7 +7,7 @@ const tsconfigRootDir = dirname(fileURLToPath(import.meta.url))
 export default [
   ...yogaConfig,
   {
-    ignores: ['apis/api-journeys-modern/webpack.config.js']
+    ignores: ['apis/api-journeys/webpack.config.js']
   },
   {
     files: ['**/*.ts', '**/*.tsx'],
