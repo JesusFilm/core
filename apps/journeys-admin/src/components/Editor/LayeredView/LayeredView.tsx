@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
 import Stack from '@mui/material/Stack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
@@ -16,6 +16,11 @@ export function LayeredView(): ReactElement {
     state: { activeSlide },
     dispatch
   } = useEditor()
+  // Host the drawer + backdrop inside the journey-map container (below the app
+  // bar) instead of portalling to <body>, so the overlay stops at the app bar:
+  // the toolbar stays interactive and clicking outside the map does not close
+  // the drawer.
+  const [container, setContainer] = useState<HTMLDivElement | null>(null)
 
   const drawerOpen =
     activeSlide === ActiveSlide.Content || activeSlide === ActiveSlide.Drawer
@@ -33,11 +38,13 @@ export function LayeredView(): ReactElement {
 
   return (
     <Box
+      ref={setContainer}
       data-testid="LayeredView"
       sx={{
         width: '100%',
         height: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px)`,
-        position: 'relative'
+        position: 'relative',
+        overflow: 'hidden'
       }}
     >
       <JourneyFlow />
@@ -46,11 +53,17 @@ export function LayeredView(): ReactElement {
         open={drawerOpen}
         onClose={handleDrawerClose}
         data-testid="LayeredViewDrawer"
-        // media libraries portal outside this drawer (see Settings/Drawer),
-        // so the focus trap must not wrestle focus away from their inputs
-        ModalProps={{ disableEnforceFocus: true }}
+        // Contain the drawer within the journey map: render into the map
+        // container and position the modal + backdrop absolutely within it so
+        // the overlay stops at the app bar. media libraries still portal to
+        // <body> (see Settings/Drawer), so the focus trap must not wrestle
+        // focus away from their inputs.
+        ModalProps={{ container, disableEnforceFocus: true }}
         sx={{
+          position: 'absolute',
+          '& .MuiBackdrop-root': { position: 'absolute' },
           '& .MuiDrawer-paper': {
+            position: 'absolute',
             height: LAYERED_DRAWER_HEIGHT,
             maxHeight: '100%',
             top: '50%',

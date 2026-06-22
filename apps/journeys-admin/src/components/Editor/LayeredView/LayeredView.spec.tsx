@@ -126,6 +126,18 @@ describe('LayeredView', () => {
     expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
   })
 
+  it('hosts the drawer inside the journey-map container, not the document body', () => {
+    renderLayeredView({ ...state, activeSlide: ActiveSlide.Drawer })
+
+    // the drawer renders into the map container rather than portalling to
+    // <body>, so the modal + backdrop are bounded to the map region (below the
+    // app bar) instead of covering the whole viewport. The absolute
+    // positioning that keeps them there is verified on the preview.
+    const container = screen.getByTestId('LayeredView')
+    expect(container).toContainElement(screen.getByTestId('LayeredViewDrawer'))
+    expect(container.querySelector('.MuiBackdrop-root')).toBeInTheDocument()
+  })
+
   it('makes the paper pointer-transparent while keeping the settings panel interactive', () => {
     renderLayeredView({ ...state, activeSlide: ActiveSlide.Drawer })
 
