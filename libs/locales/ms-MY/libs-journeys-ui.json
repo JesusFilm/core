@@ -1,4 +1,5 @@
 {
+  "About this chat": "Mengenai sembang ini",
   "Copy message": "Salin mesej",
   "Copy": "Copy",
   "Assistant is typing": "Penolong sedang menaip",
@@ -111,6 +112,7 @@
   "Close": "tutup",
   "Explore": "Terokai",
   "More": "Lagi",
+  "Media": "Media",
   "Use": "Gunakan",
   "This gallery has no templates yet.": "Galeri ini belum mempunyai sebarang templat.",
   "Untitled collection": "Koleksi tanpa tajuk",
@@ -123,6 +125,9 @@
   "Preview {{title}}": "Praperintihan {{title}}",
   "Ask a question": "Ask a question",
   "Replies may not be perfect": "Balasannya mungkin tidak sempurna.",
+  "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.": "Perbualan ini telah menjadi panjang. Mulakan perbualan baru untuk terus berbual — ini akan membersihkan sesi semasa.",
+  "Start a new conversation": "Mulakan perbualan baru",
+  "Gallery media": "Media galeri",
   "Select at least {{count}} options._other": "Pilih sekurang‑kurangnya {{count}} pilihan.",
   "Select up to {{count}} options._other": "Pilih sehingga {{count}} pilihan.",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Templat Perjalanan</0> <1>dalam</1> <2>{{count}} Bahasa</2>",

@@ -90,7 +90,10 @@ describe('PublicGalleryPage', () => {
           variant="journey"
           data={makeData({
             items: makeItems(5),
-            mediaUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+            media: {
+              type: 'link',
+              embedUrl: 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ'
+            }
           })}
         />
       )
@@ -107,7 +110,7 @@ describe('PublicGalleryPage', () => {
         within(nav).getByRole('button', { name: 'More' })
       ).toBeInTheDocument()
       expect(
-        within(nav).getByRole('button', { name: 'Strategy' })
+        within(nav).getByRole('button', { name: 'Media' })
       ).toBeInTheDocument()
     })
 
@@ -389,7 +392,7 @@ describe('PublicGalleryPage', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('renders the media section but no Explore/More when items are empty and mediaUrl is set', () => {
+    it('renders the media section but no Explore/More when items are empty and media is set', () => {
       // Regression guard: previously the empty-state component rendered
       // unconditionally on `items: []`, sitting above the media section
       // and producing contradictory "no templates yet" copy on a page that
@@ -400,7 +403,10 @@ describe('PublicGalleryPage', () => {
           variant="journey"
           data={makeData({
             items: [],
-            mediaUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+            media: {
+              type: 'link',
+              embedUrl: 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ'
+            }
           })}
         />
       )
@@ -410,24 +416,24 @@ describe('PublicGalleryPage', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('renders the media section when mediaUrl is set', () => {
+    it('renders the media section when media is set', () => {
       render(
         <PublicGalleryPage
           variant="journey"
           data={makeData({
-            mediaUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+            media: {
+              type: 'link',
+              embedUrl: 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ'
+            }
           })}
         />
       )
       expect(screen.getByTestId('TemplateGalleryMedia')).toBeInTheDocument()
     })
 
-    it('omits the media section when mediaUrl is null', () => {
+    it('omits the media section when media is null', () => {
       render(
-        <PublicGalleryPage
-          variant="journey"
-          data={makeData({ mediaUrl: null })}
-        />
+        <PublicGalleryPage variant="journey" data={makeData({ media: null })} />
       )
       expect(
         screen.queryByTestId('TemplateGalleryMedia')
@@ -509,6 +515,36 @@ describe('PublicGalleryPage', () => {
         )
       ).toBeInTheDocument()
       expect(screen.getByText('Creator name')).toBeInTheDocument()
+    })
+
+    it('renders the media section from mediaSlot, not data.media', () => {
+      render(
+        <PublicGalleryPage
+          variant="admin"
+          data={makeData({
+            media: {
+              type: 'link',
+              embedUrl: 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ'
+            }
+          })}
+          mediaSlot={<div data-testid="AdminMediaSlot" />}
+        />
+      )
+      // The admin preview renders form state via the consumer's slot; the
+      // public renderer (data.media) never mounts in this variant.
+      expect(screen.getByTestId('AdminMediaSlot')).toBeInTheDocument()
+      expect(
+        screen.queryByTestId('TemplateGalleryMedia')
+      ).not.toBeInTheDocument()
+    })
+
+    it('omits the media section when mediaSlot is not provided', () => {
+      render(
+        <PublicGalleryPage variant="admin" data={makeData({ media: null })} />
+      )
+      expect(
+        screen.queryByTestId('TemplateGalleryMedia')
+      ).not.toBeInTheDocument()
     })
   })
 })

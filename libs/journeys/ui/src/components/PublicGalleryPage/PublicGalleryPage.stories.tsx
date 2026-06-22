@@ -50,7 +50,7 @@ const gallery: PublicGalleryPageData = {
   creatorImageSrc:
     'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80',
   creatorImageAlt: 'Jane Doe',
-  mediaUrl: null,
+  media: null,
   items: Array.from({ length: 7 }, (_, index) => ({
     id: `template-${index}`,
     title: TITLES[index % TITLES.length],

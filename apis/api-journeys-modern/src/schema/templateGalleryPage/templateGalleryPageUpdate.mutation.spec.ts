@@ -1,3 +1,4 @@
+import { GraphQLError } from 'graphql'
 import { type MockedFunction, vi } from 'vitest'
 
 import { Prisma } from '@core/prisma/journeys/client'
@@ -7,9 +8,18 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
+import { linkValidate } from './media/linkValidate'
+import { muxValidate } from './media/muxValidate'
+
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
+
+vi.mock('./media/linkValidate', () => ({ linkValidate: vi.fn() }))
+vi.mock('./media/muxValidate', () => ({ muxValidate: vi.fn() }))
+
+const mockLinkValidate = linkValidate as MockedFunction<typeof linkValidate>
+const mockMuxValidate = muxValidate as MockedFunction<typeof muxValidate>
 
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
@@ -578,5 +588,312 @@ describe('templateGalleryPageUpdate', () => {
         data: expect.objectContaining({ mediaUrl: null })
       })
     )
+  })
+
+  describe('media', () => {
+    const TEMPLATE_GALLERY_PAGE_UPDATE_WITH_MEDIA = graphql(`
+      mutation TemplateGalleryPageUpdateWithMedia(
+        $id: ID!
+        $input: TemplateGalleryPageUpdateInput!
+      ) {
+        templateGalleryPageUpdate(id: $id, input: $input) {
+          id
+          media {
+            id
+            type
+            embedUrl
+            muxPlaybackId
+          }
+        }
+      }
+    `)
+
+    function mockExistingPage(media: unknown): void {
+      prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
+        id: 'p1',
+        teamId: 'team-1'
+      } as any)
+      prismaMock.templateGalleryPageMedia.upsert.mockResolvedValue({} as any)
+      prismaMock.templateGalleryPageMedia.deleteMany.mockResolvedValue({
+        count: 1
+      } as any)
+      prismaMock.templateGalleryPage.update.mockResolvedValue({
+        id: 'p1',
+        media
+      } as any)
+    }
+
+    it('upserts a link media row (create-on-update)', async () => {
+      mockLinkValidate.mockResolvedValue({
+        embedUrl: 'https://www.youtube-nocookie.com/embed/abc'
+      })
+      mockExistingPage({
+        id: 'm1',
+        type: 'link',
+        embedUrl: 'https://www.youtube-nocookie.com/embed/abc',
+        muxPlaybackId: null
+      })
+
+      const result = (await authClient({
+        document: TEMPLATE_GALLERY_PAGE_UPDATE_WITH_MEDIA,
+        variables: {
+          id: 'p1',
+          input: {
+            media: { type: 'link', url: 'https://www.youtube.com/watch?v=abc' }
+          }
+        }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(result.data.templateGalleryPageUpdate.media).toEqual({
+        id: 'm1',
+        type: 'link',
+        embedUrl: 'https://www.youtube-nocookie.com/embed/abc',
+        muxPlaybackId: null
+      })
+      // create seeds the full row; update only touches the provided slot (the
+      // link), leaving any stored mux payload untouched (muxVideoId omitted).
+      expect(prismaMock.templateGalleryPageMedia.upsert).toHaveBeenCalledWith({
+        where: { templateGalleryPageId: 'p1' },
+        create: {
+          templateGalleryPageId: 'p1',
+          type: 'link',
+          embedUrl: 'https://www.youtube-nocookie.com/embed/abc',
+          muxVideoId: null,
+          muxPlaybackId: null,
+          muxName: null,
+          muxDuration: null
+        },
+        update: {
+          type: 'link',
+          embedUrl: 'https://www.youtube-nocookie.com/embed/abc'
+        }
+      })
+    })
+
+    it('retains the other slot when switching type without re-sending it', async () => {
+      // Switch to type: none, sending no payloads — both stored slots stay.
+      mockExistingPage({
+        id: 'm1',
+        type: 'none',
+        embedUrl: 'e',
+        muxPlaybackId: 'pb'
+      })
+
+      const result = (await authClient({
+        document: TEMPLATE_GALLERY_PAGE_UPDATE_WITH_MEDIA,
+        variables: { id: 'p1', input: { media: { type: 'none' } } }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      // Only `type` is written; neither payload slot is touched.
+      expect(prismaMock.templateGalleryPageMedia.upsert).toHaveBeenCalledWith({
+        where: { templateGalleryPageId: 'p1' },
+        create: {
+          templateGalleryPageId: 'p1',
+          type: 'none',
+          embedUrl: null,
+          muxVideoId: null,
+          muxPlaybackId: null,
+          muxName: null,
+          muxDuration: null
+        },
+        update: { type: 'none' }
+      })
+    })
+
+    it('clears a single slot when its field is null', async () => {
+      // type stays link, but clear the parked upload slot.
+      mockExistingPage({
+        id: 'm1',
+        type: 'link',
+        embedUrl: 'e',
+        muxPlaybackId: null
+      })
+
+      await authClient({
+        document: TEMPLATE_GALLERY_PAGE_UPDATE_WITH_MEDIA,
+        variables: {
+          id: 'p1',
+          input: { media: { type: 'link', muxVideoId: null } }
+        }
+      })
+
+      expect(prismaMock.templateGalleryPageMedia.upsert).toHaveBeenCalledWith({
+        where: { templateGalleryPageId: 'p1' },
+        create: {
+          templateGalleryPageId: 'p1',
+          type: 'link',
+          embedUrl: null,
+          muxVideoId: null,
+          muxPlaybackId: null,
+          muxName: null,
+          muxDuration: null
+        },
+        update: {
+          type: 'link',
+          muxVideoId: null,
+          muxPlaybackId: null,
+          muxName: null,
+          muxDuration: null
+        }
+      })
+    })
+
+    it('upserts a mux media row (replace existing)', async () => {
+      mockMuxValidate.mockResolvedValue({
+        muxVideoId: 'vid-1',
+        muxPlaybackId: 'pb_x',
+        muxName: 'My clip',
+        muxDuration: 125
+      })
+      mockExistingPage({
+        id: 'm1',
+        type: 'mux',
+        embedUrl: null,
+        muxPlaybackId: 'pb_x'
+      })
+
+      const result = (await authClient({
+        document: TEMPLATE_GALLERY_PAGE_UPDATE_WITH_MEDIA,
+        variables: {
+          id: 'p1',
+          input: { media: { type: 'mux', muxVideoId: 'vid-1' } }
+        }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(result.data.templateGalleryPageUpdate.media.muxPlaybackId).toBe(
+        'pb_x'
+      )
+      expect(mockMuxValidate).toHaveBeenCalledWith('vid-1')
+    })
+
+    it('leaves the media row alone when media is null (no delete)', async () => {
+      // There is no media delete anymore: `media: null` is a no-op, like
+      // omitting it. Hide media with `type: none`, clear a slot with a null
+      // payload field.
+      mockExistingPage({
+        id: 'm1',
+        type: 'link',
+        embedUrl: 'https://x',
+        muxPlaybackId: null
+      })
+
+      const result = (await authClient({
+        document: TEMPLATE_GALLERY_PAGE_UPDATE_WITH_MEDIA,
+        variables: { id: 'p1', input: { media: null } }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(
+        prismaMock.templateGalleryPageMedia.deleteMany
+      ).not.toHaveBeenCalled()
+      expect(prismaMock.templateGalleryPageMedia.upsert).not.toHaveBeenCalled()
+    })
+
+    it('leaves media alone when the field is omitted (no-op)', async () => {
+      mockExistingPage({
+        id: 'm1',
+        type: 'link',
+        embedUrl: 'https://x',
+        muxPlaybackId: null
+      })
+
+      await authClient({
+        document: TEMPLATE_GALLERY_PAGE_UPDATE_WITH_MEDIA,
+        variables: { id: 'p1', input: { title: 'New' } }
+      })
+
+      expect(prismaMock.templateGalleryPageMedia.upsert).not.toHaveBeenCalled()
+      expect(
+        prismaMock.templateGalleryPageMedia.deleteMany
+      ).not.toHaveBeenCalled()
+    })
+
+    it('rejects an empty url string with MEDIA_INPUT_SHAPE_MISMATCH', async () => {
+      mockExistingPage(null)
+
+      const result = (await authClient({
+        document: TEMPLATE_GALLERY_PAGE_UPDATE_WITH_MEDIA,
+        variables: {
+          id: 'p1',
+          input: { media: { type: 'link', url: '' } as any }
+        }
+      })) as any
+
+      expect(result.errors?.[0]?.extensions?.reason).toBe(
+        'MEDIA_INPUT_SHAPE_MISMATCH'
+      )
+      expect(prismaMock.templateGalleryPageMedia.upsert).not.toHaveBeenCalled()
+    })
+
+    it('propagates a helper error before any write', async () => {
+      mockExistingPage(null)
+      mockLinkValidate.mockRejectedValue(
+        new GraphQLError('canva unavailable', {
+          extensions: { code: 'BAD_USER_INPUT', reason: 'CANVA_UNAVAILABLE' }
+        })
+      )
+
+      const result = (await authClient({
+        document: TEMPLATE_GALLERY_PAGE_UPDATE_WITH_MEDIA,
+        variables: {
+          id: 'p1',
+          input: { media: { type: 'link', url: 'https://www.canva.com/x' } }
+        }
+      })) as any
+
+      expect(result.errors?.[0]?.extensions?.reason).toBe('CANVA_UNAVAILABLE')
+      expect(prismaMock.templateGalleryPage.update).not.toHaveBeenCalled()
+    })
+
+    it('maps a P2002 on the media upsert to CONFLICT (field: media)', async () => {
+      mockLinkValidate.mockResolvedValue({ embedUrl: 'https://embed' })
+      prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
+        id: 'p1',
+        teamId: 'team-1'
+      } as any)
+      prismaMock.templateGalleryPageMedia.upsert.mockRejectedValue(
+        new Prisma.PrismaClientKnownRequestError('unique constraint', {
+          code: 'P2002',
+          clientVersion: '7.0.0'
+        })
+      )
+
+      const result = (await authClient({
+        document: TEMPLATE_GALLERY_PAGE_UPDATE_WITH_MEDIA,
+        variables: {
+          id: 'p1',
+          input: { media: { type: 'link', url: 'https://loom.com/x' } }
+        }
+      })) as any
+
+      expect(result.errors?.[0]?.extensions?.code).toBe('CONFLICT')
+      expect(result.errors?.[0]?.extensions?.field).toBe('media')
+    })
+
+    it('propagates a non-P2002 error from the media upsert unchanged', async () => {
+      mockLinkValidate.mockResolvedValue({ embedUrl: 'https://embed' })
+      prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
+        id: 'p1',
+        teamId: 'team-1'
+      } as any)
+      prismaMock.templateGalleryPageMedia.upsert.mockRejectedValue(
+        new Error('connection reset')
+      )
+
+      const result = (await authClient({
+        document: TEMPLATE_GALLERY_PAGE_UPDATE_WITH_MEDIA,
+        variables: {
+          id: 'p1',
+          input: { media: { type: 'link', url: 'https://loom.com/x' } }
+        }
+      })) as any
+
+      // Not coerced to CONFLICT — a generic failure surfaces as a generic error.
+      expect(result.errors?.[0]?.extensions?.code).not.toBe('CONFLICT')
+      expect(result.data?.templateGalleryPageUpdate ?? null).toBeNull()
+    })
   })
 })

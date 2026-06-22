@@ -125,6 +125,7 @@
   "Close": "Close",
   "Explore": "Explore",
   "More": "More",
+  "Media": "Media",
   "Use": "Use",
   "This gallery has no templates yet.": "This gallery has no templates yet.",
   "Untitled collection": "Untitled collection",
@@ -136,5 +137,8 @@
   "Use {{title}}": "Use {{title}}",
   "Preview {{title}}": "Preview {{title}}",
   "Ask a question": "Ask a question",
-  "Replies may not be perfect": "Replies may not be perfect"
+  "Replies may not be perfect": "Replies may not be perfect",
+  "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.": "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.",
+  "Start a new conversation": "Start a new conversation",
+  "Gallery media": "Gallery media"
 }

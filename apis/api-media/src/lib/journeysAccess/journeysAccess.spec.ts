@@ -1,6 +1,7 @@
 import { GraphQLError } from 'graphql'
 
 import { journeysPrismaMock } from '../../../test/journeysPrismaMock'
+import { logger } from '../../logger'
 
 import {
   assertTeamMembership,
@@ -122,6 +123,37 @@ describe('journeysAccess', () => {
       })
 
       expect(teamId).toBe('teamId')
+    })
+
+    it('should return null (not throw) when the caller is not a member of the team', async () => {
+      journeysPrismaMock.journey.findUnique.mockResolvedValue({
+        teamId: 'teamId',
+        team: { userTeams: [] }
+      } as never)
+
+      const teamId = await maybeResolveTeamId({
+        journeyId: 'journeyId',
+        userId: 'userId'
+      })
+
+      expect(teamId).toBeNull()
+    })
+
+    it('should return null and log when the team lookup throws', async () => {
+      const warnSpy = vi.spyOn(logger, 'warn').mockImplementation(() => logger)
+      journeysPrismaMock.journey.findUnique.mockRejectedValue(
+        new Error('journeys database unreachable')
+      )
+
+      const teamId = await maybeResolveTeamId({
+        journeyId: 'journeyId',
+        userId: 'userId'
+      })
+
+      expect(teamId).toBeNull()
+      expect(warnSpy).toHaveBeenCalledTimes(1)
+
+      warnSpy.mockRestore()
     })
   })
 })

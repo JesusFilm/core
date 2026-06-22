@@ -6,12 +6,20 @@ import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 import { ReactNode } from 'react'
 
-import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../../__generated__/GetTemplateGalleryPages'
-import { TemplateGalleryPageStatus } from '../../../../../__generated__/globalTypes'
+import {
+  GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage,
+  GetTemplateGalleryPages_templateGalleryPages_media as TemplateGalleryPageMedia
+} from '../../../../../__generated__/GetTemplateGalleryPages'
+import {
+  TemplateGalleryPageMediaType,
+  TemplateGalleryPageStatus
+} from '../../../../../__generated__/globalTypes'
 import { getTemplateGalleryPageCreateMock } from '../../../../libs/useTemplateGalleryPageCreateMutation/useTemplateGalleryPageCreateMutation.mock'
+import { getTemplateGalleryPagePublishMock } from '../../../../libs/useTemplateGalleryPagePublishMutation/useTemplateGalleryPagePublishMutation.mock'
 import { TEMPLATE_GALLERY_PAGE_UPDATE } from '../../../../libs/useTemplateGalleryPageUpdateMutation/useTemplateGalleryPageUpdateMutation'
 import { getTemplateGalleryPageUpdateMock } from '../../../../libs/useTemplateGalleryPageUpdateMutation/useTemplateGalleryPageUpdateMutation.mock'
 
+import { CollectionMediaValues, EMPTY_MEDIA } from './collectionMedia'
 import { CollectionFormValues, useCollectionForm } from './useCollectionForm'
 
 const mockEnqueueSnackbar = vi.fn()
@@ -25,6 +33,20 @@ vi.mock('notistack', async () => {
     })
   }
 })
+
+const NONE: CollectionMediaValues = EMPTY_MEDIA
+function linkForm(url: string): CollectionMediaValues {
+  return { ...EMPTY_MEDIA, type: TemplateGalleryPageMediaType.link, url }
+}
+function muxForm(
+  overrides: Partial<CollectionMediaValues> = {}
+): CollectionMediaValues {
+  return {
+    ...EMPTY_MEDIA,
+    type: TemplateGalleryPageMediaType.mux,
+    ...overrides
+  }
+}
 
 function wrapperWithMocks(
   mocks: ReadonlyArray<MockedResponse>
@@ -47,10 +69,41 @@ function defaultValues(
     creatorName: 'Creator',
     creatorImageSrc: '',
     creatorImageAlt: '',
-    mediaUrl: '',
+    media: NONE,
     slug: 'my-collection',
     journeyIds: [],
     ...overrides
+  }
+}
+
+function linkMedia(embedUrl: string): TemplateGalleryPageMedia {
+  return {
+    __typename: 'TemplateGalleryPageMedia',
+    id: 'media-1',
+    type: TemplateGalleryPageMediaType.link,
+    embedUrl,
+    muxVideoId: null,
+    muxPlaybackId: null,
+    muxName: null,
+    muxDuration: null
+  }
+}
+
+function muxMedia(
+  muxPlaybackId: string,
+  muxName: string | null = null,
+  muxDuration: number | null = null,
+  muxVideoId: string | null = 'vid-existing'
+): TemplateGalleryPageMedia {
+  return {
+    __typename: 'TemplateGalleryPageMedia',
+    id: 'media-1',
+    type: TemplateGalleryPageMediaType.mux,
+    embedUrl: null,
+    muxVideoId,
+    muxPlaybackId,
+    muxName,
+    muxDuration
   }
 }
 
@@ -84,7 +137,7 @@ function makeCollection(
     creatorName: 'Original Creator',
     creatorImageSrc: null,
     creatorImageAlt: null,
-    mediaUrl: null,
+    media: null,
     publishedAt: null,
     createdAt: '2026-05-06T00:00:00Z',
     updatedAt: '2026-05-06T00:00:00Z',
@@ -116,7 +169,7 @@ describe('useCollectionForm', () => {
         creatorName: '',
         creatorImageSrc: '',
         creatorImageAlt: '',
-        mediaUrl: '',
+        media: EMPTY_MEDIA,
         slug: '',
         journeyIds: []
       })
@@ -131,7 +184,7 @@ describe('useCollectionForm', () => {
         creatorName: 'C',
         creatorImageSrc: 'https://img/x.png',
         creatorImageAlt: 'alt',
-        mediaUrl: 'https://m/x',
+        media: linkMedia('https://www.youtube-nocookie.com/embed/x'),
         status: TemplateGalleryPageStatus.published,
         templates: [
           {
@@ -166,11 +219,66 @@ describe('useCollectionForm', () => {
         creatorName: 'C',
         creatorImageSrc: 'https://img/x.png',
         creatorImageAlt: 'alt',
-        mediaUrl: 'https://m/x',
+        media: linkForm('https://www.youtube-nocookie.com/embed/x'),
         slug: 'hydrate-slug',
         journeyIds: ['j1', 'j2']
       })
       expect(result.current.isPublished).toBe(true)
+    })
+
+    it('hydrates an existing mux row, seeding the real videoId and both denormalized fields', () => {
+      const collection = makeCollection({
+        media: muxMedia('pb-9', 'My clip', 125, 'vid-9')
+      })
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose: vi.fn()
+          }),
+        { wrapper: wrapperWithMocks([]) }
+      )
+      expect(result.current.initialValues.media).toEqual({
+        type: TemplateGalleryPageMediaType.mux,
+        url: '',
+        muxVideoId: 'vid-9',
+        muxPlaybackId: 'pb-9',
+        muxName: 'My clip',
+        muxDuration: 125
+      })
+    })
+
+    it('seeds BOTH slots when the row retains a parked payload', () => {
+      const collection = makeCollection({
+        media: {
+          __typename: 'TemplateGalleryPageMedia',
+          id: 'media-1',
+          type: TemplateGalleryPageMediaType.link,
+          embedUrl: 'https://x.test/a',
+          muxVideoId: 'vid-parked',
+          muxPlaybackId: 'pb-parked',
+          muxName: null,
+          muxDuration: null
+        }
+      })
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose: vi.fn()
+          }),
+        { wrapper: wrapperWithMocks([]) }
+      )
+      expect(result.current.initialValues.media).toMatchObject({
+        type: TemplateGalleryPageMediaType.link,
+        url: 'https://x.test/a',
+        muxVideoId: 'vid-parked',
+        muxPlaybackId: 'pb-parked'
+      })
     })
   })
 
@@ -194,12 +302,7 @@ describe('useCollectionForm', () => {
       ).resolves.toBeTruthy()
     })
 
-    // NES-1682: the Canva / Google Slides URL validation for mediaUrl
-    // was removed alongside the embed textbox UI in CollectionDialog.
-    // The field still rides through the form values for existing-data
-    // round-trip, but there is no editing surface and no per-value
-    // validation rule left to assert against. Length cap stays.
-    it('caps mediaUrl length but does not enforce URL shape (NES-1682)', async () => {
+    it('accepts every media state, including empty active slots (they render nothing)', async () => {
       const { result } = renderHook(
         () =>
           useCollectionForm({
@@ -210,32 +313,21 @@ describe('useCollectionForm', () => {
         { wrapper: wrapperWithMocks([]) }
       )
 
-      // Any shape passes — no Canva / Slides regex left.
-      await expect(
-        result.current.schema.validate(
-          defaultValues({ mediaUrl: 'http://insecure.example' })
-        )
-      ).resolves.toBeTruthy()
-      await expect(
-        result.current.schema.validate(
-          defaultValues({ mediaUrl: 'https://www.youtube.com/watch?v=abc' })
-        )
-      ).resolves.toBeTruthy()
-      // Existing Canva / Slides values still pass (round-trip on save).
-      await expect(
-        result.current.schema.validate(
-          defaultValues({
-            mediaUrl: 'https://www.canva.com/design/DAHJBsAPHB4/view'
-          })
-        )
-      ).resolves.toBeTruthy()
-
-      // Length cap at 2048 still applies as a defensive bound.
-      await expect(
-        result.current.schema.validate(
-          defaultValues({ mediaUrl: 'a'.repeat(2049) })
-        )
-      ).rejects.toThrow(/url too long/i)
+      // No media completeness rule anymore: none, a link (with or without a
+      // URL), and a mux slot (with or without an id) all pass — the server
+      // validates real URLs and an empty active slot simply renders nothing.
+      for (const media of [
+        NONE,
+        linkForm('https://x.test/a'),
+        linkForm(''),
+        muxForm({ muxVideoId: 'vid-1' }),
+        muxForm({ muxVideoId: '', muxPlaybackId: 'pb-1' }),
+        muxForm()
+      ]) {
+        await expect(
+          result.current.schema.validate(defaultValues({ media }))
+        ).resolves.toBeTruthy()
+      }
     })
 
     it('rejects slugs with uppercase or invalid characters', async () => {
@@ -275,7 +367,7 @@ describe('useCollectionForm', () => {
   })
 
   describe('handleSubmit — create branch', () => {
-    it('fires templateGalleryPageCreate with mapped input and closes the dialog', async () => {
+    it('fires templateGalleryPageCreate with mapped input (media omitted when none) and closes', async () => {
       const onClose = vi.fn()
       const createMock = getTemplateGalleryPageCreateMock({
         input: {
@@ -285,7 +377,6 @@ describe('useCollectionForm', () => {
           creatorImageSrc: null,
           creatorImageAlt: null,
           description: null,
-          mediaUrl: null,
           journeyIds: ['j1']
         }
       })
@@ -340,8 +431,6 @@ describe('useCollectionForm', () => {
         ]
       })
 
-      // Only title and journeyIds change. Other fields stay the same and
-      // must NOT appear in the input.
       const updateMock = getTemplateGalleryPageUpdateMock({
         id: 'page-7',
         input: {
@@ -369,7 +458,7 @@ describe('useCollectionForm', () => {
             creatorName: 'Old',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            mediaUrl: '',
+            media: NONE,
             slug: 'old-slug',
             journeyIds: ['j1', 'j2']
           },
@@ -419,7 +508,7 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            mediaUrl: '',
+            media: NONE,
             slug: collection.slug,
             journeyIds: []
           },
@@ -476,7 +565,7 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            mediaUrl: '',
+            media: NONE,
             slug: collection.slug,
             journeyIds: ['j1', 'j2']
           },
@@ -489,12 +578,6 @@ describe('useCollectionForm', () => {
     })
 
     it('skips slug from the update input when the user cleared the field (does not rename to empty)', async () => {
-      // P0-A regression guard. yup's `excludeEmptyString` lets an empty
-      // slug pass validation (so create-mode's empty default doesn't
-      // error), but we MUST NOT send `input.slug = ''` to the server —
-      // it would rename the published page to an empty slug and break
-      // every external link. The submit diff must drop the field when
-      // the user cleared it.
       const onClose = vi.fn()
       const collection = makeCollection({
         id: 'page-7',
@@ -502,9 +585,6 @@ describe('useCollectionForm', () => {
         slug: 'old-slug',
         status: TemplateGalleryPageStatus.published
       })
-      // The mock matches ONLY when the input contains title and no slug.
-      // If the empty slug leaks through into the input, MockedProvider
-      // will not find a matching mock and the spec fails.
       const updateMock = getTemplateGalleryPageUpdateMock({
         id: 'page-7',
         input: { title: 'New title' }
@@ -529,7 +609,7 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            mediaUrl: '',
+            media: NONE,
             slug: '',
             journeyIds: []
           },
@@ -585,7 +665,7 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            mediaUrl: '',
+            media: NONE,
             slug: 'new-slug',
             journeyIds: []
           },
@@ -644,7 +724,7 @@ describe('useCollectionForm', () => {
             creatorName: collection.creatorName ?? '',
             creatorImageSrc: '',
             creatorImageAlt: '',
-            mediaUrl: '',
+            media: NONE,
             slug: collection.slug,
             journeyIds: []
           },
@@ -661,6 +741,586 @@ describe('useCollectionForm', () => {
     })
   })
 
+  describe('handleSubmit — media', () => {
+    it('sends new mux media on create', async () => {
+      const onClose = vi.fn()
+      const createMock = getTemplateGalleryPageCreateMock({
+        input: {
+          teamId: 'team-1',
+          title: 'New',
+          creatorName: 'Creator',
+          creatorImageSrc: null,
+          creatorImageAlt: null,
+          description: null,
+          media: {
+            type: TemplateGalleryPageMediaType.mux,
+            muxVideoId: 'vid-1'
+          },
+          journeyIds: []
+        }
+      })
+
+      const { result } = renderHook(
+        () => useCollectionForm({ mode: 'create', teamId: 'team-1', onClose }),
+        { wrapper: wrapperWithMocks([createMock]) }
+      )
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          defaultValues({
+            title: 'New',
+            media: muxForm({ muxVideoId: 'vid-1' })
+          }),
+          fakeHelpers()
+        )
+      })
+
+      expect(createMock.result).toHaveBeenCalledTimes(1)
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
+
+    it('sends a changed link with the update — links save on Save, not out of band', async () => {
+      const onClose = vi.fn()
+      const collection = makeCollection({
+        id: 'page-1',
+        media: linkMedia('https://old.test/embed')
+      })
+      const updateMock = getTemplateGalleryPageUpdateMock({
+        id: 'page-1',
+        input: {
+          title: 'New Title',
+          media: {
+            type: TemplateGalleryPageMediaType.link,
+            url: 'https://new.test/x'
+          }
+        }
+      })
+
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose
+          }),
+        { wrapper: wrapperWithMocks([updateMock]) }
+      )
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          {
+            title: 'New Title',
+            description: collection.description ?? '',
+            creatorName: collection.creatorName ?? '',
+            creatorImageSrc: '',
+            creatorImageAlt: '',
+            media: linkForm('https://new.test/x'),
+            slug: collection.slug,
+            journeyIds: []
+          },
+          fakeHelpers()
+        )
+      })
+
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+      expect(onClose).toHaveBeenCalled()
+    })
+
+    it('sends url:null when the user clears the link field (type stays link)', async () => {
+      const onClose = vi.fn()
+      const collection = makeCollection({
+        id: 'page-1',
+        media: linkMedia('https://old.test/embed')
+      })
+      const updateMock = getTemplateGalleryPageUpdateMock({
+        id: 'page-1',
+        input: {
+          media: { type: TemplateGalleryPageMediaType.link, url: null }
+        }
+      })
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose
+          }),
+        { wrapper: wrapperWithMocks([updateMock]) }
+      )
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          {
+            title: collection.title,
+            description: collection.description ?? '',
+            creatorName: collection.creatorName ?? '',
+            creatorImageSrc: '',
+            creatorImageAlt: '',
+            media: linkForm(''),
+            slug: collection.slug,
+            journeyIds: []
+          },
+          fakeHelpers()
+        )
+      })
+
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
+
+    it('sends only type:none when the user toggles None on a saved link (slot retained)', async () => {
+      const onClose = vi.fn()
+      const collection = makeCollection({
+        id: 'page-1',
+        media: linkMedia('https://old.test/embed')
+      })
+      // Picking None keeps the link slot (so the user can switch back), so the
+      // url is unchanged and omitted — only the type is sent.
+      const updateMock = getTemplateGalleryPageUpdateMock({
+        id: 'page-1',
+        input: { media: { type: TemplateGalleryPageMediaType.none } }
+      })
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose
+          }),
+        { wrapper: wrapperWithMocks([updateMock]) }
+      )
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          {
+            title: collection.title,
+            description: collection.description ?? '',
+            creatorName: collection.creatorName ?? '',
+            creatorImageSrc: '',
+            creatorImageAlt: '',
+            media: {
+              ...linkForm('https://old.test/embed'),
+              type: TemplateGalleryPageMediaType.none
+            },
+            slug: collection.slug,
+            journeyIds: []
+          },
+          fakeHelpers()
+        )
+      })
+
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
+
+    it('sends muxVideoId:null when the user removes an existing upload', async () => {
+      const onClose = vi.fn()
+      const collection = makeCollection({
+        id: 'page-1',
+        media: muxMedia('pb-1', null, null, 'vid-1')
+      })
+      const updateMock = getTemplateGalleryPageUpdateMock({
+        id: 'page-1',
+        input: {
+          media: { type: TemplateGalleryPageMediaType.mux, muxVideoId: null }
+        }
+      })
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose
+          }),
+        { wrapper: wrapperWithMocks([updateMock]) }
+      )
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          {
+            title: collection.title,
+            description: collection.description ?? '',
+            creatorName: collection.creatorName ?? '',
+            creatorImageSrc: '',
+            creatorImageAlt: '',
+            media: muxForm({ muxVideoId: '', muxPlaybackId: null }),
+            slug: collection.slug,
+            journeyIds: []
+          },
+          fakeHelpers()
+        )
+      })
+
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
+
+    it('does NOT resend an untouched existing upload', async () => {
+      const onClose = vi.fn()
+      const collection = makeCollection({
+        id: 'page-1',
+        media: muxMedia('pb-1', null, null, 'vid-1')
+      })
+      const updateMock = getTemplateGalleryPageUpdateMock({
+        id: 'page-1',
+        input: { title: 'New Title' }
+      })
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose
+          }),
+        { wrapper: wrapperWithMocks([updateMock]) }
+      )
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          {
+            title: 'New Title',
+            description: collection.description ?? '',
+            creatorName: collection.creatorName ?? '',
+            creatorImageSrc: '',
+            creatorImageAlt: '',
+            // The seeded, untouched form value: the real videoId + playbackId.
+            media: muxForm({ muxVideoId: 'vid-1', muxPlaybackId: 'pb-1' }),
+            slug: collection.slug,
+            journeyIds: []
+          },
+          fakeHelpers()
+        )
+      })
+
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+      expect(onClose).toHaveBeenCalled()
+    })
+
+    it('advances the persisted baseline so a second identical save omits media', async () => {
+      const onClose = vi.fn()
+      const collection = makeCollection({
+        id: 'page-1',
+        media: linkMedia('https://old.test/embed')
+      })
+      // Single-use mock: it matches ONLY a media-bearing update. The first save
+      // consumes it; if the baseline did NOT advance, the second save would
+      // re-send the same media input, find no matching mock, and fail.
+      const updateMock = getTemplateGalleryPageUpdateMock({
+        id: 'page-1',
+        input: {
+          media: {
+            type: TemplateGalleryPageMediaType.link,
+            url: 'https://new.test/x'
+          }
+        }
+      })
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose
+          }),
+        { wrapper: wrapperWithMocks([updateMock]) }
+      )
+
+      const values = {
+        title: collection.title,
+        description: collection.description ?? '',
+        creatorName: collection.creatorName ?? '',
+        creatorImageSrc: '',
+        creatorImageAlt: '',
+        media: linkForm('https://new.test/x'),
+        slug: collection.slug,
+        journeyIds: []
+      }
+      // First save sends the changed link.
+      await act(async () => {
+        await result.current.handleSubmit(values, fakeHelpers())
+      })
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+
+      // Second identical save: media now matches the advanced baseline, so it
+      // is omitted, the input is empty, and no further mutation fires.
+      await act(async () => {
+        await result.current.handleSubmit(values, fakeHelpers())
+      })
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('handleSubmit — publish intent', () => {
+    it('publishes after a publish-intent submit and resets the intent for the next one', async () => {
+      const onClose = vi.fn()
+      const onPublished = vi.fn()
+      const collection = makeCollection({ id: 'page-1' })
+      const publishMock = getTemplateGalleryPagePublishMock({ id: 'page-1' })
+
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose,
+            onPublished
+          }),
+        { wrapper: wrapperWithMocks([publishMock]) }
+      )
+
+      const untouchedValues = {
+        title: collection.title,
+        description: collection.description ?? '',
+        creatorName: collection.creatorName ?? '',
+        creatorImageSrc: '',
+        creatorImageAlt: '',
+        media: NONE,
+        slug: collection.slug,
+        journeyIds: []
+      }
+      await act(async () => {
+        result.current.setSubmitIntent('publish')
+        await result.current.handleSubmit(untouchedValues, fakeHelpers())
+      })
+
+      expect(publishMock.result).toHaveBeenCalledTimes(1)
+      expect(onPublished).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'page-1',
+          status: TemplateGalleryPageStatus.published
+        })
+      )
+      expect(onClose).toHaveBeenCalledTimes(1)
+
+      await act(async () => {
+        await result.current.handleSubmit(untouchedValues, fakeHelpers())
+      })
+      expect(publishMock.result).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not leak a publish intent through a short-circuited submit', async () => {
+      const onClose = vi.fn()
+      const onPublished = vi.fn()
+      const collection = makeCollection({ id: 'page-1' })
+      const updateMock = getTemplateGalleryPageUpdateMock({
+        id: 'page-1',
+        input: { title: 'New Title' }
+      })
+
+      const { result, rerender } = renderHook(
+        (props: { parentBusy: boolean }) =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            parentBusy: props.parentBusy,
+            onClose,
+            onPublished
+          }),
+        {
+          initialProps: { parentBusy: true },
+          wrapper: wrapperWithMocks([updateMock])
+        }
+      )
+
+      const values = {
+        title: 'New Title',
+        description: collection.description ?? '',
+        creatorName: collection.creatorName ?? '',
+        creatorImageSrc: '',
+        creatorImageAlt: '',
+        media: NONE,
+        slug: collection.slug,
+        journeyIds: []
+      }
+      await act(async () => {
+        result.current.setSubmitIntent('publish')
+        await result.current.handleSubmit(values, fakeHelpers())
+      })
+      expect(onPublished).not.toHaveBeenCalled()
+
+      rerender({ parentBusy: false })
+      await act(async () => {
+        await result.current.handleSubmit(values, fakeHelpers())
+      })
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+      expect(onPublished).not.toHaveBeenCalled()
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not publish on a plain submit (default save intent)', async () => {
+      const onClose = vi.fn()
+      const onPublished = vi.fn()
+      const collection = makeCollection({ id: 'page-1' })
+      const updateMock = getTemplateGalleryPageUpdateMock({
+        id: 'page-1',
+        input: { title: 'New Title' }
+      })
+
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose,
+            onPublished
+          }),
+        { wrapper: wrapperWithMocks([updateMock]) }
+      )
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          {
+            title: 'New Title',
+            description: collection.description ?? '',
+            creatorName: collection.creatorName ?? '',
+            creatorImageSrc: '',
+            creatorImageAlt: '',
+            media: NONE,
+            slug: collection.slug,
+            journeyIds: []
+          },
+          fakeHelpers()
+        )
+      })
+
+      expect(updateMock.result).toHaveBeenCalledTimes(1)
+      expect(onPublished).not.toHaveBeenCalled()
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('handleSubmit — media validation errors', () => {
+    it('maps a backend media reason to an inline media field error and stays open', async () => {
+      const onClose = vi.fn()
+      const collection = makeCollection({ id: 'page-1' })
+      const errorMock: MockedResponse = {
+        request: {
+          query: TEMPLATE_GALLERY_PAGE_UPDATE,
+          variables: {
+            id: 'page-1',
+            input: {
+              media: {
+                type: TemplateGalleryPageMediaType.link,
+                url: 'https://youtu.be/p'
+              }
+            }
+          }
+        },
+        result: {
+          errors: [
+            new GraphQLError('This video is private', {
+              extensions: { code: 'BAD_USER_INPUT', reason: 'YOUTUBE_PRIVATE' }
+            })
+          ]
+        }
+      }
+
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose
+          }),
+        { wrapper: wrapperWithMocks([errorMock]) }
+      )
+
+      const helpers = fakeHelpers()
+      await act(async () => {
+        await result.current.handleSubmit(
+          {
+            title: collection.title,
+            description: collection.description ?? '',
+            creatorName: collection.creatorName ?? '',
+            creatorImageSrc: '',
+            creatorImageAlt: '',
+            media: linkForm('https://youtu.be/p'),
+            slug: collection.slug,
+            journeyIds: []
+          },
+          helpers
+        )
+      })
+
+      expect(helpers.setFieldError).toHaveBeenCalledWith(
+        'media',
+        expect.stringMatching(/private/i)
+      )
+      expect(onClose).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('mediaDirty', () => {
+    it('is true for an edited link and false for the untouched saved value', () => {
+      const collection = makeCollection({
+        id: 'page-1',
+        media: linkMedia('https://x.test/embed')
+      })
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'edit',
+            teamId: 'team-1',
+            collection,
+            onClose: vi.fn()
+          }),
+        { wrapper: wrapperWithMocks([]) }
+      )
+
+      expect(
+        result.current.mediaDirty(
+          defaultValues({ media: linkForm('https://x.test/embed') })
+        )
+      ).toBe(false)
+      expect(
+        result.current.mediaDirty(
+          defaultValues({ media: linkForm('https://new.test/y') })
+        )
+      ).toBe(true)
+      // Toggling None on the saved link is also unsaved until Save.
+      expect(
+        result.current.mediaDirty(
+          defaultValues({
+            media: {
+              ...linkForm('https://x.test/embed'),
+              type: TemplateGalleryPageMediaType.none
+            }
+          })
+        )
+      ).toBe(true)
+    })
+
+    it('treats any pending media as dirty in create mode', () => {
+      const { result } = renderHook(
+        () =>
+          useCollectionForm({
+            mode: 'create',
+            teamId: 'team-1',
+            onClose: vi.fn()
+          }),
+        { wrapper: wrapperWithMocks([]) }
+      )
+
+      expect(result.current.mediaDirty(defaultValues({ media: NONE }))).toBe(
+        false
+      )
+      expect(
+        result.current.mediaDirty(
+          defaultValues({ media: muxForm({ muxVideoId: 'vid-1' }) })
+        )
+      ).toBe(true)
+    })
+  })
+
   describe('handleSubmit — parentBusy short-circuit', () => {
     it('does not fire any mutation and shows an info snackbar', async () => {
       const onClose = vi.fn()
@@ -672,7 +1332,6 @@ describe('useCollectionForm', () => {
           creatorImageSrc: null,
           creatorImageAlt: null,
           description: null,
-          mediaUrl: null,
           journeyIds: []
         }
       })

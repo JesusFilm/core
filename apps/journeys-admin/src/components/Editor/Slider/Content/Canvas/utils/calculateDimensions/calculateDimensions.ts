@@ -5,6 +5,11 @@ import { EDIT_TOOLBAR_HEIGHT } from '../../../../../constants'
 export const CARD_WIDTH = 324
 export const CARD_HEIGHT = 674
 
+// height of the layered editor's floating paper: the card plus vertical chrome
+// (slug edit, footer, breathing room). The card/settings paper and the media
+// library overlay both use this so they stay vertically aligned.
+export const LAYERED_DRAWER_HEIGHT = CARD_HEIGHT + 200
+
 export function calculateScale(ref: RefObject<HTMLDivElement | null>): number {
   const current = ref.current
   if (current == null) return 0

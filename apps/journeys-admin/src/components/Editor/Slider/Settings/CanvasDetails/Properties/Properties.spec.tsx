@@ -20,6 +20,7 @@ import {
 } from '../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
+import { EditorLayoutProvider } from '../../../../EditorLayoutContext'
 
 import { Properties } from '.'
 
@@ -379,10 +380,12 @@ describe('Properties', () => {
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={state}>
-            <MuxVideoUploadProvider>
-              <TestEditorState />
-              <Properties />
-            </MuxVideoUploadProvider>
+            <EditorLayoutProvider value="layered">
+              <MuxVideoUploadProvider>
+                <TestEditorState />
+                <Properties />
+              </MuxVideoUploadProvider>
+            </EditorLayoutProvider>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>

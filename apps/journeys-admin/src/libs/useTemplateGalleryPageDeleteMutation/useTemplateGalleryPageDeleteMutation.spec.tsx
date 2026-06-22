@@ -19,7 +19,7 @@ function buildPage(id: string): {
   creatorName: string
   creatorImageSrc: null
   creatorImageAlt: null
-  mediaUrl: null
+  media: null
   publishedAt: null
   createdAt: string
   updatedAt: string
@@ -35,7 +35,7 @@ function buildPage(id: string): {
     creatorName: 'Creator',
     creatorImageSrc: null,
     creatorImageAlt: null,
-    mediaUrl: null,
+    media: null,
     publishedAt: null,
     createdAt: '2026-05-06T00:00:00Z',
     updatedAt: '2026-05-06T00:00:00Z',

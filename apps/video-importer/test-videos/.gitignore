@@ -3,5 +3,7 @@
 *.mp4.completed
 *.srt
 *.srt.completed
+*.vtt
+*.vtt.completed
 *.aac
 *.aac.completed

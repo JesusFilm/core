@@ -261,7 +261,23 @@ export class JourneyPage {
         : testData.journey.secondJourneyName) + generateRandomNumber(3)
   }
 
+  // The desktop layered editor opens map-first with the card inside a closed
+  // modal drawer, so the card iframe is not mounted until a step node is
+  // clicked. The mobile slider keeps every slide mounted, so this is a no-op.
+  async openLayeredCardEditor(): Promise<void> {
+    if (
+      (await this.page.locator('div[data-testid="EditorCanvas"]').count()) > 0
+    ) {
+      return
+    }
+    await this.page.locator('[data-testid^="StepBlockNode-"]').first().click()
+    await expect(
+      this.page.locator('div[data-testid="EditorCanvas"]').first()
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
+  }
+
   async enterJourneysTypography(): Promise<void> {
+    await this.openLayeredCardEditor()
     await this.page
       .frameLocator(this.journeyCardFrame)
       .first()
@@ -305,10 +321,46 @@ export class JourneyPage {
   }
 
   async clickDoneBtn(): Promise<void> {
+    // On the desktop layered editor the card lives in a modal drawer; closing
+    // it via its backdrop commits the inline edit and uncovers the toolbar.
+    // The mobile slider has no modal overlay, so tap the Fab instead.
+    if (
+      (await this.page.locator('div[data-testid="LayeredView"]').count()) > 0
+    ) {
+      await this.page
+        .locator('div[data-testid="LayeredViewDrawer"] .MuiBackdrop-root')
+        .first()
+        .click()
+      await expect(
+        this.page.locator('div[data-testid="EditorCanvas"]')
+      ).toBeHidden({ timeout: thirtySecondsTimeout })
+      return
+    }
     await this.page.locator('button[data-testid="Fab"]').click()
   }
 
+  // On the desktop layered editor an open card drawer is a modal whose backdrop
+  // covers the toolbar, so close it before reaching for a toolbar action. No-op
+  // on the mobile slider (no modal) or when the drawer is already closed.
+  async ensureLayeredDrawerClosed(): Promise<void> {
+    if (
+      (await this.page.locator('div[data-testid="LayeredView"]').count()) ===
+        0 ||
+      (await this.page.locator('div[data-testid="EditorCanvas"]').count()) === 0
+    ) {
+      return
+    }
+    await this.page
+      .locator('div[data-testid="LayeredViewDrawer"] .MuiBackdrop-root')
+      .first()
+      .click()
+    await expect(
+      this.page.locator('div[data-testid="EditorCanvas"]')
+    ).toBeHidden({ timeout: thirtySecondsTimeout })
+  }
+
   async clickThreeDotBtnOfCustomJourney(): Promise<void> {
+    await this.ensureLayeredDrawerClosed()
     await this.page.locator('button#edit-journey-actions').click()
   }
 
