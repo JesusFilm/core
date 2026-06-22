@@ -1,6 +1,6 @@
 'use client'
 
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
@@ -46,7 +46,7 @@ const GET_ADMIN_VIDEO_VARIANTS = graphql(`
   }
 `)
 
-const GET_VIDEO_VARIANT_UPLOADS = gql`
+const GET_VIDEO_VARIANT_UPLOADS = graphql(`
   query GetVideoVariantUploads($input: VideoVariantUploadsFilter, $limit: Int) {
     videoVariantUploads(input: $input, limit: $limit) {
       id
@@ -63,9 +63,9 @@ const GET_VIDEO_VARIANT_UPLOADS = gql`
       createdAt
     }
   }
-`
+`)
 
-const RESUME_VIDEO_VARIANT_UPLOAD = gql`
+const RESUME_VIDEO_VARIANT_UPLOAD = graphql(`
   mutation ResumeVideoVariantUpload(
     $id: ID!
     $downloadable: Boolean
@@ -84,12 +84,21 @@ const RESUME_VIDEO_VARIANT_UPLOAD = gql`
       updatedAt
     }
   }
-`
+`)
+
+type VideoVariantUploadStatus =
+  | 'created'
+  | 'r2Prepared'
+  | 'r2Uploaded'
+  | 'muxCreated'
+  | 'muxReady'
+  | 'variantCreated'
+  | 'failed'
 
 interface VideoVariantUploadRow {
   id: string
   source: string
-  status: string
+  status: VideoVariantUploadStatus
   videoId: string
   languageId: string
   edition: string
@@ -101,7 +110,7 @@ interface VideoVariantUploadRow {
   createdAt?: string | null
 }
 
-const incompleteUploadStatuses = [
+const incompleteUploadStatuses: VideoVariantUploadStatus[] = [
   'created',
   'r2Prepared',
   'r2Uploaded',
@@ -110,7 +119,7 @@ const incompleteUploadStatuses = [
   'failed'
 ]
 
-const uploadStatusLabels: Record<string, string> = {
+const uploadStatusLabels: Record<VideoVariantUploadStatus, string> = {
   created: 'Upload started',
   r2Prepared: 'R2 prepared',
   r2Uploaded: 'R2 uploaded',
@@ -120,19 +129,19 @@ const uploadStatusLabels: Record<string, string> = {
   variantCreated: 'Complete'
 }
 
-function getUploadStatusColor(status: string) {
+function getUploadStatusColor(status: VideoVariantUploadStatus) {
   if (status === 'failed') return 'error'
   if (status === 'muxReady' || status === 'muxCreated') return 'info'
   return 'warning'
 }
 
-function canResumeUpload(status: string) {
+function canResumeUpload(status: VideoVariantUploadStatus) {
   return status !== 'created' && status !== 'r2Prepared'
 }
 
-function getUnresumableUploadMessage(status: string) {
+function getUnresumableUploadMessage(status: VideoVariantUploadStatus) {
   if (status === 'created' || status === 'r2Prepared') {
-    return 'This upload cannot be resumed because the browser file upload did not complete. Add this audio language again.'
+    return 'This upload cannot be resumed because the browser did not finish sending the file to R2. Add this audio language again.'
   }
 
   return null

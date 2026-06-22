@@ -239,6 +239,7 @@ builder.mutationFields((t) => ({
     nullable: false,
     args: {
       id: t.arg.id({ required: true }),
+      muxVideoId: t.arg.id({ required: false }),
       downloadable: t.arg.boolean({ required: false, defaultValue: true }),
       maxResolution: t.arg({
         type: MaxResolutionTier,
@@ -249,13 +250,14 @@ builder.mutationFields((t) => ({
     resolve: async (
       query,
       _root,
-      { id, downloadable, maxResolution },
+      { id, muxVideoId, downloadable, maxResolution },
       { user }
     ) => {
       if (user == null) throw new Error('User not found')
       await createMuxVideoForUpload({
         uploadId: id,
         userId: user.id,
+        muxVideoId,
         downloadable,
         maxResolution
       })

@@ -1,24 +1,26 @@
 'use client'
 
-import { gql, useApolloClient, useLazyQuery, useMutation } from '@apollo/client'
+import { useApolloClient, useLazyQuery, useMutation } from '@apollo/client'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
 import { ReactNode, createContext, useContext, useReducer, useRef } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { graphql } from '@core/shared/gql'
+
 import { getExtension } from '../(dashboard)/videos/[videoId]/audio/add/_utils/getExtension'
 import { refreshToken } from '../../app/api'
 
-export const START_VIDEO_VARIANT_UPLOAD = gql`
+export const START_VIDEO_VARIANT_UPLOAD = graphql(`
   mutation StartVideoVariantUpload($input: VideoVariantUploadStartInput!) {
     videoVariantUploadStart(input: $input) {
       id
       status
     }
   }
-`
+`)
 
-export const MARK_VIDEO_VARIANT_UPLOAD_R2_PREPARED = gql`
+export const MARK_VIDEO_VARIANT_UPLOAD_R2_PREPARED = graphql(`
   mutation MarkVideoVariantUploadR2Prepared($id: ID!, $r2AssetId: ID!) {
     videoVariantUploadMarkR2Prepared(id: $id, r2AssetId: $r2AssetId) {
       id
@@ -26,18 +28,18 @@ export const MARK_VIDEO_VARIANT_UPLOAD_R2_PREPARED = gql`
       r2AssetId
     }
   }
-`
+`)
 
-export const MARK_VIDEO_VARIANT_UPLOAD_R2_COMPLETE = gql`
+export const MARK_VIDEO_VARIANT_UPLOAD_R2_COMPLETE = graphql(`
   mutation MarkVideoVariantUploadR2Complete($id: ID!) {
     videoVariantUploadMarkR2Complete(id: $id) {
       id
       status
     }
   }
-`
+`)
 
-export const CREATE_VIDEO_VARIANT_UPLOAD_MUX = gql`
+export const CREATE_VIDEO_VARIANT_UPLOAD_MUX = graphql(`
   mutation CreateVideoVariantUploadMux(
     $id: ID!
     $downloadable: Boolean
@@ -53,9 +55,9 @@ export const CREATE_VIDEO_VARIANT_UPLOAD_MUX = gql`
       muxVideoId
     }
   }
-`
+`)
 
-export const GET_VIDEO_VARIANT_UPLOAD = gql`
+export const GET_VIDEO_VARIANT_UPLOAD = graphql(`
   query GetVideoVariantUpload($id: ID!) {
     videoVariantUpload(id: $id) {
       id
@@ -79,9 +81,9 @@ export const GET_VIDEO_VARIANT_UPLOAD = gql`
       }
     }
   }
-`
+`)
 
-export const PREPARE_R2_MULTIPART = gql`
+export const PREPARE_R2_MULTIPART = graphql(`
   mutation PrepareCloudflareR2Multipart(
     $input: CloudflareR2MultipartPrepareInput!
   ) {
@@ -97,9 +99,9 @@ export const PREPARE_R2_MULTIPART = gql`
       }
     }
   }
-`
+`)
 
-export const COMPLETE_R2_MULTIPART = gql`
+export const COMPLETE_R2_MULTIPART = graphql(`
   mutation CloudflareR2CompleteMultipart(
     $input: CloudflareR2CompleteMultipartInput!
   ) {
@@ -109,7 +111,7 @@ export const COMPLETE_R2_MULTIPART = gql`
       publicUrl
     }
   }
-`
+`)
 
 interface UploadVideoVariantState {
   isUploading: boolean
@@ -510,9 +512,11 @@ export function UploadVideoVariantProvider({
       const multipartData = r2Response.data?.cloudflareR2MultipartPrepare
 
       if (
-        multipartData?.uploadId == null ||
-        multipartData?.publicUrl == null ||
-        multipartData?.parts == null
+        multipartData?.id == null ||
+        multipartData.fileName == null ||
+        multipartData.uploadId == null ||
+        multipartData.publicUrl == null ||
+        multipartData.parts == null
       ) {
         console.error('Failed to prepare R2 multipart upload', {
           ...logContext,
@@ -538,7 +542,16 @@ export function UploadVideoVariantProvider({
 
       const partSize =
         multipartData.partSize ?? calculateMultipartPartSize(file.size)
-      const parts = multipartData.parts
+      const parts = multipartData.parts.map((part) => {
+        if (part.partNumber == null) {
+          throw new Error('R2 multipart upload part is missing a part number')
+        }
+        if (part.uploadUrl == null) {
+          throw new Error(`Missing upload URL for part ${part.partNumber}`)
+        }
+
+        return { partNumber: part.partNumber, uploadUrl: part.uploadUrl }
+      })
 
       if (parts.length === 0) {
         console.error('R2 multipart upload has no parts', {
@@ -647,10 +660,6 @@ export function UploadVideoVariantProvider({
 
           const end = Math.min(start + partSize, file.size)
           const chunk = file.slice(start, end)
-
-          if (part.uploadUrl == null) {
-            throw new Error(`Missing upload URL for part ${part.partNumber}`)
-          }
 
           const uploadResult = await uploadPartWithRetry(
             part.uploadUrl,

@@ -1,6 +1,7 @@
 import {
   ApolloClient,
   InMemoryCache,
+  NormalizedCacheObject,
   createHttpLink,
   gql
 } from '@apollo/client'
@@ -26,7 +27,11 @@ const GET_LANGUAGE_SLUG = gql`
   }
 `
 
-function createLanguageClient(): ApolloClient<any> {
+interface GetLanguageSlugResult {
+  language: { id: string; slug: string | null } | null
+}
+
+function createLanguageClient(): ApolloClient<NormalizedCacheObject> {
   if (!process.env.GATEWAY_URL) {
     throw new Error('GATEWAY_URL environment variable is required')
   }
@@ -52,10 +57,10 @@ async function getLanguageSlug(
   languageId: string,
   logger?: Logger
 ): Promise<string> {
-  let apollo: ApolloClient<any> | null = null
+  let apollo: ApolloClient<NormalizedCacheObject> | null = null
   try {
     apollo = createLanguageClient()
-    const { data } = await apollo.query({
+    const { data } = await apollo.query<GetLanguageSlugResult>({
       query: GET_LANGUAGE_SLUG,
       variables: { languageId },
       fetchPolicy: 'no-cache'
@@ -263,11 +268,13 @@ export async function queueVideoUploadProcessing(upload: {
 export async function createMuxVideoForUpload({
   uploadId,
   userId,
+  muxVideoId,
   maxResolution,
   downloadable = true
 }: {
   uploadId: string
   userId: string
+  muxVideoId?: string | null
   maxResolution?: string | null
   downloadable?: boolean | null
 }): Promise<VideoVariantUpload & { muxVideo: MuxVideo | null }> {
@@ -302,6 +309,53 @@ export async function createMuxVideoForUpload({
           videoId: upload.videoId,
           languageId: upload.languageId,
           muxVideoId: upload.muxVideoId,
+          userId
+        }
+      })
+      throw error
+    }
+  }
+
+  if (muxVideoId != null) {
+    try {
+      const muxVideo = await prisma.muxVideo.findUnique({
+        where: { id: muxVideoId }
+      })
+
+      if (muxVideo == null) {
+        throw new GraphQLError('Mux video not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      }
+
+      const updated = await prisma.videoVariantUpload.update({
+        where: { id: upload.id },
+        data: {
+          status: 'muxCreated',
+          muxVideoId: muxVideo.id,
+          errorMessage: null
+        },
+        include: { muxVideo: true }
+      })
+
+      await queueVideoUploadProcessing(updated)
+      return updated
+    } catch (error) {
+      await prisma.videoVariantUpload.update({
+        where: { id: upload.id },
+        data: {
+          status: 'failed',
+          errorMessage: error instanceof Error ? error.message : String(error)
+        }
+      })
+      notifyMediaSlackOfOperationFailure({
+        operation: 'Video variant upload Mux link failed',
+        error,
+        context: {
+          uploadId: upload.id,
+          videoId: upload.videoId,
+          languageId: upload.languageId,
+          muxVideoId,
           userId
         }
       })
@@ -393,7 +447,7 @@ export async function resumeVideoVariantUpload({
 
   if (upload.status === 'created' || upload.status === 'r2Prepared') {
     throw new Error(
-      'This upload cannot be resumed because the browser file upload did not complete. Add this audio language again.'
+      'This upload cannot be resumed because the browser did not finish sending the file to R2. Add this audio language again.'
     )
   }
 

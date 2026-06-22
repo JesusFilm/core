@@ -407,7 +407,7 @@ type Mutation {
   videoVariantUploadStart(input: VideoVariantUploadStartInput!): VideoVariantUpload!
   videoVariantUploadMarkR2Prepared(id: ID!, r2AssetId: ID!): VideoVariantUpload!
   videoVariantUploadMarkR2Complete(id: ID!): VideoVariantUpload!
-  videoVariantUploadCreateMux(id: ID!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd): VideoVariantUpload!
+  videoVariantUploadCreateMux(id: ID!, muxVideoId: ID, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd): VideoVariantUpload!
   videoVariantUploadResume(id: ID!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd): VideoVariantUpload!
 }
 

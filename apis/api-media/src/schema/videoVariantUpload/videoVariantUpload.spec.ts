@@ -385,6 +385,86 @@ describe('videoVariantUpload lifecycle API', () => {
     )
   })
 
+  it('links an existing Mux video to a completed upload and queues processing', async () => {
+    const CREATE_MUX = graphql(`
+      mutation LinkVideoVariantUploadMux($id: ID!, $muxVideoId: ID!) {
+        videoVariantUploadCreateMux(id: $id, muxVideoId: $muxVideoId) {
+          id
+          status
+          muxVideoId
+        }
+      }
+    `)
+
+    prismaMock.videoVariantUpload.findUnique.mockResolvedValueOnce({
+      id: 'upload-id',
+      videoId: 'video-id',
+      edition: 'base',
+      languageId: '529',
+      version: 1,
+      originalFilename: 'video.mp4',
+      durationMs: 10000,
+      duration: 10,
+      width: 1920,
+      height: 1080,
+      muxVideoId: null,
+      r2AssetId: 'r2-id',
+      r2Asset: {
+        id: 'r2-id',
+        publicUrl: 'https://cdn.example.com/video.mp4'
+      }
+    } as any)
+    prismaMock.muxVideo.findUnique.mockResolvedValue({
+      id: 'mux-id',
+      assetId: 'mux-asset-id'
+    } as any)
+    prismaMock.videoVariantUpload.update.mockResolvedValue({
+      id: 'upload-id',
+      videoId: 'video-id',
+      edition: 'base',
+      languageId: '529',
+      version: 1,
+      originalFilename: 'video.mp4',
+      durationMs: 10000,
+      duration: 10,
+      width: 1920,
+      height: 1080,
+      muxVideoId: 'mux-id',
+      status: 'muxCreated'
+    } as any)
+    prismaMock.videoVariantUpload.findUniqueOrThrow.mockResolvedValue({
+      id: 'upload-id',
+      status: 'muxCreated',
+      muxVideoId: 'mux-id'
+    } as any)
+
+    const result = await publisherClient({
+      document: CREATE_MUX,
+      variables: { id: 'upload-id', muxVideoId: 'mux-id' }
+    })
+
+    expect(result).toHaveProperty('data.videoVariantUploadCreateMux', {
+      id: 'upload-id',
+      status: 'muxCreated',
+      muxVideoId: 'mux-id'
+    })
+    expect(createVideoFromUrl).not.toHaveBeenCalled()
+    expect(prismaMock.videoVariantUpload.update).toHaveBeenCalledWith({
+      where: { id: 'upload-id' },
+      data: {
+        status: 'muxCreated',
+        muxVideoId: 'mux-id',
+        errorMessage: null
+      },
+      include: { muxVideo: true }
+    })
+    expect(processVideoUploadsQueue.add).toHaveBeenCalledWith(
+      'api-media-process-video-uploads-job',
+      expect.objectContaining({ uploadId: 'upload-id', muxVideoId: 'mux-id' }),
+      expect.objectContaining({ jobId: 'mux:mux-id' })
+    )
+  })
+
   it('resumes an R2-uploaded upload by creating Mux and queueing processing', async () => {
     const RESUME_UPLOAD = graphql(`
       mutation ResumeVideoVariantUpload($id: ID!) {
@@ -749,7 +829,7 @@ describe('videoVariantUpload lifecycle API', () => {
 
     expect(result).toHaveProperty('data', null)
     expect((result as any).errors?.[0].message).toContain(
-      'This upload cannot be resumed because the browser file upload did not complete'
+      'This upload cannot be resumed because the browser did not finish sending the file to R2'
     )
     expect(createVideoFromUrl).not.toHaveBeenCalled()
   })
