@@ -90,7 +90,10 @@ export function BackgroundMediaVideo({
   const [deleteBlock] = useCoverBlockDeleteMutation()
   const [restoreBlock] = useCoverBlockRestoreMutation()
 
-  function createVideoBlock(input: VideoBlockUpdateInput): void {
+  function createVideoBlock(
+    input: VideoBlockUpdateInput,
+    shouldFocus = true
+  ): void {
     if (journey == null || cardBlock == null) return
 
     let typename
@@ -153,12 +156,15 @@ export function BackgroundMediaVideo({
         undo: {}
       },
       execute() {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          activeSlide: ActiveSlide.Content,
-          selectedStep,
-          activeContent: ActiveContent.Canvas
-        })
+        // Skip the canvas refocus when the change originates from the secondary
+        // video drawer, so the card does not shift behind the drawer.
+        if (shouldFocus)
+          dispatch({
+            type: 'SetEditorFocusAction',
+            activeSlide: ActiveSlide.Content,
+            selectedStep,
+            activeContent: ActiveContent.Canvas
+          })
         void createBlock({
           variables: {
             id: block.id,
@@ -254,7 +260,10 @@ export function BackgroundMediaVideo({
     })
   }
 
-  function updateVideoBlock(input: VideoBlockUpdateInput): void {
+  function updateVideoBlock(
+    input: VideoBlockUpdateInput,
+    shouldFocus = true
+  ): void {
     if (
       journey == null ||
       coverBlock == null ||
@@ -268,28 +277,36 @@ export function BackgroundMediaVideo({
       source: input.source ?? coverBlock.source
     }
 
-    add({
-      parameters: {
-        execute: block,
-        undo: coverBlock
-      },
-      execute(block) {
+    // A live select from the secondary video drawer skips the canvas refocus so
+    // the card does not shift behind the drawer; undo/redo always refocus to
+    // show the change, matching the rest of the editor.
+    function update(block: VideoBlock, focus: boolean): void {
+      if (focus)
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
           selectedStep,
           activeContent: ActiveContent.Canvas
         })
-        void updateBlock({
-          variables: {
-            id: coverBlock.id,
-            input: pick(block, Object.keys(input))
-          },
-          optimisticResponse: {
-            videoBlockUpdate: block
-          }
-        })
-      }
+      void updateBlock({
+        variables: {
+          id: coverBlock.id,
+          input: pick(block, Object.keys(input))
+        },
+        optimisticResponse: {
+          videoBlockUpdate: block
+        }
+      })
+    }
+
+    add({
+      parameters: {
+        execute: block,
+        undo: coverBlock
+      },
+      execute: (block) => update(block, shouldFocus),
+      undo: (block) => update(block, true),
+      redo: (block) => update(block, true)
     })
   }
 
@@ -365,13 +382,16 @@ export function BackgroundMediaVideo({
     })
   }
 
-  async function handleChange(input: VideoBlockUpdateInput): Promise<void> {
+  async function handleChange(
+    input: VideoBlockUpdateInput,
+    shouldFocus = true
+  ): Promise<void> {
     if (input.videoId === null) {
       await deleteVideoBlock()
     } else if (coverBlock == null) {
-      await createVideoBlock(input)
+      await createVideoBlock(input, shouldFocus)
     } else {
-      await updateVideoBlock(input)
+      await updateVideoBlock(input, shouldFocus)
     }
   }
 

@@ -12,6 +12,11 @@ import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { JourneyFields } from '../../../../../../../__generated__/JourneyFields'
+import {
+  listUnsplashCollectionPhotosMock,
+  triggerUnsplashDownloadMock,
+  unsplashImageInput
+} from '../ImageBlockEditor/UnsplashGallery/data'
 
 import { ImageSource } from './ImageSource'
 
@@ -112,6 +117,44 @@ describe('ImageSource', () => {
       )
       expect(await screen.findByTestId('ImageUpload')).toBeInTheDocument()
       expect(onChange).not.toHaveBeenCalled()
+    })
+
+    it('calls onChange with shouldFocus false when an image is selected', async () => {
+      const handleChange = vi.fn()
+      render(
+        <MockedProvider
+          mocks={[listUnsplashCollectionPhotosMock, triggerUnsplashDownloadMock]}
+        >
+          <SnackbarProvider>
+            <ImageSource
+              selectedBlock={imageBlock}
+              onChange={handleChange}
+              onDelete={onDelete}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'public Selected Image 1920 x 1080 pixels'
+        })
+      )
+      await waitFor(() =>
+        expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
+      )
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'white dome building during daytime'
+        })
+      )
+      // shouldFocus is false so the editor does not slide the canvas back, and
+      // the drawer closes itself rather than relying on a manual close.
+      await waitFor(() =>
+        expect(handleChange).toHaveBeenCalledWith(
+          expect.objectContaining({ src: unsplashImageInput.src }),
+          false
+        )
+      )
     })
   })
 

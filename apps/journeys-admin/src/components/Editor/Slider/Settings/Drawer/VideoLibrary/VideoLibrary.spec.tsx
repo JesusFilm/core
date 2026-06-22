@@ -432,7 +432,9 @@ describe('VideoLibrary', () => {
         videoId: 'videoId',
         videoVariantLanguageId: '529'
       },
-      true
+      // shouldFocus is false: the block is already in view, so selecting must
+      // not slide the canvas back. The outer drawer still closes via onClose.
+      false
     )
     expect(onClose).toHaveBeenCalled()
   })
@@ -1190,7 +1192,9 @@ describe('VideoLibrary', () => {
         videoId: 'videoId',
         videoVariantLanguageId: '529'
       },
-      true
+      // shouldFocus is false: the block is already in view, so selecting must
+      // not slide the canvas back. The outer drawer still closes via onClose.
+      false
     )
     expect(onClose).toHaveBeenCalled()
   })

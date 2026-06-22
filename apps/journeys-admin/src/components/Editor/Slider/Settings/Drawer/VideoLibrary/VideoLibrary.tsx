@@ -116,7 +116,11 @@ export function VideoLibrary({
     block: VideoBlockUpdateInput,
     shouldCloseDrawer = true
   ): void => {
-    const shouldFocus = shouldCloseDrawer
+    // Never re-focus the block on a library select: the block whose properties
+    // are being edited is already in view, so focusing would slide the canvas
+    // back and shift the card behind this secondary drawer. Closing the drawer
+    // is handled separately via shouldCloseDrawer.
+    const shouldFocus = false
 
     // use editor provider selected block as this accounts for background videos where the video block does not yet exist, hence the selectedBlock prop is null
     if (editorSelectedBlock != null) {
