@@ -71,6 +71,10 @@ builder.prismaObject('CloudflareImage', {
         aspectRatio === 'hd' ? `${baseUrl(id)}/f=jpg,w=1920,h=1080,q=95` : null
     }),
     blurhash: t.exposeString('blurhash', { nullable: true }),
+    // Kept `nullable: true` deliberately even though the DB column is now NOT
+    // NULL (see migration backfill_and_require_cloudflare_image_is_ai). Tightening
+    // it to non-nullable is a GraphQL contract change that would force a full
+    // codegen pass across every consumer for no behavioural gain — don't "fix" it.
     isAi: t.exposeBoolean('isAi', { nullable: true })
   })
 })
