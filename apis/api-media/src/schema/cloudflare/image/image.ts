@@ -71,10 +71,6 @@ builder.prismaObject('CloudflareImage', {
         aspectRatio === 'hd' ? `${baseUrl(id)}/f=jpg,w=1920,h=1080,q=95` : null
     }),
     blurhash: t.exposeString('blurhash', { nullable: true }),
-    // Kept `nullable: true` deliberately even though the DB column is now NOT
-    // NULL (see migration backfill_and_require_cloudflare_image_is_ai). Tightening
-    // it to non-nullable is a GraphQL contract change that would force a full
-    // codegen pass across every consumer for no behavioural gain — don't "fix" it.
     isAi: t.exposeBoolean('isAi', { nullable: true })
   })
 })
@@ -105,10 +101,20 @@ builder.queryFields((t) => ({
       return await prisma.cloudflareImage.findMany({
         ...query,
         where: {
-          ...(teamId != null
-            ? { OR: [{ userId: user.id }, { teamId }] }
-            : { userId: user.id }),
-          ...(isAi != null ? { isAi } : {})
+          AND: [
+            teamId != null
+              ? { OR: [{ userId: user.id }, { teamId }] }
+              : { userId: user.id },
+            // Treat a null isAi as "not AI". Uploads created before the isAi
+            // column existed are stored as null, and `isAi = false` would
+            // exclude them (NULL != false in SQL) — keeping historical assets
+            // out of the Custom tab. Matching false-or-null surfaces them.
+            isAi === true
+              ? { isAi: true }
+              : isAi === false
+                ? { OR: [{ isAi: false }, { isAi: null }] }
+                : {}
+          ]
         },
         orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         take: limit ?? undefined,

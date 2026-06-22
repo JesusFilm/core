@@ -306,7 +306,7 @@ describe('video', () => {
           blurhash: null,
           blurhashAttemptedAt: null,
           teamId: null,
-          isAi: false
+          isAi: null
         }
       ],
       cloudflareAssets: [
