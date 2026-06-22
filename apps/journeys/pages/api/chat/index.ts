@@ -74,6 +74,10 @@ const messageSchema = z
 const chatRequestSchema = z.object({
   messages: z.array(messageSchema).min(1).max(MAX_MESSAGES),
   language: z.string().max(64).optional(),
+  // Raw BCP-47 code for the journey language, sent alongside `language` for
+  // diagnostics only (NES-1736). Lets the server record which codes don't
+  // resolve to a usable language name client-side.
+  languageBcp47: z.string().max(64).optional(),
   sessionId: z.string().max(128).optional(),
   // Required (NES-1679): a missing journeyId is a malformed request, not a
   // killed card. Requiring it returns 400 invalid_request instead of routing
@@ -203,7 +207,8 @@ export default async function handler(
     res.status(400).json({ error: 'invalid request', code: 'invalid_request' })
     return
   }
-  const { messages, language, sessionId, journeyId, cardId } = parsed.data
+  const { messages, language, languageBcp47, sessionId, journeyId, cardId } =
+    parsed.data
 
   const promptChars = totalMessageChars(messages)
   if (promptChars > MAX_TOTAL_CHARS) {
@@ -283,6 +288,22 @@ export default async function handler(
     modelId,
     turn: messages.filter((m) => m.role === 'user').length,
     promptChars: totalMessageChars(messages)
+  }
+
+  // When the value reaching the prompt's {{language}} variable is only the raw
+  // BCP-47 code, the journey's language name didn't resolve client-side (the
+  // prompt still needs *something*, so the code is the last-resort fill). Record
+  // the code so we can spot which languages lack a usable name (NES-1736).
+  // Datadog: service:journeys event:chat_language_unresolved.
+  if (
+    languageBcp47 != null &&
+    languageBcp47.length > 0 &&
+    language === languageBcp47
+  ) {
+    logger.warn(
+      { event: 'chat_language_unresolved', ...chatLogContext, languageBcp47 },
+      'chat: journey language name unresolved; sent BCP-47 code to prompt'
+    )
   }
 
   const langfuse = getLangfuse()
@@ -459,6 +480,11 @@ export default async function handler(
   }
 }
 
+// Bible translation compiled into the Langfuse prompt's {{translation}} variable
+// (and named in the local fallback). Hardcoded for now and centralised here so
+// we can swap translations later without touching the prompt (NES-1736).
+const BIBLE_TRANSLATION = 'ESV'
+
 async function resolveSystemMessage({
   language,
   langfuse
@@ -480,8 +506,13 @@ async function resolveSystemMessage({
       )
       return { system: fallback, promptClient: null }
     }
-    const variables: Record<string, string> =
-      language != null && language.length > 0 ? { language } : {}
+    // Always supply `translation` so the prompt's {{translation}} variable
+    // resolves (otherwise Langfuse leaves the literal placeholder in the
+    // compiled prompt). `language` is only added when known.
+    const variables: Record<string, string> = { translation: BIBLE_TRANSLATION }
+    if (language != null && language.length > 0) {
+      variables.language = language
+    }
     const compiled = promptClient.compile(variables)
     return { system: compiled, promptClient }
   } catch (error) {
@@ -503,11 +534,18 @@ function buildFallbackSystemMessage({
     'You are a helpful Christian apologist and spiritual guide.',
     'Be warm, empathetic, and conversational.',
     'Support your answers with relevant Bible passages when appropriate.',
+    `Quote from the ${BIBLE_TRANSLATION} Bible.`,
     'Keep responses concise but thorough.'
   ]
 
   if (language != null && language.length > 0) {
-    parts.push(`Respond in the following language: ${language}`)
+    // Default to the journey's language, but if the user writes in a different
+    // language, answer in that language instead (NES-1736). Mirrors the
+    // Langfuse system prompt's language instruction so the fallback behaves the
+    // same when Langfuse is unavailable.
+    parts.push(
+      `Default to responding in ${language}. If the user writes in a different language, respond in that language instead.`
+    )
   }
 
   return parts.join('\n')

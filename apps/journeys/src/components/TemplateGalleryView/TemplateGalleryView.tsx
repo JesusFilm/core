@@ -3,13 +3,38 @@ import { ReactElement, useMemo } from 'react'
 
 import {
   PublicGalleryPage,
-  PublicGalleryPageData
+  PublicGalleryPageData,
+  PublicGalleryPageMedia
 } from '@core/journeys/ui/PublicGalleryPage'
 
-import { GetTemplateGalleryPage_templateGalleryPageBySlug as TemplateGalleryPage } from '../../../__generated__/GetTemplateGalleryPage'
+import {
+  GetTemplateGalleryPage_templateGalleryPageBySlug as TemplateGalleryPage,
+  GetTemplateGalleryPage_templateGalleryPageBySlug_media as TemplateGalleryPageMedia
+} from '../../../__generated__/GetTemplateGalleryPage'
+import { TemplateGalleryPageMediaType } from '../../../__generated__/globalTypes'
 
 interface TemplateGalleryViewProps {
   gallery: TemplateGalleryPage
+}
+
+/**
+ * Maps the generated media row to the lib's neutral tagged union. Rows whose
+ * payload field is missing (a mux row without a playbackId, a link row
+ * without an embedUrl) map to null so the media section simply doesn't
+ * render rather than mounting a broken player/iframe.
+ */
+function toMedia(
+  media: TemplateGalleryPageMedia | null
+): PublicGalleryPageMedia | null {
+  if (media == null) return null
+  if (media.type === TemplateGalleryPageMediaType.mux) {
+    if (media.muxPlaybackId == null || media.muxPlaybackId === '') return null
+    return { type: 'mux', muxPlaybackId: media.muxPlaybackId }
+  }
+  // Empty string is as unrenderable as null — an `src=""` iframe would
+  // mount a broken embed instead of the section simply not rendering.
+  if (media.embedUrl == null || media.embedUrl === '') return null
+  return { type: 'link', embedUrl: media.embedUrl }
 }
 
 function toData(gallery: TemplateGalleryPage): PublicGalleryPageData {
@@ -19,7 +44,7 @@ function toData(gallery: TemplateGalleryPage): PublicGalleryPageData {
     creatorName: gallery.creatorName,
     creatorImageSrc: gallery.creatorImageSrc,
     creatorImageAlt: gallery.creatorImageAlt,
-    mediaUrl: gallery.mediaUrl,
+    media: toMedia(gallery.media),
     items: gallery.templates.map((template) => ({
       id: template.id,
       title: template.title,

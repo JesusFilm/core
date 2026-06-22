@@ -3,8 +3,9 @@ import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
+import { useEditorLayout } from '../../../../EditorLayoutContext'
 import { QuickControls } from '../QuickControls'
 
 export function SelectableWrapper({
@@ -17,6 +18,7 @@ export function SelectableWrapper({
     state: { selectedBlock },
     dispatch
   } = useEditor()
+  const { isLayered } = useEditorLayout()
 
   const isSelectable =
     selectedBlock != null &&
@@ -33,6 +35,14 @@ export function SelectableWrapper({
 
   const updateEditor = (block: TreeBlock): void => {
     dispatch({ type: 'SetSelectedBlockAction', selectedBlock: block })
+    if (isLayered) {
+      // in the layered desktop view, selecting a block reveals the settings
+      // panel (ActiveSlide.Drawer) rather than the content slide
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: ActiveSlide.Drawer
+      })
+    }
     dispatch({
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: undefined
@@ -61,14 +71,24 @@ export function SelectableWrapper({
 
       if (selectedBlock?.id === block.id) {
         // Must override RadioQuestionBlock or MultiselectBlock selected during event capture
-        dispatch({ type: 'SetSelectedBlockAction', selectedBlock: block })
+        dispatch({
+          type: isLayered
+            ? 'SetSelectedBlockOnlyAction'
+            : 'SetSelectedBlockAction',
+          selectedBlock: block
+        })
       } else if (parentSelected || siblingSelected) {
         updateEditor(block)
       }
     } else {
       e.stopPropagation()
-      // eslint-disable-next-line no-empty
       if (selectedBlock?.id === block.id && isInlineEditable) {
+        if (isLayered) {
+          dispatch({
+            type: 'SetActiveSlideAction',
+            activeSlide: ActiveSlide.Drawer
+          })
+        }
       } else {
         updateEditor(block)
       }

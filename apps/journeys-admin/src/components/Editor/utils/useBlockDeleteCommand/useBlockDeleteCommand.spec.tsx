@@ -3,7 +3,7 @@ import { fireEvent, renderHook, screen, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
@@ -13,6 +13,7 @@ import {
   BlockFields_MultiselectOptionBlock as MultiselectOptionBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../__generated__/BlockFields'
+import { TestEditorState } from '../../../../libs/TestEditorState'
 import { BLOCK_DELETE } from '../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation'
 import {
   deleteCardBlockMock,
@@ -25,6 +26,7 @@ import {
   useBlockRestoreMutationMock
 } from '../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 import { MuxVideoUploadProvider } from '../../../MuxVideoUploadProvider'
+import { EditorLayoutProvider } from '../../EditorLayoutContext'
 import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
 
 import {
@@ -387,5 +389,45 @@ describe('useBlockDeleteCommand', () => {
     })
     // Ensure no unexpected multiselect update was executed
     // Apollo would throw an Unhandled error if an unmocked request was made during the test
+  })
+
+  it('keeps the active slide when deleting in the layered layout', async () => {
+    const deleteCardBlockMockResult = vi.fn(() => ({
+      ...deleteCardBlockMock.result
+    }))
+    const { result } = renderHook(() => useBlockDeleteCommand(), {
+      wrapper: ({ children }) => (
+        <MockedProvider
+          mocks={[
+            { ...deleteCardBlockMock, result: deleteCardBlockMockResult }
+          ]}
+        >
+          <EditorProvider
+            initialState={{
+              ...initiatEditorState,
+              activeSlide: ActiveSlide.Drawer
+            }}
+          >
+            <JourneyProvider
+              value={{ journey: { ...defaultJourney, id: 'journey-id' } }}
+            >
+              <MuxVideoUploadProvider>
+                <EditorLayoutProvider value="layered">
+                  <CommandProvider>
+                    <TestEditorState />
+                    {children}
+                  </CommandProvider>
+                </EditorLayoutProvider>
+              </MuxVideoUploadProvider>
+            </JourneyProvider>
+          </EditorProvider>
+        </MockedProvider>
+      )
+    })
+    result.current.addBlockDelete({ ...cardBlock, id: 'blockId' })
+    await waitFor(() => {
+      expect(deleteCardBlockMockResult).toHaveBeenCalled()
+    })
+    expect(screen.getByText('activeSlide: 2')).toBeInTheDocument()
   })
 })

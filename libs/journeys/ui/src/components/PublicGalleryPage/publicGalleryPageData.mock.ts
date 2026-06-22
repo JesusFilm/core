@@ -19,7 +19,7 @@ export function makeData(
     creatorName: 'Jane Doe',
     creatorImageSrc: 'https://example.com/avatar.jpg',
     creatorImageAlt: 'Jane Doe avatar',
-    mediaUrl: null,
+    media: null,
     items: [mockItem],
     ...overrides
   }

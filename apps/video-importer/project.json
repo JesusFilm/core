@@ -14,7 +14,7 @@
     "run": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "BUN_INSTALL=${BUN_INSTALL:-$HOME/.bun} PATH=\"$BUN_INSTALL/bin:$PATH\" bun apps/video-importer/src/video-importer.ts --folder apps/video-importer/test-videos"
+        "command": "node --import tsx apps/video-importer/src/video-importer.ts --folder apps/video-importer/test-videos --dry-run"
       }
     },
     "package": {
@@ -31,7 +31,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "BUN_INSTALL=${BUN_INSTALL:-$HOME/.bun} PATH=\"$BUN_INSTALL/bin:$PATH\" bun build --compile apps/video-importer/src/video-importer.ts --outfile dist/apps/video-importer-executable/video-importer",
+          "cd apps/video-importer && ./build-scripts/build-cross-platform.sh",
           "mkdir -p dist/apps/video-importer-executable && cp -f apps/video-importer/README.md dist/apps/video-importer-executable/README.md"
         ],
         "parallel": false

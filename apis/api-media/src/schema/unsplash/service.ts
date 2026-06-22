@@ -1,4 +1,3 @@
-import nodeFetch from 'node-fetch'
 import { createApi } from 'unsplash-js'
 
 import { UnsplashColorEnum } from './enums/UnsplashColor'
@@ -9,9 +8,9 @@ import { UnsplashPhoto } from './objects/UnsplashPhoto'
 import { UnsplashQueryResponse } from './objects/UnsplashQueryResponse'
 
 function getClient(): ReturnType<typeof createApi> {
+  // Use Node's native global `fetch` (undici) rather than node-fetch@2. [QA-530]
   return createApi({
-    accessKey: process.env.UNSPLASH_ACCESS_KEY ?? '',
-    fetch: nodeFetch as unknown as typeof fetch
+    accessKey: process.env.UNSPLASH_ACCESS_KEY ?? ''
   })
 }
 

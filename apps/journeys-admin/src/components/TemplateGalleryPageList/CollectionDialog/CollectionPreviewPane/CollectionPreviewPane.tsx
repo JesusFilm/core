@@ -16,7 +16,10 @@ import CopyRightIcon from '@core/shared/ui/icons/CopyRight'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
+import { TemplateGalleryPageMediaType } from '../../../../../__generated__/globalTypes'
 import { copyToClipboard } from '../../../../libs/copyToClipboard'
+import { MediaPreview } from '../MediaPreview'
+import { CollectionMediaValues } from '../useCollectionForm/collectionMedia'
 
 export interface CollectionPreviewValues {
   title: string
@@ -24,7 +27,7 @@ export interface CollectionPreviewValues {
   creatorName: string
   creatorImageSrc: string
   creatorImageAlt: string
-  mediaUrl: string
+  media: CollectionMediaValues
 }
 
 interface CollectionPreviewPaneProps {
@@ -68,7 +71,9 @@ function toData(
     creatorName: values.creatorName,
     creatorImageSrc: values.creatorImageSrc,
     creatorImageAlt: values.creatorImageAlt,
-    mediaUrl: values.mediaUrl,
+    // Media is intentionally NOT mapped here: the preview renders *form
+    // state* (typing, processing, thumbnails) through the `mediaSlot` below,
+    // which the neutral data shape can't express.
     items: journeys.map((journey) => ({
       id: journey.id,
       title: journey.title,
@@ -255,7 +260,18 @@ function CollectionPreviewPaneImpl({
           overflowY: 'auto'
         }}
       >
-        <PublicGalleryPage variant="admin" data={data} />
+        <PublicGalleryPage
+          variant="admin"
+          data={data}
+          // The media section previews live form state (a link mid-typing, a
+          // processing upload, a mux thumbnail) — states the public renderer
+          // can't express — so the admin injects its own MediaPreview.
+          mediaSlot={
+            values.media.type !== TemplateGalleryPageMediaType.none ? (
+              <MediaPreview media={values.media} />
+            ) : null
+          }
+        />
       </Box>
     </Box>
   )

@@ -1,5 +1,7 @@
 import { builder } from '../../builder'
 
+import { TemplateGalleryPageMediaInput } from './templateGalleryPageMediaInput'
+
 export const TemplateGalleryPageCreateInput = builder.inputType(
   'TemplateGalleryPageCreateInput',
   {
@@ -33,15 +35,26 @@ export const TemplateGalleryPageCreateInput = builder.inputType(
         required: false,
         description: 'Optional alt text for the creator avatar.'
       }),
+      // Not @deprecated: the legacy apollo CLI used by 5 frontend codegen
+      // targets predates @deprecated on INPUT_FIELD_DEFINITION and fails to
+      // load any schema containing it, so the deprecation lives in the
+      // description instead. Remove this field together with the @deprecated
+      // TemplateGalleryPage.mediaUrl output field.
       mediaUrl: t.string({
         required: false,
         description:
-          'Optional https URL of a hero/cover media asset. Rejected if not https.'
+          'Deprecated: superseded by the `media` input (NES-1704); will be removed together with the deprecated `TemplateGalleryPage.mediaUrl` field. Optional https URL of a hero/cover media asset. Rejected if not https.'
       }),
       journeyIds: t.idList({
         required: false,
         description:
           'Optional initial template journeys to attach. Cross-team and non-template ids are silently filtered out.'
+      }),
+      media: t.field({
+        type: TemplateGalleryPageMediaInput,
+        required: false,
+        description:
+          'Optional embedded media. `type` (`link`/`mux`/`none`) selects what renders; supply `url` and/or `muxVideoId` to populate either slot (both may be set at once). `url` is server-validated and normalized per provider; `muxVideoId` is validated against the media DB.'
       })
     })
   }

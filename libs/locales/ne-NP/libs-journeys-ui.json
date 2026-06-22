@@ -1,4 +1,5 @@
 {
+  "About this chat": "यस च्याटको बारेमा",
   "Copy message": "सन्देश प्रतिलिपि गर्नुहोस्",
   "Copy": "प्रतिलिपि गर्नुहोस्",
   "Assistant is typing": "सहायक टाइप गर्दैछ",
@@ -111,6 +112,7 @@
   "Close": "बन्द गर्नुहोस्",
   "Explore": "अन्वेषण गर्नुहोस्",
   "More": "थप",
+  "Media": "Media",
   "Use": "प्रयोग गर्नुहोस्",
   "This gallery has no templates yet.": "यस ग्यालरीमा अहिलेसम्म कुनै टेम्प्लेटहरू छैनन्।",
   "Untitled collection": "शीर्षकविहीन सङ्ग्रह",
@@ -123,6 +125,9 @@
   "Preview {{title}}": "अग्रिम अवलोकन {{title}}",
   "Ask a question": "प्रश्न सोध्नुहोस्",
   "Replies may not be perfect": "उत्तरहरू पूर्ण नहुन सक्छन्।",
+  "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.": "यो कुराकानी लामो भयो। कुराकानी जारी राख्न नयाँ कुराकानी सुरु गर्नुहोस् — यसले हालको सत्र मेटाउनेछ।",
+  "Start a new conversation": "नयाँ कुराकानी सुरु गर्नुहोस्",
+  "Gallery media": "ग्यालरी मिडिया",
   "Select at least {{count}} options._one": "Select at least {{count}} options.",
   "Select at least {{count}} options._other": "Select at least {{count}} options.",
   "Select up to {{count}} options._one": "Select up to {{count}} options.",

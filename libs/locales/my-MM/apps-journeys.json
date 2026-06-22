@@ -11,5 +11,15 @@
   "Privacy Policy": "Privacy Policy",
   "NextSteps © {{year}}": "NextSteps © {{year}}",
   "Use": "အသုံးပြုပါ",
-  "Preview": "Preview"
+  "Preview": "Preview",
+  "About this chat": "ဒီစကားပြောအကြောင်း",
+  "About this chat | Next Steps": "ဒီဆွေးနွေးပွဲအကြောင်း | နောက်ဆက်တွဲအဆင့်များ",
+  "The chat on this journey is powered by an AI assistant. To help us improve future replies, the messages you send and the assistant’s replies are saved.": "ဤခရီးစဉ်အတွင်း စကားပြောဆက်သွယ်မှုကို AI အကူတစ်ယောက်က ထောက်ပံ့ပေးပါသည်။ အနာဂတ်တွင် ပိုမိုကောင်းမွန်သော တုံ့ပြန်ချက်များ ပေးနိုင်ရန် သင်ပို့သော စာများနှင့် အကူ၏ တုံ့ပြန်ချက်များကို သိမ်းဆည်းထားပါသည်။",
+  "We do not save your name, email address, or any account details, and we do not link conversations to your identity.": "ကျွန်ုပ်တို့သည် သင့်နာမည်၊ အီးမေးလ်လိပ်စာ သို့မဟုတ် အကောင့်ဆိုင်ရာ အသေးစိတ်အချက်အလက်များကို မသိမ်းဆည်းပါ၊ ဆွေးနွေးချက်များကို သင့်ကိုယ်ပိုင်အထောက်အထားနှင့် မချိတ်ဆက်ပါ။",
+  "Where the messages go": "မက်ဆေ့ခ်ျတွေ ဘယ်ကို သွားသလဲ",
+  "Your messages and the assistant’s replies pass through two third-party services: an AI service that generates the replies, and an analytics service called Langfuse where the conversations are stored so the team can review them in aggregate to improve the experience. They are not sold and they are not used for advertising.": "သင့်မက်ဆေ့ခ်ျများနှင့် အကူအညီပေးသူ၏ တုံ့ပြန်ချက်များသည် တတိယပါတီဝန်ဆောင်မှုနှစ်ခုမှ ဖြတ်သွားသည်။ တစ်ခုမှာ တုံ့ပြန်ချက်များကို ဖန်တီးပေးသည့် AI ဝန်ဆောင်မှုဖြစ်ပြီး၊ တစ်ခုမှာ Langfuse ဟုခေါ်သော ခွဲခြမ်းစိတ်ဖြာမှုဝန်ဆောင်မှုဖြစ်သည်။ Langfuse တွင် စကားပြောဆိုမှုများကို သိမ်းဆည်းထားကာ အဖွဲ့က စုစုပေါင်း ပြန်လည်သုံးသပ်၍ အသုံးပြုသူအတွေ့အကြုံကို တိုးတက်အောင် ဆောင်ရွက်နိုင်သည်။ ဤဒေတာများကို မရောင်းချသလို ကြော်ငြာအတွက် မအသုံးပြုပါ။",
+  "If you prefer not to take part": "ပါဝင်ရန် မလိုချင်ပါက",
+  "There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.": "ယနေ့တွင် စကားပြောအတွက် သီးခြား ဖျက်ပစ်ခွင့် မရှိပါ။ သင့်မက်ဆေ့ခ်ျများကို သိမ်းဆည်းမခံချင်ပါက စကားပြောကို မသုံးပါနှင့် — ခရီးစဉ်၏ အခြားအပိုင်းများအားလုံးကို စကားပြောမပါဘဲ အသုံးပြုနိုင်ပါသည်။",
+  "Last updated: June 2026": "နောက်ဆုံးအပ်ဒိတ်လုပ်ခဲ့သည့်အချိန်: ၂၀၂၆ ခုနှစ် ဇွန်လ",
+  "Back to Next Steps": "နောက်ဆင့်များသို့ ပြန်သွားပါ"
 }

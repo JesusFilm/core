@@ -15,7 +15,7 @@ paths:
 
 | Domain    | Nx Project         | Schema Path                              | DB URL Env Var              | APIs Using This Domain                                                        |
 | --------- | ------------------ | ---------------------------------------- | --------------------------- | ----------------------------------------------------------------------------- |
-| journeys  | `prisma-journeys`  | `libs/prisma/journeys/db/schema.prisma`  | `PG_DATABASE_URL_JOURNEYS`  | `api-journeys`                                         |
+| journeys  | `prisma-journeys`  | `libs/prisma/journeys/db/schema.prisma`  | `PG_DATABASE_URL_JOURNEYS`  | `api-journeys`                                                                |
 | users     | `prisma-users`     | `libs/prisma/users/db/schema.prisma`     | `PG_DATABASE_URL_USERS`     | `api-users`                                                                   |
 | analytics | `prisma-analytics` | `libs/prisma/analytics/db/schema.prisma` | `PG_DATABASE_URL_ANALYTICS` | `api-analytics` (uses `prisma-introspect`, not `prisma-migrate` — see Step 3) |
 | languages | `prisma-languages` | `libs/prisma/languages/db/schema.prisma` | `PG_DATABASE_URL_LANGUAGES` | `api-languages`                                                               |
@@ -123,6 +123,18 @@ For example, for the journeys domain:
 PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public bash -c 'pnpm exec prisma migrate dev --config libs/prisma/journeys/prisma.config.ts --name "$(date +"%Y%m%d%H%M%S")"'
 ```
 
+### `P3006`: a historical migration fails to apply to the shadow database
+
+If `nx prisma-migrate prisma-<domain>` fails with `P3006` on a migration **unrelated to your change** (e.g. `constraint ... does not exist`), or `prisma migrate deploy` dies replaying history (e.g. `type "X" already exists`), the local migration history has drifted. Don't replay history — generate the migration by diffing the **live local DB** against the new schema (run from the prisma project dir so `prisma.config.ts` autoloads):
+
+```bash
+cd libs/prisma/<domain>
+export PG_DATABASE_URL_<DOMAIN>=postgresql://postgres:postgres@db:5432/<domain>?schema=public
+pnpm exec prisma migrate diff --from-config-datasource prisma.config.ts --to-schema db/schema.prisma --script
+```
+
+Write the emitted SQL (minus Prisma's banner) to `db/migrations/<timestamp>_<name>/migration.sql`, apply it with `psql -v ON_ERROR_STOP=1 -f`, then record it in `_prisma_migrations` (checksum = `sha256sum` of the file) so it isn't re-applied. Confirm the SQL is purely additive. A plain file-to-file `migrate diff --from-schema OLD --to-schema NEW` can silently return empty — use `--from-config-datasource`. Full procedure: `docs/solutions/workflow-issues/prisma7-migrate-and-nx-codegen-schema-change-gotchas-2026-06-02.md`.
+
 ### "Running generate... Error" after migration
 
 If the migration succeeds but prisma generate fails, run it separately:
@@ -131,9 +143,27 @@ If the migration succeeds but prisma generate fails, run it separately:
 nx prisma-generate prisma-<domain>
 ```
 
+### `nx codegen` serves stale output (cache hit)
+
+If `nx run-many -t codegen` logs "read the output from the cache" and the generated types (e.g. `libs/shared/gql/src/__generated__/graphql-env.d.ts`) are missing a field that **is** present in `apis/api-gateway/schema.graphql`, the codegen cache key didn't capture the upstream gateway-schema change. Re-run with the cache disabled:
+
+```bash
+nx run-many -t codegen --skip-nx-cache
+```
+
+See `docs/solutions/workflow-issues/prisma7-migrate-and-nx-codegen-schema-change-gotchas-2026-06-02.md`.
+
+### `codegen` fails at schema load: `Directive "deprecated" may not be used on INPUT_FIELD_DEFINITION`
+
+The frontend codegen targets that use the legacy `apollo client:codegen` CLI (`journeys`, `journeys-admin`, `journeys-ui`, `resources`, `watch`) reject `@deprecated` on input fields and arguments — their bundled validator predates graphql-js 15.5, and the failure is all-or-nothing at schema load. `generate-graphql` and the gateway compose (Steps 5–6) pass; only Step 7 fails. Do not add `deprecationReason` to Pothos **input** fields — express the deprecation in the field `description` text instead, and keep `@deprecated` on output fields (legal in every consumer).
+
+See `docs/solutions/build-errors/apollo-codegen-deprecated-directive-input-field-2026-06-08.md`.
+
 ## Common Mistakes to Avoid
 
 - **Do NOT edit `schema.graphql` directly** in any API — it is auto-generated. Edit the Pothos schema code instead.
 - **Do NOT forget `generate-graphql api-gateway`** after updating any subgraph schema — the gateway supergraph must be recomposed.
 - **Do NOT forget `nx run-many -t codegen`** — frontend TypeScript types will be stale until codegen runs.
 - **Do NOT skip generating for all APIs that share a prisma domain** — when multiple APIs share one Prisma schema, regenerate GraphQL for each of them.
+- **Do NOT trust a `codegen` cache hit after a gateway-schema change** — `nx run-many -t codegen` can replay stale output; run with `--skip-nx-cache` or grep the generated artifacts for the new field.
+- **Do NOT add `deprecationReason` to Pothos input fields** — the legacy apollo CLI codegen consumers fail at schema load; put the deprecation in the field description instead (see Troubleshooting).

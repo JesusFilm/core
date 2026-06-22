@@ -1,5 +1,7 @@
 import { builder } from '../../builder'
 
+import { TemplateGalleryPageMediaInput } from './templateGalleryPageMediaInput'
+
 // Deliberately omits status, publishedAt, id, teamId, createdAt, updatedAt — those are
 // either immutable or transitioned via dedicated mutations (templateGalleryPagePublish).
 export const TemplateGalleryPageUpdateInput = builder.inputType(
@@ -35,15 +37,26 @@ export const TemplateGalleryPageUpdateInput = builder.inputType(
         required: false,
         description: 'Optional creator avatar alt text. Pass `null` to clear.'
       }),
+      // Not @deprecated: the legacy apollo CLI used by 5 frontend codegen
+      // targets predates @deprecated on INPUT_FIELD_DEFINITION and fails to
+      // load any schema containing it, so the deprecation lives in the
+      // description instead. Remove this field together with the @deprecated
+      // TemplateGalleryPage.mediaUrl output field.
       mediaUrl: t.string({
         required: false,
         description:
-          'Optional https hero media URL. Pass `null` to clear. Rejected if not https.'
+          'Deprecated: superseded by the `media` input (NES-1704); will be removed together with the deprecated `TemplateGalleryPage.mediaUrl` field. Optional https hero media URL. Pass `null` to clear. Rejected if not https.'
       }),
       journeyIds: t.idList({
         required: false,
         description:
           "When provided, replaces the page's template list with these journeys in this exact order (existing assignments are deleted then recreated). Cross-team and non-template ids are silently filtered out. Omit to leave the template list unchanged."
+      }),
+      media: t.field({
+        type: TemplateGalleryPageMediaInput,
+        required: false,
+        description:
+          'Embedded media. Omit (or pass `null`) to leave the existing media untouched — there is no media delete. When an object is supplied, `type` (`link`/`mux`/`none`) selects what renders and each payload slot merges independently: for `url` and `muxVideoId`, omit to leave the stored value, pass `null` to clear that slot, or pass a value to set/replace it. Both slots may stay populated; hide everything with `type: none`.'
       })
     })
   }

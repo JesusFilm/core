@@ -2258,7 +2258,7 @@ type Query {
     Case-sensitive public slug. Must match `^[a-z0-9]+(-[a-z0-9]+)*$` (lowercase letters, digits, and hyphen-separated segments only) and be at most 200 characters. Slugs that fail this shape return null without hitting the database.
     """
     slug: String!
-  ): TemplateGalleryPage
+  ): TemplateGalleryPagePublic
 
   """
   List all TemplateGalleryPages owned by a team — both `draft` and `published` rows — ordered by `createdAt` descending.
@@ -2269,6 +2269,21 @@ type Query {
     """Owning team. Caller must be a member."""
     teamId: ID!
   ): [TemplateGalleryPage!]!
+
+  """
+  Resolve a pasted embed URL to its normalized iframe `embedUrl` without saving — for the collection media link-field preview. Runs the same validation and normalization as the create/update `media` link path (https check, host allowlist, provider normalization for Canva/YouTube/Google Slides). Authenticated callers only.
+  
+  Errors (same reason codes as the save path):
+  - BAD_USER_INPUT (field: `url`): URL is not https.
+  - BAD_USER_INPUT / EMBED_HOST_NOT_ALLOWED: host is not in the embed allowlist.
+  - BAD_USER_INPUT / CANVA_UNAVAILABLE, GOOGLE_SLIDES_NOT_PUBLISHED, etc.: provider normalization failed.
+  """
+  templateGalleryPageEmbedPreview(
+    """
+    The pasted embed URL to validate and normalize. Must be https and on an allowlisted host; provider URLs (Canva, YouTube, Google Slides) are normalized to their iframe form, and a canva.link short link is resolved to its design URL.
+    """
+    url: String!
+  ): String!
   userInvites(journeyId: ID!): [UserInvite!]
   getUserRole: UserRole
   userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
@@ -2674,7 +2689,7 @@ type TemplateGalleryPage {
   """
   Optional https URL of a hero/cover media asset shown on the public page. https-only on write.
   """
-  mediaUrl: String
+  mediaUrl: String @deprecated(reason: "Superseded by the `media` relation (NES-1704). Retained on legacy rows behind the LD flag; not written by new UI.")
 
   """
   Timestamp of the first publish event. Monotonic — never re-set on subsequent unpublish/republish, and never cleared. Null while the page has not yet been published.
@@ -2690,6 +2705,11 @@ type TemplateGalleryPage {
   Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.
   """
   templates: [TemplateGalleryItem!]!
+
+  """
+  Embedded media with both retained payload slots and the raw `muxVideoId`, so the editor can restore a parked link/upload. `null` only when the page has no media row.
+  """
+  media: TemplateGalleryPageMedia
 }
 
 """
@@ -2718,13 +2738,177 @@ input TemplateGalleryPageCreateInput {
   """Optional alt text for the creator avatar."""
   creatorImageAlt: String
 
-  """Optional https URL of a hero/cover media asset. Rejected if not https."""
+  """
+  Deprecated: superseded by the `media` input (NES-1704); will be removed together with the deprecated `TemplateGalleryPage.mediaUrl` field. Optional https URL of a hero/cover media asset. Rejected if not https.
+  """
   mediaUrl: String
 
   """
   Optional initial template journeys to attach. Cross-team and non-template ids are silently filtered out.
   """
   journeyIds: [ID!]
+
+  """
+  Optional embedded media. `type` (`link`/`mux`/`none`) selects what renders; supply `url` and/or `muxVideoId` to populate either slot (both may be set at once). `url` is server-validated and normalized per provider; `muxVideoId` is validated against the media DB.
+  """
+  media: TemplateGalleryPageMediaInput
+}
+
+"""
+Authenticated media projection for the editor. Exposes the full row, including both retained payload slots and the raw `muxVideoId`, so a parked link/upload can be restored. Returned only by authenticated, team-scoped read paths.
+"""
+type TemplateGalleryPageMedia {
+  id: ID!
+
+  """Active selector for which payload renders."""
+  type: TemplateGalleryPageMediaType!
+
+  """
+  The stored link payload. May be retained while `type` is `mux`/`none` so the editor can offer switching back.
+  """
+  embedUrl: String
+
+  """
+  Raw Mux video id of the stored upload payload. Authenticated-only — never exposed on the public type.
+  """
+  muxVideoId: ID
+
+  """Mux playback ID denormalized at save time. Tracks `muxVideoId`."""
+  muxPlaybackId: String
+
+  """Video name denormalized at save time. Tracks `muxVideoId`."""
+  muxName: String
+
+  """
+  Video duration in seconds denormalized at save time. Tracks `muxVideoId`.
+  """
+  muxDuration: Int
+}
+
+"""
+Input for attaching media to a TemplateGalleryPage. `type` (`link`/`mux`/`none`) selects what renders; both payload slots may stay populated at once. For `url` and `muxVideoId`: omit to leave the stored value, pass `null` to clear that slot, or pass a value to set/replace it.
+"""
+input TemplateGalleryPageMediaInput {
+  """
+  Active selector: which payload renders (`link`/`mux`/`none`). Required.
+  """
+  type: TemplateGalleryPageMediaType!
+
+  """
+  The embed URL slot. Omit to leave unchanged, `null` to clear, or a value to set/replace (server-validated and normalized per provider). Provider verification varies: Canva and YouTube are confirmed via oEmbed, but Google Slides is shape-validated only (a published-shaped URL that is actually private or non-existent passes validation), so a stored Google Slides embed is not guaranteed to render.
+  """
+  url: String
+
+  """
+  The Mux upload slot. Omit to leave unchanged, `null` to clear, or a value to set/replace (validated against the media DB).
+  """
+  muxVideoId: ID
+}
+
+"""
+Public media attached to a TemplateGalleryPage. Exposes only the payload selected by `type` (`link` → `embedUrl`; `mux` → `muxPlaybackId`/`muxName`/`muxDuration`; `none` → nothing). Parked payloads for the non-active slot are never exposed. All fields source directly from the stored row so public-page reads never cross to the media database.
+"""
+type TemplateGalleryPageMediaPublic {
+  id: ID!
+
+  """Active selector for which payload renders."""
+  type: TemplateGalleryPageMediaType!
+
+  """Server-normalized iframe URL. Non-null only when `type` is `link`."""
+  embedUrl: String
+
+  """
+  Mux playback ID, denormalized at save time so public reads never cross to the media DB. Non-null only when `type` is `mux`.
+  """
+  muxPlaybackId: String
+
+  """
+  Video name, denormalized at save time. Non-null only when `type` is `mux` and Mux has a name.
+  """
+  muxName: String
+
+  """
+  Video duration in seconds, denormalized at save time. Non-null only when `type` is `mux` and Mux reports a duration.
+  """
+  muxDuration: Int
+}
+
+"""
+Active selector for the media attached to a TemplateGalleryPage: which payload renders. Both payload slots may stay populated regardless of this value, so switching never discards a payload.
+"""
+enum TemplateGalleryPageMediaType {
+  """Render the embed URL (`embedUrl`)."""
+  link
+
+  """Render the Mux upload (`muxPlaybackId`)."""
+  mux
+
+  """
+  Render nothing. Any stored `embedUrl`/upload payload is retained but not shown; the public page treats this as no media.
+  """
+  none
+}
+
+"""
+Public projection of a TemplateGalleryPage, returned by the unauthenticated slug read. Identical to the full type except `media` exposes only the active payload (parked payloads and the raw `muxVideoId` are never emitted).
+"""
+type TemplateGalleryPagePublic {
+  """Stable UUID identifier."""
+  id: ID!
+
+  """Display title shown in admin UI and on the public page."""
+  title: String!
+
+  """
+  Long-form description shown on the public page. Defaults to empty string.
+  """
+  description: String!
+
+  """
+  URL-safe identifier. The public page is reached at `/collections/<slug>`. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`, max 200 characters, and must not be in the reserved list. Mutable after publish — changing it breaks any external links to the old URL.
+  """
+  slug: String!
+
+  """
+  `draft` hides the page from the public renderer; `published` exposes it via `templateGalleryPageBySlug`.
+  """
+  status: TemplateGalleryPageStatus!
+
+  """Display name of the team or person credited as the page creator."""
+  creatorName: String!
+
+  """
+  Optional https URL of the creator avatar image. Plain string (not a Block FK) — survives independently of any owning Block. https-only on write.
+  """
+  creatorImageSrc: String
+
+  """Optional alt text for the creator avatar."""
+  creatorImageAlt: String
+
+  """
+  Optional https URL of a hero/cover media asset shown on the public page. https-only on write.
+  """
+  mediaUrl: String @deprecated(reason: "Superseded by the `media` relation (NES-1704). Retained on legacy rows behind the LD flag; not written by new UI.")
+
+  """
+  Timestamp of the first publish event. Monotonic — never re-set on subsequent unpublish/republish, and never cleared. Null while the page has not yet been published.
+  """
+  publishedAt: DateTimeISO
+  createdAt: DateTimeISO!
+  updatedAt: DateTimeISO!
+
+  """Owning team. The page is hard-deleted when the team is deleted."""
+  team: Team!
+
+  """
+  Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only. Each item is the narrow `TemplateGalleryItem` DTO, NOT the full `Journey` type.
+  """
+  templates: [TemplateGalleryItem!]!
+
+  """
+  Embedded media shown on the public page, or `null` when nothing renders (no media, `type: none`, or the active slot is empty). Only the active payload is ever exposed; parked payloads are not.
+  """
+  media: TemplateGalleryPageMediaPublic
 }
 
 """
@@ -2769,7 +2953,7 @@ input TemplateGalleryPageUpdateInput {
   creatorImageAlt: String
 
   """
-  Optional https hero media URL. Pass `null` to clear. Rejected if not https.
+  Deprecated: superseded by the `media` input (NES-1704); will be removed together with the deprecated `TemplateGalleryPage.mediaUrl` field. Optional https hero media URL. Pass `null` to clear. Rejected if not https.
   """
   mediaUrl: String
 
@@ -2777,6 +2961,11 @@ input TemplateGalleryPageUpdateInput {
   When provided, replaces the page's template list with these journeys in this exact order (existing assignments are deleted then recreated). Cross-team and non-template ids are silently filtered out. Omit to leave the template list unchanged.
   """
   journeyIds: [ID!]
+
+  """
+  Embedded media. Omit (or pass `null`) to leave the existing media untouched — there is no media delete. When an object is supplied, `type` (`link`/`mux`/`none`) selects what renders and each payload slot merges independently: for `url` and `muxVideoId`, omit to leave the stored value, pass `null` to clear that slot, or pass a value to set/replace it. Both slots may stay populated; hide everything with `type: none`.
+  """
+  media: TemplateGalleryPageMediaInput
 }
 
 type TextResponseBlock implements Block
