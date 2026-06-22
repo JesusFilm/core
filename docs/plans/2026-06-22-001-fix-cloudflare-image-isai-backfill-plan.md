@@ -1,5 +1,5 @@
 ---
-title: "fix: Surface historical Cloudflare uploads by backfilling CloudflareImage.isAi"
+title: 'fix: Surface historical Cloudflare uploads by backfilling CloudflareImage.isAi'
 type: fix
 status: active
 date: 2026-06-22
@@ -95,11 +95,13 @@ Root cause (diagnosed): migration `20260506045451_add_is_ai_to_cloudflare_image`
 **Dependencies:** None
 
 **Files:**
+
 - Modify: `libs/prisma/media/db/schema.prisma` (change `isAi Boolean?` → `isAi Boolean @default(false)`)
 - Create: `libs/prisma/media/db/migrations/<timestamp>_backfill_and_require_cloudflare_image_is_ai/migration.sql`
 - (Generated) Modify: `libs/prisma/media/generated/**` via `nx prisma-generate prisma-media`
 
 **Approach:**
+
 1. Edit the schema field to `isAi Boolean @default(false)` (drop the `?`).
 2. Generate the migration with `nx prisma-migrate prisma-media` (use the non-interactive `--name` form from the schema-change rule if the env is non-interactive; if P3006 drift hits, fall back to `prisma migrate diff --from-config-datasource` per the learning doc).
 3. **Hand-edit the generated `migration.sql`** so statements run in this order: (a) `UPDATE "CloudflareImage" SET "isAi" = false WHERE "isAi" IS NULL;`, (b) `ALTER COLUMN "isAi" SET DEFAULT false;`, (c) `ALTER COLUMN "isAi" SET NOT NULL;`. Confirm the `UPDATE` precedes `SET NOT NULL`.
@@ -110,9 +112,11 @@ Root cause (diagnosed): migration `20260506045451_add_is_ai_to_cloudflare_image`
 **Patterns to follow:** Existing media migrations under `libs/prisma/media/db/migrations/`; the `media` domain rows of `.claude/rules/backend/database-schema-changes.md`.
 
 **Test scenarios:**
+
 - Test expectation: none for the migration SQL itself (pure schema + data migration). Correctness is verified by: the migration applying cleanly against a DB containing `NULL` rows, and the column reporting `NOT NULL` afterward (see Verification).
 
 **Verification:**
+
 - Migration applies locally with no error; `\d "CloudflareImage"` (or introspection) shows `isAi boolean not null default false`.
 - A pre-seeded row with `isAi = NULL` reads back as `false` after migration.
 - `nx prisma-generate prisma-media` succeeds and the client type for `isAi` is non-nullable.
@@ -126,21 +130,25 @@ Root cause (diagnosed): migration `20260506045451_add_is_ai_to_cloudflare_image`
 **Dependencies:** U1
 
 **Files:**
+
 - Modify (if needed): `apis/api-media/src/schema/cloudflare/image/image.spec.ts`
 
 **Approach:**
+
 - The resolver code is unchanged. Add/confirm a regression test asserting that a Custom-tab query (`isAi: false`) returns rows that were historically `NULL` — i.e. after backfill they are `false` and therefore match. Since the spec mocks Prisma, the meaningful assertion is that the `where` clause for `isAi: false` is what surfaces backfilled rows; document the data-level nature of the fix in a test comment so future readers don't re-introduce a nullable column.
 - If making the field non-nullable breaks any spec mock typed with `isAi: null`, update those mocks to `false`.
 
 **Patterns to follow:** Existing `getMyCloudflareImages` test block at image.spec.ts:162-392.
 
 **Test scenarios:**
+
 - Happy path: query with `isAi: false` returns the (now-backfilled) rows; `where` is `{ userId, isAi: false }`. (Existing test at image.spec.ts:306 already asserts this `where`; keep it green.)
 - Edge case: query with `isAi: true` still returns only AI rows (image.spec.ts:294 stays green).
 - Edge case: null `isAi` arg still omits the filter (image.spec.ts:318 stays green).
 - Integration: team-merged predicate with `isAi` still composes correctly (image.spec.ts:358 stays green).
 
 **Verification:**
+
 - `npx vitest run --config apis/api-media/vitest.config.mts 'apis/api-media/src/schema/cloudflare/image/image.spec.ts' --coverage=false` passes.
 
 ---
@@ -156,12 +164,12 @@ Root cause (diagnosed): migration `20260506045451_add_is_ai_to_cloudflare_image`
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
-| `SET NOT NULL` runs before the backfill and the migration fails | Hand-order the SQL: `UPDATE` first, then `SET DEFAULT`, then `SET NOT NULL`; read the SQL back before applying. |
-| Backfill locks a large `CloudflareImage` table in production | Single bounded `UPDATE`; coordinate deploy timing if the table is very large. Idempotent guard allows safe retry. |
-| Prisma shadow-DB drift (P3006) blocks migration generation | Use `prisma migrate diff --from-config-datasource` per `docs/solutions/workflow-issues/prisma7-migrate-and-nx-codegen-schema-change-gotchas-2026-06-02.md`. |
-| Non-nullable client type breaks spec mocks using `isAi: null` | Update affected mocks to `false` (deferred-to-implementation item). |
+| Risk                                                            | Mitigation                                                                                                                                                  |
+| --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SET NOT NULL` runs before the backfill and the migration fails | Hand-order the SQL: `UPDATE` first, then `SET DEFAULT`, then `SET NOT NULL`; read the SQL back before applying.                                             |
+| Backfill locks a large `CloudflareImage` table in production    | Single bounded `UPDATE`; coordinate deploy timing if the table is very large. Idempotent guard allows safe retry.                                           |
+| Prisma shadow-DB drift (P3006) blocks migration generation      | Use `prisma migrate diff --from-config-datasource` per `docs/solutions/workflow-issues/prisma7-migrate-and-nx-codegen-schema-change-gotchas-2026-06-02.md`. |
+| Non-nullable client type breaks spec mocks using `isAi: null`   | Update affected mocks to `false` (deferred-to-implementation item).                                                                                         |
 
 ---
 
