@@ -57,8 +57,9 @@ model MuxVideo {
   createdAt     DateTime           @default(now())
   readyToStream Boolean            @default(false)
   updatedAt     DateTime           @default(now()) @updatedAt
-  videoVariants VideoVariant[]
-  subtitles     MuxSubtitleTrack[]
+  videoVariants  VideoVariant[]
+  variantUploads VideoVariantUpload[]
+  subtitles      MuxSubtitleTrack[]
   teamId        String?
 
   @@index(userId(type: Hash))
@@ -70,6 +71,16 @@ model MuxVideo {
 enum MuxSubtitleTrackSource {
   uploaded
   generated
+}
+
+enum VideoVariantUploadStatus {
+  created
+  r2Prepared
+  r2Uploaded
+  muxCreated
+  muxReady
+  variantCreated
+  failed
 }
 
 enum MuxSubtitleTrackStatus {
@@ -106,6 +117,7 @@ model CloudflareR2 {
   updatedAt             DateTime               @default(now()) @updatedAt
   video                 Video?                 @relation(fields: [videoId], references: [id])
   videoVariant          VideoVariant?
+  videoVariantUploads   VideoVariantUpload[]
   videoVariantDownloads VideoVariantDownload[]
   videoSubtitleSrt      VideoSubtitle?         @relation("SrtAsset")
   videoSubtitleVtt      VideoSubtitle?         @relation("VttAsset")
@@ -154,6 +166,7 @@ model Video {
   children                  Video[]              @relation("ParentChild")
   parents                   Video[]              @relation("ParentChild")
   variants                  VideoVariant[]
+  variantUploads            VideoVariantUpload[]
   bibleCitation             BibleCitation[]
   keywords                  Keyword[]            @relation("VideoToKeyword")
   images                    CloudflareImage[]
@@ -251,6 +264,7 @@ model VideoVariant {
   asset                CloudflareR2?          @relation(fields: [assetId], references: [id])
   muxVideoId           String?
   muxVideo             MuxVideo?              @relation(fields: [muxVideoId], references: [id])
+  variantUploads       VideoVariantUpload[]
   brightcoveId         String?
   playlistItems        PlaylistItem[]
   createdAt            DateTime               @default(now())
@@ -261,6 +275,41 @@ model VideoVariant {
   @@index(videoId(type: Hash))
   @@index([published, languageId])
   @@index([updatedAt, id])
+}
+
+model VideoVariantUpload {
+  id               String                   @id @default(uuid())
+  source           String
+  sourceKey        String?
+  status           VideoVariantUploadStatus @default(created)
+  videoId          String
+  video            Video                    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  edition          String                   @default("base")
+  languageId       String
+  version          Int                      @default(1)
+  published        Boolean                  @default(true)
+  originalFilename String?
+  contentType      String?
+  contentLength    BigInt?
+  duration         Int?
+  durationMs       Int?
+  width            Int?
+  height           Int?
+  r2AssetId        String?
+  r2Asset          CloudflareR2?            @relation(fields: [r2AssetId], references: [id])
+  muxVideoId       String?
+  muxVideo         MuxVideo?                @relation(fields: [muxVideoId], references: [id])
+  videoVariantId   String?
+  videoVariant     VideoVariant?            @relation(fields: [videoVariantId], references: [id])
+  errorMessage     String?
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @default(now()) @updatedAt
+
+  @@index(status)
+  @@index([videoId, languageId, edition])
+  @@index(r2AssetId)
+  @@index(muxVideoId)
+  @@index(videoVariantId)
 }
 
 model VideoEdition {
