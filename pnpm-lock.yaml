@@ -1071,7 +1071,7 @@ importers:
         specifier: ^7.0.0
         version: 7.4.2(prisma@7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3))(typescript@5.9.3)
 
-  apis/api-journeys-modern:
+  apis/api-journeys:
     dependencies:
       '@prisma/adapter-pg':
         specifier: ^7.0.0

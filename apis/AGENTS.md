@@ -2,10 +2,10 @@
 
 GraphQL API layer for the NextSteps platform, composed via Apollo Federation.
 
-| Service               | Framework             | Role                                                                        |
-| --------------------- | --------------------- | --------------------------------------------------------------------------- |
-| `api-journeys-modern` | GraphQL Yoga + Pothos | Journeys API — code-first schema, scope auth                                |
-| `api-gateway`         | GraphQL Hive Gateway  | Federation gateway — composes subgraphs, JWT validation, header propagation |
+| Service        | Framework             | Role                                                                        |
+| -------------- | --------------------- | --------------------------------------------------------------------------- |
+| `api-journeys` | GraphQL Yoga + Pothos | Journeys API — code-first schema, scope auth                                |
+| `api-gateway`  | GraphQL Hive Gateway  | Federation gateway — composes subgraphs, JWT validation, header propagation |
 
 ## Shared conventions
 
@@ -20,7 +20,7 @@ GraphQL API layer for the NextSteps platform, composed via Apollo Federation.
 
 ### GraphQL Federation
 
-- `api-journeys-modern` is a **Federation 2.6 subgraph**.
+- `api-journeys` is a **Federation 2.6 subgraph**.
 - Use `@key` directives for entity resolution, `@shareable` for fields exposed by multiple subgraphs.
 - Gateway composes schemas at runtime — no manual stitching.
 
@@ -37,15 +37,15 @@ GraphQL API layer for the NextSteps platform, composed via Apollo Federation.
 
 ### Testing
 
-- `api-journeys-modern`: Vitest + `vitest-mock-extended` for Prisma mocking.
+- `api-journeys`: Vitest + `vitest-mock-extended` for Prisma mocking.
 - `mockDeep<PrismaClient>()` for deep mocks.
 
-## api-journeys-modern (Pothos + Yoga)
+## api-journeys (Pothos + Yoga)
 
 ### Schema organization
 
 ```
-apis/api-journeys-modern/src/
+apis/api-journeys/src/
   schema/
     builder.ts                     # Pothos SchemaBuilder with plugins
     journey/
@@ -119,7 +119,7 @@ Changes here are rare. When they happen, review for:
 
 **This is a guardrail — violations are Critical in reviews.**
 
-When adding or modifying a `customizable` field on a block or action type, the recalculation logic in `apis/api-journeys-modern/src/lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable.ts` must be updated. The logic checks:
+When adding or modifying a `customizable` field on a block or action type, the recalculation logic in `apis/api-journeys/src/lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable.ts` must be updated. The logic checks:
 
 1. **Editable text fields:** `journeyCustomizationDescription` is non-empty AND `journeyCustomizationFields` count > 0
 2. **Customizable link actions:** ButtonBlock, RadioOptionBlock, VideoBlock, or VideoTriggerBlock with `action.customizable === true` AND `action.blockId == null` (excludes NavigateToBlockAction)
@@ -139,12 +139,12 @@ Authorization uses pure functions — `journeyAcl(action, journey, user): boolea
 ## Quality gates
 
 ```bash
-# api-journeys-modern
-pnpm dlx nx run api-journeys-modern:lint
-pnpm dlx nx run api-journeys-modern:type-check
-pnpm dlx nx run api-journeys-modern:test
-pnpm dlx nx run api-journeys-modern:generate-graphql  # regenerate schema
-pnpm dlx nx run api-journeys-modern:subgraph-check    # validate against Hive
+# api-journeys
+pnpm dlx nx run api-journeys:lint
+pnpm dlx nx run api-journeys:type-check
+pnpm dlx nx run api-journeys:test
+pnpm dlx nx run api-journeys:generate-graphql  # regenerate schema
+pnpm dlx nx run api-journeys:subgraph-check    # validate against Hive
 
 # Prisma
 pnpm dlx nx run prisma-journeys:prisma-generate       # after schema changes

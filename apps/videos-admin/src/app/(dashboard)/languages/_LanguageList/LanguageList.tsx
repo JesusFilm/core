@@ -1,0 +1,359 @@
+'use client'
+
+import { gql, useQuery } from '@apollo/client'
+import SearchIcon from '@mui/icons-material/Search'
+import Box from '@mui/material/Box'
+import Chip from '@mui/material/Chip'
+import CircularProgress from '@mui/material/CircularProgress'
+import InputAdornment from '@mui/material/InputAdornment'
+import MenuItem from '@mui/material/MenuItem'
+import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import {
+  DataGrid,
+  GridColDef,
+  GridPaginationModel,
+  GridRowsProp,
+  gridClasses
+} from '@mui/x-data-grid'
+import { useRouter } from 'next/navigation'
+import {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
+
+const DEFAULT_LANGUAGE_ID = '529'
+const DEFAULT_PAGE_SIZE = 25
+
+export const GET_LANGUAGES = gql`
+  query GetLanguagesForAdmin(
+    $limit: Int
+    $offset: Int
+    $term: String
+    $where: AdminLanguagesFilter
+    $nameLanguageId: ID
+  ) {
+    adminLanguages(limit: $limit, offset: $offset, term: $term, where: $where) {
+      id
+      bcp47
+      iso3
+      slug
+      hasVideos
+      name(languageId: $nameLanguageId) {
+        id
+        languageId
+        value
+        primary
+      }
+      nativeName: name(primary: true) {
+        id
+        languageId
+        value
+        primary
+      }
+    }
+    adminLanguagesCount(term: $term, where: $where)
+  }
+`
+
+interface LanguageName {
+  id: string
+  languageId: string
+  value: string
+  primary: boolean
+}
+
+interface Language {
+  id: string
+  bcp47?: string | null
+  iso3?: string | null
+  slug?: string | null
+  hasVideos: boolean
+  name: LanguageName[]
+  nativeName: LanguageName[]
+}
+
+interface GetLanguagesData {
+  adminLanguages: Language[]
+  adminLanguagesCount: number
+}
+
+interface AdminLanguagesFilter {
+  hasVideos?: boolean
+}
+
+interface GetLanguagesVariables {
+  limit: number
+  offset: number
+  term?: string
+  where?: AdminLanguagesFilter
+  nameLanguageId: string
+}
+
+interface LanguageRow {
+  id: string
+  name: string
+  nameLanguageId: string
+  nativeName: string
+  bcp47: string
+  iso3: string
+  slug: string
+  hasVideos: boolean
+}
+
+function getPrimaryName(names: LanguageName[]): LanguageName | undefined {
+  return names.find((name) => name.primary) ?? names[0]
+}
+
+function getLocalizedName(names: LanguageName[]): LanguageName | undefined {
+  return (
+    names.find((name) => name.languageId === DEFAULT_LANGUAGE_ID) ??
+    getPrimaryName(names)
+  )
+}
+
+export function LanguageList(): ReactElement {
+  const router = useRouter()
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: DEFAULT_PAGE_SIZE
+  })
+  const paginationModelRef = useRef(paginationModel)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [term, setTerm] = useState<string>()
+  const [hasVideosFilter, setHasVideosFilter] = useState('all')
+  const [gridMounted, setGridMounted] = useState(false)
+
+  useEffect(() => {
+    setGridMounted(true)
+  }, [])
+
+  useEffect(() => {
+    paginationModelRef.current = paginationModel
+  }, [paginationModel])
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const nextTerm = searchTerm.trim() || undefined
+      setTerm((current) => (current === nextTerm ? current : nextTerm))
+    }, 300)
+
+    return () => clearTimeout(timeout)
+  }, [searchTerm])
+
+  const where = useMemo<AdminLanguagesFilter | undefined>(() => {
+    if (hasVideosFilter === 'all') return undefined
+    return { hasVideos: hasVideosFilter === 'yes' }
+  }, [hasVideosFilter])
+
+  const resetToFirstPage = useCallback((): void => {
+    setPaginationModel((current) => {
+      if (current.page === 0) return current
+      const next = { ...current, page: 0 }
+      paginationModelRef.current = next
+      return next
+    })
+  }, [])
+
+  const handlePaginationModelChange = useCallback(
+    (model: GridPaginationModel): void => {
+      const current = paginationModelRef.current
+      if (current.page === model.page && current.pageSize === model.pageSize)
+        return
+
+      paginationModelRef.current = model
+      setPaginationModel(model)
+    },
+    []
+  )
+
+  const { data, loading } = useQuery<GetLanguagesData, GetLanguagesVariables>(
+    GET_LANGUAGES,
+    {
+      variables: {
+        limit: paginationModel.pageSize,
+        offset: paginationModel.page * paginationModel.pageSize,
+        nameLanguageId: DEFAULT_LANGUAGE_ID,
+        term,
+        where
+      }
+    }
+  )
+
+  const rows: GridRowsProp<LanguageRow> = useMemo(
+    () =>
+      data?.adminLanguages.map((language) => {
+        const primaryName = getPrimaryName(language.nativeName)
+        const localizedName = getLocalizedName(language.name)
+
+        return {
+          id: language.id,
+          name: localizedName?.value ?? '',
+          nameLanguageId: localizedName?.languageId ?? DEFAULT_LANGUAGE_ID,
+          nativeName:
+            primaryName?.languageId === localizedName?.languageId
+              ? ''
+              : (primaryName?.value ?? ''),
+          bcp47: language.bcp47 ?? '',
+          iso3: language.iso3 ?? '',
+          slug: language.slug ?? '',
+          hasVideos: language.hasVideos
+        }
+      }) ?? [],
+    [data?.adminLanguages]
+  )
+
+  const columns: GridColDef<LanguageRow>[] = [
+    {
+      field: 'id',
+      headerName: 'ID',
+      width: 112
+    },
+    {
+      field: 'name',
+      headerName: 'Language name',
+      flex: 1,
+      minWidth: 240
+    },
+    {
+      field: 'hasVideos',
+      headerName: 'Has Videos',
+      width: 124,
+      type: 'boolean',
+      renderCell: (params) => (
+        <Chip
+          size="small"
+          label={params.value === true ? 'Yes' : 'No'}
+          color={params.value === true ? 'success' : 'default'}
+          variant={params.value === true ? 'filled' : 'outlined'}
+        />
+      )
+    },
+    {
+      field: 'nativeName',
+      headerName: 'Native name',
+      flex: 1,
+      minWidth: 200,
+      sortable: false,
+      filterable: false
+    },
+    { field: 'bcp47', headerName: 'BCP 47', width: 112 },
+    { field: 'iso3', headerName: 'ISO 3', width: 112 },
+    { field: 'slug', headerName: 'Slug', flex: 1, minWidth: 180 }
+  ]
+
+  return (
+    <Stack
+      sx={{
+        width: '100%',
+        maxWidth: { sm: '100%', md: '1700px' },
+        alignSelf: 'stretch',
+        height: { xs: 'calc(100svh - 160px)', md: 'calc(100vh - 150px)' },
+        minHeight: 0,
+        overflow: 'hidden',
+        pt: { xs: 4, md: 0 }
+      }}
+      spacing={2}
+    >
+      <Typography component="h2" variant="h6" sx={{ flexShrink: 0 }}>
+        Language Admin
+      </Typography>
+
+      <Paper
+        sx={{
+          width: '100%',
+          flex: 1,
+          minHeight: 0,
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          [`& .${gridClasses.cell}:focus, & .${gridClasses.cell}:focus-within`]:
+            {
+              outline: 'none'
+            },
+          [`& .${gridClasses.row}`]: {
+            cursor: 'pointer'
+          }
+        }}
+      >
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={1.5}
+          sx={{ p: 2, pb: 1, flexShrink: 0 }}
+        >
+          <TextField
+            placeholder="Search by language name or ID"
+            inputProps={{ 'aria-label': 'Search languages' }}
+            value={searchTerm}
+            onChange={(event) => {
+              resetToFirstPage()
+              setSearchTerm(event.target.value)
+            }}
+            size="small"
+            sx={{ width: { xs: '100%', sm: 360 } }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              )
+            }}
+          />
+          <TextField
+            select
+            label="Has videos"
+            value={hasVideosFilter}
+            onChange={(event) => {
+              resetToFirstPage()
+              setHasVideosFilter(event.target.value)
+            }}
+            size="small"
+            sx={{ width: { xs: '100%', sm: 160 } }}
+          >
+            <MenuItem value="all">Any</MenuItem>
+            <MenuItem value="yes">Yes</MenuItem>
+            <MenuItem value="no">No</MenuItem>
+          </TextField>
+        </Stack>
+
+        <Box sx={{ flex: '1 1 auto', minHeight: { xs: 360, sm: 420 } }}>
+          {gridMounted ? (
+            <DataGrid
+              sx={{ height: '100%', minHeight: { xs: 360, sm: 420 } }}
+              rows={rows}
+              columns={columns}
+              rowCount={data?.adminLanguagesCount ?? 0}
+              loading={loading}
+              paginationMode="server"
+              disableColumnFilter
+              paginationModel={paginationModel}
+              onPaginationModelChange={handlePaginationModelChange}
+              pageSizeOptions={[25, 50, 100]}
+              onRowClick={(params) => router.push(`/languages/${params.id}`)}
+              disableRowSelectionOnClick
+            />
+          ) : (
+            <Box
+              sx={{
+                alignItems: 'center',
+                display: 'flex',
+                height: '100%',
+                justifyContent: 'center',
+                minHeight: { xs: 360, sm: 420 }
+              }}
+            >
+              <CircularProgress size={24} />
+            </Box>
+          )}
+        </Box>
+      </Paper>
+    </Stack>
+  )
+}

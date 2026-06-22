@@ -23,7 +23,7 @@ import {
 // typename-keyed cache work, so naming it is low-risk.
 //
 // `shareable` is intentionally omitted: TemplateGalleryPage is owned exclusively
-// by api-journeys-modern and is not federated with the legacy api-journeys
+// by api-journeys and is not federated with the legacy api-journeys
 // subgraph. Setting `shareable: true` (the sibling default) would falsely
 // advertise that another subgraph may also resolve this type.
 //

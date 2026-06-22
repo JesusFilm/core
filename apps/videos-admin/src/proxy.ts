@@ -13,6 +13,7 @@ const GET_AUTH = graphql(`
       __typename
       ... on AuthenticatedUser {
         mediaUserRoles
+        languageUserRoles
       }
     }
   }
@@ -25,9 +26,65 @@ const testPathnameRegex = (pages: string[], pathName: string): boolean => {
   ).test(pathName)
 }
 
+const publisherRole = 'publisher'
 const authPage = '/users/sign-in'
 const unAuthorizedPage = '/users/unauthorized'
 const publicPaths = [authPage, unAuthorizedPage]
+
+export interface PublisherAccess {
+  hasMediaPublisher: boolean
+  hasLanguagePublisher: boolean
+}
+
+export function getPublisherAccess(
+  mediaUserRoles: readonly string[] = [],
+  languageUserRoles: readonly string[] = []
+): PublisherAccess {
+  return {
+    hasMediaPublisher: mediaUserRoles.includes(publisherRole),
+    hasLanguagePublisher: languageUserRoles.includes(publisherRole)
+  }
+}
+
+function getDefaultPath({
+  hasMediaPublisher,
+  hasLanguagePublisher
+}: PublisherAccess): string {
+  if (hasMediaPublisher) return '/videos'
+  if (hasLanguagePublisher) return '/languages'
+  return unAuthorizedPage
+}
+
+function isPathInSection(pathname: string, section: string): boolean {
+  return pathname === section || pathname.startsWith(`${section}/`)
+}
+
+export function getAuthorizedRedirectPath(
+  pathname: string,
+  access: PublisherAccess
+): string | undefined {
+  const { hasMediaPublisher, hasLanguagePublisher } = access
+
+  if (!hasMediaPublisher && !hasLanguagePublisher) return unAuthorizedPage
+
+  const defaultPath = getDefaultPath(access)
+
+  if (pathname === '/') return defaultPath
+
+  if (isPathInSection(pathname, '/languages') && !hasLanguagePublisher) {
+    return defaultPath
+  }
+
+  if (
+    (isPathInSection(pathname, '/videos') ||
+      isPathInSection(pathname, '/settings')) &&
+    !hasMediaPublisher
+  ) {
+    return defaultPath
+  }
+
+  return undefined
+}
 
 export default async function proxy(
   req: NextRequest
@@ -57,12 +114,20 @@ export default async function proxy(
         query: GET_AUTH
       })
 
-      const hasMediaRoles =
-        data.me?.__typename === 'AuthenticatedUser' &&
-        data.me.mediaUserRoles.length > 0
+      const access =
+        data.me?.__typename === 'AuthenticatedUser'
+          ? getPublisherAccess(
+              data.me.mediaUserRoles,
+              data.me.languageUserRoles
+            )
+          : getPublisherAccess()
+      const redirectPath = getAuthorizedRedirectPath(
+        req.nextUrl.pathname,
+        access
+      )
 
-      if (!hasMediaRoles) {
-        req.nextUrl.pathname = unAuthorizedPage
+      if (redirectPath != null) {
+        req.nextUrl.pathname = redirectPath
         return NextResponse.redirect(req.nextUrl)
       }
 

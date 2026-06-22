@@ -98,7 +98,7 @@ jobs:
             Validate the following spec against these rules:
 
             1. DOMAIN: The spec must describe changes to journeys-admin (also known as next-steps-admin)
-               and its related APIs (api-journeys, api-journeys-modern) or libraries (journeys-ui, shared-ui).
+               and its related APIs (api-journeys) or libraries (journeys-ui, shared-ui).
                Reject specs targeting other domains such as: watch, player, arclight, docs, videos-admin,
                resources, short-links, CI/CD, infrastructure, or unrelated libraries.
 
