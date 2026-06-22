@@ -290,7 +290,7 @@ export function BackgroundMediaVideo({
         })
       void updateBlock({
         variables: {
-          id: coverBlock.id,
+          id: block.id,
           input: pick(block, Object.keys(input))
         },
         optimisticResponse: {

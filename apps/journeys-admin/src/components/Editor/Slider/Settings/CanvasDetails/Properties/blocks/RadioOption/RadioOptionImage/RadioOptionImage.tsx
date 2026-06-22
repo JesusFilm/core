@@ -307,7 +307,7 @@ export function RadioOptionImage({
         })
       void radioOptionImageUpdate({
         variables: {
-          id: imageBlock.id,
+          id: block.id,
           input: pick(block, Object.keys(input))
         },
         optimisticResponse: {
