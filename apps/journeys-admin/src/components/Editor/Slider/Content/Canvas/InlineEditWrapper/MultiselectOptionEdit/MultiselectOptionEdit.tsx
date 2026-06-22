@@ -124,7 +124,6 @@ export function MultiselectOptionEdit({
           inputRef={(ref) => {
             if (ref != null) ref.focus()
           }}
-          autoFocus
           onFocus={(e) => {
             const target = e.currentTarget as HTMLInputElement
             target.setSelectionRange(selection.start, selection.end)
