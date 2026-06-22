@@ -89,7 +89,7 @@ describe('cloudflareImage', () => {
             blurhash: null,
             blurhashAttemptedAt: null,
             teamId: null,
-            isAi: false
+            isAi: null
           }
         ])
         const result = await client({ document: VIDEO_IMAGES_QUERY })
@@ -193,7 +193,7 @@ describe('cloudflareImage', () => {
             blurhash: 'testBlurhash',
             blurhashAttemptedAt: null,
             teamId: null,
-            isAi: false
+            isAi: null
           }
         ])
         const result = await authClient({
@@ -220,13 +220,13 @@ describe('cloudflareImage', () => {
                   process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
                 }/testId/f=jpg,w=1920,h=1080,q=95`,
                 blurhash: 'testBlurhash',
-                isAi: false
+                isAi: null
               }
             ]
           }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId' },
+          where: { AND: [{ userId: 'testUserId' }, {}] },
           orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
         })
       })
@@ -284,7 +284,7 @@ describe('cloudflareImage', () => {
           }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId' },
+          where: { AND: [{ userId: 'testUserId' }, {}] },
           orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
           take: 10,
           skip: 0
@@ -298,26 +298,55 @@ describe('cloudflareImage', () => {
           variables: { isAi: true }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId', isAi: true },
+          where: { AND: [{ userId: 'testUserId' }, { isAi: true }] },
           orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
         })
       })
 
-      // The Custom tab sends `isAi: false`, which compiles to `"isAi" = false`
-      // and excludes NULL rows. CloudflareImage.isAi is therefore NOT NULL with a
-      // `false` default (see migration backfill_and_require_cloudflare_image_is_ai)
-      // so historical uploads stay visible here. Reverting the column to nullable
-      // would silently hide every pre-backfill upload again.
-      it('should filter by isAi: false', async () => {
+      // The Custom tab sends `isAi: false`. Historical uploads predate the isAi
+      // column and are stored as null; `isAi = false` alone would exclude them
+      // (NULL != false in SQL). The resolver matches false-or-null so they show.
+      it('should match false-or-null (historical) rows when isAi is false', async () => {
         prismaMock.cloudflareImage.findMany.mockResolvedValue([])
         await authClient({
           document: GET_MY_CLOUDFLARE_IMAGES_QUERY,
           variables: { isAi: false }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId', isAi: false },
+          where: {
+            AND: [
+              { userId: 'testUserId' },
+              { OR: [{ isAi: false }, { isAi: null }] }
+            ]
+          },
           orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
         })
+      })
+
+      it('should return a historical null-isAi upload under the Custom tab', async () => {
+        prismaMock.cloudflareImage.findMany.mockResolvedValue([
+          {
+            id: 'legacyId',
+            uploaded: true,
+            userId: 'testUserId',
+            uploadUrl: 'testUrl',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            aspectRatio: null,
+            videoId: null,
+            blurhash: null,
+            blurhashAttemptedAt: null,
+            teamId: null,
+            isAi: null
+          }
+        ])
+        const result = (await authClient({
+          document: GET_MY_CLOUDFLARE_IMAGES_QUERY,
+          variables: { isAi: false }
+        })) as { data: { getMyCloudflareImages: Array<{ id: string }> } }
+        expect(result.data.getMyCloudflareImages).toEqual([
+          expect.objectContaining({ id: 'legacyId', isAi: null })
+        ])
       })
 
       it('should not filter by isAi when isAi arg is null', async () => {
@@ -327,7 +356,7 @@ describe('cloudflareImage', () => {
           variables: { isAi: null }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId' },
+          where: { AND: [{ userId: 'testUserId' }, {}] },
           orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
         })
       })
@@ -355,7 +384,9 @@ describe('cloudflareImage', () => {
           where: { teamId_userId: { teamId: 'teamId', userId: 'testUserId' } }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { OR: [{ userId: 'testUserId' }, { teamId: 'teamId' }] },
+          where: {
+            AND: [{ OR: [{ userId: 'testUserId' }, { teamId: 'teamId' }] }, {}]
+          },
           orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
         })
       })
@@ -373,8 +404,10 @@ describe('cloudflareImage', () => {
 
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
           where: {
-            OR: [{ userId: 'testUserId' }, { teamId: 'teamId' }],
-            isAi: true
+            AND: [
+              { OR: [{ userId: 'testUserId' }, { teamId: 'teamId' }] },
+              { isAi: true }
+            ]
           },
           orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
         })
@@ -421,7 +454,7 @@ describe('cloudflareImage', () => {
           blurhash: 'testBlurhash',
           blurhashAttemptedAt: null,
           teamId: null,
-          isAi: false
+          isAi: null
         })
         const result = await authClient({
           document: GET_MY_CLOUDFLARE_IMAGE_QUERY
@@ -475,7 +508,7 @@ describe('cloudflareImage', () => {
           blurhash: null,
           blurhashAttemptedAt: null,
           teamId: null,
-          isAi: false
+          isAi: null
         })
         const result = await authClient({
           document: CREATE_CLOUDFLARE_UPLOAD_BY_FILE_MUTATION,
@@ -603,7 +636,7 @@ describe('cloudflareImage', () => {
           blurhash: null,
           blurhashAttemptedAt: null,
           teamId: null,
-          isAi: false
+          isAi: null
         })
         const result = await authClient({
           document: CREATE_CLOUDFLARE_UPLOAD_BY_URL_MUTATION,
@@ -736,7 +769,7 @@ describe('cloudflareImage', () => {
           blurhash: null,
           blurhashAttemptedAt: null,
           teamId: null,
-          isAi: false
+          isAi: null
         })
         const result = await authClient({
           document: CREATE_CLOUDFLARE_IMAGE_FROM_PROMPT_MUTATION,
