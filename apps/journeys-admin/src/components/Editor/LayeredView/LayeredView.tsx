@@ -19,7 +19,10 @@ export function LayeredView(): ReactElement {
 
   const drawerOpen =
     activeSlide === ActiveSlide.Content || activeSlide === ActiveSlide.Drawer
-  const settingsVisible = activeSlide === ActiveSlide.Drawer
+  // The card and its properties open and close together: whenever the drawer is
+  // open the settings panel is shown alongside the card, rather than the card
+  // appearing on its own on the Content slide and the panel sliding in later.
+  const settingsVisible = drawerOpen
 
   function handleDrawerClose(): void {
     dispatch({

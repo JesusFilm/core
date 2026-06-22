@@ -100,11 +100,13 @@ describe('LayeredView', () => {
     expect(screen.getByTestId('LayeredViewDrawer')).toBeVisible()
   })
 
-  it('slides settings panel in only on drawer slide', () => {
+  it('shows the settings panel alongside the card on the content slide', () => {
     renderLayeredView({ ...state, activeSlide: ActiveSlide.Content })
 
+    // card + properties are coupled: the panel is in place on the content slide
+    // too, rather than slid off-screen until the drawer slide
     expect(screen.getByTestId('LayeredViewDrawerContent')).toHaveStyle(
-      'transform: translateX(calc(328px + 32px))'
+      'transform: translateX(0)'
     )
   })
 
@@ -140,14 +142,13 @@ describe('LayeredView', () => {
     )
   })
 
-  it('keeps the off-screen settings panel inert on the content slide', () => {
+  it('keeps the settings panel interactive on the content slide', () => {
     renderLayeredView({ ...state, activeSlide: ActiveSlide.Content })
 
-    // on the content slide the settings panel is slid off-screen; it must stay
-    // pointer-events: none so it cannot intercept clicks meant for the backdrop
-    // while it is transitioning in/out
+    // card + properties are coupled, so the settings panel is shown and
+    // interactive on the content slide too
     expect(screen.getByTestId('SettingsDrawer').parentElement).toHaveStyle(
-      'pointer-events: none'
+      'pointer-events: auto'
     )
   })
 })
