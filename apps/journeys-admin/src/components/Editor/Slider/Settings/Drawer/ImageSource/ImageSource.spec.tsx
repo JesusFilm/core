@@ -123,7 +123,10 @@ describe('ImageSource', () => {
       const handleChange = vi.fn()
       render(
         <MockedProvider
-          mocks={[listUnsplashCollectionPhotosMock, triggerUnsplashDownloadMock]}
+          mocks={[
+            listUnsplashCollectionPhotosMock,
+            triggerUnsplashDownloadMock
+          ]}
         >
           <SnackbarProvider>
             <ImageSource
