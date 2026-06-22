@@ -399,6 +399,10 @@ describe('ClientLayout', () => {
       expect(mockRefetch).toHaveBeenCalled()
       expect(uploadRefetch).toHaveBeenCalled()
     })
+    expect(mockEnqueueSnackbar).not.toHaveBeenCalledWith(
+      'Mux video processing errored',
+      { variant: 'error' }
+    )
   })
 
   it('treats an active resumed upload disappearing from incomplete uploads as complete', async () => {

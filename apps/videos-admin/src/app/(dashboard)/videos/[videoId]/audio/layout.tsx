@@ -156,6 +156,7 @@ export default function ClientLayout({
   const { enqueueSnackbar } = useSnackbar()
   const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
   const [resumingUploadId, setResumingUploadId] = useState<string | null>(null)
+  const [isResumeRequestInFlight, setIsResumeRequestInFlight] = useState(false)
   const { videoId } = useParams<{ videoId: string }>()
 
   const { data, loading, refetch } = useQuery(GET_ADMIN_VIDEO_VARIANTS, {
@@ -217,7 +218,7 @@ export default function ClientLayout({
   }, [enqueueSnackbar, refetch, refetchUploads])
 
   useEffect(() => {
-    if (resumingUploadId == null) return
+    if (resumingUploadId == null || isResumeRequestInFlight) return
 
     const upload = incompleteUploads.find((row) => row.id === resumingUploadId)
     if (upload == null) {
@@ -235,6 +236,7 @@ export default function ClientLayout({
     completeResumedUpload,
     enqueueSnackbar,
     resumingUploadId,
+    isResumeRequestInFlight,
     incompleteUploads
   ])
 
@@ -293,7 +295,7 @@ export default function ClientLayout({
 
   const handleResumeUpload = useCallback(
     async (uploadId: string) => {
-      setResumingUploadId(uploadId)
+      setIsResumeRequestInFlight(true)
       try {
         const result = await resumeVideoVariantUpload({
           variables: {
@@ -317,6 +319,7 @@ export default function ClientLayout({
           return
         }
 
+        setResumingUploadId(uploadId)
         await refetchUploads()
       } catch (error) {
         setResumingUploadId(null)
@@ -324,6 +327,8 @@ export default function ClientLayout({
           error instanceof Error ? error.message : 'Video upload resume failed',
           { variant: 'error' }
         )
+      } finally {
+        setIsResumeRequestInFlight(false)
       }
     },
     [
@@ -412,7 +417,7 @@ export default function ClientLayout({
                 <ReplayIcon />
               )
             }
-            disabled={resumingUploadId != null}
+            disabled={resumingUploadId != null || isResumeRequestInFlight}
             onClick={() => {
               if (canReupload) {
                 handleAddAudioLanguage()

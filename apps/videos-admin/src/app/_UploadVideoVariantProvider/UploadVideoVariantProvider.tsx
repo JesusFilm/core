@@ -3,7 +3,15 @@
 import { useApolloClient, useLazyQuery, useMutation } from '@apollo/client'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
-import { ReactNode, createContext, useContext, useReducer, useRef } from 'react'
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  useRef
+} from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { graphql } from '@core/shared/gql'
@@ -113,6 +121,15 @@ export const COMPLETE_R2_MULTIPART = graphql(`
   }
 `)
 
+type VideoVariantUploadLifecycleStatus =
+  | 'created'
+  | 'r2Prepared'
+  | 'r2Uploaded'
+  | 'muxCreated'
+  | 'muxReady'
+  | 'variantCreated'
+  | 'failed'
+
 interface UploadVideoVariantState {
   isUploading: boolean
   uploadProgress: number
@@ -124,7 +141,7 @@ interface UploadVideoVariantState {
   error: string | null
   uploadId: string | null
   muxVideoId: string | null
-  uploadStatus: string | null
+  uploadStatus: VideoVariantUploadLifecycleStatus | null
   edition: string | null
   languageId: string | null
   languageSlug: string | null
@@ -342,35 +359,36 @@ export function UploadVideoVariantProvider({
   const authRefreshIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
     null
   )
+  const stopUploadPollingRef = useRef<(() => void) | null>(null)
 
   const dispatchError = (errorMessage: string) => {
     dispatch({ type: 'SET_ERROR', error: errorMessage })
     enqueueSnackbar(errorMessage, { variant: 'error' })
   }
 
-  const stopUploadAuthRefresh = () => {
+  const stopUploadAuthRefresh = useCallback(() => {
     if (authRefreshIntervalRef.current == null) return
 
     clearInterval(authRefreshIntervalRef.current)
     authRefreshIntervalRef.current = null
-  }
+  }, [])
 
-  const syncUploadAuthToken = async () => {
+  const syncUploadAuthToken = useCallback(async () => {
     const refreshedToken = await refreshToken()
 
     if (refreshedToken == null) return false
 
     apolloClient.defaultContext.token = refreshedToken
     return true
-  }
+  }, [apolloClient])
 
-  const requireUploadAuthToken = async () => {
+  const requireUploadAuthToken = useCallback(async () => {
     if (await syncUploadAuthToken()) return
 
     throw new Error('Unable to refresh authentication for video upload')
-  }
+  }, [syncUploadAuthToken])
 
-  const startUploadAuthRefresh = () => {
+  const startUploadAuthRefresh = useCallback(() => {
     stopUploadAuthRefresh()
 
     authRefreshIntervalRef.current = setInterval(() => {
@@ -378,7 +396,7 @@ export function UploadVideoVariantProvider({
         console.warn('Failed to refresh upload auth token', { error })
       })
     }, 45000)
-  }
+  }, [stopUploadAuthRefresh, syncUploadAuthToken])
 
   const [prepareR2Multipart] = useMutation(PREPARE_R2_MULTIPART)
   const [completeR2Multipart] = useMutation(COMPLETE_R2_MULTIPART)
@@ -422,6 +440,17 @@ export function UploadVideoVariantProvider({
       }
     }
   )
+
+  useEffect(() => {
+    stopUploadPollingRef.current = stopPolling
+  }, [stopPolling])
+
+  useEffect(() => {
+    return () => {
+      stopUploadPollingRef.current?.()
+      stopUploadAuthRefresh()
+    }
+  }, [stopUploadAuthRefresh])
 
   const startUpload = async (
     file: File,
