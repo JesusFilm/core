@@ -89,7 +89,7 @@ describe('cloudflareImage', () => {
             blurhash: null,
             blurhashAttemptedAt: null,
             teamId: null,
-            isAi: null
+            isAi: false
           }
         ])
         const result = await client({ document: VIDEO_IMAGES_QUERY })
@@ -193,7 +193,7 @@ describe('cloudflareImage', () => {
             blurhash: 'testBlurhash',
             blurhashAttemptedAt: null,
             teamId: null,
-            isAi: null
+            isAi: false
           }
         ])
         const result = await authClient({
@@ -220,7 +220,7 @@ describe('cloudflareImage', () => {
                   process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
                 }/testId/f=jpg,w=1920,h=1080,q=95`,
                 blurhash: 'testBlurhash',
-                isAi: null
+                isAi: false
               }
             ]
           }
@@ -303,6 +303,11 @@ describe('cloudflareImage', () => {
         })
       })
 
+      // The Custom tab sends `isAi: false`, which compiles to `"isAi" = false`
+      // and excludes NULL rows. CloudflareImage.isAi is therefore NOT NULL with a
+      // `false` default (see migration backfill_and_require_cloudflare_image_is_ai)
+      // so historical uploads stay visible here. Reverting the column to nullable
+      // would silently hide every pre-backfill upload again.
       it('should filter by isAi: false', async () => {
         prismaMock.cloudflareImage.findMany.mockResolvedValue([])
         await authClient({
@@ -416,7 +421,7 @@ describe('cloudflareImage', () => {
           blurhash: 'testBlurhash',
           blurhashAttemptedAt: null,
           teamId: null,
-          isAi: null
+          isAi: false
         })
         const result = await authClient({
           document: GET_MY_CLOUDFLARE_IMAGE_QUERY
@@ -470,7 +475,7 @@ describe('cloudflareImage', () => {
           blurhash: null,
           blurhashAttemptedAt: null,
           teamId: null,
-          isAi: null
+          isAi: false
         })
         const result = await authClient({
           document: CREATE_CLOUDFLARE_UPLOAD_BY_FILE_MUTATION,
@@ -598,7 +603,7 @@ describe('cloudflareImage', () => {
           blurhash: null,
           blurhashAttemptedAt: null,
           teamId: null,
-          isAi: null
+          isAi: false
         })
         const result = await authClient({
           document: CREATE_CLOUDFLARE_UPLOAD_BY_URL_MUTATION,
@@ -731,7 +736,7 @@ describe('cloudflareImage', () => {
           blurhash: null,
           blurhashAttemptedAt: null,
           teamId: null,
-          isAi: null
+          isAi: false
         })
         const result = await authClient({
           document: CREATE_CLOUDFLARE_IMAGE_FROM_PROMPT_MUTATION,
