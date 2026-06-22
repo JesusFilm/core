@@ -7,6 +7,7 @@ import { SnackbarProvider } from 'notistack'
 import { type Mock, type MockedFunction } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider'
 
 import type { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import type { GetStepBlocksWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
@@ -130,7 +131,9 @@ describe('Editor', () => {
     expect(screen.getByTestId('Toolbar')).toBeInTheDocument()
   })
 
-  it('should render the Slider', async () => {
+  it('should render the Slider on mobile', async () => {
+    ;(useMediaQuery as Mock).mockImplementation(() => false)
+
     render(
       <MockedProvider>
         <SnackbarProvider>
@@ -141,9 +144,10 @@ describe('Editor', () => {
       </MockedProvider>
     )
     expect(screen.getByTestId('Slider')).toBeInTheDocument()
+    expect(screen.queryByTestId('LayeredView')).not.toBeInTheDocument()
   })
 
-  it('should render the Fab', async () => {
+  it('should render the LayeredView on desktop', async () => {
     ;(useMediaQuery as Mock).mockImplementation(() => true)
 
     render(
@@ -151,6 +155,25 @@ describe('Editor', () => {
         <SnackbarProvider>
           <ThemeProvider>
             <Editor journey={journey} />
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('LayeredView')).toBeInTheDocument()
+    expect(screen.queryByTestId('Slider')).not.toBeInTheDocument()
+  })
+
+  it('should render the Fab when the drawer is open', async () => {
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <Editor
+              journey={journey}
+              initialState={{ activeSlide: ActiveSlide.Content }}
+            />
           </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
