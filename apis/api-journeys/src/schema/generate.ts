@@ -7,7 +7,7 @@ import { logger } from './logger'
 
 import { schema } from '.'
 
-const filename = 'apis/api-journeys-modern/schema.graphql'
+const filename = 'apis/api-journeys/schema.graphql'
 export function generate(): void {
   const schemaAsString = printSubgraphSchema(lexicographicSortSchema(schema))
   const currentSchemaAsString = readFileSync(filename, 'utf-8')

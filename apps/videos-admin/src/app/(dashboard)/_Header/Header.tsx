@@ -20,7 +20,7 @@ export function Header(): ReactElement {
       spacing={2}
     >
       <NavbarBreadcrumbs />
-      <Stack direction="row" sx={{ gap: 1 }}>
+      <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
         <ToggleColorMode />
       </Stack>
     </Stack>

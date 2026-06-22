@@ -1,5 +1,6 @@
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded'
+import { gql, useQuery } from '@apollo/client'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
+import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded'
 import VideoLibraryRoundedIcon from '@mui/icons-material/VideoLibraryRounded'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -11,6 +12,27 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ReactElement, ReactNode } from 'react'
 
+export const GET_NAVIGATION_ROLES = gql`
+  query GetNavigationRoles {
+    me {
+      id
+      __typename
+      ... on AuthenticatedUser {
+        mediaUserRoles
+        languageUserRoles
+      }
+    }
+  }
+`
+
+export interface NavigationRolesData {
+  me?: {
+    __typename?: string
+    mediaUserRoles?: string[]
+    languageUserRoles?: string[]
+  } | null
+}
+
 interface Item {
   text: string
   icon: ReactNode
@@ -20,29 +42,45 @@ interface Item {
 
 export function MenuContent(): ReactElement {
   const pathname = usePathname()
+  const { data } = useQuery<NavigationRolesData>(GET_NAVIGATION_ROLES)
+  const mediaUserRoles = data?.me?.mediaUserRoles ?? []
+  const languageUserRoles = data?.me?.languageUserRoles ?? []
+  const hasMediaAccess = mediaUserRoles.includes('publisher')
+  const hasLanguageAccess = languageUserRoles.includes('publisher')
 
   const mainListItems: Item[] = [
-    {
-      text: 'Home',
-      icon: <HomeRoundedIcon />,
-      href: '/'
-    },
-    {
-      text: 'Video Library',
-      icon: <VideoLibraryRoundedIcon />,
-      href: '/videos',
-      startsWith: true
-    }
+    ...(hasMediaAccess
+      ? [
+          {
+            text: 'Video Library',
+            icon: <VideoLibraryRoundedIcon />,
+            href: '/videos',
+            startsWith: true
+          }
+        ]
+      : []),
+    ...(hasLanguageAccess
+      ? [
+          {
+            text: 'Language Admin',
+            icon: <TranslateRoundedIcon />,
+            href: '/languages',
+            startsWith: true
+          }
+        ]
+      : [])
   ]
 
-  const secondaryListItems: Item[] = [
-    {
-      text: 'Settings',
-      icon: <SettingsRoundedIcon />,
-      href: '/settings',
-      startsWith: true
-    }
-  ]
+  const secondaryListItems: Item[] = hasMediaAccess
+    ? [
+        {
+          text: 'Settings',
+          icon: <SettingsRoundedIcon />,
+          href: '/settings',
+          startsWith: true
+        }
+      ]
+    : []
 
   return (
     <Stack

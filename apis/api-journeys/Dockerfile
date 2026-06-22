@@ -12,12 +12,12 @@ RUN apk upgrade --update-cache --available && \
     rm -rf /var/cache/apk/*
 
 WORKDIR /app
-COPY ./dist/apps/api-journeys-modern .
+COPY ./dist/apps/api-journeys .
 COPY ./libs/prisma/journeys/db ./prisma-journeys/db
 COPY ./libs/prisma/journeys/prisma.config.ts ./prisma-journeys/prisma.config.ts
 COPY ./libs/prisma/users/db ./prisma-users/db
 COPY ./libs/prisma/users/prisma.config.ts ./prisma-users/prisma.config.ts
-COPY ./apis/api-journeys-modern/docker-entrypoint.sh ./docker-entrypoint.sh
+COPY ./apis/api-journeys/docker-entrypoint.sh ./docker-entrypoint.sh
 
 RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
 RUN pnpm install --prod --silent

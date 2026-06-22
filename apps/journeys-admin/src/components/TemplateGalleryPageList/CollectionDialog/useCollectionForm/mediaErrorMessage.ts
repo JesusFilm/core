@@ -26,7 +26,7 @@ export function mediaErrorReason(
  * crash.
  *
  * The reason set mirrors the validators in
- * `apis/api-journeys-modern/src/schema/templateGalleryPage/media/*`.
+ * `apis/api-journeys/src/schema/templateGalleryPage/media/*`.
  */
 export function mediaErrorMessage(reason: string, t: TFunction): string {
   switch (reason) {

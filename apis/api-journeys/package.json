@@ -1,5 +1,5 @@
 {
-  "name": "api-journeys-modern",
+  "name": "api-journeys",
   "private": true,
   "dependencies": {
     "@prisma/adapter-pg": "^7.0.0",
