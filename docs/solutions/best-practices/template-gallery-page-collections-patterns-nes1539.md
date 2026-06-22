@@ -2,7 +2,7 @@
 title: 'Template Gallery Page (Collections) frontend patterns (NES-1539)'
 category: best-practices
 date: 2026-05-06
-last_updated: 2026-05-21
+last_updated: 2026-06-09
 problem_type: ui_pattern
 component: journeys-admin/TemplateGalleryPageList
 tags:
@@ -303,8 +303,13 @@ await templateGalleryPageAssignJourney({
   },
   update: (cache) => {
     if (sourceCollection == null || sourceCollection.id === targetCollectionId) return
+    // NOTE (NES-1706/1722): the admin page type was renamed to
+    // `TemplateGalleryPageAdmin`. Hardcoding the old `__typename` here makes
+    // `cache.identify` resolve to a non-existent key and the `cache.modify`
+    // silently no-ops. Always use the CURRENT admin typename and prefer a
+    // shared constant. See logic-errors/apollo-cache-hardcoded-typename-graphql-rename-2026-06-09.md
     const sourceCacheId = cache.identify({
-      __typename: 'TemplateGalleryPage',
+      __typename: 'TemplateGalleryPageAdmin',
       id: sourceCollection.id
     })
     const movedRef = cache.identify({ __typename: 'Journey', id: templateId })

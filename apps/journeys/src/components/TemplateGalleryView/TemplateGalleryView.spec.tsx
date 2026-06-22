@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { makeGallery, mockTemplate } from './galleryFixture'
+import { makeGallery, makeLinkMedia, mockTemplate } from './galleryFixture'
 import { TemplateGalleryView } from './TemplateGalleryView'
 
 describe('TemplateGalleryView', () => {
@@ -25,5 +25,27 @@ describe('TemplateGalleryView', () => {
       'href',
       'https://admin.nextstep.is/?useTemplate=template-1'
     )
+  })
+
+  it('maps link media into the media section', () => {
+    render(
+      <TemplateGalleryView
+        gallery={makeGallery({
+          media: makeLinkMedia(
+            'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ'
+          ),
+          templates: [mockTemplate]
+        })}
+      />
+    )
+    expect(screen.getByTestId('TemplateGalleryMediaIframe')).toHaveAttribute(
+      'src',
+      'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ'
+    )
+  })
+
+  it('omits the media section when media is null (legacy row)', () => {
+    render(<TemplateGalleryView gallery={makeGallery({ media: null })} />)
+    expect(screen.queryByTestId('TemplateGalleryMedia')).not.toBeInTheDocument()
   })
 })

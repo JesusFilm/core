@@ -12,6 +12,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../../../libs/TestEditorState'
+import { EditorLayoutProvider } from '../../../EditorLayoutContext'
 
 import { StrategyItem } from '.'
 
@@ -50,6 +51,39 @@ describe('StrategyItem', () => {
     expect(screen.getByText('activeContent: goals')).toBeInTheDocument()
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
     expect(mockCloseMenu).toHaveBeenCalled()
+  })
+
+  it('should open goals in the settings drawer in the layered layout', async () => {
+    const state: EditorState = {
+      activeSlide: ActiveSlide.JourneyFlow,
+      activeContent: ActiveContent.Canvas,
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+    }
+    const mockJourney: JourneyFields = {
+      id: 'journeyId',
+      title: 'Some Title',
+      slug: 'journeySlug'
+    } as unknown as JourneyFields
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={state}>
+            <JourneyProvider value={{ journey: mockJourney }}>
+              <EditorLayoutProvider value="layered">
+                <TestEditorState />
+                <StrategyItem variant="button" />
+              </EditorLayoutProvider>
+            </JourneyProvider>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button'))
+
+    expect(screen.getByText('activeContent: goals')).toBeInTheDocument()
+    expect(screen.getByText('activeSlide: 2')).toBeInTheDocument()
   })
 
   it('Should disable "Strategy" button when showAnalytics is true', () => {

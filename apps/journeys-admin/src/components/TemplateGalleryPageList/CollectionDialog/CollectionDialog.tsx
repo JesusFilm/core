@@ -8,7 +8,14 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useMemo, useState } from 'react'
+import {
+  ReactElement,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
@@ -16,17 +23,23 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
+import {
+  MuxVideoUploadProvider,
+  useMuxVideoUpload
+} from '../../MuxVideoUploadProvider'
 
 import { CollectionDialogFooter } from './CollectionDialogFooter'
 import { CollectionPreviewPane } from './CollectionPreviewPane'
 import { CreatorImagePickerDrawer } from './CreatorImagePickerDrawer'
 import { DiscardConfirmDialog } from './DiscardConfirmDialog'
 import { JourneyPickerField } from './JourneyPickerField'
+import { MEDIA_BOX_HEIGHT, MEDIA_BOX_WIDTH } from './MediaPreview'
+import { MediaSection } from './MediaSection'
 import { useCollectionForm } from './useCollectionForm'
 
 export interface CollectionDialogProps {
   open: boolean
-  mode: 'create' | 'edit' | 'publish'
+  mode: 'create' | 'edit'
   teamId: string
   collection?: TemplateGalleryPage
   availableJourneys: readonly Journey[]
@@ -38,14 +51,15 @@ export interface CollectionDialogProps {
   parentBusy?: boolean
   /**
    * False when the active team has a `routeAllTeamJourneys` custom
-   * domain. Disables the "Open in new tab" preview button on the
-   * preview pane (NES-1644). Defaults to true.
+   * domain. Disables the footer's Publish button and the "Open in new
+   * tab" preview button on the preview pane (NES-1644). Defaults to
+   * true.
    */
   canPublish?: boolean
-  /** Tooltip copy for the disabled preview button. */
+  /** Tooltip copy for the disabled Publish / preview buttons. */
   publishBlockedReason?: string | null
   onClose: () => void
-  /** Forwarded to useCollectionForm in publish mode. */
+  /** Fired after the footer's Publish succeeds (edit mode, drafts). */
   onPublished?: (collection: TemplateGalleryPage) => void
 }
 
@@ -58,7 +72,7 @@ const SECTION_HEADER = {
   color: '#444451'
 } as const
 
-export function CollectionDialog({
+function CollectionDialogContent({
   open,
   mode,
   teamId,
@@ -71,6 +85,26 @@ export function CollectionDialog({
   onPublished
 }: CollectionDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { getUploadStatus, cancelUploadForBlock } = useMuxVideoUpload()
+  // Stable upload key shared by the media field and this dialog's upload
+  // controls. Lifted out of MediaSection so the dialog can read the in-flight
+  // status (to lock the toggle + Save) and abort the upload from discard.
+  const uploadKey = useId()
+
+  // Backstop: abort any in-flight upload if the dialog unmounts WITHOUT going
+  // through the discard flow (e.g. a parent route change or re-render drops it)
+  // — otherwise the upchunk request keeps running detached. The discard path
+  // already cancels explicitly; a second cancel here is a no-op (the provider
+  // ignores an absent/finished task), and Save is blocked while an upload is in
+  // flight, so this never aborts a just-saved upload. A ref keeps the latest
+  // canceller so the unmount-only effect can't capture a stale closure.
+  const cancelUploadRef = useRef(cancelUploadForBlock)
+  cancelUploadRef.current = cancelUploadForBlock
+  useEffect(() => {
+    return () => {
+      cancelUploadRef.current({ id: uploadKey })
+    }
+  }, [uploadKey])
 
   const {
     initialValues,
@@ -79,7 +113,9 @@ export function CollectionDialog({
     handleSubmit,
     setSubmitIntent,
     handleUnpublishAction,
-    isUnpublishing
+    isUnpublishing,
+    nonMediaDirty,
+    mediaDirty
   } = useCollectionForm({
     mode,
     teamId,
@@ -105,17 +141,35 @@ export function CollectionDialog({
   // Discard.
   const [discardConfirmOpen, setDiscardConfirmOpen] = useState(false)
 
+  // True only while a Mux upload is genuinely in flight (uploading bytes or
+  // processing). An empty mux slot is no longer blocking — under the
+  // retained-both-slots model it simply renders nothing, so a never-started or
+  // failed upload is a valid (empty) state the user can Save or switch away
+  // from. Saving mid-upload would drop the in-flight video, so that one case
+  // still blocks every submit path.
+  function isMediaBlocked(): boolean {
+    const task = getUploadStatus(uploadKey)
+    return task?.status === 'uploading' || task?.status === 'processing'
+  }
+
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={schema}
-      onSubmit={handleSubmit}
+      // Guard the Enter-key path: the footer buttons disable on mediaBlocked,
+      // but a keyboard form submit bypasses them — without this, Enter during
+      // a replacement upload (which passes schema validation thanks to the
+      // prior playbackId) would save mid-upload and close the dialog,
+      // silently dropping the new video.
+      onSubmit={async (vals, helpers) => {
+        if (isMediaBlocked()) return
+        await handleSubmit(vals, helpers)
+      }}
     >
       {({
         values,
         errors,
         touched,
-        dirty,
         handleChange,
         handleBlur,
         handleSubmit,
@@ -124,32 +178,44 @@ export function CollectionDialog({
         setValues,
         isSubmitting
       }) => {
+        // A Mux upload is genuinely in flight (uploading bytes, or Mux is
+        // processing). Reliable signal from the provider — unlike the form
+        // value it also catches a *replacement* upload, which still carries the
+        // prior video's playbackId.
+        const uploadTask = getUploadStatus(uploadKey)
+        const uploadInFlight =
+          uploadTask?.status === 'uploading' ||
+          uploadTask?.status === 'processing'
+        // Unsaved changes = dialog-saved fields (nonMediaDirty) plus any
+        // media that hasn't reached the server — an edited link, a completed
+        // upload, a removal (all covered by mediaDirty; every media value
+        // saves with the Save button) — and an in-flight upload, so Cancel
+        // routes through discard (which aborts it).
+        const hasUnsavedChanges =
+          nonMediaDirty(values) || mediaDirty(values) || uploadInFlight
         // Block close paths while a mutation is in flight so the user
         // can't dismiss the dialog mid-mutation (which would orphan the
-        // post-await side effects). Covers Formik submit (isSubmitting)
-        // and the out-of-band unpublish action (isUnpublishing). Submit
-        // succeeds → onClose() runs explicitly. Also intercepts close
-        // paths when the form is dirty: opens the "discard changes?"
+        // post-await side effects). Covers Formik submit (isSubmitting) and
+        // the out-of-band unpublish action (isUnpublishing). Submit succeeds
+        // → onClose() runs explicitly. Also intercepts close paths when
+        // there are unsaved changes: opens the "discard changes?"
         // confirmation instead of closing immediately.
         const guardedClose = (): void => {
           if (isSubmitting || isUnpublishing) return
-          if (dirty) {
+          if (hasUnsavedChanges) {
             setDiscardConfirmOpen(true)
             return
           }
           onClose()
         }
-        // Named handlers wired into the footer. Save Draft + Publish
-        // share Formik's submitForm and disambiguate via the intent
-        // ref; Unpublish bypasses Formik (see useCollectionForm).
+        // Named handlers wired into the footer. Save + Publish share
+        // Formik's submitForm and disambiguate via the intent ref
+        // (which defaults to — and resets to — 'save'); Unpublish
+        // bypasses Formik (see useCollectionForm).
         const handleCreateClick = (): void => {
           handleSubmit()
         }
         const handleSaveClick = (): void => {
-          handleSubmit()
-        }
-        const handleSaveDraftClick = (): void => {
-          setSubmitIntent('draft')
           handleSubmit()
         }
         const handlePublishClick = (): void => {
@@ -164,6 +230,9 @@ export function CollectionDialog({
         const selectedJourneysOrdered = values.journeyIds
           .map((id) => journeysById.get(id))
           .filter((j): j is Journey => j != null)
+        // Blocks every submit path (footer buttons here; the Enter-key path
+        // is guarded in Formik's onSubmit above with the same predicate).
+        const mediaBlocked = isMediaBlocked()
         return (
           <>
             <Dialog
@@ -180,14 +249,12 @@ export function CollectionDialog({
                 title:
                   mode === 'create'
                     ? t('New Collection')
-                    : mode === 'publish'
-                      ? t('Publish Collection')
-                      : t('Edit Collection'),
+                    : t('Edit Collection'),
                 closeButton: true
               }}
               // Footer is always rendered via dialogActionChildren so
               // CollectionDialogFooter owns the mode-based branching in
-              // one place — see that component for the four button
+              // one place — see that component for the three button
               // configurations.
               dialogActionChildren={
                 <CollectionDialogFooter
@@ -201,9 +268,9 @@ export function CollectionDialog({
                   onCancel={guardedClose}
                   onCreate={handleCreateClick}
                   onSave={handleSaveClick}
-                  onSaveDraft={handleSaveDraftClick}
                   onPublish={handlePublishClick}
                   onUnpublish={handleUnpublishClick}
+                  submitBlocked={mediaBlocked}
                 />
               }
               testId="CollectionDialog"
@@ -419,7 +486,7 @@ export function CollectionDialog({
                                   helperText={
                                     (touched.slug === true && errors.slug) ||
                                     t(
-                                      'Used in the public URL. Must be unique across your collections — changing it breaks existing links.'
+                                      'Used in the public URL. Must be unique across all collections — changing it breaks existing links.'
                                     )
                                   }
                                 />
@@ -432,16 +499,20 @@ export function CollectionDialog({
                               </Typography>
                               <Stack
                                 direction="row"
-                                spacing={1.5}
-                                alignItems="stretch"
+                                spacing={2}
+                                alignItems="flex-start"
                               >
+                                {/* Square image box matching the media field's
+                                    preview box so the two sections line up. */}
                                 <ButtonBase
                                   onClick={() => setImagePickerOpen(true)}
                                   sx={{
                                     bgcolor: '#efefef',
                                     borderRadius: 2,
-                                    p: 1,
-                                    height: 77,
+                                    // 8px inset (theme spacing unit is 4px).
+                                    p: 2,
+                                    width: MEDIA_BOX_WIDTH,
+                                    height: MEDIA_BOX_HEIGHT,
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: 1,
@@ -449,84 +520,111 @@ export function CollectionDialog({
                                   }}
                                   aria-label={t('Choose creator image')}
                                 >
+                                  {/* Image fills the padded area's height and
+                                      stretches up to the edit icon's lane, so
+                                      the grey border is even on the left/top/
+                                      bottom — mirroring the media field's
+                                      frame. */}
                                   {values.creatorImageSrc !== '' ? (
                                     <Box
                                       component="img"
                                       src={values.creatorImageSrc}
                                       alt={values.creatorImageAlt}
                                       sx={{
-                                        width: 56,
-                                        height: 56,
+                                        flex: 1,
+                                        minWidth: 0,
+                                        height: '100%',
                                         borderRadius: 1,
-                                        objectFit: 'cover'
+                                        objectFit: 'cover',
+                                        display: 'block'
                                       }}
                                     />
                                   ) : (
                                     <Box
                                       sx={{
-                                        width: 56,
-                                        height: 56,
+                                        flex: 1,
+                                        minWidth: 0,
+                                        height: '100%',
                                         borderRadius: 1,
                                         bgcolor: 'rgba(0,0,0,0.08)'
                                       }}
                                     />
                                   )}
                                   <Edit2Icon
-                                    sx={{ fontSize: 24, color: 'primary.main' }}
+                                    sx={{
+                                      fontSize: 24,
+                                      color: 'primary.main',
+                                      flexShrink: 0
+                                    }}
                                   />
                                 </ButtonBase>
-                                <TextField
-                                  id="creatorName"
-                                  name="creatorName"
-                                  placeholder={t('Creator name')}
-                                  fullWidth
-                                  variant="filled"
-                                  hiddenLabel
-                                  value={values.creatorName}
-                                  onChange={handleChange}
-                                  onBlur={handleBlur}
-                                  error={
-                                    touched.creatorName === true &&
-                                    Boolean(errors.creatorName)
-                                  }
-                                  helperText={
-                                    touched.creatorName === true &&
-                                    errors.creatorName
-                                  }
-                                  inputProps={{
-                                    'aria-label': t('Creator name'),
-                                    maxLength: 100
-                                  }}
-                                />
-                              </Stack>
-                              {values.creatorImageSrc !== '' && (
-                                <Box sx={{ pt: 0.5, alignSelf: 'flex-end' }}>
+                                {/* Right column: Remove sits directly under
+                                    the name field (natural flow, no bottom
+                                    pinning). Always rendered — disabled when
+                                    there's no image — so toggling the image
+                                    never shifts the layout. */}
+                                <Stack
+                                  spacing={1}
+                                  sx={{ flex: 1, minWidth: 0 }}
+                                >
+                                  <TextField
+                                    id="creatorName"
+                                    name="creatorName"
+                                    placeholder={t('Creator name')}
+                                    fullWidth
+                                    variant="filled"
+                                    hiddenLabel
+                                    value={values.creatorName}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    error={
+                                      touched.creatorName === true &&
+                                      Boolean(errors.creatorName)
+                                    }
+                                    helperText={
+                                      touched.creatorName === true &&
+                                      errors.creatorName
+                                    }
+                                    inputProps={{
+                                      'aria-label': t('Creator name'),
+                                      maxLength: 100
+                                    }}
+                                  />
                                   <Button
                                     variant="text"
                                     size="small"
                                     color="error"
+                                    disabled={values.creatorImageSrc === ''}
                                     onClick={() => {
                                       void setFieldValue('creatorImageSrc', '')
                                       void setFieldValue('creatorImageAlt', '')
                                     }}
+                                    sx={{ alignSelf: 'flex-start' }}
                                   >
                                     {t('Remove image')}
                                   </Button>
-                                </Box>
-                              )}
+                                </Stack>
+                              </Stack>
                             </Stack>
 
-                            {/* NES-1682: the "Add PDF/Video with
-                                instructions" section (TextField + helper
-                                copy referencing Canva / Google Slides) was
-                                removed per QA's decision to hide the embed
-                                editing surface. The `mediaUrl` field still
-                                rides through `CollectionFormValues` so
-                                existing values round-trip on save, but
-                                there is no editing surface and the embed
-                                preview in `CollectionPreviewPane` is also
-                                hidden. Replaces NES-1660 (helper-text
-                                approach was rejected by QA). */}
+                            <MediaSection
+                              media={values.media}
+                              uploadKey={uploadKey}
+                              disableModeSwitch={uploadInFlight}
+                              saving={isSubmitting}
+                              error={
+                                Boolean(touched.media) &&
+                                typeof errors.media === 'string'
+                                  ? errors.media
+                                  : undefined
+                              }
+                              // Every media edit — link or upload — is form
+                              // state, persisted by the dialog's Save.
+                              onChange={(next) => {
+                                void setFieldValue('media', next)
+                              }}
+                              headerSx={SECTION_HEADER}
+                            />
                           </Stack>
                         </Collapse>
                       </Stack>
@@ -552,6 +650,10 @@ export function CollectionDialog({
               open={discardConfirmOpen}
               onCancel={() => setDiscardConfirmOpen(false)}
               onConfirm={() => {
+                // Discarding aborts any in-flight upload (upchunk + polling).
+                // The provider's unmount cleanup only clears polling, never the
+                // upload itself, so cancel it explicitly. No-op when idle.
+                cancelUploadForBlock({ id: uploadKey })
                 setDiscardConfirmOpen(false)
                 onClose()
               }}
@@ -560,5 +662,16 @@ export function CollectionDialog({
         )
       }}
     </Formik>
+  )
+}
+
+export function CollectionDialog(props: CollectionDialogProps): ReactElement {
+  // Provider wraps the whole dialog so the media field, the toggle, AND the
+  // dialog's action/close logic share one upload context — switching media
+  // type mid-upload never unmounts it, and the discard flow can abort it.
+  return (
+    <MuxVideoUploadProvider>
+      <CollectionDialogContent {...props} />
+    </MuxVideoUploadProvider>
   )
 }

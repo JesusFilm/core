@@ -34,22 +34,19 @@ import { CollectionUngroupDialog } from './CollectionUngroupDialog'
 export interface CollectionCardProps {
   collection: TemplateGalleryPage
   onEdit?: (collection: TemplateGalleryPage) => void
-  onPublish?: (collection: TemplateGalleryPage) => void
   onUngroup?: (collection: TemplateGalleryPage) => void
   busy?: boolean
   /**
    * False when the active team has a `routeAllTeamJourneys` custom
    * domain — gallery pages can't be hosted on custom domains, so
-   * Publish + Preview are disabled with a tooltip.
+   * Preview is disabled with a tooltip.
    * Defaults to true to keep behaviour unchanged for non-custom-domain
    * teams.
    */
   canPublish?: boolean
   /**
-   * Tooltip copy shown on the disabled Publish / Preview menu items
-   * when `canPublish` is false. Null falls back to the default
-   * disabled-because-empty copy on Publish (Preview only renders this
-   * tooltip when canPublish is false).
+   * Tooltip copy shown on the disabled Preview menu item when
+   * `canPublish` is false.
    */
   publishBlockedReason?: string | null
   /**
@@ -72,7 +69,6 @@ export interface CollectionCardProps {
 function CollectionCardImpl({
   collection,
   onEdit,
-  onPublish,
   onUngroup,
   busy,
   canPublish = true,
@@ -102,15 +98,6 @@ function CollectionCardImpl({
       ? t('Publish the collection to preview it.')
       : ''
 
-  // The Publish menu item is the user's single entry point into the
-  // dialog for a draft, so we only disable it for the harder
-  // constraint — custom-domain teams that can't publish at all.
-  // Empty collections still open the dialog (the user may want to
-  // fill in metadata before adding templates); the dialog's own
-  // Publish button is what gates emptiness.
-  const publishDisabled = !canPublish
-  const publishTooltip = !canPublish ? (publishBlockedReason ?? '') : ''
-
   function handleMenuOpen(event: MouseEvent<HTMLButtonElement>): void {
     setAnchorEl(event.currentTarget)
   }
@@ -120,10 +107,6 @@ function CollectionCardImpl({
   function handleEdit(): void {
     handleMenuClose()
     onEdit?.(collection)
-  }
-  function handlePublish(): void {
-    handleMenuClose()
-    onPublish?.(collection)
   }
   function handlePreview(): void {
     handleMenuClose()
@@ -265,28 +248,11 @@ function CollectionCardImpl({
           open={anchorEl != null}
           onClose={handleMenuClose}
         >
-          {/* Single state-aware entry point into CollectionDialog.
-              Draft collections expose "Publish" so the user has a
-              discoverable path to publishing; the dialog itself
-              renders a Save Draft secondary button so draft edits
-              don't require a publish. Published collections expose
-              "Edit" — Publish is no longer applicable. */}
-          {isPublished ? (
-            <MenuItem onClick={handleEdit}>{t('Edit')}</MenuItem>
-          ) : (
-            <Tooltip
-              title={publishTooltip}
-              placement="left"
-              disableHoverListener={!publishDisabled}
-              disableFocusListener={!publishDisabled}
-            >
-              <span>
-                <MenuItem onClick={handlePublish} disabled={publishDisabled}>
-                  {t('Publish')}
-                </MenuItem>
-              </span>
-            </Tooltip>
-          )}
+          {/* Single entry point into CollectionDialog, regardless of
+              status — the dialog's footer is what's contextual (a
+              draft shows Publish, a published collection shows
+              Unpublish, Save is always present). */}
+          <MenuItem onClick={handleEdit}>{t('Edit')}</MenuItem>
           <Tooltip
             title={previewTooltip}
             placement="left"

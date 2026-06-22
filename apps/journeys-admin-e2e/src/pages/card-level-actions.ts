@@ -28,7 +28,24 @@ export class CardLevelActionPage {
     this.journeyName = testData.journey.firstJourneyName + this.randomNumber
   }
 
+  // The desktop layered editor keeps the card inside a closed modal drawer, so
+  // open it before touching the card iframe. No-op on the mobile slider, where
+  // every slide (including the card) stays mounted.
+  async ensureCardEditorOpen() {
+    if (
+      (await this.page.locator('div[data-testid="EditorCanvas"]').count()) > 0
+    ) {
+      return
+    }
+    await this.page.locator('[data-testid^="StepBlockNode-"]').first().click()
+    await this.page
+      .locator('div[data-testid="EditorCanvas"]')
+      .first()
+      .waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+  }
+
   async clickOnJourneyCard() {
+    await this.ensureCardEditorOpen()
     const iframes = this.page.locator(this.journeyCardFrame)
     const frame = await iframes.first().contentFrame()
     await frame
@@ -42,6 +59,7 @@ export class CardLevelActionPage {
   }
 
   async clickOnVideoJourneyCard() {
+    await this.ensureCardEditorOpen()
     const iframes = this.page.locator(this.journeyCardFrame)
     const frame = await iframes.first().contentFrame()
     await frame
@@ -59,6 +77,7 @@ export class CardLevelActionPage {
   }
 
   async clickAddBlockBtn() {
+    await this.ensureCardEditorOpen()
     await expect(
       this.page.locator('button[data-testid="Fab"]', { hasText: 'Add Block' })
     ).toHaveCount(1, { timeout: sixtySecondsTimeout })
@@ -103,6 +122,15 @@ export class CardLevelActionPage {
   }
 
   async clickDoneBtn() {
+    // The desktop layered editor has no 'Done' Fab; re-clicking 'Add Block'
+    // commits the inline edit while keeping the card drawer open (the verify
+    // steps that follow read the card frame). The mobile slider uses 'Done'.
+    if (
+      (await this.page.locator('div[data-testid="LayeredView"]').count()) > 0
+    ) {
+      await this.clickAddBlockBtn()
+      return
+    }
     await this.page
       .locator('button[data-testid="Fab"]', { hasText: 'Done' })
       .click()
@@ -478,6 +506,7 @@ export class CardLevelActionPage {
   }
 
   async deleteAllAddedCardProperties() {
+    await this.ensureCardEditorOpen()
     const iframes = this.page.locator(this.journeyCardFrame)
     const frame = await iframes.first().contentFrame()
     const properties = await frame
@@ -871,6 +900,7 @@ export class CardLevelActionPage {
   }
 
   async selectWholeFooterSectionInCard() {
+    await this.ensureCardEditorOpen()
     const iframes = this.page.locator(this.journeyCardFrame)
     const frame = await iframes.first().contentFrame()
     await frame

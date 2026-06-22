@@ -15,6 +15,10 @@ import { JourneyRef } from './journey'
 builder.queryField('journey', (t) =>
   t.prismaField({
     type: JourneyRef,
+    // Non-null to preserve the legacy api-journeys contract (`journey: Journey!`).
+    // Relaxing this to nullable breaks every consumer page typed against the
+    // non-null result (apps/journeys, resources, journeys-admin templates) —
+    // a break masked on main by stale nx codegen cache replay.
     nullable: false,
     args: {
       id: t.arg({ type: 'ID', required: true }),
@@ -28,6 +32,10 @@ builder.queryField('journey', (t) =>
         skipRoutingFilter: false
       }
 
+      // embedded + hostname is an unsupported combination. The legacy resolver
+      // returned null here under a non-null SDL (`Journey!`), which surfaced to
+      // clients as a field error; throw NOT_FOUND to keep that error-shaped
+      // behavior under the same non-null contract.
       if (options.embedded === true && options.hostname != null) {
         throw new GraphQLError('journey not found', {
           extensions: { code: 'NOT_FOUND' }
