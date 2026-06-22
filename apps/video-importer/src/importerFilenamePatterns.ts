@@ -1,6 +1,6 @@
 /**
  * Filename patterns only — safe to import from Slack / CLI helpers without
- * loading Bun (R2) or other importer side effects.
+ * loading R2 or other importer side effects.
  */
 
 export const VIDEO_FILENAME_REGEX =

@@ -3,8 +3,8 @@
 ## Context & stack
 
 - **Location:** `apps/video-importer` in the Nx monorepo.
-- **Purpose:** Bun-powered CLI for batch importing videos, subtitles, and audio previews into the Jesus Film Media platform.
-- **Runtime:** Source runs with Bun for local importer execution and is compiled into standalone binaries for non-developer users.
+- **Purpose:** Node-powered CLI for batch importing videos, subtitles, and audio previews into the Jesus Film Media platform.
+- **Runtime:** Source runs with Node/tsx for local importer execution and is packaged into Node SEA executables for non-developer users.
 - **External systems:** Cloudflare R2 uploads, GraphQL mutations/queries, Firebase auth, and `ffprobe` metadata extraction.
 
 ## Workspace setup
@@ -21,7 +21,7 @@
 - `pnpm dlx nx run video-importer:lint` - Lint the importer.
 - `pnpm dlx nx run video-importer:type-check` - Type-check with `tsc -b`.
 - `pnpm dlx nx run video-importer:build` - Compile TypeScript.
-- `pnpm dlx nx run video-importer:compile` - Build the standalone Bun executable.
+- `pnpm dlx nx run video-importer:compile` - Build the Node SEA executables.
 - `pnpm dlx nx run video-importer:package` - Build cross-platform release artifacts and copy the README.
 
 ## Import contracts
@@ -45,9 +45,9 @@
 ## Packaging constraints
 
 - The packaged binary is for non-developers. Keep console output direct, actionable, and free of developer-only jargon.
-- Prefer dependencies and APIs that work in both Bun source execution and Bun standalone executable mode.
-- Preserve default folder behavior: source execution defaults to `process.cwd()`, standalone executable mode defaults to the binary directory.
-- If dynamic imports are used for packaging compatibility, verify the compiled executable path still works.
+- Prefer dependencies and APIs that work in Node source execution and Node SEA executable mode.
+- Preserve default folder behavior: source execution defaults to `process.cwd()`, Node SEA executable mode defaults to the executable directory.
+- If dynamic imports are used for packaging compatibility, verify the packaged executable path still works.
 
 ## Testing expectations
 

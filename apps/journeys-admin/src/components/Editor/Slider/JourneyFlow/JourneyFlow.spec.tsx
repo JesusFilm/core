@@ -30,6 +30,7 @@ import { mockReactFlow } from '../../../../../test/mockReactFlow'
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 import { MuxVideoUploadProvider } from '../../../MuxVideoUploadProvider'
+import { EditorLayoutProvider } from '../../EditorLayoutContext'
 import { CommandRedoItem } from '../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
 
@@ -161,6 +162,36 @@ describe('JourneyFlow', () => {
     expect(
       screen.getByRole('checkbox', { name: 'Analytics Overlay' })
     ).toBeInTheDocument()
+  })
+
+  it('should keep flow controls visible in the layered layout when the drawer is open', async () => {
+    const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
+
+    render(
+      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+        <SnackbarProvider>
+          <FlagsProvider flags={{}}>
+            <JourneyProvider value={{ journey: defaultJourney }}>
+              <EditorProvider
+                initialState={{ steps, activeSlide: ActiveSlide.Drawer }}
+              >
+                <MuxVideoUploadProvider>
+                  <EditorLayoutProvider value="layered">
+                    <Box sx={{ width: '100vw', height: '100vh' }}>
+                      <JourneyFlow />
+                    </Box>
+                  </EditorLayoutProvider>
+                </MuxVideoUploadProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(screen.getByRole('button', { name: 'Add Step' })).toBeInTheDocument()
   })
 
   it('should update step positions if any step does not have a position', async () => {

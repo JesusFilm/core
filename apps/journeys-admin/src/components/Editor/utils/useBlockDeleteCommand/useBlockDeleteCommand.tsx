@@ -18,6 +18,7 @@ import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 import { useMuxVideoUpload } from '../../../MuxVideoUploadProvider'
+import { useEditorLayout } from '../../EditorLayoutContext'
 
 import { setBlockRestoreEditorState } from './setBlockRestoreEditorState'
 
@@ -42,9 +43,10 @@ export function useBlockDeleteCommand(): {
 } {
   const { add } = useCommand()
   const {
-    state: { selectedStep, steps },
+    state: { selectedStep, steps, activeSlide },
     dispatch
   } = useEditor()
+  const { isLayered } = useEditorLayout()
   const { journey } = useJourney()
   const [blockDelete] = useBlockDeleteMutation()
   const [blockRestore] = useBlockRestoreMutation()
@@ -148,7 +150,7 @@ export function useBlockDeleteCommand(): {
                   : undefined,
               selectedStep,
               activeContent: ActiveContent.Canvas,
-              activeSlide: ActiveSlide.Content
+              activeSlide: isLayered ? activeSlide : ActiveSlide.Content
             })
 
         void blockDelete(currentBlock, {
