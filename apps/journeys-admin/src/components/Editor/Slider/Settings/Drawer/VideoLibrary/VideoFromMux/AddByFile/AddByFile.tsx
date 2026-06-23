@@ -88,7 +88,8 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
           // and closing drawer would interrupt their workflow.
           const shouldCloseDrawer = false
           onChange(videoId, shouldCloseDrawer)
-        }
+        },
+        journey?.id
       )
     }
   }

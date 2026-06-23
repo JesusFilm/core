@@ -1,0 +1,1 @@
+export { MediaLibraryTeamTag } from './MediaLibraryTeamTag'

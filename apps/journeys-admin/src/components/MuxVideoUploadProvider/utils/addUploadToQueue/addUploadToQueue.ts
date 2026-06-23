@@ -12,6 +12,7 @@ export function addUploadToQueue(
   languageCode: string | undefined,
   languageName: string | undefined,
   onComplete: ((videoId: string) => void) | undefined,
+  journeyId: string | undefined,
   dependencies: AddUploadToQueueDependencies
 ): void {
   const { setUploadTasks } = dependencies
@@ -23,6 +24,7 @@ export function addUploadToQueue(
       file,
       languageCode,
       languageName,
+      journeyId,
       status: 'waiting',
       progress: 0,
       onComplete

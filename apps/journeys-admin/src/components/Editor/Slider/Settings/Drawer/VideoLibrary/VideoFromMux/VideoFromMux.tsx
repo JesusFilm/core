@@ -4,6 +4,7 @@ import { ReactElement } from 'react'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/BlockFields'
@@ -28,6 +29,7 @@ export function VideoFromMux({
   videoBlock
 }: VideoFromMuxProps): ReactElement {
   const { journey } = useJourney()
+  const { activeTeam } = useTeam()
   const {
     state: { selectedBlock }
   } = useEditor()
@@ -69,6 +71,7 @@ export function VideoFromMux({
           selectedVideoId={selectedVideoId}
           onSelect={onSelect}
           uploading={uploading}
+          teamId={activeTeam?.id}
         />
       )}
     </Stack>

@@ -279,6 +279,53 @@ describe('SocialScreenSocialImage', () => {
     })
   })
 
+  it('should forward the active journey id to the upload mutation', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => await Promise.resolve(cfResponse)
+    } as unknown as Response)
+
+    const uploadResult = vi.fn(() => ({
+      data: {
+        createCloudflareUploadByFile: {
+          __typename: 'CloudflareImage' as const,
+          uploadUrl: 'https://upload.imagedelivery.net/upload-url',
+          id: 'cloudflare-image-id'
+        }
+      }
+    }))
+    const strictUploadMock = {
+      ...cloudflareUploadMutationMock,
+      // Tightened from the shared catch-all matcher to prove journeyId threads
+      // through to the mutation variables.
+      variableMatcher: (variables: { journeyId?: string }) =>
+        variables.journeyId === 'journeyId',
+      result: uploadResult as typeof cloudflareUploadMutationMock.result
+    }
+
+    render(
+      <MockedProvider mocks={[strictUploadMock, journeyImageBlockUpdateMock]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: mockJourney,
+              variant: 'admin'
+            }}
+          >
+            <SocialScreenSocialImage />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
+    const file = new File(['file'], 'testFile.png', { type: 'image/png' })
+
+    fireEvent.change(fileInput, { target: { files: [file] } })
+
+    await waitFor(() => expect(uploadResult).toHaveBeenCalled())
+  })
+
   it('should handle upload error gracefully', async () => {
     mockFetch.mockRejectedValueOnce(new Error('Upload failed'))
 
