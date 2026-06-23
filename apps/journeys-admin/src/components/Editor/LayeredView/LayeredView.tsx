@@ -101,10 +101,9 @@ export function LayeredView(): ReactElement {
               width: DRAWER_WIDTH,
               flexShrink: 0,
               // re-enable clicks on the settings panel (the paper is
-              // pointer-events: none so empty areas close the drawer), but
-              // only while it is the on-screen target — when it is slid
-              // off-screen on the content slide it must stay inert so it can't
-              // intercept clicks mid-transition
+              // pointer-events: none so empty areas close the drawer). The card
+              // and panel open and close together, so the panel only needs to be
+              // interactive while the drawer is open
               pointerEvents: settingsVisible ? 'auto' : 'none'
             }}
           >

@@ -494,4 +494,44 @@ describe('SelectableWrapper', () => {
     })
     expect(push).not.toHaveBeenCalled()
   })
+
+  // NES-1745: re-clicking an already-selected option in the layered layout
+  // dispatches SetSelectedBlockOnlyAction. selectedBlockId must follow
+  // selectedBlock to the option (and not stay on the parent question selected
+  // during event capture), otherwise the next steps refresh re-derives the
+  // selection back to the question and unmounts the inline editor.
+  it('keeps selectedBlockId on the option when re-clicking it in the layered layout', async () => {
+    const { getByText, getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: radioOption1,
+              selectedBlockId: radioOption1.id,
+              steps: [step([radioQuestionBlock])]
+            }}
+          >
+            <MuxVideoUploadProvider>
+              <EditorLayoutProvider value="layered">
+                <TestEditorState />
+                <SelectableWrapper block={radioQuestionBlock}>
+                  <RadioQuestion
+                    {...radioQuestionBlock}
+                    wrappers={{ Wrapper: SelectableWrapper }}
+                  />
+                </SelectableWrapper>
+              </EditorLayoutProvider>
+            </MuxVideoUploadProvider>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      fireEvent.click(getByRole('button', { name: 'Option 1' }))
+    )
+    expect(getByText(`selectedBlock: ${radioOption1.id}`)).toBeInTheDocument()
+    expect(getByText(`selectedBlockId: ${radioOption1.id}`)).toBeInTheDocument()
+    expect(push).not.toHaveBeenCalled()
+  })
 })
