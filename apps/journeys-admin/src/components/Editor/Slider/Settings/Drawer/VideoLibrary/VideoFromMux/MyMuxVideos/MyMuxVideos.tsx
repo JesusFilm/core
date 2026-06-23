@@ -7,7 +7,7 @@ import ImageListItem from '@mui/material/ImageListItem'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import {
   GetMyMuxVideos,
@@ -18,17 +18,20 @@ import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../../../../../__generated__/globalTypes'
+import { useAuth } from '../../../../../../../../libs/auth'
 import { sendVideoSelectEvent } from '../../../../../../../../libs/sendMediaSelectEvent'
 import { LoadMoreButton } from '../../../ImageBlockEditor/LoadMoreButton'
+import { MediaLibraryTeamTag } from '../../../ImageBlockEditor/MediaLibraryTeamTag'
 import { VideoDetails } from '../../VideoDetails'
 
 export const GET_MY_MUX_VIDEOS = gql`
-  query GetMyMuxVideos($offset: Int, $limit: Int) {
-    getMyMuxVideos(offset: $offset, limit: $limit) {
+  query GetMyMuxVideos($offset: Int, $limit: Int, $teamId: ID) {
+    getMyMuxVideos(offset: $offset, limit: $limit, teamId: $teamId) {
       id
       playbackId
       readyToStream
       duration
+      userId
     }
   }
 `
@@ -37,6 +40,12 @@ interface MyMuxVideosProps {
   selectedVideoId?: string | null
   onSelect: (block: VideoBlockUpdateInput, shouldCloseDrawer?: boolean) => void
   uploading?: boolean
+  /**
+   * Active team id. When provided, the grid shows a merged feed of the caller's
+   * own uploads plus videos shared with the team. When undefined the query
+   * omits the arg and degrades to personal-only.
+   */
+  teamId?: string
 }
 
 export const PAGE_SIZE = 10
@@ -45,9 +54,11 @@ const PEEK_LIMIT = PAGE_SIZE + 1
 export function MyMuxVideos({
   selectedVideoId,
   onSelect,
-  uploading
+  uploading,
+  teamId
 }: MyMuxVideosProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
+  const { user } = useAuth()
   const [previewVideo, setPreviewVideo] = useState<{
     id: string
     playbackId: string
@@ -55,11 +66,20 @@ export function MyMuxVideos({
   } | null>(null)
   const [pagesFetched, setPagesFetched] = useState(1)
 
+  // Reset pagination when the team scope changes. The component does not remount
+  // on a team switch, so a stale pagesFetched would compute hasMore against the
+  // new team's first page and hide Load More for teams with more results.
+  useEffect(() => {
+    setPagesFetched(1)
+  }, [teamId])
+
   const { data, loading, error, fetchMore, networkStatus } = useQuery<
     GetMyMuxVideos,
     GetMyMuxVideosVariables
   >(GET_MY_MUX_VIDEOS, {
-    variables: { offset: 0, limit: PEEK_LIMIT },
+    // Omit teamId entirely when there's no active team so the resolver returns
+    // personal-only results and the cache key matches the personal entry.
+    variables: { offset: 0, limit: PEEK_LIMIT, teamId },
     fetchPolicy: 'cache-first',
     notifyOnNetworkStatusChange: true
   })
@@ -107,7 +127,11 @@ export function MyMuxVideos({
 
   const handleLoadMore = async (): Promise<void> => {
     const result = await fetchMore({
-      variables: { offset: pagesFetched * PAGE_SIZE, limit: PEEK_LIMIT }
+      variables: {
+        offset: pagesFetched * PAGE_SIZE,
+        limit: PEEK_LIMIT,
+        teamId
+      }
     }).catch(() => null)
     if (result == null) return
     setPagesFetched((prev) => prev + 1)
@@ -139,6 +163,10 @@ export function MyMuxVideos({
         )}
         {videos.map((video) => {
           const selected = selectedVideoId === video.id
+          // A tile belongs to a teammate when its uploader differs from the
+          // current user. video.userId and the auth-context id are both the
+          // firebase uid, so they compare directly. Drives the "Team" tag.
+          const isTeamUpload = user?.id != null && video.userId !== user.id
           return (
             <ImageListItem
               key={video.id}
@@ -156,7 +184,11 @@ export function MyMuxVideos({
             >
               <ButtonBase
                 data-testid={`my-mux-video-${video.id}`}
-                aria-label={t('Select uploaded video')}
+                aria-label={
+                  isTeamUpload
+                    ? t('Select video uploaded by a teammate')
+                    : t('Select uploaded video')
+                }
                 aria-pressed={selected}
                 onClick={() => handleClick(video)}
                 disableRipple
@@ -176,6 +208,11 @@ export function MyMuxVideos({
                   }}
                 />
               </ButtonBase>
+              {isTeamUpload && (
+                <MediaLibraryTeamTag
+                  data-testid={`my-mux-video-team-tag-${video.id}`}
+                />
+              )}
             </ImageListItem>
           )
         })}

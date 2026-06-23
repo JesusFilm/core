@@ -1,6 +1,10 @@
 import { act, renderHook } from '@testing-library/react'
+import { ReactElement, ReactNode } from 'react'
 import { ErrorCode, useDropzone } from 'react-dropzone'
 import { type Mock, type MockedFunction } from 'vitest'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { useCloudflareUploadByFileMutation } from '../useCloudflareUploadByFileMutation'
 
@@ -46,7 +50,9 @@ describe('useImageUpload', () => {
       acceptedFiles: [],
       fileRejections: []
     } as any)
-    mockUseCloudflareUploadByFileMutation.mockReturnValue([vi.fn()] as any)
+    mockUseCloudflareUploadByFileMutation.mockReturnValue([
+      vi.fn()
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
   })
 
   afterEach(() => {
@@ -75,7 +81,7 @@ describe('useImageUpload', () => {
     })
     mockUseCloudflareUploadByFileMutation.mockReturnValue([
       createCloudflareUploadByFile
-    ] as any)
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
 
     getMockFetch().mockResolvedValueOnce({
       ok: true,
@@ -134,7 +140,7 @@ describe('useImageUpload', () => {
     )
     mockUseCloudflareUploadByFileMutation.mockReturnValue([
       createCloudflareUploadByFile
-    ] as any)
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
 
     const { result } = renderHook(() => useImageUpload({ onUploadComplete }))
 
@@ -202,7 +208,7 @@ describe('useImageUpload', () => {
     })
     mockUseCloudflareUploadByFileMutation.mockReturnValue([
       createCloudflareUploadByFile
-    ] as any)
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
 
     getMockFetch().mockResolvedValueOnce({
       ok: true,
@@ -240,7 +246,7 @@ describe('useImageUpload', () => {
     })
     mockUseCloudflareUploadByFileMutation.mockReturnValue([
       createCloudflareUploadByFile
-    ] as any)
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
 
     getMockFetch().mockResolvedValueOnce({
       ok: true,
@@ -279,7 +285,7 @@ describe('useImageUpload', () => {
     })
     mockUseCloudflareUploadByFileMutation.mockReturnValue([
       createCloudflareUploadByFile
-    ] as any)
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
 
     getMockFetch().mockRejectedValueOnce(new Error('Network error'))
 
@@ -304,7 +310,7 @@ describe('useImageUpload', () => {
       .mockRejectedValueOnce(new Error('Mutation failed'))
     mockUseCloudflareUploadByFileMutation.mockReturnValue([
       createCloudflareUploadByFile
-    ] as any)
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
 
     const { result } = renderHook(() =>
       useImageUpload({ onUploadComplete, onUploadError })
@@ -325,6 +331,48 @@ describe('useImageUpload', () => {
     expect(result.current.success).toBe(false)
   })
 
+  it('should forward the active journey id to the upload mutation', async () => {
+    const createCloudflareUploadByFile = vi.fn().mockResolvedValue({
+      data: {
+        createCloudflareUploadByFile: {
+          uploadUrl: 'https://upload.url'
+        }
+      }
+    })
+    mockUseCloudflareUploadByFileMutation.mockReturnValue([
+      createCloudflareUploadByFile
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
+
+    getMockFetch().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        success: true,
+        result: { id: 'image-id' }
+      })
+    })
+
+    const wrapper = ({ children }: { children: ReactNode }): ReactElement => (
+      <JourneyProvider
+        value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+      >
+        {children}
+      </JourneyProvider>
+    )
+
+    renderHook(() => useImageUpload({ onUploadComplete }), { wrapper })
+
+    const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
+    const file = new File(['file'], 'test.png', { type: 'image/png' })
+
+    await act(async () => {
+      await onDrop?.([file], [], {} as any)
+    })
+
+    expect(createCloudflareUploadByFile).toHaveBeenCalledWith({
+      variables: { journeyId: 'journeyId' }
+    })
+  })
+
   it('should handle missing uploadUrl in mutation response', async () => {
     const createCloudflareUploadByFile = vi.fn().mockResolvedValue({
       data: {
@@ -335,7 +383,7 @@ describe('useImageUpload', () => {
     })
     mockUseCloudflareUploadByFileMutation.mockReturnValue([
       createCloudflareUploadByFile
-    ] as any)
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
 
     const { result } = renderHook(() =>
       useImageUpload({ onUploadComplete, onUploadError })
