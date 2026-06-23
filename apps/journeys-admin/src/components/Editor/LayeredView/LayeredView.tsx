@@ -86,6 +86,10 @@ export function LayeredView(): ReactElement {
             // other's minimum content width
             width: 'max-content',
             height: '100%',
+            // breathing room so neither the card column nor the properties
+            // panel runs to the top/bottom edges of the floating drawer; the
+            // card scale (calculateLayeredScale) accounts for this reduced height
+            py: 2,
             transform: settingsVisible
               ? 'translateX(0)'
               : `translateX(calc(${DRAWER_WIDTH}px + ${DRAWER_GAP * 2}px))`,

@@ -13,7 +13,11 @@ import type { ReactElement, ReactNode } from 'react'
 
 import X2Icon from '@core/shared/ui/icons/X2'
 
-import { DRAWER_GAP, DRAWER_WIDTH } from '../../../constants'
+import {
+  DRAWER_GAP,
+  DRAWER_WIDTH,
+  EDIT_TOOLBAR_HEIGHT
+} from '../../../constants'
 import { useEditorLayout } from '../../../EditorLayoutContext'
 import { LAYERED_DRAWER_HEIGHT } from '../../Content/Canvas/utils/calculateDimensions'
 
@@ -156,11 +160,15 @@ export function Drawer({
             left: { xs: 0, md: 'auto' },
             ...(isLayeredLibrary
               ? {
-                  top: `max(0px, calc(50% - ${LAYERED_DRAWER_HEIGHT / 2}px))`,
+                  // keep the floating library below the app bar and within the
+                  // viewport: never start above the app bar, and cap the height
+                  // so the bottom of the list (and its content) is never clipped
+                  // off the bottom of the screen on shorter laptops
+                  top: `max(${EDIT_TOOLBAR_HEIGHT + DRAWER_GAP}px, calc(50% - ${LAYERED_DRAWER_HEIGHT / 2}px))`,
                   right: DRAWER_GAP,
                   bottom: 'auto',
                   height: LAYERED_DRAWER_HEIGHT,
-                  maxHeight: '100%',
+                  maxHeight: `calc(100% - ${EDIT_TOOLBAR_HEIGHT + DRAWER_GAP * 2}px)`,
                   zIndex: (theme) => theme.zIndex.drawer + 1
                 }
               : {

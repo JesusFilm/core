@@ -36,6 +36,7 @@ import { SelectableWrapper } from './SelectableWrapper'
 import {
   CARD_HEIGHT,
   CARD_WIDTH,
+  calculateLayeredScale,
   calculateScale,
   calculateScaledMargin
 } from './utils/calculateDimensions'
@@ -80,13 +81,18 @@ export function Canvas(): ReactElement {
   const [scale, setScale] = useState(initialScale)
 
   useEffect(() => {
-    const handleResize = (): void => setScale(calculateScale(containerRef))
+    const handleResize = (): void =>
+      setScale(
+        isLayered
+          ? calculateLayeredScale(containerRef)
+          : calculateScale(containerRef)
+      )
     handleResize()
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
     // recalculate when the slide changes as the canvas container resizes
     // without a window resize (e.g. the layered view drawer opening)
-  }, [activeSlide])
+  }, [activeSlide, isLayered])
 
   function handleJourneyAppearanceClick(): void {
     dispatch({
