@@ -6,6 +6,7 @@ const NEW_MUX_VIDEO_FRAGMENT = gql`
     playbackId
     readyToStream
     duration
+    userId
   }
 `
 
@@ -22,6 +23,7 @@ export function prependMuxVideo(
     playbackId: string
     readyToStream: boolean
     duration?: number | null
+    userId: string
   }
 ): void {
   const ref = cache.writeFragment({

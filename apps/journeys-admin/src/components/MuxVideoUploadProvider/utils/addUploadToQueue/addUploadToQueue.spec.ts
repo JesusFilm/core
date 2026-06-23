@@ -10,6 +10,7 @@ describe('addUploadToQueue', () => {
     const languageCode = 'en'
     const languageName = 'English'
     const onComplete = vi.fn()
+    const journeyId = 'journey-1'
 
     addUploadToQueue(
       videoBlockId,
@@ -17,6 +18,7 @@ describe('addUploadToQueue', () => {
       languageCode,
       languageName,
       onComplete,
+      journeyId,
       { setUploadTasks }
     )
 
@@ -32,6 +34,7 @@ describe('addUploadToQueue', () => {
       file,
       languageCode,
       languageName,
+      journeyId,
       status: 'waiting',
       progress: 0,
       onComplete
@@ -43,9 +46,17 @@ describe('addUploadToQueue', () => {
     const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
     const videoBlockId = 'block-1'
 
-    addUploadToQueue(videoBlockId, file, undefined, undefined, undefined, {
-      setUploadTasks
-    })
+    addUploadToQueue(
+      videoBlockId,
+      file,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      {
+        setUploadTasks
+      }
+    )
 
     expect(setUploadTasks).toHaveBeenCalledTimes(1)
     const updateFn = setUploadTasks.mock.calls[0][0]
@@ -71,7 +82,7 @@ describe('addUploadToQueue', () => {
       languageName: 'English'
     }
 
-    addUploadToQueue('block-2', file2, 'es', 'Spanish', undefined, {
+    addUploadToQueue('block-2', file2, 'es', 'Spanish', undefined, undefined, {
       setUploadTasks
     })
 
