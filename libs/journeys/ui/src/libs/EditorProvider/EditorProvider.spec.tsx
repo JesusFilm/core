@@ -159,6 +159,7 @@ describe('EditorContext', () => {
           })
         ).toEqual({
           ...state,
+          selectedBlockId: block.id,
           selectedBlock: block
         })
       })

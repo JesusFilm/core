@@ -120,16 +120,6 @@ export function Canvas(): ReactElement {
       frameRef.current?.contentDocument ??
       frameRef.current?.contentWindow?.document
 
-    // Keep the active inline editor selected while the user is editing its
-    // text, even with a collapsed cursor (no highlight). Clicking to place the
-    // cursor otherwise deselects the block and tears the editor down — most
-    // visible on nested fields like poll/multiselect options.
-    const activeTag = iframeDocument?.activeElement?.tagName
-    if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') {
-      resetClickOrigin()
-      return
-    }
-
     const selectedText = iframeDocument?.getSelection()?.toString()
 
     // if user is copying from typog blocks or text, keep focus on typog blocks

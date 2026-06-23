@@ -9,7 +9,7 @@ problem_type: 'ui_bug'
 severity: medium
 root_cause: logic_error
 resolution_type: code_fix
-status: in-progress
+status: resolved
 tags:
   - inline-edit
   - focus-loss
@@ -28,10 +28,11 @@ symptoms:
 
 # Inline text editing loses focus per keystroke in the single-page editor
 
-> **Status: investigation in progress / fix UNVERIFIED.** This doc captures the
-> decisions, dead-ends, and current best hypothesis for a hand-off. The latest
-> commit on the branch (`d1b49d4c4`) is an _attempted_ fix that the reporter says
-> still does not work. Read "Open questions" before continuing.
+> **Status: RESOLVED — root cause confirmed and fix verified in a live browser.**
+> The fix is a one-line reducer change in `EditorProvider.tsx`
+> (`SetSelectedBlockOnlyAction` must also update `selectedBlockId`). The earlier
+> attempted fix (`d1b49d4c4`, a `handleSelectCard` guard) was wrong and has been
+> reverted. See "Confirmed root cause" below; "Open questions" are now answered.
 
 ## Problem
 
@@ -77,55 +78,81 @@ editor layout for desktop", which renders the canvas inside a MUI `Drawer`
    `LayeredView` Modal already sets `disableEnforceFocus: true`, and the probe
    proved the input is _unmounted_, not blurred-in-place.
 
-## Current best hypothesis + attempted fix
+## Confirmed root cause (`SetSelectedBlockOnlyAction` desyncs `selectedBlockId`)
 
-The collapsed-vs-highlighted behaviour points squarely at `handleSelectCard` in
-`apps/journeys-admin/src/components/Editor/Slider/Content/Canvas/Canvas.tsx`. It is
-the `onClick` handler on the `EditorCanvas` stack and deselects the active block
-back to the card unless text is highlighted:
+The deselect is **not** `handleSelectCard`. It is a stale-`selectedBlockId`
+re-derivation, and the trigger is the keystroke itself, not the click.
 
-```ts
-const selectedText = iframeDocument?.getSelection()?.toString()
-// keeps editing ONLY when text is highlighted:
-if (selectedText != null && selectedText !== '' && !selectionRef.current) return
-// ...otherwise:
-dispatch({ type: 'SetSelectedBlockAction', selectedBlock: selectedStep }) // deselect
-```
-
-A collapsed cursor means `getSelection().toString() === ''`, so the guard does not
-fire and the block is deselected → `showEditable` in `InlineEditWrapper.tsx`
-(`selectedBlock?.id === block.id`) flips false → `RadioOptionEdit` unmounts.
-
-**Attempted fix (`d1b49d4c4`, unverified):** also bail out when an inline input is
-focused, regardless of selection:
+`EditorState` keeps both `selectedBlock` (the `TreeBlock`) and `selectedBlockId`
+(its id). The invariant `selectedBlockId === selectedBlock?.id` must hold, because
+`SetStepsAction` rebuilds the block tree from the Apollo cache and re-derives the
+selection **from `selectedBlockId`**:
 
 ```ts
-const activeTag = iframeDocument?.activeElement?.tagName
-if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') {
-  resetClickOrigin()
-  return
+case 'SetStepsAction': {
+  const selectedBlock = state.selectedBlockId != null
+    ? (searchBlocks(action.steps, state.selectedBlockId) ?? action.steps[0])
+    : action.steps[0]
+  // ...
 }
 ```
 
-## Open questions (resolve these FIRST when continuing)
+NES-308 broke the invariant for the **layered** option re-select. When an
+already-selected option is clicked again, `SelectableWrapper` dispatches
+`SetSelectedBlockOnlyAction`, whose reducer case set **only** `selectedBlock`:
 
-1. **Where does the editable input actually live — the card iframe or the main
-   document?** `FramePortal`
-   (`libs/journeys/ui/src/components/FramePortal/FramePortal.tsx`) `createPortal`s
-   into the iframe's `contentDocument.body`, so blocks _should_ be inside the
-   iframe — which is why the existing guard reads `iframeDocument.getSelection()`.
-   BUT the diagnostic MutationObserver, run on the **main** `document.body`, _saw_
-   the input add/remove, implying the **main document**. This contradiction
-   decides whether the new guard should read `iframeDocument.activeElement`
-   (current) or `document.activeElement`. The attempted fix may simply be reading
-   the wrong document.
-2. **Does `handleSelectCard` even fire on the collapse-click?** It is a
-   main-document `onClick`; clicks inside a same-origin iframe normally do not
-   bubble to the parent. Put a breakpoint in `handleSelectCard` and confirm it
-   runs on the collapse-click. If it does not, the real deselect is elsewhere —
-   search for what dispatches `SetSelectedBlockAction` / `SetSelectedStepAction`
-   or otherwise clears `selectedBlock` on a click or `selectionchange` while
-   editing.
+```ts
+case 'SetSelectedBlockOnlyAction':
+  return { ...state, selectedBlock: action.selectedBlock } // selectedBlockId NOT updated!
+```
+
+But during the same click's capture phase the parent question first dispatches
+`SetSelectedBlockAction(question)`, which sets `selectedBlockId = question.id`. So
+after the collapse-click: `selectedBlock` = option (editing works) but
+`selectedBlockId` = **question** (stale). The first keystroke fires an optimistic
+`radioOptionBlockUpdate` → cache write → `SetStepsAction` →
+`searchBlocks(steps, question.id)` → selection snaps to the **question** →
+`showEditable` for the option flips false → `RadioOptionEdit` unmounts → focus lost
+after exactly one character.
+
+Why highlighted works / collapsed breaks: a **fresh** select reaches the option via
+`updateEditor` → `SetSelectedBlockAction` (sets `selectedBlockId` correctly, text
+auto-highlights). Only the **re-select on an already-selected option** (the
+collapse-click) goes through `SetSelectedBlockOnlyAction` and corrupts
+`selectedBlockId`. Typography/Button never hit that branch.
+
+### The fix
+
+Keep the two in sync in the reducer:
+
+```ts
+case 'SetSelectedBlockOnlyAction':
+  return {
+    ...state,
+    selectedBlockId: action.selectedBlock?.id, // <-- added
+    selectedBlock: action.selectedBlock
+  }
+```
+
+All three callers (`SelectableWrapper` option re-select, `Canvas`
+`handleJourneyAppearanceClick`, `Slider.resetCanvasFocus`) pass a real block/step,
+so syncing the id is strictly more correct everywhere. `d1b49d4c4`'s
+`handleSelectCard` guard was reverted.
+
+## Open questions — now answered (verified in a live browser via instrumented reducer logs + dual-document MutationObserver)
+
+1. **Where does the editable input live?** The **iframe** (`FramePortal`), as the
+   code implies. A DOM map showed all 9 `SelectableWrapper`s + the option
+   `textarea` inside `iframe[0].contentDocument`; the main document held only the
+   card-slug field and a react-flow checkbox. The prior "main document" reading was
+   a misattribution (the page also has a second, Beacon iframe; `iframe.last()`
+   pointed at the wrong one).
+2. **Does `handleSelectCard` fire on the collapse-click?** **No.** Instrumentation
+   showed it fires only when clicking **empty canvas** (React synthetic events
+   bubble through the portal into the parent tree), never on a block/input click —
+   `SelectableWrapper`'s `onClick` and the input's `onClick` both `stopPropagation`.
+   So the collapse-click and the keystroke never reach `handleSelectCard`; the
+   `d1b49d4c4` guard could not have helped.
 
 ## Diagnostic technique that worked (reusable)
 
