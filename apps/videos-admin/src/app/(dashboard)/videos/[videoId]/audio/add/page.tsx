@@ -103,9 +103,9 @@ export default function AddAudioLanguageDialog(): ReactElement {
     await startDialogUpload(values)
   }
 
-  const isUploadInProgress = uploadState.isUploading || uploadState.isProcessing
+  const isUploadInProgress = uploadState.isUploading
   const handleDialogClose = (): void => {
-    // Don't close the dialog if upload is in progress
+    // Don't close the dialog while the browser is still transferring the file.
     if (isUploadInProgress) {
       return
     }

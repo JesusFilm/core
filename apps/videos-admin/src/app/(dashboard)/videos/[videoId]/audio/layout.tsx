@@ -122,9 +122,9 @@ const incompleteUploadStatuses: VideoVariantUploadStatus[] = [
 const uploadStatusLabels: Record<VideoVariantUploadStatus, string> = {
   created: 'Upload started',
   r2Prepared: 'R2 prepared',
-  r2Uploaded: 'R2 uploaded',
-  muxCreated: 'Mux created',
-  muxReady: 'Mux ready',
+  r2Uploaded: 'Processing',
+  muxCreated: 'Processing',
+  muxReady: 'Finalizing',
   failed: 'Failed',
   variantCreated: 'Complete'
 }
@@ -137,6 +137,18 @@ function getUploadStatusColor(status: VideoVariantUploadStatus) {
 
 function canResumeUpload(status: VideoVariantUploadStatus) {
   return status !== 'created' && status !== 'r2Prepared'
+}
+
+function getBackgroundUploadMessage(status: VideoVariantUploadStatus) {
+  if (
+    status === 'r2Uploaded' ||
+    status === 'muxCreated' ||
+    status === 'muxReady'
+  ) {
+    return 'Processing will finish in the background.'
+  }
+
+  return null
 }
 
 function getUnresumableUploadMessage(status: VideoVariantUploadStatus) {
@@ -346,6 +358,7 @@ export default function ClientLayout({
       const canResume = canResumeUpload(upload.status)
       const canReupload = !canResume
       const actionLabel = upload.status === 'failed' ? 'Retry' : 'Resume'
+      const backgroundUploadMessage = getBackgroundUploadMessage(upload.status)
       const unresumableMessage = getUnresumableUploadMessage(upload.status)
 
       return (
@@ -381,6 +394,15 @@ export default function ClientLayout({
                 ? ` • ${upload.originalFilename}`
                 : ''}
             </Typography>
+            {backgroundUploadMessage != null && (
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ display: 'block' }}
+              >
+                {backgroundUploadMessage}
+              </Typography>
+            )}
             {unresumableMessage != null && (
               <Typography
                 variant="caption"

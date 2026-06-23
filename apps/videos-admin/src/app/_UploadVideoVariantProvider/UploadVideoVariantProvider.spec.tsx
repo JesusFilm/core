@@ -12,7 +12,6 @@ import { refreshToken } from '../api'
 import {
   COMPLETE_R2_MULTIPART,
   CREATE_VIDEO_VARIANT_UPLOAD_MUX,
-  GET_VIDEO_VARIANT_UPLOAD,
   MARK_VIDEO_VARIANT_UPLOAD_R2_COMPLETE,
   MARK_VIDEO_VARIANT_UPLOAD_R2_PREPARED,
   PREPARE_R2_MULTIPART,
@@ -276,38 +275,6 @@ const createMuxMock = {
   }
 }
 
-const getUploadVariantCreatedMock = {
-  request: {
-    query: GET_VIDEO_VARIANT_UPLOAD,
-    variables: { id: 'upload-id' }
-  },
-  result: {
-    data: {
-      videoVariantUpload: {
-        id: 'upload-id',
-        status: 'variantCreated',
-        errorMessage: null,
-        muxVideoId: 'mux-id',
-        videoVariantId: 'variant-id',
-        videoVariant: {
-          id: 'variant-id',
-          videoId: 'video-id',
-          slug: 'video-slug/en',
-          hls: 'https://stream.mux.com/playback-id.m3u8',
-          language: {
-            id: 'language-id',
-            slug: 'en',
-            name: {
-              value: 'English',
-              primary: true
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
 const initialStateForTests = {
   isUploading: false,
   uploadProgress: 0,
@@ -347,7 +314,7 @@ const createWrapper = (mocks: any[] = []) => {
   }
 }
 
-async function startTestUpload(result: any) {
+async function startTestUpload(result: any, onComplete?: () => void) {
   await act(async () => {
     await result.current.startUpload(
       new File(['test'], 'test.mp4', { type: 'video/mp4' }),
@@ -357,7 +324,7 @@ async function startTestUpload(result: any) {
       'base',
       false,
       'video-slug',
-      undefined
+      onComplete
     )
   })
 }
@@ -383,22 +350,22 @@ describe('UploadVideoVariantContext', () => {
     expect(result.current.uploadState).toEqual(initialStateForTests)
   })
 
-  it('uses backend lifecycle calls and resets after variant creation', async () => {
+  it('uses backend lifecycle calls and hands off processing after Mux creation', async () => {
     const mocks = [
       startVideoVariantUploadMock,
       prepareR2MultipartMock,
       markR2PreparedMock,
       completeR2MultipartMock,
       markR2CompleteMock,
-      createMuxMock,
-      getUploadVariantCreatedMock
+      createMuxMock
     ]
 
+    const onComplete = vi.fn()
     const { result } = renderHook(() => useUploadVideoVariant(), {
       wrapper: createWrapper(mocks)
     })
 
-    await startTestUpload(result)
+    await startTestUpload(result, onComplete)
 
     await waitFor(() => {
       expect(axios.put).toHaveBeenCalledWith(
@@ -414,9 +381,11 @@ describe('UploadVideoVariantContext', () => {
 
     await waitFor(() => {
       expect(result.current.uploadState).toEqual(initialStateForTests)
-      expect(mockEnqueueSnackbar).toHaveBeenCalledWith('Audio Language Added', {
-        variant: 'success'
-      })
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        'Upload complete. Processing will finish in the background.',
+        { variant: 'success' }
+      )
+      expect(onComplete).toHaveBeenCalledTimes(1)
     })
   })
 

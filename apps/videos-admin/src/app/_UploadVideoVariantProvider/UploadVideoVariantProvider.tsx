@@ -1,6 +1,6 @@
 'use client'
 
-import { useApolloClient, useLazyQuery, useMutation } from '@apollo/client'
+import { useApolloClient, useMutation } from '@apollo/client'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
 import {
@@ -8,7 +8,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useReducer,
   useRef
 } from 'react'
@@ -61,32 +60,6 @@ export const CREATE_VIDEO_VARIANT_UPLOAD_MUX = graphql(`
       id
       status
       muxVideoId
-    }
-  }
-`)
-
-export const GET_VIDEO_VARIANT_UPLOAD = graphql(`
-  query GetVideoVariantUpload($id: ID!) {
-    videoVariantUpload(id: $id) {
-      id
-      status
-      errorMessage
-      muxVideoId
-      videoVariantId
-      videoVariant {
-        id
-        videoId
-        slug
-        hls
-        language {
-          id
-          slug
-          name {
-            value
-            primary
-          }
-        }
-      }
     }
   }
 `)
@@ -289,7 +262,6 @@ type UploadAction =
       uploadSpeedBps?: number | null
       etaSeconds?: number | null
     }
-  | { type: 'START_PROCESSING'; uploadId: string; muxVideoId?: string | null }
   | { type: 'COMPLETE' }
   | { type: 'SET_ERROR'; error: string }
   | { type: 'CLEAR' }
@@ -328,15 +300,6 @@ function uploadReducer(
         etaSeconds:
           action.etaSeconds !== undefined ? action.etaSeconds : state.etaSeconds
       }
-    case 'START_PROCESSING':
-      return {
-        ...state,
-        isUploading: false,
-        isProcessing: true,
-        uploadId: action.uploadId,
-        muxVideoId: action.muxVideoId ?? state.muxVideoId,
-        uploadStatus: 'muxCreated'
-      }
     case 'COMPLETE':
       return initialState
     case 'SET_ERROR':
@@ -359,7 +322,6 @@ export function UploadVideoVariantProvider({
   const authRefreshIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
     null
   )
-  const stopUploadPollingRef = useRef<(() => void) | null>(null)
 
   const dispatchError = (errorMessage: string) => {
     dispatch({ type: 'SET_ERROR', error: errorMessage })
@@ -410,48 +372,6 @@ export function UploadVideoVariantProvider({
   const [createVideoVariantUploadMux] = useMutation(
     CREATE_VIDEO_VARIANT_UPLOAD_MUX
   )
-  const [getVideoVariantUpload, { stopPolling }] = useLazyQuery(
-    GET_VIDEO_VARIANT_UPLOAD,
-    {
-      pollInterval: 2000,
-      notifyOnNetworkStatusChange: true,
-      onCompleted: (data) => {
-        const upload = data.videoVariantUpload
-
-        if (upload.status === 'variantCreated') {
-          stopPolling()
-          stopUploadAuthRefresh()
-          state.onComplete?.()
-          dispatch({ type: 'COMPLETE' })
-          enqueueSnackbar('Audio Language Added', { variant: 'success' })
-          return
-        }
-
-        if (upload.status === 'failed') {
-          stopPolling()
-          stopUploadAuthRefresh()
-          dispatchError(upload.errorMessage ?? 'Video upload processing failed')
-        }
-      },
-      onError: (error) => {
-        stopPolling()
-        stopUploadAuthRefresh()
-        dispatchError(error.message || 'Failed to get video upload status')
-      }
-    }
-  )
-
-  useEffect(() => {
-    stopUploadPollingRef.current = stopPolling
-  }, [stopPolling])
-
-  useEffect(() => {
-    return () => {
-      stopUploadPollingRef.current?.()
-      stopUploadAuthRefresh()
-    }
-  }, [stopUploadAuthRefresh])
-
   const startUpload = async (
     file: File,
     videoId: string,
@@ -471,7 +391,6 @@ export function UploadVideoVariantProvider({
       fileName: file.name,
       fileSize: file.size
     }
-    let isPollingMuxVideo = false
 
     try {
       console.info('Starting video upload', logContext)
@@ -791,30 +710,25 @@ export function UploadVideoVariantProvider({
         return
       }
 
-      dispatch({
-        type: 'START_PROCESSING',
-        uploadId,
-        muxVideoId: muxResponse.data.videoVariantUploadCreateMux.muxVideoId
-      })
-      console.info('Mux video created, polling upload lifecycle', {
+      console.info('Mux video created, upload processing handed off', {
         ...logContext,
         uploadId,
         muxVideoId: muxResponse.data.videoVariantUploadCreateMux.muxVideoId
       })
 
-      await requireUploadAuthToken()
-      void getVideoVariantUpload({ variables: { id: uploadId } })
-      isPollingMuxVideo = true
+      dispatch({ type: 'COMPLETE' })
+      enqueueSnackbar(
+        'Upload complete. Processing will finish in the background.',
+        { variant: 'success' }
+      )
+      onComplete?.()
     } catch (error) {
-      stopUploadAuthRefresh()
       const errorMessage =
         (error instanceof Error && error.message) || 'Failed to upload video'
       console.error('Video upload failed', { ...logContext, error })
       dispatchError(errorMessage)
     } finally {
-      if (!isPollingMuxVideo) {
-        stopUploadAuthRefresh()
-      }
+      stopUploadAuthRefresh()
     }
   }
 

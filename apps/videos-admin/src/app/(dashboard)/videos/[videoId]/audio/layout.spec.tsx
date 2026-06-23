@@ -280,6 +280,114 @@ describe('ClientLayout', () => {
     expect(screen.getByText('Mux video processing errored')).toBeTruthy()
   })
 
+  it('shows background processing copy for handed-off uploads', () => {
+    const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
+
+    mockedUseQuery
+      .mockReturnValueOnce({
+        data: {
+          adminVideo: {
+            id: 'video123',
+            slug: 'test-video',
+            published: true,
+            variants: mockVideoVariants
+          }
+        },
+        loading: false,
+        error: undefined,
+        fetchMore: vi.fn(),
+        refetch: mockRefetch,
+        networkStatus: NetworkStatus.ready,
+        client: {} as any,
+        called: true,
+        startPolling: vi.fn(),
+        stopPolling: vi.fn(),
+        subscribeToMore: vi.fn(),
+        updateQuery: vi.fn(),
+        observable: {} as any,
+        variables: { id: 'video123' },
+        reobserve: vi.fn(),
+        previousData: undefined
+      })
+      .mockReturnValueOnce({
+        data: {
+          videoVariantUploads: [
+            {
+              id: 'upload-r2-uploaded',
+              source: 'videos-admin',
+              status: 'r2Uploaded',
+              videoId: 'video123',
+              languageId: '184631',
+              edition: 'base',
+              originalFilename: 'test-video.mp4',
+              errorMessage: null,
+              muxVideoId: null,
+              videoVariantId: null,
+              updatedAt: '2026-06-18T00:00:00.000Z',
+              createdAt: '2026-06-18T00:00:00.000Z'
+            },
+            {
+              id: 'upload-mux-created',
+              source: 'videos-admin',
+              status: 'muxCreated',
+              videoId: 'video123',
+              languageId: '14278',
+              edition: 'base',
+              originalFilename: 'test-video.mp4',
+              errorMessage: null,
+              muxVideoId: 'mux-id',
+              videoVariantId: null,
+              updatedAt: '2026-06-18T00:00:00.000Z',
+              createdAt: '2026-06-18T00:00:00.000Z'
+            },
+            {
+              id: 'upload-mux-ready',
+              source: 'videos-admin',
+              status: 'muxReady',
+              videoId: 'video123',
+              languageId: '529',
+              edition: 'base',
+              originalFilename: 'test-video.mp4',
+              errorMessage: null,
+              muxVideoId: 'mux-ready-id',
+              videoVariantId: null,
+              updatedAt: '2026-06-18T00:00:00.000Z',
+              createdAt: '2026-06-18T00:00:00.000Z'
+            }
+          ]
+        },
+        loading: false,
+        error: undefined,
+        fetchMore: vi.fn(),
+        refetch: mockRefetch,
+        networkStatus: NetworkStatus.ready,
+        client: {} as any,
+        called: true,
+        startPolling: vi.fn(),
+        stopPolling: vi.fn(),
+        subscribeToMore: vi.fn(),
+        updateQuery: vi.fn(),
+        observable: {} as any,
+        variables: {},
+        reobserve: vi.fn(),
+        previousData: undefined
+      })
+
+    render(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    expect(screen.getAllByText('Processing')).toHaveLength(2)
+    expect(screen.getByText('Finalizing')).toBeTruthy()
+    expect(
+      screen.getAllByText('Processing will finish in the background.')
+    ).toHaveLength(3)
+  })
+
   it('clears resume state when resume mutation returns a completed upload', async () => {
     const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
     const mockedUseMutation = useMutation as MockedFunction<typeof useMutation>
