@@ -30,7 +30,7 @@ symptoms:
 
 > **Status: investigation in progress / fix UNVERIFIED.** This doc captures the
 > decisions, dead-ends, and current best hypothesis for a hand-off. The latest
-> commit on the branch (`d1b49d4c4`) is an *attempted* fix that the reporter says
+> commit on the branch (`d1b49d4c4`) is an _attempted_ fix that the reporter says
 > still does not work. Read "Open questions" before continuing.
 
 ## Problem
@@ -40,7 +40,7 @@ layout), editing a **poll option** or **multiselect option** text label loses
 focus after a single keystroke when the cursor is collapsed (you clicked to place
 a cursor without highlighting text). The editable field is torn out of the DOM,
 so you have to re-click the field for every character. One-level-deep blocks
-(Typography, Button) are unaffected — only the *nested* option blocks (which live
+(Typography, Button) are unaffected — only the _nested_ option blocks (which live
 inside a Question block) break.
 
 This is a **regression from PR #9297 (NES-308, commit `f8a3b9c49`)** "single-page
@@ -53,7 +53,7 @@ editor layout for desktop", which renders the canvas inside a MUI `Drawer`
 - Highlighted text (single-click → `onFocus` selects all) types fine.
 - Nested option blocks break; Typography/Button do not.
 - MutationObserver shows the `input` element is **removed** from the DOM on the
-  triggering interaction and not re-added — so it is a *deselect + unmount*, not a
+  triggering interaction and not re-added — so it is a _deselect + unmount_, not a
   focus-steal or a key-churn remount.
 
 ## What didn't work (dead-ends — do not repeat)
@@ -73,9 +73,9 @@ editor layout for desktop", which renders the canvas inside a MUI `Drawer`
    using stable module-level component references.
 4. **Key churn in the option list** — ruled out; `RadioQuestion` maps options
    with a stable `key={option.id}`.
-5. **MUI `FocusTrap` stealing focus** — ruled out as the *primary* cause; the
+5. **MUI `FocusTrap` stealing focus** — ruled out as the _primary_ cause; the
    `LayeredView` Modal already sets `disableEnforceFocus: true`, and the probe
-   proved the input is *unmounted*, not blurred-in-place.
+   proved the input is _unmounted_, not blurred-in-place.
 
 ## Current best hypothesis + attempted fix
 
@@ -112,9 +112,9 @@ if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') {
 1. **Where does the editable input actually live — the card iframe or the main
    document?** `FramePortal`
    (`libs/journeys/ui/src/components/FramePortal/FramePortal.tsx`) `createPortal`s
-   into the iframe's `contentDocument.body`, so blocks *should* be inside the
+   into the iframe's `contentDocument.body`, so blocks _should_ be inside the
    iframe — which is why the existing guard reads `iframeDocument.getSelection()`.
-   BUT the diagnostic MutationObserver, run on the **main** `document.body`, *saw*
+   BUT the diagnostic MutationObserver, run on the **main** `document.body`, _saw_
    the input add/remove, implying the **main document**. This contradiction
    decides whether the new guard should read `iframeDocument.activeElement`
    (current) or `document.activeElement`. The attempted fix may simply be reading
@@ -129,19 +129,29 @@ if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') {
 
 ## Diagnostic technique that worked (reusable)
 
-Distinguish "remount/unmount" from "focus steal" by arming listeners *before*
+Distinguish "remount/unmount" from "focus steal" by arming listeners _before_
 interacting (so the console click does not blur the field), then typing:
 
 ```js
-;(() => { window.__probeOff?.()
-  const log=(...a)=>console.log('[probe]',...a)
-  const onOut=e=>log('focusOUT',e.target.tagName,'→',document.activeElement?.tagName)
-  document.addEventListener('focusout',onOut,true)
-  const hasInput=n=>n.nodeType===1&&(n.matches?.('input,textarea')||n.querySelector?.('input,textarea'))
-  const obs=new MutationObserver(ms=>ms.forEach(m=>{m.removedNodes.forEach(n=>hasInput(n)&&log('REMOVED'));m.addedNodes.forEach(n=>hasInput(n)&&log('ADDED'))}))
-  obs.observe(document.body,{childList:true,subtree:true})
-  window.__probeOff=()=>{obs.disconnect();document.removeEventListener('focusout',onOut,true)}
-  return 'armed' })()
+;(() => {
+  window.__probeOff?.()
+  const log = (...a) => console.log('[probe]', ...a)
+  const onOut = (e) => log('focusOUT', e.target.tagName, '→', document.activeElement?.tagName)
+  document.addEventListener('focusout', onOut, true)
+  const hasInput = (n) => n.nodeType === 1 && (n.matches?.('input,textarea') || n.querySelector?.('input,textarea'))
+  const obs = new MutationObserver((ms) =>
+    ms.forEach((m) => {
+      m.removedNodes.forEach((n) => hasInput(n) && log('REMOVED'))
+      m.addedNodes.forEach((n) => hasInput(n) && log('ADDED'))
+    })
+  )
+  obs.observe(document.body, { childList: true, subtree: true })
+  window.__probeOff = () => {
+    obs.disconnect()
+    document.removeEventListener('focusout', onOut, true)
+  }
+  return 'armed'
+})()
 ```
 
 - `ADDED` then `REMOVED` (no auto re-add) = deselect/unmount (this bug).
@@ -153,8 +163,8 @@ interacting (so the console click does not blur the field), then typing:
 
 - `handleSelectCard`'s "keep editing only when text is highlighted" guard is
   fragile: placing a collapsed cursor is a normal editing action and must not
-  deselect. Any canvas-level "click === deselect" handler should treat *focus
-  inside an editable field* as "still editing", not just *non-empty selection*.
+  deselect. Any canvas-level "click === deselect" handler should treat _focus
+  inside an editable field_ as "still editing", not just _non-empty selection_.
 - When a focused `<input>`/`<textarea>` "loses focus per keystroke", check for an
   **unmount** (parent deselect / conditional render flip) before chasing focus
   traps — the MutationObserver probe above settles it in seconds.
