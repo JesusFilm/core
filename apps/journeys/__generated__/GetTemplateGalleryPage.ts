@@ -10,7 +10,7 @@ import { TemplateGalleryPageMediaType } from "./globalTypes";
 // ====================================================
 
 export interface GetTemplateGalleryPage_templateGalleryPageBySlug_media {
-  __typename: "TemplateGalleryPageMediaPublic";
+  __typename: "TemplateGalleryPageMedia";
   id: string;
   /**
    * Discriminator for which underlying field is populated.

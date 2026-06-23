@@ -7,7 +7,7 @@ import { TemplateGalleryPageMediaType } from '../../../__generated__/globalTypes
 
 export function makeLinkMedia(embedUrl: string): GalleryMedia {
   return {
-    __typename: 'TemplateGalleryPageMediaPublic',
+    __typename: 'TemplateGalleryPageMedia',
     id: 'media-1',
     type: TemplateGalleryPageMediaType.link,
     embedUrl,
@@ -17,7 +17,7 @@ export function makeLinkMedia(embedUrl: string): GalleryMedia {
 
 export function makeMuxMedia(muxPlaybackId: string): GalleryMedia {
   return {
-    __typename: 'TemplateGalleryPageMediaPublic',
+    __typename: 'TemplateGalleryPageMedia',
     id: 'media-1',
     type: TemplateGalleryPageMediaType.mux,
     embedUrl: null,
