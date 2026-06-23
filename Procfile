@@ -1,5 +1,5 @@
 analytics: nx serve api-analytics
-journeys-modern: nx serve api-journeys-modern
+journeys: nx serve api-journeys
 languages: nx serve api-languages
 media: nx serve api-media
 users: nx serve api-users
