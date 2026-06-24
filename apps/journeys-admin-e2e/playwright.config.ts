@@ -29,9 +29,9 @@ export default defineConfig({
     permissions: ['clipboard-read', 'clipboard-write'],
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL:
-      process.env.JOURNEYS_ADMIN_DAILY_E2E ??
       process.env.DEPLOYMENT_URL ??
-      'http://localhost:4200',
+      process.env.JOURNEYS_ADMIN_DAILY_E2E ??
+      'https://admin-stage.nextstep.is/',
     actionTimeout: 20000,
     navigationTimeout: 60000,
     screenshot: 'only-on-failure',

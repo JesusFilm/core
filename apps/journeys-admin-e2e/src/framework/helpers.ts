@@ -2,6 +2,20 @@ import dayjs from 'dayjs'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config()
 
+export const DEFAULT_JOURNEYS_ADMIN_E2E_URL = 'https://admin-stage.nextstep.is/'
+
+export type DiscoverListType = 'journeys' | 'templates'
+export type DiscoverStatus = 'active' | 'archived' | 'trashed'
+
+export function getDiscoverListUrl(
+  baseUrl: string,
+  type: DiscoverListType,
+  status: DiscoverStatus = 'active'
+): string {
+  const normalizedBaseUrl = baseUrl.replace(/\/$/, '')
+  return `${normalizedBaseUrl}/?type=${type}&status=${status}`
+}
+
 async function getCredentials(
   accountKey: string
 ): Promise<{ email: string; password: string }> {

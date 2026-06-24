@@ -202,7 +202,7 @@ export class TemplatePage {
   async verifyPreviewTemplateInJourneyTemplate() {
     const [newPage] = await Promise.all([
       this.context.waitForEvent('page'),
-      await this.clickPreviewBtnInJourneyTemplatePage()
+      this.clickPreviewBtnInJourneyTemplatePage()
     ])
     await newPage.waitForLoadState()
     const tabName: string = await newPage.title()
@@ -254,7 +254,7 @@ export class TemplatePage {
   async verifyTemplateIsEdited(editedText) {
     const [newPage] = await Promise.all([
       this.context.waitForEvent('page'),
-      await this.clickPreviewBtnInJourneyTemplatePage()
+      this.clickPreviewBtnInJourneyTemplatePage()
     ])
     await newPage.waitForLoadState()
     const tabName: string = await newPage.title()

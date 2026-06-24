@@ -368,11 +368,12 @@ export class CardLevelActionPage {
         'div[data-testid="VideoFromMux"] span[role="progressbar"]'
       )
     ).toBeVisible({ timeout: sixtySecondsTimeout })
+    // 90s: Mux video processing on stage can exceed 60s for SampleVideo.mp4
     await expect(
       this.page.locator(
         'div[data-testid="VideoFromMux"] span[role="progressbar"]'
       )
-    ).toBeHidden({ timeout: sixtySecondsTimeout })
+    ).toBeHidden({ timeout: 90000 })
   }
 
   async verifyUploadVideoInJourney(uplodedType: string) {

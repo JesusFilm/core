@@ -17,8 +17,8 @@ async function waitForHealthy(url: string, timeoutMs: number): Promise<void> {
 
 export default async function globalSetup(config: FullConfig) {
   const baseURL =
-    process.env.JOURNEYS_ADMIN_DAILY_E2E ??
     process.env.DEPLOYMENT_URL ??
-    'http://localhost:4200'
+    process.env.JOURNEYS_ADMIN_DAILY_E2E ??
+    'https://admin-stage.nextstep.is/'
   await waitForHealthy(baseURL, 120_000)
 }

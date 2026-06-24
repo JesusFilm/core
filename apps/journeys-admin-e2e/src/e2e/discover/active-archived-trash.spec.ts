@@ -36,11 +36,7 @@ test.describe('Verify user able to Active, Archived, Trash the journeys', () => 
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
   })
 
-  // ISSUE: After archiving a journey (or when the test runs), the Discover journey list (Active/Archived/Trash
-  // tabs) is not found – locator('button[id*="archived-status-panel-tab"]') times out. Likely environment- or
-  // routing-related (e.g. discover list not visible in this deployment). Re-enable when the discover journey
-  // list is available.
-  test.skip('Verify the user able to move the single journeys from Active, archived, Trash page', async ({
+  test('Verify the user able to move the single journeys from Active, archived, Trash page', async ({
     page
   }) => {
     const journeyPage = new JourneyPage(page)
@@ -66,7 +62,7 @@ test.describe('Verify user able to Active, Archived, Trash the journeys', () => 
   // ISSUE: After archiving (or when the test runs), the Discover journey list (Active/Archived/Trash tabs) is
   // not found – button[id*="archived-status-panel-tab"] times out. Likely environment- or routing-related.
   // Re-enable when the discover journey list is available.
-  test.skip('Verify the user able to move the all journeys from Active, archived, Trash page', async ({
+  test('Verify the user able to move the all journeys from Active, archived, Trash page', async ({
     page
   }) => {
     const journeyPage = new JourneyPage(page)
