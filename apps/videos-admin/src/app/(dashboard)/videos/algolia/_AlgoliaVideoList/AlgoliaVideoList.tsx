@@ -19,14 +19,12 @@ import {
 } from '@mui/x-data-grid'
 import { algoliasearch } from 'algoliasearch'
 import { useRouter } from 'next/navigation'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 import {
   Configure,
   InstantSearch,
   useHits,
   useInstantSearch,
-  usePagination,
-  useRefinementList,
   useSearchBox
 } from 'react-instantsearch'
 
@@ -54,6 +52,10 @@ interface AlgoliaRow {
   containsCount: number
   published: boolean
 }
+
+type PublishedFilterValue = 'both' | 'published' | 'draft'
+
+const ALGOLIA_HITS_PER_PAGE = 1000
 
 function getAlgoliaSearchClient() {
   const appId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? ''
@@ -97,44 +99,20 @@ function mapAlgoliaHitToRow(hit: AlgoliaVideoRecord): AlgoliaRow {
   }
 }
 
-function PublishedFilter(): ReactElement {
-  const { items: publishedItems, refine: refinePublished } = useRefinementList({
-    attribute: 'published'
-  })
-
-  const publishedTrueItem = publishedItems.find((item) => item.label === 'true')
-  const publishedFalseItem = publishedItems.find(
-    (item) => item.label === 'false'
-  )
-
-  const selectedPublishedFilter = publishedTrueItem?.isRefined
-    ? 'published'
-    : publishedFalseItem?.isRefined
-      ? 'draft'
-      : 'both'
-
+function PublishedFilter({
+  publishedCount,
+  draftCount,
+  selectedPublishedFilter,
+  onPublishedFilterChange
+}: {
+  publishedCount: number
+  draftCount: number
+  selectedPublishedFilter: PublishedFilterValue
+  onPublishedFilterChange: (value: PublishedFilterValue) => void
+}): ReactElement {
   const handlePublishedChange = (event: SelectChangeEvent): void => {
-    const selectedValue = event.target.value
-    if (selectedValue === selectedPublishedFilter) return
-
-    if (publishedTrueItem?.isRefined === true) {
-      refinePublished(publishedTrueItem.value)
-    }
-    if (publishedFalseItem?.isRefined === true) {
-      refinePublished(publishedFalseItem.value)
-    }
-
-    if (selectedValue === 'published' && publishedTrueItem != null) {
-      refinePublished(publishedTrueItem.value)
-    }
-
-    if (selectedValue === 'draft' && publishedFalseItem != null) {
-      refinePublished(publishedFalseItem.value)
-    }
+    onPublishedFilterChange(event.target.value as PublishedFilterValue)
   }
-
-  const publishedCount = publishedTrueItem?.count ?? 0
-  const draftCount = publishedFalseItem?.count ?? 0
 
   return (
     <FormControl size="small" sx={{ minWidth: 200 }}>
@@ -158,9 +136,18 @@ function AlgoliaInstantSearchResults(): ReactElement {
   const { query, refine } = useSearchBox()
   const { items } = useHits<AlgoliaVideoRecord>()
   const { status, error } = useInstantSearch()
-  const { currentRefinement, nbPages, refine: refinePage } = usePagination()
+  const [selectedPublishedFilter, setSelectedPublishedFilter] =
+    useState<PublishedFilterValue>('both')
 
   const rows: GridRowsProp<AlgoliaRow> = items.map(mapAlgoliaHitToRow)
+  const publishedCount = rows.filter((row) => row.published).length
+  const draftCount = rows.length - publishedCount
+  const filteredRows =
+    selectedPublishedFilter === 'published'
+      ? rows.filter((row) => row.published)
+      : selectedPublishedFilter === 'draft'
+        ? rows.filter((row) => !row.published)
+        : rows
 
   const handleRowClick = (params: GridRowParams<AlgoliaRow>): void => {
     const selectedMediaComponentId = params.row.mediaComponentId
@@ -211,20 +198,31 @@ function AlgoliaInstantSearchResults(): ReactElement {
           placeholder="Search by ID, title, or description"
           sx={{ flexGrow: 1 }}
         />
-        <PublishedFilter />
+        <PublishedFilter
+          publishedCount={publishedCount}
+          draftCount={draftCount}
+          selectedPublishedFilter={selectedPublishedFilter}
+          onPublishedFilterChange={setSelectedPublishedFilter}
+        />
       </Stack>
       {error != null && <Alert severity="error">{error.message}</Alert>}
       <Typography variant="caption" color="text.secondary">
-        Some Algolia records may not map to an editable admin video detail page.
+        Showing up to {ALGOLIA_HITS_PER_PAGE} Algolia records. Some records may
+        not map to an editable admin video detail page.
       </Typography>
       <Box sx={{ flexGrow: 1, minHeight: 0 }}>
         <DataGrid
-          rows={rows}
+          rows={filteredRows}
           columns={columns}
           loading={status === 'loading' || status === 'stalled'}
           onRowClick={handleRowClick}
           disableRowSelectionOnClick
-          hideFooter
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 50 }
+            }
+          }}
+          pageSizeOptions={[25, 50, 100]}
           getRowClassName={(params) =>
             params.row.mediaComponentId == null ? 'row--disabled' : ''
           }
@@ -239,32 +237,6 @@ function AlgoliaInstantSearchResults(): ReactElement {
           }}
         />
       </Box>
-      <Stack
-        direction="row"
-        spacing={1}
-        alignItems="center"
-        sx={{ flexShrink: 0 }}
-      >
-        <Button
-          aria-label="Previous page"
-          variant="outlined"
-          disabled={currentRefinement <= 0}
-          onClick={() => refinePage(currentRefinement - 1)}
-        >
-          Previous
-        </Button>
-        <Typography variant="body2" color="text.secondary">
-          Page {nbPages === 0 ? 0 : currentRefinement + 1} of {nbPages}
-        </Typography>
-        <Button
-          aria-label="Next page"
-          variant="outlined"
-          disabled={currentRefinement >= nbPages - 1}
-          onClick={() => refinePage(currentRefinement + 1)}
-        >
-          Next
-        </Button>
-      </Stack>
     </Stack>
   )
 }
@@ -299,7 +271,7 @@ export function AlgoliaVideoList(): ReactElement {
   return (
     <InstantSearch searchClient={searchClient} indexName={indexName}>
       <Configure
-        hitsPerPage={50}
+        hitsPerPage={ALGOLIA_HITS_PER_PAGE}
         attributesToRetrieve={[
           'objectID',
           'mediaComponentId',
