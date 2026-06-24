@@ -195,7 +195,14 @@ export function Drawer({
         <Box
           data-testid="SettingsDrawerContent"
           className="swiper-no-swiping"
-          sx={{ flexGrow: 1, overflow: 'auto', mb: { md: 4 } }}
+          // the floating media library scrolls flush to the bottom to match the
+          // properties panel (which has no bottom margin); other drawers keep the
+          // bottom breathing room
+          sx={{
+            flexGrow: 1,
+            overflow: 'auto',
+            mb: isLayeredLibrary ? 0 : { md: 4 }
+          }}
         >
           {children}
         </Box>
