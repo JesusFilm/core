@@ -709,7 +709,11 @@ describe('CopyToTeamDialog', () => {
                 id: '529',
                 slug: 'english',
                 name: [
-                  { value: 'English', primary: true, __typename: 'LanguageName' }
+                  {
+                    value: 'English',
+                    primary: true,
+                    __typename: 'LanguageName'
+                  }
                 ]
               },
               {
@@ -722,7 +726,11 @@ describe('CopyToTeamDialog', () => {
                     primary: false,
                     __typename: 'LanguageName'
                   },
-                  { value: 'Español', primary: true, __typename: 'LanguageName' }
+                  {
+                    value: 'Español',
+                    primary: true,
+                    __typename: 'LanguageName'
+                  }
                 ]
               }
             ]
@@ -731,7 +739,10 @@ describe('CopyToTeamDialog', () => {
       }
 
       const mocks = [
-        { request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS }, result: teamsResult },
+        {
+          request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+          result: teamsResult
+        },
         languagesMock,
         updateLastActiveTeamIdMock
       ]
