@@ -617,6 +617,11 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoEditionCreate(input: VideoEditionCreateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionUpdate(input: VideoEditionUpdateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionDelete(id: ID!) : VideoEdition! @join__field(graph: API_MEDIA) 
+  videoVariantUploadStart(input: VideoVariantUploadStartInput!) : VideoVariantUpload! @join__field(graph: API_MEDIA)
+  videoVariantUploadMarkR2Prepared(id: ID!, r2AssetId: ID!) : VideoVariantUpload! @join__field(graph: API_MEDIA)
+  videoVariantUploadMarkR2Complete(id: ID!) : VideoVariantUpload! @join__field(graph: API_MEDIA)
+  videoVariantUploadCreateMux(id: ID!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd) : VideoVariantUpload! @join__field(graph: API_MEDIA)
+  videoVariantUploadResume(id: ID!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd) : VideoVariantUpload! @join__field(graph: API_MEDIA)
   userImpersonate(email: String!) : String @join__field(graph: API_USERS) 
   createVerificationRequest(input: CreateVerificationRequestInput) : Boolean @join__field(graph: API_USERS) 
   validateEmail(email: String!, token: String!) : AuthenticatedUser @join__field(graph: API_USERS) 
@@ -1591,6 +1596,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   videoEditions(where: VideoEditionsFilter, offset: Int, limit: Int) : [VideoEdition!]! @join__field(graph: API_MEDIA) 
   videoEditionsCount(where: VideoEditionsFilter) : Int! @join__field(graph: API_MEDIA) 
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
+  videoVariantUpload(id: ID!) : VideoVariantUpload! @join__field(graph: API_MEDIA)
+  videoVariantUploads(input: VideoVariantUploadsFilter, offset: Int, limit: Int) : [VideoVariantUpload!]! @join__field(graph: API_MEDIA)
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
   youtubeClosedCaptionLanguages(videoId: ID!) : QueryYoutubeClosedCaptionLanguagesResult! @join__field(graph: API_MEDIA) 
@@ -3049,6 +3056,34 @@ type VideoVariantDownload @join__type(graph: API_MEDIA)  {
   version: Int!
 }
 
+type VideoVariantUpload @join__type(graph: API_MEDIA)  {
+  id: ID!
+  source: String!
+  sourceKey: String
+  status: VideoVariantUploadStatus!
+  videoId: ID!
+  edition: String!
+  languageId: ID!
+  version: Int!
+  published: Boolean!
+  originalFilename: String
+  contentType: String
+  contentLength: BigInt
+  duration: Int
+  durationMs: Int
+  width: Int
+  height: Int
+  r2AssetId: ID
+  muxVideoId: ID
+  videoVariantId: ID
+  errorMessage: String
+  createdAt: Date!
+  updatedAt: Date!
+  r2Asset: CloudflareR2
+  muxVideo: MuxVideo
+  videoVariant: VideoVariant
+}
+
 type Youtube @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
   id: ID!
   primaryLanguageId: ID
@@ -3698,6 +3733,16 @@ enum VideoVariantDownloadQuality @join__type(graph: API_MEDIA)  {
   qhd @join__enumValue(graph: API_MEDIA) 
   uhd @join__enumValue(graph: API_MEDIA) 
   highest @join__enumValue(graph: API_MEDIA) 
+}
+
+enum VideoVariantUploadStatus @join__type(graph: API_MEDIA)  {
+  created @join__enumValue(graph: API_MEDIA)
+  r2Prepared @join__enumValue(graph: API_MEDIA)
+  r2Uploaded @join__enumValue(graph: API_MEDIA)
+  muxCreated @join__enumValue(graph: API_MEDIA)
+  muxReady @join__enumValue(graph: API_MEDIA)
+  variantCreated @join__enumValue(graph: API_MEDIA)
+  failed @join__enumValue(graph: API_MEDIA)
 }
 
 enum App @join__type(graph: API_USERS)  {
@@ -5346,6 +5391,35 @@ input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {
   muxVideoId: String
   brightcoveId: String
   version: Int
+}
+
+input VideoVariantUploadStartInput @join__type(graph: API_MEDIA)  {
+  id: ID
+  source: String!
+  sourceKey: String
+  videoId: ID!
+  edition: String!
+  languageId: ID!
+  version: Int!
+  published: Boolean
+  originalFilename: String
+  contentType: String
+  contentLength: BigInt
+  duration: Int
+  durationMs: Int
+  width: Int
+  height: Int
+  r2AssetId: ID
+}
+
+input VideoVariantUploadsFilter @join__type(graph: API_MEDIA)  {
+  status: VideoVariantUploadStatus
+  statuses: [VideoVariantUploadStatus!]
+  videoId: ID
+  languageId: ID
+  edition: String
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
 }
 
 input VideosFilter @join__type(graph: API_MEDIA)  {
