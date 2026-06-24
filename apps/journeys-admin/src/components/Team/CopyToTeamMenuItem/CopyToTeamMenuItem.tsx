@@ -224,6 +224,13 @@ export function CopyToTeamMenuItem({
         onClose={() => {
           setHasOpenDialog?.(false)
           setDuplicateTeamDialogOpen(false)
+          // Cancel any in-flight translation so closing the dialog stops the
+          // subscription cleanly instead of firing onComplete on a dismissed
+          // dialog (defensive: the wrapper hides the buttons and blocks
+          // backdrop/escape while translating, so this is not user-reachable
+          // mid-translation today).
+          setLoading(false)
+          setTranslationVariables(undefined)
         }}
         submitAction={handleDuplicateJourney}
         translationProgress={{

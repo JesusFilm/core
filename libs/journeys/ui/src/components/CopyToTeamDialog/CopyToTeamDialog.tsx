@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography'
 import { Formik, FormikHelpers } from 'formik'
 import sortBy from 'lodash/sortBy'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { boolean, object, string } from 'yup'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
@@ -91,6 +91,7 @@ export function CopyToTeamDialog({
   const teams = query?.data?.teams ?? []
   const [updateLastActiveTeamId, { client }] =
     useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
+  const [pendingTeamId, setPendingTeamId] = useState<string | null>(null)
 
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
     languageId: '529',
@@ -99,19 +100,34 @@ export function CopyToTeamDialog({
     }
   })
 
-  const updateTeamState = (teamId: string): void => {
-    setActiveTeam(teams.find((team) => team.id === teamId) ?? null)
-    void updateLastActiveTeamId({
-      variables: {
-        input: {
-          lastActiveTeamId: teamId
+  const updateTeamState = useCallback(
+    (teamId: string): void => {
+      setActiveTeam(teams.find((team) => team.id === teamId) ?? null)
+      void updateLastActiveTeamId({
+        variables: {
+          input: {
+            lastActiveTeamId: teamId
+          }
+        },
+        onCompleted() {
+          void client.refetchQueries({ include: ['GetAdminJourneys'] })
         }
-      },
-      onCompleted() {
-        void client.refetchQueries({ include: ['GetAdminJourneys'] })
-      }
-    })
-  }
+      })
+    },
+    [setActiveTeam, teams, updateLastActiveTeamId, client]
+  )
+
+  // When translation is enabled the team switch is deferred (see handleSubmit)
+  // and applied here, once the consumer closes the dialog on completion.
+  // Switching immediately would refetch GetAdminJourneys and unmount the
+  // consumer that owns the translation subscription before it finishes,
+  // leaving the copied journey untranslated (NES-1636).
+  useEffect(() => {
+    if (!open && pendingTeamId != null) {
+      updateTeamState(pendingTeamId)
+      setPendingTeamId(null)
+    }
+  }, [open, pendingTeamId, updateTeamState])
 
   async function handleSubmit(
     values: FormValues,
@@ -123,15 +139,16 @@ export function CopyToTeamDialog({
       values.showTranslation
     )
 
-    // Update team state
-    updateTeamState(values.teamSelect)
-
     // Always reset the form after submission
     resetForm()
 
-    // Only close dialog immediately if translation is not enabled
-    // If translation is enabled, the dialog will be closed when translation completes
-    if (!values.showTranslation) {
+    if (values.showTranslation) {
+      // Defer the team switch until the translation subscription completes and
+      // the consumer closes the dialog (open -> false). See the effect above.
+      setPendingTeamId(values.teamSelect)
+    } else {
+      // No translation: switch teams and close the dialog immediately.
+      updateTeamState(values.teamSelect)
       onClose()
     }
   }
