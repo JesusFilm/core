@@ -94,15 +94,6 @@ export const COMPLETE_R2_MULTIPART = graphql(`
   }
 `)
 
-type VideoVariantUploadLifecycleStatus =
-  | 'created'
-  | 'r2Prepared'
-  | 'r2Uploaded'
-  | 'muxCreated'
-  | 'muxReady'
-  | 'variantCreated'
-  | 'failed'
-
 interface UploadVideoVariantState {
   isUploading: boolean
   uploadProgress: number
@@ -113,8 +104,6 @@ interface UploadVideoVariantState {
   isProcessing: boolean
   error: string | null
   uploadId: string | null
-  muxVideoId: string | null
-  uploadStatus: VideoVariantUploadLifecycleStatus | null
   edition: string | null
   languageId: string | null
   languageSlug: string | null
@@ -149,8 +138,6 @@ const initialState: UploadVideoVariantState = {
   isProcessing: false,
   error: null,
   uploadId: null,
-  muxVideoId: null,
-  uploadStatus: null,
   edition: null,
   languageId: null,
   languageSlug: null,

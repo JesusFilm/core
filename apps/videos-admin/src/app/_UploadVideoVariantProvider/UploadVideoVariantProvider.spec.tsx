@@ -285,8 +285,6 @@ const initialStateForTests = {
   isProcessing: false,
   error: null,
   uploadId: null,
-  muxVideoId: null,
-  uploadStatus: null,
   edition: null,
   languageId: null,
   languageSlug: null,
