@@ -220,7 +220,8 @@ describe('processVideoUploads service', () => {
       {
         videoId: 'video-id',
         muxVideoId: 'mux-video-id',
-        finalStatus: 'errored'
+        finalStatus: 'errored',
+        uploadId: undefined
       },
       'Video upload processing failed due to Mux error'
     )
