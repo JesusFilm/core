@@ -9,6 +9,7 @@ import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__ge
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE } from '../../../../../../../../libs/useCloudflareUploadByFileMutation/useCloudflareUploadByFileMutation'
+import { prependCloudflareImage } from '../../MediaLibrary/prependCloudflareImage'
 
 import { ImageUpload } from './ImageUpload'
 
@@ -20,6 +21,14 @@ vi.mock('node-fetch', async () => {
     default: vi.fn()
   }
 })
+
+vi.mock('../../MediaLibrary/prependCloudflareImage', async () => ({
+  prependCloudflareImage: vi.fn()
+}))
+
+const mockPrependCloudflareImage = prependCloudflareImage as MockedFunction<
+  typeof prependCloudflareImage
+>
 
 vi.mock('@next/third-parties/google', async () => ({
   sendGTMEvent: vi.fn()
@@ -210,6 +219,61 @@ describe('ImageUpload', () => {
       })
     )
     expect(screen.getByText('Upload Successful!')).toBeInTheDocument()
+  })
+
+  it('should skip optimistic prepend when no authenticated user but still call onChange', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => await Promise.resolve(cfResponse)
+    } as unknown as Response)
+
+    const onChange = vi.fn()
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE
+            },
+            result: {
+              data: {
+                createCloudflareUploadByFile: {
+                  id: 'uploadId',
+                  uploadUrl: 'https://upload.imagedelivery.net/uploadId',
+                  userId: 'userId',
+                  __typename: 'CloudflareImage'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <ImageUpload
+          onChange={onChange}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+    const inputEl = screen.getByTestId('drop zone')
+    Object.defineProperty(inputEl, 'files', {
+      value: [
+        new File([new Blob(['file'])], 'testFile.png', {
+          type: 'image/png'
+        })
+      ]
+    })
+    fireEvent.drop(inputEl)
+
+    await waitFor(() =>
+      expect(onChange).toHaveBeenCalledWith({
+        src: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
+        scale: 100,
+        focalLeft: 50,
+        focalTop: 50
+      })
+    )
+    expect(mockPrependCloudflareImage).not.toHaveBeenCalled()
   })
 
   it('should render drop zone text in default state', () => {

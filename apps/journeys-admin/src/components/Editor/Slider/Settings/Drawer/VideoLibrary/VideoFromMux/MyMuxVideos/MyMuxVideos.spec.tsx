@@ -3,9 +3,11 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { offsetLimitPagination } from '@apollo/client/utilities'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { GraphQLError } from 'graphql'
 import { type MockedFunction } from 'vitest'
 
 import { GetMyMuxVideos } from '../../../../../../../../../__generated__/GetMyMuxVideos'
+import { AuthContext, User } from '../../../../../../../../libs/auth'
 
 import { GET_MY_MUX_VIDEOS, MyMuxVideos, PAGE_SIZE } from './MyMuxVideos'
 
@@ -45,7 +47,7 @@ vi.mock('../../VideoDetails', () => ({
 
 const buildMock = (
   videos: GetMyMuxVideos['getMyMuxVideos'],
-  variables: { offset: number; limit: number } = {
+  variables: { offset: number; limit: number; teamId?: string } = {
     offset: 0,
     limit: PEEK_LIMIT
   }
@@ -56,13 +58,15 @@ const buildMock = (
 
 const readyVideo = (
   id: string,
-  duration: number | null = 9
+  duration: number | null = 9,
+  userId = 'me'
 ): GetMyMuxVideos['getMyMuxVideos'][number] => ({
   __typename: 'MuxVideo',
   id,
   playbackId: `${id}-playback`,
   readyToStream: true,
-  duration
+  duration,
+  userId
 })
 
 describe('MyMuxVideos', () => {
@@ -238,6 +242,103 @@ describe('MyMuxVideos', () => {
     })
   })
 
+  it('should pass teamId in the fetchMore variables when loading more', async () => {
+    const firstPage = Array.from({ length: PEEK_LIMIT }, (_, i) =>
+      readyVideo(`v${i}`)
+    )
+    const secondPage = [readyVideo(`v${PEEK_LIMIT}`)]
+
+    render(
+      <MockedProvider
+        cache={buildCache()}
+        mocks={[
+          buildMock(firstPage, {
+            offset: 0,
+            limit: PEEK_LIMIT,
+            teamId: 'team-1'
+          }),
+          buildMock(secondPage, {
+            offset: PAGE_SIZE,
+            limit: PEEK_LIMIT,
+            teamId: 'team-1'
+          })
+        ]}
+      >
+        <MyMuxVideos onSelect={vi.fn()} teamId="team-1" />
+      </MockedProvider>
+    )
+
+    const loadMore = await screen.findByRole('button', { name: 'Load More' })
+    fireEvent.click(loadMore)
+
+    // The page-2 tile only renders if the fetchMore request matched the mock
+    // keyed on { offset: PAGE_SIZE, limit: PEEK_LIMIT, teamId: 'team-1' }.
+    await waitFor(() => {
+      expect(
+        screen.getByTestId(`my-mux-video-v${PEEK_LIMIT}`)
+      ).toBeInTheDocument()
+    })
+  })
+
+  it('should reset pagination when the team scope changes so Load More stays available', async () => {
+    const teamKeyedCache = new InMemoryCache({
+      typePolicies: {
+        Query: { fields: { getMyMuxVideos: offsetLimitPagination(['teamId']) } }
+      }
+    })
+    const team1FirstPage = Array.from({ length: PEEK_LIMIT }, (_, i) =>
+      readyVideo(`t1-v${i}`)
+    )
+    const team1SecondPage = [readyVideo(`t1-v${PEEK_LIMIT}`)]
+    const team2FirstPage = Array.from({ length: PEEK_LIMIT }, (_, i) =>
+      readyVideo(`t2-v${i}`)
+    )
+    const mocks = [
+      buildMock(team1FirstPage, {
+        offset: 0,
+        limit: PEEK_LIMIT,
+        teamId: 'team-1'
+      }),
+      buildMock(team1SecondPage, {
+        offset: PAGE_SIZE,
+        limit: PEEK_LIMIT,
+        teamId: 'team-1'
+      }),
+      buildMock(team2FirstPage, {
+        offset: 0,
+        limit: PEEK_LIMIT,
+        teamId: 'team-2'
+      })
+    ]
+
+    const { rerender } = render(
+      <MockedProvider cache={teamKeyedCache} mocks={mocks}>
+        <MyMuxVideos onSelect={vi.fn()} teamId="team-1" />
+      </MockedProvider>
+    )
+
+    // Paginate team-1 so pagesFetched advances past 1.
+    fireEvent.click(await screen.findByRole('button', { name: 'Load More' }))
+    await waitFor(() => {
+      expect(
+        screen.getByTestId(`my-mux-video-t1-v${PEEK_LIMIT}`)
+      ).toBeInTheDocument()
+    })
+
+    // Switch to team-2 (component does not remount). Without the reset,
+    // pagesFetched would stay at 2 and hide Load More for team-2's first page.
+    rerender(
+      <MockedProvider cache={teamKeyedCache} mocks={mocks}>
+        <MyMuxVideos onSelect={vi.fn()} teamId="team-2" />
+      </MockedProvider>
+    )
+
+    await screen.findByTestId('my-mux-video-t2-v0')
+    expect(
+      screen.getByRole('button', { name: 'Load More' })
+    ).toBeInTheDocument()
+  })
+
   it('should hide the Load More button when no more results', async () => {
     const firstPage = Array.from({ length: 3 }, (_, i) => readyVideo(`v${i}`))
 
@@ -295,6 +396,104 @@ describe('MyMuxVideos', () => {
       ).toBeInTheDocument()
     })
     expect(screen.getByTestId('MyMuxVideos')).toBeInTheDocument()
+  })
+
+  it('should pass teamId to the query when an active team is provided', async () => {
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_MY_MUX_VIDEOS,
+              variables: { offset: 0, limit: PEEK_LIMIT, teamId: 'team-1' }
+            },
+            result: { data: { getMyMuxVideos: [readyVideo('shared')] } }
+          }
+        ]}
+      >
+        <MyMuxVideos onSelect={vi.fn()} teamId="team-1" />
+      </MockedProvider>
+    )
+
+    // The tile only renders if the mock keyed on teamId matched the request.
+    await waitFor(() => {
+      expect(screen.getByTestId('my-mux-video-shared')).toBeInTheDocument()
+    })
+  })
+
+  it('should surface the generic error banner when the team query is rejected with FORBIDDEN', async () => {
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_MY_MUX_VIDEOS,
+              variables: { offset: 0, limit: PEEK_LIMIT, teamId: 'team-1' }
+            },
+            result: {
+              errors: [
+                new GraphQLError('Not a member of this team', {
+                  extensions: { code: 'FORBIDDEN' }
+                })
+              ]
+            }
+          }
+        ]}
+      >
+        <MyMuxVideos onSelect={vi.fn()} teamId="team-1" />
+      </MockedProvider>
+    )
+
+    expect(
+      await screen.findByText('Could not load your videos.')
+    ).toBeInTheDocument()
+  })
+
+  it('should tag a teammate upload with a Team tag and leave the caller’s own untagged', async () => {
+    const user: User = {
+      id: 'me',
+      uid: 'me',
+      displayName: null,
+      email: null,
+      phoneNumber: null,
+      photoURL: null,
+      providerId: 'firebase',
+      emailVerified: true,
+      token: 'token',
+      isAnonymous: false
+    }
+    render(
+      <AuthContext.Provider value={{ user }}>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_MY_MUX_VIDEOS,
+                variables: { offset: 0, limit: PEEK_LIMIT, teamId: 'team-1' }
+              },
+              result: {
+                data: {
+                  getMyMuxVideos: [
+                    readyVideo('mine', 9, 'me'),
+                    readyVideo('theirs', 9, 'teammate')
+                  ]
+                }
+              }
+            }
+          ]}
+        >
+          <MyMuxVideos onSelect={vi.fn()} teamId="team-1" />
+        </MockedProvider>
+      </AuthContext.Provider>
+    )
+
+    await screen.findByTestId('my-mux-video-mine')
+    expect(
+      screen.queryByTestId('my-mux-video-team-tag-mine')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId('my-mux-video-team-tag-theirs')
+    ).toBeInTheDocument()
   })
 
   it('should not advance pagination when Load More fails', async () => {
