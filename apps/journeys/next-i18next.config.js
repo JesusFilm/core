@@ -15,6 +15,7 @@ if (typeof window !== 'undefined') {
 // only ever activate a few of these, but legal/about-chat resolves journey
 // languages (?lang=<bcp47>) through this same map (NES-1724/NES-1731) —
 // when adding a locale folder, add its language here too.
+/** @type {Record<string, string[]>} */
 const fallbackLng = {
   default: ['en'],
   am: ['am-ET'],

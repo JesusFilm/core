@@ -15,6 +15,7 @@ if (isBrowser) {
 // translation folders in libs/locales with full region tags (`fr-FR`,
 // `es-ES`). Map each short code to its folder — one entry per libs/locales
 // folder. `default` is i18next's catch-all, not a language tag.
+/** @type {Record<string, string[]>} */
 const fallbackLng = {
   default: ['en'],
   es: ['es-ES'],
