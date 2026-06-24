@@ -19,7 +19,7 @@ const defaultReordered: Reordered = {
   creatorName: 'Creator',
   creatorImageSrc: null,
   creatorImageAlt: null,
-  mediaUrl: null,
+  media: null,
   publishedAt: null,
   createdAt: '2026-05-06T00:00:00Z',
   updatedAt: '2026-05-06T00:00:00Z',
@@ -34,7 +34,7 @@ export const getTemplateGalleryPageReorderTemplateMock = (
   TemplateGalleryPageReorderTemplateVariables
 > => ({
   request: { query: TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE, variables },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       templateGalleryPageReorderTemplate: { ...defaultReordered, ...overrides }
     }

@@ -14,7 +14,7 @@ describe('TagAutocomplete', () => {
         ]}
         label="label"
         placeholder="placeholder"
-        onChange={jest.fn()}
+        onChange={vi.fn()}
       />
     )
 
@@ -50,7 +50,7 @@ describe('TagAutocomplete', () => {
         ]}
         selectedTagIds={['tag2', 'tag3']}
         limit={1}
-        onChange={jest.fn()}
+        onChange={vi.fn()}
       />
     )
 
@@ -69,7 +69,7 @@ describe('TagAutocomplete', () => {
   })
 
   it('should call onChange with selected tag values when deleting option', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     const { getByRole } = render(
       <TagAutocomplete
         parentId="parentId"
@@ -92,7 +92,7 @@ describe('TagAutocomplete', () => {
   })
 
   it('should call onChange with selected tag values when selecting option', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     const { getByRole } = render(
       <TagAutocomplete
         parentId="parentId"

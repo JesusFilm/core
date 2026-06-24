@@ -1,2 +1,0 @@
-import './qrCode'
-import './inputs'

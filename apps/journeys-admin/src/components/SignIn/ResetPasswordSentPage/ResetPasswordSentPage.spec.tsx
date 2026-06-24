@@ -23,7 +23,7 @@ describe('ResetPasswordSentPage', () => {
   })
 
   it('should redirect home after finishing email reset', async () => {
-    const mockSetActivePage = jest.fn()
+    const mockSetActivePage = vi.fn()
     const { getByRole } = render(
       <ResetPasswordSentPage
         setActivePage={mockSetActivePage}

@@ -8,6 +8,7 @@ import {
   useRefinementList,
   useSearchBox
 } from 'react-instantsearch'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import '../../../test/i18n'
 import { SearchBarProvider } from '../../libs/algolia/SearchBarProvider'
@@ -16,19 +17,18 @@ import { getLanguagesContinentsMock } from '../../libs/useLanguagesContinentsQue
 import { fetchCountryMock, languageRefinements } from './data'
 import { SearchBar } from './SearchBar'
 
-global.fetch = jest.fn(fetchCountryMock) as jest.Mock
+const originalFetch = global.fetch
+global.fetch = vi.fn(fetchCountryMock) as Mock
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
-const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+const mockUseRefinementList = useRefinementList as MockedFunction<
   typeof useRefinementList
 >
 
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
-  typeof useSearchBox
->
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
 
-const mockUseClearRefinements = useClearRefinements as jest.MockedFunction<
+const mockUseClearRefinements = useClearRefinements as MockedFunction<
   typeof useClearRefinements
 >
 
@@ -41,7 +41,7 @@ async function clickOnSearchBar(): Promise<void> {
 }
 
 describe('SearchBar', () => {
-  const refine = jest.fn()
+  const refine = vi.fn()
 
   const useRefinementList = {
     items: languageRefinements,
@@ -54,14 +54,19 @@ describe('SearchBar', () => {
   } as unknown as SearchBoxRenderState
 
   const clearRefinements = {
-    refine: jest.fn(),
+    refine: vi.fn(),
     canRefine: false
   } as unknown as ClearRefinementsRenderState
 
   beforeEach(() => {
+    refine.mockClear()
     mockUseRefinementList.mockReturnValue(useRefinementList)
     mockUseSearchBox.mockReturnValue(useSearchBox)
     mockUseClearRefinements.mockReturnValue(clearRefinements)
+  })
+
+  afterAll(() => {
+    global.fetch = originalFetch
   })
 
   it('should render input field', async () => {
@@ -171,7 +176,9 @@ describe('SearchBar', () => {
       </MockedProvider>
     )
     await clickOnSearchBar()
-    expect(screen.queryByTestId('SearchBarDropdown')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.queryByTestId('SearchBarDropdown')).toBeInTheDocument()
+    )
   })
 
   it('should open suggestions dropdown when searchbar clicked', async () => {
@@ -183,7 +190,9 @@ describe('SearchBar', () => {
       </MockedProvider>
     )
     await clickOnSearchBar()
-    expect(screen.queryByTestId('SearchBarDropdown')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.queryByTestId('SearchBarDropdown')).toBeInTheDocument()
+    )
     expect(screen.getByText('Search Suggestions')).toBeVisible()
   })
 

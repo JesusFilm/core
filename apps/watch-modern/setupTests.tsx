@@ -1,10 +1,11 @@
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom/vitest'
 import 'isomorphic-fetch'
 import { configure } from '@testing-library/react'
 
 configure({ asyncUtilTimeout: 2500 })
+;(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true
 
-jest.mock('next/image', () => ({
+vi.mock('next/image', () => ({
   __esModule: true,
   default: ({ src, alt }: { src: string; alt: string }) => (
     // eslint-disable-next-line @next/next/no-img-element
@@ -25,7 +26,7 @@ Object.defineProperty(
   }))(window.navigator.userAgent)
 )
 
-jest.mock('next/router', () => require('next-router-mock'))
-
-if (process.env['CI'] === 'true')
-  jest.retryTimes(3, { logErrorsBeforeRetry: true })
+vi.mock(
+  'next/router',
+  () => import(/* webpackChunkName: "next-router-mock" */ 'next-router-mock')
+)

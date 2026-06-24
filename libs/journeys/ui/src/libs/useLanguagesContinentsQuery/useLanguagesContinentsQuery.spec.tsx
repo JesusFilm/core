@@ -6,7 +6,7 @@ import { getLanguagesContinentsMock } from './useLanguagesContinentsQuery.mock'
 
 describe('useLanguagesContinentsQuery', () => {
   it('should get languages and continents', async () => {
-    const result = jest.fn().mockReturnValue(getLanguagesContinentsMock.result)
+    const result = vi.fn().mockReturnValue(getLanguagesContinentsMock.result)
 
     renderHook(() => useLanguagesContinentsQuery(), {
       wrapper: ({ children }) => (

@@ -39,6 +39,12 @@ interface PromptInputProps {
   isLoading: boolean
   onStop?: () => void
   /**
+   * Hard-disables typing and submitting regardless of `isLoading`. Used by
+   * the conversation-cap terminal state (NES-1663): once the cap is hit the
+   * only way forward is to start a new conversation, so the input is locked.
+   */
+  disabled?: boolean
+  /**
    * `inline` (default) — floating rounded capsule for the pinned bar
    * (semi-transparent white surface, drop shadow, backdrop blur).
    * `floating` — same form-factor on a dark blurred backdrop for the
@@ -72,6 +78,7 @@ export function PromptInput({
   onSubmit,
   isLoading,
   onStop,
+  disabled = false,
   variant = 'inline'
 }: PromptInputProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
@@ -97,7 +104,7 @@ export function PromptInput({
       // compose multi-line questions.
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault()
-        if (input.trim().length > 0 && !isLoading) {
+        if (input.trim().length > 0 && !isLoading && !disabled) {
           onSubmit(e as unknown as FormEvent)
         }
         return
@@ -122,7 +129,7 @@ export function PromptInput({
         }
       }
     },
-    [input, isLoading, onSubmit, triggerShake]
+    [input, isLoading, disabled, onSubmit, triggerShake]
   )
 
   const handleInputChange = useCallback(
@@ -161,14 +168,14 @@ export function PromptInput({
   const handleFormSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault()
-      if (input.trim().length > 0 && !isLoading) {
+      if (input.trim().length > 0 && !isLoading && !disabled) {
         onSubmit(e)
       }
     },
-    [input, isLoading, onSubmit]
+    [input, isLoading, disabled, onSubmit]
   )
 
-  const canSubmit = input.trim().length > 0
+  const canSubmit = input.trim().length > 0 && !disabled
   const isFloating = variant === 'floating'
 
   const showCounter = input.length >= COUNTER_VISIBILITY_THRESHOLD
@@ -223,8 +230,8 @@ export function PromptInput({
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         onPaste={handlePaste}
-        placeholder={t('Ask anything…')}
-        disabled={isLoading}
+        placeholder={t('Ask your questions about faith')}
+        disabled={isLoading || disabled}
         inputProps={{
           'aria-label': t('Chat message input'),
           maxLength: MAX_MESSAGE_CHARS

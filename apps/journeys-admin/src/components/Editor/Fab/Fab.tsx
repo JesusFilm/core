@@ -15,6 +15,7 @@ import {
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import type { BlockFields_CardBlock as CardBlock } from '../../../../__generated__/BlockFields'
+import { useEditorLayout } from '../EditorLayoutContext'
 
 interface FabProps {
   variant?: 'mobile' | 'canvas'
@@ -34,6 +35,7 @@ export function Fab({ variant }: FabProps): ReactElement {
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
+  const { isLayered } = useEditorLayout()
 
   if (activeContent == null) {
     dispatch({
@@ -50,7 +52,7 @@ export function Fab({ variant }: FabProps): ReactElement {
     })
     dispatch({
       type: 'SetActiveSlideAction',
-      activeSlide: mdUp ? ActiveSlide.Content : ActiveSlide.Drawer
+      activeSlide: isLayered || !mdUp ? ActiveSlide.Drawer : ActiveSlide.Content
     })
     dispatch({
       type: 'SetActiveCanvasDetailsDrawerAction',

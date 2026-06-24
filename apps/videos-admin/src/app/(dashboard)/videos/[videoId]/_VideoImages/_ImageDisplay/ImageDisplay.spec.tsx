@@ -5,15 +5,15 @@ import { ImageAspectRatio } from '../../../constants'
 import { ImageDisplay } from './ImageDisplay'
 
 // Mock the next/navigation useRouter hook
-const mockPush = jest.fn()
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(() => ({
+const mockPush = vi.fn()
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
     push: mockPush
   }))
 }))
 
 // Mock the next/image component
-jest.mock('next/image', () => ({
+vi.mock('next/image', () => ({
   __esModule: true,
   default: ({ src, alt, fill, style, priority }: any) => (
     // eslint-disable-next-line @next/next/no-img-element
@@ -29,18 +29,18 @@ jest.mock('next/image', () => ({
 }))
 
 // Mock MUI icons
-jest.mock('@core/shared/ui/icons/Edit2', () => ({
+vi.mock('@core/shared/ui/icons/Edit2', () => ({
   __esModule: true,
   default: () => <span data-testid="edit-icon">Edit Icon</span>
 }))
 
-jest.mock('@core/shared/ui/icons/Upload1', () => ({
+vi.mock('@core/shared/ui/icons/Upload1', () => ({
   __esModule: true,
   default: () => <span data-testid="upload-icon">Upload Icon</span>
 }))
 
 // Mock MUI components
-jest.mock('@mui/material/Box', () => ({
+vi.mock('@mui/material/Box', () => ({
   __esModule: true,
   default: ({ children, sx, ...props }: any) => (
     <div
@@ -60,7 +60,7 @@ jest.mock('@mui/material/Box', () => ({
   )
 }))
 
-jest.mock('@mui/material/Stack', () => ({
+vi.mock('@mui/material/Stack', () => ({
   __esModule: true,
   default: ({ children, sx, ...props }: any) => (
     <div
@@ -81,7 +81,7 @@ jest.mock('@mui/material/Stack', () => ({
   )
 }))
 
-jest.mock('@mui/material/IconButton', () => ({
+vi.mock('@mui/material/IconButton', () => ({
   __esModule: true,
   default: ({ children, onClick, ...props }: any) => (
     <button data-testid="mui-icon-button" onClick={onClick} {...props}>
@@ -90,7 +90,7 @@ jest.mock('@mui/material/IconButton', () => ({
   )
 }))
 
-jest.mock('@mui/material/Tooltip', () => ({
+vi.mock('@mui/material/Tooltip', () => ({
   __esModule: true,
   default: ({ children, title, ...props }: any) => (
     <div data-testid="mui-tooltip" aria-label={title} {...props}>
@@ -99,7 +99,7 @@ jest.mock('@mui/material/Tooltip', () => ({
   )
 }))
 
-jest.mock('@mui/material/Typography', () => ({
+vi.mock('@mui/material/Typography', () => ({
   __esModule: true,
   default: ({ children, ...props }: any) => (
     <div data-testid="mui-typography" {...props}>
@@ -116,7 +116,7 @@ describe('ImageDisplay', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders the image when src is provided', () => {

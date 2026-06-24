@@ -1,5 +1,6 @@
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { render, screen } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import {
   EditorProvider,
@@ -10,14 +11,14 @@ import { ThemeProvider } from '../../../../../ThemeProvider'
 
 import { CanvasFooter } from './CanvasFooter'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('CanvasFooter', () => {
   it('should render fab when not in analytics mode', () => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
 
     const initialState = {
       showAnalytics: false

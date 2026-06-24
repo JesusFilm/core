@@ -8,6 +8,8 @@ import {
   useDropzone
 } from 'react-dropzone'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { useCloudflareUploadByFileMutation } from '../useCloudflareUploadByFileMutation'
 
 /**
@@ -47,7 +49,8 @@ export interface UseImageUploadReturn {
   fileRejections: readonly FileRejection[]
 }
 
-const DEFAULT_MAX_SIZE = 10485760 // 10MB
+export const MAX_IMAGE_UPLOAD_BYTES = 10_000_000 // 10 MB (decimal)
+const DEFAULT_MAX_SIZE = MAX_IMAGE_UPLOAD_BYTES
 const DEFAULT_ACCEPT: Accept = {
   'image/png': [],
   'image/jpeg': [],
@@ -60,6 +63,7 @@ export function useImageUpload(
   useImageUploadOptions: UseImageUploadOptions
 ): UseImageUploadReturn {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
   const {
     onUploadComplete,
     onUploadStart,
@@ -135,7 +139,9 @@ export function useImageUpload(
     onUploadStart?.()
 
     try {
-      const { data } = await createCloudflareUploadByFile({})
+      const { data } = await createCloudflareUploadByFile({
+        variables: { journeyId: journey?.id }
+      })
 
       if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
         const file = acceptedFiles[0]

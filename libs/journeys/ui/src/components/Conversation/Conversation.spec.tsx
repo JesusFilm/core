@@ -1,8 +1,9 @@
 import { act, fireEvent, render } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import { Conversation } from './Conversation'
 
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
@@ -12,9 +13,9 @@ class ResizeObserverMock {
   constructor(cb: ResizeObserverCallback) {
     observers.push(cb)
   }
-  observe = jest.fn()
-  unobserve = jest.fn()
-  disconnect = jest.fn()
+  observe = vi.fn()
+  unobserve = vi.fn()
+  disconnect = vi.fn()
 }
 
 function mockScrollMetrics({
@@ -26,15 +27,13 @@ function mockScrollMetrics({
   scrollTop: number
   clientHeight: number
 }): void {
-  jest
-    .spyOn(HTMLElement.prototype, 'scrollHeight', 'get')
-    .mockReturnValue(scrollHeight)
-  jest
-    .spyOn(HTMLElement.prototype, 'scrollTop', 'get')
-    .mockReturnValue(scrollTop)
-  jest
-    .spyOn(HTMLElement.prototype, 'clientHeight', 'get')
-    .mockReturnValue(clientHeight)
+  vi.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockReturnValue(
+    scrollHeight
+  )
+  vi.spyOn(HTMLElement.prototype, 'scrollTop', 'get').mockReturnValue(scrollTop)
+  vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(
+    clientHeight
+  )
 }
 
 function fireResizeObservers(): void {
@@ -53,7 +52,7 @@ function getScrollContainer(container: HTMLElement): HTMLElement {
 }
 
 describe('Conversation', () => {
-  let scrollToSpy: jest.Mock
+  let scrollToSpy: Mock
   let originalScrollTo: typeof Element.prototype.scrollTo | undefined
   let originalResizeObserver: typeof window.ResizeObserver | undefined
 
@@ -63,17 +62,17 @@ describe('Conversation', () => {
     window.ResizeObserver =
       ResizeObserverMock as unknown as typeof ResizeObserver
     // jsdom does not implement Element.prototype.scrollTo, so we install
-    // a fresh jest.fn() each test instead of spying on a missing prop.
+    // a fresh vi.fn() each test instead of spying on a missing prop.
     originalScrollTo = (
       Element.prototype as { scrollTo?: typeof Element.prototype.scrollTo }
     ).scrollTo
-    scrollToSpy = jest.fn()
+    scrollToSpy = vi.fn()
     Element.prototype.scrollTo =
       scrollToSpy as unknown as typeof Element.prototype.scrollTo
   })
 
   afterEach(() => {
-    jest.restoreAllMocks()
+    vi.restoreAllMocks()
     if (originalResizeObserver == null) {
       delete (window as Window & { ResizeObserver?: typeof ResizeObserver })
         .ResizeObserver
@@ -181,5 +180,59 @@ describe('Conversation', () => {
     expect(scrollToSpy).toHaveBeenCalledWith(
       expect.objectContaining({ behavior: 'smooth' })
     )
+  })
+
+  it('drops the scroll-to-bottom pill after the conversation is reset (NES-1663)', () => {
+    // Tall conversation, reader scrolled up → pill visible.
+    mockScrollMetrics({ scrollHeight: 1000, scrollTop: 100, clientHeight: 400 })
+    const { queryByTestId, container, rerender } = render(
+      <Conversation scrollKey={8} bottomClearance={72}>
+        <div>messages</div>
+      </Conversation>
+    )
+    fireEvent.scroll(getScrollContainer(container))
+    expect(queryByTestId('ScrollToBottomPill')).toBeInTheDocument()
+
+    // Reset clears the conversation (scrollKey shrinks to 0).
+    rerender(
+      <Conversation scrollKey={0} bottomClearance={72}>
+        <div />
+      </Conversation>
+    )
+    expect(queryByTestId('ScrollToBottomPill')).not.toBeInTheDocument()
+
+    // …and it stays gone once the idle sheet finishes shrinking: the bottom-
+    // clearance padding (144) now exceeds the viewport (72), which without the
+    // reset-pin would re-strand scrollTop above it and resurface the pill.
+    mockScrollMetrics({ scrollHeight: 144, scrollTop: 0, clientHeight: 72 })
+    fireResizeObservers()
+    expect(queryByTestId('ScrollToBottomPill')).not.toBeInTheDocument()
+  })
+
+  it('resumes normal pill behaviour once a new message follows a reset (NES-1663)', () => {
+    mockScrollMetrics({ scrollHeight: 1000, scrollTop: 100, clientHeight: 400 })
+    const { queryByTestId, container, rerender } = render(
+      <Conversation scrollKey={3}>
+        <div>messages</div>
+      </Conversation>
+    )
+
+    // Reset, then a fresh message arrives (scrollKey grows again) → the
+    // reset-pin is released.
+    rerender(
+      <Conversation scrollKey={0}>
+        <div />
+      </Conversation>
+    )
+    rerender(
+      <Conversation scrollKey={1}>
+        <div>new</div>
+      </Conversation>
+    )
+
+    // Reader scrolls up in the new conversation → the pill works again.
+    mockScrollMetrics({ scrollHeight: 1000, scrollTop: 100, clientHeight: 400 })
+    fireEvent.scroll(getScrollContainer(container))
+    expect(queryByTestId('ScrollToBottomPill')).toBeInTheDocument()
   })
 })

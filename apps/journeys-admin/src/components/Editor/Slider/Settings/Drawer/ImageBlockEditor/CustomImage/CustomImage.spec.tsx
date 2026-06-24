@@ -1,9 +1,21 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { render, screen } from '@testing-library/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { render, screen, waitFor } from '@testing-library/react'
+
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
+import { GET_MY_CLOUDFLARE_IMAGES } from '../MediaLibrary/MediaLibrary'
 
 import { CustomImage } from '.'
+
+const mockActiveTeam: { id: string; title: string } | null = null
+const mockUseTeam = vi.fn<
+  () => { activeTeam: { id: string; title: string } | null }
+>(() => ({ activeTeam: mockActiveTeam }))
+
+vi.mock('@core/journeys/ui/TeamProvider', () => ({
+  useTeam: () => mockUseTeam()
+}))
 
 describe('CustomImage', () => {
   const imageBlock: ImageBlock = {
@@ -22,13 +34,96 @@ describe('CustomImage', () => {
     customizable: null
   }
 
+  const myImagesMock: MockedResponse = {
+    request: {
+      query: GET_MY_CLOUDFLARE_IMAGES,
+      variables: { offset: 0, limit: 11, isAi: false }
+    },
+    result: {
+      data: {
+        getMyCloudflareImages: [
+          {
+            __typename: 'CloudflareImage',
+            id: 'a',
+            url: 'https://imagedelivery.net/key/a',
+            blurhash: null,
+            userId: 'me'
+          }
+        ]
+      }
+    }
+  }
+
   it('should render image upload', () => {
     render(
       <MockedProvider>
-        <CustomImage onChange={jest.fn()} selectedBlock={imageBlock} />
+        <CustomImage onChange={vi.fn()} selectedBlock={imageBlock} />
       </MockedProvider>
     )
 
     expect(screen.getByTestId('ImageUpload')).toBeInTheDocument()
+  })
+
+  it('should not render the uploads grid when mediaLibrary flag is off', async () => {
+    render(
+      <MockedProvider mocks={[myImagesMock]}>
+        <FlagsProvider flags={{ mediaLibrary: false }}>
+          <CustomImage onChange={vi.fn()} selectedBlock={imageBlock} />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(screen.queryByText('Uploads')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('MediaLibrary')).not.toBeInTheDocument()
+  })
+
+  it('should render the uploads grid when mediaLibrary flag is on', async () => {
+    render(
+      <MockedProvider mocks={[myImagesMock]}>
+        <FlagsProvider flags={{ mediaLibrary: true }}>
+          <CustomImage onChange={vi.fn()} selectedBlock={imageBlock} />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => {
+      expect(screen.getByTestId('MediaLibrary')).toBeInTheDocument()
+    })
+    expect(screen.getByText('Uploads')).toBeInTheDocument()
+  })
+
+  it('should forward the active team id into the uploads query', async () => {
+    mockUseTeam.mockReturnValue({
+      activeTeam: { id: 'team-1', title: 'Team 1' }
+    })
+    const teamImagesMock: MockedResponse = {
+      request: {
+        query: GET_MY_CLOUDFLARE_IMAGES,
+        variables: { offset: 0, limit: 11, isAi: false, teamId: 'team-1' }
+      },
+      result: {
+        data: {
+          getMyCloudflareImages: [
+            {
+              __typename: 'CloudflareImage',
+              id: 'a',
+              url: 'https://imagedelivery.net/key/a',
+              blurhash: null,
+              userId: 'me'
+            }
+          ]
+        }
+      }
+    }
+    render(
+      <MockedProvider mocks={[teamImagesMock]}>
+        <FlagsProvider flags={{ mediaLibrary: true }}>
+          <CustomImage onChange={vi.fn()} selectedBlock={imageBlock} />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    // The mock only matches when teamId is sent, so rendering the tile proves
+    // CustomImage forwarded activeTeam.id into the query.
+    expect(
+      await screen.findByTestId('media-library-image-a')
+    ).toBeInTheDocument()
   })
 })

@@ -1,29 +1,30 @@
 import { NetworkStatus, useSuspenseQuery } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { type MockedFunction } from 'vitest'
 
 import { VideoInformation } from './VideoInformation'
 import { GET_KEYWORDS } from './VideoKeywords'
 
 // Mock useSuspenseQuery hook
-jest.mock('@apollo/client', () => {
-  const original = jest.requireActual('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const original = await vi.importActual('@apollo/client')
   return {
     ...original,
-    useSuspenseQuery: jest.fn()
+    useSuspenseQuery: vi.fn()
   }
 })
 
 // Mock notistack
-const mockEnqueueSnackbar = jest.fn()
-jest.mock('notistack', () => ({
+const mockEnqueueSnackbar = vi.fn()
+vi.mock('notistack', () => ({
   useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
 }))
 
 // Mock next/navigation
-jest.mock('next/navigation', () => ({
+vi.mock('next/navigation', () => ({
   useRouter: () => ({
-    push: jest.fn()
+    push: vi.fn()
   })
 }))
 
@@ -73,19 +74,19 @@ const mockVideoData = {
 
 describe('VideoInformation', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     // Default mock implementation for useSuspenseQuery
-    const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
+    const mockedUseSuspenseQuery = useSuspenseQuery as MockedFunction<
       typeof useSuspenseQuery
     >
     mockedUseSuspenseQuery.mockReturnValue({
       data: mockVideoData,
-      fetchMore: jest.fn(),
-      subscribeToMore: jest.fn(),
+      fetchMore: vi.fn(),
+      subscribeToMore: vi.fn(),
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
-      refetch: jest.fn().mockResolvedValue({ data: mockVideoData })
+      refetch: vi.fn().mockResolvedValue({ data: mockVideoData })
     })
   })
 
@@ -128,17 +129,17 @@ describe('VideoInformation', () => {
       }
     }
 
-    const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
+    const mockedUseSuspenseQuery = useSuspenseQuery as MockedFunction<
       typeof useSuspenseQuery
     >
     mockedUseSuspenseQuery.mockReturnValue({
       data: incompleteVideoData,
-      fetchMore: jest.fn(),
-      subscribeToMore: jest.fn(),
+      fetchMore: vi.fn(),
+      subscribeToMore: vi.fn(),
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
-      refetch: jest.fn().mockResolvedValue({ data: incompleteVideoData })
+      refetch: vi.fn().mockResolvedValue({ data: incompleteVideoData })
     })
 
     render(
@@ -194,17 +195,17 @@ describe('VideoInformation', () => {
       }
     }
 
-    const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
+    const mockedUseSuspenseQuery = useSuspenseQuery as MockedFunction<
       typeof useSuspenseQuery
     >
     mockedUseSuspenseQuery.mockReturnValue({
       data: collectionVideoData,
-      fetchMore: jest.fn(),
-      subscribeToMore: jest.fn(),
+      fetchMore: vi.fn(),
+      subscribeToMore: vi.fn(),
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
-      refetch: jest.fn().mockResolvedValue({ data: collectionVideoData })
+      refetch: vi.fn().mockResolvedValue({ data: collectionVideoData })
     })
 
     render(
@@ -260,20 +261,20 @@ describe('VideoInformation', () => {
       }
     }
 
-    const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
+    const mockedUseSuspenseQuery = useSuspenseQuery as MockedFunction<
       typeof useSuspenseQuery
     >
 
     // Create a mock refetch function that will initially return data without title
     // but later can return updated data with title for the "Try Again" functionality
-    const mockRefetch = jest
+    const mockRefetch = vi
       .fn()
       .mockResolvedValue({ data: videoDataWithoutTitle })
 
     mockedUseSuspenseQuery.mockReturnValue({
       data: videoDataWithoutTitle,
-      fetchMore: jest.fn(),
-      subscribeToMore: jest.fn(),
+      fetchMore: vi.fn(),
+      subscribeToMore: vi.fn(),
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
@@ -360,6 +361,54 @@ describe('VideoInformation', () => {
     await waitFor(() => {
       const saveButton = screen.getByRole('button', { name: /save/i })
       expect(saveButton).not.toBeDisabled()
+    })
+  })
+
+  it('should display character count for title field', async () => {
+    render(
+      <MockedProvider mocks={[keywordsMock]}>
+        <VideoInformation videoId={mockVideoId} />
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Title')).toBeInTheDocument()
+    })
+
+    // Initial title is 'Test Video Title' (16 chars)
+    expect(screen.getByText('16/60')).toBeInTheDocument()
+
+    // Type a new title and verify counter updates
+    const titleInput = screen.getByLabelText('Title')
+    fireEvent.change(titleInput, { target: { value: 'Short' } })
+
+    await waitFor(() => {
+      expect(screen.getByText('5/60')).toBeInTheDocument()
+    })
+  })
+
+  it('should show validation error when title exceeds 60 characters', async () => {
+    render(
+      <MockedProvider mocks={[keywordsMock]}>
+        <VideoInformation videoId={mockVideoId} />
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Title')).toBeInTheDocument()
+    })
+
+    const titleInput = screen.getByLabelText('Title')
+    const longTitle = 'A'.repeat(61)
+    fireEvent.change(titleInput, { target: { value: longTitle } })
+    fireEvent.blur(titleInput)
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Title must be 60 characters or less')
+      ).toBeInTheDocument()
+      // Counter should NOT be shown when there is an error
+      expect(screen.queryByText('61/60')).not.toBeInTheDocument()
     })
   })
 })

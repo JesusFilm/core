@@ -101,7 +101,7 @@ describe('EmailInviteForm', () => {
   })
 
   it('should create user invite on click', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         userInviteCreate: {
           id: 'inviteId',
@@ -166,7 +166,7 @@ describe('EmailInviteForm', () => {
   })
 
   it('should trim and normalize email to lowercase', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         userInviteCreate: {
           id: 'inviteId',

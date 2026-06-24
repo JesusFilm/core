@@ -190,3 +190,43 @@ The script includes comprehensive error handling for:
 - Network connectivity issues
 
 If any error occurs, the script will log the error and continue processing other items when possible.
+
+## QA-528 Video Variant Upload Test Data
+
+The `create-video-variant-upload-test-data` script creates durable
+`VideoVariantUpload` rows for QA. It does not call R2 or Mux. Instead, it
+creates database rows that simulate the upload lifecycle states shown in
+videos-admin: `created`, `r2Prepared`, `r2Uploaded`, `muxCreated`, `muxReady`,
+and `failed`.
+
+The script is dry-run by default. Add `--write` to mutate the database.
+
+### Local Usage
+
+```bash
+pnpm exec nx run api-media:create-video-variant-upload-test-data -- --video-id=0_JesusVisionJFP
+
+pnpm exec nx run api-media:create-video-variant-upload-test-data -- --video-id=0_JesusVisionJFP --write
+```
+
+### Stage Usage
+
+Load stage api-media secrets first, then pass both stage safety flags:
+
+```bash
+pnpm exec nx run api-media:create-video-variant-upload-test-data -- --video-id=0_JesusVisionJFP --stage --confirm-stage --write
+```
+
+By default, the script deletes prior rows with `source = qa-528-test-data` for
+the target video before creating fresh rows. Use `--keep-existing` to append
+another set, or `--cleanup-only --write` to remove only the script-generated
+rows.
+
+### Useful Options
+
+```bash
+--language-ids=184631,14278,529
+--statuses=r2Uploaded,muxCreated,muxReady,failed
+--edition=base
+--run-id=my-local-run
+```

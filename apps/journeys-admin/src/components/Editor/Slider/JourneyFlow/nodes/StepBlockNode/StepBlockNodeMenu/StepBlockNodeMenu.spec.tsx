@@ -9,9 +9,9 @@ import { MuxVideoUploadProvider } from '../../../../../../MuxVideoUploadProvider
 
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'
 
-jest.mock('@core/shared/ui/deviceUtils', () => {
+vi.mock('@core/shared/ui/deviceUtils', () => {
   return {
-    isIOSTouchScreen: jest.fn()
+    isIOSTouchScreen: vi.fn()
   }
 })
 
@@ -27,7 +27,7 @@ describe('StepBlockNodeMenu', () => {
     children: []
   }
 
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('should open menu on click', async () => {
     const { getByTestId, getByRole, queryByTestId } = render(

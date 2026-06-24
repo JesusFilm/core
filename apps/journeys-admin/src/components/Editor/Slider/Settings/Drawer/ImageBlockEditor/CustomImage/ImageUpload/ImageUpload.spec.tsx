@@ -2,29 +2,40 @@ import { MockedProvider } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import fetch, { Response } from 'node-fetch'
+import { type MockedFunction } from 'vitest'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE } from '../../../../../../../../libs/useCloudflareUploadByFileMutation/useCloudflareUploadByFileMutation'
+import { prependCloudflareImage } from '../../MediaLibrary/prependCloudflareImage'
 
 import { ImageUpload } from './ImageUpload'
 
-jest.mock('node-fetch', () => {
-  const originalModule = jest.requireActual('node-fetch')
+vi.mock('node-fetch', async () => {
+  const originalModule = await vi.importActual('node-fetch')
   return {
     __esModule: true,
     ...originalModule,
-    default: jest.fn()
+    default: vi.fn()
   }
 })
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+vi.mock('../../MediaLibrary/prependCloudflareImage', async () => ({
+  prependCloudflareImage: vi.fn()
 }))
 
-const mockFetch = fetch as jest.MockedFunction<typeof fetch>
-const mockSendGTMEvent = sendGTMEvent as jest.MockedFunction<
-  typeof sendGTMEvent
+const mockPrependCloudflareImage = prependCloudflareImage as MockedFunction<
+  typeof prependCloudflareImage
 >
+
+vi.mock('@next/third-parties/google', async () => ({
+  sendGTMEvent: vi.fn()
+}))
+
+const mockFetch = fetch as MockedFunction<typeof fetch>
+const mockSendGTMEvent = sendGTMEvent as MockedFunction<typeof sendGTMEvent>
 
 describe('ImageUpload', () => {
   let originalEnv
@@ -75,7 +86,7 @@ describe('ImageUpload', () => {
   }
 
   it('should check if the mutations gets called', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         createCloudflareUploadByUrl: {
           id: 'uploadId',
@@ -84,7 +95,7 @@ describe('ImageUpload', () => {
         }
       }
     }))
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     render(
       <MockedProvider
         mocks={[
@@ -103,7 +114,7 @@ describe('ImageUpload', () => {
         />
       </MockedProvider>
     )
-    window.URL.createObjectURL = jest.fn().mockImplementation(() => 'url')
+    window.URL.createObjectURL = vi.fn().mockImplementation(() => 'url')
     const input = screen.getByTestId('drop zone')
     const file = new File(['file'], 'testFile.png', {
       type: 'image/png'
@@ -115,13 +126,54 @@ describe('ImageUpload', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
+  it('should thread the active journeyId into the upload mutation', async () => {
+    const result = vi.fn(() => ({
+      data: {
+        createCloudflareUploadByFile: {
+          id: 'uploadId',
+          uploadUrl: 'uploadUrl',
+          __typename: 'CloudflareImage'
+        }
+      }
+    }))
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE,
+              variables: { journeyId: 'journeyId' }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        >
+          <ImageUpload
+            onChange={vi.fn()}
+            loading={false}
+            selectedBlock={imageBlock}
+          />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const input = screen.getByTestId('drop zone')
+    const file = new File(['file'], 'testFile.png', { type: 'image/png' })
+    Object.defineProperty(input, 'files', { value: [file] })
+    fireEvent.drop(input)
+    // The mock only matches when journeyId is sent, so being called proves it threaded
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
   it('should call onChange on file drop', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => await Promise.resolve(cfResponse)
     } as unknown as Response)
 
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     render(
       <MockedProvider
         mocks={[
@@ -169,49 +221,13 @@ describe('ImageUpload', () => {
     expect(screen.getByText('Upload Successful!')).toBeInTheDocument()
   })
 
-  it('should render drop zone text in default state', () => {
-    render(
-      <MockedProvider>
-        <ImageUpload
-          onChange={jest.fn()}
-          loading={false}
-          selectedBlock={imageBlock}
-        />
-      </MockedProvider>
-    )
-    expect(screen.getByText('Drop an image here')).toBeInTheDocument()
-    expect(
-      screen.getByText('or click to browse your files')
-    ).toBeInTheDocument()
-  })
+  it('should skip optimistic prepend when no authenticated user but still call onChange', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => await Promise.resolve(cfResponse)
+    } as unknown as Response)
 
-  it('should render loading state', () => {
-    render(
-      <MockedProvider>
-        <ImageUpload onChange={jest.fn()} loading selectedBlock={imageBlock} />
-      </MockedProvider>
-    )
-    expect(screen.getByTestId('Upload1Icon')).toBeInTheDocument()
-    expect(screen.getByText('Uploading...')).toBeInTheDocument()
-  })
-
-  it('should render error state', () => {
-    render(
-      <MockedProvider>
-        <ImageUpload
-          onChange={jest.fn()}
-          loading={false}
-          selectedBlock={imageBlock}
-          error
-        />
-      </MockedProvider>
-    )
-    expect(screen.getAllByTestId('AlertTriangleIcon')).toHaveLength(2)
-    expect(screen.getByText('Upload Failed!')).toBeInTheDocument()
-  })
-
-  it('should call setUploading on file drop', async () => {
-    const setUploading = jest.fn()
+    const onChange = vi.fn()
     render(
       <MockedProvider
         mocks={[
@@ -233,7 +249,95 @@ describe('ImageUpload', () => {
         ]}
       >
         <ImageUpload
-          onChange={jest.fn()}
+          onChange={onChange}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+    const inputEl = screen.getByTestId('drop zone')
+    Object.defineProperty(inputEl, 'files', {
+      value: [
+        new File([new Blob(['file'])], 'testFile.png', {
+          type: 'image/png'
+        })
+      ]
+    })
+    fireEvent.drop(inputEl)
+
+    await waitFor(() =>
+      expect(onChange).toHaveBeenCalledWith({
+        src: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
+        scale: 100,
+        focalLeft: 50,
+        focalTop: 50
+      })
+    )
+    expect(mockPrependCloudflareImage).not.toHaveBeenCalled()
+  })
+
+  it('should render drop zone text in default state', () => {
+    render(
+      <MockedProvider>
+        <ImageUpload
+          onChange={vi.fn()}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+    expect(screen.getByText('Drop an image here')).toBeInTheDocument()
+  })
+
+  it('should render loading state', () => {
+    render(
+      <MockedProvider>
+        <ImageUpload onChange={vi.fn()} loading selectedBlock={imageBlock} />
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('Upload1Icon')).toBeInTheDocument()
+    expect(screen.getByText('Uploading...')).toBeInTheDocument()
+  })
+
+  it('should render error state', () => {
+    render(
+      <MockedProvider>
+        <ImageUpload
+          onChange={vi.fn()}
+          loading={false}
+          selectedBlock={imageBlock}
+          error
+        />
+      </MockedProvider>
+    )
+    expect(screen.getAllByTestId('AlertTriangleIcon')).toHaveLength(2)
+    expect(screen.getByText('Upload Failed!')).toBeInTheDocument()
+  })
+
+  it('should call setUploading on file drop', async () => {
+    const setUploading = vi.fn()
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE
+            },
+            result: {
+              data: {
+                createCloudflareUploadByFile: {
+                  id: 'uploadId',
+                  uploadUrl: 'https://upload.imagedelivery.net/uploadId',
+                  userId: 'userId',
+                  __typename: 'CloudflareImage'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <ImageUpload
+          onChange={vi.fn()}
           setUploading={setUploading}
           loading
           selectedBlock={imageBlock}
@@ -255,8 +359,8 @@ describe('ImageUpload', () => {
   })
 
   it('should handle file too large error', async () => {
-    const onChange = jest.fn()
-    const setUploading = jest.fn()
+    const onChange = vi.fn()
+    const setUploading = vi.fn()
 
     render(
       <MockedProvider>
@@ -299,9 +403,109 @@ describe('ImageUpload', () => {
     ).not.toBeDisabled()
   })
 
+  it('should reject files just over 10 MB', async () => {
+    const onChange = vi.fn()
+    const setUploading = vi.fn()
+
+    render(
+      <MockedProvider>
+        <ImageUpload
+          onChange={onChange}
+          setUploading={setUploading}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+
+    const inputEl = screen.getByTestId('drop zone')
+
+    const boundaryFile = new File(
+      [new ArrayBuffer(10_200_000)],
+      'boundary.png',
+      {
+        type: 'image/png'
+      }
+    )
+
+    Object.defineProperty(inputEl, 'files', {
+      value: [boundaryFile]
+    })
+
+    fireEvent.drop(inputEl)
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file'
+        )
+      ).toBeInTheDocument()
+    })
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(mockSendGTMEvent).toHaveBeenCalledWith({
+      event: 'image_upload_failure',
+      fileSize: 10_200_000,
+      fileType: 'image/png',
+      errorCode: 'file-too-large'
+    })
+  })
+
+  it('should accept files just under 10 MB', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => await Promise.resolve(cfResponse)
+    } as unknown as Response)
+
+    const onChange = vi.fn()
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE
+            },
+            result: {
+              data: {
+                createCloudflareUploadByFile: {
+                  id: 'uploadId',
+                  uploadUrl: 'https://upload.imagedelivery.net/uploadId',
+                  userId: 'userId',
+                  __typename: 'CloudflareImage'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <ImageUpload
+          onChange={onChange}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+
+    const inputEl = screen.getByTestId('drop zone')
+    const justUnderLimit = new File(
+      [new ArrayBuffer(9_999_999)],
+      'just-under.png',
+      { type: 'image/png' }
+    )
+    Object.defineProperty(inputEl, 'files', { value: [justUnderLimit] })
+    fireEvent.drop(inputEl)
+
+    await waitFor(() => expect(onChange).toHaveBeenCalled())
+    expect(
+      screen.queryByText(
+        'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file'
+      )
+    ).not.toBeInTheDocument()
+  })
+
   it('should handle wrong file type error', async () => {
-    const onChange = jest.fn()
-    const setUploading = jest.fn()
+    const onChange = vi.fn()
+    const setUploading = vi.fn()
 
     render(
       <MockedProvider>
@@ -360,8 +564,8 @@ describe('ImageUpload', () => {
       json: async () => await Promise.resolve(cfErrorResponse)
     } as unknown as Response)
 
-    const onChange = jest.fn()
-    const setUploading = jest.fn()
+    const onChange = vi.fn()
+    const setUploading = vi.fn()
 
     render(
       <MockedProvider
@@ -422,8 +626,8 @@ describe('ImageUpload', () => {
       json: async () => await Promise.resolve(cfResponse)
     } as unknown as Response)
 
-    const onChange = jest.fn()
-    const setUploading = jest.fn()
+    const onChange = vi.fn()
+    const setUploading = vi.fn()
 
     render(
       <MockedProvider
@@ -530,7 +734,7 @@ describe('ImageUpload', () => {
         ]}
       >
         <ImageUpload
-          onChange={jest.fn()}
+          onChange={vi.fn()}
           loading={false}
           selectedBlock={imageBlock}
         />
@@ -557,7 +761,7 @@ describe('ImageUpload', () => {
     render(
       <MockedProvider>
         <ImageUpload
-          onChange={jest.fn()}
+          onChange={vi.fn()}
           loading={false}
           selectedBlock={imageBlock}
         />
@@ -611,7 +815,7 @@ describe('ImageUpload', () => {
         ]}
       >
         <ImageUpload
-          onChange={jest.fn()}
+          onChange={vi.fn()}
           loading={false}
           selectedBlock={imageBlock}
         />
@@ -657,7 +861,7 @@ describe('ImageUpload', () => {
         ]}
       >
         <ImageUpload
-          onChange={jest.fn()}
+          onChange={vi.fn()}
           loading={false}
           selectedBlock={imageBlock}
         />

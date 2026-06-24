@@ -1,6 +1,10 @@
+import { useMutation } from '@apollo/client'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { useRouter } from 'next/navigation'
+import nodeFetch from 'node-fetch'
 import { SnackbarProvider } from 'notistack'
+import { type Mock } from 'vitest'
 
 import { resolvedParams } from '../../../../../../test/utils/resolvedParams'
 import { ImageAspectRatio } from '../../../constants'
@@ -8,7 +12,7 @@ import { ImageAspectRatio } from '../../../constants'
 import VideoImage from './page'
 
 // Mock the FileUpload component
-jest.mock('../../../../../../components/FileUpload', () => ({
+vi.mock('../../../../../../components/FileUpload', () => ({
   FileUpload: ({ onDrop, loading, onUploadComplete }) => (
     <div data-testid="file-upload">
       <button
@@ -33,9 +37,9 @@ jest.mock('../../../../../../components/FileUpload', () => ({
 }))
 
 // Mock the Apollo Client hooks
-jest.mock('@apollo/client', () => ({
-  useMutation: jest.fn(() => [jest.fn(), { loading: false }]),
-  useSuspenseQuery: jest.fn(() => ({
+vi.mock('@apollo/client', () => ({
+  useMutation: vi.fn(() => [vi.fn(), { loading: false }]),
+  useSuspenseQuery: vi.fn(() => ({
     data: {
       adminVideo: {
         id: 'video-123',
@@ -50,16 +54,16 @@ jest.mock('@apollo/client', () => ({
 }))
 
 // Mock the next/navigation
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(() => ({
-    push: jest.fn()
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
   }))
 }))
 
 // Mock the node-fetch module
-jest.mock('node-fetch', () => ({
+vi.mock('node-fetch', () => ({
   __esModule: true,
-  default: jest.fn(() =>
+  default: vi.fn(() =>
     Promise.resolve({
       json: () =>
         Promise.resolve({
@@ -70,8 +74,20 @@ jest.mock('node-fetch', () => ({
   )
 }))
 
+// Mock notistack (hoisted so the factory can reference the mock)
+const { mockEnqueueSnackbar } = vi.hoisted(() => ({
+  mockEnqueueSnackbar: vi.fn()
+}))
+
+vi.mock('notistack', async () => ({
+  ...(await vi.importActual('notistack')),
+  useSnackbar: () => ({
+    enqueueSnackbar: mockEnqueueSnackbar
+  })
+}))
+
 // Mock the Dialog component
-jest.mock('@core/shared/ui/Dialog', () => ({
+vi.mock('@core/shared/ui/Dialog', () => ({
   Dialog: ({ children, onClose, dialogTitle, testId }) => (
     <div data-testid={testId || 'dialog'}>
       <div data-testid="dialog-title">{dialogTitle.title}</div>
@@ -100,7 +116,7 @@ describe('VideoImage', () => {
     )
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders the image upload dialog', () => {
@@ -118,8 +134,8 @@ describe('VideoImage', () => {
   })
 
   it('redirects on close button click', async () => {
-    const mockRouter = { push: jest.fn() }
-    require('next/navigation').useRouter.mockReturnValue(mockRouter)
+    const mockRouter = { push: vi.fn() }
+    vi.mocked(useRouter as unknown as Mock).mockReturnValue(mockRouter)
 
     renderComponent()
 
@@ -133,7 +149,7 @@ describe('VideoImage', () => {
 
   it('handles file upload successfully', async () => {
     // Setup mocks
-    const mockCreateUpload = jest.fn().mockResolvedValue({
+    const mockCreateUpload = vi.fn().mockResolvedValue({
       data: {
         createCloudflareUploadByFile: {
           id: 'upload-123',
@@ -141,14 +157,14 @@ describe('VideoImage', () => {
         }
       }
     })
-    const mockUploadComplete = jest.fn().mockResolvedValue({
+    const mockUploadComplete = vi.fn().mockResolvedValue({
       data: { cloudflareUploadComplete: true }
     })
-    const mockDeleteImage = jest.fn().mockResolvedValue({
+    const mockDeleteImage = vi.fn().mockResolvedValue({
       data: { deleteCloudflareImage: true }
     })
 
-    require('@apollo/client').useMutation.mockImplementation((mutation) => {
+    vi.mocked(useMutation as unknown as Mock).mockImplementation((mutation) => {
       // Return appropriate mock based on the mutation
       if (
         mutation.definitions?.[0]?.name?.value ===
@@ -164,11 +180,11 @@ describe('VideoImage', () => {
       ) {
         return [mockDeleteImage, { loading: false }]
       }
-      return [jest.fn(), { loading: false }]
+      return [vi.fn(), { loading: false }]
     })
 
-    const mockRouter = { push: jest.fn() }
-    require('next/navigation').useRouter.mockReturnValue(mockRouter)
+    const mockRouter = { push: vi.fn() }
+    vi.mocked(useRouter as unknown as Mock).mockReturnValue(mockRouter)
 
     renderComponent()
 
@@ -191,7 +207,7 @@ describe('VideoImage', () => {
 
     // Verify fetch was called to upload the file
     await waitFor(() => {
-      expect(require('node-fetch').default).toHaveBeenCalledWith(
+      expect(vi.mocked(nodeFetch as unknown as Mock)).toHaveBeenCalledWith(
         'https://example.com/upload',
         expect.objectContaining({
           method: 'POST',
@@ -223,7 +239,7 @@ describe('VideoImage', () => {
 
   it('shows error notification when upload fails', async () => {
     // Setup mock for failed upload
-    const mockCreateUpload = jest.fn().mockResolvedValue({
+    const mockCreateUpload = vi.fn().mockResolvedValue({
       data: {
         createCloudflareUploadByFile: {
           id: 'upload-123',
@@ -232,28 +248,19 @@ describe('VideoImage', () => {
       }
     })
 
-    require('@apollo/client').useMutation.mockReturnValue([
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
       mockCreateUpload,
       { loading: false }
     ])
 
     // Mock fetch to return error
-    require('node-fetch').default.mockResolvedValue({
+    vi.mocked(nodeFetch as unknown as Mock).mockResolvedValue({
       json: () =>
         Promise.resolve({
           errors: ['Upload failed'],
           result: {}
         })
     })
-
-    // Mock snackbar
-    const mockEnqueueSnackbar = jest.fn()
-    jest.mock('notistack', () => ({
-      ...jest.requireActual('notistack'),
-      useSnackbar: () => ({
-        enqueueSnackbar: mockEnqueueSnackbar
-      })
-    }))
 
     renderComponent()
 
@@ -263,7 +270,7 @@ describe('VideoImage', () => {
 
     // Verify error handling
     await waitFor(() => {
-      expect(require('node-fetch').default).toHaveBeenCalled()
+      expect(vi.mocked(nodeFetch as unknown as Mock)).toHaveBeenCalled()
     })
   })
 })

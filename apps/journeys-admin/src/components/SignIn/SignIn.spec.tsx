@@ -1,23 +1,24 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import { useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import { SignIn } from './SignIn'
 
-const mockUseAuth = jest.fn()
-const mockReplace = jest.fn()
+const mockUseAuth = vi.fn()
+const mockReplace = vi.fn()
 
-jest.mock('../../libs/auth', () => ({
+vi.mock('../../libs/auth', () => ({
   __esModule: true,
   useAuth: (...args: unknown[]) => mockUseAuth(...args)
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('SignIn', () => {
   beforeEach(() => {

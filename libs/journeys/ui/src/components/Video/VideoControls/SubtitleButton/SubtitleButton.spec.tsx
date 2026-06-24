@@ -1,45 +1,44 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
+import { getCaptionsAndSubtitleTracks as _getCaptionsAndSubtitleTracks } from '../../utils/getCaptionsAndSubtitleTracks'
+import { getYouTubePlayer as _getYouTubePlayer } from '../../utils/getYouTubePlayer'
+import { hideAllSubtitles as _hideAllSubtitles } from '../../utils/hideAllSubtitles'
+import { setYouTubeCaptionTrack as _setYouTubeCaptionTrack } from '../../utils/setYouTubeCaptionTrack'
+import { unloadYouTubeCaptions as _unloadYouTubeCaptions } from '../../utils/unloadYouTubeCaptions'
 import VideoJsPlayer from '../../utils/videoJsTypes'
 
 import { SubtitleButton } from './SubtitleButton'
 
-jest.mock('next-i18next/pages', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (key: string) => key
   })
 }))
-jest.mock('../../utils/getCaptionsAndSubtitleTracks', () => ({
-  getCaptionsAndSubtitleTracks: jest.fn()
+vi.mock('../../utils/getCaptionsAndSubtitleTracks', () => ({
+  getCaptionsAndSubtitleTracks: vi.fn()
 }))
 
-jest.mock('../../utils/hideAllSubtitles', () => ({
-  hideAllSubtitles: jest.fn()
+vi.mock('../../utils/hideAllSubtitles', () => ({
+  hideAllSubtitles: vi.fn()
 }))
 
-jest.mock('../../utils/getYouTubePlayer', () => ({
-  getYouTubePlayer: jest.fn()
+vi.mock('../../utils/getYouTubePlayer', () => ({
+  getYouTubePlayer: vi.fn()
 }))
 
-jest.mock('../../utils/setYouTubeCaptionTrack', () => ({
-  setYouTubeCaptionTrack: jest.fn()
+vi.mock('../../utils/setYouTubeCaptionTrack', () => ({
+  setYouTubeCaptionTrack: vi.fn()
 }))
 
-jest.mock('../../utils/unloadYouTubeCaptions', () => ({
-  unloadYouTubeCaptions: jest.fn()
+vi.mock('../../utils/unloadYouTubeCaptions', () => ({
+  unloadYouTubeCaptions: vi.fn()
 }))
-const { getCaptionsAndSubtitleTracks } = jest.requireMock(
-  '../../utils/getCaptionsAndSubtitleTracks'
-)
-const { hideAllSubtitles } = jest.requireMock('../../utils/hideAllSubtitles')
-const { getYouTubePlayer } = jest.requireMock('../../utils/getYouTubePlayer')
-const { setYouTubeCaptionTrack } = jest.requireMock(
-  '../../utils/setYouTubeCaptionTrack'
-)
-const { unloadYouTubeCaptions } = jest.requireMock(
-  '../../utils/unloadYouTubeCaptions'
-)
+const getCaptionsAndSubtitleTracks = vi.mocked(_getCaptionsAndSubtitleTracks)
+const hideAllSubtitles = vi.mocked(_hideAllSubtitles)
+const getYouTubePlayer = vi.mocked(_getYouTubePlayer)
+const setYouTubeCaptionTrack = vi.mocked(_setYouTubeCaptionTrack)
+const unloadYouTubeCaptions = vi.mocked(_unloadYouTubeCaptions)
 
 describe('SubtitleButton', () => {
   let player: VideoJsPlayer
@@ -47,14 +46,14 @@ describe('SubtitleButton', () => {
   let mockTrack2: TextTrack
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     player = {
-      textTracks: jest.fn(() => {
+      textTracks: vi.fn(() => {
         const tracks = [mockTrack1, mockTrack2]
         const trackList = Object.assign(tracks, {
           length: tracks.length,
-          item: jest.fn((index: number) => tracks[index] || null)
+          item: vi.fn((index: number) => tracks[index] || null)
         })
         return trackList
       })
@@ -80,7 +79,7 @@ describe('SubtitleButton', () => {
   it('should render disabled state when no tracks are available', () => {
     getCaptionsAndSubtitleTracks.mockReturnValue([])
 
-    const setActive = jest.fn()
+    const setActive = vi.fn()
 
     render(
       <SubtitleButton
@@ -98,7 +97,7 @@ describe('SubtitleButton', () => {
   it('should render enabled state when tracks are available but none selected', () => {
     getCaptionsAndSubtitleTracks.mockReturnValue([mockTrack1, mockTrack2])
 
-    const setActive = jest.fn()
+    const setActive = vi.fn()
 
     render(
       <SubtitleButton
@@ -117,7 +116,7 @@ describe('SubtitleButton', () => {
     const activeTrack = { ...mockTrack1, mode: 'showing' as TextTrackMode }
     getCaptionsAndSubtitleTracks.mockReturnValue([activeTrack, mockTrack2])
 
-    const setActive = jest.fn()
+    const setActive = vi.fn()
 
     render(
       <SubtitleButton
@@ -135,7 +134,7 @@ describe('SubtitleButton', () => {
   it('should open menu when button is clicked and visible is true', async () => {
     getCaptionsAndSubtitleTracks.mockReturnValue([mockTrack1, mockTrack2])
 
-    const setActive = jest.fn()
+    const setActive = vi.fn()
 
     render(
       <SubtitleButton
@@ -161,7 +160,7 @@ describe('SubtitleButton', () => {
   it('should not open menu when visible is false', async () => {
     getCaptionsAndSubtitleTracks.mockReturnValue([mockTrack1, mockTrack2])
 
-    const setActive = jest.fn()
+    const setActive = vi.fn()
 
     render(
       <SubtitleButton
@@ -183,7 +182,7 @@ describe('SubtitleButton', () => {
   it('should handle HTML5 video subtitle toggle', async () => {
     getCaptionsAndSubtitleTracks.mockReturnValue([mockTrack1, mockTrack2])
 
-    const setActive = jest.fn()
+    const setActive = vi.fn()
 
     render(
       <SubtitleButton
@@ -210,13 +209,13 @@ describe('SubtitleButton', () => {
 
   it('should handle YouTube video subtitle toggle', async () => {
     const mockYtPlayer = {
-      setOption: jest.fn(),
-      loadModule: jest.fn()
-    }
+      setOption: vi.fn(),
+      loadModule: vi.fn()
+    } as unknown as ReturnType<typeof _getYouTubePlayer>
     getYouTubePlayer.mockReturnValue(mockYtPlayer)
     getCaptionsAndSubtitleTracks.mockReturnValue([mockTrack1, mockTrack2])
 
-    const setActive = jest.fn()
+    const setActive = vi.fn()
 
     render(
       <SubtitleButton
@@ -247,7 +246,7 @@ describe('SubtitleButton', () => {
     const activeTrack = { ...mockTrack1, mode: 'showing' as TextTrackMode }
     getCaptionsAndSubtitleTracks.mockReturnValue([activeTrack, mockTrack2])
 
-    const setActive = jest.fn()
+    const setActive = vi.fn()
 
     render(
       <SubtitleButton
@@ -274,14 +273,14 @@ describe('SubtitleButton', () => {
 
   it('should handle turning off YouTube subtitles', async () => {
     const mockYtPlayer = {
-      setOption: jest.fn(),
-      loadModule: jest.fn()
-    }
+      setOption: vi.fn(),
+      loadModule: vi.fn()
+    } as unknown as ReturnType<typeof _getYouTubePlayer>
     getYouTubePlayer.mockReturnValue(mockYtPlayer)
     const activeTrack = { ...mockTrack1, mode: 'showing' as TextTrackMode }
     getCaptionsAndSubtitleTracks.mockReturnValue([activeTrack, mockTrack2])
 
-    const setActive = jest.fn()
+    const setActive = vi.fn()
 
     render(
       <SubtitleButton
@@ -316,7 +315,7 @@ describe('SubtitleButton', () => {
 
     getCaptionsAndSubtitleTracks.mockReturnValue([])
 
-    const setActive = jest.fn()
+    const setActive = vi.fn()
 
     render(
       <SubtitleButton
@@ -334,7 +333,7 @@ describe('SubtitleButton', () => {
   it('should handle empty track list gracefully', () => {
     getCaptionsAndSubtitleTracks.mockReturnValue([])
 
-    const setActive = jest.fn()
+    const setActive = vi.fn()
 
     render(
       <SubtitleButton
@@ -352,7 +351,7 @@ describe('SubtitleButton', () => {
   it('should call setActive to persist controls visibility when menu opens', async () => {
     getCaptionsAndSubtitleTracks.mockReturnValue([mockTrack1, mockTrack2])
 
-    const setActive = jest.fn()
+    const setActive = vi.fn()
 
     render(
       <SubtitleButton
@@ -375,7 +374,7 @@ describe('SubtitleButton', () => {
   it('should call setActive to hide controls when menu closes', async () => {
     getCaptionsAndSubtitleTracks.mockReturnValue([mockTrack1, mockTrack2])
 
-    const setActive = jest.fn()
+    const setActive = vi.fn()
 
     render(
       <SubtitleButton

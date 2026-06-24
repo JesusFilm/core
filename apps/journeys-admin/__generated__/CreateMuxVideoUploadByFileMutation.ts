@@ -22,4 +22,5 @@ export interface CreateMuxVideoUploadByFileMutation {
 export interface CreateMuxVideoUploadByFileMutationVariables {
   name: string;
   generateSubtitlesInput?: GenerateSubtitlesInput | null;
+  journeyId?: string | null;
 }

@@ -5,11 +5,14 @@ import {
   useMutation
 } from '@apollo/client'
 
-import { CreateCloudflareUploadByFile } from '../../../__generated__/CreateCloudflareUploadByFile'
+import {
+  CreateCloudflareUploadByFile,
+  CreateCloudflareUploadByFileVariables
+} from '../../../__generated__/CreateCloudflareUploadByFile'
 
 export const CREATE_CLOUDFLARE_UPLOAD_BY_FILE = gql`
-  mutation CreateCloudflareUploadByFile {
-    createCloudflareUploadByFile {
+  mutation CreateCloudflareUploadByFile($journeyId: ID) {
+    createCloudflareUploadByFile(journeyId: $journeyId) {
       uploadUrl
       id
     }
@@ -19,12 +22,15 @@ export const CREATE_CLOUDFLARE_UPLOAD_BY_FILE = gql`
 export function useCloudflareUploadByFileMutation(
   options?: MutationHookOptions<
     CreateCloudflareUploadByFile,
-    Record<string, never>
+    CreateCloudflareUploadByFileVariables
   >
-): MutationTuple<CreateCloudflareUploadByFile, Record<string, never>> {
+): MutationTuple<
+  CreateCloudflareUploadByFile,
+  CreateCloudflareUploadByFileVariables
+> {
   const mutation = useMutation<
     CreateCloudflareUploadByFile,
-    Record<string, never>
+    CreateCloudflareUploadByFileVariables
   >(CREATE_CLOUDFLARE_UPLOAD_BY_FILE, options)
 
   return mutation

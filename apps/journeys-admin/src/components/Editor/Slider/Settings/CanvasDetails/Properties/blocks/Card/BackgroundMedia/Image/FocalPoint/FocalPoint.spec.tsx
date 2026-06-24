@@ -1,18 +1,19 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { type MockedFunction } from 'vitest'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 
 import { FocalPoint } from './FocalPoint'
 import { calculatePoint } from './utils/calculatePoint'
 
-jest.mock('./utils/calculatePoint')
+vi.mock('./utils/calculatePoint')
 
-const mockedCalculatePoint = calculatePoint as jest.MockedFunction<
+const mockedCalculatePoint = calculatePoint as MockedFunction<
   typeof calculatePoint
 >
 
 describe('FocalPoint', () => {
-  const updateImageBlock = jest.fn()
+  const updateImageBlock = vi.fn()
 
   const imageBlock: ImageBlock = {
     id: 'image.id',
@@ -41,7 +42,7 @@ describe('FocalPoint', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders FocalPoint', () => {

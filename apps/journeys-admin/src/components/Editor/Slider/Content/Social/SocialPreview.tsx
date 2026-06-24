@@ -9,6 +9,8 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
+import { useEditorLayout } from '../../../EditorLayoutContext'
+
 import { Message } from './Message/Message'
 import { Post } from './Post/Post'
 
@@ -18,11 +20,14 @@ export function SocialPreview(): ReactElement {
     state: { activeSlide },
     dispatch
   } = useEditor()
+  const { isLayered } = useEditorLayout()
+
+  const contentActive = isLayered || activeSlide === ActiveSlide.Content
 
   function handleSelect(): void {
     dispatch({
       type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.Content
+      activeSlide: isLayered ? ActiveSlide.Drawer : ActiveSlide.Content
     })
   }
 
@@ -31,10 +36,13 @@ export function SocialPreview(): ReactElement {
       {mdUp ? (
         <Stack
           height={736}
-          width={activeSlide === ActiveSlide.JourneyFlow ? 387 : '100%'}
+          width={isLayered ? 'auto' : contentActive ? '100%' : 387}
           data-testid="OuterStack"
           justifyContent="space-between"
           alignSelf="center"
+          // the layered drawer paper is pointer-events: none so empty areas
+          // close the drawer; the preview itself stays interactive
+          sx={{ pointerEvents: isLayered ? 'auto' : undefined }}
         >
           <Stack
             onClick={handleSelect}
@@ -43,34 +51,44 @@ export function SocialPreview(): ReactElement {
             data-testid="SocialPreview"
             height={682}
             width="100%"
+            gap={isLayered ? 2 : 0}
           >
             <Stack
-              flexGrow={1}
               alignItems="center"
+              data-testid="SocialPostColumn"
               sx={{
-                cursor:
-                  activeSlide === ActiveSlide.JourneyFlow
-                    ? 'pointer'
-                    : undefined,
-                flexGrow: activeSlide === ActiveSlide.Content ? 1 : 0,
-                minWidth: 387,
-                transition: (theme) =>
-                  theme.transitions.create('flex-grow', { duration: 300 })
+                cursor: contentActive ? undefined : 'pointer',
+                // the layered drawer sizes to content, so the columns need
+                // fixed widths instead of the slider's flex-grow transition
+                ...(isLayered
+                  ? { width: 300, flexShrink: 0 }
+                  : {
+                      flexGrow: contentActive ? 1 : 0,
+                      minWidth: 387,
+                      transition: (theme) =>
+                        theme.transitions.create('flex-grow', {
+                          duration: 300
+                        })
+                    })
               }}
             >
               <Post />
             </Stack>
             <Divider orientation="vertical" sx={{ height: 300 }} />
             <Stack
-              flexGrow={1}
               alignItems="center"
+              data-testid="SocialMessageColumn"
               sx={{
-                flexGrow: 1,
-                opacity: activeSlide === ActiveSlide.Content ? 1 : 0,
-                transition: (theme) =>
-                  theme.transitions.create(['flex-grow', 'opacity'], {
-                    duration: 300
-                  })
+                opacity: contentActive ? 1 : 0,
+                ...(isLayered
+                  ? { width: 387, flexShrink: 0 }
+                  : {
+                      flexGrow: 1,
+                      transition: (theme) =>
+                        theme.transitions.create(['flex-grow', 'opacity'], {
+                          duration: 300
+                        })
+                    })
               }}
             >
               <Message />

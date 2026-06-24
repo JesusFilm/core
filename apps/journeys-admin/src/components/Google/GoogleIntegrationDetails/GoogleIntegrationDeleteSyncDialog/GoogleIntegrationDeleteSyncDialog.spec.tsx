@@ -52,7 +52,7 @@ describe('GoogleIntegrationDeleteSyncDialog', () => {
   }
 
   it('calls delete mutation and closes on confirm', async () => {
-    const handleClose = jest.fn()
+    const handleClose = vi.fn()
 
     const { getByRole } = render(
       <MockedProvider mocks={[baseMock, syncsQueryMock]} addTypename={false}>
@@ -74,7 +74,7 @@ describe('GoogleIntegrationDeleteSyncDialog', () => {
   })
 
   it('does not call mutation when required data is missing', async () => {
-    const handleClose = jest.fn()
+    const handleClose = vi.fn()
 
     const { getByRole } = render(
       <MockedProvider mocks={[]} addTypename={false}>

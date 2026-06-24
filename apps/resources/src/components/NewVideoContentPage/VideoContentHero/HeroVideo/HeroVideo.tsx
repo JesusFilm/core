@@ -131,7 +131,7 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
     >
       {variant?.hls && (
         <video
-          key={variant.hls}
+          key={variant.id ?? variant.hls}
           data-testid="ContentHeroVideo"
           ref={videoRef}
           className="vjs [&_.vjs-tech]:object-contain [&_.vjs-tech]:md:object-cover"

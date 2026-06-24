@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
@@ -12,12 +13,12 @@ import { GET_VISITORS } from './VisitorsList'
 
 import { VisitorsList } from '.'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('VisitorList', () => {
   const request = {
@@ -26,7 +27,7 @@ describe('VisitorList', () => {
       first: 100
     }
   }
-  const result = jest.fn(() => ({
+  const result = vi.fn(() => ({
     data: {
       visitors: {
         __typename: 'VisitorConnection',
@@ -101,7 +102,7 @@ describe('VisitorList', () => {
   })
 
   it('should fetch more visitors', async () => {
-    const fetchResult = jest.fn(() => ({
+    const fetchResult = vi.fn(() => ({
       data: {
         visitors: {
           __typename: 'VisitorConnection',
@@ -192,7 +193,7 @@ describe('VisitorList', () => {
   })
 
   it('should link to visitor when clicking on a row', async () => {
-    const push = jest.fn()
+    const push = vi.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
 
     const { getAllByRole } = render(

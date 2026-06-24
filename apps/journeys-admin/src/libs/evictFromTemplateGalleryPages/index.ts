@@ -1,0 +1,1 @@
+export { evictFromTemplateGalleryPages } from './evictFromTemplateGalleryPages'

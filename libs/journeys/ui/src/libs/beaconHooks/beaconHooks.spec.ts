@@ -1,15 +1,16 @@
 import camelCase from 'lodash/camelCase'
 import startCase from 'lodash/startCase'
+import { type Mock } from 'vitest'
 
 import { openBeacon, setBeaconPageViewed, setBeaconRoute } from '.'
 
 describe('beaconHooks', () => {
   beforeEach(() => {
-    window.Beacon = jest.fn()
+    window.Beacon = vi.fn()
   })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   describe('setBeaconPageViewed', () => {
@@ -34,7 +35,7 @@ describe('beaconHooks', () => {
       setBeaconPageViewed(route)
 
       // Simulate the 'on' event callback
-      const onOpenCallback = (window.Beacon as jest.Mock).mock.calls.find(
+      const onOpenCallback = (window.Beacon as Mock).mock.calls.find(
         (call) => call[0] === 'on' && call[1] === 'open'
       )?.[2]
       if (onOpenCallback != null) {

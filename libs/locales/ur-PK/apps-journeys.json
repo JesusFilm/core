@@ -9,5 +9,17 @@
   "Get me out of here!": "Get me out of here!",
   "Terms & Conditions": "Terms & Conditions",
   "Privacy Policy": "Privacy Policy",
-  "NextSteps © {{year}}": "NextSteps © {{year}}"
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Use": "استعمال کریں",
+  "Preview": "Preview",
+  "About this chat": "اس چیٹ کے بارے میں",
+  "About this chat | Next Steps": "اس چیٹ کے بارے میں | اگلے اقدامات",
+  "The chat on this journey is powered by an AI assistant. To help us improve future replies, the messages you send and the assistant’s replies are saved.": "اس سفر کے دوران چیٹ ایک مصنوعی ذہانت کے معاون کے ذریعے چلتی ہے۔ مستقبل کے جوابات کو بہتر بنانے میں ہماری مدد کے لیے، آپ کے بھیجے گئے پیغامات اور معاون کے جوابات محفوظ کیے جاتے ہیں۔",
+  "We do not save your name, email address, or any account details, and we do not link conversations to your identity.": "ہم آپ کا نام، ای میل ایڈریس یا کسی بھی اکاؤنٹ کی تفصیلات محفوظ نہیں کرتے، اور ہم بات چیت کو آپ کی شناخت سے منسلک نہیں کرتے۔",
+  "Where the messages go": "پیغامات کہاں جاتے ہیں",
+  "Your messages and the assistant’s replies pass through two third-party services: an AI service that generates the replies, and an analytics service called Langfuse where the conversations are stored so the team can review them in aggregate to improve the experience. They are not sold and they are not used for advertising.": "آپ کے پیغامات اور اسسٹنٹ کے جوابات دو تیسرے فریق کی خدمات سے گزرتے ہیں: ایک AI سروس جو جوابات تیار کرتی ہے، اور ایک تجزیاتی سروس جسے Langfuse کہتے ہیں جہاں بات چیت محفوظ کی جاتی ہے تاکہ ٹیم انہیں مجموعی طور پر جائزہ لے کر تجربے کو بہتر بنا سکے۔ یہ فروخت نہیں کیے جاتے اور نہ ہی اشتہارات کے لیے استعمال ہوتے ہیں۔",
+  "If you prefer not to take part": "اگر آپ حصہ نہ لینا پسند کرتے ہیں",
+  "There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.": "آج چیٹ سے مخصوص آپٹ آؤٹ کا کوئی آپشن نہیں ہے۔ اگر آپ نہیں چاہتے کہ آپ کے پیغامات محفوظ ہوں تو براہِ کرم چیٹ استعمال نہ کریں — باقی سفر اس کے بغیر بھی جاری رہتا ہے۔",
+  "Last updated: June 2026": "آخری بار اپ ڈیٹ کیا گیا: جون 2026",
+  "Back to Next Steps": "اگلے اقدامات کی طرف واپس"
 }

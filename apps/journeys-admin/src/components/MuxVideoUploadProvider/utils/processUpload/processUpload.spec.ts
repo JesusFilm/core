@@ -1,4 +1,5 @@
 import { UpChunk } from '@mux/upchunk'
+import { type Mock } from 'vitest'
 
 import { TASK_CLEANUP_DELAY } from '../constants'
 import type { UploadTask } from '../types'
@@ -6,46 +7,46 @@ import type { UploadTask } from '../types'
 import { processUpload } from './processUpload'
 
 // Mock UpChunk
-jest.mock('@mux/upchunk', () => ({
+vi.mock('@mux/upchunk', () => ({
   UpChunk: {
-    createUpload: jest.fn()
+    createUpload: vi.fn()
   }
 }))
 
 describe('processUpload', () => {
   let mockDependencies: {
-    setUploadTasks: jest.Mock
-    createMuxVideoUploadByFile: jest.Mock
-    startPolling: jest.Mock
+    setUploadTasks: Mock
+    createMuxVideoUploadByFile: Mock
+    startPolling: Mock
     uploadInstanceRefs: { current: Map<string, { abort: () => void }> }
   }
 
   let mockUpload: {
-    on: jest.Mock
-    abort: jest.Mock
+    on: Mock
+    abort: Mock
   }
 
   beforeEach(() => {
-    jest.useFakeTimers()
-    jest.clearAllMocks()
+    vi.useFakeTimers()
+    vi.clearAllMocks()
 
     mockUpload = {
-      on: jest.fn(),
-      abort: jest.fn()
+      on: vi.fn(),
+      abort: vi.fn()
     }
-    ;(UpChunk.createUpload as jest.Mock).mockReturnValue(mockUpload)
+    ;(UpChunk.createUpload as Mock).mockReturnValue(mockUpload)
 
     mockDependencies = {
-      setUploadTasks: jest.fn(),
-      createMuxVideoUploadByFile: jest.fn(),
-      startPolling: jest.fn(),
+      setUploadTasks: vi.fn(),
+      createMuxVideoUploadByFile: vi.fn(),
+      startPolling: vi.fn(),
       uploadInstanceRefs: { current: new Map() }
     }
   })
 
   afterEach(() => {
-    jest.runOnlyPendingTimers()
-    jest.useRealTimers()
+    vi.runOnlyPendingTimers()
+    vi.useRealTimers()
   })
 
   it('should update status to uploading', async () => {
@@ -106,6 +107,36 @@ describe('processUpload', () => {
           languageCode: 'en',
           languageName: 'English'
         }
+      }
+    })
+  })
+
+  it('should forward journeyId to the upload mutation when present', async () => {
+    const file = new File(['test'], 'my-video.mp4', { type: 'video/mp4' })
+    const task: UploadTask = {
+      videoBlockId: 'block-1',
+      file,
+      status: 'waiting',
+      progress: 0,
+      journeyId: 'journey-1'
+    }
+
+    mockDependencies.createMuxVideoUploadByFile.mockResolvedValue({
+      data: {
+        createMuxVideoUploadByFile: {
+          uploadUrl: 'https://upload.url',
+          id: 'video-1'
+        }
+      }
+    })
+
+    await processUpload('block-1', task, mockDependencies)
+
+    expect(mockDependencies.createMuxVideoUploadByFile).toHaveBeenCalledWith({
+      variables: {
+        name: 'my-video',
+        generateSubtitlesInput: undefined,
+        journeyId: 'journey-1'
       }
     })
   })
@@ -348,7 +379,7 @@ describe('processUpload', () => {
 
   it('should call onComplete callback when polling completes', async () => {
     const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
-    const onComplete = jest.fn()
+    const onComplete = vi.fn()
     const task: UploadTask = {
       videoBlockId: 'block-1',
       file,
@@ -405,7 +436,7 @@ describe('processUpload', () => {
         expect(completedCall).toBeDefined()
 
         // Advance timers to trigger cleanup
-        jest.advanceTimersByTime(TASK_CLEANUP_DELAY)
+        vi.advanceTimersByTime(TASK_CLEANUP_DELAY)
 
         // Verify onComplete was called
         const finalCall =
@@ -486,7 +517,7 @@ describe('processUpload', () => {
       expect(errorStatusCall).toBeDefined()
 
       // Advance timers to trigger cleanup
-      jest.advanceTimersByTime(TASK_CLEANUP_DELAY)
+      vi.advanceTimersByTime(TASK_CLEANUP_DELAY)
 
       // Verify cleanup removes the task
       const cleanupCall =
@@ -591,7 +622,7 @@ describe('processUpload', () => {
     )
 
     // Advance timers to trigger cleanup
-    jest.advanceTimersByTime(TASK_CLEANUP_DELAY)
+    vi.advanceTimersByTime(TASK_CLEANUP_DELAY)
 
     // Verify cleanup removes the task
     const cleanupCall =

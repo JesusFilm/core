@@ -241,7 +241,7 @@ describe('Chat', () => {
   })
 
   it('should call chatButtonCreate when add 2nd custom button is clicked', async () => {
-    const mockResult = jest.fn(() => ({
+    const mockResult = vi.fn(() => ({
       data: {
         chatButtonCreate: {
           __typename: 'ChatButton' as const,

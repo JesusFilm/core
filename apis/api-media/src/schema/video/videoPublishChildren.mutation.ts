@@ -39,6 +39,7 @@ type VideoPublishParent = {
 
 type VideoPublishPlan = {
   videoIdsToPublish: string[]
+  variantVideoIds: string[]
   videosFailedValidation: VideoPublishValidationFailure[]
 }
 
@@ -188,8 +189,24 @@ async function buildVideoPublishPlan(
     )
   }
 
+  const variantVideoIds =
+    planMode === 'childrenVideosAndVariants'
+      ? [
+          ...(parent.published || candidateVideoIdsToPublish.includes(parent.id)
+            ? [parent.id]
+            : []),
+          ...parent.children
+            .filter(
+              (child) =>
+                child.published || candidateVideoIdsToPublish.includes(child.id)
+            )
+            .map((child) => child.id)
+        ]
+      : []
+
   return {
     videoIdsToPublish: candidateVideoIdsToPublish,
+    variantVideoIds,
     videosFailedValidation
   }
 }
@@ -297,7 +314,7 @@ export async function executeVideoPublishChildren(
 
   let variantVideoIds: string[] = []
   if (mode === 'childrenVideosAndVariants') {
-    variantVideoIds = videoIdsToPublish
+    variantVideoIds = plan?.variantVideoIds ?? []
   } else if (mode === 'variantsOnly') {
     variantVideoIds = [id]
   }
@@ -345,7 +362,9 @@ export async function executeVideoPublishChildren(
     }
   })
 
-  const affectedVideoIds = [...new Set([id, ...videoIdsToPublish])]
+  const affectedVideoIds = [
+    ...new Set([id, ...videoIdsToPublish, ...variantVideoIds])
+  ]
 
   try {
     await Promise.all(

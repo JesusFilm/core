@@ -17,7 +17,7 @@
         "mtxr.sqltools",
         "mtxr.sqltools-driver-pg",
         "prisma.prisma",
-        "firsttris.vscode-jest-runner",
+        "vitest.explorer",
         "redhat.vscode-yaml",
         "anthropic.claude-code"
       ]

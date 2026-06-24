@@ -17,14 +17,14 @@ import { blockActionLinkUpdateMock } from '../../../../../../../../libs/useBlock
 import { Action } from './Action'
 import { steps } from './data'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
 describe('Action', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   const selectedStep = steps[1]
@@ -306,7 +306,7 @@ describe('Action', () => {
       }
     })
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         blockDeleteAction: {
           id: 'button1.id'

@@ -109,7 +109,7 @@ describe('UnsplashGallery', () => {
   }
 
   it('should return a collection of images from unsplash', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     render(
       <MockedProvider
         mocks={[listUnsplashCollectionPhotosMock, triggerUnsplashDownloadMock]}
@@ -142,7 +142,7 @@ describe('UnsplashGallery', () => {
         <ThemeProvider>
           <UnsplashGallery
             selectedBlock={{ src: item.urls.regular } as unknown as ImageBlock}
-            onChange={jest.fn()}
+            onChange={vi.fn()}
           />
         </ThemeProvider>
       </MockedProvider>
@@ -155,7 +155,7 @@ describe('UnsplashGallery', () => {
   })
 
   it('should search images from unsplash', async () => {
-    const result = jest.fn().mockReturnValue(searchUnsplashPhotosMock.result)
+    const result = vi.fn().mockReturnValue(searchUnsplashPhotosMock.result)
     render(
       <MockedProvider
         mocks={[
@@ -166,7 +166,7 @@ describe('UnsplashGallery', () => {
           }
         ]}
       >
-        <UnsplashGallery onChange={jest.fn()} />
+        <UnsplashGallery onChange={vi.fn()} />
       </MockedProvider>
     )
     fireEvent.change(screen.getByRole('textbox', { name: 'UnsplashSearch' }), {
@@ -179,7 +179,7 @@ describe('UnsplashGallery', () => {
   })
 
   it('should update search field once chip is selected', async () => {
-    const result = jest
+    const result = vi
       .fn()
       .mockReturnValue(listUnsplashCollectionPhotosMock.result)
     render(
@@ -200,7 +200,7 @@ describe('UnsplashGallery', () => {
           }
         ]}
       >
-        <UnsplashGallery onChange={jest.fn()} />
+        <UnsplashGallery onChange={vi.fn()} />
       </MockedProvider>
     )
     fireEvent.change(screen.getByRole('textbox', { name: 'UnsplashSearch' }), {
@@ -217,7 +217,7 @@ describe('UnsplashGallery', () => {
   })
 
   it('should fetch more images from unsplash', async () => {
-    const result = jest
+    const result = vi
       .fn()
       .mockReturnValue(listUnsplashCollectionPhotosMock.result)
     render(
@@ -237,7 +237,7 @@ describe('UnsplashGallery', () => {
           }
         ]}
       >
-        <UnsplashGallery onChange={jest.fn()} />
+        <UnsplashGallery onChange={vi.fn()} />
       </MockedProvider>
     )
     await waitFor(() =>
@@ -248,7 +248,7 @@ describe('UnsplashGallery', () => {
   })
 
   it('should fetch more images from unsplash search', async () => {
-    const result = jest.fn().mockReturnValue(searchUnsplashPhotosMock.result)
+    const result = vi.fn().mockReturnValue(searchUnsplashPhotosMock.result)
     render(
       <MockedProvider
         mocks={[
@@ -267,7 +267,7 @@ describe('UnsplashGallery', () => {
           }
         ]}
       >
-        <UnsplashGallery onChange={jest.fn()} />
+        <UnsplashGallery onChange={vi.fn()} />
       </MockedProvider>
     )
     fireEvent.change(screen.getByRole('textbox', { name: 'UnsplashSearch' }), {

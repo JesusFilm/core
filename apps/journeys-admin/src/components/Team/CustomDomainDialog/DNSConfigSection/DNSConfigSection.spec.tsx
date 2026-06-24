@@ -10,7 +10,7 @@ import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../_
 
 import { CHECK_CUSTOM_DOMAIN, DNSConfigSection } from './DNSConfigSection'
 
-const writeText = jest.fn()
+const writeText = vi.fn()
 
 Object.assign(navigator, {
   clipboard: {
@@ -18,9 +18,9 @@ Object.assign(navigator, {
   }
 })
 
-const mockEnqueueSnackbar = jest.fn()
+const mockEnqueueSnackbar = vi.fn()
 
-jest.mock('notistack', () => ({
+vi.mock('notistack', () => ({
   __esModule: true,
   useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar }),
   SnackbarProvider: ({ children }: { children: React.ReactNode }) => (
@@ -57,6 +57,7 @@ describe('DNSConfigSection', () => {
     name: 'example.com',
     apexName: 'example.com',
     id: 'customDomainId',
+    routeAllTeamJourneys: false,
     journeyCollection: null
   }
 
@@ -65,11 +66,12 @@ describe('DNSConfigSection', () => {
     name: 'www.example.com',
     apexName: 'example.com',
     id: 'customDomainId',
+    routeAllTeamJourneys: false,
     journeyCollection: null
   }
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should show copy A value to clipboard', async () => {

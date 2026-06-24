@@ -79,7 +79,7 @@ export function AppNavbar(): ReactElement {
               Nexus
             </Typography>
           </Stack>
-          <Stack direction="row" spacing={1}>
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
             <ToggleColorMode />
             <MenuButton aria-label="menu" onClick={toggleDrawer(true)}>
               <MenuRoundedIcon />

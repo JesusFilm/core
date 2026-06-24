@@ -52,6 +52,13 @@ export function Conversation({
   const contentRef = useRef<HTMLDivElement>(null)
   const wasNearBottomRef = useRef(true)
   const isFirstRenderRef = useRef(true)
+  const prevScrollKeyRef = useRef(scrollKey)
+  // Set from a conversation reset (scrollKey shrinks) and held until the next
+  // message. While set, the now-empty conversation is pinned to the bottom so
+  // the sheet's resize-to-idle animation can't strand scrollTop above the
+  // bottom-clearance padding and leave the scroll-to-latest pill showing with
+  // nothing below it.
+  const resetPinRef = useRef(false)
   const [isAtBottom, setIsAtBottom] = useState(true)
   const fadeBeforeInput = bottomClearance > 0
   const bottomMask = fadeBeforeInput
@@ -68,6 +75,15 @@ export function Conversation({
     // the pill doesn't render — otherwise scrollHeight - 0 - 0 reads
     // as "far above bottom" and the chevron leaks through.
     if (el.clientHeight === 0) {
+      wasNearBottomRef.current = true
+      setIsAtBottom(true)
+      return
+    }
+    // Just-reset conversation: the bottom-clearance padding can still exceed
+    // the shrinking idle viewport, so keep it pinned to the bottom rather than
+    // letting a stranded scrollTop surface the pill over an empty chat.
+    if (resetPinRef.current) {
+      el.scrollTo({ top: el.scrollHeight, behavior: 'auto' })
       wasNearBottomRef.current = true
       setIsAtBottom(true)
       return
@@ -106,9 +122,28 @@ export function Conversation({
   useEffect(() => {
     if (isFirstRenderRef.current) {
       isFirstRenderRef.current = false
+      prevScrollKeyRef.current = scrollKey
       scrollToBottom(false)
       return
     }
+    const prevScrollKey = prevScrollKeyRef.current
+    prevScrollKeyRef.current = scrollKey
+    // A shrinking scrollKey means the conversation was cleared/reset — pin to
+    // the bottom and drop the pill regardless of where the reader had scrolled,
+    // and hold the pin through the resize-to-idle animation (see resetPinRef).
+    if (
+      scrollKey != null &&
+      prevScrollKey != null &&
+      scrollKey < prevScrollKey
+    ) {
+      resetPinRef.current = true
+      wasNearBottomRef.current = true
+      setIsAtBottom(true)
+      scrollToBottom(false)
+      return
+    }
+    // New message(s) — leave reset-pin mode and resume normal follow behaviour.
+    resetPinRef.current = false
     if (wasNearBottomRef.current) {
       scrollToBottom(true)
     }

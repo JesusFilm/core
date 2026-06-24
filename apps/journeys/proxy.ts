@@ -60,6 +60,17 @@ export default async function proxy(
     searchParams.length > 0 ? `?${searchParams}` : ''
   }`
 
+  // Template-gallery pages are root-domain-only by design (NES-1644):
+  // custom domains never host them, so the path itself is authoritative.
+  // Always rewrite to `/home/template-gallery/...` regardless of hostname —
+  // otherwise dev hosts (and any hostname that isn't NEXT_PUBLIC_ROOT_DOMAIN
+  // and isn't in NEXT_PUBLIC_DEV_HOSTS) fall through to the `/[hostname]/
+  // [journeySlug]` catch-all and 404, since that route is for journeys on
+  // custom domains, not template-gallery slugs.
+  if (url.pathname.startsWith('/template-gallery/')) {
+    return NextResponse.rewrite(new URL(`/home${path}`, req.url))
+  }
+
   // rewrite root application to `/home` folder
   if (
     process.env.NEXT_PUBLIC_ROOT_DOMAIN != null &&

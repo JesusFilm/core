@@ -46,6 +46,7 @@ import type {
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
+import { useEditorLayout } from '../../EditorLayoutContext'
 
 import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
 import { Controls } from './Controls'
@@ -74,6 +75,7 @@ import {
 } from './nodes/SocialPreviewNode/libs/positions'
 import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
+import { TemplateInfoHelper } from './TemplateInfoHelper'
 import '@xyflow/react/dist/style.css'
 import { useStepAndBlockSelection } from './utils/useStepAndBlockSelection'
 
@@ -102,12 +104,13 @@ export const GET_STEP_BLOCKS_WITH_POSITION = gql`
 
 export function JourneyFlow(): ReactElement {
   const router = useRouter()
-  const { editorAnalytics } = useFlags()
+  const { editorAnalytics, teamTemplateCollection } = useFlags()
   const theme = useTheme()
   const {
     state: { steps, activeSlide, showAnalytics, analytics },
     dispatch
   } = useEditor()
+  const { isLayered } = useEditorLayout()
   const { journey } = useJourney()
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
@@ -644,27 +647,41 @@ export function JourneyFlow(): ReactElement {
         }}
         elevateEdgesOnSelect
       >
-        {activeSlide === ActiveSlide.JourneyFlow && (
+        {(isLayered || activeSlide === ActiveSlide.JourneyFlow) && (
           <>
             <Panel position="top-right">
               {showAnalytics !== true && (
                 <NewStepButton disabled={steps == null || loading} />
               )}
             </Panel>
-            {/* Hide analytics overlay switch for local templates */}
-            {!isTemplate &&
-              journey != null &&
-              /* Only show analytics panel when editorAnalytics feature flag is enabled */
-              editorAnalytics && (
+            {/*
+             * Top-left Panel slot is shared between two affordances, gated by
+             * the journey type:
+             *   - Templates → floating tutorial-info helper (NES-1642), gated
+             *     by `teamTemplateCollection` (same flag the templates-tab
+             *     side panel ships behind, NES-1538).
+             *   - Regular journeys → analytics-overlay switch + card, gated
+             *     by `editorAnalytics`.
+             * Only one branch can match at a time; the Panel itself only
+             * mounts when the active branch's flag is on, preserving the
+             * existing "no Panel when off" behaviour callers rely on.
+             */}
+            {journey != null &&
+              ((isTemplate && teamTemplateCollection === true) ||
+                (!isTemplate && editorAnalytics === true)) && (
                 <Panel position="top-left">
-                  <>
-                    <AnalyticsOverlaySwitch />
-                    <Fade in={showAnalytics} unmountOnExit>
-                      <Box>
-                        <JourneyAnalyticsCard />
-                      </Box>
-                    </Fade>
-                  </>
+                  {isTemplate ? (
+                    <TemplateInfoHelper />
+                  ) : (
+                    <>
+                      <AnalyticsOverlaySwitch />
+                      <Fade in={showAnalytics} unmountOnExit>
+                        <Box>
+                          <JourneyAnalyticsCard />
+                        </Box>
+                      </Fade>
+                    </>
+                  )}
                 </Panel>
               )}
             <Controls handleReset={allBlockPositionUpdate} />

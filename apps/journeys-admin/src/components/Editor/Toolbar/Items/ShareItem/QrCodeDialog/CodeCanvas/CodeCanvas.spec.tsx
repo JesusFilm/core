@@ -6,7 +6,7 @@ import { CodeCanvas } from './CodeCanvas'
 describe('CodeCanvas', () => {
   beforeAll(() => {
     Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
-      value: jest.fn()
+      value: vi.fn()
     })
   })
 

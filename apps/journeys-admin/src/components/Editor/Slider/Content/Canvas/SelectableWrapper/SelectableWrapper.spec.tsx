@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '@core/journeys/ui/Button'
@@ -22,24 +23,26 @@ import { RadioQuestionFields } from '../../../../../../../__generated__/RadioQue
 import { SignUpFields } from '../../../../../../../__generated__/SignUpFields'
 import { StepFields } from '../../../../../../../__generated__/StepFields'
 import { TypographyFields } from '../../../../../../../__generated__/TypographyFields'
+import { TestEditorState } from '../../../../../../libs/TestEditorState'
 import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
+import { EditorLayoutProvider } from '../../../../EditorLayoutContext'
 
 import { SelectableWrapper } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('SelectableWrapper', () => {
-  const push = jest.fn()
+  const push = vi.fn()
   mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
 
   const typographyBlock: TreeBlock<TypographyFields> = {
@@ -257,6 +260,35 @@ describe('SelectableWrapper', () => {
     })
 
     expect(push).not.toHaveBeenCalled()
+  })
+
+  it('should open the settings drawer on block click in the layered layout', async () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step([typographyBlock])]
+            }}
+          >
+            <MuxVideoUploadProvider>
+              <EditorLayoutProvider value="layered">
+                <TestEditorState />
+                <SelectableWrapper block={typographyBlock}>
+                  <Typography {...typographyBlock} />
+                </SelectableWrapper>
+              </EditorLayoutProvider>
+            </MuxVideoUploadProvider>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByText('typography content'))
+    expect(getByText('activeSlide: 2')).toBeInTheDocument()
+    expect(
+      getByText(`selectedBlock: ${typographyBlock.id}`)
+    ).toBeInTheDocument()
   })
 
   it('should select radio question on radio option click', async () => {

@@ -309,9 +309,9 @@ enum MediaRole {
 }
 
 type Mutation {
-  createCloudflareUploadByFile(input: ImageInput): CloudflareImage!
-  createCloudflareUploadByUrl(url: String!, input: ImageInput): CloudflareImage!
-  createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
+  createCloudflareUploadByFile(input: ImageInput, journeyId: ID): CloudflareImage!
+  createCloudflareUploadByUrl(url: String!, input: ImageInput, journeyId: ID): CloudflareImage!
+  createCloudflareImageFromPrompt(prompt: String!, input: ImageInput, journeyId: ID): CloudflareImage!
   deleteCloudflareImage(id: ID!): Boolean!
   cloudflareUploadComplete(id: ID!): Boolean!
 
@@ -333,8 +333,8 @@ type Mutation {
   bibleCitationDelete(id: ID!): Boolean
   createKeyword(value: String!, languageId: String!): Keyword!
   createMuxVideoAndQueueUpload(videoId: ID!, edition: String!, languageId: ID!, version: Int!, r2PublicUrl: String!, originalFilename: String!, durationMs: Int!, duration: Int!, width: Int!, height: Int!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = fhd): MuxVideo!
-  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd, generateSubtitlesInput: GenerateSubtitlesInput): MuxVideo!
-  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
+  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd, generateSubtitlesInput: GenerateSubtitlesInput, journeyId: ID): MuxVideo!
+  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd, journeyId: ID): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
   playlistCreate(input: PlaylistCreateInput!): MutationPlaylistCreateResult
@@ -404,6 +404,11 @@ type Mutation {
   videoEditionCreate(input: VideoEditionCreateInput!): VideoEdition!
   videoEditionUpdate(input: VideoEditionUpdateInput!): VideoEdition!
   videoEditionDelete(id: ID!): VideoEdition!
+  videoVariantUploadStart(input: VideoVariantUploadStartInput!): VideoVariantUpload!
+  videoVariantUploadMarkR2Prepared(id: ID!, r2AssetId: ID!): VideoVariantUpload!
+  videoVariantUploadMarkR2Complete(id: ID!): VideoVariantUpload!
+  videoVariantUploadCreateMux(id: ID!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd): VideoVariantUpload!
+  videoVariantUploadResume(id: ID!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd): VideoVariantUpload!
 }
 
 input MutationBibleCitationCreateInput {
@@ -715,7 +720,7 @@ input PlaylistUpdateInput {
 }
 
 type Query {
-  getMyCloudflareImages(offset: Int, limit: Int, isAi: Boolean): [CloudflareImage!]!
+  getMyCloudflareImages(offset: Int, limit: Int, isAi: Boolean, teamId: ID): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
   videoImages(where: VideoImagesFilter, offset: Int, limit: Int): [CloudflareImage!]!
   videoImagesCount(where: VideoImagesFilter): Int!
@@ -726,7 +731,7 @@ type Query {
   bibleCitation(id: ID!): BibleCitation!
   keywords(where: KeywordsFilter, offset: Int, limit: Int): [Keyword!]!
   keywordsCount(where: KeywordsFilter): Int!
-  getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
+  getMyMuxVideos(offset: Int, limit: Int, teamId: ID): [MuxVideo!]!
   getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!
   getMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo
   getMyGeneratedMuxSubtitleTrack(muxVideoId: ID!, bcp47: String!, userGenerated: Boolean): QueryGetMyGeneratedMuxSubtitleTrackResult!
@@ -788,6 +793,8 @@ type Query {
   videoEditions(where: VideoEditionsFilter, offset: Int, limit: Int): [VideoEdition!]!
   videoEditionsCount(where: VideoEditionsFilter): Int!
   videoEdition(id: ID!): VideoEdition
+  videoVariantUpload(id: ID!): VideoVariantUpload!
+  videoVariantUploads(input: VideoVariantUploadsFilter, offset: Int, limit: Int): [VideoVariantUpload!]!
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
   youtubeClosedCaptionLanguages(videoId: ID!): QueryYoutubeClosedCaptionLanguagesResult!
@@ -1540,6 +1547,73 @@ input VideoVariantUpdateInput {
   muxVideoId: String
   brightcoveId: String
   version: Int
+}
+
+type VideoVariantUpload {
+  id: ID!
+  source: String!
+  sourceKey: String
+  status: VideoVariantUploadStatus!
+  videoId: ID!
+  edition: String!
+  languageId: ID!
+  version: Int!
+  published: Boolean!
+  originalFilename: String
+  contentType: String
+  contentLength: BigInt
+  duration: Int
+  durationMs: Int
+  width: Int
+  height: Int
+  r2AssetId: ID
+  muxVideoId: ID
+  videoVariantId: ID
+  errorMessage: String
+  createdAt: Date!
+  updatedAt: Date!
+  r2Asset: CloudflareR2
+  muxVideo: MuxVideo
+  videoVariant: VideoVariant
+}
+
+input VideoVariantUploadStartInput {
+  id: ID
+  source: String!
+  sourceKey: String
+  videoId: ID!
+  edition: String!
+  languageId: ID!
+  version: Int!
+  published: Boolean
+  originalFilename: String
+  contentType: String
+  contentLength: BigInt
+  duration: Int
+  durationMs: Int
+  width: Int
+  height: Int
+  r2AssetId: ID
+}
+
+enum VideoVariantUploadStatus {
+  created
+  r2Prepared
+  r2Uploaded
+  muxCreated
+  muxReady
+  variantCreated
+  failed
+}
+
+input VideoVariantUploadsFilter {
+  status: VideoVariantUploadStatus
+  statuses: [VideoVariantUploadStatus!]
+  videoId: ID
+  languageId: ID
+  edition: String
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
 }
 
 input VideosFilter {

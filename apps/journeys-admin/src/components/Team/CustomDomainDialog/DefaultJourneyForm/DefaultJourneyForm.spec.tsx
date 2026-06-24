@@ -42,9 +42,9 @@ import {
   UPDATE_JOURNEY_COLLECTION
 } from './DefaultJourneyForm'
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn(() => 'uuid')
+  v4: vi.fn(() => 'uuid')
 }))
 const createJourneyCollectionMock: MockedResponse<
   CreateJourneyCollection,
@@ -187,16 +187,23 @@ describe('DefaultJourneyForm', () => {
     __typename: 'CustomDomain' as const,
     name: 'example.com',
     apexName: 'example.com',
+    routeAllTeamJourneys: false,
     journeyCollection: null
   }
 
   it('should set a default journey for custom domain', async () => {
-    const result = jest.fn().mockReturnValue(createJourneyCollectionMock.result)
+    const result = vi.fn().mockReturnValue(createJourneyCollectionMock.result)
+    // Spy on the teams query so we can wait for the active team to load before
+    // selecting an option. The create mutation only fires when activeTeam is
+    // set, which happens after GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS resolves.
+    const teamsResult = vi
+      .fn()
+      .mockReturnValue(getLastActiveTeamIdAndTeamsMock.result)
     const { getByRole } = render(
       <MockedProvider
         mocks={[
           getAdminJourneysMock,
-          getLastActiveTeamIdAndTeamsMock,
+          { ...getLastActiveTeamIdAndTeamsMock, result: teamsResult },
           { ...createJourneyCollectionMock, result }
         ]}
       >
@@ -211,6 +218,7 @@ describe('DefaultJourneyForm', () => {
       </MockedProvider>
     )
 
+    await waitFor(() => expect(teamsResult).toHaveBeenCalled())
     fireEvent.mouseDown(getByRole('combobox'))
     await waitFor(() =>
       expect(
@@ -222,7 +230,7 @@ describe('DefaultJourneyForm', () => {
   })
 
   it('should update defualt journey', async () => {
-    const result = jest.fn().mockReturnValue(updateJourneyCollectionMock.result)
+    const result = vi.fn().mockReturnValue(updateJourneyCollectionMock.result)
     const { getByRole } = render(
       <MockedProvider
         mocks={[
@@ -266,7 +274,7 @@ describe('DefaultJourneyForm', () => {
   })
 
   it('should delete custom journey', async () => {
-    const result = jest.fn().mockReturnValue(deleteJourneyCollectionMock.result)
+    const result = vi.fn().mockReturnValue(deleteJourneyCollectionMock.result)
     const { getByRole, getByLabelText } = render(
       <MockedProvider
         mocks={[
@@ -304,7 +312,7 @@ describe('DefaultJourneyForm', () => {
   })
 
   it('should be disabled if user does not have correct permissions', async () => {
-    const result = jest.fn().mockReturnValue(deleteJourneyCollectionMock.result)
+    const result = vi.fn().mockReturnValue(deleteJourneyCollectionMock.result)
     const { getByRole } = render(
       <MockedProvider
         mocks={[

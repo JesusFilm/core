@@ -11,10 +11,12 @@ import { ReactElement } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { Tooltip } from '../../../../../Tooltip'
+import { useEditorLayout } from '../../../../EditorLayoutContext'
 
 export function Post(): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
+  const { isLayered } = useEditorLayout()
 
   return (
     <Box data-testid="SocialPreviewPost">
@@ -26,6 +28,8 @@ export function Post(): ReactElement {
       >
         <Typography
           variant="caption"
+          // the layered desktop view floats over a dark backdrop
+          color={isLayered ? 'white' : undefined}
           pb={4}
           textAlign="center"
           sx={{ fontSize: 16 }}

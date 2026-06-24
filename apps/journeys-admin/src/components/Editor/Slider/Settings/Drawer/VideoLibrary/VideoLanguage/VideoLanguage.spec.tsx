@@ -4,9 +4,9 @@ import { GetVideo_video_variantLanguages as Language } from '../../../../../../.
 
 import { VideoLanguage } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn(() => true)
+  default: vi.fn(() => true)
 }))
 
 const languages: Language[] = [
@@ -58,8 +58,8 @@ const languages: Language[] = [
   }
 ]
 
-const handleChange = jest.fn()
-const handleClose = jest.fn()
+const handleChange = vi.fn()
+const handleClose = vi.fn()
 
 describe('VideoLanguage', () => {
   it('should call onClose when closed', () => {
@@ -118,8 +118,8 @@ describe('VideoLanguage', () => {
   })
 
   it('should call onApply (and not onClose) when Apply clicked with onApply provided', () => {
-    const handleApply = jest.fn()
-    const localHandleClose = jest.fn()
+    const handleApply = vi.fn()
+    const localHandleClose = vi.fn()
     const { getByRole } = render(
       <VideoLanguage
         open

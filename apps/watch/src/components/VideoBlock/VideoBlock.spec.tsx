@@ -11,7 +11,7 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { VideoBlock } from './VideoBlock'
 
-jest.mock('../ContentHeader', () => ({
+vi.mock('../ContentHeader', () => ({
   ContentHeader: ({
     languageSlug,
     isPersistent
@@ -29,7 +29,7 @@ jest.mock('../ContentHeader', () => ({
   )
 }))
 
-jest.mock('./VideoBlockPlayer', () => ({
+vi.mock('./VideoBlockPlayer', () => ({
   VideoBlockPlayer: ({
     isPreview,
     collapsed,
@@ -111,7 +111,7 @@ describe('VideoBlock', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders with default props', () => {
@@ -274,7 +274,7 @@ describe('VideoBlock', () => {
   })
 
   it('calls onMuxInsertComplete when mux insert completes', () => {
-    const onMuxInsertComplete = jest.fn()
+    const onMuxInsertComplete = vi.fn()
     const muxInsert: CarouselMuxSlide = {
       source: 'mux',
       id: 'test-mux-id',
@@ -304,7 +304,7 @@ describe('VideoBlock', () => {
   })
 
   it('calls onSkipActiveVideo when skip button is clicked', () => {
-    const onSkipActiveVideo = jest.fn()
+    const onSkipActiveVideo = vi.fn()
 
     renderVideoBlock({ onSkipActiveVideo })
 
@@ -338,11 +338,57 @@ describe('VideoBlock', () => {
     expect(player).toBeInTheDocument()
   })
 
-  it('uses variant.hls as key when currentMuxInsert is not provided', () => {
-    renderVideoBlock()
+  it('remounts VideoBlockPlayer when variant id changes and HLS stays the same', () => {
+    const firstContent = videos[0]
+    const firstVariant = firstContent.variant
 
-    const player = screen.getByTestId('VideoBlockPlayer')
-    expect(player).toBeInTheDocument()
+    if (firstVariant == null) throw new Error('Expected test video variant')
+
+    const secondContent = {
+      ...firstContent,
+      variant: {
+        ...firstVariant,
+        id: 'duplicate-language-variant',
+        slug: 'jesus/duplicate-language',
+        hls: firstVariant.hls
+      }
+    }
+
+    const { rerender } = render(
+      <VideoProvider value={{ content: firstContent }}>
+        <PlayerProvider initialState={defaultPlayerState}>
+          <WatchProvider
+            initialState={{
+              audioLanguageId: '529',
+              subtitleLanguageId: '529',
+              subtitleOn: false
+            }}
+          >
+            <VideoBlock />
+          </WatchProvider>
+        </PlayerProvider>
+      </VideoProvider>
+    )
+
+    const firstPlayer = screen.getByTestId('VideoBlockPlayer')
+
+    rerender(
+      <VideoProvider value={{ content: secondContent }}>
+        <PlayerProvider initialState={defaultPlayerState}>
+          <WatchProvider
+            initialState={{
+              audioLanguageId: '529',
+              subtitleLanguageId: '529',
+              subtitleOn: false
+            }}
+          >
+            <VideoBlock />
+          </WatchProvider>
+        </PlayerProvider>
+      </VideoProvider>
+    )
+
+    expect(screen.getByTestId('VideoBlockPlayer')).not.toBe(firstPlayer)
   })
 
   it('handles null currentMuxInsert', () => {

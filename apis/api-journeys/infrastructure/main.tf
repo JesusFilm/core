@@ -14,5 +14,5 @@ module "ecs-task" {
   environment_variables = local.environment_variables
   alb_listener_arn      = module.alb-listener.arn
   alb_dns_name          = var.alb.dns_name
-  dd_source             = "nestjs"
+  dd_source             = "graphql-yoga"
 }

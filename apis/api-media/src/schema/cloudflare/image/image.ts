@@ -1,5 +1,9 @@
 import { Prisma, prisma } from '@core/prisma/media/client'
 
+import {
+  assertTeamMembership,
+  maybeResolveTeamId
+} from '../../../lib/journeysAccess/journeysAccess'
 import { jobName as processImageBlurhashJobName } from '../../../workers/processImageBlurhash/config'
 import { queue as processImageBlurhashQueue } from '../../../workers/processImageBlurhash/queue'
 import { builder, toPrismaDateTimeFilter } from '../../builder'
@@ -78,16 +82,41 @@ builder.queryFields((t) => ({
     args: {
       offset: t.arg.int({ required: false }),
       limit: t.arg.int({ required: false }),
-      isAi: t.arg.boolean({ required: false })
+      isAi: t.arg.boolean({ required: false }),
+      teamId: t.arg.id({ required: false })
     },
-    resolve: async (query, _root, { offset, limit, isAi }, { user }) => {
+    resolve: async (
+      query,
+      _root,
+      { offset, limit, isAi, teamId },
+      { user }
+    ) => {
+      if (teamId != null)
+        await assertTeamMembership({ teamId, userId: user.id })
+
+      // Single merged grid: personal + team uploads interleaved by createdAt.
+      // The `userId OR teamId` predicate is served by a bitmap-OR across the
+      // `(userId, createdAt DESC)` and `(teamId, createdAt DESC)` indexes — keep
+      // both indexes (see migration) or this degrades to a full table scan.
       return await prisma.cloudflareImage.findMany({
         ...query,
         where: {
-          userId: user.id,
-          ...(isAi != null ? { isAi } : {})
+          AND: [
+            teamId != null
+              ? { OR: [{ userId: user.id }, { teamId }] }
+              : { userId: user.id },
+            // Treat a null isAi as "not AI". Uploads created before the isAi
+            // column existed are stored as null, and `isAi = false` would
+            // exclude them (NULL != false in SQL) — keeping historical assets
+            // out of the Custom tab. Matching false-or-null surfaces them.
+            isAi === true
+              ? { isAi: true }
+              : isAi === false
+                ? { OR: [{ isAi: false }, { isAi: null }] }
+                : {}
+          ]
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         take: limit ?? undefined,
         skip: offset ?? undefined
       })
@@ -154,9 +183,12 @@ builder.mutationFields((t) => ({
       type: 'CloudflareImage',
       nullable: false,
       args: {
-        input: t.arg({ type: ImageInput, required: false })
+        input: t.arg({ type: ImageInput, required: false }),
+        journeyId: t.arg.id({ required: false })
       },
-      resolve: async (query, _root, { input }, { user }) => {
+      resolve: async (query, _root, { input, journeyId }, { user }) => {
+        const teamId = await maybeResolveTeamId({ journeyId, userId: user.id })
+
         const { id, uploadURL } = await createImageByDirectUpload()
 
         return await prisma.cloudflareImage.create({
@@ -167,7 +199,8 @@ builder.mutationFields((t) => ({
             userId: user.id,
             aspectRatio: input?.aspectRatio ?? undefined,
             videoId: input?.videoId ?? undefined,
-            isAi: false
+            isAi: false,
+            teamId
           }
         })
       }
@@ -179,9 +212,17 @@ builder.mutationFields((t) => ({
       nullable: false,
       args: {
         url: t.arg.string({ required: true }),
-        input: t.arg({ type: ImageInput, required: false })
+        input: t.arg({ type: ImageInput, required: false }),
+        journeyId: t.arg.id({ required: false })
       },
-      resolve: async (query, _root, { url, input }, { user }: any) => {
+      resolve: async (query, _root, { url, input, journeyId }, context) => {
+        const user = context.type === 'authenticated' ? context.user : undefined
+
+        const teamId = await maybeResolveTeamId({
+          journeyId,
+          userId: user?.id
+        })
+
         const { id } = await createImageFromUrl(url)
         const image = await prisma.cloudflareImage.create({
           ...query,
@@ -191,7 +232,8 @@ builder.mutationFields((t) => ({
             uploaded: true,
             aspectRatio: input?.aspectRatio ?? undefined,
             videoId: input?.videoId ?? undefined,
-            isAi: false
+            isAi: false,
+            teamId
           }
         })
 
@@ -209,9 +251,12 @@ builder.mutationFields((t) => ({
       nullable: false,
       args: {
         prompt: t.arg.string({ required: true }),
-        input: t.arg({ type: ImageInput, required: false })
+        input: t.arg({ type: ImageInput, required: false }),
+        journeyId: t.arg.id({ required: false })
       },
-      resolve: async (query, _root, { prompt, input }, { user }) => {
+      resolve: async (query, _root, { prompt, input, journeyId }, { user }) => {
+        const teamId = await maybeResolveTeamId({ journeyId, userId: user.id })
+
         const image = await createImageFromResponse(
           await createImageFromText(prompt)
         )
@@ -224,7 +269,8 @@ builder.mutationFields((t) => ({
             uploaded: true,
             aspectRatio: input?.aspectRatio ?? undefined,
             videoId: input?.videoId ?? undefined,
-            isAi: true
+            isAi: true,
+            teamId
           }
         })
 

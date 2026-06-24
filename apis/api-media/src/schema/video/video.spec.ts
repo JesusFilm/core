@@ -305,6 +305,7 @@ describe('video', () => {
           videoId: null,
           blurhash: null,
           blurhashAttemptedAt: null,
+          teamId: null,
           isAi: null
         }
       ],
@@ -2790,6 +2791,45 @@ describe('video', () => {
           id: 'id'
         })
       })
+
+      it.each([true, false])(
+        'should update restrictAutoTranslations to %s',
+        async (restrictAutoTranslations) => {
+          prismaMock.userMediaRole.findUnique.mockResolvedValue({
+            id: 'userId',
+            userId: 'userId',
+            roles: ['publisher'],
+            createdAt: new Date(),
+            updatedAt: new Date()
+          })
+          prismaMock.video.update.mockResolvedValue({
+            id: 'id',
+            restrictAutoTranslations
+          } as unknown as Video)
+
+          const result = await authClient({
+            document: VIDEO_UPDATE_MUTATION,
+            variables: {
+              input: {
+                id: 'id',
+                restrictAutoTranslations
+              }
+            }
+          })
+
+          expect(prismaMock.video.update).toHaveBeenCalledWith(
+            expect.objectContaining({
+              where: { id: 'id' },
+              data: expect.objectContaining({
+                restrictAutoTranslations
+              })
+            })
+          )
+          expect(result).toHaveProperty('data.videoUpdate', {
+            id: 'id'
+          })
+        }
+      )
 
       it('should update video with child relations when childIds are provided', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({

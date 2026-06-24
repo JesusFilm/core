@@ -2,6 +2,9 @@ import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
@@ -55,15 +58,26 @@ export default async function UnauthorizedPage(): Promise<ReactNode> {
         </Typography>
         {process.env.NODE_ENV === 'development' && (
           <Alert severity="warning" sx={{ mt: 2 }}>
-            <strong>You need to create a UserMediaRole record</strong>
-            <ol>
-              <li>Open Prisma Studio for api-media</li>
-              <li>Select the UserMediaRole model</li>
-              <li>
-                Add a record with the id and userId below with at least one role
-              </li>
-              <li>Sign out and back in again</li>
-            </ol>
+            <Typography component="p" fontWeight="bold">
+              You need to create a UserMediaRole or UserLanguageRole record
+            </Typography>
+            <List component="ol" dense sx={{ listStyle: 'decimal', pl: 3 }}>
+              {[
+                'Open Prisma Studio for api-media or api-languages',
+                'Select the UserMediaRole or UserLanguageRole model',
+                'Add a record with the id and userId below with at least one role',
+                'Sign out and back in again'
+              ].map((instruction) => (
+                <ListItem
+                  component="li"
+                  disablePadding
+                  key={instruction}
+                  sx={{ display: 'list-item' }}
+                >
+                  <ListItemText primary={instruction} />
+                </ListItem>
+              ))}
+            </List>
           </Alert>
         )}
       </Box>
