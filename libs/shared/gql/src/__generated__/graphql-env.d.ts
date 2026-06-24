@@ -461,7 +461,7 @@ export type introspection_types = {
     'ZodError': { kind: 'OBJECT'; name: 'ZodError'; fields: { 'fieldErrors': { name: 'fieldErrors'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'LIST'; name: never; ofType: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'ZodFieldError'; ofType: null; }; }; }; } }; 'message': { name: 'message'; type: { kind: 'SCALAR'; name: 'String'; ofType: null; } }; }; };
     'ZodFieldError': { kind: 'OBJECT'; name: 'ZodFieldError'; fields: { 'message': { name: 'message'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'String'; ofType: null; }; } }; 'path': { name: 'path'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'LIST'; name: never; ofType: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'String'; ofType: null; }; }; }; } }; }; };
     'join__FieldSet': unknown;
-    'join__Graph': { name: 'join__Graph'; enumValues: 'API_ANALYTICS' | 'API_JOURNEYS_MODERN' | 'API_LANGUAGES' | 'API_MEDIA' | 'API_USERS'; };
+    'join__Graph': { name: 'join__Graph'; enumValues: 'API_ANALYTICS' | 'API_JOURNEYS' | 'API_LANGUAGES' | 'API_MEDIA' | 'API_USERS'; };
     'link__Import': unknown;
     'link__Purpose': { name: 'link__Purpose'; enumValues: 'SECURITY' | 'EXECUTION'; };
 };

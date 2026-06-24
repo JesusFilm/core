@@ -99,7 +99,7 @@ module "api-analytics" {
   }
 }
 
-module "api-journeys-modern" {
+module "api-journeys" {
   source        = "../../../apis/api-journeys/infrastructure"
   ecs_config    = local.internal_ecs_config
   env           = "stage"

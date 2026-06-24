@@ -55,10 +55,9 @@ jobs:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
     with:
       name: api-journeys
-      service: api-journeys-modern
       env: prod
       branch: ${{ github.ref_name }}
-      endpoint_url: http://api-journeys-modern.service.internal:4004/graphql
+      endpoint_url: http://api-journeys.service.internal:4004/graphql
     secrets:
       HIVE_TOKEN: ${{ secrets.HIVE_PROD_READ_WRITE_TOKEN }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}

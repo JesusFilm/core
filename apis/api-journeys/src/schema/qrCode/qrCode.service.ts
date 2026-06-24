@@ -33,7 +33,7 @@ async function graphqlRequest(
     headers: {
       'Content-Type': 'application/json',
       'interop-token': INTEROP_TOKEN,
-      'x-graphql-client-name': 'api-journeys-modern',
+      'x-graphql-client-name': 'api-journeys',
       'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
     },
     body: JSON.stringify({ query, variables })

@@ -1,5 +1,5 @@
 locals {
-  port = 4004
+  port = coalesce(var.port_override, 4004)
   environment_variables = [
     "AWS_ACCESS_KEY_ID",
     "AWS_SECRET_ACCESS_KEY",
@@ -60,7 +60,7 @@ locals {
     "VERCEL_TOKEN"
   ]
   service_config = {
-    name                              = "api-journeys-modern"
+    name                              = var.service_name
     doppler_project_name              = "api-journeys"
     is_public                         = false
     container_port                    = local.port

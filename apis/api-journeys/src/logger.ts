@@ -10,4 +10,4 @@ export const logger = pino({
     err: pino.stdSerializers.err,
     error: pino.stdSerializers.err
   }
-}).child({ service: 'api-journeys-modern' })
+}).child({ service: 'api-journeys' })

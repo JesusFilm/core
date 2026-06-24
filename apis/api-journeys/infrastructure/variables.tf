@@ -30,9 +30,21 @@ variable "env" {
   default = "prod"
 }
 
+variable "service_name" {
+  type        = string
+  default     = "api-journeys"
+  description = "Service identity used for AWS resource names, the service-discovery host, and ALB host-header routing. Override only for a temporary parallel (expand/contract) deployment."
+}
+
+variable "port_override" {
+  type        = number
+  default     = null
+  description = "Temporarily override the container/ALB-listener port. Defaults to the standard port (4004). Used only for a parallel deployment to avoid an ALB listener collision on the standard port."
+}
+
 variable "doppler_token" {
   type        = string
-  description = "Doppler token for API Journeys Modern"
+  description = "Doppler token for API Journeys"
   sensitive   = true
 }
 

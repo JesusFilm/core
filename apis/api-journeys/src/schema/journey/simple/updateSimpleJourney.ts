@@ -44,7 +44,7 @@ const httpLink = createHttpLink({
   uri: env.GATEWAY_URL,
   headers: {
     'interop-token': env.INTEROP_TOKEN,
-    'x-graphql-client-name': 'api-journeys-modern',
+    'x-graphql-client-name': 'api-journeys',
     'x-graphql-client-version': env.SERVICE_VERSION
   }
 })

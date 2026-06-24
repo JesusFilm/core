@@ -17,7 +17,7 @@ export async function runIfLeader(
   } = {}
 ): Promise<void> {
   await sharedRunIfLeader(task, {
-    lockKey: 'api-journeys-modern:workers:leader',
+    lockKey: 'api-journeys:workers:leader',
     lockTtlMs: options.lockTtlMs ?? DEFAULT_LOCK_TTL_MS,
     contend: options.contend ?? DEFAULT_CONTEND,
     contendDelayMs: options.contendDelayMs ?? DEFAULT_CONTEND_DELAY_MS,

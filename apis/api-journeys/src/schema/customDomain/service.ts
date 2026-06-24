@@ -175,7 +175,7 @@ function createGatewayClient(): ApolloClient<unknown> {
     uri: process.env.GATEWAY_URL,
     headers: {
       'interop-token': process.env.INTEROP_TOKEN ?? '',
-      'x-graphql-client-name': 'api-journeys-modern',
+      'x-graphql-client-name': 'api-journeys',
       'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
     }
   })
