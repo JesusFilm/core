@@ -404,6 +404,11 @@ type Mutation {
   videoEditionCreate(input: VideoEditionCreateInput!): VideoEdition!
   videoEditionUpdate(input: VideoEditionUpdateInput!): VideoEdition!
   videoEditionDelete(id: ID!): VideoEdition!
+  videoVariantUploadStart(input: VideoVariantUploadStartInput!): VideoVariantUpload!
+  videoVariantUploadMarkR2Prepared(id: ID!, r2AssetId: ID!): VideoVariantUpload!
+  videoVariantUploadMarkR2Complete(id: ID!): VideoVariantUpload!
+  videoVariantUploadCreateMux(id: ID!, muxVideoId: ID, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd): VideoVariantUpload!
+  videoVariantUploadResume(id: ID!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd): VideoVariantUpload!
 }
 
 input MutationBibleCitationCreateInput {
@@ -788,6 +793,8 @@ type Query {
   videoEditions(where: VideoEditionsFilter, offset: Int, limit: Int): [VideoEdition!]!
   videoEditionsCount(where: VideoEditionsFilter): Int!
   videoEdition(id: ID!): VideoEdition
+  videoVariantUpload(id: ID!): VideoVariantUpload!
+  videoVariantUploads(input: VideoVariantUploadsFilter, offset: Int, limit: Int): [VideoVariantUpload!]!
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
   youtubeClosedCaptionLanguages(videoId: ID!): QueryYoutubeClosedCaptionLanguagesResult!
@@ -1534,6 +1541,73 @@ input VideoVariantUpdateInput {
   muxVideoId: String
   brightcoveId: String
   version: Int
+}
+
+type VideoVariantUpload {
+  id: ID!
+  source: String!
+  sourceKey: String
+  status: VideoVariantUploadStatus!
+  videoId: ID!
+  edition: String!
+  languageId: ID!
+  version: Int!
+  published: Boolean!
+  originalFilename: String
+  contentType: String
+  contentLength: BigInt
+  duration: Int
+  durationMs: Int
+  width: Int
+  height: Int
+  r2AssetId: ID
+  muxVideoId: ID
+  videoVariantId: ID
+  errorMessage: String
+  createdAt: Date!
+  updatedAt: Date!
+  r2Asset: CloudflareR2
+  muxVideo: MuxVideo
+  videoVariant: VideoVariant
+}
+
+input VideoVariantUploadStartInput {
+  id: ID
+  source: String!
+  sourceKey: String
+  videoId: ID!
+  edition: String!
+  languageId: ID!
+  version: Int!
+  published: Boolean
+  originalFilename: String
+  contentType: String
+  contentLength: BigInt
+  duration: Int
+  durationMs: Int
+  width: Int
+  height: Int
+  r2AssetId: ID
+}
+
+enum VideoVariantUploadStatus {
+  created
+  r2Prepared
+  r2Uploaded
+  muxCreated
+  muxReady
+  variantCreated
+  failed
+}
+
+input VideoVariantUploadsFilter {
+  status: VideoVariantUploadStatus
+  statuses: [VideoVariantUploadStatus!]
+  videoId: ID
+  languageId: ID
+  edition: String
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
 }
 
 input VideosFilter {

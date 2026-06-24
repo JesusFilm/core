@@ -104,6 +104,102 @@ describe('processVideoUploads service', () => {
     })
   })
 
+  it('updates an existing variant idempotently and marks the durable upload complete', async () => {
+    const uploadJob = {
+      data: {
+        ...mockJob.data,
+        uploadId: 'upload-id'
+      }
+    } as Job<ProcessVideoUploadJobData>
+
+    prismaMock.muxVideo.findUnique.mockResolvedValue({
+      id: 'mux-video-id',
+      assetId: 'asset-id'
+    } as any)
+    ;(getVideo as Mock).mockResolvedValue({
+      status: 'ready',
+      duration: 120,
+      playback_ids: [{ id: 'playback-id', policy: 'public' }]
+    })
+
+    prismaMock.muxVideo.update.mockResolvedValue({} as any)
+    prismaMock.videoVariantUpload.update.mockResolvedValue({} as any)
+    prismaMock.video.findUnique.mockResolvedValue({ slug: 'video-slug' } as any)
+    prismaMock.videoVariant.findFirst.mockResolvedValue({
+      id: 'variant-id',
+      slug: 'variant-slug'
+    } as any)
+    prismaMock.videoVariant.update.mockResolvedValue({
+      id: 'variant-id'
+    } as any)
+
+    await service(uploadJob, mockLogger)
+
+    expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
+      where: { id: 'variant-id' },
+      data: expect.objectContaining({
+        muxVideoId: 'mux-video-id',
+        downloadable: true,
+        published: true,
+        version: 1
+      })
+    })
+    expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
+    expect(prismaMock.videoVariantUpload.update).toHaveBeenCalledWith({
+      where: { id: 'upload-id' },
+      data: { status: 'muxReady', errorMessage: null }
+    })
+    expect(prismaMock.videoVariantUpload.update).toHaveBeenCalledWith({
+      where: { id: 'upload-id' },
+      data: {
+        status: 'variantCreated',
+        videoVariantId: 'variant-id',
+        errorMessage: null
+      }
+    })
+  })
+
+  it('marks the durable upload failed when final variant creation fails', async () => {
+    const uploadJob = {
+      data: {
+        ...mockJob.data,
+        uploadId: 'upload-id'
+      }
+    } as Job<ProcessVideoUploadJobData>
+    const variantError = new Error('variant update failed')
+
+    prismaMock.muxVideo.findUnique.mockResolvedValue({
+      id: 'mux-video-id',
+      assetId: 'asset-id'
+    } as any)
+    ;(getVideo as Mock).mockResolvedValue({
+      status: 'ready',
+      duration: 120,
+      playback_ids: [{ id: 'playback-id', policy: 'public' }]
+    })
+
+    prismaMock.muxVideo.update.mockResolvedValue({} as any)
+    prismaMock.videoVariantUpload.update.mockResolvedValue({} as any)
+    prismaMock.video.findUnique.mockResolvedValue({ slug: 'video-slug' } as any)
+    prismaMock.videoVariant.findFirst.mockResolvedValue({
+      id: 'variant-id',
+      slug: 'variant-slug'
+    } as any)
+    prismaMock.videoVariant.update.mockRejectedValue(variantError)
+
+    await expect(service(uploadJob, mockLogger)).rejects.toThrow(
+      'variant update failed'
+    )
+
+    expect(prismaMock.videoVariantUpload.update).toHaveBeenCalledWith({
+      where: { id: 'upload-id' },
+      data: {
+        status: 'failed',
+        errorMessage: 'variant update failed'
+      }
+    })
+  })
+
   it('logs and stops when mux video processing errored', async () => {
     prismaMock.muxVideo.findUnique.mockResolvedValue({
       id: 'mux-video-id',
@@ -124,7 +220,8 @@ describe('processVideoUploads service', () => {
       {
         videoId: 'video-id',
         muxVideoId: 'mux-video-id',
-        finalStatus: 'errored'
+        finalStatus: 'errored',
+        uploadId: undefined
       },
       'Video upload processing failed due to Mux error'
     )

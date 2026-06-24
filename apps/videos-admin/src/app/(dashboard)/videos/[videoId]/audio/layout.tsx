@@ -5,8 +5,10 @@ import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import PublishIcon from '@mui/icons-material/Publish'
+import ReplayIcon from '@mui/icons-material/Replay'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
@@ -16,12 +18,11 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
 
 import { PublishedChip } from '../../../../../components/PublishedChip'
-import { Section } from '../../../../../components/Section'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 const GET_ADMIN_VIDEO_VARIANTS = graphql(`
@@ -45,14 +46,118 @@ const GET_ADMIN_VIDEO_VARIANTS = graphql(`
   }
 `)
 
-const UPDATE_VIDEO_VARIANT = graphql(`
-  mutation UpdateVideoVariant($input: VideoVariantUpdateInput!) {
-    videoVariantUpdate(input: $input) {
+const GET_VIDEO_VARIANT_UPLOADS = graphql(`
+  query GetVideoVariantUploads($input: VideoVariantUploadsFilter, $limit: Int) {
+    videoVariantUploads(input: $input, limit: $limit) {
       id
-      published
+      source
+      status
+      videoId
+      languageId
+      edition
+      originalFilename
+      errorMessage
+      muxVideoId
+      videoVariantId
+      updatedAt
+      createdAt
     }
   }
 `)
+
+const RESUME_VIDEO_VARIANT_UPLOAD = graphql(`
+  mutation ResumeVideoVariantUpload(
+    $id: ID!
+    $downloadable: Boolean
+    $maxResolution: MaxResolutionTier
+  ) {
+    videoVariantUploadResume(
+      id: $id
+      downloadable: $downloadable
+      maxResolution: $maxResolution
+    ) {
+      id
+      status
+      errorMessage
+      muxVideoId
+      videoVariantId
+      updatedAt
+    }
+  }
+`)
+
+type VideoVariantUploadStatus =
+  | 'created'
+  | 'r2Prepared'
+  | 'r2Uploaded'
+  | 'muxCreated'
+  | 'muxReady'
+  | 'variantCreated'
+  | 'failed'
+
+interface VideoVariantUploadRow {
+  id: string
+  source: string
+  status: VideoVariantUploadStatus
+  videoId: string
+  languageId: string
+  edition: string
+  originalFilename?: string | null
+  errorMessage?: string | null
+  muxVideoId?: string | null
+  videoVariantId?: string | null
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+
+const incompleteUploadStatuses: VideoVariantUploadStatus[] = [
+  'created',
+  'r2Prepared',
+  'r2Uploaded',
+  'muxCreated',
+  'muxReady',
+  'failed'
+]
+
+const uploadStatusLabels: Record<VideoVariantUploadStatus, string> = {
+  created: 'Upload started',
+  r2Prepared: 'R2 prepared',
+  r2Uploaded: 'Processing',
+  muxCreated: 'Processing',
+  muxReady: 'Finalizing',
+  failed: 'Failed',
+  variantCreated: 'Complete'
+}
+
+function getUploadStatusColor(status: VideoVariantUploadStatus) {
+  if (status === 'failed') return 'error'
+  if (status === 'muxReady' || status === 'muxCreated') return 'info'
+  return 'warning'
+}
+
+function canResumeUpload(status: VideoVariantUploadStatus) {
+  return status !== 'created' && status !== 'r2Prepared'
+}
+
+function getBackgroundUploadMessage(status: VideoVariantUploadStatus) {
+  if (
+    status === 'r2Uploaded' ||
+    status === 'muxCreated' ||
+    status === 'muxReady'
+  ) {
+    return 'Processing will finish in the background.'
+  }
+
+  return null
+}
+
+function getUnresumableUploadMessage(status: VideoVariantUploadStatus) {
+  if (status === 'created' || status === 'r2Prepared') {
+    return 'This upload cannot be resumed because the browser did not finish sending the file to R2. Add this audio language again.'
+  }
+
+  return null
+}
 export default function ClientLayout({
   children
 }: {
@@ -62,17 +167,39 @@ export default function ClientLayout({
   const pathname = usePathname()
   const { enqueueSnackbar } = useSnackbar()
   const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
+  const [resumingUploadId, setResumingUploadId] = useState<string | null>(null)
+  const [isResumeRequestInFlight, setIsResumeRequestInFlight] = useState(false)
   const { videoId } = useParams<{ videoId: string }>()
 
   const { data, loading, refetch } = useQuery(GET_ADMIN_VIDEO_VARIANTS, {
     variables: { id: videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
   })
 
-  const [updateVariant, { loading: isPublishing }] =
-    useMutation(UPDATE_VIDEO_VARIANT)
+  const {
+    data: uploadsData,
+    refetch: refetchUploads,
+    startPolling: startUploadPolling,
+    stopPolling: stopUploadPolling
+  } = useQuery(GET_VIDEO_VARIANT_UPLOADS, {
+    variables: {
+      input: { videoId, statuses: incompleteUploadStatuses },
+      limit: 100
+    },
+    fetchPolicy: 'cache-and-network'
+  })
+
+  const [resumeVideoVariantUpload] = useMutation(RESUME_VIDEO_VARIANT_UPLOAD)
+
+  const incompleteUploads = useMemo(
+    () => (uploadsData?.videoVariantUploads ?? []) as VideoVariantUploadRow[],
+    [uploadsData?.videoVariantUploads]
+  )
 
   useEffect(() => {
-    if (reloadOnPathChange) void refetch()
+    if (reloadOnPathChange) {
+      void refetch()
+      void refetchUploads()
+    }
     setReloadOnPathChange(
       (pathname?.includes('add') ||
         pathname?.includes('delete') ||
@@ -80,6 +207,50 @@ export default function ClientLayout({
         false
     )
   }, [pathname])
+
+  useEffect(() => {
+    if (incompleteUploads.length > 0 || resumingUploadId != null) {
+      startUploadPolling(3000)
+      return () => stopUploadPolling()
+    }
+
+    stopUploadPolling()
+  }, [
+    incompleteUploads.length,
+    resumingUploadId,
+    startUploadPolling,
+    stopUploadPolling
+  ])
+
+  const completeResumedUpload = useCallback(() => {
+    setResumingUploadId(null)
+    enqueueSnackbar('Audio language restored', { variant: 'success' })
+    void refetch()
+    void refetchUploads()
+  }, [enqueueSnackbar, refetch, refetchUploads])
+
+  useEffect(() => {
+    if (resumingUploadId == null || isResumeRequestInFlight) return
+
+    const upload = incompleteUploads.find((row) => row.id === resumingUploadId)
+    if (upload == null) {
+      completeResumedUpload()
+      return
+    }
+
+    if (upload.status === 'failed') {
+      setResumingUploadId(null)
+      enqueueSnackbar(upload.errorMessage ?? 'Video upload resume failed', {
+        variant: 'error'
+      })
+    }
+  }, [
+    completeResumedUpload,
+    enqueueSnackbar,
+    resumingUploadId,
+    isResumeRequestInFlight,
+    incompleteUploads
+  ])
 
   const handleAddAudioLanguage = useCallback((): void => {
     router.push(`/videos/${videoId}/audio/add`, {
@@ -134,6 +305,161 @@ export default function ClientLayout({
     router.push(`/videos/${videoId}/audio/publishAll`, { scroll: false })
   }, [data?.adminVideo.variants, enqueueSnackbar, router, videoId])
 
+  const handleResumeUpload = useCallback(
+    async (uploadId: string) => {
+      setIsResumeRequestInFlight(true)
+      try {
+        const result = await resumeVideoVariantUpload({
+          variables: {
+            id: uploadId,
+            downloadable: true,
+            maxResolution: 'uhd'
+          }
+        })
+        const upload = result.data?.videoVariantUploadResume
+
+        if (upload?.status === 'variantCreated') {
+          completeResumedUpload()
+          return
+        }
+
+        if (upload?.status === 'failed') {
+          setResumingUploadId(null)
+          enqueueSnackbar(upload.errorMessage ?? 'Video upload resume failed', {
+            variant: 'error'
+          })
+          return
+        }
+
+        setResumingUploadId(uploadId)
+        await refetchUploads()
+      } catch (error) {
+        setResumingUploadId(null)
+        enqueueSnackbar(
+          error instanceof Error ? error.message : 'Video upload resume failed',
+          { variant: 'error' }
+        )
+      } finally {
+        setIsResumeRequestInFlight(false)
+      }
+    },
+    [
+      completeResumedUpload,
+      enqueueSnackbar,
+      refetchUploads,
+      resumeVideoVariantUpload
+    ]
+  )
+
+  const renderIncompleteUploadItems = () => {
+    return incompleteUploads.map((upload) => {
+      const isResuming = resumingUploadId === upload.id
+      const statusLabel = uploadStatusLabels[upload.status] ?? upload.status
+      const canResume = canResumeUpload(upload.status)
+      const canReupload = !canResume
+      const actionLabel = upload.status === 'failed' ? 'Retry' : 'Resume'
+      const backgroundUploadMessage = getBackgroundUploadMessage(upload.status)
+      const unresumableMessage = getUnresumableUploadMessage(upload.status)
+
+      return (
+        <ListItem
+          key={upload.id}
+          sx={{
+            border: '1px solid',
+            borderColor: 'warning.light',
+            backgroundColor: 'background.default',
+            borderRadius: 1,
+            p: 1,
+            mb: 1,
+            minHeight: 66,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Box sx={{ minWidth: 0 }}>
+            <Stack direction="row" gap={1} alignItems="center" flexWrap="wrap">
+              <Typography variant="body2" fontWeight={600}>
+                Language {upload.languageId}
+              </Typography>
+              <Chip
+                size="small"
+                label={statusLabel}
+                color={getUploadStatusColor(upload.status) as any}
+              />
+            </Stack>
+            <Typography variant="caption" color="text.secondary">
+              {upload.edition} • {upload.source}
+              {upload.originalFilename != null
+                ? ` • ${upload.originalFilename}`
+                : ''}
+            </Typography>
+            {backgroundUploadMessage != null && (
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ display: 'block' }}
+              >
+                {backgroundUploadMessage}
+              </Typography>
+            )}
+            {unresumableMessage != null && (
+              <Typography
+                variant="caption"
+                color="warning.main"
+                sx={{ display: 'block' }}
+              >
+                {unresumableMessage}
+              </Typography>
+            )}
+            {upload.errorMessage != null && (
+              <Typography
+                variant="caption"
+                color="error.main"
+                sx={{ display: 'block' }}
+              >
+                {upload.errorMessage}
+              </Typography>
+            )}
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: 'block' }}
+            >
+              Upload id: {upload.id}
+            </Typography>
+          </Box>
+          <Button
+            size="small"
+            variant="outlined"
+            startIcon={
+              isResuming ? undefined : canReupload ? (
+                <AddIcon />
+              ) : (
+                <ReplayIcon />
+              )
+            }
+            disabled={resumingUploadId != null || isResumeRequestInFlight}
+            onClick={() => {
+              if (canReupload) {
+                handleAddAudioLanguage()
+                return
+              }
+
+              void handleResumeUpload(upload.id)
+            }}
+          >
+            {canReupload
+              ? 'Add again'
+              : isResuming
+                ? 'Resuming...'
+                : actionLabel}
+          </Button>
+        </ListItem>
+      )
+    })
+  }
+
   const renderContent = () => {
     if (loading) {
       return (
@@ -155,7 +481,10 @@ export default function ClientLayout({
       )
     }
 
-    if (!data?.adminVideo.variants || data.adminVideo.variants.length === 0) {
+    if (
+      (!data?.adminVideo.variants || data.adminVideo.variants.length === 0) &&
+      incompleteUploads.length === 0
+    ) {
       return (
         <Box
           sx={{
@@ -177,13 +506,15 @@ export default function ClientLayout({
     return (
       <Box
         sx={{
-          height: 'calc(100% - 60px)',
+          flex: 1,
+          minHeight: 0,
           overflow: 'auto',
           mt: 1
         }}
       >
         <List disablePadding>
-          {data.adminVideo.variants.map((variant) => {
+          {renderIncompleteUploadItems()}
+          {(data?.adminVideo.variants ?? []).map((variant) => {
             const canPreview =
               variant.published &&
               data?.adminVideo?.published &&
@@ -284,7 +615,9 @@ export default function ClientLayout({
           borderRadius: 1,
           width: '100%',
           p: 2,
-          height: 'calc(100vh - 400px)'
+          height: 'calc(100vh - 260px)',
+          minHeight: 420,
+          maxHeight: 'calc(100vh - 220px)'
         }}
       >
         {/* Custom header with both buttons */}
@@ -319,7 +652,9 @@ export default function ClientLayout({
         </Stack>
 
         {/* Content */}
-        <Box sx={{ flex: 1, overflow: 'auto' }}>{renderContent()}</Box>
+        <Box sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+          {renderContent()}
+        </Box>
       </Stack>
       {children}
     </>
