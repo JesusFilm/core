@@ -9,7 +9,7 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useParams, useRouter, useSelectedLayoutSegment } from 'next/navigation'
-import { ReactNode, useCallback, useEffect, useRef } from 'react'
+import { ReactNode, useCallback } from 'react'
 
 import { graphql } from '@core/shared/gql'
 
@@ -54,15 +54,6 @@ export default function VideoViewLayout({
 }: VideoViewLayoutProps): ReactNode {
   const router = useRouter()
   const { videoId } = useParams<{ videoId: string }>()
-  const previousVideoId = useRef<string | null>(null)
-
-  useEffect(() => {
-    if (previousVideoId.current !== videoId) {
-      window.scrollTo({ top: 0, left: 0 })
-      previousVideoId.current = videoId
-    }
-  }, [videoId])
-
   // keep metadata visible when modal is open
   const availableTabs = [
     'metadata',

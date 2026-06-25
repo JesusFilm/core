@@ -6,7 +6,6 @@ import VideoViewLayout from './layout'
 
 const mockPush = vi.fn()
 const mockSegment = vi.fn()
-const mockScrollTo = vi.fn()
 const mockVideoInformation = vi.fn(() => (
   <div data-testid="video-information" />
 ))
@@ -14,7 +13,6 @@ const mockVideoInformation = vi.fn(() => (
 vi.mock('next/navigation', () => ({
   useParams: () => ({ videoId: 'video123' }),
   useRouter: () => ({ push: mockPush }),
-  usePathname: () => '/videos/video123',
   useSelectedLayoutSegment: () => mockSegment()
 }))
 
@@ -63,7 +61,6 @@ describe('VideoViewLayout', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    window.scrollTo = mockScrollTo
     mockSegment.mockReturnValue('metadata')
     useSuspenseQuery.mockReturnValue({
       data: {
@@ -77,16 +74,6 @@ describe('VideoViewLayout', () => {
         }
       }
     })
-  })
-
-  it('scrolls to the top when the video detail page loads', () => {
-    render(
-      <VideoViewLayout studyQuestions={<div>Study questions</div>}>
-        <div />
-      </VideoViewLayout>
-    )
-
-    expect(mockScrollTo).toHaveBeenCalledWith({ top: 0, left: 0 })
   })
 
   it('uses the children tab behind the publish all dialog without rendering metadata queries', () => {

@@ -140,7 +140,6 @@ describe('VideoTabView', () => {
     expect(screen.getByText('Audio Languages')).toBeInTheDocument()
     expect(screen.getByText('Editions')).toBeInTheDocument()
     expect(screen.getByText('Restrictions')).toBeInTheDocument()
-    expect(screen.getByText('Troubleshooting')).toBeInTheDocument()
 
     // Verify counts are displayed
     expect(screen.getByText('5')).toBeInTheDocument() // Children count
@@ -163,7 +162,6 @@ describe('VideoTabView', () => {
     expect(screen.getByText('Audio Languages')).toBeInTheDocument()
     expect(screen.getByText('Editions')).toBeInTheDocument()
     expect(screen.getByText('Restrictions')).toBeInTheDocument()
-    expect(screen.getByText('Troubleshooting')).toBeInTheDocument()
 
     // Verify counts are displayed
     expect(screen.getByText('10')).toBeInTheDocument() // Children count
@@ -186,7 +184,6 @@ describe('VideoTabView', () => {
     expect(screen.getByText('Audio Languages')).toBeInTheDocument()
     expect(screen.getByText('Editions')).toBeInTheDocument()
     expect(screen.getByText('Restrictions')).toBeInTheDocument()
-    expect(screen.getByText('Troubleshooting')).toBeInTheDocument()
   })
 
   it('should have correct hrefs', () => {
@@ -206,6 +203,5 @@ describe('VideoTabView', () => {
     expect(tabs[2]).toHaveAttribute('href', '/videos/video-123/audio')
     expect(tabs[3]).toHaveAttribute('href', '/videos/video-123/editions')
     expect(tabs[4]).toHaveAttribute('href', '/videos/video-123/restrictions')
-    expect(tabs[5]).toHaveAttribute('href', '/videos/video-123/troubleshooting')
   })
 })
