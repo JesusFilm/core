@@ -66,7 +66,7 @@ describe('ImageLibrary', () => {
       )
       expect(screen.getByText('Custom')).toBeInTheDocument()
       expect(
-        screen.getByTestId('ImageBlockEditor').parentElement?.parentElement
+        screen.getByTestId('ImageBlockEditor').closest('.swiper-no-swiping')
       ).toHaveClass('swiper-no-swiping MuiBox-root')
     })
 
@@ -112,7 +112,7 @@ describe('ImageLibrary', () => {
       )
       expect(screen.getByText('Custom')).toBeInTheDocument()
       expect(
-        screen.getByTestId('ImageBlockEditor').parentElement?.parentElement
+        screen.getByTestId('ImageBlockEditor').closest('.swiper-no-swiping')
       ).toHaveClass('swiper-no-swiping MuiBox-root')
     })
   })

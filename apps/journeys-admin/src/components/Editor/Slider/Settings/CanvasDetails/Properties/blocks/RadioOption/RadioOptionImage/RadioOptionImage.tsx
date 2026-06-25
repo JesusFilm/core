@@ -138,7 +138,10 @@ export function RadioOptionImage({
     RadioOptionImageRestoreVariables
   >(RADIO_OPTION_IMAGE_RESTORE)
 
-  function createImageBlock(input: ImageBlockUpdateInput): void {
+  function createImageBlock(
+    input: ImageBlockUpdateInput,
+    shouldFocus = true
+  ): void {
     if (journey == null || radioOptionBlock == null) return
 
     const block: ImageBlock = {
@@ -163,14 +166,17 @@ export function RadioOptionImage({
         undo: {}
       },
       execute() {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          activeSlide: ActiveSlide.Content,
-          selectedStep,
-          activeContent: ActiveContent.Canvas,
-          selectedBlock: radioOptionBlock,
-          selectedBlockId: radioOptionBlock.id
-        })
+        // Skip the canvas refocus when the change originates from the secondary
+        // image drawer, so the card does not shift behind the drawer.
+        if (shouldFocus)
+          dispatch({
+            type: 'SetEditorFocusAction',
+            activeSlide: ActiveSlide.Content,
+            selectedStep,
+            activeContent: ActiveContent.Canvas,
+            selectedBlock: radioOptionBlock,
+            selectedBlockId: radioOptionBlock.id
+          })
         void radioOptionImageCreate({
           variables: {
             id: block.id,
@@ -268,7 +274,10 @@ export function RadioOptionImage({
     })
   }
 
-  function updateImageBlock(input: ImageBlockUpdateInput): void {
+  function updateImageBlock(
+    input: ImageBlockUpdateInput,
+    shouldFocus = true
+  ): void {
     if (journey == null || imageBlock == null) return
 
     const block: ImageBlock = {
@@ -283,12 +292,11 @@ export function RadioOptionImage({
       scale: input?.scale ?? imageBlock.scale
     }
 
-    add({
-      parameters: {
-        execute: block,
-        undo: imageBlock
-      },
-      execute(block) {
+    // A live select from the secondary image drawer skips the canvas refocus so
+    // the card does not shift behind the drawer; undo/redo always refocus to
+    // show the change, matching the rest of the editor.
+    function update(block: ImageBlock, focus: boolean): void {
+      if (focus)
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
@@ -297,16 +305,25 @@ export function RadioOptionImage({
           selectedBlock: radioOptionBlock,
           selectedBlockId: radioOptionBlock.id
         })
-        void radioOptionImageUpdate({
-          variables: {
-            id: imageBlock.id,
-            input: pick(block, Object.keys(input))
-          },
-          optimisticResponse: {
-            imageBlockUpdate: block
-          }
-        })
-      }
+      void radioOptionImageUpdate({
+        variables: {
+          id: block.id,
+          input: pick(block, Object.keys(input))
+        },
+        optimisticResponse: {
+          imageBlockUpdate: block
+        }
+      })
+    }
+
+    add({
+      parameters: {
+        execute: block,
+        undo: imageBlock
+      },
+      execute: (block) => update(block, shouldFocus),
+      undo: (block) => update(block, true),
+      redo: (block) => update(block, true)
     })
   }
 
@@ -381,13 +398,16 @@ export function RadioOptionImage({
     })
   }
 
-  async function handleChange(input: ImageBlockUpdateInput): Promise<void> {
+  async function handleChange(
+    input: ImageBlockUpdateInput,
+    shouldFocus = true
+  ): Promise<void> {
     if (input.src === '') return
 
     if (imageBlock == null) {
-      await createImageBlock(input)
+      await createImageBlock(input, shouldFocus)
     } else {
-      await updateImageBlock(input)
+      await updateImageBlock(input, shouldFocus)
     }
   }
 
