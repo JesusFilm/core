@@ -30,7 +30,7 @@ describe('loadJourneyLocaleResources', () => {
   describe('resolveLocaleFolder', () => {
     test('maps short language codes to their region folder', async () => {
       const { resolveLocaleFolder }: ModuleUnderTest = await import(
-        './loadJourneyLocaleResources'
+        /* webpackChunkName: "test-loadJourneyLocaleResources" */ './loadJourneyLocaleResources'
       )
 
       expect(resolveLocaleFolder('fr')).toBe('fr-FR')
@@ -40,7 +40,7 @@ describe('loadJourneyLocaleResources', () => {
 
     test('canonicalises casing and passes region tags through', async () => {
       const { resolveLocaleFolder }: ModuleUnderTest = await import(
-        './loadJourneyLocaleResources'
+        /* webpackChunkName: "test-loadJourneyLocaleResources" */ './loadJourneyLocaleResources'
       )
 
       expect(resolveLocaleFolder('zh-Hans-CN')).toBe('zh-Hans-CN')

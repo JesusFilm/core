@@ -19,7 +19,7 @@ import { getCardMetadata } from '.'
 
 // Passthrough translator that also resolves {{interpolation}} placeholders so
 // assertions read the literal English copy getCardMetadata passes through.
-const t = ((key: string, options?: Record<string, unknown>): string =>
+const t = ((key: string, options?: Record<string, string | number>): string =>
   key.replace(/{{(\w+)}}/g, (_, name: string) =>
     String(options?.[name] ?? '')
   )) as unknown as TFunction
