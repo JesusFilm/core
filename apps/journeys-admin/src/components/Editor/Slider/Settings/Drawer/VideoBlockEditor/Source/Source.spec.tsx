@@ -183,7 +183,9 @@ describe('Source', () => {
           startAt: 0,
           endAt: 144
         },
-        true
+        // shouldFocus is false: selecting a video must not slide the canvas
+        // back, since the block is already in view behind this drawer.
+        false
       )
     )
     await waitFor(() => {

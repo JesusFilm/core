@@ -46,7 +46,10 @@ export function ImageOptions(): ReactElement {
     await updateImageBlock({ src: null, alt: '' })
   }
 
-  function updateImageBlock(input: ImageBlockUpdateInput): void {
+  function updateImageBlock(
+    input: ImageBlockUpdateInput,
+    shouldFocus = true
+  ): void {
     const block: ImageBlock = {
       ...imageBlock,
       ...input,
@@ -56,27 +59,35 @@ export function ImageOptions(): ReactElement {
       width: input.width ?? imageBlock.width
     }
 
-    add({
-      parameters: {
-        execute: block,
-        undo: imageBlock
-      },
-      execute(block) {
+    // A live select from the secondary image drawer skips the refocus so the
+    // card does not slide back into view; undo/redo always refocus to show the
+    // change, matching the rest of the editor.
+    function update(block: ImageBlock, focus: boolean): void {
+      if (focus)
         dispatch({
           type: 'SetEditorFocusAction',
           selectedBlock,
           selectedStep
         })
-        void imageBlockUpdate({
-          variables: {
-            id: imageBlock.id,
-            input: pick(block, Object.keys(input))
-          },
-          optimisticResponse: {
-            imageBlockUpdate: block
-          }
-        })
-      }
+      void imageBlockUpdate({
+        variables: {
+          id: imageBlock.id,
+          input: pick(block, Object.keys(input))
+        },
+        optimisticResponse: {
+          imageBlockUpdate: block
+        }
+      })
+    }
+
+    add({
+      parameters: {
+        execute: block,
+        undo: imageBlock
+      },
+      execute: (block) => update(block, shouldFocus),
+      undo: (block) => update(block, true),
+      redo: (block) => update(block, true)
     })
   }
 
@@ -85,7 +96,9 @@ export function ImageOptions(): ReactElement {
       <Stack direction="column" gap={4}>
         <ImageSource
           selectedBlock={imageBlock}
-          onChange={async (input) => updateImageBlock(input)}
+          onChange={async (input, shouldFocus) =>
+            updateImageBlock(input, shouldFocus)
+          }
           onDelete={deleteImageBlock}
         />
         <FocalPoint
