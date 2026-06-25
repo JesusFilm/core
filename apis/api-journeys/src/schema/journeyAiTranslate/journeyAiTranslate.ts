@@ -322,7 +322,10 @@ async function translateCardBlocks({
 
   if (pendingBlockIds.size > 0) {
     logger.warn(
-      { cardBlockId: cardBlock.id, missingBlockIds: Array.from(pendingBlockIds) },
+      {
+        cardBlockId: cardBlock.id,
+        missingBlockIds: Array.from(pendingBlockIds)
+      },
       'Card translation incomplete: some blocks were not translated after retries'
     )
   }
