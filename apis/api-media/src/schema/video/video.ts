@@ -735,13 +735,16 @@ builder.mutationFields((t) => ({
     resolve: async (query, _parent, { input }) => {
       // Get current video data to check if published status is changing and to prevent slug change after publish
       const currentVideo =
-        input.published !== undefined || input.slug !== undefined
+        input.published !== undefined ||
+        input.slug !== undefined ||
+        input.restrictAutoTranslations === false
           ? await prisma.video.findUnique({
               where: { id: input.id },
               select: {
                 published: true,
                 publishedAt: true,
                 slug: true,
+                restrictAutoTranslations: true,
                 variants: {
                   where: { published: true },
                   select: { languageId: true }
@@ -757,6 +760,15 @@ builder.mutationFields((t) => ({
         currentVideo?.publishedAt != null
       ) {
         throw new Error('Cannot change slug after video has been published')
+      }
+
+      if (
+        input.restrictAutoTranslations === false &&
+        currentVideo?.restrictAutoTranslations === true
+      ) {
+        throw new Error(
+          'Automatic translation restriction cannot be disabled once enabled'
+        )
       }
 
       // If published is being set to true, we need to check if publishedAt should be set

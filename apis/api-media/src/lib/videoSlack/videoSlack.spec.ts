@@ -61,6 +61,7 @@ function videoRow(overrides: Partial<VideoRow>): VideoRow {
     originId: null,
     restrictDownloadPlatforms: [],
     restrictViewPlatforms: [],
+    restrictAutoTranslations: false,
     publishedAt: null,
     createdAt: testDate,
     updatedAt: testDate,

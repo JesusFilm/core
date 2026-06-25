@@ -80,6 +80,7 @@ describe('video', () => {
       originId: null,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      restrictAutoTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -97,6 +98,7 @@ describe('video', () => {
       originId: null,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      restrictAutoTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -117,6 +119,7 @@ describe('video', () => {
       originId: null,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      restrictAutoTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -134,6 +137,7 @@ describe('video', () => {
       originId: null,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      restrictAutoTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -154,6 +158,7 @@ describe('video', () => {
       locked: false,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      restrictAutoTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -399,6 +404,7 @@ describe('video', () => {
     locked: false,
     restrictDownloadPlatforms: [],
     restrictViewPlatforms: [],
+    restrictAutoTranslations: false,
     publishedAt: null
   }
 
@@ -2352,6 +2358,7 @@ describe('video', () => {
       locked: false,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      restrictAutoTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -2792,44 +2799,88 @@ describe('video', () => {
         })
       })
 
-      it.each([true, false])(
-        'should update restrictAutoTranslations to %s',
-        async (restrictAutoTranslations) => {
-          prismaMock.userMediaRole.findUnique.mockResolvedValue({
-            id: 'userId',
-            userId: 'userId',
-            roles: ['publisher'],
-            createdAt: new Date(),
-            updatedAt: new Date()
-          })
-          prismaMock.video.update.mockResolvedValue({
-            id: 'id',
-            restrictAutoTranslations
-          } as unknown as Video)
+      it('should enable restrictAutoTranslations', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.update.mockResolvedValue({
+          id: 'id',
+          restrictAutoTranslations: true
+        } as unknown as Video)
 
-          const result = await authClient({
-            document: VIDEO_UPDATE_MUTATION,
-            variables: {
-              input: {
-                id: 'id',
-                restrictAutoTranslations
-              }
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              restrictAutoTranslations: true
             }
-          })
+          }
+        })
 
-          expect(prismaMock.video.update).toHaveBeenCalledWith(
-            expect.objectContaining({
-              where: { id: 'id' },
-              data: expect.objectContaining({
-                restrictAutoTranslations
-              })
+        expect(prismaMock.video.update).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: { id: 'id' },
+            data: expect.objectContaining({
+              restrictAutoTranslations: true
             })
-          )
-          expect(result).toHaveProperty('data.videoUpdate', {
-            id: 'id'
           })
-        }
-      )
+        )
+        expect(result).toHaveProperty('data.videoUpdate', {
+          id: 'id'
+        })
+      })
+
+      it('should keep restrictAutoTranslations enabled once set', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          published: true,
+          publishedAt: null,
+          slug: 'slug',
+          restrictAutoTranslations: true,
+          variants: []
+        } as unknown as Video)
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              restrictAutoTranslations: false
+            }
+          }
+        })
+
+        expect(prismaMock.video.findUnique).toHaveBeenCalledWith({
+          where: { id: 'id' },
+          select: {
+            published: true,
+            publishedAt: true,
+            slug: true,
+            restrictAutoTranslations: true,
+            variants: {
+              where: { published: true },
+              select: { languageId: true }
+            }
+          }
+        })
+        expect(prismaMock.video.update).not.toHaveBeenCalled()
+        expect(result).toHaveProperty('data', null)
+        expect(result).toHaveProperty('errors')
+        expect((result as any).errors?.[0]?.message).toBe(
+          'Automatic translation restriction cannot be disabled once enabled'
+        )
+      })
 
       it('should update video with child relations when childIds are provided', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
@@ -3435,7 +3486,6 @@ describe('video', () => {
         })
 
         expect(result).toHaveProperty('data', null)
-        expect(prismaMock.video.findUnique).not.toHaveBeenCalled()
         expect(mockUpdateVideoAvailableLanguages).not.toHaveBeenCalled()
       })
     })
@@ -3499,6 +3549,7 @@ describe('video', () => {
         originId: null,
         restrictDownloadPlatforms: [],
         restrictViewPlatforms: [],
+        restrictAutoTranslations: false,
         publishedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -3549,6 +3600,7 @@ describe('video', () => {
         originId: null,
         restrictDownloadPlatforms: [],
         restrictViewPlatforms: [],
+        restrictAutoTranslations: false,
         publishedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
