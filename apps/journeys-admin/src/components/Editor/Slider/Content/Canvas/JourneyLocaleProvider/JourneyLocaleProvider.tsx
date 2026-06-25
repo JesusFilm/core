@@ -10,7 +10,7 @@ import {
 // eslint-disable-next-line no-restricted-imports
 import { I18nextProvider } from 'react-i18next'
 
-import { LOCALE_MAP, loadJourneyLocaleResources } from './utils'
+import { loadJourneyLocaleResources } from './utils'
 
 interface JourneyLocaleProviderProps {
   children: ReactNode
@@ -29,17 +29,13 @@ export function JourneyLocaleProvider({
     Record<string, Record<string, any>>
   >({})
 
-  const memoizedLoadResources = useCallback(
-    async (directoryLocale: string): Promise<void> => {
-      return loadJourneyLocaleResources(locale, setResources, directoryLocale)
-    },
-    [locale, setResources]
-  )
+  const memoizedLoadResources = useCallback(async (): Promise<void> => {
+    return loadJourneyLocaleResources(locale, setResources)
+  }, [locale, setResources])
 
   useEffect(() => {
-    const directoryLocale = LOCALE_MAP[locale] || locale
-    void memoizedLoadResources(directoryLocale)
-  }, [locale, memoizedLoadResources])
+    void memoizedLoadResources()
+  }, [memoizedLoadResources])
 
   // Create a new i18next instance for this component tree
   const i18nInstance = useMemo(() => {
