@@ -2,7 +2,6 @@ import { createInstance } from 'i18next'
 import {
   ReactElement,
   ReactNode,
-  useCallback,
   useEffect,
   useMemo,
   useState
@@ -29,13 +28,20 @@ export function JourneyLocaleProvider({
     Record<string, Record<string, any>>
   >({})
 
-  const memoizedLoadResources = useCallback(async (): Promise<void> => {
-    return loadJourneyLocaleResources(locale, setResources)
-  }, [locale, setResources])
-
+  // Guard against a stale locale winning the race: if `locale` changes before
+  // a previous load resolves, ignore the older result so resources are never
+  // committed under the wrong locale (which would fall back to English).
   useEffect(() => {
-    void memoizedLoadResources()
-  }, [memoizedLoadResources])
+    let cancelled = false
+
+    void loadJourneyLocaleResources(locale, (nextResources) => {
+      if (!cancelled) setResources(nextResources)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [locale])
 
   // Create a new i18next instance for this component tree
   const i18nInstance = useMemo(() => {
