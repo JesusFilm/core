@@ -10,18 +10,18 @@ import { TemplateGalleryPageMediaType } from "./globalTypes";
 // ====================================================
 
 export interface GetTemplateGalleryPage_templateGalleryPageBySlug_media {
-  __typename: "TemplateGalleryPageMediaPublic";
+  __typename: "TemplateGalleryPageMedia";
   id: string;
   /**
-   * Active selector for which payload renders.
+   * Discriminator for which underlying field is populated.
    */
   type: TemplateGalleryPageMediaType;
   /**
-   * Server-normalized iframe URL. Non-null only when `type` is `link`.
+   * Server-normalized iframe URL. Populated for `link`; null for `mux`.
    */
   embedUrl: string | null;
   /**
-   * Mux playback ID, denormalized at save time so public reads never cross to the media DB. Non-null only when `type` is `mux`.
+   * Mux playback ID, denormalized from MuxVideo at save time so public reads never cross to the media DB. Populated for `mux`; null for `link`.
    */
   muxPlaybackId: string | null;
 }
@@ -90,7 +90,7 @@ export interface GetTemplateGalleryPage_templateGalleryPageBySlug {
    */
   creatorName: string;
   /**
-   * Embedded media shown on the public page, or `null` when nothing renders (no media, `type: none`, or the active slot is empty). Only the active payload is ever exposed; parked payloads are not.
+   * Embedded media shown on the public page. `null` for legacy rows that predate the multi-type embed (which used the deprecated `mediaUrl` scalar).
    */
   media: GetTemplateGalleryPage_templateGalleryPageBySlug_media | null;
   /**
