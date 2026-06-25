@@ -828,6 +828,57 @@ describe('journeyAiTranslateCreate mutation', () => {
       })
     )
   })
+
+  it('translates MultiselectOptionBlock labels nested under a MultiselectBlock', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'multiselect1',
+          typename: 'MultiselectBlock',
+          parentBlockId: 'card1'
+        },
+        {
+          id: 'msoption1',
+          typename: 'MultiselectOptionBlock',
+          parentBlockId: 'multiselect1',
+          label: 'Red'
+        },
+        {
+          id: 'msoption2',
+          typename: 'MultiselectOptionBlock',
+          parentBlockId: 'multiselect1',
+          label: 'Blue'
+        }
+      ]
+    } as any)
+
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'msoption1', updates: { label: 'Rojo' } },
+        { blockId: 'msoption2', updates: { label: 'Azul' } }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'msoption1' }),
+        data: { label: 'Rojo' }
+      })
+    )
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'msoption2' }),
+        data: { label: 'Azul' }
+      })
+    )
+  })
 })
 
 describe('journeyAiTranslateCreateSubscription', () => {

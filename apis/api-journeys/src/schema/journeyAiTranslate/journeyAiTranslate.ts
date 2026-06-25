@@ -84,6 +84,7 @@ const allowedTranslationFieldsByBlockType = {
   TypographyBlock: ['content'],
   ButtonBlock: ['label'],
   RadioOptionBlock: ['label'],
+  MultiselectOptionBlock: ['label'],
   TextResponseBlock: ['label', 'placeholder', 'hint'],
   SignUpBlock: ['submitLabel']
 } as const satisfies Record<string, readonly TranslatableBlockField[]>
@@ -119,16 +120,20 @@ function getTranslatableBlocksForCard(
     (block) => block.parentBlockId === cardBlock.id
   )
 
-  const radioOptionBlocks = cardChildren
-    .filter((block) => block.typename === 'RadioQuestionBlock')
-    .flatMap((rq) =>
-      allBlocks.filter(
-        (block) =>
-          block.parentBlockId === rq.id && block.typename === 'RadioOptionBlock'
-      )
+  // Option blocks are grandchildren of the card: RadioOptionBlocks hang off a
+  // RadioQuestionBlock and MultiselectOptionBlocks hang off a MultiselectBlock,
+  // both of which are direct card children. Collect them so their labels are
+  // translated too.
+  const nestedOptionBlocks = cardChildren.flatMap((child) =>
+    allBlocks.filter(
+      (block) =>
+        block.parentBlockId === child.id &&
+        (block.typename === 'RadioOptionBlock' ||
+          block.typename === 'MultiselectOptionBlock')
     )
+  )
 
-  return [...cardChildren, ...radioOptionBlocks].filter((block) => {
+  return [...cardChildren, ...nestedOptionBlocks].filter((block) => {
     const fields = getTranslatableFields(block)
     return Object.values(fields).some((v) => v != null && v !== '')
   })

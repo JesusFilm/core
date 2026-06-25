@@ -54,6 +54,12 @@ export function getTranslatableFields(
     }
   }
 
+  if (block.typename === 'MultiselectOptionBlock') {
+    return {
+      label: block.label
+    }
+  }
+
   if (block.typename === 'SignUpBlock') {
     return {
       submitLabel: block.submitLabel
