@@ -19,6 +19,24 @@ export function calculateScale(ref: RefObject<HTMLDivElement | null>): number {
   return Math.min(clientHeight, 1)
 }
 
+// chrome that must stay on-screen below the card in the layered editor: the
+// "ADD BLOCK" footer (Fab + its top margin) and the gap above it, so the card
+// scales down enough to keep the footer visible on shorter screens.
+export const LAYERED_CARD_CHROME = 120
+
+// In the layered editor the card sits in a fixed-height floating drawer with the
+// footer rendered beneath it. Scale the card against the height that remains
+// after reserving that chrome (rather than the full container) so the footer is
+// always visible and the card keeps a max size of 1 on tall screens.
+export function calculateLayeredScale(
+  ref: RefObject<HTMLDivElement | null>
+): number {
+  const current = ref.current
+  if (current == null) return 0
+
+  return Math.min((current.clientHeight - LAYERED_CARD_CHROME) / CARD_HEIGHT, 1)
+}
+
 export function calculateScaledMargin(
   dimension: number,
   scale?: number
