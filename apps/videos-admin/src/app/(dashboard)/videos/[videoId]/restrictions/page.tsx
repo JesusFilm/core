@@ -4,7 +4,6 @@ import { useParams } from 'next/navigation'
 import { ReactElement } from 'react'
 
 import { Section } from '../../../../../components/Section'
-
 import { RestrictAutoTranslations } from '../_RestrictAutoTranslations'
 import { RestrictedDownloads } from '../_RestrictedDownloads'
 import { RestrictedViews } from '../_RestrictedViews'
