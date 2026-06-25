@@ -1,4 +1,7 @@
-const fs = require('fs')
+// Use the same globber i18next-cli itself uses to resolve `input`, so this
+// guard matches files identically to extraction (and avoids Node's
+// experimental `fs.globSync`).
+const { globSync } = require('glob')
 
 /**
  * Validates that the extract `input` globs match at least one source file, then
@@ -9,35 +12,29 @@ const fs = require('fs')
  * globs (`src/**`) matched nothing and extraction reported success while
  * updating no catalog. A 0-file match now fails the target loudly instead.
  *
- * Only runs during `i18next-cli extract` (not status/types/lint), and uses the
- * Node built-in glob — no extra dependencies.
+ * Only runs during `i18next-cli extract` (not status/types/lint).
  *
  * @param {string[]} globs input globs, relative to the workspace root
  * @returns {string[]} the same globs
  */
 module.exports = function assertExtractInput(globs) {
-  // The subcommand is argv[2] (e.g. `i18next-cli extract --config ...`).
+  // i18next-cli places the subcommand at argv[2]: `i18next-cli <subcommand>
+  // [options]`. If a future CLI version nests subcommands differently, update
+  // this check — otherwise the guard would silently no-op.
   if (process.argv[2] !== 'extract') return globs
 
-  // fs.globSync is experimental in Node 22 and emits a one-time warning;
-  // silence it only for the duration of these synchronous calls.
-  const originalEmitWarning = process.emitWarning
-  process.emitWarning = () => {}
-  let matchCount = 0
-  try {
-    for (const pattern of globs) {
-      matchCount += fs.globSync(pattern).length
-    }
-  } finally {
-    process.emitWarning = originalEmitWarning
-  }
+  const matchCount = globs.reduce(
+    (count, pattern) => count + globSync(pattern).length,
+    0
+  )
 
   if (matchCount === 0) {
     throw new Error(
       `i18next extract: input globs matched 0 source files from cwd "${process.cwd()}".\n` +
-        'Globs must be relative to the workspace root. Received:\n' +
+        'Globs must be relative to the workspace root (the nx target runs ' +
+        'there, not the project directory). Received:\n' +
         globs.map((glob) => `  - ${glob}`).join('\n') +
-        '\nSee NES-1723.'
+        '\nSee https://linear.app/jesus-film-project/issue/NES-1723'
     )
   }
 
