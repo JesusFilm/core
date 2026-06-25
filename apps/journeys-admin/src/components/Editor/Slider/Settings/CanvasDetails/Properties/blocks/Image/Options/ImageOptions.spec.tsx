@@ -2,11 +2,16 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { ReactElement } from 'react'
 import { type Mock } from 'vitest'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveSlide,
+  EditorProvider,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
@@ -30,6 +35,13 @@ vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: vi.fn()
 }))
+
+function ActiveSlideText(): ReactElement {
+  const {
+    state: { activeSlide }
+  } = useEditor()
+  return <div data-testid="active-slide">{activeSlide}</div>
+}
 
 describe('ImageOptions', () => {
   beforeEach(() => {
@@ -147,8 +159,11 @@ describe('ImageOptions', () => {
         ]}
       >
         <CommandProvider>
-          <EditorProvider initialState={{ selectedBlock }}>
+          <EditorProvider
+            initialState={{ selectedBlock, activeSlide: ActiveSlide.Drawer }}
+          >
             <ImageOptions />
+            <ActiveSlideText />
             <CommandUndoItem variant="button" />
             <CommandRedoItem variant="button" />
           </EditorProvider>
@@ -172,15 +187,89 @@ describe('ImageOptions', () => {
     expect(cache.extract()[`ImageBlock:${selectedBlock.id}`]?.src).toEqual(
       unsplashImageInput.src
     )
+    // Selecting from the drawer does not move the canvas...
+    expect(screen.getByTestId('active-slide')).toHaveTextContent(
+      String(ActiveSlide.Drawer)
+    )
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(undoResult).toHaveBeenCalled())
     expect(cache.extract()[`ImageBlock:${selectedBlock.id}`]?.src).toEqual(
       selectedBlock.src
     )
+    // ...but undo refocuses the block, matching the rest of the editor.
+    expect(screen.getByTestId('active-slide')).toHaveTextContent(
+      String(ActiveSlide.Content)
+    )
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(updateResult).toHaveBeenCalledTimes(2))
     expect(cache.extract()[`ImageBlock:${selectedBlock.id}`]?.src).toEqual(
       unsplashImageInput.src
+    )
+  })
+
+  it('keeps the canvas in place when selecting an image from the secondary drawer', async () => {
+    const updateResult = vi.fn(() => ({
+      data: {
+        imageBlockUpdate: {
+          ...selectedBlock,
+          ...unsplashImageInput
+        }
+      }
+    }))
+    const updateMock: MockedResponse<
+      ImageBlockUpdate,
+      ImageBlockUpdateVariables
+    > = {
+      request: {
+        query: IMAGE_BLOCK_UPDATE,
+        variables: {
+          id: selectedBlock.id,
+          input: unsplashImageInput
+        }
+      },
+      result: updateResult
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          listUnsplashCollectionPhotosMock,
+          triggerUnsplashDownloadMock,
+          updateMock
+        ]}
+      >
+        <CommandProvider>
+          <EditorProvider
+            initialState={{ selectedBlock, activeSlide: ActiveSlide.Drawer }}
+          >
+            <ImageOptions />
+            <ActiveSlideText />
+          </EditorProvider>
+        </CommandProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('active-slide')).toHaveTextContent(
+      String(ActiveSlide.Drawer)
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'public Selected Image 1920 x 1080 pixels'
+      })
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
+    )
+    fireEvent.click(
+      screen.getByRole('button', { name: 'white dome building during daytime' })
+    )
+
+    await waitFor(() => expect(updateResult).toHaveBeenCalled())
+    // The canvas must not slide back to Content: the block properties stay in
+    // view so the card does not shift behind the secondary drawer.
+    expect(screen.getByTestId('active-slide')).toHaveTextContent(
+      String(ActiveSlide.Drawer)
     )
   })
 

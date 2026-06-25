@@ -100,11 +100,13 @@ describe('LayeredView', () => {
     expect(screen.getByTestId('LayeredViewDrawer')).toBeVisible()
   })
 
-  it('slides settings panel in only on drawer slide', () => {
+  it('shows the settings panel alongside the card on the content slide', () => {
     renderLayeredView({ ...state, activeSlide: ActiveSlide.Content })
 
+    // card + properties are coupled: the panel is in place on the content slide
+    // too, rather than slid off-screen until the drawer slide
     expect(screen.getByTestId('LayeredViewDrawerContent')).toHaveStyle(
-      'transform: translateX(calc(328px + 32px))'
+      'transform: translateX(0)'
     )
   })
 
@@ -124,6 +126,18 @@ describe('LayeredView', () => {
     expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
   })
 
+  it('hosts the drawer inside the journey-map container, not the document body', () => {
+    renderLayeredView({ ...state, activeSlide: ActiveSlide.Drawer })
+
+    // the drawer renders into the map container rather than portalling to
+    // <body>, so the modal + backdrop are bounded to the map region (below the
+    // app bar) instead of covering the whole viewport. The absolute
+    // positioning that keeps them there is verified on the preview.
+    const container = screen.getByTestId('LayeredView')
+    expect(container).toContainElement(screen.getByTestId('LayeredViewDrawer'))
+    expect(container.querySelector('.MuiBackdrop-root')).toBeInTheDocument()
+  })
+
   it('makes the paper pointer-transparent while keeping the settings panel interactive', () => {
     renderLayeredView({ ...state, activeSlide: ActiveSlide.Drawer })
 
@@ -140,14 +154,13 @@ describe('LayeredView', () => {
     )
   })
 
-  it('keeps the off-screen settings panel inert on the content slide', () => {
+  it('keeps the settings panel interactive on the content slide', () => {
     renderLayeredView({ ...state, activeSlide: ActiveSlide.Content })
 
-    // on the content slide the settings panel is slid off-screen; it must stay
-    // pointer-events: none so it cannot intercept clicks meant for the backdrop
-    // while it is transitioning in/out
+    // card + properties are coupled, so the settings panel is shown and
+    // interactive on the content slide too
     expect(screen.getByTestId('SettingsDrawer').parentElement).toHaveStyle(
-      'pointer-events: none'
+      'pointer-events: auto'
     )
   })
 })
