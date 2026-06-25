@@ -13,7 +13,11 @@ import type { ReactElement, ReactNode } from 'react'
 
 import X2Icon from '@core/shared/ui/icons/X2'
 
-import { DRAWER_GAP, DRAWER_WIDTH } from '../../../constants'
+import {
+  DRAWER_GAP,
+  DRAWER_WIDTH,
+  EDIT_TOOLBAR_HEIGHT
+} from '../../../constants'
 import { useEditorLayout } from '../../../EditorLayoutContext'
 import { LAYERED_DRAWER_HEIGHT } from '../../Content/Canvas/utils/calculateDimensions'
 
@@ -135,6 +139,15 @@ export function Drawer({
   // it portals to the body and floats over the settings slot
   const isLayeredLibrary = isLayered && open != null
 
+  // The secondary media library must overlay the properties panel it opens from
+  // one-to-one, so the user reads them as a single drawer. The editor drawer
+  // paper is centred in the map area below the app bar with height
+  // min(LAYERED_DRAWER_HEIGHT, available); the panel inside it is inset by
+  // LAYERED_PANEL_INSET top and bottom. Mirror that exact rect here (the library
+  // is portalled to the body, so it is positioned in viewport coordinates).
+  const LAYERED_PANEL_INSET = 8
+  const layeredPaperHeight = `min(${LAYERED_DRAWER_HEIGHT}px, calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px))`
+
   return (
     // disablePortal makes this an inert pass-through everywhere except the
     // layered media-library case, where it lifts the drawer out to the body
@@ -156,11 +169,15 @@ export function Drawer({
             left: { xs: 0, md: 'auto' },
             ...(isLayeredLibrary
               ? {
-                  top: `max(0px, calc(50% - ${LAYERED_DRAWER_HEIGHT / 2}px))`,
+                  // match the properties panel rect exactly: centred in the map
+                  // area below the app bar, inset by LAYERED_PANEL_INSET, and
+                  // capped to the available height so it never covers the app
+                  // bar or runs off the bottom on shorter laptops
+                  top: `calc(${EDIT_TOOLBAR_HEIGHT + LAYERED_PANEL_INSET}px + (100svh - ${EDIT_TOOLBAR_HEIGHT}px - ${layeredPaperHeight}) / 2)`,
                   right: DRAWER_GAP,
                   bottom: 'auto',
-                  height: LAYERED_DRAWER_HEIGHT,
-                  maxHeight: '100%',
+                  height: `calc(${layeredPaperHeight} - ${LAYERED_PANEL_INSET * 2}px)`,
+                  maxHeight: 'none',
                   zIndex: (theme) => theme.zIndex.drawer + 1
                 }
               : {
@@ -178,7 +195,14 @@ export function Drawer({
         <Box
           data-testid="SettingsDrawerContent"
           className="swiper-no-swiping"
-          sx={{ flexGrow: 1, overflow: 'auto', mb: { md: 4 } }}
+          // the floating media library scrolls flush to the bottom to match the
+          // properties panel (which has no bottom margin); other drawers keep the
+          // bottom breathing room
+          sx={{
+            flexGrow: 1,
+            overflow: 'auto',
+            mb: isLayeredLibrary ? 0 : { md: 4 }
+          }}
         >
           {children}
         </Box>
