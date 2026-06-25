@@ -8,9 +8,7 @@ import i18nConfig from '../../../../../../../../next-i18next.config'
 // config so the two can't drift (the same source legal/about-chat resolves
 // through, NES-1731). `default` is i18next's catch-all, not a language tag.
 const FOLDER_BY_LANGUAGE: Record<string, string> = Object.fromEntries(
-  Object.entries(
-    (i18nConfig as { fallbackLng: Record<string, string[]> }).fallbackLng
-  )
+  Object.entries(i18nConfig.fallbackLng as Record<string, string[]>)
     .filter(([language]) => language !== 'default')
     .map(([language, folders]) => [language, folders[0]] as const)
 )
