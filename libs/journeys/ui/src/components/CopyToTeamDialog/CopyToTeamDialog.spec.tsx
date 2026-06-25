@@ -718,7 +718,7 @@ describe('CopyToTeamDialog', () => {
               },
               {
                 __typename: 'Language',
-                id: '528',
+                id: '21028',
                 slug: 'spanish',
                 name: [
                   {
@@ -797,7 +797,7 @@ describe('CopyToTeamDialog', () => {
       await waitFor(() =>
         expect(handleSubmitActionMock).toHaveBeenCalledWith(
           'teamId',
-          expect.objectContaining({ id: '528' }),
+          expect.objectContaining({ id: '21028' }),
           true
         )
       )

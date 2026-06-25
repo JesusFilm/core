@@ -1,15 +1,11 @@
-import { useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useJourneyAiTranslateSubscription } from '@core/journeys/ui/useJourneyAiTranslateSubscription'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
-import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
-import { UpdateLastActiveTeamId } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
@@ -60,10 +56,6 @@ export function CopyToTeamMenuItem({
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
-  const { query, setActiveTeam } = useTeam()
-  const teams = query?.data?.teams ?? []
-  const [updateLastActiveTeamId, { client }] =
-    useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
   const [loading, setLoading] = useState(false)
   const [translationVariables, setTranslationVariables] = useState<
     | {
@@ -77,24 +69,15 @@ export function CopyToTeamMenuItem({
       }
     | undefined
   >(undefined)
-  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null)
   const { journey: journeyFromContext } = useJourney()
   const journeyData = journey ?? journeyFromContext
   const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
 
-  const updateTeamState = (teamId: string): void => {
-    setActiveTeam(teams.find((team) => team.id === teamId) ?? null)
-    void updateLastActiveTeamId({
-      variables: {
-        input: {
-          lastActiveTeamId: teamId
-        }
-      },
-      onCompleted() {
-        void client.refetchQueries({ include: ['GetAdminJourneys'] })
-      }
-    })
-  }
+  // The shared CopyToTeamDialog owns the team switch: it switches immediately
+  // for a plain copy, and defers the switch until it closes on completion for
+  // the translation flow (so the refetch doesn't unmount this component's
+  // subscription mid-translation — NES-1636). This component no longer
+  // switches teams itself.
 
   // Set up the subscription for translation
   const { data: translationData } = useJourneyAiTranslateSubscription({
@@ -112,14 +95,9 @@ export function CopyToTeamMenuItem({
       })
       setLoading(false)
       setTranslationVariables(undefined) // Reset to stop subscription
-
-      // Update team state when translation completes
-      if (selectedTeamId) {
-        updateTeamState(selectedTeamId)
-      }
       handleCloseMenu() // Close menu when translation completes
-      setDuplicateTeamDialogOpen(false) // Close dialog when translation completes
-      setSelectedTeamId(null) // Reset selected team
+      // Closing the dialog triggers its deferred switch to the destination team.
+      setDuplicateTeamDialogOpen(false)
     },
     onError(error) {
       enqueueSnackbar(error.message, {
@@ -130,7 +108,6 @@ export function CopyToTeamMenuItem({
       setTranslationVariables(undefined)
       handleCloseMenu() // Close menu on translation error
       setDuplicateTeamDialogOpen(false) // Close dialog on translation error
-      setSelectedTeamId(null) // Reset selected team
     }
   })
 
@@ -163,14 +140,11 @@ export function CopyToTeamMenuItem({
             variant: 'success',
             preventDuplicate: true
           })
-          updateTeamState(teamId) // Update team state immediately for non-translation scenarios
+          // The dialog switches to the destination team and closes itself.
           handleCloseMenu()
           setDuplicateTeamDialogOpen(false)
           return
         }
-
-        // Store the team ID for later team state update when translation completes
-        setSelectedTeamId(teamId)
 
         const currentLanguageName =
           journeyData.language.name.find(({ primary }) => !primary)?.value ?? ''
