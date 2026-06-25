@@ -1,3 +1,5 @@
+import { TFunction } from 'i18next'
+
 import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
@@ -14,6 +16,13 @@ import {
 } from '../../../../../../../../../__generated__/globalTypes'
 
 import { getCardMetadata } from '.'
+
+// Passthrough translator that also resolves {{interpolation}} placeholders so
+// assertions read the literal English copy getCardMetadata passes through.
+const t = ((key: string, options?: Record<string, unknown>): string =>
+  key.replace(/{{(\w+)}}/g, (_, name: string) =>
+    String(options?.[name] ?? '')
+  )) as unknown as TFunction
 
 const typography: TreeBlock<TypographyBlock> = {
   __typename: 'TypographyBlock',
@@ -181,7 +190,7 @@ const card: TreeBlock<CardBlock> = {
 
 describe('getCardMetadata', () => {
   it('should return card metadata', () => {
-    const cardMetadata = getCardMetadata(card)
+    const cardMetadata = getCardMetadata(card, t)
     expect(cardMetadata).toEqual({
       title: 'title content',
       subtitle: undefined,
@@ -197,7 +206,7 @@ describe('getCardMetadata', () => {
       ...card,
       children: [video, image, typography]
     }
-    const cardMetadata = getCardMetadata(videoCard)
+    const cardMetadata = getCardMetadata(videoCard, t)
     expect(cardMetadata).toEqual({
       description: 'English',
       title: 'FallingPlates',
@@ -215,7 +224,7 @@ describe('getCardMetadata', () => {
       coverBlockId: null,
       children: [image]
     }
-    const cardMetadata = getCardMetadata(imageCard)
+    const cardMetadata = getCardMetadata(imageCard, t)
     expect(cardMetadata).toEqual({
       title: 'Image',
       subtitle: `${image.width} x ${image.height} pixels`,
