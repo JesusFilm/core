@@ -43,13 +43,20 @@ export function getTranslatableFields(
   if (block.typename === 'TextResponseBlock') {
     return {
       label: block.label,
-      placeholder: block.placeholder
+      placeholder: block.placeholder,
+      hint: block.hint
     }
   }
 
   if (block.typename === 'RadioOptionBlock') {
     return {
       label: block.label
+    }
+  }
+
+  if (block.typename === 'SignUpBlock') {
+    return {
+      submitLabel: block.submitLabel
     }
   }
 

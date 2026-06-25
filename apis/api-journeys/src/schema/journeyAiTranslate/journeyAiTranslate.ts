@@ -63,7 +63,9 @@ const BlockTranslationUpdatesSchema = z
   .object({
     content: z.string().optional(),
     label: z.string().optional(),
-    placeholder: z.string().optional()
+    placeholder: z.string().optional(),
+    hint: z.string().optional(),
+    submitLabel: z.string().optional()
   })
   .refine((updates) => Object.keys(updates).length > 0, {
     message: 'At least one supported update field is required'
@@ -82,7 +84,8 @@ const allowedTranslationFieldsByBlockType = {
   TypographyBlock: ['content'],
   ButtonBlock: ['label'],
   RadioOptionBlock: ['label'],
-  TextResponseBlock: ['label', 'placeholder']
+  TextResponseBlock: ['label', 'placeholder', 'hint'],
+  SignUpBlock: ['submitLabel']
 } as const satisfies Record<string, readonly TranslatableBlockField[]>
 
 function getValidatedBlockUpdates(
@@ -131,6 +134,137 @@ function getTranslatableBlocksForCard(
   })
 }
 
+// The model is asked to echo back one structured-output entry per block it is
+// given. It probabilistically omits some, so we re-request only the blocks that
+// were not translated, up to this many total attempts per card.
+const MAX_CARD_TRANSLATION_ATTEMPTS = 3
+
+interface TranslateBlocksArgs {
+  blocksToTranslate: Block[]
+  allBlocks: Block[]
+  cardBlockId: string
+  journeyId: string
+  cardContent: string
+  journeyAnalysis: string
+  sourceLanguageName: string
+  targetLanguageName: string
+  onBlockUpdated?: (
+    blockId: string,
+    updates: Partial<Record<TranslatableBlockField, string>>
+  ) => void
+  session: ReturnType<typeof createOpenrouterFallbackSession>
+}
+
+/**
+ * Streams translations for a specific set of blocks and writes each validated
+ * result to the database. Returns the IDs of the blocks that were actually
+ * translated so the caller can re-request the ones the model omitted.
+ *
+ * Never throws — a failed attempt resolves to whatever it managed to translate,
+ * leaving the rest for the caller's retry loop.
+ */
+async function translateBlocksOnce({
+  blocksToTranslate,
+  allBlocks,
+  cardBlockId,
+  journeyId,
+  cardContent,
+  journeyAnalysis,
+  sourceLanguageName,
+  targetLanguageName,
+  onBlockUpdated,
+  session
+}: TranslateBlocksArgs): Promise<Set<string>> {
+  const allowedBlockIds = new Set(blocksToTranslate.map((b) => b.id))
+  const updatedBlockIds = new Set<string>()
+  const blocksInfo = blocksToTranslate
+    .map((block) => createTranslationInfo(block))
+    .join('\n')
+
+  const prompt = `Context from journey analysis:
+${hardenPrompt(journeyAnalysis)}
+
+Translate from ${hardenPrompt(sourceLanguageName)} to ${hardenPrompt(targetLanguageName)}.
+
+Card context:
+${hardenPrompt(cardContent)}
+
+Blocks to translate (use the EXACT IDs shown in square brackets as blockId):
+${hardenPrompt(blocksInfo)}
+
+Return exactly one entry for every block ID listed above — do not skip, merge, or invent blocks. If a block does not need changes, still return it with its text translated.`
+
+  try {
+    await session.execute(async (model, abortSignal) => {
+      let streamError: unknown
+      const { elementStream } = streamText({
+        model,
+        abortSignal,
+        maxRetries: 0,
+        messages: [
+          { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
+          {
+            role: 'user',
+            content: [{ type: 'text', text: prompt }]
+          }
+        ],
+        output: Output.array({ element: BlockTranslationSchema }),
+        onError: ({ error }) => {
+          streamError = error
+          logger.warn(
+            { error, cardBlockId },
+            'Error in translation stream for card'
+          )
+        }
+      })
+
+      for await (const item of elementStream) {
+        try {
+          const cleanBlockId = item.blockId.replace(/^\[|\]$/g, '')
+
+          if (!allowedBlockIds.has(cleanBlockId)) continue
+          if (updatedBlockIds.has(cleanBlockId)) continue
+
+          const blockToUpdate = allBlocks.find((b) => b.id === cleanBlockId)
+          if (blockToUpdate == null) continue
+
+          const validatedUpdates = getValidatedBlockUpdates(
+            blockToUpdate,
+            item.updates
+          )
+          if (validatedUpdates == null) continue
+
+          await prisma.block.update({
+            where: { id: cleanBlockId, journeyId },
+            data: validatedUpdates
+          })
+
+          updatedBlockIds.add(cleanBlockId)
+          onBlockUpdated?.(cleanBlockId, validatedUpdates)
+        } catch (updateError) {
+          logger.error(
+            { error: updateError, blockId: item.blockId },
+            'Error updating block'
+          )
+        }
+      }
+
+      // The AI SDK reports stream failures to onError and ends the stream
+      // instead of throwing, which silently truncates the array. Re-throw so a
+      // fallback-eligible error (timeout/429/403) advances the session to the
+      // next model. Only escalate while blocks remain untranslated — a late
+      // error after every block landed is not worth a fallback round-trip.
+      if (streamError != null && updatedBlockIds.size < allowedBlockIds.size) {
+        throw streamError
+      }
+    })
+  } catch (error) {
+    logger.warn({ error, cardBlockId }, 'Card translation attempt failed')
+  }
+
+  return updatedBlockIds
+}
+
 async function translateCardBlocks({
   allBlocks,
   cardBlock,
@@ -158,72 +292,40 @@ async function translateCardBlocks({
   const blocksToTranslate = getTranslatableBlocksForCard(allBlocks, cardBlock)
   if (blocksToTranslate.length === 0) return
 
-  const allowedBlockIds = new Set(blocksToTranslate.map((b) => b.id))
-  const blocksInfo = blocksToTranslate
-    .map((block) => createTranslationInfo(block))
-    .join('\n')
+  const blocksById = new Map(blocksToTranslate.map((b) => [b.id, b]))
+  const pendingBlockIds = new Set(blocksById.keys())
 
-  const prompt = `Context from journey analysis:
-${hardenPrompt(journeyAnalysis)}
+  for (
+    let attempt = 1;
+    attempt <= MAX_CARD_TRANSLATION_ATTEMPTS && pendingBlockIds.size > 0;
+    attempt++
+  ) {
+    const pendingBlocks = Array.from(pendingBlockIds, (id) =>
+      blocksById.get(id)
+    ).filter((block): block is Block => block != null)
 
-Translate from ${hardenPrompt(sourceLanguageName)} to ${hardenPrompt(targetLanguageName)}.
-
-Card context:
-${hardenPrompt(cardContent)}
-
-Blocks to translate (use the EXACT IDs shown in square brackets as blockId):
-${hardenPrompt(blocksInfo)}`
-
-  await session.execute(async (model, abortSignal) => {
-    const { elementStream } = streamText({
-      model,
-      abortSignal,
-      maxRetries: 0,
-      messages: [
-        { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
-        {
-          role: 'user',
-          content: [{ type: 'text', text: prompt }]
-        }
-      ],
-      output: Output.array({ element: BlockTranslationSchema }),
-      onError: ({ error }) => {
-        logger.warn(
-          { error, cardBlockId: cardBlock.id },
-          'Error in translation stream for card'
-        )
-      }
+    const updatedBlockIds = await translateBlocksOnce({
+      blocksToTranslate: pendingBlocks,
+      allBlocks,
+      cardBlockId: cardBlock.id,
+      journeyId,
+      cardContent,
+      journeyAnalysis,
+      sourceLanguageName,
+      targetLanguageName,
+      onBlockUpdated,
+      session
     })
 
-    for await (const item of elementStream) {
-      try {
-        const cleanBlockId = item.blockId.replace(/^\[|\]$/g, '')
+    for (const id of updatedBlockIds) pendingBlockIds.delete(id)
+  }
 
-        if (!allowedBlockIds.has(cleanBlockId)) continue
-
-        const blockToUpdate = allBlocks.find((b) => b.id === cleanBlockId)
-        if (blockToUpdate == null) continue
-
-        const validatedUpdates = getValidatedBlockUpdates(
-          blockToUpdate,
-          item.updates
-        )
-        if (validatedUpdates == null) continue
-
-        await prisma.block.update({
-          where: { id: cleanBlockId, journeyId },
-          data: validatedUpdates
-        })
-
-        onBlockUpdated?.(cleanBlockId, validatedUpdates)
-      } catch (updateError) {
-        logger.error(
-          { error: updateError, blockId: item.blockId },
-          'Error updating block'
-        )
-      }
-    }
-  })
+  if (pendingBlockIds.size > 0) {
+    logger.warn(
+      { cardBlockId: cardBlock.id, missingBlockIds: Array.from(pendingBlockIds) },
+      'Card translation incomplete: some blocks were not translated after retries'
+    )
+  }
 }
 
 // Define the shared input type
@@ -359,6 +461,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           sourceLanguageName: input.journeyLanguageName,
           targetLanguageName: input.textLanguageName,
           journeyTitle: input.name,
+          journeyDisplayTitle: journey.displayTitle,
           journeyDescription: journey.description,
           seoTitle: journey.seoTitle,
           seoDescription: journey.seoDescription,
@@ -430,6 +533,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
         const updateData: {
           title: string
           languageId: string
+          displayTitle?: string
           description?: string
           seoTitle?: string
           seoDescription?: string
@@ -437,6 +541,10 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
         } = {
           title: analysisResult.title,
           languageId: input.textLanguageId
+        }
+
+        if (journey.displayTitle && analysisResult.displayTitle) {
+          updateData.displayTitle = analysisResult.displayTitle
         }
 
         if (hasDescription && analysisResult.description) {
@@ -639,6 +747,7 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
           sourceLanguageName,
           targetLanguageName,
           journeyTitle: input.name,
+          journeyDisplayTitle: journey.displayTitle,
           journeyDescription: journey.description,
           seoTitle: journey.seoTitle,
           seoDescription: journey.seoDescription,
@@ -696,6 +805,10 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
           where: { id: input.journeyId },
           data: {
             title: analysisAndTranslation.title,
+            // Only update displayTitle if the original journey had one
+            ...(journey.displayTitle
+              ? { displayTitle: analysisAndTranslation.displayTitle }
+              : {}),
             // Only update description if the original journey had one
             ...(hasDescription
               ? { description: analysisAndTranslation.description }

@@ -167,6 +167,7 @@ describe('journeyAiTranslateCreate mutation', () => {
     analysis:
       'This journey is about example content. Cultural adaptations include...',
     title: 'Título del Viaje Traducido',
+    displayTitle: '',
     description: 'Descripción del viaje traducida',
     seoTitle: '',
     seoDescription: ''
@@ -682,6 +683,151 @@ describe('journeyAiTranslateCreate mutation', () => {
       }
     })
   })
+
+  it('translates displayTitle when the journey has one', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      displayTitle: 'Original Display Title'
+    } as any)
+
+    mockTranslateJourneyMetadata.mockResolvedValueOnce({
+      ...mockAnalysisAndTranslation,
+      displayTitle: 'Título de Visualización Traducido'
+    })
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    // The journey's display title is forwarded for translation...
+    expect(mockTranslateJourneyMetadata).toHaveBeenCalledWith(
+      expect.objectContaining({
+        journeyDisplayTitle: 'Original Display Title'
+      })
+    )
+
+    // ...and written back to the journey.
+    expect(prismaMock.journey.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: mockInput.journeyId },
+        data: expect.objectContaining({
+          displayTitle: 'Título de Visualización Traducido'
+        })
+      })
+    )
+  })
+
+  it('does not set displayTitle when the journey has none', async () => {
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    expect(prismaMock.journey.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.not.objectContaining({
+          displayTitle: expect.anything()
+        })
+      })
+    )
+  })
+
+  it('re-requests blocks the model omits on the first attempt', async () => {
+    // First attempt translates only typography1 and omits the rest.
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'typography1', updates: { content: 'Contenido traducido' } }
+      ])
+    } as any)
+    // Retry attempt returns the previously-omitted blocks.
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'button1', updates: { label: 'Botón traducido' } },
+        { blockId: 'option1', updates: { label: 'Opción traducida' } },
+        {
+          blockId: 'text1',
+          updates: { label: 'Texto', placeholder: 'Escriba' }
+        }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    // A second AI call is made to fetch the omitted blocks.
+    expect(mockStreamText).toHaveBeenCalledTimes(2)
+
+    // Every block ends up translated despite the first-attempt omission.
+    for (const id of ['typography1', 'button1', 'option1', 'text1']) {
+      expect(prismaMock.block.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ id })
+        })
+      )
+    }
+  })
+
+  it('translates SignUpBlock submitLabel and TextResponseBlock hint', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'signup1',
+          typename: 'SignUpBlock',
+          parentBlockId: 'card1',
+          submitLabel: 'Submit'
+        },
+        {
+          id: 'text1',
+          typename: 'TextResponseBlock',
+          parentBlockId: 'card1',
+          label: 'Name',
+          placeholder: 'Your name',
+          hint: 'We keep it private'
+        }
+      ]
+    } as any)
+
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'signup1', updates: { submitLabel: 'Enviar' } },
+        {
+          blockId: 'text1',
+          updates: {
+            label: 'Nombre',
+            placeholder: 'Tu nombre',
+            hint: 'Lo mantenemos privado'
+          }
+        }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'signup1' }),
+        data: { submitLabel: 'Enviar' }
+      })
+    )
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'text1' }),
+        data: {
+          label: 'Nombre',
+          placeholder: 'Tu nombre',
+          hint: 'Lo mantenemos privado'
+        }
+      })
+    )
+  })
 })
 
 describe('journeyAiTranslateCreateSubscription', () => {
@@ -783,6 +929,7 @@ describe('journeyAiTranslateCreateSubscription', () => {
     analysis:
       'This journey is about example content. Cultural adaptations include...',
     title: 'Título del Viaje Traducido',
+    displayTitle: 'Título de Visualización Traducido',
     description: 'Descripción del viaje traducida',
     seoTitle: 'Título SEO Traducido',
     seoDescription: 'Descripción SEO Traducida'
