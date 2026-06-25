@@ -165,8 +165,10 @@ interface TranslateBlocksArgs {
  * result to the database. Returns the IDs of the blocks that were actually
  * translated so the caller can re-request the ones the model omitted.
  *
- * Never throws — a failed attempt resolves to whatever it managed to translate,
- * leaving the rest for the caller's retry loop.
+ * Always resolves (never rejects) — although a fallback-eligible stream error is
+ * re-thrown internally to advance the session to the next model, the outer
+ * try/catch absorbs it, so a failed attempt resolves to whatever it managed to
+ * translate and leaves the rest for the caller's retry loop.
  */
 async function translateBlocksOnce({
   blocksToTranslate,
