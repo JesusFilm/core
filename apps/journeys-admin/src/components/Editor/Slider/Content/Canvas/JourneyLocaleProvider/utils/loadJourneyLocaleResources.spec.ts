@@ -36,6 +36,10 @@ describe('loadJourneyLocaleResources', () => {
       expect(resolveLocaleFolder('fr')).toBe('fr-FR')
       expect(resolveLocaleFolder('de')).toBe('de-DE')
       expect(resolveLocaleFolder('zh')).toBe('zh-Hans-CN')
+      // every journey-language folder must resolve, not just the URL locales
+      expect(resolveLocaleFolder('ar')).toBe('ar-SA')
+      expect(resolveLocaleFolder('my')).toBe('my-MM')
+      expect(resolveLocaleFolder('zh-Hant')).toBe('zh-Hant-TW')
     })
 
     test('canonicalises casing and passes region tags through', async () => {

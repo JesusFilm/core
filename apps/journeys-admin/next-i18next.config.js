@@ -11,26 +11,39 @@ if (isBrowser) {
   localePath = require('path').resolve('./public/locales')
 }
 
-// Next.js URL locales are short codes (`fr`, `es`) but Crowdin writes the
-// translation folders in libs/locales with full region tags (`fr-FR`,
-// `es-ES`). Map each short code to its folder — one entry per libs/locales
-// folder. `default` is i18next's catch-all, not a language tag.
+// Maps each language code to its libs/locales folder — one entry per folder.
+// `default` is i18next's catch-all, not a language tag.
+//
+// Next.js URL locales are short codes (`fr`) but Crowdin writes the folders
+// with full region tags (`fr-FR`). The editor canvas also resolves a journey's
+// own language (any BCP-47 tag) to its folder through this same map
+// (JourneyLocaleProvider / loadJourneyLocaleResources), so it must cover every
+// journey language — not just the URL locales the admin UI exposes.
 /** @type {Record<string, string[]>} */
 const fallbackLng = {
   default: ['en'],
+  am: ['am-ET'],
+  ar: ['ar-SA'],
+  bn: ['bn-BD'],
+  de: ['de-DE'],
   es: ['es-ES'],
   fr: ['fr-FR'],
+  hi: ['hi-IN'],
   id: ['id-ID'],
-  th: ['th-TH'],
   ja: ['ja-JP'],
   ko: ['ko-KR'],
-  ru: ['ru-RU'],
-  tr: ['tr-TR'],
-  zh: ['zh-Hans-CN'],
-  de: ['de-DE'],
-  ne: ['ne-NP'],
   ms: ['ms-MY'],
-  pt: ['pt-BR']
+  my: ['my-MM'],
+  ne: ['ne-NP'],
+  pt: ['pt-BR'],
+  ru: ['ru-RU'],
+  th: ['th-TH'],
+  tl: ['tl-PH'],
+  tr: ['tr-TR'],
+  ur: ['ur-PK'],
+  vi: ['vi-VN'],
+  zh: ['zh-Hans-CN'],
+  'zh-Hant': ['zh-Hant-TW']
 }
 
 /** @type {import('next-i18next/pages').UserConfig} */
