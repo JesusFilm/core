@@ -63,6 +63,17 @@ export function Button({
   const selectedAction = getAction(t, action?.__typename)
   const selectedEventLabel = getEventLabelOption(t, eventLabel).label
 
+  // Map alignment to a translated label with literal t() calls. Justify only
+  // appears in this summary (the alignment control itself is icon-only), so it
+  // needs a literal to be extracted — capitalize(enum) would leave it
+  // permanently untranslated.
+  const alignmentLabel: Record<ButtonAlignment, string> = {
+    [ButtonAlignment.left]: t('Left'),
+    [ButtonAlignment.center]: t('Center'),
+    [ButtonAlignment.right]: t('Right'),
+    [ButtonAlignment.justify]: t('Justify')
+  }
+
   useEffect(() => {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
@@ -113,9 +124,7 @@ export function Button({
         id={`${id}-button-alignment`}
         icon={<AlignLeft />}
         name={t('Alignment')}
-        value={t(
-          capitalize(settings?.alignment?.toString() ?? ButtonAlignment.justify)
-        )}
+        value={alignmentLabel[settings?.alignment ?? ButtonAlignment.justify]}
       >
         <Alignment />
       </Accordion>
