@@ -813,8 +813,10 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
           where: { id: input.journeyId },
           data: {
             title: analysisAndTranslation.title,
-            // Only update displayTitle if the original journey had one
-            ...(journey.displayTitle
+            // Only update displayTitle if the original journey had one and a
+            // non-empty translation came back, so an omitted translation never
+            // clears an existing displayTitle (matches the subscription path).
+            ...(journey.displayTitle && analysisAndTranslation.displayTitle
               ? { displayTitle: analysisAndTranslation.displayTitle }
               : {}),
             // Only update description if the original journey had one

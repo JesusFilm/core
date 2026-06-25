@@ -733,6 +733,33 @@ describe('journeyAiTranslateCreate mutation', () => {
     )
   })
 
+  it('does not overwrite an existing displayTitle with an empty translation', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      displayTitle: 'Original Display Title'
+    } as any)
+
+    // Translation came back empty for displayTitle (e.g. model omitted it).
+    mockTranslateJourneyMetadata.mockResolvedValueOnce({
+      ...mockAnalysisAndTranslation,
+      displayTitle: ''
+    })
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    // The real displayTitle must be preserved, not cleared.
+    expect(prismaMock.journey.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.not.objectContaining({
+          displayTitle: expect.anything()
+        })
+      })
+    )
+  })
+
   it('re-requests blocks the model omits on the first attempt', async () => {
     // First attempt translates only typography1 and omits the rest.
     mockStreamText.mockReturnValueOnce({
