@@ -9,7 +9,7 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useParams, useRouter, useSelectedLayoutSegment } from 'next/navigation'
-import { ReactNode, useCallback } from 'react'
+import { ReactNode, useCallback, useEffect, useRef } from 'react'
 
 import { graphql } from '@core/shared/gql'
 
@@ -18,8 +18,6 @@ import { Section } from '../../../../components/Section'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../constants'
 
 import { LockedVideoView } from './_LockedVideo'
-import { RestrictedDownloads } from './_RestrictedDownloads'
-import { RestrictedViews } from './_RestrictedViews'
 import { VideoBibleCitation } from './_VideoBibleCitation'
 import { VideoDescription } from './_VideoDescription'
 import { VideoViewFallback } from './_VideoFallback'
@@ -56,12 +54,22 @@ export default function VideoViewLayout({
 }: VideoViewLayoutProps): ReactNode {
   const router = useRouter()
   const { videoId } = useParams<{ videoId: string }>()
+  const previousVideoId = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (previousVideoId.current !== videoId) {
+      window.scrollTo({ top: 0, left: 0 })
+      previousVideoId.current = videoId
+    }
+  }, [videoId])
+
   // keep metadata visible when modal is open
   const availableTabs = [
     'metadata',
     'audio',
     'children',
     'editions',
+    'restrictions',
     'troubleshooting'
   ]
   const segment = useSelectedLayoutSegment() ?? 'metadata'
@@ -185,12 +193,6 @@ export default function VideoViewLayout({
                 </Section>
                 <VideoBibleCitation videoId={videoId} />
                 {studyQuestions}
-                <Section title="Restricted Downloads" variant="outlined">
-                  <RestrictedDownloads videoId={videoId} />
-                </Section>
-                <Section title="Restricted Views" variant="outlined">
-                  <RestrictedViews videoId={videoId} />
-                </Section>
               </Stack>
             </>
           )}
