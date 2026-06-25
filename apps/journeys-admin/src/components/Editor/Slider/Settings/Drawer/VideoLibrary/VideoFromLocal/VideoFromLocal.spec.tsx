@@ -8,23 +8,22 @@ import {
   useInstantSearch,
   useSearchBox
 } from 'react-instantsearch'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import { VideoFromLocal } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
-  typeof useSearchBox
->
-const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
+const mockUseInstantSearch = useInstantSearch as MockedFunction<
   typeof useInstantSearch
 >
-const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
+const mockUseInfiniteHits = useInfiniteHits as MockedFunction<
   typeof useInfiniteHits
 >
 
@@ -49,7 +48,7 @@ describe('VideoFromLocal', () => {
 
   const searchBox = {
     query: '',
-    refine: jest.fn()
+    refine: vi.fn()
   } as unknown as SearchBoxRenderState
 
   const infiniteHits = {
@@ -64,7 +63,7 @@ describe('VideoFromLocal', () => {
         titles: ['title3']
       }
     ],
-    showMore: jest.fn(),
+    showMore: vi.fn(),
     isLastPage: false
   } as unknown as InfiniteHitsRenderState
 
@@ -77,7 +76,7 @@ describe('VideoFromLocal', () => {
   } as unknown as InstantSearchApi
 
   beforeEach(() => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
 
     mockUseSearchBox.mockReturnValue(searchBox)
     mockUseInfiniteHits.mockReturnValue(infiniteHits)
@@ -85,13 +84,13 @@ describe('VideoFromLocal', () => {
   })
 
   it('should render the placeholder text when there is no search query', () => {
-    render(<VideoFromLocal onSelect={jest.fn()} />)
+    render(<VideoFromLocal onSelect={vi.fn()} />)
     expect(screen.getByText('Featured Videos')).toBeInTheDocument()
     expect(screen.getByText('Jesus Film Library')).toBeInTheDocument()
   })
 
   it('should render a video list item', async () => {
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
     render(<VideoFromLocal onSelect={onSelect} />)
     await waitFor(() => expect(screen.getByText('title1')).toBeInTheDocument())
     expect(screen.getByText('title2')).toBeInTheDocument()
@@ -99,14 +98,14 @@ describe('VideoFromLocal', () => {
   })
 
   it('should call show more on Load More button click', async () => {
-    const showMore = jest.fn()
+    const showMore = vi.fn()
     mockUseInfiniteHits.mockReturnValue({
       items,
       showMore,
       isLastPage: false
     } as unknown as InfiniteHitsRenderState)
 
-    render(<VideoFromLocal onSelect={jest.fn()} />)
+    render(<VideoFromLocal onSelect={vi.fn()} />)
     await waitFor(() =>
       fireEvent.click(screen.getByRole('button', { name: 'Load More' }))
     )
@@ -116,11 +115,11 @@ describe('VideoFromLocal', () => {
   it('should show No More Videos button if last page', async () => {
     mockUseInfiniteHits.mockReturnValue({
       items: [],
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: true
     } as unknown as InfiniteHitsRenderState)
 
-    render(<VideoFromLocal onSelect={jest.fn()} />)
+    render(<VideoFromLocal onSelect={vi.fn()} />)
     await waitFor(() =>
       expect(
         screen.getByRole('button', { name: 'No More Videos' })
@@ -131,11 +130,11 @@ describe('VideoFromLocal', () => {
   it('should render No More Videos if video length is 0', async () => {
     mockUseInfiniteHits.mockReturnValue({
       items: [],
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: false
     } as unknown as InfiniteHitsRenderState)
 
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
     render(<VideoFromLocal onSelect={onSelect} />)
     await waitFor(() =>
       expect(screen.getByText('No Results Found')).toBeInTheDocument()

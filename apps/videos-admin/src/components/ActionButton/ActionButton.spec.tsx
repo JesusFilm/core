@@ -20,9 +20,9 @@ describe('ActionButton', () => {
   })
 
   it('should render with actions', async () => {
-    const viewFn = jest.fn()
-    const editFn = jest.fn()
-    const deleteFn = jest.fn()
+    const viewFn = vi.fn()
+    const editFn = vi.fn()
+    const deleteFn = vi.fn()
 
     render(
       <ActionButton

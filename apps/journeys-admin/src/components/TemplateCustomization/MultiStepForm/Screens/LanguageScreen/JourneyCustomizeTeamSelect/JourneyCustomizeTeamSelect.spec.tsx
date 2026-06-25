@@ -12,7 +12,7 @@ import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 
 describe('JourneyCustomizeTeamSelect', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders selected team title', () => {

@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 
 import { VideoViewFallback } from './VideoFallback'
 
-jest.mock('next/navigation', () => ({
+vi.mock('next/navigation', () => ({
   usePathname: () => '/videos/123'
 }))
 

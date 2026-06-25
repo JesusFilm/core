@@ -1,13 +1,14 @@
 import { renderHook } from '@testing-library/react'
 import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
+import { type MockedFunction } from 'vitest'
 
 import { reducer, useVideoFilter } from './useVideoFilter'
 
-jest.mock('next/navigation', () => ({
-  useSearchParams: jest.fn()
+vi.mock('next/navigation', () => ({
+  useSearchParams: vi.fn()
 }))
 
-const mockUseSearchParams = useSearchParams as jest.MockedFunction<
+const mockUseSearchParams = useSearchParams as MockedFunction<
   typeof useSearchParams
 >
 
@@ -115,7 +116,7 @@ describe('useVideoFilter', () => {
 
     mockUseSearchParams.mockReturnValue(search)
 
-    window.history.pushState = jest.fn()
+    window.history.pushState = vi.fn()
 
     const { result } = renderHook(useVideoFilter)
 

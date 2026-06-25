@@ -1,6 +1,14 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key"])
 
+input AdminLanguagesFilter {
+  ids: [ID!]
+  bcp47: [String!]
+  iso3: [String!]
+  hasVideos: Boolean
+  updatedAt: DateTimeFilter
+}
+
 type AudioPreview
   @key(fields: "languageId")
 {
@@ -66,6 +74,27 @@ type CountryLanguage {
   order: Int
 }
 
+input CountryLanguageCreateInput {
+  languageId: ID!
+  countryId: ID!
+  speakers: Int!
+  displaySpeakers: Int
+  primary: Boolean
+  suggested: Boolean
+  order: Int
+}
+
+input CountryLanguageUpdateInput {
+  id: ID!
+  languageId: ID
+  countryId: ID
+  speakers: Int
+  displaySpeakers: Int
+  primary: Boolean
+  suggested: Boolean
+  order: Int
+}
+
 type CountryName {
   value: String!
   primary: Boolean!
@@ -90,6 +119,7 @@ type Language
   bcp47: String
   iso3: String
   slug: String
+  hasVideos: Boolean!
   name(languageId: ID, primary: Boolean): [LanguageName!]!
   countryLanguages: [CountryLanguage!]!
   audioPreview: AudioPreview
@@ -101,13 +131,27 @@ enum LanguageIdType {
 }
 
 type LanguageName {
+  id: ID!
   value: String!
+  languageId: String!
   primary: Boolean!
   language: Language!
 }
 
+input LanguageNameUpdateInput {
+  languageId: ID!
+  nameLanguageId: ID
+  value: String!
+}
+
 enum LanguageRole {
   publisher
+}
+
+input LanguageUpdateInput {
+  id: ID!
+  bcp47: String
+  iso3: String
 }
 
 input LanguagesFilter {
@@ -118,9 +162,14 @@ input LanguagesFilter {
 }
 
 type Mutation {
+  languageUpdate(input: LanguageUpdateInput!): Language!
+  languageNameUpdate(input: LanguageNameUpdateInput!): Language!
   audioPreviewCreate(input: MutationAudioPreviewCreateInput!): AudioPreview!
   audioPreviewUpdate(input: MutationAudioPreviewUpdateInput!): AudioPreview!
   audioPreviewDelete(languageId: ID!): AudioPreview!
+  countryLanguageCreate(input: CountryLanguageCreateInput!): CountryLanguage!
+  countryLanguageUpdate(input: CountryLanguageUpdateInput!): CountryLanguage!
+  countryLanguageDelete(id: ID!): CountryLanguage!
 }
 
 input MutationAudioPreviewCreateInput {
@@ -145,8 +194,11 @@ type Query {
   language(id: ID!, idType: LanguageIdType = databaseId): Language
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String): [Language!]!
   languagesCount(where: LanguagesFilter, term: String): Int!
+  adminLanguages(offset: Int, limit: Int, where: AdminLanguagesFilter, term: String): [Language!]!
+  adminLanguagesCount(where: AdminLanguagesFilter, term: String): Int!
   country(id: ID!): Country
   countries(term: String, ids: [ID!], where: CountriesFilter): [Country!]!
+  adminCountries(term: String, ids: [ID!], where: CountriesFilter): [Country!]!
 }
 
 interface User {

@@ -3,6 +3,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -11,26 +12,31 @@ import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { JourneyFields } from '../../../../../../../__generated__/JourneyFields'
+import {
+  listUnsplashCollectionPhotosMock,
+  triggerUnsplashDownloadMock,
+  unsplashImageInput
+} from '../ImageBlockEditor/UnsplashGallery/data'
 
 import { ImageSource } from './ImageSource'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+  useRouter: vi.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('ImageSource', () => {
-  const onChange = jest.fn()
-  const onDelete = jest.fn()
-  const push = jest.fn()
-  const on = jest.fn()
+  const onChange = vi.fn()
+  const onDelete = vi.fn()
+  const push = vi.fn()
+  const on = vi.fn()
   const imageBlock: ImageBlock = {
     id: 'imageBlockId',
     __typename: 'ImageBlock',
@@ -48,7 +54,7 @@ describe('ImageSource', () => {
   }
 
   beforeEach(() => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
@@ -84,7 +90,7 @@ describe('ImageSource', () => {
       await waitFor(() =>
         fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
       )
-      expect(screen.getByTestId('ImageUpload')).toBeInTheDocument()
+      expect(await screen.findByTestId('ImageUpload')).toBeInTheDocument()
     })
   })
 
@@ -109,8 +115,49 @@ describe('ImageSource', () => {
       await waitFor(() =>
         fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
       )
-      expect(screen.getByTestId('ImageUpload')).toBeInTheDocument()
+      expect(await screen.findByTestId('ImageUpload')).toBeInTheDocument()
       expect(onChange).not.toHaveBeenCalled()
+    })
+
+    it('calls onChange with shouldFocus false when an image is selected', async () => {
+      const handleChange = vi.fn()
+      render(
+        <MockedProvider
+          mocks={[
+            listUnsplashCollectionPhotosMock,
+            triggerUnsplashDownloadMock
+          ]}
+        >
+          <SnackbarProvider>
+            <ImageSource
+              selectedBlock={imageBlock}
+              onChange={handleChange}
+              onDelete={onDelete}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'public Selected Image 1920 x 1080 pixels'
+        })
+      )
+      await waitFor(() =>
+        expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
+      )
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'white dome building during daytime'
+        })
+      )
+      // shouldFocus is false so the editor does not slide the canvas back, and
+      // the drawer closes itself rather than relying on a manual close.
+      await waitFor(() =>
+        expect(handleChange).toHaveBeenCalledWith(
+          expect.objectContaining({ src: unsplashImageInput.src }),
+          false
+        )
+      )
     })
   })
 

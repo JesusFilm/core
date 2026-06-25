@@ -99,19 +99,8 @@ module "api-analytics" {
   }
 }
 
-module "api-journeys" {
-  source        = "../../../apis/api-journeys/infrastructure"
-  ecs_config    = local.internal_ecs_config
-  env           = "stage"
-  doppler_token = data.aws_ssm_parameter.doppler_api_journeys_stage_token.value
-  alb = {
-    arn      = module.stage.internal_alb.arn
-    dns_name = module.stage.internal_alb.dns_name
-  }
-}
-
 module "api-journeys-modern" {
-  source        = "../../../apis/api-journeys-modern/infrastructure"
+  source        = "../../../apis/api-journeys/infrastructure"
   ecs_config    = local.internal_ecs_config
   env           = "stage"
   doppler_token = data.aws_ssm_parameter.doppler_api_journeys_stage_token.value

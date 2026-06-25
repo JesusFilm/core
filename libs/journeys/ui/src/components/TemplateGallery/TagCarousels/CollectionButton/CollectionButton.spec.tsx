@@ -14,7 +14,7 @@ describe('CollectionButton', () => {
 
   it('should render a collection button with image', () => {
     const { getByRole } = render(
-      <CollectionButton item={tag} onClick={jest.fn()} />
+      <CollectionButton item={tag} onClick={vi.fn()} />
     )
 
     expect(getByRole('button', { name: 'NUA tag NUA NUA' })).toBeInTheDocument()
@@ -34,7 +34,7 @@ describe('CollectionButton', () => {
             }
           ]
         }}
-        onClick={jest.fn()}
+        onClick={vi.fn()}
       />
     )
 
@@ -43,7 +43,7 @@ describe('CollectionButton', () => {
   })
 
   it('should render loading skeleton if no tag is passed', () => {
-    const onClick = jest.fn()
+    const onClick = vi.fn()
 
     const { getByTestId, getByRole } = render(
       <CollectionButton item={undefined} onClick={onClick} />
@@ -55,7 +55,7 @@ describe('CollectionButton', () => {
   })
 
   it('should call onClick on button click', () => {
-    const onClick = jest.fn()
+    const onClick = vi.fn()
     const { getByRole } = render(
       <CollectionButton item={tag} onClick={onClick} />
     )

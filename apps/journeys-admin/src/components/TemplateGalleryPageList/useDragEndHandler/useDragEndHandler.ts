@@ -2,6 +2,7 @@ import { Reference } from '@apollo/client'
 import { DragEndEvent } from '@dnd-kit/core'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
+import { MutableRefObject } from 'react'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
@@ -18,15 +19,24 @@ export interface UseDragEndHandlerParams {
   templateIdToCollection: ReadonlyMap<string, TemplateGalleryPage>
   /** Map of collectionId → collection. */
   collectionsById: ReadonlyMap<string, TemplateGalleryPage>
-  /** True while a previous drop's mutation is still in flight. The hook
-   * uses it as a defensive guard and the parent uses it to gate
-   * droppable wrappers; both readers see the same value. */
-  dragInFlight: boolean
-  /** Setter for `dragInFlight` — the hook flips it on entry to a real
-   * mutation and off in the finally block. */
+  /** Synchronous in-flight guard. The ref is the source of truth for
+   * "is a drop currently being processed?" — closure-captured state
+   * would read stale `false` for a second drop arriving in the same
+   * React batch. The hook flips it on entry to a real mutation and off
+   * in finally. The parent also flips its mirror state for rendering. */
+  dragInFlightRef: MutableRefObject<boolean>
+  /** Setter for `dragInFlight` state — drives busy chips and droppable
+   * lock in the parent's render. The hook flips it alongside the ref. */
   setDragInFlight: (next: boolean) => void
   /** Setter for the active drag id — the hook clears it on drop. */
   setActiveDragId: (next: string | null) => void
+  /**
+   * NES-1717: true when the given collection is currently collapsed. A drop
+   * onto a collapsed collection lands via its header (the only visible part),
+   * so the user can't see the template arrive — we surface a confirmation
+   * toast instead. Defaults to "never collapsed" when omitted.
+   */
+  isCollectionCollapsed?: (collectionId: string) => boolean
 }
 
 /**
@@ -47,9 +57,10 @@ export function useDragEndHandler(
     journeyById,
     templateIdToCollection,
     collectionsById,
-    dragInFlight,
+    dragInFlightRef,
     setDragInFlight,
-    setActiveDragId
+    setActiveDragId,
+    isCollectionCollapsed
   } = params
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -63,7 +74,7 @@ export function useDragEndHandler(
     setActiveDragId(null)
     // Defensive — handleDragStart already short-circuits while a mutation
     // is in flight, but keep the guard so reorders can't interleave.
-    if (dragInFlight) return
+    if (dragInFlightRef.current) return
     const { active, over } = event
     if (over == null) return
 
@@ -104,6 +115,9 @@ export function useDragEndHandler(
         return
     }
 
+    // `setDragInFlight` in the parent is a wrapper that flips both the
+    // state and the ref together — call it once, never set the ref
+    // directly here (Mike review, NES-1644).
     setDragInFlight(true)
     try {
       const sameCollection =
@@ -151,7 +165,7 @@ export function useDragEndHandler(
           movingFromSource ??
           (movingFromUnsectioned != null
             ? {
-                __typename: 'Journey' as const,
+                __typename: 'TemplateGalleryItem' as const,
                 id: movingFromUnsectioned.id,
                 title: movingFromUnsectioned.title,
                 primaryImageBlock:
@@ -169,8 +183,30 @@ export function useDragEndHandler(
           targetCollectionId != null
             ? collectionsById.get(targetCollectionId)
             : null
+        // Capture collapse state at drop time, before the await — the toast
+        // confirms "you dropped onto something you couldn't see", which is a
+        // fact about the moment of the drop, not about whatever the state has
+        // become by the time the network round-trip resolves (NES-1717 review).
+        const targetWasCollapsed =
+          targetCollectionId != null &&
+          isCollectionCollapsed?.(targetCollectionId) === true
         const assignResult = await templateGalleryPageAssignJourney({
           variables: { journeyId: templateId, pageId: targetCollectionId },
+          // NES-1668: in production the source-page `cache.modify` below
+          // wasn't reliably trimming the moved template — QA observed the
+          // card showing in both source and target until a manual refresh.
+          // The historical concern in `useTemplateGalleryPageAssignJourneyMutation.ts`
+          // (NES-1539 todo 021) was that a `refetchQueries` on the mutation
+          // hook itself races with the optimisticResponse for rapid
+          // back-to-back drops and produces a one-frame ghost-card flash.
+          // We accept that minor edge-case flash as the cost of an always-
+          // consistent gallery — the user-visible "stays in both until I
+          // hit refresh" bug is strictly worse. Keep the optimisticResponse
+          // + cache.modify for instant feedback; the refetch is the
+          // belt-and-suspenders that papers over whatever the modify
+          // misses (likely the `accepted` gate misfiring on certain
+          // server response shapes).
+          refetchQueries: ['GetTemplateGalleryPages'],
           // Optimistic + cache.modify so both the target page (gain) and
           // the source page (loss) update in the same tick as the drop.
           // The server response replaces the optimistic write for the
@@ -230,7 +266,7 @@ export function useDragEndHandler(
               id: sourceCollection.id
             })
             const movedRef = cache.identify({
-              __typename: 'Journey',
+              __typename: 'TemplateGalleryItem',
               id: templateId
             })
             if (sourceCacheId == null || movedRef == null) return
@@ -265,6 +301,18 @@ export function useDragEndHandler(
             enqueueSnackbar(
               t("Couldn't move template — the server rejected the move."),
               { variant: 'error', preventDuplicate: true }
+            )
+          } else if (targetWasCollapsed) {
+            // The template landed in a collapsed collection the user can't
+            // see — confirm the drop so the move doesn't feel like it
+            // vanished (NES-1717). Fall back to a generic message rather than
+            // interpolating an empty name if the title can't be resolved.
+            const targetName = targetCollection?.title ?? returnedPage?.title
+            enqueueSnackbar(
+              targetName != null && targetName !== ''
+                ? t('Added to {{collection}}', { collection: targetName })
+                : t('Added to collection'),
+              { variant: 'success', preventDuplicate: true }
             )
           }
         }

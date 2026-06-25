@@ -2,7 +2,7 @@ import { render } from '@testing-library/react'
 
 import { InstantSearchProvider } from './InstantSearchProvider'
 
-jest.mock('algoliasearch')
+vi.mock('algoliasearch')
 
 describe('InstantSearchProvider', () => {
   it('renders children correctly', () => {

@@ -19,6 +19,8 @@ describe('langfuse client', () => {
     delete process.env.LANGFUSE_SECRET_KEY
     delete process.env.LANGFUSE_BASE_URL
     delete process.env.VERCEL_ENV
+    delete process.env.VERCEL_GIT_COMMIT_REF
+    delete process.env.LANGFUSE_TRACING_ENVIRONMENT
   })
 
   afterEach(() => {
@@ -108,7 +110,8 @@ describe('langfuse client', () => {
       expect(mockLangfuseConstructor).toHaveBeenCalledWith({
         publicKey: 'pk-test',
         secretKey: 'sk-test',
-        baseUrl: 'https://lf.test'
+        baseUrl: 'https://lf.test',
+        environment: 'development'
       })
     })
 
@@ -122,6 +125,55 @@ describe('langfuse client', () => {
       const second = getLangfuse()
       expect(first).toBe(second)
       expect(mockLangfuseConstructor).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('environment resolution', () => {
+    beforeEach(() => {
+      process.env.LANGFUSE_PUBLIC_KEY = 'pk'
+      process.env.LANGFUSE_SECRET_KEY = 'sk'
+      process.env.LANGFUSE_BASE_URL = 'https://lf.test'
+    })
+
+    async function constructedEnvironment(): Promise<string> {
+      // eslint-disable-next-line import/dynamic-import-chunkname
+      const { getLangfuse } = await import('./client')
+      getLangfuse()
+      expect(mockLangfuseConstructor).toHaveBeenCalledTimes(1)
+      return mockLangfuseConstructor.mock.calls[0][0].environment
+    }
+
+    it("tags 'production' when VERCEL_ENV is 'production'", async () => {
+      process.env.VERCEL_ENV = 'production'
+      expect(await constructedEnvironment()).toBe('production')
+    })
+
+    it("tags 'stage' when VERCEL_ENV is 'preview' and branch is 'stage'", async () => {
+      process.env.VERCEL_ENV = 'preview'
+      process.env.VERCEL_GIT_COMMIT_REF = 'stage'
+      expect(await constructedEnvironment()).toBe('stage')
+    })
+
+    it("tags 'preview' when VERCEL_ENV is 'preview' on any other branch", async () => {
+      process.env.VERCEL_ENV = 'preview'
+      process.env.VERCEL_GIT_COMMIT_REF = 'jacobusbrink/nes-1234-something'
+      expect(await constructedEnvironment()).toBe('preview')
+    })
+
+    it("tags 'development' when VERCEL_ENV is unset", async () => {
+      expect(await constructedEnvironment()).toBe('development')
+    })
+
+    it('honours LANGFUSE_TRACING_ENVIRONMENT as an override', async () => {
+      process.env.VERCEL_ENV = 'production'
+      process.env.LANGFUSE_TRACING_ENVIRONMENT = 'load-test'
+      expect(await constructedEnvironment()).toBe('load-test')
+    })
+
+    it('ignores an empty LANGFUSE_TRACING_ENVIRONMENT override', async () => {
+      process.env.VERCEL_ENV = 'production'
+      process.env.LANGFUSE_TRACING_ENVIRONMENT = ''
+      expect(await constructedEnvironment()).toBe('production')
     })
   })
 

@@ -22,8 +22,8 @@ describe('File', () => {
   })
 
   it('should render with actions', () => {
-    const onDelete = jest.fn()
-    const onDownload = jest.fn()
+    const onDelete = vi.fn()
+    const onDownload = vi.fn()
     render(
       <FileComponent
         file={file}

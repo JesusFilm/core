@@ -741,14 +741,45 @@ model TemplateGalleryPage {
   creatorName      String
   creatorImageSrc  String?
   creatorImageAlt  String?
+  /// @deprecated NES-1704 — superseded by the `media` relation.
+  /// Kept on legacy rows behind the LD flag; not read or written by new UI.
   mediaUrl         String?
   publishedAt      DateTime?
   createdAt        DateTime                      @default(now())
   updatedAt        DateTime                      @updatedAt
   team             Team                          @relation(fields: [teamId], references: [id], onDelete: Cascade)
   templates        TemplateGalleryPageTemplate[]
+  media            TemplateGalleryPageMedia?
 
   @@index([teamId, createdAt(sort: Desc)])
+}
+
+enum TemplateGalleryPageMediaType {
+  link
+  mux
+  none
+}
+
+model TemplateGalleryPageMedia {
+  id                    String                       @id @default(uuid())
+  templateGalleryPageId String                       @unique
+  /// Active selector: which payload renders. `link` shows embedUrl, `mux` shows
+  /// the upload, `none` shows nothing. Both payload slots may stay populated
+  /// regardless of `type` so switching back and forth never discards a payload.
+  type                  TemplateGalleryPageMediaType
+  /// The link payload. May be retained while `type` is `mux`/`none`.
+  embedUrl              String?
+  /// Cross-DB scalar (no @relation). The upload payload; may be retained while `type` is `link`/`none`.
+  muxVideoId            String?
+  /// Denormalized from MuxVideo.playbackId at save time. Tracks `muxVideoId`.
+  muxPlaybackId         String?
+  /// Denormalized from MuxVideo.name at save time. Tracks `muxVideoId`.
+  muxName               String?
+  /// Denormalized from MuxVideo.duration (seconds) at save time. Tracks `muxVideoId`.
+  muxDuration           Int?
+  createdAt             DateTime                     @default(now())
+  updatedAt             DateTime                     @updatedAt
+  templateGalleryPage   TemplateGalleryPage          @relation(fields: [templateGalleryPageId], references: [id], onDelete: Cascade)
 }
 
 model TemplateGalleryPageTemplate {

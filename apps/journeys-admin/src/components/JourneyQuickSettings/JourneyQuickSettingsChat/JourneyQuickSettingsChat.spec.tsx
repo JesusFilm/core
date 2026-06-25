@@ -90,9 +90,7 @@ describe('JourneyQuickSettingsChat', () => {
       }
     }
 
-    const mockHostUpdateResult = jest
-      .fn()
-      .mockReturnValue(updateHostMock.result)
+    const mockHostUpdateResult = vi.fn().mockReturnValue(updateHostMock.result)
 
     render(
       <MockedProvider
@@ -113,7 +111,7 @@ describe('JourneyQuickSettingsChat', () => {
   })
 
   it('should call createhost mutation on name change if host does not exist', async () => {
-    const mockCreateResult = jest.fn().mockReturnValue(hostCreateMock.result)
+    const mockCreateResult = vi.fn().mockReturnValue(hostCreateMock.result)
 
     const updateJourneyHostMock: MockedResponse<
       UpdateJourneyHost,
@@ -137,7 +135,7 @@ describe('JourneyQuickSettingsChat', () => {
       }
     }
 
-    const mockJourneyUpdateResult = jest
+    const mockJourneyUpdateResult = vi
       .fn()
       .mockReturnValue(updateJourneyHostMock.result)
 

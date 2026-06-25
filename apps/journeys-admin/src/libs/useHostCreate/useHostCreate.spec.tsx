@@ -12,10 +12,10 @@ import { useHostCreate } from './useHostCreate'
 
 describe('useHostCreate', () => {
   it('should not create/update host when journey has no team', async () => {
-    const mockCreateResult = jest.fn(() => ({
+    const mockCreateResult = vi.fn(() => ({
       ...hostCreateMock.result
     }))
-    const mockJourneyUpdateResult = jest.fn(() => ({
+    const mockJourneyUpdateResult = vi.fn(() => ({
       ...updateJourneyHostMock.result
     }))
 
@@ -43,10 +43,10 @@ describe('useHostCreate', () => {
   })
 
   it('should create host when journey has team', async () => {
-    const mockCreateResult = jest.fn(() => ({
+    const mockCreateResult = vi.fn(() => ({
       ...hostCreateMock.result
     }))
-    const mockJourneyUpdateResult = jest.fn(() => ({
+    const mockJourneyUpdateResult = vi.fn(() => ({
       ...updateJourneyHostMock.result
     }))
 

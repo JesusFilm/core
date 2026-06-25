@@ -15,9 +15,9 @@ import { getCustomDomainMock } from '../../../libs/useCustomDomainsQuery/useCust
 import { CustomDomainDialog } from './CustomDomainDialog'
 import { CHECK_CUSTOM_DOMAIN } from './DNSConfigSection'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 const checkCustomDomainMockConfiguredAndVerified: MockedResponse<CheckCustomDomain> =
@@ -43,7 +43,7 @@ const checkCustomDomainMockConfiguredAndVerified: MockedResponse<CheckCustomDoma
 
 describe('CustomDomainDialog', () => {
   it('creates should show dns config if there is a custom domain', async () => {
-    const result = jest
+    const result = vi
       .fn()
       .mockReturnValue(checkCustomDomainMockConfiguredAndVerified.result)
     const { getByText, queryByText } = render(
@@ -71,7 +71,7 @@ describe('CustomDomainDialog', () => {
   })
 
   it('creates should not show dns config if not a team manager', async () => {
-    const result = jest
+    const result = vi
       .fn()
       .mockReturnValue(checkCustomDomainMockConfiguredAndVerified.result)
 
@@ -98,7 +98,7 @@ describe('CustomDomainDialog', () => {
   })
 
   it('shohuld call on close', async () => {
-    const onClose = jest.fn()
+    const onClose = vi.fn()
     const { getByTestId } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
@@ -114,7 +114,7 @@ describe('CustomDomainDialog', () => {
   })
 
   it('should have the proper link for instructions button', () => {
-    const onClose = jest.fn()
+    const onClose = vi.fn()
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>

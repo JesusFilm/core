@@ -3,6 +3,7 @@ import { convertToModelMessages, streamText } from 'ai'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { type Mock, type MockedFunction } from 'vitest'
 
+import { getCardChatEnabled } from '../../../src/libs/getCardChatEnabled'
 import { getFlags } from '../../../src/libs/getFlags'
 import {
   getActivePromptLabel,
@@ -10,6 +11,12 @@ import {
 } from '../../../src/libs/langfuse/client'
 
 import handler from './index'
+
+const { mockLoggerError, mockLoggerWarn, mockLoggerInfo } = vi.hoisted(() => ({
+  mockLoggerError: vi.fn(),
+  mockLoggerWarn: vi.fn(),
+  mockLoggerInfo: vi.fn()
+}))
 
 vi.mock('@ai-sdk/google', () => ({
   google: vi.fn(() => ({ id: 'gemini' }))
@@ -32,13 +39,22 @@ vi.mock('langfuse', () => ({
 vi.mock('../../../src/libs/getFlags', () => ({
   getFlags: vi.fn()
 }))
+vi.mock('../../../src/libs/getCardChatEnabled', () => ({
+  getCardChatEnabled: vi.fn()
+}))
 vi.mock('../../../src/libs/langfuse/client', () => ({
   APOLOGIST_PROMPT_NAME: 'apologist-world-cup-chat',
   getActivePromptLabel: vi.fn(() => 'development'),
   getLangfuse: vi.fn(() => null)
 }))
+vi.mock('../../../src/libs/logger', () => ({
+  logger: { error: mockLoggerError, warn: mockLoggerWarn, info: mockLoggerInfo }
+}))
 
 const mockGetFlags = getFlags as unknown as MockedFunction<typeof getFlags>
+const mockGetCardChatEnabled = getCardChatEnabled as unknown as MockedFunction<
+  typeof getCardChatEnabled
+>
 const mockGetLangfuse = getLangfuse as unknown as MockedFunction<
   typeof getLangfuse
 >
@@ -158,6 +174,9 @@ describe('/api/chat handler', () => {
     process.env.APOLOGIST_API_KEY = 'apologist-test-key'
     mockGetActivePromptLabel.mockReturnValue('development')
     mockGetLangfuse.mockReturnValue(null)
+    // Default the per-card kill switch to "enabled" so the existing happy-path
+    // tests reach streamText. Tests that exercise the 403 override this.
+    mockGetCardChatEnabled.mockResolvedValue(true)
     lastStreamConfig = null
     installStreamTextSuccess()
   })
@@ -185,14 +204,19 @@ describe('/api/chat handler', () => {
         }
       } as unknown as NextApiRequest
 
-      const { res, status, end, json } = makeRes()
+      const { res, status, json } = makeRes()
 
       await handler(req, res)
 
       expect(mockGetFlags).toHaveBeenCalledTimes(1)
       expect(status).toHaveBeenCalledWith(404)
-      expect(end).toHaveBeenCalledWith()
-      expect(json).not.toHaveBeenCalled()
+      // Carries a `code` so the client recognises the deterministic flag-off
+      // and hides Retry. Crucially, this still never reads req.body (the Proxy
+      // above would throw) — the flag check alone decides the 404.
+      expect(json).toHaveBeenCalledWith({
+        error: 'not found',
+        code: 'not_found'
+      })
     })
 
     it('returns 404 when apologistChat flag is missing', async () => {
@@ -203,12 +227,15 @@ describe('/api/chat handler', () => {
         body: { messages: [{ role: 'user', content: 'hi' }] }
       } as unknown as NextApiRequest
 
-      const { res, status, end } = makeRes()
+      const { res, status, json } = makeRes()
 
       await handler(req, res)
 
       expect(status).toHaveBeenCalledWith(404)
-      expect(end).toHaveBeenCalledWith()
+      expect(json).toHaveBeenCalledWith({
+        error: 'not found',
+        code: 'not_found'
+      })
     })
 
     it('returns 405 for non-POST when flag is on', async () => {
@@ -238,7 +265,10 @@ describe('/api/chat handler', () => {
       await handler(req, res)
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
     })
   })
 
@@ -250,7 +280,11 @@ describe('/api/chat handler', () => {
     function postReq(): NextApiRequest {
       return {
         method: 'POST',
-        body: { messages: [{ role: 'user', content: 'hi' }] },
+        body: {
+          messages: [{ role: 'user', content: 'hi' }],
+          journeyId: 'journey-1',
+          cardId: 'card-1'
+        },
         headers: {}
       } as unknown as NextApiRequest
     }
@@ -377,12 +411,18 @@ describe('/api/chat handler', () => {
       mockGetFlags.mockResolvedValue({ apologistChat: true })
     })
 
-    function postReq(language?: string): NextApiRequest {
+    function postReq(
+      language?: string,
+      languageBcp47?: string
+    ): NextApiRequest {
       return {
         method: 'POST',
         body: {
           messages: [{ role: 'user', content: 'hi' }],
-          ...(language != null && { language })
+          journeyId: 'journey-1',
+          cardId: 'card-1',
+          ...(language != null && { language }),
+          ...(languageBcp47 != null && { languageBcp47 })
         },
         headers: {}
       } as unknown as NextApiRequest
@@ -397,16 +437,17 @@ describe('/api/chat handler', () => {
       const system = lastStreamConfig?.system
       expect(system).toContain('You are a helpful Christian apologist')
       expect(system).toContain('Be warm, empathetic, and conversational.')
-      expect(system).not.toContain('Respond in the following language')
+      expect(system).toContain('Quote from the ESV Bible.')
+      expect(system).not.toContain('Default to responding in')
     })
 
-    it('appends the language line to the fallback prompt when language is present', async () => {
+    it('appends the default-language line to the fallback prompt when language is present', async () => {
       mockGetLangfuse.mockReturnValue(null)
 
       await handler(postReq('Spanish'), makeRes().res)
 
       expect(lastStreamConfig?.system).toContain(
-        'Respond in the following language: Spanish'
+        'Default to responding in Spanish. If the user writes in a different language, respond in that language instead.'
       )
     })
 
@@ -417,9 +458,6 @@ describe('/api/chat handler', () => {
         })
       })
       mockGetLangfuse.mockReturnValue(fake as never)
-      const warnSpy = vi
-        .spyOn(console, 'warn')
-        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -427,8 +465,7 @@ describe('/api/chat handler', () => {
       expect(lastStreamConfig?.system).toContain(
         'You are a helpful Christian apologist'
       )
-      expect(warnSpy).toHaveBeenCalled()
-      warnSpy.mockRestore()
+      expect(mockLoggerWarn).toHaveBeenCalled()
     })
 
     it("falls back when prompt type is not 'text'", async () => {
@@ -436,16 +473,12 @@ describe('/api/chat handler', () => {
         promptResult: { type: 'chat', compile: vi.fn() }
       })
       mockGetLangfuse.mockReturnValue(fake as never)
-      const warnSpy = vi
-        .spyOn(console, 'warn')
-        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
       expect(lastStreamConfig?.system).toContain(
         'You are a helpful Christian apologist'
       )
-      warnSpy.mockRestore()
     })
 
     it('compiles the prompt with the language variable on success', async () => {
@@ -459,17 +492,46 @@ describe('/api/chat handler', () => {
         undefined,
         { label: 'development' }
       )
-      expect(fake.compile).toHaveBeenCalledWith({ language: 'French' })
+      expect(fake.compile).toHaveBeenCalledWith({
+        language: 'French',
+        translation: 'ESV'
+      })
       expect(lastStreamConfig?.system).toBe('compiled-system[lang=French]')
     })
 
-    it('omits the language variable from compile when none is supplied', async () => {
+    it('compiles with only the ESV translation variable when no language is supplied', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
 
       await handler(postReq(), makeRes().res)
 
-      expect(fake.compile).toHaveBeenCalledWith({})
+      expect(fake.compile).toHaveBeenCalledWith({ translation: 'ESV' })
+    })
+
+    it('warns chat_language_unresolved when only the bcp47 code reaches the prompt (NES-1736)', async () => {
+      mockGetLangfuse.mockReturnValue(null)
+
+      await handler(postReq('ur', 'ur'), makeRes().res)
+
+      expect(mockLoggerWarn).toHaveBeenCalledWith(
+        expect.objectContaining({
+          event: 'chat_language_unresolved',
+          languageBcp47: 'ur',
+          journeyId: 'journey-1'
+        }),
+        expect.stringContaining('language name unresolved')
+      )
+    })
+
+    it('does not warn chat_language_unresolved when a resolved name reaches the prompt (NES-1736)', async () => {
+      mockGetLangfuse.mockReturnValue(null)
+
+      await handler(postReq('Urdu', 'ur'), makeRes().res)
+
+      expect(mockLoggerWarn).not.toHaveBeenCalledWith(
+        expect.objectContaining({ event: 'chat_language_unresolved' }),
+        expect.anything()
+      )
     })
 
     it('forwards the active prompt label from getActivePromptLabel', async () => {
@@ -507,11 +569,12 @@ describe('/api/chat handler', () => {
         method: 'POST',
         body: {
           messages: [{ role: 'user', content: 'hi' }],
+          journeyId: overrides.journeyId ?? 'journey-1',
+          cardId: 'card-1',
           ...(overrides.language != null && { language: overrides.language }),
           ...(overrides.sessionId != null && {
             sessionId: overrides.sessionId
-          }),
-          ...(overrides.journeyId != null && { journeyId: overrides.journeyId })
+          })
         },
         headers
       } as unknown as NextApiRequest
@@ -557,22 +620,15 @@ describe('/api/chat handler', () => {
         promptError: new Error('boom')
       })
       mockGetLangfuse.mockReturnValue(fake as never)
-      const warnSpy = vi
-        .spyOn(console, 'warn')
-        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
       const generationCall = fake.generation.mock.calls[0][0]
       expect(generationCall.prompt).toBeUndefined()
-      warnSpy.mockRestore()
     })
 
     it('does not create a trace, generation, or flush when langfuse is null', async () => {
       mockGetLangfuse.mockReturnValue(null)
-      const errorSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -590,8 +646,6 @@ describe('/api/chat handler', () => {
       await expect(
         lastStreamConfig?.onError?.({ error: new Error('mid-stream') })
       ).resolves.not.toThrow()
-
-      errorSpy.mockRestore()
     })
 
     it('ends the generation with output + usage on a successful onFinish', async () => {
@@ -615,6 +669,58 @@ describe('/api/chat handler', () => {
       expect(fake.flushAsync).toHaveBeenCalledTimes(1)
     })
 
+    it('logs a structured info event on successful completion (no PII)', async () => {
+      const fake = makeFakeLangfuse()
+      mockGetLangfuse.mockReturnValue(fake as never)
+
+      await handler(
+        {
+          method: 'POST',
+          body: {
+            messages: [{ role: 'user', content: 'hi' }],
+            language: 'es',
+            sessionId: 'sess-1',
+            journeyId: 'journey-1',
+            cardId: 'card-1'
+          },
+          headers: { 'x-vercel-ip-country': 'NZ' }
+        } as unknown as NextApiRequest,
+        makeRes().res
+      )
+
+      await lastStreamConfig?.onFinish?.({
+        text: 'a reply',
+        usage: { inputTokens: 5, outputTokens: 9 },
+        finishReason: 'stop'
+      })
+
+      expect(mockLoggerInfo).toHaveBeenCalledTimes(1)
+      const [fields, message] = mockLoggerInfo.mock.calls[0]
+      expect(message).toBe('[chat] completed')
+      expect(fields).toMatchObject({
+        event: 'apologist_chat_completed',
+        journeyId: 'journey-1',
+        cardId: 'card-1',
+        language: 'es',
+        ipCountry: 'NZ',
+        sessionId: 'sess-1',
+        provider: 'apologist',
+        modelId: 'openai/gpt/4o-mini',
+        turn: 1,
+        promptTokens: 5,
+        completionTokens: 9,
+        finishReason: 'stop'
+      })
+      expect(typeof fields.durationMs).toBe('number')
+      expect(typeof fields.promptChars).toBe('number')
+      // No PII: raw message text / content is never logged, only counts.
+      expect(fields).not.toHaveProperty('messages')
+      expect(fields).not.toHaveProperty('text')
+      // Regression guard: journeyTitle was removed as client-controlled
+      // (untrusted) input and must never return to the logs.
+      expect(fields).not.toHaveProperty('journeyTitle')
+    })
+
     it('omits usage from the end payload when streamText reports no usage', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
@@ -633,14 +739,22 @@ describe('/api/chat handler', () => {
       })
     })
 
-    it("ends with ERROR when onFinish reports finishReason 'error'", async () => {
+    it("ends with ERROR and logs a no-PII error event when onFinish reports finishReason 'error'", async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
 
-      await handler(postReq(), makeRes().res)
+      await handler(
+        postReq({
+          language: 'es',
+          sessionId: 'sess-1',
+          journeyId: 'journey-1',
+          ipCountry: 'NZ'
+        }),
+        makeRes().res
+      )
 
       await lastStreamConfig?.onFinish?.({
-        text: '',
+        text: 'secret model reply',
         finishReason: 'error'
       })
 
@@ -650,14 +764,35 @@ describe('/api/chat handler', () => {
         statusMessage: 'finishReason=error'
       })
       expect(fake.flushAsync).toHaveBeenCalledTimes(1)
+
+      // Error event carries its own tag but mirrors the success event's
+      // non-PII triage fields, so both are queryable the same way in Datadog.
+      expect(mockLoggerError).toHaveBeenCalledTimes(1)
+      const [fields, message] = mockLoggerError.mock.calls[0]
+      expect(message).toBe('[chat] completed with error')
+      expect(fields).toMatchObject({
+        event: 'apologist_chat_error',
+        journeyId: 'journey-1',
+        language: 'es',
+        ipCountry: 'NZ',
+        sessionId: 'sess-1',
+        provider: 'apologist',
+        modelId: 'openai/gpt/4o-mini',
+        turn: 1,
+        finishReason: 'error'
+      })
+      expect(typeof fields.durationMs).toBe('number')
+      expect(typeof fields.promptChars).toBe('number')
+      // No PII: the user's message text, the model reply, and the raw IP are
+      // never logged — only counts and identifiers.
+      expect(fields).not.toHaveProperty('messages')
+      expect(fields).not.toHaveProperty('text')
+      expect(fields).not.toHaveProperty('journeyTitle')
     })
 
     it('ends with ERROR and flushes when onError fires (mid-stream failure)', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
-      const errorSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -669,15 +804,15 @@ describe('/api/chat handler', () => {
         statusMessage: 'socket hangup'
       })
       expect(fake.flushAsync).toHaveBeenCalledTimes(1)
-      errorSpy.mockRestore()
+      expect(mockLoggerError).toHaveBeenCalledWith(
+        expect.objectContaining({ event: 'apologist_chat_stream_error' }),
+        '[chat] streamText onError'
+      )
     })
 
     it('ends the generation exactly once when onError fires before onFinish', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
-      const errorSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -693,15 +828,11 @@ describe('/api/chat handler', () => {
         level: 'ERROR',
         statusMessage: 'first'
       })
-      errorSpy.mockRestore()
     })
 
     it('ends the generation exactly once when onFinish fires before onError', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
-      const errorSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => undefined)
 
       await handler(postReq(), makeRes().res)
 
@@ -718,16 +849,12 @@ describe('/api/chat handler', () => {
         usage: { input: 2, output: 3, unit: 'TOKENS' },
         level: 'DEFAULT'
       })
-      errorSpy.mockRestore()
     })
 
     it('responds 500 + ends the generation when streamText throws synchronously', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
       installStreamTextSyncThrow(new Error('sync boom'))
-      const errorSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => undefined)
 
       const { res, status, json } = makeRes(false)
       await handler(postReq(), res)
@@ -741,16 +868,16 @@ describe('/api/chat handler', () => {
       expect(status).toHaveBeenCalledWith(500)
       // Generic message; raw 'sync boom' stays in server logs.
       expect(json).toHaveBeenCalledWith({ error: 'upstream streamText failed' })
-      errorSpy.mockRestore()
+      expect(mockLoggerError).toHaveBeenCalledWith(
+        expect.objectContaining({ event: 'apologist_chat_sync_error' }),
+        '[chat] synchronous error'
+      )
     })
 
     it('calls res.end() instead of writing JSON when headers were already sent before the throw', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
       installStreamTextSyncThrow(new Error('post-headers boom'))
-      const errorSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => undefined)
 
       const { res, status, json, end } = makeRes(true)
       await handler(postReq(), res)
@@ -758,7 +885,6 @@ describe('/api/chat handler', () => {
       expect(status).not.toHaveBeenCalled()
       expect(json).not.toHaveBeenCalled()
       expect(end).toHaveBeenCalledWith()
-      errorSpy.mockRestore()
     })
   })
 
@@ -768,9 +894,21 @@ describe('/api/chat handler', () => {
     })
 
     function postReq(body: unknown): NextApiRequest {
+      // journeyId + cardId are now required (NES-1679). Inject them into object
+      // bodies so each bounds test fails for its intended reason rather than for
+      // a missing id. Non-object bodies (e.g. the "not-an-object" case) and
+      // bodies that already set these ids pass through unchanged.
+      const withRequiredIds =
+        body != null && typeof body === 'object' && !Array.isArray(body)
+          ? {
+              journeyId: 'journey-1',
+              cardId: 'card-1',
+              ...(body as Record<string, unknown>)
+            }
+          : body
       return {
         method: 'POST',
-        body,
+        body: withRequiredIds,
         headers: {}
       } as unknown as NextApiRequest
     }
@@ -781,7 +919,10 @@ describe('/api/chat handler', () => {
       await handler(postReq('not-an-object'), res)
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
     })
 
@@ -791,7 +932,10 @@ describe('/api/chat handler', () => {
       await handler(postReq({}), res)
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
     })
 
@@ -801,7 +945,10 @@ describe('/api/chat handler', () => {
       await handler(postReq({ messages: [{ content: 'hi' }] }), res)
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
     })
 
@@ -814,7 +961,10 @@ describe('/api/chat handler', () => {
       )
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
     })
 
@@ -824,7 +974,10 @@ describe('/api/chat handler', () => {
       await handler(postReq({ messages: [{ role: 'user' }] }), res)
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
     })
 
@@ -833,9 +986,6 @@ describe('/api/chat handler', () => {
       mockConvertToModelMessages.mockImplementationOnce(() => {
         throw new Error('unsupported part shape')
       })
-      const errorSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => undefined)
 
       const { res, status, json } = makeRes()
 
@@ -845,9 +995,15 @@ describe('/api/chat handler', () => {
       )
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
-      errorSpy.mockRestore()
+      expect(mockLoggerError).toHaveBeenCalledWith(
+        expect.objectContaining({ event: 'apologist_chat_convert_error' }),
+        '[chat] convertToModelMessages failed'
+      )
     })
 
     it('rejects when a single message exceeds the per-message char cap', async () => {
@@ -861,12 +1017,16 @@ describe('/api/chat handler', () => {
       )
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
     })
 
     it('rejects when the messages array exceeds the count cap', async () => {
-      const messages = Array.from({ length: 21 }, () => ({
+      // 41 > MAX_MESSAGES (40, raised in NES-1663).
+      const messages = Array.from({ length: 41 }, () => ({
         role: 'user',
         content: 'hi'
       }))
@@ -875,24 +1035,61 @@ describe('/api/chat handler', () => {
       await handler(postReq({ messages }), res)
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
     })
 
-    it('rejects when the cumulative input chars exceed the total cap', async () => {
-      // 7 messages * 3000 chars = 21000 > 20000 cap, each within per-message
-      // and message-count caps.
-      const messages = Array.from({ length: 7 }, () => ({
+    it('rejects an over-cap conversation with a coded 400 and logs a warn event (NES-1663)', async () => {
+      // 11 messages * 4000 chars = 44000 > MAX_TOTAL_CHARS (40000), each at the
+      // per-message cap and within the message-count cap.
+      const messages = Array.from({ length: 11 }, () => ({
         role: 'user',
-        content: 'x'.repeat(3000)
+        content: 'x'.repeat(4000)
       }))
       const { res, status, json } = makeRes()
 
-      await handler(postReq({ messages }), res)
+      await handler(
+        {
+          method: 'POST',
+          body: {
+            messages,
+            language: 'es',
+            sessionId: 'sess-1',
+            journeyId: 'journey-1',
+            cardId: 'card-1'
+          },
+          headers: {}
+        } as unknown as NextApiRequest,
+        res
+      )
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'request too large' })
+      // Coded body: the client switches on `code` (AI SDK v6 hides the status)
+      // to show the catered message + hide Retry.
+      expect(json).toHaveBeenCalledWith({
+        error: 'request too large',
+        code: 'conversation_capped'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
+
+      // Observability: warn (not error — it's user-driven, not a fault) with
+      // non-PII triage fields for the Datadog frequency query.
+      expect(mockLoggerWarn).toHaveBeenCalledWith(
+        {
+          event: 'chat_conversation_capped',
+          sessionId: 'sess-1',
+          journeyId: 'journey-1',
+          language: 'es',
+          messageCount: 11,
+          promptChars: 44000
+        },
+        'chat conversation hit size cap'
+      )
+      // Never escalated to an error log — keeps it out of error alerts.
+      expect(mockLoggerError).not.toHaveBeenCalled()
     })
 
     it('counts parts[].text toward the per-message and total caps', async () => {
@@ -907,7 +1104,10 @@ describe('/api/chat handler', () => {
       await handler(postReq({ messages }), res)
 
       expect(status).toHaveBeenCalledWith(400)
-      expect(json).toHaveBeenCalledWith({ error: 'invalid request' })
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
       expect(mockStreamText).not.toHaveBeenCalled()
     })
 
@@ -939,6 +1139,124 @@ describe('/api/chat handler', () => {
       expect(status).not.toHaveBeenCalledWith(400)
       expect(json).not.toHaveBeenCalledWith({ error: 'invalid request' })
       expect(mockStreamText).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('per-card kill switch (NES-1679)', () => {
+    beforeEach(() => {
+      mockGetFlags.mockResolvedValue({ apologistChat: true })
+    })
+
+    function postReq(body: Record<string, unknown>): NextApiRequest {
+      return {
+        method: 'POST',
+        body,
+        headers: {}
+      } as unknown as NextApiRequest
+    }
+
+    it('returns 400 when cardId is missing from the body', async () => {
+      const { res, status, json } = makeRes()
+
+      await handler(
+        postReq({ messages: [{ role: 'user', content: 'hi' }] }),
+        res
+      )
+
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
+      // The card lookup never runs — the schema rejects the request first.
+      expect(mockGetCardChatEnabled).not.toHaveBeenCalled()
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('returns 400 (not 403) when journeyId is missing from the body', async () => {
+      const { res, status, json } = makeRes()
+
+      await handler(
+        postReq({
+          messages: [{ role: 'user', content: 'hi' }],
+          cardId: 'card-1'
+        }),
+        res
+      )
+
+      // A missing journeyId is a malformed request, not a killed card: it must
+      // 400 invalid_request, not route through the kill switch to a 403
+      // chat_disabled (which would wrongly show the "chat turned off" copy).
+      expect(status).toHaveBeenCalledWith(400)
+      expect(json).toHaveBeenCalledWith({
+        error: 'invalid request',
+        code: 'invalid_request'
+      })
+      expect(mockGetCardChatEnabled).not.toHaveBeenCalled()
+      expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('passes journeyId + cardId to the lookup and streams when chat is enabled', async () => {
+      mockGetCardChatEnabled.mockResolvedValue(true)
+      mockGetLangfuse.mockReturnValue(null)
+
+      await handler(
+        postReq({
+          messages: [{ role: 'user', content: 'hi' }],
+          journeyId: 'journey-1',
+          cardId: 'card-1'
+        }),
+        makeRes().res
+      )
+
+      expect(mockGetCardChatEnabled).toHaveBeenCalledWith({
+        journeyId: 'journey-1',
+        cardId: 'card-1'
+      })
+      expect(mockStreamText).toHaveBeenCalledTimes(1)
+    })
+
+    it('returns 403 with a chat_disabled code when the card has chat disabled', async () => {
+      mockGetCardChatEnabled.mockResolvedValue(false)
+      const { res, status, json } = makeRes()
+
+      await handler(
+        postReq({
+          messages: [{ role: 'user', content: 'hi' }],
+          journeyId: 'journey-1',
+          cardId: 'card-1'
+        }),
+        res
+      )
+
+      expect(status).toHaveBeenCalledWith(403)
+      expect(json).toHaveBeenCalledWith({
+        error: 'chat disabled for this card',
+        code: 'chat_disabled'
+      })
+      // Fails closed before any model work.
+      expect(mockStreamText).not.toHaveBeenCalled()
+      expect(mockLoggerWarn).toHaveBeenCalledWith(
+        expect.objectContaining({ event: 'chat_card_disabled' }),
+        '[chat] blocked: chat disabled for card'
+      )
+    })
+
+    it('does not run the card lookup when the apologistChat flag is off', async () => {
+      mockGetFlags.mockResolvedValue({ apologistChat: false })
+      const { res, status } = makeRes()
+
+      await handler(
+        postReq({
+          messages: [{ role: 'user', content: 'hi' }],
+          journeyId: 'journey-1',
+          cardId: 'card-1'
+        }),
+        res
+      )
+
+      expect(status).toHaveBeenCalledWith(404)
+      expect(mockGetCardChatEnabled).not.toHaveBeenCalled()
     })
   })
 })

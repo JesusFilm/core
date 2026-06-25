@@ -4,6 +4,7 @@ import Tabs from '@mui/material/Tabs'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
+import { useSnackbar } from 'notistack'
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
@@ -17,6 +18,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../__generated__/BlockFields'
 import { VideoBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
 import { useMuxVideoUpload } from '../../../../../MuxVideoUploadProvider'
+import { isUploadActive } from '../../../../../MuxVideoUploadProvider/utils/isUploadActive'
 import { Drawer } from '../Drawer'
 
 import { VideoFromLocal } from './VideoFromLocal'
@@ -32,7 +34,7 @@ const VideoDetails = dynamic(
 const VideoFromMux = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/VideoLibrary/VideoFromCMux/VideoFromMux" */ './VideoFromMux'
+      /* webpackChunkName: "Editor/VideoLibrary/VideoFromMux/VideoFromMux" */ './VideoFromMux'
     ).then((mod) => mod.VideoFromMux),
   { ssr: false }
 )
@@ -73,6 +75,7 @@ export function VideoLibrary({
 
   const { getUploadStatus, cancelUploadForBlock } = useMuxVideoUpload()
   const uploadStatus = getUploadStatus(selectedBlock?.id ?? '')
+  const { enqueueSnackbar } = useSnackbar()
 
   const [activeTab, setActiveTab] = useState(
     uploadStatus != null ? UPLOAD_TAB : LIBRARY_TAB
@@ -113,10 +116,29 @@ export function VideoLibrary({
     block: VideoBlockUpdateInput,
     shouldCloseDrawer = true
   ): void => {
-    const shouldFocus = shouldCloseDrawer
+    // Never re-focus the block on a library select: the block whose properties
+    // are being edited is already in view, so focusing would slide the canvas
+    // back and shift the card behind this secondary drawer. Closing the drawer
+    // is handled separately via shouldCloseDrawer.
+    const shouldFocus = false
 
     // use editor provider selected block as this accounts for background videos where the video block does not yet exist, hence the selectedBlock prop is null
-    if (editorSelectedBlock != null) cancelUploadForBlock(editorSelectedBlock)
+    if (editorSelectedBlock != null) {
+      const activeUpload = getUploadStatus(editorSelectedBlock.id)
+      const isActive = isUploadActive(activeUpload)
+      // Only announce a cancellation for user-driven selects (Select / Apply,
+      // which pass shouldCloseDrawer=true). A natural upload completion calls
+      // onSelect with shouldCloseDrawer=false while the task is still mid-flight
+      // (onComplete fires before the 'completed' status commits), so without
+      // this guard a successful upload would show a false "cancelled" message.
+      if (isActive && shouldCloseDrawer) {
+        enqueueSnackbar(t('Video upload cancelled'), {
+          variant: 'info',
+          preventDuplicate: true
+        })
+      }
+      cancelUploadForBlock(editorSelectedBlock)
+    }
 
     if (handleSelect != null) handleSelect(block, shouldFocus)
     setOpenVideoDetails(false)
@@ -144,78 +166,79 @@ export function VideoLibrary({
   return (
     <>
       <Drawer title={t('Video Library')} open={open} onClose={onClose}>
-        <Box
-          sx={{
-            borderBottom: 1,
-            borderColor: 'divider',
-            width: '100%',
-            height: 73,
-            backgroundColor: (theme) => theme.palette.background.paper
-          }}
-          data-testid="VideoLibrary"
-        >
-          <Tabs
-            value={activeTab}
-            onChange={handleChange}
-            aria-label="video library tabs"
+        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <Box
+            sx={{
+              borderBottom: 1,
+              borderColor: 'divider',
+              width: '100%',
+              height: 73,
+              flexShrink: 0,
+              backgroundColor: (theme) => theme.palette.background.paper
+            }}
+            data-testid="VideoLibrary"
           >
-            <Tab
-              icon={<MediaStrip1Icon />}
-              label={t('Library')}
-              {...tabA11yProps('video-from-local', LIBRARY_TAB)}
-              sx={{ flexGrow: 1 }}
-            />
-            <Tab
-              icon={<YoutubeIcon />}
-              label={t('YouTube')}
-              {...tabA11yProps('video-from-youtube', YOUTUBE_TAB)}
-              sx={{ flexGrow: 1 }}
-            />
-            <Tab
-              icon={<Upload1Icon />}
-              label={t('Upload')}
-              {...tabA11yProps('video-from-mux', UPLOAD_TAB)}
-              sx={{ flexGrow: 1 }}
-            />
-          </Tabs>
-        </Box>
+            <Tabs
+              value={activeTab}
+              onChange={handleChange}
+              aria-label="video library tabs"
+            >
+              <Tab
+                icon={<MediaStrip1Icon />}
+                label={t('Library')}
+                {...tabA11yProps('video-from-local', LIBRARY_TAB)}
+                sx={{ flexGrow: 1 }}
+              />
+              <Tab
+                icon={<YoutubeIcon />}
+                label={t('YouTube')}
+                {...tabA11yProps('video-from-youtube', YOUTUBE_TAB)}
+                sx={{ flexGrow: 1 }}
+              />
+              <Tab
+                icon={<Upload1Icon />}
+                label={t('Upload')}
+                {...tabA11yProps('video-from-mux', UPLOAD_TAB)}
+                sx={{ flexGrow: 1 }}
+              />
+            </Tabs>
+          </Box>
 
-        <Box
-          sx={{
-            width: '100%',
-            height: {
-              xs: 'calc(100vh - 295px)',
-              sm: 'calc(100vh - 265px)'
-            },
-            overflowY: 'auto'
-          }}
-        >
-          <TabPanel
-            name="video-from-local"
-            value={activeTab}
-            index={LIBRARY_TAB}
-            sx={{ flexGrow: 1, overflow: 'auto' }}
+          <Box
+            sx={{
+              width: '100%',
+              flex: 1,
+              minHeight: 0,
+              overflowY: 'auto'
+            }}
           >
-            <VideoFromLocal onSelect={onSelect} />
-          </TabPanel>
-          <TabPanel
-            name="video-from-youtube"
-            value={activeTab}
-            index={YOUTUBE_TAB}
-            sx={{ flexGrow: 1, overflow: 'auto' }}
-            unmountUntilVisible
-          >
-            <VideoFromYouTube onSelect={onSelect} />
-          </TabPanel>
-          <TabPanel
-            name="video-from-mux"
-            value={activeTab}
-            index={UPLOAD_TAB}
-            sx={{ flexGrow: 1, overflow: 'auto' }}
-            unmountUntilVisible
-          >
-            <VideoFromMux onSelect={onSelect} />
-          </TabPanel>
+            <TabPanel
+              name="video-from-local"
+              value={activeTab}
+              index={LIBRARY_TAB}
+              sx={{ flexGrow: 1, overflow: 'auto' }}
+            >
+              <VideoFromLocal onSelect={onSelect} />
+            </TabPanel>
+            <TabPanel
+              name="video-from-youtube"
+              value={activeTab}
+              index={YOUTUBE_TAB}
+              sx={{ flexGrow: 1, overflow: 'auto' }}
+              unmountUntilVisible
+            >
+              <VideoFromYouTube onSelect={onSelect} />
+            </TabPanel>
+            <TabPanel
+              name="video-from-mux"
+              value={activeTab}
+              index={UPLOAD_TAB}
+              sx={{ flexGrow: 1, overflow: 'auto' }}
+              unmountUntilVisible
+            >
+              <VideoFromMux onSelect={onSelect} videoBlock={selectedBlock} />
+            </TabPanel>
+          </Box>
         </Box>
       </Drawer>
       {selectedBlock?.videoId != null && uploadStatus == null && (

@@ -346,6 +346,9 @@ export function VideoBlockEditorSettingsPosterLibrary({
     } else {
       updateImageBlock(input)
     }
+    // Close the secondary drawer once a poster image is selected, returning the
+    // user to the video settings without disturbing the underlying drawer.
+    onClose()
   }
 
   return (

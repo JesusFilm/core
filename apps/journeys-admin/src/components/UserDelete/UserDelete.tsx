@@ -263,7 +263,7 @@ function UserDeleteContent(): ReactElement {
       setLogs(userLogs)
       setResolvedUserId(uid)
 
-      // Step 2: check journeys counts from api-journeys-modern using the
+      // Step 2: check journeys counts from api-journeys using the
       // resolved Firebase UID returned by userDeleteCheck
       if (uid !== '') {
         const { data: journeysData } = await userDeleteJourneysCheck({
@@ -307,7 +307,7 @@ function UserDeleteContent(): ReactElement {
     }
 
     try {
-      // Step 3: delete journeys data from api-journeys-modern, get back IDs
+      // Step 3: delete journeys data from api-journeys, get back IDs
       const journeysResult = await userDeleteJourneysConfirm({
         variables: { userId: resolvedUserId }
       })

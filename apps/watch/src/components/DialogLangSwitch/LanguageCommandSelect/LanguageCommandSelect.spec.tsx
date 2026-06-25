@@ -30,7 +30,7 @@ describe('LanguageCommandSelect', () => {
     emptyMessage: 'No languages found.',
     loadingMessage: 'Loading languages...',
     noLanguagesMessage: 'No languages available.',
-    onSelect: jest.fn()
+    onSelect: vi.fn()
   }
 
   it('renders placeholder when no option is selected', () => {
@@ -73,7 +73,7 @@ describe('LanguageCommandSelect', () => {
   })
 
   it('calls onSelect when an option is selected', async () => {
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
     const user = userEvent.setup()
     render(<LanguageCommandSelect {...defaultProps} onSelect={onSelect} />)
 

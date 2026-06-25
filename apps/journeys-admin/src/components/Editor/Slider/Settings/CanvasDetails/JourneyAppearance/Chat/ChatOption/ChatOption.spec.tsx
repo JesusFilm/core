@@ -1,11 +1,17 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 
 import { MessagePlatform } from '../../../../../../../../../__generated__/globalTypes'
+import {
+  JourneyChatButtonUpdate,
+  JourneyChatButtonUpdateVariables
+} from '../../../../../../../../../__generated__/JourneyChatButtonUpdate'
 import { JourneyFields_chatButtons as ChatButton } from '../../../../../../../../../__generated__/JourneyFields'
+
+import { JOURNEY_CHAT_BUTTON_UPDATE } from './Details/Details'
 
 import { ChatOption } from '.'
 
@@ -67,7 +73,7 @@ describe('ChatOption', () => {
     expect(screen.getByRole('textbox')).toHaveValue('https://newlink.com')
   })
 
-  it('should update currentPlatform locally', () => {
+  it('should update currentPlatform locally', async () => {
     const props = {
       title: 'title',
       chatButton: {
@@ -83,8 +89,35 @@ describe('ChatOption', () => {
       enableIconSelect: true
     }
 
+    const updateResult = vi.fn(() => ({
+      data: {
+        chatButtonUpdate: {
+          __typename: 'ChatButton' as const,
+          id: 'chatButton.id',
+          link: 'https://example.com',
+          platform: MessagePlatform.snapchat,
+          customizable: null
+        }
+      }
+    }))
+
+    const updateMock: MockedResponse<
+      JourneyChatButtonUpdate,
+      JourneyChatButtonUpdateVariables
+    > = {
+      request: {
+        query: JOURNEY_CHAT_BUTTON_UPDATE,
+        variables: {
+          chatButtonUpdateId: 'chatButton.id',
+          journeyId: 'journeyId',
+          input: { platform: MessagePlatform.snapchat }
+        }
+      },
+      result: updateResult
+    }
+
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[updateMock]}>
         <SnackbarProvider>
           <CommandProvider>
             <ChatOption {...props} />
@@ -96,6 +129,7 @@ describe('ChatOption', () => {
     fireEvent.click(screen.getByText('TikTok'))
     fireEvent.click(screen.getByText('Snapchat'))
     expect(screen.getByRole('combobox')).toHaveTextContent('Snapchat')
+    await waitFor(() => expect(updateResult).toHaveBeenCalled())
   })
 
   it('should sync state when chatButton changes to a different button', () => {

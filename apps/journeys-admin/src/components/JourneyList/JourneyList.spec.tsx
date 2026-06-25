@@ -1,8 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
+
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { ThemeProvider } from '../ThemeProvider'
@@ -11,31 +14,51 @@ import { SortOrder } from './JourneySort'
 
 import { JourneyList } from '.'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => {
+  useRouter: vi.fn(() => {
     return {
       query: {
         status: 'active',
         type: 'journeys'
       },
-      push: jest.fn(),
+      push: vi.fn(),
       events: {
-        on: jest.fn(),
-        off: jest.fn()
+        on: vi.fn(),
+        off: vi.fn()
       }
     }
   })
 }))
 
-jest.mock('../../libs/useAdminJourneysQuery', () => ({
+vi.mock('../../libs/useAdminJourneysQuery', () => ({
   __esModule: true,
-  useAdminJourneysQuery: jest.fn()
+  useAdminJourneysQuery: vi.fn()
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-const mockedUseAdminJourneysQuery =
-  useAdminJourneysQuery as jest.MockedFunction<typeof useAdminJourneysQuery>
+// TemplateGalleryPageList is exercised by its own spec. Here we stub it to
+// surface only the inline mobile info trigger (NES-1686) when the parent
+// passes `onOpenInfo`, so JourneyList tests can verify the trigger wiring
+// without standing up the gallery's Apollo queries.
+vi.mock('../TemplateGalleryPageList', () => ({
+  __esModule: true,
+  TemplateGalleryPageList: ({ onOpenInfo }: { onOpenInfo?: () => void }) =>
+    onOpenInfo != null ? (
+      <button
+        type="button"
+        data-testid="TemplateInfoPanelMobileTrigger"
+        aria-label="Open template info"
+        onClick={onOpenInfo}
+      >
+        Open template info
+      </button>
+    ) : null
+}))
+
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
+const mockedUseAdminJourneysQuery = useAdminJourneysQuery as MockedFunction<
+  typeof useAdminJourneysQuery
+>
 
 describe('JourneyList', () => {
   let originalSetItem: typeof Storage.prototype.setItem
@@ -46,7 +69,7 @@ describe('JourneyList', () => {
 
   beforeEach(() => {
     mockedUseAdminJourneysQuery.mockReturnValue({
-      refetch: jest.fn()
+      refetch: vi.fn()
     } as unknown as ReturnType<typeof useAdminJourneysQuery>)
     sessionStorage.clear()
   })
@@ -81,8 +104,8 @@ describe('JourneyList', () => {
     mockedUseRouter.mockReturnValue({
       query: { status: 'active', type: 'journeys' },
       events: {
-        on: jest.fn(),
-        off: jest.fn()
+        on: vi.fn(),
+        off: vi.fn()
       }
     } as unknown as NextRouter)
     const { getByRole } = render(
@@ -101,8 +124,8 @@ describe('JourneyList', () => {
     mockedUseRouter.mockReturnValue({
       query: { status: 'trashed', type: 'journeys' },
       events: {
-        on: jest.fn(),
-        off: jest.fn()
+        on: vi.fn(),
+        off: vi.fn()
       }
     } as unknown as NextRouter)
     const { queryByRole } = render(
@@ -121,8 +144,8 @@ describe('JourneyList', () => {
     mockedUseRouter.mockReturnValue({
       query: { status: 'archived', type: 'journeys' },
       events: {
-        on: jest.fn(),
-        off: jest.fn()
+        on: vi.fn(),
+        off: vi.fn()
       }
     } as unknown as NextRouter)
     const { queryByRole } = render(
@@ -141,8 +164,8 @@ describe('JourneyList', () => {
     mockedUseRouter.mockReturnValue({
       query: { status: 'active', type: 'templates' },
       events: {
-        on: jest.fn(),
-        off: jest.fn()
+        on: vi.fn(),
+        off: vi.fn()
       }
     } as unknown as NextRouter)
     const { queryByRole } = render(
@@ -158,8 +181,8 @@ describe('JourneyList', () => {
   })
 
   it('should call refetch when route changes to /publisher', () => {
-    const onMock = jest.fn()
-    const offMock = jest.fn()
+    const onMock = vi.fn()
+    const offMock = vi.fn()
 
     mockedUseRouter.mockReturnValue({
       query: { status: 'active', type: 'journeys' },
@@ -186,8 +209,8 @@ describe('JourneyList', () => {
   })
 
   it('should call refetch when route changes to /', () => {
-    const onMock = jest.fn()
-    const offMock = jest.fn()
+    const onMock = vi.fn()
+    const offMock = vi.fn()
 
     mockedUseRouter.mockReturnValue({
       query: { status: 'active', type: 'journeys' },
@@ -214,8 +237,8 @@ describe('JourneyList', () => {
   })
 
   it('should not call refetch when router changes to some other route', () => {
-    const onMock = jest.fn()
-    const offMock = jest.fn()
+    const onMock = vi.fn()
+    const offMock = vi.fn()
 
     mockedUseRouter.mockReturnValue({
       query: { status: 'active', type: 'journeys' },
@@ -243,7 +266,7 @@ describe('JourneyList', () => {
 
   it('should display "title" in session storage when sorting by name is selected', async () => {
     const user = userEvent.setup()
-    Storage.prototype.setItem = jest.fn()
+    Storage.prototype.setItem = vi.fn()
 
     render(
       <SnackbarProvider>
@@ -267,7 +290,7 @@ describe('JourneyList', () => {
 
   it('should display "updated at" in session storage when sorting by last modified is selected', async () => {
     const user = userEvent.setup()
-    Storage.prototype.setItem = jest.fn()
+    Storage.prototype.setItem = vi.fn()
 
     render(
       <SnackbarProvider>
@@ -294,7 +317,7 @@ describe('JourneyList', () => {
 
   it('should display "created at" in session storage when sorting by date created is selected', async () => {
     const user = userEvent.setup()
-    Storage.prototype.setItem = jest.fn()
+    Storage.prototype.setItem = vi.fn()
 
     render(
       <SnackbarProvider>
@@ -335,5 +358,109 @@ describe('JourneyList', () => {
       expect(sortButton).toHaveTextContent('Sort By: Name')
     })
     expect(sessionStorage.getItem('journeyListSortBy')).toBe(SortOrder.TITLE)
+  })
+
+  describe('Template Info side panel (NES-1538)', () => {
+    function renderWithFlags(flags: { teamTemplateCollection?: boolean }) {
+      return render(
+        <SnackbarProvider>
+          <MockedProvider>
+            <ThemeProvider>
+              <FlagsProvider flags={flags}>
+                <JourneyList />
+              </FlagsProvider>
+            </ThemeProvider>
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+    }
+
+    it('renders the desktop panel and mobile trigger when teamTemplateCollection is on and the templates tab is active', () => {
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'templates' },
+        events: { on: vi.fn(), off: vi.fn() }
+      } as unknown as NextRouter)
+
+      renderWithFlags({ teamTemplateCollection: true })
+
+      expect(screen.getByTestId('TemplateInfoPanelDesktop')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('TemplateInfoPanelMobileTrigger')
+      ).toBeInTheDocument()
+    })
+
+    it('renders nothing on the journeys tab even with the flag on', () => {
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'journeys' },
+        events: { on: vi.fn(), off: vi.fn() }
+      } as unknown as NextRouter)
+
+      renderWithFlags({ teamTemplateCollection: true })
+
+      expect(
+        screen.queryByTestId('TemplateInfoPanelDesktop')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId('TemplateInfoPanelMobileTrigger')
+      ).not.toBeInTheDocument()
+    })
+
+    it('renders nothing when teamTemplateCollection is off (local template surface unavailable)', () => {
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'templates' },
+        events: { on: vi.fn(), off: vi.fn() }
+      } as unknown as NextRouter)
+
+      renderWithFlags({ teamTemplateCollection: false })
+
+      expect(
+        screen.queryByTestId('TemplateInfoPanelDesktop')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId('TemplateInfoPanelMobileTrigger')
+      ).not.toBeInTheDocument()
+    })
+
+    // MUI's `SwipeableDrawer` keeps the drawer Stack mounted even with
+    // `disableSwipeToOpen`, so its `data-testid` cannot signal open/close.
+    // The *Modal portal wrapper* (with `role="presentation"`) is the only
+    // attribute that mounts and unmounts with the drawer's open state — and
+    // because this spec stubs `TemplateGalleryPageList` to a plain button,
+    // no other `presentation`-role element exists in the render tree.
+    it('mounts the mobile drawer modal when the trigger button is clicked', () => {
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'templates' },
+        events: { on: vi.fn(), off: vi.fn() }
+      } as unknown as NextRouter)
+
+      renderWithFlags({ teamTemplateCollection: true })
+
+      expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
+
+      fireEvent.click(screen.getByTestId('TemplateInfoPanelMobileTrigger'))
+
+      expect(screen.getByRole('presentation')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Close template info' })
+      ).toBeInTheDocument()
+    })
+
+    it('unmounts the mobile drawer modal when the X button is clicked', () => {
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'templates' },
+        events: { on: vi.fn(), off: vi.fn() }
+      } as unknown as NextRouter)
+
+      renderWithFlags({ teamTemplateCollection: true })
+
+      fireEvent.click(screen.getByTestId('TemplateInfoPanelMobileTrigger'))
+      expect(screen.getByRole('presentation')).toBeInTheDocument()
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Close template info' })
+      )
+
+      expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
+    })
   })
 })

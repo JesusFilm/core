@@ -19,7 +19,7 @@ describe('DownloadButton', () => {
   })
 
   it('should call onClick when button is clicked', () => {
-    const setOpenDownload = jest.fn()
+    const setOpenDownload = vi.fn()
 
     const { getByRole } = render(
       <DownloadButton variant="button" onClick={setOpenDownload} />
@@ -30,7 +30,7 @@ describe('DownloadButton', () => {
   })
 
   it('should call onClick when icon is clicked', () => {
-    const setOpenShare = jest.fn()
+    const setOpenShare = vi.fn()
 
     const { getByTestId } = render(
       <DownloadButton variant="icon" onClick={setOpenShare} />

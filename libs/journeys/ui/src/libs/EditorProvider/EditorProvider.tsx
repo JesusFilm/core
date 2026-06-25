@@ -236,6 +236,7 @@ export const reducer = (
     case 'SetSelectedBlockOnlyAction':
       return {
         ...state,
+        selectedBlockId: action.selectedBlock?.id,
         selectedBlock: action.selectedBlock
       }
     case 'SetSelectedBlockByIdAction':

@@ -13,6 +13,8 @@ import {
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
+import { useEditorLayout } from '../../../../EditorLayoutContext'
+
 import goal from './assets/goal.svg'
 
 interface ListItemProps {
@@ -36,6 +38,7 @@ export function GoalsBanner(): ReactElement {
   const theme = useTheme()
   const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
+  const { isLayered } = useEditorLayout()
 
   function handleClick(): void {
     dispatch({ type: 'SetActiveSlideAction', activeSlide: ActiveSlide.Drawer })
@@ -50,16 +53,17 @@ export function GoalsBanner(): ReactElement {
       }}
       data-testid="ActionsBanner"
     >
-      <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+      <Box sx={{ display: { xs: 'none', md: isLayered ? 'flex' : 'block' } }}>
         <Image
           src={goal}
           alt="goal"
           height={504}
           width={464}
-          style={{
-            maxWidth: '100%',
-            height: 'auto'
-          }}
+          style={
+            isLayered
+              ? { maxWidth: '100%' }
+              : { maxWidth: '100%', height: 'auto' }
+          }
         />
       </Box>
       <Stack gap={3} justifyContent="center">

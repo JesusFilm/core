@@ -3,25 +3,26 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import { ThemeProvider } from '../ThemeProvider'
 
 import { StatusTabPanel } from './StatusTabPanel'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({ query: { tab: undefined } }))
+  useRouter: vi.fn(() => ({ query: { tab: undefined } }))
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('StatusTabPanel', () => {
-  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+  beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => true))
 
   it('should render tab panels', () => {
     const { getByText } = render(
@@ -32,8 +33,8 @@ describe('StatusTabPanel', () => {
               activeList={<>Active List</>}
               archivedList={<>Archived</>}
               trashedList={<>Trashed</>}
-              setActiveEvent={jest.fn()}
-              setSortOrder={jest.fn()}
+              setActiveEvent={vi.fn()}
+              setSortOrder={vi.fn()}
             />
           </SnackbarProvider>
         </ThemeProvider>
@@ -51,8 +52,8 @@ describe('StatusTabPanel', () => {
               activeList={<>Active List</>}
               archivedList={<>Archived</>}
               trashedList={<>Trashed</>}
-              setActiveEvent={jest.fn()}
-              setSortOrder={jest.fn()}
+              setActiveEvent={vi.fn()}
+              setSortOrder={vi.fn()}
             />
           </SnackbarProvider>
         </ThemeProvider>
@@ -78,8 +79,8 @@ describe('StatusTabPanel', () => {
               activeList={<>Active List</>}
               archivedList={<>Archived</>}
               trashedList={<>Trashed</>}
-              setActiveEvent={jest.fn()}
-              setSortOrder={jest.fn()}
+              setActiveEvent={vi.fn()}
+              setSortOrder={vi.fn()}
             />
           </SnackbarProvider>
         </ThemeProvider>
@@ -106,8 +107,8 @@ describe('StatusTabPanel', () => {
               activeList={<>Active List</>}
               archivedList={<>Archived List</>}
               trashedList={<>Trashed List</>}
-              setActiveEvent={jest.fn()}
-              setSortOrder={jest.fn()}
+              setActiveEvent={vi.fn()}
+              setSortOrder={vi.fn()}
             />
           </ThemeProvider>
         </MockedProvider>
@@ -120,8 +121,8 @@ describe('StatusTabPanel', () => {
   })
 
   it('should switch tab to active', () => {
-    const push = jest.fn()
-    const setActiveEvent = jest.fn()
+    const push = vi.fn()
+    const setActiveEvent = vi.fn()
     mockedUseRouter.mockReturnValue({
       query: {
         tab: 'archived'
@@ -138,7 +139,7 @@ describe('StatusTabPanel', () => {
               archivedList={<>Archived List</>}
               trashedList={<>Trashed List</>}
               setActiveEvent={setActiveEvent}
-              setSortOrder={jest.fn()}
+              setSortOrder={vi.fn()}
             />
           </ThemeProvider>
         </MockedProvider>
@@ -158,8 +159,8 @@ describe('StatusTabPanel', () => {
   })
 
   it('should switch tab to archived', () => {
-    const push = jest.fn()
-    const setActiveEvent = jest.fn()
+    const push = vi.fn()
+    const setActiveEvent = vi.fn()
     mockedUseRouter.mockReturnValue({
       query: {
         tab: 'active'
@@ -176,7 +177,7 @@ describe('StatusTabPanel', () => {
               archivedList={<>Archived List</>}
               trashedList={<>Trashed List</>}
               setActiveEvent={setActiveEvent}
-              setSortOrder={jest.fn()}
+              setSortOrder={vi.fn()}
             />
           </ThemeProvider>
         </MockedProvider>
@@ -194,8 +195,8 @@ describe('StatusTabPanel', () => {
   })
 
   it('should switch tab to trash', () => {
-    const push = jest.fn()
-    const setActiveEvent = jest.fn()
+    const push = vi.fn()
+    const setActiveEvent = vi.fn()
     mockedUseRouter.mockReturnValue({
       query: {
         status: 'active'
@@ -212,7 +213,7 @@ describe('StatusTabPanel', () => {
               archivedList={<>Archived List</>}
               trashedList={<>Trashed List</>}
               setActiveEvent={setActiveEvent}
-              setSortOrder={jest.fn()}
+              setSortOrder={vi.fn()}
             />
           </ThemeProvider>
         </MockedProvider>

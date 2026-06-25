@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type Mock, type MockInstance, type MockedFunction } from 'vitest'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
@@ -20,17 +21,17 @@ import {
   GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN
 } from './DoneScreen'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-jest.mock('../../../../../libs/auth', () => ({
+vi.mock('../../../../../libs/auth', () => ({
   __esModule: true,
   useAuth: () => ({ user: null })
 }))
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   __esModule: true,
   useTranslation: () => {
     return {
@@ -39,7 +40,7 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 const getCustomDomainsMock = {
   request: {
@@ -54,6 +55,7 @@ const getCustomDomainsMock = {
           id: 'customDomainId',
           name: 'custom.domain.com',
           apexName: 'custom.domain.com',
+          routeAllTeamJourneys: false,
           journeyCollection: null
         }
       ]
@@ -127,25 +129,25 @@ const journeyForSharingMock = {
 }
 
 describe('DoneScreen', () => {
-  let push: jest.Mock
-  let writeTextSpy: jest.SpyInstance
+  let push: Mock
+  let writeTextSpy: MockInstance
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    push = jest.fn()
+    vi.clearAllMocks()
+    push = vi.fn()
 
     if (!navigator.clipboard) {
-      Object.assign(navigator, { clipboard: { writeText: jest.fn() } })
+      Object.assign(navigator, { clipboard: { writeText: vi.fn() } })
     }
 
-    writeTextSpy = jest
+    writeTextSpy = vi
       .spyOn(navigator.clipboard, 'writeText')
-      .mockImplementation(jest.fn())
+      .mockImplementation(vi.fn())
 
     mockUseRouter.mockReturnValue({
       push,
       query: { redirect: null },
-      events: { on: jest.fn() }
+      events: { on: vi.fn() }
     } as unknown as NextRouter)
   })
 
@@ -357,7 +359,7 @@ describe('DoneScreen', () => {
   })
 
   it('should fire notification update mutation when switch is toggled', async () => {
-    const result = jest
+    const result = vi
       .fn()
       .mockReturnValueOnce(useJourneyNotifcationUpdateMock.result)
     render(

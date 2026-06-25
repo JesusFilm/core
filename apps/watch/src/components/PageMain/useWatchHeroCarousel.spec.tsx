@@ -1,4 +1,5 @@
 import { act, renderHook } from '@testing-library/react'
+import type { Mock } from 'vitest'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import type { PlayerState } from '../../libs/playerContext'
@@ -11,17 +12,17 @@ import {
 
 import { useWatchHeroCarousel } from './useWatchHeroCarousel'
 
-jest.mock('../VideoHero/libs/useCarouselVideos', () => ({
-  useCarouselVideos: jest.fn()
+vi.mock('../VideoHero/libs/useCarouselVideos', () => ({
+  useCarouselVideos: vi.fn()
 }))
 
-jest.mock('../../libs/playerContext', () => ({
-  usePlayer: jest.fn()
+vi.mock('../../libs/playerContext', () => ({
+  usePlayer: vi.fn()
 }))
 
 describe('useWatchHeroCarousel', () => {
-  const useCarouselVideosMock = jest.mocked(useCarouselVideos)
-  const usePlayerMock = jest.mocked(usePlayer)
+  const useCarouselVideosMock = vi.mocked(useCarouselVideos)
+  const usePlayerMock = vi.mocked(usePlayer)
 
   const createVideo = (
     overrides: Partial<CarouselVideo> = {}
@@ -83,15 +84,15 @@ describe('useWatchHeroCarousel', () => {
     { source: 'video', id: videoTwo.id, video: videoTwo }
   ]
 
-  let moveToNextMock: jest.Mock
-  let jumpToVideoMock: jest.Mock
+  let moveToNextMock: Mock
+  let jumpToVideoMock: Mock
   let playerState: PlayerState
 
   beforeEach(() => {
-    jest.useFakeTimers()
+    vi.useFakeTimers({ shouldAdvanceTime: true })
 
-    moveToNextMock = jest.fn()
-    jumpToVideoMock = jest.fn().mockReturnValue(true)
+    moveToNextMock = vi.fn()
+    jumpToVideoMock = vi.fn().mockReturnValue(true)
 
     playerState = {
       play: false,
@@ -109,7 +110,7 @@ describe('useWatchHeroCarousel', () => {
       duration: '0:00'
     }
 
-    usePlayerMock.mockReturnValue({ state: playerState, dispatch: jest.fn() })
+    usePlayerMock.mockReturnValue({ state: playerState, dispatch: vi.fn() })
     useCarouselVideosMock.mockReturnValue({
       slides: [...muxSlides, ...videoSlides],
       videos: [videoOne, videoTwo],
@@ -117,7 +118,7 @@ describe('useWatchHeroCarousel', () => {
       currentIndex: 0,
       error: null,
       moveToNext: moveToNextMock,
-      moveToPrevious: jest.fn(),
+      moveToPrevious: vi.fn(),
       jumpToVideo: jumpToVideoMock,
       currentPoolIndex: 0
     })
@@ -125,10 +126,10 @@ describe('useWatchHeroCarousel', () => {
 
   afterEach(() => {
     act(() => {
-      jest.runOnlyPendingTimers()
+      vi.runOnlyPendingTimers()
     })
-    jest.useRealTimers()
-    jest.clearAllMocks()
+    vi.useRealTimers()
+    vi.clearAllMocks()
   })
 
   it('initializes with the first slide active', () => {
@@ -139,6 +140,15 @@ describe('useWatchHeroCarousel', () => {
     expect(result.current.activeVideo?.id).toBe(muxSlideOne.id)
   })
 
+  it('passes direct languageId to carousel video loader', () => {
+    renderHook(() => useWatchHeroCarousel({ languageId: '496' }))
+
+    expect(useCarouselVideosMock).toHaveBeenCalledWith({
+      locale: undefined,
+      languageId: '496'
+    })
+  })
+
   it('advances through mux slides and into videos when inserts complete', () => {
     const { result } = renderHook(() => useWatchHeroCarousel())
 
@@ -146,7 +156,7 @@ describe('useWatchHeroCarousel', () => {
       result.current.handleMuxInsertComplete()
     })
     act(() => {
-      jest.runOnlyPendingTimers()
+      vi.runOnlyPendingTimers()
     })
 
     expect(result.current.activeVideoId).toBe(muxSlideTwo.id)
@@ -156,7 +166,7 @@ describe('useWatchHeroCarousel', () => {
       result.current.handleMuxInsertComplete()
     })
     act(() => {
-      jest.runOnlyPendingTimers()
+      vi.runOnlyPendingTimers()
     })
 
     expect(result.current.activeVideoId).toBe(videoOne.id)
@@ -171,13 +181,13 @@ describe('useWatchHeroCarousel', () => {
       result.current.handleMuxInsertComplete()
     })
     act(() => {
-      jest.runOnlyPendingTimers()
+      vi.runOnlyPendingTimers()
     })
     act(() => {
       result.current.handleMuxInsertComplete()
     })
     act(() => {
-      jest.runOnlyPendingTimers()
+      vi.runOnlyPendingTimers()
     })
     jumpToVideoMock.mockClear()
 
@@ -196,7 +206,7 @@ describe('useWatchHeroCarousel', () => {
       result.current.handleSkipActiveVideo()
     })
     act(() => {
-      jest.runOnlyPendingTimers()
+      vi.runOnlyPendingTimers()
     })
 
     expect(result.current.activeVideoId).toBe(muxSlideTwo.id)
@@ -205,7 +215,7 @@ describe('useWatchHeroCarousel', () => {
       result.current.handleSkipActiveVideo()
     })
     act(() => {
-      jest.runOnlyPendingTimers()
+      vi.runOnlyPendingTimers()
     })
 
     expect(result.current.activeVideoId).toBe(videoOne.id)
@@ -234,19 +244,19 @@ describe('useWatchHeroCarousel', () => {
       result.current.handleMuxInsertComplete()
     })
     act(() => {
-      jest.runOnlyPendingTimers()
+      vi.runOnlyPendingTimers()
     })
     act(() => {
       result.current.handleMuxInsertComplete()
     })
     act(() => {
-      jest.runOnlyPendingTimers()
+      vi.runOnlyPendingTimers()
     })
     jumpToVideoMock.mockClear()
 
     act(() => {
       playerState = { ...playerState, progress: 96 }
-      usePlayerMock.mockReturnValue({ state: playerState, dispatch: jest.fn() })
+      usePlayerMock.mockReturnValue({ state: playerState, dispatch: vi.fn() })
       rerender()
     })
 

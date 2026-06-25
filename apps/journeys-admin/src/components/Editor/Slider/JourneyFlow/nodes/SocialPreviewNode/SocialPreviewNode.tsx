@@ -20,6 +20,7 @@ import { isIOSTouchScreen } from '@core/shared/ui/deviceUtils'
 
 import { Tooltip } from '../../../../../Tooltip'
 import { getReactflowTooltipOffset } from '../../../../../Tooltip/utils/getReactflowTooltipOffset'
+import { useEditorLayout } from '../../../../EditorLayoutContext'
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
 import { BaseNode, HandleVariant } from '../BaseNode'
 
@@ -36,6 +37,7 @@ export function SocialPreviewNode(): ReactElement {
     dispatch,
     state: { activeContent, activeSlide, showAnalytics }
   } = useEditor()
+  const { isLayered } = useEditorLayout()
 
   useEffect(() => {
     const timeout = showTooltip
@@ -56,7 +58,7 @@ export function SocialPreviewNode(): ReactElement {
       dispatch({ type: 'SetSelectedStepAction', selectedStep: undefined })
       dispatch({
         type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.JourneyFlow
+        activeSlide: isLayered ? ActiveSlide.Drawer : ActiveSlide.JourneyFlow
       })
       dispatch({
         type: 'SetActiveContentAction',
@@ -65,7 +67,7 @@ export function SocialPreviewNode(): ReactElement {
     } else {
       dispatch({
         type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.Content
+        activeSlide: isLayered ? ActiveSlide.Drawer : ActiveSlide.Content
       })
     }
   }

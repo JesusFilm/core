@@ -9,5 +9,17 @@
   "Get me out of here!": "Get me out of here!",
   "Terms & Conditions": "Terms & Conditions",
   "Privacy Policy": "Privacy Policy",
-  "NextSteps © {{year}}": "NextSteps © {{year}}"
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Use": "उपयोग करें",
+  "Preview": "Preview",
+  "About this chat": "इस चैट के बारे में",
+  "About this chat | Next Steps": "इस चैट के बारे में | अगले कदम",
+  "The chat on this journey is powered by an AI assistant. To help us improve future replies, the messages you send and the assistant’s replies are saved.": "इस यात्रा पर चैट एक एआई सहायक द्वारा संचालित है। भविष्य में प्रतिक्रियाओं को बेहतर बनाने में हमारी मदद करने के लिए, आपके द्वारा भेजे गए संदेश और सहायक की प्रतिक्रियाएं सहेजी जाती हैं।",
+  "We do not save your name, email address, or any account details, and we do not link conversations to your identity.": "हम आपका नाम, ईमेल पता या कोई खाता विवरण सहेजते नहीं हैं, और हम बातचीत को आपकी पहचान से जोड़ते नहीं हैं।",
+  "Where the messages go": "संदेश कहाँ जाते हैं",
+  "Your messages and the assistant’s replies pass through two third-party services: an AI service that generates the replies, and an analytics service called Langfuse where the conversations are stored so the team can review them in aggregate to improve the experience. They are not sold and they are not used for advertising.": "आपके संदेश और सहायक की प्रतिक्रियाएँ दो तृतीय-पक्ष सेवाओं से होकर गुजरती हैं: एक एआई सेवा जो प्रतिक्रियाएँ उत्पन्न करती है, और एक विश्लेषण सेवा जिसे Langfuse कहते हैं, जहाँ बातचीत संग्रहीत की जाती है ताकि टीम अनुभव को बेहतर बनाने के लिए इन्हें समग्र रूप में समीक्षा कर सके। इन्हें बेचा नहीं जाता और विज्ञापन के लिए उपयोग नहीं किया जाता।",
+  "If you prefer not to take part": "यदि आप भाग नहीं लेना पसंद करते हैं",
+  "There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.": "आज चैट के लिए कोई विशिष्ट ऑप्ट-आउट नहीं है। यदि आप नहीं चाहते कि आपके संदेश सहेजे जाएँ, तो कृपया चैट का उपयोग न करें — बाकी यात्रा इसके बिना भी चलती है।",
+  "Last updated: June 2026": "अंतिम अपडेट: जून 2026",
+  "Back to Next Steps": "अगले कदमों पर वापस"
 }

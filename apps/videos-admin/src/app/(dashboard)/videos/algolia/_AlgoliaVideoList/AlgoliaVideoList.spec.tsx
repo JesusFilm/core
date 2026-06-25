@@ -1,62 +1,57 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { algoliasearch } from 'algoliasearch'
 import {
+  Configure,
   useHits,
   useInstantSearch,
   usePagination,
   useRefinementList,
   useSearchBox
 } from 'react-instantsearch'
+import { type MockedFunction } from 'vitest'
 
 import { AlgoliaVideoList } from './AlgoliaVideoList'
 
-const mockPush = jest.fn()
+const mockPush = vi.fn()
 
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(() => ({
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
     push: mockPush
   }))
 }))
 
-jest.mock('algoliasearch', () => ({
-  algoliasearch: jest.fn(() => ({}))
+vi.mock('algoliasearch', () => ({
+  algoliasearch: vi.fn(() => ({}))
 }))
 
-jest.mock('react-instantsearch', () => ({
-  Configure: ({ children }) => <>{children}</>,
+vi.mock('react-instantsearch', () => ({
+  Configure: vi.fn(() => null),
   InstantSearch: ({ children }) => <>{children}</>,
-  useHits: jest.fn(),
-  useInstantSearch: jest.fn(),
-  usePagination: jest.fn(),
-  useRefinementList: jest.fn(),
-  useSearchBox: jest.fn()
+  useHits: vi.fn(),
+  useInstantSearch: vi.fn(),
+  usePagination: vi.fn(),
+  useRefinementList: vi.fn(),
+  useSearchBox: vi.fn()
 }))
 
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
-  typeof useSearchBox
->
-const mockUseHits = useHits as jest.MockedFunction<typeof useHits>
-const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
+const mockConfigure = Configure as MockedFunction<typeof Configure>
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
+const mockUseHits = useHits as MockedFunction<typeof useHits>
+const mockUseInstantSearch = useInstantSearch as MockedFunction<
   typeof useInstantSearch
 >
-const mockUsePagination = usePagination as jest.MockedFunction<
-  typeof usePagination
->
-const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+const mockUsePagination = usePagination as MockedFunction<typeof usePagination>
+const mockUseRefinementList = useRefinementList as MockedFunction<
   typeof useRefinementList
 >
-const mockAlgoliaSearch = algoliasearch as jest.MockedFunction<
-  typeof algoliasearch
->
+const mockAlgoliaSearch = algoliasearch as MockedFunction<typeof algoliasearch>
 
 describe('AlgoliaVideoList', () => {
   const originalEnv = process.env
-  const mockSearchRefine = jest.fn()
-  const mockPageRefine = jest.fn()
-  const mockPublishedRefine = jest.fn()
+  const mockSearchRefine = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env = {
       ...originalEnv,
       NEXT_PUBLIC_ALGOLIA_APP_ID: 'test-app-id',
@@ -75,33 +70,36 @@ describe('AlgoliaVideoList', () => {
       status: 'idle',
       error: null
     } as any)
-    mockUsePagination.mockReturnValue({
-      currentRefinement: 0,
-      nbPages: 1,
-      refine: mockPageRefine
-    } as any)
-    mockUseRefinementList.mockReturnValue({
-      items: [
-        { label: 'true', value: 'published:true', isRefined: false, count: 2 },
-        { label: 'false', value: 'published:false', isRefined: false, count: 1 }
-      ],
-      refine: mockPublishedRefine
-    } as any)
   })
 
   afterAll(() => {
     process.env = originalEnv
   })
 
-  it('renders search and published filter controls with facet counts', () => {
+  it('renders search and published filter controls with local hit counts', () => {
+    mockUseHits.mockReturnValue({
+      items: [
+        {
+          objectID: 'published-1',
+          mediaComponentId: 'published-1',
+          published: true
+        },
+        {
+          objectID: 'published-2',
+          mediaComponentId: 'published-2',
+          published: true
+        },
+        { objectID: 'draft-1', mediaComponentId: 'draft-1', published: false }
+      ]
+    } as any)
+
     render(<AlgoliaVideoList />)
 
     expect(screen.getByLabelText('Search Algolia')).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: 'Previous page' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Next page' })
+      screen.getByText(
+        'Showing up to 1000 Algolia records. Some records may not map to an editable admin video detail page.'
+      )
     ).toBeInTheDocument()
     expect(
       screen.getByRole('combobox', { name: 'Published' })
@@ -115,6 +113,30 @@ describe('AlgoliaVideoList', () => {
     expect(
       screen.getByRole('option', { name: 'Draft (1)' })
     ).toBeInTheDocument()
+  })
+
+  it('requests one large algolia result set without facet or pagination refinement hooks', () => {
+    render(<AlgoliaVideoList />)
+
+    const configureProps = mockConfigure.mock.calls[0]?.[0] as
+      | {
+          attributesToRetrieve?: string[]
+          hitsPerPage?: number
+        }
+      | undefined
+
+    expect(configureProps).toEqual(
+      expect.objectContaining({
+        attributesToRetrieve: expect.arrayContaining([
+          'objectID',
+          'mediaComponentId',
+          'published'
+        ]),
+        hitsPerPage: 1000
+      })
+    )
+    expect(mockUseRefinementList).not.toHaveBeenCalled()
+    expect(mockUsePagination).not.toHaveBeenCalled()
   })
 
   it('renders mapped hits and published draft chips', () => {
@@ -199,13 +221,31 @@ describe('AlgoliaVideoList', () => {
     expect(mockPush).not.toHaveBeenCalled()
   })
 
-  it('refines published filter with dropdown selections', () => {
+  it('filters published rows locally with dropdown selections', () => {
+    mockUseHits.mockReturnValue({
+      items: [
+        {
+          objectID: 'published-id',
+          mediaComponentId: 'published-id',
+          title: 'Published Title',
+          published: true
+        },
+        {
+          objectID: 'draft-id',
+          mediaComponentId: 'draft-id',
+          title: 'Draft Title',
+          published: false
+        }
+      ]
+    } as any)
+
     render(<AlgoliaVideoList />)
 
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Published' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Published (2)' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Published (1)' }))
 
-    expect(mockPublishedRefine).toHaveBeenCalledWith('published:true')
+    expect(screen.getByText('Published Title')).toBeInTheDocument()
+    expect(screen.queryByText('Draft Title')).not.toBeInTheDocument()
   })
 
   it('shows warning when algolia env vars are missing', () => {

@@ -70,9 +70,6 @@ export enum IconColor {
   secondary = "secondary",
 }
 
-/**
- * IconName is equivalent to the icons found in @mui/icons-material
- */
 export enum IconName {
   ArrowBackRounded = "ArrowBackRounded",
   ArrowForwardRounded = "ArrowForwardRounded",
@@ -190,6 +187,14 @@ export enum Service {
   apiVideos = "apiVideos",
 }
 
+/**
+ * Discriminator for the media attached to a TemplateGalleryPage. Determines which underlying fields are populated.
+ */
+export enum TemplateGalleryPageMediaType {
+  link = "link",
+  mux = "mux",
+}
+
 export enum TextResponseType {
   email = "email",
   freeForm = "freeForm",
@@ -257,11 +262,6 @@ export enum VideoBlockSource {
   youTube = "youTube",
 }
 
-/**
- * The status of a visitor according to team members interacting with the
- * visitor admin interface. This enum should map to an emoji when displayed
- * (names here match Apple's emoji name)
- */
 export enum VisitorStatus {
   checkMarkSymbol = "checkMarkSymbol",
   partyPopper = "partyPopper",
@@ -449,9 +449,9 @@ export interface VideoProgressEventCreateInput {
   blockId: string;
   stepId?: string | null;
   position?: number | null;
-  progress: number;
   label?: string | null;
   value?: VideoBlockSource | null;
+  progress: number;
 }
 
 export interface VideoStartEventCreateInput {
@@ -463,14 +463,11 @@ export interface VideoStartEventCreateInput {
   value?: VideoBlockSource | null;
 }
 
-/**
- * A list of fields to update a visitor when calling the visitorUpdate mutation
- */
 export interface VisitorUpdateInput {
   email?: string | null;
-  messagePlatformId?: string | null;
-  messagePlatform?: MessagePlatform | null;
   name?: string | null;
+  messagePlatform?: MessagePlatform | null;
+  messagePlatformId?: string | null;
   notes?: string | null;
   status?: VisitorStatus | null;
   countryCode?: string | null;

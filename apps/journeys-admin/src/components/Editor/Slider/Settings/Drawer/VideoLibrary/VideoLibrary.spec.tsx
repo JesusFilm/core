@@ -18,6 +18,7 @@ import {
   useSearchBox
 } from 'react-instantsearch'
 import { SWRConfig } from 'swr'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -41,7 +42,7 @@ import { VideoLibrary } from '.'
 
 // Stub VideoFromMux so we can drive the documented background-upload contract
 // (onSelect with shouldCloseDrawer=false) directly from a test.
-jest.mock('./VideoFromMux', () => ({
+vi.mock('./VideoFromMux', async () => ({
   __esModule: true,
   VideoFromMux: ({
     onSelect
@@ -61,48 +62,46 @@ jest.mock('./VideoFromMux', () => ({
   )
 }))
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', async () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('../../../../../MuxVideoUploadProvider', () => ({
-  ...jest.requireActual('../../../../../MuxVideoUploadProvider'),
-  useMuxVideoUpload: jest.fn(() => ({
-    getUploadStatus: jest.fn(),
-    addUploadTask: jest.fn(),
-    cancelUploadForBlock: jest.fn()
+vi.mock('../../../../../MuxVideoUploadProvider', async () => ({
+  ...(await vi.importActual('../../../../../MuxVideoUploadProvider')),
+  useMuxVideoUpload: vi.fn(() => ({
+    getUploadStatus: vi.fn(),
+    addUploadTask: vi.fn(),
+    cancelUploadForBlock: vi.fn()
   }))
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', async () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+  useRouter: vi.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
-  typeof useSearchBox
->
-const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
+const mockUseSearchBox = useSearchBox as MockedFunction<typeof useSearchBox>
+const mockUseInstantSearch = useInstantSearch as MockedFunction<
   typeof useInstantSearch
 >
-const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
+const mockUseInfiniteHits = useInfiniteHits as MockedFunction<
   typeof useInfiniteHits
 >
 
-const mockUseMuxVideoUpload = useMuxVideoUpload as jest.MockedFunction<
+const mockUseMuxVideoUpload = useMuxVideoUpload as MockedFunction<
   typeof useMuxVideoUpload
 >
 
-const mockGetUploadStatus = jest.fn()
-const mockCancelUploadForBlock = jest.fn()
-const mockAddUploadTask = jest.fn()
-const push = jest.fn()
-const on = jest.fn()
+const mockGetUploadStatus = vi.fn()
+const mockCancelUploadForBlock = vi.fn()
+const mockAddUploadTask = vi.fn()
+const push = vi.fn()
+const on = vi.fn()
 
 const mockRouter = (query = { param: null }) => {
   mockedUseRouter.mockReturnValue({
@@ -114,14 +113,14 @@ const mockRouter = (query = { param: null }) => {
 
 describe('VideoLibrary', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockUseSearchBox.mockReturnValue({
-      refine: jest.fn()
+      refine: vi.fn()
     } as unknown as SearchBoxRenderState)
 
     mockUseInfiniteHits.mockReturnValue({
       items: videoItems,
-      showMore: jest.fn(),
+      showMore: vi.fn(),
       isLastPage: false
     } as unknown as InfiniteHitsRenderState)
 
@@ -147,9 +146,7 @@ describe('VideoLibrary', () => {
   })
 
   describe('smUp', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => true)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => true))
 
     it('should render the Video Library on the right', () => {
       render(
@@ -163,12 +160,12 @@ describe('VideoLibrary', () => {
       )
       expect(screen.getByText('Video Library')).toBeInTheDocument()
       expect(
-        screen.getByTestId('VideoLibrary').parentElement?.parentElement
+        screen.getByTestId('VideoLibrary').closest('.MuiDrawer-paper')
       ).toHaveClass('MuiDrawer-paperAnchorRight')
     })
 
     it('should close VideoLibrary on close Icon click', () => {
-      const onClose = jest.fn()
+      const onClose = vi.fn()
       render(
         <MockedProvider>
           <SnackbarProvider>
@@ -305,9 +302,7 @@ describe('VideoLibrary', () => {
   })
 
   describe('xsDown', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => false)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => false))
 
     it('should render the VideoLibrary from the bottom', () => {
       render(
@@ -321,15 +316,13 @@ describe('VideoLibrary', () => {
       )
       expect(screen.getByText('Video Library')).toBeInTheDocument()
       expect(
-        screen.getByTestId('VideoLibrary').parentElement?.parentElement
+        screen.getByTestId('VideoLibrary').closest('.MuiDrawer-paper')
       ).toHaveClass('MuiDrawer-paperAnchorBottom')
     })
   })
 
   describe('VideoSearch', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => true)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => true))
 
     it('displays searched video', async () => {
       render(
@@ -352,8 +345,8 @@ describe('VideoLibrary', () => {
   })
 
   it('when video selected calls onSelect', async () => {
-    const onSelect = jest.fn()
-    const onClose = jest.fn()
+    const onSelect = vi.fn()
+    const onClose = vi.fn()
     const mocks = [
       {
         request: {
@@ -439,15 +432,17 @@ describe('VideoLibrary', () => {
         videoId: 'videoId',
         videoVariantLanguageId: '529'
       },
-      true
+      // shouldFocus is false: the block is already in view, so selecting must
+      // not slide the canvas back. The outer drawer still closes via onClose.
+      false
     )
     expect(onClose).toHaveBeenCalled()
   })
 
   it('should render video details if videoId is not null', async () => {
     mswServer.use(getPlaylistItemsEmpty, getVideosWithOffsetAndUrl)
-    const onSelect = jest.fn()
-    const onClose = jest.fn()
+    const onSelect = vi.fn()
+    const onClose = vi.fn()
 
     render(
       <MockedProvider>
@@ -584,7 +579,7 @@ describe('VideoLibrary', () => {
   })
 
   it('should cancel video upload when changing to different video source', async () => {
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
     const selectedBlock: TreeBlock<VideoBlock> = {
       id: 'video1.id',
       __typename: 'VideoBlock',
@@ -694,10 +689,133 @@ describe('VideoLibrary', () => {
     })
   })
 
+  it('should show a cancellation snackbar when an active upload is interrupted by a new selection', async () => {
+    const onSelect = vi.fn()
+    const selectedBlock: TreeBlock<VideoBlock> = {
+      id: 'video1.id',
+      __typename: 'VideoBlock',
+      parentBlockId: 'card1.id',
+      parentOrder: 0,
+      startAt: 0,
+      endAt: null,
+      muted: false,
+      autoplay: true,
+      fullsize: true,
+      action: null,
+      videoId: null,
+      videoVariantLanguageId: null,
+      source: VideoBlockSource.mux,
+      title: null,
+      description: null,
+      duration: null,
+      image: null,
+      objectFit: null,
+      subtitleLanguage: null,
+      showGeneratedSubtitles: null,
+      mediaVideo: null,
+      posterBlockId: null,
+      eventLabel: null,
+      endEventLabel: null,
+      customizable: null,
+      notes: null,
+      children: []
+    }
+
+    mockGetUploadStatus.mockImplementation((id: string) =>
+      id === selectedBlock.id
+        ? {
+            videoBlockId: selectedBlock.id,
+            file: new File(['test'], 'test.mp4', { type: 'video/mp4' }),
+            status: 'uploading',
+            progress: 25
+          }
+        : null
+    )
+
+    const mocks = [
+      {
+        request: {
+          query: GET_VIDEO,
+          variables: { id: 'videoId', languageId: '529' }
+        },
+        result: {
+          data: {
+            video: {
+              id: 'videoId',
+              primaryLanguageId: '529',
+              images: [],
+              title: [
+                { primary: true, value: 'title1', __typename: 'Language' }
+              ],
+              description: [
+                { primary: true, value: 'desc', __typename: 'Language' }
+              ],
+              variant: {
+                id: 'v1',
+                duration: 144,
+                hls: 'https://example.com/video.m3u8',
+                __typename: 'VideoVariant'
+              },
+              variantLanguages: [
+                {
+                  __typename: 'Language',
+                  id: '529',
+                  slug: 'english',
+                  name: [
+                    {
+                      value: 'English',
+                      primary: true,
+                      __typename: 'LanguageName'
+                    }
+                  ]
+                }
+              ],
+              __typename: 'Video'
+            }
+          }
+        }
+      }
+    ]
+
+    mockRouter()
+
+    render(
+      <MockedProvider mocks={mocks}>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock,
+              selectedAttributeId: selectedBlock.id
+            }}
+          >
+            <MuxVideoUploadProvider>
+              <VideoLibrary open onSelect={onSelect} />
+            </MuxVideoUploadProvider>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(screen.getByText('title1')).toBeInTheDocument())
+    await waitFor(() =>
+      fireEvent.click(screen.getByTestId('VideoListItem-videoId'))
+    )
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Select' })).toBeEnabled()
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Select' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Video upload cancelled')).toBeInTheDocument()
+    })
+    expect(mockCancelUploadForBlock).toHaveBeenCalledWith(selectedBlock)
+    mockGetUploadStatus.mockReset()
+  })
+
   it('should navigate to YouTube tab when clicking Change Video on a YouTube video', async () => {
     mswServer.use(getPlaylistItemsEmpty, getVideosWithOffsetAndUrl)
-    const onSelect = jest.fn()
-    const onClose = jest.fn()
+    const onSelect = vi.fn()
+    const onClose = vi.fn()
 
     mockRouter()
 
@@ -773,8 +891,8 @@ describe('VideoLibrary', () => {
   })
 
   it('should navigate to Library tab when clicking Change Video on an internal video', async () => {
-    const onSelect = jest.fn()
-    const onClose = jest.fn()
+    const onSelect = vi.fn()
+    const onClose = vi.fn()
     const mocks = [
       {
         request: {
@@ -890,8 +1008,8 @@ describe('VideoLibrary', () => {
   })
 
   it('should navigate to Upload tab when clicking Change Video on a mux video', async () => {
-    const onSelect = jest.fn()
-    const onClose = jest.fn()
+    const onSelect = vi.fn()
+    const onClose = vi.fn()
 
     mockRouter()
 
@@ -963,8 +1081,8 @@ describe('VideoLibrary', () => {
   })
 
   it('should close both drawers when Apply is clicked in the language picker for an existing internal video', async () => {
-    const onSelect = jest.fn()
-    const onClose = jest.fn()
+    const onSelect = vi.fn()
+    const onClose = vi.fn()
     const mocks = [
       {
         request: {
@@ -1074,14 +1192,16 @@ describe('VideoLibrary', () => {
         videoId: 'videoId',
         videoVariantLanguageId: '529'
       },
-      true
+      // shouldFocus is false: the block is already in view, so selecting must
+      // not slide the canvas back. The outer drawer still closes via onClose.
+      false
     )
     expect(onClose).toHaveBeenCalled()
   })
 
   it('should not close the outer drawer when onSelect is called with shouldCloseDrawer=false (background mux upload)', async () => {
-    const onSelect = jest.fn()
-    const onClose = jest.fn()
+    const onSelect = vi.fn()
+    const onClose = vi.fn()
 
     mockRouter()
 
@@ -1111,5 +1231,58 @@ describe('VideoLibrary', () => {
       false
     )
     expect(onClose).not.toHaveBeenCalled()
+  })
+
+  it('should not show a cancellation snackbar when an upload completes naturally (shouldCloseDrawer=false)', async () => {
+    const onSelect = vi.fn()
+    const editorBlock = {
+      id: 'bg-card-id',
+      __typename: 'CardBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      children: []
+    } as unknown as TreeBlock<VideoBlock>
+
+    // Active upload exists for the block, but the completion path passes
+    // shouldCloseDrawer=false — the snackbar must stay suppressed.
+    mockGetUploadStatus.mockImplementation((id: string) =>
+      id === editorBlock.id
+        ? {
+            videoBlockId: editorBlock.id,
+            file: new File(['test'], 'test.mp4', { type: 'video/mp4' }),
+            status: 'processing',
+            progress: 100
+          }
+        : null
+    )
+
+    mockRouter()
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={{ selectedBlock: editorBlock }}>
+            <MuxVideoUploadProvider>
+              <VideoLibrary open onSelect={onSelect} />
+            </MuxVideoUploadProvider>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Upload' }))
+    await waitFor(() =>
+      expect(
+        screen.getByTestId('mock-mux-background-complete')
+      ).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByTestId('mock-mux-background-complete'))
+
+    expect(onSelect).toHaveBeenCalledWith(
+      { videoId: 'mux-bg-id', source: 'mux' },
+      false
+    )
+    expect(screen.queryByText('Video upload cancelled')).not.toBeInTheDocument()
+    mockGetUploadStatus.mockReset()
   })
 })

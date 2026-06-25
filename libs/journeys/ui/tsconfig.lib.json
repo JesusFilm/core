@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../../dist/out-tsc",
-    "types": ["node"]
+    "types": ["node", "vitest/globals"]
   },
   "files": [
     "index.d.ts",
@@ -13,8 +13,8 @@
   "exclude": [
     "**/*.spec.ts",
     "**/*.spec.tsx",
-    "jest.config.ts",
-    "postcss.config.mjs"
+    "postcss.config.mjs",
+    "vitest.config.mts"
   ],
   "include": [
     "**/*.js",

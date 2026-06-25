@@ -5,23 +5,24 @@ import { nextActiveBlock } from '../block'
 
 import { handleAction } from '.'
 
-jest.mock('../block', () => {
-  const originalModule = jest.requireActual('../block')
+vi.mock('../block', async () => {
+  const originalModule =
+    await vi.importActual<typeof import('../block')>('../block')
   return {
     __esModule: true,
     ...originalModule,
-    nextActiveBlock: jest.fn()
+    nextActiveBlock: vi.fn()
   }
 })
 
 describe('action', () => {
   describe('handleAction', () => {
     const router = {
-      push: jest.fn()
+      push: vi.fn()
     } as unknown as NextRouter
 
     beforeEach(() => {
-      jest.resetAllMocks()
+      vi.resetAllMocks()
     })
 
     it('should handle empty action', () => {
@@ -39,7 +40,7 @@ describe('action', () => {
     })
 
     it('should handle EmailAction', () => {
-      window.open = jest.fn()
+      window.open = vi.fn()
 
       handleAction(router, {
         __typename: 'EmailAction',
@@ -55,7 +56,7 @@ describe('action', () => {
       )
     })
 
-    xit('should handle PhoneAction call', () => {
+    it.skip('should handle PhoneAction call', () => {
       handleAction(router, {
         __typename: 'PhoneAction',
         parentBlockId: 'parent-id',
@@ -70,7 +71,7 @@ describe('action', () => {
     })
 
     // TODO: Fix this test
-    xit('should handle PhoneAction text', () => {
+    it.skip('should handle PhoneAction text', () => {
       handleAction(router, {
         __typename: 'PhoneAction',
         parentBlockId: 'parent-id',
@@ -85,7 +86,7 @@ describe('action', () => {
     })
 
     it('should handle external LinkAction', () => {
-      window.open = jest.fn()
+      window.open = vi.fn()
 
       handleAction(router, {
         __typename: 'LinkAction',
@@ -114,7 +115,7 @@ describe('action', () => {
     })
 
     it('should not open new tab for internal links to journeys', () => {
-      window.open = jest.fn()
+      window.open = vi.fn()
 
       handleAction(router, {
         __typename: 'LinkAction',
@@ -131,7 +132,7 @@ describe('action', () => {
     })
 
     it('should not redirect when url is an empty string', () => {
-      window.open = jest.fn()
+      window.open = vi.fn()
       handleAction(router, {
         __typename: 'LinkAction',
         parentBlockId: 'parent-id',

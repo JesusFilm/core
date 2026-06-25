@@ -1,4 +1,4 @@
-import { useDroppable } from '@dnd-kit/core'
+import { Collision, useDroppable } from '@dnd-kit/core'
 import {
   SortableContext,
   rectSortingStrategy,
@@ -10,6 +10,7 @@ import { ReactElement, memo } from 'react'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { JourneyCard } from '../../JourneyList/JourneyCard'
+import { COLLECTION_GRID_SPACING } from '../collectionLayout'
 
 // Drop zone identity is encoded into a string the dnd-kit `over.id` carries
 // back into the dispatcher. Wrappers use the encoder; the parent uses the
@@ -33,6 +34,62 @@ export function parseDropZoneId(raw: string): DropZoneId | null {
     return { kind: 'collection', id: raw.slice(COLLECTION_PREFIX.length) }
   }
   return null
+}
+
+/**
+ * The drop intent for a pointer position, decoded from the section under the
+ * cursor and the dragged card's origin:
+ *  - `reorder`  — the dragged card already belongs to the collection under the
+ *    cursor; the caller should target the nearest card *within that collection*
+ *    so the drop lands at a slot (works even when the cursor is in the gap
+ *    between cards, where `pointerWithin` only sees the container).
+ *  - `section`  — moving into a different section (or the unsectioned pool);
+ *    the whole section is the drop zone, so target its container.
+ *  - `passthrough` — the cursor isn't over any section container; the caller
+ *    keeps the raw collision result.
+ */
+export type SectionDropResolution =
+  | { kind: 'reorder'; collectionId: string }
+  | { kind: 'section'; collision: Collision }
+  | { kind: 'passthrough' }
+
+/**
+ * Decides, from the pointer collisions, how to target the gallery's nested
+ * droppables so a whole collection acts as one drop zone without breaking
+ * intra-collection reorder. Pure and dnd-kit-geometry-free so it's unit
+ * testable; the caller runs the real collision strategies and applies the
+ * decision (notably a collection-scoped `closestCenter` for `reorder`).
+ *
+ * Only pointer-derived collisions should be passed in. A drop in dead space
+ * (cursor outside every droppable) must NOT be promoted to a section — that
+ * would silently reassign membership on a missed drop — so the caller handles
+ * the empty case before calling this.
+ */
+export function resolveSectionDrop(
+  pointerCollisions: Collision[],
+  activeId: string,
+  templateIdToCollection: ReadonlyMap<string, { id: string }>
+): SectionDropResolution {
+  // The section container under the cursor (collection or unsectioned). Cards
+  // carry raw journey ids, which parse to null.
+  const sectionCollision = pointerCollisions.find(
+    (collision) => parseDropZoneId(String(collision.id)) != null
+  )
+  if (sectionCollision == null) return { kind: 'passthrough' }
+
+  const zone = parseDropZoneId(String(sectionCollision.id))
+  const sectionCollectionId = zone?.kind === 'collection' ? zone.id : null
+  const sourceCollectionId = templateIdToCollection.get(activeId)?.id ?? null
+
+  // Dragging a card around its own collection → reorder within it.
+  if (
+    sectionCollectionId != null &&
+    sectionCollectionId === sourceCollectionId
+  ) {
+    return { kind: 'reorder', collectionId: sectionCollectionId }
+  }
+
+  return { kind: 'section', collision: sectionCollision }
 }
 
 interface DroppableCollectionWrapperProps {
@@ -82,26 +139,22 @@ function DraggableJourneysGridImpl({
   // draggable AND a drop target with a known index, so dnd-kit hands us
   // the over-item id in handleDragEnd.
   const ids = journeys.map((j) => j.id)
+  // No outer padding: the grid sits directly in its container so the
+  // in-collection grid and the All Templates grid share identical
+  // geometry and their cards column-align (NES-1696). The card gap is
+  // matched to the CollectionCard's inner padding via collectionLayout.
   return (
     <SortableContext items={ids} strategy={rectSortingStrategy}>
-      {/* Outer padding matches the Grid's spacing/rowSpacing so the gap
-          between a card and the collection edge equals the gap between
-          two cards — Sushma flagged the inconsistent 8px-vs-32px in DM. */}
-      <Box sx={{ p: { xs: 2.5, sm: 4 } }}>
-        <Grid container spacing={4} rowSpacing={{ xs: 2.5, sm: 4 }}>
-          {journeys.map((journey) => (
-            <Grid
-              key={journey.id}
-              size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
-            >
-              <DraggableJourney
-                journey={journey}
-                disabled={publishedLock || dragInFlight}
-              />
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
+      <Grid container spacing={COLLECTION_GRID_SPACING}>
+        {journeys.map((journey) => (
+          <Grid key={journey.id} size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}>
+            <DraggableJourney
+              journey={journey}
+              disabled={publishedLock || dragInFlight}
+            />
+          </Grid>
+        ))}
+      </Grid>
     </SortableContext>
   )
 }

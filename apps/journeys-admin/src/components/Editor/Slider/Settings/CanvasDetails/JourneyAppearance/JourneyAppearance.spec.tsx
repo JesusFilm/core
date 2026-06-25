@@ -22,7 +22,7 @@ import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../libs/useUserTeamsA
 
 import { JourneyAppearance } from './JourneyAppearance'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -36,7 +36,7 @@ describe('JourneyAppearance', () => {
   }
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   it('should display JourneyAppearance attributes for Journey mode', async () => {

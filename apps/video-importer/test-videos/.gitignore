@@ -1,0 +1,9 @@
+# Local/generated importer fixtures. Keep the recipe in git, not the media.
+*.mp4
+*.mp4.completed
+*.srt
+*.srt.completed
+*.vtt
+*.vtt.completed
+*.aac
+*.aac.completed

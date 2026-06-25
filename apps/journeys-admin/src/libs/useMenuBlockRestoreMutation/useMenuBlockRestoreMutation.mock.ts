@@ -24,7 +24,7 @@ export const mockUseMenuBlockRestoreMutation: MockedResponse<
       }
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       stepRestore: [mockMenuStep],
       journeyUpdate: {

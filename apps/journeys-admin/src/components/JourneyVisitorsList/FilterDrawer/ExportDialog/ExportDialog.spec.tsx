@@ -20,7 +20,7 @@ import { FILTERED_EVENTS } from '../../../../libs/useJourneyEventsExport/utils/c
 
 import { ExportDialog } from './ExportDialog'
 
-const mockOnClose = jest.fn()
+const mockOnClose = vi.fn()
 
 const journeyCreatedAt = '2023-01-01T00:00:00.000Z'
 
@@ -33,10 +33,10 @@ const mockGetJourneyEventsCountQuery = getMockGetJourneyEventsCountQuery({
   }
 })
 
-const mockExportJourneyContacts = jest.fn().mockImplementation(() => {
+const mockExportJourneyContacts = vi.fn().mockImplementation(() => {
   return Promise.resolve()
 })
-jest.mock('../../../../libs/useJourneyContactsExport', () => ({
+vi.mock('../../../../libs/useJourneyContactsExport', () => ({
   useJourneyContactsExport: () => ({
     exportJourneyContacts: mockExportJourneyContacts,
     downloading: false
@@ -58,16 +58,16 @@ const defaultProps = {
 
 describe('ExportDialog', () => {
   beforeAll(() => {
-    jest.useFakeTimers()
-    jest.setSystemTime(new Date('2023-12-31T00:00:00.000Z'))
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    vi.setSystemTime(new Date('2023-12-31T00:00:00.000Z'))
   })
 
   afterAll(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('Visitor Actions', () => {
@@ -204,7 +204,7 @@ describe('ExportDialog', () => {
     })
 
     it('should call export function with default filters on button click', async () => {
-      const mockExportJourneyEventsResult = jest.fn(() => ({
+      const mockExportJourneyEventsResult = vi.fn(() => ({
         ...getJourneyEventsMock.result
       }))
 

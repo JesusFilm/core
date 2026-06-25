@@ -9,5 +9,17 @@
   "Get me out of here!": "ここから出してくれ",
   "Terms & Conditions": "ご利用条件",
   "Privacy Policy": "プライバシーポリシー",
-  "NextSteps © {{year}}": "NextSteps © {{year}}"
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Use": "用途",
+  "Preview": "プレビュー",
+  "About this chat": "このチャットについて",
+  "About this chat | Next Steps": "このチャットについて | 今後の手順",
+  "The chat on this journey is powered by an AI assistant. To help us improve future replies, the messages you send and the assistant’s replies are saved.": "この旅のチャット機能は、AIアシスタントによって提供されています。今後の返信の質を向上させるため、お客様からのメッセージとアシスタントの返信は保存されます。",
+  "We do not save your name, email address, or any account details, and we do not link conversations to your identity.": "当社は、お客様の氏名、メールアドレス、およびアカウント情報を一切保存せず、会話内容をお客様の身元と結びつけることもありません。",
+  "Where the messages go": "メッセージの行き先",
+  "Your messages and the assistant’s replies pass through two third-party services: an AI service that generates the replies, and an analytics service called Langfuse where the conversations are stored so the team can review them in aggregate to improve the experience. They are not sold and they are not used for advertising.": "ユーザーからのメッセージとアシスタントの返信は、2つのサードパーティ製サービスを経由します。1つは返信を生成するAIサービス、もう1つは「Langfuse」という分析サービスで、会話内容はここに保存され、チームがそれらをまとめて確認し、ユーザー体験の向上に役立てています。これらの情報は販売されることはなく、広告目的で使用されることもありません。",
+  "If you prefer not to take part": "参加をご希望でない場合は",
+  "There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.": "現時点では、チャット機能のみを個別に無効にする設定はありません。メッセージの保存を希望されない場合は、チャット機能をご利用にならないでください。チャット機能を使わなくても、その他の機能は通常通りご利用いただけます。",
+  "Last updated: June 2026": "最終更新日：2026年6月",
+  "Back to Next Steps": "「次のステップ」に戻る"
 }

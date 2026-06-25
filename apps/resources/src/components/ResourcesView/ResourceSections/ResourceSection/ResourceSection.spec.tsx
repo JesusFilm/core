@@ -1,16 +1,17 @@
 import { render, screen } from '@testing-library/react'
 import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 import { useHits } from 'react-instantsearch'
+import type { MockedFunction } from 'vitest'
 
 import { resourceItems } from './data'
 
 import { ResourceSection } from '.'
 
-jest.mock('react-instantsearch')
+vi.mock('react-instantsearch')
 
-const mockedUseHits = useHits as jest.MockedFunction<typeof useHits>
+const mockedUseHits = useHits as MockedFunction<typeof useHits>
 
-describe('ResourceSection', () => {
+describe('ResourceSection', async () => {
   beforeEach(() => {
     mockedUseHits.mockReturnValue({
       hits: resourceItems
@@ -18,7 +19,7 @@ describe('ResourceSection', () => {
   })
 
   it('should render ResourceSection', () => {
-    render(<ResourceSection index={0} handleItemSearch={jest.fn()} />)
+    render(<ResourceSection index={0} handleItemSearch={vi.fn()} />)
     const items = screen.getAllByTestId('ResourceCard')
     expect(items).toHaveLength(10)
 
@@ -36,7 +37,7 @@ describe('ResourceSection', () => {
   })
 
   it('should call handleitemsearch', () => {
-    const handleItemSearchMock = jest.fn()
+    const handleItemSearchMock = vi.fn()
     render(
       <ResourceSection index={0} handleItemSearch={handleItemSearchMock} />
     )
@@ -49,7 +50,7 @@ describe('ResourceSection', () => {
       hits: []
     } as unknown as HitsRenderState)
 
-    render(<ResourceSection index={0} handleItemSearch={jest.fn()} />)
+    render(<ResourceSection index={0} handleItemSearch={vi.fn()} />)
 
     expect(screen.queryByTestId('ResourceSection')).not.toBeInTheDocument()
   })

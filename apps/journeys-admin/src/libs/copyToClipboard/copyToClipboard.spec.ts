@@ -8,7 +8,7 @@ describe('copyToClipboard', () => {
 
   beforeEach(() => {
     // jsdom does not implement document.execCommand. Stub a default so
-    // jest.spyOn has something to wrap; tests override the impl.
+    // vi.spyOn has something to wrap; tests override the impl.
     Object.defineProperty(document, 'execCommand', {
       value: () => false,
       configurable: true,
@@ -29,7 +29,7 @@ describe('copyToClipboard', () => {
   })
 
   it('uses navigator.clipboard.writeText when available and resolved', async () => {
-    const writeText = jest.fn().mockResolvedValue(undefined)
+    const writeText = vi.fn().mockResolvedValue(undefined)
     Object.defineProperty(navigator, 'clipboard', {
       value: { writeText },
       configurable: true
@@ -40,7 +40,7 @@ describe('copyToClipboard', () => {
   })
 
   it('falls back to a copy-event listener when navigator.clipboard.writeText rejects', async () => {
-    const writeText = jest.fn().mockRejectedValue(new Error('blocked'))
+    const writeText = vi.fn().mockRejectedValue(new Error('blocked'))
     Object.defineProperty(navigator, 'clipboard', {
       value: { writeText },
       configurable: true
@@ -48,9 +48,9 @@ describe('copyToClipboard', () => {
 
     // Stub execCommand so it dispatches a synthetic copy event with a
     // fake ClipboardData implementation our handler can write to.
-    const setData = jest.fn()
+    const setData = vi.fn()
     const fakeClipboardData = { setData } as unknown as DataTransfer
-    const execCommandSpy = jest
+    const execCommandSpy = vi
       .spyOn(document, 'execCommand')
       .mockImplementation(() => {
         const event = new Event('copy', {
@@ -72,13 +72,13 @@ describe('copyToClipboard', () => {
   })
 
   it('returns false when execCommand throws', async () => {
-    const writeText = jest.fn().mockRejectedValue(new Error('blocked'))
+    const writeText = vi.fn().mockRejectedValue(new Error('blocked'))
     Object.defineProperty(navigator, 'clipboard', {
       value: { writeText },
       configurable: true
     })
 
-    const execCommandSpy = jest
+    const execCommandSpy = vi
       .spyOn(document, 'execCommand')
       .mockImplementation(() => {
         throw new Error('execCommand crashed')
@@ -89,7 +89,7 @@ describe('copyToClipboard', () => {
   })
 
   it('returns false when execCommand reports success but no copy event fires', async () => {
-    const writeText = jest.fn().mockRejectedValue(new Error('blocked'))
+    const writeText = vi.fn().mockRejectedValue(new Error('blocked'))
     Object.defineProperty(navigator, 'clipboard', {
       value: { writeText },
       configurable: true
@@ -98,7 +98,7 @@ describe('copyToClipboard', () => {
     // Some browsers return true from execCommand without actually
     // dispatching the event when the document has no selection / focus
     // trap stole it. The fallback should report false in that case.
-    const execCommandSpy = jest
+    const execCommandSpy = vi
       .spyOn(document, 'execCommand')
       .mockImplementation(() => true)
 

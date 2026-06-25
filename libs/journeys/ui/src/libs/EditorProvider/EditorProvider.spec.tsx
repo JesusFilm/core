@@ -14,7 +14,7 @@ import {
   EditorState
 } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -159,6 +159,7 @@ describe('EditorContext', () => {
           })
         ).toEqual({
           ...state,
+          selectedBlockId: block.id,
           selectedBlock: block
         })
       })
@@ -497,6 +498,71 @@ describe('EditorContext', () => {
           showCardTemplates: true,
           active: undefined
         })
+      })
+    })
+
+    describe('SetSelectedBlockOnlyAction then SetStepsAction (NES-1745)', () => {
+      it('keeps a re-selected poll option selected when the steps refresh', () => {
+        // Regression: re-clicking an already-selected option dispatches
+        // SetSelectedBlockOnlyAction. If it leaves selectedBlockId pointing at
+        // the parent question, the first keystroke's optimistic update fires
+        // SetStepsAction, which re-derives selection from the stale id and
+        // snaps back to the question — unmounting the inline editor.
+        const radioOption: TreeBlock = {
+          id: 'radioOption.id',
+          __typename: 'RadioOptionBlock',
+          parentBlockId: 'radioQuestion.id',
+          parentOrder: 0,
+          label: 'Option 1',
+          pollOptionImageBlockId: null,
+          action: null,
+          eventLabel: null,
+          children: []
+        }
+        const radioQuestion: TreeBlock = {
+          id: 'radioQuestion.id',
+          __typename: 'RadioQuestionBlock',
+          parentBlockId: 'step.id',
+          parentOrder: 0,
+          gridView: false,
+          children: [radioOption]
+        }
+        const step: TreeBlock = {
+          id: 'step.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          slug: null,
+          children: [radioQuestion]
+        }
+        // the parent question's id is left selected by the capture-phase
+        // dispatch that precedes the option re-select
+        const state: EditorState = {
+          steps: [step],
+          selectedStep: step,
+          selectedStepId: step.id,
+          selectedBlock: radioQuestion,
+          selectedBlockId: radioQuestion.id,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.Drawer,
+          activeContent: ActiveContent.Canvas
+        }
+
+        const afterSelect = reducer(state, {
+          type: 'SetSelectedBlockOnlyAction',
+          selectedBlock: radioOption
+        })
+        expect(afterSelect.selectedBlock).toBe(radioOption)
+        expect(afterSelect.selectedBlockId).toBe(radioOption.id)
+
+        const afterStepsRefresh = reducer(afterSelect, {
+          type: 'SetStepsAction',
+          steps: [step]
+        })
+        expect(afterStepsRefresh.selectedBlockId).toBe(radioOption.id)
+        expect(afterStepsRefresh.selectedBlock).toEqual(radioOption)
       })
     })
 

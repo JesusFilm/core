@@ -7,12 +7,12 @@ import { videos } from '../data'
 
 import { VideoListItem } from './VideoListItem'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('../../VideoDetails', () => ({
+vi.mock('../../VideoDetails', () => ({
   __esModule: true,
   VideoDetails: ({ onSelect }: { onSelect: (block: any) => void }) => {
     onSelect({
@@ -28,7 +28,7 @@ describe('Video List Item', () => {
   it('should render the content of VideoListItem', () => {
     const { getByText } = render(
       <MockedProvider>
-        <VideoListItem {...videos[0]} onSelect={jest.fn()} />
+        <VideoListItem {...videos[0]} onSelect={vi.fn()} />
       </MockedProvider>
     )
     expect(getByText("Andreas' Story")).toBeInTheDocument()
@@ -42,7 +42,7 @@ describe('Video List Item', () => {
 
   describe('handleSelect', () => {
     it('calls handleSelect with imageHigh when available', async () => {
-      const handleSelect = jest.fn()
+      const handleSelect = vi.fn()
 
       const { getByTestId } = render(
         <MockedProvider>
@@ -72,7 +72,7 @@ describe('Video List Item', () => {
     })
 
     it('handleSelect does not override image when imageHigh is not provided', async () => {
-      const handleSelect = jest.fn()
+      const handleSelect = vi.fn()
 
       const { getByTestId } = render(
         <MockedProvider>
@@ -101,9 +101,9 @@ describe('Video List Item', () => {
     })
   })
 
-  xit('should open VideoDetails', async () => {
+  it.skip('should open VideoDetails', async () => {
     // times out in jest 30
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
     const getVideoMock = {
       request: {
         query: GET_VIDEO,

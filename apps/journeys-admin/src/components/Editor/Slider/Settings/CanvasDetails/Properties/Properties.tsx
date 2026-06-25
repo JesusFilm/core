@@ -1,7 +1,5 @@
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
-import { Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, ReactNode } from 'react'
@@ -10,6 +8,7 @@ import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields as StepBlock } from '../../../../../../../__generated__/BlockFields'
+import { useEditorLayout } from '../../../../EditorLayoutContext'
 import { DrawerTitle } from '../../Drawer'
 import { CardTemplates } from '../../Drawer/CardTemplates/CardTemplates'
 
@@ -119,7 +118,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
   const selectedBlock = block ?? state.selectedBlock
   const selectedStep = step ?? state.selectedStep
 
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
+  const { isLayered } = useEditorLayout()
 
   let component: ReactNode | undefined
   let title: string | undefined
@@ -201,7 +200,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
     } else {
       dispatch({
         type: 'SetActiveSlideAction',
-        activeSlide: mdUp ? ActiveSlide.JourneyFlow : ActiveSlide.Content
+        activeSlide: isLayered ? ActiveSlide.JourneyFlow : ActiveSlide.Content
       })
     }
   }
@@ -215,8 +214,11 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       sx={{
         height: '100%',
         borderRadius: 3,
-        borderBottomLeftRadius: 0,
-        borderBottomRightRadius: 0,
+        // the layered view's settings panel floats, so keep all corners
+        // rounded; the slider's panel is anchored to the bottom edge
+        ...(isLayered
+          ? {}
+          : { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }),
         overflow: 'hidden'
       }}
       border={1}

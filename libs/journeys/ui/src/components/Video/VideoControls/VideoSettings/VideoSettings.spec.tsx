@@ -4,34 +4,34 @@ import { VideoSettings } from '.'
 
 describe('VideoSettings', () => {
   const mockPlayer = {
-    qualityLevels: jest.fn().mockReturnValue({
-      on: jest.fn(),
-      off: jest.fn(),
+    qualityLevels: vi.fn().mockReturnValue({
+      on: vi.fn(),
+      off: vi.fn(),
       selectedIndex: 0,
       length: 3
     }),
-    tech: jest.fn().mockReturnValue({
+    tech: vi.fn().mockReturnValue({
       name_: 'Html5',
       vhs: {
         mediaSource: {
           activeSourceBuffers: []
         },
         playlistController_: {
-          fastQualityChange_: jest.fn()
+          fastQualityChange_: vi.fn()
         }
       }
     }),
-    currentTime: jest.fn().mockReturnValue(0),
-    duration: jest.fn().mockReturnValue(100),
-    paused: jest.fn().mockReturnValue(false),
-    pause: jest.fn(),
-    play: jest.fn().mockResolvedValue(undefined)
+    currentTime: vi.fn().mockReturnValue(0),
+    duration: vi.fn().mockReturnValue(100),
+    paused: vi.fn().mockReturnValue(false),
+    pause: vi.fn(),
+    play: vi.fn().mockResolvedValue(undefined)
   }
 
-  const mockOnToggleStats = jest.fn()
+  const mockOnToggleStats = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders correctly settings button', () => {

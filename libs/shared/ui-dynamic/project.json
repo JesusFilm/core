@@ -21,10 +21,10 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/libs/shared/ui"],
+      "executor": "@nx/vitest:test",
+      "outputs": ["{workspaceRoot}/coverage/libs/shared/ui-dynamic"],
       "options": {
-        "jestConfig": "libs/shared/ui-dynamic/jest.config.ts"
+        "configFile": "libs/shared/ui-dynamic/vitest.config.mts"
       }
     },
     "demo": {
