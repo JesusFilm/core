@@ -1,11 +1,5 @@
 import { createInstance } from 'i18next'
-import {
-  ReactElement,
-  ReactNode,
-  useEffect,
-  useMemo,
-  useState
-} from 'react'
+import { ReactElement, ReactNode, useEffect, useMemo, useState } from 'react'
 // eslint-disable-next-line no-restricted-imports
 import { I18nextProvider } from 'react-i18next'
 
