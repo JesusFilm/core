@@ -4,7 +4,10 @@ import { Logger } from 'pino'
 import { prisma } from '@core/prisma/media/client'
 
 import { getVideo } from '../../../schema/mux/video/service'
-import { createOrUpdateVideoVariant } from '../../../schema/videoVariantUpload/service'
+import {
+  createOrUpdateVideoVariant,
+  isUnrecoverableMuxAssetLookupError
+} from '../../../schema/videoVariantUpload/service'
 import { jobName as processVideoDownloadsNowJobName } from '../../processVideoDownloads/config'
 import { queue as processVideoDownloadsQueue } from '../../processVideoDownloads/queue'
 
@@ -294,6 +297,11 @@ async function waitForMuxVideoCompletion(
         },
         'Error checking Mux video status'
       )
+
+      if (isUnrecoverableMuxAssetLookupError(error)) {
+        return { finalStatus: 'errored', playbackId: null }
+      }
+
       attempts++
       await new Promise((resolve) => setTimeout(resolve, intervalMs))
     }
