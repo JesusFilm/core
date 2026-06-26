@@ -3,6 +3,7 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/media/client'
 
 import { DateTimeFilter, builder, toPrismaDateTimeFilter } from '../builder'
+import { Language } from '../language'
 import { MaxResolutionTier } from '../mux/video/enums'
 
 import { createMuxVideoForUpload, resumeVideoVariantUpload } from './service'
@@ -76,6 +77,11 @@ export const VideoVariantUpload = builder.prismaObject('VideoVariantUpload', {
     videoId: t.exposeID('videoId', { nullable: false }),
     edition: t.exposeString('edition', { nullable: false }),
     languageId: t.exposeID('languageId', { nullable: false }),
+    language: t.field({
+      type: Language,
+      nullable: false,
+      resolve: ({ languageId: id }) => ({ id })
+    }),
     version: t.exposeInt('version', { nullable: false }),
     published: t.exposeBoolean('published', { nullable: false }),
     originalFilename: t.exposeString('originalFilename'),

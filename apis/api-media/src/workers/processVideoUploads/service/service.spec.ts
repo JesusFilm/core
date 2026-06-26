@@ -231,6 +231,43 @@ describe('processVideoUploads service', () => {
     expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
   })
 
+  it('marks the durable upload failed when Mux rejects the asset id', async () => {
+    const uploadJob = {
+      data: {
+        ...mockJob.data,
+        uploadId: 'upload-id'
+      }
+    } as Job<ProcessVideoUploadJobData>
+
+    prismaMock.muxVideo.findUnique.mockResolvedValue({
+      id: 'mux-video-id',
+      assetId: 'invalid-asset-id'
+    } as any)
+    prismaMock.videoVariantUpload.findUnique.mockResolvedValue({
+      id: 'upload-id',
+      muxNonStandardInputDetectedAt: null
+    } as any)
+    ;(getVideo as Mock).mockRejectedValue(
+      new Error(
+        '400 {"error":{"type":"invalid_parameters","messages":["Failed to parse ID"]}}'
+      )
+    )
+    prismaMock.videoVariantUpload.update.mockResolvedValue({} as any)
+
+    await service(uploadJob, mockLogger)
+
+    expect(prismaMock.videoVariantUpload.update).toHaveBeenCalledWith({
+      where: { id: 'upload-id' },
+      data: {
+        status: 'failed',
+        errorMessage: 'Mux video processing errored'
+      }
+    })
+    expect(processVideoDownloadsQueue.add).not.toHaveBeenCalled()
+    expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
+    expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
+  })
+
   it('marks the upload when Mux reports non-standard input reasons', async () => {
     const uploadJob = {
       data: {

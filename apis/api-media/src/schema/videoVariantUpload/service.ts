@@ -14,9 +14,32 @@ import type { MuxVideo, VideoVariantUpload } from '@core/prisma/media/client'
 import { notifyMediaSlackOfOperationFailure } from '../../lib/slack'
 import { jobName as processVideoUploadsJobName } from '../../workers/processVideoUploads/config'
 import { queue as processVideoUploadsQueue } from '../../workers/processVideoUploads/queue'
-import { createVideoFromUrl, getMaxResolutionValue } from '../mux/video/service'
+import {
+  createVideoFromUrl,
+  getMaxResolutionValue,
+  getVideo
+} from '../mux/video/service'
 
 const FIVE_DAYS = 5 * 24 * 60 * 60
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
+}
+
+export function isUnrecoverableMuxAssetLookupError(error: unknown): boolean {
+  const message = getErrorMessage(error).toLowerCase()
+
+  return (
+    message.includes('failed to parse id') ||
+    message.includes('invalid_parameters') ||
+    message.includes('not_found') ||
+    message.includes('not found')
+  )
+}
+
+function getMuxAssetLookupErrorMessage(error: unknown): string {
+  return `Mux asset lookup failed: ${getErrorMessage(error)}`
+}
 
 const GET_LANGUAGE_SLUG = gql`
   query GetLanguageSlug($languageId: ID!) {
@@ -460,10 +483,46 @@ export async function resumeVideoVariantUpload({
     })
   }
 
-  if (
-    upload.muxVideo?.readyToStream === true &&
-    upload.muxVideo.playbackId != null
-  ) {
+  let readyPlaybackId =
+    upload.muxVideo?.readyToStream === true ? upload.muxVideo.playbackId : null
+
+  if (readyPlaybackId == null && upload.muxVideo?.assetId != null) {
+    try {
+      const muxAsset = await getVideo(upload.muxVideo.assetId, false)
+      const muxPlaybackId = muxAsset.playback_ids?.[0]?.id
+
+      if (muxAsset.status === 'ready' && muxPlaybackId != null) {
+        readyPlaybackId = muxPlaybackId
+        await prisma.muxVideo.update({
+          where: { id: upload.muxVideo.id },
+          data: {
+            playbackId: muxPlaybackId,
+            readyToStream: true,
+            duration: Math.ceil(muxAsset.duration ?? 0),
+            downloadable: true
+          }
+        })
+      }
+    } catch (error) {
+      if (isUnrecoverableMuxAssetLookupError(error)) {
+        const errorMessage = getMuxAssetLookupErrorMessage(error)
+        await prisma.videoVariantUpload.update({
+          where: { id: upload.id },
+          data: { status: 'failed', errorMessage }
+        })
+
+        return await prisma.videoVariantUpload.findUniqueOrThrow({
+          where: { id: upload.id },
+          include: { muxVideo: true, videoVariant: true }
+        })
+      }
+
+      // If Mux cannot be reached during a manual retry, keep the existing
+      // background queue path below so transient lookup errors do not block it.
+    }
+  }
+
+  if (upload.muxVideo != null && readyPlaybackId != null) {
     if (
       upload.durationMs == null ||
       upload.duration == null ||
@@ -480,7 +539,7 @@ export async function resumeVideoVariantUpload({
       languageId: upload.languageId,
       version: upload.version,
       muxVideoId: upload.muxVideo.id,
-      playbackId: upload.muxVideo.playbackId,
+      playbackId: readyPlaybackId,
       published: upload.published,
       metadata: {
         durationMs: upload.durationMs,

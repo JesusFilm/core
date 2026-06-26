@@ -1551,6 +1551,7 @@ type VideoVariantUpload {
   videoId: ID!
   edition: String!
   languageId: ID!
+  language: Language!
   version: Int!
   published: Boolean!
   originalFilename: String
