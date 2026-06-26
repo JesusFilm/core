@@ -214,6 +214,7 @@ describe('videoVariantUpload lifecycle API', () => {
           videoId
           languageId
           edition
+          muxNonStandardInputDetectedAt
         }
       }
     `)
@@ -224,7 +225,8 @@ describe('videoVariantUpload lifecycle API', () => {
         status: 'failed',
         videoId: 'video-id',
         languageId: '529',
-        edition: 'base'
+        edition: 'base',
+        muxNonStandardInputDetectedAt: null
       }
     ] as any)
 
@@ -246,7 +248,8 @@ describe('videoVariantUpload lifecycle API', () => {
         status: 'failed',
         videoId: 'video-id',
         languageId: '529',
-        edition: 'base'
+        edition: 'base',
+        muxNonStandardInputDetectedAt: null
       }
     ])
     expect(prismaMock.videoVariantUpload.findMany).toHaveBeenCalledWith(
