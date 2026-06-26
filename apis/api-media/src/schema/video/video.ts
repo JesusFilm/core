@@ -119,10 +119,10 @@ const Video = builder.prismaObject('Video', {
     id: t.exposeID('id', { nullable: false }),
     label: t.expose('label', { type: VideoLabel, nullable: false }),
     locked: t.exposeBoolean('locked', { nullable: false }),
-    restrictAutoTranslations: t.exposeBoolean('restrictAutoTranslations', {
+    restrictTranslations: t.exposeBoolean('restrictTranslations', {
       nullable: false,
       description:
-        'When true, automated systems must not add dubbed audio variants or subtitle tracks to this video without express permission. Metadata translations (title, description, study questions) are unaffected.'
+        'When true, translated audio variants or subtitle tracks must not be added to this video without express permission. Metadata translations (title, description, study questions) are unaffected.'
     }),
     primaryLanguageId: t.exposeID('primaryLanguageId', { nullable: false }),
     published: t.exposeBoolean('published', { nullable: false }),
@@ -737,14 +737,14 @@ builder.mutationFields((t) => ({
       const currentVideo =
         input.published !== undefined ||
         input.slug !== undefined ||
-        input.restrictAutoTranslations === false
+        input.restrictTranslations === false
           ? await prisma.video.findUnique({
               where: { id: input.id },
               select: {
                 published: true,
                 publishedAt: true,
                 slug: true,
-                restrictAutoTranslations: true,
+                restrictTranslations: true,
                 variants: {
                   where: { published: true },
                   select: { languageId: true }
@@ -763,11 +763,11 @@ builder.mutationFields((t) => ({
       }
 
       if (
-        input.restrictAutoTranslations === false &&
-        currentVideo?.restrictAutoTranslations === true
+        input.restrictTranslations === false &&
+        currentVideo?.restrictTranslations === true
       ) {
         throw new Error(
-          'Automatic translation restriction cannot be disabled once enabled'
+          'Translation restriction cannot be disabled once enabled'
         )
       }
 
@@ -812,7 +812,7 @@ builder.mutationFields((t) => ({
           publishedAt: publishedAtUpdate,
           slug: input.slug ?? undefined,
           noIndex: input.noIndex ?? undefined,
-          restrictAutoTranslations: input.restrictAutoTranslations ?? undefined,
+          restrictTranslations: input.restrictTranslations ?? undefined,
           childIds: input.childIds ?? undefined,
           restrictDownloadPlatforms:
             input.restrictDownloadPlatforms ?? undefined,

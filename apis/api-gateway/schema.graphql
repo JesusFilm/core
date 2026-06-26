@@ -2132,9 +2132,9 @@ type Video @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", 
   label: VideoLabel! @join__field(graph: API_MEDIA) 
   locked: Boolean! @join__field(graph: API_MEDIA) 
   """
-  When true, automated systems must not add dubbed audio variants or subtitle tracks to this video without express permission. Metadata translations (title, description, study questions) are unaffected.
+  When true, translated audio variants or subtitle tracks must not be added to this video without express permission. Metadata translations (title, description, study questions) are unaffected.
   """
-  restrictAutoTranslations: Boolean! @join__field(graph: API_MEDIA) 
+  restrictTranslations: Boolean! @join__field(graph: API_MEDIA)
   published: Boolean! @join__field(graph: API_MEDIA) 
   cloudflareAssets: [CloudflareR2!]! @join__field(graph: API_MEDIA) 
   videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
@@ -5319,7 +5319,7 @@ input VideoUpdateInput @join__type(graph: API_MEDIA)  {
   keywordIds: [String!]
   restrictDownloadPlatforms: [Platform!]
   restrictViewPlatforms: [Platform!]
-  restrictAutoTranslations: Boolean
+  restrictTranslations: Boolean
 }
 
 input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {

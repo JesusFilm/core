@@ -80,7 +80,7 @@ describe('video', () => {
       originId: null,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
-      restrictAutoTranslations: false,
+      restrictTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -98,7 +98,7 @@ describe('video', () => {
       originId: null,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
-      restrictAutoTranslations: false,
+      restrictTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -119,7 +119,7 @@ describe('video', () => {
       originId: null,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
-      restrictAutoTranslations: false,
+      restrictTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -137,7 +137,7 @@ describe('video', () => {
       originId: null,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
-      restrictAutoTranslations: false,
+      restrictTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -158,7 +158,7 @@ describe('video', () => {
       locked: false,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
-      restrictAutoTranslations: false,
+      restrictTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -404,7 +404,7 @@ describe('video', () => {
     locked: false,
     restrictDownloadPlatforms: [],
     restrictViewPlatforms: [],
-    restrictAutoTranslations: false,
+    restrictTranslations: false,
     publishedAt: null
   }
 
@@ -2358,7 +2358,7 @@ describe('video', () => {
       locked: false,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
-      restrictAutoTranslations: false,
+      restrictTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -2799,7 +2799,7 @@ describe('video', () => {
         })
       })
 
-      it('should enable restrictAutoTranslations', async () => {
+      it('should enable restrictTranslations', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -2809,7 +2809,7 @@ describe('video', () => {
         })
         prismaMock.video.update.mockResolvedValue({
           id: 'id',
-          restrictAutoTranslations: true
+          restrictTranslations: true
         } as unknown as Video)
 
         const result = await authClient({
@@ -2817,7 +2817,7 @@ describe('video', () => {
           variables: {
             input: {
               id: 'id',
-              restrictAutoTranslations: true
+              restrictTranslations: true
             }
           }
         })
@@ -2826,7 +2826,7 @@ describe('video', () => {
           expect.objectContaining({
             where: { id: 'id' },
             data: expect.objectContaining({
-              restrictAutoTranslations: true
+              restrictTranslations: true
             })
           })
         )
@@ -2835,7 +2835,7 @@ describe('video', () => {
         })
       })
 
-      it('should keep restrictAutoTranslations enabled once set', async () => {
+      it('should keep restrictTranslations enabled once set', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -2847,7 +2847,7 @@ describe('video', () => {
           published: true,
           publishedAt: null,
           slug: 'slug',
-          restrictAutoTranslations: true,
+          restrictTranslations: true,
           variants: []
         } as unknown as Video)
 
@@ -2856,7 +2856,7 @@ describe('video', () => {
           variables: {
             input: {
               id: 'id',
-              restrictAutoTranslations: false
+              restrictTranslations: false
             }
           }
         })
@@ -2867,7 +2867,7 @@ describe('video', () => {
             published: true,
             publishedAt: true,
             slug: true,
-            restrictAutoTranslations: true,
+            restrictTranslations: true,
             variants: {
               where: { published: true },
               select: { languageId: true }
@@ -2878,7 +2878,7 @@ describe('video', () => {
         expect(result).toHaveProperty('data', null)
         expect(result).toHaveProperty('errors')
         expect((result as any).errors?.[0]?.message).toBe(
-          'Automatic translation restriction cannot be disabled once enabled'
+          'Translation restriction cannot be disabled once enabled'
         )
       })
 
@@ -3549,7 +3549,7 @@ describe('video', () => {
         originId: null,
         restrictDownloadPlatforms: [],
         restrictViewPlatforms: [],
-        restrictAutoTranslations: false,
+        restrictTranslations: false,
         publishedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -3600,7 +3600,7 @@ describe('video', () => {
         originId: null,
         restrictDownloadPlatforms: [],
         restrictViewPlatforms: [],
-        restrictAutoTranslations: false,
+        restrictTranslations: false,
         publishedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
