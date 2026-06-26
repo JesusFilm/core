@@ -14,63 +14,58 @@ import { graphql } from '@core/shared/gql'
 import { CancelButton } from '../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../components/SaveButton'
 
-interface RestrictAutoTranslationsProps {
+interface RestrictTranslationsProps {
   videoId: string
 }
 
-export const GET_RESTRICT_AUTO_TRANSLATIONS = graphql(`
-  query GetRestrictAutoTranslations($id: ID!) {
+export const GET_RESTRICT_TRANSLATIONS = graphql(`
+  query GetRestrictTranslations($id: ID!) {
     adminVideo(id: $id) {
       id
-      restrictAutoTranslations
+      restrictTranslations
     }
   }
 `)
 
-export const UPDATE_RESTRICT_AUTO_TRANSLATIONS = graphql(`
-  mutation UpdateRestrictAutoTranslations($input: VideoUpdateInput!) {
+export const UPDATE_RESTRICT_TRANSLATIONS = graphql(`
+  mutation UpdateRestrictTranslations($input: VideoUpdateInput!) {
     videoUpdate(input: $input) {
       id
-      restrictAutoTranslations
+      restrictTranslations
     }
   }
 `)
 
-export function RestrictAutoTranslations({
+export function RestrictTranslations({
   videoId
-}: RestrictAutoTranslationsProps): ReactElement {
+}: RestrictTranslationsProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const [updateRestrictAutoTranslations] = useMutation(
-    UPDATE_RESTRICT_AUTO_TRANSLATIONS
-  )
+  const [updateRestrictTranslations] = useMutation(UPDATE_RESTRICT_TRANSLATIONS)
 
-  const { data } = useSuspenseQuery(GET_RESTRICT_AUTO_TRANSLATIONS, {
+  const { data } = useSuspenseQuery(GET_RESTRICT_TRANSLATIONS, {
     variables: { id: videoId }
   })
-  const restrictionLocked = data.adminVideo.restrictAutoTranslations === true
+  const restrictionLocked = data.adminVideo.restrictTranslations === true
 
-  async function handleUpdateRestrictAutoTranslations(
+  async function handleUpdateRestrictTranslations(
     values: FormikValues,
     { resetForm }: FormikProps<FormikValues>
   ): Promise<void> {
-    await updateRestrictAutoTranslations({
+    await updateRestrictTranslations({
       variables: {
         input: {
           id: videoId,
-          restrictAutoTranslations: values.restrictAutoTranslations
+          restrictTranslations: values.restrictTranslations
         }
       },
       onCompleted: () => {
-        enqueueSnackbar(
-          'Successfully updated automatic translation restriction',
-          {
-            variant: 'success'
-          }
-        )
+        enqueueSnackbar('Successfully updated translation restriction', {
+          variant: 'success'
+        })
         void resetForm({ values })
       },
       onError: () => {
-        enqueueSnackbar('Failed to update automatic translation restriction', {
+        enqueueSnackbar('Failed to update translation restriction', {
           variant: 'error'
         })
       }
@@ -80,33 +75,31 @@ export function RestrictAutoTranslations({
   return (
     <Formik
       initialValues={{
-        restrictAutoTranslations:
-          data.adminVideo.restrictAutoTranslations ?? false
+        restrictTranslations: data.adminVideo.restrictTranslations ?? false
       }}
-      onSubmit={handleUpdateRestrictAutoTranslations}
+      onSubmit={handleUpdateRestrictTranslations}
     >
       {({ values, setFieldValue, isSubmitting, dirty, resetForm }) => (
         <Form>
           <Stack gap={2}>
             <Stack gap={1}>
               <Typography variant="body2" color="text.secondary">
-                When enabled, automated systems must not add translated audio
-                variants or subtitle tracks to this video without express
-                permission. Metadata translations (title, description, study
-                questions) are unaffected. Once enabled, this restriction cannot
-                be disabled.
+                When enabled, translated audio variants or subtitle tracks must
+                not be added to this video without express permission. Metadata
+                translations (title, description, study questions) are
+                unaffected. Once enabled, this restriction cannot be disabled.
               </Typography>
               <FormControlLabel
                 control={
                   <Switch
-                    checked={values.restrictAutoTranslations}
+                    checked={values.restrictTranslations}
                     onChange={(event) => {
                       void setFieldValue(
-                        'restrictAutoTranslations',
+                        'restrictTranslations',
                         event.target.checked
                       )
                     }}
-                    name="restrictAutoTranslations"
+                    name="restrictTranslations"
                     disabled={restrictionLocked}
                   />
                 }

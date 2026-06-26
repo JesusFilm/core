@@ -5,10 +5,10 @@ import { SnackbarProvider } from 'notistack'
 import { Suspense } from 'react'
 
 import {
-  GET_RESTRICT_AUTO_TRANSLATIONS,
-  RestrictAutoTranslations,
-  UPDATE_RESTRICT_AUTO_TRANSLATIONS
-} from './RestrictAutoTranslations'
+  GET_RESTRICT_TRANSLATIONS,
+  RestrictTranslations,
+  UPDATE_RESTRICT_TRANSLATIONS
+} from './RestrictTranslations'
 
 vi.mock('@apollo/client', async () => {
   const original = await vi.importActual('@apollo/client')
@@ -21,7 +21,7 @@ vi.mock('@apollo/client', async () => {
           data: {
             adminVideo: {
               id: id ?? 'video1',
-              restrictAutoTranslations: id === 'video2'
+              restrictTranslations: id === 'video2'
             }
           }
         }
@@ -33,7 +33,7 @@ vi.mock('@apollo/client', async () => {
 const mockVideoWithRestrictionDisabled = [
   {
     request: {
-      query: GET_RESTRICT_AUTO_TRANSLATIONS,
+      query: GET_RESTRICT_TRANSLATIONS,
       variables: {
         id: 'video1'
       }
@@ -42,7 +42,7 @@ const mockVideoWithRestrictionDisabled = [
       data: {
         adminVideo: {
           id: 'video1',
-          restrictAutoTranslations: false
+          restrictTranslations: false
         }
       }
     }
@@ -52,7 +52,7 @@ const mockVideoWithRestrictionDisabled = [
 const mockVideoWithRestrictionEnabled = [
   {
     request: {
-      query: GET_RESTRICT_AUTO_TRANSLATIONS,
+      query: GET_RESTRICT_TRANSLATIONS,
       variables: {
         id: 'video2'
       }
@@ -61,7 +61,7 @@ const mockVideoWithRestrictionEnabled = [
       data: {
         adminVideo: {
           id: 'video2',
-          restrictAutoTranslations: true
+          restrictTranslations: true
         }
       }
     }
@@ -70,11 +70,11 @@ const mockVideoWithRestrictionEnabled = [
 
 const mockEnableMutation = {
   request: {
-    query: UPDATE_RESTRICT_AUTO_TRANSLATIONS,
+    query: UPDATE_RESTRICT_TRANSLATIONS,
     variables: {
       input: {
         id: 'video1',
-        restrictAutoTranslations: true
+        restrictTranslations: true
       }
     }
   },
@@ -82,7 +82,7 @@ const mockEnableMutation = {
     data: {
       videoUpdate: {
         id: 'video1',
-        restrictAutoTranslations: true
+        restrictTranslations: true
       }
     }
   }
@@ -102,11 +102,11 @@ const TestWrapper = ({
   </MockedProvider>
 )
 
-describe('RestrictAutoTranslations', () => {
+describe('RestrictTranslations', () => {
   it('renders disabled when the restriction is off', async () => {
     render(
       <TestWrapper mocks={mockVideoWithRestrictionDisabled}>
-        <RestrictAutoTranslations videoId="video1" />
+        <RestrictTranslations videoId="video1" />
       </TestWrapper>
     )
 
@@ -118,7 +118,7 @@ describe('RestrictAutoTranslations', () => {
   it('renders locked when the restriction is on', async () => {
     render(
       <TestWrapper mocks={mockVideoWithRestrictionEnabled}>
-        <RestrictAutoTranslations videoId="video2" />
+        <RestrictTranslations videoId="video2" />
       </TestWrapper>
     )
 
@@ -135,7 +135,7 @@ describe('RestrictAutoTranslations', () => {
 
     render(
       <TestWrapper mocks={[mockVideoWithRestrictionDisabled[0]]}>
-        <RestrictAutoTranslations videoId="video1" />
+        <RestrictTranslations videoId="video1" />
       </TestWrapper>
     )
 
@@ -163,7 +163,7 @@ describe('RestrictAutoTranslations', () => {
       <TestWrapper
         mocks={[...mockVideoWithRestrictionDisabled, mockEnableMutation]}
       >
-        <RestrictAutoTranslations videoId="video1" />
+        <RestrictTranslations videoId="video1" />
       </TestWrapper>
     )
 
@@ -172,9 +172,7 @@ describe('RestrictAutoTranslations', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(
-          'Successfully updated automatic translation restriction'
-        )
+        screen.getByText('Successfully updated translation restriction')
       ).toBeInTheDocument()
     })
   })
@@ -182,7 +180,7 @@ describe('RestrictAutoTranslations', () => {
   it('displays descriptive text about the feature', async () => {
     render(
       <TestWrapper mocks={mockVideoWithRestrictionDisabled}>
-        <RestrictAutoTranslations videoId="video1" />
+        <RestrictTranslations videoId="video1" />
       </TestWrapper>
     )
 

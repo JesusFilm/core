@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation'
 import { ReactElement } from 'react'
 
 import { Section } from '../../../../../components/Section'
-import { RestrictAutoTranslations } from '../_RestrictAutoTranslations'
+import { RestrictTranslations } from '../_RestrictTranslations'
 import { RestrictedDownloads } from '../_RestrictedDownloads'
 import { RestrictedViews } from '../_RestrictedViews'
 
@@ -13,8 +13,8 @@ export default function VideoRestrictionsPage(): ReactElement {
 
   return (
     <>
-      <Section title="Automatic Translations" variant="outlined">
-        <RestrictAutoTranslations videoId={videoId} />
+      <Section title="Translations" variant="outlined">
+        <RestrictTranslations videoId={videoId} />
       </Section>
       <Section title="Restricted Views" variant="outlined">
         <RestrictedViews videoId={videoId} />

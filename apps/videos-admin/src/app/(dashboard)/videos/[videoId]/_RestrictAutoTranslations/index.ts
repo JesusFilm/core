@@ -1,1 +1,0 @@
-export { RestrictAutoTranslations } from './RestrictAutoTranslations'
