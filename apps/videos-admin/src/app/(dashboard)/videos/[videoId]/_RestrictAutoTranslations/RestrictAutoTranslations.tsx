@@ -110,7 +110,7 @@ export function RestrictAutoTranslations({
                     disabled={restrictionLocked}
                   />
                 }
-                label="Restrict automatic translations"
+                label="Restrict translations"
               />
             </Stack>
             <Stack direction="row" justifyContent="flex-end" gap={1}>
