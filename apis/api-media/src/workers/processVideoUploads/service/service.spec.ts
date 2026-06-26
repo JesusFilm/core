@@ -293,13 +293,13 @@ describe('processVideoUploads service', () => {
 
     await service(uploadJob, mockLogger)
 
-    const nonStandardUpdateCalls = prismaMock.videoVariantUpload.update.mock.calls.filter(
-      ([call]) =>
+    const nonStandardUpdateCalls =
+      prismaMock.videoVariantUpload.update.mock.calls.filter(([call]) =>
         Object.prototype.hasOwnProperty.call(
           call.data,
           'muxNonStandardInputDetectedAt'
         )
-    )
+      )
     expect(nonStandardUpdateCalls).toHaveLength(0)
   })
 
@@ -328,14 +328,13 @@ describe('processVideoUploads service', () => {
 
     await service(uploadJob, mockLogger)
 
-    const nonStandardUpdateCalls = prismaMock.videoVariantUpload.update.mock.calls.filter(
-      ([call]) =>
+    const nonStandardUpdateCalls =
+      prismaMock.videoVariantUpload.update.mock.calls.filter(([call]) =>
         Object.prototype.hasOwnProperty.call(
           call.data,
           'muxNonStandardInputDetectedAt'
         )
-    )
+      )
     expect(nonStandardUpdateCalls).toHaveLength(0)
   })
-
 })
