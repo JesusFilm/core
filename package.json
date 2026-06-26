@@ -342,6 +342,7 @@
     "eslint-plugin-react-hooks": "5.2.0",
     "eslint-plugin-storybook": "^10.3.5",
     "file-loader": "^6.2.0",
+    "glob": "^13.0.6",
     "http-server": "^14.1.1",
     "husky": "^8.0.3",
     "i18next-cli": "^1.56.0",
