@@ -47,13 +47,23 @@ const GET_ADMIN_VIDEO_VARIANTS = graphql(`
 `)
 
 const GET_VIDEO_VARIANT_UPLOADS = graphql(`
-  query GetVideoVariantUploads($input: VideoVariantUploadsFilter, $limit: Int) {
+  query GetVideoVariantUploads(
+    $input: VideoVariantUploadsFilter
+    $limit: Int
+    $languageId: ID
+  ) {
     videoVariantUploads(input: $input, limit: $limit) {
       id
       source
       status
       videoId
       languageId
+      language {
+        id
+        name(languageId: $languageId) {
+          value
+        }
+      }
       edition
       originalFilename
       errorMessage
@@ -103,6 +113,10 @@ interface VideoVariantUploadRow {
   status: VideoVariantUploadStatus
   videoId: string
   languageId: string
+  language?: {
+    id: string
+    name?: Array<{ value?: string | null }> | null
+  } | null
   edition: string
   originalFilename?: string | null
   errorMessage?: string | null
@@ -157,6 +171,12 @@ function isStaleMuxProcessing(upload: VideoVariantUploadRow): boolean {
   if (!Number.isFinite(updatedAtMs)) return false
 
   return Date.now() - updatedAtMs > getMuxProcessingStaleMs(upload)
+}
+
+function getUploadLanguageLabel(upload: VideoVariantUploadRow): string {
+  return (
+    upload.language?.name?.[0]?.value?.trim() || `Language ${upload.languageId}`
+  )
 }
 
 function getIncompleteUploadDisplayState(
@@ -251,7 +271,8 @@ export default function ClientLayout({
   } = useQuery(GET_VIDEO_VARIANT_UPLOADS, {
     variables: {
       input: { videoId, statuses: incompleteUploadStatuses },
-      limit: 100
+      limit: 100,
+      languageId: DEFAULT_VIDEO_LANGUAGE_ID
     },
     fetchPolicy: 'cache-and-network'
   })
@@ -443,7 +464,7 @@ export default function ClientLayout({
           <Box sx={{ minWidth: 0 }}>
             <Stack direction="row" gap={1} alignItems="center" flexWrap="wrap">
               <Typography variant="body2" fontWeight={600}>
-                Language {upload.languageId}
+                {getUploadLanguageLabel(upload)}
               </Typography>
               <Chip
                 size="small"
@@ -452,6 +473,9 @@ export default function ClientLayout({
               />
             </Stack>
             <Typography variant="caption" color="text.secondary">
+              {upload.language?.name?.[0]?.value != null
+                ? `${upload.languageId} • `
+                : ''}
               {upload.edition} • {upload.source}
               {upload.originalFilename != null
                 ? ` • ${upload.originalFilename}`
