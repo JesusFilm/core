@@ -58,6 +58,7 @@ const GET_VIDEO_VARIANT_UPLOADS = graphql(`
       originalFilename
       errorMessage
       muxVideoId
+      muxNonStandardInputDetectedAt
       videoVariantId
       updatedAt
       createdAt
@@ -80,6 +81,7 @@ const RESUME_VIDEO_VARIANT_UPLOAD = graphql(`
       status
       errorMessage
       muxVideoId
+      muxNonStandardInputDetectedAt
       videoVariantId
       updatedAt
     }
@@ -105,6 +107,7 @@ interface VideoVariantUploadRow {
   originalFilename?: string | null
   errorMessage?: string | null
   muxVideoId?: string | null
+  muxNonStandardInputDetectedAt?: string | null
   videoVariantId?: string | null
   updatedAt?: string | null
   createdAt?: string | null
@@ -119,44 +122,108 @@ const incompleteUploadStatuses: VideoVariantUploadStatus[] = [
   'failed'
 ]
 
-const uploadStatusLabels: Record<VideoVariantUploadStatus, string> = {
-  created: 'Upload started',
-  r2Prepared: 'R2 prepared',
-  r2Uploaded: 'Processing',
-  muxCreated: 'Processing',
-  muxReady: 'Finalizing',
-  failed: 'Failed',
-  variantCreated: 'Complete'
+const STANDARD_MUX_PROCESSING_STALE_MS = 30 * 60 * 1000
+const NON_STANDARD_MUX_PROCESSING_STALE_MS = 2 * 60 * 60 * 1000
+
+interface IncompleteUploadDisplayState {
+  label: string
+  color: 'error' | 'info' | 'warning'
+  message: string | null
+  action: 'addAgain' | 'resume' | null
+  actionLabel: string | null
 }
 
-function getUploadStatusColor(status: VideoVariantUploadStatus) {
-  if (status === 'failed') return 'error'
-  if (status === 'muxReady' || status === 'muxCreated') return 'info'
-  return 'warning'
+function getMuxProcessingStaleMs(upload: VideoVariantUploadRow): number {
+  return upload.muxNonStandardInputDetectedAt == null
+    ? STANDARD_MUX_PROCESSING_STALE_MS
+    : NON_STANDARD_MUX_PROCESSING_STALE_MS
 }
 
-function canResumeUpload(status: VideoVariantUploadStatus) {
-  return status !== 'created' && status !== 'r2Prepared'
-}
+function getMuxProcessingStaleMessage(upload: VideoVariantUploadRow): string {
+  const staleHours = getMuxProcessingStaleMs(upload) / (60 * 60 * 1000)
 
-function getBackgroundUploadMessage(status: VideoVariantUploadStatus) {
-  if (
-    status === 'r2Uploaded' ||
-    status === 'muxCreated' ||
-    status === 'muxReady'
-  ) {
-    return 'Processing will finish in the background.'
+  if (staleHours >= 1) {
+    return `Processing has not updated in over ${staleHours} hours. Retry processing.`
   }
 
-  return null
+  const staleMinutes = getMuxProcessingStaleMs(upload) / (60 * 1000)
+  return `Processing has not updated in over ${staleMinutes} minutes. Retry processing.`
 }
 
-function getUnresumableUploadMessage(status: VideoVariantUploadStatus) {
-  if (status === 'created' || status === 'r2Prepared') {
-    return 'This upload cannot be resumed because the browser did not finish sending the file to R2. Add this audio language again.'
-  }
+function isStaleMuxProcessing(upload: VideoVariantUploadRow): boolean {
+  if (upload.status !== 'muxCreated' || upload.updatedAt == null) return false
 
-  return null
+  const updatedAtMs = Date.parse(upload.updatedAt)
+  if (!Number.isFinite(updatedAtMs)) return false
+
+  return Date.now() - updatedAtMs > getMuxProcessingStaleMs(upload)
+}
+
+function getIncompleteUploadDisplayState(
+  upload: VideoVariantUploadRow
+): IncompleteUploadDisplayState {
+  switch (upload.status) {
+    case 'created':
+    case 'r2Prepared':
+      return {
+        label: 'Upload not complete',
+        color: 'warning',
+        message:
+          'This upload cannot be resumed because the browser did not finish sending the file to R2. Add this audio language again.',
+        action: 'addAgain',
+        actionLabel: 'Add again'
+      }
+    case 'r2Uploaded':
+      return {
+        label: 'Ready to process',
+        color: 'warning',
+        message: 'The file uploaded successfully. Start processing to continue.',
+        action: 'resume',
+        actionLabel: 'Start processing'
+      }
+    case 'muxCreated':
+      if (isStaleMuxProcessing(upload)) {
+        return {
+          label: 'Stale',
+          color: 'warning',
+          message: getMuxProcessingStaleMessage(upload),
+          action: 'resume',
+          actionLabel: 'Retry'
+        }
+      }
+
+      return {
+        label: 'Processing',
+        color: 'info',
+        message: 'Mux is processing this upload. No action needed.',
+        action: null,
+        actionLabel: null
+      }
+    case 'muxReady':
+      return {
+        label: 'Ready to finalize',
+        color: 'info',
+        message: 'Mux is ready. Finalize this audio language.',
+        action: 'resume',
+        actionLabel: 'Finalize'
+      }
+    case 'failed':
+      return {
+        label: 'Failed',
+        color: 'error',
+        message: null,
+        action: 'resume',
+        actionLabel: 'Retry'
+      }
+    case 'variantCreated':
+      return {
+        label: 'Complete',
+        color: 'info',
+        message: null,
+        action: null,
+        actionLabel: null
+      }
+  }
 }
 export default function ClientLayout({
   children
@@ -354,12 +421,7 @@ export default function ClientLayout({
   const renderIncompleteUploadItems = () => {
     return incompleteUploads.map((upload) => {
       const isResuming = resumingUploadId === upload.id
-      const statusLabel = uploadStatusLabels[upload.status] ?? upload.status
-      const canResume = canResumeUpload(upload.status)
-      const canReupload = !canResume
-      const actionLabel = upload.status === 'failed' ? 'Retry' : 'Resume'
-      const backgroundUploadMessage = getBackgroundUploadMessage(upload.status)
-      const unresumableMessage = getUnresumableUploadMessage(upload.status)
+      const displayState = getIncompleteUploadDisplayState(upload)
 
       return (
         <ListItem
@@ -384,8 +446,8 @@ export default function ClientLayout({
               </Typography>
               <Chip
                 size="small"
-                label={statusLabel}
-                color={getUploadStatusColor(upload.status) as any}
+                label={displayState.label}
+                color={displayState.color}
               />
             </Stack>
             <Typography variant="caption" color="text.secondary">
@@ -394,22 +456,13 @@ export default function ClientLayout({
                 ? ` • ${upload.originalFilename}`
                 : ''}
             </Typography>
-            {backgroundUploadMessage != null && (
+            {displayState.message != null && (
               <Typography
                 variant="caption"
                 color="text.secondary"
                 sx={{ display: 'block' }}
               >
-                {backgroundUploadMessage}
-              </Typography>
-            )}
-            {unresumableMessage != null && (
-              <Typography
-                variant="caption"
-                color="warning.main"
-                sx={{ display: 'block' }}
-              >
-                {unresumableMessage}
+                {displayState.message}
               </Typography>
             )}
             {upload.errorMessage != null && (
@@ -429,32 +482,30 @@ export default function ClientLayout({
               Upload id: {upload.id}
             </Typography>
           </Box>
-          <Button
-            size="small"
-            variant="outlined"
-            startIcon={
-              isResuming ? undefined : canReupload ? (
-                <AddIcon />
-              ) : (
-                <ReplayIcon />
-              )
-            }
-            disabled={resumingUploadId != null || isResumeRequestInFlight}
-            onClick={() => {
-              if (canReupload) {
-                handleAddAudioLanguage()
-                return
+          {displayState.action != null && displayState.actionLabel != null && (
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={
+                isResuming ? undefined : displayState.action === 'addAgain' ? (
+                  <AddIcon />
+                ) : (
+                  <ReplayIcon />
+                )
               }
+              disabled={resumingUploadId != null || isResumeRequestInFlight}
+              onClick={() => {
+                if (displayState.action === 'addAgain') {
+                  handleAddAudioLanguage()
+                  return
+                }
 
-              void handleResumeUpload(upload.id)
-            }}
-          >
-            {canReupload
-              ? 'Add again'
-              : isResuming
-                ? 'Resuming...'
-                : actionLabel}
-          </Button>
+                void handleResumeUpload(upload.id)
+              }}
+            >
+              {isResuming ? 'Working...' : displayState.actionLabel}
+            </Button>
+          )}
         </ListItem>
       )
     })

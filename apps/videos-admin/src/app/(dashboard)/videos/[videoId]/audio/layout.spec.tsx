@@ -8,7 +8,6 @@ import {
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { ReactElement } from 'react'
 import { type MockedFunction } from 'vitest'
 
 import ClientLayout from './layout'
@@ -53,20 +52,6 @@ vi.mock('notistack', () => ({
   SnackbarProvider: ({ children }: { children: React.ReactNode }) => children
 }))
 
-// Helper function to render component with different pathnames
-const renderWithPathname = (pathname: string): void => {
-  mockPathname = pathname
-  mockUsePathname.mockReturnValue(pathname)
-
-  render(
-    <MockedProvider>
-      <ClientLayout>
-        <div>Child content</div>
-      </ClientLayout>
-    </MockedProvider>
-  )
-}
-
 describe('ClientLayout', () => {
   const mockVideoVariants = [
     {
@@ -99,6 +84,7 @@ describe('ClientLayout', () => {
   ]
 
   beforeEach(() => {
+    vi.useRealTimers()
     vi.clearAllMocks()
 
     // Default mock implementation for useQuery
@@ -280,7 +266,10 @@ describe('ClientLayout', () => {
     expect(screen.getByText('Mux video processing errored')).toBeTruthy()
   })
 
-  it('shows background processing copy for handed-off uploads', () => {
+  it('shows lifecycle-specific labels, messages, and actions for incomplete uploads', () => {
+    const dateNowSpy = vi
+      .spyOn(Date, 'now')
+      .mockReturnValue(new Date('2026-06-18T01:00:00.000Z').getTime())
     const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
 
     mockedUseQuery
@@ -313,31 +302,73 @@ describe('ClientLayout', () => {
         data: {
           videoVariantUploads: [
             {
-              id: 'upload-r2-uploaded',
+              id: 'upload-created',
               source: 'videos-admin',
-              status: 'r2Uploaded',
+              status: 'created',
               videoId: 'video123',
-              languageId: '184631',
+              languageId: 'created-language',
               edition: 'base',
               originalFilename: 'test-video.mp4',
               errorMessage: null,
               muxVideoId: null,
               videoVariantId: null,
-              updatedAt: '2026-06-18T00:00:00.000Z',
-              createdAt: '2026-06-18T00:00:00.000Z'
+              updatedAt: '2026-06-18T00:59:00.000Z',
+              createdAt: '2026-06-18T00:59:00.000Z'
             },
             {
-              id: 'upload-mux-created',
+              id: 'upload-r2-prepared',
+              source: 'videos-admin',
+              status: 'r2Prepared',
+              videoId: 'video123',
+              languageId: 'r2-prepared-language',
+              edition: 'base',
+              originalFilename: 'test-video.mp4',
+              errorMessage: null,
+              muxVideoId: null,
+              videoVariantId: null,
+              updatedAt: '2026-06-18T00:59:00.000Z',
+              createdAt: '2026-06-18T00:59:00.000Z'
+            },
+            {
+              id: 'upload-r2-uploaded',
+              source: 'videos-admin',
+              status: 'r2Uploaded',
+              videoId: 'video123',
+              languageId: 'r2-uploaded-language',
+              edition: 'base',
+              originalFilename: 'test-video.mp4',
+              errorMessage: null,
+              muxVideoId: null,
+              videoVariantId: null,
+              updatedAt: '2026-06-18T00:59:00.000Z',
+              createdAt: '2026-06-18T00:59:00.000Z'
+            },
+            {
+              id: 'upload-mux-created-fresh',
               source: 'videos-admin',
               status: 'muxCreated',
               videoId: 'video123',
-              languageId: '14278',
+              languageId: 'mux-fresh-language',
               edition: 'base',
               originalFilename: 'test-video.mp4',
               errorMessage: null,
               muxVideoId: 'mux-id',
               videoVariantId: null,
-              updatedAt: '2026-06-18T00:00:00.000Z',
+              updatedAt: '2026-06-18T00:45:00.000Z',
+              createdAt: '2026-06-18T00:00:00.000Z'
+            },
+            {
+              id: 'upload-mux-created-stale',
+              source: 'videos-admin',
+              status: 'muxCreated',
+              videoId: 'video123',
+              languageId: 'mux-stale-language',
+              edition: 'base',
+              originalFilename: 'test-video.mp4',
+              errorMessage: null,
+              muxVideoId: 'mux-stale-id',
+              videoVariantId: null,
+              updatedAt: '2026-06-18T00:29:59.000Z',
               createdAt: '2026-06-18T00:00:00.000Z'
             },
             {
@@ -345,14 +376,28 @@ describe('ClientLayout', () => {
               source: 'videos-admin',
               status: 'muxReady',
               videoId: 'video123',
-              languageId: '529',
+              languageId: 'mux-ready-language',
               edition: 'base',
               originalFilename: 'test-video.mp4',
               errorMessage: null,
               muxVideoId: 'mux-ready-id',
               videoVariantId: null,
-              updatedAt: '2026-06-18T00:00:00.000Z',
-              createdAt: '2026-06-18T00:00:00.000Z'
+              updatedAt: '2026-06-18T00:59:00.000Z',
+              createdAt: '2026-06-18T00:59:00.000Z'
+            },
+            {
+              id: 'upload-failed',
+              source: 'videos-admin',
+              status: 'failed',
+              videoId: 'video123',
+              languageId: 'failed-language',
+              edition: 'base',
+              originalFilename: 'test-video.mp4',
+              errorMessage: 'Mux video processing errored',
+              muxVideoId: 'failed-mux-id',
+              videoVariantId: null,
+              updatedAt: '2026-06-18T00:59:00.000Z',
+              createdAt: '2026-06-18T00:59:00.000Z'
             }
           ]
         },
@@ -380,12 +425,484 @@ describe('ClientLayout', () => {
         </ClientLayout>
       </MockedProvider>
     )
+    dateNowSpy.mockRestore()
 
-    expect(screen.getAllByText('Processing')).toHaveLength(2)
-    expect(screen.getByText('Finalizing')).toBeTruthy()
+    expect(screen.getAllByText('Upload not complete')).toHaveLength(2)
+    expect(screen.getAllByText('Add again')).toHaveLength(2)
+    expect(screen.getByText('Ready to process')).toBeTruthy()
+    expect(screen.getByText('Start processing')).toBeTruthy()
+    expect(screen.getByText('Processing')).toBeTruthy()
     expect(
-      screen.getAllByText('Processing will finish in the background.')
-    ).toHaveLength(3)
+      screen.getByText('Mux is processing this upload. No action needed.')
+    ).toBeTruthy()
+    expect(screen.getByText('Stale')).toBeTruthy()
+    expect(
+      screen.getByText(
+        'Processing has not updated in over 30 minutes. Retry processing.'
+      )
+    ).toBeTruthy()
+    expect(screen.getByText('Ready to finalize')).toBeTruthy()
+    expect(screen.getByText('Finalize')).toBeTruthy()
+    expect(screen.getByText('Failed')).toBeTruthy()
+    expect(screen.getByText('Mux video processing errored')).toBeTruthy()
+    expect(screen.queryByText('Resume')).toBeNull()
+  })
+
+  it('routes unresumable uploads to add again without calling resume', () => {
+    const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
+    const mockedUseMutation = useMutation as MockedFunction<typeof useMutation>
+    const resumeMutation = vi.fn()
+
+    mockedUseMutation.mockReturnValue([
+      resumeMutation,
+      {
+        loading: false,
+        error: undefined,
+        data: undefined,
+        called: false,
+        client: {} as any,
+        reset: vi.fn()
+      }
+    ])
+    mockedUseQuery
+      .mockReturnValueOnce({
+        data: {
+          adminVideo: {
+            id: 'video123',
+            slug: 'test-video',
+            published: true,
+            variants: []
+          }
+        },
+        loading: false,
+        error: undefined,
+        fetchMore: vi.fn(),
+        refetch: mockRefetch,
+        networkStatus: NetworkStatus.ready,
+        client: {} as any,
+        called: true,
+        startPolling: vi.fn(),
+        stopPolling: vi.fn(),
+        subscribeToMore: vi.fn(),
+        updateQuery: vi.fn(),
+        observable: {} as any,
+        variables: { id: 'video123' },
+        reobserve: vi.fn(),
+        previousData: undefined
+      })
+      .mockReturnValueOnce({
+        data: {
+          videoVariantUploads: [
+            {
+              id: 'upload-created',
+              source: 'videos-admin',
+              status: 'created',
+              videoId: 'video123',
+              languageId: '184631',
+              edition: 'base',
+              originalFilename: 'test-video.mp4',
+              errorMessage: null,
+              muxVideoId: null,
+              videoVariantId: null,
+              updatedAt: '2026-06-18T00:00:00.000Z',
+              createdAt: '2026-06-18T00:00:00.000Z'
+            },
+            {
+              id: 'upload-r2-prepared',
+              source: 'videos-admin',
+              status: 'r2Prepared',
+              videoId: 'video123',
+              languageId: '14278',
+              edition: 'base',
+              originalFilename: 'test-video.mp4',
+              errorMessage: null,
+              muxVideoId: null,
+              videoVariantId: null,
+              updatedAt: '2026-06-18T00:00:00.000Z',
+              createdAt: '2026-06-18T00:00:00.000Z'
+            }
+          ]
+        },
+        loading: false,
+        error: undefined,
+        fetchMore: vi.fn(),
+        refetch: vi.fn(),
+        networkStatus: NetworkStatus.ready,
+        client: {} as any,
+        called: true,
+        startPolling: vi.fn(),
+        stopPolling: vi.fn(),
+        subscribeToMore: vi.fn(),
+        updateQuery: vi.fn(),
+        observable: {} as any,
+        variables: {},
+        reobserve: vi.fn(),
+        previousData: undefined
+      })
+
+    render(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getAllByText('Add again')[0])
+
+    expect(mockPush).toHaveBeenCalledWith('/videos/video123/audio/add', {
+      scroll: false
+    })
+    expect(resumeMutation).not.toHaveBeenCalled()
+  })
+
+  it('starts processing an R2-uploaded row through the resume mutation', async () => {
+    const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
+    const mockedUseMutation = useMutation as MockedFunction<typeof useMutation>
+    const resumeMutation = vi.fn().mockResolvedValue({
+      data: {
+        videoVariantUploadResume: {
+          id: 'upload-r2-uploaded',
+          status: 'muxCreated',
+          errorMessage: null,
+          muxVideoId: 'mux-id',
+          videoVariantId: null,
+          updatedAt: '2026-06-18T00:00:00.000Z'
+        }
+      }
+    })
+
+    mockedUseMutation.mockReturnValue([
+      resumeMutation,
+      {
+        loading: false,
+        error: undefined,
+        data: undefined,
+        called: false,
+        client: {} as any,
+        reset: vi.fn()
+      }
+    ])
+    mockedUseQuery.mockImplementation((_query, options?: any) => {
+      if (options?.variables?.input?.statuses != null) {
+        return {
+          data: {
+            videoVariantUploads: [
+              {
+                id: 'upload-r2-uploaded',
+                source: 'videos-admin',
+                status: 'r2Uploaded',
+                videoId: 'video123',
+                languageId: '184631',
+                edition: 'base',
+                originalFilename: 'test-video.mp4',
+                errorMessage: null,
+                muxVideoId: null,
+                videoVariantId: null,
+                updatedAt: '2026-06-18T00:00:00.000Z',
+                createdAt: '2026-06-18T00:00:00.000Z'
+              }
+            ]
+          },
+          loading: false,
+          error: undefined,
+          fetchMore: vi.fn(),
+          refetch: vi.fn(),
+          networkStatus: NetworkStatus.ready,
+          client: {} as any,
+          called: true,
+          startPolling: vi.fn(),
+          stopPolling: vi.fn(),
+          subscribeToMore: vi.fn(),
+          updateQuery: vi.fn(),
+          observable: {} as any,
+          variables: options.variables,
+          reobserve: vi.fn(),
+          previousData: undefined
+        } as QueryResult<any, OperationVariables>
+      }
+
+      return {
+        data: {
+          adminVideo: {
+            id: 'video123',
+            slug: 'test-video',
+            published: true,
+            variants: mockVideoVariants
+          }
+        },
+        loading: false,
+        error: undefined,
+        fetchMore: vi.fn(),
+        refetch: mockRefetch,
+        networkStatus: NetworkStatus.ready,
+        client: {} as any,
+        called: true,
+        startPolling: vi.fn(),
+        stopPolling: vi.fn(),
+        subscribeToMore: vi.fn(),
+        updateQuery: vi.fn(),
+        observable: {} as any,
+        variables: options?.variables ?? {},
+        reobserve: vi.fn(),
+        previousData: undefined
+      } as QueryResult<any, OperationVariables>
+    })
+
+    render(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByText('Start processing'))
+
+    await waitFor(() => {
+      expect(resumeMutation).toHaveBeenCalledWith({
+        variables: {
+          id: 'upload-r2-uploaded',
+          downloadable: true,
+          maxResolution: 'uhd'
+        }
+      })
+    })
+  })
+
+  it('uses a two-hour stale threshold when Mux detects non-standard input', async () => {
+    const dateNowSpy = vi
+      .spyOn(Date, 'now')
+      .mockReturnValue(new Date('2026-06-18T03:00:00.000Z').getTime())
+    const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
+    const mockedUseMutation = useMutation as MockedFunction<typeof useMutation>
+    const resumeMutation = vi.fn()
+
+    mockedUseMutation.mockReturnValue([
+      resumeMutation,
+      {
+        loading: false,
+        error: undefined,
+        data: undefined,
+        called: false,
+        client: {} as any,
+        reset: vi.fn()
+      }
+    ])
+    mockedUseQuery
+      .mockReturnValueOnce({
+        data: {
+          adminVideo: {
+            id: 'video123',
+            slug: 'test-video',
+            published: true,
+            variants: mockVideoVariants
+          }
+        },
+        loading: false,
+        error: undefined,
+        fetchMore: vi.fn(),
+        refetch: mockRefetch,
+        networkStatus: NetworkStatus.ready,
+        client: {} as any,
+        called: true,
+        startPolling: vi.fn(),
+        stopPolling: vi.fn(),
+        subscribeToMore: vi.fn(),
+        updateQuery: vi.fn(),
+        observable: {} as any,
+        variables: { id: 'video123' },
+        reobserve: vi.fn(),
+        previousData: undefined
+      })
+      .mockReturnValueOnce({
+        data: {
+          videoVariantUploads: [
+            {
+              id: 'upload-non-standard-fresh',
+              source: 'qa-528-test-data',
+              status: 'muxCreated',
+              videoId: 'video123',
+              languageId: 'fresh-language',
+              edition: 'base',
+              originalFilename: 'test-video.mp4',
+              errorMessage: null,
+              muxVideoId: 'mux-fresh-id',
+              muxNonStandardInputDetectedAt: '2026-06-18T02:30:00.000Z',
+              videoVariantId: null,
+              updatedAt: '2026-06-18T02:29:00.000Z',
+              createdAt: '2026-06-18T00:00:00.000Z'
+            },
+            {
+              id: 'upload-non-standard-stale',
+              source: 'qa-528-test-data',
+              status: 'muxCreated',
+              videoId: 'video123',
+              languageId: 'stale-language',
+              edition: 'base',
+              originalFilename: 'test-video.mp4',
+              errorMessage: null,
+              muxVideoId: 'mux-stale-id',
+              muxNonStandardInputDetectedAt: '2026-06-18T01:00:00.000Z',
+              videoVariantId: null,
+              updatedAt: '2026-06-18T00:59:00.000Z',
+              createdAt: '2026-06-18T00:00:00.000Z'
+            }
+          ]
+        },
+        loading: false,
+        error: undefined,
+        fetchMore: vi.fn(),
+        refetch: vi.fn(),
+        networkStatus: NetworkStatus.ready,
+        client: {} as any,
+        called: true,
+        startPolling: vi.fn(),
+        stopPolling: vi.fn(),
+        subscribeToMore: vi.fn(),
+        updateQuery: vi.fn(),
+        observable: {} as any,
+        variables: {},
+        reobserve: vi.fn(),
+        previousData: undefined
+      })
+
+    render(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+    dateNowSpy.mockRestore()
+
+    expect(screen.getByText('Language fresh-language')).toBeTruthy()
+    expect(screen.getByText('Language stale-language')).toBeTruthy()
+    expect(screen.getByText('Processing')).toBeTruthy()
+    expect(screen.getByText('Stale')).toBeTruthy()
+    expect(
+      screen.getByText('Processing has not updated in over 2 hours. Retry processing.')
+    ).toBeTruthy()
+    expect(screen.getByText('Retry')).toBeTruthy()
+    expect(resumeMutation).not.toHaveBeenCalled()
+  })
+
+  it('allows stale Mux processing rows to retry', async () => {
+    const dateNowSpy = vi
+      .spyOn(Date, 'now')
+      .mockReturnValue(new Date('2026-06-18T01:00:00.000Z').getTime())
+    const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
+    const mockedUseMutation = useMutation as MockedFunction<typeof useMutation>
+    const resumeMutation = vi.fn().mockResolvedValue({
+      data: {
+        videoVariantUploadResume: {
+          id: 'upload-mux-stale',
+          status: 'muxCreated',
+          errorMessage: null,
+          muxVideoId: 'mux-id',
+          videoVariantId: null,
+          updatedAt: '2026-06-18T01:00:00.000Z'
+        }
+      }
+    })
+
+    mockedUseMutation.mockReturnValue([
+      resumeMutation,
+      {
+        loading: false,
+        error: undefined,
+        data: undefined,
+        called: false,
+        client: {} as any,
+        reset: vi.fn()
+      }
+    ])
+    mockedUseQuery.mockImplementation((_query, options?: any) => {
+      if (options?.variables?.input?.statuses != null) {
+        return {
+          data: {
+            videoVariantUploads: [
+              {
+                id: 'upload-mux-stale',
+                source: 'videos-admin',
+                status: 'muxCreated',
+                videoId: 'video123',
+                languageId: '184631',
+                edition: 'base',
+                originalFilename: 'test-video.mp4',
+                errorMessage: null,
+                muxVideoId: 'mux-id',
+                videoVariantId: null,
+                updatedAt: '2026-06-18T00:29:00.000Z',
+                createdAt: '2026-06-18T00:00:00.000Z'
+              }
+            ]
+          },
+          loading: false,
+          error: undefined,
+          fetchMore: vi.fn(),
+          refetch: vi.fn(),
+          networkStatus: NetworkStatus.ready,
+          client: {} as any,
+          called: true,
+          startPolling: vi.fn(),
+          stopPolling: vi.fn(),
+          subscribeToMore: vi.fn(),
+          updateQuery: vi.fn(),
+          observable: {} as any,
+          variables: options.variables,
+          reobserve: vi.fn(),
+          previousData: undefined
+        } as QueryResult<any, OperationVariables>
+      }
+
+      return {
+        data: {
+          adminVideo: {
+            id: 'video123',
+            slug: 'test-video',
+            published: true,
+            variants: mockVideoVariants
+          }
+        },
+        loading: false,
+        error: undefined,
+        fetchMore: vi.fn(),
+        refetch: mockRefetch,
+        networkStatus: NetworkStatus.ready,
+        client: {} as any,
+        called: true,
+        startPolling: vi.fn(),
+        stopPolling: vi.fn(),
+        subscribeToMore: vi.fn(),
+        updateQuery: vi.fn(),
+        observable: {} as any,
+        variables: options?.variables ?? {},
+        reobserve: vi.fn(),
+        previousData: undefined
+      } as QueryResult<any, OperationVariables>
+    })
+
+    render(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+    dateNowSpy.mockRestore()
+
+    fireEvent.click(screen.getByText('Retry'))
+
+    await waitFor(() => {
+      expect(resumeMutation).toHaveBeenCalledWith({
+        variables: {
+          id: 'upload-mux-stale',
+          downloadable: true,
+          maxResolution: 'uhd'
+        }
+      })
+    })
   })
 
   it('clears resume state when resume mutation returns a completed upload', async () => {
@@ -424,12 +941,12 @@ describe('ClientLayout', () => {
               {
                 id: 'upload-ready',
                 source: 'videos-admin',
-                status: 'failed',
+                status: 'muxReady',
                 videoId: 'video123',
                 languageId: '184631',
                 edition: 'base',
                 originalFilename: 'test-video.mp4',
-                errorMessage: 'Mux video processing errored',
+                errorMessage: null,
                 muxVideoId: 'mux-id',
                 videoVariantId: null,
                 updatedAt: '2026-06-18T00:00:00.000Z',
@@ -490,7 +1007,7 @@ describe('ClientLayout', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByText('Retry'))
+    fireEvent.click(screen.getByText('Finalize'))
 
     await waitFor(() => {
       expect(resumeMutation).toHaveBeenCalledWith({
@@ -532,13 +1049,13 @@ describe('ClientLayout', () => {
       {
         id: 'upload-processing',
         source: 'videos-admin',
-        status: 'muxCreated',
+        status: 'r2Uploaded',
         videoId: 'video123',
         languageId: '184631',
         edition: 'base',
         originalFilename: 'test-video.mp4',
         errorMessage: null,
-        muxVideoId: 'mux-id',
+        muxVideoId: null,
         videoVariantId: null,
         updatedAt: '2026-06-18T00:00:00.000Z',
         createdAt: '2026-06-18T00:00:00.000Z'
@@ -614,7 +1131,7 @@ describe('ClientLayout', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByText('Resume'))
+    fireEvent.click(screen.getByText('Start processing'))
 
     await waitFor(() => expect(uploadRefetch).toHaveBeenCalled())
 
