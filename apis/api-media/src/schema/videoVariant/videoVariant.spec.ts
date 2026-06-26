@@ -224,7 +224,7 @@ describe('videoVariant', () => {
             originId: null,
             restrictDownloadPlatforms: [],
             restrictViewPlatforms: [],
-            restrictAutoTranslations: false,
+            restrictTranslations: false,
             publishedAt: null
           },
           downloads: [
@@ -365,7 +365,7 @@ describe('videoVariant', () => {
             originId: null,
             restrictDownloadPlatforms: [],
             restrictViewPlatforms: [],
-            restrictAutoTranslations: false,
+            restrictTranslations: false,
             publishedAt: null
           },
           downloads: []
@@ -498,7 +498,7 @@ describe('videoVariant', () => {
             originId: null,
             restrictDownloadPlatforms: [],
             restrictViewPlatforms: [],
-            restrictAutoTranslations: false,
+            restrictTranslations: false,
             publishedAt: null
           },
           downloads: [
@@ -642,7 +642,7 @@ describe('videoVariant', () => {
             originId: null,
             restrictDownloadPlatforms: [],
             restrictViewPlatforms: [],
-            restrictAutoTranslations: false,
+            restrictTranslations: false,
             publishedAt: null
           },
           downloads: []
@@ -754,7 +754,7 @@ describe('videoVariant', () => {
             originId: null,
             restrictDownloadPlatforms: [],
             restrictViewPlatforms: [],
-            restrictAutoTranslations: false,
+            restrictTranslations: false,
             publishedAt: null
           },
           downloads: []
@@ -867,7 +867,7 @@ describe('videoVariant', () => {
             originId: null,
             restrictDownloadPlatforms: [],
             restrictViewPlatforms: [],
-            restrictAutoTranslations: false,
+            restrictTranslations: false,
             publishedAt: null
           },
           downloads: []
@@ -1205,7 +1205,7 @@ describe('videoVariant', () => {
           originId: null,
           restrictDownloadPlatforms: [],
           restrictViewPlatforms: [],
-          restrictAutoTranslations: false,
+          restrictTranslations: false,
           publishedAt: null
         })
         prismaMock.video.update.mockResolvedValue({
@@ -1223,7 +1223,7 @@ describe('videoVariant', () => {
           originId: null,
           restrictDownloadPlatforms: [],
           restrictViewPlatforms: [],
-          restrictAutoTranslations: false,
+          restrictTranslations: false,
           publishedAt: null
         })
         const result = await authClient({
@@ -1370,7 +1370,7 @@ describe('videoVariant', () => {
           originId: null,
           restrictDownloadPlatforms: [],
           restrictViewPlatforms: [],
-          restrictAutoTranslations: false,
+          restrictTranslations: false,
           publishedAt: null
         })
         prismaMock.video.update.mockResolvedValue({
@@ -1388,7 +1388,7 @@ describe('videoVariant', () => {
           originId: null,
           restrictDownloadPlatforms: [],
           restrictViewPlatforms: [],
-          restrictAutoTranslations: false,
+          restrictTranslations: false,
           publishedAt: null
         })
 
