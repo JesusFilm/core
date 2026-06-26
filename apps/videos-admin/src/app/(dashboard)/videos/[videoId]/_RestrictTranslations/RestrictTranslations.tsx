@@ -84,8 +84,8 @@ export function RestrictTranslations({
           <Stack gap={2}>
             <Stack gap={1}>
               <Typography variant="body2" color="text.secondary">
-                When enabled, translated audio variants or subtitle tracks must
-                not be added to this video without express permission. Metadata
+                When enabled, generated translated audio variants or generated
+                subtitle tracks should not be created for this video. Metadata
                 translations (title, description, study questions) are
                 unaffected. Once enabled, this restriction cannot be disabled.
               </Typography>

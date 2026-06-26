@@ -1,4 +1,5 @@
 import { useSuspenseQuery as apolloClient_useSuspenseQuery } from '@apollo/client'
+import Box from '@mui/material/Box'
 import { render, screen } from '@testing-library/react'
 import { type Mock } from 'vitest'
 
@@ -7,7 +8,7 @@ import VideoViewLayout from './layout'
 const mockPush = vi.fn()
 const mockSegment = vi.fn()
 const mockVideoInformation = vi.fn(() => (
-  <div data-testid="video-information" />
+  <Box data-testid="video-information" />
 ))
 
 vi.mock('next/navigation', () => ({
@@ -29,28 +30,28 @@ vi.mock('./_VideoInformation', () => ({
 }))
 
 vi.mock('./_VideoImages', () => ({
-  VideoImages: () => <div data-testid="video-images" />
+  VideoImages: () => <Box data-testid="video-images" />
 }))
 
 vi.mock('./_VideoImageAlt', () => ({
-  VideoImageAlt: () => <div data-testid="video-image-alt" />
+  VideoImageAlt: () => <Box data-testid="video-image-alt" />
 }))
 
 vi.mock('./_VideoSnippet', () => ({
-  VideoSnippet: () => <div data-testid="video-snippet" />
+  VideoSnippet: () => <Box data-testid="video-snippet" />
 }))
 
 vi.mock('./_VideoDescription', () => ({
-  VideoDescription: () => <div data-testid="video-description" />
+  VideoDescription: () => <Box data-testid="video-description" />
 }))
 
 vi.mock('./_VideoBibleCitation', () => ({
-  VideoBibleCitation: () => <div data-testid="video-bible-citation" />
+  VideoBibleCitation: () => <Box data-testid="video-bible-citation" />
 }))
 
 vi.mock('./_VideoTabs', () => ({
   VideoTabView: ({ currentTab }: { currentTab: string }) => (
-    <div data-testid="current-tab">{currentTab}</div>
+    <Box data-testid="current-tab">{currentTab}</Box>
   )
 }))
 

@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import { render, screen } from '@testing-library/react'
 
 import VideoRestrictionsPage from './page'
@@ -8,19 +9,19 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('../_RestrictTranslations', () => ({
   RestrictTranslations: ({ videoId }: { videoId: string }) => (
-    <div data-testid="restrict-translations">{videoId}</div>
+    <Box data-testid="restrict-translations">{videoId}</Box>
   )
 }))
 
 vi.mock('../_RestrictedViews', () => ({
   RestrictedViews: ({ videoId }: { videoId: string }) => (
-    <div data-testid="restricted-views">{videoId}</div>
+    <Box data-testid="restricted-views">{videoId}</Box>
   )
 }))
 
 vi.mock('../_RestrictedDownloads', () => ({
   RestrictedDownloads: ({ videoId }: { videoId: string }) => (
-    <div data-testid="restricted-downloads">{videoId}</div>
+    <Box data-testid="restricted-downloads">{videoId}</Box>
   )
 }))
 
