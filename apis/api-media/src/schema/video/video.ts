@@ -812,7 +812,8 @@ builder.mutationFields((t) => ({
           publishedAt: publishedAtUpdate,
           slug: input.slug ?? undefined,
           noIndex: input.noIndex ?? undefined,
-          restrictTranslations: input.restrictTranslations ?? undefined,
+          restrictTranslations:
+            input.restrictTranslations === true ? true : undefined,
           childIds: input.childIds ?? undefined,
           restrictDownloadPlatforms:
             input.restrictDownloadPlatforms ?? undefined,

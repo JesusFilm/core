@@ -2882,6 +2882,49 @@ describe('video', () => {
         )
       })
 
+      it('should not write restrictTranslations false after a stale false read', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          published: true,
+          publishedAt: null,
+          slug: 'slug',
+          restrictTranslations: false,
+          variants: []
+        } as unknown as Video)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'id',
+          restrictTranslations: true
+        } as unknown as Video)
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              restrictTranslations: false
+            }
+          }
+        })
+
+        expect(prismaMock.video.update).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: { id: 'id' },
+            data: expect.not.objectContaining({
+              restrictTranslations: false
+            })
+          })
+        )
+        expect(result).toHaveProperty('data.videoUpdate', {
+          id: 'id'
+        })
+      })
+
       it('should update video with child relations when childIds are provided', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
