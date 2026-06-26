@@ -122,7 +122,7 @@ const Video = builder.prismaObject('Video', {
     restrictTranslations: t.exposeBoolean('restrictTranslations', {
       nullable: false,
       description:
-        'When true, translated audio variants or subtitle tracks must not be added to this video without express permission. Metadata translations (title, description, study questions) are unaffected.'
+        'When true, generated translated audio variants or generated subtitle tracks should not be created for this video. Metadata translations (title, description, study questions) are unaffected.'
     }),
     primaryLanguageId: t.exposeID('primaryLanguageId', { nullable: false }),
     published: t.exposeBoolean('published', { nullable: false }),
