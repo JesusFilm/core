@@ -2132,7 +2132,7 @@ type Video @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", 
   label: VideoLabel! @join__field(graph: API_MEDIA) 
   locked: Boolean! @join__field(graph: API_MEDIA) 
   """
-  When true, translated audio variants or subtitle tracks must not be added to this video without express permission. Metadata translations (title, description, study questions) are unaffected.
+  When true, generated translated audio variants or generated subtitle tracks should not be created for this video. Metadata translations (title, description, study questions) are unaffected.
   """
   restrictTranslations: Boolean! @join__field(graph: API_MEDIA)
   published: Boolean! @join__field(graph: API_MEDIA) 
