@@ -4,9 +4,9 @@ import { useParams } from 'next/navigation'
 import { ReactElement } from 'react'
 
 import { Section } from '../../../../../components/Section'
-import { RestrictTranslations } from '../_RestrictTranslations'
 import { RestrictedDownloads } from '../_RestrictedDownloads'
 import { RestrictedViews } from '../_RestrictedViews'
+import { RestrictTranslations } from '../_RestrictTranslations'
 
 export default function VideoRestrictionsPage(): ReactElement {
   const { videoId } = useParams<{ videoId: string }>()
