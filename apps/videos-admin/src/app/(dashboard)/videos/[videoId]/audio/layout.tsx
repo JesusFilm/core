@@ -177,7 +177,8 @@ function getIncompleteUploadDisplayState(
       return {
         label: 'Ready to process',
         color: 'warning',
-        message: 'The file uploaded successfully. Start processing to continue.',
+        message:
+          'The file uploaded successfully. Start processing to continue.',
         action: 'resume',
         actionLabel: 'Start processing'
       }

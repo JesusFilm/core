@@ -781,7 +781,9 @@ describe('ClientLayout', () => {
     expect(screen.getByText('Processing')).toBeTruthy()
     expect(screen.getByText('Stale')).toBeTruthy()
     expect(
-      screen.getByText('Processing has not updated in over 2 hours. Retry processing.')
+      screen.getByText(
+        'Processing has not updated in over 2 hours. Retry processing.'
+      )
     ).toBeTruthy()
     expect(screen.getByText('Retry')).toBeTruthy()
     expect(resumeMutation).not.toHaveBeenCalled()
