@@ -60,17 +60,28 @@ export async function service(
       return
     }
 
-    const muxCompletion = await waitForMuxVideoCompletion(muxVideo, logger)
-    const { finalStatus, playbackId } = muxCompletion
+    const durableUpload =
+      uploadId != null
+        ? await prisma.videoVariantUpload.findUnique({
+            where: { id: uploadId },
+            select: { id: true, muxNonStandardInputDetectedAt: true }
+          })
+        : await prisma.videoVariantUpload.findFirst({
+            where: { muxVideoId },
+            select: { id: true, muxNonStandardInputDetectedAt: true }
+          })
 
-    const durableUploadId =
-      uploadId ??
-      (
-        await prisma.videoVariantUpload.findFirst({
-          where: { muxVideoId },
-          select: { id: true }
-        })
-      )?.id
+    const durableUploadId = uploadId ?? durableUpload?.id
+    const muxCompletion = await waitForMuxVideoCompletion(
+      muxVideo,
+      {
+        uploadId: durableUploadId,
+        muxNonStandardInputDetected:
+          durableUpload?.muxNonStandardInputDetectedAt != null
+      },
+      logger
+    )
+    const { finalStatus, playbackId } = muxCompletion
 
     if (finalStatus === 'ready' && playbackId) {
       if (durableUploadId != null) {
@@ -145,6 +156,10 @@ export async function service(
 
 async function waitForMuxVideoCompletion(
   muxVideo: { id: string; assetId: string | null },
+  upload: {
+    uploadId?: string
+    muxNonStandardInputDetected: boolean
+  },
   logger?: Logger
 ): Promise<
   | { finalStatus: 'ready'; playbackId: string; duration: number | null }
@@ -167,6 +182,27 @@ async function waitForMuxVideoCompletion(
   while (attempts < maxAttempts) {
     try {
       const muxVideoAsset = await getVideo(muxVideo.assetId, false)
+
+      if (
+        !upload.muxNonStandardInputDetected &&
+        upload.uploadId != null &&
+        hasNonStandardInputReasons(muxVideoAsset)
+      ) {
+        await prisma.videoVariantUpload.update({
+          where: { id: upload.uploadId },
+          data: { muxNonStandardInputDetectedAt: new Date() }
+        })
+        upload.muxNonStandardInputDetected = true
+
+        logger?.info(
+          {
+            muxVideoId: muxVideo.id,
+            assetId: muxVideo.assetId,
+            uploadId: upload.uploadId
+          },
+          'Mux detected non-standard input for video upload'
+        )
+      }
 
       if (muxVideoAsset.status === 'errored') {
         logger?.error(
@@ -273,4 +309,16 @@ async function waitForMuxVideoCompletion(
     'Mux video processing reached maximum attempts without becoming ready'
   )
   return { finalStatus: 'timeout', playbackId: null }
+}
+
+function hasNonStandardInputReasons(asset: {
+  non_standard_input_reasons?: unknown
+}): boolean {
+  const reasons = asset.non_standard_input_reasons
+
+  return (
+    reasons != null &&
+    typeof reasons === 'object' &&
+    Object.keys(reasons).length > 0
+  )
 }

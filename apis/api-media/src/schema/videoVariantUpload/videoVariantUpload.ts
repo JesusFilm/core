@@ -92,6 +92,10 @@ export const VideoVariantUpload = builder.prismaObject('VideoVariantUpload', {
     height: t.exposeInt('height'),
     r2AssetId: t.exposeID('r2AssetId'),
     muxVideoId: t.exposeID('muxVideoId'),
+    muxNonStandardInputDetectedAt: t.expose('muxNonStandardInputDetectedAt', {
+      type: 'Date',
+      nullable: true
+    }),
     videoVariantId: t.exposeID('videoVariantId'),
     errorMessage: t.exposeString('errorMessage'),
     createdAt: t.expose('createdAt', { type: 'Date', nullable: false }),
