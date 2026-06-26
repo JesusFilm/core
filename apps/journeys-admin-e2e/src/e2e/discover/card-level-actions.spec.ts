@@ -225,7 +225,6 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.clickSelectImageBtn() // Select Plus icon to add the Image
     await cardLevelActionPage.selectFirstImageFromGalleryForFooter() //Select first image from the gallery for the Footer section
     await cardLevelActionPage.valdiateSelectedImageWithDeleteIcon() //Verifying the Selected Image with Delete icon is display
-    await cardLevelActionPage.closeToolDrawerForFooterImage() // Close the tool drawer after selected the Image
     await cardLevelActionPage.validateSelectedImageWithEditIcon() //Verifying the Selected image is showing under Logo section with edit button
     await cardLevelActionPage.expandJourneyAppearance('Display Title') // clicking on the 'Display Title' tab from the tab list of footer properties drawer
     await cardLevelActionPage.enterDisplayTitleForFooter(footerTitle) // Enter Display title for the Footer Section
@@ -240,7 +239,6 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.validateWebsiteFooterSectionInCard(footerTitle) //Verifying the Selected Image, Display Title and menu icon are showing at the top of the card
     await cardLevelActionPage.expandJourneyAppearance('Menu') // clicking on the 'Menu' tab from the tab list of footer properties drawer
     await cardLevelActionPage.clickCreateMenuCardButtonInMenuFooter() //Click create menu card button to create menu card
-    await cardLevelActionPage.clickleftSideArrowIcon() //Click Left Chevron button to navigate to react flow panel
     await cardLevelActionPage.validateMenuCardInReactFlow() //Verifying the Menu card in react flow panel
   })
 })

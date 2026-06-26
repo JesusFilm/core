@@ -330,10 +330,7 @@ export class JourneyPage {
       await this.page
         .locator('div[data-testid="LayeredViewDrawer"] .MuiBackdrop-root')
         .first()
-        // the backdrop sits behind the floating card (z-index -1), so its
-        // centre is covered by the card; click the exposed dimmed margin
-        // (top-left) to dismiss, as a user would
-        .click({ position: { x: 40, y: 40 } })
+        .click()
       await expect(
         this.page.locator('div[data-testid="EditorCanvas"]')
       ).toBeHidden({ timeout: thirtySecondsTimeout })
@@ -356,9 +353,7 @@ export class JourneyPage {
     await this.page
       .locator('div[data-testid="LayeredViewDrawer"] .MuiBackdrop-root')
       .first()
-      // click the exposed dimmed margin (top-left); the backdrop's centre is
-      // covered by the floating card (z-index -1)
-      .click({ position: { x: 40, y: 40 } })
+      .click()
     await expect(
       this.page.locator('div[data-testid="EditorCanvas"]')
     ).toBeHidden({ timeout: thirtySecondsTimeout })
