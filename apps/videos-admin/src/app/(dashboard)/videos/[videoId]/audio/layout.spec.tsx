@@ -194,6 +194,10 @@ describe('ClientLayout', () => {
               status: 'failed',
               videoId: 'video123',
               languageId: '184631',
+              language: {
+                id: '184631',
+                name: [{ value: 'Upload English' }]
+              },
               edition: 'base',
               originalFilename: 'test-video.mp4',
               errorMessage: 'Mux video processing errored',
@@ -228,7 +232,8 @@ describe('ClientLayout', () => {
               'failed'
             ]
           },
-          limit: 100
+          limit: 100,
+          languageId: '529'
         },
         reobserve: vi.fn(),
         previousData: undefined
@@ -258,11 +263,13 @@ describe('ClientLayout', () => {
               'failed'
             ]
           },
-          limit: 100
+          limit: 100,
+          languageId: '529'
         }
       })
     )
-    expect(screen.getByText('Language 184631')).toBeTruthy()
+    expect(screen.getByText('Upload English')).toBeTruthy()
+    expect(screen.getByText(/184631/)).toBeTruthy()
     expect(screen.getByText('Mux video processing errored')).toBeTruthy()
   })
 

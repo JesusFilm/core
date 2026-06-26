@@ -5,12 +5,13 @@ import { graphql } from '@core/shared/gql'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { queue as processVideoUploadsQueue } from '../../workers/processVideoUploads/queue'
-import { createVideoFromUrl } from '../mux/video/service'
+import { createVideoFromUrl, getVideo } from '../mux/video/service'
 
 vi.mock('../mux/video/service', async () => ({
   ...(await vi.importActual('../mux/video/service')),
   createVideoFromUrl: vi.fn().mockResolvedValue({ id: 'mux-asset-id' }),
-  getMaxResolutionValue: vi.fn().mockReturnValue('2160p')
+  getMaxResolutionValue: vi.fn().mockReturnValue('2160p'),
+  getVideo: vi.fn().mockResolvedValue({ status: 'processing' })
 }))
 
 vi.mock('../../workers/processVideoUploads/queue', () => ({
@@ -35,6 +36,7 @@ describe('videoVariantUpload lifecycle API', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     ;(createVideoFromUrl as Mock).mockResolvedValue({ id: 'mux-asset-id' })
+    ;(getVideo as Mock).mockResolvedValue({ status: 'processing' })
     ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
       id: 'role-id',
       userId: 'testUserId',
@@ -775,6 +777,147 @@ describe('videoVariantUpload lifecycle API', () => {
         status: 'failed',
         errorMessage: 'Upload is missing required metadata'
       }
+    })
+  })
+
+  it('marks an existing Mux upload failed when retry finds an invalid Mux asset', async () => {
+    const RESUME_UPLOAD = graphql(`
+      mutation ResumeVideoVariantUpload($id: ID!) {
+        videoVariantUploadResume(id: $id) {
+          id
+          status
+          errorMessage
+        }
+      }
+    `)
+
+    prismaMock.videoVariantUpload.findUnique.mockResolvedValueOnce({
+      id: 'upload-id',
+      status: 'muxCreated',
+      videoId: 'video-id',
+      edition: 'base',
+      languageId: '529',
+      version: 1,
+      published: true,
+      durationMs: 10000,
+      duration: 10,
+      width: 1920,
+      height: 1080,
+      muxVideoId: 'mux-id',
+      muxVideo: {
+        id: 'mux-id',
+        assetId: 'invalid-asset-id',
+        readyToStream: false,
+        playbackId: null
+      }
+    } as any)
+    ;(getVideo as Mock).mockRejectedValue(
+      new Error(
+        '400 {"error":{"type":"invalid_parameters","messages":["Failed to parse ID"]}}'
+      )
+    )
+    prismaMock.videoVariantUpload.update.mockResolvedValue({} as any)
+    prismaMock.videoVariantUpload.findUniqueOrThrow.mockResolvedValue({
+      id: 'upload-id',
+      status: 'failed',
+      errorMessage:
+        'Mux asset lookup failed: 400 {"error":{"type":"invalid_parameters","messages":["Failed to parse ID"]}}'
+    } as any)
+
+    const result = await publisherClient({
+      document: RESUME_UPLOAD,
+      variables: { id: 'upload-id' }
+    })
+
+    expect(processVideoUploadsQueue.add).not.toHaveBeenCalled()
+    expect(prismaMock.videoVariantUpload.update).toHaveBeenCalledWith({
+      where: { id: 'upload-id' },
+      data: {
+        status: 'failed',
+        errorMessage:
+          'Mux asset lookup failed: 400 {"error":{"type":"invalid_parameters","messages":["Failed to parse ID"]}}'
+      }
+    })
+    expect(result).toHaveProperty('data.videoVariantUploadResume', {
+      id: 'upload-id',
+      status: 'failed',
+      errorMessage:
+        'Mux asset lookup failed: 400 {"error":{"type":"invalid_parameters","messages":["Failed to parse ID"]}}'
+    })
+  })
+
+  it('refreshes Mux status and finalizes when retry finds the asset is ready', async () => {
+    const RESUME_UPLOAD = graphql(`
+      mutation ResumeVideoVariantUpload($id: ID!) {
+        videoVariantUploadResume(id: $id) {
+          id
+          status
+          videoVariantId
+        }
+      }
+    `)
+
+    prismaMock.videoVariantUpload.findUnique.mockResolvedValueOnce({
+      id: 'upload-id',
+      status: 'muxCreated',
+      videoId: 'video-id',
+      edition: 'base',
+      languageId: '529',
+      version: 1,
+      published: true,
+      durationMs: 10000,
+      duration: 10,
+      width: 1920,
+      height: 1080,
+      muxVideoId: 'mux-id',
+      muxVideo: {
+        id: 'mux-id',
+        assetId: 'mux-asset-id',
+        readyToStream: false,
+        playbackId: null
+      }
+    } as any)
+    ;(getVideo as Mock).mockResolvedValue({
+      id: 'mux-asset-id',
+      status: 'ready',
+      playback_ids: [{ id: 'playback-id' }],
+      duration: 11.2
+    })
+    prismaMock.video.findUnique.mockResolvedValue({ slug: 'video-slug' } as any)
+    prismaMock.videoVariant.findFirst.mockResolvedValue({
+      id: 'variant-id',
+      slug: 'video-slug/en'
+    } as any)
+    prismaMock.videoVariant.update.mockResolvedValue({
+      id: 'variant-id'
+    } as any)
+    prismaMock.videoVariantUpload.update.mockResolvedValue({} as any)
+    prismaMock.videoVariantUpload.findUniqueOrThrow.mockResolvedValue({
+      id: 'upload-id',
+      status: 'variantCreated',
+      videoVariantId: 'variant-id'
+    } as any)
+
+    const result = await publisherClient({
+      document: RESUME_UPLOAD,
+      variables: { id: 'upload-id' }
+    })
+
+    expect(getVideo).toHaveBeenCalledWith('mux-asset-id', false)
+    expect(prismaMock.muxVideo.update).toHaveBeenCalledWith({
+      where: { id: 'mux-id' },
+      data: {
+        playbackId: 'playback-id',
+        readyToStream: true,
+        duration: 12,
+        downloadable: true
+      }
+    })
+    expect(processVideoUploadsQueue.add).not.toHaveBeenCalled()
+    expect(result).toHaveProperty('data.videoVariantUploadResume', {
+      id: 'upload-id',
+      status: 'variantCreated',
+      videoVariantId: 'variant-id'
     })
   })
 
