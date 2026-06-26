@@ -111,9 +111,7 @@ describe('RestrictAutoTranslations', () => {
     )
 
     await waitFor(() => {
-      expect(
-        screen.getByLabelText('Restrict translations')
-      ).not.toBeChecked()
+      expect(screen.getByLabelText('Restrict translations')).not.toBeChecked()
     })
   })
 
@@ -125,9 +123,7 @@ describe('RestrictAutoTranslations', () => {
     )
 
     await waitFor(() => {
-      const switchInput = screen.getByLabelText(
-        'Restrict translations'
-      )
+      const switchInput = screen.getByLabelText('Restrict translations')
       expect(switchInput).toBeChecked()
       expect(switchInput).toBeDisabled()
       expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
