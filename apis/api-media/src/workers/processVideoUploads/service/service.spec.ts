@@ -230,4 +230,112 @@ describe('processVideoUploads service', () => {
     expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
     expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
   })
+
+  it('marks the upload when Mux reports non-standard input reasons', async () => {
+    const uploadJob = {
+      data: {
+        ...mockJob.data,
+        uploadId: 'upload-id'
+      }
+    } as Job<ProcessVideoUploadJobData>
+
+    prismaMock.muxVideo.findUnique.mockResolvedValue({
+      id: 'mux-video-id',
+      assetId: 'asset-id'
+    } as any)
+    prismaMock.videoVariantUpload.findUnique.mockResolvedValue({
+      id: 'upload-id',
+      muxNonStandardInputDetectedAt: null
+    } as any)
+    ;(getVideo as Mock).mockResolvedValue({
+      status: 'errored',
+      playback_ids: [],
+      non_standard_input_reasons: { video_codec: 'hevc' }
+    })
+    prismaMock.videoVariantUpload.update.mockResolvedValue({} as any)
+
+    await service(uploadJob, mockLogger)
+
+    expect(prismaMock.videoVariantUpload.update).toHaveBeenCalledWith({
+      where: { id: 'upload-id' },
+      data: { muxNonStandardInputDetectedAt: expect.any(Date) }
+    })
+    expect(prismaMock.videoVariantUpload.update).toHaveBeenCalledWith({
+      where: { id: 'upload-id' },
+      data: {
+        status: 'failed',
+        errorMessage: 'Mux video processing errored'
+      }
+    })
+  })
+
+  it('does not mark the upload when Mux reports standard input', async () => {
+    const uploadJob = {
+      data: {
+        ...mockJob.data,
+        uploadId: 'upload-id'
+      }
+    } as Job<ProcessVideoUploadJobData>
+
+    prismaMock.muxVideo.findUnique.mockResolvedValue({
+      id: 'mux-video-id',
+      assetId: 'asset-id'
+    } as any)
+    prismaMock.videoVariantUpload.findUnique.mockResolvedValue({
+      id: 'upload-id',
+      muxNonStandardInputDetectedAt: null
+    } as any)
+    ;(getVideo as Mock).mockResolvedValue({
+      status: 'errored',
+      playback_ids: []
+    })
+    prismaMock.videoVariantUpload.update.mockResolvedValue({} as any)
+
+    await service(uploadJob, mockLogger)
+
+    const nonStandardUpdateCalls = prismaMock.videoVariantUpload.update.mock.calls.filter(
+      ([call]) =>
+        Object.prototype.hasOwnProperty.call(
+          call.data,
+          'muxNonStandardInputDetectedAt'
+        )
+    )
+    expect(nonStandardUpdateCalls).toHaveLength(0)
+  })
+
+  it('does not rewrite an upload already marked as Mux non-standard input', async () => {
+    const uploadJob = {
+      data: {
+        ...mockJob.data,
+        uploadId: 'upload-id'
+      }
+    } as Job<ProcessVideoUploadJobData>
+
+    prismaMock.muxVideo.findUnique.mockResolvedValue({
+      id: 'mux-video-id',
+      assetId: 'asset-id'
+    } as any)
+    prismaMock.videoVariantUpload.findUnique.mockResolvedValue({
+      id: 'upload-id',
+      muxNonStandardInputDetectedAt: new Date('2026-06-18T00:00:00.000Z')
+    } as any)
+    ;(getVideo as Mock).mockResolvedValue({
+      status: 'errored',
+      playback_ids: [],
+      non_standard_input_reasons: { video_codec: 'hevc' }
+    })
+    prismaMock.videoVariantUpload.update.mockResolvedValue({} as any)
+
+    await service(uploadJob, mockLogger)
+
+    const nonStandardUpdateCalls = prismaMock.videoVariantUpload.update.mock.calls.filter(
+      ([call]) =>
+        Object.prototype.hasOwnProperty.call(
+          call.data,
+          'muxNonStandardInputDetectedAt'
+        )
+    )
+    expect(nonStandardUpdateCalls).toHaveLength(0)
+  })
+
 })

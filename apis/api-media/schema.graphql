@@ -1562,6 +1562,7 @@ type VideoVariantUpload {
   height: Int
   r2AssetId: ID
   muxVideoId: ID
+  muxNonStandardInputDetectedAt: Date
   videoVariantId: ID
   errorMessage: String
   createdAt: Date!
