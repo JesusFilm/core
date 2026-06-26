@@ -652,11 +652,12 @@ describe('CopyToTeamDialog', () => {
       expect(handleCloseMenuMock).toHaveBeenCalled()
     })
 
-    it('defers the team switch until the dialog closes when translation is enabled', async () => {
-      // NES-1636: switching teams immediately refetches GetAdminJourneys and
-      // unmounts the consumer that owns the translation subscription before it
-      // completes, so the copied journey lands untranslated. The switch must be
-      // held until the consumer closes the dialog on completion.
+    it('does not switch teams for the translation path — the consumer owns it', async () => {
+      // NES-1636: switching teams here refetches GetAdminJourneys and unmounts
+      // the consumer that owns the translation subscription before it finishes,
+      // so the copied journey lands untranslated. For the translation path the
+      // dialog must NOT switch at all; the consumer switches on its own
+      // onComplete (success only). The dialog only switches for a plain copy.
       //
       // Clear leaked active-team state so TeamProvider doesn't fire its own
       // mount-sync updateLastActiveTeamId and pollute the assertion below.
@@ -802,16 +803,14 @@ describe('CopyToTeamDialog', () => {
         )
       )
 
-      // Team switch is deferred: the dialog is still open mid-translation.
+      // The dialog does not switch teams on the translation path...
       expect(updateLastActiveTeamIdMock.result).not.toHaveBeenCalled()
       expect(handleCloseMenuMock).not.toHaveBeenCalled()
 
-      // Consumer closes the dialog when the translation subscription completes.
+      // ...not even once the consumer closes the dialog on completion — the
+      // consumer is responsible for the success-only switch.
       rerender(ui(false))
-
-      await waitFor(() =>
-        expect(updateLastActiveTeamIdMock.result).toHaveBeenCalled()
-      )
+      expect(updateLastActiveTeamIdMock.result).not.toHaveBeenCalled()
     })
   })
 

@@ -6,6 +6,7 @@ import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useJourneyAiTranslateSubscription } from '@core/journeys/ui/useJourneyAiTranslateSubscription'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import { useUpdateActiveTeam } from '@core/journeys/ui/useUpdateActiveTeam'
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
@@ -56,6 +57,7 @@ export function CopyToTeamMenuItem({
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
+  const updateTeamState = useUpdateActiveTeam()
   const [loading, setLoading] = useState(false)
   const [translationVariables, setTranslationVariables] = useState<
     | {
@@ -69,15 +71,10 @@ export function CopyToTeamMenuItem({
       }
     | undefined
   >(undefined)
+  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null)
   const { journey: journeyFromContext } = useJourney()
   const journeyData = journey ?? journeyFromContext
   const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
-
-  // The shared CopyToTeamDialog owns the team switch: it switches immediately
-  // for a plain copy, and defers the switch until it closes on completion for
-  // the translation flow (so the refetch doesn't unmount this component's
-  // subscription mid-translation — NES-1636). This component no longer
-  // switches teams itself.
 
   // Set up the subscription for translation
   const { data: translationData } = useJourneyAiTranslateSubscription({
@@ -95,9 +92,14 @@ export function CopyToTeamMenuItem({
       })
       setLoading(false)
       setTranslationVariables(undefined) // Reset to stop subscription
+
+      // Update team state when translation completes
+      if (selectedTeamId) {
+        updateTeamState(selectedTeamId)
+      }
       handleCloseMenu() // Close menu when translation completes
-      // Closing the dialog triggers its deferred switch to the destination team.
-      setDuplicateTeamDialogOpen(false)
+      setDuplicateTeamDialogOpen(false) // Close dialog when translation completes
+      setSelectedTeamId(null) // Reset selected team
     },
     onError(error) {
       enqueueSnackbar(error.message, {
@@ -108,6 +110,7 @@ export function CopyToTeamMenuItem({
       setTranslationVariables(undefined)
       handleCloseMenu() // Close menu on translation error
       setDuplicateTeamDialogOpen(false) // Close dialog on translation error
+      setSelectedTeamId(null) // Reset selected team
     }
   })
 
@@ -140,11 +143,14 @@ export function CopyToTeamMenuItem({
             variant: 'success',
             preventDuplicate: true
           })
-          // The dialog switches to the destination team and closes itself.
+          // The dialog switches to the destination team for a plain copy.
           handleCloseMenu()
           setDuplicateTeamDialogOpen(false)
           return
         }
+
+        // Store the team ID for later team state update when translation completes
+        setSelectedTeamId(teamId)
 
         const currentLanguageName =
           journeyData.language.name.find(({ primary }) => !primary)?.value ?? ''
@@ -199,12 +205,13 @@ export function CopyToTeamMenuItem({
           setHasOpenDialog?.(false)
           setDuplicateTeamDialogOpen(false)
           // Cancel any in-flight translation so closing the dialog stops the
-          // subscription cleanly instead of firing onComplete on a dismissed
-          // dialog (defensive: the wrapper hides the buttons and blocks
-          // backdrop/escape while translating, so this is not user-reachable
-          // mid-translation today).
+          // subscription cleanly and a stale selectedTeamId can't drive a
+          // later team switch (defensive: the wrapper hides the buttons and
+          // blocks backdrop/escape while translating, so this isn't
+          // user-reachable mid-translation today).
           setLoading(false)
           setTranslationVariables(undefined)
+          setSelectedTeamId(null)
         }}
         submitAction={handleDuplicateJourney}
         translationProgress={{

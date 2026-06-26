@@ -1,4 +1,3 @@
-import { useMutation } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import MenuItem from '@mui/material/MenuItem'
@@ -9,7 +8,7 @@ import Typography from '@mui/material/Typography'
 import { Formik, FormikHelpers } from 'formik'
 import sortBy from 'lodash/sortBy'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 import { boolean, object, string } from 'yup'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
@@ -17,8 +16,7 @@ import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { SUPPORTED_LANGUAGE_IDS } from '../../libs/useJourneyAiTranslateSubscription/supportedLanguages'
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
-import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
-import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
+import { useUpdateActiveTeam } from '../../libs/useUpdateActiveTeam'
 import { useTeam } from '../TeamProvider'
 import { TranslationDialogWrapper } from '../TranslationDialogWrapper'
 
@@ -87,11 +85,9 @@ export function CopyToTeamDialog({
   defaultToActiveTeam = false
 }: CopyToTeamDialogProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
-  const { query, setActiveTeam, activeTeam } = useTeam()
+  const { query, activeTeam } = useTeam()
   const teams = query?.data?.teams ?? []
-  const [updateLastActiveTeamId, { client }] =
-    useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
-  const [pendingTeamId, setPendingTeamId] = useState<string | null>(null)
+  const updateTeamState = useUpdateActiveTeam()
 
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
     languageId: '529',
@@ -99,35 +95,6 @@ export function CopyToTeamDialog({
       ids: [...SUPPORTED_LANGUAGE_IDS]
     }
   })
-
-  const updateTeamState = useCallback(
-    (teamId: string): void => {
-      setActiveTeam(teams.find((team) => team.id === teamId) ?? null)
-      void updateLastActiveTeamId({
-        variables: {
-          input: {
-            lastActiveTeamId: teamId
-          }
-        },
-        onCompleted() {
-          void client.refetchQueries({ include: ['GetAdminJourneys'] })
-        }
-      })
-    },
-    [setActiveTeam, teams, updateLastActiveTeamId, client]
-  )
-
-  // When translation is enabled the team switch is deferred (see handleSubmit)
-  // and applied here, once the consumer closes the dialog on completion.
-  // Switching immediately would refetch GetAdminJourneys and unmount the
-  // consumer that owns the translation subscription before it finishes,
-  // leaving the copied journey untranslated (NES-1636).
-  useEffect(() => {
-    if (!open && pendingTeamId != null) {
-      updateTeamState(pendingTeamId)
-      setPendingTeamId(null)
-    }
-  }, [open, pendingTeamId, updateTeamState])
 
   async function handleSubmit(
     values: FormValues,
@@ -142,15 +109,17 @@ export function CopyToTeamDialog({
     // Always reset the form after submission
     resetForm()
 
-    if (values.showTranslation) {
-      // Defer the team switch until the translation subscription completes and
-      // the consumer closes the dialog (open -> false). See the effect above.
-      setPendingTeamId(values.teamSelect)
-    } else {
-      // No translation: switch teams and close the dialog immediately.
+    if (!values.showTranslation) {
+      // Plain copy: switch to the destination team and close immediately.
       updateTeamState(values.teamSelect)
       onClose()
+      return
     }
+
+    // Translation: the consumer switches the team and closes the dialog only
+    // when the subscription completes successfully. Switching here would both
+    // fire on an error/cancel close and refetch GetAdminJourneys, unmounting
+    // the consumer that owns the translation subscription mid-run (NES-1636).
   }
 
   const baseLanguageShape = {
