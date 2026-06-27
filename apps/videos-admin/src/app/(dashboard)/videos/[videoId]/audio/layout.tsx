@@ -5,10 +5,8 @@ import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import PublishIcon from '@mui/icons-material/Publish'
-import ReplayIcon from '@mui/icons-material/Replay'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
@@ -23,6 +21,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { graphql } from '@core/shared/gql'
 
 import { PublishedChip } from '../../../../../components/PublishedChip'
+import {
+  IncompleteVideoVariantUploadItems,
+  incompleteUploadStatuses,
+  type VideoVariantUploadRow
+} from './_IncompleteVideoVariantUploadItems'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 const GET_ADMIN_VIDEO_VARIANTS = graphql(`
@@ -55,6 +58,7 @@ const GET_VIDEO_VARIANT_UPLOADS = graphql(`
     videoVariantUploads(input: $input, limit: $limit) {
       id
       source
+      sourceKey
       status
       videoId
       languageId
@@ -66,7 +70,10 @@ const GET_VIDEO_VARIANT_UPLOADS = graphql(`
       }
       edition
       originalFilename
+      contentType
+      contentLength
       errorMessage
+      r2AssetId
       muxVideoId
       muxNonStandardInputDetectedAt
       videoVariantId
@@ -98,154 +105,6 @@ const RESUME_VIDEO_VARIANT_UPLOAD = graphql(`
   }
 `)
 
-type VideoVariantUploadStatus =
-  | 'created'
-  | 'r2Prepared'
-  | 'r2Uploaded'
-  | 'muxCreated'
-  | 'muxReady'
-  | 'variantCreated'
-  | 'failed'
-
-interface VideoVariantUploadRow {
-  id: string
-  source: string
-  status: VideoVariantUploadStatus
-  videoId: string
-  languageId: string
-  language?: {
-    id: string
-    name?: Array<{ value?: string | null }> | null
-  } | null
-  edition: string
-  originalFilename?: string | null
-  errorMessage?: string | null
-  muxVideoId?: string | null
-  muxNonStandardInputDetectedAt?: string | null
-  videoVariantId?: string | null
-  updatedAt?: string | null
-  createdAt?: string | null
-}
-
-const incompleteUploadStatuses: VideoVariantUploadStatus[] = [
-  'created',
-  'r2Prepared',
-  'r2Uploaded',
-  'muxCreated',
-  'muxReady',
-  'failed'
-]
-
-const STANDARD_MUX_PROCESSING_STALE_MS = 30 * 60 * 1000
-const NON_STANDARD_MUX_PROCESSING_STALE_MS = 2 * 60 * 60 * 1000
-
-interface IncompleteUploadDisplayState {
-  label: string
-  color: 'error' | 'info' | 'warning'
-  message: string | null
-  action: 'addAgain' | 'resume' | null
-  actionLabel: string | null
-}
-
-function getMuxProcessingStaleMs(upload: VideoVariantUploadRow): number {
-  return upload.muxNonStandardInputDetectedAt == null
-    ? STANDARD_MUX_PROCESSING_STALE_MS
-    : NON_STANDARD_MUX_PROCESSING_STALE_MS
-}
-
-function getMuxProcessingStaleMessage(upload: VideoVariantUploadRow): string {
-  const staleHours = getMuxProcessingStaleMs(upload) / (60 * 60 * 1000)
-
-  if (staleHours >= 1) {
-    return `Processing has not updated in over ${staleHours} hours. Retry processing.`
-  }
-
-  const staleMinutes = getMuxProcessingStaleMs(upload) / (60 * 1000)
-  return `Processing has not updated in over ${staleMinutes} minutes. Retry processing.`
-}
-
-function isStaleMuxProcessing(upload: VideoVariantUploadRow): boolean {
-  if (upload.status !== 'muxCreated' || upload.updatedAt == null) return false
-
-  const updatedAtMs = Date.parse(upload.updatedAt)
-  if (!Number.isFinite(updatedAtMs)) return false
-
-  return Date.now() - updatedAtMs > getMuxProcessingStaleMs(upload)
-}
-
-function getUploadLanguageLabel(upload: VideoVariantUploadRow): string {
-  return (
-    upload.language?.name?.[0]?.value?.trim() || `Language ${upload.languageId}`
-  )
-}
-
-function getIncompleteUploadDisplayState(
-  upload: VideoVariantUploadRow
-): IncompleteUploadDisplayState {
-  switch (upload.status) {
-    case 'created':
-    case 'r2Prepared':
-      return {
-        label: 'Upload not complete',
-        color: 'warning',
-        message:
-          'This upload cannot be resumed because the browser did not finish sending the file to R2. Add this audio language again.',
-        action: 'addAgain',
-        actionLabel: 'Add again'
-      }
-    case 'r2Uploaded':
-      return {
-        label: 'Ready to process',
-        color: 'warning',
-        message:
-          'The file uploaded successfully. Start processing to continue.',
-        action: 'resume',
-        actionLabel: 'Start processing'
-      }
-    case 'muxCreated':
-      if (isStaleMuxProcessing(upload)) {
-        return {
-          label: 'Stale',
-          color: 'warning',
-          message: getMuxProcessingStaleMessage(upload),
-          action: 'resume',
-          actionLabel: 'Retry'
-        }
-      }
-
-      return {
-        label: 'Processing',
-        color: 'info',
-        message: 'Mux is processing this upload. No action needed.',
-        action: null,
-        actionLabel: null
-      }
-    case 'muxReady':
-      return {
-        label: 'Ready to finalize',
-        color: 'info',
-        message: 'Mux is ready. Finalize this audio language.',
-        action: 'resume',
-        actionLabel: 'Finalize'
-      }
-    case 'failed':
-      return {
-        label: 'Failed',
-        color: 'error',
-        message: null,
-        action: 'resume',
-        actionLabel: 'Retry'
-      }
-    case 'variantCreated':
-      return {
-        label: 'Complete',
-        color: 'info',
-        message: null,
-        action: null,
-        actionLabel: null
-      }
-  }
-}
 export default function ClientLayout({
   children
 }: {
@@ -440,102 +299,6 @@ export default function ClientLayout({
     ]
   )
 
-  const renderIncompleteUploadItems = () => {
-    return incompleteUploads.map((upload) => {
-      const isResuming = resumingUploadId === upload.id
-      const displayState = getIncompleteUploadDisplayState(upload)
-
-      return (
-        <ListItem
-          key={upload.id}
-          sx={{
-            border: '1px solid',
-            borderColor: 'warning.light',
-            backgroundColor: 'background.default',
-            borderRadius: 1,
-            p: 1,
-            mb: 1,
-            minHeight: 66,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
-          }}
-        >
-          <Box sx={{ minWidth: 0 }}>
-            <Stack direction="row" gap={1} alignItems="center" flexWrap="wrap">
-              <Typography variant="body2" fontWeight={600}>
-                {getUploadLanguageLabel(upload)}
-              </Typography>
-              <Chip
-                size="small"
-                label={displayState.label}
-                color={displayState.color}
-              />
-            </Stack>
-            <Typography variant="caption" color="text.secondary">
-              {upload.language?.name?.[0]?.value != null
-                ? `${upload.languageId} • `
-                : ''}
-              {upload.edition} • {upload.source}
-              {upload.originalFilename != null
-                ? ` • ${upload.originalFilename}`
-                : ''}
-            </Typography>
-            {displayState.message != null && (
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ display: 'block' }}
-              >
-                {displayState.message}
-              </Typography>
-            )}
-            {upload.errorMessage != null && (
-              <Typography
-                variant="caption"
-                color="error.main"
-                sx={{ display: 'block' }}
-              >
-                {upload.errorMessage}
-              </Typography>
-            )}
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ display: 'block' }}
-            >
-              Upload id: {upload.id}
-            </Typography>
-          </Box>
-          {displayState.action != null && displayState.actionLabel != null && (
-            <Button
-              size="small"
-              variant="outlined"
-              startIcon={
-                isResuming ? undefined : displayState.action === 'addAgain' ? (
-                  <AddIcon />
-                ) : (
-                  <ReplayIcon />
-                )
-              }
-              disabled={resumingUploadId != null || isResumeRequestInFlight}
-              onClick={() => {
-                if (displayState.action === 'addAgain') {
-                  handleAddAudioLanguage()
-                  return
-                }
-
-                void handleResumeUpload(upload.id)
-              }}
-            >
-              {isResuming ? 'Working...' : displayState.actionLabel}
-            </Button>
-          )}
-        </ListItem>
-      )
-    })
-  }
-
   const renderContent = () => {
     if (loading) {
       return (
@@ -589,7 +352,13 @@ export default function ClientLayout({
         }}
       >
         <List disablePadding>
-          {renderIncompleteUploadItems()}
+          <IncompleteVideoVariantUploadItems
+            uploads={incompleteUploads}
+            resumingUploadId={resumingUploadId}
+            isResumeRequestInFlight={isResumeRequestInFlight}
+            onAddAudioLanguage={handleAddAudioLanguage}
+            onResumeUpload={(uploadId) => void handleResumeUpload(uploadId)}
+          />
           {(data?.adminVideo.variants ?? []).map((variant) => {
             const canPreview =
               variant.published &&
