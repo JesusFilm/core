@@ -228,7 +228,9 @@ resource "aws_eks_node_group" "az_2a_ondemand" {
     max_unavailable = 2
   }
   node_repair_config {
-    enabled = true
+    enabled                                 = true
+    max_parallel_nodes_repaired_percentage  = 10
+    max_unhealthy_node_threshold_percentage = 50
   }
   capacity_type = "ON_DEMAND"
 
