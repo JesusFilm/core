@@ -191,6 +191,7 @@ describe('ClientLayout', () => {
             {
               id: 'upload-old-failed',
               source: 'videos-admin',
+              sourceKey: 'source-key-1',
               status: 'failed',
               videoId: 'video123',
               languageId: '184631',
@@ -200,7 +201,10 @@ describe('ClientLayout', () => {
               },
               edition: 'base',
               originalFilename: 'test-video.mp4',
+              contentType: 'video/mp4',
+              contentLength: '12345',
               errorMessage: 'Mux video processing errored',
+              r2AssetId: 'r2-id',
               muxVideoId: 'mux-id',
               videoVariantId: null,
               updatedAt: '2026-06-18T00:00:00.000Z',
@@ -271,6 +275,122 @@ describe('ClientLayout', () => {
     expect(screen.getByText('Upload English')).toBeTruthy()
     expect(screen.getByText(/184631/)).toBeTruthy()
     expect(screen.getByText('Mux video processing errored')).toBeTruthy()
+    expect(screen.getByLabelText('view upload details')).toBeTruthy()
+    expect(screen.getByLabelText('copy upload details')).toBeTruthy()
+    expect(screen.queryByText(/Upload id:/)).toBeNull()
+  })
+
+  it('copies persisted upload debug details to the clipboard', async () => {
+    const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText },
+      configurable: true
+    })
+
+    mockedUseQuery
+      .mockReturnValueOnce({
+        data: {
+          adminVideo: {
+            id: 'video123',
+            slug: 'test-video',
+            published: true,
+            variants: mockVideoVariants
+          }
+        },
+        loading: false,
+        error: undefined,
+        fetchMore: vi.fn(),
+        refetch: mockRefetch,
+        networkStatus: NetworkStatus.ready,
+        client: {} as any,
+        called: true,
+        startPolling: vi.fn(),
+        stopPolling: vi.fn(),
+        subscribeToMore: vi.fn(),
+        updateQuery: vi.fn(),
+        observable: {} as any,
+        variables: { id: 'video123' },
+        reobserve: vi.fn(),
+        previousData: undefined
+      })
+      .mockReturnValueOnce({
+        data: {
+          videoVariantUploads: [
+            {
+              id: 'upload-debug-id',
+              source: 'qa-528-test-data',
+              sourceKey: 'debug-source-key',
+              status: 'muxCreated',
+              videoId: 'video123',
+              languageId: '10685',
+              edition: 'base',
+              originalFilename: 'test-video.mp4',
+              contentType: 'video/mp4',
+              contentLength: '12345',
+              errorMessage: null,
+              r2AssetId: 'r2-debug-id',
+              muxVideoId: 'mux-debug-id',
+              muxNonStandardInputDetectedAt: null,
+              videoVariantId: null,
+              updatedAt: '2026-06-18T00:45:00.000Z',
+              createdAt: '2026-06-18T00:30:00.000Z'
+            }
+          ]
+        },
+        loading: false,
+        error: undefined,
+        fetchMore: vi.fn(),
+        refetch: mockRefetch,
+        networkStatus: NetworkStatus.ready,
+        client: {} as any,
+        called: true,
+        startPolling: vi.fn(),
+        stopPolling: vi.fn(),
+        subscribeToMore: vi.fn(),
+        updateQuery: vi.fn(),
+        observable: {} as any,
+        variables: {},
+        reobserve: vi.fn(),
+        previousData: undefined
+      })
+
+    render(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByLabelText('copy upload details'))
+
+    await waitFor(() => {
+      expect(writeText).toHaveBeenCalledWith(
+        [
+          'Upload ID: upload-debug-id',
+          'Status: muxCreated',
+          'Video ID: video123',
+          'Language ID: 10685',
+          'Edition: base',
+          'Source: qa-528-test-data',
+          'Source key: debug-source-key',
+          'Original filename: test-video.mp4',
+          'Content type: video/mp4',
+          'Content length: 12345',
+          'R2 asset ID: r2-debug-id',
+          'Mux video ID: mux-debug-id',
+          'Video variant ID: none',
+          'Mux non-standard input detected at: none',
+          'Created at: 2026-06-18T00:30:00.000Z',
+          'Updated at: 2026-06-18T00:45:00.000Z',
+          'Error message: none'
+        ].join('\n')
+      )
+    })
+    expect(mockEnqueueSnackbar).toHaveBeenCalledWith('Copied upload details', {
+      variant: 'success'
+    })
   })
 
   it('shows lifecycle-specific labels, messages, and actions for incomplete uploads', () => {
@@ -442,6 +562,7 @@ describe('ClientLayout', () => {
     expect(
       screen.getByText('Mux is processing this upload. No action needed.')
     ).toBeTruthy()
+    expect(screen.getByText('Processing for 15 minutes')).toBeTruthy()
     expect(screen.getByText('Stale')).toBeTruthy()
     expect(
       screen.getByText(
@@ -786,6 +907,7 @@ describe('ClientLayout', () => {
     expect(screen.getByText('Language fresh-language')).toBeTruthy()
     expect(screen.getByText('Language stale-language')).toBeTruthy()
     expect(screen.getByText('Processing')).toBeTruthy()
+    expect(screen.getByText('Processing for 31 minutes')).toBeTruthy()
     expect(screen.getByText('Stale')).toBeTruthy()
     expect(
       screen.getByText(
