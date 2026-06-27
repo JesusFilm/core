@@ -2914,7 +2914,7 @@ describe('video', () => {
 
         expect(prismaMock.video.update).toHaveBeenCalledWith(
           expect.objectContaining({
-            where: { id: 'id' },
+            where: { id: 'id', restrictTranslations: false },
             data: expect.not.objectContaining({
               restrictTranslations: false
             })
@@ -2923,6 +2923,61 @@ describe('video', () => {
         expect(result).toHaveProperty('data.videoUpdate', {
           id: 'id'
         })
+      })
+
+      it('should not update after restrictTranslations is enabled by a concurrent request', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          published: true,
+          publishedAt: null,
+          slug: 'slug',
+          restrictTranslations: false,
+          variants: []
+        } as unknown as Video)
+        prismaMock.video.update.mockRejectedValue(
+          new Prisma.PrismaClientKnownRequestError('No Video found', {
+            code: 'P2025',
+            clientVersion: 'test'
+          })
+        )
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              label: VideoLabel.episode,
+              restrictTranslations: false
+            }
+          }
+        })
+
+        expect(prismaMock.video.update).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: { id: 'id', restrictTranslations: false },
+            data: expect.objectContaining({
+              label: 'episode'
+            })
+          })
+        )
+        expect(prismaMock.video.update).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.not.objectContaining({
+              restrictTranslations: false
+            })
+          })
+        )
+        expect(result).toHaveProperty('data', null)
+        expect(result).toHaveProperty('errors')
+        expect((result as any).errors?.[0]?.message).toBe(
+          'Translation restriction cannot be disabled once enabled'
+        )
       })
 
       it('should update video with child relations when childIds are provided', async () => {
