@@ -152,7 +152,16 @@ const coreUploadDebugLabels = new Set([
 
 function formatUploadDebugValue(value: unknown): string {
   if (value == null || value === '') return 'none'
-  return String(value)
+  if (
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'bigint' ||
+    typeof value === 'boolean'
+  ) {
+    return value.toString()
+  }
+
+  return JSON.stringify(value)
 }
 
 function getUploadDebugFields(upload: VideoVariantUploadRow): Array<{

@@ -21,12 +21,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { graphql } from '@core/shared/gql'
 
 import { PublishedChip } from '../../../../../components/PublishedChip'
+import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
+
 import {
   IncompleteVideoVariantUploadItems,
-  incompleteUploadStatuses,
-  type VideoVariantUploadRow
+  type VideoVariantUploadRow,
+  incompleteUploadStatuses
 } from './_IncompleteVideoVariantUploadItems'
-import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 const GET_ADMIN_VIDEO_VARIANTS = graphql(`
   query GetAdminVideoVariants($id: ID!, $languageId: ID) {
