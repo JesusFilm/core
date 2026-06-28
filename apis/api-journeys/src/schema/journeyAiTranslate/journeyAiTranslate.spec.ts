@@ -972,6 +972,59 @@ describe('journeyAiTranslateCreate mutation', () => {
     )
   })
 
+  it('collects and translates blocks nested deeper than one level under the card', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'wrapper1',
+          typename: 'MultiselectBlock',
+          parentBlockId: 'card1'
+        },
+        // A TypographyBlock two levels under the card (card → wrapper → text).
+        // The previous one-level collection would have missed this.
+        {
+          id: 'nestedtypo',
+          typename: 'TypographyBlock',
+          parentBlockId: 'wrapper1',
+          content: 'Nested text'
+        },
+        {
+          id: 'option1',
+          typename: 'MultiselectOptionBlock',
+          parentBlockId: 'wrapper1',
+          label: 'Opt'
+        }
+      ]
+    } as any)
+
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'nestedtypo', updates: { content: 'Texto anidado' } },
+        { blockId: 'option1', updates: { label: 'Opción' } }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'nestedtypo' }),
+        data: { content: 'Texto anidado' }
+      })
+    )
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'option1' }),
+        data: { label: 'Opción' }
+      })
+    )
+  })
+
   it('translates MultiselectOptionBlock labels nested under a MultiselectBlock', async () => {
     prismaMock.journey.findUnique.mockResolvedValueOnce({
       ...mockJourney,

@@ -116,24 +116,29 @@ function getTranslatableBlocksForCard(
   allBlocks: Block[],
   cardBlock: Block
 ): Block[] {
-  const cardChildren = allBlocks.filter(
-    (block) => block.parentBlockId === cardBlock.id
-  )
+  const childrenByParent = new Map<string, Block[]>()
+  for (const block of allBlocks) {
+    if (block.parentBlockId == null) continue
+    const siblings = childrenByParent.get(block.parentBlockId) ?? []
+    siblings.push(block)
+    childrenByParent.set(block.parentBlockId, siblings)
+  }
 
-  // Option blocks are grandchildren of the card: RadioOptionBlocks hang off a
-  // RadioQuestionBlock and MultiselectOptionBlocks hang off a MultiselectBlock,
-  // both of which are direct card children. Collect them so their labels are
-  // translated too.
-  const nestedOptionBlocks = cardChildren.flatMap((child) =>
-    allBlocks.filter(
-      (block) =>
-        block.parentBlockId === child.id &&
-        (block.typename === 'RadioOptionBlock' ||
-          block.typename === 'MultiselectOptionBlock')
-    )
-  )
+  // Collect every descendant of the card, at any depth, so nested translatable
+  // content (e.g. RadioOptionBlocks under a RadioQuestionBlock, or
+  // MultiselectOptionBlocks under a MultiselectBlock) is never missed regardless
+  // of how deeply it is nested.
+  const descendants: Block[] = []
+  const stack = [...(childrenByParent.get(cardBlock.id) ?? [])]
+  while (stack.length > 0) {
+    const block = stack.pop()
+    if (block == null) continue
+    descendants.push(block)
+    const children = childrenByParent.get(block.id)
+    if (children != null) stack.push(...children)
+  }
 
-  return [...cardChildren, ...nestedOptionBlocks].filter((block) => {
+  return descendants.filter((block) => {
     const fields = getTranslatableFields(block)
     return Object.values(fields).some((v) => v != null && v !== '')
   })
