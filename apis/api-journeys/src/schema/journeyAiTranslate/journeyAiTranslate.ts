@@ -139,13 +139,21 @@ function getTranslatableBlocksForCard(
   })
 }
 
-// The model is asked to echo back one structured-output entry per block it is
-// given. It probabilistically omits some, so we re-request only the blocks that
-// were not translated, up to this many total attempts per card.
-const MAX_CARD_TRANSLATION_ATTEMPTS = 3
+// Per-card translation is resilient to the model omitting whole blocks OR
+// individual fields from its structured output. We make a few batched passes
+// re-requesting only the still-missing fields, then escalate any stubborn block
+// to its own isolated request — a one-block request cannot be dropped off the
+// tail of a long array or merged into a sibling's entry.
+const MAX_CARD_BATCH_ATTEMPTS = 3
+const MAX_PER_BLOCK_ATTEMPTS = 2
+
+interface BlockTranslationRequest {
+  block: Block
+  fields: TranslatableBlockField[]
+}
 
 interface TranslateBlocksArgs {
-  blocksToTranslate: Block[]
+  requests: BlockTranslationRequest[]
   allBlocks: Block[]
   cardBlockId: string
   journeyId: string
@@ -161,9 +169,28 @@ interface TranslateBlocksArgs {
 }
 
 /**
- * Streams translations for a specific set of blocks and writes each validated
- * result to the database. Returns the IDs of the blocks that were actually
- * translated so the caller can re-request the ones the model omitted.
+ * The translatable fields of a block that actually carry a source value,
+ * restricted to the fields allowed for that block type. These are the fields a
+ * complete translation must cover.
+ */
+function getRequiredFields(block: Block): TranslatableBlockField[] {
+  const allowedFields =
+    allowedTranslationFieldsByBlockType[
+      block.typename as keyof typeof allowedTranslationFieldsByBlockType
+    ]
+  if (allowedFields == null) return []
+
+  const fields = getTranslatableFields(block)
+  return allowedFields.filter((field) => {
+    const value = fields[field]
+    return value != null && value !== ''
+  })
+}
+
+/**
+ * Streams translations for a specific set of (block, fields) requests and writes
+ * each validated result to the database. Returns, per block, the set of fields
+ * that were actually written this pass so the caller can re-request the rest.
  *
  * Always resolves (never rejects) — although a fallback-eligible stream error is
  * re-thrown internally to advance the session to the next model, the outer
@@ -171,7 +198,7 @@ interface TranslateBlocksArgs {
  * translate and leaves the rest for the caller's retry loop.
  */
 async function translateBlocksOnce({
-  blocksToTranslate,
+  requests,
   allBlocks,
   cardBlockId,
   journeyId,
@@ -181,11 +208,24 @@ async function translateBlocksOnce({
   targetLanguageName,
   onBlockUpdated,
   session
-}: TranslateBlocksArgs): Promise<Set<string>> {
-  const allowedBlockIds = new Set(blocksToTranslate.map((b) => b.id))
-  const updatedBlockIds = new Set<string>()
-  const blocksInfo = blocksToTranslate
-    .map((block) => createTranslationInfo(block))
+}: TranslateBlocksArgs): Promise<Map<string, Set<TranslatableBlockField>>> {
+  const requestedFieldsByBlock = new Map(
+    requests.map((request) => [
+      request.block.id,
+      new Set<TranslatableBlockField>(request.fields)
+    ])
+  )
+  const writtenFields = new Map<string, Set<TranslatableBlockField>>()
+  const totalRequested = requests.reduce(
+    (sum, request) => sum + request.fields.length,
+    0
+  )
+  let totalWritten = 0
+
+  if (totalRequested === 0) return writtenFields
+
+  const blocksInfo = requests
+    .map((request) => createTranslationInfo(request.block, request.fields))
     .join('\n')
 
   const prompt = `Context from journey analysis:
@@ -199,7 +239,7 @@ ${hardenPrompt(cardContent)}
 Blocks to translate (use the EXACT IDs shown in square brackets as blockId):
 ${hardenPrompt(blocksInfo)}
 
-Return exactly one entry for every block ID listed above — do not skip, merge, or invent blocks. If a block does not need changes, still return it with its text translated.`
+Return exactly one entry for every block ID listed above, and translate every field shown for it — do not skip, merge, or invent blocks or fields.`
 
   try {
     await session.execute(async (model, abortSignal) => {
@@ -229,8 +269,8 @@ Return exactly one entry for every block ID listed above — do not skip, merge,
         try {
           const cleanBlockId = item.blockId.replace(/^\[|\]$/g, '')
 
-          if (!allowedBlockIds.has(cleanBlockId)) continue
-          if (updatedBlockIds.has(cleanBlockId)) continue
+          const requestedFields = requestedFieldsByBlock.get(cleanBlockId)
+          if (requestedFields == null) continue
 
           const blockToUpdate = allBlocks.find((b) => b.id === cleanBlockId)
           if (blockToUpdate == null) continue
@@ -241,13 +281,33 @@ Return exactly one entry for every block ID listed above — do not skip, merge,
           )
           if (validatedUpdates == null) continue
 
+          // Only write fields we asked for this pass and have not already
+          // written, so a later retry can't overwrite an earlier field's value.
+          const alreadyWritten =
+            writtenFields.get(cleanBlockId) ??
+            new Set<TranslatableBlockField>()
+          const updates = Object.fromEntries(
+            Object.entries(validatedUpdates).filter(
+              ([field]) =>
+                requestedFields.has(field as TranslatableBlockField) &&
+                !alreadyWritten.has(field as TranslatableBlockField)
+            )
+          ) as Partial<Record<TranslatableBlockField, string>>
+
+          if (Object.keys(updates).length === 0) continue
+
           await prisma.block.update({
             where: { id: cleanBlockId, journeyId },
-            data: validatedUpdates
+            data: updates
           })
 
-          updatedBlockIds.add(cleanBlockId)
-          onBlockUpdated?.(cleanBlockId, validatedUpdates)
+          for (const field of Object.keys(updates) as TranslatableBlockField[]) {
+            alreadyWritten.add(field)
+          }
+          writtenFields.set(cleanBlockId, alreadyWritten)
+          totalWritten += Object.keys(updates).length
+
+          onBlockUpdated?.(cleanBlockId, updates)
         } catch (updateError) {
           logger.error(
             { error: updateError, blockId: item.blockId },
@@ -259,9 +319,9 @@ Return exactly one entry for every block ID listed above — do not skip, merge,
       // The AI SDK reports stream failures to onError and ends the stream
       // instead of throwing, which silently truncates the array. Re-throw so a
       // fallback-eligible error (timeout/429/403) advances the session to the
-      // next model. Only escalate while blocks remain untranslated — a late
-      // error after every block landed is not worth a fallback round-trip.
-      if (streamError != null && updatedBlockIds.size < allowedBlockIds.size) {
+      // next model. Only escalate while fields remain untranslated — a late
+      // error after everything landed is not worth a fallback round-trip.
+      if (streamError != null && totalWritten < totalRequested) {
         throw streamError
       }
     })
@@ -269,7 +329,7 @@ Return exactly one entry for every block ID listed above — do not skip, merge,
     logger.warn({ error, cardBlockId }, 'Card translation attempt failed')
   }
 
-  return updatedBlockIds
+  return writtenFields
 }
 
 async function translateCardBlocks({
@@ -300,19 +360,46 @@ async function translateCardBlocks({
   if (blocksToTranslate.length === 0) return
 
   const blocksById = new Map(blocksToTranslate.map((b) => [b.id, b]))
-  const pendingBlockIds = new Set(blocksById.keys())
+  const requiredFieldsByBlock = new Map(
+    blocksToTranslate.map((b) => [b.id, getRequiredFields(b)])
+  )
+  const translatedFieldsByBlock = new Map<string, Set<TranslatableBlockField>>(
+    blocksToTranslate.map((b) => [b.id, new Set()])
+  )
 
-  for (
-    let attempt = 1;
-    attempt <= MAX_CARD_TRANSLATION_ATTEMPTS && pendingBlockIds.size > 0;
-    attempt++
-  ) {
-    const pendingBlocks = Array.from(pendingBlockIds, (id) =>
-      blocksById.get(id)
-    ).filter((block): block is Block => block != null)
+  const missingFieldsFor = (blockId: string): TranslatableBlockField[] => {
+    const required = requiredFieldsByBlock.get(blockId) ?? []
+    const done = translatedFieldsByBlock.get(blockId) ?? new Set()
+    return required.filter((field) => !done.has(field))
+  }
 
-    const updatedBlockIds = await translateBlocksOnce({
-      blocksToTranslate: pendingBlocks,
+  const incompleteBlockIds = (): string[] =>
+    Array.from(blocksById.keys()).filter(
+      (id) => missingFieldsFor(id).length > 0
+    )
+
+  const recordWritten = (
+    written: Map<string, Set<TranslatableBlockField>>
+  ): void => {
+    for (const [blockId, fields] of written) {
+      const done = translatedFieldsByBlock.get(blockId)
+      if (done == null) continue
+      for (const field of fields) done.add(field)
+    }
+  }
+
+  const translate = (
+    blockIds: string[]
+  ): Promise<Map<string, Set<TranslatableBlockField>>> => {
+    const requests = blockIds
+      .map((id) => ({ block: blocksById.get(id), fields: missingFieldsFor(id) }))
+      .filter(
+        (request): request is BlockTranslationRequest =>
+          request.block != null && request.fields.length > 0
+      )
+
+    return translateBlocksOnce({
+      requests,
       allBlocks,
       cardBlockId: cardBlock.id,
       journeyId,
@@ -323,17 +410,47 @@ async function translateCardBlocks({
       onBlockUpdated,
       session
     })
-
-    for (const id of updatedBlockIds) pendingBlockIds.delete(id)
   }
 
-  if (pendingBlockIds.size > 0) {
+  // Phase 1: batched passes — one request covering every still-missing field
+  // across the card. Handles the common case cheaply.
+  for (
+    let attempt = 1;
+    attempt <= MAX_CARD_BATCH_ATTEMPTS && incompleteBlockIds().length > 0;
+    attempt++
+  ) {
+    recordWritten(await translate(incompleteBlockIds()))
+  }
+
+  // Phase 2: per-block escalation — translate each stubborn block on its own,
+  // requesting only the fields still missing.
+  const stubbornBlockIds = incompleteBlockIds()
+  if (stubbornBlockIds.length > 0) {
+    await Promise.all(
+      stubbornBlockIds.map(async (blockId) => {
+        for (
+          let attempt = 1;
+          attempt <= MAX_PER_BLOCK_ATTEMPTS &&
+          missingFieldsFor(blockId).length > 0;
+          attempt++
+        ) {
+          recordWritten(await translate([blockId]))
+        }
+      })
+    )
+  }
+
+  const stillMissing = incompleteBlockIds()
+  if (stillMissing.length > 0) {
     logger.warn(
       {
         cardBlockId: cardBlock.id,
-        missingBlockIds: Array.from(pendingBlockIds)
+        missing: stillMissing.map((id) => ({
+          blockId: id,
+          fields: missingFieldsFor(id)
+        }))
       },
-      'Card translation incomplete: some blocks were not translated after retries'
+      'Card translation incomplete: some block fields were not translated after retries and escalation'
     )
   }
 }
