@@ -70,16 +70,22 @@ export function getTranslatableFields(
 }
 
 /**
- * Creates translation info string for a block
+ * Creates translation info string for a block.
+ *
+ * Pass `fields` to restrict the serialized fields to a subset (e.g. when
+ * re-requesting only the fields a previous attempt left untranslated).
  */
-export function createTranslationInfo(block: Block): string {
+export function createTranslationInfo(
+  block: Block,
+  fields?: readonly string[]
+): string {
   const fieldInfo = []
   const translateableFields = getTranslatableFields(block)
 
   for (const [field, value] of Object.entries(translateableFields)) {
-    if (value !== undefined && value !== null) {
-      fieldInfo.push(`${field}: "${value}"`)
-    }
+    if (value === undefined || value === null) continue
+    if (fields != null && !fields.includes(field)) continue
+    fieldInfo.push(`${field}: "${value}"`)
   }
 
   return `[${block.id}] ${block.typename}: ${fieldInfo.join(', ')}`

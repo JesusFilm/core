@@ -856,6 +856,122 @@ describe('journeyAiTranslateCreate mutation', () => {
     )
   })
 
+  it('re-requests an individual field the model omits (field-level completeness)', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'text1',
+          typename: 'TextResponseBlock',
+          parentBlockId: 'card1',
+          label: 'Name',
+          placeholder: 'Your name',
+          hint: 'We keep it private'
+        }
+      ]
+    } as any)
+
+    // First attempt translates label + placeholder but omits hint.
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        {
+          blockId: 'text1',
+          updates: { label: 'Nombre', placeholder: 'Tu nombre' }
+        }
+      ])
+    } as any)
+    // Retry returns the omitted hint.
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'text1', updates: { hint: 'Lo mantenemos privado' } }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    // A second call is made because hint was still missing after the first.
+    expect(mockStreamText).toHaveBeenCalledTimes(2)
+
+    // The retry prompt asks only for the missing hint field.
+    const retryPrompt = (mockStreamText.mock.calls[1][0] as any).messages[1]
+      .content[0].text as string
+    expect(retryPrompt).toContain('hint:')
+    expect(retryPrompt).not.toContain('label:')
+
+    // label + placeholder written first, hint written on the retry.
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'text1' }),
+        data: { label: 'Nombre', placeholder: 'Tu nombre' }
+      })
+    )
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'text1' }),
+        data: { hint: 'Lo mantenemos privado' }
+      })
+    )
+  })
+
+  it('escalates to a per-block request when batched passes keep omitting a block', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'radio1',
+          typename: 'RadioQuestionBlock',
+          parentBlockId: 'card1',
+          label: 'Pick one'
+        },
+        {
+          id: 'option1',
+          typename: 'RadioOptionBlock',
+          parentBlockId: 'radio1',
+          label: 'Option A'
+        }
+      ]
+    } as any)
+
+    // Three batched passes all drop the option, then the per-block escalation
+    // request returns it.
+    mockStreamText
+      .mockReturnValueOnce({
+        elementStream: createMockAsyncIterator([])
+      } as any)
+      .mockReturnValueOnce({
+        elementStream: createMockAsyncIterator([])
+      } as any)
+      .mockReturnValueOnce({
+        elementStream: createMockAsyncIterator([])
+      } as any)
+      .mockReturnValueOnce({
+        elementStream: createMockAsyncIterator([
+          { blockId: 'option1', updates: { label: 'Opción A' } }
+        ])
+      } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    // 3 batched attempts + 1 per-block escalation attempt.
+    expect(mockStreamText).toHaveBeenCalledTimes(4)
+
+    // The option is ultimately translated.
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'option1' }),
+        data: { label: 'Opción A' }
+      })
+    )
+  })
+
   it('translates MultiselectOptionBlock labels nested under a MultiselectBlock', async () => {
     prismaMock.journey.findUnique.mockResolvedValueOnce({
       ...mockJourney,
