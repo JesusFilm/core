@@ -284,8 +284,7 @@ Return exactly one entry for every block ID listed above, and translate every fi
           // Only write fields we asked for this pass and have not already
           // written, so a later retry can't overwrite an earlier field's value.
           const alreadyWritten =
-            writtenFields.get(cleanBlockId) ??
-            new Set<TranslatableBlockField>()
+            writtenFields.get(cleanBlockId) ?? new Set<TranslatableBlockField>()
           const updates = Object.fromEntries(
             Object.entries(validatedUpdates).filter(
               ([field]) =>
@@ -301,7 +300,9 @@ Return exactly one entry for every block ID listed above, and translate every fi
             data: updates
           })
 
-          for (const field of Object.keys(updates) as TranslatableBlockField[]) {
+          for (const field of Object.keys(
+            updates
+          ) as TranslatableBlockField[]) {
             alreadyWritten.add(field)
           }
           writtenFields.set(cleanBlockId, alreadyWritten)
@@ -392,7 +393,10 @@ async function translateCardBlocks({
     blockIds: string[]
   ): Promise<Map<string, Set<TranslatableBlockField>>> => {
     const requests = blockIds
-      .map((id) => ({ block: blocksById.get(id), fields: missingFieldsFor(id) }))
+      .map((id) => ({
+        block: blocksById.get(id),
+        fields: missingFieldsFor(id)
+      }))
       .filter(
         (request): request is BlockTranslationRequest =>
           request.block != null && request.fields.length > 0
