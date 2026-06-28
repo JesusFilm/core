@@ -972,6 +972,80 @@ describe('journeyAiTranslateCreate mutation', () => {
     )
   })
 
+  it('translates both radio and multiselect option labels on the same card', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'radio1',
+          typename: 'RadioQuestionBlock',
+          parentBlockId: 'card1',
+          label: 'Pick one'
+        },
+        {
+          id: 'ropt1',
+          typename: 'RadioOptionBlock',
+          parentBlockId: 'radio1',
+          label: 'Red'
+        },
+        {
+          id: 'ropt2',
+          typename: 'RadioOptionBlock',
+          parentBlockId: 'radio1',
+          label: 'Blue'
+        },
+        {
+          id: 'multi1',
+          typename: 'MultiselectBlock',
+          parentBlockId: 'card1',
+          label: 'Pick any'
+        },
+        {
+          id: 'mopt1',
+          typename: 'MultiselectOptionBlock',
+          parentBlockId: 'multi1',
+          label: 'Cat'
+        },
+        {
+          id: 'mopt2',
+          typename: 'MultiselectOptionBlock',
+          parentBlockId: 'multi1',
+          label: 'Dog'
+        }
+      ]
+    } as any)
+
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'ropt1', updates: { label: 'Rojo' } },
+        { blockId: 'ropt2', updates: { label: 'Azul' } },
+        { blockId: 'mopt1', updates: { label: 'Gato' } },
+        { blockId: 'mopt2', updates: { label: 'Perro' } }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    const expected: Array<[string, string]> = [
+      ['ropt1', 'Rojo'],
+      ['ropt2', 'Azul'],
+      ['mopt1', 'Gato'],
+      ['mopt2', 'Perro']
+    ]
+    for (const [id, label] of expected) {
+      expect(prismaMock.block.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ id }),
+          data: { label }
+        })
+      )
+    }
+  })
+
   it('collects and translates blocks nested deeper than one level under the card', async () => {
     prismaMock.journey.findUnique.mockResolvedValueOnce({
       ...mockJourney,
