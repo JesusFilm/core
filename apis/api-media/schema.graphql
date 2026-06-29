@@ -407,7 +407,7 @@ type Mutation {
   videoVariantUploadStart(input: VideoVariantUploadStartInput!): VideoVariantUpload!
   videoVariantUploadMarkR2Prepared(id: ID!, r2AssetId: ID!): VideoVariantUpload!
   videoVariantUploadMarkR2Complete(id: ID!): VideoVariantUpload!
-  videoVariantUploadCreateMux(id: ID!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd): VideoVariantUpload!
+  videoVariantUploadCreateMux(id: ID!, muxVideoId: ID, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd): VideoVariantUpload!
   videoVariantUploadResume(id: ID!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd): VideoVariantUpload!
 }
 
@@ -1551,6 +1551,7 @@ type VideoVariantUpload {
   videoId: ID!
   edition: String!
   languageId: ID!
+  language: Language!
   version: Int!
   published: Boolean!
   originalFilename: String
@@ -1562,6 +1563,7 @@ type VideoVariantUpload {
   height: Int
   r2AssetId: ID
   muxVideoId: ID
+  muxNonStandardInputDetectedAt: Date
   videoVariantId: ID
   errorMessage: String
   createdAt: Date!
