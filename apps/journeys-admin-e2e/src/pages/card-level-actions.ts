@@ -291,7 +291,9 @@ export class CardLevelActionPage {
       timeout: sixtySecondsTimeout
     })
     await this.page
-      .locator('div[data-testid="ImageSource"] button[data-testid="card click area"]')
+      .locator(
+        'div[data-testid="ImageSource"] button[data-testid="card click area"]'
+      )
       .click()
   }
 
