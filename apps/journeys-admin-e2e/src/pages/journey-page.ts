@@ -330,7 +330,7 @@ export class JourneyPage {
       await this.page
         .locator('div[data-testid="LayeredViewDrawer"] .MuiBackdrop-root')
         .first()
-        .click()
+        .click({ position: { x: 40, y: 40 } })
       await expect(
         this.page.locator('div[data-testid="EditorCanvas"]')
       ).toBeHidden({ timeout: thirtySecondsTimeout })
@@ -353,7 +353,7 @@ export class JourneyPage {
     await this.page
       .locator('div[data-testid="LayeredViewDrawer"] .MuiBackdrop-root')
       .first()
-      .click()
+      .click({ position: { x: 40, y: 40 } })
     await expect(
       this.page.locator('div[data-testid="EditorCanvas"]')
     ).toBeHidden({ timeout: thirtySecondsTimeout })
