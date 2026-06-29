@@ -620,7 +620,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoVariantUploadStart(input: VideoVariantUploadStartInput!) : VideoVariantUpload! @join__field(graph: API_MEDIA)
   videoVariantUploadMarkR2Prepared(id: ID!, r2AssetId: ID!) : VideoVariantUpload! @join__field(graph: API_MEDIA)
   videoVariantUploadMarkR2Complete(id: ID!) : VideoVariantUpload! @join__field(graph: API_MEDIA)
-  videoVariantUploadCreateMux(id: ID!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd) : VideoVariantUpload! @join__field(graph: API_MEDIA)
+  videoVariantUploadCreateMux(id: ID!, muxVideoId: ID, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd) : VideoVariantUpload! @join__field(graph: API_MEDIA)
   videoVariantUploadResume(id: ID!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd) : VideoVariantUpload! @join__field(graph: API_MEDIA)
   userImpersonate(email: String!) : String @join__field(graph: API_USERS) 
   createVerificationRequest(input: CreateVerificationRequestInput) : Boolean @join__field(graph: API_USERS) 
