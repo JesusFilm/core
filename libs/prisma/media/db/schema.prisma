@@ -279,32 +279,33 @@ model VideoVariant {
 }
 
 model VideoVariantUpload {
-  id               String                   @id @default(uuid())
-  source           String
-  sourceKey        String?
-  status           VideoVariantUploadStatus @default(created)
-  videoId          String
-  video            Video                    @relation(fields: [videoId], references: [id], onDelete: Cascade)
-  edition          String                   @default("base")
-  languageId       String
-  version          Int                      @default(1)
-  published        Boolean                  @default(true)
-  originalFilename String?
-  contentType      String?
-  contentLength    BigInt?
-  duration         Int?
-  durationMs       Int?
-  width            Int?
-  height           Int?
-  r2AssetId        String?
-  r2Asset          CloudflareR2?            @relation(fields: [r2AssetId], references: [id])
-  muxVideoId       String?
-  muxVideo         MuxVideo?                @relation(fields: [muxVideoId], references: [id])
-  videoVariantId   String?
-  videoVariant     VideoVariant?            @relation(fields: [videoVariantId], references: [id])
-  errorMessage     String?
-  createdAt        DateTime                 @default(now())
-  updatedAt        DateTime                 @default(now()) @updatedAt
+  id                            String                   @id @default(uuid())
+  source                        String
+  sourceKey                     String?
+  status                        VideoVariantUploadStatus @default(created)
+  videoId                       String
+  video                         Video                    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  edition                       String                   @default("base")
+  languageId                    String
+  version                       Int                      @default(1)
+  published                     Boolean                  @default(true)
+  originalFilename              String?
+  contentType                   String?
+  contentLength                 BigInt?
+  duration                      Int?
+  durationMs                    Int?
+  width                         Int?
+  height                        Int?
+  r2AssetId                     String?
+  r2Asset                       CloudflareR2?            @relation(fields: [r2AssetId], references: [id])
+  muxVideoId                    String?
+  muxVideo                      MuxVideo?                @relation(fields: [muxVideoId], references: [id])
+  muxNonStandardInputDetectedAt DateTime?
+  videoVariantId                String?
+  videoVariant                  VideoVariant?            @relation(fields: [videoVariantId], references: [id])
+  errorMessage                  String?
+  createdAt                     DateTime                 @default(now())
+  updatedAt                     DateTime                 @default(now()) @updatedAt
 
   @@index(status)
   @@index([videoId, languageId, edition])

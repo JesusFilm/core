@@ -3,6 +3,7 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/media/client'
 
 import { DateTimeFilter, builder, toPrismaDateTimeFilter } from '../builder'
+import { Language } from '../language'
 import { MaxResolutionTier } from '../mux/video/enums'
 
 import { createMuxVideoForUpload, resumeVideoVariantUpload } from './service'
@@ -76,6 +77,11 @@ export const VideoVariantUpload = builder.prismaObject('VideoVariantUpload', {
     videoId: t.exposeID('videoId', { nullable: false }),
     edition: t.exposeString('edition', { nullable: false }),
     languageId: t.exposeID('languageId', { nullable: false }),
+    language: t.field({
+      type: Language,
+      nullable: false,
+      resolve: ({ languageId: id }) => ({ id })
+    }),
     version: t.exposeInt('version', { nullable: false }),
     published: t.exposeBoolean('published', { nullable: false }),
     originalFilename: t.exposeString('originalFilename'),
@@ -92,6 +98,10 @@ export const VideoVariantUpload = builder.prismaObject('VideoVariantUpload', {
     height: t.exposeInt('height'),
     r2AssetId: t.exposeID('r2AssetId'),
     muxVideoId: t.exposeID('muxVideoId'),
+    muxNonStandardInputDetectedAt: t.expose('muxNonStandardInputDetectedAt', {
+      type: 'Date',
+      nullable: true
+    }),
     videoVariantId: t.exposeID('videoVariantId'),
     errorMessage: t.exposeString('errorMessage'),
     createdAt: t.expose('createdAt', { type: 'Date', nullable: false }),
@@ -239,6 +249,7 @@ builder.mutationFields((t) => ({
     nullable: false,
     args: {
       id: t.arg.id({ required: true }),
+      muxVideoId: t.arg.id({ required: false }),
       downloadable: t.arg.boolean({ required: false, defaultValue: true }),
       maxResolution: t.arg({
         type: MaxResolutionTier,
@@ -249,13 +260,14 @@ builder.mutationFields((t) => ({
     resolve: async (
       query,
       _root,
-      { id, downloadable, maxResolution },
+      { id, muxVideoId, downloadable, maxResolution },
       { user }
     ) => {
       if (user == null) throw new Error('User not found')
       await createMuxVideoForUpload({
         uploadId: id,
         userId: user.id,
+        muxVideoId,
         downloadable,
         maxResolution
       })
