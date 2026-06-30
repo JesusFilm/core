@@ -23,6 +23,10 @@ const PLAUSIBLE_MAX_BREAKDOWN_LIMIT = 1000
 // `page` param and keeps returning full pages) capping the fetch at 50k rows.
 const PLAUSIBLE_MAX_BREAKDOWN_PAGES = 50
 
+// Per-request timeout. A paginated report can issue many sequential calls, so a
+// single hung connection must not block the resolver indefinitely.
+const PLAUSIBLE_REQUEST_TIMEOUT_MS = 30000
+
 type PlausibleBreakdownRow = Record<string, number | string | null>
 
 export function buildJourneySiteId(journeyId: string): string {
@@ -70,6 +74,7 @@ export async function getJourneyStatsBreakdown(
       endpoint,
       {
         headers,
+        timeout: PLAUSIBLE_REQUEST_TIMEOUT_MS,
         params: {
           site_id: resolvedSiteId,
           ...params,

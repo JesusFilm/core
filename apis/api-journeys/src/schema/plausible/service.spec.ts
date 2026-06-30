@@ -63,6 +63,7 @@ describe('getJourneyStatsBreakdown', () => {
         'https://plausible.example/api/v1/stats/breakdown',
         expect.objectContaining({
           headers: { Authorization: 'Bearer plausible-key' },
+          timeout: 30000,
           params: expect.objectContaining({
             site_id: 'api-journeys-journey-journey-id',
             property: 'event:goal',
