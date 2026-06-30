@@ -73,7 +73,7 @@ export function AudioLanguageFileUpload({
     })
   }
 
-  const { getRootProps, open, getInputProps, isDragAccept } = useDropzone({
+  const { getRootProps, open, getInputProps } = useDropzone({
     onDrop,
     onDropAccepted,
     onDropRejected,
@@ -132,7 +132,7 @@ export function AudioLanguageFileUpload({
           flexDirection: 'column',
           alignItems: 'center'
         }}
-        {...getRootProps({ isDragAccept })}
+        {...getRootProps()}
       >
         <input {...getInputProps()} data-testid="DropZone" />
         {error != null || fileRejected ? (
@@ -151,7 +151,8 @@ export function AudioLanguageFileUpload({
         >
           {uploading && 'Uploading...'}
           {processing && 'Processing...'}
-          {(error != null || fileRejected) && 'Upload Failed!'}
+          {error != null && 'Upload Failed!'}
+          {error == null && fileRejected && 'Upload Failed!'}
           {!uploading &&
             !processing &&
             !fileRejected &&
@@ -217,8 +218,8 @@ export function AudioLanguageFileUpload({
           }}
         />
         {error != null ? (
-          <Typography variant="caption">
-            Something went wrong, try again
+          <Typography variant="caption" sx={{ textAlign: 'center' }}>
+            {error}
           </Typography>
         ) : fileRejected ? (
           <Typography variant="caption">
