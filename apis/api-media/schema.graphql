@@ -1563,11 +1563,11 @@ type VideoVariantUpload {
   height: Int
   r2AssetId: ID
   muxVideoId: ID
-  muxNonStandardInputDetectedAt: Date
+  muxNonStandardInputDetectedAt: DateTime
   videoVariantId: ID
   errorMessage: String
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   r2Asset: CloudflareR2
   muxVideo: MuxVideo
   videoVariant: VideoVariant
