@@ -417,7 +417,9 @@ describe('youtubeVideo', () => {
         variables: { channelId: 'channel-1', limit: 5000 } as any
       })
 
-      expect((result as any).errors?.[0].message).toContain('limit must be between')
+      expect((result as any).errors?.[0].message).toContain(
+        'limit must be between'
+      )
       expect(prismaMock.youtubeVideo.findMany).not.toHaveBeenCalled()
     })
   })

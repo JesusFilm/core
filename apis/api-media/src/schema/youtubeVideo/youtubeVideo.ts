@@ -172,7 +172,10 @@ builder.queryFields((t) => ({
       // Omitting limit returns every row on purpose: the consumer's resume diff
       // reads the full set, so a silent default page size could under-read it.
       // A provided limit is still bounded to avoid pathological page sizes.
-      if (limit != null && (limit < 1 || limit > MAX_YOUTUBE_VIDEOS_PAGE_SIZE)) {
+      if (
+        limit != null &&
+        (limit < 1 || limit > MAX_YOUTUBE_VIDEOS_PAGE_SIZE)
+      ) {
         throw new GraphQLError(
           `limit must be between 1 and ${MAX_YOUTUBE_VIDEOS_PAGE_SIZE}`,
           { extensions: { code: 'BAD_USER_INPUT' } }
