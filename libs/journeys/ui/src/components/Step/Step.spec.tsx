@@ -309,6 +309,50 @@ describe('Step', () => {
     )
   })
 
+  it('fires only pageview for a card whose eventLabel has no capture goal', async () => {
+    const mockPlausible = vi.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const blockWithShareCard: TreeBlock<StepFields> = {
+      ...block,
+      children: [
+        {
+          __typename: 'CardBlock',
+          id: 'Card1',
+          parentBlockId: 'Step1',
+          parentOrder: 0,
+          backgroundColor: null,
+          coverBlockId: null,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          backdropBlur: null,
+          eventLabel: BlockEventLabel.share,
+          children: [],
+          showAssistant: null,
+          expandChatByDefault: null
+        }
+      ]
+    }
+
+    treeBlocksVar([blockWithShareCard])
+    blockHistoryVar([blockWithShareCard])
+
+    render(
+      <MockedProvider mocks={[mockStepViewEventCreate]}>
+        <JourneyProvider value={{ journey }}>
+          <Step {...blockWithShareCard} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(mockStepViewEventCreate.result).toHaveBeenCalled()
+    )
+    // share has no registered Plausible goal, so only pageview should fire.
+    expect(mockPlausible).toHaveBeenCalledWith('pageview', expect.any(Object))
+    expect(mockPlausible).toHaveBeenCalledTimes(1)
+  })
+
   it.skip('should create a stepViewEvent with a UTM code', async () => {
     // disabled due to Jest v30 compatibility issues
     const mockSearch = '?utm_source=source&utm_campaign=campaign'

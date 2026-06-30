@@ -67,10 +67,14 @@ builder.queryField('templateFamilyStatsAggregate', (t) =>
       let breakdownResults: PlausibleStatsResponse[] = []
       if (templateJourney.templateSite === true) {
         const templateSiteId = `api-journeys-template-${templateJourney.id}`
+        // This aggregate sums every journey's views, so it always needs the
+        // full result set. Drop any client-supplied limit/page so the fetch
+        // paginates instead of collapsing to a single (top-100) page.
+        const fullFetchWhere = { ...where, limit: undefined, page: undefined }
         breakdownResults = await getJourneyStatsBreakdown(
           templateJourney.id,
           {
-            ...where,
+            ...fullFetchWhere,
             property: 'event:page',
             metrics: 'visitors'
           },

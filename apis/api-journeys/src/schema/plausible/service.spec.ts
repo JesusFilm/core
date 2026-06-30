@@ -80,6 +80,18 @@ describe('getJourneyStatsBreakdown', () => {
     expect(mockAxios.get).toHaveBeenCalledTimes(1)
   })
 
+  it('returns an empty array after a single request when the first page is empty', async () => {
+    mockPage([])
+
+    const result = await getJourneyStatsBreakdown('journey-id', {
+      property: 'event:props:templateKey',
+      metrics: 'visitors'
+    })
+
+    expect(result).toEqual([])
+    expect(mockAxios.get).toHaveBeenCalledTimes(1)
+  })
+
   it('paginates through every page until a short page is returned', async () => {
     mockPage(buildRows(1000, 0))
     mockPage(buildRows(1000, 1000))
@@ -190,6 +202,26 @@ describe('getJourneyStatsBreakdown', () => {
     )
   })
 
+  it('makes a single request passing through an explicit limit and page together', async () => {
+    mockPage(buildRows(500, 1000))
+
+    const result = await getJourneyStatsBreakdown('journey-id', {
+      property: 'event:props:templateKey',
+      metrics: 'visitors',
+      limit: 500,
+      page: 3
+    })
+
+    expect(result).toHaveLength(500)
+    expect(mockAxios.get).toHaveBeenCalledTimes(1)
+    expect(mockAxios.get).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        params: expect.objectContaining({ limit: 500, page: 3 })
+      })
+    )
+  })
+
   it('throws a BAD_USER_INPUT GraphQLError when Plausible returns an error', async () => {
     mockIsAxiosError.mockReturnValueOnce(true)
     mockAxios.get.mockRejectedValueOnce({
@@ -205,5 +237,30 @@ describe('getJourneyStatsBreakdown', () => {
       message: 'Invalid property',
       extensions: { code: 'BAD_USER_INPUT' }
     })
+  })
+
+  it('rethrows the original error when it is not an axios error', async () => {
+    mockIsAxiosError.mockReturnValue(false)
+    mockAxios.get.mockRejectedValueOnce(new Error('boom'))
+
+    await expect(
+      getJourneyStatsBreakdown('journey-id', {
+        property: 'event:goal',
+        metrics: 'visitors'
+      })
+    ).rejects.toThrow('boom')
+  })
+
+  it('rethrows the original axios error when it carries no string error message', async () => {
+    mockIsAxiosError.mockReturnValueOnce(true)
+    const axiosError = { response: { data: {} } }
+    mockAxios.get.mockRejectedValueOnce(axiosError as never)
+
+    await expect(
+      getJourneyStatsBreakdown('journey-id', {
+        property: 'event:goal',
+        metrics: 'visitors'
+      })
+    ).rejects.toBe(axiosError)
   })
 })
