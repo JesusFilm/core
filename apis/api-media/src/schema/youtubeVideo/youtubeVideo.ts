@@ -79,7 +79,8 @@ export const YoutubeVideo = builder.prismaObject('YoutubeVideo', {
     language: t.field({
       type: Language,
       nullable: true,
-      resolve: ({ languageId }) => (languageId == null ? null : { id: languageId })
+      resolve: ({ languageId }) =>
+        languageId == null ? null : { id: languageId }
     }),
     reasonCode: t.expose('reasonCode', {
       type: YoutubeReasonCode,
@@ -113,12 +114,15 @@ export const YoutubeVideo = builder.prismaObject('YoutubeVideo', {
   })
 })
 
-const YoutubeVideoPlaylistInput = builder.inputType('YoutubeVideoPlaylistInput', {
-  fields: (t) => ({
-    playlistId: t.string({ required: true }),
-    title: t.string({ required: true })
-  })
-})
+const YoutubeVideoPlaylistInput = builder.inputType(
+  'YoutubeVideoPlaylistInput',
+  {
+    fields: (t) => ({
+      playlistId: t.string({ required: true }),
+      title: t.string({ required: true })
+    })
+  }
+)
 
 const YoutubeVideoUpsertInput = builder.inputType('YoutubeVideoUpsertInput', {
   fields: (t) => ({

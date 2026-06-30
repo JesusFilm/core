@@ -84,7 +84,11 @@ describe('youtubeVideo', () => {
       const result = await publisherClient({
         document: UPSERT,
         variables: {
-          input: { youtubeVideoId: 'yt-1', channelId: 'channel-1', reviewState: 'SKIPPED' }
+          input: {
+            youtubeVideoId: 'yt-1',
+            channelId: 'channel-1',
+            reviewState: 'SKIPPED'
+          }
         } as any
       })
 
@@ -107,7 +111,11 @@ describe('youtubeVideo', () => {
       await publisherClient({
         document: UPSERT,
         variables: {
-          input: { youtubeVideoId: 'yt-1', channelId: 'channel-1', reviewState: 'SKIPPED' }
+          input: {
+            youtubeVideoId: 'yt-1',
+            channelId: 'channel-1',
+            reviewState: 'SKIPPED'
+          }
         } as any
       })
 
@@ -148,7 +156,9 @@ describe('youtubeVideo', () => {
         'LINKED'
       )
       expect(prismaMock.videoVariant.findUnique).toHaveBeenCalledWith({
-        where: { languageId_videoId: { languageId: '529', videoId: 'video-1' } },
+        where: {
+          languageId_videoId: { languageId: '529', videoId: 'video-1' }
+        },
         select: { id: true }
       })
     })
@@ -169,7 +179,9 @@ describe('youtubeVideo', () => {
         } as any
       })
 
-      expect((result as any).errors?.[0].message).toContain('no catalog variant')
+      expect((result as any).errors?.[0].message).toContain(
+        'no catalog variant'
+      )
       expect(prismaMock.youtubeVideo.upsert).not.toHaveBeenCalled()
     })
 
@@ -205,7 +217,9 @@ describe('youtubeVideo', () => {
         } as any
       })
 
-      expect((result as any).errors?.[0].message).toContain('must not reference a variant')
+      expect((result as any).errors?.[0].message).toContain(
+        'must not reference a variant'
+      )
       expect(prismaMock.youtubeVideo.upsert).not.toHaveBeenCalled()
     })
 
@@ -223,7 +237,9 @@ describe('youtubeVideo', () => {
         } as any
       })
 
-      expect((result as any).errors?.[0].message).toContain('must not reference a variant')
+      expect((result as any).errors?.[0].message).toContain(
+        'must not reference a variant'
+      )
       expect(prismaMock.youtubeVideo.upsert).not.toHaveBeenCalled()
     })
 
@@ -232,7 +248,11 @@ describe('youtubeVideo', () => {
         id: 'variant-id'
       } as any)
       prismaMock.youtubeVideo.upsert.mockResolvedValue(
-        buildRow({ reviewState: 'LINKED', videoId: 'video-1', languageId: '529' })
+        buildRow({
+          reviewState: 'LINKED',
+          videoId: 'video-1',
+          languageId: '529'
+        })
       )
 
       const link = (youtubeVideoId: string) =>
