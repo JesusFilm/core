@@ -128,6 +128,30 @@ describe('getJourneyStatsBreakdown', () => {
     expect(mockAxios.get).toHaveBeenCalledTimes(2)
   })
 
+  it('stops at the max page cap and logs when every page stays full', async () => {
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
+    // Every page returns a full 1000 rows, simulating a runaway loop.
+    mockAxios.get.mockResolvedValue({
+      data: { results: buildRows(1000) }
+    } as never)
+
+    const result = await getJourneyStatsBreakdown('journey-id', {
+      property: 'event:props:templateKey',
+      metrics: 'visitors'
+    })
+
+    expect(mockAxios.get).toHaveBeenCalledTimes(50)
+    expect(result).toHaveLength(50000)
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      expect.stringContaining('hit max page cap'),
+      expect.objectContaining({ siteId: 'api-journeys-journey-journey-id' })
+    )
+
+    consoleErrorSpy.mockRestore()
+  })
+
   it('does not auto-paginate when the caller specifies an explicit limit', async () => {
     mockPage(buildRows(1000))
 

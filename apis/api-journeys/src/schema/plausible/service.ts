@@ -18,6 +18,11 @@ type PlausibleBreakdownParams = {
 // https://plausible.io/docs/stats-api#get-apiv1statsbreakdown
 const PLAUSIBLE_MAX_BREAKDOWN_LIMIT = 1000
 
+// Safety bound on auto-pagination. The loop normally stops when a short page is
+// returned; this guards against a runaway loop (e.g. if Plausible ignores the
+// `page` param and keeps returning full pages) capping the fetch at 50k rows.
+const PLAUSIBLE_MAX_BREAKDOWN_PAGES = 50
+
 type PlausibleBreakdownRow = Record<string, number | string | null>
 
 export function buildJourneySiteId(journeyId: string): string {
@@ -102,11 +107,16 @@ export async function getJourneyStatsBreakdown(
     // short page signals the last one.
     const allRows: PlausibleBreakdownRow[] = []
     let page = 1
-    for (;;) {
+    for (; page <= PLAUSIBLE_MAX_BREAKDOWN_PAGES; page++) {
       const rows = await fetchPage(page, PLAUSIBLE_MAX_BREAKDOWN_LIMIT)
       allRows.push(...rows)
       if (rows.length < PLAUSIBLE_MAX_BREAKDOWN_LIMIT) break
-      page += 1
+    }
+    if (page > PLAUSIBLE_MAX_BREAKDOWN_PAGES) {
+      console.error(
+        '[getJourneyStatsBreakdown] hit max page cap; results may be truncated',
+        { siteId: resolvedSiteId, property: params.property }
+      )
     }
     return allRows.map(toStatsResponse)
   } catch (error) {
