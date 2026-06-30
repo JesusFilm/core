@@ -151,6 +151,8 @@ const YoutubeVideoUpsertInput = builder.inputType('YoutubeVideoUpsertInput', {
   })
 })
 
+const MAX_YOUTUBE_VIDEOS_PAGE_SIZE = 1000
+
 builder.queryFields((t) => ({
   youtubeVideos: t.withAuth({ isPublisher: true }).prismaField({
     type: ['YoutubeVideo'],
@@ -161,14 +163,30 @@ builder.queryFields((t) => ({
       offset: t.arg.int({ required: false }),
       limit: t.arg.int({ required: false })
     },
-    resolve: async (query, _root, { channelId, offset, limit }) =>
-      await prisma.youtubeVideo.findMany({
+    resolve: async (query, _root, { channelId, offset, limit }) => {
+      if (offset != null && offset < 0) {
+        throw new GraphQLError('offset must not be negative', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
+      }
+      // Omitting limit returns every row on purpose: the consumer's resume diff
+      // reads the full set, so a silent default page size could under-read it.
+      // A provided limit is still bounded to avoid pathological page sizes.
+      if (limit != null && (limit < 1 || limit > MAX_YOUTUBE_VIDEOS_PAGE_SIZE)) {
+        throw new GraphQLError(
+          `limit must be between 1 and ${MAX_YOUTUBE_VIDEOS_PAGE_SIZE}`,
+          { extensions: { code: 'BAD_USER_INPUT' } }
+        )
+      }
+
+      return await prisma.youtubeVideo.findMany({
         ...query,
         where: { channelId },
         orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
         skip: offset ?? undefined,
         take: limit ?? undefined
       })
+    }
   }),
   youtubeVideoByVideoId: t.withAuth({ isPublisher: true }).prismaField({
     type: 'YoutubeVideo',

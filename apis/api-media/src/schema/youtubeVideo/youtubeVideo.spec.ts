@@ -382,6 +382,44 @@ describe('youtubeVideo', () => {
         })
       )
     })
+
+    it('returns every row when limit is omitted (resume-diff reads the full set)', async () => {
+      prismaMock.youtubeVideo.findMany.mockResolvedValue([
+        buildRow({ youtubeVideoId: 'yt-1', reviewState: 'SKIPPED' })
+      ])
+
+      const result = await publisherClient({
+        document: LIST,
+        variables: { channelId: 'channel-1' } as any
+      })
+
+      expect((result as any).errors).toBeUndefined()
+      expect(prismaMock.youtubeVideo.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ take: undefined, skip: undefined })
+      )
+    })
+
+    it('rejects a negative offset', async () => {
+      const result = await publisherClient({
+        document: LIST,
+        variables: { channelId: 'channel-1', offset: -1 } as any
+      })
+
+      expect((result as any).errors?.[0].message).toContain(
+        'offset must not be negative'
+      )
+      expect(prismaMock.youtubeVideo.findMany).not.toHaveBeenCalled()
+    })
+
+    it('rejects a limit above the maximum page size', async () => {
+      const result = await publisherClient({
+        document: LIST,
+        variables: { channelId: 'channel-1', limit: 5000 } as any
+      })
+
+      expect((result as any).errors?.[0].message).toContain('limit must be between')
+      expect(prismaMock.youtubeVideo.findMany).not.toHaveBeenCalled()
+    })
   })
 
   describe('youtubeVideoByVideoId', () => {

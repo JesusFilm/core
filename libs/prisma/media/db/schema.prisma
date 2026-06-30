@@ -726,7 +726,11 @@ model YoutubeVideo {
   // Shorts, alternate cuts).
   videoId        String?
   languageId     String?
-  variant        VideoVariant?      @relation(fields: [languageId, videoId], references: [languageId, videoId])
+  // Cascade (not SetNull): a CHECK constraint enforces the LINKED-has-variant
+  // invariant at rest, so a deleted variant must remove its linked rows rather
+  // than null their refs and leave an invalid LINKED row. The CHECK constraint
+  // itself lives in the migration SQL (Prisma has no schema syntax for it).
+  variant        VideoVariant?      @relation(fields: [languageId, videoId], references: [languageId, videoId], onDelete: Cascade)
   reasonCode     YoutubeReasonCode?
   reasonNote     String?
   // Captured YouTube-authored facts — stored alongside, never overwriting,

@@ -32,7 +32,13 @@ CREATE TABLE "YoutubeVideo" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "YoutubeVideo_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "YoutubeVideo_pkey" PRIMARY KEY ("id"),
+    -- Backstops the status invariant at rest: LINKED must carry a variant
+    -- reference; DISMISSED/SKIPPED must not. Mirrors the write-service check.
+    CONSTRAINT "YoutubeVideo_reviewState_variant_check" CHECK (
+        ("reviewState" = 'LINKED' AND "videoId" IS NOT NULL AND "languageId" IS NOT NULL)
+        OR ("reviewState" IN ('DISMISSED', 'SKIPPED') AND "videoId" IS NULL AND "languageId" IS NULL)
+    )
 );
 
 -- CreateIndex
@@ -51,4 +57,4 @@ CREATE INDEX "YoutubeVideo_videoId_languageId_idx" ON "YoutubeVideo"("videoId", 
 CREATE INDEX "YoutubeVideo_updatedAt_id_idx" ON "YoutubeVideo"("updatedAt", "id");
 
 -- AddForeignKey
-ALTER TABLE "YoutubeVideo" ADD CONSTRAINT "YoutubeVideo_languageId_videoId_fkey" FOREIGN KEY ("languageId", "videoId") REFERENCES "VideoVariant"("languageId", "videoId") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "YoutubeVideo" ADD CONSTRAINT "YoutubeVideo_languageId_videoId_fkey" FOREIGN KEY ("languageId", "videoId") REFERENCES "VideoVariant"("languageId", "videoId") ON DELETE CASCADE ON UPDATE CASCADE;
