@@ -41,19 +41,30 @@ export function getPlausibleConfig(): {
   }
 }
 
+interface GetJourneyStatsBreakdownOptions {
+  /**
+   * When true, page through the entire breakdown (every row) instead of making
+   * a single request. Plausible returns only the top 100 rows by default, which
+   * silently drops low-volume rows (e.g. capture conversions) from reports that
+   * aggregate across many journeys. Defaults to false so callers that want a
+   * single bounded request (e.g. per-journey analytics) keep their behavior.
+   */
+  paginate?: boolean
+}
+
 export async function getJourneyStatsBreakdown(
   journeyId: string,
   params: PlausibleBreakdownParams,
-  siteId?: string
+  siteId?: string,
+  { paginate = false }: GetJourneyStatsBreakdownOptions = {}
 ): Promise<PlausibleStatsResponse[]> {
   const { baseUrl, headers } = getPlausibleConfig()
   const endpoint = `${baseUrl}/api/v1/stats/breakdown`
   const resolvedSiteId = siteId ?? buildJourneySiteId(journeyId)
   const propertyKey = params.property?.split(':').pop() ?? ''
 
-  const fetchPage = async (
-    page: number,
-    limit: number
+  const requestRows = async (
+    overrides: Record<string, number> = {}
   ): Promise<PlausibleBreakdownRow[]> => {
     const response = await axios.get<{ results: PlausibleBreakdownRow[] }>(
       endpoint,
@@ -62,8 +73,7 @@ export async function getJourneyStatsBreakdown(
         params: {
           site_id: resolvedSiteId,
           ...params,
-          limit,
-          page
+          ...overrides
         }
       }
     )
@@ -91,28 +101,40 @@ export async function getJourneyStatsBreakdown(
   }
 
   try {
-    // When the caller pins a specific limit or page, honor it with a single
-    // request — they are intentionally asking for a bounded slice of results.
-    if (params.limit != null || params.page != null) {
-      const rows = await fetchPage(
-        params.page ?? 1,
-        params.limit ?? PLAUSIBLE_MAX_BREAKDOWN_LIMIT
-      )
+    // Default: a single request that passes the caller's params through
+    // unchanged (Plausible applies its own default limit). Used for bounded,
+    // per-journey queries that must not fan out into many calls.
+    if (!paginate) {
+      const rows = await requestRows()
       return rows.map(toStatsResponse)
     }
 
-    // Otherwise page through every result. Plausible returns only the top 100
-    // rows by default, so low-volume rows (e.g. capture conversions) silently
-    // drop off as a site accumulates data. Loop with the max page size until a
-    // short page signals the last one.
+    // Reports page through every row. Force the max page size and ignore any
+    // caller limit/page. De-dupe by the breakdown's property value so that a
+    // page-ignoring or unstable upstream cannot re-send rows and inflate the
+    // downstream per-event sums; stop on a short page, a page that adds nothing
+    // new, or the page cap.
+    const seen = new Set<string>()
     const allRows: PlausibleBreakdownRow[] = []
     let page = 1
+    let cappedWithMore = false
     for (; page <= PLAUSIBLE_MAX_BREAKDOWN_PAGES; page++) {
-      const rows = await fetchPage(page, PLAUSIBLE_MAX_BREAKDOWN_LIMIT)
-      allRows.push(...rows)
-      if (rows.length < PLAUSIBLE_MAX_BREAKDOWN_LIMIT) break
+      const rows = await requestRows({
+        limit: PLAUSIBLE_MAX_BREAKDOWN_LIMIT,
+        page
+      })
+      let newRows = 0
+      for (const row of rows) {
+        const rowKey = String(row[propertyKey] ?? '')
+        if (seen.has(rowKey)) continue
+        seen.add(rowKey)
+        allRows.push(row)
+        newRows++
+      }
+      if (rows.length < PLAUSIBLE_MAX_BREAKDOWN_LIMIT || newRows === 0) break
+      if (page === PLAUSIBLE_MAX_BREAKDOWN_PAGES) cappedWithMore = true
     }
-    if (page > PLAUSIBLE_MAX_BREAKDOWN_PAGES) {
+    if (cappedWithMore) {
       console.error(
         '[getJourneyStatsBreakdown] hit max page cap; results may be truncated',
         { siteId: resolvedSiteId, property: params.property }
