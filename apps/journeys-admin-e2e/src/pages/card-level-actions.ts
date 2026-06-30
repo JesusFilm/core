@@ -290,6 +290,11 @@ export class CardLevelActionPage {
     ).not.toHaveAttribute('src', this.uploadedImgSrc, {
       timeout: sixtySecondsTimeout
     })
+  }
+
+  // NES-1745: the image library auto-closes after upload/selection,
+  // so reopen the ImageSource before the next step that needs it open
+  async reopenImageSource() {
     await this.page
       .locator(
         'div[data-testid="ImageSource"] button[data-testid="card click area"]'
@@ -465,12 +470,6 @@ export class CardLevelActionPage {
         'div[data-testid="VideoBlockEditor"] svg[data-testid="Edit2Icon"]'
       )
     ).toBeHidden({ timeout: sixtySecondsTimeout })
-  }
-
-  async clickleftSideArrowIcon() {
-    await this.page
-      .locator('div[slot="container-start"] svg[data-testid="ChevronLeftIcon"]')
-      .click()
   }
 
   async hoverOnExistingCard() {
@@ -1553,13 +1552,6 @@ export class CardLevelActionPage {
         'div[data-testid="ImageBlockHeader"]:has(img) button:has(svg[data-testid="imageBlockHeaderDelete"])'
       )
     ).toBeVisible()
-  }
-  async closeToolDrawerForFooterImage() {
-    await this.page
-      .locator(
-        'div.MuiToolbar-root:has-text("Image") button[aria-label="close-image-library"]'
-      )
-      .click()
   }
   async validateSelectedImageWithEditIcon() {
     await expect(

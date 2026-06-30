@@ -72,10 +72,12 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.uploadImageInCustomTab() // uploading image in the custom tab
     //  await cardLevelActionPage.verifyImgUploadedSuccessMsg() // verifying the 'Upload successful' message
     await cardLevelActionPage.verifyImageGotChanged() // verifying the image is updated in the custom tab
+    await cardLevelActionPage.reopenImageSource() // reopen panel for next step (NES-1745 auto-closes after upload)
     await cardLevelActionPage.clickImageSelectionTab('Gallery') // clicking on Gallery tab in image drawer tab list
     await cardLevelActionPage.getImageSrc() // getting current image source
     await cardLevelActionPage.clickImgFromFeatureOfGalleryTab() // selecting an image of Gallery tab in the image drawer
     await cardLevelActionPage.verifyImageGotChanged() // verifying the seleted image is updated in the image drawer
+    await cardLevelActionPage.reopenImageSource() // reopen panel for next step (NES-1745 auto-closes after selection)
     await cardLevelActionPage.clickImgDeleteBtn() // deleting the selected image
     await cardLevelActionPage.verifyImageIsDeleted() // verifying the image is deleted from the image drawer
   })
