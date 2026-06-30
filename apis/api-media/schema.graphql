@@ -1126,6 +1126,11 @@ type Video
   id: ID!
   label: VideoLabel!
   locked: Boolean!
+
+  """
+  When true, generated translated audio variants or generated subtitle tracks should not be created for this video. Metadata translations (title, description, study questions) are unaffected.
+  """
+  restrictTranslations: Boolean!
   primaryLanguageId: ID!
   published: Boolean!
   cloudflareAssets: [CloudflareR2!]!
@@ -1404,6 +1409,7 @@ input VideoUpdateInput {
   keywordIds: [String!]
   restrictDownloadPlatforms: [Platform!]
   restrictViewPlatforms: [Platform!]
+  restrictTranslations: Boolean
 }
 
 type VideoVariant {

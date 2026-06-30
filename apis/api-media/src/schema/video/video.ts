@@ -119,6 +119,11 @@ const Video = builder.prismaObject('Video', {
     id: t.exposeID('id', { nullable: false }),
     label: t.expose('label', { type: VideoLabel, nullable: false }),
     locked: t.exposeBoolean('locked', { nullable: false }),
+    restrictTranslations: t.exposeBoolean('restrictTranslations', {
+      nullable: false,
+      description:
+        'When true, generated translated audio variants or generated subtitle tracks should not be created for this video. Metadata translations (title, description, study questions) are unaffected.'
+    }),
     primaryLanguageId: t.exposeID('primaryLanguageId', { nullable: false }),
     published: t.exposeBoolean('published', { nullable: false }),
     cloudflareAssets: t.relation('cloudflareAssets', { nullable: false }),
@@ -730,13 +735,16 @@ builder.mutationFields((t) => ({
     resolve: async (query, _parent, { input }) => {
       // Get current video data to check if published status is changing and to prevent slug change after publish
       const currentVideo =
-        input.published !== undefined || input.slug !== undefined
+        input.published !== undefined ||
+        input.slug !== undefined ||
+        input.restrictTranslations === false
           ? await prisma.video.findUnique({
               where: { id: input.id },
               select: {
                 published: true,
                 publishedAt: true,
                 slug: true,
+                restrictTranslations: true,
                 variants: {
                   where: { published: true },
                   select: { languageId: true }
@@ -752,6 +760,15 @@ builder.mutationFields((t) => ({
         currentVideo?.publishedAt != null
       ) {
         throw new Error('Cannot change slug after video has been published')
+      }
+
+      if (
+        input.restrictTranslations === false &&
+        currentVideo?.restrictTranslations === true
+      ) {
+        throw new Error(
+          'Translation restriction cannot be disabled once enabled'
+        )
       }
 
       // If published is being set to true, we need to check if publishedAt should be set
@@ -785,30 +802,52 @@ builder.mutationFields((t) => ({
         }
       }
 
-      const video = await prisma.video.update({
-        ...query,
-        where: { id: input.id },
-        data: {
-          label: input.label ?? undefined,
-          primaryLanguageId: input.primaryLanguageId ?? undefined,
-          published: input.published ?? undefined,
-          publishedAt: publishedAtUpdate,
-          slug: input.slug ?? undefined,
-          noIndex: input.noIndex ?? undefined,
-          childIds: input.childIds ?? undefined,
-          restrictDownloadPlatforms:
-            input.restrictDownloadPlatforms ?? undefined,
-          restrictViewPlatforms: input.restrictViewPlatforms ?? undefined,
-          ...childRelationUpdate,
-          ...(input.keywordIds
-            ? { keywords: { set: input.keywordIds.map((id) => ({ id })) } }
-            : {})
-        },
-        include: {
-          ...query.include,
-          children: true
+      const videoWhere: Prisma.VideoWhereUniqueInput =
+        input.restrictTranslations === false
+          ? { id: input.id, restrictTranslations: false }
+          : { id: input.id }
+
+      let video
+      try {
+        video = await prisma.video.update({
+          ...query,
+          where: videoWhere,
+          data: {
+            label: input.label ?? undefined,
+            primaryLanguageId: input.primaryLanguageId ?? undefined,
+            published: input.published ?? undefined,
+            publishedAt: publishedAtUpdate,
+            slug: input.slug ?? undefined,
+            noIndex: input.noIndex ?? undefined,
+            restrictTranslations:
+              input.restrictTranslations === true ? true : undefined,
+            childIds: input.childIds ?? undefined,
+            restrictDownloadPlatforms:
+              input.restrictDownloadPlatforms ?? undefined,
+            restrictViewPlatforms: input.restrictViewPlatforms ?? undefined,
+            ...childRelationUpdate,
+            ...(input.keywordIds
+              ? { keywords: { set: input.keywordIds.map((id) => ({ id })) } }
+              : {})
+          },
+          include: {
+            ...query.include,
+            children: true
+          }
+        })
+      } catch (e) {
+        if (
+          input.restrictTranslations === false &&
+          currentVideo?.restrictTranslations === false &&
+          e instanceof Prisma.PrismaClientKnownRequestError &&
+          e.code === 'P2025'
+        ) {
+          throw new Error(
+            'Translation restriction cannot be disabled once enabled'
+          )
         }
-      })
+        throw e
+      }
 
       // Handle parent variant changes if video published status changed
       if (currentVideo && input.published !== undefined) {
