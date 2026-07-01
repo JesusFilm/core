@@ -972,6 +972,157 @@ describe('journeyAiTranslateCreate mutation', () => {
     )
   })
 
+  it('injects the default "Submit" label for an empty submit button and translates only the result', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'button1',
+          typename: 'ButtonBlock',
+          parentBlockId: 'card1',
+          label: '',
+          submitEnabled: true
+        }
+      ]
+    } as any)
+
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'button1', updates: { label: 'Enviar' } }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    // The default is injected into the prompt sent to the model...
+    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[1]
+      .content[0].text as string
+    expect(prompt).toContain('label: "Submit"')
+
+    // ...but only the translated value is written — the English default is never
+    // persisted (no extra database write).
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'button1' }),
+        data: { label: 'Enviar' }
+      })
+    )
+    expect(prismaMock.block.update).not.toHaveBeenCalledWith(
+      expect.objectContaining({ data: { label: 'Submit' } })
+    )
+  })
+
+  it('injects the default "Button" label for an empty non-submit button', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'button1',
+          typename: 'ButtonBlock',
+          parentBlockId: 'card1',
+          label: '',
+          submitEnabled: false
+        }
+      ]
+    } as any)
+
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'button1', updates: { label: 'Botón' } }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[1]
+      .content[0].text as string
+    expect(prompt).toContain('label: "Button"')
+
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'button1' }),
+        data: { label: 'Botón' }
+      })
+    )
+  })
+
+  it('injects the default submit label for a sign-up block with no submit text', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'signup1',
+          typename: 'SignUpBlock',
+          parentBlockId: 'card1',
+          submitLabel: ''
+        }
+      ]
+    } as any)
+
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'signup1', updates: { submitLabel: 'Enviar' } }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[1]
+      .content[0].text as string
+    expect(prompt).toContain('submitLabel: "Submit"')
+
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'signup1' }),
+        data: { submitLabel: 'Enviar' }
+      })
+    )
+  })
+
+  it('leaves a button that already has a label untouched (uses its real text)', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'button1',
+          typename: 'ButtonBlock',
+          parentBlockId: 'card1',
+          label: 'Watch now',
+          submitEnabled: false
+        }
+      ]
+    } as any)
+
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'button1', updates: { label: 'Ver ahora' } }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[1]
+      .content[0].text as string
+    expect(prompt).toContain('label: "Watch now"')
+    expect(prompt).not.toContain('label: "Button"')
+  })
+
   it('translates both radio and multiselect option labels on the same card', async () => {
     prismaMock.journey.findUnique.mockResolvedValueOnce({
       ...mockJourney,
