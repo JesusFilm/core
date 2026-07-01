@@ -112,6 +112,30 @@ function getValidatedBlockUpdates(
 
 // --- Shared helpers for mutation and subscription ---
 
+// Buttons and sign-up submit buttons render a UI-language fallback ("Submit" /
+// "Button", see libs/journeys/ui Button.tsx / SignUp.tsx) when their label is
+// blank. That default text is never stored on the block, so it never reaches
+// the AI and stays English for the 33 languages the i18n dictionary doesn't
+// cover. Fill the blank with its canonical default for translation purposes
+// ONLY — this returns a clone used to build the prompt; the default itself is
+// never written to the database. The model's translated value lands on the real
+// block through the normal write path, so no extra database call is needed.
+function withDefaultButtonLabel(block: Block): Block {
+  if (
+    block.typename === 'ButtonBlock' &&
+    (block.label == null || block.label === '')
+  ) {
+    return { ...block, label: block.submitEnabled ? 'Submit' : 'Button' }
+  }
+  if (
+    block.typename === 'SignUpBlock' &&
+    (block.submitLabel == null || block.submitLabel === '')
+  ) {
+    return { ...block, submitLabel: 'Submit' }
+  }
+  return block
+}
+
 function getTranslatableBlocksForCard(
   allBlocks: Block[],
   cardBlock: Block
@@ -138,7 +162,7 @@ function getTranslatableBlocksForCard(
     if (children != null) stack.push(...children)
   }
 
-  return descendants.filter((block) => {
+  return descendants.map(withDefaultButtonLabel).filter((block) => {
     const fields = getTranslatableFields(block)
     return Object.values(fields).some((v) => v != null && v !== '')
   })
