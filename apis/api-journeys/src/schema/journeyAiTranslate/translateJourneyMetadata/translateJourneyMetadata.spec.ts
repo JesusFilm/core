@@ -55,6 +55,9 @@ function defaultImplementation(): void {
     if (text.includes('produce only the analysis')) {
       return aiResult({ analysis: 'ANALYSIS CONTEXT' })
     }
+    if (text.includes('Translate the journey display title below')) {
+      return aiResult({ translation: 'Título visible traducido' })
+    }
     if (text.includes('Translate the journey title below')) {
       return aiResult({ translation: 'Título traducido' })
     }
@@ -75,6 +78,7 @@ const baseInput = {
   sourceLanguageName: 'English',
   targetLanguageName: 'Spanish',
   journeyTitle: 'My Journey Title',
+  journeyDisplayTitle: 'My Display Title',
   journeyDescription: 'My journey description',
   seoTitle: 'My SEO Title',
   seoDescription: 'My SEO Description',
@@ -94,6 +98,7 @@ describe('translateJourneyMetadata', () => {
     expect(result).toEqual({
       analysis: 'ANALYSIS CONTEXT',
       title: 'Título traducido',
+      displayTitle: 'Título visible traducido',
       description: 'Descripción traducida',
       seoTitle: 'Título SEO traducido',
       seoDescription: 'Descripción SEO traducida'
@@ -133,7 +138,7 @@ describe('translateJourneyMetadata', () => {
       (call) => !promptOf(call).includes('produce only the analysis')
     )
 
-    expect(fieldCalls).toHaveLength(4)
+    expect(fieldCalls).toHaveLength(5)
     for (const call of fieldCalls) {
       expect(promptOf(call)).toContain('<hardened>ANALYSIS CONTEXT</hardened>')
     }
@@ -142,12 +147,14 @@ describe('translateJourneyMetadata', () => {
   it('returns empty strings for absent fields without making AI calls for them', async () => {
     const result = await translateJourneyMetadata({
       ...baseInput,
+      journeyDisplayTitle: null,
       journeyDescription: null,
       seoTitle: null,
       seoDescription: '   '
     })
 
     expect(result.title).toBe('Título traducido')
+    expect(result.displayTitle).toBe('')
     expect(result.description).toBe('')
     expect(result.seoTitle).toBe('')
     expect(result.seoDescription).toBe('')
@@ -170,6 +177,7 @@ describe('translateJourneyMetadata', () => {
 
     const result = await translateJourneyMetadata({
       ...baseInput,
+      journeyDisplayTitle: null,
       seoTitle: null,
       seoDescription: null
     })

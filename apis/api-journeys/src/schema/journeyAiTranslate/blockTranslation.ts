@@ -43,7 +43,8 @@ export function getTranslatableFields(
   if (block.typename === 'TextResponseBlock') {
     return {
       label: block.label,
-      placeholder: block.placeholder
+      placeholder: block.placeholder,
+      hint: block.hint
     }
   }
 
@@ -53,20 +54,38 @@ export function getTranslatableFields(
     }
   }
 
+  if (block.typename === 'MultiselectOptionBlock') {
+    return {
+      label: block.label
+    }
+  }
+
+  if (block.typename === 'SignUpBlock') {
+    return {
+      submitLabel: block.submitLabel
+    }
+  }
+
   return {}
 }
 
 /**
- * Creates translation info string for a block
+ * Creates translation info string for a block.
+ *
+ * Pass `fields` to restrict the serialized fields to a subset (e.g. when
+ * re-requesting only the fields a previous attempt left untranslated).
  */
-export function createTranslationInfo(block: Block): string {
+export function createTranslationInfo(
+  block: Block,
+  fields?: readonly string[]
+): string {
   const fieldInfo = []
   const translateableFields = getTranslatableFields(block)
 
   for (const [field, value] of Object.entries(translateableFields)) {
-    if (value !== undefined && value !== null) {
-      fieldInfo.push(`${field}: "${value}"`)
-    }
+    if (value === undefined || value === null) continue
+    if (fields != null && !fields.includes(field)) continue
+    fieldInfo.push(`${field}: "${value}"`)
   }
 
   return `[${block.id}] ${block.typename}: ${fieldInfo.join(', ')}`
