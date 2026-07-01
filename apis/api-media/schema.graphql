@@ -306,6 +306,7 @@ enum MaxResolutionTier {
 
 enum MediaRole {
   publisher
+  youtubeAdmin
 }
 
 type Mutation {

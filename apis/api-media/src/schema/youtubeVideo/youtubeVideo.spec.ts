@@ -37,10 +37,10 @@ function buildRow(overrides: Record<string, unknown> = {}): any {
 }
 
 describe('youtubeVideo', () => {
-  const publisherClient = getClient({
+  const youtubeAdminClient = getClient({
     headers: { authorization: 'token' },
     context: {
-      currentRoles: ['publisher'],
+      currentRoles: ['youtubeAdmin'],
       currentUser: { id: 'user-id' }
     }
   })
@@ -71,7 +71,7 @@ describe('youtubeVideo', () => {
     ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
       id: 'role-id',
       userId: 'user-id',
-      roles: ['publisher']
+      roles: ['youtubeAdmin']
     } as any)
   })
 
@@ -81,7 +81,7 @@ describe('youtubeVideo', () => {
         buildRow({ youtubeVideoId: 'yt-1', reviewState: 'SKIPPED' })
       )
 
-      const result = await publisherClient({
+      const result = await youtubeAdminClient({
         document: UPSERT,
         variables: {
           input: {
@@ -105,10 +105,39 @@ describe('youtubeVideo', () => {
       )
     })
 
+    it('rejects a caller without the youtubeAdmin role', async () => {
+      const publisherOnlyClient = getClient({
+        headers: { authorization: 'token' },
+        context: {
+          currentRoles: ['publisher'],
+          currentUser: { id: 'user-id' }
+        }
+      })
+      ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
+        id: 'role-id',
+        userId: 'user-id',
+        roles: ['publisher']
+      } as any)
+
+      const result = await publisherOnlyClient({
+        document: UPSERT,
+        variables: {
+          input: {
+            youtubeVideoId: 'yt-1',
+            channelId: 'channel-1',
+            reviewState: 'SKIPPED'
+          }
+        } as any
+      })
+
+      expect((result as any).errors).toBeDefined()
+      expect(prismaMock.youtubeVideo.upsert).not.toHaveBeenCalled()
+    })
+
     it('records reviewedBy from the authenticated identity', async () => {
       prismaMock.youtubeVideo.upsert.mockResolvedValue(buildRow())
 
-      await publisherClient({
+      await youtubeAdminClient({
         document: UPSERT,
         variables: {
           input: {
@@ -138,7 +167,7 @@ describe('youtubeVideo', () => {
         })
       )
 
-      const result = await publisherClient({
+      const result = await youtubeAdminClient({
         document: UPSERT,
         variables: {
           input: {
@@ -166,7 +195,7 @@ describe('youtubeVideo', () => {
     it('rejects a LINKED row whose variant does not exist', async () => {
       prismaMock.videoVariant.findUnique.mockResolvedValue(null)
 
-      const result = await publisherClient({
+      const result = await youtubeAdminClient({
         document: UPSERT,
         variables: {
           input: {
@@ -186,7 +215,7 @@ describe('youtubeVideo', () => {
     })
 
     it('rejects a LINKED row missing videoId/languageId', async () => {
-      const result = await publisherClient({
+      const result = await youtubeAdminClient({
         document: UPSERT,
         variables: {
           input: {
@@ -204,7 +233,7 @@ describe('youtubeVideo', () => {
     })
 
     it('rejects a DISMISSED row that references a variant', async () => {
-      const result = await publisherClient({
+      const result = await youtubeAdminClient({
         document: UPSERT,
         variables: {
           input: {
@@ -224,7 +253,7 @@ describe('youtubeVideo', () => {
     })
 
     it('rejects a SKIPPED row that references a variant', async () => {
-      const result = await publisherClient({
+      const result = await youtubeAdminClient({
         document: UPSERT,
         variables: {
           input: {
@@ -256,7 +285,7 @@ describe('youtubeVideo', () => {
       )
 
       const link = (youtubeVideoId: string) =>
-        publisherClient({
+        youtubeAdminClient({
           document: UPSERT,
           variables: {
             input: {
@@ -291,7 +320,7 @@ describe('youtubeVideo', () => {
         })
       )
 
-      await publisherClient({
+      await youtubeAdminClient({
         document: UPSERT,
         variables: {
           input: {
@@ -337,7 +366,7 @@ describe('youtubeVideo', () => {
     it('removes the row', async () => {
       prismaMock.youtubeVideo.delete.mockResolvedValue(buildRow())
 
-      const result = await publisherClient({
+      const result = await youtubeAdminClient({
         document: DELETE,
         variables: { youtubeVideoId: 'yt-1' } as any
       })
@@ -365,7 +394,7 @@ describe('youtubeVideo', () => {
         buildRow({ youtubeVideoId: 'yt-2', reviewState: 'LINKED' })
       ])
 
-      const result = await publisherClient({
+      const result = await youtubeAdminClient({
         document: LIST,
         variables: { channelId: 'channel-1', offset: 0, limit: 10 } as any
       })
@@ -388,7 +417,7 @@ describe('youtubeVideo', () => {
         buildRow({ youtubeVideoId: 'yt-1', reviewState: 'SKIPPED' })
       ])
 
-      const result = await publisherClient({
+      const result = await youtubeAdminClient({
         document: LIST,
         variables: { channelId: 'channel-1' } as any
       })
@@ -400,7 +429,7 @@ describe('youtubeVideo', () => {
     })
 
     it('rejects a negative offset', async () => {
-      const result = await publisherClient({
+      const result = await youtubeAdminClient({
         document: LIST,
         variables: { channelId: 'channel-1', offset: -1 } as any
       })
@@ -412,7 +441,7 @@ describe('youtubeVideo', () => {
     })
 
     it('rejects a limit above the maximum page size', async () => {
-      const result = await publisherClient({
+      const result = await youtubeAdminClient({
         document: LIST,
         variables: { channelId: 'channel-1', limit: 5000 } as any
       })
@@ -439,7 +468,7 @@ describe('youtubeVideo', () => {
         buildRow({ youtubeVideoId: 'yt-1', reviewState: 'LINKED' })
       )
 
-      const result = await publisherClient({
+      const result = await youtubeAdminClient({
         document: BY_ID,
         variables: { youtubeVideoId: 'yt-1' } as any
       })
