@@ -21,6 +21,11 @@ const PLAUSIBLE_MAX_BREAKDOWN_LIMIT = 1000
 // Safety bound on auto-pagination. The loop normally stops when a short page is
 // returned; this guards against a runaway loop (e.g. if Plausible ignores the
 // `page` param and keeps returning full pages) capping the fetch at 50k rows.
+// 50 is also a deliberate ceiling against Plausible's rate limits: a report
+// issues up to this many pages per breakdown (and templateFamilyStatsBreakdown
+// runs two), so ~100 sequential calls already sits at Plausible cloud's
+// ~100 req/60s burst limit (600/hr per team). Raising it trades a rare tail
+// truncation for 429s. Truncation is logged below rather than surfaced.
 const PLAUSIBLE_MAX_BREAKDOWN_PAGES = 50
 
 // Per-request timeout. A paginated report can issue many sequential calls, so a
