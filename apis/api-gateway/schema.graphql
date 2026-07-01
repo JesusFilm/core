@@ -3696,6 +3696,7 @@ enum DefaultPlatform @join__type(graph: API_MEDIA)  {
 
 enum MediaRole @join__type(graph: API_MEDIA)  {
   publisher @join__enumValue(graph: API_MEDIA) 
+  youtubeAdmin @join__enumValue(graph: API_MEDIA) 
 }
 
 enum ImageAspectRatio @join__type(graph: API_MEDIA)  {

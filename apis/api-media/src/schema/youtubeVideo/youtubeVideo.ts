@@ -154,7 +154,7 @@ const YoutubeVideoUpsertInput = builder.inputType('YoutubeVideoUpsertInput', {
 const MAX_YOUTUBE_VIDEOS_PAGE_SIZE = 1000
 
 builder.queryFields((t) => ({
-  youtubeVideos: t.withAuth({ isPublisher: true }).prismaField({
+  youtubeVideos: t.withAuth({ isYoutubeAdmin: true }).prismaField({
     type: ['YoutubeVideo'],
     nullable: false,
     description: "List a channel's YoutubeVideo rows (the resume-diff source).",
@@ -191,7 +191,7 @@ builder.queryFields((t) => ({
       })
     }
   }),
-  youtubeVideoByVideoId: t.withAuth({ isPublisher: true }).prismaField({
+  youtubeVideoByVideoId: t.withAuth({ isYoutubeAdmin: true }).prismaField({
     type: 'YoutubeVideo',
     nullable: true,
     description: 'Look up a single row by its youtubeVideoId.',
@@ -207,7 +207,7 @@ builder.queryFields((t) => ({
 }))
 
 builder.mutationFields((t) => ({
-  youtubeVideoUpsert: t.withAuth({ isPublisher: true }).prismaField({
+  youtubeVideoUpsert: t.withAuth({ isYoutubeAdmin: true }).prismaField({
     type: 'YoutubeVideo',
     nullable: false,
     description:
@@ -259,7 +259,7 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  youtubeVideoDelete: t.withAuth({ isPublisher: true }).field({
+  youtubeVideoDelete: t.withAuth({ isYoutubeAdmin: true }).field({
     type: 'Boolean',
     nullable: false,
     description: 'Remove a YoutubeVideo row.',
