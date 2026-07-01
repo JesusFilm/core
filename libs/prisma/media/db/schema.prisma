@@ -268,6 +268,7 @@ model VideoVariant {
   variantUploads       VideoVariantUpload[]
   brightcoveId         String?
   playlistItems        PlaylistItem[]
+  youtubeVideos        YoutubeVideo[]
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @default(now()) @updatedAt
 
@@ -579,6 +580,7 @@ model TaxonomyName {
 
 enum MediaRole {
   publisher
+  youtubeAdmin
 }
 
 model UserMediaRole {
@@ -699,4 +701,63 @@ model ArclightApiKey {
   defaultPlatform DefaultPlatform
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @default(now()) @updatedAt
+}
+
+// Records a YouTube video an operator has *seen* and how it relates to the
+// catalog. Absence of a row means "not yet seen". reviewState carries the
+// LINKED / DISMISSED / SKIPPED distinction; a row count is NOT a channel video
+// count. See PRD JesusFilm/youtube-studio#145.
+enum YoutubeReviewState {
+  LINKED // terminal; resolves to a variant; excluded from the review queue
+  DISMISSED // terminal; no variant; excluded from the queue
+  SKIPPED // non-terminal; no variant; returns to the queue in a later session
+}
+
+enum YoutubeReasonCode {
+  NO_CATALOG_MATCH
+  NOT_APPLICABLE
+}
+
+model YoutubeVideo {
+  id             String             @id @default(uuid())
+  youtubeVideoId String             @unique
+  channelId      String
+  reviewState    YoutubeReviewState
+  // Variant reference — present iff reviewState = LINKED (enforced on write).
+  // No unique constraint: a variant may have many LINKED rows (re-uploads,
+  // Shorts, alternate cuts).
+  videoId        String?
+  languageId     String?
+  // Cascade (not SetNull): a CHECK constraint enforces the LINKED-has-variant
+  // invariant at rest, so a deleted variant must remove its linked rows rather
+  // than null their refs and leave an invalid LINKED row. The CHECK constraint
+  // itself lives in the migration SQL (Prisma has no schema syntax for it).
+  variant        VideoVariant?      @relation(fields: [languageId, videoId], references: [languageId, videoId], onDelete: Cascade)
+  reasonCode     YoutubeReasonCode?
+  reasonNote     String?
+  // Captured YouTube-authored facts — stored alongside, never overwriting,
+  // Core canonical title/description.
+  youtubeTitle       String?
+  youtubeDescription String?
+  tags               String[]   @default([])
+  thumbnailUrl       String? // YouTube-hosted URL only; the image is never downloaded
+  playlists          Json? // [{ playlistId, title }] snapshots; non-authoritative
+  madeForKids        Boolean? // null = unknown/unset
+  ageRestricted      Boolean?
+  fileName           String? // original upload file name; frequently absent
+  privacyStatus      String?
+  publishedAt        DateTime?
+  // Provenance
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  matchMethod     String? // meaningful only on LINKED
+  matchConfidence Float? // meaningful only on LINKED
+  lastSyncedAt    DateTime? // freshness signal only, never a deletion clock
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now()) @updatedAt
+
+  @@index(channelId(type: Hash))
+  @@index(reviewState)
+  @@index([videoId, languageId])
+  @@index([updatedAt, id])
 }
