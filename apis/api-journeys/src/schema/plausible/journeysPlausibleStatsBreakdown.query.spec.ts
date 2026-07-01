@@ -133,6 +133,34 @@ describe('journeysPlausibleStatsBreakdown', () => {
     })
   })
 
+  it('makes a single request and does not paginate even on a full page', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue({
+      id: 'journey-id',
+      userJourneys: [],
+      team: { userTeams: [] }
+    } as any)
+    // A full page would trigger another fetch if this passthrough paginated.
+    mockAxios.get.mockResolvedValue({
+      data: {
+        results: Array.from({ length: 1000 }, (_, i) => ({
+          goal: `event-${i}`,
+          visitors: 1
+        }))
+      }
+    } as any)
+
+    await authClient({
+      document: QUERY,
+      variables: {
+        id: 'journey-id',
+        idType: 'databaseId',
+        where: { property: 'event:goal' }
+      }
+    })
+
+    expect(mockAxios.get).toHaveBeenCalledTimes(1)
+  })
+
   it('returns error when journey not found', async () => {
     prismaMock.journey.findUnique.mockResolvedValue(null)
 
