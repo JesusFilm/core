@@ -36,7 +36,7 @@ Template card analytics (`TemplateAggregateAnalytics`) showed a **declining View
 
 ## What Didn't Work
 
-- Hunting for Plausible-side data loss (ClickHouse TTL/retention, sampling, salt rotation) or backend subtractive steps. Those were plausible for the *breakdown* surface but the template card decline had a much simpler cause: the frontend never sent a date range at all.
+- Hunting for Plausible-side data loss (ClickHouse TTL/retention, sampling, salt rotation) or backend subtractive steps. Those were plausible for the _breakdown_ surface but the template card decline had a much simpler cause: the frontend never sent a date range at all.
 - Expecting the type system to catch it: `period` and `date` are optional on `PlausibleStatsAggregateFilter`, so `where: {}` compiles and passes GraphQL validation.
 
 ## Solution
@@ -74,12 +74,12 @@ void getTemplateStats({
 
 Audit of all four analytics surfaces (QA-540, 2026-07-02):
 
-| Surface | Component | Date range |
-| --- | --- | --- |
-| Journey card analytics | `AnalyticsItem` (via `JourneyCardInfo`) | ✅ all time (explicit custom range) |
-| Template card analytics | `TemplateAggregateAnalytics` | ⚠️ was `where: {}` → fixed in PR #9340 |
-| Template breakdown analytics | `TemplateBreakdownAnalyticsDialog` | ✅ all time (explicit custom range) |
-| Analytics dialog (editor overlay) | `AnalyticsOverlaySwitch` | ✅ all time by default (`allTime` preset) |
+| Surface                           | Component                               | Date range                                |
+| --------------------------------- | --------------------------------------- | ----------------------------------------- |
+| Journey card analytics            | `AnalyticsItem` (via `JourneyCardInfo`) | ✅ all time (explicit custom range)       |
+| Template card analytics           | `TemplateAggregateAnalytics`            | ⚠️ was `where: {}` → fixed in PR #9340    |
+| Template breakdown analytics      | `TemplateBreakdownAnalyticsDialog`      | ✅ all time (explicit custom range)       |
+| Analytics dialog (editor overlay) | `AnalyticsOverlaySwitch`                | ✅ all time by default (`allTime` preset) |
 
 When updating call sites, remember Apollo `MockedProvider` matches variables **exactly**: update spec mocks to the new `where`, and mock `formatISO` for determinism (see `AnalyticsItem.spec.tsx` for the pattern) or compute the expected date under the suite's faked system time (see `JourneyCard.spec.tsx`).
 
