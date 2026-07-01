@@ -4,13 +4,18 @@ import {
   useApolloClient,
   useLazyQuery
 } from '@apollo/client'
+import { formatISO } from 'date-fns'
 import { useCallback } from 'react'
 
 import {
   GetTemplateFamilyStatsAggregate,
   GetTemplateFamilyStatsAggregateVariables
 } from '../../../__generated__/GetTemplateFamilyStatsAggregate'
-import { IdType } from '../../../__generated__/globalTypes'
+import {
+  IdType,
+  PlausibleStatsAggregateFilter
+} from '../../../__generated__/globalTypes'
+import { earliestStatsCollected } from '../../components/Editor/Slider/JourneyFlow/AnalyticsOverlaySwitch/buildPresetDateRange'
 
 export const GET_TEMPLATE_FAMILY_STATS_AGGREGATE = gql`
   query GetTemplateFamilyStatsAggregate(
@@ -25,6 +30,21 @@ export const GET_TEMPLATE_FAMILY_STATS_AGGREGATE = gql`
     }
   }
 `
+
+/**
+ * Builds the all-time stats filter shared by every template-stats query.
+ * Omitting period/date makes the Plausible Stats API silently default to
+ * the last 30 days, and every call site must send the same `where` args so
+ * queries and refetches read/write the same Apollo cache entry.
+ */
+export function buildAllTimeStatsFilter(): PlausibleStatsAggregateFilter {
+  return {
+    period: 'custom',
+    date: `${earliestStatsCollected},${formatISO(new Date(), {
+      representation: 'date'
+    })}`
+  }
+}
 
 /**
  * Hook that provides functions to fetch and refetch template family stats.
@@ -63,7 +83,7 @@ export function useTemplateFamilyStatsAggregateLazyQuery(): {
             variables: {
               id: templateId,
               idType: IdType.databaseId,
-              where: {}
+              where: buildAllTimeStatsFilter()
             },
             fetchPolicy: 'network-only'
           })

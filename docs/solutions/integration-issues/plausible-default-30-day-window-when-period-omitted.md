@@ -55,22 +55,23 @@ void getTemplateStats({
 })
 ```
 
-After:
+After — both template-stats call sites share one builder, exported from `useTemplateFamilyStatsAggregateLazyQuery`:
 
 ```ts
-void getTemplateStats({
-  variables: {
-    id: journeyId,
-    idType: IdType.databaseId,
-    where: {
-      period: 'custom',
-      date: `${earliestStatsCollected},${formatISO(new Date(), {
-        representation: 'date'
-      })}`
-    }
+export function buildAllTimeStatsFilter(): PlausibleStatsAggregateFilter {
+  return {
+    period: 'custom',
+    date: `${earliestStatsCollected},${formatISO(new Date(), {
+      representation: 'date'
+    })}`
   }
-})
+}
+
+// TemplateAggregateAnalytics.tsx and refetchTemplateStats both use:
+where: buildAllTimeStatsFilter()
 ```
+
+The first fix pass changed only the component's initial query and **missed the second call site in the same lib**: `refetchTemplateStats` (run after duplicate/trash/restore/translate/copy-to-team across many components) still sent `where: {}`. Caught in PR review. Beyond re-introducing the 30-day window, the mismatch had a second consequence: Apollo keys `templateFamilyStatsAggregate` by its `where` args, so the refetch wrote a **different cache entry** than the card was reading — making the refetch a silent UI no-op.
 
 Audit of all four analytics surfaces (QA-540, 2026-07-02):
 
@@ -90,7 +91,8 @@ The chain has no default on our side: the frontend `where` is spread by the api-
 ## Prevention
 
 - Any new frontend query against `journeysPlausibleStatsAggregate`, `journeysPlausibleStatsBreakdown`, `templateFamilyStatsAggregate`, or `templateFamilyStatsBreakdown` must pass an explicit `period`/`date`. Never send an empty `where` — it compiles, runs, and silently means "last 30 days".
-- Build the range from `earliestStatsCollected`, not a hardcoded date, so the floor stays consistent across surfaces.
+- Build the range from `earliestStatsCollected`, not a hardcoded date, so the floor stays consistent across surfaces. For template stats specifically, reuse `buildAllTimeStatsFilter()` from `useTemplateFamilyStatsAggregateLazyQuery`.
+- When changing a query's variables, grep for **every** use of the query document (the `GET_*` constant) — imperative `client.query` refetch call sites are easy to miss, and a `where` mismatch between query and refetch splits the Apollo cache entry, silently breaking the refresh.
 - If declining analytics numbers are reported again, check the date range each surface actually sends **first** — it is far cheaper to verify than Plausible-side data-loss theories.
 - Frontend-only enforcement was evaluated and deliberately skipped (few call sites): baking the filter into hooks doesn't bind future queries, and lint can't see runtime variable values. If this recurs, the real fix is server-side — make `period`/`date` required on the filter inputs (codegen then makes `where: {}` a frontend compile error) or default omitted filters to all-time in the resolvers.
 - `PlausibleEmbedDashboard` (the reports-page iframe) also opens on Plausible's own 30-day UI default; known, unaddressed as of 2026-07-02.
