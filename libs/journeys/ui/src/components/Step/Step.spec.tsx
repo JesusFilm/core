@@ -238,7 +238,7 @@ describe('Step', () => {
     })
   })
 
-  it('should call plausible with eventLabel for pageview events', async () => {
+  it('should call plausible with the capture goal for card eventLabel', async () => {
     const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
@@ -278,7 +278,7 @@ describe('Step', () => {
       expect(mockStepViewEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('pageview', expect.any(Object))
-    expect(mockPlausible).toHaveBeenCalledWith(BlockEventLabel.custom1, {
+    expect(mockPlausible).toHaveBeenCalledWith('custom1Capture', {
       u: expect.stringContaining(`/journeyId/Step1`),
       props: {
         id: 'uuid',
@@ -286,22 +286,71 @@ describe('Step', () => {
         value: 'Step 1',
         key: keyify({
           stepId: 'Step1',
-          event: BlockEventLabel.custom1,
+          event: 'custom1Capture',
           blockId: 'Step1',
           journeyId: 'journeyId'
         }),
         simpleKey: keyify({
           stepId: 'Step1',
-          event: BlockEventLabel.custom1,
+          event: 'custom1Capture',
           blockId: 'Step1',
           journeyId: 'journeyId'
         }),
         templateKey: templateKeyify({
-          event: BlockEventLabel.custom1,
+          event: 'custom1Capture',
           journeyId: 'journeyId'
         })
       }
     })
+    // Raw event labels are no longer fired; only the registered capture goal is.
+    expect(mockPlausible).not.toHaveBeenCalledWith(
+      BlockEventLabel.custom1,
+      expect.anything()
+    )
+  })
+
+  it('fires only pageview for a card whose eventLabel has no capture goal', async () => {
+    const mockPlausible = vi.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const blockWithShareCard: TreeBlock<StepFields> = {
+      ...block,
+      children: [
+        {
+          __typename: 'CardBlock',
+          id: 'Card1',
+          parentBlockId: 'Step1',
+          parentOrder: 0,
+          backgroundColor: null,
+          coverBlockId: null,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          backdropBlur: null,
+          eventLabel: BlockEventLabel.share,
+          children: [],
+          showAssistant: null,
+          expandChatByDefault: null
+        }
+      ]
+    }
+
+    treeBlocksVar([blockWithShareCard])
+    blockHistoryVar([blockWithShareCard])
+
+    render(
+      <MockedProvider mocks={[mockStepViewEventCreate]}>
+        <JourneyProvider value={{ journey }}>
+          <Step {...blockWithShareCard} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(mockStepViewEventCreate.result).toHaveBeenCalled()
+    )
+    // share has no registered Plausible goal, so only pageview should fire.
+    expect(mockPlausible).toHaveBeenCalledWith('pageview', expect.any(Object))
+    expect(mockPlausible).toHaveBeenCalledTimes(1)
   })
 
   it.skip('should create a stepViewEvent with a UTM code', async () => {
