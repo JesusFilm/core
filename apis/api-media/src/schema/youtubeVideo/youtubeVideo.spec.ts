@@ -45,6 +45,9 @@ describe('youtubeVideo', () => {
     }
   })
 
+  // Reads are public — no auth headers/context.
+  const publicClient = getClient()
+
   const UPSERT = graphql(`
     mutation YoutubeVideoUpsert($input: YoutubeVideoUpsertInput!) {
       youtubeVideoUpsert(input: $input) {
@@ -394,7 +397,7 @@ describe('youtubeVideo', () => {
         buildRow({ youtubeVideoId: 'yt-2', reviewState: 'LINKED' })
       ])
 
-      const result = await youtubeAdminClient({
+      const result = await publicClient({
         document: LIST,
         variables: { channelId: 'channel-1', offset: 0, limit: 10 } as any
       })
@@ -417,7 +420,7 @@ describe('youtubeVideo', () => {
         buildRow({ youtubeVideoId: 'yt-1', reviewState: 'SKIPPED' })
       ])
 
-      const result = await youtubeAdminClient({
+      const result = await publicClient({
         document: LIST,
         variables: { channelId: 'channel-1' } as any
       })
@@ -429,7 +432,7 @@ describe('youtubeVideo', () => {
     })
 
     it('rejects a negative offset', async () => {
-      const result = await youtubeAdminClient({
+      const result = await publicClient({
         document: LIST,
         variables: { channelId: 'channel-1', offset: -1 } as any
       })
@@ -441,7 +444,7 @@ describe('youtubeVideo', () => {
     })
 
     it('rejects a limit above the maximum page size', async () => {
-      const result = await youtubeAdminClient({
+      const result = await publicClient({
         document: LIST,
         variables: { channelId: 'channel-1', limit: 5000 } as any
       })
@@ -468,7 +471,7 @@ describe('youtubeVideo', () => {
         buildRow({ youtubeVideoId: 'yt-1', reviewState: 'LINKED' })
       )
 
-      const result = await youtubeAdminClient({
+      const result = await publicClient({
         document: BY_ID,
         variables: { youtubeVideoId: 'yt-1' } as any
       })
