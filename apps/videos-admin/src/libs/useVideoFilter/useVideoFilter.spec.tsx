@@ -35,6 +35,7 @@ describe('useVideoFilter', () => {
         locked: true,
         id: true,
         title: true,
+        label: true,
         description: true,
         published: true
       },
@@ -80,6 +81,7 @@ describe('useVideoFilter', () => {
         locked: true,
         id: true,
         title: false,
+        label: true,
         description: true,
         published: true
       },
@@ -89,6 +91,23 @@ describe('useVideoFilter', () => {
         published: false,
         title: 'Jesus'
       }
+    })
+  })
+
+  it('should return initial state with label filter from query params', () => {
+    const search = new URLSearchParams(
+      'filters[label][is]=collection'
+    ) as ReadonlyURLSearchParams
+
+    mockUseSearchParams.mockReturnValue(search)
+
+    const { result } = renderHook(useVideoFilter)
+
+    expect(result.current.filters.where).toStrictEqual({
+      labels: ['collection']
+    })
+    expect(result.current.tableFilterProps.filterModel).toStrictEqual({
+      items: [{ field: 'label', operator: 'is', value: 'collection' }]
     })
   })
 
@@ -118,6 +137,7 @@ describe('useVideoFilter', () => {
         locked: true,
         id: true,
         title: true,
+        label: true,
         description: true,
         published: true
       },
@@ -184,6 +204,25 @@ describe('useVideoFilter', () => {
           ids: ['11_Advent'],
           title: 'Jesus',
           published: false
+        }
+      })
+    })
+
+    it('should handle FilterChange action with label filter', () => {
+      const filterModel = {
+        items: [{ field: 'label', operator: 'is', value: 'collection' }]
+      }
+
+      expect(
+        reducer(initialState, {
+          type: 'FilterChange',
+          model: filterModel
+        })
+      ).toEqual({
+        ...initialState,
+        filterModel: filterModel,
+        whereArgs: {
+          labels: ['collection']
         }
       })
     })

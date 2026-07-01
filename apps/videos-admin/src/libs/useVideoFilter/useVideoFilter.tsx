@@ -52,6 +52,17 @@ export function reducer(state: FilterState, action: FilterAction): FilterState {
   }
 }
 
+const VideoLabelSchema = z.enum([
+  'collection',
+  'episode',
+  'featureFilm',
+  'segment',
+  'series',
+  'shortFilm',
+  'trailer',
+  'behindTheScenes'
+])
+
 const FilterModelSchema = z.object({
   locked: z
     .object({
@@ -66,6 +77,11 @@ const FilterModelSchema = z.object({
   title: z
     .object({
       equals: z.string()
+    })
+    .optional(),
+  label: z
+    .object({
+      is: VideoLabelSchema
     })
     .optional(),
   published: z
@@ -107,6 +123,7 @@ function getColumnVisibilityModel(
     'locked',
     'id',
     'title',
+    'label',
     'description',
     'published'
   ]
@@ -152,6 +169,14 @@ function getWhereArgs(model: GridFilterModel): VideosWhereFilter {
         item.value != null
       )
         where.locked = item.value
+
+      if (
+        item.field === 'label' &&
+        item.operator === 'is' &&
+        item.value != null &&
+        item.value !== ''
+      )
+        where.labels = [item.value]
     })
   }
 
