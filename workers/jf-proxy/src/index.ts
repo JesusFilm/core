@@ -1,10 +1,17 @@
 import { Hono } from 'hono'
 
 const CACHE_MAX_AGE = 86400 // 24 hours
+const FORGE_WATCH_STATIC_PATH_PREFIX = '/forge-watch-static/'
+const WATCH_PATH_PREFIX = '/watch'
+const WATCH_NEXT_PATH_PREFIX = '/watch/_next/'
+const WATCH_IMAGES_PATH_PREFIX = '/watch/images/'
+const FORGE_WATCH_CONTENT_PAGE_PATTERN =
+  /^\/watch\/[^/]+\.html\/[^/]+\.html\/?$/
 
 const app = new Hono<{
   Bindings: {
     RESOURCES_PROXY_DEST?: string
+    FORGE_PROXY_DEST?: string
     WATCH_PROXY_DEST?: string
     IOS_APP_ID?: string
     ANDROID_PACKAGE_NAME?: string
@@ -68,16 +75,15 @@ app.get('*', async (c) => {
   const url = new URL(c.req.url)
   const pathname = url.pathname
 
-  // Check if path is /watch and has EXPERIMENTAL cookie
   const cookieHeader = c.req.header('cookie')
-  const hasExperimentalCookie = cookieHeader?.includes('EXPERIMENTAL')
-  const isWatchPath = pathname.startsWith('/watch')
-
-  // Set destination based on path and cookie
-  const proxyDest =
-    isWatchPath && hasExperimentalCookie
-      ? (c.env.WATCH_PROXY_DEST ?? url.hostname)
-      : (c.env.RESOURCES_PROXY_DEST ?? url.hostname)
+  const proxyDest = getProxyDest({
+    pathname,
+    cookieHeader,
+    hostname: url.hostname,
+    resourcesProxyDest: c.env.RESOURCES_PROXY_DEST,
+    forgeProxyDest: c.env.FORGE_PROXY_DEST,
+    watchProxyDest: c.env.WATCH_PROXY_DEST
+  })
 
   url.hostname = proxyDest
 
@@ -144,5 +150,58 @@ app.get('*', async (c) => {
     headers: sanitizedHeaders
   })
 })
+
+function getProxyDest({
+  pathname,
+  cookieHeader,
+  hostname,
+  resourcesProxyDest,
+  forgeProxyDest,
+  watchProxyDest
+}: {
+  pathname: string
+  cookieHeader?: string
+  hostname: string
+  resourcesProxyDest?: string
+  forgeProxyDest?: string
+  watchProxyDest?: string
+}): string {
+  if (isForgeWatchStaticPath(pathname) || isForgeWatchContentPage(pathname)) {
+    return forgeProxyDest ?? resourcesProxyDest ?? hostname
+  }
+
+  if (isLegacyWatchSupportPath(pathname)) {
+    return watchProxyDest ?? hostname
+  }
+
+  const hasExperimentalCookie = cookieHeader?.includes('EXPERIMENTAL')
+  if (isWatchPath(pathname) && hasExperimentalCookie) {
+    return watchProxyDest ?? hostname
+  }
+
+  return resourcesProxyDest ?? hostname
+}
+
+function isForgeWatchStaticPath(pathname: string): boolean {
+  return pathname.startsWith(FORGE_WATCH_STATIC_PATH_PREFIX)
+}
+
+function isForgeWatchContentPage(pathname: string): boolean {
+  return FORGE_WATCH_CONTENT_PAGE_PATTERN.test(pathname)
+}
+
+function isLegacyWatchSupportPath(pathname: string): boolean {
+  return (
+    pathname.startsWith(WATCH_NEXT_PATH_PREFIX) ||
+    pathname.startsWith(WATCH_IMAGES_PATH_PREFIX)
+  )
+}
+
+function isWatchPath(pathname: string): boolean {
+  return (
+    pathname === WATCH_PATH_PREFIX ||
+    pathname.startsWith(`${WATCH_PATH_PREFIX}/`)
+  )
+}
 
 export default app

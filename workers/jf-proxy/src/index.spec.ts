@@ -224,6 +224,120 @@ describe('test the worker', () => {
     expect(await res.text()).toBe('resources video content')
   })
 
+  it('should route Forge Watch static assets to FORGE_PROXY_DEST', async () => {
+    fetchMock
+      .get('http://forge.example.com')
+      .intercept({ path: '/forge-watch-static/_next/static/chunks/app.js' })
+      .reply(200, 'forge static content')
+
+    const res = await app.request(
+      'http://localhost/forge-watch-static/_next/static/chunks/app.js',
+      {},
+      {
+        RESOURCES_PROXY_DEST: 'resources.example.com',
+        FORGE_PROXY_DEST: 'forge.example.com',
+        WATCH_PROXY_DEST: 'watch.example.com'
+      }
+    )
+    expect(res.status).toBe(200)
+    expect(await res.text()).toBe('forge static content')
+  })
+
+  it('should route Forge Watch content pages to FORGE_PROXY_DEST', async () => {
+    fetchMock
+      .get('http://forge.example.com')
+      .intercept({ path: '/watch/jesus.html/english.html' })
+      .reply(200, 'forge watch page')
+
+    const res = await app.request(
+      'http://localhost/watch/jesus.html/english.html',
+      {
+        headers: {
+          cookie: 'EXPERIMENTAL=true'
+        }
+      },
+      {
+        RESOURCES_PROXY_DEST: 'resources.example.com',
+        FORGE_PROXY_DEST: 'forge.example.com',
+        WATCH_PROXY_DEST: 'watch.example.com'
+      }
+    )
+    expect(res.status).toBe(200)
+    expect(await res.text()).toBe('forge watch page')
+  })
+
+  it('should fall back to RESOURCES_PROXY_DEST for Forge routes when FORGE_PROXY_DEST is missing', async () => {
+    fetchMock
+      .get('http://resources.example.com')
+      .intercept({ path: '/forge-watch-static/_next/static/chunks/app.js' })
+      .reply(200, 'forge fallback content')
+
+    const res = await app.request(
+      'http://localhost/forge-watch-static/_next/static/chunks/app.js',
+      {},
+      {
+        RESOURCES_PROXY_DEST: 'resources.example.com',
+        WATCH_PROXY_DEST: 'watch.example.com'
+      }
+    )
+    expect(res.status).toBe(200)
+    expect(await res.text()).toBe('forge fallback content')
+  })
+
+  it('should route legacy Watch static assets to WATCH_PROXY_DEST', async () => {
+    fetchMock
+      .get('http://watch.example.com')
+      .intercept({ path: '/watch/_next/static/chunks/legacy.js' })
+      .reply(200, 'legacy static content')
+
+    const res = await app.request(
+      'http://localhost/watch/_next/static/chunks/legacy.js',
+      {},
+      {
+        RESOURCES_PROXY_DEST: 'resources.example.com',
+        WATCH_PROXY_DEST: 'watch.example.com'
+      }
+    )
+    expect(res.status).toBe(200)
+    expect(await res.text()).toBe('legacy static content')
+  })
+
+  it('should route legacy Watch optimized images to WATCH_PROXY_DEST', async () => {
+    fetchMock
+      .get('http://watch.example.com')
+      .intercept({ path: '/watch/_next/image?url=/foo.jpg&w=828&q=75' })
+      .reply(200, 'legacy optimized image')
+
+    const res = await app.request(
+      'http://localhost/watch/_next/image?url=/foo.jpg&w=828&q=75',
+      {},
+      {
+        RESOURCES_PROXY_DEST: 'resources.example.com',
+        WATCH_PROXY_DEST: 'watch.example.com'
+      }
+    )
+    expect(res.status).toBe(200)
+    expect(await res.text()).toBe('legacy optimized image')
+  })
+
+  it('should route legacy Watch images to WATCH_PROXY_DEST', async () => {
+    fetchMock
+      .get('http://watch.example.com')
+      .intercept({ path: '/watch/images/foo.jpg' })
+      .reply(200, 'legacy image')
+
+    const res = await app.request(
+      'http://localhost/watch/images/foo.jpg',
+      {},
+      {
+        RESOURCES_PROXY_DEST: 'resources.example.com',
+        WATCH_PROXY_DEST: 'watch.example.com'
+      }
+    )
+    expect(res.status).toBe(200)
+    expect(await res.text()).toBe('legacy image')
+  })
+
   it('should route non-/watch paths to RESOURCES_PROXY_DEST regardless of cookie', async () => {
     fetchMock
       .get('http://resources.example.com')
