@@ -154,7 +154,8 @@ const YoutubeVideoUpsertInput = builder.inputType('YoutubeVideoUpsertInput', {
 const MAX_YOUTUBE_VIDEOS_PAGE_SIZE = 1000
 
 builder.queryFields((t) => ({
-  youtubeVideos: t.withAuth({ isYoutubeAdmin: true }).prismaField({
+  // Reads are public; only writes are restricted to the youtubeAdmin role.
+  youtubeVideos: t.prismaField({
     type: ['YoutubeVideo'],
     nullable: false,
     description: "List a channel's YoutubeVideo rows (the resume-diff source).",
@@ -191,7 +192,7 @@ builder.queryFields((t) => ({
       })
     }
   }),
-  youtubeVideoByVideoId: t.withAuth({ isYoutubeAdmin: true }).prismaField({
+  youtubeVideoByVideoId: t.prismaField({
     type: 'YoutubeVideo',
     nullable: true,
     description: 'Look up a single row by its youtubeVideoId.',
