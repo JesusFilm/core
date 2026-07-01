@@ -35,7 +35,7 @@ jobs:
           run_install: false
       - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install
@@ -63,9 +63,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ./.cache
-          key: ${{ runner.os }}-node-22-lint-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node-24-lint-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-node-22-lint-
+            ${{ runner.os }}-node-24-lint-
       - name: Run ESLint
         uses: mansagroup/nrwl-nx-action@v3
         with:

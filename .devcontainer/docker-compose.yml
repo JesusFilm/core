@@ -1,6 +1,6 @@
 services:
   bootstrap:
-    image: mcr.microsoft.com/devcontainers/typescript-node:20
+    image: mcr.microsoft.com/devcontainers/typescript-node:24
     volumes:
       - core-workspace:/workspaces
       - core-node-user:/home/node
@@ -53,7 +53,7 @@ services:
       target: final
       dockerfile: Dockerfile
       args:
-        VARIANT: 20
+        VARIANT: 24
         USER_UID: 1000
         USER_GID: 1000
     volumes:
