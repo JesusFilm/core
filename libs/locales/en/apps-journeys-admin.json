@@ -1356,5 +1356,11 @@
   "This video didn't finish uploading. Remove it or try again.": "This video didn't finish uploading. Remove it or try again.",
   "Used in the public URL. Must be unique across all collections — changing it breaks existing links.": "Used in the public URL. Must be unique across all collections — changing it breaks existing links.",
   "Your uploaded video will appear here": "Your uploaded video will appear here",
-  "No media will be shown on the public page.": "No media will be shown on the public page."
+  "No media will be shown on the public page.": "No media will be shown on the public page.",
+  "Password": "Password",
+  "Access ID": "Access ID",
+  "Access Secret": "Access Secret",
+  "Failed to check video status": "Failed to check video status",
+  "Justify": "Justify",
+  "{{width}} x {{height}} pixels": "{{width}} x {{height}} pixels"
 }
