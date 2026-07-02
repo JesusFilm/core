@@ -55,7 +55,7 @@ void getTemplateStats({
 })
 ```
 
-After — both template-stats call sites share one builder, exported from `useTemplateFamilyStatsAggregateLazyQuery`:
+After — both template-stats call sites share one builder, `libs/buildAllTimeStatsFilter` (its own module, NOT exported from the hook lib: ~10 specs mock the hook module with `vi.mock` factories, and adding a new export there crashed every tree that consumed it):
 
 ```ts
 export function buildAllTimeStatsFilter(): PlausibleStatsAggregateFilter {
@@ -91,7 +91,7 @@ The chain has no default on our side: the frontend `where` is spread by the api-
 ## Prevention
 
 - Any new frontend query against `journeysPlausibleStatsAggregate`, `journeysPlausibleStatsBreakdown`, `templateFamilyStatsAggregate`, or `templateFamilyStatsBreakdown` must pass an explicit `period`/`date`. Never send an empty `where` — it compiles, runs, and silently means "last 30 days".
-- Build the range from `earliestStatsCollected`, not a hardcoded date, so the floor stays consistent across surfaces. For template stats specifically, reuse `buildAllTimeStatsFilter()` from `useTemplateFamilyStatsAggregateLazyQuery`.
+- Build the range from `earliestStatsCollected`, not a hardcoded date, so the floor stays consistent across surfaces. For template stats specifically, reuse `buildAllTimeStatsFilter()` from `libs/buildAllTimeStatsFilter`.
 - When changing a query's variables, grep for **every** use of the query document (the `GET_*` constant) — imperative `client.query` refetch call sites are easy to miss, and a `where` mismatch between query and refetch splits the Apollo cache entry, silently breaking the refresh.
 - If declining analytics numbers are reported again, check the date range each surface actually sends **first** — it is far cheaper to verify than Plausible-side data-loss theories.
 - Frontend-only enforcement was evaluated and deliberately skipped (few call sites): baking the filter into hooks doesn't bind future queries, and lint can't see runtime variable values. If this recurs, the real fix is server-side — make `period`/`date` required on the filter inputs (codegen then makes `where: {}` a frontend compile error) or default omitted filters to all-time in the resolvers.
