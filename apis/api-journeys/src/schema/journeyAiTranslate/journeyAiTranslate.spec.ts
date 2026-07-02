@@ -856,6 +856,54 @@ describe('journeyAiTranslateCreate mutation', () => {
     )
   })
 
+  it('does not write an empty translation and re-requests the field', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'typography1',
+          typename: 'TypographyBlock',
+          parentBlockId: 'card1',
+          content: 'Hello'
+        }
+      ]
+    } as any)
+
+    // First attempt returns an empty string — a failed translation that must not
+    // blank the block or be treated as complete.
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'typography1', updates: { content: '' } }
+      ])
+    } as any)
+    // Retry returns a real translation.
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'typography1', updates: { content: 'Hola' } }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    // The empty value is never written...
+    expect(prismaMock.block.update).not.toHaveBeenCalledWith(
+      expect.objectContaining({ data: { content: '' } })
+    )
+    // ...the field stays missing, so a second call is made and the real
+    // translation lands.
+    expect(mockStreamText).toHaveBeenCalledTimes(2)
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'typography1' }),
+        data: { content: 'Hola' }
+      })
+    )
+  })
+
   it('re-requests an individual field the model omits (field-level completeness)', async () => {
     prismaMock.journey.findUnique.mockResolvedValueOnce({
       ...mockJourney,

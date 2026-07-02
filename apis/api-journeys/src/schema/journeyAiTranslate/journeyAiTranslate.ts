@@ -103,7 +103,13 @@ function getValidatedBlockUpdates(
   const validatedUpdates = Object.fromEntries(
     allowedFields.flatMap((field) => {
       const value = updates[field]
-      return typeof value === 'string' ? [[field, value]] : []
+      // Reject empty / whitespace-only translations: every requested field has a
+      // non-empty source, so an empty return is a failed translation. Dropping
+      // it here avoids blanking the block and keeps the field "missing" so the
+      // retry/escalation loop re-requests it.
+      return typeof value === 'string' && value.trim() !== ''
+        ? [[field, value]]
+        : []
     })
   ) as Partial<Record<TranslatableBlockField, string>>
 
