@@ -128,6 +128,7 @@
   "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.": "لقد طالت هذه المحادثة. ابدأ محادثة جديدة لمواصلة الدردشة — سيؤدي ذلك إلى مسح الجلسة الحالية.",
   "Start a new conversation": "ابدأ محادثة جديدة",
   "Gallery media": "وسائط المعرض",
+  "Chat has been turned off for this part of the journey.": "تم إيقاف ميزة الدردشة في هذا الجزء من الرحلة.",
   "Select at least {{count}} options._zero": "حدد على الأقل {{count}} خيارات",
   "Select at least {{count}} options._one": "حدد على الأقل {{count}} خيارات",
   "Select at least {{count}} options._two": "حدد على الأقل {{count}} خيارات",
