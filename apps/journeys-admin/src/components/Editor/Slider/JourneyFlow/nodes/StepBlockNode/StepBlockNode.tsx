@@ -137,17 +137,20 @@ export function StepBlockNode({
           {/* Block rows preview published content, so their default titles
               (Submit/Button/Option/Subscribe) follow the journey's language to
               match the canvas and viewer. The step row above ("Default Next
-              Step") is editor chrome and stays in the UI language. */}
-          <JourneyLocaleProvider locale={locale}>
-            {actionBlocks.map((block) => (
-              <ActionButton
-                key={block.id}
-                stepId={step.id}
-                block={block}
-                selected={isSelected}
-              />
-            ))}
-          </JourneyLocaleProvider>
+              Step") is editor chrome and stays in the UI language. Guarded so
+              step nodes without action blocks don't mount an i18n instance. */}
+          {actionBlocks.length > 0 && (
+            <JourneyLocaleProvider locale={locale}>
+              {actionBlocks.map((block) => (
+                <ActionButton
+                  key={block.id}
+                  stepId={step.id}
+                  block={block}
+                  selected={isSelected}
+                />
+              ))}
+            </JourneyLocaleProvider>
+          )}
         </Stack>
       </Stack>
     </Stack>
