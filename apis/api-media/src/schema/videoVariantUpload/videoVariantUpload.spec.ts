@@ -266,6 +266,44 @@ describe('videoVariantUpload lifecycle API', () => {
     )
   })
 
+  it('serializes upload timestamps as DateTime values', async () => {
+    const UPLOADS_QUERY = graphql(`
+      query VideoVariantUploads($input: VideoVariantUploadsFilter) {
+        videoVariantUploads(input: $input) {
+          id
+          muxNonStandardInputDetectedAt
+          createdAt
+          updatedAt
+        }
+      }
+    `)
+
+    prismaMock.videoVariantUpload.findMany.mockResolvedValue([
+      {
+        id: 'upload-id',
+        muxNonStandardInputDetectedAt: new Date('2026-06-18T00:15:00.000Z'),
+        createdAt: new Date('2026-06-18T00:00:00.000Z'),
+        updatedAt: new Date('2026-06-18T00:30:00.000Z')
+      }
+    ] as any)
+
+    const result = await publisherClient({
+      document: UPLOADS_QUERY,
+      variables: {
+        input: { videoId: 'video-id' }
+      } as any
+    })
+
+    expect(result).toHaveProperty('data.videoVariantUploads', [
+      {
+        id: 'upload-id',
+        muxNonStandardInputDetectedAt: '2026-06-18T00:15:00.000Z',
+        createdAt: '2026-06-18T00:00:00.000Z',
+        updatedAt: '2026-06-18T00:30:00.000Z'
+      }
+    ])
+  })
+
   it('queries uploads by multiple statuses for admin recovery views', async () => {
     const UPLOADS_QUERY = graphql(`
       query VideoVariantUploads($input: VideoVariantUploadsFilter) {

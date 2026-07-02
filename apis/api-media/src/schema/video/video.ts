@@ -89,7 +89,7 @@ export function getLanguageIdFromInfo(
       )?.find(({ id }: { id: string }) => id === parentId)?.primaryLanguageId
 }
 
-const Video = builder.prismaObject('Video', {
+export const Video = builder.prismaObject('Video', {
   shareable: true,
   include: {
     childIds: true
