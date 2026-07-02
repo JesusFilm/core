@@ -122,15 +122,6 @@ export class CardLevelActionPage {
   }
 
   async clickDoneBtn() {
-    // The desktop layered editor has no 'Done' Fab; re-clicking 'Add Block'
-    // commits the inline edit while keeping the card drawer open (the verify
-    // steps that follow read the card frame). The mobile slider uses 'Done'.
-    if (
-      (await this.page.locator('div[data-testid="LayeredView"]').count()) > 0
-    ) {
-      await this.clickAddBlockBtn()
-      return
-    }
     await this.page
       .locator('button[data-testid="Fab"]', { hasText: 'Done' })
       .click()
@@ -277,13 +268,13 @@ export class CardLevelActionPage {
     if (
       await this.page
         .locator(
-          'div[data-testid="ImageSource"] + div div[data-testid="ImageBlockThumbnail"] img'
+          'div[data-testid="ImageSource"] div[data-testid="ImageBlockThumbnail"] img'
         )
         .isVisible()
     ) {
       this.uploadedImgSrc = await this.page
         .locator(
-          'div[data-testid="ImageSource"] + div div[data-testid="ImageBlockThumbnail"] img'
+          'div[data-testid="ImageSource"] div[data-testid="ImageBlockThumbnail"] img'
         )
         .getAttribute('src')
     } else {
@@ -294,11 +285,21 @@ export class CardLevelActionPage {
   async verifyImageGotChanged() {
     await expect(
       this.page.locator(
-        'div[data-testid="ImageSource"] + div div[data-testid="ImageBlockThumbnail"] img'
+        'div[data-testid="ImageSource"] div[data-testid="ImageBlockThumbnail"] img'
       )
     ).not.toHaveAttribute('src', this.uploadedImgSrc, {
       timeout: sixtySecondsTimeout
     })
+  }
+
+  // NES-1745: the image library auto-closes after upload/selection,
+  // so reopen the ImageSource before the next step that needs it open
+  async reopenImageSource() {
+    await this.page
+      .locator(
+        'div[data-testid="ImageSource"] button[data-testid="card click area"]'
+      )
+      .click()
   }
 
   async verifyImgUploadedSuccessMsg() {
@@ -324,7 +325,7 @@ export class CardLevelActionPage {
   async clickImgDeleteBtn() {
     await this.page
       .locator(
-        'div[data-testid="ImageSource"] + div svg[data-testid="imageBlockHeaderDelete"]'
+        'div[data-testid="ImageBlockHeader"] svg[data-testid="imageBlockHeaderDelete"]'
       )
       .click()
   }
@@ -332,7 +333,7 @@ export class CardLevelActionPage {
   async verifyImageIsDeleted() {
     await expect(
       this.page.locator(
-        'div[data-testid="ImageSource"] + div div[data-testid="ImageBlockThumbnail"] img'
+        'div[data-testid="ImageSource"] div[data-testid="ImageBlockThumbnail"] img'
       )
     ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
@@ -469,12 +470,6 @@ export class CardLevelActionPage {
         'div[data-testid="VideoBlockEditor"] svg[data-testid="Edit2Icon"]'
       )
     ).toBeHidden({ timeout: sixtySecondsTimeout })
-  }
-
-  async clickleftSideArrowIcon() {
-    await this.page
-      .locator('div[slot="container-start"] svg[data-testid="ChevronLeftIcon"]')
-      .click()
   }
 
   async hoverOnExistingCard() {
@@ -1557,13 +1552,6 @@ export class CardLevelActionPage {
         'div[data-testid="ImageBlockHeader"]:has(img) button:has(svg[data-testid="imageBlockHeaderDelete"])'
       )
     ).toBeVisible()
-  }
-  async closeToolDrawerForFooterImage() {
-    await this.page
-      .locator(
-        'div.MuiToolbar-root:has-text("Image") button[aria-label="close-image-library"]'
-      )
-      .click()
   }
   async validateSelectedImageWithEditIcon() {
     await expect(

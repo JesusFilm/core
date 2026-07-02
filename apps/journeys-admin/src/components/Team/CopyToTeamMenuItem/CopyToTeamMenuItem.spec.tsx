@@ -47,6 +47,17 @@ describe('CopyToTeamMenuItem', () => {
   beforeEach(() => {
     handleCloseMenu.mockClear()
     refetchTemplateStats.mockClear()
+    // These result mocks are shared across tests; clear their call counts so
+    // assertions on whether the team switch fired aren't polluted by earlier
+    // tests in this file.
+    ;(
+      updateLastActiveTeamIdMock.result as MockedFunction<() => unknown>
+    ).mockClear()
+    ;(
+      updateLastActiveTeamIdMockForTranslation.result as MockedFunction<
+        () => unknown
+      >
+    ).mockClear()
     mockedUseTemplateFamilyStatsAggregateLazyQuery.mockReturnValue({
       query: [
         vi.fn(),
@@ -498,6 +509,9 @@ describe('CopyToTeamMenuItem', () => {
   })
 
   it('should handle translation errors', async () => {
+    // Clear leaked active-team state so TeamProvider doesn't fire its own
+    // mount-sync updateLastActiveTeamId and pollute the no-switch assertion.
+    window.sessionStorage.clear()
     const translateSubscriptionErrorMock = {
       request: {
         query: JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
@@ -593,6 +607,9 @@ describe('CopyToTeamMenuItem', () => {
       expect(screen.getByText('Translation failed')).toBeInTheDocument()
     })
     expect(handleCloseMenu).toHaveBeenCalled()
+    // The team must NOT switch when translation fails — the duplicate exists in
+    // the destination but the user should stay put (NES-1636 follow-up).
+    expect(updateLastActiveTeamIdMock.result).not.toHaveBeenCalled()
   })
 
   it('should call handleKeepMounted when provided', async () => {

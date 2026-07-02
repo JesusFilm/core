@@ -7,6 +7,7 @@ import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
 import { useJourneyAiTranslateSubscription } from '@core/journeys/ui/useJourneyAiTranslateSubscription'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
+import { useUpdateActiveTeam } from '@core/journeys/ui/useUpdateActiveTeam'
 
 import { IdType } from '../../../__generated__/globalTypes'
 
@@ -56,12 +57,17 @@ function ActiveUseTemplateDeepLink({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const router = useRouter()
+  // The dialog switches teams itself for a plain copy, but defers the
+  // translation flow to the consumer so the switch fires only on success
+  // (NES-1636) — see onComplete below.
+  const updateTeamState = useUpdateActiveTeam()
 
   const [open, setOpen] = useState(true)
   const [loading, setLoading] = useState(false)
   const [translationVariables, setTranslationVariables] = useState<
     TranslationVariables | undefined
   >(undefined)
+  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null)
 
   // Set true the moment a success/error path issues `router.replace` to the
   // journey list. CopyToTeamDialog calls `onClose()` after submitAction
@@ -108,6 +114,10 @@ function ActiveUseTemplateDeepLink({
       setLoading(false)
       setTranslationVariables(undefined)
       setOpen(false)
+      // Switch to the destination team only on success, before navigating to
+      // its journey list.
+      if (selectedTeamId != null) updateTeamState(selectedTeamId)
+      setSelectedTeamId(null)
       navigateToJourneyList()
     },
     onError(error) {
@@ -117,6 +127,7 @@ function ActiveUseTemplateDeepLink({
       })
       setLoading(false)
       setTranslationVariables(undefined)
+      setSelectedTeamId(null)
       setOpen(false)
       // The duplicate mutation already succeeded before translation began,
       // so the (untranslated) journey exists. Take the user to the list
@@ -136,9 +147,9 @@ function ActiveUseTemplateDeepLink({
 
       // Translation needs the source journey's language metadata. Throwing
       // (instead of a plain return) halts CopyToTeamDialog's submit pipeline
-      // BEFORE updateTeamState + resetForm run, so the user's selections
-      // survive the retry. The throw fires before `setLoading(true)` and
-      // outside the try block below — no "duplication failed" snackbar leaks.
+      // BEFORE resetForm runs, so the user's selections survive the retry.
+      // The throw fires before `setLoading(true)` and outside the try block
+      // below — no "duplication failed" snackbar leaks.
       if (wantsTranslation && journey == null) {
         enqueueSnackbar(t('Loading template — please retry'), {
           variant: 'info',
@@ -181,6 +192,9 @@ function ActiveUseTemplateDeepLink({
 
         const currentLanguageName =
           journey.language.name.find(({ primary }) => !primary)?.value ?? ''
+
+        // Remember the destination so onComplete can switch to it on success.
+        setSelectedTeamId(teamId)
 
         setTranslationVariables({
           journeyId: data.journeyDuplicate.id,

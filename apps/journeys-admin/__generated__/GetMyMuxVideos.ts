@@ -13,6 +13,7 @@ export interface GetMyMuxVideos_getMyMuxVideos {
   playbackId: string | null;
   readyToStream: boolean;
   duration: number | null;
+  userId: string;
 }
 
 export interface GetMyMuxVideos {
@@ -22,4 +23,5 @@ export interface GetMyMuxVideos {
 export interface GetMyMuxVideosVariables {
   offset?: number | null;
   limit?: number | null;
+  teamId?: string | null;
 }

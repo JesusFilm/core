@@ -13,4 +13,5 @@ export interface NewMuxVideo {
   playbackId: string | null;
   readyToStream: boolean;
   duration: number | null;
+  userId: string;
 }
