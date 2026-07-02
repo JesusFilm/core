@@ -33,7 +33,10 @@ class RestrictionsErrorBoundary extends Component<
   }
 
   componentDidUpdate(prevProps: RestrictionsErrorBoundaryProps): void {
-    if (prevProps.resetKey !== this.props.resetKey && this.state.error != null) {
+    if (
+      prevProps.resetKey !== this.props.resetKey &&
+      this.state.error != null
+    ) {
       this.setState({ error: undefined })
     }
   }
