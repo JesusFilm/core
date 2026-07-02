@@ -50,44 +50,45 @@ export function ChatOverlay({
     <Box
       data-testid="ChatOverlay"
       sx={{
+        // Bottom-anchored band exactly as tall as the chat sheet (144px idle
+        // → 80% active). The overlay used to be a full-viewport fixed layer
+        // that silently swallowed clicks on the card revealed above the chat
+        // (QA-538); sizing the container to the sheet means nothing
+        // chat-related exists above it, so the journey stays natively
+        // interactive. Children must stay within the band — an escapee
+        // (negative offset, own fixed positioning) would cover the journey
+        // and silently reintroduce QA-538.
         position: 'fixed',
-        inset: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height,
+        transition: HEIGHT_TRANSITION,
         zIndex: (theme) => theme.zIndex.modal,
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'flex-end',
-        px: 2,
+        px: 2
         // No bottom padding: the chat sheet sits flush to the screen bottom so
         // its top edge aligns exactly with the bordered dark overlay (otherwise
         // the panel floats ~24px above the border and the header reads as
         // jammed against it). Mirrors the mobile drawer's flush-to-bottom
         // sheet (NES-1738 feedback).
-        //
-        // Layout-only layer: since NES-1738 the visible surfaces occupy just
-        // the bottom band, so the card revealed above must stay clickable
-        // (poll options, nav arrows — QA-538). The interactive children opt
-        // back in with pointerEvents: 'auto'.
-        pointerEvents: 'none'
       }}
     >
       <Box
         onClick={onClose}
         aria-hidden
         sx={{
+          // Dark surface fills the band behind the centred panel: absolute so
+          // it ignores the px gutter and stays full-width, and it tracks the
+          // band's height transition automatically. Clicking it closes the
+          // chat. Colour/opacity unchanged from NES-1654 (near-opaque 98%,
+          // no blur).
           position: 'absolute',
-          left: 0,
+          top: 0,
           right: 0,
           bottom: 0,
-          // Dark surface scales WITH the chat (NES-1738 Option B): it grows
-          // from the 144px idle bar to 80% in lockstep with the panel, so the
-          // journey card is revealed above the chat instead of being hidden by
-          // a full-screen layer. Colour/opacity unchanged from NES-1654
-          // (near-opaque 98%, no blur); only the size now tracks the sheet.
-          height,
-          transition: HEIGHT_TRANSITION,
-          // Re-enable pointer events (the root layer is pointerEvents: 'none')
-          // so clicking the scrim beside the panel still closes the chat.
-          pointerEvents: 'auto',
+          left: 0,
           bgcolor: (theme) => alpha(theme.palette.grey[900], 0.98),
           // Rounded top + a 1px translucent-white top border on the FULL-WIDTH
           // background overlay (not the centred chat panel) so its top edge
@@ -105,19 +106,15 @@ export function ChatOverlay({
           position: 'relative',
           width: '100%',
           maxWidth: '48rem',
-          // Compact-then-grow height (Option B). The panel variant's
+          // Fills the band (Option B, NES-1738). The panel variant's
           // ChatHeader + inline input fill the 144px idle bar exactly like
           // the mobile drawer; on the first message AiChat reports 'active'
-          // and the bar grows to 80%, revealing the card's CTA while the
+          // and the band grows to 80%, revealing the card's CTA while the
           // bar sits idle.
-          height,
-          transition: HEIGHT_TRANSITION,
+          height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          minHeight: 0,
-          // Re-enable pointer events (the root layer is pointerEvents: 'none')
-          // so the chat panel stays fully interactive.
-          pointerEvents: 'auto'
+          minHeight: 0
         }}
       >
         <AiChat
