@@ -13,6 +13,7 @@ import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider/JourneyProvider'
 import {
   JourneyPlausibleEvents,
+  fireCaptureEvent,
   keyify,
   templateKeyify
 } from '../../libs/plausibleHelpers'
@@ -99,26 +100,16 @@ export function Step({
           children[0]?.__typename === 'CardBlock'
             ? children[0].eventLabel
             : null
-        if (eventLabel != null) {
-          const eventLabelKey = keyify({
-            stepId: input.blockId,
-            event: eventLabel,
-            blockId: input.blockId,
-            journeyId: journey?.id
-          })
-          plausible(eventLabel, {
-            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
-            props: {
-              ...input,
-              key: eventLabelKey,
-              simpleKey: eventLabelKey,
-              templateKey: templateKeyify({
-                event: eventLabel,
-                journeyId: journey?.id
-              })
-            }
-          })
-        }
+        // Fire the registered Capture goal (e.g. christDecisionCapture) instead of
+        // the raw event label so card conversions are counted in the Plausible
+        // dashboard, matching how buttons/videos/radio questions report captures.
+        fireCaptureEvent(plausible, eventLabel, {
+          u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+          input,
+          stepId: input.blockId,
+          blockId: input.blockId,
+          journeyId: journey?.id
+        })
       }
       sendGTMEvent({
         event: 'step_view',

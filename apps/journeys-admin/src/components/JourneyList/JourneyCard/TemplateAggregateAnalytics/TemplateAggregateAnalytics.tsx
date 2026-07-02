@@ -10,6 +10,7 @@ import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import Inbox2Icon from '@core/shared/ui/icons/Inbox2'
 
 import { IdType } from '../../../../../__generated__/globalTypes'
+import { buildAllTimeStatsFilter } from '../../../../libs/buildAllTimeStatsFilter'
 import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { Item } from '../../../Editor/Toolbar/Items/Item'
 
@@ -34,7 +35,7 @@ export function TemplateAggregateAnalytics({
         variables: {
           id: journeyId,
           idType: IdType.databaseId,
-          where: {}
+          where: buildAllTimeStatsFilter()
         }
       })
     }
