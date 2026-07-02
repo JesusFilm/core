@@ -1,0 +1,1 @@
+export { JourneyLocaleProvider } from './JourneyLocaleProvider'
