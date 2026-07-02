@@ -19,7 +19,8 @@ const items: RoadmapItem[] = [
     spanToEnd: false,
     status: 'In progress',
     effort: 'Ongoing',
-    content: 'Fixing the highest-impact issues with a [link](https://example.com).'
+    content:
+      'Fixing the highest-impact issues with a [link](https://example.com).'
   },
   {
     title: 'Future product ideas',
@@ -83,8 +84,9 @@ describe('Roadmap', () => {
   it('renders markdown content, including links', () => {
     render(<Roadmap items={items} />)
 
-    expect(
-      screen.getByRole('link', { name: 'link' })
-    ).toHaveAttribute('href', 'https://example.com')
+    expect(screen.getByRole('link', { name: 'link' })).toHaveAttribute(
+      'href',
+      'https://example.com'
+    )
   })
 })
