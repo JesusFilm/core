@@ -50,7 +50,7 @@ for the visitor.
   The dark backdrop became a bottom sheet (144px idle / 80% active), but the
   overlay's root `Box` stayed `position: fixed; inset: 0` at
   `theme.zIndex.modal` with default pointer-events — a transparent
-  full-viewport click shield. The card was *visually* revealed but not
+  full-viewport click shield. The card was _visually_ revealed but not
   interactively.
 - **Existing tests couldn't catch it.** jsdom performs no hit-testing
   (`fireEvent.click` dispatches on the target regardless of covering
