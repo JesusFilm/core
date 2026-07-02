@@ -56,12 +56,18 @@ export function ChatOverlay({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'flex-end',
-        px: 2
+        px: 2,
         // No bottom padding: the chat sheet sits flush to the screen bottom so
         // its top edge aligns exactly with the bordered dark overlay (otherwise
         // the panel floats ~24px above the border and the header reads as
         // jammed against it). Mirrors the mobile drawer's flush-to-bottom
         // sheet (NES-1738 feedback).
+        //
+        // Layout-only layer: since NES-1738 the visible surfaces occupy just
+        // the bottom band, so the card revealed above must stay clickable
+        // (poll options, nav arrows — QA-538). The interactive children opt
+        // back in with pointerEvents: 'auto'.
+        pointerEvents: 'none'
       }}
     >
       <Box
@@ -79,6 +85,9 @@ export function ChatOverlay({
           // (near-opaque 98%, no blur); only the size now tracks the sheet.
           height,
           transition: HEIGHT_TRANSITION,
+          // Re-enable pointer events (the root layer is pointerEvents: 'none')
+          // so clicking the scrim beside the panel still closes the chat.
+          pointerEvents: 'auto',
           bgcolor: (theme) => alpha(theme.palette.grey[900], 0.98),
           // Rounded top + a 1px translucent-white top border on the FULL-WIDTH
           // background overlay (not the centred chat panel) so its top edge
@@ -105,7 +114,10 @@ export function ChatOverlay({
           transition: HEIGHT_TRANSITION,
           display: 'flex',
           flexDirection: 'column',
-          minHeight: 0
+          minHeight: 0,
+          // Re-enable pointer events (the root layer is pointerEvents: 'none')
+          // so the chat panel stays fully interactive.
+          pointerEvents: 'auto'
         }}
       >
         <AiChat

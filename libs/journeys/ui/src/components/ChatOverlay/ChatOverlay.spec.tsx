@@ -125,4 +125,26 @@ describe('ChatOverlay', () => {
     fireEvent.click(backdrop)
     expect(onClose).toHaveBeenCalledTimes(1)
   })
+
+  // QA-538: the full-viewport root is a layout-only layer. Since NES-1738 the
+  // visible chat surfaces occupy just the bottom band, so the journey card
+  // revealed above must keep receiving clicks (poll options, nav arrows).
+  // jsdom does no hit-testing, so pin the pointer-events styles directly.
+  it('lets clicks pass through the root layer to the journey card (QA-538)', () => {
+    render(<ChatOverlay open onClose={vi.fn()} />)
+    expect(screen.getByTestId('ChatOverlay')).toHaveStyle({
+      pointerEvents: 'none'
+    })
+  })
+
+  it('keeps the backdrop and chat panel interactive despite the pass-through root', () => {
+    render(<ChatOverlay open onClose={vi.fn()} />)
+    const backdrop = screen
+      .getByTestId('ChatOverlay')
+      .querySelector('[aria-hidden]') as HTMLElement
+    expect(backdrop).toHaveStyle({ pointerEvents: 'auto' })
+    expect(screen.getByTestId('ChatOverlayPanel')).toHaveStyle({
+      pointerEvents: 'auto'
+    })
+  })
 })
