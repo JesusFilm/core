@@ -329,6 +329,7 @@ type Mutation {
   cloudflareR2Delete(id: ID!): CloudflareR2!
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
   triggerUnsplashDownload(url: String!): Boolean!
+  reindexLanguagesInAlgolia: ReindexLanguagesInAlgoliaResult!
   bibleCitationCreate(input: MutationBibleCitationCreateInput!): BibleCitation
   bibleCitationUpdate(input: MutationBibleCitationUpdateInput!): BibleCitation
   bibleCitationDelete(id: ID!): Boolean
@@ -880,6 +881,11 @@ enum RedirectType {
   dl
   dh
   s
+}
+
+type ReindexLanguagesInAlgoliaResult {
+  """Number of languages pushed to the Algolia languages index"""
+  count: Int!
 }
 
 enum SegmindModel {

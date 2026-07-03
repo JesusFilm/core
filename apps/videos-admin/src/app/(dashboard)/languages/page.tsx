@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 
-import { LanguageList } from './_LanguageList'
+import { LanguagesTabs } from './_LanguagesTabs'
 
 export default function LanguagesPage(): ReactElement {
-  return <LanguageList />
+  return <LanguagesTabs />
 }

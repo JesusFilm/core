@@ -1,6 +1,8 @@
 import { prisma } from '@core/prisma/media/client'
 
+import { reindexLanguagesWithVideosInAlgolia } from '../../lib/languages/updateLanguageInAlgolia'
 import { builder } from '../builder'
+import { logger } from '../logger'
 
 export const Language = builder.externalRef(
   'Language',
@@ -100,3 +102,32 @@ LanguageWithSlug.implement({
     slug: t.exposeString('slug', { nullable: false })
   })
 })
+
+interface ReindexLanguagesInAlgoliaResultShape {
+  count: number
+}
+
+const ReindexLanguagesInAlgoliaResult =
+  builder.objectRef<ReindexLanguagesInAlgoliaResultShape>(
+    'ReindexLanguagesInAlgoliaResult'
+  )
+
+ReindexLanguagesInAlgoliaResult.implement({
+  fields: (t) => ({
+    count: t.exposeInt('count', {
+      nullable: false,
+      description: 'Number of languages pushed to the Algolia languages index'
+    })
+  })
+})
+
+builder.mutationFields((t) => ({
+  // Repairs the Algolia languages index by re-upserting every language that has
+  // videos. Languages that were already hasVideos: true never hit the
+  // incremental sync, so this backfills them and makes them searchable.
+  reindexLanguagesInAlgolia: t.withAuth({ isPublisher: true }).field({
+    type: ReindexLanguagesInAlgoliaResult,
+    nullable: false,
+    resolve: async () => await reindexLanguagesWithVideosInAlgolia(logger)
+  })
+}))

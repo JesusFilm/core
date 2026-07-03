@@ -1,9 +1,17 @@
+import { parse } from 'graphql'
 import { vi } from 'vitest'
 
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
+import { reindexLanguagesWithVideosInAlgolia } from '../../lib/languages/updateLanguageInAlgolia'
+
+vi.mock('../../lib/languages/updateLanguageInAlgolia', () => ({
+  reindexLanguagesWithVideosInAlgolia: vi.fn(),
+  updateLanguageInAlgoliaFromMedia: vi.fn(),
+  buildAlgoliaLanguageRecord: vi.fn()
+}))
 
 describe('Language', () => {
   const client = getClient()
@@ -268,6 +276,52 @@ describe('Language', () => {
 
       expect(resolvedLanguage).toEqual({ id: '529' })
       expect(languageWithSlugData.slug).toBe('english')
+    })
+  })
+
+  describe('reindexLanguagesInAlgolia', () => {
+    // Not using the typed `graphql()` helper: this mutation is not yet in the
+    // composed gateway schema that gql.tada validates against.
+    const REINDEX_MUTATION = parse(`
+      mutation ReindexLanguagesInAlgolia {
+        reindexLanguagesInAlgolia {
+          count
+        }
+      }
+    `)
+
+    const publisherClient = getClient({
+      headers: { authorization: 'token' },
+      context: { user: { id: 'userId' }, currentRoles: ['publisher'] }
+    })
+
+    beforeEach(() => {
+      vi.clearAllMocks()
+    })
+
+    it('reindexes languages and returns the count for publishers', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      vi.mocked(reindexLanguagesWithVideosInAlgolia).mockResolvedValue({
+        count: 42
+      })
+
+      const data = await publisherClient({ document: REINDEX_MUTATION })
+
+      expect(reindexLanguagesWithVideosInAlgolia).toHaveBeenCalledTimes(1)
+      expect(data).toHaveProperty('data.reindexLanguagesInAlgolia.count', 42)
+    })
+
+    it('rejects callers without the publisher role', async () => {
+      const data = await client({ document: REINDEX_MUTATION })
+
+      expect(reindexLanguagesWithVideosInAlgolia).not.toHaveBeenCalled()
+      expect(data).toHaveProperty('errors')
     })
   })
 })
