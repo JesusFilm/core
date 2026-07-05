@@ -40,6 +40,10 @@ import {
   JourneyStatus,
   TemplateGalleryPageStatus
 } from '../../../__generated__/globalTypes'
+import {
+  sendCollectionCreateEvent,
+  sendCollectionEditOpenEvent
+} from '../../libs/sendCollectionEvent'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { useCanPublishCollection } from '../../libs/useCanPublishCollection'
 import { useTemplateGalleryPageCreateMutation } from '../../libs/useTemplateGalleryPageCreateMutation'
@@ -474,7 +478,7 @@ export function TemplateGalleryPageList({
     if (creatingRef.current || createLoading || teamId == null) return
     creatingRef.current = true
     try {
-      await templateGalleryPageCreate({
+      const { data } = await templateGalleryPageCreate({
         variables: {
           input: {
             teamId,
@@ -484,6 +488,10 @@ export function TemplateGalleryPageList({
           }
         }
       })
+      const created = data?.templateGalleryPageCreate
+      if (created != null) {
+        sendCollectionCreateEvent({ teamId, collectionId: created.id })
+      }
       if (mountedRef.current) {
         enqueueSnackbar(t('Collection created'), {
           variant: 'success',
@@ -507,6 +515,15 @@ export function TemplateGalleryPageList({
     setEditTargetId(null)
   }
   function handleEdit(collection: TemplateGalleryPage): void {
+    // teamId is always defined once collections render (the null guard
+    // below returns early), so the check is TS narrowing, not behavior.
+    if (teamId != null) {
+      sendCollectionEditOpenEvent({
+        teamId,
+        collectionId: collection.id,
+        collectionStatus: collection.status
+      })
+    }
     setEditTargetId(collection.id)
   }
 

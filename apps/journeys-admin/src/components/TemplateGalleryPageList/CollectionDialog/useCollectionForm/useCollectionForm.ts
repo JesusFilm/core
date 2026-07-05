@@ -14,6 +14,12 @@ import {
   TemplateGalleryPageStatus,
   TemplateGalleryPageUpdateInput
 } from '../../../../../__generated__/globalTypes'
+import {
+  sendCollectionDescriptionUpdateEvent,
+  sendCollectionMediaUpdateEvent,
+  sendCollectionPublishEvent,
+  sendCollectionSlugUpdateEvent
+} from '../../../../libs/sendCollectionEvent'
 import { useTemplateGalleryPageCreateMutation } from '../../../../libs/useTemplateGalleryPageCreateMutation'
 import { useTemplateGalleryPagePublishMutation } from '../../../../libs/useTemplateGalleryPagePublishMutation'
 import { useTemplateGalleryPageUnpublishMutation } from '../../../../libs/useTemplateGalleryPageUnpublishMutation'
@@ -326,6 +332,25 @@ export function useCollectionForm({
           // retry after a later failure (e.g. publish) doesn't resend it.
           if (input.media !== undefined) {
             persistedMediaRef.current = values.media
+            sendCollectionMediaUpdateEvent({
+              teamId,
+              collectionId: collection.id,
+              mediaType: values.media.type,
+              mediaUrl: values.media.url
+            })
+          }
+          if (input.description !== undefined) {
+            sendCollectionDescriptionUpdateEvent({
+              teamId,
+              collectionId: collection.id
+            })
+          }
+          if (input.slug !== undefined) {
+            sendCollectionSlugUpdateEvent({
+              teamId,
+              collectionId: collection.id,
+              collectionSlug: values.slug
+            })
           }
           // Suppress the update snackbar when we're about to fire publish
           // — the success dialog covers it, and stacking two toasts
@@ -354,6 +379,11 @@ export function useCollectionForm({
             })
             return
           }
+          sendCollectionPublishEvent({
+            teamId,
+            collectionId: collection.id,
+            collectionSlug: result.slug
+          })
           // Merge server-set fields (status, publishedAt, updatedAt,
           // slug) into the collection so the success dialog has the
           // live public URL. Don't merge the form values: the
