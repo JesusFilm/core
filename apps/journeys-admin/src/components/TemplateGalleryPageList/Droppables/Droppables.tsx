@@ -1,4 +1,4 @@
-import { Collision, useDroppable } from '@dnd-kit/core'
+import { Collision, useDndMonitor, useDroppable } from '@dnd-kit/core'
 import {
   SortableContext,
   rectSortingStrategy,
@@ -9,17 +9,12 @@ import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, memo } from 'react'
+import { ReactElement, memo, useState } from 'react'
 
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
-import {
-  JOURNEY_CARD_CONTENT_HEIGHT,
-  JOURNEY_CARD_IMAGE_ASPECT_RATIO,
-  JOURNEY_CARD_IMAGE_MARGIN,
-  JourneyCard
-} from '../../JourneyList/JourneyCard'
+import { JourneyCard, JourneyCardSizer } from '../../JourneyList/JourneyCard'
 import { COLLECTION_GRID_SPACING } from '../collectionLayout'
 
 // Drop zone identity is encoded into a string the dnd-kit `over.id` carries
@@ -142,19 +137,33 @@ interface DraggableJourneysGridProps {
    * unsectioned pool omits it (dropping there is "remove", not "add").
    */
   showDropPlaceholder?: boolean
-  /** True while any card is being dragged — lights up the placeholder. */
-  dragActive?: boolean
 }
+
+// One card slot — must stay identical between the real card tiles and the
+// drop placeholder tile so the placeholder always occupies exactly one
+// card's footprint.
+const GRID_TILE_SIZE = { xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }
 
 /**
  * Always-visible drop affordance rendered as the last grid tile of a
  * collection (NES-1703). Purely visual — the whole collection is already
  * one droppable via DroppableCollectionWrapper, so a drop landing on this
  * tile routes through the section drop-zone like any other in-collection
- * drop. Lights up while a drag is active.
+ * drop. Lights up while a drag is active — tracked via useDndMonitor
+ * (start/end/cancel events → local state) rather than a prop drilled from
+ * the parent or useDndContext: the prop would bust every collection
+ * grid's memo on drag start, and the context value is rebuilt on every
+ * pointer-move tick. This way each tile re-renders exactly twice per
+ * drag. Same pattern as the editor's DragItemWrapper.
  */
-function DropPlaceholderTile({ active }: { active: boolean }): ReactElement {
+function DropPlaceholderTile(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const [dragActive, setDragActive] = useState(false)
+  useDndMonitor({
+    onDragStart: () => setDragActive(true),
+    onDragEnd: () => setDragActive(false),
+    onDragCancel: () => setDragActive(false)
+  })
   return (
     <Box
       data-testid="CollectionDropPlaceholder"
@@ -166,24 +175,16 @@ function DropPlaceholderTile({ active }: { active: boolean }): ReactElement {
         // Neutral darkening while a drag is active — primary.main is red
         // in this theme, and every collection's placeholder lighting up
         // red at once was too loud.
-        borderColor: active ? 'text.secondary' : 'divider',
-        color: active ? 'text.secondary' : 'text.disabled',
+        borderColor: dragActive ? 'text.secondary' : 'divider',
+        color: dragActive ? 'text.secondary' : 'text.disabled',
         transition: 'border-color 0.2s ease, color 0.2s ease'
       }}
     >
-      {/* Invisible sizers mirroring JourneyCard's geometry (image area +
-          fixed text block) so the tile's intrinsic height matches a real
-          card — even when it's the only tile in an empty collection,
-          where there's no row-mate to flex-stretch against. */}
-      <Box
-        aria-hidden
-        sx={{
-          mx: JOURNEY_CARD_IMAGE_MARGIN,
-          mt: JOURNEY_CARD_IMAGE_MARGIN,
-          aspectRatio: JOURNEY_CARD_IMAGE_ASPECT_RATIO
-        }}
-      />
-      <Box aria-hidden sx={{ height: JOURNEY_CARD_CONTENT_HEIGHT }} />
+      {/* Sizer mirroring JourneyCard's in-flow geometry so the tile's
+          intrinsic height matches a real card — even when it's the only
+          tile in an empty collection, where there's no row-mate to
+          flex-stretch against. */}
+      <JourneyCardSizer />
       <Stack
         alignItems="center"
         justifyContent="center"
@@ -200,8 +201,7 @@ function DropPlaceholderTile({ active }: { active: boolean }): ReactElement {
 function DraggableJourneysGridImpl({
   journeys,
   dragInFlight,
-  showDropPlaceholder = false,
-  dragActive = false
+  showDropPlaceholder = false
 }: DraggableJourneysGridProps): ReactElement | null {
   if (journeys.length === 0 && !showDropPlaceholder) return null
   // SortableContext gives intra-collection ordering: each item is both a
@@ -216,13 +216,13 @@ function DraggableJourneysGridImpl({
     <SortableContext items={ids} strategy={rectSortingStrategy}>
       <Grid container spacing={COLLECTION_GRID_SPACING}>
         {journeys.map((journey) => (
-          <Grid key={journey.id} size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}>
+          <Grid key={journey.id} size={GRID_TILE_SIZE}>
             <DraggableJourney journey={journey} disabled={dragInFlight} />
           </Grid>
         ))}
         {showDropPlaceholder && (
-          <Grid size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}>
-            <DropPlaceholderTile active={dragActive} />
+          <Grid size={GRID_TILE_SIZE}>
+            <DropPlaceholderTile />
           </Grid>
         )}
       </Grid>

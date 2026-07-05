@@ -1,6 +1,5 @@
 import { DndContext } from '@dnd-kit/core'
 import { render, screen } from '@testing-library/react'
-import { ReactElement } from 'react'
 
 import '../../../../test/i18n'
 
@@ -12,14 +11,11 @@ import { DraggableJourneysGrid } from './Droppables'
 function renderGrid(
   props: Partial<Parameters<typeof DraggableJourneysGrid>[0]> = {}
 ): ReturnType<typeof render> {
-  function Harness(): ReactElement {
-    return (
-      <DndContext>
-        <DraggableJourneysGrid journeys={[]} dragInFlight={false} {...props} />
-      </DndContext>
-    )
-  }
-  return render(<Harness />)
+  return render(
+    <DndContext>
+      <DraggableJourneysGrid journeys={[]} dragInFlight={false} {...props} />
+    </DndContext>
+  )
 }
 
 describe('DraggableJourneysGrid drop placeholder (NES-1703)', () => {
@@ -34,12 +30,5 @@ describe('DraggableJourneysGrid drop placeholder (NES-1703)', () => {
     expect(
       screen.queryByTestId('CollectionDropPlaceholder')
     ).not.toBeInTheDocument()
-  })
-
-  it('keeps the placeholder mounted while a drag is active', () => {
-    // dragActive only restyles the tile (border lights up) — it must stay
-    // in the tree so the collection always presents a drop target.
-    renderGrid({ showDropPlaceholder: true, dragActive: true })
-    expect(screen.getByTestId('CollectionDropPlaceholder')).toBeInTheDocument()
   })
 })

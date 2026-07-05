@@ -135,7 +135,7 @@ export function CollectionDialogFooter({
   // collection is publishable (it just renders no templates until some
   // are added).
   const publishBlocked = !canPublish
-  const publishTooltip = !canPublish ? (publishBlockedReason ?? '') : ''
+  const publishTooltip = publishBlocked ? (publishBlockedReason ?? '') : ''
   return (
     <>
       <Button onClick={onCancel} disabled={busy}>

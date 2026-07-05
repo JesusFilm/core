@@ -299,9 +299,6 @@ function CollectionCardImpl({
             minHeight: 100
           }}
         >
-          {/* NES-1703: children render unconditionally — the grid's
-              always-present DropPlaceholderTile is the empty-state drop
-              affordance now. */}
           {children}
         </CardContent>
       </Collapse>

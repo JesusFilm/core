@@ -34,16 +34,37 @@ import { JourneyCardText } from './JourneyCardText'
 import { JourneyCardVariant } from './journeyCardVariant'
 import { TemplateAggregateAnalytics } from './TemplateAggregateAnalytics'
 
-/**
- * Card geometry shared with the template gallery's DropPlaceholderTile
- * (NES-1703) so the placeholder's intrinsic height always matches a real
- * card. Keep these in sync with nothing — change them here and both the
- * card and the placeholder follow.
- */
-export const JOURNEY_CARD_IMAGE_MARGIN = { xs: 3, sm: 1.75 }
-export const JOURNEY_CARD_IMAGE_ASPECT_RATIO = { xs: '2', sm: '1.43' }
+// Shared between the card's own layout and JourneyCardSizer below.
+const JOURNEY_CARD_IMAGE_MARGIN = { xs: 3, sm: 1.75 }
+const JOURNEY_CARD_IMAGE_ASPECT_RATIO = { xs: '2', sm: '1.43' }
 // Fixed text-block height accommodating one- and two-line titles.
-export const JOURNEY_CARD_CONTENT_HEIGHT = { xs: 139, sm: 137 }
+const JOURNEY_CARD_CONTENT_HEIGHT = { xs: 139, sm: 137 }
+
+/**
+ * Invisible spacer matching a JourneyCard's in-flow height (NES-1703).
+ * The template gallery's DropPlaceholderTile renders this so its dashed
+ * tile is always exactly card-sized — even alone in an empty collection.
+ *
+ * Colocated with JourneyCard because the height contract is structural,
+ * not just these constants: it also relies on the analytics/info footer
+ * being `position: absolute` and the Card adding no in-flow chrome. If
+ * you add in-flow content to JourneyCard, mirror it here.
+ */
+export function JourneyCardSizer(): ReactElement {
+  return (
+    <>
+      <Box
+        aria-hidden
+        sx={{
+          mx: JOURNEY_CARD_IMAGE_MARGIN,
+          mt: JOURNEY_CARD_IMAGE_MARGIN,
+          aspectRatio: JOURNEY_CARD_IMAGE_ASPECT_RATIO
+        }}
+      />
+      <Box aria-hidden sx={{ height: JOURNEY_CARD_CONTENT_HEIGHT }} />
+    </>
+  )
+}
 
 const TemplateBreakdownAnalyticsDialog = dynamic(
   async () =>
@@ -79,6 +100,7 @@ interface JourneyCardProps {
  * @param {string} [props.duplicatedJourneyId] - The ID of the duplicated journey
  * @param {JourneyCardVariant} [props.variant] - The variant of the journey card
  * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Function to refetch journey data
+ * @param {'hover' | 'always'} [props.showDragAffordance] - Renders the move-arrow drag affordance over the image (NES-1703)
  * @returns {ReactElement} A journey card component
  */
 
