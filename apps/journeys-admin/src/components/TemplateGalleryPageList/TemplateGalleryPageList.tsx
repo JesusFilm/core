@@ -218,8 +218,7 @@ export function TemplateGalleryPageList({
     function updateGalleryMinHeight(): void {
       if (rootNode == null) return
       // Offset from the top of the document — stable under scroll.
-      const topOffset =
-        rootNode.getBoundingClientRect().top + window.scrollY
+      const topOffset = rootNode.getBoundingClientRect().top + window.scrollY
       setGalleryMinHeight(
         `calc(100vh - ${Math.max(0, Math.round(topOffset))}px)`
       )
@@ -701,9 +700,7 @@ export function TemplateGalleryPageList({
                     <DroppableCollectionWrapper
                       key={collection.id}
                       id={collection.id}
-                      disabled={
-                        interactionsLocked || busyId === collection.id
-                      }
+                      disabled={interactionsLocked || busyId === collection.id}
                     >
                       <CollectionCard
                         collection={collection}
