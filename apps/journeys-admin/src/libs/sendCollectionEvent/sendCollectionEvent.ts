@@ -7,7 +7,9 @@ import {
 
 /**
  * GTM events for the Local Template Library collection workflow (NES-1698).
- * Event names are snake_case and dataLayer keys are camelCase per
+ * Every event carries the `team_collection_` prefix so the feature reads as
+ * one group among all analytics. Event names are snake_case (max 40 chars —
+ * GA4's event-name cap) and dataLayer keys are camelCase per
  * apps/docs/docs/03-basics/06-analytics.md.
  */
 
@@ -72,6 +74,17 @@ interface CollectionMediaUpdateEvent {
   mediaUrl?: string
 }
 
+// Each preview surface reports a distinct event name (rather than one event
+// with a location param) so the surfaces show up as separate rows in GA4.
+const PREVIEW_CLICK_EVENT_BY_LOCATION: Record<
+  CollectionLinkEventLocation,
+  string
+> = {
+  card_menu: 'team_collection_menu_preview_click',
+  edit_dialog: 'team_collection_dialog_preview_click',
+  publish_success_dialog: 'team_collection_publish_preview_click'
+}
+
 // GA4 caps event parameter values at 100 characters — report the embed host
 // (e.g. "www.youtube.com") rather than the full URL. Mux uploads have no URL,
 // so they report as the literal provider "mux".
@@ -94,7 +107,7 @@ export function sendCollectionCreateEvent({
   collectionId
 }: CollectionCreateEvent): void {
   sendGTMEvent({
-    event: 'collection_create',
+    event: 'team_collection_create',
     teamId,
     collectionId
   })
@@ -106,7 +119,7 @@ export function sendCollectionEditOpenEvent({
   collectionStatus
 }: CollectionEditOpenEvent): void {
   sendGTMEvent({
-    event: 'collection_edit_open',
+    event: 'team_collection_edit_dialog_open',
     teamId,
     collectionId,
     collectionStatus
@@ -119,7 +132,7 @@ export function sendCollectionPublishEvent({
   collectionSlug
 }: CollectionPublishEvent): void {
   sendGTMEvent({
-    event: 'collection_publish',
+    event: 'team_collection_publish',
     teamId,
     collectionId,
     collectionSlug
@@ -131,7 +144,7 @@ export function sendCollectionTemplateDragEvent({
   templateId
 }: CollectionTemplateEvent): void {
   sendGTMEvent({
-    event: 'collection_template_drag',
+    event: 'team_collection_template_added_via_drag',
     collectionId,
     templateId
   })
@@ -142,7 +155,7 @@ export function sendCollectionTemplateAddEvent({
   templateId
 }: CollectionTemplateEvent): void {
   sendGTMEvent({
-    event: 'collection_template_add',
+    event: 'team_collection_template_added_in_dialog',
     collectionId,
     templateId
   })
@@ -152,7 +165,7 @@ export function sendCollectionMoreDetailsClickEvent({
   collectionId
 }: CollectionMoreDetailsClickEvent): void {
   sendGTMEvent({
-    event: 'collection_more_details_click',
+    event: 'team_collection_more_details_click',
     collectionId
   })
 }
@@ -163,8 +176,7 @@ export function sendCollectionPreviewClickEvent({
   collectionId
 }: CollectionPreviewClickEvent): void {
   sendGTMEvent({
-    event: 'collection_preview_click',
-    location,
+    event: PREVIEW_CLICK_EVENT_BY_LOCATION[location],
     collectionSlug,
     collectionId
   })
@@ -175,7 +187,7 @@ export function sendCollectionCopyLinkClickEvent({
   collectionSlug
 }: CollectionCopyLinkClickEvent): void {
   sendGTMEvent({
-    event: 'collection_copy_link_click',
+    event: 'team_collection_copy_link_click',
     location,
     collectionSlug
   })
@@ -186,7 +198,7 @@ export function sendCollectionDescriptionUpdateEvent({
   collectionId
 }: CollectionDescriptionUpdateEvent): void {
   sendGTMEvent({
-    event: 'collection_description_update',
+    event: 'team_collection_description_update',
     teamId,
     collectionId
   })
@@ -198,7 +210,7 @@ export function sendCollectionSlugUpdateEvent({
   collectionSlug
 }: CollectionSlugUpdateEvent): void {
   sendGTMEvent({
-    event: 'collection_slug_update',
+    event: 'team_collection_slug_update',
     teamId,
     collectionId,
     collectionSlug
@@ -212,7 +224,7 @@ export function sendCollectionMediaUpdateEvent({
   mediaUrl
 }: CollectionMediaUpdateEvent): void {
   sendGTMEvent({
-    event: 'collection_media_update',
+    event: 'team_collection_media_update',
     teamId,
     collectionId,
     mediaType,
