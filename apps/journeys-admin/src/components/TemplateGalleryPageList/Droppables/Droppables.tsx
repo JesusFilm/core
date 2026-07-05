@@ -6,10 +6,20 @@ import {
 } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, memo } from 'react'
 
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
+
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
-import { JourneyCard } from '../../JourneyList/JourneyCard'
+import {
+  JOURNEY_CARD_CONTENT_HEIGHT,
+  JOURNEY_CARD_IMAGE_ASPECT_RATIO,
+  JOURNEY_CARD_IMAGE_MARGIN,
+  JourneyCard
+} from '../../JourneyList/JourneyCard'
 import { COLLECTION_GRID_SPACING } from '../collectionLayout'
 
 // Drop zone identity is encoded into a string the dnd-kit `over.id` carries
@@ -126,13 +136,74 @@ export const DroppableCollectionWrapper = memo(DroppableCollectionWrapperImpl)
 interface DraggableJourneysGridProps {
   journeys: readonly Journey[]
   dragInFlight: boolean
+  /**
+   * NES-1703: when true a card-sized dashed placeholder tile always renders
+   * after the cards — the collection's standing drop affordance. The
+   * unsectioned pool omits it (dropping there is "remove", not "add").
+   */
+  showDropPlaceholder?: boolean
+  /** True while any card is being dragged — lights up the placeholder. */
+  dragActive?: boolean
+}
+
+/**
+ * Always-visible drop affordance rendered as the last grid tile of a
+ * collection (NES-1703). Purely visual — the whole collection is already
+ * one droppable via DroppableCollectionWrapper, so a drop landing on this
+ * tile routes through the section drop-zone like any other in-collection
+ * drop. Lights up while a drag is active.
+ */
+function DropPlaceholderTile({ active }: { active: boolean }): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  return (
+    <Box
+      data-testid="CollectionDropPlaceholder"
+      sx={{
+        position: 'relative',
+        height: '100%',
+        borderRadius: '12px',
+        border: '2px dashed',
+        // Neutral darkening while a drag is active — primary.main is red
+        // in this theme, and every collection's placeholder lighting up
+        // red at once was too loud.
+        borderColor: active ? 'text.secondary' : 'divider',
+        color: active ? 'text.secondary' : 'text.disabled',
+        transition: 'border-color 0.2s ease, color 0.2s ease'
+      }}
+    >
+      {/* Invisible sizers mirroring JourneyCard's geometry (image area +
+          fixed text block) so the tile's intrinsic height matches a real
+          card — even when it's the only tile in an empty collection,
+          where there's no row-mate to flex-stretch against. */}
+      <Box
+        aria-hidden
+        sx={{
+          mx: JOURNEY_CARD_IMAGE_MARGIN,
+          mt: JOURNEY_CARD_IMAGE_MARGIN,
+          aspectRatio: JOURNEY_CARD_IMAGE_ASPECT_RATIO
+        }}
+      />
+      <Box aria-hidden sx={{ height: JOURNEY_CARD_CONTENT_HEIGHT }} />
+      <Stack
+        alignItems="center"
+        justifyContent="center"
+        spacing={1}
+        sx={{ position: 'absolute', inset: 0 }}
+      >
+        <Plus2Icon fontSize="large" />
+        <Typography variant="body2">{t('Drag templates here')}</Typography>
+      </Stack>
+    </Box>
+  )
 }
 
 function DraggableJourneysGridImpl({
   journeys,
-  dragInFlight
+  dragInFlight,
+  showDropPlaceholder = false,
+  dragActive = false
 }: DraggableJourneysGridProps): ReactElement | null {
-  if (journeys.length === 0) return null
+  if (journeys.length === 0 && !showDropPlaceholder) return null
   // SortableContext gives intra-collection ordering: each item is both a
   // draggable AND a drop target with a known index, so dnd-kit hands us
   // the over-item id in handleDragEnd.
@@ -149,6 +220,11 @@ function DraggableJourneysGridImpl({
             <DraggableJourney journey={journey} disabled={dragInFlight} />
           </Grid>
         ))}
+        {showDropPlaceholder && (
+          <Grid size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}>
+            <DropPlaceholderTile active={dragActive} />
+          </Grid>
+        )}
       </Grid>
     </SortableContext>
   )
@@ -176,6 +252,11 @@ export function UnsectionedDroppable({
       ref={setNodeRef}
       sx={{
         minHeight: 100,
+        // NES-1703: fill the gallery column's remaining height so the
+        // unsectioned pool's drop target reaches the bottom of the page —
+        // dropping "out of a collection" doesn't demand pixel accuracy on
+        // the grid itself.
+        flexGrow: 1,
         backgroundColor: (theme) => theme.palette.background.default,
         borderRadius: 1,
         outline: isOver ? '2px solid' : 'none',
@@ -217,7 +298,10 @@ export function DraggableJourney({
         cursor: disabled === true ? 'default' : isDragging ? 'grabbing' : 'grab'
       }}
     >
-      <JourneyCard journey={journey} />
+      <JourneyCard
+        journey={journey}
+        showDragAffordance={disabled === true ? undefined : 'hover'}
+      />
     </Box>
   )
 }

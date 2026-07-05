@@ -205,6 +205,29 @@ export function TemplateGalleryPageList({
   const creatingRef = useRef(false)
   const [editTargetId, setEditTargetId] = useState<string | null>(null)
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
+  // NES-1703: size the gallery column to fill exactly the space between
+  // its own top and the bottom of the viewport, so the unsectioned
+  // droppable ends flush with the visible screen instead of adding a
+  // viewportful of scroll below the navbar/tabs. Callback-ref state (not
+  // useRef) because the root Box mounts after the loading early-returns —
+  // a mount-time effect would fire before the node exists.
+  const [rootNode, setRootNode] = useState<HTMLDivElement | null>(null)
+  const [galleryMinHeight, setGalleryMinHeight] = useState('auto')
+  useEffect(() => {
+    if (rootNode == null) return
+    function updateGalleryMinHeight(): void {
+      if (rootNode == null) return
+      // Offset from the top of the document — stable under scroll.
+      const topOffset =
+        rootNode.getBoundingClientRect().top + window.scrollY
+      setGalleryMinHeight(
+        `calc(100vh - ${Math.max(0, Math.round(topOffset))}px)`
+      )
+    }
+    updateGalleryMinHeight()
+    window.addEventListener('resize', updateGalleryMinHeight)
+    return () => window.removeEventListener('resize', updateGalleryMinHeight)
+  }, [rootNode])
   // `dragInFlight` drives rendering (busy chips, droppable lock); the ref
   // is the synchronous source of truth for gating a second drop that
   // arrives within the same tick as a setState batch — state would read
@@ -562,7 +585,22 @@ export function TemplateGalleryPageList({
 
   return (
     <GalleryDialogLockContext.Provider value={galleryDialogLockValue}>
-      <Box sx={{ p: 4 }} data-testid="TemplateGalleryPageList">
+      <Box
+        ref={setRootNode}
+        sx={{
+          p: 4,
+          // NES-1703: flex column filling the measured gap to the bottom
+          // of the viewport so the unsectioned droppable can grow into it
+          // — a big, easy drop target for pulling templates out of
+          // collections, without pushing extra scroll below the fold.
+          // The inert DnD-scope wrapper is `display: contents`, so the
+          // droppable is a direct flex item.
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: galleryMinHeight
+        }}
+        data-testid="TemplateGalleryPageList"
+      >
         {showCollectionsSection && (
           <Stack
             direction="row"
@@ -686,6 +724,8 @@ export function TemplateGalleryPageList({
                             journeysByCollection.get(collection.id) ?? []
                           }
                           dragInFlight={interactionsLocked}
+                          showDropPlaceholder
+                          dragActive={activeDragId != null}
                         />
                       </CollectionCard>
                     </DroppableCollectionWrapper>
@@ -717,7 +757,13 @@ export function TemplateGalleryPageList({
             <DragOverlay>
               {activeDragJourney != null ? (
                 <Box sx={{ width: 280, cursor: 'grabbing', opacity: 0.95 }}>
-                  <JourneyCard journey={activeDragJourney} />
+                  {/* 'always': the clone never receives hover while
+                      dnd-kit holds pointer capture, and the arrow staying
+                      visible mid-drag reinforces "you're moving this". */}
+                  <JourneyCard
+                    journey={activeDragJourney}
+                    showDragAffordance="always"
+                  />
                 </Box>
               ) : null}
             </DragOverlay>

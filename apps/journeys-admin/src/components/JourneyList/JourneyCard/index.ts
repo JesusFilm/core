@@ -1,1 +1,6 @@
-export { JourneyCard } from './JourneyCard'
+export {
+  JourneyCard,
+  JOURNEY_CARD_CONTENT_HEIGHT,
+  JOURNEY_CARD_IMAGE_ASPECT_RATIO,
+  JOURNEY_CARD_IMAGE_MARGIN
+} from './JourneyCard'
