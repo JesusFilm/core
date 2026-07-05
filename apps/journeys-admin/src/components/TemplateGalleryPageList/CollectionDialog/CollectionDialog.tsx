@@ -372,9 +372,7 @@ function CollectionDialogContent({
                         onChange={(next) => {
                           if (collection != null) {
                             next
-                              .filter(
-                                (id) => !values.journeyIds.includes(id)
-                              )
+                              .filter((id) => !values.journeyIds.includes(id))
                               .forEach((templateId) =>
                                 sendCollectionTemplateAddEvent({
                                   collectionId: collection.id,
