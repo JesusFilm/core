@@ -36,10 +36,7 @@ import {
   GetAdminJourneys_journeys as Journey
 } from '../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../__generated__/GetTemplateGalleryPages'
-import {
-  JourneyStatus,
-  TemplateGalleryPageStatus
-} from '../../../__generated__/globalTypes'
+import { JourneyStatus } from '../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { useCanPublishCollection } from '../../libs/useCanPublishCollection'
 import { useTemplateGalleryPageCreateMutation } from '../../libs/useTemplateGalleryPageCreateMutation'
@@ -667,10 +664,7 @@ export function TemplateGalleryPageList({
                       key={collection.id}
                       id={collection.id}
                       disabled={
-                        collection.status ===
-                          TemplateGalleryPageStatus.published ||
-                        interactionsLocked ||
-                        busyId === collection.id
+                        interactionsLocked || busyId === collection.id
                       }
                     >
                       <CollectionCard
@@ -690,10 +684,6 @@ export function TemplateGalleryPageList({
                         <DraggableJourneysGrid
                           journeys={
                             journeysByCollection.get(collection.id) ?? []
-                          }
-                          publishedLock={
-                            collection.status ===
-                            TemplateGalleryPageStatus.published
                           }
                           dragInFlight={interactionsLocked}
                         />
@@ -715,7 +705,6 @@ export function TemplateGalleryPageList({
               ) : (
                 <DraggableJourneysGrid
                   journeys={unsectioned}
-                  publishedLock={false}
                   dragInFlight={interactionsLocked}
                 />
               )}

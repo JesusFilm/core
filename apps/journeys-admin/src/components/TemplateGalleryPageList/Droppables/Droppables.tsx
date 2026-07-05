@@ -125,13 +125,11 @@ export const DroppableCollectionWrapper = memo(DroppableCollectionWrapperImpl)
 
 interface DraggableJourneysGridProps {
   journeys: readonly Journey[]
-  publishedLock: boolean
   dragInFlight: boolean
 }
 
 function DraggableJourneysGridImpl({
   journeys,
-  publishedLock,
   dragInFlight
 }: DraggableJourneysGridProps): ReactElement | null {
   if (journeys.length === 0) return null
@@ -148,10 +146,7 @@ function DraggableJourneysGridImpl({
       <Grid container spacing={COLLECTION_GRID_SPACING}>
         {journeys.map((journey) => (
           <Grid key={journey.id} size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}>
-            <DraggableJourney
-              journey={journey}
-              disabled={publishedLock || dragInFlight}
-            />
+            <DraggableJourney journey={journey} disabled={dragInFlight} />
           </Grid>
         ))}
       </Grid>

@@ -6,7 +6,6 @@ import { MutableRefObject } from 'react'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
-import { TemplateGalleryPageStatus } from '../../../../__generated__/globalTypes'
 import { useTemplateGalleryPageAssignJourneyMutation } from '../../../libs/useTemplateGalleryPageAssignJourneyMutation'
 import { useTemplateGalleryPageReorderTemplateMutation } from '../../../libs/useTemplateGalleryPageReorderTemplateMutation'
 import { parseDropZoneId } from '../Droppables'
@@ -106,14 +105,6 @@ export function useDragEndHandler(
 
     // unsectioned -> unsectioned: no-op
     if (sourceCollection == null && targetCollectionId == null) return
-
-    // Published guard on either side blocks every kind of move.
-    if (sourceCollection?.status === TemplateGalleryPageStatus.published) return
-    if (targetCollectionId != null) {
-      const targetCollection = collectionsById.get(targetCollectionId)
-      if (targetCollection?.status === TemplateGalleryPageStatus.published)
-        return
-    }
 
     // `setDragInFlight` in the parent is a wrapper that flips both the
     // state and the ref together — call it once, never set the ref
