@@ -272,7 +272,7 @@ describe('useDragEndHandler', () => {
     expect(assignMock.result).toHaveBeenCalledTimes(1)
   })
 
-  it('rejects drops when the source collection is published', async () => {
+  it('allows drops out of a published source collection (NES-1703)', async () => {
     const j1 = journey('j1', 'A')
     const source = makeCollection('page-A', [j1], {
       status: TemplateGalleryPageStatus.published
@@ -306,12 +306,11 @@ describe('useDragEndHandler', () => {
       )
     })
 
-    expect(assignMock.result).not.toHaveBeenCalled()
-    // No mutation kicked off → setDragInFlight(true) never fired either.
-    expect(setDragInFlight).not.toHaveBeenCalledWith(true)
+    expect(assignMock.result).toHaveBeenCalledTimes(1)
+    expect(setDragInFlight).toHaveBeenCalledWith(true)
   })
 
-  it('rejects drops when the target collection is published', async () => {
+  it('allows drops into a published target collection (NES-1703)', async () => {
     const j1 = journey('j1', 'A')
     const source = makeCollection('page-A', [j1])
     const target = makeCollection('page-B', [], {
@@ -345,8 +344,8 @@ describe('useDragEndHandler', () => {
       )
     })
 
-    expect(assignMock.result).not.toHaveBeenCalled()
-    expect(setDragInFlight).not.toHaveBeenCalledWith(true)
+    expect(assignMock.result).toHaveBeenCalledTimes(1)
+    expect(setDragInFlight).toHaveBeenCalledWith(true)
   })
 
   it('is a no-op when sourceIndex === targetIndex (intra-collection same slot)', async () => {

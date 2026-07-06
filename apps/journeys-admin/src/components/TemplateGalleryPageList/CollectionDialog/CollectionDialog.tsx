@@ -263,7 +263,6 @@ function CollectionDialogContent({
                   isPublished={isPublished}
                   canPublish={canPublish}
                   publishBlockedReason={publishBlockedReason}
-                  journeyCount={values.journeyIds.length}
                   isSubmitting={isSubmitting}
                   isUnpublishing={isUnpublishing}
                   onCancel={guardedClose}
