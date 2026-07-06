@@ -29,6 +29,7 @@ NES-1698 added 13 `team_collection_*` GTM events for the template gallery collec
 - **Fire on confirmed success**, not intent: after the mutation resolves (create/publish), after the server accepts a drag-drop, and once per save-that-changed-a-field rather than per keystroke.
 - **Code pattern** (from NES-1662): a typed helper file per feature in `apps/<app>/src/libs/send<Thing>Event/` wrapping `sendGTMEvent` from `@next/third-parties/google`, with a vitest spec. Example: `apps/journeys-admin/src/libs/sendCollectionEvent/`.
 - **In GTM tags, map only the params that event actually sends.** GTM's dataLayer model merges across pushes, so an unmapped-but-stale key from an earlier event would silently attach old values.
+- **Register GA4 custom dimensions at the same time as the GTM setup, before the feature ships.** Registration is not retroactive: parameters are stored with every event, but breakdowns only work from the registration date forward, and pre-registration data can never be sliced by an unregistered parameter (BigQuery export has the same only-from-link-date rule). Register low-cardinality params (`location`, `mediaProvider`, `mediaType`, `collectionSlug`) per GA4 property; skip unbounded IDs.
 
 ### Replicating a container change Dev → Stage → Prod
 
