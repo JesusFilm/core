@@ -137,6 +137,14 @@
   "Video Course": "Video na Kurso",
   "Every Gospel, Told on Video": "Bawat Ebanghelyo, Ikinukwento sa Video",
   "Scripture, Spoken Exactly as Written": "Kasulatan, Sinasambit nang eksakto ayon sa nakasulat",
+  "Search by topic, occasion, or audience ...": "Maghanap ayon sa paksa, okasyon, o madla ...",
+  "<0><0></0><1>interaction</1></0>": "<0><0></0><1>pakikipag-ugnayan</1></0>",
+  "Search Suggestions": "Mga mungkahi sa paghahanap",
+  "See Less": "Ipakita nang kaunti",
+  "Clear All": "I-clear Lahat",
+  "Sorry, there are no languages available for this search. Try removing some of your search criteria!": "Pasensya na, walang magagamit na wika para sa paghahanap na ito. Subukang alisin ang ilan sa iyong mga pamantayan sa paghahanap!",
+  "Loading...": "Loading...",
+  "There are no suggestions for this search": "Walang mungkahi para sa paghahanap na ito.",
   "{{count}} languages_one": "{{count}} languages",
   "{{count}} languages_other": "{{count}} languages"
 }
