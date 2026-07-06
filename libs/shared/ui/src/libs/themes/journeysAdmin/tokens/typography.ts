@@ -1,5 +1,7 @@
 import { ThemeOptions } from '@mui/material/styles'
 
+import { THAI_FALLBACK_FONT } from '../../fonts'
+
 // Update the Typography's variant prop options
 declare module '@mui/material/styles' {
   interface TypographyPropsVariantOverrides {
@@ -32,7 +34,7 @@ declare module '@mui/material/Typography' {
 export const adminTypography: Pick<ThemeOptions, 'typography'> = {
   typography: {
     fontFamily: [
-      '"Montserrat", "Open Sans", "Tahoma", "Verdana", sans-serif'
+      `"Montserrat", "Open Sans", "Tahoma", "Verdana", ${THAI_FALLBACK_FONT}, sans-serif`
     ].join(','),
     h1: {
       fontWeight: 500,
@@ -79,16 +81,16 @@ export const adminTypography: Pick<ThemeOptions, 'typography'> = {
       fontSize: 14,
       fontWeight: 600,
       lineHeight: '19px',
-      fontFamily: '"Montserrat", "Open Sans", "Tahoma", "Verdana", sans-serif'
+      fontFamily: `"Montserrat", "Open Sans", "Tahoma", "Verdana", ${THAI_FALLBACK_FONT}, sans-serif`
     },
     body1: {
-      fontFamily: '"Open Sans", "Tahoma", "Verdana", sans-serif',
+      fontFamily: `"Open Sans", "Tahoma", "Verdana", ${THAI_FALLBACK_FONT}, sans-serif`,
       fontWeight: 400,
       fontSize: 16,
       lineHeight: '24px'
     },
     body2: {
-      fontFamily: '"Open Sans", "Tahoma", "Verdana", sans-serif',
+      fontFamily: `"Open Sans", "Tahoma", "Verdana", ${THAI_FALLBACK_FONT}, sans-serif`,
       fontWeight: 400,
       fontSize: 14,
       lineHeight: '22px'
@@ -106,10 +108,10 @@ export const adminTypography: Pick<ThemeOptions, 'typography'> = {
       lineHeight: '16px',
       letterSpacing: 1,
       textTransform: 'uppercase',
-      fontFamily: '"Montserrat", "Open Sans", "Tahoma", "Verdana", sans-serif'
+      fontFamily: `"Montserrat", "Open Sans", "Tahoma", "Verdana", ${THAI_FALLBACK_FONT}, sans-serif`
     },
     caption: {
-      fontFamily: '"Open Sans", "Tahoma", "Verdana", sans-serif',
+      fontFamily: `"Open Sans", "Tahoma", "Verdana", ${THAI_FALLBACK_FONT}, sans-serif`,
       fontWeight: 400,
       fontSize: 12,
       lineHeight: '18px'

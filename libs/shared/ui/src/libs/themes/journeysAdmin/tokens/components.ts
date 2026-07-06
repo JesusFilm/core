@@ -1,5 +1,7 @@
 import { ThemeOptions } from '@mui/material/styles'
 
+import { THAI_FALLBACK_FONT } from '../../fonts'
+
 import { palette } from './colors'
 
 declare module '@mui/material/Button' {
@@ -14,7 +16,7 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
     MuiButton: {
       styleOverrides: {
         root: {
-          fontFamily: "'Montserrat', sans-serif",
+          fontFamily: `'Montserrat', ${THAI_FALLBACK_FONT}, sans-serif`,
           fontWeight: 800,
           borderRadius: '12px',
           textTransform: 'none'
@@ -202,7 +204,7 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
       styleOverrides: {
         primary: {
           fontWeight: 600,
-          fontFamily: "'Montserrat', sans-serif"
+          fontFamily: `'Montserrat', ${THAI_FALLBACK_FONT}, sans-serif`
         },
         secondary: {
           color: palette[800]

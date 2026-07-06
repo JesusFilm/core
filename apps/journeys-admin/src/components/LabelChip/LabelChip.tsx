@@ -2,6 +2,8 @@ import Chip from '@mui/material/Chip'
 import { SxProps, Theme } from '@mui/material/styles'
 import { ReactElement } from 'react'
 
+import { THAI_FALLBACK_FONT } from '@core/shared/ui/themes'
+
 export type LabelChipColor = 'default' | 'success'
 
 interface LabelChipProps {
@@ -38,7 +40,7 @@ export function LabelChip({
           borderRadius: '4px',
           bgcolor: isSuccess ? 'success.main' : 'divider',
           color: isSuccess ? 'success.contrastText' : 'text.primary',
-          fontFamily: '"Open Sans", sans-serif',
+          fontFamily: `"Open Sans", ${THAI_FALLBACK_FONT}, sans-serif`,
           fontSize: 14,
           fontWeight: 600,
           lineHeight: '20px',

@@ -6,10 +6,12 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, memo, useMemo } from 'react'
 
+import { THAI_FALLBACK_FONT } from '@core/shared/ui/themes'
+
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
 
 const SECTION_HEADER = {
-  fontFamily: 'Montserrat, sans-serif',
+  fontFamily: `Montserrat, ${THAI_FALLBACK_FONT}, sans-serif`,
   fontWeight: 600,
   fontSize: 16,
   lineHeight: '24px',

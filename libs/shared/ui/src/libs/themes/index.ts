@@ -5,6 +5,8 @@ import { adminLight } from './journeysAdmin/theme'
 import { getJourneyUiDark, getJourneyUiLight } from './journeyUi/theme'
 import { websiteDark, websiteLight } from './website/theme'
 
+export { DEFAULT_FONTS, SARABUN_FONTS_QUERY, THAI_FALLBACK_FONT } from './fonts'
+
 export enum ThemeMode {
   dark = 'dark',
   light = 'light'

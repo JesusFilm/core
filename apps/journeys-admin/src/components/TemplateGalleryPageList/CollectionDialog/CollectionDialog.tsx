@@ -20,6 +20,7 @@ import {
 import { Dialog } from '@core/shared/ui/Dialog'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
+import { THAI_FALLBACK_FONT } from '@core/shared/ui/themes'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
@@ -65,7 +66,7 @@ export interface CollectionDialogProps {
 
 // Matches the Figma "Editor / Subtitle/2" type token on section headers.
 const SECTION_HEADER = {
-  fontFamily: 'Montserrat, sans-serif',
+  fontFamily: `Montserrat, ${THAI_FALLBACK_FONT}, sans-serif`,
   fontWeight: 600,
   fontSize: 16,
   lineHeight: '24px',
