@@ -16,7 +16,6 @@ function makeProps(
     isPublished: false,
     canPublish: true,
     publishBlockedReason: null,
-    journeyCount: 1,
     isSubmitting: false,
     isUnpublishing: false,
     onCancel: vi.fn(),
@@ -87,28 +86,13 @@ describe('CollectionDialogFooter', () => {
       expect(onSave).toHaveBeenCalledTimes(1)
     })
 
-    it('disables Publish when journeyCount is 0 with the empty-collection tooltip', async () => {
-      render(<CollectionDialogFooter {...makeProps({ journeyCount: 0 })} />)
-      const publish = screen.getByRole('button', { name: 'Publish' })
-      expect(publish).toBeDisabled()
-      // Save must stay enabled so the user can edit metadata before
-      // adding templates.
-      expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
-
-      await userEvent.hover(publish.parentElement as HTMLElement)
-      expect(await screen.findByRole('tooltip')).toHaveTextContent(
-        'Add at least one template before publishing'
-      )
-    })
-
     it('disables Publish when canPublish is false and shows the custom-domain reason', async () => {
       const reason = 'gate copy'
       render(
         <CollectionDialogFooter
           {...makeProps({
             canPublish: false,
-            publishBlockedReason: reason,
-            journeyCount: 3
+            publishBlockedReason: reason
           })}
         />
       )

@@ -36,10 +36,7 @@ import {
   GetAdminJourneys_journeys as Journey
 } from '../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../__generated__/GetTemplateGalleryPages'
-import {
-  JourneyStatus,
-  TemplateGalleryPageStatus
-} from '../../../__generated__/globalTypes'
+import { JourneyStatus } from '../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { useCanPublishCollection } from '../../libs/useCanPublishCollection'
 import { useTemplateGalleryPageCreateMutation } from '../../libs/useTemplateGalleryPageCreateMutation'
@@ -116,6 +113,26 @@ export interface TemplateGalleryPageListProps {
    * trigger.
    */
   onOpenInfo?: () => void
+}
+
+// Type-level fallback for `journeysByCollection.get()` — the memoized map
+// sets an entry for every collection, so this is never actually reached;
+// a stable identity (not an inline `[]`) keeps it harmless for the grid's
+// memo if that invariant ever changes.
+const NO_JOURNEYS: readonly Journey[] = []
+
+// Nearest scrollable ancestor. journeys-admin scrolls inside an inner
+// container (PageWrapper's MainPanelBody, `overflowY: auto`), not the
+// window — so viewport-fill measurements must be taken relative to that
+// container or they drift by exactly the container's scroll offset.
+function getScrollParent(node: HTMLElement): HTMLElement | null {
+  let parent = node.parentElement
+  while (parent != null) {
+    const { overflowY } = window.getComputedStyle(parent)
+    if (overflowY === 'auto' || overflowY === 'scroll') return parent
+    parent = parent.parentElement
+  }
+  return null
 }
 
 export function TemplateGalleryPageList({
@@ -208,6 +225,77 @@ export function TemplateGalleryPageList({
   const creatingRef = useRef(false)
   const [editTargetId, setEditTargetId] = useState<string | null>(null)
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
+  // NES-1703: size the gallery column to fill exactly the space between
+  // its own top and the bottom of the viewport, so the unsectioned
+  // droppable ends flush with the visible screen instead of adding a
+  // viewportful of scroll below the navbar/tabs. Callback-ref state (not
+  // useRef) because the root Box mounts after the loading early-returns —
+  // a mount-time effect would fire before the node exists.
+  //
+  // Gated on `visible`: the Team Templates TabPanel keeps this component
+  // mounted but display:none while another tab is active, where
+  // getBoundingClientRect().top reads 0 and would lock in a bogus
+  // viewport-tall min-height. The effect re-runs when the tab becomes
+  // visible, so the measurement always happens on a laid-out node.
+  //
+  // The min-height is written straight to the node (not React state):
+  // a resize tick then costs one rAF-throttled style write instead of a
+  // full gallery re-render + a new emotion class per unique value. Safe
+  // because nothing else manages this node's inline style. innerHeight
+  // (not 100vh) so mobile browsers' URL-bar chrome is accounted for.
+  const [rootNode, setRootNode] = useState<HTMLDivElement | null>(null)
+  useEffect(() => {
+    if (rootNode == null || !visible) return
+    let frame: number | null = null
+    function measureGalleryMinHeight(): void {
+      if (rootNode == null) return
+      // Not laid out yet — `visible` derives from the router and can flip
+      // true a beat before the ancestor TabPanel's `hidden` state syncs
+      // (child effects run first), so the node may still be display:none
+      // here. Skip; the ResizeObserver below fires again the moment the
+      // panel unhides and the node gains a real size.
+      if (rootNode.getClientRects().length === 0) return
+      const rootTop = rootNode.getBoundingClientRect().top
+      const scrollParent = getScrollParent(rootNode)
+      // Offset from the top of the scrolling context's CONTENT (not the
+      // viewport) so the value is stable regardless of current scroll
+      // position, paired with that context's visible height.
+      const topOffset =
+        scrollParent != null
+          ? rootTop -
+            scrollParent.getBoundingClientRect().top +
+            scrollParent.scrollTop
+          : rootTop + window.scrollY
+      const viewportHeight =
+        scrollParent != null ? scrollParent.clientHeight : window.innerHeight
+      rootNode.style.minHeight = `${Math.max(
+        0,
+        Math.round(viewportHeight - topOffset)
+      )}px`
+    }
+    function handleResize(): void {
+      if (frame != null) return
+      frame = window.requestAnimationFrame(() => {
+        frame = null
+        measureGalleryMinHeight()
+      })
+    }
+    measureGalleryMinHeight()
+    window.addEventListener('resize', handleResize)
+    // Re-measure when the node's own size changes: covers the hidden→
+    // visible transition above and width changes from panel/drawer
+    // layout shifts. Guarded — jsdom has no ResizeObserver.
+    const resizeObserver =
+      typeof ResizeObserver !== 'undefined'
+        ? new ResizeObserver(handleResize)
+        : null
+    resizeObserver?.observe(rootNode)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      resizeObserver?.disconnect()
+      if (frame != null) window.cancelAnimationFrame(frame)
+    }
+  }, [rootNode, visible])
   // `dragInFlight` drives rendering (busy chips, droppable lock); the ref
   // is the synchronous source of truth for gating a second drop that
   // arrives within the same tick as a setState batch — state would read
@@ -526,6 +614,13 @@ export function TemplateGalleryPageList({
     setActiveDragId(String(event.active.id))
   }
 
+  // A cancelled drag (Escape, touchcancel) fires onDragCancel, not
+  // onDragEnd — without this the DragOverlay clone lingers and the
+  // placeholder tiles stay in their drag-active style.
+  function handleDragCancel(): void {
+    setActiveDragId(null)
+  }
+
   const handleDragEnd = useDragEndHandler({
     journeyById,
     templateIdToCollection,
@@ -565,7 +660,21 @@ export function TemplateGalleryPageList({
 
   return (
     <GalleryDialogLockContext.Provider value={galleryDialogLockValue}>
-      <Box sx={{ p: 4 }} data-testid="TemplateGalleryPageList">
+      <Box
+        ref={setRootNode}
+        sx={{
+          p: 4,
+          // NES-1703: flex column filling the measured gap to the bottom
+          // of the viewport (min-height is written directly to the node
+          // by the measurement effect above) so the unsectioned droppable
+          // can grow into it — a big, easy drop target for pulling
+          // templates out of collections, without pushing extra scroll
+          // below the fold.
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+        data-testid="TemplateGalleryPageList"
+      >
         {showCollectionsSection && (
           <Stack
             direction="row"
@@ -633,13 +742,20 @@ export function TemplateGalleryPageList({
         <Box
           data-testid="TemplateGalleryDndScope"
           inert={dialogOpen}
-          sx={{ display: 'contents' }}
+          // A real flex box (not `display: contents`) so the wrapper is a
+          // grown flex item of the gallery column AND its own column for
+          // the droppables — UnsectionedDroppable's flexGrow reaches the
+          // page bottom through it, and any future styling on this
+          // wrapper (e.g. locked-state dimming) won't be silently
+          // discarded the way `display: contents` discards all styling.
+          sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}
         >
           <DndContext
             collisionDetection={collisionDetection}
             sensors={sensors}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
+            onDragCancel={handleDragCancel}
           >
             {showCollectionsSection &&
               (collections.length === 0 ? (
@@ -666,12 +782,7 @@ export function TemplateGalleryPageList({
                     <DroppableCollectionWrapper
                       key={collection.id}
                       id={collection.id}
-                      disabled={
-                        collection.status ===
-                          TemplateGalleryPageStatus.published ||
-                        interactionsLocked ||
-                        busyId === collection.id
-                      }
+                      disabled={interactionsLocked || busyId === collection.id}
                     >
                       <CollectionCard
                         collection={collection}
@@ -689,13 +800,11 @@ export function TemplateGalleryPageList({
                       >
                         <DraggableJourneysGrid
                           journeys={
-                            journeysByCollection.get(collection.id) ?? []
-                          }
-                          publishedLock={
-                            collection.status ===
-                            TemplateGalleryPageStatus.published
+                            journeysByCollection.get(collection.id) ??
+                            NO_JOURNEYS
                           }
                           dragInFlight={interactionsLocked}
+                          showDropPlaceholder
                         />
                       </CollectionCard>
                     </DroppableCollectionWrapper>
@@ -715,20 +824,25 @@ export function TemplateGalleryPageList({
               ) : (
                 <DraggableJourneysGrid
                   journeys={unsectioned}
-                  publishedLock={false}
                   dragInFlight={interactionsLocked}
                 />
               )}
             </UnsectionedDroppable>
 
             {/* Default dropAnimation snaps the card back to its origin when a
-            drop is rejected (published, no-op, etc.) and runs the standard
+            drop is a no-op (dead space, same slot) and runs the standard
             "settle" animation when accepted — gives the user visual
             feedback either way. */}
             <DragOverlay>
               {activeDragJourney != null ? (
                 <Box sx={{ width: 280, cursor: 'grabbing', opacity: 0.95 }}>
-                  <JourneyCard journey={activeDragJourney} />
+                  {/* 'always': the clone never receives hover while
+                      dnd-kit holds pointer capture, and the arrow staying
+                      visible mid-drag reinforces "you're moving this". */}
+                  <JourneyCard
+                    journey={activeDragJourney}
+                    showDragAffordance="always"
+                  />
                 </Box>
               ) : null}
             </DragOverlay>

@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Collapse from '@mui/material/Collapse'
@@ -300,21 +299,7 @@ function CollectionCardImpl({
             minHeight: 100
           }}
         >
-          {isEmpty ? (
-            <Box
-              sx={{
-                p: 2,
-                textAlign: 'center',
-                color: 'text.disabled'
-              }}
-            >
-              <Typography variant="caption">
-                {t('Drag templates here to add them to this collection.')}
-              </Typography>
-            </Box>
-          ) : (
-            children
-          )}
+          {children}
         </CardContent>
       </Collapse>
 
