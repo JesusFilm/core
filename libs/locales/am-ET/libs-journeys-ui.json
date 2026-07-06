@@ -128,6 +128,7 @@
   "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.": "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.",
   "Start a new conversation": "Start a new conversation",
   "Gallery media": "Gallery media",
+  "Chat has been turned off for this part of the journey.": "Chat has been turned off for this part of the journey.",
   "Select at least {{count}} options._one": "Select at least {{count}} options.",
   "Select at least {{count}} options._other": "Select at least {{count}} options.",
   "Select up to {{count}} options._one": "Select up to {{count}} options.",
