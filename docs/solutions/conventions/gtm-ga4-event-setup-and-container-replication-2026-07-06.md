@@ -32,9 +32,10 @@ NES-1698 added 13 `team_collection_*` GTM events for the template gallery collec
 
 ### Replicating a container change Dev → Stage → Prod
 
-There are three GTM containers (Dev, Stage, Prod), each with its own `GA4 Measurement ID` constant that all GA4 tags reference by name.
+There are three GTM containers (Dev, Stage, Prod). Each environment is a separate GA4 property, so the Measurement ID **value** differs in every container. Dev and Stage both name their constant `GA4 Measurement ID`; Prod names its constant slightly differently.
 
-- **The GA4 Measurement ID is the SAME for Dev and Stage, but DIFFERENT in Prod.** A Dev→Stage import that accidentally carries the constant is therefore harmless-by-coincidence, but the same mistake Dev→Prod repoints tags at the wrong GA4 property. Never rely on the coincidence: **always exclude `GA4 Measurement ID` from container exports** (and any tag that hardcodes a `G-…` ID instead of referencing the constant).
+- **Same constant name in Dev and Stage; different name in Prod.** GTM resolves variable references by name on import, so Dev→Stage "just works": imported tags reference `{{GA4 Measurement ID}}` and pick up Stage's own constant (holding Stage's own value). Dev→Prod does not — the imported tags' reference resolves to nothing because Prod's constant is named differently, so **each imported tag must be edited after import** to use Prod's constant. Either way, **always exclude the `GA4 Measurement ID` constant from container exports** so the target's value can never be overwritten (and exclude any tag that hardcodes a `G-…` ID instead of referencing the constant).
+- **GA4-side configuration is per property.** Custom dimensions, key-event marking, and similar settings must be repeated in each environment's GA4 property — registering them in one property does nothing for the others.
 - Export via **Admin → Export Container**. Select-all is fine _if_ you then untick the Measurement ID constant — one untick beats hand-picking 30+ items and risking a missed one.
 - Import via **Admin → Import Container → Merge**. Neither conflict mode protects you from including the constant:
   - **Overwrite conflicting** replaces the target's differing items — Stage/Prod's Measurement ID gets Dev's value, and _every_ tag in that container starts reporting to the wrong property.
@@ -57,7 +58,7 @@ A wrong Measurement ID doesn't error — it silently sends one environment's ana
 ## When to Apply
 
 - Adding GTM/GA4 events: follow the event-design rules and the `send<Thing>Event` helper pattern.
-- Promoting GTM config between containers: follow the export/exclude/merge/preview procedure — especially Dev→Prod, where the Measurement ID actually differs.
+- Promoting GTM config between containers: follow the export/exclude/merge/preview procedure — especially Dev→Prod, where the constant's different name means the imported tags need repointing.
 - Tag Assistant won't connect locally: check, in order — container ID matches the workspace being previewed, `gtm.js` loads (console keys check), extension blocking (307 internal redirect), auth redirect (sign in first), third-party cookies.
 
 ## Examples
