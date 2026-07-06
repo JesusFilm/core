@@ -35,11 +35,11 @@ export default class MyDocument extends Document<{
           {this.props.rtl && this.props.locale !== 'ur' ? (
             <>
               <link
-                href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&display=swap"
+                href={`https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&${SARABUN_FONTS_QUERY}&display=swap`}
                 rel="stylesheet"
               />
               <link
-                href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&display=swap"
+                href={`https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&${SARABUN_FONTS_QUERY}&display=swap`}
                 rel="preload"
                 as="style"
               />

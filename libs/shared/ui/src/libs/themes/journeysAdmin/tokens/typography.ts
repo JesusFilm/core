@@ -34,7 +34,7 @@ declare module '@mui/material/Typography' {
 export const adminTypography: Pick<ThemeOptions, 'typography'> = {
   typography: {
     fontFamily: [
-      `"Montserrat", "Open Sans", "Tahoma", "Verdana", ${THAI_FALLBACK_FONT}, sans-serif`
+      `"Montserrat", "Open Sans", ${THAI_FALLBACK_FONT}, "Tahoma", "Verdana", sans-serif`
     ].join(','),
     h1: {
       fontWeight: 500,
@@ -81,16 +81,16 @@ export const adminTypography: Pick<ThemeOptions, 'typography'> = {
       fontSize: 14,
       fontWeight: 600,
       lineHeight: '19px',
-      fontFamily: `"Montserrat", "Open Sans", "Tahoma", "Verdana", ${THAI_FALLBACK_FONT}, sans-serif`
+      fontFamily: `"Montserrat", "Open Sans", ${THAI_FALLBACK_FONT}, "Tahoma", "Verdana", sans-serif`
     },
     body1: {
-      fontFamily: `"Open Sans", "Tahoma", "Verdana", ${THAI_FALLBACK_FONT}, sans-serif`,
+      fontFamily: `"Open Sans", ${THAI_FALLBACK_FONT}, "Tahoma", "Verdana", sans-serif`,
       fontWeight: 400,
       fontSize: 16,
       lineHeight: '24px'
     },
     body2: {
-      fontFamily: `"Open Sans", "Tahoma", "Verdana", ${THAI_FALLBACK_FONT}, sans-serif`,
+      fontFamily: `"Open Sans", ${THAI_FALLBACK_FONT}, "Tahoma", "Verdana", sans-serif`,
       fontWeight: 400,
       fontSize: 14,
       lineHeight: '22px'
@@ -108,10 +108,10 @@ export const adminTypography: Pick<ThemeOptions, 'typography'> = {
       lineHeight: '16px',
       letterSpacing: 1,
       textTransform: 'uppercase',
-      fontFamily: `"Montserrat", "Open Sans", "Tahoma", "Verdana", ${THAI_FALLBACK_FONT}, sans-serif`
+      fontFamily: `"Montserrat", "Open Sans", ${THAI_FALLBACK_FONT}, "Tahoma", "Verdana", sans-serif`
     },
     caption: {
-      fontFamily: `"Open Sans", "Tahoma", "Verdana", ${THAI_FALLBACK_FONT}, sans-serif`,
+      fontFamily: `"Open Sans", ${THAI_FALLBACK_FONT}, "Tahoma", "Verdana", sans-serif`,
       fontWeight: 400,
       fontSize: 12,
       lineHeight: '18px'

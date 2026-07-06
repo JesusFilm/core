@@ -1,16 +1,21 @@
-import { TypographyStyle } from '@mui/material/styles'
+import { ThemeOptions } from '@mui/material/styles'
 
 import { THAI_FALLBACK_FONT } from '../../fonts'
 import { journeyUiTypography } from '../../journeyUi/tokens/typography'
 
 import { baseTypography, createFontFamilyString } from './typography'
 
+type TypographyTokens = Pick<ThemeOptions, 'typography'>
+
 function getFontFamily(
-  typography: unknown,
+  tokens: TypographyTokens,
   variant: string
 ): string | undefined {
-  const variants = typography as Record<string, TypographyStyle>
-  return variants[variant]?.fontFamily as string | undefined
+  const variants = tokens.typography as Record<
+    string,
+    { fontFamily?: string } | undefined
+  >
+  return variants[variant]?.fontFamily
 }
 
 describe('createFontFamilyString', () => {
@@ -28,19 +33,19 @@ describe('createFontFamilyString', () => {
 })
 
 describe('baseTypography', () => {
-  it('should include the Thai fallback after the Latin fonts in the top-level fontFamily', () => {
+  it('should place the Thai fallback after the Latin webfonts and before Tahoma in the top-level fontFamily', () => {
     expect(
       (baseTypography.typography as { fontFamily?: string }).fontFamily
     ).toBe(
-      `Montserrat,"Open Sans",Tahoma,Verdana,${THAI_FALLBACK_FONT},sans-serif`
+      `Montserrat,"Open Sans",${THAI_FALLBACK_FONT},Tahoma,Verdana,sans-serif`
     )
   })
 
   it.each(['body1', 'body2', 'caption'])(
-    'should include the Thai fallback before sans-serif in %s',
+    'should place the Thai fallback before Tahoma in %s',
     (variant) => {
-      expect(getFontFamily(baseTypography.typography, variant)).toBe(
-        `"Open Sans","Tahoma","Verdana",${THAI_FALLBACK_FONT},sans-serif`
+      expect(getFontFamily(baseTypography, variant)).toBe(
+        `"Open Sans",${THAI_FALLBACK_FONT},"Tahoma","Verdana",sans-serif`
       )
     }
   )
@@ -50,7 +55,7 @@ describe('journeyUiTypography', () => {
   it.each(['subtitle1', 'subtitle2', 'body2', 'caption'])(
     'should include the Thai fallback after Open Sans in %s',
     (variant) => {
-      expect(getFontFamily(journeyUiTypography.typography, variant)).toBe(
+      expect(getFontFamily(journeyUiTypography, variant)).toBe(
         `"Open Sans",${THAI_FALLBACK_FONT},sans-serif`
       )
     }

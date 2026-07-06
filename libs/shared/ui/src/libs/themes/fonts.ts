@@ -1,7 +1,9 @@
-// Sarabun is appended after the Latin fonts in every font stack as a
-// unicode-range-scoped Thai fallback: Latin glyphs keep resolving to
-// Montserrat/Open Sans while Thai glyphs fall through to Sarabun, and the
-// Sarabun Thai .woff2 only downloads when Thai glyphs actually render.
+// Sarabun sits after the Latin webfonts (Montserrat/Open Sans) in every font
+// stack as a unicode-range-scoped Thai fallback: Latin glyphs keep resolving
+// to Montserrat/Open Sans while Thai glyphs fall through to Sarabun, and the
+// Sarabun Thai .woff2 only downloads when Thai glyphs actually render. It
+// must precede any Thai-capable system font (Tahoma ships Thai glyphs on
+// Windows) or that font intercepts Thai before Sarabun.
 export const THAI_FALLBACK_FONT = '"Sarabun"'
 
 // Weight list must be a superset of every fontWeight used across the
