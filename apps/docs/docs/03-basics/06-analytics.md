@@ -107,6 +107,18 @@ So decide which parameters you may ever want to filter by, and register them **a
 
 In the GA4 property, go to **Admin → Data display → Custom definitions → Create custom dimension**. Enter a dimension name, leave the scope as **Event**, and set the event parameter to the exact camelCase key sent in the `dataLayer`. Repeat per parameter.
 
+**Always fill in the Description field.** GA4 gives a dimension no other context — someone browsing Custom definitions later has no access to the codebase, the GTM container, or this doc. Write the description so it stands alone:
+
+- Name the product/app and the feature the value comes from (e.g. "NextSteps admin template gallery").
+- Say where in the UI the value is set or the action happens.
+- List the possible values when the set is small (e.g. `mux`, `link`, `none`).
+- Don't reference internal event names, dataLayer keys, or repo terms — they mean nothing inside GA4.
+- Keep it within GA4's 150-character description limit.
+
+Example, for a `location` parameter:
+
+> Where in the NextSteps admin template gallery a collection's public link was copied: the edit dialog or the publish success dialog.
+
 Notes:
 
 - Custom definitions are **per GA4 property**. Each environment has its own property, so repeat the registration in every property that needs the breakdowns (at minimum prod).
