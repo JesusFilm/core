@@ -1,7 +1,7 @@
 ---
 title: "feat: Thai font (Sarabun) support for journeys & journeys-admin"
 type: feat
-status: active
+status: completed
 date: 2026-07-06
 origin: docs/brainstorms/thai-font-support-requirements.md
 ---
