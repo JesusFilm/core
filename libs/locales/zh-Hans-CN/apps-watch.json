@@ -137,5 +137,13 @@
   "Video Course": "视频课程",
   "Every Gospel, Told on Video": "用视频讲述每一则福音",
   "Scripture, Spoken Exactly as Written": "经文，字如其人",
+  "Search by topic, occasion, or audience ...": "按主题、场合或受众搜索……",
+  "<0><0></0><1>interaction</1></0>": "<0><0></0><1>交互</1></0>",
+  "Search Suggestions": "搜索建议",
+  "See Less": "收起",
+  "Clear All": "清除全部",
+  "Sorry, there are no languages available for this search. Try removing some of your search criteria!": "抱歉，此搜索暂无可用语言。请尝试删除部分搜索条件！",
+  "Loading...": "正在加载...",
+  "There are no suggestions for this search": "此搜索没有相关建议",
   "{{count}} languages_other": "{{count}} 语言"
 }
