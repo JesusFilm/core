@@ -30,10 +30,12 @@ Thai (`th`) is already a supported i18n locale in both apps, and journeys can ca
 ## Requirements
 
 **Font availability**
+
 - R1. Sarabun must be loaded via the Google Fonts `<link>` on every page of both apps (a global link), so the fallback works for any Thai text regardless of the journey's language or the UI locale.
 - R2. Sarabun must be loaded such that its `unicode-range` (Thai block) subsetting is preserved, so the Thai `.woff2` downloads only when Thai characters are actually rendered — English-only pages must not download the Thai font file.
 
 **Font application (per-script)**
+
 - R3. Sarabun must be appended to the application-default type stack so that Thai glyphs resolve to Sarabun while Latin glyphs continue to resolve to Montserrat, per glyph.
 - R4. The per-script fallback must apply to all typography roles that carry the default stack — header, body, and label — across both apps.
 - R5. The fallback must also apply to author-selected fonts (`journeyTheme.headerFont`/`bodyFont`/`labelFont`): when an author picks a Latin font for a journey, Thai characters within that journey must still resolve to Sarabun rather than a system fallback.
@@ -41,6 +43,7 @@ Thai (`th`) is already a supported i18n locale in both apps, and journeys can ca
 - R7. The editor canvas preview (the iframe-portal render path used by the admin editor) must load Sarabun and apply the same fallback, so authored Thai text renders correctly while building a journey.
 
 **No locale branching**
+
 - R8. Thai support must not introduce a locale- or journey-language-conditional typography variant (unlike the existing Arabic/Urdu branches). Per-glyph `unicode-range` selection is the sole mechanism; the same font stack is used regardless of locale.
 
 ---
