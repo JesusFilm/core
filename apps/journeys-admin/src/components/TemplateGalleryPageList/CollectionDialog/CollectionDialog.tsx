@@ -23,10 +23,7 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
-import {
-  sendCollectionMoreDetailsClickEvent,
-  sendCollectionTemplateAddEvent
-} from '../../../libs/sendCollectionEvent'
+import { sendCollectionMoreDetailsClickEvent } from '../../../libs/sendCollectionEvent'
 import {
   MuxVideoUploadProvider,
   useMuxVideoUpload
@@ -370,16 +367,6 @@ function CollectionDialogContent({
                         // submit and the picker callback is fire-and-
                         // forget. Same pattern below for setFieldTouched.
                         onChange={(next) => {
-                          if (collection != null) {
-                            next
-                              .filter((id) => !values.journeyIds.includes(id))
-                              .forEach((templateId) =>
-                                sendCollectionTemplateAddEvent({
-                                  collectionId: collection.id,
-                                  templateId
-                                })
-                              )
-                          }
                           void setFieldValue('journeyIds', next)
                         }}
                         onTouch={() => {

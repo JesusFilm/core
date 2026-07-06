@@ -18,7 +18,8 @@ import {
   sendCollectionDescriptionUpdateEvent,
   sendCollectionMediaUpdateEvent,
   sendCollectionPublishEvent,
-  sendCollectionSlugUpdateEvent
+  sendCollectionSlugUpdateEvent,
+  sendCollectionTemplateAddEvent
 } from '../../../../libs/sendCollectionEvent'
 import { useTemplateGalleryPageCreateMutation } from '../../../../libs/useTemplateGalleryPageCreateMutation'
 import { useTemplateGalleryPagePublishMutation } from '../../../../libs/useTemplateGalleryPagePublishMutation'
@@ -351,6 +352,22 @@ export function useCollectionForm({
               collectionId: collection.id,
               collectionSlug: values.slug
             })
+          }
+          // Fire per template the save actually added (net of removals and
+          // re-adds within the session) — mirrors the drag event's
+          // only-on-confirmed-persistence semantics.
+          if (input.journeyIds !== undefined) {
+            const persistedIds = new Set(
+              collection.templates.map((tpl) => tpl.id)
+            )
+            values.journeyIds
+              .filter((id) => !persistedIds.has(id))
+              .forEach((templateId) =>
+                sendCollectionTemplateAddEvent({
+                  collectionId: collection.id,
+                  templateId
+                })
+              )
           }
           // Suppress the update snackbar when we're about to fire publish
           // — the success dialog covers it, and stacking two toasts
