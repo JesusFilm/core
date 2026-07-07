@@ -239,6 +239,9 @@ export function canManageTemplateField(
   const isLocalTemplate =
     journey.template === true && journey.teamId !== 'jfp-team'
 
+  if (journey.template === true && user.roles?.includes('publisher') === true)
+    return true
+
   if (isLocalTemplate && (hasJourneyRole || hasTeamRole)) return true
 
   if (

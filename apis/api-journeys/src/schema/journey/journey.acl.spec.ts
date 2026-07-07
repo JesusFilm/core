@@ -6,7 +6,11 @@ import {
 
 import { Action } from '../../lib/auth/ability'
 
-import { Journey, journeyAcl } from './journey.acl'
+import {
+  Journey,
+  canManageTemplateField,
+  journeyAcl
+} from './journey.acl'
 
 describe('journeyAcl', () => {
   const user = { id: 'userId' }
@@ -344,6 +348,49 @@ describe('journeyAcl', () => {
 
     it('denies when user has no userTeam or userJourneys', () => {
       expect(can(Action.Export, journeyEmpty, user)).toBe(false)
+    })
+  })
+
+  describe('canManageTemplateField', () => {
+    const aclUser = {
+      ...user,
+      firstName: 'Test',
+      emailVerified: true
+    }
+
+    const globalTemplate = {
+      id: 'journeyId',
+      template: true,
+      teamId: 'jfp-team',
+      userJourneys: [],
+      team: { userTeams: [] }
+    } as unknown as Journey
+
+    const localTemplate = {
+      ...globalTemplate,
+      teamId: 'teamId'
+    } as unknown as Journey
+
+    it('allows publishers to update customization fields on global templates', () => {
+      expect(
+        canManageTemplateField(globalTemplate, {
+          ...aclUser,
+          roles: ['publisher']
+        })
+      ).toBe(true)
+    })
+
+    it('allows publishers to update customization fields on local templates', () => {
+      expect(
+        canManageTemplateField(localTemplate, {
+          ...aclUser,
+          roles: ['publisher']
+        })
+      ).toBe(true)
+    })
+
+    it('denies non-publishers without journey or team access on global templates', () => {
+      expect(canManageTemplateField(globalTemplate, aclUser)).toBe(false)
     })
   })
 })
