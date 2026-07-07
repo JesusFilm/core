@@ -5,6 +5,7 @@ import { FormikHelpers } from 'formik'
 import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 import { ReactNode } from 'react'
+import { type MockedFunction } from 'vitest'
 
 import {
   GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage,
@@ -14,6 +15,7 @@ import {
   TemplateGalleryPageMediaType,
   TemplateGalleryPageStatus
 } from '../../../../../__generated__/globalTypes'
+import { sendCollectionTemplateAddEvent } from '../../../../libs/sendCollectionEvent'
 import { getTemplateGalleryPageCreateMock } from '../../../../libs/useTemplateGalleryPageCreateMutation/useTemplateGalleryPageCreateMutation.mock'
 import { getTemplateGalleryPagePublishMock } from '../../../../libs/useTemplateGalleryPagePublishMutation/useTemplateGalleryPagePublishMutation.mock'
 import { TEMPLATE_GALLERY_PAGE_UPDATE } from '../../../../libs/useTemplateGalleryPageUpdateMutation/useTemplateGalleryPageUpdateMutation'
@@ -33,6 +35,19 @@ vi.mock('notistack', async () => {
     })
   }
 })
+
+vi.mock('../../../../libs/sendCollectionEvent', () => ({
+  sendCollectionDescriptionUpdateEvent: vi.fn(),
+  sendCollectionMediaUpdateEvent: vi.fn(),
+  sendCollectionPublishEvent: vi.fn(),
+  sendCollectionSlugUpdateEvent: vi.fn(),
+  sendCollectionTemplateAddEvent: vi.fn()
+}))
+
+const mockSendCollectionTemplateAddEvent =
+  sendCollectionTemplateAddEvent as MockedFunction<
+    typeof sendCollectionTemplateAddEvent
+  >
 
 const NONE: CollectionMediaValues = EMPTY_MEDIA
 function linkForm(url: string): CollectionMediaValues {
@@ -575,6 +590,151 @@ describe('useCollectionForm', () => {
 
       expect(updateMock.result).toHaveBeenCalledTimes(1)
       expect(onClose).toHaveBeenCalled()
+    })
+
+    // NES-1698: the template-add analytics event must fire once per id the
+    // save actually added (diffed against the persisted templates), and
+    // never for reorders — lock the wiring in so a refactor can't silently
+    // over/under-count adds.
+    describe('analytics wiring (NES-1698)', () => {
+      const templatesJ1J2: TemplateGalleryPage['templates'] = [
+        {
+          __typename: 'TemplateGalleryItem',
+          id: 'j1',
+          title: 'A',
+          primaryImageBlock: null
+        },
+        {
+          __typename: 'TemplateGalleryItem',
+          id: 'j2',
+          title: 'B',
+          primaryImageBlock: null
+        }
+      ]
+
+      function valuesWithJourneyIds(
+        collection: TemplateGalleryPage,
+        journeyIds: string[]
+      ): CollectionFormValues {
+        return {
+          title: collection.title,
+          description: collection.description ?? '',
+          creatorName: collection.creatorName ?? '',
+          creatorImageSrc: '',
+          creatorImageAlt: '',
+          media: NONE,
+          slug: collection.slug,
+          journeyIds
+        }
+      }
+
+      beforeEach(() => {
+        mockSendCollectionTemplateAddEvent.mockClear()
+      })
+
+      it('fires one template-add event per template the save actually added', async () => {
+        const collection = makeCollection({
+          id: 'page-7',
+          templates: templatesJ1J2
+        })
+        const updateMock = getTemplateGalleryPageUpdateMock({
+          id: 'page-7',
+          input: { journeyIds: ['j1', 'j2', 'j3'] }
+        })
+
+        const { result } = renderHook(
+          () =>
+            useCollectionForm({
+              mode: 'edit',
+              teamId: 'team-1',
+              collection,
+              onClose: vi.fn()
+            }),
+          { wrapper: wrapperWithMocks([updateMock]) }
+        )
+
+        await act(async () => {
+          await result.current.handleSubmit(
+            valuesWithJourneyIds(collection, ['j1', 'j2', 'j3']),
+            fakeHelpers()
+          )
+        })
+
+        expect(updateMock.result).toHaveBeenCalledTimes(1)
+        expect(mockSendCollectionTemplateAddEvent).toHaveBeenCalledTimes(1)
+        expect(mockSendCollectionTemplateAddEvent).toHaveBeenCalledWith({
+          collectionId: 'page-7',
+          templateId: 'j3'
+        })
+      })
+
+      it('fires no template-add event for a pure reorder', async () => {
+        const collection = makeCollection({
+          id: 'page-7',
+          templates: templatesJ1J2
+        })
+        const updateMock = getTemplateGalleryPageUpdateMock({
+          id: 'page-7',
+          input: { journeyIds: ['j2', 'j1'] }
+        })
+
+        const { result } = renderHook(
+          () =>
+            useCollectionForm({
+              mode: 'edit',
+              teamId: 'team-1',
+              collection,
+              onClose: vi.fn()
+            }),
+          { wrapper: wrapperWithMocks([updateMock]) }
+        )
+
+        await act(async () => {
+          await result.current.handleSubmit(
+            valuesWithJourneyIds(collection, ['j2', 'j1']),
+            fakeHelpers()
+          )
+        })
+
+        expect(updateMock.result).toHaveBeenCalledTimes(1)
+        expect(mockSendCollectionTemplateAddEvent).not.toHaveBeenCalled()
+      })
+
+      it('fires one add event for the added id when a save adds one template and removes another', async () => {
+        const collection = makeCollection({
+          id: 'page-7',
+          templates: templatesJ1J2
+        })
+        const updateMock = getTemplateGalleryPageUpdateMock({
+          id: 'page-7',
+          input: { journeyIds: ['j1', 'j3'] }
+        })
+
+        const { result } = renderHook(
+          () =>
+            useCollectionForm({
+              mode: 'edit',
+              teamId: 'team-1',
+              collection,
+              onClose: vi.fn()
+            }),
+          { wrapper: wrapperWithMocks([updateMock]) }
+        )
+
+        await act(async () => {
+          await result.current.handleSubmit(
+            valuesWithJourneyIds(collection, ['j1', 'j3']),
+            fakeHelpers()
+          )
+        })
+
+        expect(updateMock.result).toHaveBeenCalledTimes(1)
+        expect(mockSendCollectionTemplateAddEvent).toHaveBeenCalledTimes(1)
+        expect(mockSendCollectionTemplateAddEvent).toHaveBeenCalledWith({
+          collectionId: 'page-7',
+          templateId: 'j3'
+        })
+      })
     })
 
     it('skips slug from the update input when the user cleared the field (does not rename to empty)', async () => {
