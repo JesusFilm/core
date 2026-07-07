@@ -386,7 +386,7 @@ describe('journeyAcl', () => {
       ).toBe(true)
     })
 
-    it('should deny publishers without local template access', () => {
+    it('should deny publishers on local templates without proper team or journey access', () => {
       expect(
         canManageTemplateField(localTemplate, {
           ...aclUser,
