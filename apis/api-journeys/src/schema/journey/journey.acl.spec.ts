@@ -367,7 +367,17 @@ describe('journeyAcl', () => {
       teamId: 'teamId'
     } as unknown as Journey
 
-    it('allows publishers to update customization fields on global templates', () => {
+    const localTemplateWithJourneyEditor = {
+      ...localTemplate,
+      userJourneys: [{ userId: user.id, role: UserJourneyRole.editor }]
+    } as unknown as Journey
+
+    const localTemplateWithTeamMember = {
+      ...localTemplate,
+      team: { userTeams: [{ userId: user.id, role: UserTeamRole.member }] }
+    } as unknown as Journey
+
+    it('should allow publishers to update customization fields on global templates', () => {
       expect(
         canManageTemplateField(globalTemplate, {
           ...aclUser,
@@ -376,7 +386,7 @@ describe('journeyAcl', () => {
       ).toBe(true)
     })
 
-    it('allows publishers to update customization fields on local templates', () => {
+    it('should allow publishers to update customization fields on local templates', () => {
       expect(
         canManageTemplateField(localTemplate, {
           ...aclUser,
@@ -385,7 +395,16 @@ describe('journeyAcl', () => {
       ).toBe(true)
     })
 
-    it('denies non-publishers without journey or team access on global templates', () => {
+    it('should allow non-publishers with local template access to update customization fields', () => {
+      expect(
+        canManageTemplateField(localTemplateWithJourneyEditor, aclUser)
+      ).toBe(true)
+      expect(canManageTemplateField(localTemplateWithTeamMember, aclUser)).toBe(
+        true
+      )
+    })
+
+    it('should deny non-publishers without journey or team access on global templates', () => {
       expect(canManageTemplateField(globalTemplate, aclUser)).toBe(false)
     })
   })

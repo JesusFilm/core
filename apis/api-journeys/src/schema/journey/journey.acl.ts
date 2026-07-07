@@ -244,11 +244,5 @@ export function canManageTemplateField(
 
   if (isLocalTemplate && (hasJourneyRole || hasTeamRole)) return true
 
-  if (
-    user.roles?.includes('publisher') === true &&
-    (hasJourneyRole || hasTeamRole)
-  )
-    return true
-
   return false
 }
