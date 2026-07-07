@@ -45,7 +45,7 @@ Publisher users could manage templates through the broader Journey ACL, but quic
 
 ## Solution
 
-Align `canManageTemplateField` with the existing publisher template policy: publishers can update customization fields on templates, even when they do not have direct journey or team membership.
+Align `canManageTemplateField` with the global-template publisher policy: publishers can update customization fields on global templates, even when they do not have direct journey or team membership. Local or team-owned templates still require the user to have the correct journey or team access.
 
 Before:
 
@@ -62,9 +62,10 @@ return false
 After:
 
 ```ts
-const isLocalTemplate = journey.template === true && journey.teamId !== 'jfp-team'
+const isGlobalTemplate = journey.template === true && journey.teamId === 'jfp-team'
+const isLocalTemplate = journey.template === true && !isGlobalTemplate
 
-if (journey.template === true && user.roles?.includes('publisher') === true) return true
+if (isGlobalTemplate && user.roles?.includes('publisher') === true) return true
 
 if (isLocalTemplate && (hasJourneyRole || hasTeamRole)) return true
 ```
@@ -72,20 +73,21 @@ if (isLocalTemplate && (hasJourneyRole || hasTeamRole)) return true
 Add direct ACL helper coverage for:
 
 - publisher access to global templates
-- publisher access to local templates, matching the existing all-template publisher policy
+- publisher denial on local templates when the user has no journey or team access
+- publisher and non-publisher access on local templates when the user has the correct journey or team access
 - non-publisher denial when the user has no journey or team access
 
 ## Why This Works
 
-The failing mutation uses `canManageTemplateField`, not the whole-journey `journeyAcl` update/manage path. The previous helper required publisher users to also have direct journey/team access, which contradicted the existing Journey ACL comments and tests that treat the publisher role as a template-management role.
+The failing mutation uses `canManageTemplateField`, not the whole-journey `journeyAcl` update/manage path. The previous helper required publisher users to also have direct journey/team access, which blocked publisher-only access to global quick-start templates.
 
-The fix puts the publisher-template allow rule before the local-template membership rule. Non-publishers without journey or team access still return false, while publishers reach the later mutation logic that confirms the journey is actually a template before writing customization fields.
+The fix puts the publisher global-template allow rule before the local-template membership rule. Publishers can update global templates without direct membership. For local or team-owned templates, publishers and non-publishers both need the correct journey or team access. Users without journey or team access still return false.
 
 ## Prevention
 
 - When fixing authorization bugs, trace the exact mutation or query called by the frontend. Similar-looking ACL helpers may not be on the execution path.
-- Keep field-level ACL helpers aligned with broader resource-level ACL policy unless the helper intentionally documents a stricter contract.
-- Add tests for role-only access when a role is meant to grant capability without direct resource membership.
+- Keep field-level ACL helpers aligned with the precise resource scope. A broader resource-level policy may still need a narrower global-vs-local template contract.
+- Add tests for role-only access when a role is meant to grant capability without direct resource membership, and denial coverage when that role-only access is intentionally scoped.
 - Keep local-vs-global template scope explicit in tests. The `jfp-team` boundary is a known drift point from local template work.
 
 ## Related Issues

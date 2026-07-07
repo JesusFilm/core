@@ -386,9 +386,24 @@ describe('journeyAcl', () => {
       ).toBe(true)
     })
 
-    it('should allow publishers to update customization fields on local templates', () => {
+    it('should deny publishers without local template access', () => {
       expect(
         canManageTemplateField(localTemplate, {
+          ...aclUser,
+          roles: ['publisher']
+        })
+      ).toBe(false)
+    })
+
+    it('should allow publishers with local template access to update customization fields', () => {
+      expect(
+        canManageTemplateField(localTemplateWithJourneyEditor, {
+          ...aclUser,
+          roles: ['publisher']
+        })
+      ).toBe(true)
+      expect(
+        canManageTemplateField(localTemplateWithTeamMember, {
           ...aclUser,
           roles: ['publisher']
         })
