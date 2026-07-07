@@ -63,7 +63,9 @@ const BlockTranslationUpdatesSchema = z
   .object({
     content: z.string().optional(),
     label: z.string().optional(),
-    placeholder: z.string().optional()
+    placeholder: z.string().optional(),
+    hint: z.string().optional(),
+    submitLabel: z.string().optional()
   })
   .refine((updates) => Object.keys(updates).length > 0, {
     message: 'At least one supported update field is required'
@@ -82,7 +84,9 @@ const allowedTranslationFieldsByBlockType = {
   TypographyBlock: ['content'],
   ButtonBlock: ['label'],
   RadioOptionBlock: ['label'],
-  TextResponseBlock: ['label', 'placeholder']
+  MultiselectOptionBlock: ['label'],
+  TextResponseBlock: ['label', 'placeholder', 'hint'],
+  SignUpBlock: ['submitLabel']
 } as const satisfies Record<string, readonly TranslatableBlockField[]>
 
 function getValidatedBlockUpdates(
@@ -99,7 +103,13 @@ function getValidatedBlockUpdates(
   const validatedUpdates = Object.fromEntries(
     allowedFields.flatMap((field) => {
       const value = updates[field]
-      return typeof value === 'string' ? [[field, value]] : []
+      // Reject empty / whitespace-only translations: every requested field has a
+      // non-empty source, so an empty return is a failed translation. Dropping
+      // it here avoids blanking the block and keeps the field "missing" so the
+      // retry/escalation loop re-requests it.
+      return typeof value === 'string' && value.trim() !== ''
+        ? [[field, value]]
+        : []
     })
   ) as Partial<Record<TranslatableBlockField, string>>
 
@@ -108,27 +118,254 @@ function getValidatedBlockUpdates(
 
 // --- Shared helpers for mutation and subscription ---
 
+// Buttons and sign-up submit buttons render a UI-language fallback ("Submit" /
+// "Button", see libs/journeys/ui Button.tsx / SignUp.tsx) when their label is
+// blank. That default text is never stored on the block, so it never reaches
+// the AI and stays English for the 33 languages the i18n dictionary doesn't
+// cover. Fill the blank with its canonical default for translation purposes
+// ONLY — this returns a clone used to build the prompt; the default itself is
+// never written to the database. The model's translated value lands on the real
+// block through the normal write path, so no extra database call is needed.
+function withDefaultButtonLabel(block: Block): Block {
+  if (
+    block.typename === 'ButtonBlock' &&
+    (block.label == null || block.label === '')
+  ) {
+    return { ...block, label: block.submitEnabled ? 'Submit' : 'Button' }
+  }
+  if (
+    block.typename === 'SignUpBlock' &&
+    (block.submitLabel == null || block.submitLabel === '')
+  ) {
+    return { ...block, submitLabel: 'Submit' }
+  }
+  return block
+}
+
 function getTranslatableBlocksForCard(
   allBlocks: Block[],
   cardBlock: Block
 ): Block[] {
-  const cardChildren = allBlocks.filter(
-    (block) => block.parentBlockId === cardBlock.id
-  )
+  const childrenByParent = new Map<string, Block[]>()
+  for (const block of allBlocks) {
+    if (block.parentBlockId == null) continue
+    const siblings = childrenByParent.get(block.parentBlockId) ?? []
+    siblings.push(block)
+    childrenByParent.set(block.parentBlockId, siblings)
+  }
 
-  const radioOptionBlocks = cardChildren
-    .filter((block) => block.typename === 'RadioQuestionBlock')
-    .flatMap((rq) =>
-      allBlocks.filter(
-        (block) =>
-          block.parentBlockId === rq.id && block.typename === 'RadioOptionBlock'
-      )
-    )
+  // Collect every descendant of the card, at any depth, so nested translatable
+  // content (e.g. RadioOptionBlocks under a RadioQuestionBlock, or
+  // MultiselectOptionBlocks under a MultiselectBlock) is never missed regardless
+  // of how deeply it is nested.
+  const descendants: Block[] = []
+  const stack = [...(childrenByParent.get(cardBlock.id) ?? [])]
+  while (stack.length > 0) {
+    const block = stack.pop()
+    if (block == null) continue
+    descendants.push(block)
+    const children = childrenByParent.get(block.id)
+    if (children != null) stack.push(...children)
+  }
 
-  return [...cardChildren, ...radioOptionBlocks].filter((block) => {
+  return descendants.map(withDefaultButtonLabel).filter((block) => {
     const fields = getTranslatableFields(block)
     return Object.values(fields).some((v) => v != null && v !== '')
   })
+}
+
+// Per-card translation is resilient to the model omitting whole blocks OR
+// individual fields from its structured output. We make a few batched passes
+// re-requesting only the still-missing fields, then escalate any stubborn block
+// to its own isolated request — a one-block request cannot be dropped off the
+// tail of a long array or merged into a sibling's entry.
+const MAX_CARD_BATCH_ATTEMPTS = 3
+const MAX_PER_BLOCK_ATTEMPTS = 2
+
+interface BlockTranslationRequest {
+  block: Block
+  fields: TranslatableBlockField[]
+}
+
+interface TranslateBlocksArgs {
+  requests: BlockTranslationRequest[]
+  allBlocks: Block[]
+  cardBlockId: string
+  journeyId: string
+  cardContent: string
+  journeyAnalysis: string
+  sourceLanguageName: string
+  targetLanguageName: string
+  onBlockUpdated?: (
+    blockId: string,
+    updates: Partial<Record<TranslatableBlockField, string>>
+  ) => void
+  session: ReturnType<typeof createOpenrouterFallbackSession>
+}
+
+/**
+ * The translatable fields of a block that actually carry a source value,
+ * restricted to the fields allowed for that block type. These are the fields a
+ * complete translation must cover.
+ */
+function getRequiredFields(block: Block): TranslatableBlockField[] {
+  const allowedFields =
+    allowedTranslationFieldsByBlockType[
+      block.typename as keyof typeof allowedTranslationFieldsByBlockType
+    ]
+  if (allowedFields == null) return []
+
+  const fields = getTranslatableFields(block)
+  return allowedFields.filter((field) => {
+    const value = fields[field]
+    return value != null && value !== ''
+  })
+}
+
+/**
+ * Streams translations for a specific set of (block, fields) requests and writes
+ * each validated result to the database. Returns, per block, the set of fields
+ * that were actually written this pass so the caller can re-request the rest.
+ *
+ * Always resolves (never rejects) — although a fallback-eligible stream error is
+ * re-thrown internally to advance the session to the next model, the outer
+ * try/catch absorbs it, so a failed attempt resolves to whatever it managed to
+ * translate and leaves the rest for the caller's retry loop.
+ */
+async function translateBlocksOnce({
+  requests,
+  allBlocks,
+  cardBlockId,
+  journeyId,
+  cardContent,
+  journeyAnalysis,
+  sourceLanguageName,
+  targetLanguageName,
+  onBlockUpdated,
+  session
+}: TranslateBlocksArgs): Promise<Map<string, Set<TranslatableBlockField>>> {
+  const requestedFieldsByBlock = new Map(
+    requests.map((request) => [
+      request.block.id,
+      new Set<TranslatableBlockField>(request.fields)
+    ])
+  )
+  const writtenFields = new Map<string, Set<TranslatableBlockField>>()
+  const totalRequested = requests.reduce(
+    (sum, request) => sum + request.fields.length,
+    0
+  )
+  let totalWritten = 0
+
+  if (totalRequested === 0) return writtenFields
+
+  const blocksInfo = requests
+    .map((request) => createTranslationInfo(request.block, request.fields))
+    .join('\n')
+
+  const prompt = `Context from journey analysis:
+${hardenPrompt(journeyAnalysis)}
+
+Translate from ${hardenPrompt(sourceLanguageName)} to ${hardenPrompt(targetLanguageName)}.
+
+Card context:
+${hardenPrompt(cardContent)}
+
+Blocks to translate (use the EXACT IDs shown in square brackets as blockId):
+${hardenPrompt(blocksInfo)}
+
+Return exactly one entry for every block ID listed above, and translate every field shown for it — do not skip, merge, or invent blocks or fields.`
+
+  try {
+    await session.execute(async (model, abortSignal) => {
+      let streamError: unknown
+      const { elementStream } = streamText({
+        model,
+        abortSignal,
+        maxRetries: 0,
+        messages: [
+          { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
+          {
+            role: 'user',
+            content: [{ type: 'text', text: prompt }]
+          }
+        ],
+        output: Output.array({ element: BlockTranslationSchema }),
+        onError: ({ error }) => {
+          streamError = error
+          logger.warn(
+            { error, cardBlockId },
+            'Error in translation stream for card'
+          )
+        }
+      })
+
+      for await (const item of elementStream) {
+        try {
+          const cleanBlockId = item.blockId.replace(/^\[|\]$/g, '')
+
+          const requestedFields = requestedFieldsByBlock.get(cleanBlockId)
+          if (requestedFields == null) continue
+
+          const blockToUpdate = allBlocks.find((b) => b.id === cleanBlockId)
+          if (blockToUpdate == null) continue
+
+          const validatedUpdates = getValidatedBlockUpdates(
+            blockToUpdate,
+            item.updates
+          )
+          if (validatedUpdates == null) continue
+
+          // Only write fields we asked for this pass and have not already
+          // written, so a later retry can't overwrite an earlier field's value.
+          const alreadyWritten =
+            writtenFields.get(cleanBlockId) ?? new Set<TranslatableBlockField>()
+          const updates = Object.fromEntries(
+            Object.entries(validatedUpdates).filter(
+              ([field]) =>
+                requestedFields.has(field as TranslatableBlockField) &&
+                !alreadyWritten.has(field as TranslatableBlockField)
+            )
+          ) as Partial<Record<TranslatableBlockField, string>>
+
+          if (Object.keys(updates).length === 0) continue
+
+          await prisma.block.update({
+            where: { id: cleanBlockId, journeyId },
+            data: updates
+          })
+
+          for (const field of Object.keys(
+            updates
+          ) as TranslatableBlockField[]) {
+            alreadyWritten.add(field)
+          }
+          writtenFields.set(cleanBlockId, alreadyWritten)
+          totalWritten += Object.keys(updates).length
+
+          onBlockUpdated?.(cleanBlockId, updates)
+        } catch (updateError) {
+          logger.error(
+            { error: updateError, blockId: item.blockId },
+            'Error updating block'
+          )
+        }
+      }
+
+      // The AI SDK reports stream failures to onError and ends the stream
+      // instead of throwing, which silently truncates the array. Re-throw so a
+      // fallback-eligible error (timeout/429/403) advances the session to the
+      // next model. Only escalate while fields remain untranslated — a late
+      // error after everything landed is not worth a fallback round-trip.
+      if (streamError != null && totalWritten < totalRequested) {
+        throw streamError
+      }
+    })
+  } catch (error) {
+    logger.warn({ error, cardBlockId }, 'Card translation attempt failed')
+  }
+
+  return writtenFields
 }
 
 async function translateCardBlocks({
@@ -158,72 +395,103 @@ async function translateCardBlocks({
   const blocksToTranslate = getTranslatableBlocksForCard(allBlocks, cardBlock)
   if (blocksToTranslate.length === 0) return
 
-  const allowedBlockIds = new Set(blocksToTranslate.map((b) => b.id))
-  const blocksInfo = blocksToTranslate
-    .map((block) => createTranslationInfo(block))
-    .join('\n')
+  const blocksById = new Map(blocksToTranslate.map((b) => [b.id, b]))
+  const requiredFieldsByBlock = new Map(
+    blocksToTranslate.map((b) => [b.id, getRequiredFields(b)])
+  )
+  const translatedFieldsByBlock = new Map<string, Set<TranslatableBlockField>>(
+    blocksToTranslate.map((b) => [b.id, new Set()])
+  )
 
-  const prompt = `Context from journey analysis:
-${hardenPrompt(journeyAnalysis)}
+  const missingFieldsFor = (blockId: string): TranslatableBlockField[] => {
+    const required = requiredFieldsByBlock.get(blockId) ?? []
+    const done = translatedFieldsByBlock.get(blockId) ?? new Set()
+    return required.filter((field) => !done.has(field))
+  }
 
-Translate from ${hardenPrompt(sourceLanguageName)} to ${hardenPrompt(targetLanguageName)}.
+  const incompleteBlockIds = (): string[] =>
+    Array.from(blocksById.keys()).filter(
+      (id) => missingFieldsFor(id).length > 0
+    )
 
-Card context:
-${hardenPrompt(cardContent)}
-
-Blocks to translate (use the EXACT IDs shown in square brackets as blockId):
-${hardenPrompt(blocksInfo)}`
-
-  await session.execute(async (model, abortSignal) => {
-    const { elementStream } = streamText({
-      model,
-      abortSignal,
-      maxRetries: 0,
-      messages: [
-        { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
-        {
-          role: 'user',
-          content: [{ type: 'text', text: prompt }]
-        }
-      ],
-      output: Output.array({ element: BlockTranslationSchema }),
-      onError: ({ error }) => {
-        logger.warn(
-          { error, cardBlockId: cardBlock.id },
-          'Error in translation stream for card'
-        )
-      }
-    })
-
-    for await (const item of elementStream) {
-      try {
-        const cleanBlockId = item.blockId.replace(/^\[|\]$/g, '')
-
-        if (!allowedBlockIds.has(cleanBlockId)) continue
-
-        const blockToUpdate = allBlocks.find((b) => b.id === cleanBlockId)
-        if (blockToUpdate == null) continue
-
-        const validatedUpdates = getValidatedBlockUpdates(
-          blockToUpdate,
-          item.updates
-        )
-        if (validatedUpdates == null) continue
-
-        await prisma.block.update({
-          where: { id: cleanBlockId, journeyId },
-          data: validatedUpdates
-        })
-
-        onBlockUpdated?.(cleanBlockId, validatedUpdates)
-      } catch (updateError) {
-        logger.error(
-          { error: updateError, blockId: item.blockId },
-          'Error updating block'
-        )
-      }
+  const recordWritten = (
+    written: Map<string, Set<TranslatableBlockField>>
+  ): void => {
+    for (const [blockId, fields] of written) {
+      const done = translatedFieldsByBlock.get(blockId)
+      if (done == null) continue
+      for (const field of fields) done.add(field)
     }
-  })
+  }
+
+  const translate = (
+    blockIds: string[]
+  ): Promise<Map<string, Set<TranslatableBlockField>>> => {
+    const requests = blockIds
+      .map((id) => ({
+        block: blocksById.get(id),
+        fields: missingFieldsFor(id)
+      }))
+      .filter(
+        (request): request is BlockTranslationRequest =>
+          request.block != null && request.fields.length > 0
+      )
+
+    return translateBlocksOnce({
+      requests,
+      allBlocks,
+      cardBlockId: cardBlock.id,
+      journeyId,
+      cardContent,
+      journeyAnalysis,
+      sourceLanguageName,
+      targetLanguageName,
+      onBlockUpdated,
+      session
+    })
+  }
+
+  // Phase 1: batched passes — one request covering every still-missing field
+  // across the card. Handles the common case cheaply.
+  for (
+    let attempt = 1;
+    attempt <= MAX_CARD_BATCH_ATTEMPTS && incompleteBlockIds().length > 0;
+    attempt++
+  ) {
+    recordWritten(await translate(incompleteBlockIds()))
+  }
+
+  // Phase 2: per-block escalation — translate each stubborn block on its own,
+  // requesting only the fields still missing.
+  const stubbornBlockIds = incompleteBlockIds()
+  if (stubbornBlockIds.length > 0) {
+    await Promise.all(
+      stubbornBlockIds.map(async (blockId) => {
+        for (
+          let attempt = 1;
+          attempt <= MAX_PER_BLOCK_ATTEMPTS &&
+          missingFieldsFor(blockId).length > 0;
+          attempt++
+        ) {
+          recordWritten(await translate([blockId]))
+        }
+      })
+    )
+  }
+
+  const stillMissing = incompleteBlockIds()
+  if (stillMissing.length > 0) {
+    logger.warn(
+      {
+        cardBlockId: cardBlock.id,
+        missing: stillMissing.map((id) => ({
+          blockId: id,
+          fields: missingFieldsFor(id)
+        }))
+      },
+      'Card translation incomplete: some block fields were not translated after retries and escalation'
+    )
+  }
 }
 
 // Define the shared input type
@@ -359,6 +627,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           sourceLanguageName: input.journeyLanguageName,
           targetLanguageName: input.textLanguageName,
           journeyTitle: input.name,
+          journeyDisplayTitle: journey.displayTitle,
           journeyDescription: journey.description,
           seoTitle: journey.seoTitle,
           seoDescription: journey.seoDescription,
@@ -430,6 +699,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
         const updateData: {
           title: string
           languageId: string
+          displayTitle?: string
           description?: string
           seoTitle?: string
           seoDescription?: string
@@ -437,6 +707,10 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
         } = {
           title: analysisResult.title,
           languageId: input.textLanguageId
+        }
+
+        if (journey.displayTitle && analysisResult.displayTitle) {
+          updateData.displayTitle = analysisResult.displayTitle
         }
 
         if (hasDescription && analysisResult.description) {
@@ -639,6 +913,7 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
           sourceLanguageName,
           targetLanguageName,
           journeyTitle: input.name,
+          journeyDisplayTitle: journey.displayTitle,
           journeyDescription: journey.description,
           seoTitle: journey.seoTitle,
           seoDescription: journey.seoDescription,
@@ -696,6 +971,12 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
           where: { id: input.journeyId },
           data: {
             title: analysisAndTranslation.title,
+            // Only update displayTitle if the original journey had one and a
+            // non-empty translation came back, so an omitted translation never
+            // clears an existing displayTitle (matches the subscription path).
+            ...(journey.displayTitle && analysisAndTranslation.displayTitle
+              ? { displayTitle: analysisAndTranslation.displayTitle }
+              : {}),
             // Only update description if the original journey had one
             ...(hasDescription
               ? { description: analysisAndTranslation.description }
