@@ -50,16 +50,11 @@ Align `canManageTemplateField` with the existing publisher template policy: publ
 Before:
 
 ```ts
-const isLocalTemplate =
-  journey.template === true && journey.teamId !== 'jfp-team'
+const isLocalTemplate = journey.template === true && journey.teamId !== 'jfp-team'
 
 if (isLocalTemplate && (hasJourneyRole || hasTeamRole)) return true
 
-if (
-  user.roles?.includes('publisher') === true &&
-  (hasJourneyRole || hasTeamRole)
-)
-  return true
+if (user.roles?.includes('publisher') === true && (hasJourneyRole || hasTeamRole)) return true
 
 return false
 ```
@@ -67,11 +62,9 @@ return false
 After:
 
 ```ts
-const isLocalTemplate =
-  journey.template === true && journey.teamId !== 'jfp-team'
+const isLocalTemplate = journey.template === true && journey.teamId !== 'jfp-team'
 
-if (journey.template === true && user.roles?.includes('publisher') === true)
-  return true
+if (journey.template === true && user.roles?.includes('publisher') === true) return true
 
 if (isLocalTemplate && (hasJourneyRole || hasTeamRole)) return true
 ```

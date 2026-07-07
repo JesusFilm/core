@@ -6,11 +6,7 @@ import {
 
 import { Action } from '../../lib/auth/ability'
 
-import {
-  Journey,
-  canManageTemplateField,
-  journeyAcl
-} from './journey.acl'
+import { Journey, canManageTemplateField, journeyAcl } from './journey.acl'
 
 describe('journeyAcl', () => {
   const user = { id: 'userId' }
