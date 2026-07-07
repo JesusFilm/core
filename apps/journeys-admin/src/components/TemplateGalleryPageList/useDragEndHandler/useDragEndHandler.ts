@@ -6,6 +6,7 @@ import { MutableRefObject } from 'react'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
+import { sendCollectionTemplateDragEvent } from '../../../libs/sendCollectionEvent'
 import { useTemplateGalleryPageAssignJourneyMutation } from '../../../libs/useTemplateGalleryPageAssignJourneyMutation'
 import { useTemplateGalleryPageReorderTemplateMutation } from '../../../libs/useTemplateGalleryPageReorderTemplateMutation'
 import { parseDropZoneId } from '../Droppables'
@@ -293,18 +294,24 @@ export function useDragEndHandler(
               t("Couldn't move template — the server rejected the move."),
               { variant: 'error', preventDuplicate: true }
             )
-          } else if (targetWasCollapsed) {
-            // The template landed in a collapsed collection the user can't
-            // see — confirm the drop so the move doesn't feel like it
-            // vanished (NES-1717). Fall back to a generic message rather than
-            // interpolating an empty name if the title can't be resolved.
-            const targetName = targetCollection?.title ?? returnedPage?.title
-            enqueueSnackbar(
-              targetName != null && targetName !== ''
-                ? t('Added to {{collection}}', { collection: targetName })
-                : t('Added to collection'),
-              { variant: 'success', preventDuplicate: true }
-            )
+          } else {
+            sendCollectionTemplateDragEvent({
+              collectionId: targetCollectionId,
+              templateId
+            })
+            if (targetWasCollapsed) {
+              // The template landed in a collapsed collection the user can't
+              // see — confirm the drop so the move doesn't feel like it
+              // vanished (NES-1717). Fall back to a generic message rather than
+              // interpolating an empty name if the title can't be resolved.
+              const targetName = targetCollection?.title ?? returnedPage?.title
+              enqueueSnackbar(
+                targetName != null && targetName !== ''
+                  ? t('Added to {{collection}}', { collection: targetName })
+                  : t('Added to collection'),
+                { variant: 'success', preventDuplicate: true }
+              )
+            }
           }
         }
       }

@@ -18,6 +18,10 @@ import Play3Icon from '@core/shared/ui/icons/Play3'
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
 import { TemplateGalleryPageMediaType } from '../../../../../__generated__/globalTypes'
 import { copyToClipboard } from '../../../../libs/copyToClipboard'
+import {
+  sendCollectionCopyLinkClickEvent,
+  sendCollectionPreviewClickEvent
+} from '../../../../libs/sendCollectionEvent'
 import { MediaPreview } from '../MediaPreview'
 import { CollectionMediaValues } from '../useCollectionForm/collectionMedia'
 
@@ -134,6 +138,10 @@ function CollectionPreviewPaneImpl({
 
   async function handleCopy(): Promise<void> {
     if (publicUrl == null) return
+    sendCollectionCopyLinkClickEvent({
+      location: 'edit_dialog',
+      collectionSlug: slug ?? undefined
+    })
     const ok = await copyToClipboard(publicUrl)
     enqueueSnackbar(
       ok ? t('Link copied to clipboard') : t("Couldn't copy link"),
@@ -145,6 +153,10 @@ function CollectionPreviewPaneImpl({
     // narrow `slug` through a boolean — the explicit `slug == null`
     // here is the type-narrowing pair, not a redundant safety check.
     if (viewDisabled || slug == null) return
+    sendCollectionPreviewClickEvent({
+      location: 'edit_dialog',
+      collectionSlug: slug
+    })
     window.open(
       `/api/preview-template-gallery?slug=${encodeURIComponent(slug)}`,
       '_blank',

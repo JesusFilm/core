@@ -22,6 +22,7 @@ import MoreIcon from '@core/shared/ui/icons/More'
 
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
 import { TemplateGalleryPageStatus } from '../../../../__generated__/globalTypes'
+import { sendCollectionPreviewClickEvent } from '../../../libs/sendCollectionEvent'
 import { LabelChip } from '../../LabelChip'
 import {
   COLLECTION_CARD_BORDER_WIDTH,
@@ -110,6 +111,11 @@ function CollectionCardImpl({
   function handlePreview(): void {
     handleMenuClose()
     if (previewDisabled) return
+    sendCollectionPreviewClickEvent({
+      location: 'card_menu',
+      collectionSlug: collection.slug,
+      collectionId: collection.id
+    })
     window.open(previewHref, '_blank', 'noopener,noreferrer')
   }
   function handleOpenUngroup(): void {
