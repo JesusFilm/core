@@ -9,6 +9,10 @@ import { ReactElement } from 'react'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import {
+  buildCustomizeHref,
+  buildUseTemplateHref
+} from '../../../libs/adminTemplateLinks'
+import {
   GALLERY_ACTION_COLOR,
   GALLERY_ACTION_SIZE,
   GALLERY_USE_BUTTON_MIN_WIDTH
@@ -52,48 +56,6 @@ interface JourneyViewCardActionsProps {
    * link or focus target.
    */
   decorative?: boolean
-}
-
-/**
- * Normalise `NEXT_PUBLIC_JOURNEYS_ADMIN_URL` into an absolute https base.
- * Guards against schemeless values (e.g. `admin.staging.local`) which would
- * otherwise throw inside `new URL` and crash the page at render.
- */
-function sanitiseAdminBase(adminUrl: string): string {
-  try {
-    return new URL('/', adminUrl).origin
-  } catch {
-    const sanitised = adminUrl.trim().replace(/^\/+/, '').replace(/\/+$/, '')
-    return `https://${sanitised}`
-  }
-}
-
-/**
- * Build the admin "Use Template" deep link (`/?useTemplate=<id>`).
- */
-function buildUseTemplateHref(adminUrl: string, itemId: string): string {
-  try {
-    const url = new URL('/', adminUrl)
-    url.searchParams.set('useTemplate', itemId)
-    return url.toString()
-  } catch {
-    return `${sanitiseAdminBase(adminUrl)}/?useTemplate=${encodeURIComponent(itemId)}`
-  }
-}
-
-/**
- * Build the admin template customization entry point. Customizable templates
- * skip the "Copy to team" dialog and land directly in the guided editor.
- */
-function buildCustomizeHref(adminUrl: string, itemId: string): string {
-  try {
-    return new URL(
-      `/templates/${encodeURIComponent(itemId)}/customize`,
-      adminUrl
-    ).toString()
-  } catch {
-    return `${sanitiseAdminBase(adminUrl)}/templates/${encodeURIComponent(itemId)}/customize`
-  }
 }
 
 function buildUseHref(

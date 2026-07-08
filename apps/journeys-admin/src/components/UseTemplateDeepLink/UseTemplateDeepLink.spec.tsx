@@ -343,6 +343,17 @@ describe('UseTemplateDeepLink', () => {
     expect(push).not.toHaveBeenCalled()
   })
 
+  it('shows a loading indicator while the journey query resolves', async () => {
+    setup()
+    expect(screen.getByTestId('UseTemplateDeepLinkLoading')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+    expect(
+      screen.queryByTestId('UseTemplateDeepLinkLoading')
+    ).not.toBeInTheDocument()
+  })
+
   it('duplicates the journey and replaces the URL with /?type=journeys&refresh=true', async () => {
     const { push, replace } = setup()
     await waitFor(() =>

@@ -1,3 +1,5 @@
+import Backdrop from '@mui/material/Backdrop'
+import CircularProgress from '@mui/material/CircularProgress'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
@@ -95,7 +97,7 @@ function ActiveUseTemplateDeepLink({
     // Full navigation — not shallow. Shallow routing only applies to query
     // changes on the *same* page; using it across pathnames skips
     // getServerSideProps and surfaces a 404 on /templates/[journeyId]/customize.
-    void router.replace(`/templates/${journeyId}/customize`)
+    void router.replace(`/templates/${encodeURIComponent(journeyId)}/customize`)
   }, [journeyLoading, isCustomizable, journeyId, router])
 
   useEffect(() => {
@@ -255,7 +257,20 @@ function ActiveUseTemplateDeepLink({
     stripParamFromUrl()
   }, [loading, translationVariables, stripParamFromUrl])
 
-  if (journeyLoading || isCustomizable) return null
+  // Deep links land here directly, so show a blocking spinner instead of a
+  // blank page while we decide between the dialog and the customize redirect
+  // (and while the redirect itself is in flight).
+  if (journeyLoading || isCustomizable) {
+    return (
+      <Backdrop
+        open
+        data-testid="UseTemplateDeepLinkLoading"
+        sx={{ zIndex: (theme) => theme.zIndex.modal }}
+      >
+        <CircularProgress sx={{ color: 'common.white' }} />
+      </Backdrop>
+    )
+  }
 
   return (
     <CopyToTeamDialog
