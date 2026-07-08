@@ -37,7 +37,7 @@ A language that has media available, with speaker/country/content counts — the
 A country with population, language counts, and flag assets — the Arclight projection of the languages context's Country.
 
 **Metadata Language Tag**:
-A BCP-47 tag (from a fixed whitelist) that a consumer requests metadata text in. Distinct from `languageId`: tags select the language of *descriptive text*; numeric ids select the language of *media renditions*. Responses report the tag actually used after fallback (default English).
+A BCP-47 tag (from a fixed whitelist) that a consumer requests metadata text in. Distinct from `languageId`: tags select the language of _descriptive text_; numeric ids select the language of _media renditions_. Responses report the tag actually used after fallback (default English).
 _Avoid_: locale, using tag and languageId interchangeably
 
 ### Consumers & Delivery

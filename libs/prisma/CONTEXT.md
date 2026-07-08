@@ -1,6 +1,6 @@
 # Prisma (persistence kernel)
 
-Not a domain — the shared persistence layer of the API contexts: one Prisma schema per context-owned logical database, plus the conventions for generating clients, migrating, and seeding them. Each subdirectory (`journeys`, `media`, `languages`, `users`, `analytics`) is the storage of *another* bounded context; this lib owns only the persistence vocabulary below.
+Not a domain — the shared persistence layer of the API contexts: one Prisma schema per context-owned logical database, plus the conventions for generating clients, migrating, and seeding them. Each subdirectory (`journeys`, `media`, `languages`, `users`, `analytics`) is the storage of _another_ bounded context; this lib owns only the persistence vocabulary below.
 
 ## Language
 
@@ -25,8 +25,8 @@ A timestamp-named SQL migration owned by the context's Prisma schema; applied wi
 The `000000000000_squashed_migrations` baseline that the journeys and media histories were collapsed into; existing databases mark it applied rather than running it.
 
 **Introspected Schema**:
-The analytics special case: its Prisma schema is *pulled* (`db pull`) from Plausible Analytics' externally-managed database, never migrated or seeded from here. Its models look foreign on purpose — snake_case names, bigint autoincrement ids — because Plausible's Elixir stack owns the DDL.
-_Avoid_: treating analytics like the owned schemas (it has no migrations to write)
+The analytics special case: its Prisma schema is _pulled_ (`db pull`) from Plausible Analytics' externally-managed database, never migrated or seeded from here. Its models look foreign on purpose — snake*case names, bigint autoincrement ids — because Plausible's Elixir stack owns the DDL.
+\_Avoid*: treating analytics like the owned schemas (it has no migrations to write)
 
 **Seed**:
 The journeys-only bootstrap data (teams, NUA templates, onboarding, Playwright user access), re-run when its manual version marker is bumped. No other schema seeds.

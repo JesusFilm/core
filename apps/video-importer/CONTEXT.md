@@ -48,5 +48,5 @@ The idempotency behavior for subtitles and audio previews: re-importing finds th
 Two distinct counters share the word: the Variant version parsed from the filename, and the subtitle's per-format `srtVersion`/`vttVersion` that the Upsert auto-increments. Say which one you mean.
 
 **Deferred Encoding**:
-The importer uploads bytes to R2 and asks the media API to enqueue Mux ingest; "imported" therefore means *accepted*, not *ready to stream* — encoding completes asynchronously after the run ends.
+The importer uploads bytes to R2 and asks the media API to enqueue Mux ingest; "imported" therefore means _accepted_, not _ready to stream_ — encoding completes asynchronously after the run ends.
 _Avoid_: Uploaded = playable

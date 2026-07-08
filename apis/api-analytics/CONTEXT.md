@@ -1,6 +1,6 @@
 # Plausible Provisioning
 
-The measurement-provisioning context (deployable: `api-analytics`). A thin GraphQL federation subgraph sitting **directly on top of [Plausible Analytics](https://plausible.io)' own database** — its Prisma schema is *introspected* from Plausible, not owned. Its sole job is to provision the Plausible **Sites**, **Goals**, and **Shared Links** that the rest of the platform (chiefly `api-journeys`) reports traffic against. It exposes one write and no reads.
+The measurement-provisioning context (deployable: `api-analytics`). A thin GraphQL federation subgraph sitting **directly on top of [Plausible Analytics](https://plausible.io)' own database** — its Prisma schema is _introspected_ from Plausible, not owned. Its sole job is to provision the Plausible **Sites**, **Goals**, and **Shared Links** that the rest of the platform (chiefly `api-journeys`) reports traffic against. It exposes one write and no reads.
 
 ## Language
 
@@ -29,7 +29,7 @@ _Avoid_: access, permission, collaborator, seat
 ### Identity
 
 **Plausible User**:
-The identity this context authenticates — a row in **Plausible's own `users` table**. It is *not* an `api-users` / Firebase user; it is a separate identity space local to the Plausible database and must never be joined to a Firebase UID.
+The identity this context authenticates — a row in **Plausible's own `users` table**. It is _not_ an `api-users` / Firebase user; it is a separate identity space local to the Plausible database and must never be joined to a Firebase UID.
 _Avoid_: user (unqualified), account, Firebase user, currentUser (that is only the context field)
 
 **API Key**:
@@ -37,9 +37,10 @@ The only credential. A Bearer token resolved to a Plausible User by looking up i
 _Avoid_: token, secret, bearer token, session
 
 **isAuthenticated / isAnonymous**:
-The two auth scopes, both derived from the resolved Plausible User: *authenticated* = a user row **with** an email; *anonymous* = a user row with a **null** email. Note this is a different notion of "anonymous" from the Users context's Anonymous User.
+The two auth scopes, both derived from the resolved Plausible User: _authenticated_ = a user row **with** an email; _anonymous_ = a user row with a **null** email. Note this is a different notion of "anonymous" from the Users context's Anonymous User.
 _Avoid_: loggedIn, guest
 
 > **Two traps worth stating plainly.**
-> 1. **`users` here is Plausible's table, not the Users context.** The `currentUser` on every request is a *Plausible* identity keyed by an API key — a distinct identity space. Never conflate it with a Firebase UID or an `api-users` User.
+>
+> 1. **`users` here is Plausible's table, not the Users context.** The `currentUser` on every request is a _Plausible_ identity keyed by an API key — a distinct identity space. Never conflate it with a Firebase UID or an `api-users` User.
 > 2. **This context owns none of its schema.** The tables (`sites`, `goals`, `shared_links`, `site_memberships`, `api_keys`, `users`, …) are Plausible's, pulled in with `nx prisma-introspect prisma-analytics` — there are **no migrations here**. Numeric Plausible ids (`BigInt`) are surfaced to the graph as `String`.

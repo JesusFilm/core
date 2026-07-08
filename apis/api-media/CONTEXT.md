@@ -19,7 +19,7 @@ A distinct cut of a Video — a specific edit of the footage, defaulting to `bas
 _Avoid_: Version (reserved for the numeric revision counter), cut, release
 
 **Primary Language**:
-The Video's original, canonical language. Contrast with the many languages a Video is *available* in via its Variants and translated text.
+The Video's original, canonical language. Contrast with the many languages a Video is _available_ in via its Variants and translated text.
 _Avoid_: Default language, source language
 
 **Origin**:
@@ -125,5 +125,5 @@ The asset stores — Cloudflare **Images** for pictures, **R2** for video and su
 _Avoid_: Bucket, blob, file store (when the specific store matters, name it)
 
 **YouTube Video**:
-A record of a YouTube video an operator has *reviewed* against the catalog, carrying a review state (`LINKED`, `DISMISSED`, `SKIPPED`). Absence of a record means "not yet reviewed"; it is a review artifact, not a mirror of a YouTube channel.
+A record of a YouTube video an operator has _reviewed_ against the catalog, carrying a review state (`LINKED`, `DISMISSED`, `SKIPPED`). Absence of a record means "not yet reviewed"; it is a review artifact, not a mirror of a YouTube channel.
 _Avoid_: Video (that is a catalog concept)

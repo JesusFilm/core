@@ -1,6 +1,6 @@
 ---
 name: implement
-description: "Implement a piece of work based on a PRD or set of issues."
+description: 'Implement a piece of work based on a PRD or set of issues.'
 disable-model-invocation: true
 ---
 

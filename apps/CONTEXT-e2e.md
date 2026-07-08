@@ -1,6 +1,6 @@
 # E2E Testing
 
-The end-to-end verification surface: eleven Playwright suites (`apps/*-e2e`), one per app surface, that exercise a *deployed* app through a browser (or its public HTTP API) rather than mocking. Owns no product entities — journey, video, and language vocabulary in specs is the owning contexts'; this context owns only the vocabulary of how the suites target, run, and report.
+The end-to-end verification surface: eleven Playwright suites (`apps/*-e2e`), one per app surface, that exercise a _deployed_ app through a browser (or its public HTTP API) rather than mocking. Owns no product entities — journey, video, and language vocabulary in specs is the owning contexts'; this context owns only the vocabulary of how the suites target, run, and report.
 
 ## Language
 
@@ -20,12 +20,12 @@ One of the pool of five shared, real test accounts (email/password secrets, plus
 _Avoid_: test fixture, seeded user
 
 **Smoke vs Full (journeys-admin)**:
-journeys-admin-e2e splits into a small smoke set (login, create journey) and the full suite. Terminology trap: its target named plain `e2e` runs only the smoke set — the full suite is `e2e-full` — while every other suite's `e2e` target *is* its full suite.
+journeys-admin-e2e splits into a small smoke set (login, create journey) and the full suite. Terminology trap: its target named plain `e2e` runs only the smoke set — the full suite is `e2e-full` — while every other suite's `e2e` target _is_ its full suite.
 
 **Monitor**:
 A Checkly uptime check written as a Playwright test (`*.monitor.ts`, currently journeys-admin only) — a production health probe on a retry schedule, not part of any suite run.
 _Avoid_: monitoring test (it never runs with the suite)
 
 **Contract Spec (arclight)**:
-arclight-e2e's dominant style: request-level assertions that the legacy REST façade's response *shape* (fields, types, URL patterns) still matches what external API-key consumers depend on — structure matching, not golden-file diffing. Requests send a cache-bypass header so the origin, not a cached copy, is verified.
+arclight-e2e's dominant style: request-level assertions that the legacy REST façade's response _shape_ (fields, types, URL patterns) still matches what external API-key consumers depend on — structure matching, not golden-file diffing. Requests send a cache-bypass header so the origin, not a cached copy, is verified.
 _Avoid_: golden tests, snapshot tests (visual snapshots are a separate, minor mechanism)

@@ -1,6 +1,6 @@
 # Docs
 
-The public developer handbook for the platform, served at `docs.core.jesusfilm.org` (a Docusaurus site, deployed to Vercel). It owns no domain entities — it is prose *about* the other contexts, written for contributors and team members. Its language is about the publication itself, not the platform it describes.
+The public developer handbook for the platform, served at `docs.core.jesusfilm.org` (a Docusaurus site, deployed to Vercel). It owns no domain entities — it is prose _about_ the other contexts, written for contributors and team members. Its language is about the publication itself, not the platform it describes.
 
 ## Language
 

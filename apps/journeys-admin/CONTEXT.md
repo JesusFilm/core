@@ -1,6 +1,6 @@
 # Journeys Admin
 
-The creator-facing authoring surface (`apps/journeys-admin`): where a signed-in creator builds, manages, shares, and measures Journeys, and where Publishers curate the template library. It owns no content or measurement entities — **Journey**, **Block**, **Step**, **Card**, **Team**, **Template**, and the role vocabularies belong to [Journeys](../../apis/api-journeys/CONTEXT.md), and **Visitor**/**Event** data belongs to [Journey Analytics](../../apis/api-journeys/CONTEXT-analytics.md). What this context owns is the *authoring experience*: the Editor's spatial model, the journey-list lifecycle actions, the sharing/adoption flows, and the report surfaces.
+The creator-facing authoring surface (`apps/journeys-admin`): where a signed-in creator builds, manages, shares, and measures Journeys, and where Publishers curate the template library. It owns no content or measurement entities — **Journey**, **Block**, **Step**, **Card**, **Team**, **Template**, and the role vocabularies belong to [Journeys](../../apis/api-journeys/CONTEXT.md), and **Visitor**/**Event** data belongs to [Journey Analytics](../../apis/api-journeys/CONTEXT-analytics.md). What this context owns is the _authoring experience_: the Editor's spatial model, the journey-list lifecycle actions, the sharing/adoption flows, and the report surfaces.
 
 ## Language
 
@@ -99,7 +99,7 @@ The simplified, step-by-step guided editing flow offered after adopting a custom
 _Avoid_: wizard, onboarding (that's the new-user flow)
 
 **Publisher Pages**:
-The internal surface (under `/publisher`) where users holding the platform-wide **Publisher** role manage the template library. Non-publishers are shown the **Publisher Invite** — an access-explanation screen, *not* an actual invitation.
+The internal surface (under `/publisher`) where users holding the platform-wide **Publisher** role manage the template library. Non-publishers are shown the **Publisher Invite** — an access-explanation screen, _not_ an actual invitation.
 _Avoid_: admin pages; don't count Publisher Invite as a third invite type alongside team and journey invites
 
 **Collection**:
@@ -139,7 +139,7 @@ The emoji-style marker (star, thumbs up/down, warning, …) a team member assign
 _Avoid_: rating, flag
 
 **Template Breakdown Analytics**:
-Aggregate stats for a template *family* — every journey duplicated from a template — sorted by the tracked goal events (views, responses, decisions, prayer requests, gospel start/complete, RSVP).
+Aggregate stats for a template _family_ — every journey duplicated from a template — sorted by the tracked goal events (views, responses, decisions, prayer requests, gospel start/complete, RSVP).
 _Avoid_: template stats (unqualified)
 
 ### Integrations

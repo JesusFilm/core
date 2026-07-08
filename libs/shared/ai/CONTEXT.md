@@ -30,7 +30,7 @@ The system-prompt preamble that tells the model guillemet-enclosed content is da
 ### The AI-facing journey shape
 
 **Journey Simple**:
-The flattened, AI-legible projection of a Journey: a title, a description, and an array of Simple Cards. This is deliberately *not* the Journeys context's Block tree — it is a lossy, prompt-sized shape the model can read and emit. The lib owns only the shape; the mapping to and from real Journeys (`simplifyJourney`/`updateSimpleJourney`) is owned by `api-journeys`.
+The flattened, AI-legible projection of a Journey: a title, a description, and an array of Simple Cards. This is deliberately _not_ the Journeys context's Block tree — it is a lossy, prompt-sized shape the model can read and emit. The lib owns only the shape; the mapping to and from real Journeys (`simplifyJourney`/`updateSimpleJourney`) is owned by `api-journeys`.
 _Avoid_: treating it as a persistence or API contract — it is an LLM I/O format
 
 **Simple Card**:
@@ -38,10 +38,10 @@ One screen of a Journey Simple — synthetic id (`card-1`, `card-2`, …), layou
 _Avoid_: assuming its `id` is a Block UUID (it never is)
 
 **Video Card**:
-A Simple Card carrying a video segment. An exclusivity rule applies: a video card may hold *only* the video and a required default-next-card — every content field must be absent.
+A Simple Card carrying a video segment. An exclusivity rule applies: a video card may hold _only_ the video and a required default-next-card — every content field must be absent.
 
 **Update Schema**:
-The strict twin of each Journey Simple schema, used to validate AI *output* before it is applied: exactly one of next-card/url on buttons and poll options, video-card exclusivity, and every non-video card must offer some navigation (button, poll, or default next card). The base schemas are the lenient read/generation shape; the Update Schemas are the gate.
+The strict twin of each Journey Simple schema, used to validate AI _output_ before it is applied: exactly one of next-card/url on buttons and poll options, video-card exclusivity, and every non-video card must offer some navigation (button, poll, or default next card). The base schemas are the lenient read/generation shape; the Update Schemas are the gate.
 
 **Image Description**:
 The vision helper that asks a Model Chain for a 1–2 sentence description of an image (journey/story-focused by default). Failure is soft — it logs and returns `null`, never throws past a resolved chain.
@@ -52,4 +52,4 @@ The vision helper that asks a Model Chain for a 1–2 sentence description of an
 A Simple Card is not the Journeys context's `CardBlock` — it corresponds to a whole Step (plus its Card). Say "Simple Card" when in this vocabulary.
 
 **Env-name trap**:
-`GEMINI_MAX_RETRIES` governs retry counts for *both* flavors, including OpenRouter sessions that never touch Gemini.
+`GEMINI_MAX_RETRIES` governs retry counts for _both_ flavors, including OpenRouter sessions that never touch Gemini.

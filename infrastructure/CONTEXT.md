@@ -28,7 +28,7 @@ The shared per-Environment foundation produced by the `modules/aws` composite �
 _Avoid_: "the network module" (it also owns the cluster and load balancers)
 
 **ECS Config**:
-The bundle of substrate references (`public_ecs_config` / `internal_ecs_config`) an Environment hands to each Service: which subnets, security group, ALB, cluster, and DNS zone it plugs into. Choosing between the two *is* choosing the Service's exposure.
+The bundle of substrate references (`public_ecs_config` / `internal_ecs_config`) an Environment hands to each Service: which subnets, security group, ALB, cluster, and DNS zone it plugs into. Choosing between the two _is_ choosing the Service's exposure.
 
 **Naming Convention (`jfp-`)**:
 AWS resources are named `jfp-<thing>-<env>` (`jfp` = Jesus Film Project), e.g. `jfp-public-alb-prod`, `jfp-ecs-cluster-stage`.
@@ -74,7 +74,7 @@ _Avoid_: "the cluster" (ambiguous with the ECS cluster)
 The Environment stacks name the journeys Service module `api-journeys-modern`, but it sources `apis/api-journeys/infrastructure` — the same deployable the rest of the repo calls `api-journeys`. One Service, two names; prefer `api-journeys` and treat `-modern` as the gateway/subgraph label.
 
 **Nested environment modules**:
-`module "prod"` at the root sources `environments/prod`, which itself contains a `module "prod"` sourcing `modules/aws`. "The prod module" is ambiguous — say the *Environment stack* (outer) or the *Substrate* (inner).
+`module "prod"` at the root sources `environments/prod`, which itself contains a `module "prod"` sourcing `modules/aws`. "The prod module" is ambiguous — say the _Environment stack_ (outer) or the _Substrate_ (inner).
 
 **Environment (overloaded)**:
 AWS Environments (`prod`/`stage`), Doppler configs, and Vercel environments (production/preview) are three different partitions that only loosely align. Name the system when it matters.

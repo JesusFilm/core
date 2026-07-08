@@ -7,7 +7,7 @@ Not a domain — the shared server-side kernel of the GraphQL Yoga subgraph APIs
 ### Identity & trust
 
 **Payload User**:
-The lightweight identity shape (`User`) parsed from the gateway-forwarded Firebase JWT payload: `id` is the **Firebase UID**, the display name is sanitized and split into first/last, and `imageUrl` survives only if https. This is *not* the Users context's `User` entity — it never touches a database and its `id` is the federation key, not the User record id.
+The lightweight identity shape (`User`) parsed from the gateway-forwarded Firebase JWT payload: `id` is the **Firebase UID**, the display name is sanitized and split into first/last, and `imageUrl` survives only if https. This is _not_ the Users context's `User` entity — it never touches a database and its `id` is the federation key, not the User record id.
 _Avoid_: "the user" without saying which shape (payload projection vs Users-context entity)
 
 **Sanitization (identity fields)**:
@@ -18,7 +18,7 @@ The shared-secret header that marks a request as a trusted service-to-service ca
 _Avoid_: conflating with the Gateway Signature
 
 **Gateway Callback Client**:
-The Apollo client a subgraph uses to call *back into the supergraph* as itself: pointed at the gateway, authenticated by the Interop Token, self-identified by the `x-graphql-client-name` header (the API's name).
+The Apollo client a subgraph uses to call _back into the supergraph_ as itself: pointed at the gateway, authenticated by the Interop Token, self-identified by the `x-graphql-client-name` header (the API's name).
 
 ### Worker leadership
 

@@ -1,6 +1,6 @@
 # Journeys Viewer
 
-The audience-facing delivery surface (`apps/journeys`, the NextSteps viewer): it plays back published Journeys to anonymous Visitors, one Step at a time or as a website, on the root domain or a team's Custom Domain, standalone or embedded. It owns no content — the **Journey**, **Block**, **Step**, **Card**, and **Action** vocabulary is owned by [Journeys](../../apis/api-journeys/CONTEXT.md), and the events it reports belong to [Journey Analytics](../../apis/api-journeys/CONTEXT-analytics.md). What this context owns is the *playback experience*: navigation state, delivery modes, and the Visitor's session on the device.
+The audience-facing delivery surface (`apps/journeys`, the NextSteps viewer): it plays back published Journeys to anonymous Visitors, one Step at a time or as a website, on the root domain or a team's Custom Domain, standalone or embedded. It owns no content — the **Journey**, **Block**, **Step**, **Card**, and **Action** vocabulary is owned by [Journeys](../../apis/api-journeys/CONTEXT.md), and the events it reports belong to [Journey Analytics](../../apis/api-journeys/CONTEXT-analytics.md). What this context owns is the _playback experience_: navigation state, delivery modes, and the Visitor's session on the device.
 
 ## Language
 
@@ -37,7 +37,7 @@ The product's own hostname (e.g. `your.nextstep.is`), serving any published Jour
 _Avoid_: default domain, main site
 
 **Custom Domain** (consumed):
-A team's vanity hostname, owned by the [Journeys](../../apis/api-journeys/CONTEXT.md) context. Here it is a *routing input*: the incoming hostname scopes which Journey a Slug resolves to.
+A team's vanity hostname, owned by the [Journeys](../../apis/api-journeys/CONTEXT.md) context. Here it is a _routing input_: the incoming hostname scopes which Journey a Slug resolves to.
 _Avoid_: host (ambiguous — Host is a presenter identity upstream), hostname (fine in code, not in conversation)
 
 **Embed**:
@@ -51,7 +51,7 @@ _Avoid_: mode (overloaded with theme mode and website mode), environment
 ### Audience
 
 **Visitor** (consumed):
-The anonymous audience member, owned by [Journey Analytics](../../apis/api-journeys/CONTEXT-analytics.md). This context is where the Visitor *comes into being*: an anonymous Firebase sign-in on the device mints the identity, and the client enriches it with country and referrer. Never a creator/User.
+The anonymous audience member, owned by [Journey Analytics](../../apis/api-journeys/CONTEXT-analytics.md). This context is where the Visitor _comes into being_: an anonymous Firebase sign-in on the device mints the identity, and the client enriches it with country and referrer. Never a creator/User.
 _Avoid_: user, viewer
 
 **AI Assistant (Apologist)**:

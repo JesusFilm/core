@@ -1,6 +1,6 @@
 # Users
 
-The identity context. `api-users` owns *who a person is* — their name, email, photo, and verification/admin status — as a thin, read-through projection of Firebase Auth. It is the source of truth for user profile and account status; what a user is allowed to do (journeys, teams, roles) lives in other contexts and references a user only by id.
+The identity context. `api-users` owns _who a person is_ — their name, email, photo, and verification/admin status — as a thin, read-through projection of Firebase Auth. It is the source of truth for user profile and account status; what a user is allowed to do (journeys, teams, roles) lives in other contexts and references a user only by id.
 
 ## Language
 
@@ -30,7 +30,7 @@ _Avoid_: userId (that is only the column name), uid
 This context's own primary key for the `User` row (`id` column, a UUID). This is the identifier the graph **exposes as the `id` field** on every User type.
 _Avoid_: databaseId (reserved as a delete Id Type), internal id, db id
 
-> **The `id` asymmetry (hazard).** `id` does not mean one thing. The `id` you *read off* a User in the graph is the **User record id** (DB UUID); the `id` you *pass in* to a lookup, reference, or federation key is the **Firebase UID**. They are different values for the same person and are not interchangeable — a User record id fed back into `user(id:)` resolves to nothing. Always say which one you mean.
+> **The `id` asymmetry (hazard).** `id` does not mean one thing. The `id` you _read off_ a User in the graph is the **User record id** (DB UUID); the `id` you _pass in_ to a lookup, reference, or federation key is the **Firebase UID**. They are different values for the same person and are not interchangeable — a User record id fed back into `user(id:)` resolves to nothing. Always say which one you mean.
 
 **Conversion**:
 The transition of an Anonymous User into an Authenticated User via Firebase account linking, back-filling email, name, and photo onto the existing `User` row and triggering email verification. The `User` row is kept; only its identity is enriched.
@@ -77,7 +77,7 @@ A Target that exists in Firebase Auth but has no `User` row. Deletion still runs
 _Avoid_: orphan account, ghost user
 
 **User Delete Check**:
-A dry run that locates a Target across the DB and Firebase and reports what *would* be removed, changing nothing.
+A dry run that locates a Target across the DB and Firebase and reports what _would_ be removed, changing nothing.
 _Avoid_: delete preview, dry delete
 
 **User Delete Confirm**:

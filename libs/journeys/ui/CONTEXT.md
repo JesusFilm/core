@@ -1,6 +1,6 @@
 # Journeys UI (shared kernel)
 
-The shared vocabulary of journey rendering and editing: the block tree model, the components that render it, playback navigation state, action handling, editor selection/undo state, and the template-gallery and search surfaces. Consumed by the Journeys Viewer, Journeys Admin, and Resources contexts; owns no entities — Journey/Block/Action are the Journeys context's — but it *is* the owner of the client-side terms below.
+The shared vocabulary of journey rendering and editing: the block tree model, the components that render it, playback navigation state, action handling, editor selection/undo state, and the template-gallery and search surfaces. Consumed by the Journeys Viewer, Journeys Admin, and Resources contexts; owns no entities — Journey/Block/Action are the Journeys context's — but it _is_ the owner of the client-side terms below.
 
 ## Language
 
@@ -30,7 +30,7 @@ A block that can carry an Action (button, radio option, sign-up, video). Only Ac
 ### Playback (viewer-side)
 
 **Block History**:
-The stack of visited Steps that *is* the playback position: navigating forward pushes a Step, back pops one. The **Active Block** is the top of the stack. Lives only on the device.
+The stack of visited Steps that _is_ the playback position: navigating forward pushes a Step, back pops one. The **Active Block** is the top of the stack. Lives only on the device.
 _Avoid_: navigation history, route history (no router involved)
 
 **Next Active Block**:

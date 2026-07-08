@@ -7,7 +7,7 @@ The publisher-facing curation surface for the media and languages catalogs: mana
 ### Access
 
 **Publisher**:
-The only role this app knows. It comes in two independent dimensions — a *media* publisher (may use the Video Library and Settings) and a *language* publisher (may use the Language Admin). A user can hold either, both, or neither; with neither they land on the Unauthorized page.
+The only role this app knows. It comes in two independent dimensions — a _media_ publisher (may use the Video Library and Settings) and a _language_ publisher (may use the Language Admin). A user can hold either, both, or neither; with neither they land on the Unauthorized page.
 _Avoid_: Admin, mediaUserRole (no such role name exists — the role value is literally `publisher` in each dimension)
 
 **Video Library**:
@@ -16,7 +16,7 @@ The GraphQL-backed admin list of all Videos, published or not (the `adminVideos`
 ### Publishing workflow
 
 **Draft**:
-A Video whose `published` flag is off. The UI status word for unpublished; a Draft that has *never* been published is the only kind of Video that may be deleted.
+A Video whose `published` flag is off. The UI status word for unpublished; a Draft that has _never_ been published is the only kind of Video that may be deleted.
 _Avoid_: Unpublished (as a UI label — the enum value is `unpublished`, the label is "Draft")
 
 **Publishing Validation**:
@@ -30,7 +30,7 @@ A Video the admin refuses to open or edit at all. Orthogonal to published/Draft.
 _Avoid_: Read-only, archived
 
 **Restricted (Downloads / Views)**:
-Per-Video block-lists of consuming Platforms: a platform listed under Restricted Downloads or Restricted Views is *denied*, not allowed. The single most inverted term in this context.
+Per-Video block-lists of consuming Platforms: a platform listed under Restricted Downloads or Restricted Views is _denied_, not allowed. The single most inverted term in this context.
 _Avoid_: Allowed platforms, availability
 
 ### The video and its parts
@@ -68,7 +68,7 @@ A UI-only pseudo-value: "auto" asks Mux to generate the real qualities (high/sd/
 ### The upload
 
 **Variant Upload**:
-The multi-step lifecycle for getting a video file into a Variant: start → R2 prepared → R2 complete → Mux enqueued. It is resumable, and "complete" means *accepted by Mux*, not playable — encoding finishes in the background.
+The multi-step lifecycle for getting a video file into a Variant: start → R2 prepared → R2 complete → Mux enqueued. It is resumable, and "complete" means _accepted by Mux_, not playable — encoding finishes in the background.
 _Avoid_: Upload = playable
 
 **Asset Upload**:

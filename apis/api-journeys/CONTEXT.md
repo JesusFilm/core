@@ -2,7 +2,7 @@
 
 The authoring-and-delivery context. `api-journeys` owns the **Journey** — an interactive, multi-step experience built from a tree of visual blocks — from the editor that composes it to the public page that serves it. It is the source of truth for journeys, their block content, the teams that own them, and the templates they are cloned from. The audience-facing measurement side — who visits a published journey and what they do — is a separate bounded context that shares the same deployable and database: see [Journey Analytics](./CONTEXT-analytics.md). Journeys references users, languages, media, and short links by id only; those identities are owned elsewhere.
 
-> **Product framing.** Journeys are typically **gospel-presentation / evangelism funnels** (the NextSteps product). This is not incidental branding — it is baked into the domain vocabulary: the goal labels a creator tracks are `decisionForChrist`, `gospelPresentationStart/Complete`, `prayerRequest`, and `rsvp` (see **Event Label** in the sibling [Journey Analytics](./CONTEXT-analytics.md) context). Treat "ministry funnel" as the mental model for what a Journey is *for*.
+> **Product framing.** Journeys are typically **gospel-presentation / evangelism funnels** (the NextSteps product). This is not incidental branding — it is baked into the domain vocabulary: the goal labels a creator tracks are `decisionForChrist`, `gospelPresentationStart/Complete`, `prayerRequest`, and `rsvp` (see **Event Label** in the sibling [Journey Analytics](./CONTEXT-analytics.md) context). Treat "ministry funnel" as the mental model for what a Journey is _for_.
 
 ## Language
 
@@ -42,6 +42,7 @@ _Avoid_: featured image, thumbnail (for primary image block)
 ### Block types
 
 **Block Types** (the `typename` values):
+
 - **StepBlock** — a screen; the flow node (see **Step**).
 - **CardBlock** — the content container inside a Step (see **Card**).
 - **TypographyBlock** — a text element.
@@ -68,6 +69,7 @@ What a block does when triggered. One Action per block, keyed 1:1 by `parentBloc
 _Avoid_: link, handler, onClick
 
 **Action Types**:
+
 - **NavigateToBlockAction** — go to another block/Step within the Journey (`blockId`).
 - **LinkAction** — open an external URL.
 - **EmailAction** — open a mailto.
@@ -82,16 +84,16 @@ _Avoid_: organization, workspace, account, tenant
 
 **Team membership (UserTeam)**:
 A user's membership of a Team, carrying a **Team Role**. `manager` is the team admin (update/delete the team, manage memberships and invites); `member` is a collaborator who can read the team and work on its journeys.
-_Avoid_: seat, org member; do not call a manager an "owner" (owner is a *journey* role)
+_Avoid_: seat, org member; do not call a manager an "owner" (owner is a _journey_ role)
 
 **Journey access (UserJourney)**:
-A user's direct access to one Journey, carrying a **Journey Role**: `owner` (full control), `editor` (edit and invite, but not manage roles), or `inviteRequested` (a *pending request* to join — not a granted role, and never counted as a collaborator).
+A user's direct access to one Journey, carrying a **Journey Role**: `owner` (full control), `editor` (edit and invite, but not manage roles), or `inviteRequested` (a _pending request_ to join — not a granted role, and never counted as a collaborator).
 _Avoid_: collaborator role, permission
 
 > **Two role vocabularies, one authorization.** Team roles (`manager`/`member`) and Journey roles (`owner`/`editor`) are distinct axes, but they compose: a **team manager has owner-equivalent authority over every Journey in the team**, even with no `UserJourney` row. Never reason about journey permissions from the `UserJourney` alone — always fold in the caller's Team role on the owning team.
 
 **Invite**:
-An email invitation to join a Team (`UserTeamInvite`) or a single Journey (`UserInvite`). Both follow the same lifecycle: created by a sender, then `acceptedAt` or `removedAt` is stamped. Distinct from `inviteRequested`, which is the *reverse* direction (a user asking in).
+An email invitation to join a Team (`UserTeamInvite`) or a single Journey (`UserInvite`). Both follow the same lifecycle: created by a sender, then `acceptedAt` or `removedAt` is stamped. Distinct from `inviteRequested`, which is the _reverse_ direction (a user asking in).
 _Avoid_: request (that is `inviteRequested`), share
 
 **Publisher**:
@@ -117,17 +119,18 @@ The act of deep-copying a Journey (all Steps, descendant blocks with remapped na
 _Avoid_: copy, fork, clone (use "duplicate" — it is the mutation and the mental model)
 
 > **The four Journey booleans — keep them straight.**
-> - **`template`** — this Journey *is* a reusable template.
+>
+> - **`template`** — this Journey _is_ a reusable template.
 > - **`templateSite`** — a companion published "site" exists for this template. Records existence only; not copied on duplicate.
 > - **`website`** — this Journey renders as a multi-page website experience rather than the default single-flow journey.
-> - **`customizable`** — *derived, not user-set*: whether a template exposes editable content (text, links, or media) for a duplicator to personalise. Recalculated from customization fields/flags; only meaningful when `template` is true.
+> - **`customizable`** — _derived, not user-set_: whether a template exposes editable content (text, links, or media) for a duplicator to personalise. Recalculated from customization fields/flags; only meaningful when `template` is true.
 
 **Template Gallery Page**:
 A team-curated, slug-addressable **public landing page** (`/collections/<slug>`) bundling a hand-picked, hand-ordered list of template journeys for others to discover and duplicate. Has a `draft`/`published` status and its own hero **media**. Exposed publicly as the narrowed `TemplateGalleryPagePublic` / `TemplateGalleryItem` types so anonymous callers cannot traverse to team or block internals.
 _Avoid_: gallery, marketplace, catalog page
 
 **Journey Collection**:
-An ordered set of a *team's own* journeys, wired to **Custom Domain** routing — an internal distribution container, not a public curation surface. Do not conflate with a Template Gallery Page: a Gallery Page markets templates to strangers; a Collection routes a team's own journeys under its domain.
+An ordered set of a _team's own_ journeys, wired to **Custom Domain** routing — an internal distribution container, not a public curation surface. Do not conflate with a Template Gallery Page: a Gallery Page markets templates to strangers; a Collection routes a team's own journeys under its domain.
 _Avoid_: gallery, group, folder
 
 ### Customization & theming
