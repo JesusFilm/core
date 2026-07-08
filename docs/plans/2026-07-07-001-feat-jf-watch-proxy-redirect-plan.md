@@ -1,5 +1,5 @@
 ---
-title: "feat: Move JF watch redirect to Cloudflare proxy"
+title: 'feat: Move JF watch redirect to Cloudflare proxy'
 date: 2026-07-07
 type: feat
 artifact_contract: ce-unified-plan/v1
@@ -124,12 +124,12 @@ It does not verify video/language variants and it does not forward to the app-lo
 
 ### Risks & Dependencies
 
-| Risk | Mitigation |
-|---|---|
-| Worker env lacks a Core GraphQL endpoint binding today. | Add an explicit Worker var such as `CORE_GRAPHQL_ENDPOINT` in `workers/jf-proxy/wrangler.toml`, or reuse the repo-approved gateway URL if one already exists in deployment config. Tests should inject the binding. |
-| `caches.default` can be awkward to assert directly in Worker tests. | Isolate cache-key/read/write behavior in a small helper and cover behavior through `@cloudflare/vitest-pool-workers`; use distinct synthetic cache URLs per test to avoid cross-test collisions. |
-| Existing catch-all proxy fallback could accidentally handle the route first. | Register the new route above `app.get('*')` and add a test that no fetch is made to `RESOURCES_PROXY_DEST` for the handled redirect route. |
-| Positive slug cache can become stale after slug edits. | Use a bounded TTL in the cached Response’s `Cache-Control` header and keep the cache positive-only. |
+| Risk                                                                         | Mitigation                                                                                                                                                                                                          |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Worker env lacks a Core GraphQL endpoint binding today.                      | Add an explicit Worker var such as `CORE_GRAPHQL_ENDPOINT` in `workers/jf-proxy/wrangler.toml`, or reuse the repo-approved gateway URL if one already exists in deployment config. Tests should inject the binding. |
+| `caches.default` can be awkward to assert directly in Worker tests.          | Isolate cache-key/read/write behavior in a small helper and cover behavior through `@cloudflare/vitest-pool-workers`; use distinct synthetic cache URLs per test to avoid cross-test collisions.                    |
+| Existing catch-all proxy fallback could accidentally handle the route first. | Register the new route above `app.get('*')` and add a test that no fetch is made to `RESOURCES_PROXY_DEST` for the handled redirect route.                                                                          |
+| Positive slug cache can become stale after slug edits.                       | Use a bounded TTL in the cached Response’s `Cache-Control` header and keep the cache positive-only.                                                                                                                 |
 
 ---
 
@@ -214,12 +214,12 @@ It does not verify video/language variants and it does not forward to the app-lo
 
 ## Verification Contract
 
-| Gate | Applies to | Done signal |
-|---|---|---|
-| Worker route and resolver tests | U1, U2, U3, U4 | Valid redirect, 302 status, suffix tolerance, cache miss selection, cache hit behavior without GraphQL, uncached not-found, no variant lookup, and 404 behavior are covered. |
-| Worker catch-all regression tests | U1 | Existing proxy forwarding, cookie routing, and not-found fallback behavior remain unchanged. |
-| Worker type/config check | U1, U2, U3, U4 | New bindings, helper modules, and Worker tests type-check under the Worker/Vitest config. |
-| Manual contract check in a Worker environment | Whole plan | A valid ID/language request returns a temporary redirect to the canonical watch URL; a missing slug returns not found and does not create a negative cache entry. |
+| Gate                                          | Applies to     | Done signal                                                                                                                                                                  |
+| --------------------------------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Worker route and resolver tests               | U1, U2, U3, U4 | Valid redirect, 302 status, suffix tolerance, cache miss selection, cache hit behavior without GraphQL, uncached not-found, no variant lookup, and 404 behavior are covered. |
+| Worker catch-all regression tests             | U1             | Existing proxy forwarding, cookie routing, and not-found fallback behavior remain unchanged.                                                                                 |
+| Worker type/config check                      | U1, U2, U3, U4 | New bindings, helper modules, and Worker tests type-check under the Worker/Vitest config.                                                                                    |
+| Manual contract check in a Worker environment | Whole plan     | A valid ID/language request returns a temporary redirect to the canonical watch URL; a missing slug returns not found and does not create a negative cache entry.            |
 
 ---
 
