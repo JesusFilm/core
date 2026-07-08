@@ -8,7 +8,9 @@ import { ReactElement, useEffect } from 'react'
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 
+import { JourneyLocaleProvider } from '../../../Content/Canvas/JourneyLocaleProvider'
 import { BaseNode, HandleVariant } from '../BaseNode'
 
 import { ActionButton } from './ActionButton'
@@ -28,6 +30,7 @@ export function StepBlockNode({
     dispatch
   } = useEditor()
   const { journey } = useJourney()
+  const { locale } = getJourneyRTL(journey)
 
   const updateNodeInternals = useUpdateNodeInternals()
 
@@ -131,14 +134,23 @@ export function StepBlockNode({
           {journey?.website !== true && (
             <ActionButton stepId={step.id} block={step} selected={isSelected} />
           )}
-          {actionBlocks.map((block) => (
-            <ActionButton
-              key={block.id}
-              stepId={step.id}
-              block={block}
-              selected={isSelected}
-            />
-          ))}
+          {/* Block rows preview published content, so their default titles
+              (Submit/Button/Option/Subscribe) follow the journey's language to
+              match the canvas and viewer. The step row above ("Default Next
+              Step") is editor chrome and stays in the UI language. Guarded so
+              step nodes without action blocks don't mount an i18n instance. */}
+          {actionBlocks.length > 0 && (
+            <JourneyLocaleProvider locale={locale}>
+              {actionBlocks.map((block) => (
+                <ActionButton
+                  key={block.id}
+                  stepId={step.id}
+                  block={block}
+                  selected={isSelected}
+                />
+              ))}
+            </JourneyLocaleProvider>
+          )}
         </Stack>
       </Stack>
     </Stack>

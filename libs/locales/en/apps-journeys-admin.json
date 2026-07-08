@@ -1361,5 +1361,11 @@
   "Collapse {{title}} collection": "Collapse {{title}} collection",
   "Select video uploaded by a teammate": "Select video uploaded by a teammate",
   "Select image uploaded by a teammate": "Select image uploaded by a teammate",
-  "Drag templates here": "Drag templates here"
+  "Drag templates here": "Drag templates here",
+  "Password": "Password",
+  "Access ID": "Access ID",
+  "Access Secret": "Access Secret",
+  "Failed to check video status": "Failed to check video status",
+  "Justify": "Justify",
+  "{{width}} x {{height}} pixels": "{{width}} x {{height}} pixels"
 }

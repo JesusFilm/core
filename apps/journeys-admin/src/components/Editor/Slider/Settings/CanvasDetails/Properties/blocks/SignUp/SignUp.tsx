@@ -48,10 +48,10 @@ export function SignUp({
         id={`${id}-signup-icon`}
         icon={<InformationCircleContained />}
         name={t('Button Icon')}
-        value={
+        value={t(
           icons.find(({ value }) => value === submitIcon?.iconName)?.label ??
-          t('None')
-        }
+            'None'
+        )}
       >
         <Icon id={submitIcon?.id} />
       </Accordion>

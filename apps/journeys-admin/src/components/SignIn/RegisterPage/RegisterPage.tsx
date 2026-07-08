@@ -212,7 +212,7 @@ export function RegisterPage({
                 id="name"
                 autoComplete="name"
                 name="name"
-                label="Name"
+                label={t('Name')}
                 placeholder={t('First & last name')}
                 variant="filled"
                 value={values.name}
@@ -230,7 +230,7 @@ export function RegisterPage({
                 type="email"
                 autoComplete="username"
                 name="email"
-                label="Email"
+                label={t('Email')}
                 placeholder={t('Enter your email address here')}
                 variant="filled"
                 value={values.email}
@@ -247,7 +247,7 @@ export function RegisterPage({
                 id="new-password"
                 autoComplete="new-password"
                 name="password"
-                label="Password"
+                label={t('Password')}
                 placeholder={t('Choose password')}
                 variant="filled"
                 value={values.password}
