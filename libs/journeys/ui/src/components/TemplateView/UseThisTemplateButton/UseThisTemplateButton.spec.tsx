@@ -205,11 +205,7 @@ describe('UseThisTemplateButton', () => {
 
       afterEach(() => {
         if (originalLocationDescriptor != null) {
-          Object.defineProperty(
-            window,
-            'location',
-            originalLocationDescriptor
-          )
+          Object.defineProperty(window, 'location', originalLocationDescriptor)
         }
         process.env = originalEnv
       })

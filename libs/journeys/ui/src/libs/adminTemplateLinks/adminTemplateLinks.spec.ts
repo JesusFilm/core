@@ -26,9 +26,9 @@ describe('sanitiseAdminBase', () => {
 
 describe('buildUseTemplateHref', () => {
   it('builds the deep link from a valid base', () => {
-    expect(buildUseTemplateHref('https://admin.nextstep.is', 'template-1')).toBe(
-      'https://admin.nextstep.is/?useTemplate=template-1'
-    )
+    expect(
+      buildUseTemplateHref('https://admin.nextstep.is', 'template-1')
+    ).toBe('https://admin.nextstep.is/?useTemplate=template-1')
   })
 
   it('falls back to an absolute https href for schemeless bases', () => {
