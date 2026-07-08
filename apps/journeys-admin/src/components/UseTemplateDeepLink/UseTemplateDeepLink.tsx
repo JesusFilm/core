@@ -55,7 +55,7 @@ interface ActiveUseTemplateDeepLinkProps {
 
 function ActiveUseTemplateDeepLink({
   journeyId
-}: ActiveUseTemplateDeepLinkProps): ReactElement | null {
+}: ActiveUseTemplateDeepLinkProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const router = useRouter()
