@@ -50,6 +50,7 @@ function toData(gallery: TemplateGalleryPage): PublicGalleryPageData {
       title: template.title,
       description: template.description,
       slug: template.slug,
+      customizable: template.customizable,
       // String-coerce defensively: if Apollo ever returns a custom DateTime
       // scalar or a Date here, parseISO downstream silently yields Invalid
       // Date and the meta line drops the date without warning.

@@ -35,9 +35,32 @@ export function UseThisTemplateButton({
   const [loading, setLoading] = useState(false)
 
   async function handleCustomizeNavigation(): Promise<void> {
-    void router.push(`/templates/${journeyDataId ?? ''}/customize`, undefined, {
-      shallow: true
-    })
+    const customizePath = `/templates/${journeyDataId ?? ''}/customize`
+    const adminBase =
+      process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ??
+      (typeof window !== 'undefined'
+        ? window.location.origin
+        : 'https://admin.nextstep.is')
+
+    const onAdminApp =
+      typeof window !== 'undefined' &&
+      (() => {
+        try {
+          return new URL(adminBase).origin === window.location.origin
+        } catch {
+          return window.location.origin.includes(adminBase.replace(/^\/+/, ''))
+        }
+      })()
+
+    if (onAdminApp) {
+      // Full navigation — shallow routing is only valid for query changes on
+      // the same page, not for crossing into /templates/[journeyId]/customize.
+      void router.push(customizePath)
+      return
+    }
+
+    const sanitizedBase = adminBase.replace(/\/+$/, '')
+    window.location.assign(`${sanitizedBase}${customizePath}`)
   }
 
   const handleCheckSignIn = async (): Promise<void> => {

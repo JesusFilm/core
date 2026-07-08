@@ -266,7 +266,7 @@ describe('PublicGalleryPage', () => {
 
       it('falls back to an absolute https:// href when the env value is schemeless', () => {
         // `new URL('/', 'admin.staging.local')` throws because the base isn't a
-        // valid absolute URL. The guard in buildUseTemplateHref catches it and
+        // valid absolute URL. The guard in buildUseHref catches it and
         // hand-builds the href with an `https://` scheme so the browser resolves
         // it as an absolute URL — without the scheme it would otherwise be
         // treated as a path relative to the current host.
@@ -282,6 +282,19 @@ describe('PublicGalleryPage', () => {
         ).toHaveAttribute(
           'href',
           'https://admin.staging.local/?useTemplate=template-0'
+        )
+      })
+
+      it('links customizable templates into the customize flow', () => {
+        const items = [{ ...mockItem, id: 'custom-tmpl', customizable: true }]
+        render(
+          <PublicGalleryPage variant="journey" data={makeData({ items })} />
+        )
+        expect(
+          screen.getAllByTestId('GalleryTemplateCardUseButton')[0]
+        ).toHaveAttribute(
+          'href',
+          'https://admin.nextstep.is/templates/custom-tmpl/customize'
         )
       })
     })

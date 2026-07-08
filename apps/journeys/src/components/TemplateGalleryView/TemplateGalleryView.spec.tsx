@@ -27,6 +27,20 @@ describe('TemplateGalleryView', () => {
     )
   })
 
+  it('links customizable templates into the customize flow', () => {
+    render(
+      <TemplateGalleryView
+        gallery={makeGallery({
+          templates: [{ ...mockTemplate, customizable: true }]
+        })}
+      />
+    )
+    expect(screen.getByTestId('GalleryTemplateCardUseButton')).toHaveAttribute(
+      'href',
+      'https://admin.nextstep.is/templates/template-1/customize'
+    )
+  })
+
   it('maps link media into the media section', () => {
     render(
       <TemplateGalleryView

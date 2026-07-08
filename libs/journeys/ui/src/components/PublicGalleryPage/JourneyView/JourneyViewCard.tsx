@@ -139,6 +139,7 @@ export function JourneyViewCard({
           <Box sx={{ pt: 1, mt: 'auto' }}>
             <JourneyViewCardActions
               itemId={item.id}
+              customizable={item.customizable}
               itemTitle={item.title}
               itemSlug={item.slug}
               fullWidth
@@ -221,6 +222,7 @@ export function JourneyViewCard({
 
       <JourneyViewCardActions
         itemId={item.id}
+        customizable={item.customizable}
         itemTitle={item.title}
         itemSlug={item.slug}
         fullWidth

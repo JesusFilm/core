@@ -121,11 +121,7 @@ describe('UseThisTemplateButton', () => {
         )
 
         await waitFor(() => {
-          expect(push).toHaveBeenCalledWith(
-            `/templates/${journeyId}/customize`,
-            undefined,
-            { shallow: true }
-          )
+          expect(push).toHaveBeenCalledWith(`/templates/${journeyId}/customize`)
         })
       })
 
@@ -177,11 +173,7 @@ describe('UseThisTemplateButton', () => {
           expect(screen.getByRole('progressbar')).toBeInTheDocument()
         })
         await waitFor(() => {
-          expect(push).toHaveBeenCalledWith(
-            `/templates/${journeyId}/customize`,
-            undefined,
-            { shallow: true }
-          )
+          expect(push).toHaveBeenCalledWith(`/templates/${journeyId}/customize`)
         })
       })
     })

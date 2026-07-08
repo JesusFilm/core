@@ -104,7 +104,9 @@ const languagesMock: MockedResponse = {
 
 const sourceJourneyId = 'template-id'
 
-function buildJourneyMock(): MockedResponse {
+function buildJourneyMock(
+  options: { customizable?: boolean | null } = {}
+): MockedResponse {
   return {
     request: {
       query: GET_JOURNEY,
@@ -121,6 +123,7 @@ function buildJourneyMock(): MockedResponse {
           id: sourceJourneyId,
           title: 'Sample Template',
           template: true,
+          customizable: options.customizable ?? false,
           fromTemplateId: null,
           language: {
             __typename: 'Language',
@@ -231,6 +234,7 @@ interface SetupOptions {
   useTemplate?: string | string[] | null
   duplicateError?: boolean
   includeJourneyMock?: boolean
+  customizable?: boolean | null
   translationError?: boolean
   push?: Mock
   replace?: Mock
@@ -261,7 +265,11 @@ function setup(options: SetupOptions = {}): {
       { shouldError: options.duplicateError }
     )
   ]
-  if (options.includeJourneyMock !== false) mocks.push(buildJourneyMock())
+  if (options.includeJourneyMock !== false) {
+    mocks.push(
+      buildJourneyMock({ customizable: options.customizable ?? false })
+    )
+  }
   if (options.translationError != null) {
     mocks.push(
       buildTranslateSubscriptionMock({ shouldError: options.translationError })
@@ -322,6 +330,17 @@ describe('UseTemplateDeepLink', () => {
     await waitFor(() =>
       expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
     )
+  })
+
+  it('redirects customizable templates to the customize flow', async () => {
+    const { push, replace } = setup({ customizable: true })
+    await waitFor(() =>
+      expect(replace).toHaveBeenCalledWith(
+        `/templates/${sourceJourneyId}/customize`
+      )
+    )
+    expect(screen.queryByTestId('CopyToTeamDialog')).not.toBeInTheDocument()
+    expect(push).not.toHaveBeenCalled()
   })
 
   it('duplicates the journey and replaces the URL with /?type=journeys&refresh=true', async () => {
