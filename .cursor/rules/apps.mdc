@@ -8,31 +8,22 @@ alwaysApply: false
 
 - [base.mdc](mdc:.cursor/rules/base.mdc)
 
-The user asks questions about the following front-end coding languages and frameworks:
+## Stack
 
 - ReactJS
 - NextJS
-- JavaScript
 - TypeScript
-- HTML
-- CSS
-- MUI
-- Gql.tada
+- MUI (Material UI)
 - Apollo Client
+- Gql.tada
 
-### Code Implementation Guidelines
+## Code Guidelines
 
-Follow these rules when you write code:
+- Always use MUI components over raw HTML elements; avoid writing custom CSS or bare HTML tags.
+- Name event handler functions with a `handle` prefix (e.g. `handleClick`, `handleKeyDown`).
+- Implement accessibility on all interactive elements: `tabIndex`, `aria-label`, `onClick`, `onKeyDown`.
 
-- Use early returns whenever possible to make the code more readable.
-- Always use MUI over HTML elements; avoid using CSS or tags.
-- Use descriptive variable and function/const names. Also, event functions should be named with a “handle” prefix, like “handleClick” for onClick and “handleKeyDown” for onKeyDown.
-- Implement accessibility features on elements. For example, a tag should have a tabindex=“0”, aria-label, on:click, and on:keydown, and similar attributes.
+## Testing Guidelines
 
-
-### Testing Implementation Guidelines
-
-Follow these rules when you write tests in the frontend: 
-
-- use '@testing-library/react' npm package
-
+- Use `@testing-library/react` for all frontend tests.
+- Don't add unit tests for static-config edits (nav arrays, feature-flag defaults, role-permission maps, route tables, copy strings) — such tests read the same data the component reads and only fail when the config is intentionally edited, so they duplicate the diff rather than catch regressions. Exception: add a test when the config drives branching logic, has a non-obvious transformation, or has caused real prior regressions.
