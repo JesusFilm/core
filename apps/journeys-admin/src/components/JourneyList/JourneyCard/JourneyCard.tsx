@@ -1,4 +1,5 @@
 import { ApolloQueryResult } from '@apollo/client'
+import OpenWithRoundedIcon from '@mui/icons-material/OpenWithRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
@@ -33,6 +34,38 @@ import { JourneyCardText } from './JourneyCardText'
 import { JourneyCardVariant } from './journeyCardVariant'
 import { TemplateAggregateAnalytics } from './TemplateAggregateAnalytics'
 
+// Shared between the card's own layout and JourneyCardSizer below.
+const JOURNEY_CARD_IMAGE_MARGIN = { xs: 3, sm: 1.75 }
+const JOURNEY_CARD_IMAGE_ASPECT_RATIO = { xs: '2', sm: '1.43' }
+// Fixed text-block height accommodating one- and two-line titles.
+const JOURNEY_CARD_CONTENT_HEIGHT = { xs: 139, sm: 137 }
+
+/**
+ * Invisible spacer matching a JourneyCard's in-flow height (NES-1703).
+ * The template gallery's DropPlaceholderTile renders this so its dashed
+ * tile is always exactly card-sized — even alone in an empty collection.
+ *
+ * Colocated with JourneyCard because the height contract is structural,
+ * not just these constants: it also relies on the analytics/info footer
+ * being `position: absolute` and the Card adding no in-flow chrome. If
+ * you add in-flow content to JourneyCard, mirror it here.
+ */
+export function JourneyCardSizer(): ReactElement {
+  return (
+    <>
+      <Box
+        aria-hidden
+        sx={{
+          mx: JOURNEY_CARD_IMAGE_MARGIN,
+          mt: JOURNEY_CARD_IMAGE_MARGIN,
+          aspectRatio: JOURNEY_CARD_IMAGE_ASPECT_RATIO
+        }}
+      />
+      <Box aria-hidden sx={{ height: JOURNEY_CARD_CONTENT_HEIGHT }} />
+    </>
+  )
+}
+
 const TemplateBreakdownAnalyticsDialog = dynamic(
   async () =>
     await import(
@@ -47,6 +80,15 @@ interface JourneyCardProps {
   duplicatedJourneyId?: string
   variant?: JourneyCardVariant
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  /**
+   * NES-1703: renders a multi-directional move arrow over the centre of
+   * the image, signalling the card can be dragged. `'hover'` fades it in
+   * on hover (resting gallery cards); `'always'` keeps it visible (the
+   * DragOverlay clone, where dnd-kit's pointer capture means hover state
+   * never fires). Only the template-gallery drag wrappers pass this —
+   * the plain journey lists render no affordance.
+   */
+  showDragAffordance?: 'hover' | 'always'
 }
 
 /**
@@ -58,6 +100,7 @@ interface JourneyCardProps {
  * @param {string} [props.duplicatedJourneyId] - The ID of the duplicated journey
  * @param {JourneyCardVariant} [props.variant] - The variant of the journey card
  * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Function to refetch journey data
+ * @param {'hover' | 'always'} [props.showDragAffordance] - Renders the move-arrow drag affordance over the image (NES-1703)
  * @returns {ReactElement} A journey card component
  */
 
@@ -65,7 +108,8 @@ export function JourneyCard({
   journey,
   duplicatedJourneyId,
   variant = JourneyCardVariant.default,
-  refetch
+  refetch,
+  showDragAffordance
 }: JourneyCardProps): ReactElement {
   const theme = useTheme()
   const duplicatedJourneyRef = useRef<HTMLDivElement>(null)
@@ -206,12 +250,9 @@ export function JourneyCard({
             sx={{
               position: 'relative',
               width: 'auto',
-              aspectRatio: {
-                xs: '2',
-                sm: '1.43'
-              },
-              mx: { xs: 3, sm: 1.75 },
-              mt: { xs: 3, sm: 1.75 },
+              aspectRatio: JOURNEY_CARD_IMAGE_ASPECT_RATIO,
+              mx: JOURNEY_CARD_IMAGE_MARGIN,
+              mt: JOURNEY_CARD_IMAGE_MARGIN,
               borderRadius: '8px',
               borderWidth: 1,
               borderStyle: 'solid',
@@ -382,13 +423,42 @@ export function JourneyCard({
                 transition: 'opacity 0.3s'
               }}
             />
+            {showDragAffordance != null && (
+              <Box
+                data-testid="JourneyCardDragAffordance"
+                aria-hidden
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  zIndex: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 48,
+                  height: 48,
+                  borderRadius: '50%',
+                  backgroundColor: '#000000cc',
+                  color: 'common.white',
+                  opacity:
+                    showDragAffordance === 'always' || isCardHovered ? 1 : 0,
+                  transition: 'opacity 0.3s',
+                  // Purely visual — never intercept the pointer, or it
+                  // would swallow the drag sensor's pointerdown.
+                  pointerEvents: 'none'
+                }}
+              >
+                <OpenWithRoundedIcon />
+              </Box>
+            )}
           </Box>
           <CardContent
             sx={{
               pl: { xs: 3, sm: 2.5 },
               pr: 2,
               pt: 1,
-              height: { xs: 139, sm: 137 }, // Fixed height to accommodate both one and two line titles
+              height: JOURNEY_CARD_CONTENT_HEIGHT,
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-start'

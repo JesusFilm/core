@@ -69,22 +69,27 @@ describe('ChatOverlay', () => {
 
   it('opens compact at 144px in the idle state', () => {
     render(<ChatOverlay open onClose={vi.fn()} />)
-    const panel = screen.getByTestId('ChatOverlayPanel')
-    expect(panel).toHaveAttribute('data-sheet-state', 'idle')
-    expect(panel).toHaveStyle({ height: '144px' })
+    expect(screen.getByTestId('ChatOverlay')).toHaveStyle({ height: '144px' })
+    expect(screen.getByTestId('ChatOverlayPanel')).toHaveAttribute(
+      'data-sheet-state',
+      'idle'
+    )
   })
 
   it('grows to 80% once AiChat reports messages (active state)', async () => {
     render(<ChatOverlay open onClose={vi.fn()} />)
-    const panel = screen.getByTestId('ChatOverlayPanel')
-    expect(panel).toHaveStyle({ height: '144px' })
+    const overlay = screen.getByTestId('ChatOverlay')
+    expect(overlay).toHaveStyle({ height: '144px' })
 
     fireEvent.click(
       await screen.findByRole('button', { name: 'mock-activate' })
     )
 
-    expect(panel).toHaveAttribute('data-sheet-state', 'active')
-    expect(panel).toHaveStyle({ height: '80%' })
+    expect(screen.getByTestId('ChatOverlayPanel')).toHaveAttribute(
+      'data-sheet-state',
+      'active'
+    )
+    expect(overlay).toHaveStyle({ height: '80%' })
   })
 
   it('closes via the AiChat panel close control (no separate corner X)', async () => {
@@ -101,19 +106,6 @@ describe('ChatOverlay', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('scales the dark backdrop with the chat (144px idle → 80% active)', async () => {
-    render(<ChatOverlay open onClose={vi.fn()} />)
-    const backdrop = screen
-      .getByTestId('ChatOverlay')
-      .querySelector('[aria-hidden]') as HTMLElement
-    expect(backdrop).toHaveStyle({ height: '144px' })
-
-    fireEvent.click(
-      await screen.findByRole('button', { name: 'mock-activate' })
-    )
-    expect(backdrop).toHaveStyle({ height: '80%' })
-  })
-
   it('closes when the backdrop is clicked', () => {
     const onClose = vi.fn()
     render(<ChatOverlay open onClose={onClose} />)
@@ -124,5 +116,37 @@ describe('ChatOverlay', () => {
       .querySelector('[aria-hidden]') as HTMLElement
     fireEvent.click(backdrop)
     expect(onClose).toHaveBeenCalledTimes(1)
+  })
+
+  // QA-538: the overlay must never cover the journey above the chat. It used
+  // to be a full-viewport fixed layer that silently swallowed clicks on the
+  // revealed card (poll options, nav arrows); the container is now a
+  // bottom-anchored band exactly as tall as the sheet, so everything above it
+  // stays natively interactive. jsdom does no hit-testing, so pin the band
+  // geometry directly (grow-to-80% is covered by the active-state test).
+  it('only occupies the chat band, leaving the journey above interactive (QA-538)', () => {
+    render(<ChatOverlay open onClose={vi.fn()} />)
+    expect(screen.getByTestId('ChatOverlay')).toHaveStyle({
+      position: 'fixed',
+      bottom: '0px',
+      height: '144px'
+    })
+  })
+
+  it('fills the band with the dark surface and the chat panel', () => {
+    render(<ChatOverlay open onClose={vi.fn()} />)
+    const backdrop = screen
+      .getByTestId('ChatOverlay')
+      .querySelector('[aria-hidden]') as HTMLElement
+    expect(backdrop).toHaveStyle({
+      position: 'absolute',
+      top: '0px',
+      right: '0px',
+      bottom: '0px',
+      left: '0px'
+    })
+    expect(screen.getByTestId('ChatOverlayPanel')).toHaveStyle({
+      height: '100%'
+    })
   })
 })

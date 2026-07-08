@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { getLastActiveTeamIdAndTeamsMock } from '@core/journeys/ui/TeamProvider/TeamProvider.mock'
@@ -14,13 +15,39 @@ import {
   ThemeName,
   UserJourneyRole
 } from '../../../__generated__/globalTypes'
+import {
+  sendCollectionCreateEvent,
+  sendCollectionEditOpenEvent
+} from '../../libs/sendCollectionEvent'
 import { GET_ADMIN_JOURNEYS } from '../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { getTemplateGalleryPageCreateMock } from '../../libs/useTemplateGalleryPageCreateMutation/useTemplateGalleryPageCreateMutation.mock'
 import { GET_TEMPLATE_GALLERY_PAGES } from '../../libs/useTemplateGalleryPagesQuery'
 import { ThemeProvider } from '../ThemeProvider'
 
 import { TemplateGalleryPageList } from './TemplateGalleryPageList'
 
 import '../../../test/i18n'
+
+vi.mock('../../libs/sendCollectionEvent', () => ({
+  sendCollectionCreateEvent: vi.fn(),
+  sendCollectionEditOpenEvent: vi.fn(),
+  sendCollectionPublishEvent: vi.fn(),
+  sendCollectionTemplateDragEvent: vi.fn(),
+  sendCollectionTemplateAddEvent: vi.fn(),
+  sendCollectionMoreDetailsClickEvent: vi.fn(),
+  sendCollectionPreviewClickEvent: vi.fn(),
+  sendCollectionCopyLinkClickEvent: vi.fn(),
+  sendCollectionDescriptionUpdateEvent: vi.fn(),
+  sendCollectionSlugUpdateEvent: vi.fn(),
+  sendCollectionMediaUpdateEvent: vi.fn()
+}))
+
+const mockSendCollectionCreateEvent =
+  sendCollectionCreateEvent as MockedFunction<typeof sendCollectionCreateEvent>
+const mockSendCollectionEditOpenEvent =
+  sendCollectionEditOpenEvent as MockedFunction<
+    typeof sendCollectionEditOpenEvent
+  >
 
 const TEAM_ID = 'teamId'
 
@@ -437,6 +464,106 @@ describe('TemplateGalleryPageList', () => {
     await waitFor(() =>
       expect(getByTestId('TemplateGalleryDndScope')).toHaveAttribute('inert')
     )
+  })
+
+  // NES-1698: lock in the create / edit-open analytics wiring — create must
+  // fire only once the mutation returns the new collection (so the event
+  // carries its real id), and edit-open fires when the dialog opens.
+  describe('analytics wiring (NES-1698)', () => {
+    beforeEach(() => {
+      mockSendCollectionCreateEvent.mockClear()
+      mockSendCollectionEditOpenEvent.mockClear()
+    })
+
+    it('fires the create event with the new collection id after create succeeds', async () => {
+      // Existing collection is 'Featured Templates', so the auto-name is
+      // 'Collection 1'.
+      const createMock = getTemplateGalleryPageCreateMock(
+        {
+          input: {
+            teamId: TEAM_ID,
+            title: 'Collection 1',
+            creatorName: '',
+            journeyIds: []
+          }
+        },
+        { id: 'page-new', team: { __typename: 'Team', id: TEAM_ID } }
+      )
+
+      const { getByTestId } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMock,
+            journeysMock,
+            createMock
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByTestId('CollectionCard-page-1')).toBeInTheDocument()
+      )
+
+      fireEvent.click(getByTestId('CreateCollectionButton'))
+
+      await waitFor(() => expect(createMock.result).toHaveBeenCalledTimes(1))
+      await waitFor(() =>
+        expect(mockSendCollectionCreateEvent).toHaveBeenCalledTimes(1)
+      )
+      expect(mockSendCollectionCreateEvent).toHaveBeenCalledWith({
+        teamId: TEAM_ID,
+        collectionId: 'page-new'
+      })
+    })
+
+    it('fires the edit-open event with the collection id and status when the edit dialog opens', async () => {
+      const { getByTestId, getByText } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMock,
+            journeysMock
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByTestId('CollectionCard-page-1')).toBeInTheDocument()
+      )
+
+      fireEvent.click(
+        within(getByTestId('CollectionCard-page-1')).getByLabelText(
+          'Collection actions'
+        )
+      )
+      fireEvent.click(getByText('Edit'))
+
+      await waitFor(() =>
+        expect(mockSendCollectionEditOpenEvent).toHaveBeenCalledTimes(1)
+      )
+      expect(mockSendCollectionEditOpenEvent).toHaveBeenCalledWith({
+        teamId: TEAM_ID,
+        collectionId: 'page-1',
+        collectionStatus: TemplateGalleryPageStatus.draft
+      })
+    })
   })
 
   // NES-1717: collapse wiring through the parent — proves collapsed /

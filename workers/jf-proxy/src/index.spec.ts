@@ -2,6 +2,50 @@ import { fetchMock } from 'cloudflare:test'
 
 import app from '.'
 
+const graphQlEndpoint = 'http://graphql.example.com'
+
+function workerEnv(
+  overrides: Record<string, string | undefined> = {}
+): Record<string, string | undefined> {
+  return {
+    RESOURCES_PROXY_DEST: 'resources.example.com',
+    WATCH_PROXY_DEST: 'watch.example.com',
+    CORE_GRAPHQL_ENDPOINT: graphQlEndpoint,
+    ...overrides
+  }
+}
+
+function expectGraphQlRequest(
+  responseData: unknown,
+  assertBody?: (body: {
+    query?: string
+    variables?: Record<string, unknown>
+  }) => void
+): void {
+  fetchMock
+    .get(graphQlEndpoint)
+    .intercept({ path: '/', method: 'POST' })
+    .reply(({ body }) => {
+      const bodyText =
+        typeof body === 'string'
+          ? body
+          : body instanceof Uint8Array
+            ? new TextDecoder().decode(body)
+            : String(body)
+      const requestBody = JSON.parse(bodyText)
+      assertBody?.(requestBody)
+      return {
+        statusCode: 200,
+        data: JSON.stringify({
+          data: responseData
+        }),
+        responseOptions: {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      }
+    })
+}
+
 describe('test the worker', () => {
   beforeAll(() => {
     fetchMock.activate()
@@ -9,6 +53,223 @@ describe('test the worker', () => {
   })
 
   afterEach(() => fetchMock.assertNoPendingInterceptors())
+
+  describe('JF watch ID redirect', () => {
+    it('should redirect from cold cache after resolving video and language slugs', async () => {
+      expectGraphQlRequest(
+        {
+          videos: [{ slug: 'jesus' }],
+          languages: [{ slug: 'english' }]
+        },
+        ({ query, variables }) => {
+          expect(query).toContain('videos(where: { ids: $videoIds }')
+          expect(query).toContain('languages(where: { ids: $languageIds }')
+          expect(variables).toEqual({
+            videoIds: ['cold-video-1'],
+            languageIds: ['cold-language-1']
+          })
+        }
+      )
+
+      const res = await app.request(
+        'http://localhost/bin/jf/watch.html/cold-video-1/cold-language-1',
+        {},
+        workerEnv()
+      )
+
+      expect(res.status).toBe(302)
+      expect(res.headers.get('location')).toBe('/watch/jesus.html/english.html')
+    })
+
+    it('should normalize optional html suffixes before cache and GraphQL lookup', async () => {
+      expectGraphQlRequest(
+        {
+          videos: [{ slug: 'suffix-video' }],
+          languages: [{ slug: 'suffix-language' }]
+        },
+        ({ variables }) => {
+          expect(variables).toEqual({
+            videoIds: ['suffix-video-id'],
+            languageIds: ['529']
+          })
+        }
+      )
+
+      const res = await app.request(
+        'http://localhost/bin/jf/watch.html/suffix-video-id.html/529.htm',
+        {},
+        workerEnv()
+      )
+
+      expect(res.status).toBe(302)
+      expect(res.headers.get('location')).toBe(
+        '/watch/suffix-video.html/suffix-language.html'
+      )
+    })
+
+    it('should also own the legacy api resolver path', async () => {
+      expectGraphQlRequest({
+        videos: [{ slug: 'api-video' }],
+        languages: [{ slug: 'api-language' }]
+      })
+
+      const res = await app.request(
+        'http://localhost/api/jf/watch.html/api-video-id/api-language-id',
+        {},
+        workerEnv()
+      )
+
+      expect(res.status).toBe(302)
+      expect(res.headers.get('location')).toBe(
+        '/watch/api-video.html/api-language.html'
+      )
+    })
+
+    it('should redirect when the incoming route has a trailing slash', async () => {
+      expectGraphQlRequest({
+        videos: [{ slug: 'trailing-video' }],
+        languages: [{ slug: 'trailing-language' }]
+      })
+
+      const res = await app.request(
+        'http://localhost/bin/jf/watch.html/trailing-video-id/trailing-language-id/',
+        {},
+        workerEnv()
+      )
+
+      expect(res.status).toBe(302)
+      expect(res.headers.get('location')).toBe(
+        '/watch/trailing-video.html/trailing-language.html'
+      )
+    })
+
+    it('should return service unavailable when the slug lookup times out', async () => {
+      fetchMock
+        .get(graphQlEndpoint)
+        .intercept({ path: '/', method: 'POST' })
+        .replyWithError(new Error('The operation was aborted'))
+
+      const res = await app.request(
+        'http://localhost/bin/jf/watch.html/timeout-video-id/timeout-language-id',
+        {},
+        workerEnv()
+      )
+
+      expect(res.status).toBe(503)
+    })
+
+    it('should fetch only the missing language slug when video slug is cached', async () => {
+      expectGraphQlRequest(
+        {
+          languages: [{ slug: 'partial-language' }]
+        },
+        ({ query, variables }) => {
+          expect(query).not.toContain('videos(where: { ids: $videoIds }')
+          expect(query).toContain('languages(where: { ids: $languageIds }')
+          expect(variables).toEqual({
+            languageIds: ['partial-language-id']
+          })
+        }
+      )
+
+      await caches.default.put(
+        'https://jf-proxy.local/cache/jf-watch/video/partial-video-id',
+        new Response('partial-video', {
+          headers: { 'Cache-Control': 'public, max-age=86400' }
+        })
+      )
+
+      const res = await app.request(
+        'http://localhost/bin/jf/watch.html/partial-video-id/partial-language-id',
+        {},
+        workerEnv()
+      )
+
+      expect(res.status).toBe(302)
+      expect(res.headers.get('location')).toBe(
+        '/watch/partial-video.html/partial-language.html'
+      )
+    })
+
+    it('should fetch only the missing video slug when language slug is cached', async () => {
+      await caches.default.put(
+        'https://jf-proxy.local/cache/jf-watch/language/cached-language-id',
+        new Response('cached-language', {
+          headers: { 'Cache-Control': 'public, max-age=86400' }
+        })
+      )
+
+      expectGraphQlRequest(
+        {
+          videos: [{ slug: 'missing-video' }]
+        },
+        ({ query, variables }) => {
+          expect(query).toContain('videos(where: { ids: $videoIds }')
+          expect(query).not.toContain('languages(where: { ids: $languageIds }')
+          expect(variables).toEqual({
+            videoIds: ['missing-video-id']
+          })
+        }
+      )
+
+      const res = await app.request(
+        'http://localhost/bin/jf/watch.html/missing-video-id/cached-language-id',
+        {},
+        workerEnv()
+      )
+
+      expect(res.status).toBe(302)
+      expect(res.headers.get('location')).toBe(
+        '/watch/missing-video.html/cached-language.html'
+      )
+    })
+
+    it('should redirect from cache without GraphQL when both slugs are cached', async () => {
+      await caches.default.put(
+        'https://jf-proxy.local/cache/jf-watch/video/fully-cached-video-id',
+        new Response('fully-cached-video', {
+          headers: { 'Cache-Control': 'public, max-age=86400' }
+        })
+      )
+      await caches.default.put(
+        'https://jf-proxy.local/cache/jf-watch/language/fully-cached-language-id',
+        new Response('fully-cached-language', {
+          headers: { 'Cache-Control': 'public, max-age=86400' }
+        })
+      )
+
+      const res = await app.request(
+        'http://localhost/bin/jf/watch.html/fully-cached-video-id/fully-cached-language-id',
+        {},
+        workerEnv()
+      )
+
+      expect(res.status).toBe(302)
+      expect(res.headers.get('location')).toBe(
+        '/watch/fully-cached-video.html/fully-cached-language.html'
+      )
+    })
+
+    it('should return 404 and not cache when a slug cannot be resolved', async () => {
+      expectGraphQlRequest({
+        videos: [{ slug: 'uncached-video' }],
+        languages: []
+      })
+
+      const res = await app.request(
+        'http://localhost/bin/jf/watch.html/uncached-video-id/missing-language-id',
+        {},
+        workerEnv()
+      )
+
+      expect(res.status).toBe(404)
+      expect(
+        await caches.default.match(
+          'https://jf-proxy.local/cache/jf-watch/language/missing-language-id'
+        )
+      ).toBeUndefined()
+    })
+  })
 
   it('should return 200 response', async () => {
     fetchMock

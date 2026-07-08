@@ -1,5 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { formatISO } from 'date-fns'
 import { SnackbarProvider } from 'notistack'
 import { type MockedFunction } from 'vitest'
 
@@ -288,7 +289,12 @@ describe('JourneyCard', () => {
         variables: {
           id: publishedLocalTemplate.id,
           idType: IdType.databaseId,
-          where: {}
+          where: {
+            period: 'custom',
+            date: `2024-06-01,${formatISO(new Date(), {
+              representation: 'date'
+            })}`
+          }
         }
       },
       result: {
