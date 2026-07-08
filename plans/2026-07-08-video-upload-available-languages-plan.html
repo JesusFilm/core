@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Video Upload Available Languages Repair Plan</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7f9;
+        --paper: #ffffff;
+        --ink: #172026;
+        --muted: #5f6b73;
+        --line: #d9e0e6;
+        --accent: #0b6bcb;
+        --accent-soft: #e8f2ff;
+        --good: #147d4f;
+        --warn: #a45b00;
+        --risk: #b3261e;
+        --shadow: 0 14px 40px rgba(23, 32, 38, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font: 16px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+      }
+
+      main {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 34px 0 56px;
+      }
+
+      header {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        padding: 30px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.15;
+        margin: 0;
+      }
+
+      h1 {
+        font-size: clamp(30px, 4vw, 46px);
+        letter-spacing: 0;
+      }
+
+      h2 {
+        font-size: 22px;
+        margin-bottom: 12px;
+      }
+
+      h3 {
+        font-size: 17px;
+        margin-bottom: 8px;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      code {
+        background: #edf1f5;
+        border-radius: 4px;
+        padding: 2px 5px;
+        font-size: 0.92em;
+      }
+
+      .eyebrow {
+        color: var(--accent);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 12px;
+        margin-bottom: 12px;
+      }
+
+      .summary {
+        color: var(--muted);
+        font-size: 18px;
+        margin-top: 16px;
+        max-width: 880px;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 22px;
+      }
+
+      .pill {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--muted);
+        padding: 6px 10px;
+        background: #fbfcfd;
+        font-size: 13px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-top: 18px;
+      }
+
+      .section,
+      .card {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 22px;
+      }
+
+      .section {
+        margin-top: 18px;
+      }
+
+      .card strong {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .card p {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 3px 9px;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+
+      .status.good {
+        background: #e8f6ef;
+        color: var(--good);
+      }
+
+      .status.warn {
+        background: #fff4e4;
+        color: var(--warn);
+      }
+
+      .status.risk {
+        background: #fdecea;
+        color: var(--risk);
+      }
+
+      ol,
+      ul {
+        margin: 12px 0 0;
+        padding-left: 22px;
+      }
+
+      li + li {
+        margin-top: 8px;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 12px;
+        overflow: hidden;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid var(--line);
+        padding: 12px 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        color: var(--muted);
+        font-size: 12px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .callout {
+        background: var(--accent-soft);
+        border: 1px solid #bdd9f8;
+        border-radius: 8px;
+        padding: 16px;
+        margin-top: 14px;
+      }
+
+      .callout strong {
+        color: #084b8f;
+      }
+
+      .step {
+        display: grid;
+        grid-template-columns: 96px 1fr;
+        gap: 18px;
+        padding: 20px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .step:first-of-type {
+        border-top: 0;
+        padding-top: 4px;
+      }
+
+      .step-number {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: var(--ink);
+        color: white;
+        font-weight: 800;
+        font-size: 20px;
+      }
+
+      .checks {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+        margin-top: 12px;
+      }
+
+      .mini {
+        background: #fbfcfd;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+      }
+
+      .mini p {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      @media (max-width: 860px) {
+        .grid,
+        .checks {
+          grid-template-columns: 1fr;
+        }
+
+        .step {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div class="eyebrow">Plan for review</div>
+        <h1>Repair Video Upload Available Languages Sync</h1>
+        <p class="summary">
+          Production has playable video variants for the requested language
+          uploads, but several are missing from <code>Video.availableLanguages</code>.
+          That makes direct playback work while discovery/listing endpoints lag
+          or miss the language.
+        </p>
+        <div class="meta">
+          <span class="pill">Created 2026-07-08</span>
+          <span class="pill">Scope: api-media upload processing</span>
+          <span class="pill">Primary video: <code>1_jf-0-0</code></span>
+          <span class="pill">Review mode: one step at a time</span>
+        </div>
+      </header>
+
+      <section class="grid" aria-label="Situation summary">
+        <div class="card">
+          <span class="status good">Observed</span>
+          <strong>Direct playback is live</strong>
+          <p>
+            The direct Arclight component-language route returns HLS for Mupun,
+            Yao Baiku, Langilan Manobo, Talaandig Manobo, and Ama.
+          </p>
+        </div>
+        <div class="card">
+          <span class="status warn">Observed</span>
+          <strong>Discovery is stale</strong>
+          <p>
+            <code>availableLanguages</code> includes Yao Baiku and Ama, but not
+            Mupun, Langilan Manobo, or Talaandig Manobo.
+          </p>
+        </div>
+        <div class="card">
+          <span class="status risk">Likely Cause</span>
+          <strong>Upload worker bypasses side effects</strong>
+          <p>
+            Direct Prisma writes create/update variants without running the same
+            language-maintenance code used by the GraphQL mutation.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Recommendation</h2>
+        <p>
+          Fix the upload-processing code path so every successful published
+          variant creation/update also updates <code>availableLanguages</code>,
+          parent collections, Algolia, and cache. Then run a one-time production
+          repair to recompute stale <code>availableLanguages</code> from current
+          published variants.
+        </p>
+        <div class="callout">
+          <strong>Decision point:</strong>
+          We should decide whether to patch only the current upload worker, or
+          refactor both upload-worker paths to call one shared
+          <code>createOrUpdateVideoVariant</code> implementation with side
+          effects included.
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Production Evidence</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Language</th>
+              <th>Version</th>
+              <th>Direct Playback</th>
+              <th>Aggregate Listing</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Mupun <code>155934</code></td>
+              <td><code>40560</code></td>
+              <td>Live HLS + low/high downloads</td>
+              <td>Missing from <code>availableLanguages</code></td>
+            </tr>
+            <tr>
+              <td>Yao, Baiku <code>185359</code></td>
+              <td><code>41620</code></td>
+              <td>Live HLS; downloads not yet surfaced</td>
+              <td>Present</td>
+            </tr>
+            <tr>
+              <td>Langilan Manobo <code>185340</code></td>
+              <td><code>40744</code></td>
+              <td>Live HLS + low/high downloads</td>
+              <td>Missing from <code>availableLanguages</code></td>
+            </tr>
+            <tr>
+              <td>Talaandig Manobo <code>185337</code></td>
+              <td><code>40738</code></td>
+              <td>Live HLS + low/high downloads</td>
+              <td>Missing from <code>availableLanguages</code></td>
+            </tr>
+            <tr>
+              <td>Ama <code>20118</code></td>
+              <td><code>32219</code></td>
+              <td>Live HLS + low/high downloads</td>
+              <td>Present</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section">
+        <h2>Code Findings</h2>
+        <div class="checks">
+          <div class="mini">
+            <h3>Known-good mutation path</h3>
+            <p>
+              <code>apis/api-media/src/schema/videoVariant/videoVariant.ts</code>
+              calls <code>addLanguageToVideo</code> and
+              <code>updateParentCollectionLanguages</code> after creating a
+              published variant.
+            </p>
+          </div>
+          <div class="mini">
+            <h3>Upload worker path</h3>
+            <p>
+              <code>apis/api-media/src/workers/processVideoUploads/service/service.ts</code>
+              creates or updates <code>VideoVariant</code> directly and does not
+              run those side effects.
+            </p>
+          </div>
+          <div class="mini">
+            <h3>Upload service helper path</h3>
+            <p>
+              <code>apis/api-media/src/schema/videoVariantUpload/service.ts</code>
+              has another direct create/update helper with the same missing
+              language sync concern.
+            </p>
+          </div>
+          <div class="mini">
+            <h3>Repair helper exists</h3>
+            <p>
+              <code>updateVideoAvailableLanguages</code> can recompute the field
+              from currently published variants and child video languages.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Walkthrough Steps</h2>
+
+        <div class="step">
+          <div class="step-number">1</div>
+          <div>
+            <h3>Confirm desired behavior</h3>
+            <p>
+              Agree that any successfully published upload-created variant
+              should immediately appear in language discovery, parent
+              collection/feature-film language lists, and Algolia search.
+            </p>
+            <ul>
+              <li>Confirm whether unpublished uploads should be excluded.</li>
+              <li>Confirm whether existing variant updates should also refresh the aggregate list.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">2</div>
+          <div>
+            <h3>Choose implementation shape</h3>
+            <p>
+              Prefer one shared helper for upload-created variants so both the
+              worker and resume/service path cannot drift again.
+            </p>
+            <ul>
+              <li>Option A: add side-effect calls after each direct create/update.</li>
+              <li>Option B: centralize create/update and side effects in one helper.</li>
+              <li>Recommendation: Option B if the diff stays small; Option A if release speed dominates.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">3</div>
+          <div>
+            <h3>Patch upload variant finalization</h3>
+            <p>
+              After the variant is created or updated and is published, call
+              <code>addLanguageToVideo(videoId, languageId)</code>,
+              <code>updateParentCollectionLanguages(videoId)</code>,
+              <code>updateVideoInAlgolia(videoId)</code>, and reset relevant
+              caches.
+            </p>
+            <ul>
+              <li>Keep variant creation atomic enough that failures are visible.</li>
+              <li>Send Slack failure notifications if language sync fails after upload finalization.</li>
+              <li>Avoid breaking successful playback if a non-critical cache/index refresh fails.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">4</div>
+          <div>
+            <h3>Add regression tests</h3>
+            <p>
+              Tests should prove that upload finalization updates the variant
+              and the aggregate language fields.
+            </p>
+            <ul>
+              <li>Worker test: ready Mux asset creates/updates variant and adds language to the video.</li>
+              <li>Parent test: child video language update refreshes parent feature-film/collection language list.</li>
+              <li>Negative test: unpublished variant does not add to <code>availableLanguages</code>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">5</div>
+          <div>
+            <h3>Create one-time repair</h3>
+            <p>
+              Run a bounded production repair for affected videos, starting with
+              <code>1_jf-0-0</code>, using the existing recompute helper or a
+              tiny script that calculates languages from published variants.
+            </p>
+            <ul>
+              <li>Dry-run output should show before/after language IDs.</li>
+              <li>Apply run should update DB, Algolia, and cache.</li>
+              <li>Capture the exact affected IDs in the deploy notes.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">6</div>
+          <div>
+            <h3>Validate production</h3>
+            <p>
+              Recheck both direct playback and discovery paths after deploy and
+              repair.
+            </p>
+            <ul>
+              <li><code>/v2/media-components/1_jf-0-0/languages/{languageId}</code> returns 200 with HLS.</li>
+              <li><code>/v2/media-components/1_jf-0-0?expand=languageIds</code> includes all five IDs.</li>
+              <li><code>/v2/media-components?languageIds={languageId}&amp;subTypes=featureFilm</code> returns <code>1_jf-0-0</code>.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Risks And Guardrails</h2>
+        <ul>
+          <li>
+            A direct DB repair without cache/index refresh can leave Arclight or
+            Algolia stale, so repair should include cache reset and Algolia
+            update.
+          </li>
+          <li>
+            If the worker retries after partial success, the language update
+            must be idempotent. <code>addLanguageToVideo</code> already handles
+            duplicate prevention.
+          </li>
+          <li>
+            Exact version confirmation is publisher/DB-gated; REST proves
+            playback, while DB or authorized GraphQL is needed to prove the
+            stored <code>version</code> values.
+          </li>
+        </ul>
+      </section>
+
+      <section class="section">
+        <h2>Open Questions</h2>
+        <ol>
+          <li>
+            Should the repair target only <code>1_jf-0-0</code>, or recompute all
+            videos with upload-created variants from the last few days?
+          </li>
+          <li>
+            Should missing download URLs for Yao Baiku block the rollout, or be
+            tracked as a separate Mux download-processing issue?
+          </li>
+          <li>
+            Do we want upload finalization to update Algolia synchronously, or
+            queue that update separately to reduce worker latency?
+          </li>
+        </ol>
+      </section>
+
+      <section class="section">
+        <h2>Definition Of Done</h2>
+        <ul>
+          <li>New upload-created published variants update <code>availableLanguages</code> immediately.</li>
+          <li>Parent collection/feature-film language lists update after child variant finalization.</li>
+          <li>Regression tests cover the upload-worker path.</li>
+          <li>Production repair makes all five requested languages discoverable.</li>
+          <li>Post-repair checks confirm direct playback and listing endpoints agree.</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

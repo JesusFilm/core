@@ -10,6 +10,8 @@ import { queue as processVideoDownloadsQueue } from '../../processVideoDownloads
 import { ProcessVideoUploadJobData, service } from './service'
 
 vi.mock('../../../schema/mux/video/service', () => ({
+  createVideoFromUrl: vi.fn(),
+  getMaxResolutionValue: vi.fn(),
   getVideo: vi.fn()
 }))
 
@@ -17,6 +19,23 @@ vi.mock('../../processVideoDownloads/queue', () => ({
   queue: {
     add: vi.fn()
   }
+}))
+
+vi.mock('../../../lib/algolia/algoliaVideoUpdate', () => ({
+  updateVideoInAlgolia: vi.fn()
+}))
+
+vi.mock('../../../lib/algolia/algoliaVideoVariantUpdate', () => ({
+  updateVideoVariantInAlgolia: vi.fn()
+}))
+
+vi.mock('../../../lib/videoCacheReset', () => ({
+  videoCacheReset: vi.fn(),
+  videoVariantCacheReset: vi.fn()
+}))
+
+vi.mock('../../../lib/slack', () => ({
+  notifyMediaSlackOfOperationFailure: vi.fn()
 }))
 
 const mockLogger = {
@@ -59,7 +78,10 @@ describe('processVideoUploads service', () => {
     })
 
     prismaMock.muxVideo.update.mockResolvedValue({} as any)
-    prismaMock.video.findUnique.mockResolvedValue({ slug: 'video-slug' } as any)
+    prismaMock.video.findUnique
+      .mockResolvedValueOnce({ slug: 'video-slug' } as any)
+      .mockResolvedValueOnce({ availableLanguages: [] } as any)
+    prismaMock.video.findMany.mockResolvedValue([] as any)
     prismaMock.videoVariant.findFirst.mockResolvedValue({
       id: 'variant-id',
       slug: 'variant-slug'
@@ -101,6 +123,10 @@ describe('processVideoUploads service', () => {
         published: true,
         version: 1
       })
+    })
+    expect(prismaMock.video.update).toHaveBeenCalledWith({
+      where: { id: 'video-id' },
+      data: { availableLanguages: { set: ['529'] } }
     })
   })
 
