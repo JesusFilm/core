@@ -83,6 +83,7 @@ function toData(
       title: journey.title,
       description: journey.description,
       slug: journey.slug,
+      customizable: journey.customizable,
       // String-coerce defensively: if Apollo ever returns a custom DateTime
       // scalar or a Date here, parseISO downstream silently yields Invalid
       // Date and the meta line drops the date without warning.
