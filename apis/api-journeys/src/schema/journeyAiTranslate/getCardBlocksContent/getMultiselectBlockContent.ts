@@ -1,6 +1,6 @@
 import { Block } from '@core/prisma/journeys/client'
 
-export function getRadioQuestionBlockContent({
+export function getMultiselectBlockContent({
   blocks,
   block
 }: {
@@ -8,7 +8,7 @@ export function getRadioQuestionBlockContent({
   block: Block
 }): string {
   let result = `
-## Radio Question:
+## Multiselect Question:
 - Block ID: ${block.id}
 ${block.label != null && block.label !== '' ? `- Question: ${block.label}\n` : ''}
 ### Options:
@@ -16,7 +16,7 @@ ${block.label != null && block.label !== '' ? `- Question: ${block.label}\n` : '
   const options = blocks.filter(
     (childBlock) =>
       childBlock.parentBlockId === block.id &&
-      childBlock.typename === 'RadioOptionBlock'
+      childBlock.typename === 'MultiselectOptionBlock'
   )
   for (const option of options) {
     result += `- ${option.label}\n`

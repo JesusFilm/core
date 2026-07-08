@@ -5,7 +5,12 @@ type: application
 version: 0.1.0
 appVersion: 'v7.11.1'
 
+# The kubernetes/dashboard project was archived on 2026-01-21 and its GitHub
+# Pages Helm repo (https://kubernetes.github.io/dashboard/) no longer serves
+# index.yaml, which broke Renovate lookups and Helm dependency resolution.
+# The gh-pages branch (frozen at chart 7.14.0) is still reachable via raw
+# GitHub content, so point the dependency there to keep the same chart.
 dependencies:
   - name: kubernetes-dashboard
     version: '7.11.1'
-    repository: https://kubernetes.github.io/dashboard/
+    repository: https://raw.githubusercontent.com/kubernetes/dashboard/gh-pages

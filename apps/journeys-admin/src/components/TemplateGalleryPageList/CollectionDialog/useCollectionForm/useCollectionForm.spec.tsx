@@ -5,6 +5,7 @@ import { FormikHelpers } from 'formik'
 import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 import { ReactNode } from 'react'
+import { type MockedFunction } from 'vitest'
 
 import {
   GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage,
@@ -14,6 +15,13 @@ import {
   TemplateGalleryPageMediaType,
   TemplateGalleryPageStatus
 } from '../../../../../__generated__/globalTypes'
+import {
+  sendCollectionDescriptionUpdateEvent,
+  sendCollectionMediaUpdateEvent,
+  sendCollectionPublishEvent,
+  sendCollectionSlugUpdateEvent,
+  sendCollectionTemplateAddEvent
+} from '../../../../libs/sendCollectionEvent'
 import { getTemplateGalleryPageCreateMock } from '../../../../libs/useTemplateGalleryPageCreateMutation/useTemplateGalleryPageCreateMutation.mock'
 import { getTemplateGalleryPagePublishMock } from '../../../../libs/useTemplateGalleryPagePublishMutation/useTemplateGalleryPagePublishMutation.mock'
 import { TEMPLATE_GALLERY_PAGE_UPDATE } from '../../../../libs/useTemplateGalleryPageUpdateMutation/useTemplateGalleryPageUpdateMutation'
@@ -33,6 +41,35 @@ vi.mock('notistack', async () => {
     })
   }
 })
+
+vi.mock('../../../../libs/sendCollectionEvent', () => ({
+  sendCollectionDescriptionUpdateEvent: vi.fn(),
+  sendCollectionMediaUpdateEvent: vi.fn(),
+  sendCollectionPublishEvent: vi.fn(),
+  sendCollectionSlugUpdateEvent: vi.fn(),
+  sendCollectionTemplateAddEvent: vi.fn()
+}))
+
+const mockSendCollectionTemplateAddEvent =
+  sendCollectionTemplateAddEvent as MockedFunction<
+    typeof sendCollectionTemplateAddEvent
+  >
+const mockSendCollectionPublishEvent =
+  sendCollectionPublishEvent as MockedFunction<
+    typeof sendCollectionPublishEvent
+  >
+const mockSendCollectionDescriptionUpdateEvent =
+  sendCollectionDescriptionUpdateEvent as MockedFunction<
+    typeof sendCollectionDescriptionUpdateEvent
+  >
+const mockSendCollectionSlugUpdateEvent =
+  sendCollectionSlugUpdateEvent as MockedFunction<
+    typeof sendCollectionSlugUpdateEvent
+  >
+const mockSendCollectionMediaUpdateEvent =
+  sendCollectionMediaUpdateEvent as MockedFunction<
+    typeof sendCollectionMediaUpdateEvent
+  >
 
 const NONE: CollectionMediaValues = EMPTY_MEDIA
 function linkForm(url: string): CollectionMediaValues {
@@ -575,6 +612,339 @@ describe('useCollectionForm', () => {
 
       expect(updateMock.result).toHaveBeenCalledTimes(1)
       expect(onClose).toHaveBeenCalled()
+    })
+
+    // NES-1698: the template-add analytics event must fire once per id the
+    // save actually added (diffed against the persisted templates), and
+    // never for reorders — lock the wiring in so a refactor can't silently
+    // over/under-count adds.
+    describe('analytics wiring (NES-1698)', () => {
+      const templatesJ1J2: TemplateGalleryPage['templates'] = [
+        {
+          __typename: 'TemplateGalleryItem',
+          id: 'j1',
+          title: 'A',
+          primaryImageBlock: null
+        },
+        {
+          __typename: 'TemplateGalleryItem',
+          id: 'j2',
+          title: 'B',
+          primaryImageBlock: null
+        }
+      ]
+
+      function valuesWithJourneyIds(
+        collection: TemplateGalleryPage,
+        journeyIds: string[]
+      ): CollectionFormValues {
+        return {
+          title: collection.title,
+          description: collection.description ?? '',
+          creatorName: collection.creatorName ?? '',
+          creatorImageSrc: '',
+          creatorImageAlt: '',
+          media: NONE,
+          slug: collection.slug,
+          journeyIds
+        }
+      }
+
+      beforeEach(() => {
+        mockSendCollectionTemplateAddEvent.mockClear()
+        mockSendCollectionPublishEvent.mockClear()
+        mockSendCollectionDescriptionUpdateEvent.mockClear()
+        mockSendCollectionSlugUpdateEvent.mockClear()
+        mockSendCollectionMediaUpdateEvent.mockClear()
+      })
+
+      it('fires one template-add event per template the save actually added', async () => {
+        const collection = makeCollection({
+          id: 'page-7',
+          templates: templatesJ1J2
+        })
+        const updateMock = getTemplateGalleryPageUpdateMock({
+          id: 'page-7',
+          input: { journeyIds: ['j1', 'j2', 'j3'] }
+        })
+
+        const { result } = renderHook(
+          () =>
+            useCollectionForm({
+              mode: 'edit',
+              teamId: 'team-1',
+              collection,
+              onClose: vi.fn()
+            }),
+          { wrapper: wrapperWithMocks([updateMock]) }
+        )
+
+        await act(async () => {
+          await result.current.handleSubmit(
+            valuesWithJourneyIds(collection, ['j1', 'j2', 'j3']),
+            fakeHelpers()
+          )
+        })
+
+        expect(updateMock.result).toHaveBeenCalledTimes(1)
+        expect(mockSendCollectionTemplateAddEvent).toHaveBeenCalledTimes(1)
+        expect(mockSendCollectionTemplateAddEvent).toHaveBeenCalledWith({
+          collectionId: 'page-7',
+          templateId: 'j3'
+        })
+      })
+
+      it('fires no template-add event for a pure reorder', async () => {
+        const collection = makeCollection({
+          id: 'page-7',
+          templates: templatesJ1J2
+        })
+        const updateMock = getTemplateGalleryPageUpdateMock({
+          id: 'page-7',
+          input: { journeyIds: ['j2', 'j1'] }
+        })
+
+        const { result } = renderHook(
+          () =>
+            useCollectionForm({
+              mode: 'edit',
+              teamId: 'team-1',
+              collection,
+              onClose: vi.fn()
+            }),
+          { wrapper: wrapperWithMocks([updateMock]) }
+        )
+
+        await act(async () => {
+          await result.current.handleSubmit(
+            valuesWithJourneyIds(collection, ['j2', 'j1']),
+            fakeHelpers()
+          )
+        })
+
+        expect(updateMock.result).toHaveBeenCalledTimes(1)
+        expect(mockSendCollectionTemplateAddEvent).not.toHaveBeenCalled()
+      })
+
+      it('fires one add event for the added id when a save adds one template and removes another', async () => {
+        const collection = makeCollection({
+          id: 'page-7',
+          templates: templatesJ1J2
+        })
+        const updateMock = getTemplateGalleryPageUpdateMock({
+          id: 'page-7',
+          input: { journeyIds: ['j1', 'j3'] }
+        })
+
+        const { result } = renderHook(
+          () =>
+            useCollectionForm({
+              mode: 'edit',
+              teamId: 'team-1',
+              collection,
+              onClose: vi.fn()
+            }),
+          { wrapper: wrapperWithMocks([updateMock]) }
+        )
+
+        await act(async () => {
+          await result.current.handleSubmit(
+            valuesWithJourneyIds(collection, ['j1', 'j3']),
+            fakeHelpers()
+          )
+        })
+
+        expect(updateMock.result).toHaveBeenCalledTimes(1)
+        expect(mockSendCollectionTemplateAddEvent).toHaveBeenCalledTimes(1)
+        expect(mockSendCollectionTemplateAddEvent).toHaveBeenCalledWith({
+          collectionId: 'page-7',
+          templateId: 'j3'
+        })
+      })
+
+      it('fires the publish event with the server-returned slug after publish succeeds', async () => {
+        const collection = makeCollection({ id: 'page-7' })
+        const publishMock = getTemplateGalleryPagePublishMock({ id: 'page-7' })
+
+        const { result } = renderHook(
+          () =>
+            useCollectionForm({
+              mode: 'edit',
+              teamId: 'team-1',
+              collection,
+              onClose: vi.fn(),
+              onPublished: vi.fn()
+            }),
+          { wrapper: wrapperWithMocks([publishMock]) }
+        )
+
+        await act(async () => {
+          result.current.setSubmitIntent('publish')
+          await result.current.handleSubmit(
+            valuesWithJourneyIds(collection, []),
+            fakeHelpers()
+          )
+        })
+
+        expect(publishMock.result).toHaveBeenCalledTimes(1)
+        // The publish mock returns slug 'collection' — the event must carry
+        // the server-returned slug, not the form value.
+        expect(mockSendCollectionPublishEvent).toHaveBeenCalledTimes(1)
+        expect(mockSendCollectionPublishEvent).toHaveBeenCalledWith({
+          teamId: 'team-1',
+          collectionId: 'page-7',
+          collectionSlug: 'collection'
+        })
+      })
+
+      it('fires the description update event only when the save changed the description', async () => {
+        const collection = makeCollection({ id: 'page-7' })
+        const updateMock = getTemplateGalleryPageUpdateMock({
+          id: 'page-7',
+          input: { description: 'New description' }
+        })
+
+        const { result } = renderHook(
+          () =>
+            useCollectionForm({
+              mode: 'edit',
+              teamId: 'team-1',
+              collection,
+              onClose: vi.fn()
+            }),
+          { wrapper: wrapperWithMocks([updateMock]) }
+        )
+
+        await act(async () => {
+          await result.current.handleSubmit(
+            {
+              ...valuesWithJourneyIds(collection, []),
+              description: 'New description'
+            },
+            fakeHelpers()
+          )
+        })
+
+        expect(updateMock.result).toHaveBeenCalledTimes(1)
+        expect(mockSendCollectionDescriptionUpdateEvent).toHaveBeenCalledWith({
+          teamId: 'team-1',
+          collectionId: 'page-7'
+        })
+        expect(mockSendCollectionSlugUpdateEvent).not.toHaveBeenCalled()
+        expect(mockSendCollectionMediaUpdateEvent).not.toHaveBeenCalled()
+      })
+
+      it('fires the slug update event with the new slug only when the save changed the slug', async () => {
+        const collection = makeCollection({ id: 'page-7' })
+        const updateMock = getTemplateGalleryPageUpdateMock({
+          id: 'page-7',
+          input: { slug: 'new-slug' }
+        })
+
+        const { result } = renderHook(
+          () =>
+            useCollectionForm({
+              mode: 'edit',
+              teamId: 'team-1',
+              collection,
+              onClose: vi.fn()
+            }),
+          { wrapper: wrapperWithMocks([updateMock]) }
+        )
+
+        await act(async () => {
+          await result.current.handleSubmit(
+            { ...valuesWithJourneyIds(collection, []), slug: 'new-slug' },
+            fakeHelpers()
+          )
+        })
+
+        expect(updateMock.result).toHaveBeenCalledTimes(1)
+        expect(mockSendCollectionSlugUpdateEvent).toHaveBeenCalledWith({
+          teamId: 'team-1',
+          collectionId: 'page-7',
+          collectionSlug: 'new-slug'
+        })
+        expect(mockSendCollectionDescriptionUpdateEvent).not.toHaveBeenCalled()
+        expect(mockSendCollectionMediaUpdateEvent).not.toHaveBeenCalled()
+      })
+
+      it('fires the media update event with the saved type and url only when the save changed media', async () => {
+        const collection = makeCollection({ id: 'page-7' })
+        const updateMock = getTemplateGalleryPageUpdateMock({
+          id: 'page-7',
+          input: {
+            media: {
+              type: TemplateGalleryPageMediaType.link,
+              url: 'https://youtu.be/abc'
+            }
+          }
+        })
+
+        const { result } = renderHook(
+          () =>
+            useCollectionForm({
+              mode: 'edit',
+              teamId: 'team-1',
+              collection,
+              onClose: vi.fn()
+            }),
+          { wrapper: wrapperWithMocks([updateMock]) }
+        )
+
+        await act(async () => {
+          await result.current.handleSubmit(
+            {
+              ...valuesWithJourneyIds(collection, []),
+              media: linkForm('https://youtu.be/abc')
+            },
+            fakeHelpers()
+          )
+        })
+
+        expect(updateMock.result).toHaveBeenCalledTimes(1)
+        expect(mockSendCollectionMediaUpdateEvent).toHaveBeenCalledWith({
+          teamId: 'team-1',
+          collectionId: 'page-7',
+          mediaType: TemplateGalleryPageMediaType.link,
+          mediaUrl: 'https://youtu.be/abc'
+        })
+        expect(mockSendCollectionDescriptionUpdateEvent).not.toHaveBeenCalled()
+        expect(mockSendCollectionSlugUpdateEvent).not.toHaveBeenCalled()
+      })
+
+      it('fires no field-update events for a save that only changed the title', async () => {
+        const collection = makeCollection({ id: 'page-7' })
+        const updateMock = getTemplateGalleryPageUpdateMock({
+          id: 'page-7',
+          input: { title: 'New title' }
+        })
+
+        const { result } = renderHook(
+          () =>
+            useCollectionForm({
+              mode: 'edit',
+              teamId: 'team-1',
+              collection,
+              onClose: vi.fn()
+            }),
+          { wrapper: wrapperWithMocks([updateMock]) }
+        )
+
+        await act(async () => {
+          await result.current.handleSubmit(
+            { ...valuesWithJourneyIds(collection, []), title: 'New title' },
+            fakeHelpers()
+          )
+        })
+
+        expect(updateMock.result).toHaveBeenCalledTimes(1)
+        expect(mockSendCollectionDescriptionUpdateEvent).not.toHaveBeenCalled()
+        expect(mockSendCollectionSlugUpdateEvent).not.toHaveBeenCalled()
+        expect(mockSendCollectionMediaUpdateEvent).not.toHaveBeenCalled()
+        expect(mockSendCollectionTemplateAddEvent).not.toHaveBeenCalled()
+        expect(mockSendCollectionPublishEvent).not.toHaveBeenCalled()
+      })
     })
 
     it('skips slug from the update input when the user cleared the field (does not rename to empty)', async () => {
