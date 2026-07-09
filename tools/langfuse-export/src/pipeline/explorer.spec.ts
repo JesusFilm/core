@@ -528,10 +528,10 @@ describe('renderExplorer — bilingual rendering (NES-1762)', () => {
 
     openFirstSession(doc)
     const detailMarker = must(
-      firstByClass(getHost(doc, 'detail'), 'detail-langs')
+      firstByClass(getHost(doc, 'detail'), 'detail-summary')
     )
     expect(detailMarker.textContent).toBe(
-      'MACHINE-TRANSLATED FROM BENGALI, ARABIC'
+      'Contains messages machine-translated from Bengali and Arabic'
     )
   })
 
@@ -554,10 +554,8 @@ describe('renderExplorer — bilingual rendering (NES-1762)', () => {
   it('truncates the detail-header language list past two languages', () => {
     const doc = runViewer(mixedDataset)
     openFirstSession(doc)
-    const marker = must(firstByClass(getHost(doc, 'detail'), 'detail-langs'))
-    expect(marker.textContent).toContain('AFRIKAANS, ARABIC')
-    expect(marker.textContent).toContain('+2 MORE')
-    expect(marker.textContent).not.toContain('KOREAN')
+    const marker = must(firstByClass(getHost(doc, 'detail'), 'detail-summary'))
+    expect(marker.textContent).toContain('Afrikaans, Arabic, Yiddish and Korean')
 
     // The narrow card never wraps or clips: it states the count instead.
     const cardMarker = must(firstByClass(getHost(doc, 'list'), 'card-langs'))

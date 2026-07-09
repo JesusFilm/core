@@ -81,9 +81,9 @@ header.top h1 { margin:0 0 4px; font-family:var(--font-sans); font-size:var(--te
 .facets { border-right:1px solid var(--border-subtle); background:var(--bg-primary); }
 .list { border-right:1px solid var(--border-subtle); background:var(--bg-secondary); }
 .detail { background:var(--bg-primary); }
-.group-title { font-family:var(--font-sans); font-size:var(--text-2xs); text-transform:uppercase; letter-spacing:0.16em; font-weight:600; color:var(--fg-secondary); margin:12px 0 4px; padding:4px 8px; display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none; border-radius:var(--radius-sm); }
+.group-title { font-family:var(--font-sans); font-size:var(--text-2xs); text-transform:uppercase; letter-spacing:0.16em; font-weight:600; color:var(--fg-primary); margin:12px 0 4px; padding:4px 8px; display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none; border-radius:var(--radius-sm); }
 .group-title:hover { background:var(--bg-muted); color:var(--fg-primary); }
-.caret { display:inline-block; width:0.85em; text-align:center; font-size:var(--text-xs); color:var(--fg-secondary); }
+.caret { display:inline-block; width:0.85em; text-align:center; font-size:var(--text-xs); color:var(--fg-primary); }
 .group-title .gcount { margin-left:auto; font-weight:400; letter-spacing:0; color:var(--fg-primary); }
 .group-hint { font-family:var(--font-sans); font-size:var(--text-2xs); color:var(--fg-primary); margin:0 0 8px 16px; }
 .facet { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:4px 8px; border-radius:var(--radius-sm); cursor:pointer; user-select:none; font-size:var(--text-sm); color:var(--fg-primary); }
@@ -92,7 +92,7 @@ header.top h1 { margin:0 0 4px; font-family:var(--font-sans); font-size:var(--te
 .facet .l { flex:1 1 auto; min-width:0; display:flex; align-items:baseline; gap:8px; }
 .facet-tmark { width:8px; height:8px; border-radius:var(--radius-pill); background:var(--jfp-navy); display:inline-block; flex:0 0 auto; align-self:center; }
 .facet-gloss { color:var(--jfp-navy); }
-.facet-original { font-size:var(--text-xs); color:var(--fg-secondary); }
+.facet-original { font-size:var(--text-xs); color:var(--fg-primary); }
 .facet .c { font-size:var(--text-2xs); color:var(--fg-primary); flex:0 0 auto; }
 .facet.active .c { color:var(--fg-primary); }
 .facet-legend { display:flex; align-items:center; gap:8px; font-size:var(--text-2xs); line-height:1.5; color:var(--fg-secondary); margin:4px 0 8px; }
@@ -118,8 +118,8 @@ button.clear:focus-visible { outline:none; box-shadow:var(--focus-ring); border-
 .preview-original { margin-top:4px; padding-inline-start:8px; border-inline-start:3px solid var(--border-strong); font-family:var(--font-serif); font-size:var(--text-xs); line-height:1.5; color:var(--fg-primary); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .langmark { display:inline-block; font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; letter-spacing:0.04em; color:var(--jfp-warm-white); background:var(--jfp-navy); border-radius:var(--radius-pill); padding:4px 10px; white-space:nowrap; max-width:100%; overflow:hidden; text-overflow:ellipsis; }
 .card-langs { margin:8px 0 0; }
-.detail-langs { margin:0 0 8px; }
-.o-cue { font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; text-transform:uppercase; letter-spacing:0.16em; color:var(--fg-secondary); margin-right:6px; }
+.detail-summary { margin:0 0 8px; font-family:var(--font-sans); font-size:var(--text-2xs); letter-spacing:0.04em; color:var(--fg-primary); }
+.o-cue { font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; text-transform:uppercase; letter-spacing:0.16em; color:var(--fg-primary); margin-right:6px; }
 .chip { display:inline-block; font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; letter-spacing:0.04em; background:var(--jfp-warm-white); color:var(--fg-primary); border:1px solid var(--border-default); border-radius:var(--radius-pill); padding:4px 10px; margin:4px 8px 4px 0; }
 .pill { display:inline-block; font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; line-height:1.5; color:var(--fg-primary); letter-spacing:0.04em; background:var(--bg-muted); border:1px solid var(--border-default); border-radius:var(--radius-pill); padding:4px 10px; margin-right:8px; white-space:nowrap; vertical-align:middle; }
 .empty { color:var(--fg-secondary); font-style:italic; font-family:var(--font-serif); padding:24px 4px; }
@@ -230,16 +230,6 @@ const VIEWER_JS = `
   }
   // Names a session's detected languages for the card / detail marker, most
   // frequent first, truncating gracefully past three so a mixed session reads
-  // 'TRANSLATED FROM AFRIKAANS, ARABIC, YIDDISH +1 more'.
-  function languagesLabel(list) {
-    var names = [];
-    for (var i = 0; i < list.length; i++) names.push(langName(list[i]).toUpperCase());
-    if (names.length <= 2) return names.join(', ');
-    return names.slice(0, 2).join(', ') + ' +' + (names.length - 2) + ' MORE';
-  }
-  // The card column is narrow; the detail pane is not. A chip that must not wrap
-  // must also not be clipped, so the card summarises ('MACHINE-TRANSLATED . 3
-  // LANGUAGES') and the detail header names them.
   // Title-cased, comma-joined, with a final 'and' — prose, not a chip label.
   function languageNames(list) {
     var names = [];
@@ -247,17 +237,14 @@ const VIEWER_JS = `
     if (names.length === 1) return names[0];
     return names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
   }
-  function languagesMarker(className, list, compact) {
-    var wrap = el('div', className);
-    var text;
-    if (compact && list.length > 1) {
-      text = 'MACHINE-TRANSLATED FROM ' + langName(list[0]).toUpperCase() +
-        ' +' + (list.length - 1) + ' MORE';
-    } else {
-      text = 'MACHINE-TRANSLATED FROM ' + languagesLabel(list);
-    }
-    var mark = el('span', 'langmark', text);
-    mark.title = 'Machine translation \u2014 accuracy is not guaranteed. Detected: ' + languagesLabel(list);
+  // The navy badge that labels ONE machine-written line. The only navy that is
+  // not directly above machine text would be a lie, so there is no other caller.
+  function translatedBadge(code) {
+    var wrap = el('div', 'card-langs');
+    var name = langName(code);
+    var mark = el('span', 'langmark',
+      name ? ('MACHINE-TRANSLATED FROM ' + name.toUpperCase()) : 'MACHINE-TRANSLATED');
+    mark.title = 'Machine translation \u2014 accuracy is not guaranteed.';
     wrap.appendChild(mark);
     return wrap;
   }
@@ -467,7 +454,7 @@ const VIEWER_JS = `
     // the language people actually typed disagree for 12% of sessions; naming
     // both makes 'Journey: English' above 'MACHINE-TRANSLATED FROM YIDDISH'
     // read as a fact rather than a contradiction.
-    renderFacetGroup(host, 'Language Typed', typed, 'what people wrote');
+    renderFacetGroup(host, 'Language Typed', typed, 'what people wrote \u2014 assistant replies excluded');
     renderFacetGroup(host, 'Journey Language', languages, 'how the journey was configured');
     renderFacetGroup(host, 'Themes', themes);
     renderFacetGroup(host, 'Keywords', keywords);
@@ -506,7 +493,7 @@ const VIEWER_JS = `
           // machine actually wrote — above a human-typed English preview it
           // would brand that human's words as machine output.
           preview.appendChild(
-            languagesMarker('card-langs', [session.sourceLanguage], false)
+            translatedBadge(session.sourceLanguage)
           );
           // English preview is the default reading path (navy); the original
           // follows beneath, cued by the same uppercase ORIGINAL label the
@@ -560,7 +547,11 @@ const VIEWER_JS = `
     host.appendChild(el('h2', null, session.label));
     host.appendChild(buildMeta(session));
     if (session.translatedLanguages && session.translatedLanguages.length > 0) {
-      host.appendChild(languagesMarker('detail-langs', session.translatedLanguages, false));
+      // Navy means 'directly above machine-written text'. This is a statement
+      // about the conversation, not a label for the line under it, so it takes
+      // the same plain register the session card uses.
+      host.appendChild(el('div', 'detail-summary',
+        'Contains messages machine-translated from ' + languageNames(session.translatedLanguages)));
     }
     if (session.themes && session.themes.length > 0) {
       var chips = el('div');
