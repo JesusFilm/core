@@ -348,11 +348,7 @@ describe('TemplateViewHeader', () => {
     fireEvent.click(getAllByRole('button', { name: 'Use This Template' })[0])
 
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        '/templates/journeyId/customize',
-        undefined,
-        { shallow: true }
-      )
+      expect(push).toHaveBeenCalledWith('/templates/journeyId/customize')
     })
   })
 

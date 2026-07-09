@@ -1,4 +1,4 @@
 export {
   loadJourneyLocaleResources,
-  LOCALE_MAP
+  resolveLocaleFolder
 } from './loadJourneyLocaleResources'

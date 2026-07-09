@@ -4,13 +4,12 @@ globs: workers/**/*
 alwaysApply: false
 ---
 
-# Cloudflare workers
+# Cloudflare Workers Rules
 
-- @base.mdc
+- [base.mdc](mdc:.cursor/rules/base.mdc)
 
-The user asks questions about Cloudlare Node.js workers using Typescript
+## Stack
 
-Implement using:
-
-- Vite
-
+- Cloudflare Workers
+- TypeScript
+- Vite (build tool)

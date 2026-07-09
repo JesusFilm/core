@@ -1,45 +1,36 @@
 ---
-description: 
+description: Watch-Modern Rules
 globs: apps/watch-modern/**
 alwaysApply: false
 ---
 
 # Watch-Modern Rules
 
-- @base.mdc
+- [base.mdc](mdc:.cursor/rules/base.mdc)
 
 ## Stack
 
 - ReactJS
 - NextJS
-- JavaScript
 - TypeScript
-- HTML
-- CSS
 - Tailwind CSS
-- Shadcn
-- Gql.tada
+- Shadcn/ui
 - Apollo Client
+- Gql.tada
 
-### Code Implementation Guidelines
+## Code Guidelines
 
-Follow these rules when you write code:
+- Do not introduce MUI components; this app uses shadcn/ui and Tailwind CSS only.
+- Prefer `shadcn/ui` components over custom implementations or raw HTML elements.
+  If a shadcn/ui component doesn't exist, use semantic HTML + Tailwind CSS and document the reason.
+- Name event handler functions with a `handle` prefix (e.g. `handleClick`, `handleKeyDown`).
+- Implement accessibility on all interactive elements: `tabIndex`, `aria-label`, `onClick`, `onKeyDown`.
 
-- Use early returns whenever possible to make the code more readable.
-- Prefer shadcn/ui components over custom implementations or raw HTML elements. If a shadcn/ui component does not exist, use semantic HTML and Tailwind CSS, and document the reason.
-- Use descriptive variable and function/const names. Also, event functions should be named with a “handle” prefix, like “handleClick” for onClick and “handleKeyDown” for onKeyDown.
-- Implement accessibility features on elements. For example, a tag should have a tabindex=“0”, aria-label, on:click, and on:keydown, and similar attributes.
-- “All components and functions must be fully typed with TypeScript.”
+## Testing Guidelines
 
-
-### Testing Implementation Guidelines
-
-Follow these rules when you write tests in the frontend: 
-
-- use '@testing-library/react' npm package
-
+- Use `@testing-library/react` for all frontend tests.
 
 ## Documentation Guidelines
 
-- All components must have JSDoc comments, including examples and prop documentation.
-- Keep documentation up to date with code changes.
+- All components must have JSDoc comments including prop documentation and usage examples.
+- Keep documentation in sync with code changes.

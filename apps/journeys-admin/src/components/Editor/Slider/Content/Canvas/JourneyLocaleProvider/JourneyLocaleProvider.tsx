@@ -1,16 +1,9 @@
 import { createInstance } from 'i18next'
-import {
-  ReactElement,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from 'react'
+import { ReactElement, ReactNode, useEffect, useMemo, useState } from 'react'
 // eslint-disable-next-line no-restricted-imports
 import { I18nextProvider } from 'react-i18next'
 
-import { LOCALE_MAP, loadJourneyLocaleResources } from './utils'
+import { loadJourneyLocaleResources } from './utils'
 
 interface JourneyLocaleProviderProps {
   children: ReactNode
@@ -29,17 +22,20 @@ export function JourneyLocaleProvider({
     Record<string, Record<string, any>>
   >({})
 
-  const memoizedLoadResources = useCallback(
-    async (directoryLocale: string): Promise<void> => {
-      return loadJourneyLocaleResources(locale, setResources, directoryLocale)
-    },
-    [locale, setResources]
-  )
-
+  // Guard against a stale locale winning the race: if `locale` changes before
+  // a previous load resolves, ignore the older result so resources are never
+  // committed under the wrong locale (which would fall back to English).
   useEffect(() => {
-    const directoryLocale = LOCALE_MAP[locale] || locale
-    void memoizedLoadResources(directoryLocale)
-  }, [locale, memoizedLoadResources])
+    let cancelled = false
+
+    void loadJourneyLocaleResources(locale, (nextResources) => {
+      if (!cancelled) setResources(nextResources)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [locale])
 
   // Create a new i18next instance for this component tree
   const i18nInstance = useMemo(() => {

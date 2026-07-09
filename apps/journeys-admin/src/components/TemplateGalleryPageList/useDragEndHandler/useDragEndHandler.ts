@@ -6,7 +6,7 @@ import { MutableRefObject } from 'react'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
-import { TemplateGalleryPageStatus } from '../../../../__generated__/globalTypes'
+import { sendCollectionTemplateDragEvent } from '../../../libs/sendCollectionEvent'
 import { useTemplateGalleryPageAssignJourneyMutation } from '../../../libs/useTemplateGalleryPageAssignJourneyMutation'
 import { useTemplateGalleryPageReorderTemplateMutation } from '../../../libs/useTemplateGalleryPageReorderTemplateMutation'
 import { parseDropZoneId } from '../Droppables'
@@ -106,14 +106,6 @@ export function useDragEndHandler(
 
     // unsectioned -> unsectioned: no-op
     if (sourceCollection == null && targetCollectionId == null) return
-
-    // Published guard on either side blocks every kind of move.
-    if (sourceCollection?.status === TemplateGalleryPageStatus.published) return
-    if (targetCollectionId != null) {
-      const targetCollection = collectionsById.get(targetCollectionId)
-      if (targetCollection?.status === TemplateGalleryPageStatus.published)
-        return
-    }
 
     // `setDragInFlight` in the parent is a wrapper that flips both the
     // state and the ref together — call it once, never set the ref
@@ -302,18 +294,24 @@ export function useDragEndHandler(
               t("Couldn't move template — the server rejected the move."),
               { variant: 'error', preventDuplicate: true }
             )
-          } else if (targetWasCollapsed) {
-            // The template landed in a collapsed collection the user can't
-            // see — confirm the drop so the move doesn't feel like it
-            // vanished (NES-1717). Fall back to a generic message rather than
-            // interpolating an empty name if the title can't be resolved.
-            const targetName = targetCollection?.title ?? returnedPage?.title
-            enqueueSnackbar(
-              targetName != null && targetName !== ''
-                ? t('Added to {{collection}}', { collection: targetName })
-                : t('Added to collection'),
-              { variant: 'success', preventDuplicate: true }
-            )
+          } else {
+            sendCollectionTemplateDragEvent({
+              collectionId: targetCollectionId,
+              templateId
+            })
+            if (targetWasCollapsed) {
+              // The template landed in a collapsed collection the user can't
+              // see — confirm the drop so the move doesn't feel like it
+              // vanished (NES-1717). Fall back to a generic message rather than
+              // interpolating an empty name if the title can't be resolved.
+              const targetName = targetCollection?.title ?? returnedPage?.title
+              enqueueSnackbar(
+                targetName != null && targetName !== ''
+                  ? t('Added to {{collection}}', { collection: targetName })
+                  : t('Added to collection'),
+                { variant: 'success', preventDuplicate: true }
+              )
+            }
           }
         }
       }

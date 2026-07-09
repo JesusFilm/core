@@ -106,7 +106,7 @@ export function PasswordPage({
                 type="email"
                 autoComplete="username"
                 name="email"
-                label="Email"
+                label={t('Email')}
                 placeholder={t('Enter your email address here')}
                 variant="filled"
                 value={values.email}
@@ -122,7 +122,7 @@ export function PasswordPage({
               <TextField
                 autoComplete="current-password"
                 name="password"
-                label="Password"
+                label={t('Password')}
                 placeholder={t('Enter Password')}
                 variant="filled"
                 value={values.password}

@@ -10,6 +10,10 @@ import { type ReactElement, useEffect, useState } from 'react'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import LayoutTopIcon from '@core/shared/ui/icons/LayoutTop'
 
+import {
+  buildCustomizeHref,
+  sanitiseAdminBase
+} from '../../../libs/adminTemplateLinks'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { JourneyFields } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { AccountCheckDialog } from '../AccountCheckDialog'
@@ -35,9 +39,24 @@ export function UseThisTemplateButton({
   const [loading, setLoading] = useState(false)
 
   async function handleCustomizeNavigation(): Promise<void> {
-    void router.push(`/templates/${journeyDataId ?? ''}/customize`, undefined, {
-      shallow: true
-    })
+    const adminBase = process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL
+
+    if (
+      adminBase == null ||
+      typeof window === 'undefined' ||
+      sanitiseAdminBase(adminBase) === window.location.origin
+    ) {
+      // Full navigation — shallow routing is only valid for query changes on
+      // the same page, not for crossing into /templates/[journeyId]/customize.
+      void router.push(`/templates/${journeyDataId ?? ''}/customize`)
+      return
+    }
+
+    // Rendered outside journeys-admin (e.g. resources): hand off to the admin
+    // app with an absolute href — buildCustomizeHref re-prepends https:// for
+    // schemeless env values so the browser doesn't resolve the target as a
+    // path relative to the current host.
+    window.location.assign(buildCustomizeHref(adminBase, journeyDataId ?? ''))
   }
 
   const handleCheckSignIn = async (): Promise<void> => {
