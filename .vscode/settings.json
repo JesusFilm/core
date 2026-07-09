@@ -96,8 +96,26 @@
     "**/.git/subtree-cache/**": true,
     "**/node_modules/*/**": true,
     "**/coverage/*/**": true,
+    "**/dist/*/**": true,
+    "**/.nx/*/**": true,
+    "**/.next/*/**": true,
+    "**/.turbo/*/**": true,
     "**/.cache/*/**": true
   },
+  "terraform.languageServer.indexing.ignoreDirectoryNames": [
+    "__generated__",
+    ".cache",
+    ".next",
+    ".nx",
+    ".turbo",
+    "coverage",
+    "dist",
+    "node_modules",
+    "pages",
+    "public",
+    "src",
+    "storybook-static"
+  ],
   "tailwindCSS.experimental.classRegex": [
     ["className\\s*:\\s*['\"]([^'\"]*)['\"]"]
   ]

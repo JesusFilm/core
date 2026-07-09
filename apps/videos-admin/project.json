@@ -78,7 +78,7 @@
         "dev": true,
         "hostname": "0.0.0.0",
         "port": 4500,
-        "turbo": true
+        "webpack": true
       },
       "configurations": {
         "production": {
