@@ -4,6 +4,7 @@
 // the curated facet vocabulary, and (when available) per-session LLM themes.
 
 import { isNonContentPhrase, normalizeLanguageLabel } from './facets'
+import { scriptContradictsLanguage } from './translate'
 import { firstUserMessage } from './normalize'
 import type { FacetExtraction } from './facets'
 import type {
@@ -59,10 +60,17 @@ function withTranslation(
   const translation = translations?.get(message.text)
   const english = usefulEnglish(message.text, translation)
   if (english == null || translation == null) return message
+  // The translation may be sound while the language label is provably wrong —
+  // the model tagged an Arabic message `es`. Keep the English, drop the claim,
+  // and the viewer renders an unnamed MACHINE-TRANSLATED badge rather than a lie.
+  const attributable = !scriptContradictsLanguage(
+    message.text,
+    translation.sourceLanguage
+  )
   return {
     ...message,
     textEnglish: english,
-    sourceLanguage: translation.sourceLanguage
+    ...(attributable ? { sourceLanguage: translation.sourceLanguage } : {})
   }
 }
 
@@ -104,6 +112,37 @@ function toMessages(
     }
   }
   return messages
+}
+
+// A term -> the language it was written in, but only when EVERY user message
+// containing it was non-English and they agree on one language. Ambiguity (any
+// English use, or several languages) means we say nothing.
+function keywordSourceLanguages(
+  sessions: DatasetSession[]
+): Map<string, string> {
+  const seenIn = new Map<string, Set<string | null>>()
+  for (const session of sessions) {
+    for (const message of session.messages) {
+      if (message.role !== 'user') continue
+      const language =
+        message.textEnglish == null ? null : (message.sourceLanguage ?? null)
+      // `null` means English (or unattributable) — either way, not evidence of a
+      // foreign origin.
+      const tokens = message.text.toLowerCase().match(/\p{L}+/gu) ?? []
+      for (const token of new Set(tokens)) {
+        const languages = seenIn.get(token) ?? new Set<string | null>()
+        languages.add(language)
+        seenIn.set(token, languages)
+      }
+    }
+  }
+  const origins = new Map<string, string>()
+  for (const [token, languages] of seenIn) {
+    if (languages.has(null) || languages.size !== 1) continue
+    const [only] = languages
+    if (only != null) origins.set(token, only)
+  }
+  return origins
 }
 
 function conversationStartTime(conversation: SanitisedConversation): string {
@@ -151,36 +190,39 @@ export function buildDataset(
     // must state the languages actually found rather than imply one.
     const sessionLanguageCounts = new Map<string, number>()
     for (const message of messages) {
-      // A message carries `sourceLanguage` only alongside `textEnglish`, so both
-      // being set marks a genuine (non-English) translation.
-      if (message.textEnglish != null && message.sourceLanguage != null) {
-        translatedMessageCount += 1
-        sourceLanguageCounts.set(
-          message.sourceLanguage,
-          (sourceLanguageCounts.get(message.sourceLanguage) ?? 0) + 1
-        )
-        sessionLanguageCounts.set(
-          message.sourceLanguage,
-          (sessionLanguageCounts.get(message.sourceLanguage) ?? 0) + 1
-        )
-      }
+      if (message.textEnglish == null) continue
+      // Every translated message counts as translated. A few carry no language:
+      // the model's label was disproved by the script, so we translated but
+      // cannot say from what. Those contribute no language tally.
+      translatedMessageCount += 1
+      if (message.sourceLanguage == null) continue
+      sourceLanguageCounts.set(
+        message.sourceLanguage,
+        (sourceLanguageCounts.get(message.sourceLanguage) ?? 0) + 1
+      )
+      sessionLanguageCounts.set(
+        message.sourceLanguage,
+        (sessionLanguageCounts.get(message.sourceLanguage) ?? 0) + 1
+      )
     }
     const translatedLanguages = Array.from(sessionLanguageCounts.entries())
       .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
       .map(([code]) => code)
 
-    // What was actually TYPED, as display names. A message with no translation
-    // was English; every other message names its detected source. This is the
-    // filter an analyst wants — the journey's configured language is a different
-    // question, and on this corpus the two disagree for 12% of sessions.
+    // What the HUMAN actually typed. Only user turns count: the assistant replies
+    // in its own languages, and counting those made a 'Language Typed -> Hindi'
+    // facet whose single session had a Bengali-speaking user and a Hindi-speaking
+    // bot. A user message with no translation was English; one whose language we
+    // could not attribute contributes nothing rather than a guess.
     const typedLanguages = new Set<string>()
     if (translations != null) {
       for (const message of messages) {
-        typedLanguages.add(
-          message.sourceLanguage == null
-            ? 'English'
-            : normalizeLanguageLabel(message.sourceLanguage)
-        )
+        if (message.role !== 'user') continue
+        if (message.textEnglish == null) {
+          typedLanguages.add('English')
+        } else if (message.sourceLanguage != null) {
+          typedLanguages.add(normalizeLanguageLabel(message.sourceLanguage))
+        }
       }
     }
     for (const name of typedLanguages) {
@@ -256,13 +298,25 @@ export function buildDataset(
   // `איר` -> 'you'. Suppress those, so a translated keyword must clear the same
   // bar an English one already did. Anything suppressed is counted, not dropped
   // silently.
+  // Which languages a keyword was actually written in. A token is glossed only
+  // when the model thinks it is non-English, but some foreign words ARE English
+  // words: Afrikaans `die` ('the') came back as English and rendered as a plain
+  // keyword meaning 'death'. A term that never once appears in an English user
+  // message is not an English term, whatever the model said.
+  const keywordOrigins = keywordSourceLanguages(sessions)
+
   let suppressedTranslatedKeywordCount = 0
   const keywordFacets: Facet[] = []
   for (const facet of facets.keywordFacets) {
     const translation = translations?.get(facet.label)
     const english = usefulEnglish(facet.label, translation)
     if (english == null || translation == null) {
-      keywordFacets.push(facet)
+      const origin = keywordOrigins.get(facet.label)
+      // Untranslated, but provably never used in English: mark its origin so it
+      // cannot pass as an English content word.
+      keywordFacets.push(
+        origin == null ? facet : { ...facet, sourceLanguage: origin }
+      )
       continue
     }
     // A single foreign token can gloss to several English words ('to do',

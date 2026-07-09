@@ -406,18 +406,19 @@ describe('renderExplorer — bilingual rendering (NES-1762)', () => {
     expect(html).not.toMatch(/\.caret \{[^}]*--fg-brand/)
   })
 
-  it('tints pills from an on-system class ramp, never inline navy or red hues', () => {
-    const doc = runViewer(dataset)
+  // The tint ramp was removed: the on-system options sat in a luminance band too
+  // narrow to line sessions up, and stepping outside it emitted off-palette hues.
+  it('renders metadata pills with no colour of their own', () => {
+    const doc = runViewer(translatedDataset)
     const pills = byClass(getHost(doc, 'list'), 'pill')
     expect(pills.length).toBeGreaterThan(0)
     pills.forEach((pillNode) => {
-      // Tint comes from a class in the ramp, not an inline hashed HSL colour.
-      expect(pillNode.className).toMatch(/pill-[a-c]\b/)
+      expect(pillNode.className).toBe('pill')
       expect(pillNode.style.backgroundColor).toBeUndefined()
     })
-    // Navy is reserved for machine translation; it must not enter the pill ramp.
-    const html = renderExplorer(dataset)
-    expect(html).not.toMatch(/\.pill-[a-c] \{[^}]*--jfp-navy/)
+    // Navy means machine translation, and nothing else may borrow it.
+    const html = renderExplorer(translatedDataset)
+    expect(html).not.toMatch(/\.pill-[a-z] \{[^}]*navy/)
   })
 
   it('renders the English translation and the untruncated original for a translated message', () => {

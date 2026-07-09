@@ -1,4 +1,8 @@
-import { cannotBeEnglish, collectTranslatable } from './translate'
+import {
+  cannotBeEnglish,
+  collectTranslatable,
+  scriptContradictsLanguage
+} from './translate'
 import type { FacetExtraction } from './facets'
 import type { ConversationTurn, SanitisedConversation } from '../types'
 
@@ -116,5 +120,27 @@ describe('cannotBeEnglish', () => {
     expect(
       cannotBeEnglish('mostly english text with one word যীশু here now')
     ).toBe(false)
+  })
+})
+
+describe('scriptContradictsLanguage', () => {
+  it('disproves a label the script rules out', () => {
+    expect(scriptContradictsLanguage('السلام عليكم', 'es')).toBe(true)
+    expect(scriptContradictsLanguage('আমি যীশুকে বিশ্বাস করি', 'hi')).toBe(true)
+    expect(scriptContradictsLanguage('who is Jesus', 'bn')).toBe(true)
+  })
+
+  it('accepts a label the script corroborates', () => {
+    expect(scriptContradictsLanguage('السلام عليكم', 'ar')).toBe(false)
+    expect(scriptContradictsLanguage('¿quién es Dios?', 'es')).toBe(false)
+    expect(scriptContradictsLanguage('আমি যীশুকে', 'bn')).toBe(false)
+    // Yiddish is written in Hebrew script — not a contradiction.
+    expect(scriptContradictsLanguage('איך בין', 'yi')).toBe(false)
+  })
+
+  it('stays silent when it cannot prove anything', () => {
+    expect(scriptContradictsLanguage('hello', 'xx')).toBe(false) // unknown code
+    expect(scriptContradictsLanguage('123 !!!', 'es')).toBe(false) // no letters
+    expect(scriptContradictsLanguage('', 'ar')).toBe(false)
   })
 })

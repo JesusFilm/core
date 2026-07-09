@@ -22,9 +22,14 @@ function escapeHtml(value: string): string {
 // Jesus Film Project design tokens (NES-1762). Original message ink is
 // --fg-primary (#4D4D4D, the authoritative body ink); machine-translated
 // English is --jfp-navy (#424A66, a sanctioned informational accent that reads
-// as a secondary source). Brand red is reserved for emphasis/selection, never
-// for translated body text. No dark mode, no gradients, no web fonts.
+// as a secondary source). Brand red is reserved for the brand eyebrow and the
+// focus ring; selection uses the strong neutral, so red is never spent on chrome.
+// No dark mode, no gradients, no web fonts.
 const VIEWER_CSS = `
+/* The Jesus Film Project token layer, carried whole and on purpose. Some tokens
+   are declared but unused (e.g. --fg-muted, which fails contrast and must never
+   be applied to text): keeping the palette complete is what lets every rule below
+   reference a token instead of a raw hex value. */
 :root {
   --jfp-red:#EF3340; --jfp-red-medium:#CB333B; --jfp-red-dark:#643335; --jfp-soft-black:#4D4D4D;
   --jfp-white:#FFFFFF; --jfp-warm-white:#F0EDE3; --jfp-warm-gray-01:#B0AFA8;
@@ -61,7 +66,7 @@ header.top h1 { margin:0 0 4px; font-family:var(--font-sans); font-size:var(--te
 .meta { color:var(--fg-secondary); font-size:var(--text-xs); }
 .stats { margin-top:8px; display:flex; flex-wrap:wrap; gap:4px 24px; font-size:var(--text-xs); color:var(--fg-secondary); }
 .stats b { color:var(--fg-primary); font-weight:600; }
-.note { margin-top:12px; font-size:var(--text-xs); line-height:1.5; background:var(--bg-secondary); border:1px solid var(--border-default); border-left:3px solid var(--border-strong); padding:12px 16px; border-radius:var(--radius-md); color:var(--fg-secondary); }
+.note { margin-top:12px; font-size:var(--text-xs); line-height:1.5; background:var(--bg-secondary); border:1px solid var(--border-default); border-left:3px solid var(--border-strong); padding:12px 16px; border-radius:var(--radius-md); color:var(--fg-primary); }
 .note strong { color:var(--fg-primary); font-weight:600; }
 .note-translation { border-color:var(--jfp-navy); box-shadow:var(--shadow-xs); }
 .legend { display:flex; flex-wrap:wrap; gap:8px 16px; margin-top:8px; font-size:var(--text-2xs); }
@@ -76,16 +81,16 @@ header.top h1 { margin:0 0 4px; font-family:var(--font-sans); font-size:var(--te
 .facets { border-right:1px solid var(--border-subtle); background:var(--bg-primary); }
 .list { border-right:1px solid var(--border-subtle); background:var(--bg-secondary); }
 .detail { background:var(--bg-primary); }
-.group-title { font-family:var(--font-sans); font-size:var(--text-2xs); text-transform:uppercase; letter-spacing:0.16em; font-weight:600; color:var(--fg-secondary); margin:12px 0 4px; padding:4px 6px; display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none; border-radius:var(--radius-sm); }
+.group-title { font-family:var(--font-sans); font-size:var(--text-2xs); text-transform:uppercase; letter-spacing:0.16em; font-weight:600; color:var(--fg-secondary); margin:12px 0 4px; padding:4px 8px; display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none; border-radius:var(--radius-sm); }
 .group-title:hover { background:var(--bg-muted); color:var(--fg-primary); }
 .caret { display:inline-block; width:0.85em; text-align:center; font-size:var(--text-xs); color:var(--fg-secondary); }
 .group-title .gcount { margin-left:auto; font-weight:400; letter-spacing:0; color:var(--fg-primary); }
-.group-hint { font-family:var(--font-sans); font-size:var(--text-2xs); color:var(--fg-primary); margin:0 0 8px 20px; }
+.group-hint { font-family:var(--font-sans); font-size:var(--text-2xs); color:var(--fg-primary); margin:0 0 8px 16px; }
 .facet { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:4px 8px; border-radius:var(--radius-sm); cursor:pointer; user-select:none; font-size:var(--text-sm); color:var(--fg-primary); }
 .facet:hover { background:var(--bg-muted); }
 .facet.active { background:var(--bg-secondary); color:var(--fg-primary); font-weight:600; box-shadow:inset 2px 0 0 var(--border-strong); }
 .facet .l { flex:1 1 auto; min-width:0; display:flex; align-items:baseline; gap:8px; }
-.facet-tmark { width:6px; height:6px; border-radius:var(--radius-pill); background:var(--jfp-navy); display:inline-block; flex:0 0 auto; align-self:center; }
+.facet-tmark { width:8px; height:8px; border-radius:var(--radius-pill); background:var(--jfp-navy); display:inline-block; flex:0 0 auto; align-self:center; }
 .facet-gloss { color:var(--jfp-navy); }
 .facet-original { font-size:var(--text-xs); color:var(--fg-secondary); }
 .facet .c { font-size:var(--text-2xs); color:var(--fg-primary); flex:0 0 auto; }
@@ -110,16 +115,13 @@ button.clear:focus-visible { outline:none; box-shadow:var(--focus-ring); border-
    per-message badge: it must never read as a label for the line above it. */
 .card-summary { margin-top:8px; font-family:var(--font-sans); font-size:var(--text-2xs); letter-spacing:0.04em; color:var(--fg-primary); }
 .preview-en { font-family:var(--font-serif); font-size:var(--text-sm); line-height:1.5; color:var(--jfp-navy); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-.preview-original { margin-top:4px; padding-left:8px; border-left:2px solid var(--border-strong); font-family:var(--font-serif); font-size:var(--text-xs); line-height:1.5; color:var(--fg-primary); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.preview-original { margin-top:4px; padding-inline-start:8px; border-inline-start:3px solid var(--border-strong); font-family:var(--font-serif); font-size:var(--text-xs); line-height:1.5; color:var(--fg-primary); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .langmark { display:inline-block; font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; letter-spacing:0.04em; color:var(--jfp-warm-white); background:var(--jfp-navy); border-radius:var(--radius-pill); padding:4px 10px; white-space:nowrap; max-width:100%; overflow:hidden; text-overflow:ellipsis; }
 .card-langs { margin:8px 0 0; }
 .detail-langs { margin:0 0 8px; }
 .o-cue { font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; text-transform:uppercase; letter-spacing:0.16em; color:var(--fg-secondary); margin-right:6px; }
 .chip { display:inline-block; font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; letter-spacing:0.04em; background:var(--jfp-warm-white); color:var(--fg-primary); border:1px solid var(--border-default); border-radius:var(--radius-pill); padding:4px 10px; margin:4px 8px 4px 0; }
-.pill { display:inline-block; font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; line-height:1.5; color:var(--fg-primary); letter-spacing:0.04em; border:1px solid transparent; border-radius:var(--radius-pill); padding:4px 10px; margin-right:8px; white-space:nowrap; vertical-align:middle; }
-.pill-a { background:var(--jfp-warm-white); border-color:var(--jfp-warm-gray-02); }
-.pill-b { background:var(--jfp-gray-02); border-color:var(--jfp-gray-01); }
-.pill-c { background:var(--jfp-warm-gray-02); border-color:var(--jfp-warm-gray-01); }
+.pill { display:inline-block; font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; line-height:1.5; color:var(--fg-primary); letter-spacing:0.04em; background:var(--bg-muted); border:1px solid var(--border-default); border-radius:var(--radius-pill); padding:4px 10px; margin-right:8px; white-space:nowrap; vertical-align:middle; }
 .empty { color:var(--fg-secondary); font-style:italic; font-family:var(--font-serif); padding:24px 4px; }
 .detail h2 { font-family:var(--font-sans); font-size:var(--text-lg); font-weight:600; letter-spacing:-0.02em; margin:4px 0 8px; color:var(--fg-primary); }
 .detail .sub { color:var(--fg-secondary); font-size:var(--text-xs); margin-bottom:8px; display:flex; flex-wrap:wrap; align-items:center; gap:4px; }
@@ -133,7 +135,7 @@ button.clear:focus-visible { outline:none; box-shadow:var(--focus-ring); border-
 .t-en-text { font-family:var(--font-serif); font-size:var(--text-base); line-height:1.7; color:var(--jfp-navy); white-space:pre-wrap; word-wrap:break-word; overflow-wrap:anywhere; }
 .badge { display:inline-block; font-family:var(--font-sans); font-weight:600; font-size:var(--text-2xs); letter-spacing:0.04em; padding:4px 10px; border-radius:var(--radius-pill); }
 .b-navy { background:var(--jfp-navy); color:var(--jfp-warm-white); }
-.t-original { margin-top:12px; padding-left:12px; border-left:3px solid var(--border-strong); }
+.t-original { margin-top:12px; padding-inline-start:12px; border-inline-start:3px solid var(--border-strong); }
 .o-label { font-family:var(--font-sans); font-size:var(--text-2xs); text-transform:uppercase; letter-spacing:0.16em; font-weight:600; color:var(--fg-primary); margin-bottom:4px; }
 .o-text { font-family:var(--font-serif); font-size:var(--text-sm); line-height:1.7; color:var(--fg-primary); white-space:pre-wrap; word-wrap:break-word; overflow-wrap:anywhere; }
 `
@@ -203,23 +205,12 @@ const VIEWER_JS = `
     }
     return out;
   }
-  // Stable hash per value so every 'US' / 'English' pill picks the same tint and
-  // a reader can line up sessions with the same country or language at a glance.
-  function hashOf(seed) {
-    var hash = 0;
-    for (var i = 0; i < seed.length; i++) {
-      hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
-    }
-    return hash;
-  }
-  // Pills draw from a small on-system tint ramp (warm-white, greys, plus muted
-  // marigold and maroon tints) chosen by the value hash. Deliberately excludes
-  // navy (reserved for machine translation) and red (reserved for brand
-  // emphasis), so per-value tints never collide with a semantic colour.
-  var PILL_TINTS = ['pill-a', 'pill-b', 'pill-c'];
+  // Metadata pills carry no colour. A per-value tint ramp was tried: the only
+  // on-system options sit in a luminance band too narrow to line sessions up by
+  // colour, and stepping outside it emitted greens and pinks that fought the
+  // warm palette. The label already names the value.
   function pill(kind, value) {
-    var tint = PILL_TINTS[hashOf(kind + ':' + value) % PILL_TINTS.length];
-    return el('span', 'pill ' + tint, value);
+    return el('span', 'pill', value);
   }
   // Code -> display name so translation markers name the source language in
   // words ('TRANSLATED FROM BENGALI'), never a bare code that reads as a
@@ -288,6 +279,9 @@ const VIEWER_JS = `
     enWrap.appendChild(el('div', 't-en-text', english));
     container.appendChild(enWrap);
     var orig = el('div', 't-original');
+    // dir on the wrapper, not just the text: the ORIGINAL label and the rule
+    // then flip together for RTL instead of stranding the rule opposite the text.
+    orig.setAttribute('dir', 'auto');
     orig.appendChild(el('div', 'o-label', 'Original'));
     var otext = el('div', 'o-text', original);
     otext.setAttribute('dir', 'auto');
@@ -413,6 +407,18 @@ const VIEWER_JS = `
           term.setAttribute('dir', 'auto');
           label.appendChild(term);
           row.setAttribute('title', 'Machine-translated keyword \\u2014 original term: ' + facet.label);
+        } else if (facet.sourceLanguage) {
+          // Not translated, but never used in an English message. Afrikaans
+          // 'die' means 'the' and is an English word too, so it would otherwise
+          // pose as 'death'. Name the language it was actually written in.
+          label.appendChild(el('span', 'facet-tmark'));
+          var native = el('span', null, facet.label);
+          native.setAttribute('dir', 'auto');
+          label.appendChild(native);
+          label.appendChild(el('span', 'facet-original', langName(facet.sourceLanguage)));
+          row.setAttribute('title',
+            'This term only ever appears in ' + langName(facet.sourceLanguage) +
+            ' messages \u2014 it is not the English word.');
         } else {
           label.textContent = facet.label;
         }
@@ -443,7 +449,7 @@ const VIEWER_JS = `
     var keywords = [];
     var hasGloss = false;
     for (var i = 0; i < facets.length; i++) {
-      if (facets[i].labelEnglish) hasGloss = true;
+      if (facets[i].labelEnglish || facets[i].sourceLanguage) hasGloss = true;
       if (facets[i].kind === 'country') countries.push(facets[i]);
       else if (facets[i].kind === 'language') languages.push(facets[i]);
       else if (facets[i].kind === 'typedLanguage') typed.push(facets[i]);
@@ -453,7 +459,7 @@ const VIEWER_JS = `
     if (hasGloss) {
       var legend = el('div', 'facet-legend');
       legend.appendChild(el('span', 'facet-tmark'));
-      legend.appendChild(document.createTextNode('Navy terms are machine-translated \\u2014 the original term follows.'));
+      legend.appendChild(document.createTextNode('A navy dot marks a keyword from a non-English message \\u2014 its English gloss, or the language it was written in, follows.'));
       host.appendChild(legend);
     }
     renderFacetGroup(host, 'Country', countries);
@@ -494,9 +500,6 @@ const VIEWER_JS = `
         card.appendChild(el('div', 'label', session.label));
         card.appendChild(buildMeta(session));
         // Name every language actually detected in the session's messages, so a
-        // mixed session under an 'English' journey pill is not read as English.
-        if (session.translatedLanguages && session.translatedLanguages.length > 0) {
-        }
         var preview = el('div', 'preview');
         if (session.firstUserMessageEnglish) {
           // The navy badge is a per-message label. It may ONLY sit above text a

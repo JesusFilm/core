@@ -578,9 +578,11 @@ describe('buildDataset — typed-language facets (NES-1762)', () => {
       translations
     )
     const typed = dataset.facets.filter((f) => f.kind === 'typedLanguage')
+    // s2's English comes from the ASSISTANT's reply, not the user, so it must
+    // not count toward "what people wrote".
     expect(typed.map((f) => `${f.label}=${f.count}`).sort()).toEqual([
       'Afrikaans=1',
-      'English=2'
+      'English=1'
     ])
     // The Bengali-journey session contains no Bengali, so it must not appear
     // under a typed-Bengali facet — there isn't one.
@@ -588,8 +590,62 @@ describe('buildDataset — typed-language facets (NES-1762)', () => {
     expect(dataset.sessions[0].facetKeys).toContain('typedLanguage:English')
     expect(dataset.sessions[0].facetKeys).not.toContain('typedLanguage:Bengali')
     expect(dataset.sessions[1].facetKeys).toContain('typedLanguage:Afrikaans')
-    // A session that mixes languages carries a key for each.
-    expect(dataset.sessions[1].facetKeys).toContain('typedLanguage:English')
+    expect(dataset.sessions[1].facetKeys).not.toContain('typedLanguage:English')
+  })
+
+  // A model that tags an Arabic message `es` must not produce a facet or a
+  // badge claiming Spanish. The translation survives; the attribution does not.
+  it('drops a language attribution the script disproves', () => {
+    const arabic = 'السلام عليكم ورحمة الله'
+    const conversations = [
+      conv({
+        sessionId: 's1',
+        turns: [turn({ userMessage: arabic, assistantReply: '' })]
+      })
+    ]
+    const translations = new Map<string, Translation>([
+      [arabic, { sourceLanguage: 'es', english: 'Peace be upon you' }]
+    ])
+    const dataset = buildDataset(
+      conversations,
+      window,
+      emptyFacets(),
+      null,
+      0,
+      '2026-05-31T00:00:00.000Z',
+      translations
+    )
+    const [message] = dataset.sessions[0].messages
+    expect(message.textEnglish).toBe('Peace be upon you')
+    expect(message.sourceLanguage).toBeUndefined()
+    expect(dataset.facets.filter((f) => f.kind === 'typedLanguage')).toEqual([])
+    expect(dataset.summary.sourceLanguages).not.toContain('es')
+  })
+
+  it('keeps an attribution the script corroborates', () => {
+    const arabic = 'السلام عليكم ورحمة الله'
+    const dataset = buildDataset(
+      [
+        conv({
+          sessionId: 's1',
+          turns: [turn({ userMessage: arabic, assistantReply: '' })]
+        })
+      ],
+      window,
+      emptyFacets(),
+      null,
+      0,
+      '2026-05-31T00:00:00.000Z',
+      new Map<string, Translation>([
+        [arabic, { sourceLanguage: 'ar', english: 'Peace be upon you' }]
+      ])
+    )
+    expect(dataset.sessions[0].messages[0].sourceLanguage).toBe('ar')
+    expect(
+      dataset.facets
+        .filter((f) => f.kind === 'typedLanguage')
+        .map((f) => f.label)
+    ).toEqual(['Arabic'])
   })
 
   it('emits no typed-language facets when no translation pass ran', () => {
@@ -602,5 +658,89 @@ describe('buildDataset — typed-language facets (NES-1762)', () => {
       '2026-05-31T00:00:00.000Z'
     )
     expect(dataset.facets.filter((f) => f.kind === 'typedLanguage')).toEqual([])
+  })
+})
+
+describe('buildDataset — a foreign word that looks English (NES-1762)', () => {
+  // Afrikaans 'die' means 'the'. The model calls it English, because it IS an
+  // English word — so it renders as a plain keyword meaning 'death'. A term
+  // never once used in an English message is not an English term.
+  it('attributes a keyword used only in non-English messages', () => {
+    const extraction: FacetExtraction = {
+      ...emptyFacets(),
+      keywordFacets: [
+        { key: 'keyword:die', label: 'die', kind: 'keyword', count: 1 },
+        { key: 'keyword:bible', label: 'bible', kind: 'keyword', count: 1 }
+      ],
+      sessionKeywordKeys: new Map([['s1', ['keyword:die', 'keyword:bible']]])
+    }
+    const afrikaans = 'Kan ek die bybel glo'
+    const english = 'is the bible reliable'
+    const conversations = [
+      conv({
+        sessionId: 's1',
+        turns: [
+          turn({ userMessage: afrikaans, assistantReply: '' }),
+          turn({ userMessage: english, assistantReply: '' })
+        ]
+      })
+    ]
+    const translations = new Map<string, Translation>([
+      [afrikaans, { sourceLanguage: 'af', english: 'Can I believe the bible' }],
+      [english, { sourceLanguage: 'en' }]
+    ])
+    const dataset = buildDataset(
+      conversations,
+      window,
+      extraction,
+      null,
+      0,
+      '2026-05-31T00:00:00.000Z',
+      translations
+    )
+    const byLabel = Object.fromEntries(
+      dataset.facets
+        .filter((f) => f.kind === 'keyword')
+        .map((f) => [f.label, f])
+    )
+    // 'die' appears only in the Afrikaans message -> attributed.
+    expect(byLabel.die.sourceLanguage).toBe('af')
+    expect(byLabel.die.labelEnglish).toBeUndefined()
+    // 'bible' appears in an English message too -> no claim.
+    expect(byLabel.bible.sourceLanguage).toBeUndefined()
+  })
+
+  it('makes no claim when a term spans several non-English languages', () => {
+    const extraction: FacetExtraction = {
+      ...emptyFacets(),
+      keywordFacets: [
+        { key: 'keyword:amen', label: 'amen', kind: 'keyword', count: 2 }
+      ],
+      sessionKeywordKeys: new Map([['s1', ['keyword:amen']]])
+    }
+    const conversations = [
+      conv({
+        sessionId: 's1',
+        turns: [
+          turn({ userMessage: 'amen hermano', assistantReply: '' }),
+          turn({ userMessage: 'amen broer', assistantReply: '' })
+        ]
+      })
+    ]
+    const translations = new Map<string, Translation>([
+      ['amen hermano', { sourceLanguage: 'es', english: 'amen brother' }],
+      ['amen broer', { sourceLanguage: 'af', english: 'amen brother' }]
+    ])
+    const dataset = buildDataset(
+      conversations,
+      window,
+      extraction,
+      null,
+      0,
+      '2026-05-31T00:00:00.000Z',
+      translations
+    )
+    const amen = dataset.facets.find((f) => f.label === 'amen')
+    expect(amen?.sourceLanguage).toBeUndefined()
   })
 })
