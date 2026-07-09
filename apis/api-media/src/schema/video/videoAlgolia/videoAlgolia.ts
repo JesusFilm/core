@@ -347,10 +347,10 @@ builder.queryFields((t) => ({
         for (const variant of variants) {
           const expected = buildVideoVariantAlgoliaObject(variant, languages)
           try {
-            const actual = (await client.getObject({
+            const actual = await client.getObject({
               indexName: algoliaConfig.videoVariantsIndex,
               objectID: variant.id
-            }))
+            })
             const mismatches = getVariantIndexMismatches(expected, actual)
 
             if (mismatches.length > 0) {
