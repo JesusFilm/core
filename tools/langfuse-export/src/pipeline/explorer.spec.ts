@@ -555,7 +555,9 @@ describe('renderExplorer — bilingual rendering (NES-1762)', () => {
     const doc = runViewer(mixedDataset)
     openFirstSession(doc)
     const marker = must(firstByClass(getHost(doc, 'detail'), 'detail-summary'))
-    expect(marker.textContent).toContain('Afrikaans, Arabic, Yiddish and Korean')
+    expect(marker.textContent).toContain(
+      'Afrikaans, Arabic, Yiddish and Korean'
+    )
 
     // The narrow card never wraps or clips: it states the count instead.
     const cardMarker = must(firstByClass(getHost(doc, 'list'), 'card-langs'))
@@ -630,5 +632,30 @@ describe('renderExplorer — the navy badge never brands human text (NES-1762)',
       'MACHINE-TRANSLATED FROM BENGALI'
     )
     expect(firstByClass(list, 'card-summary')).toBeNull()
+  })
+})
+
+describe('renderExplorer — RTL originals (NES-1762)', () => {
+  // dir="auto" resolves from the first strong character. The Latin word
+  // "Original" is that character, so the wrapper must not rely on auto alone.
+  it('pins the original wrapper rtl for an RTL language and excludes the label', () => {
+    const doc = runViewer(translatedDataset)
+    openFirstSession(doc)
+    const detail = getHost(doc, 'detail')
+    const originals = byClass(detail, 't-original')
+    // The Arabic message is the third; the Bengali (LTR) is the first.
+    const arabic = originals.find((node) =>
+      node.textContent.includes('السلام عليكم')
+    )
+    expect(arabic).toBeDefined()
+    expect(must(arabic).getAttribute('dir')).toBe('rtl')
+    const bengali = originals.find((node) =>
+      node.textContent.includes('নমস্কার')
+    )
+    expect(must(bengali).getAttribute('dir')).toBe('auto')
+
+    // The label carries its own dir, so it never decides the wrapper's.
+    const label = must(firstByClass(must(arabic), 'o-label'))
+    expect(label.getAttribute('dir')).toBe('ltr')
   })
 })

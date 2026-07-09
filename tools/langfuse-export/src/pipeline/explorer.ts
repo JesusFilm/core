@@ -94,7 +94,6 @@ header.top h1 { margin:0 0 4px; font-family:var(--font-sans); font-size:var(--te
 .facet-gloss { color:var(--jfp-navy); }
 .facet-original { font-size:var(--text-xs); color:var(--fg-primary); }
 .facet .c { font-size:var(--text-2xs); color:var(--fg-primary); flex:0 0 auto; }
-.facet.active .c { color:var(--fg-primary); }
 .facet-legend { display:flex; align-items:center; gap:8px; font-size:var(--text-2xs); line-height:1.5; color:var(--fg-secondary); margin:4px 0 8px; }
 .toolbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px; }
 .count-line { font-size:var(--text-xs); color:var(--fg-secondary); }
@@ -119,7 +118,7 @@ button.clear:focus-visible { outline:none; box-shadow:var(--focus-ring); border-
 .langmark { display:inline-block; font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; letter-spacing:0.04em; color:var(--jfp-warm-white); background:var(--jfp-navy); border-radius:var(--radius-pill); padding:4px 10px; white-space:nowrap; max-width:100%; overflow:hidden; text-overflow:ellipsis; }
 .card-langs { margin:8px 0 0; }
 .detail-summary { margin:0 0 8px; font-family:var(--font-sans); font-size:var(--text-2xs); letter-spacing:0.04em; color:var(--fg-primary); }
-.o-cue { font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; text-transform:uppercase; letter-spacing:0.16em; color:var(--fg-primary); margin-right:6px; }
+.o-cue { font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; text-transform:uppercase; letter-spacing:0.16em; color:var(--fg-primary); margin-inline-end:8px; }
 .chip { display:inline-block; font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; letter-spacing:0.04em; background:var(--jfp-warm-white); color:var(--fg-primary); border:1px solid var(--border-default); border-radius:var(--radius-pill); padding:4px 10px; margin:4px 8px 4px 0; }
 .pill { display:inline-block; font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; line-height:1.5; color:var(--fg-primary); letter-spacing:0.04em; background:var(--bg-muted); border:1px solid var(--border-default); border-radius:var(--radius-pill); padding:4px 10px; margin-right:8px; white-space:nowrap; vertical-align:middle; }
 .empty { color:var(--fg-secondary); font-style:italic; font-family:var(--font-serif); padding:24px 4px; }
@@ -216,6 +215,8 @@ const VIEWER_JS = `
   // words ('TRANSLATED FROM BENGALI'), never a bare code that reads as a
   // journey-language pill or as "translated INTO". Accepts an already-normalised
   // name too (a non-code key falls through to itself).
+  // Scripts written right-to-left. Yiddish is here: it uses Hebrew script.
+  var RTL_CODES = { ar: 1, fa: 1, he: 1, ur: 1, ps: 1, sd: 1, yi: 1 };
   var LANG_NAMES = {
     bn: 'Bengali', es: 'Spanish', ar: 'Arabic', fr: 'French', af: 'Afrikaans',
     ko: 'Korean', hi: 'Hindi', yi: 'Yiddish', he: 'Hebrew', fa: 'Farsi',
@@ -266,10 +267,15 @@ const VIEWER_JS = `
     enWrap.appendChild(el('div', 't-en-text', english));
     container.appendChild(enWrap);
     var orig = el('div', 't-original');
-    // dir on the wrapper, not just the text: the ORIGINAL label and the rule
-    // then flip together for RTL instead of stranding the rule opposite the text.
-    orig.setAttribute('dir', 'auto');
-    orig.appendChild(el('div', 'o-label', 'Original'));
+    // dir on the WRAPPER so the label and the rule flip with the text. 'auto'
+    // alone is not enough: it resolves from the first strong character, which
+    // would be the Latin word 'Original'. The spec ignores descendants that
+    // carry their own dir, so the label is pinned ltr and excluded from the
+    // computation; a known RTL language is stated outright.
+    orig.setAttribute('dir', RTL_CODES[code] ? 'rtl' : 'auto');
+    var olabel = el('div', 'o-label', 'Original');
+    olabel.setAttribute('dir', 'ltr');
+    orig.appendChild(olabel);
     var otext = el('div', 'o-text', original);
     otext.setAttribute('dir', 'auto');
     orig.appendChild(otext);
@@ -502,8 +508,11 @@ const VIEWER_JS = `
           en.setAttribute('dir', 'ltr');
           preview.appendChild(en);
           var orig = el('div', 'preview-original');
-          orig.setAttribute('dir', 'auto');
-          orig.appendChild(el('span', 'o-cue', 'Original'));
+          orig.setAttribute('dir', RTL_CODES[session.sourceLanguage] ? 'rtl' : 'auto');
+          var ocue = el('span', 'o-cue', 'Original');
+          ocue.setAttribute('dir', 'ltr');
+          orig.appendChild(ocue);
+          orig.appendChild(document.createTextNode('\u00a0'));
           orig.appendChild(document.createTextNode(session.firstUserMessage));
           preview.appendChild(orig);
         } else {
