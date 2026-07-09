@@ -1,6 +1,8 @@
+import BugReportRoundedIcon from '@mui/icons-material/BugReportRounded'
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded'
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
+import SyncRoundedIcon from '@mui/icons-material/SyncRounded'
 import VideoLibraryRoundedIcon from '@mui/icons-material/VideoLibraryRounded'
 import Breadcrumbs, { breadcrumbsClasses } from '@mui/material/Breadcrumbs'
 import MuiLink from '@mui/material/Link'
@@ -38,6 +40,14 @@ export function NavbarBreadcrumbs(): ReactElement {
     settings: {
       icon: <SettingsRoundedIcon fontSize="inherit" />,
       value: 'Settings'
+    },
+    'status-pipeline': {
+      icon: <SyncRoundedIcon fontSize="inherit" />,
+      value: 'Status Pipeline'
+    },
+    'algolia-debugging': {
+      icon: <BugReportRoundedIcon fontSize="inherit" />,
+      value: 'Algolia Debugging'
     }
   }
 
