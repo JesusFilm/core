@@ -317,7 +317,9 @@ describe('buildDataset with translations', () => {
 
     const en = dataset.sessions[1]
     expect(en.firstUserMessageEnglish).toBeUndefined()
-    expect(en.sourceLanguage).toBe('en') // detected English
+    // `sourceLanguage` names the language of a TRANSLATED preview. An English
+    // preview has no translation, so there is nothing to name.
+    expect(en.sourceLanguage).toBeUndefined()
   })
 
   it('glosses keyword facets while keeping the original label + filter key', () => {
@@ -742,5 +744,59 @@ describe('buildDataset — a foreign word that looks English (NES-1762)', () => 
     )
     const amen = dataset.facets.find((f) => f.label === 'amen')
     expect(amen?.sourceLanguage).toBeUndefined()
+  })
+})
+
+describe('buildDataset — the card cannot out-claim the conversation (NES-1762)', () => {
+  // Romanized Bengali is Latin script. The message pipeline refuses to name it;
+  // the session card must refuse too, or one message is "Bengali" on the card
+  // and unnamed one click later.
+  it('drops a card language claim the script disproves', () => {
+    const romanized = 'Biwasa holo akta asa'
+    const dataset = buildDataset(
+      [
+        conv({
+          sessionId: 's1',
+          turns: [turn({ userMessage: romanized, assistantReply: '' })]
+        })
+      ],
+      window,
+      emptyFacets(),
+      null,
+      0,
+      '2026-05-31T00:00:00.000Z',
+      new Map<string, Translation>([
+        [romanized, { sourceLanguage: 'bn', english: 'Faith is a hope' }]
+      ])
+    )
+    const [session] = dataset.sessions
+    // The translation still shows; only the attribution is withheld.
+    expect(session.firstUserMessageEnglish).toBe('Faith is a hope')
+    expect(session.sourceLanguage).toBeUndefined()
+    // And it agrees with the message the card is previewing.
+    expect(session.messages[0].textEnglish).toBe('Faith is a hope')
+    expect(session.messages[0].sourceLanguage).toBeUndefined()
+  })
+
+  it('keeps a card language claim the script corroborates', () => {
+    const bengali = 'যীশু কী সত্য?'
+    const dataset = buildDataset(
+      [
+        conv({
+          sessionId: 's1',
+          turns: [turn({ userMessage: bengali, assistantReply: '' })]
+        })
+      ],
+      window,
+      emptyFacets(),
+      null,
+      0,
+      '2026-05-31T00:00:00.000Z',
+      new Map<string, Translation>([
+        [bengali, { sourceLanguage: 'bn', english: 'Is Jesus real?' }]
+      ])
+    )
+    expect(dataset.sessions[0].sourceLanguage).toBe('bn')
+    expect(dataset.sessions[0].messages[0].sourceLanguage).toBe('bn')
   })
 })

@@ -188,9 +188,10 @@ export interface DatasetSession {
   messageCount: number
   firstUserMessage: string
   firstUserMessageEnglish?: string
-  // Detected language of `firstUserMessage`; also drives the session-card
-  // "translated" affordance. Distinct from `language`, which is the journey's
-  // configured language and may not match what the user actually typed.
+  // The language of the machine-translated preview, and only that. Absent when
+  // the preview is English, and absent when the script disproved the model's
+  // label — the card must never name a language the conversation view refuses to.
+  // Distinct from `language`, the journey's configured language.
   sourceLanguage?: string
   startTime: string
   themes: string[]

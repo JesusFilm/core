@@ -246,10 +246,18 @@ export function buildDataset(
       facets.sessionKeywordKeys.get(conversation.sessionId) ?? []
 
     const firstMessage = firstUserMessage(conversation)
-    // Detected language + English gloss of the first user message (drives the
-    // session-card "translated" affordance). sourceLanguage is set whenever the
-    // model detected a language; firstUserMessageEnglish only when it translated.
     const firstTranslation = translations?.get(firstMessage)
+    const firstEnglish = usefulEnglish(firstMessage, firstTranslation)
+    // The card badge names this language. It must clear the SAME bar the message
+    // pipeline applies, or a card says "MACHINE-TRANSLATED FROM BENGALI" over
+    // romanized Latin text while the detail view of that very message — which is
+    // guarded — refuses to name it. Two real sessions did exactly that.
+    const firstLanguage =
+      firstTranslation != null &&
+      firstEnglish != null &&
+      !scriptContradictsLanguage(firstMessage, firstTranslation.sourceLanguage)
+        ? firstTranslation.sourceLanguage
+        : undefined
 
     return {
       id: conversation.sessionId,
@@ -265,9 +273,8 @@ export function buildDataset(
       journeyId: conversation.journeyId,
       messageCount: messages.length,
       firstUserMessage: firstMessage,
-      firstUserMessageEnglish:
-        usefulEnglish(firstMessage, firstTranslation) ?? undefined,
-      sourceLanguage: firstTranslation?.sourceLanguage,
+      firstUserMessageEnglish: firstEnglish ?? undefined,
+      sourceLanguage: firstLanguage,
       startTime: conversationStartTime(conversation),
       themes,
       facetKeys: [

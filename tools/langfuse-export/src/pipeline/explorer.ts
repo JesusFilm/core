@@ -328,6 +328,11 @@ const VIEWER_JS = `
     stats.appendChild(stat(summary.nullSessionCount || 0, 'null-session'));
     stats.appendChild(stat(summary.excludedLoadTestTurns || 0, 'load-test turns excluded'));
     stats.appendChild(stat(summary.suppressedKeywordCount || 0, 'over-common keywords suppressed'));
+    // Computed and, until now, shown nowhere. A dropped facet the reader cannot
+    // see was dropped is a silent cap.
+    if (summary.suppressedTranslatedKeywordCount) {
+      stats.appendChild(stat(summary.suppressedTranslatedKeywordCount, 'non-English function words suppressed'));
+    }
     host.appendChild(stats);
     if (!summary.themesAvailable) {
       host.appendChild(el('div', 'note', 'Per-session themes were not generated for this dataset \\u2014 filter by keyword facets instead.'));
