@@ -7,12 +7,12 @@ import {
   getAlgoliaConfig
 } from '../../../lib/algolia/algoliaClient'
 import { updateVideoInAlgolia } from '../../../lib/algolia/algoliaVideoUpdate'
-import { getLanguages } from '../../../lib/algolia/languages'
 import {
   buildVideoVariantAlgoliaObject,
   updateVideoVariantInAlgolia,
   videoVariantAlgoliaInclude
 } from '../../../lib/algolia/algoliaVideoVariantUpdate'
+import { getLanguages } from '../../../lib/algolia/languages'
 import { logger } from '../../../logger'
 import { builder } from '../../builder'
 
@@ -350,7 +350,7 @@ builder.queryFields((t) => ({
             const actual = (await client.getObject({
               indexName: algoliaConfig.videoVariantsIndex,
               objectID: variant.id
-            })) as Record<string, unknown>
+            }))
             const mismatches = getVariantIndexMismatches(expected, actual)
 
             if (mismatches.length > 0) {

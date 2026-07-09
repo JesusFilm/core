@@ -834,6 +834,7 @@ describe('videoAlgolia', () => {
           error: 'VideoVariant row exists; refusing to delete Algolia object'
         })
       })
+
       it('reports extra Algolia object delete failures per row', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
