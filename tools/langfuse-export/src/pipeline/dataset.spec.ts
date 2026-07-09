@@ -4,7 +4,8 @@ import type {
   ConversationTurn,
   DateWindow,
   SanitisedConversation,
-  ThemeSynthesis
+  ThemeSynthesis,
+  Translation
 } from '../types'
 
 const window: DateWindow = {
@@ -212,5 +213,327 @@ describe('buildDataset', () => {
     expect(noThemes.summary.themesAvailable).toBe(false)
     expect(noThemes.facets.some((f) => f.kind === 'theme')).toBe(false)
     expect(noThemes.sessions[1].themes).toEqual([])
+  })
+
+  it('marks translation unavailable and zeroed when no translations are supplied', () => {
+    expect(dataset.summary.translationAvailable).toBe(false)
+    expect(dataset.summary.translatedMessageCount).toBe(0)
+    expect(dataset.summary.sourceLanguages).toEqual([])
+    expect(dataset.sessions[1].messages[0].textEnglish).toBeUndefined()
+    expect(dataset.sessions[1].sourceLanguage).toBeUndefined()
+  })
+})
+
+describe('buildDataset with translations', () => {
+  // spanish (05-11) sorts before english (05-12): sessions[0]=es1, [1]=en1.
+  const spanish = conv({
+    sessionId: 'es1',
+    language: 'es',
+    turns: [
+      turn({
+        startTime: '2026-05-11T09:00:00.000Z',
+        userMessage: '¿Resucitó Jesús?',
+        assistantReply: 'Hay evidencia fuerte.'
+      })
+    ]
+  })
+  const english = conv({
+    sessionId: 'en1',
+    language: 'en',
+    turns: [
+      turn({
+        startTime: '2026-05-12T09:00:00.000Z',
+        userMessage: 'Is God real?',
+        assistantReply: 'Consider the evidence.'
+      })
+    ]
+  })
+
+  const translations = new Map<string, Translation>([
+    ['¿Resucitó Jesús?', { sourceLanguage: 'es', english: 'Did Jesus rise?' }],
+    [
+      'Hay evidencia fuerte.',
+      { sourceLanguage: 'es', english: 'There is strong evidence.' }
+    ],
+    ['Is God real?', { sourceLanguage: 'en' }],
+    ['Consider the evidence.', { sourceLanguage: 'en' }],
+    ['resurrección', { sourceLanguage: 'es', english: 'resurrection' }]
+  ])
+
+  const glossFacets: FacetExtraction = {
+    keywordFacets: [
+      {
+        key: 'keyword:resurrección',
+        label: 'resurrección',
+        kind: 'keyword',
+        count: 1
+      }
+    ],
+    sessionKeywordKeys: new Map([
+      ['es1', ['keyword:resurrección']],
+      ['en1', []]
+    ]),
+    suppressedKeywordCount: 0,
+    countryFacets: [],
+    sessionCountryKeys: new Map([
+      ['es1', []],
+      ['en1', []]
+    ]),
+    languageFacets: [],
+    sessionLanguageKeys: new Map([
+      ['es1', []],
+      ['en1', []]
+    ])
+  }
+
+  const dataset = buildDataset(
+    [spanish, english],
+    window,
+    glossFacets,
+    null,
+    0,
+    '2026-06-04T00:00:00.000Z',
+    translations
+  )
+
+  it('adds textEnglish + sourceLanguage to translated messages without mutating text', () => {
+    const es = dataset.sessions[0]
+    expect(es.messages[0].text).toBe('¿Resucitó Jesús?') // original untouched
+    expect(es.messages[0].textEnglish).toBe('Did Jesus rise?')
+    expect(es.messages[0].sourceLanguage).toBe('es')
+  })
+
+  it('leaves English messages as pass-through (no textEnglish)', () => {
+    const en = dataset.sessions[1]
+    expect(en.messages[0].text).toBe('Is God real?')
+    expect(en.messages[0].textEnglish).toBeUndefined()
+    expect(en.messages[0].sourceLanguage).toBeUndefined()
+  })
+
+  it('populates firstUserMessageEnglish + session sourceLanguage', () => {
+    const es = dataset.sessions[0]
+    expect(es.firstUserMessageEnglish).toBe('Did Jesus rise?')
+    expect(es.sourceLanguage).toBe('es')
+
+    const en = dataset.sessions[1]
+    expect(en.firstUserMessageEnglish).toBeUndefined()
+    expect(en.sourceLanguage).toBe('en') // detected English
+  })
+
+  it('glosses keyword facets while keeping the original label + filter key', () => {
+    const keyword = dataset.facets.filter((f) => f.kind === 'keyword')[0]
+    expect(keyword.label).toBe('resurrección')
+    expect(keyword.key).toBe('keyword:resurrección')
+    expect(keyword.labelEnglish).toBe('resurrection')
+    expect(keyword.sourceLanguage).toBe('es')
+  })
+
+  it('summarises translation counts and distinct non-en languages', () => {
+    expect(dataset.summary.translationAvailable).toBe(true)
+    expect(dataset.summary.translatedMessageCount).toBe(2) // es user + es assistant
+    expect(dataset.summary.sourceLanguages).toEqual(['es'])
+  })
+})
+
+describe('buildDataset — translation guards (NES-1762)', () => {
+  // A model that mislabels 'sup' as Spanish and echoes it back must not produce
+  // a TRANSLATED chip above identical text.
+  it('ignores a translation identical to its source', () => {
+    const conversations = [
+      conv({
+        sessionId: 's1',
+        turns: [turn({ userMessage: 'sup', assistantReply: 'hi' })]
+      })
+    ]
+    const translations = new Map<string, Translation>([
+      ['sup', { sourceLanguage: 'es', english: 'sup' }]
+    ])
+    const dataset = buildDataset(
+      conversations,
+      window,
+      emptyFacets(),
+      null,
+      0,
+      '2026-05-31T00:00:00.000Z',
+      translations
+    )
+    const [message] = dataset.sessions[0].messages
+    expect(message.text).toBe('sup')
+    expect(message.textEnglish).toBeUndefined()
+    expect(message.sourceLanguage).toBeUndefined()
+    expect(dataset.summary.translatedMessageCount).toBe(0)
+    expect(dataset.sessions[0].firstUserMessageEnglish).toBeUndefined()
+  })
+
+  it('ignores an identical translation that differs only by surrounding whitespace', () => {
+    const conversations = [
+      conv({
+        sessionId: 's1',
+        turns: [turn({ userMessage: 'Hum', assistantReply: '' })]
+      })
+    ]
+    const translations = new Map<string, Translation>([
+      ['Hum', { sourceLanguage: 'hi', english: '  Hum  ' }]
+    ])
+    const dataset = buildDataset(
+      conversations,
+      window,
+      emptyFacets(),
+      null,
+      0,
+      '2026-05-31T00:00:00.000Z',
+      translations
+    )
+    expect(dataset.sessions[0].messages[0].textEnglish).toBeUndefined()
+  })
+
+  it('suppresses a keyword facet whose English gloss is a stopword, and drops its session keys', () => {
+    const extraction: FacetExtraction = {
+      ...emptyFacets(),
+      keywordFacets: [
+        { key: 'keyword:que', label: 'que', kind: 'keyword', count: 2 },
+        { key: 'keyword:dios', label: 'dios', kind: 'keyword', count: 3 }
+      ],
+      sessionKeywordKeys: new Map([['s1', ['keyword:que', 'keyword:dios']]])
+    }
+    const translations = new Map<string, Translation>([
+      ['que', { sourceLanguage: 'es', english: 'that' }],
+      ['dios', { sourceLanguage: 'es', english: 'God' }]
+    ])
+    const dataset = buildDataset(
+      [conv({ sessionId: 's1' })],
+      window,
+      extraction,
+      null,
+      0,
+      '2026-05-31T00:00:00.000Z',
+      translations
+    )
+    const keywords = dataset.facets.filter((f) => f.kind === 'keyword')
+    expect(keywords.map((f) => f.key)).toEqual(['keyword:dios'])
+    // Gloss is lowercased so it sits beside untranslated terms.
+    expect(keywords[0].labelEnglish).toBe('god')
+    expect(keywords[0].label).toBe('dios')
+    expect(dataset.summary.suppressedTranslatedKeywordCount).toBe(1)
+    expect(dataset.sessions[0].facetKeys).not.toContain('keyword:que')
+    expect(dataset.sessions[0].facetKeys).toContain('keyword:dios')
+  })
+
+  it('leaves untranslated keyword facets and their keys intact', () => {
+    const extraction: FacetExtraction = {
+      ...emptyFacets(),
+      keywordFacets: [
+        {
+          key: 'keyword:resurrection',
+          label: 'resurrection',
+          kind: 'keyword',
+          count: 2
+        }
+      ],
+      sessionKeywordKeys: new Map([['s1', ['keyword:resurrection']]])
+    }
+    const dataset = buildDataset(
+      [conv({ sessionId: 's1' })],
+      window,
+      extraction,
+      null,
+      0,
+      '2026-05-31T00:00:00.000Z',
+      new Map()
+    )
+    expect(dataset.facets.filter((f) => f.kind === 'keyword')).toHaveLength(1)
+    expect(dataset.sessions[0].facetKeys).toContain('keyword:resurrection')
+    expect(dataset.summary.suppressedTranslatedKeywordCount).toBe(0)
+  })
+})
+
+function emptyFacets(): FacetExtraction {
+  return {
+    keywordFacets: [],
+    sessionKeywordKeys: new Map(),
+    suppressedKeywordCount: 0,
+    countryFacets: [],
+    sessionCountryKeys: new Map(),
+    languageFacets: [],
+    sessionLanguageKeys: new Map()
+  }
+}
+
+describe('buildDataset — session language reporting (NES-1762)', () => {
+  // A session's journey language routinely disagrees with what was typed, and a
+  // session is often not monolingual. The card must be able to say so.
+  it('reports every non-English language actually detected in a session', () => {
+    const conversations = [
+      conv({
+        sessionId: 's1',
+        language: 'English',
+        turns: [
+          turn({ userMessage: 'hi', assistantReply: 'goeie dag' }),
+          turn({ userMessage: 'مرحبا', assistantReply: 'איך בין' })
+        ]
+      })
+    ]
+    const translations = new Map<string, Translation>([
+      ['hi', { sourceLanguage: 'en' }],
+      ['goeie dag', { sourceLanguage: 'af', english: 'good day' }],
+      ['مرحبا', { sourceLanguage: 'ar', english: 'hello' }],
+      ['איך בין', { sourceLanguage: 'yi', english: 'I am' }]
+    ])
+    const dataset = buildDataset(
+      conversations,
+      window,
+      emptyFacets(),
+      null,
+      0,
+      '2026-05-31T00:00:00.000Z',
+      translations
+    )
+    const [session] = dataset.sessions
+    expect(session.translatedLanguages.sort()).toEqual(['af', 'ar', 'yi'])
+    // The journey language says English; the typed languages say otherwise.
+    expect(session.language).toBe('English')
+    expect(session.languageLabel).toBe('English')
+  })
+
+  it('normalises the journey language label but preserves the raw value', () => {
+    const dataset = buildDataset(
+      [conv({ sessionId: 's1', language: 'Spanish, Latin American' })],
+      window,
+      emptyFacets(),
+      null,
+      0,
+      '2026-05-31T00:00:00.000Z'
+    )
+    expect(dataset.sessions[0].language).toBe('Spanish, Latin American')
+    expect(dataset.sessions[0].languageLabel).toBe('Spanish')
+    expect(dataset.sessions[0].translatedLanguages).toEqual([])
+  })
+
+  it('suppresses a keyword facet whose gloss is only function words', () => {
+    const extraction: FacetExtraction = {
+      ...emptyFacets(),
+      keywordFacets: [
+        { key: 'keyword:hacer', label: 'hacer', kind: 'keyword', count: 2 },
+        { key: 'keyword:kitab', label: 'kitab', kind: 'keyword', count: 2 }
+      ],
+      sessionKeywordKeys: new Map([['s1', ['keyword:hacer', 'keyword:kitab']]])
+    }
+    const translations = new Map<string, Translation>([
+      ['hacer', { sourceLanguage: 'es', english: 'to do' }],
+      ['kitab', { sourceLanguage: 'ar', english: 'the book' }]
+    ])
+    const dataset = buildDataset(
+      [conv({ sessionId: 's1' })],
+      window,
+      extraction,
+      null,
+      0,
+      '2026-05-31T00:00:00.000Z',
+      translations
+    )
+    const keywords = dataset.facets.filter((f) => f.kind === 'keyword')
+    // 'to do' is all function words; 'the book' keeps a content word.
+    expect(keywords.map((f) => f.labelEnglish)).toEqual(['the book'])
+    expect(dataset.summary.suppressedTranslatedKeywordCount).toBe(1)
   })
 })

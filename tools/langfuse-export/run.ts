@@ -20,8 +20,10 @@ import { createLangfuseClient, fetchTraceData } from './src/clients/langfuse'
 import {
   createLlmScrub,
   createModel,
-  synthesizeThemes
+  synthesizeThemes,
+  translateTexts
 } from './src/clients/openrouter'
+import { cacheKey, loadCache, saveCache } from './src/clients/translation-cache'
 import { createZip } from './src/clients/zip'
 import { loadEnvFile, parseEnv } from './src/env'
 import { buildDataset, invertThemes } from './src/pipeline/dataset'
@@ -29,10 +31,12 @@ import { buildFacets } from './src/pipeline/facets'
 import { renderExplorer } from './src/pipeline/explorer'
 import { normalize } from './src/pipeline/normalize'
 import { sanitize } from './src/pipeline/sanitize'
+import { cannotBeEnglish, collectTranslatable } from './src/pipeline/translate'
 import type {
   ObservationRecord,
   ThemeSynthesis,
-  TraceRecord
+  TraceRecord,
+  Translation
 } from './src/types'
 
 interface FixtureData {
@@ -82,6 +86,12 @@ It runs fully offline (no internet, no install). Use the left panel to filter
 by theme/keyword facets, click a session to read the whole conversation in
 order. dataset.json is the same data as a plain file for reference.
 
+TRANSLATION
+  Many messages are not in English. When a translation is shown it is
+  MACHINE-GENERATED (automatic) and its accuracy is NOT guaranteed. The
+  original message is always kept exactly as written and never altered — read
+  it as the source of truth and treat the English as an aid only.
+
 PRIVACY
   User messages are PII-scrubbed but scrubbing is best-effort, not a guarantee.
   Share this folder directly with named recipients — do not post it publicly.
@@ -119,6 +129,18 @@ async function main(): Promise<void> {
 
   if (useFixture) {
     console.log(`Source:        fixture ${options.fixture} (offline)`)
+    console.log(`Translate:     ${options.translate ? 'on' : 'off'}`)
+    // --translate needs OpenRouter credentials, so load env + create the model
+    // even under --fixture (the fixture only replaces the Langfuse source, not
+    // the translation LLM). parseEnv validates all four keys, including the
+    // Langfuse ones, which is acceptable — --translate is an online operation.
+    if (options.translate) {
+      loadEnvFile(__dirname)
+      const env = parseEnv()
+      if (options.model != null) env.openrouterModel = options.model
+      console.log(`Model:         ${env.openrouterModel}`)
+      model = createModel(env)
+    }
     console.log('')
     const fixture = loadFixture(
       resolve(process.cwd(), options.fixture as string)
@@ -132,6 +154,7 @@ async function main(): Promise<void> {
   } else {
     console.log(`Environment:   ${options.environment}`)
     console.log(`LLM scrub:     ${options.llmScrub ? 'on' : 'off'}`)
+    console.log(`Translate:     ${options.translate ? 'on' : 'off'}`)
     loadEnvFile(__dirname)
     const env = parseEnv()
     if (options.model != null) env.openrouterModel = options.model
@@ -175,6 +198,10 @@ async function main(): Promise<void> {
       : undefined
   const sanitised = await sanitize(conversations, llmScrub)
 
+  // Facets are computed before translation (keyword labels are translated too)
+  // and are pure/cheap, so build them up front — ahead of the LLM passes.
+  const facets = buildFacets(sanitised)
+
   // Theme synthesis is the one LLM call shared by both deliverables. Skipped
   // entirely under --fixture (offline). Degrades to null on failure.
   let themeSynthesis: ThemeSynthesis | null = null
@@ -189,13 +216,65 @@ async function main(): Promise<void> {
     }
   }
 
+  // Translation pass (--translate). Paid once: translations are cached by
+  // content hash, so a re-render reuses the cache and costs nothing. Degrades
+  // to no translation on failure; the original text is always retained.
+  let translations: Map<string, Translation> | null = null
+  if (options.translate && model != null) {
+    try {
+      console.log('Translating corpus via OpenRouter...')
+      const cachePath =
+        options.translationCache != null
+          ? resolve(process.cwd(), options.translationCache)
+          : resolve(__dirname, 'output', '.translation-cache.json')
+      const strings = collectTranslatable(sanitised, facets)
+      const cache = loadCache(cachePath)
+
+      // Translate only the cache misses; each item is keyed by its content hash.
+      // A cached "this is English" verdict on non-Latin-script text is a lie an
+      // earlier run recorded — treat it as a miss so the cache self-heals.
+      const misses = strings.filter((text) => {
+        const cached = cache.get(cacheKey(text))
+        if (cached == null) return true
+        return cached.sourceLanguage === 'en' && cannotBeEnglish(text)
+      })
+      const fresh = await translateTexts(
+        model,
+        misses.map((text) => ({ id: cacheKey(text), text })),
+        { onProgress: progress }
+      )
+
+      for (const [key, translation] of fresh) cache.set(key, translation)
+      saveCache(cachePath, cache)
+
+      // buildDataset looks up by the exact original string, so rebuild the map
+      // keyed by text (out of the content-hash cache).
+      translations = new Map<string, Translation>()
+      for (const text of strings) {
+        const translation = cache.get(cacheKey(text))
+        if (translation != null) translations.set(text, translation)
+      }
+
+      const cacheHits = strings.length - misses.length
+      const failed = misses.length - fresh.size
+      console.log(
+        `  translation: ${strings.length} strings, ${cacheHits} cache hits, ` +
+          `${fresh.size} newly translated, ${failed} failed`
+      )
+    } catch (error) {
+      console.warn(
+        `  translation failed (${error instanceof Error ? error.message : String(error)}) — continuing without translation`
+      )
+      translations = null
+    }
+  }
+
   const id = runId()
   const outDir = resolve(__dirname, 'output', id)
   mkdirSync(outDir, { recursive: true })
   const generatedAt = new Date().toISOString()
 
   // ---- build the insights-explorer bundle ----
-  const facets = buildFacets(sanitised)
   const themesBySession = useFixture
     ? fixtureThemes != null
       ? new Map(Object.entries(fixtureThemes))
@@ -210,7 +289,8 @@ async function main(): Promise<void> {
     facets,
     themesBySession,
     excludedTurnCount,
-    generatedAt
+    generatedAt,
+    translations
   )
   const html = renderExplorer(dataset)
   const datasetJson = JSON.stringify(dataset, null, 2)
@@ -228,6 +308,12 @@ async function main(): Promise<void> {
     `  explorer: ${dataset.sessions.length} sessions, ${dataset.facets.length} facets, ` +
       `${dataset.summary.suppressedKeywordCount} over-common keywords suppressed`
   )
+  if (dataset.summary.suppressedTranslatedKeywordCount > 0) {
+    console.log(
+      `  explorer: ${dataset.summary.suppressedTranslatedKeywordCount} translated keyword facets ` +
+        `suppressed (English gloss is a stopword — e.g. 'que' -> 'that')`
+    )
+  }
 
   if (options.debug) {
     const lines: string[] = []
