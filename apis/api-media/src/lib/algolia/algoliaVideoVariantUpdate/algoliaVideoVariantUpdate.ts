@@ -5,7 +5,20 @@ import { prisma } from '@core/prisma/media/client'
 import { getAlgoliaClient, getAlgoliaConfig } from '../algoliaClient'
 import { getLanguages } from '../languages'
 
-function sortByEnglishFirst(
+export const videoVariantAlgoliaInclude = {
+  video: {
+    include: {
+      title: true,
+      description: true,
+      imageAlt: true,
+      snippet: true,
+      subtitles: true,
+      images: true
+    }
+  }
+} as const
+
+export function sortByEnglishFirst(
   a: { languageId?: string },
   b: { languageId?: string }
 ): number {
@@ -14,10 +27,76 @@ function sortByEnglishFirst(
   return aIsEn === bIsEn ? 0 : aIsEn ? -1 : 1
 }
 
+export function getValidCloudflareImageAccount(): string | null {
+  const imageAccount = process.env.CLOUDFLARE_IMAGE_ACCOUNT
+  const isValidImageAccount =
+    imageAccount != null &&
+    imageAccount !== '' &&
+    imageAccount !== 'testAccount'
+
+  return isValidImageAccount ? imageAccount : null
+}
+
+export function buildVideoVariantAlgoliaObject(
+  videoVariant: any,
+  languages: Record<string, { english?: string; primary?: string }>
+): Record<string, unknown> {
+  const imageAccount = getValidCloudflareImageAccount()
+  const cfImage = videoVariant.video?.images.find(
+    ({ aspectRatio }: { aspectRatio?: string }) => aspectRatio === 'banner'
+  )
+  let image = ''
+  if (cfImage != null && imageAccount != null) {
+    const version = videoVariant.version ?? 1
+    image = `https://imagedelivery.net/${imageAccount}/${cfImage.id}/f=jpg,w=1280,h=600,q=95?v=${version}`
+  }
+
+  const sortedTitles = [...(videoVariant.video?.title ?? [])].sort(
+    sortByEnglishFirst
+  )
+
+  const sortedDescription = [...(videoVariant.video?.description ?? [])].sort(
+    sortByEnglishFirst
+  )
+
+  return {
+    objectID: videoVariant.id,
+    videoId: videoVariant.videoId,
+    titles: sortedTitles.map((title) => title?.value),
+    titlesWithLanguages: sortedTitles.map((title) => ({
+      value: title?.value ?? '',
+      languageId: title?.languageId ?? ''
+    })),
+    description: sortedDescription.map((d) => d?.value),
+    duration: videoVariant.duration,
+    languageId: videoVariant.languageId,
+    languageEnglishName: languages[videoVariant.languageId]?.english,
+    languagePrimaryName: languages[videoVariant.languageId]?.primary,
+    subtitles: videoVariant.video?.subtitles
+      .filter(
+        (subtitle: { edition?: string }) =>
+          subtitle.edition === videoVariant.edition
+      )
+      .map((subtitle: { languageId?: string }) => subtitle.languageId),
+    slug: videoVariant.slug,
+    label: videoVariant.video?.label,
+    image,
+    imageAlt:
+      videoVariant.video?.imageAlt.find(
+        (alt: { languageId?: string }) => alt.languageId === '529'
+      )?.value ?? '',
+    childrenCount: videoVariant.video?.childIds.length ?? 0,
+    videoPublished: videoVariant.video?.published ?? false,
+    published: videoVariant.published ?? false,
+    restrictViewPlatforms: videoVariant.video?.restrictViewPlatforms ?? [],
+    manualRanking: videoVariant.languageId === '529' ? 0 : 1
+  }
+}
+
 export async function updateVideoVariantInAlgolia(
   videoVariantId: string,
   logger?: Logger
-): Promise<void> {
+): Promise<boolean> {
   try {
     const client = getAlgoliaClient()
     const algoliaConfig = getAlgoliaConfig()
@@ -25,18 +104,7 @@ export async function updateVideoVariantInAlgolia(
 
     const videoVariant = await prisma.videoVariant.findUnique({
       where: { id: videoVariantId },
-      include: {
-        video: {
-          include: {
-            title: true,
-            description: true,
-            imageAlt: true,
-            snippet: true,
-            subtitles: true,
-            images: true
-          }
-        }
-      }
+      include: videoVariantAlgoliaInclude
     })
 
     if (videoVariant == null) {
@@ -45,66 +113,21 @@ export async function updateVideoVariantInAlgolia(
         indexName: algoliaConfig.videoVariantsIndex,
         objectID: videoVariantId
       })
-      return
+      return true
     }
 
-    const imageAccount = process.env.CLOUDFLARE_IMAGE_ACCOUNT
-    const isValidImageAccount =
-      imageAccount != null &&
-      imageAccount !== '' &&
-      imageAccount !== 'testAccount'
-    if (!isValidImageAccount) {
+    const imageAccount = getValidCloudflareImageAccount()
+    if (imageAccount == null) {
       logger?.warn(
-        `CLOUDFLARE_IMAGE_ACCOUNT is missing or invalid ("${imageAccount}"). Skipping Algolia update for ${videoVariantId} to avoid polluting prod.`
+        `CLOUDFLARE_IMAGE_ACCOUNT is missing or invalid ("${process.env.CLOUDFLARE_IMAGE_ACCOUNT}"). Skipping Algolia update for ${videoVariantId} to avoid polluting prod.`
       )
-      return
+      return false
     }
 
-    const cfImage = videoVariant.video?.images.find(
-      ({ aspectRatio }) => aspectRatio === 'banner'
+    const transformedVideo = buildVideoVariantAlgoliaObject(
+      videoVariant,
+      languages
     )
-    let image = ''
-    if (cfImage != null) {
-      const version = videoVariant.version ?? 1
-      image = `https://imagedelivery.net/${imageAccount}/${cfImage.id}/f=jpg,w=1280,h=600,q=95?v=${version}`
-    }
-
-    const sortedTitles = [...(videoVariant.video?.title ?? [])].sort(
-      sortByEnglishFirst
-    )
-
-    const sortedDescription = [...(videoVariant.video?.description ?? [])].sort(
-      sortByEnglishFirst
-    )
-
-    const transformedVideo = {
-      objectID: videoVariant.id,
-      videoId: videoVariant.videoId,
-      titles: sortedTitles.map((title) => title?.value),
-      titlesWithLanguages: sortedTitles.map((title) => ({
-        value: title?.value ?? '',
-        languageId: title?.languageId ?? ''
-      })),
-      description: sortedDescription.map((d) => d?.value),
-      duration: videoVariant.duration,
-      languageId: videoVariant.languageId,
-      languageEnglishName: languages[videoVariant.languageId]?.english,
-      languagePrimaryName: languages[videoVariant.languageId]?.primary,
-      subtitles: videoVariant.video?.subtitles
-        .filter((subtitle) => subtitle.edition === videoVariant.edition)
-        .map((subtitle) => subtitle.languageId),
-      slug: videoVariant.slug,
-      label: videoVariant.video?.label,
-      image,
-      imageAlt:
-        videoVariant.video?.imageAlt.find((alt) => alt.languageId === '529')
-          ?.value ?? '',
-      childrenCount: videoVariant.video?.childIds.length ?? 0,
-      videoPublished: videoVariant.video?.published ?? false,
-      published: videoVariant.published ?? false,
-      restrictViewPlatforms: videoVariant.video?.restrictViewPlatforms ?? [],
-      manualRanking: videoVariant.languageId === '529' ? 0 : 1
-    }
 
     const result = await client.saveObjects({
       indexName: algoliaConfig.videoVariantsIndex,
@@ -118,10 +141,12 @@ export async function updateVideoVariantInAlgolia(
     logger?.info(
       `Record ${videoVariant.id} is now available in index ${algoliaConfig.videoVariantsIndex}`
     )
+    return true
   } catch (error) {
     logger?.error(
       error,
       `failed to update video variant ${videoVariantId} in algolia`
     )
+    return false
   }
 }

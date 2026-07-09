@@ -8,11 +8,15 @@ import { updateVideoInAlgolia } from '../../../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../../../lib/algolia/algoliaVideoVariantUpdate'
 
 const getObjectSpy = vi.fn()
+const customPostSpy = vi.fn()
+const deleteObjectSpy = vi.fn()
 
 // Mock the algolia client helper
 vi.mock('../../../lib/algolia/algoliaClient', () => ({
   getAlgoliaClient: () => ({
-    getObject: getObjectSpy
+    getObject: getObjectSpy,
+    customPost: customPostSpy,
+    deleteObject: deleteObjectSpy
   }),
   getAlgoliaConfig: () => ({
     appId: 'test-app-id',
@@ -27,7 +31,47 @@ vi.mock('../../../lib/algolia/algoliaVideoUpdate', () => ({
   updateVideoInAlgolia: vi.fn()
 }))
 
+vi.mock('../../../lib/algolia/languages', () => ({
+  getLanguages: vi.fn().mockResolvedValue({
+    '529': { english: 'English', primary: 'English' },
+    '496': { english: 'Spanish', primary: 'Español' }
+  })
+}))
+
 vi.mock('../../../lib/algolia/algoliaVideoVariantUpdate', () => ({
+  videoVariantAlgoliaInclude: {
+    video: {
+      include: {
+        title: true,
+        description: true,
+        imageAlt: true,
+        snippet: true,
+        subtitles: true,
+        images: true
+      }
+    }
+  },
+  buildVideoVariantAlgoliaObject: vi.fn((variant) => ({
+    objectID: variant.id,
+    videoId: variant.videoId,
+    languageId: variant.languageId,
+    languageEnglishName: variant.languageId === '496' ? 'Spanish' : 'English',
+    languagePrimaryName: variant.languageId === '496' ? 'Español' : 'English',
+    slug: variant.slug,
+    published: variant.published,
+    videoPublished: variant.video?.published ?? false,
+    duration: variant.duration,
+    label: variant.video?.label,
+    titles:
+      variant.video?.title?.map((title: { value: string }) => title.value) ??
+      [],
+    description:
+      variant.video?.description?.map(
+        (description: { value: string }) => description.value
+      ) ?? [],
+    childrenCount: variant.video?.childIds?.length ?? 0,
+    image: variant.video?.images?.[0]?.id ?? ''
+  })),
   updateVideoVariantInAlgolia: vi.fn()
 }))
 
@@ -51,12 +95,14 @@ describe('videoAlgolia', () => {
     vi.clearAllMocks()
 
     getObjectSpy.mockReset()
+    customPostSpy.mockReset()
+    deleteObjectSpy.mockReset()
     mockedUpdateVideoInAlgolia.mockResolvedValue(undefined)
-    mockedUpdateVideoVariantInAlgolia.mockResolvedValue(undefined)
+    mockedUpdateVideoVariantInAlgolia.mockResolvedValue(true as any)
   })
 
   afterEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('queries', () => {
@@ -456,7 +502,379 @@ describe('videoAlgolia', () => {
     })
   })
 
+  describe('checkAlgoliaVideoVariantIndexBatch', () => {
+    const CHECK_VARIANT_INDEX_BATCH_QUERY = graphql(`
+      query CheckAlgoliaVideoVariantIndexBatch(
+        $input: CheckAlgoliaVideoVariantIndexBatchInput!
+      ) {
+        checkAlgoliaVideoVariantIndexBatch(input: $input) {
+          scanType
+          batchKey
+          nextBatchKey
+          done
+          checkedCount
+          missingCount
+          staleCount
+          extraCount
+          failedCount
+          issues {
+            id
+            issueType
+            variantId
+            objectId
+            videoId
+            languageId
+            languageName
+            mismatches {
+              field
+              expected
+              actual
+            }
+            error
+          }
+        }
+      }
+    `)
+
+    it('checks a Core batch and reports stale and missing variants only', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      prismaMock.videoVariant.findMany.mockResolvedValue([
+        {
+          id: 'variant-stale',
+          videoId: 'video-1',
+          languageId: '529',
+          slug: 'watch/english',
+          published: true,
+          duration: 120,
+          video: {
+            published: true,
+            label: 'segment',
+            childIds: [],
+            title: [{ value: 'Jesus', languageId: '529' }],
+            description: [{ value: 'Description', languageId: '529' }],
+            images: [{ id: 'banner-id' }]
+          }
+        },
+        {
+          id: 'variant-missing',
+          videoId: 'video-2',
+          languageId: '496',
+          slug: 'watch/spanish',
+          published: true,
+          duration: 90,
+          video: {
+            published: true,
+            label: 'segment',
+            childIds: [],
+            title: [{ value: 'Jesus ES', languageId: '496' }],
+            description: [],
+            images: []
+          }
+        }
+      ] as any)
+      getObjectSpy
+        .mockResolvedValueOnce({
+          objectID: 'variant-stale',
+          videoId: 'wrong-video',
+          languageId: '529',
+          languageEnglishName: 'English',
+          languagePrimaryName: 'English',
+          slug: 'watch/english',
+          published: true,
+          videoPublished: true,
+          duration: 120,
+          label: 'segment',
+          titles: ['Jesus'],
+          description: ['Description'],
+          childrenCount: 0,
+          image: 'banner-id'
+        })
+        .mockRejectedValueOnce(new Error('Object not found'))
+
+      const result = await authClient({
+        document: CHECK_VARIANT_INDEX_BATCH_QUERY,
+        variables: { input: { scanType: 'core', batchSize: 2 } } as any
+      })
+
+      expect(result).toHaveProperty(
+        'data.checkAlgoliaVideoVariantIndexBatch.checkedCount',
+        2
+      )
+      expect(result).toHaveProperty(
+        'data.checkAlgoliaVideoVariantIndexBatch.missingCount',
+        1
+      )
+      expect(result).toHaveProperty(
+        'data.checkAlgoliaVideoVariantIndexBatch.staleCount',
+        1
+      )
+      expect(result).toHaveProperty(
+        'data.checkAlgoliaVideoVariantIndexBatch.nextBatchKey',
+        'variant-missing'
+      )
+      const issues = (result as any).data.checkAlgoliaVideoVariantIndexBatch
+        .issues
+      expect(issues).toContainEqual(
+        expect.objectContaining({
+          issueType: 'missing',
+          objectId: 'variant-missing',
+          languageName: 'Spanish'
+        })
+      )
+      expect(issues).toContainEqual(
+        expect.objectContaining({
+          issueType: 'stale',
+          objectId: 'variant-stale',
+          mismatches: [
+            {
+              field: 'videoId',
+              expected: '"video-1"',
+              actual: '"wrong-video"'
+            }
+          ]
+        })
+      )
+    })
+
+    it('checks an Algolia browse batch and reports extra objects', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      customPostSpy.mockResolvedValue({
+        hits: [
+          {
+            objectID: 'variant-existing',
+            videoId: 'video-1',
+            languageId: '529'
+          },
+          { objectID: 'variant-extra', videoId: 'video-2', languageId: '496' }
+        ],
+        cursor: 'next-cursor'
+      })
+      prismaMock.videoVariant.findMany.mockResolvedValue([
+        { id: 'variant-existing' }
+      ] as any)
+
+      const result = await authClient({
+        document: CHECK_VARIANT_INDEX_BATCH_QUERY,
+        variables: {
+          input: { scanType: 'algolia', batchKey: 'start-cursor', batchSize: 2 }
+        } as any
+      })
+
+      expect(customPostSpy).toHaveBeenCalledWith({
+        path: '/1/indexes/test-video-variants-index/browse',
+        body: { cursor: 'start-cursor' }
+      })
+      expect(result).toHaveProperty(
+        'data.checkAlgoliaVideoVariantIndexBatch.extraCount',
+        1
+      )
+      expect(result).toHaveProperty(
+        'data.checkAlgoliaVideoVariantIndexBatch.nextBatchKey',
+        'next-cursor'
+      )
+      expect(
+        (result as any).data.checkAlgoliaVideoVariantIndexBatch.issues
+      ).toContainEqual(
+        expect.objectContaining({
+          issueType: 'extra',
+          objectId: 'variant-extra',
+          variantId: null,
+          videoId: 'video-2',
+          languageName: 'Spanish'
+        })
+      )
+    })
+  })
+
   describe('mutations', () => {
+    describe('fixAlgoliaVideoVariantIndexIssues', () => {
+      const FIX_VARIANT_INDEX_ISSUES_MUTATION = graphql(`
+        mutation FixAlgoliaVideoVariantIndexIssues(
+          $input: FixAlgoliaVideoVariantIndexIssuesInput!
+        ) {
+          fixAlgoliaVideoVariantIndexIssues(input: $input) {
+            fixedCount
+            failedCount
+            issues {
+              issueType
+              objectId
+              error
+            }
+          }
+        }
+      `)
+
+      it('upserts selected missing and stale variants with existing updater behavior', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoVariant.findUnique.mockResolvedValue({
+          id: 'variant-1'
+        } as any)
+
+        const result = await authClient({
+          document: FIX_VARIANT_INDEX_ISSUES_MUTATION,
+          variables: {
+            input: { issueType: 'stale', objectIds: ['variant-1', 'variant-2'] }
+          } as any
+        })
+
+        expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith(
+          'variant-1',
+          expect.anything()
+        )
+        expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith(
+          'variant-2',
+          expect.anything()
+        )
+        expect(result).toHaveProperty(
+          'data.fixAlgoliaVideoVariantIndexIssues',
+          { fixedCount: 2, failedCount: 0, issues: [] }
+        )
+      })
+
+      it('reports selected missing and stale variants that fail to update', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoVariant.findUnique.mockResolvedValue({
+          id: 'variant-1',
+          videoId: 'video-1',
+          languageId: '529'
+        } as any)
+        mockedUpdateVideoVariantInAlgolia.mockResolvedValueOnce(false as any)
+
+        const result = await authClient({
+          document: FIX_VARIANT_INDEX_ISSUES_MUTATION,
+          variables: {
+            input: { issueType: 'missing', objectIds: ['variant-1'] }
+          } as any
+        })
+
+        expect(result).toHaveProperty(
+          'data.fixAlgoliaVideoVariantIndexIssues.fixedCount',
+          0
+        )
+        expect(result).toHaveProperty(
+          'data.fixAlgoliaVideoVariantIndexIssues.failedCount',
+          1
+        )
+        expect(
+          (result as any).data.fixAlgoliaVideoVariantIndexIssues.issues
+        ).toContainEqual({
+          issueType: 'failed',
+          objectId: 'variant-1',
+          error: 'Algolia update did not complete'
+        })
+      })
+
+      it('re-checks Core row absence before deleting an extra Algolia object', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoVariant.findUnique
+          .mockResolvedValueOnce(null)
+          .mockResolvedValueOnce({ id: 'variant-valid' } as any)
+        deleteObjectSpy.mockResolvedValue({})
+
+        const result = await authClient({
+          document: FIX_VARIANT_INDEX_ISSUES_MUTATION,
+          variables: {
+            input: {
+              issueType: 'extra',
+              objectIds: ['variant-extra', 'variant-valid']
+            }
+          } as any
+        })
+
+        expect(deleteObjectSpy).toHaveBeenCalledWith({
+          indexName: 'test-video-variants-index',
+          objectID: 'variant-extra'
+        })
+        expect(deleteObjectSpy).not.toHaveBeenCalledWith(
+          expect.objectContaining({ objectID: 'variant-valid' })
+        )
+        expect(result).toHaveProperty(
+          'data.fixAlgoliaVideoVariantIndexIssues.fixedCount',
+          1
+        )
+        expect(result).toHaveProperty(
+          'data.fixAlgoliaVideoVariantIndexIssues.failedCount',
+          1
+        )
+        expect(
+          (result as any).data.fixAlgoliaVideoVariantIndexIssues.issues
+        ).toContainEqual({
+          issueType: 'failed',
+          objectId: 'variant-valid',
+          error: 'VideoVariant row exists; refusing to delete Algolia object'
+        })
+      })
+      it('reports extra Algolia object delete failures per row', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoVariant.findUnique.mockResolvedValue(null)
+        deleteObjectSpy
+          .mockRejectedValueOnce(new Error('Algolia delete failed'))
+          .mockResolvedValueOnce({})
+
+        const result = await authClient({
+          document: FIX_VARIANT_INDEX_ISSUES_MUTATION,
+          variables: {
+            input: {
+              issueType: 'extra',
+              objectIds: ['variant-fail', 'variant-extra']
+            }
+          } as any
+        })
+
+        expect(result).toHaveProperty(
+          'data.fixAlgoliaVideoVariantIndexIssues.fixedCount',
+          1
+        )
+        expect(result).toHaveProperty(
+          'data.fixAlgoliaVideoVariantIndexIssues.failedCount',
+          1
+        )
+        expect(
+          (result as any).data.fixAlgoliaVideoVariantIndexIssues.issues
+        ).toContainEqual({
+          issueType: 'failed',
+          objectId: 'variant-fail',
+          error: 'Algolia delete failed'
+        })
+      })
+    })
+
     describe('updateVideoAlgoliaIndex', () => {
       const UPDATE_VIDEO_ALGOLIA_INDEX_MUTATION = graphql(`
         mutation UpdateVideoAlgoliaIndex($videoId: ID!) {

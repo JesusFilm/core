@@ -1,0 +1,435 @@
+'use client'
+
+import { gql, useApolloClient, useMutation } from '@apollo/client'
+import BuildRoundedIcon from '@mui/icons-material/BuildRounded'
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded'
+import Alert from '@mui/material/Alert'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
+import LinearProgress from '@mui/material/LinearProgress'
+import Link from '@mui/material/Link'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  GridRowSelectionModel
+} from '@mui/x-data-grid'
+import NextLink from 'next/link'
+import { useSnackbar } from 'notistack'
+import { ReactElement, useCallback, useMemo, useState } from 'react'
+
+interface VariantIndexMismatch {
+  field: string
+  expected: string | null
+  actual: string | null
+}
+
+interface VariantIndexIssue {
+  id: string
+  issueType: 'missing' | 'stale' | 'extra' | 'failed'
+  variantId: string | null
+  objectId: string
+  videoId: string | null
+  languageId: string | null
+  languageName: string | null
+  mismatches: VariantIndexMismatch[]
+  error: string | null
+}
+
+interface BatchResult {
+  scanType: 'core' | 'algolia'
+  batchKey: string | null
+  nextBatchKey: string | null
+  done: boolean
+  checkedCount: number
+  missingCount: number
+  staleCount: number
+  extraCount: number
+  failedCount: number
+  issues: VariantIndexIssue[]
+}
+
+interface SummaryCounts {
+  checked: number
+  missing: number
+  stale: number
+  extra: number
+  failed: number
+}
+
+const CHECK_VARIANT_INDEX_BATCH = gql`
+  query CheckAlgoliaVideoVariantIndexBatch(
+    $input: CheckAlgoliaVideoVariantIndexBatchInput!
+  ) {
+    checkAlgoliaVideoVariantIndexBatch(input: $input) {
+      scanType
+      batchKey
+      nextBatchKey
+      done
+      checkedCount
+      missingCount
+      staleCount
+      extraCount
+      failedCount
+      issues {
+        id
+        issueType
+        variantId
+        objectId
+        videoId
+        languageId
+        languageName
+        mismatches {
+          field
+          expected
+          actual
+        }
+        error
+      }
+    }
+  }
+`
+
+const FIX_VARIANT_INDEX_ISSUES = gql`
+  mutation FixAlgoliaVideoVariantIndexIssues(
+    $input: FixAlgoliaVideoVariantIndexIssuesInput!
+  ) {
+    fixAlgoliaVideoVariantIndexIssues(input: $input) {
+      fixedCount
+      failedCount
+      issues {
+        id
+        issueType
+        objectId
+        error
+      }
+    }
+  }
+`
+
+const BATCH_SIZE = 100
+const initialSummary: SummaryCounts = {
+  checked: 0,
+  missing: 0,
+  stale: 0,
+  extra: 0,
+  failed: 0
+}
+const emptySelectionModel: GridRowSelectionModel = {
+  type: 'include',
+  ids: new Set()
+}
+
+function getIssueColor(issueType: VariantIndexIssue['issueType']) {
+  switch (issueType) {
+    case 'missing':
+      return 'warning'
+    case 'stale':
+      return 'info'
+    case 'extra':
+      return 'secondary'
+    case 'failed':
+      return 'error'
+  }
+}
+
+function getMismatchText(mismatches: VariantIndexMismatch[]): string {
+  if (mismatches.length === 0) return 'none'
+  return mismatches.map((mismatch) => mismatch.field).join(', ')
+}
+
+function mergeIssues(
+  existingIssues: VariantIndexIssue[],
+  nextIssues: VariantIndexIssue[]
+): VariantIndexIssue[] {
+  const byId = new Map(existingIssues.map((issue) => [issue.id, issue]))
+  for (const issue of nextIssues) byId.set(issue.id, issue)
+  return Array.from(byId.values())
+}
+
+export function AlgoliaDebugging(): ReactElement {
+  const apolloClient = useApolloClient()
+  const { enqueueSnackbar } = useSnackbar()
+  const [fixIssues] = useMutation(FIX_VARIANT_INDEX_ISSUES)
+  const [issues, setIssues] = useState<VariantIndexIssue[]>([])
+  const [summary, setSummary] = useState<SummaryCounts>(initialSummary)
+  const [scanning, setScanning] = useState(false)
+  const [scanError, setScanError] = useState<string | null>(null)
+  const [selectionModel, setSelectionModel] =
+    useState<GridRowSelectionModel>(emptySelectionModel)
+
+  const selectedIssues = useMemo(() => {
+    const selectedIds = new Set(Array.from(selectionModel.ids).map(String))
+    return issues.filter((issue) => selectedIds.has(issue.id))
+  }, [issues, selectionModel])
+
+  const selectedFixableCounts = useMemo(
+    () => ({
+      missing: selectedIssues.filter((issue) => issue.issueType === 'missing')
+        .length,
+      stale: selectedIssues.filter((issue) => issue.issueType === 'stale')
+        .length,
+      extra: selectedIssues.filter((issue) => issue.issueType === 'extra')
+        .length
+    }),
+    [selectedIssues]
+  )
+
+  const applyBatch = useCallback((batch: BatchResult) => {
+    setSummary((current) => ({
+      checked: current.checked + batch.checkedCount,
+      missing: current.missing + batch.missingCount,
+      stale: current.stale + batch.staleCount,
+      extra: current.extra + batch.extraCount,
+      failed: current.failed + batch.failedCount
+    }))
+    setIssues((current) => mergeIssues(current, batch.issues))
+  }, [])
+
+  const runScanType = useCallback(
+    async (scanType: 'core' | 'algolia') => {
+      let batchKey: string | null = null
+      let done = false
+
+      while (!done) {
+        const { data } = await apolloClient.query<{
+          checkAlgoliaVideoVariantIndexBatch: BatchResult
+        }>({
+          query: CHECK_VARIANT_INDEX_BATCH,
+          variables: {
+            input: { scanType, batchKey, batchSize: BATCH_SIZE }
+          },
+          fetchPolicy: 'no-cache'
+        })
+        const batch = data.checkAlgoliaVideoVariantIndexBatch
+        applyBatch(batch)
+        batchKey = batch.nextBatchKey
+        done = batch.done
+      }
+    },
+    [apolloClient, applyBatch]
+  )
+
+  const handleStartScan = useCallback(async () => {
+    setScanning(true)
+    setScanError(null)
+    setIssues([])
+    setSummary(initialSummary)
+    setSelectionModel(emptySelectionModel)
+
+    try {
+      await runScanType('core')
+      await runScanType('algolia')
+      enqueueSnackbar('Variant index check complete', { variant: 'success' })
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      setScanError(message)
+      enqueueSnackbar('Variant index check failed', { variant: 'error' })
+    } finally {
+      setScanning(false)
+    }
+  }, [enqueueSnackbar, runScanType])
+
+  const handleFix = useCallback(
+    async (
+      issueType: 'missing' | 'stale' | 'extra',
+      objectIds: string[]
+    ): Promise<void> => {
+      const result = await fixIssues({
+        variables: { input: { issueType, objectIds } }
+      })
+      const fixedCount =
+        result.data?.fixAlgoliaVideoVariantIndexIssues?.fixedCount ?? 0
+      const failedCount =
+        result.data?.fixAlgoliaVideoVariantIndexIssues?.failedCount ?? 0
+      const failedIds = new Set(
+        (result.data?.fixAlgoliaVideoVariantIndexIssues?.issues ?? []).map(
+          (issue: { objectId: string }) => issue.objectId
+        )
+      )
+      const fixedIds = new Set(
+        objectIds.filter((objectId) => !failedIds.has(objectId))
+      )
+
+      if (fixedIds.size > 0) {
+        setIssues((current) =>
+          current.filter((issue) => !fixedIds.has(issue.objectId))
+        )
+        setSelectionModel((current) => ({
+          ...current,
+          ids: new Set(
+            Array.from(current.ids).filter((id) => !fixedIds.has(String(id)))
+          )
+        }))
+      }
+
+      enqueueSnackbar(
+        failedCount > 0
+          ? `Fixed ${fixedCount}; ${failedCount} failed`
+          : `Fixed ${fixedCount}`,
+        { variant: failedCount > 0 ? 'warning' : 'success' }
+      )
+    },
+    [enqueueSnackbar, fixIssues]
+  )
+
+  const handleFixSelected = useCallback(
+    async (issueType: 'missing' | 'stale' | 'extra') => {
+      const objectIds = selectedIssues
+        .filter((issue) => issue.issueType === issueType)
+        .map((issue) => issue.objectId)
+      await handleFix(issueType, objectIds)
+    },
+    [handleFix, selectedIssues]
+  )
+
+  const columns = useMemo<GridColDef<VariantIndexIssue>[]>(
+    () => [
+      {
+        field: 'issueType',
+        headerName: 'Issue',
+        width: 120,
+        renderCell: ({ row }: GridRenderCellParams<VariantIndexIssue>) => (
+          <Chip
+            size="small"
+            label={row.issueType}
+            color={getIssueColor(row.issueType)}
+          />
+        )
+      },
+      { field: 'objectId', headerName: 'Object ID', width: 220 },
+      {
+        field: 'videoId',
+        headerName: 'Video ID',
+        width: 180,
+        renderCell: ({ row }: GridRenderCellParams<VariantIndexIssue>) =>
+          row.videoId != null ? (
+            <Link component={NextLink} href={`/videos/${row.videoId}`}>
+              {row.videoId}
+            </Link>
+          ) : (
+            'none'
+          )
+      },
+      { field: 'languageId', headerName: 'Language ID', width: 120 },
+      { field: 'languageName', headerName: 'Language', width: 160 },
+      {
+        field: 'mismatches',
+        headerName: 'Mismatches',
+        flex: 1,
+        minWidth: 180,
+        valueGetter: (_value, row) => getMismatchText(row.mismatches)
+      },
+      {
+        field: 'error',
+        headerName: 'Error',
+        flex: 1,
+        minWidth: 180,
+        valueGetter: (_value, row) => row.error ?? 'none'
+      },
+      {
+        field: 'actions',
+        headerName: '',
+        width: 120,
+        sortable: false,
+        filterable: false,
+        renderCell: ({ row }: GridRenderCellParams<VariantIndexIssue>) =>
+          row.issueType === 'missing' ||
+          row.issueType === 'stale' ||
+          row.issueType === 'extra' ? (
+            <Button
+              size="small"
+              startIcon={<BuildRoundedIcon />}
+              onClick={() =>
+                void handleFix(row.issueType as 'missing' | 'stale' | 'extra', [
+                  row.objectId
+                ])
+              }
+            >
+              Fix
+            </Button>
+          ) : null
+      }
+    ],
+    [handleFix]
+  )
+
+  return (
+    <Stack spacing={2} sx={{ p: 3, height: 'calc(100vh - 112px)' }}>
+      <Stack
+        direction={{ xs: 'column', md: 'row' }}
+        spacing={1.5}
+        alignItems={{ xs: 'stretch', md: 'center' }}
+      >
+        <Button
+          variant="contained"
+          startIcon={<PlayArrowRoundedIcon />}
+          disabled={scanning}
+          onClick={() => void handleStartScan()}
+        >
+          {scanning ? 'Checking' : 'Start Variant Check'}
+        </Button>
+        <Button
+          variant="outlined"
+          startIcon={<BuildRoundedIcon />}
+          disabled={selectedFixableCounts.missing === 0 || scanning}
+          onClick={() => void handleFixSelected('missing')}
+        >
+          Fix Missing ({selectedFixableCounts.missing})
+        </Button>
+        <Button
+          variant="outlined"
+          startIcon={<BuildRoundedIcon />}
+          disabled={selectedFixableCounts.stale === 0 || scanning}
+          onClick={() => void handleFixSelected('stale')}
+        >
+          Fix Stale ({selectedFixableCounts.stale})
+        </Button>
+        <Button
+          variant="outlined"
+          color="secondary"
+          startIcon={<BuildRoundedIcon />}
+          disabled={selectedFixableCounts.extra === 0 || scanning}
+          onClick={() => void handleFixSelected('extra')}
+        >
+          Delete Extra ({selectedFixableCounts.extra})
+        </Button>
+      </Stack>
+
+      <Stack direction="row" flexWrap="wrap" gap={1}>
+        <Chip label={`Checked ${summary.checked}`} />
+        <Chip color="warning" label={`Missing ${summary.missing}`} />
+        <Chip color="info" label={`Stale ${summary.stale}`} />
+        <Chip color="secondary" label={`Extra ${summary.extra}`} />
+        <Chip color="error" label={`Failed ${summary.failed}`} />
+      </Stack>
+
+      {scanning && <LinearProgress />}
+      {scanError != null && <Alert severity="error">{scanError}</Alert>}
+
+      <Box sx={{ flexGrow: 1, minHeight: 360 }}>
+        <DataGrid
+          rows={issues}
+          columns={columns}
+          checkboxSelection
+          disableRowSelectionOnClick
+          rowSelectionModel={selectionModel}
+          onRowSelectionModelChange={setSelectionModel}
+          getRowId={(row) => row.id}
+          pageSizeOptions={[25, 50, 100]}
+          initialState={{
+            pagination: { paginationModel: { pageSize: 25, page: 0 } }
+          }}
+          localeText={{ noRowsLabel: 'No variant index issues' }}
+        />
+      </Box>
+
+      <Typography variant="caption" color="text.secondary">
+        Results are kept in this browser tab.
+      </Typography>
+    </Stack>
+  )
+}
