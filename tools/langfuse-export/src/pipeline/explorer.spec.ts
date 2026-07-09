@@ -412,12 +412,12 @@ describe('renderExplorer — bilingual rendering (NES-1762)', () => {
     expect(pills.length).toBeGreaterThan(0)
     pills.forEach((pillNode) => {
       // Tint comes from a class in the ramp, not an inline hashed HSL colour.
-      expect(pillNode.className).toMatch(/pill-[a-d]\b/)
+      expect(pillNode.className).toMatch(/pill-[a-c]\b/)
       expect(pillNode.style.backgroundColor).toBeUndefined()
     })
     // Navy is reserved for machine translation; it must not enter the pill ramp.
     const html = renderExplorer(dataset)
-    expect(html).not.toMatch(/\.pill-[a-d] \{[^}]*--jfp-navy/)
+    expect(html).not.toMatch(/\.pill-[a-c] \{[^}]*--jfp-navy/)
   })
 
   it('renders the English translation and the untruncated original for a translated message', () => {

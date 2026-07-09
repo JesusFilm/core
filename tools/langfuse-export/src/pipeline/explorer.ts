@@ -83,6 +83,7 @@ header.top h1 { margin:0 0 4px; font-family:var(--font-sans); font-size:var(--te
 .group-title:hover { background:var(--bg-muted); color:var(--fg-primary); }
 .caret { display:inline-block; width:0.85em; text-align:center; font-size:var(--text-xs); color:var(--fg-secondary); }
 .group-title .gcount { margin-left:auto; font-weight:400; letter-spacing:0; color:var(--fg-secondary); }
+.group-hint { font-family:var(--font-sans); font-size:var(--text-2xs); color:var(--fg-primary); margin:0 0 8px 20px; }
 .facet { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:4px 8px; border-radius:var(--radius-sm); cursor:pointer; user-select:none; font-size:var(--text-sm); color:var(--fg-primary); }
 .facet:hover { background:var(--bg-muted); }
 .facet.active { background:var(--bg-secondary); color:var(--fg-primary); font-weight:600; box-shadow:inset 2px 0 0 var(--border-strong); }
@@ -122,7 +123,6 @@ button.clear:focus-visible { outline:none; box-shadow:var(--focus-ring); border-
 .pill-a { background:var(--jfp-warm-white); border-color:var(--jfp-warm-gray-02); }
 .pill-b { background:var(--jfp-gray-02); border-color:var(--jfp-gray-01); }
 .pill-c { background:var(--jfp-warm-gray-02); border-color:var(--jfp-warm-gray-01); }
-.pill-d { background:color-mix(in srgb, var(--jfp-marigold) 18%, var(--jfp-white)); border-color:color-mix(in srgb, var(--jfp-marigold) 42%, var(--jfp-white)); }
 .empty { color:var(--fg-secondary); font-style:italic; font-family:var(--font-serif); padding:24px 4px; }
 .detail h2 { font-family:var(--font-sans); font-size:var(--text-lg); font-weight:600; letter-spacing:-0.02em; margin:4px 0 8px; color:var(--fg-primary); }
 .detail .sub { color:var(--fg-secondary); font-size:var(--text-xs); margin-bottom:8px; display:flex; flex-wrap:wrap; align-items:center; gap:4px; }
@@ -138,7 +138,7 @@ button.clear:focus-visible { outline:none; box-shadow:var(--focus-ring); border-
 .b-navy { background:var(--jfp-navy); color:var(--jfp-warm-white); }
 .t-original { margin-top:12px; padding-left:12px; border-left:3px solid var(--border-strong); }
 .o-label { font-family:var(--font-sans); font-size:var(--text-2xs); text-transform:uppercase; letter-spacing:0.16em; font-weight:600; color:var(--fg-primary); margin-bottom:4px; }
-.o-text { font-family:var(--font-serif); font-size:var(--text-base); line-height:1.7; color:var(--fg-primary); white-space:pre-wrap; word-wrap:break-word; overflow-wrap:anywhere; }
+.o-text { font-family:var(--font-serif); font-size:var(--text-sm); line-height:1.7; color:var(--fg-primary); white-space:pre-wrap; word-wrap:break-word; overflow-wrap:anywhere; }
 `
 
 // Vanilla-DOM viewer. Deliberately written without template literals so it can
@@ -219,7 +219,7 @@ const VIEWER_JS = `
   // marigold and maroon tints) chosen by the value hash. Deliberately excludes
   // navy (reserved for machine translation) and red (reserved for brand
   // emphasis), so per-value tints never collide with a semantic colour.
-  var PILL_TINTS = ['pill-a', 'pill-b', 'pill-c', 'pill-d'];
+  var PILL_TINTS = ['pill-a', 'pill-b', 'pill-c'];
   function pill(kind, value) {
     var tint = PILL_TINTS[hashOf(kind + ':' + value) % PILL_TINTS.length];
     return el('span', 'pill ' + tint, value);
@@ -369,7 +369,7 @@ const VIEWER_JS = `
     }
   }
 
-  function renderFacetGroup(host, title, items) {
+  function renderFacetGroup(host, title, items, hint) {
     if (items.length === 0) return;
     var expanded = expandedGroups[title] === true;
     // How many of this group's facets are currently selected, so a collapsed
@@ -384,13 +384,18 @@ const VIEWER_JS = `
     header.appendChild(el('span', null, title));
     var count = activeCount > 0 ? activeCount + ' / ' + items.length : String(items.length);
     header.appendChild(el('span', 'gcount', count));
+    if (hint) header.title = title + ' \u2014 ' + hint;
+    host.appendChild(header);
     header.addEventListener('click', function () {
       expandedGroups[title] = !expanded;
       renderFacets();
     });
-    host.appendChild(header);
 
     if (!expanded) return;
+    // 'Language Typed' and 'Journey Language' list overlapping values, so the
+    // difference between them has to be legible at the point of use — not only
+    // in the paragraph above, and never behind a hover.
+    if (hint) host.appendChild(el('div', 'group-hint', hint));
     for (var i = 0; i < items.length; i++) {
       (function (facet) {
         var row = el('div', 'facet' + (selected[facet.key] ? ' active' : ''));
@@ -454,8 +459,8 @@ const VIEWER_JS = `
     // the language people actually typed disagree for 12% of sessions; naming
     // both makes 'Journey: English' above 'MACHINE-TRANSLATED FROM YIDDISH'
     // read as a fact rather than a contradiction.
-    renderFacetGroup(host, 'Language Typed', typed);
-    renderFacetGroup(host, 'Journey Language', languages);
+    renderFacetGroup(host, 'Language Typed', typed, 'what people wrote');
+    renderFacetGroup(host, 'Journey Language', languages, 'how the journey was configured');
     renderFacetGroup(host, 'Themes', themes);
     renderFacetGroup(host, 'Keywords', keywords);
   }
