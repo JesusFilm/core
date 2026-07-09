@@ -142,7 +142,17 @@ export interface DatasetMessage {
 // ipCountry — a region filter), and `language` (the journey's configured
 // BCP-47 language). `count` is the number of sessions carrying the facet
 // (document frequency), shown next to each chip.
-export type FacetKind = 'theme' | 'keyword' | 'country' | 'language'
+// `language` is the journey's CONFIGURED language; `typedLanguage` is what the
+// user actually wrote. They disagree often enough to mislead: 6 sessions on a
+// 'Bengali' journey contain no Bengali at all, and Yiddish/Korean/Hindi were
+// typed but had no journey of their own. Both are facets so the distinction is
+// structural rather than a footnote.
+export type FacetKind =
+  | 'theme'
+  | 'keyword'
+  | 'country'
+  | 'language'
+  | 'typedLanguage'
 
 export interface Facet {
   key: string // stable filter key, e.g. 'keyword:resurrection' or 'theme:Suffering'

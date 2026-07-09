@@ -537,3 +537,70 @@ describe('buildDataset — session language reporting (NES-1762)', () => {
     expect(dataset.summary.suppressedTranslatedKeywordCount).toBe(1)
   })
 })
+
+describe('buildDataset — typed-language facets (NES-1762)', () => {
+  // Journey language and typed language disagree often. Filtering "Bengali" on
+  // the journey facet returns sessions containing no Bengali at all; the typed
+  // facet answers the question an analyst is actually asking.
+  it('facets on what was typed, not on the journey language', () => {
+    const conversations = [
+      // Journey says Bengali; the user wrote English throughout.
+      conv({
+        sessionId: 's1',
+        language: 'Bengali (Indian)',
+        turns: [
+          turn({
+            userMessage: 'who is Jesus',
+            assistantReply: 'He is the Christ'
+          })
+        ]
+      }),
+      // Journey says English; the user wrote Afrikaans.
+      conv({
+        sessionId: 's2',
+        language: 'en',
+        turns: [turn({ userMessage: 'goeie dag', assistantReply: 'good day' })]
+      })
+    ]
+    const translations = new Map<string, Translation>([
+      ['who is Jesus', { sourceLanguage: 'en' }],
+      ['He is the Christ', { sourceLanguage: 'en' }],
+      ['goeie dag', { sourceLanguage: 'af', english: 'good day' }],
+      ['good day', { sourceLanguage: 'en' }]
+    ])
+    const dataset = buildDataset(
+      conversations,
+      window,
+      emptyFacets(),
+      null,
+      0,
+      '2026-05-31T00:00:00.000Z',
+      translations
+    )
+    const typed = dataset.facets.filter((f) => f.kind === 'typedLanguage')
+    expect(typed.map((f) => `${f.label}=${f.count}`).sort()).toEqual([
+      'Afrikaans=1',
+      'English=2'
+    ])
+    // The Bengali-journey session contains no Bengali, so it must not appear
+    // under a typed-Bengali facet — there isn't one.
+    expect(typed.find((f) => f.label === 'Bengali')).toBeUndefined()
+    expect(dataset.sessions[0].facetKeys).toContain('typedLanguage:English')
+    expect(dataset.sessions[0].facetKeys).not.toContain('typedLanguage:Bengali')
+    expect(dataset.sessions[1].facetKeys).toContain('typedLanguage:Afrikaans')
+    // A session that mixes languages carries a key for each.
+    expect(dataset.sessions[1].facetKeys).toContain('typedLanguage:English')
+  })
+
+  it('emits no typed-language facets when no translation pass ran', () => {
+    const dataset = buildDataset(
+      [conv({ sessionId: 's1', language: 'en' })],
+      window,
+      emptyFacets(),
+      null,
+      0,
+      '2026-05-31T00:00:00.000Z'
+    )
+    expect(dataset.facets.filter((f) => f.kind === 'typedLanguage')).toEqual([])
+  })
+})

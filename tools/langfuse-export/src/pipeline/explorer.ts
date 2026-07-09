@@ -61,11 +61,11 @@ header.top h1 { margin:0 0 4px; font-family:var(--font-sans); font-size:var(--te
 .meta { color:var(--fg-secondary); font-size:var(--text-xs); }
 .stats { margin-top:8px; display:flex; flex-wrap:wrap; gap:4px 24px; font-size:var(--text-xs); color:var(--fg-secondary); }
 .stats b { color:var(--fg-primary); font-weight:600; }
-.note { margin-top:12px; font-size:var(--text-xs); line-height:1.5; background:var(--bg-secondary); border:1px solid var(--border-default); border-left:3px solid var(--jfp-navy); padding:12px 16px; border-radius:var(--radius-md); color:var(--fg-secondary); }
+.note { margin-top:12px; font-size:var(--text-xs); line-height:1.5; background:var(--bg-secondary); border:1px solid var(--border-default); border-left:3px solid var(--border-strong); padding:12px 16px; border-radius:var(--radius-md); color:var(--fg-secondary); }
 .note strong { color:var(--fg-primary); font-weight:600; }
 .note-translation { border-color:var(--jfp-navy); box-shadow:var(--shadow-xs); }
 .legend { display:flex; flex-wrap:wrap; gap:8px 16px; margin-top:8px; font-size:var(--text-2xs); }
-.legend-item { display:inline-flex; align-items:center; gap:6px; color:var(--fg-secondary); }
+.legend-item { display:inline-flex; align-items:center; gap:8px; color:var(--fg-secondary); }
 .swatch { width:10px; height:10px; border-radius:var(--radius-xs); display:inline-block; flex:0 0 auto; }
 .swatch.ink-original { background:var(--fg-primary); }
 .swatch.ink-translated { background:var(--jfp-navy); }
@@ -86,13 +86,13 @@ header.top h1 { margin:0 0 4px; font-family:var(--font-sans); font-size:var(--te
 .facet { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:4px 8px; border-radius:var(--radius-sm); cursor:pointer; user-select:none; font-size:var(--text-sm); color:var(--fg-primary); }
 .facet:hover { background:var(--bg-muted); }
 .facet.active { background:var(--bg-secondary); color:var(--fg-primary); font-weight:600; box-shadow:inset 2px 0 0 var(--border-strong); }
-.facet .l { flex:1 1 auto; min-width:0; display:flex; align-items:baseline; gap:6px; }
+.facet .l { flex:1 1 auto; min-width:0; display:flex; align-items:baseline; gap:8px; }
 .facet-tmark { width:6px; height:6px; border-radius:var(--radius-pill); background:var(--jfp-navy); display:inline-block; flex:0 0 auto; align-self:center; }
 .facet-gloss { color:var(--jfp-navy); }
 .facet-original { font-size:var(--text-xs); color:var(--fg-secondary); }
 .facet .c { font-size:var(--text-2xs); color:var(--fg-secondary); flex:0 0 auto; }
 .facet.active .c { color:var(--fg-primary); }
-.facet-legend { display:flex; align-items:center; gap:6px; font-size:var(--text-2xs); line-height:1.4; color:var(--fg-secondary); margin:4px 0 8px; }
+.facet-legend { display:flex; align-items:center; gap:8px; font-size:var(--text-2xs); line-height:1.5; color:var(--fg-secondary); margin:4px 0 8px; }
 .toolbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px; }
 .count-line { font-size:var(--text-xs); color:var(--fg-secondary); }
 button.clear { font-family:var(--font-sans); font-size:var(--text-xs); font-weight:600; color:var(--fg-primary); border:1px solid var(--border-default); background:var(--bg-primary); border-radius:var(--radius-pill); padding:4px 12px; cursor:pointer; transition:background 120ms var(--ease-out), border-color 120ms var(--ease-out); }
@@ -108,14 +108,17 @@ button.clear:focus-visible { outline:none; box-shadow:var(--focus-ring); border-
 .card .sub { font-size:var(--text-xs); color:var(--fg-secondary); margin:4px 0; display:flex; flex-wrap:wrap; align-items:center; gap:4px; }
 .preview { margin-top:2px; }
 .preview-line { font-family:var(--font-serif); font-size:var(--text-sm); line-height:1.5; color:var(--fg-primary); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+/* A session-level statement about the conversation, deliberately NOT the navy
+   per-message badge: it must never read as a label for the line above it. */
+.card-summary { margin-top:8px; font-family:var(--font-sans); font-size:var(--text-2xs); letter-spacing:0.04em; color:var(--fg-primary); }
 .preview-en { font-family:var(--font-serif); font-size:var(--text-sm); line-height:1.5; color:var(--jfp-navy); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-.preview-original { margin-top:4px; padding-left:8px; border-left:2px solid var(--jfp-navy); font-family:var(--font-serif); font-size:var(--text-xs); line-height:1.55; color:var(--fg-primary); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.preview-original { margin-top:4px; padding-left:8px; border-left:2px solid var(--border-strong); font-family:var(--font-serif); font-size:var(--text-xs); line-height:1.5; color:var(--fg-primary); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .langmark { display:inline-block; font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; letter-spacing:0.04em; color:var(--jfp-white); background:var(--jfp-navy); border-radius:var(--radius-pill); padding:4px 10px; white-space:nowrap; max-width:100%; overflow:hidden; text-overflow:ellipsis; }
 .card-langs { margin:8px 0 0; }
 .detail-langs { margin:0 0 8px; }
 .o-cue { font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; text-transform:uppercase; letter-spacing:0.16em; color:var(--fg-secondary); margin-right:6px; }
 .chip { display:inline-block; font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; letter-spacing:0.04em; background:var(--jfp-warm-white); color:var(--fg-primary); border:1px solid var(--border-default); border-radius:var(--radius-pill); padding:4px 10px; margin:4px 8px 4px 0; }
-.pill { display:inline-block; font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; line-height:1.4; color:var(--fg-primary); border:1px solid transparent; border-radius:var(--radius-pill); padding:4px 10px; margin-right:6px; white-space:nowrap; vertical-align:middle; }
+.pill { display:inline-block; font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; line-height:1.5; color:var(--fg-primary); letter-spacing:0.04em; border:1px solid transparent; border-radius:var(--radius-pill); padding:4px 10px; margin-right:8px; white-space:nowrap; vertical-align:middle; }
 .pill-a { background:var(--jfp-warm-white); border-color:var(--jfp-warm-gray-02); }
 .pill-b { background:var(--jfp-gray-02); border-color:var(--jfp-gray-01); }
 .pill-c { background:var(--jfp-warm-gray-02); border-color:var(--jfp-warm-gray-01); }
@@ -133,9 +136,9 @@ button.clear:focus-visible { outline:none; box-shadow:var(--focus-ring); border-
 .t-en-text { font-family:var(--font-serif); font-size:var(--text-base); line-height:1.7; color:var(--jfp-navy); white-space:pre-wrap; word-wrap:break-word; overflow-wrap:anywhere; }
 .badge { display:inline-block; font-family:var(--font-sans); font-weight:600; font-size:var(--text-2xs); letter-spacing:0.04em; padding:4px 10px; border-radius:var(--radius-pill); }
 .b-navy { background:var(--jfp-navy); color:var(--jfp-warm-white); }
-.t-original { margin-top:12px; padding-left:12px; border-left:3px solid var(--jfp-navy); }
+.t-original { margin-top:12px; padding-left:12px; border-left:3px solid var(--border-strong); }
 .o-label { font-family:var(--font-sans); font-size:var(--text-2xs); text-transform:uppercase; letter-spacing:0.16em; font-weight:600; color:var(--fg-primary); margin-bottom:4px; }
-.o-text { font-family:var(--font-serif); font-size:var(--text-sm); line-height:1.7; color:var(--fg-primary); white-space:pre-wrap; word-wrap:break-word; overflow-wrap:anywhere; }
+.o-text { font-family:var(--font-serif); font-size:var(--text-base); line-height:1.7; color:var(--fg-primary); white-space:pre-wrap; word-wrap:break-word; overflow-wrap:anywhere; }
 `
 
 // Vanilla-DOM viewer. Deliberately written without template literals so it can
@@ -253,7 +256,8 @@ const VIEWER_JS = `
     var wrap = el('div', className);
     var text;
     if (compact && list.length > 1) {
-      text = 'MACHINE-TRANSLATED \u00b7 ' + list.length + ' LANGUAGES';
+      text = 'MACHINE-TRANSLATED FROM ' + langName(list[0]).toUpperCase() +
+        ' +' + (list.length - 1) + ' MORE';
     } else {
       text = 'MACHINE-TRANSLATED FROM ' + languagesLabel(list);
     }
@@ -424,8 +428,10 @@ const VIEWER_JS = `
       return;
     }
     host.appendChild(el('div', 'meta', 'Select facets to narrow. Within a group any match counts; across groups all must match.'));
+    host.appendChild(el('div', 'facet-legend', '\u201cLanguage Typed\u201d is what people wrote. \u201cJourney Language\u201d is the journey\u2019s configured language \u2014 the two often differ.'));
     var countries = [];
     var languages = [];
+    var typed = [];
     var themes = [];
     var keywords = [];
     var hasGloss = false;
@@ -433,6 +439,7 @@ const VIEWER_JS = `
       if (facets[i].labelEnglish) hasGloss = true;
       if (facets[i].kind === 'country') countries.push(facets[i]);
       else if (facets[i].kind === 'language') languages.push(facets[i]);
+      else if (facets[i].kind === 'typedLanguage') typed.push(facets[i]);
       else if (facets[i].kind === 'theme') themes.push(facets[i]);
       else keywords.push(facets[i]);
     }
@@ -443,6 +450,11 @@ const VIEWER_JS = `
       host.appendChild(legend);
     }
     renderFacetGroup(host, 'Country', countries);
+    // Two language facets, deliberately. The journey's configured language and
+    // the language people actually typed disagree for 12% of sessions; naming
+    // both makes 'Journey: English' above 'MACHINE-TRANSLATED FROM YIDDISH'
+    // read as a fact rather than a contradiction.
+    renderFacetGroup(host, 'Language Typed', typed);
     renderFacetGroup(host, 'Journey Language', languages);
     renderFacetGroup(host, 'Themes', themes);
     renderFacetGroup(host, 'Keywords', keywords);
@@ -477,10 +489,15 @@ const VIEWER_JS = `
         // Name every language actually detected in the session's messages, so a
         // mixed session under an 'English' journey pill is not read as English.
         if (session.translatedLanguages && session.translatedLanguages.length > 0) {
-          card.appendChild(languagesMarker('card-langs', session.translatedLanguages, true));
         }
         var preview = el('div', 'preview');
         if (session.firstUserMessageEnglish) {
+          // The navy badge is a per-message label. It may ONLY sit above text a
+          // machine actually wrote — above a human-typed English preview it
+          // would brand that human's words as machine output.
+          preview.appendChild(
+            languagesMarker('card-langs', [session.sourceLanguage], false)
+          );
           // English preview is the default reading path (navy); the original
           // follows beneath, cued by the same uppercase ORIGINAL label the
           // conversation view uses so the two lines are never confused.
@@ -496,6 +513,16 @@ const VIEWER_JS = `
           preview.appendChild(el('div', 'preview-line', session.firstUserMessage || '(no user text)'));
         }
         card.appendChild(preview);
+        // Session-level fact, in a different register from the per-message
+        // badge: it describes the conversation, never the preview line above it.
+        // Skipped when the preview's own badge already says the same thing.
+        var langs = session.translatedLanguages || [];
+        var previewCovers = session.sourceLanguage && langs.length === 1 &&
+          langs[0] === session.sourceLanguage;
+        if (langs.length > 0 && !previewCovers) {
+          card.appendChild(el('div', 'card-summary',
+            'Conversation contains machine-translated ' + languagesLabel(langs).toLowerCase()));
+        }
         card.addEventListener('click', function () {
           activeId = session.id;
           renderList();

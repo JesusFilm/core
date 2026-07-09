@@ -512,17 +512,18 @@ describe('renderExplorer — bilingual rendering (NES-1762)', () => {
     expect(original.getAttribute('dir')).toBe('auto')
   })
 
-  // The narrow card summarises so the chip is neither wrapped nor clipped; the
-  // wide detail header names the languages.
-  it('summarises languages on the card and names them in the detail header', () => {
+  // The navy badge labels only the line beneath it; the session-level fact sits
+  // below the preview in a different register; the detail header names them all.
+  it('labels the preview line, and states the session fact separately', () => {
     const doc = runViewer(translatedDataset)
 
     const cardMarker = must(firstByClass(getHost(doc, 'list'), 'card-langs'))
-    expect(cardMarker.textContent).toBe('MACHINE-TRANSLATED \u00b7 2 LANGUAGES')
-    // The names are still reachable without opening the session.
-    expect(
-      must(firstByClass(getHost(doc, 'list'), 'langmark')).title
-    ).toContain('BENGALI, ARABIC')
+    expect(cardMarker.textContent).toBe('MACHINE-TRANSLATED FROM BENGALI')
+
+    const summary = must(firstByClass(getHost(doc, 'list'), 'card-summary'))
+    expect(summary.textContent).toBe(
+      'Conversation contains machine-translated bengali, arabic'
+    )
 
     openFirstSession(doc)
     const detailMarker = must(
@@ -559,7 +560,7 @@ describe('renderExplorer — bilingual rendering (NES-1762)', () => {
 
     // The narrow card never wraps or clips: it states the count instead.
     const cardMarker = must(firstByClass(getHost(doc, 'list'), 'card-langs'))
-    expect(cardMarker.textContent).toBe('MACHINE-TRANSLATED \u00b7 4 LANGUAGES')
+    expect(cardMarker.textContent).toBe('MACHINE-TRANSLATED FROM AFRIKAANS')
   })
 
   it('discloses machine translation in the header with named languages and a legend', () => {
@@ -582,5 +583,49 @@ describe('renderExplorer — bilingual rendering (NES-1762)', () => {
     // Legend swatches for both inks so a reader landing mid-page can decode them.
     expect(firstByClass(top, 'ink-translated')).not.toBeNull()
     expect(firstByClass(top, 'ink-original')).not.toBeNull()
+  })
+})
+
+describe('renderExplorer — the navy badge never brands human text (NES-1762)', () => {
+  // A card whose first message is human English, but whose later messages were
+  // translated. The navy badge must NOT sit above that human English line.
+  const englishPreviewMixed: InsightsDataset = {
+    ...translatedDataset,
+    sessions: [
+      {
+        ...translatedDataset.sessions[0],
+        firstUserMessage: 'is the bible reliable?',
+        firstUserMessageEnglish: undefined,
+        sourceLanguage: undefined,
+        translatedLanguages: ['Afrikaans', 'Korean']
+      }
+    ]
+  }
+
+  it('omits the navy badge when the preview line is human English', () => {
+    const doc = runViewer(englishPreviewMixed)
+    const list = getHost(doc, 'list')
+    expect(firstByClass(list, 'card-langs')).toBeNull()
+    expect(firstByClass(list, 'preview-en')).toBeNull()
+    // ...but the session still discloses that it contains translations.
+    const summary = must(firstByClass(list, 'card-summary'))
+    expect(summary.textContent).toBe(
+      'Conversation contains machine-translated afrikaans, korean'
+    )
+  })
+
+  it('omits the redundant summary when the preview badge already says it', () => {
+    const single: InsightsDataset = {
+      ...translatedDataset,
+      sessions: [
+        { ...translatedDataset.sessions[0], translatedLanguages: ['bn'] }
+      ]
+    }
+    const doc = runViewer(single)
+    const list = getHost(doc, 'list')
+    expect(must(firstByClass(list, 'card-langs')).textContent).toBe(
+      'MACHINE-TRANSLATED FROM BENGALI'
+    )
+    expect(firstByClass(list, 'card-summary')).toBeNull()
   })
 })

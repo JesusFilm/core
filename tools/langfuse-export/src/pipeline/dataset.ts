@@ -137,6 +137,8 @@ export function buildDataset(
   let translatedMessageCount = 0
   // Non-'en' source language -> number of translated messages carrying it.
   const sourceLanguageCounts = new Map<string, number>()
+  // Display name of a language actually typed -> number of sessions using it.
+  const typedLanguageCounts = new Map<string, number>()
 
   const sessions: DatasetSession[] = ordered.map((conversation, index) => {
     const messages = toMessages(conversation, translations)
@@ -166,6 +168,27 @@ export function buildDataset(
     const translatedLanguages = Array.from(sessionLanguageCounts.entries())
       .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
       .map(([code]) => code)
+
+    // What was actually TYPED, as display names. A message with no translation
+    // was English; every other message names its detected source. This is the
+    // filter an analyst wants — the journey's configured language is a different
+    // question, and on this corpus the two disagree for 12% of sessions.
+    const typedLanguages = new Set<string>()
+    if (translations != null) {
+      for (const message of messages) {
+        typedLanguages.add(
+          message.sourceLanguage == null
+            ? 'English'
+            : normalizeLanguageLabel(message.sourceLanguage)
+        )
+      }
+    }
+    for (const name of typedLanguages) {
+      typedLanguageCounts.set(name, (typedLanguageCounts.get(name) ?? 0) + 1)
+    }
+    const typedLanguageKeys = Array.from(typedLanguages)
+      .sort()
+      .map((name) => `typedLanguage:${name}`)
 
     const themes = themesBySession?.get(conversation.sessionId) ?? []
     for (const label of themes) {
@@ -208,6 +231,7 @@ export function buildDataset(
       facetKeys: [
         ...countryKeys,
         ...languageKeys,
+        ...typedLanguageKeys,
         ...themeKeys,
         ...keywordKeys
       ],
@@ -268,6 +292,15 @@ export function buildDataset(
     }
   }
 
+  const typedLanguageFacets: Facet[] = Array.from(typedLanguageCounts.entries())
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([label, count]) => ({
+      key: `typedLanguage:${label}`,
+      label,
+      kind: 'typedLanguage' as const,
+      count
+    }))
+
   const sourceLanguages = Array.from(sourceLanguageCounts.entries())
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
     .map(([code]) => code)
@@ -290,6 +323,7 @@ export function buildDataset(
       sourceLanguages
     },
     facets: [
+      ...typedLanguageFacets,
       ...facets.countryFacets,
       ...facets.languageFacets,
       ...themeFacets,
