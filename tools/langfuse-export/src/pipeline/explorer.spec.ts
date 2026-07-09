@@ -522,7 +522,7 @@ describe('renderExplorer — bilingual rendering (NES-1762)', () => {
 
     const summary = must(firstByClass(getHost(doc, 'list'), 'card-summary'))
     expect(summary.textContent).toBe(
-      'Conversation contains machine-translated bengali, arabic'
+      'Contains messages machine-translated from Bengali and Arabic'
     )
 
     openFirstSession(doc)
@@ -580,9 +580,13 @@ describe('renderExplorer — bilingual rendering (NES-1762)', () => {
       'in full in the conversation view'
     )
 
-    // Legend swatches for both inks so a reader landing mid-page can decode them.
-    expect(firstByClass(top, 'ink-translated')).not.toBeNull()
-    expect(firstByClass(top, 'ink-original')).not.toBeNull()
+    // The legend sets each label in the very ink it names, so it demonstrates the
+    // code rather than asserting it. Two 10px swatches read as one colour.
+    const translatedSample = must(firstByClass(top, 'ink-translated-text'))
+    const originalSample = must(firstByClass(top, 'ink-original-text'))
+    expect(translatedSample.textContent).toBe('English (machine translation)')
+    expect(originalSample.textContent).toBe('Original message')
+    expect(firstByClass(top, 'swatch')).toBeNull()
   })
 })
 
@@ -610,7 +614,7 @@ describe('renderExplorer — the navy badge never brands human text (NES-1762)',
     // ...but the session still discloses that it contains translations.
     const summary = must(firstByClass(list, 'card-summary'))
     expect(summary.textContent).toBe(
-      'Conversation contains machine-translated afrikaans, korean'
+      'Contains messages machine-translated from Afrikaans and Korean'
     )
   })
 

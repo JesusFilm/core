@@ -66,9 +66,6 @@ header.top h1 { margin:0 0 4px; font-family:var(--font-sans); font-size:var(--te
 .note-translation { border-color:var(--jfp-navy); box-shadow:var(--shadow-xs); }
 .legend { display:flex; flex-wrap:wrap; gap:8px 16px; margin-top:8px; font-size:var(--text-2xs); }
 .legend-item { display:inline-flex; align-items:center; gap:8px; color:var(--fg-secondary); }
-.swatch { width:10px; height:10px; border-radius:var(--radius-xs); display:inline-block; flex:0 0 auto; }
-.swatch.ink-original { background:var(--fg-primary); }
-.swatch.ink-translated { background:var(--jfp-navy); }
 /* The legend is set in the very inks it names, so it demonstrates the code
    instead of merely asserting it (two 10px swatches read as one colour). */
 .legend-sample { font-family:var(--font-serif); font-size:var(--text-xs); }
@@ -82,7 +79,7 @@ header.top h1 { margin:0 0 4px; font-family:var(--font-sans); font-size:var(--te
 .group-title { font-family:var(--font-sans); font-size:var(--text-2xs); text-transform:uppercase; letter-spacing:0.16em; font-weight:600; color:var(--fg-secondary); margin:12px 0 4px; padding:4px 6px; display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none; border-radius:var(--radius-sm); }
 .group-title:hover { background:var(--bg-muted); color:var(--fg-primary); }
 .caret { display:inline-block; width:0.85em; text-align:center; font-size:var(--text-xs); color:var(--fg-secondary); }
-.group-title .gcount { margin-left:auto; font-weight:400; letter-spacing:0; color:var(--fg-secondary); }
+.group-title .gcount { margin-left:auto; font-weight:400; letter-spacing:0; color:var(--fg-primary); }
 .group-hint { font-family:var(--font-sans); font-size:var(--text-2xs); color:var(--fg-primary); margin:0 0 8px 20px; }
 .facet { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:4px 8px; border-radius:var(--radius-sm); cursor:pointer; user-select:none; font-size:var(--text-sm); color:var(--fg-primary); }
 .facet:hover { background:var(--bg-muted); }
@@ -91,7 +88,7 @@ header.top h1 { margin:0 0 4px; font-family:var(--font-sans); font-size:var(--te
 .facet-tmark { width:6px; height:6px; border-radius:var(--radius-pill); background:var(--jfp-navy); display:inline-block; flex:0 0 auto; align-self:center; }
 .facet-gloss { color:var(--jfp-navy); }
 .facet-original { font-size:var(--text-xs); color:var(--fg-secondary); }
-.facet .c { font-size:var(--text-2xs); color:var(--fg-secondary); flex:0 0 auto; }
+.facet .c { font-size:var(--text-2xs); color:var(--fg-primary); flex:0 0 auto; }
 .facet.active .c { color:var(--fg-primary); }
 .facet-legend { display:flex; align-items:center; gap:8px; font-size:var(--text-2xs); line-height:1.5; color:var(--fg-secondary); margin:4px 0 8px; }
 .toolbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px; }
@@ -107,14 +104,14 @@ button.clear:focus-visible { outline:none; box-shadow:var(--focus-ring); border-
 .card.active { border-color:var(--border-strong); box-shadow:0 0 0 1px var(--border-strong); }
 .card .label { font-family:var(--font-sans); font-weight:600; color:var(--fg-primary); }
 .card .sub { font-size:var(--text-xs); color:var(--fg-secondary); margin:4px 0; display:flex; flex-wrap:wrap; align-items:center; gap:4px; }
-.preview { margin-top:2px; }
+.preview { margin-top:4px; }
 .preview-line { font-family:var(--font-serif); font-size:var(--text-sm); line-height:1.5; color:var(--fg-primary); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 /* A session-level statement about the conversation, deliberately NOT the navy
    per-message badge: it must never read as a label for the line above it. */
 .card-summary { margin-top:8px; font-family:var(--font-sans); font-size:var(--text-2xs); letter-spacing:0.04em; color:var(--fg-primary); }
 .preview-en { font-family:var(--font-serif); font-size:var(--text-sm); line-height:1.5; color:var(--jfp-navy); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .preview-original { margin-top:4px; padding-left:8px; border-left:2px solid var(--border-strong); font-family:var(--font-serif); font-size:var(--text-xs); line-height:1.5; color:var(--fg-primary); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-.langmark { display:inline-block; font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; letter-spacing:0.04em; color:var(--jfp-white); background:var(--jfp-navy); border-radius:var(--radius-pill); padding:4px 10px; white-space:nowrap; max-width:100%; overflow:hidden; text-overflow:ellipsis; }
+.langmark { display:inline-block; font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; letter-spacing:0.04em; color:var(--jfp-warm-white); background:var(--jfp-navy); border-radius:var(--radius-pill); padding:4px 10px; white-space:nowrap; max-width:100%; overflow:hidden; text-overflow:ellipsis; }
 .card-langs { margin:8px 0 0; }
 .detail-langs { margin:0 0 8px; }
 .o-cue { font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; text-transform:uppercase; letter-spacing:0.16em; color:var(--fg-secondary); margin-right:6px; }
@@ -252,6 +249,13 @@ const VIEWER_JS = `
   // The card column is narrow; the detail pane is not. A chip that must not wrap
   // must also not be clipped, so the card summarises ('MACHINE-TRANSLATED . 3
   // LANGUAGES') and the detail header names them.
+  // Title-cased, comma-joined, with a final 'and' — prose, not a chip label.
+  function languageNames(list) {
+    var names = [];
+    for (var i = 0; i < list.length; i++) names.push(langName(list[i]));
+    if (names.length === 1) return names[0];
+    return names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+  }
   function languagesMarker(className, list, compact) {
     var wrap = el('div', className);
     var text;
@@ -357,10 +361,8 @@ const VIEWER_JS = `
       note.appendChild(line);
       var legend = el('div', 'legend');
       var lt = el('span', 'legend-item');
-      lt.appendChild(el('span', 'swatch ink-translated'));
       lt.appendChild(el('span', 'legend-sample ink-translated-text', 'English (machine translation)'));
       var lo = el('span', 'legend-item');
-      lo.appendChild(el('span', 'swatch ink-original'));
       lo.appendChild(el('span', 'legend-sample ink-original-text', 'Original message'));
       legend.appendChild(lt);
       legend.appendChild(lo);
@@ -526,7 +528,7 @@ const VIEWER_JS = `
           langs[0] === session.sourceLanguage;
         if (langs.length > 0 && !previewCovers) {
           card.appendChild(el('div', 'card-summary',
-            'Conversation contains machine-translated ' + languagesLabel(langs).toLowerCase()));
+            'Contains messages machine-translated from ' + languageNames(langs)));
         }
         card.addEventListener('click', function () {
           activeId = session.id;
