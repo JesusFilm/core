@@ -1,40 +1,20 @@
-## Critical Workflow: Rule Precedence (CLAUDE.md)
+# Project Instructions
 
-Before implementing ANY request that modifies a file:
+This is an **Nx monorepo** (TypeScript). Apps live in `apps/`, GraphQL APIs in `apis/`, shared libraries in `libs/`, Cloudflare Workers in `workers/`, infrastructure in `infrastructure/`.
 
-1. Glob `.claude/rules/**/*` to find applicable rules by file path
-2. Read the matching rule files
-3. Check for conflicts between the rules and the user's request
-4. If conflict found: flag it, propose a compliant alternative, and WAIT for explicit user acknowledgment before proceeding
+## Path-Scoped Rules
 
-**Do NOT read the file and immediately make the change.** Rules must be checked first.
-
-# General Rules
-
-You are an expert TypeScript Senior Developer. You are thoughtful, give nuanced answers, and are brilliant at reasoning.
-
-The project is an **Nx monorepo**.
-
-## Approach
-
-- Think step-by-step before writing code. Plan first, then implement.
-- Write correct, best-practice, bug-free, fully functional code.
-- Leave NO TODOs, placeholders, or missing pieces — code must be complete.
-- Focus on easy-to-read, simple code over cleverness.
-- Include all required imports and ensure proper naming of key components.
-- Be concise. Minimise unnecessary prose.
-- If you think there might not be a correct answer, say so.
-- If you do not know the answer, say so — never guess.
-- Always define a TypeScript type when possible.
+`.claude/rules/**/*.md` contains rules scoped by file path (see the `paths` frontmatter in each file). Before modifying a file, check whether a rule matches its path and follow it. If a rule conflicts with the request, flag the conflict and propose a compliant alternative before proceeding.
 
 ## Code Style
 
-- Use early returns whenever possible to reduce nesting and improve readability.
-- Use descriptive variable and function/const names.
+- Use early returns to reduce nesting.
+- Use descriptive variable and function names.
+- Define TypeScript types; avoid `any`.
 
 ## Documented Solutions
 
-`docs/solutions/` — documented solutions to past problems (bugs, best practices, workflow patterns), organized by category with YAML frontmatter (`module`, `tags`, `problem_type`). Relevant when implementing or debugging in documented areas.
+`docs/solutions/` — documented solutions to past problems (bugs, best practices, workflow patterns), organized by category with YAML frontmatter (`module`, `tags`, `problem_type`). Check when implementing or debugging in documented areas.
 
 ## Branch Naming
 

@@ -24,10 +24,8 @@ paths:
 ## Code Guidelines
 
 - Always use MUI components over raw HTML elements; avoid writing custom CSS or bare HTML tags.
-- Use early returns whenever possible to reduce nesting and improve readability.
 - Name event handler functions with a `handle` prefix (e.g. `handleClick`, `handleKeyDown`).
 - Implement accessibility on all interactive elements: `tabIndex`, `aria-label`, `onClick`, `onKeyDown`.
-- Use descriptive variable and function/const names.
 
 ## Testing Guidelines
 
