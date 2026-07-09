@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { SnackbarProvider } from 'notistack'
 
 import {
+  GET_JESUS_FILM_VARIANTS,
   GET_LANGUAGE,
   LanguageForm,
   UPDATE_LANGUAGE,
@@ -75,6 +76,36 @@ const getLanguageMock = {
   result: { data: { language } }
 }
 
+const getJesusFilmVariantsMock = {
+  request: {
+    query: GET_JESUS_FILM_VARIANTS,
+    variables: { id: '1_jf-0-0', languageId: '529' }
+  },
+  result: {
+    data: {
+      adminVideo: {
+        id: '1_jf-0-0',
+        title: [{ value: 'Jesus Film', __typename: 'VideoTitle' }],
+        variants: [
+          {
+            id: '20615_1_jf-0-0',
+            version: 3,
+            language: { id: '20615', __typename: 'Language' },
+            __typename: 'VideoVariant'
+          },
+          {
+            id: '529_1_jf-0-0',
+            version: 1,
+            language: { id: '529', __typename: 'Language' },
+            __typename: 'VideoVariant'
+          }
+        ],
+        __typename: 'Video'
+      }
+    }
+  }
+}
+
 const updatedLanguage = {
   ...language,
   bcp47: 'zh-Hans',
@@ -105,6 +136,7 @@ function renderForm(): void {
     <MockedProvider
       mocks={[
         getLanguageMock,
+        getJesusFilmVariantsMock,
         {
           request: {
             query: UPDATE_LANGUAGE,
@@ -181,7 +213,7 @@ describe('LanguageForm', () => {
 
   it('should render loading state inside the editor shell', () => {
     render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider mocks={[getLanguageMock, getJesusFilmVariantsMock]}>
         <SnackbarProvider>
           <LanguageForm />
         </SnackbarProvider>
@@ -213,6 +245,16 @@ describe('LanguageForm', () => {
     fireEvent.click(screen.getAllByRole('button', { name: 'Save' })[0])
 
     expect(await screen.findByText('Language saved')).toBeInTheDocument()
+  })
+
+  it('should show the linked Jesus Film version', async () => {
+    renderForm()
+
+    expect(await screen.findByText('Jesus Film -')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'v3' })).toHaveAttribute(
+      'href',
+      '/videos/1_jf-0-0/audio/20615_1_jf-0-0'
+    )
   })
 
   it('should return to the language list', async () => {

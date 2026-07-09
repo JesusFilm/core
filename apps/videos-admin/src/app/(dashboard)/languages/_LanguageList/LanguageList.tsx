@@ -6,6 +6,7 @@ import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
 import InputAdornment from '@mui/material/InputAdornment'
+import Link from '@mui/material/Link'
 import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
@@ -18,6 +19,7 @@ import {
   GridRowsProp,
   gridClasses
 } from '@mui/x-data-grid'
+import NextLink from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   ReactElement,
@@ -30,6 +32,7 @@ import {
 
 const DEFAULT_LANGUAGE_ID = '529'
 const DEFAULT_PAGE_SIZE = 25
+const JESUS_FILM_VIDEO_ID = '1_jf-0-0'
 
 export const GET_LANGUAGES = gql`
   query GetLanguagesForAdmin(
@@ -62,6 +65,24 @@ export const GET_LANGUAGES = gql`
   }
 `
 
+export const GET_JESUS_FILM_VARIANTS = gql`
+  query GetJesusFilmLanguageVersions($id: ID!, $languageId: ID) {
+    adminVideo(id: $id) {
+      id
+      title(languageId: $languageId) {
+        value
+      }
+      variants(input: { onlyPublished: false }) {
+        id
+        version
+        language {
+          id
+        }
+      }
+    }
+  }
+`
+
 interface LanguageName {
   id: string
   languageId: string
@@ -84,6 +105,22 @@ interface GetLanguagesData {
   adminLanguagesCount: number
 }
 
+interface JesusFilmVariant {
+  id: string
+  version: number
+  language: {
+    id: string
+  }
+}
+
+interface GetJesusFilmData {
+  adminVideo: {
+    id: string
+    title: Array<{ value: string }>
+    variants: JesusFilmVariant[]
+  }
+}
+
 interface AdminLanguagesFilter {
   hasVideos?: boolean
 }
@@ -96,6 +133,11 @@ interface GetLanguagesVariables {
   nameLanguageId: string
 }
 
+interface GetJesusFilmVariables {
+  id: string
+  languageId: string
+}
+
 interface LanguageRow {
   id: string
   name: string
@@ -105,6 +147,8 @@ interface LanguageRow {
   iso3: string
   slug: string
   hasVideos: boolean
+  jesusFilmTitle: string
+  jesusFilmVariant?: JesusFilmVariant
 }
 
 function getPrimaryName(names: LanguageName[]): LanguageName | undefined {
@@ -127,7 +171,7 @@ export function LanguageList(): ReactElement {
   const paginationModelRef = useRef(paginationModel)
   const [searchTerm, setSearchTerm] = useState('')
   const [term, setTerm] = useState<string>()
-  const [hasVideosFilter, setHasVideosFilter] = useState('all')
+  const [hasVideosFilter, setHasVideosFilter] = useState('yes')
   const [gridMounted, setGridMounted] = useState(false)
 
   useEffect(() => {
@@ -185,6 +229,26 @@ export function LanguageList(): ReactElement {
       }
     }
   )
+  const { data: jesusFilmData, loading: jesusFilmLoading } = useQuery<
+    GetJesusFilmData,
+    GetJesusFilmVariables
+  >(GET_JESUS_FILM_VARIANTS, {
+    variables: { id: JESUS_FILM_VIDEO_ID, languageId: DEFAULT_LANGUAGE_ID }
+  })
+
+  const jesusFilmTitle =
+    jesusFilmData?.adminVideo.title[0]?.value ?? JESUS_FILM_VIDEO_ID
+
+  const jesusFilmVariantsByLanguageId = useMemo(
+    () =>
+      new Map(
+        (jesusFilmData?.adminVideo.variants ?? []).map((variant) => [
+          variant.language.id,
+          variant
+        ])
+      ),
+    [jesusFilmData?.adminVideo.variants]
+  )
 
   const rows: GridRowsProp<LanguageRow> = useMemo(
     () =>
@@ -203,10 +267,12 @@ export function LanguageList(): ReactElement {
           bcp47: language.bcp47 ?? '',
           iso3: language.iso3 ?? '',
           slug: language.slug ?? '',
-          hasVideos: language.hasVideos
+          hasVideos: language.hasVideos,
+          jesusFilmTitle,
+          jesusFilmVariant: jesusFilmVariantsByLanguageId.get(language.id)
         }
       }) ?? [],
-    [data?.adminLanguages]
+    [data?.adminLanguages, jesusFilmTitle, jesusFilmVariantsByLanguageId]
   )
 
   const columns: GridColDef<LanguageRow>[] = [
@@ -245,7 +311,48 @@ export function LanguageList(): ReactElement {
     },
     { field: 'bcp47', headerName: 'BCP 47', width: 112 },
     { field: 'iso3', headerName: 'ISO 3', width: 112 },
-    { field: 'slug', headerName: 'Slug', flex: 1, minWidth: 180 }
+    { field: 'slug', headerName: 'Slug', flex: 1, minWidth: 180 },
+    {
+      field: 'jesusFilmVariant',
+      headerName: '1_jf-0-0',
+      flex: 1,
+      minWidth: 220,
+      sortable: false,
+      filterable: false,
+      renderCell: (params) => {
+        const variant = params.row.jesusFilmVariant
+
+        if (variant == null) {
+          return (
+            <Typography variant="body2" color="text.secondary">
+              -
+            </Typography>
+          )
+        }
+
+        return (
+          <Stack
+            direction="row"
+            spacing={0.5}
+            alignItems="center"
+            sx={{ minWidth: 0 }}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <Typography variant="body2" noWrap>
+              {params.row.jesusFilmTitle} -
+            </Typography>
+            <Link
+              component={NextLink}
+              href={`/videos/${JESUS_FILM_VIDEO_ID}/audio/${variant.id}`}
+              underline="hover"
+              sx={{ flexShrink: 0, fontWeight: 600 }}
+            >
+              v{variant.version}
+            </Link>
+          </Stack>
+        )
+      }
+    }
   ]
 
   return (
@@ -330,7 +437,7 @@ export function LanguageList(): ReactElement {
               rows={rows}
               columns={columns}
               rowCount={data?.adminLanguagesCount ?? 0}
-              loading={loading}
+              loading={loading || jesusFilmLoading}
               paginationMode="server"
               disableColumnFilter
               paginationModel={paginationModel}

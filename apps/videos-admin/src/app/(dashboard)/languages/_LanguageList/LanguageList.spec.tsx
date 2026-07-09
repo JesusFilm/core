@@ -4,7 +4,11 @@ import userEvent from '@testing-library/user-event'
 import { useRouter } from 'next/navigation'
 import { SnackbarProvider } from 'notistack'
 
-import { GET_LANGUAGES, LanguageList } from './LanguageList'
+import {
+  GET_JESUS_FILM_VARIANTS,
+  GET_LANGUAGES,
+  LanguageList
+} from './LanguageList'
 
 vi.mock('next/navigation')
 
@@ -22,7 +26,7 @@ const getLanguagesMock = {
       offset: 0,
       nameLanguageId: '529',
       term: undefined,
-      where: undefined
+      where: { hasVideos: true }
     }
   },
   result: {
@@ -53,7 +57,26 @@ const getLanguagesMock = {
             }
           ],
           __typename: 'Language'
-        },
+        }
+      ],
+      adminLanguagesCount: 1
+    }
+  }
+}
+
+const allLanguagesMock = {
+  ...getLanguagesMock,
+  request: {
+    ...getLanguagesMock.request,
+    variables: {
+      ...getLanguagesMock.request.variables,
+      where: undefined
+    }
+  },
+  result: {
+    data: {
+      adminLanguages: [
+        ...getLanguagesMock.result.data.adminLanguages,
         {
           id: '12345',
           bcp47: null,
@@ -78,7 +101,7 @@ const searchLanguagesMock = {
       offset: 0,
       nameLanguageId: '529',
       term: 'eng',
-      where: undefined
+      where: { hasVideos: true }
     }
   },
   result: {
@@ -123,26 +146,7 @@ const searchLanguageIdMock = {
       limit: 25,
       offset: 0,
       nameLanguageId: '529',
-      term: '123',
-      where: undefined
-    }
-  },
-  result: {
-    data: {
-      adminLanguages: [getLanguagesMock.result.data.adminLanguages[1]],
-      adminLanguagesCount: 1
-    }
-  }
-}
-
-const hasVideosLanguagesMock = {
-  request: {
-    query: GET_LANGUAGES,
-    variables: {
-      limit: 25,
-      offset: 0,
-      nameLanguageId: '529',
-      term: undefined,
+      term: '206',
       where: { hasVideos: true }
     }
   },
@@ -150,6 +154,33 @@ const hasVideosLanguagesMock = {
     data: {
       adminLanguages: [getLanguagesMock.result.data.adminLanguages[0]],
       adminLanguagesCount: 1
+    }
+  }
+}
+
+const getJesusFilmVariantsMock = {
+  request: {
+    query: GET_JESUS_FILM_VARIANTS,
+    variables: {
+      id: '1_jf-0-0',
+      languageId: '529'
+    }
+  },
+  result: {
+    data: {
+      adminVideo: {
+        id: '1_jf-0-0',
+        title: [{ value: 'Jesus Film', __typename: 'VideoTitle' }],
+        variants: [
+          {
+            id: '20615_1_jf-0-0',
+            version: 3,
+            language: { id: '20615', __typename: 'Language' },
+            __typename: 'VideoVariant'
+          }
+        ],
+        __typename: 'Video'
+      }
     }
   }
 }
@@ -167,7 +198,7 @@ describe('LanguageList', () => {
 
   it('should show languages', async () => {
     render(
-      <MockedProvider mocks={[getLanguagesMock]}>
+      <MockedProvider mocks={[getLanguagesMock, getJesusFilmVariantsMock]}>
         <SnackbarProvider>
           <LanguageList />
         </SnackbarProvider>
@@ -177,15 +208,28 @@ describe('LanguageList', () => {
     expect(await screen.findByText('Chinese, Mandarin')).toBeInTheDocument()
     expect(screen.getByText('Putonghua')).toBeInTheDocument()
     expect(screen.getByText('mandarin-china')).toBeInTheDocument()
-    expect(screen.getByText('Yes')).toBeInTheDocument()
-    expect(screen.getByText('12345')).toBeInTheDocument()
+    expect(screen.getAllByText('Yes')).toHaveLength(2)
+    expect(screen.getByText('Jesus Film -')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'v3' })).toHaveAttribute(
+      'href',
+      '/videos/1_jf-0-0/audio/20615_1_jf-0-0'
+    )
+    expect(
+      screen.getByRole('combobox', { name: 'Has videos' })
+    ).toHaveTextContent('Yes')
   })
 
   it('should search languages by name without choosing a column', async () => {
     const user = userEvent.setup()
 
     render(
-      <MockedProvider mocks={[getLanguagesMock, searchLanguagesMock]}>
+      <MockedProvider
+        mocks={[
+          getLanguagesMock,
+          getJesusFilmVariantsMock,
+          searchLanguagesMock
+        ]}
+      >
         <SnackbarProvider>
           <LanguageList />
         </SnackbarProvider>
@@ -205,7 +249,13 @@ describe('LanguageList', () => {
     const user = userEvent.setup()
 
     render(
-      <MockedProvider mocks={[getLanguagesMock, searchLanguageIdMock]}>
+      <MockedProvider
+        mocks={[
+          getLanguagesMock,
+          getJesusFilmVariantsMock,
+          searchLanguageIdMock
+        ]}
+      >
         <SnackbarProvider>
           <LanguageList />
         </SnackbarProvider>
@@ -214,18 +264,20 @@ describe('LanguageList', () => {
 
     await user.type(
       screen.getByRole('textbox', { name: 'Search languages' }),
-      '123'
+      '206'
     )
     await waitForSearchDebounce()
 
-    expect(await screen.findByText('12345')).toBeInTheDocument()
+    expect(await screen.findByText('Chinese, Mandarin')).toBeInTheDocument()
   })
 
-  it('should filter languages by has videos using the server query', async () => {
+  it('should show all languages when choosing any has videos filter', async () => {
     const user = userEvent.setup()
 
     render(
-      <MockedProvider mocks={[getLanguagesMock, hasVideosLanguagesMock]}>
+      <MockedProvider
+        mocks={[getLanguagesMock, getJesusFilmVariantsMock, allLanguagesMock]}
+      >
         <SnackbarProvider>
           <LanguageList />
         </SnackbarProvider>
@@ -234,14 +286,14 @@ describe('LanguageList', () => {
 
     await screen.findByText('Chinese, Mandarin')
     await user.click(screen.getByRole('combobox', { name: 'Has videos' }))
-    await user.click(screen.getByRole('option', { name: 'Yes' }))
+    await user.click(screen.getByRole('option', { name: 'Any' }))
 
-    expect(await screen.findByText('Chinese, Mandarin')).toBeInTheDocument()
+    expect(await screen.findByText('12345')).toBeInTheDocument()
   })
 
   it('should navigate to language editor when clicking a row', async () => {
     render(
-      <MockedProvider mocks={[getLanguagesMock]}>
+      <MockedProvider mocks={[getLanguagesMock, getJesusFilmVariantsMock]}>
         <SnackbarProvider>
           <LanguageList />
         </SnackbarProvider>

@@ -4,11 +4,13 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
+import Link from '@mui/material/Link'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
+import NextLink from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, ReactNode, useMemo } from 'react'
@@ -21,6 +23,7 @@ import {
 } from '../_LanguageCountryLinks'
 
 const DEFAULT_LANGUAGE_ID = '529'
+const JESUS_FILM_VIDEO_ID = '1_jf-0-0'
 
 export const GET_LANGUAGE = gql`
   query GetLanguageForAdmin($id: ID!, $nameLanguageId: ID) {
@@ -54,6 +57,24 @@ export const GET_LANGUAGE = gql`
             value
             primary
           }
+        }
+      }
+    }
+  }
+`
+
+export const GET_JESUS_FILM_VARIANTS = gql`
+  query GetJesusFilmLanguageVersions($id: ID!, $languageId: ID) {
+    adminVideo(id: $id) {
+      id
+      title(languageId: $languageId) {
+        value
+      }
+      variants(input: { onlyPublished: false }) {
+        id
+        version
+        language {
+          id
         }
       }
     }
@@ -110,6 +131,27 @@ interface GetLanguageVariables {
   nameLanguageId: string
 }
 
+interface JesusFilmVariant {
+  id: string
+  version: number
+  language: {
+    id: string
+  }
+}
+
+interface GetJesusFilmData {
+  adminVideo: {
+    id: string
+    title: Array<{ value: string }>
+    variants: JesusFilmVariant[]
+  }
+}
+
+interface GetJesusFilmVariables {
+  id: string
+  languageId: string
+}
+
 interface LanguageFormValues {
   name: string
   nativeName: string
@@ -159,6 +201,12 @@ export function LanguageForm(): ReactElement {
   >(GET_LANGUAGE, {
     variables: { id: languageId, nameLanguageId: DEFAULT_LANGUAGE_ID }
   })
+  const { data: jesusFilmData, loading: jesusFilmLoading } = useQuery<
+    GetJesusFilmData,
+    GetJesusFilmVariables
+  >(GET_JESUS_FILM_VARIANTS, {
+    variables: { id: JESUS_FILM_VIDEO_ID, languageId: DEFAULT_LANGUAGE_ID }
+  })
 
   const [updateLanguage] = useMutation(UPDATE_LANGUAGE)
   const [updateLanguageName] = useMutation(UPDATE_LANGUAGE_NAME)
@@ -171,6 +219,15 @@ export function LanguageForm(): ReactElement {
   const primaryName = useMemo(
     () => getPrimaryName(language?.nativeName ?? []),
     [language?.nativeName]
+  )
+  const jesusFilmTitle =
+    jesusFilmData?.adminVideo.title[0]?.value ?? JESUS_FILM_VIDEO_ID
+  const jesusFilmVariant = useMemo(
+    () =>
+      jesusFilmData?.adminVideo.variants.find(
+        (variant) => variant.language.id === languageId
+      ),
+    [jesusFilmData?.adminVideo.variants, languageId]
   )
 
   const initialValues: LanguageFormValues = {
@@ -366,6 +423,29 @@ export function LanguageForm(): ReactElement {
             </Form>
           )}
         </Formik>
+      </Paper>
+
+      <Paper sx={{ p: 3 }}>
+        <Typography component="h3" variant="h6" sx={{ mb: 2 }}>
+          Linked Films
+        </Typography>
+        {jesusFilmLoading ? (
+          <Typography color="text.secondary">
+            Loading film version...
+          </Typography>
+        ) : jesusFilmVariant == null ? (
+          <Typography color="text.secondary">-</Typography>
+        ) : (
+          <Stack direction="row" spacing={0.5} sx={{ alignItems: 'baseline' }}>
+            <Typography>{jesusFilmTitle} -</Typography>
+            <Link
+              component={NextLink}
+              href={`/videos/${JESUS_FILM_VIDEO_ID}/audio/${jesusFilmVariant.id}`}
+            >
+              v{jesusFilmVariant.version}
+            </Link>
+          </Stack>
+        )}
       </Paper>
 
       <LanguageCountryLinks
