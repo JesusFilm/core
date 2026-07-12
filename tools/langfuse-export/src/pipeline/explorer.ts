@@ -75,7 +75,7 @@ header.top h1 { margin:0 0 4px; font-family:var(--font-sans); font-size:var(--te
    instead of merely asserting it (two 10px swatches read as one colour). */
 .legend-sample { font-family:var(--font-serif); font-size:var(--text-xs); }
 .legend-sample.ink-translated-text { color:var(--jfp-navy); }
-.legend-sample.ink-original-text { color:var(--fg-primary); }
+.legend-sample.ink-original-text { color:var(--fg-primary); background:var(--bg-primary); border:1px solid var(--border-default); border-inline-start:3px solid var(--border-strong); border-radius:var(--radius-sm); padding:1px 6px; }
 .layout { flex:1 1 auto; min-height:0; display:grid; grid-template-columns:260px 360px 1fr; }
 .facets, .list, .detail { overflow:auto; padding:16px; }
 .facets { border-right:1px solid var(--border-subtle); background:var(--bg-primary); }
@@ -114,7 +114,7 @@ button.clear:focus-visible { outline:none; box-shadow:var(--focus-ring); border-
    per-message badge: it must never read as a label for the line above it. */
 .card-summary { margin-top:8px; font-family:var(--font-sans); font-size:var(--text-2xs); letter-spacing:0.04em; color:var(--fg-primary); }
 .preview-en { font-family:var(--font-serif); font-size:var(--text-sm); line-height:1.5; color:var(--jfp-navy); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-.preview-original { margin-top:4px; padding-inline-start:8px; border-inline-start:3px solid var(--border-strong); font-family:var(--font-serif); font-size:var(--text-xs); line-height:1.5; color:var(--fg-primary); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.preview-original { margin-top:6px; padding:4px 8px; background:var(--bg-secondary); border-inline-start:3px solid var(--border-strong); border-radius:var(--radius-sm); font-family:var(--font-serif); font-size:var(--text-xs); line-height:1.5; color:var(--fg-primary); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .langmark { display:inline-block; font-family:var(--font-sans); font-size:var(--text-2xs); font-weight:600; letter-spacing:0.04em; color:var(--jfp-warm-white); background:var(--jfp-navy); border-radius:var(--radius-pill); padding:4px 10px; white-space:nowrap; max-width:100%; overflow:hidden; text-overflow:ellipsis; }
 .card-langs { margin:8px 0 0; }
 .detail-summary { margin:0 0 8px; font-family:var(--font-sans); font-size:var(--text-2xs); letter-spacing:0.04em; color:var(--fg-primary); }
@@ -134,9 +134,36 @@ button.clear:focus-visible { outline:none; box-shadow:var(--focus-ring); border-
 .t-en-text { font-family:var(--font-serif); font-size:var(--text-base); line-height:1.7; color:var(--jfp-navy); white-space:pre-wrap; word-wrap:break-word; overflow-wrap:anywhere; }
 .badge { display:inline-block; font-family:var(--font-sans); font-weight:600; font-size:var(--text-2xs); letter-spacing:0.04em; padding:4px 10px; border-radius:var(--radius-pill); }
 .b-navy { background:var(--jfp-navy); color:var(--jfp-warm-white); }
-.t-original { margin-top:12px; padding-inline-start:12px; border-inline-start:3px solid var(--border-strong); }
-.o-label { font-family:var(--font-sans); font-size:var(--text-2xs); text-transform:uppercase; letter-spacing:0.16em; font-weight:600; color:var(--fg-primary); margin-bottom:4px; }
-.o-text { font-family:var(--font-serif); font-size:var(--text-sm); line-height:1.7; color:var(--fg-primary); white-space:pre-wrap; word-wrap:break-word; overflow-wrap:anywhere; }
+/* The original is one interaction away, never gone: the disclosure row (toggle
+   + standing machine-translation note) stays visible while the panel is closed,
+   so 'accuracy not guaranteed; original available' reads without expanding. */
+.o-disclose { display:flex; flex-wrap:wrap; align-items:center; gap:6px 12px; margin-top:10px; }
+.o-toggle { display:inline-flex; align-items:center; gap:6px; font-family:var(--font-sans); font-size:var(--text-xs); font-weight:600; color:var(--fg-primary); background:var(--bg-primary); border:1px solid var(--border-default); border-radius:var(--radius-pill); padding:4px 12px; cursor:pointer; transition:background 120ms var(--ease-out), border-color 120ms var(--ease-out); }
+.o-toggle:hover { background:var(--bg-muted); border-color:var(--fg-secondary); }
+.o-toggle:focus-visible { outline:none; box-shadow:var(--focus-ring); border-color:var(--jfp-red); }
+.o-caret { display:inline-block; width:0.7em; text-align:center; font-size:var(--text-2xs); color:var(--fg-secondary); }
+.o-note { font-family:var(--font-sans); font-size:var(--text-2xs); letter-spacing:0.04em; color:var(--fg-secondary); }
+/* The original recedes into a bordered inset — a white 'source' card on the
+   tinted bubble — while the navy English above stays the open, full-size
+   reading path. The distinction is surface + border + size, not hue alone. */
+.t-original { margin-top:10px; padding:10px 12px; background:var(--bg-primary); border:1px solid var(--border-default); border-inline-start:3px solid var(--border-strong); border-radius:var(--radius-sm); box-shadow:var(--shadow-xs); }
+.o-label { font-family:var(--font-sans); font-size:var(--text-2xs); text-transform:uppercase; letter-spacing:0.16em; font-weight:700; color:var(--fg-secondary); margin-bottom:6px; }
+.o-text { font-family:var(--font-serif); font-size:var(--text-sm); line-height:1.7; color:var(--fg-primary); }
+/* Minimal Markdown block styles. Headings sit at the small end of the type
+   scale so an in-bubble '#' is only slightly larger than body — never the
+   48/64px display scale. Logical padding/border so lists and blockquotes flip
+   under RTL. Sans headings over serif body follows the JFP pairing. */
+.md-p { margin:0 0 8px; }
+.md-p, .md-li, .md-quote { white-space:pre-wrap; word-wrap:break-word; overflow-wrap:anywhere; }
+.md-h { font-family:var(--font-sans); font-weight:700; line-height:1.3; letter-spacing:-0.01em; margin:10px 0 4px; }
+.md-h1 { font-size:17px; } .md-h2 { font-size:16px; } .md-h3 { font-size:15px; }
+.md-h4, .md-h5, .md-h6 { font-size:14px; }
+.md-ul { margin:4px 0 8px; padding-inline-start:20px; }
+.md-li { margin:2px 0; }
+.md-quote { margin:8px 0; padding-inline-start:12px; border-inline-start:3px solid var(--border-default); color:var(--fg-secondary); font-style:italic; }
+.md-p:first-child, .md-h:first-child, .md-ul:first-child, .md-quote:first-child { margin-top:0; }
+.md-p:last-child, .md-ul:last-child, .md-quote:last-child, .md-li:last-child { margin-bottom:0; }
+strong { font-weight:700; }
 `
 
 // Vanilla-DOM viewer. Deliberately written without template literals so it can
@@ -163,6 +190,107 @@ const VIEWER_JS = `
     return node;
   }
   function clearNode(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+
+  // --- Minimal, inert Markdown -> DOM (NES-1762) ---------------------------
+  // Hand-rolled so corpus text NEVER touches innerHTML: every run of text lands
+  // through createTextNode/textContent, so a hostile closing-script tag or an
+  // img/onerror payload renders as the literal characters typed, not as markup.
+  // (No end-tag literal appears in this comment on purpose.) Supported set,
+  // deliberately tiny: '#'..'######' headings, '- '/'* ' unordered lists, '> '
+  // blockquotes, '**bold**' inline, and paragraphs. Everything else (links,
+  // images, code fences, raw HTML) is emitted as the literal text it was.
+  // No regex: the whole parser is string scanning, so nothing here depends on
+  // escape handling inside this module's template string.
+  function mdLstrip(s) {
+    var i = 0;
+    while (i < s.length && (s.charAt(i) === ' ' || s.charAt(i) === '\\t')) i += 1;
+    return s.slice(i);
+  }
+  function mdHeadingLevel(s) {
+    var n = 0;
+    while (n < s.length && s.charAt(n) === '#') n += 1;
+    if (n < 1 || n > 6) return 0;
+    var next = s.charAt(n);
+    return next === ' ' || next === '\\t' ? n : 0;
+  }
+  // '- ' or '* ' opens a list item. The trailing space is what separates a
+  // '* item' bullet from '**bold**' at the start of a line (which has '*' next,
+  // not a space), so bold headings never get mistaken for bullets.
+  function mdIsListItem(s) {
+    return (s.charAt(0) === '-' || s.charAt(0) === '*') && s.charAt(1) === ' ';
+  }
+  // Inline pass: only '**bold**'. An unmatched '**' (no closing pair) is left
+  // as literal text rather than swallowing the rest of the line.
+  function appendInline(parent, text) {
+    var rest = String(text);
+    var open;
+    while ((open = rest.indexOf('**')) !== -1) {
+      var after = rest.slice(open + 2);
+      var close = after.indexOf('**');
+      if (close === -1) break;
+      if (open > 0) parent.appendChild(document.createTextNode(rest.slice(0, open)));
+      var strong = document.createElement('strong');
+      strong.textContent = after.slice(0, close);
+      parent.appendChild(strong);
+      rest = after.slice(close + 2);
+    }
+    if (rest) parent.appendChild(document.createTextNode(rest));
+  }
+  function renderMarkdown(host, text) {
+    var lines = String(text).split('\\n');
+    var i = 0;
+    while (i < lines.length) {
+      var line = mdLstrip(lines[i]);
+      if (line === '') { i += 1; continue; }
+      var level = mdHeadingLevel(line);
+      if (level > 0) {
+        var h = el('div', 'md-h md-h' + level);
+        appendInline(h, mdLstrip(line.slice(level)));
+        host.appendChild(h);
+        i += 1;
+        continue;
+      }
+      if (line.charAt(0) === '>') {
+        var quote = el('div', 'md-quote');
+        var qbuf = [];
+        while (i < lines.length) {
+          var ql = mdLstrip(lines[i]);
+          if (ql.charAt(0) !== '>') break;
+          var body = ql.slice(1);
+          if (body.charAt(0) === ' ') body = body.slice(1);
+          qbuf.push(body);
+          i += 1;
+        }
+        appendInline(quote, qbuf.join('\\n'));
+        host.appendChild(quote);
+        continue;
+      }
+      if (mdIsListItem(line)) {
+        var list = el('ul', 'md-ul');
+        while (i < lines.length) {
+          var ll = mdLstrip(lines[i]);
+          if (!mdIsListItem(ll)) break;
+          var li = el('li', 'md-li');
+          appendInline(li, mdLstrip(ll.slice(1)));
+          list.appendChild(li);
+          i += 1;
+        }
+        host.appendChild(list);
+        continue;
+      }
+      // Paragraph: gather consecutive lines until a blank line or a block start.
+      var pbuf = [];
+      while (i < lines.length) {
+        var pl = mdLstrip(lines[i]);
+        if (pl === '' || mdHeadingLevel(pl) > 0 || pl.charAt(0) === '>' || mdIsListItem(pl)) break;
+        pbuf.push(lines[i]);
+        i += 1;
+      }
+      var p = el('div', 'md-p');
+      appendInline(p, pbuf.join('\\n'));
+      host.appendChild(p);
+    }
+  }
   function selectedKeys() {
     var out = [];
     for (var key in selected) { if (selected[key]) out.push(key); }
@@ -261,24 +389,52 @@ const VIEWER_JS = `
     var head = el('div', 't-en-head');
     var label = name ? ('MACHINE-TRANSLATED FROM ' + name.toUpperCase()) : 'MACHINE-TRANSLATED';
     var badge = el('span', 'badge b-navy', label);
-    badge.setAttribute('title', 'Machine translation \\u2014 accuracy is not guaranteed; the original is shown below.');
+    badge.setAttribute('title', 'Machine translation \\u2014 accuracy is not guaranteed; the original is one click below.');
     head.appendChild(badge);
     enWrap.appendChild(head);
-    enWrap.appendChild(el('div', 't-en-text', english));
+    // The English gloss is the default reading path: navy, full size, markdown
+    // rendered so headings/lists/bold read as structure, not raw '#'/'-'.
+    var enText = el('div', 't-en-text');
+    renderMarkdown(enText, english);
+    enWrap.appendChild(enText);
     container.appendChild(enWrap);
+
+    // Collapsed-by-default original. dir on the WRAPPER so the label and the
+    // rule flip with the text. 'auto' alone is not enough: it resolves from the
+    // first strong character, which would be the Latin word 'Original'. The
+    // label is pinned ltr and excluded; a known RTL language is stated outright.
     var orig = el('div', 't-original');
-    // dir on the WRAPPER so the label and the rule flip with the text. 'auto'
-    // alone is not enough: it resolves from the first strong character, which
-    // would be the Latin word 'Original'. The spec ignores descendants that
-    // carry their own dir, so the label is pinned ltr and excluded from the
-    // computation; a known RTL language is stated outright.
     orig.setAttribute('dir', RTL_CODES[code] ? 'rtl' : 'auto');
-    var olabel = el('div', 'o-label', 'Original');
+    orig.style.display = 'none';
+    var olabel = el('div', 'o-label', name ? ('Original \\u00b7 ' + name) : 'Original');
     olabel.setAttribute('dir', 'ltr');
     orig.appendChild(olabel);
-    var otext = el('div', 'o-text', original);
+    var otext = el('div', 'o-text');
     otext.setAttribute('dir', 'auto');
+    renderMarkdown(otext, original);
     orig.appendChild(otext);
+
+    // Disclosure row stays put while the panel is closed, so the standing note
+    // (accuracy not guaranteed) and the way back to the source (Show original)
+    // are always visible without expanding.
+    var disclose = el('div', 'o-disclose');
+    var toggle = el('button', 'o-toggle');
+    toggle.setAttribute('type', 'button');
+    toggle.setAttribute('aria-expanded', 'false');
+    var caret = el('span', 'o-caret', '\\u25B8');
+    var toggleLabel = el('span', 'o-toggle-label', 'Show original');
+    toggle.appendChild(caret);
+    toggle.appendChild(toggleLabel);
+    toggle.addEventListener('click', function () {
+      var hidden = orig.style.display === 'none';
+      orig.style.display = hidden ? 'block' : 'none';
+      caret.textContent = hidden ? '\\u25BE' : '\\u25B8';
+      toggleLabel.textContent = hidden ? 'Hide original' : 'Show original';
+      toggle.setAttribute('aria-expanded', hidden ? 'true' : 'false');
+    });
+    disclose.appendChild(toggle);
+    disclose.appendChild(el('span', 'o-note', 'Machine translation \\u2014 accuracy not guaranteed'));
+    container.appendChild(disclose);
     container.appendChild(orig);
   }
   // language + country as coloured pills; message count (and null-session) stay
@@ -348,7 +504,7 @@ const VIEWER_JS = `
       var langText = langs.length + ' language' + (langs.length === 1 ? '' : 's');
       var tail = ' machine-translated to English from ' + langText;
       if (names.length > 0) tail += ' (' + names.join(', ') + ')';
-      tail += '. Accuracy is not guaranteed \\u2014 the original is shown beneath every translation, in full in the conversation view.';
+      tail += '. Accuracy is not guaranteed \\u2014 every original is kept in full in the conversation view, one click beneath its translation.';
       line.appendChild(document.createTextNode(tail));
       note.appendChild(line);
       var legend = el('div', 'legend');
@@ -587,8 +743,9 @@ const VIEWER_JS = `
       if (msg.textEnglish) {
         appendTranslation(bubble, msg.text, msg.textEnglish, msg.sourceLanguage);
       } else {
-        // English source passes through untouched: no chip, no second block.
-        bubble.textContent = msg.text;
+        // English source: no chip, no second block — but still markdown-rendered
+        // so an assistant reply's headings, lists, and bold read as structure.
+        renderMarkdown(bubble, msg.text);
       }
       wrap.appendChild(bubble);
       host.appendChild(wrap);

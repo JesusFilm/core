@@ -659,3 +659,255 @@ describe('renderExplorer — RTL originals (NES-1762)', () => {
     expect(label.getAttribute('dir')).toBe('ltr')
   })
 })
+
+function byTag(root: FakeNode, tag: string): FakeNode[] {
+  return collect(root, []).filter((node) => node.tagName === tag)
+}
+
+// The chat corpus is markdown. The viewer renders a deliberately tiny subset —
+// small headings, bold, unordered lists, blockquotes, paragraphs — hand-rolled
+// through createElement/textContent so hostile content can never become markup.
+const assistantMarkdown = [
+  '# Assurance',
+  '',
+  'Two things matter:',
+  '',
+  '- **Grace** is a gift',
+  '- Faith follows',
+  '',
+  '> Peace I leave with you',
+  '',
+  'Read </script> as text.'
+].join('\n')
+
+const markdownDataset: InsightsDataset = {
+  summary: { ...dataset.summary, translationAvailable: false },
+  facets: [],
+  sessions: [
+    {
+      id: 'md1',
+      label: 'Session MD',
+      synthetic: false,
+      language: 'en',
+      languageLabel: 'English',
+      translatedLanguages: [],
+      ipCountry: 'US',
+      messageCount: 2,
+      firstUserMessage: 'tell me about grace',
+      startTime: '2026-05-10T00:00:00.000Z',
+      themes: [],
+      facetKeys: [],
+      messages: [
+        {
+          role: 'user',
+          text: 'tell me about grace',
+          startTime: '2026-05-10T00:00:00.000Z',
+          model: 'm'
+        },
+        {
+          role: 'assistant',
+          text: assistantMarkdown,
+          startTime: '2026-05-10T00:00:00.000Z',
+          model: 'm'
+        }
+      ]
+    }
+  ]
+}
+
+// A translated message whose English gloss AND original are both markdown, in an
+// RTL language — the parser must run over both blocks and the original must
+// still flip to rtl.
+const enGloss = '## Answer\n\n- **love** first'
+const arGloss = '## عنوان\n\n- **الله**'
+const markdownTranslatedDataset: InsightsDataset = {
+  ...translatedDataset,
+  sessions: [
+    {
+      ...translatedDataset.sessions[0],
+      firstUserMessage: arGloss,
+      firstUserMessageEnglish: enGloss,
+      sourceLanguage: 'ar',
+      translatedLanguages: ['Arabic'],
+      messageCount: 1,
+      messages: [
+        {
+          role: 'user',
+          text: arGloss,
+          textEnglish: enGloss,
+          sourceLanguage: 'ar',
+          startTime: '2026-05-10T00:00:00.000Z',
+          model: 'm'
+        }
+      ]
+    }
+  ]
+}
+
+describe('renderExplorer — minimal Markdown rendering (NES-1762)', () => {
+  it('renders headings, bold, lists, and blockquotes as structure', () => {
+    const doc = runViewer(markdownDataset)
+    openFirstSession(doc)
+    const detail = getHost(doc, 'detail')
+
+    // An in-bubble '#' becomes a small md-h1, never raw '# Assurance' text.
+    expect(must(firstByClass(detail, 'md-h1')).textContent).toBe('Assurance')
+
+    // '**Grace**' becomes a <strong>, not literal asterisks.
+    expect(byTag(detail, 'strong').map((node) => node.textContent)).toContain(
+      'Grace'
+    )
+
+    // Two '- ' lines become one md-ul with two md-li.
+    const list = must(firstByClass(detail, 'md-ul'))
+    const items = byClass(list, 'md-li')
+    expect(items).toHaveLength(2)
+    expect(items[1].textContent).toBe('Faith follows')
+
+    // Blockquote and paragraph.
+    expect(must(firstByClass(detail, 'md-quote')).textContent).toBe(
+      'Peace I leave with you'
+    )
+    expect(firstByClass(detail, 'md-p')).not.toBeNull()
+  })
+
+  it('never creates markup elements from hostile inline content', () => {
+    const doc = runViewer(markdownDataset)
+    openFirstSession(doc)
+    const detail = getHost(doc, 'detail')
+    // The '</script>' the assistant "wrote" is text, not a tag: no script/img
+    // node exists anywhere in the tree, and the literal survives intact.
+    expect(byTag(detail, 'script')).toHaveLength(0)
+    expect(byTag(detail, 'img')).toHaveLength(0)
+    expect(byClass(detail, 'md-p').map((node) => node.textContent)).toContain(
+      'Read </script> as text.'
+    )
+  })
+
+  it('treats both - and * as bullets, but not **bold** starting a line', () => {
+    const ds: InsightsDataset = {
+      ...markdownDataset,
+      sessions: [
+        {
+          ...markdownDataset.sessions[0],
+          messageCount: 1,
+          messages: [
+            {
+              role: 'assistant',
+              text: '**Heading bold** intro\n\n* **A:** first\n* second',
+              startTime: '2026-05-10T00:00:00.000Z',
+              model: 'm'
+            }
+          ]
+        }
+      ]
+    }
+    const doc = runViewer(ds)
+    openFirstSession(doc)
+    const detail = getHost(doc, 'detail')
+
+    // '* ' lines form a real list — the marker the LLM most often emits.
+    const items = byClass(detail, 'md-li')
+    expect(items).toHaveLength(2)
+    expect(items[0].textContent).toBe('A: first')
+    expect(items[1].textContent).toBe('second')
+
+    // ...but a line that only starts with '**bold**' is a paragraph, not a bullet.
+    const para = must(firstByClass(detail, 'md-p'))
+    expect(para.textContent).toBe('Heading bold intro')
+    expect(byTag(para, 'strong').map((node) => node.textContent)).toContain(
+      'Heading bold'
+    )
+  })
+
+  it('leaves an unmatched ** as literal text', () => {
+    const ds: InsightsDataset = {
+      ...markdownDataset,
+      sessions: [
+        {
+          ...markdownDataset.sessions[0],
+          messageCount: 1,
+          messages: [
+            {
+              role: 'assistant',
+              text: 'a ** dangling marker',
+              startTime: '2026-05-10T00:00:00.000Z',
+              model: 'm'
+            }
+          ]
+        }
+      ]
+    }
+    const doc = runViewer(ds)
+    openFirstSession(doc)
+    const detail = getHost(doc, 'detail')
+    expect(byTag(detail, 'strong')).toHaveLength(0)
+    expect(must(firstByClass(detail, 'md-p')).textContent).toBe(
+      'a ** dangling marker'
+    )
+  })
+
+  it('renders markdown in BOTH the translated English and the original', () => {
+    const doc = runViewer(markdownTranslatedDataset)
+    openFirstSession(doc)
+    const detail = getHost(doc, 'detail')
+
+    const enText = must(firstByClass(detail, 't-en-text'))
+    expect(firstByClass(enText, 'md-h2')).not.toBeNull()
+    expect(byTag(enText, 'strong').map((node) => node.textContent)).toContain(
+      'love'
+    )
+
+    const oText = must(firstByClass(detail, 'o-text'))
+    expect(firstByClass(oText, 'md-h2')).not.toBeNull()
+    expect(byTag(oText, 'strong').map((node) => node.textContent)).toContain(
+      'الله'
+    )
+    // Markdown blocks don't defeat the RTL wrapper.
+    expect(must(firstByClass(detail, 't-original')).getAttribute('dir')).toBe(
+      'rtl'
+    )
+  })
+})
+
+describe('renderExplorer — collapsed original (NES-1762)', () => {
+  it('collapses the original by default and expands it on click', () => {
+    const doc = runViewer(translatedDataset)
+    openFirstSession(doc)
+    const detail = getHost(doc, 'detail')
+
+    // Collapsed by default — the navy English gloss is the visible reading path.
+    const panel = must(firstByClass(detail, 't-original'))
+    expect(panel.style.display).toBe('none')
+
+    const toggle = must(firstByClass(detail, 'o-toggle'))
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    expect(toggle.textContent).toContain('Show original')
+
+    toggle.dispatch('click')
+    expect(panel.style.display).toBe('block')
+    expect(toggle.getAttribute('aria-expanded')).toBe('true')
+    expect(toggle.textContent).toContain('Hide original')
+
+    // ...and it collapses again on a second click.
+    toggle.dispatch('click')
+    expect(panel.style.display).toBe('none')
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+  })
+
+  it('keeps the machine-translation disclosure visible while collapsed', () => {
+    const doc = runViewer(translatedDataset)
+    openFirstSession(doc)
+    const detail = getHost(doc, 'detail')
+
+    // The panel is still collapsed; the disclosure must read without expanding.
+    expect(must(firstByClass(detail, 't-original')).style.display).toBe('none')
+    expect(
+      must(firstByClass(detail, 'o-note')).textContent.toLowerCase()
+    ).toContain('accuracy not guaranteed')
+    // The badge above still names machine translation and the source language.
+    expect(must(firstByClass(detail, 'b-navy')).textContent).toBe(
+      'MACHINE-TRANSLATED FROM BENGALI'
+    )
+  })
+})
