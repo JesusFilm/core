@@ -137,5 +137,13 @@
   "Video Course": "หลักสูตรวิดีโอ",
   "Every Gospel, Told on Video": "พระกิตติคุณทุกเล่ม เล่าผ่านวิดีโอ",
   "Scripture, Spoken Exactly as Written": "พระคัมภีร์, กล่าวตามตัวอักษร",
+  "Search by topic, occasion, or audience ...": "ค้นหาตามหัวข้อ โอกาส หรือกลุ่มเป้าหมาย ...",
+  "<0><0></0><1>interaction</1></0>": "<0><0></0><1>ปฏิสัมพันธ์</1></0>",
+  "Search Suggestions": "คำแนะนำการค้นหา",
+  "See Less": "ดูน้อยลง",
+  "Clear All": "ล้างทั้งหมด",
+  "Sorry, there are no languages available for this search. Try removing some of your search criteria!": "ขออภัย ไม่มีภาษาใดที่พร้อมใช้งานสำหรับการค้นหานี้ กรุณาลองลบเกณฑ์การค้นหาบางส่วนของคุณ!",
+  "Loading...": "กำลังโหลด...",
+  "There are no suggestions for this search": "ไม่มีคำแนะนำสำหรับการค้นหาครั้งนี้",
   "{{count}} languages_other": "{{count}} ภาษา"
 }

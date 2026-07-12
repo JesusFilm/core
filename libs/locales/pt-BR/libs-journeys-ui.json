@@ -128,6 +128,7 @@
   "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.": "Essa conversa já está ficando longa. Começa uma nova para continuarmos conversando — isso vai encerrar a sessão atual.",
   "Start a new conversation": "Começa uma nova conversa",
   "Gallery media": "Mídia da galeria",
+  "Chat has been turned off for this part of the journey.": "O chat foi desativado nesta parte da viagem.",
   "Select at least {{count}} options._one": "Selecione pelo menos {{count}} opções.",
   "Select at least {{count}} options._other": "Selecione pelo menos {{count}} opções.",
   "Select up to {{count}} options._one": "Selecione até {{count}} opções.",

@@ -137,6 +137,14 @@
   "Video Course": "ভিডিও কোর্স",
   "Every Gospel, Told on Video": "প্রতিটি সুসমাচার, ভিডিওতে বলা",
   "Scripture, Spoken Exactly as Written": "শাস্ত্র, ঠিক যেমন লেখা হয়েছে তেমনই উচ্চারিত",
+  "Search by topic, occasion, or audience ...": "বিষয়, উপলক্ষ বা শ্রোতা অনুযায়ী অনুসন্ধান করুন ...",
+  "<0><0></0><1>interaction</1></0>": "<0><0></0><1>আন্তঃক্রিয়া</1></0>",
+  "Search Suggestions": "অনুসন্ধানের পরামর্শ",
+  "See Less": "কম দেখুন",
+  "Clear All": "সব মুছুন",
+  "Sorry, there are no languages available for this search. Try removing some of your search criteria!": "দুঃখিত, এই অনুসন্ধানের জন্য কোনো ভাষা উপলব্ধ নেই। আপনার অনুসন্ধানের কিছু মানদণ্ড সরিয়ে দেখুন!",
+  "Loading...": "Loading...",
+  "There are no suggestions for this search": "এই অনুসন্ধানের জন্য কোনো পরামর্শ নেই।",
   "{{count}} languages_one": "{{count}} languages",
   "{{count}} languages_other": "{{count}} languages"
 }
