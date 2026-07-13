@@ -209,6 +209,9 @@ describe('LanguageList', () => {
     expect(screen.getByText('Putonghua')).toBeInTheDocument()
     expect(screen.getByText('mandarin-china')).toBeInTheDocument()
     expect(screen.getAllByText('Yes')).toHaveLength(2)
+    expect(
+      screen.getByRole('columnheader', { name: 'Jesus Film' })
+    ).toBeInTheDocument()
     expect(screen.getByText('Jesus Film -')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'v3' })).toHaveAttribute(
       'href',
@@ -289,6 +292,7 @@ describe('LanguageList', () => {
     await user.click(screen.getByRole('option', { name: 'Any' }))
 
     expect(await screen.findByText('12345')).toBeInTheDocument()
+    expect(screen.getByText('-')).toBeInTheDocument()
   })
 
   it('should navigate to language editor when clicking a row', async () => {

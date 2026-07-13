@@ -1,5 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 import { useParams, useRouter } from 'next/navigation'
 import { SnackbarProvider } from 'notistack'
 
@@ -93,6 +99,27 @@ const getJesusFilmVariantsMock = {
             language: { id: '20615', __typename: 'Language' },
             __typename: 'VideoVariant'
           },
+          {
+            id: '529_1_jf-0-0',
+            version: 1,
+            language: { id: '529', __typename: 'Language' },
+            __typename: 'VideoVariant'
+          }
+        ],
+        __typename: 'Video'
+      }
+    }
+  }
+}
+
+const getJesusFilmVariantsWithoutLanguageMock = {
+  ...getJesusFilmVariantsMock,
+  result: {
+    data: {
+      adminVideo: {
+        id: '1_jf-0-0',
+        title: [{ value: 'Jesus Film', __typename: 'VideoTitle' }],
+        variants: [
           {
             id: '529_1_jf-0-0',
             version: 1,
@@ -255,6 +282,25 @@ describe('LanguageForm', () => {
       'href',
       '/videos/1_jf-0-0/audio/20615_1_jf-0-0'
     )
+  })
+
+  it('should show an empty linked films state when there is no Jesus Film variant', async () => {
+    render(
+      <MockedProvider
+        mocks={[getLanguageMock, getJesusFilmVariantsWithoutLanguageMock]}
+      >
+        <SnackbarProvider>
+          <LanguageForm />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const linkedFilmsHeading = await screen.findByRole('heading', {
+      name: 'Linked Films'
+    })
+    const linkedFilmsSection = linkedFilmsHeading.parentElement as HTMLElement
+
+    expect(within(linkedFilmsSection).getByText('-')).toBeInTheDocument()
   })
 
   it('should return to the language list', async () => {

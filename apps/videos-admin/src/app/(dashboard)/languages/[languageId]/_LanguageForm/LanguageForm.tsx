@@ -18,12 +18,21 @@ import { ReactElement, ReactNode, useMemo } from 'react'
 import { CancelButton } from '../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../components/SaveButton'
 import {
+  DEFAULT_LANGUAGE_ID,
+  GET_JESUS_FILM_VARIANTS,
+  JESUS_FILM_VIDEO_ID,
+  getJesusFilmTitle,
+  getJesusFilmVariantForLanguage,
+  getJesusFilmVariantPath
+} from '../../_JesusFilmVersion/jesusFilmVersion'
+import type {
+  GetJesusFilmData,
+  GetJesusFilmVariables
+} from '../../_JesusFilmVersion/jesusFilmVersion'
+import {
   CountryLanguageLink,
   LanguageCountryLinks
 } from '../_LanguageCountryLinks'
-
-const DEFAULT_LANGUAGE_ID = '529'
-const JESUS_FILM_VIDEO_ID = '1_jf-0-0'
 
 export const GET_LANGUAGE = gql`
   query GetLanguageForAdmin($id: ID!, $nameLanguageId: ID) {
@@ -57,24 +66,6 @@ export const GET_LANGUAGE = gql`
             value
             primary
           }
-        }
-      }
-    }
-  }
-`
-
-export const GET_JESUS_FILM_VARIANTS = gql`
-  query GetJesusFilmLanguageVersions($id: ID!, $languageId: ID) {
-    adminVideo(id: $id) {
-      id
-      title(languageId: $languageId) {
-        value
-      }
-      variants(input: { onlyPublished: false }) {
-        id
-        version
-        language {
-          id
         }
       }
     }
@@ -129,27 +120,6 @@ interface GetLanguageData {
 interface GetLanguageVariables {
   id: string
   nameLanguageId: string
-}
-
-interface JesusFilmVariant {
-  id: string
-  version: number
-  language: {
-    id: string
-  }
-}
-
-interface GetJesusFilmData {
-  adminVideo: {
-    id: string
-    title: Array<{ value: string }>
-    variants: JesusFilmVariant[]
-  }
-}
-
-interface GetJesusFilmVariables {
-  id: string
-  languageId: string
 }
 
 interface LanguageFormValues {
@@ -220,13 +190,9 @@ export function LanguageForm(): ReactElement {
     () => getPrimaryName(language?.nativeName ?? []),
     [language?.nativeName]
   )
-  const jesusFilmTitle =
-    jesusFilmData?.adminVideo.title[0]?.value ?? JESUS_FILM_VIDEO_ID
+  const jesusFilmTitle = getJesusFilmTitle(jesusFilmData)
   const jesusFilmVariant = useMemo(
-    () =>
-      jesusFilmData?.adminVideo.variants.find(
-        (variant) => variant.language.id === languageId
-      ),
+    () => getJesusFilmVariantForLanguage(jesusFilmData, languageId),
     [jesusFilmData?.adminVideo.variants, languageId]
   )
 
@@ -440,7 +406,7 @@ export function LanguageForm(): ReactElement {
             <Typography>{jesusFilmTitle} -</Typography>
             <Link
               component={NextLink}
-              href={`/videos/${JESUS_FILM_VIDEO_ID}/audio/${jesusFilmVariant.id}`}
+              href={getJesusFilmVariantPath(jesusFilmVariant.id)}
             >
               v{jesusFilmVariant.version}
             </Link>
@@ -458,3 +424,5 @@ export function LanguageForm(): ReactElement {
     </LanguageEditorShell>
   )
 }
+
+export { GET_JESUS_FILM_VARIANTS }
