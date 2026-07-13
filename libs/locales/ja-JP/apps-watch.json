@@ -137,5 +137,13 @@
   "Video Course": "ビデオコース",
   "Every Gospel, Told on Video": "ビデオで語るすべての福音",
   "Scripture, Spoken Exactly as Written": "聖典、書かれた通りに語られる",
+  "Search by topic, occasion, or audience ...": "トピック、場面、対象者などで検索……",
+  "<0><0></0><1>interaction</1></0>": "<0><0></0><1>相互作用</1></0>",
+  "Search Suggestions": "検索候補",
+  "See Less": "表示を縮小",
+  "Clear All": "すべてクリア",
+  "Sorry, there are no languages available for this search. Try removing some of your search criteria!": "申し訳ありませんが、この検索に対応する言語はありません。検索条件をいくつか外してみてください！",
+  "Loading...": "読み込み中...",
+  "There are no suggestions for this search": "この検索に関する提案はありません",
   "{{count}} languages_other": "{{count}} 言語"
 }

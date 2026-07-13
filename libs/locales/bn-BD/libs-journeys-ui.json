@@ -128,6 +128,7 @@
   "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.": "এই কথোপকথনটি দীর্ঘ হয়ে গেছে।  আলোচনা চালিয়ে যেতে একটি নতুন কথোপকথন শুরু করুন — এতে বর্তমান সেশনটি মুছে যাবে।",
   "Start a new conversation": "একটি নতুন কথোপকথন শুরু করুন",
   "Gallery media": "গ্যালারি মিডিয়া",
+  "Chat has been turned off for this part of the journey.": "এই ভ্রমণের এই অংশের জন্য চ্যাট বন্ধ করা হয়েছে।",
   "Select at least {{count}} options._one": "Select at least {{count}} options.",
   "Select at least {{count}} options._other": "Select at least {{count}} options.",
   "Select up to {{count}} options._one": "Select up to {{count}} options.",

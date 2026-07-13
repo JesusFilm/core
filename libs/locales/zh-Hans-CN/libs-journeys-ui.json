@@ -128,6 +128,7 @@
   "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.": "这次聊天已经聊得挺久了。如果想继续聊天，请开启一个新的对话——这会清空当前的对话记录。",
   "Start a new conversation": "开始新对话",
   "Gallery media": "图库媒体",
+  "Chat has been turned off for this part of the journey.": "此段旅程中已关闭聊天功能。",
   "Select at least {{count}} options._other": "至少选择 {{count}} 选项。",
   "Select up to {{count}} options._other": "最多可选择 {{count}} 选项。",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>旅程模板</0><1>在</1><2>所有语言</2>",

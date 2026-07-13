@@ -137,5 +137,13 @@
   "Video Course": "ဗီဒီယို သင်တန်း",
   "Every Gospel, Told on Video": "သမ္မာကျမ်းတိုင်းကို ဗီဒီယိုဖြင့် ပြောပြခြင်း",
   "Scripture, Spoken Exactly as Written": "ကျမ်းစာ၊ ရေးသားထားသည့်အတိုင်း တိတိကျကျ ပြောဆိုခြင်း",
+  "Search by topic, occasion, or audience ...": "ခေါင်းစဉ်၊ အခမ်းအနား သို့မဟုတ် ပရိသတ်အလိုက် ရှာဖွေပါ။",
+  "<0><0></0><1>interaction</1></0>": "<0><0></0><1>ထိတွေ့ဆက်ဆံမှု</1></0>",
+  "Search Suggestions": "ရှာဖွေ အကြံပြုချက်များ",
+  "See Less": "နည်းနည်းသာမြင်ရန်",
+  "Clear All": "အားလုံးဖျက်ရန်",
+  "Sorry, there are no languages available for this search. Try removing some of your search criteria!": "တောင်းပန်ပါတယ်၊ ဒီရှာဖွေမှုအတွက် ဘာသာစကား မရရှိနိုင်ပါ။ ရှာဖွေရေး စံနှုန်းအချို့ကို ဖယ်ရှားပြီး ထပ်မံကြိုးစားပါ။",
+  "Loading...": "Loading...",
+  "There are no suggestions for this search": "ဤရှာဖွေမှုအတွက် အကြံပြုချက် မရှိပါ။",
   "{{count}} languages_other": "{{count}} languages"
 }
