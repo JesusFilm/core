@@ -16,9 +16,9 @@ export const videoVariantAlgoliaInclude = {
       images: true
     }
   }
-} as const satisfies Prisma.VideoVariantInclude
+} satisfies Prisma.VideoVariantInclude
 
-type VideoVariantAlgoliaPayload = Prisma.VideoVariantGetPayload<{
+export type VideoVariantAlgoliaPayload = Prisma.VideoVariantGetPayload<{
   include: typeof videoVariantAlgoliaInclude
 }>
 
