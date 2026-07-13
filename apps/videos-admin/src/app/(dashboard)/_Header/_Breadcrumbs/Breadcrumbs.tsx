@@ -45,7 +45,7 @@ export function NavbarBreadcrumbs(): ReactElement {
       icon: <SyncRoundedIcon fontSize="inherit" />,
       value: 'Status Pipeline'
     },
-    'algolia-debugging': {
+    algolia: {
       icon: <BugReportRoundedIcon fontSize="inherit" />,
       value: 'Algolia Debugging'
     }

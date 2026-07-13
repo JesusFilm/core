@@ -43,6 +43,19 @@ interface Item {
   excludedStartsWith?: string[]
 }
 
+function isItemSelected(item: Item, pathname?: string | null): boolean {
+  if (pathname == null) return false
+  if (pathname === item.href) return true
+  if (item.startsWith !== true) return false
+  if (!pathname.startsWith(item.href)) return false
+
+  return (
+    item.excludedStartsWith?.some((excludedPath) =>
+      pathname.startsWith(excludedPath)
+    ) !== true
+  )
+}
+
 export function MenuContent(): ReactElement {
   const pathname = usePathname()
   const { data } = useQuery<NavigationRolesData>(GET_NAVIGATION_ROLES)
@@ -61,7 +74,7 @@ export function MenuContent(): ReactElement {
             startsWith: true,
             excludedStartsWith: [
               '/videos/status-pipeline',
-              '/videos/algolia-debugging'
+              '/videos/algolia'
             ]
           },
           {
@@ -73,7 +86,7 @@ export function MenuContent(): ReactElement {
           {
             text: 'Algolia Debugging',
             icon: <BugReportRoundedIcon />,
-            href: '/videos/algolia-debugging',
+            href: '/videos/algolia',
             startsWith: true
           }
         ]
@@ -115,14 +128,7 @@ export function MenuContent(): ReactElement {
             <ListItemButton
               LinkComponent={Link}
               href={item.href}
-              selected={
-                pathname === item.href ||
-                (item.startsWith === true &&
-                  pathname?.startsWith(item.href) &&
-                  item.excludedStartsWith?.some((excludedPath) =>
-                    pathname.startsWith(excludedPath)
-                  ) !== true)
-              }
+              selected={isItemSelected(item, pathname)}
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />
@@ -137,14 +143,7 @@ export function MenuContent(): ReactElement {
             <ListItemButton
               LinkComponent={Link}
               href={item.href}
-              selected={
-                pathname === item.href ||
-                (item.startsWith === true &&
-                  pathname?.startsWith(item.href) &&
-                  item.excludedStartsWith?.some((excludedPath) =>
-                    pathname.startsWith(excludedPath)
-                  ) !== true)
-              }
+              selected={isItemSelected(item, pathname)}
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />
