@@ -128,6 +128,7 @@
   "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.": "การสนทนานี้ยาวเกินไปแล้ว เริ่มการสนทนาใหม่เพื่อคุยต่อ — การทำเช่นนี้จะล้างเซสชั่นปัจจุบัน",
   "Start a new conversation": "เริ่มการสนทนาใหม่",
   "Gallery media": "สื่อแกลเลอรี",
+  "Chat has been turned off for this part of the journey.": "การแชทถูกปิดใช้งานสำหรับส่วนนี้ของการเดินทาง",
   "Select at least {{count}} options._other": "เลือกอย่างน้อย {{count}} ตัวเลือก",
   "Select up to {{count}} options._other": "เลือกได้สูงสุดถึง {{count}} ตัวเลือก",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Journey Templates</0><1>in</1><2>{{count}} languages</2>",

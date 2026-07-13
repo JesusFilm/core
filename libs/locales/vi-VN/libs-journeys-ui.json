@@ -128,6 +128,7 @@
   "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.": "Cuộc trò chuyện này đã kéo dài quá rồi. Hãy bắt đầu một cuộc trò chuyện mới để tiếp tục trao đổi — thao tác này sẽ xóa phiên trò chuyện hiện tại.",
   "Start a new conversation": "Bắt đầu một cuộc trò chuyện mới",
   "Gallery media": "Thư viện phương tiện",
+  "Chat has been turned off for this part of the journey.": "Tính năng trò chuyện đã bị tắt trong chặng đường này.",
   "Select at least {{count}} options._other": "Chọn ít nhất các tùy chọn sau: {{count}} .",
   "Select up to {{count}} options._other": "Chọn tối đa {{count}} tùy chọn.",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Journey Templates</0><1>in</1><2>{{count}} languages</2>",
