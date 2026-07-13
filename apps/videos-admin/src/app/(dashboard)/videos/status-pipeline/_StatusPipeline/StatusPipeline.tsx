@@ -68,9 +68,11 @@ interface StatusPipelineRow {
   language: string
   edition: string
   source: string
+  sourceKey: string
   originalFilename: string
   r2AssetId: string
   muxVideoId: string
+  muxNonStandardInputDetectedAt: string
   videoVariantId: string
   errorMessage: string
   createdAt: string
@@ -220,9 +222,13 @@ function getRow(upload: VideoVariantUploadRow): StatusPipelineRow {
     language: getLanguageLabel(upload),
     edition: upload.edition,
     source: upload.source,
+    sourceKey: getOptionalText(upload.sourceKey),
     originalFilename: getOptionalText(upload.originalFilename),
     r2AssetId: getOptionalText(upload.r2AssetId),
     muxVideoId: getOptionalText(upload.muxVideoId),
+    muxNonStandardInputDetectedAt: getOptionalText(
+      upload.muxNonStandardInputDetectedAt
+    ),
     videoVariantId: getOptionalText(upload.videoVariantId),
     errorMessage: getOptionalText(upload.errorMessage),
     createdAt: getOptionalText(upload.createdAt),
@@ -285,6 +291,33 @@ export function StatusPipeline(): ReactElement {
 
     stopPolling()
   }, [hasVisibleIncompleteRows, resumingUploadId, startPolling, stopPolling])
+
+  useEffect(() => {
+    if (resumingUploadId == null || isResumeRequestInFlight || loading) return
+
+    const upload = uploads.find((row) => row.id === resumingUploadId)
+    if (upload == null) {
+      setResumingUploadId(null)
+      if (statusFilter === 'notComplete') {
+        enqueueSnackbar('Upload recovered', { variant: 'success' })
+      }
+      return
+    }
+
+    if (upload.status === 'failed') {
+      setResumingUploadId(null)
+      enqueueSnackbar(upload.errorMessage ?? 'Video upload resume failed', {
+        variant: 'error'
+      })
+    }
+  }, [
+    enqueueSnackbar,
+    isResumeRequestInFlight,
+    loading,
+    resumingUploadId,
+    statusFilter,
+    uploads
+  ])
 
   const handleStatusFilterChange = (event: SelectChangeEvent): void => {
     setStatusFilter(event.target.value as StatusFilterValue)
@@ -367,13 +400,20 @@ export function StatusPipeline(): ReactElement {
     { field: 'language', headerName: 'Language', minWidth: 180 },
     { field: 'edition', headerName: 'Edition', minWidth: 120 },
     { field: 'source', headerName: 'Source', minWidth: 160 },
+    { field: 'sourceKey', headerName: 'Source key', minWidth: 180 },
     {
       field: 'originalFilename',
       headerName: 'Original filename',
       minWidth: 220
     },
+    { field: 'id', headerName: 'Upload ID', minWidth: 180 },
     { field: 'r2AssetId', headerName: 'R2 asset ID', minWidth: 180 },
     { field: 'muxVideoId', headerName: 'Mux video ID', minWidth: 180 },
+    {
+      field: 'muxNonStandardInputDetectedAt',
+      headerName: 'Mux non-standard input',
+      minWidth: 240
+    },
     { field: 'videoVariantId', headerName: 'Video variant ID', minWidth: 180 },
     { field: 'errorMessage', headerName: 'Error message', minWidth: 240 },
     { field: 'createdAt', headerName: 'Created', minWidth: 210 },

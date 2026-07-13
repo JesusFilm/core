@@ -72,7 +72,7 @@ const uploadRows = [
     errorMessage: 'Mux rejected the asset',
     r2AssetId: 'r2-asset-2',
     muxVideoId: 'mux-2',
-    muxNonStandardInputDetectedAt: null,
+    muxNonStandardInputDetectedAt: '2026-07-08T10:04:00.000Z',
     videoVariantId: 'variant-2',
     createdAt: '2026-07-08T10:00:00.000Z',
     updatedAt: '2026-07-08T10:05:00.000Z'
@@ -188,9 +188,12 @@ describe('StatusPipeline', () => {
     expect(screen.getByText('English')).toBeInTheDocument()
     expect(screen.getByText('base')).toBeInTheDocument()
     expect(screen.getByText('videos-admin')).toBeInTheDocument()
+    expect(screen.getByText('source-key')).toBeInTheDocument()
     expect(screen.getByText('jesus-film.mp4')).toBeInTheDocument()
+    expect(screen.getByText('upload-r2')).toBeInTheDocument()
     expect(screen.getByText('r2-asset-1')).toBeInTheDocument()
     expect(screen.getByText('mux-2')).toBeInTheDocument()
+    expect(screen.getByText('2026-07-08T10:04:00.000Z')).toBeInTheDocument()
     expect(screen.getByText('variant-2')).toBeInTheDocument()
     expect(screen.getByText('Mux rejected the asset')).toBeInTheDocument()
     expect(screen.getByText('2026-07-09T10:00:00.000Z')).toBeInTheDocument()
@@ -240,6 +243,63 @@ describe('StatusPipeline', () => {
       })
     })
     expect(mockRefetch).toHaveBeenCalled()
+  })
+
+  it('treats an active resumed upload disappearing from not-complete rows as recovered', async () => {
+    const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
+    let visibleUploads: unknown[] = uploadRows
+    mockedUseQuery.mockImplementation(() =>
+      createQueryResult({ videoVariantUploads: visibleUploads })
+    )
+
+    const { rerender } = render(<StatusPipeline />)
+
+    fireEvent.click(screen.getByRole('button', { name: /start processing/i }))
+
+    await waitFor(() => {
+      expect(mockResumeVideoVariantUpload).toHaveBeenCalled()
+    })
+
+    visibleUploads = []
+    rerender(<StatusPipeline />)
+
+    await waitFor(() => {
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith('Upload recovered', {
+        variant: 'success'
+      })
+    })
+  })
+
+  it('shows failure feedback when an active resumed upload later fails', async () => {
+    const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
+    let visibleUploads: unknown[] = uploadRows
+    mockedUseQuery.mockImplementation(() =>
+      createQueryResult({ videoVariantUploads: visibleUploads })
+    )
+
+    const { rerender } = render(<StatusPipeline />)
+
+    fireEvent.click(screen.getByRole('button', { name: /start processing/i }))
+
+    await waitFor(() => {
+      expect(mockResumeVideoVariantUpload).toHaveBeenCalled()
+    })
+
+    visibleUploads = [
+      {
+        ...uploadRows[0],
+        status: 'failed',
+        errorMessage: 'Mux processing failed'
+      }
+    ]
+    rerender(<StatusPipeline />)
+
+    await waitFor(() => {
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        'Mux processing failed',
+        { variant: 'error' }
+      )
+    })
   })
 
   it('shows feedback when retry completes the upload', async () => {
