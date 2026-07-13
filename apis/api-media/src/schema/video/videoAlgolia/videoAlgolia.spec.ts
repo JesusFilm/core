@@ -8,14 +8,14 @@ import { updateVideoInAlgolia } from '../../../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../../../lib/algolia/algoliaVideoVariantUpdate'
 
 const getObjectSpy = vi.fn()
-const customPostSpy = vi.fn()
+const browseSpy = vi.fn()
 const deleteObjectSpy = vi.fn()
 
 // Mock the algolia client helper
 vi.mock('../../../lib/algolia/algoliaClient', () => ({
   getAlgoliaClient: () => ({
     getObject: getObjectSpy,
-    customPost: customPostSpy,
+    browse: browseSpy,
     deleteObject: deleteObjectSpy
   }),
   getAlgoliaConfig: () => ({
@@ -115,7 +115,7 @@ describe('videoAlgolia', () => {
     vi.clearAllMocks()
 
     getObjectSpy.mockReset()
-    customPostSpy.mockReset()
+    browseSpy.mockReset()
     deleteObjectSpy.mockReset()
     mockedUpdateVideoInAlgolia.mockResolvedValue(undefined)
     mockedUpdateVideoVariantInAlgolia.mockResolvedValue(true as any)
@@ -688,7 +688,7 @@ describe('videoAlgolia', () => {
         createdAt: new Date(),
         updatedAt: new Date()
       })
-      customPostSpy.mockResolvedValue({
+      browseSpy.mockResolvedValue({
         hits: [
           {
             objectID: 'variant-existing',
@@ -710,9 +710,9 @@ describe('videoAlgolia', () => {
         } as any
       })
 
-      expect(customPostSpy).toHaveBeenCalledWith({
-        path: '/1/indexes/test-video-variants-index/browse',
-        body: { cursor: 'start-cursor' }
+      expect(browseSpy).toHaveBeenCalledWith({
+        indexName: 'test-video-variants-index',
+        browseParams: { cursor: 'start-cursor' }
       })
       expect(result).toHaveProperty(
         'data.checkAlgoliaVideoVariantIndexBatch.extraCount',

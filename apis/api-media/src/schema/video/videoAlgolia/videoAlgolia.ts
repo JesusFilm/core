@@ -41,9 +41,9 @@ type AlgoliaBrowseResponse = {
 }
 
 type AlgoliaClientWithBrowse = ReturnType<typeof getAlgoliaClient> & {
-  customPost: (args: {
-    path: string
-    body:
+  browse: (args: {
+    indexName: string
+    browseParams:
       | { cursor: string }
       | { hitsPerPage: number; attributesToRetrieve: string[] }
   }) => Promise<AlgoliaBrowseResponse>
@@ -173,9 +173,9 @@ async function browseAlgoliaVideoVariantObjectsBatch({
           attributesToRetrieve: ['objectID', ...VARIANT_INDEX_STALE_FIELDS]
         }
 
-  const response = await client.customPost({
-    path: `/1/indexes/${encodeURIComponent(algoliaConfig.videoVariantsIndex)}/browse`,
-    body
+  const response = await client.browse({
+    indexName: algoliaConfig.videoVariantsIndex,
+    browseParams: body
   })
 
   return {
