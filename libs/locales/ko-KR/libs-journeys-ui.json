@@ -128,6 +128,7 @@
   "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.": "대화가 꽤 길어졌네요. 계속 대화하고 싶으시면 새 대화를 시작해 주세요. 그러면 현재 세션이 종료됩니다.",
   "Start a new conversation": "새로운 대화를 시작하세요",
   "Gallery media": "갤러리 미디어",
+  "Chat has been turned off for this part of the journey.": "이 여정의 이 구간에서는 채팅 기능이 비활성화되었습니다.",
   "Select at least {{count}} options._other": "{{count}} 옵션을 선택합니다.",
   "Select up to {{count}} options._other": "최대 {{count}} 옵션을 선택합니다.",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>여정 템플릿</0><1>in</1><2>{{count}} 언어</2>",
