@@ -19,6 +19,18 @@ type AlgoliaVideoVariantIndexIssueMismatch {
   actual: String
 }
 
+enum AlgoliaVideoVariantIndexIssueType {
+  missing
+  stale
+  extra
+  failed
+}
+
+enum AlgoliaVideoVariantIndexScanType {
+  core
+  algolia
+}
+
 type ArclightApiKey
   @key(fields: "key")
 {
@@ -78,7 +90,7 @@ The `BigInt` scalar type represents non-fractional signed whole numeric values.
 scalar BigInt
 
 input CheckAlgoliaVideoVariantIndexBatchInput {
-  scanType: String!
+  scanType: AlgoliaVideoVariantIndexScanType!
   batchKey: String
   batchSize: Int
 }
@@ -269,7 +281,7 @@ type Error implements BaseError
 }
 
 input FixAlgoliaVideoVariantIndexIssuesInput {
-  issueType: String!
+  issueType: AlgoliaVideoVariantIndexIssueType!
   objectIds: [String!]!
 }
 

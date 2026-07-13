@@ -1,6 +1,6 @@
 import { Logger } from 'pino'
 
-import { prisma } from '@core/prisma/media/client'
+import { Prisma, prisma } from '@core/prisma/media/client'
 
 import { getAlgoliaClient, getAlgoliaConfig } from '../algoliaClient'
 import { getLanguages } from '../languages'
@@ -16,7 +16,11 @@ export const videoVariantAlgoliaInclude = {
       images: true
     }
   }
-} as const
+} satisfies Prisma.VideoVariantInclude
+
+export type VideoVariantAlgoliaPayload = Prisma.VideoVariantGetPayload<{
+  include: typeof videoVariantAlgoliaInclude
+}>
 
 export function sortByEnglishFirst(
   a: { languageId?: string },
@@ -38,12 +42,12 @@ export function getValidCloudflareImageAccount(): string | null {
 }
 
 export function buildVideoVariantAlgoliaObject(
-  videoVariant: any,
+  videoVariant: VideoVariantAlgoliaPayload,
   languages: Record<string, { english?: string; primary?: string }>
 ): Record<string, unknown> {
   const imageAccount = getValidCloudflareImageAccount()
   const cfImage = videoVariant.video?.images.find(
-    ({ aspectRatio }: { aspectRatio?: string }) => aspectRatio === 'banner'
+    ({ aspectRatio }) => aspectRatio === 'banner'
   )
   let image = ''
   if (cfImage != null && imageAccount != null) {

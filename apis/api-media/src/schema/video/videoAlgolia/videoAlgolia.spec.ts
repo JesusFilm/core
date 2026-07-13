@@ -65,12 +65,32 @@ vi.mock('../../../lib/algolia/algoliaVideoVariantUpdate', () => ({
     titles:
       variant.video?.title?.map((title: { value: string }) => title.value) ??
       [],
+    titlesWithLanguages:
+      variant.video?.title?.map(
+        (title: { value: string; languageId: string }) => ({
+          value: title.value,
+          languageId: title.languageId
+        })
+      ) ?? [],
     description:
       variant.video?.description?.map(
         (description: { value: string }) => description.value
       ) ?? [],
+    subtitles:
+      variant.video?.subtitles
+        ?.filter(
+          (subtitle: { edition: string }) =>
+            subtitle.edition === variant.edition
+        )
+        .map((subtitle: { languageId: string }) => subtitle.languageId) ?? [],
     childrenCount: variant.video?.childIds?.length ?? 0,
-    image: variant.video?.images?.[0]?.id ?? ''
+    image: variant.video?.images?.[0]?.id ?? '',
+    imageAlt:
+      variant.video?.imageAlt?.find(
+        (alt: { languageId: string }) => alt.languageId === '529'
+      )?.value ?? '',
+    restrictViewPlatforms: variant.video?.restrictViewPlatforms ?? [],
+    manualRanking: variant.languageId === '529' ? 0 : 1
   })),
   updateVideoVariantInAlgolia: vi.fn()
 }))
@@ -552,13 +572,17 @@ describe('videoAlgolia', () => {
           slug: 'watch/english',
           published: true,
           duration: 120,
+          edition: 'base',
           video: {
             published: true,
             label: 'segment',
             childIds: [],
             title: [{ value: 'Jesus', languageId: '529' }],
             description: [{ value: 'Description', languageId: '529' }],
-            images: [{ id: 'banner-id' }]
+            subtitles: [],
+            images: [{ id: 'banner-id' }],
+            imageAlt: [{ value: 'Jesus image', languageId: '529' }],
+            restrictViewPlatforms: []
           }
         },
         {
@@ -568,13 +592,17 @@ describe('videoAlgolia', () => {
           slug: 'watch/spanish',
           published: true,
           duration: 90,
+          edition: 'base',
           video: {
             published: true,
             label: 'segment',
             childIds: [],
             title: [{ value: 'Jesus ES', languageId: '496' }],
             description: [],
-            images: []
+            subtitles: [],
+            images: [],
+            imageAlt: [],
+            restrictViewPlatforms: []
           }
         }
       ] as any)
@@ -591,9 +619,14 @@ describe('videoAlgolia', () => {
           duration: 120,
           label: 'segment',
           titles: ['Jesus'],
+          titlesWithLanguages: [{ value: 'Jesus', languageId: '529' }],
           description: ['Description'],
+          subtitles: [],
           childrenCount: 0,
-          image: 'banner-id'
+          image: 'banner-id',
+          imageAlt: 'Jesus image',
+          restrictViewPlatforms: ['watch'],
+          manualRanking: 0
         })
         .mockRejectedValueOnce(new Error('Object not found'))
 
@@ -636,6 +669,11 @@ describe('videoAlgolia', () => {
               field: 'videoId',
               expected: '"video-1"',
               actual: '"wrong-video"'
+            },
+            {
+              field: 'restrictViewPlatforms',
+              expected: '[]',
+              actual: '["watch"]'
             }
           ]
         })

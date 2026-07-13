@@ -35,6 +35,20 @@ const getErrorString = (err: unknown): string => {
 type VariantIndexIssueType = 'missing' | 'stale' | 'extra' | 'failed'
 type VariantIndexScanType = 'core' | 'algolia'
 
+type AlgoliaBrowseResponse = {
+  hits?: unknown
+  cursor?: unknown
+}
+
+type AlgoliaClientWithBrowse = ReturnType<typeof getAlgoliaClient> & {
+  customPost: (args: {
+    path: string
+    body:
+      | { cursor: string }
+      | { hitsPerPage: number; attributesToRetrieve: string[] }
+  }) => Promise<AlgoliaBrowseResponse>
+}
+
 interface VariantIndexMismatch {
   field: string
   expected: string | null
@@ -66,10 +80,29 @@ const VARIANT_INDEX_STALE_FIELDS = [
   'duration',
   'label',
   'titles',
+  'titlesWithLanguages',
   'description',
+  'subtitles',
   'childrenCount',
-  'image'
+  'image',
+  'imageAlt',
+  'restrictViewPlatforms',
+  'manualRanking'
 ]
+
+const VariantIndexIssueTypeEnum = builder.enumType(
+  'AlgoliaVideoVariantIndexIssueType',
+  {
+    values: ['missing', 'stale', 'extra', 'failed'] as const
+  }
+)
+
+const VariantIndexScanTypeEnum = builder.enumType(
+  'AlgoliaVideoVariantIndexScanType',
+  {
+    values: ['core', 'algolia'] as const
+  }
+)
 
 function normalizeBatchSize(batchSize: number | null | undefined): number {
   if (batchSize == null || batchSize < 1)
@@ -130,29 +163,14 @@ async function browseAlgoliaVideoVariantObjectsBatch({
   cursor: string | null | undefined
   batchSize: number
 }): Promise<{ hits: Array<Record<string, unknown>>; cursor: string | null }> {
-  const client = getAlgoliaClient() as any
+  const client = getAlgoliaClient() as AlgoliaClientWithBrowse
   const algoliaConfig = getAlgoliaConfig()
   const body =
     cursor != null && cursor !== ''
       ? { cursor }
       : {
           hitsPerPage: batchSize,
-          attributesToRetrieve: [
-            'objectID',
-            'videoId',
-            'languageId',
-            'languageEnglishName',
-            'languagePrimaryName',
-            'slug',
-            'published',
-            'videoPublished',
-            'duration',
-            'label',
-            'titles',
-            'description',
-            'childrenCount',
-            'image'
-          ]
+          attributesToRetrieve: ['objectID', ...VARIANT_INDEX_STALE_FIELDS]
         }
 
   const response = await client.customPost({
@@ -199,7 +217,7 @@ const CheckAlgoliaVideoVariantIndexBatchInput = builder.inputType(
   'CheckAlgoliaVideoVariantIndexBatchInput',
   {
     fields: (t) => ({
-      scanType: t.string({ required: true }),
+      scanType: t.field({ type: VariantIndexScanTypeEnum, required: true }),
       batchKey: t.string({ required: false }),
       batchSize: t.int({ required: false })
     })
@@ -210,7 +228,7 @@ const FixAlgoliaVideoVariantIndexIssuesInput = builder.inputType(
   'FixAlgoliaVideoVariantIndexIssuesInput',
   {
     fields: (t) => ({
-      issueType: t.string({ required: true }),
+      issueType: t.field({ type: VariantIndexIssueTypeEnum, required: true }),
       objectIds: t.stringList({ required: true })
     })
   }
@@ -326,7 +344,7 @@ builder.queryFields((t) => ({
       })
     },
     resolve: async (_parent, { input }) => {
-      const scanType = input.scanType as VariantIndexScanType
+      const scanType = input.scanType
       const batchSize = normalizeBatchSize(input.batchSize)
       const languages = await getLanguages(logger)
       const client = getAlgoliaClient()
@@ -669,7 +687,7 @@ builder.mutationFields((t) => ({
       const algoliaConfig = getAlgoliaConfig()
       const fixed: string[] = []
       const issues: VariantIndexIssue[] = []
-      const issueType = input.issueType as VariantIndexIssueType
+      const issueType = input.issueType
 
       if (issueType === 'missing' || issueType === 'stale') {
         for (const objectId of input.objectIds) {

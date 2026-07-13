@@ -3731,6 +3731,18 @@ enum LanguageIdType @join__type(graph: API_LANGUAGES)  {
   bcp47 @join__enumValue(graph: API_LANGUAGES) 
 }
 
+enum AlgoliaVideoVariantIndexIssueType @join__type(graph: API_MEDIA)  {
+  missing @join__enumValue(graph: API_MEDIA)
+  stale @join__enumValue(graph: API_MEDIA)
+  extra @join__enumValue(graph: API_MEDIA)
+  failed @join__enumValue(graph: API_MEDIA)
+}
+
+enum AlgoliaVideoVariantIndexScanType @join__type(graph: API_MEDIA)  {
+  core @join__enumValue(graph: API_MEDIA)
+  algolia @join__enumValue(graph: API_MEDIA)
+}
+
 enum DefaultPlatform @join__type(graph: API_MEDIA)  {
   ios @join__enumValue(graph: API_MEDIA) 
   android @join__enumValue(graph: API_MEDIA) 
@@ -5081,7 +5093,7 @@ input BibleBooksFilter @join__type(graph: API_MEDIA)  {
 }
 
 input CheckAlgoliaVideoVariantIndexBatchInput @join__type(graph: API_MEDIA)  {
-  scanType: String!
+  scanType: AlgoliaVideoVariantIndexScanType!
   batchKey: String
   batchSize: Int
 }
@@ -5169,7 +5181,7 @@ input CloudflareR2MultipartUploadedPartInput @join__type(graph: API_MEDIA)  {
 }
 
 input FixAlgoliaVideoVariantIndexIssuesInput @join__type(graph: API_MEDIA)  {
-  issueType: String!
+  issueType: AlgoliaVideoVariantIndexIssueType!
   objectIds: [String!]!
 }
 
@@ -5607,4 +5619,3 @@ input MeInput @join__type(graph: API_USERS)  {
   redirect: String
   app: App
 }
-    
