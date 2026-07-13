@@ -129,7 +129,7 @@ export function getLinkedLanguageStudioManagedFilmsByLanguageId(
   >()
 
   for (const filmId of LANGUAGE_STUDIO_MANAGED_FILM_IDS) {
-    const film = data?.adminVideos.find(({ id }) => id === filmId)
+    const film = (data?.adminVideos ?? []).find(({ id }) => id === filmId)
     if (film == null) continue
 
     for (const variant of film.variants) {

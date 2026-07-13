@@ -270,6 +270,15 @@ const getLanguageStudioManagedFilmsWithoutLanguageMock = {
   }
 }
 
+const getLanguageStudioManagedFilmsNullMock = {
+  ...getLanguageStudioManagedFilmsMock,
+  result: {
+    data: {
+      adminVideos: null
+    }
+  }
+}
+
 async function waitForSearchDebounce(): Promise<void> {
   await act(async () => {
     await new Promise((resolve) => setTimeout(resolve, 350))
@@ -393,6 +402,21 @@ describe('LanguageList', () => {
 
     expect(await screen.findByText('12345')).toBeInTheDocument()
     expect(screen.getAllByText('-').length).toBeGreaterThan(0)
+  })
+
+  it('should show an empty linked films state when managed films are null', async () => {
+    render(
+      <MockedProvider
+        mocks={[getLanguagesMock, getLanguageStudioManagedFilmsNullMock]}
+      >
+        <SnackbarProvider>
+          <LanguageList />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(await screen.findByText('Chinese, Mandarin')).toBeInTheDocument()
+    expect(screen.getByText('-')).toBeInTheDocument()
   })
 
   it('should navigate to language editor when clicking a row', async () => {
