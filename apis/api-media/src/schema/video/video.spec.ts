@@ -2877,9 +2877,9 @@ describe('video', () => {
         expect(prismaMock.video.update).not.toHaveBeenCalled()
         expect(result).toHaveProperty('data', null)
         expect(result).toHaveProperty('errors')
-        expect((result as any).errors?.[0]?.message).toBe(
-          'Translation restriction cannot be disabled once enabled'
-        )
+        expect(
+          'errors' in result ? result.errors?.[0]?.message : undefined
+        ).toBe('Translation restriction cannot be disabled once enabled')
       })
 
       it('should not write restrictTranslations false after a stale false read', async () => {
@@ -2975,9 +2975,9 @@ describe('video', () => {
         )
         expect(result).toHaveProperty('data', null)
         expect(result).toHaveProperty('errors')
-        expect((result as any).errors?.[0]?.message).toBe(
-          'Translation restriction cannot be disabled once enabled'
-        )
+        expect(
+          'errors' in result ? result.errors?.[0]?.message : undefined
+        ).toBe('Translation restriction cannot be disabled once enabled')
       })
 
       it('should update video with child relations when childIds are provided', async () => {

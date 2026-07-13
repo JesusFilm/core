@@ -81,8 +81,8 @@ describe('VideoViewLayout', () => {
     mockSegment.mockReturnValue('publishAll')
 
     render(
-      <VideoViewLayout studyQuestions={<div>Study questions</div>}>
-        <div data-testid="publish-all-dialog">Publish all dialog</div>
+      <VideoViewLayout studyQuestions={<Box>Study questions</Box>}>
+        <Box data-testid="publish-all-dialog">Publish all dialog</Box>
       </VideoViewLayout>
     )
 
@@ -95,8 +95,8 @@ describe('VideoViewLayout', () => {
     mockSegment.mockReturnValue('restrictions')
 
     render(
-      <VideoViewLayout studyQuestions={<div>Study questions</div>}>
-        <div data-testid="restrictions-page">Restrictions page</div>
+      <VideoViewLayout studyQuestions={<Box>Study questions</Box>}>
+        <Box data-testid="restrictions-page">Restrictions page</Box>
       </VideoViewLayout>
     )
 
@@ -107,8 +107,8 @@ describe('VideoViewLayout', () => {
 
   it('does not render restriction sections on the metadata tab', () => {
     render(
-      <VideoViewLayout studyQuestions={<div>Study questions</div>}>
-        <div />
+      <VideoViewLayout studyQuestions={<Box>Study questions</Box>}>
+        <Box />
       </VideoViewLayout>
     )
 

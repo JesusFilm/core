@@ -5,7 +5,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import { Form, Formik, FormikProps, FormikValues } from 'formik'
+import { Form, Formik, FormikHelpers } from 'formik'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -16,6 +16,10 @@ import { SaveButton } from '../../../../../components/SaveButton'
 
 interface RestrictTranslationsProps {
   videoId: string
+}
+
+interface RestrictTranslationsFormValues {
+  restrictTranslations: boolean
 }
 
 export const GET_RESTRICT_TRANSLATIONS = graphql(`
@@ -48,8 +52,8 @@ export function RestrictTranslations({
   const restrictionLocked = data.adminVideo.restrictTranslations === true
 
   async function handleUpdateRestrictTranslations(
-    values: FormikValues,
-    { resetForm }: FormikProps<FormikValues>
+    values: RestrictTranslationsFormValues,
+    { resetForm }: FormikHelpers<RestrictTranslationsFormValues>
   ): Promise<void> {
     await updateRestrictTranslations({
       variables: {
