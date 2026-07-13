@@ -130,7 +130,18 @@ async function browseAlgoliaVideoVariantObjectsBatch({
   cursor: string | null | undefined
   batchSize: number
 }): Promise<{ hits: Array<Record<string, unknown>>; cursor: string | null }> {
-  const client = getAlgoliaClient() as any
+  type BrowseResponse = {
+    hits?: unknown
+    cursor?: unknown
+  }
+  type AlgoliaBrowseClient = ReturnType<typeof getAlgoliaClient> & {
+    customPost: (args: {
+      path: string
+      body: Record<string, unknown>
+    }) => Promise<BrowseResponse>
+  }
+
+  const client = getAlgoliaClient() as AlgoliaBrowseClient
   const algoliaConfig = getAlgoliaConfig()
   const body =
     cursor != null && cursor !== ''

@@ -150,6 +150,29 @@ function mergeIssues(
   return Array.from(byId.values())
 }
 
+function subtractFixedIssues(
+  current: SummaryCounts,
+  fixedIssues: VariantIndexIssue[]
+): SummaryCounts {
+  const fixedCounts = fixedIssues.reduce(
+    (counts, issue) => ({
+      missing: counts.missing + (issue.issueType === 'missing' ? 1 : 0),
+      stale: counts.stale + (issue.issueType === 'stale' ? 1 : 0),
+      extra: counts.extra + (issue.issueType === 'extra' ? 1 : 0),
+      failed: counts.failed + (issue.issueType === 'failed' ? 1 : 0)
+    }),
+    { missing: 0, stale: 0, extra: 0, failed: 0 }
+  )
+
+  return {
+    ...current,
+    missing: Math.max(0, current.missing - fixedCounts.missing),
+    stale: Math.max(0, current.stale - fixedCounts.stale),
+    extra: Math.max(0, current.extra - fixedCounts.extra),
+    failed: Math.max(0, current.failed - fixedCounts.failed)
+  }
+}
+
 export function AlgoliaDebugging(): ReactElement {
   const apolloClient = useApolloClient()
   const { enqueueSnackbar } = useSnackbar()
@@ -255,9 +278,13 @@ export function AlgoliaDebugging(): ReactElement {
       )
 
       if (fixedIds.size > 0) {
+        const fixedIssues = issues.filter((issue) =>
+          fixedIds.has(issue.objectId)
+        )
         setIssues((current) =>
           current.filter((issue) => !fixedIds.has(issue.objectId))
         )
+        setSummary((current) => subtractFixedIssues(current, fixedIssues))
         setSelectionModel((current) => ({
           ...current,
           ids: new Set(
@@ -273,7 +300,7 @@ export function AlgoliaDebugging(): ReactElement {
         { variant: failedCount > 0 ? 'warning' : 'success' }
       )
     },
-    [enqueueSnackbar, fixIssues]
+    [enqueueSnackbar, fixIssues, issues]
   )
 
   const handleFixSelected = useCallback(

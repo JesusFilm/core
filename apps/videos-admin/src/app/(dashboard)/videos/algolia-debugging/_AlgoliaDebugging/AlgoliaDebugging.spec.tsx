@@ -179,5 +179,11 @@ describe('AlgoliaDebugging', () => {
     expect(mockEnqueueSnackbar).toHaveBeenCalledWith('Fixed 1', {
       variant: 'success'
     })
+    await waitFor(() => expect(screen.getByText('Stale 0')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('button', { name: 'Fix' })
+      ).not.toBeInTheDocument()
+    )
   })
 })
