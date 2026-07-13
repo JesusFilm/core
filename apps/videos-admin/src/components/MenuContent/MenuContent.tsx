@@ -72,10 +72,7 @@ export function MenuContent(): ReactElement {
             icon: <VideoLibraryRoundedIcon />,
             href: '/videos',
             startsWith: true,
-            excludedStartsWith: [
-              '/videos/status-pipeline',
-              '/videos/algolia'
-            ]
+            excludedStartsWith: ['/videos/status-pipeline', '/videos/algolia']
           },
           {
             text: 'Status Pipeline',
