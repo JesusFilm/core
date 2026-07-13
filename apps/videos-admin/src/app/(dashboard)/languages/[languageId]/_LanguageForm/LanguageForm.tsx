@@ -19,17 +19,16 @@ import { CancelButton } from '../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../components/SaveButton'
 import {
   DEFAULT_LANGUAGE_ID,
-  GET_JESUS_FILM_VARIANTS,
-  JESUS_FILM_VIDEO_ID,
+  GET_LANGUAGE_STUDIO_MANAGED_FILMS,
+  LANGUAGE_STUDIO_MANAGED_FILM_IDS,
   LINKED_LANGUAGE_STUDIO_MANAGED_FILMS_LABEL,
-  getJesusFilmTitle,
-  getJesusFilmVariantForLanguage,
-  getJesusFilmVariantPath
-} from '../../_JesusFilmVersion/jesusFilmVersion'
+  getLanguageStudioManagedFilmPath,
+  getLinkedLanguageStudioManagedFilmsForLanguage
+} from '../../_LanguageStudioManagedFilms/languageStudioManagedFilms'
 import type {
-  GetJesusFilmData,
-  GetJesusFilmVariables
-} from '../../_JesusFilmVersion/jesusFilmVersion'
+  GetLanguageStudioManagedFilmsData,
+  GetLanguageStudioManagedFilmsVariables
+} from '../../_LanguageStudioManagedFilms/languageStudioManagedFilms'
 import {
   CountryLanguageLink,
   LanguageCountryLinks
@@ -172,11 +171,14 @@ export function LanguageForm(): ReactElement {
   >(GET_LANGUAGE, {
     variables: { id: languageId, nameLanguageId: DEFAULT_LANGUAGE_ID }
   })
-  const { data: jesusFilmData, loading: jesusFilmLoading } = useQuery<
-    GetJesusFilmData,
-    GetJesusFilmVariables
-  >(GET_JESUS_FILM_VARIANTS, {
-    variables: { id: JESUS_FILM_VIDEO_ID, languageId: DEFAULT_LANGUAGE_ID }
+  const { data: linkedFilmsData, loading: linkedFilmsLoading } = useQuery<
+    GetLanguageStudioManagedFilmsData,
+    GetLanguageStudioManagedFilmsVariables
+  >(GET_LANGUAGE_STUDIO_MANAGED_FILMS, {
+    variables: {
+      ids: LANGUAGE_STUDIO_MANAGED_FILM_IDS,
+      languageId: DEFAULT_LANGUAGE_ID
+    }
   })
 
   const [updateLanguage] = useMutation(UPDATE_LANGUAGE)
@@ -191,10 +193,13 @@ export function LanguageForm(): ReactElement {
     () => getPrimaryName(language?.nativeName ?? []),
     [language?.nativeName]
   )
-  const jesusFilmTitle = getJesusFilmTitle(jesusFilmData)
-  const jesusFilmVariant = useMemo(
-    () => getJesusFilmVariantForLanguage(jesusFilmData, languageId),
-    [jesusFilmData?.adminVideo.variants, languageId]
+  const linkedFilms = useMemo(
+    () =>
+      getLinkedLanguageStudioManagedFilmsForLanguage(
+        linkedFilmsData,
+        languageId
+      ),
+    [linkedFilmsData?.adminVideos, languageId]
   )
 
   const initialValues: LanguageFormValues = {
@@ -396,22 +401,34 @@ export function LanguageForm(): ReactElement {
         <Typography component="h3" variant="h6" sx={{ mb: 2 }}>
           {LINKED_LANGUAGE_STUDIO_MANAGED_FILMS_LABEL}
         </Typography>
-        {jesusFilmLoading ? (
+        {linkedFilmsLoading ? (
           <Typography color="text.secondary">
             Loading film version...
           </Typography>
-        ) : jesusFilmVariant == null ? (
+        ) : linkedFilms.length === 0 ? (
           <Typography color="text.secondary">-</Typography>
         ) : (
-          <Stack direction="row" spacing={0.5} sx={{ alignItems: 'baseline' }}>
-            <Typography>{jesusFilmTitle}:</Typography>
-            <Link
-              component={NextLink}
-              href={getJesusFilmVariantPath(jesusFilmVariant.id)}
-            >
-              {jesusFilmVariant.version}
-            </Link>
-            <Typography>: {JESUS_FILM_VIDEO_ID}</Typography>
+          <Stack spacing={0.5}>
+            {linkedFilms.map((linkedFilm) => (
+              <Stack
+                key={`${linkedFilm.videoId}-${linkedFilm.variant.id}`}
+                direction="row"
+                spacing={0.5}
+                sx={{ alignItems: 'baseline' }}
+              >
+                <Typography>{linkedFilm.title}:</Typography>
+                <Link
+                  component={NextLink}
+                  href={getLanguageStudioManagedFilmPath({
+                    videoId: linkedFilm.videoId,
+                    variantId: linkedFilm.variant.id
+                  })}
+                >
+                  {linkedFilm.variant.version}
+                </Link>
+                <Typography>: {linkedFilm.videoId}</Typography>
+              </Stack>
+            ))}
           </Stack>
         )}
       </Paper>
@@ -427,4 +444,4 @@ export function LanguageForm(): ReactElement {
   )
 }
 
-export { GET_JESUS_FILM_VARIANTS }
+export { GET_LANGUAGE_STUDIO_MANAGED_FILMS }

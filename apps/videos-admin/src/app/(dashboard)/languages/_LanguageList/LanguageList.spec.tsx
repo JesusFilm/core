@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { SnackbarProvider } from 'notistack'
 
 import {
-  GET_JESUS_FILM_VARIANTS,
+  GET_LANGUAGE_STUDIO_MANAGED_FILMS,
   GET_LANGUAGES,
   LanguageList
 } from './LanguageList'
@@ -13,6 +13,13 @@ import {
 vi.mock('next/navigation')
 
 const push = vi.fn()
+const languageStudioManagedFilmIds = [
+  '1_cl-0-0',
+  '1_jf-0-0',
+  '1_wjv-0-0',
+  '1_wl-0-0',
+  'MAG1'
+]
 
 vi.mocked(useRouter).mockReturnValue({ push } as unknown as ReturnType<
   typeof useRouter
@@ -158,29 +165,107 @@ const searchLanguageIdMock = {
   }
 }
 
-const getJesusFilmVariantsMock = {
+const getLanguageStudioManagedFilmsMock = {
   request: {
-    query: GET_JESUS_FILM_VARIANTS,
+    query: GET_LANGUAGE_STUDIO_MANAGED_FILMS,
     variables: {
-      id: '1_jf-0-0',
+      ids: languageStudioManagedFilmIds,
       languageId: '529'
     }
   },
   result: {
     data: {
-      adminVideo: {
-        id: '1_jf-0-0',
-        title: [{ value: 'Jesus Film', __typename: 'VideoTitle' }],
-        variants: [
-          {
-            id: '20615_1_jf-0-0',
-            version: 3,
-            language: { id: '20615', __typename: 'Language' },
-            __typename: 'VideoVariant'
-          }
-        ],
-        __typename: 'Video'
-      }
+      adminVideos: [
+        {
+          id: '1_cl-0-0',
+          title: [
+            {
+              value: 'The Story of Jesus for Children',
+              __typename: 'VideoTitle'
+            }
+          ],
+          variants: [],
+          __typename: 'Video'
+        },
+        {
+          id: '1_jf-0-0',
+          title: [{ value: 'JESUS', __typename: 'VideoTitle' }],
+          variants: [
+            {
+              id: '20615_1_jf-0-0',
+              version: 3,
+              language: { id: '20615', __typename: 'Language' },
+              __typename: 'VideoVariant'
+            }
+          ],
+          __typename: 'Video'
+        },
+        {
+          id: '1_wjv-0-0',
+          title: [
+            {
+              value: 'Walking with Jesus (Africa)',
+              __typename: 'VideoTitle'
+            }
+          ],
+          variants: [],
+          __typename: 'Video'
+        },
+        {
+          id: '1_wl-0-0',
+          title: [
+            {
+              value: "Magdalena - Director's Cut",
+              __typename: 'VideoTitle'
+            }
+          ],
+          variants: [
+            {
+              id: '20615_1_wl-0-0',
+              version: 4,
+              language: { id: '20615', __typename: 'Language' },
+              __typename: 'VideoVariant'
+            }
+          ],
+          __typename: 'Video'
+        },
+        {
+          id: 'MAG1',
+          title: [{ value: 'Magdalena', __typename: 'VideoTitle' }],
+          variants: [
+            {
+              id: '529_MAG1',
+              version: 42,
+              language: { id: '529', __typename: 'Language' },
+              __typename: 'VideoVariant'
+            }
+          ],
+          __typename: 'Video'
+        }
+      ]
+    }
+  }
+}
+
+const getLanguageStudioManagedFilmsWithoutLanguageMock = {
+  ...getLanguageStudioManagedFilmsMock,
+  result: {
+    data: {
+      adminVideos: [
+        {
+          id: '1_jf-0-0',
+          title: [{ value: 'JESUS', __typename: 'VideoTitle' }],
+          variants: [
+            {
+              id: '529_1_jf-0-0',
+              version: 1,
+              language: { id: '529', __typename: 'Language' },
+              __typename: 'VideoVariant'
+            }
+          ],
+          __typename: 'Video'
+        }
+      ]
     }
   }
 }
@@ -198,7 +283,9 @@ describe('LanguageList', () => {
 
   it('should show languages', async () => {
     render(
-      <MockedProvider mocks={[getLanguagesMock, getJesusFilmVariantsMock]}>
+      <MockedProvider
+        mocks={[getLanguagesMock, getLanguageStudioManagedFilmsMock]}
+      >
         <SnackbarProvider>
           <LanguageList />
         </SnackbarProvider>
@@ -214,12 +301,18 @@ describe('LanguageList', () => {
         name: 'Linked Language Studio Managed Films'
       })
     ).toBeInTheDocument()
-    expect(screen.getByText('Jesus Film:')).toBeInTheDocument()
+    expect(screen.getByText('JESUS:')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: '3' })).toHaveAttribute(
       'href',
       '/videos/1_jf-0-0/audio/20615_1_jf-0-0'
     )
     expect(screen.getByText(': 1_jf-0-0')).toBeInTheDocument()
+    expect(screen.getByText("Magdalena - Director's Cut:")).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '4' })).toHaveAttribute(
+      'href',
+      '/videos/1_wl-0-0/audio/20615_1_wl-0-0'
+    )
+    expect(screen.getByText(': 1_wl-0-0')).toBeInTheDocument()
     expect(
       screen.getByRole('combobox', { name: 'Has videos' })
     ).toHaveTextContent('Yes')
@@ -232,7 +325,7 @@ describe('LanguageList', () => {
       <MockedProvider
         mocks={[
           getLanguagesMock,
-          getJesusFilmVariantsMock,
+          getLanguageStudioManagedFilmsMock,
           searchLanguagesMock
         ]}
       >
@@ -258,7 +351,7 @@ describe('LanguageList', () => {
       <MockedProvider
         mocks={[
           getLanguagesMock,
-          getJesusFilmVariantsMock,
+          getLanguageStudioManagedFilmsMock,
           searchLanguageIdMock
         ]}
       >
@@ -282,7 +375,11 @@ describe('LanguageList', () => {
 
     render(
       <MockedProvider
-        mocks={[getLanguagesMock, getJesusFilmVariantsMock, allLanguagesMock]}
+        mocks={[
+          getLanguagesMock,
+          getLanguageStudioManagedFilmsWithoutLanguageMock,
+          allLanguagesMock
+        ]}
       >
         <SnackbarProvider>
           <LanguageList />
@@ -295,12 +392,14 @@ describe('LanguageList', () => {
     await user.click(screen.getByRole('option', { name: 'Any' }))
 
     expect(await screen.findByText('12345')).toBeInTheDocument()
-    expect(screen.getByText('-')).toBeInTheDocument()
+    expect(screen.getAllByText('-').length).toBeGreaterThan(0)
   })
 
   it('should navigate to language editor when clicking a row', async () => {
     render(
-      <MockedProvider mocks={[getLanguagesMock, getJesusFilmVariantsMock]}>
+      <MockedProvider
+        mocks={[getLanguagesMock, getLanguageStudioManagedFilmsMock]}
+      >
         <SnackbarProvider>
           <LanguageList />
         </SnackbarProvider>

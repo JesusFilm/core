@@ -33,18 +33,17 @@ import {
 
 import {
   DEFAULT_LANGUAGE_ID,
-  GET_JESUS_FILM_VARIANTS,
-  JESUS_FILM_VIDEO_ID,
+  GET_LANGUAGE_STUDIO_MANAGED_FILMS,
+  LANGUAGE_STUDIO_MANAGED_FILM_IDS,
   LINKED_LANGUAGE_STUDIO_MANAGED_FILMS_LABEL,
-  getJesusFilmTitle,
-  getJesusFilmVariantPath,
-  getJesusFilmVariantsByLanguageId
-} from '../_JesusFilmVersion/jesusFilmVersion'
+  getLanguageStudioManagedFilmPath,
+  getLinkedLanguageStudioManagedFilmsByLanguageId
+} from '../_LanguageStudioManagedFilms/languageStudioManagedFilms'
 import type {
-  GetJesusFilmData,
-  GetJesusFilmVariables,
-  JesusFilmVariant
-} from '../_JesusFilmVersion/jesusFilmVersion'
+  GetLanguageStudioManagedFilmsData,
+  GetLanguageStudioManagedFilmsVariables,
+  LinkedLanguageStudioManagedFilm
+} from '../_LanguageStudioManagedFilms/languageStudioManagedFilms'
 
 const DEFAULT_PAGE_SIZE = 25
 
@@ -122,8 +121,7 @@ interface LanguageRow {
   iso3: string
   slug: string
   hasVideos: boolean
-  jesusFilmTitle: string
-  jesusFilmVariant?: JesusFilmVariant
+  linkedFilms: LinkedLanguageStudioManagedFilm[]
 }
 
 function getPrimaryName(names: LanguageName[]): LanguageName | undefined {
@@ -208,18 +206,19 @@ export function LanguageList(): ReactElement {
       }
     }
   )
-  const { data: jesusFilmData, loading: jesusFilmLoading } = useQuery<
-    GetJesusFilmData,
-    GetJesusFilmVariables
-  >(GET_JESUS_FILM_VARIANTS, {
-    variables: { id: JESUS_FILM_VIDEO_ID, languageId: DEFAULT_LANGUAGE_ID }
+  const { data: linkedFilmsData, loading: linkedFilmsLoading } = useQuery<
+    GetLanguageStudioManagedFilmsData,
+    GetLanguageStudioManagedFilmsVariables
+  >(GET_LANGUAGE_STUDIO_MANAGED_FILMS, {
+    variables: {
+      ids: LANGUAGE_STUDIO_MANAGED_FILM_IDS,
+      languageId: DEFAULT_LANGUAGE_ID
+    }
   })
 
-  const jesusFilmTitle = getJesusFilmTitle(jesusFilmData)
-
-  const jesusFilmVariantsByLanguageId = useMemo(
-    () => getJesusFilmVariantsByLanguageId(jesusFilmData),
-    [jesusFilmData?.adminVideo.variants]
+  const linkedFilmsByLanguageId = useMemo(
+    () => getLinkedLanguageStudioManagedFilmsByLanguageId(linkedFilmsData),
+    [linkedFilmsData?.adminVideos]
   )
 
   const rows: GridRowsProp<LanguageRow> = useMemo(
@@ -240,11 +239,10 @@ export function LanguageList(): ReactElement {
           iso3: language.iso3 ?? '',
           slug: language.slug ?? '',
           hasVideos: language.hasVideos,
-          jesusFilmTitle,
-          jesusFilmVariant: jesusFilmVariantsByLanguageId.get(language.id)
+          linkedFilms: linkedFilmsByLanguageId.get(language.id) ?? []
         }
       }) ?? [],
-    [data?.adminLanguages, jesusFilmTitle, jesusFilmVariantsByLanguageId]
+    [data?.adminLanguages, linkedFilmsByLanguageId]
   )
 
   const columns: GridColDef<LanguageRow>[] = [
@@ -285,16 +283,16 @@ export function LanguageList(): ReactElement {
     { field: 'iso3', headerName: 'ISO 3', width: 112 },
     { field: 'slug', headerName: 'Slug', flex: 1, minWidth: 180 },
     {
-      field: 'jesusFilmVariant',
+      field: 'linkedFilms',
       headerName: LINKED_LANGUAGE_STUDIO_MANAGED_FILMS_LABEL,
       flex: 1,
-      minWidth: 320,
+      minWidth: 360,
       sortable: false,
       filterable: false,
       renderCell: (params) => {
-        const variant = params.row.jesusFilmVariant
+        const linkedFilms = params.row.linkedFilms
 
-        if (variant == null) {
+        if (linkedFilms.length === 0) {
           return (
             <Typography variant="body2" color="text.secondary">
               -
@@ -304,26 +302,38 @@ export function LanguageList(): ReactElement {
 
         return (
           <Stack
-            direction="row"
-            spacing={0.5}
-            alignItems="center"
-            sx={{ minWidth: 0 }}
+            spacing={0.25}
+            alignItems="flex-start"
+            sx={{ minWidth: 0, py: 1 }}
             onClick={handleLinkedFilmClick}
           >
-            <Typography variant="body2" noWrap>
-              {params.row.jesusFilmTitle}:
-            </Typography>
-            <Link
-              component={NextLink}
-              href={getJesusFilmVariantPath(variant.id)}
-              underline="hover"
-              sx={{ flexShrink: 0, fontWeight: 600 }}
-            >
-              {variant.version}
-            </Link>
-            <Typography variant="body2" noWrap>
-              : {JESUS_FILM_VIDEO_ID}
-            </Typography>
+            {linkedFilms.map((linkedFilm) => (
+              <Stack
+                key={`${linkedFilm.videoId}-${linkedFilm.variant.id}`}
+                direction="row"
+                spacing={0.5}
+                alignItems="center"
+                sx={{ minWidth: 0 }}
+              >
+                <Typography variant="body2" noWrap>
+                  {linkedFilm.title}:
+                </Typography>
+                <Link
+                  component={NextLink}
+                  href={getLanguageStudioManagedFilmPath({
+                    videoId: linkedFilm.videoId,
+                    variantId: linkedFilm.variant.id
+                  })}
+                  underline="hover"
+                  sx={{ flexShrink: 0, fontWeight: 600 }}
+                >
+                  {linkedFilm.variant.version}
+                </Link>
+                <Typography variant="body2" noWrap>
+                  : {linkedFilm.videoId}
+                </Typography>
+              </Stack>
+            ))}
           </Stack>
         )
       }
@@ -412,11 +422,12 @@ export function LanguageList(): ReactElement {
               rows={rows}
               columns={columns}
               rowCount={data?.adminLanguagesCount ?? 0}
-              loading={loading || jesusFilmLoading}
+              loading={loading || linkedFilmsLoading}
               paginationMode="server"
               disableColumnFilter
               paginationModel={paginationModel}
               onPaginationModelChange={handlePaginationModelChange}
+              getRowHeight={() => 'auto'}
               pageSizeOptions={[25, 50, 100]}
               onRowClick={(params) => router.push(`/languages/${params.id}`)}
               disableRowSelectionOnClick
@@ -440,4 +451,4 @@ export function LanguageList(): ReactElement {
   )
 }
 
-export { GET_JESUS_FILM_VARIANTS }
+export { GET_LANGUAGE_STUDIO_MANAGED_FILMS }
