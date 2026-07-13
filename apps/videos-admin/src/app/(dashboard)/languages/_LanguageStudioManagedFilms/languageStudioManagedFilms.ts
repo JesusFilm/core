@@ -30,7 +30,7 @@ export const LANGUAGE_STUDIO_MANAGED_FILMS = [
 export const LANGUAGE_STUDIO_MANAGED_FILM_IDS =
   LANGUAGE_STUDIO_MANAGED_FILMS.map(({ id }) => id)
 
-const fallbackFilmTitleById = new Map(
+const fallbackFilmTitleById = new Map<string, string>(
   LANGUAGE_STUDIO_MANAGED_FILMS.map(({ id, title }) => [id, title])
 )
 
