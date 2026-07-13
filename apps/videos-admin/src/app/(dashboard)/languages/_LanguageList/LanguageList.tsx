@@ -35,6 +35,7 @@ import {
   DEFAULT_LANGUAGE_ID,
   GET_JESUS_FILM_VARIANTS,
   JESUS_FILM_VIDEO_ID,
+  LINKED_LANGUAGE_STUDIO_MANAGED_FILMS_LABEL,
   getJesusFilmTitle,
   getJesusFilmVariantPath,
   getJesusFilmVariantsByLanguageId
@@ -285,9 +286,9 @@ export function LanguageList(): ReactElement {
     { field: 'slug', headerName: 'Slug', flex: 1, minWidth: 180 },
     {
       field: 'jesusFilmVariant',
-      headerName: jesusFilmTitle,
+      headerName: LINKED_LANGUAGE_STUDIO_MANAGED_FILMS_LABEL,
       flex: 1,
-      minWidth: 220,
+      minWidth: 320,
       sortable: false,
       filterable: false,
       renderCell: (params) => {
@@ -310,7 +311,7 @@ export function LanguageList(): ReactElement {
             onClick={handleLinkedFilmClick}
           >
             <Typography variant="body2" noWrap>
-              {params.row.jesusFilmTitle} -
+              {params.row.jesusFilmTitle}:
             </Typography>
             <Link
               component={NextLink}
@@ -318,8 +319,11 @@ export function LanguageList(): ReactElement {
               underline="hover"
               sx={{ flexShrink: 0, fontWeight: 600 }}
             >
-              v{variant.version}
+              {variant.version}
             </Link>
+            <Typography variant="body2" noWrap>
+              : {JESUS_FILM_VIDEO_ID}
+            </Typography>
           </Stack>
         )
       }

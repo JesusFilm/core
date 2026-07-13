@@ -21,6 +21,7 @@ import {
   DEFAULT_LANGUAGE_ID,
   GET_JESUS_FILM_VARIANTS,
   JESUS_FILM_VIDEO_ID,
+  LINKED_LANGUAGE_STUDIO_MANAGED_FILMS_LABEL,
   getJesusFilmTitle,
   getJesusFilmVariantForLanguage,
   getJesusFilmVariantPath
@@ -393,7 +394,7 @@ export function LanguageForm(): ReactElement {
 
       <Paper sx={{ p: 3 }}>
         <Typography component="h3" variant="h6" sx={{ mb: 2 }}>
-          Linked Films
+          {LINKED_LANGUAGE_STUDIO_MANAGED_FILMS_LABEL}
         </Typography>
         {jesusFilmLoading ? (
           <Typography color="text.secondary">
@@ -403,13 +404,14 @@ export function LanguageForm(): ReactElement {
           <Typography color="text.secondary">-</Typography>
         ) : (
           <Stack direction="row" spacing={0.5} sx={{ alignItems: 'baseline' }}>
-            <Typography>{jesusFilmTitle} -</Typography>
+            <Typography>{jesusFilmTitle}:</Typography>
             <Link
               component={NextLink}
               href={getJesusFilmVariantPath(jesusFilmVariant.id)}
             >
-              v{jesusFilmVariant.version}
+              {jesusFilmVariant.version}
             </Link>
+            <Typography>: {JESUS_FILM_VIDEO_ID}</Typography>
           </Stack>
         )}
       </Paper>

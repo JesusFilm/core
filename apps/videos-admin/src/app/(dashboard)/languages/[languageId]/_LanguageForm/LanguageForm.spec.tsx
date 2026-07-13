@@ -277,11 +277,12 @@ describe('LanguageForm', () => {
   it('should show the linked Jesus Film version', async () => {
     renderForm()
 
-    expect(await screen.findByText('Jesus Film -')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'v3' })).toHaveAttribute(
+    expect(await screen.findByText('Jesus Film:')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '3' })).toHaveAttribute(
       'href',
       '/videos/1_jf-0-0/audio/20615_1_jf-0-0'
     )
+    expect(screen.getByText(': 1_jf-0-0')).toBeInTheDocument()
   })
 
   it('should show an empty linked films state when there is no Jesus Film variant', async () => {
@@ -296,7 +297,7 @@ describe('LanguageForm', () => {
     )
 
     const linkedFilmsHeading = await screen.findByRole('heading', {
-      name: 'Linked Films'
+      name: 'Linked Language Studio Managed Films'
     })
     const linkedFilmsSection = linkedFilmsHeading.parentElement as HTMLElement
 

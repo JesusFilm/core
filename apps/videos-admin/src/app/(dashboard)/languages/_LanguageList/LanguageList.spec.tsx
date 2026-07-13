@@ -210,13 +210,16 @@ describe('LanguageList', () => {
     expect(screen.getByText('mandarin-china')).toBeInTheDocument()
     expect(screen.getAllByText('Yes')).toHaveLength(2)
     expect(
-      screen.getByRole('columnheader', { name: 'Jesus Film' })
+      screen.getByRole('columnheader', {
+        name: 'Linked Language Studio Managed Films'
+      })
     ).toBeInTheDocument()
-    expect(screen.getByText('Jesus Film -')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'v3' })).toHaveAttribute(
+    expect(screen.getByText('Jesus Film:')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '3' })).toHaveAttribute(
       'href',
       '/videos/1_jf-0-0/audio/20615_1_jf-0-0'
     )
+    expect(screen.getByText(': 1_jf-0-0')).toBeInTheDocument()
     expect(
       screen.getByRole('combobox', { name: 'Has videos' })
     ).toHaveTextContent('Yes')

@@ -2,6 +2,8 @@ import { gql } from '@apollo/client'
 
 export const DEFAULT_LANGUAGE_ID = '529'
 export const JESUS_FILM_VIDEO_ID = '1_jf-0-0'
+export const LINKED_LANGUAGE_STUDIO_MANAGED_FILMS_LABEL =
+  'Linked Language Studio Managed Films'
 
 export const GET_JESUS_FILM_VARIANTS = gql`
   query GetJesusFilmLanguageVersions($id: ID!, $languageId: ID) {
