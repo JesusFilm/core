@@ -92,12 +92,11 @@ REPORT
   fi
 
   sort -t $'\t' -k1,1nr "$tmp_file" |
-    awk -F '\t' '{
+    awk -F '\t' 'NR <= 40 {
       cmd=$3
       if (length(cmd) > 180) cmd=substr(cmd, 1, 177) "..."
       printf "%8d  pid=%-8s  %s\n", $1, $2, cmd
-    }' |
-    head -40
+    }'
 
   rm -f "$tmp_file"
 }

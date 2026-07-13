@@ -111,9 +111,6 @@
     "coverage",
     "dist",
     "node_modules",
-    "pages",
-    "public",
-    "src",
     "storybook-static"
   ],
   "tailwindCSS.experimental.classRegex": [
