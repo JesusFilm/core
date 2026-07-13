@@ -38,6 +38,9 @@ export function NavbarBreadcrumbs(): ReactElement {
     settings: {
       icon: <SettingsRoundedIcon fontSize="inherit" />,
       value: 'Settings'
+    },
+    'status-pipeline': {
+      value: 'Video Status Pipeline'
     }
   }
 

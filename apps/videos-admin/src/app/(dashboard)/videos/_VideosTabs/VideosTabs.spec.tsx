@@ -29,8 +29,8 @@ describe('VideosTabs', () => {
       screen.getByRole('tab', { name: 'Library (Backup)' })
     ).toHaveAttribute('aria-selected', 'false')
     expect(
-      screen.getByRole('tab', { name: 'Status Pipeline' })
-    ).toHaveAttribute('aria-selected', 'false')
+      screen.queryByRole('tab', { name: 'Video Status Pipeline' })
+    ).not.toBeInTheDocument()
   })
 
   it('routes Library to the backup page', () => {
@@ -41,16 +41,8 @@ describe('VideosTabs', () => {
     expect(mockPush).toHaveBeenCalledWith('/videos/library')
   })
 
-  it('routes Status Pipeline to the status pipeline page', () => {
-    render(<VideosTabs />)
-
-    fireEvent.click(screen.getByRole('tab', { name: 'Status Pipeline' }))
-
-    expect(mockPush).toHaveBeenCalledWith('/videos/status-pipeline')
-  })
-
   it('routes Algolia Search back to the main videos page', () => {
-    mockPathname = '/videos/status-pipeline'
+    mockPathname = '/videos/library'
 
     render(<VideosTabs />)
 

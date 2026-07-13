@@ -476,7 +476,7 @@ export function StatusPipeline(): ReactElement {
       }}
       gap={2}
     >
-      <Typography variant="h4">Status Pipeline</Typography>
+      <Typography variant="h4">Video Status Pipeline</Typography>
       <Stack direction="row" spacing={1} alignItems="center">
         <FormControl size="small" sx={{ minWidth: 220 }}>
           <InputLabel id="status-pipeline-filter-label">Status</InputLabel>
