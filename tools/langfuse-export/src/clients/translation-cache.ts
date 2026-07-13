@@ -8,11 +8,20 @@ import { createHash } from 'node:crypto'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 
+import { cannotBeEnglish } from '../pipeline/translate'
 import type { Translation } from '../types'
 
 // sha256 of the exact source string. Same string in -> same key out.
 export function cacheKey(text: string): string {
   return createHash('sha256').update(text, 'utf8').digest('hex')
+}
+
+// A cached 'en' verdict on text that script alone rules out as English (a
+// non-Latin paragraph the model once mislabelled). It must be re-translated,
+// and — because a failed re-ask records nothing — the poisoned entry has to be
+// evicted too, or the rebuild would re-emit the false English attribution.
+export function isPoisonedEnglish(cached: Translation, text: string): boolean {
+  return cached.sourceLanguage === 'en' && cannotBeEnglish(text)
 }
 
 // Coerce one on-disk value into a Translation, or null if it isn't one.
@@ -62,15 +71,26 @@ export function loadCache(path: string): Map<string, Translation> {
 }
 
 // Persist the cache, creating parent directories. Keys are sorted so the file
-// is a stable, diff-friendly artifact regardless of insertion order.
+// is a stable, diff-friendly artifact regardless of insertion order. A write
+// failure is caught and logged, never thrown: persistence is an optimisation
+// for the next run, so a failed save must not abort this run and discard the
+// freshly fetched translations that already drive the in-memory dataset.
 export function saveCache(
   path: string,
   cache: ReadonlyMap<string, Translation>
 ): void {
-  mkdirSync(dirname(path), { recursive: true })
-  const record: Record<string, Translation> = {}
-  for (const key of [...cache.keys()].sort()) {
-    record[key] = cache.get(key) as Translation
+  try {
+    mkdirSync(dirname(path), { recursive: true })
+    const record: Record<string, Translation> = {}
+    for (const key of [...cache.keys()].sort()) {
+      record[key] = cache.get(key) as Translation
+    }
+    writeFileSync(path, JSON.stringify(record, null, 2), 'utf8')
+  } catch (error) {
+    console.warn(
+      `[langfuse-export] could not persist translation cache to ${path} ` +
+        `(${error instanceof Error ? error.message : String(error)}) — ` +
+        `continuing with the in-memory cache`
+    )
   }
-  writeFileSync(path, JSON.stringify(record, null, 2), 'utf8')
 }

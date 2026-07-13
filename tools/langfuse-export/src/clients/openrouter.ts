@@ -17,7 +17,7 @@ import { generateText, type LanguageModel } from 'ai'
 
 import type { ToolEnv } from '../env'
 import { firstUserMessage } from '../pipeline/normalize'
-import { cannotBeEnglish } from '../pipeline/translate'
+import { canonicalLanguageCode, cannotBeEnglish } from '../pipeline/translate'
 import type {
   SanitisedConversation,
   ThemeSynthesis,
@@ -160,9 +160,11 @@ export function parseTranslations(
     const record = entry as Record<string, unknown>
     const id = typeof record.id === 'string' ? record.id : ''
     if (!validIds.has(id)) continue
-    const lang =
-      typeof record.lang === 'string' ? record.lang.trim().toLowerCase() : ''
-    if (lang.length === 0) continue
+    const rawLang = typeof record.lang === 'string' ? record.lang.trim() : ''
+    if (rawLang.length === 0) continue
+    // Fold a full-name answer ('bengali') back onto its code ('bn') so one
+    // language can never split into two facet rows downstream.
+    const lang = canonicalLanguageCode(rawLang)
     if (lang === 'en') {
       // English source: detection only, nothing translated. Ignore any `en`
       // the model wrongly supplied.
@@ -192,7 +194,7 @@ const TRANSLATION_SYSTEM_PROMPT =
 // Split items into batches within a character budget so long assistant replies
 // don't blow a single prompt, hard-capping the item count. A single item over
 // the budget still gets sent whole (its own batch) — never truncated.
-function batchByCharBudget(
+export function batchByCharBudget(
   items: Array<{ id: string; text: string }>
 ): Array<Array<{ id: string; text: string }>> {
   const batches: Array<Array<{ id: string; text: string }>> = []

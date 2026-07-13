@@ -358,11 +358,12 @@ const VIEWER_JS = `
     return LANG_NAMES[key] || String(code);
   }
   // Names a session's detected languages for the card / detail marker, most
-  // frequent first, truncating gracefully past three so a mixed session reads
-  // Title-cased, comma-joined, with a final 'and' — prose, not a chip label.
+  // frequent first: Title-cased, comma-joined, with a final 'and' — prose, not
+  // a chip label. Callers pass the already-ordered list; every name is kept.
   function languageNames(list) {
     var names = [];
     for (var i = 0; i < list.length; i++) names.push(langName(list[i]));
+    if (names.length === 0) return '';
     if (names.length === 1) return names[0];
     return names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
   }

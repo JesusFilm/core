@@ -22,6 +22,52 @@ export function cannotBeEnglish(text: string): boolean {
   return latin / letters.length < 0.5
 }
 
+// The model is asked for an ISO code but sometimes answers with a full name
+// ('bengali' for 'bn'). Left as-is, one language splits into two facet rows —
+// 'Bengali' from the code and 'bengali' from the name. Fold a recognised name
+// back onto its code so every consumer sees one value. An unrecognised code is
+// returned lowercased-and-trimmed unchanged: a real language we don't list yet
+// (e.g. Tamil 'ta') must not be dropped, only ones we can name are unified.
+const LANGUAGE_CODE_BY_NAME: Record<string, string> = {
+  afrikaans: 'af',
+  arabic: 'ar',
+  bengali: 'bn',
+  bulgarian: 'bg',
+  chinese: 'zh',
+  dutch: 'nl',
+  english: 'en',
+  farsi: 'fa',
+  french: 'fr',
+  german: 'de',
+  greek: 'el',
+  hebrew: 'he',
+  hindi: 'hi',
+  indonesian: 'id',
+  italian: 'it',
+  japanese: 'ja',
+  korean: 'ko',
+  marathi: 'mr',
+  nepali: 'ne',
+  pashto: 'ps',
+  persian: 'fa',
+  portuguese: 'pt',
+  russian: 'ru',
+  serbian: 'sr',
+  spanish: 'es',
+  swahili: 'sw',
+  thai: 'th',
+  turkish: 'tr',
+  ukrainian: 'uk',
+  urdu: 'ur',
+  vietnamese: 'vi',
+  yiddish: 'yi'
+}
+
+export function canonicalLanguageCode(value: string): string {
+  const normalized = value.trim().toLowerCase()
+  return LANGUAGE_CODE_BY_NAME[normalized] ?? normalized
+}
+
 export function collectTranslatable(
   conversations: SanitisedConversation[],
   facets: FacetExtraction

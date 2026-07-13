@@ -2,7 +2,12 @@ import { mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { cacheKey, loadCache, saveCache } from './translation-cache'
+import {
+  cacheKey,
+  isPoisonedEnglish,
+  loadCache,
+  saveCache
+} from './translation-cache'
 import type { Translation } from '../types'
 
 function tmpFile(name: string): string {
@@ -75,5 +80,44 @@ describe('saveCache', () => {
     ])
     saveCache(path, cache)
     expect(loadCache(path)).toEqual(cache)
+  })
+
+  it('swallows and warns on an I/O failure instead of aborting the run', () => {
+    // A file where a directory is expected makes mkdir/write throw ENOTDIR —
+    // a real persistence failure, no mocking needed.
+    const blocker = tmpFile('blocker')
+    writeFileSync(blocker, 'i am a file, not a directory', 'utf8')
+    const path = join(blocker, 'sub', 'cache.json')
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    expect(() =>
+      saveCache(path, new Map([['h', { sourceLanguage: 'en' }]]))
+    ).not.toThrow()
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('could not persist translation cache')
+    )
+    warn.mockRestore()
+  })
+})
+
+describe('isPoisonedEnglish', () => {
+  it('flags a cached en verdict that script rules out as English', () => {
+    expect(
+      isPoisonedEnglish({ sourceLanguage: 'en' }, 'আমি যীশুকে বিশ্বাস করি')
+    ).toBe(true)
+  })
+
+  it('leaves a genuine en verdict on Latin text alone', () => {
+    expect(isPoisonedEnglish({ sourceLanguage: 'en' }, 'who is Jesus')).toBe(
+      false
+    )
+  })
+
+  it('is only about en verdicts — a named translation is never poisoned', () => {
+    expect(
+      isPoisonedEnglish(
+        { sourceLanguage: 'bn', english: 'I believe in Jesus' },
+        'আমি যীশুকে বিশ্বাস করি'
+      )
+    ).toBe(false)
   })
 })

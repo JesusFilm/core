@@ -4,7 +4,7 @@
 // the curated facet vocabulary, and (when available) per-session LLM themes.
 
 import { isNonContentPhrase, normalizeLanguageLabel } from './facets'
-import { scriptContradictsLanguage } from './translate'
+import { cannotBeEnglish, scriptContradictsLanguage } from './translate'
 import { firstUserMessage } from './normalize'
 import type { FacetExtraction } from './facets'
 import type {
@@ -212,14 +212,16 @@ export function buildDataset(
     // What the HUMAN actually typed. Only user turns count: the assistant replies
     // in its own languages, and counting those made a 'Language Typed -> Hindi'
     // facet whose single session had a Bengali-speaking user and a Hindi-speaking
-    // bot. A user message with no translation was English; one whose language we
-    // could not attribute contributes nothing rather than a guess.
+    // bot. A user message with no translation is English ONLY when script does
+    // not rule it out — a non-Latin turn whose translation simply failed (an
+    // OpenRouter outage) must not be tagged English; it contributes nothing. One
+    // whose language we could not attribute likewise contributes nothing.
     const typedLanguages = new Set<string>()
     if (translations != null) {
       for (const message of messages) {
         if (message.role !== 'user') continue
         if (message.textEnglish == null) {
-          typedLanguages.add('English')
+          if (!cannotBeEnglish(message.text)) typedLanguages.add('English')
         } else if (message.sourceLanguage != null) {
           typedLanguages.add(normalizeLanguageLabel(message.sourceLanguage))
         }

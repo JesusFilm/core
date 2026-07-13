@@ -595,6 +595,40 @@ describe('buildDataset — typed-language facets (NES-1762)', () => {
     expect(dataset.sessions[1].facetKeys).not.toContain('typedLanguage:English')
   })
 
+  // A failed/absent translation must not be silently attributed to English.
+  // `withTranslation` leaves textEnglish unset both for a genuine English turn
+  // and for one whose translation simply never arrived (an OpenRouter outage) —
+  // so absence alone cannot mean English. Script is the tiebreaker.
+  it('tags an untranslated Latin message English but never an untranslated non-Latin one', () => {
+    const bengali = 'আমি যীশুকে বিশ্বাস করি'
+    const conversations = [
+      conv({
+        sessionId: 's1',
+        turns: [turn({ userMessage: 'who is Jesus', assistantReply: '' })]
+      }),
+      conv({
+        sessionId: 's2',
+        turns: [turn({ userMessage: bengali, assistantReply: '' })]
+      })
+    ]
+    // The translation pass ran (map is non-null) but produced nothing for these
+    // strings — a total item failure. Neither turn has a translation.
+    const translations = new Map<string, Translation>()
+    const dataset = buildDataset(
+      conversations,
+      window,
+      emptyFacets(),
+      null,
+      0,
+      '2026-05-31T00:00:00.000Z',
+      translations
+    )
+    const typed = dataset.facets.filter((f) => f.kind === 'typedLanguage')
+    expect(typed.map((f) => `${f.label}=${f.count}`)).toEqual(['English=1'])
+    expect(dataset.sessions[0].facetKeys).toContain('typedLanguage:English')
+    expect(dataset.sessions[1].facetKeys).not.toContain('typedLanguage:English')
+  })
+
   // A model that tags an Arabic message `es` must not produce a facet or a
   // badge claiming Spanish. The translation survives; the attribution does not.
   it('drops a language attribution the script disproves', () => {

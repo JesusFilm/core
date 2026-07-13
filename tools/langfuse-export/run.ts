@@ -23,7 +23,12 @@ import {
   synthesizeThemes,
   translateTexts
 } from './src/clients/openrouter'
-import { cacheKey, loadCache, saveCache } from './src/clients/translation-cache'
+import {
+  cacheKey,
+  isPoisonedEnglish,
+  loadCache,
+  saveCache
+} from './src/clients/translation-cache'
 import { createZip } from './src/clients/zip'
 import { loadEnvFile, parseEnv } from './src/env'
 import { buildDataset, invertThemes } from './src/pipeline/dataset'
@@ -31,7 +36,7 @@ import { buildFacets } from './src/pipeline/facets'
 import { renderExplorer } from './src/pipeline/explorer'
 import { normalize } from './src/pipeline/normalize'
 import { sanitize } from './src/pipeline/sanitize'
-import { cannotBeEnglish, collectTranslatable } from './src/pipeline/translate'
+import { collectTranslatable } from './src/pipeline/translate'
 import type {
   ObservationRecord,
   ThemeSynthesis,
@@ -232,11 +237,17 @@ async function main(): Promise<void> {
 
       // Translate only the cache misses; each item is keyed by its content hash.
       // A cached "this is English" verdict on non-Latin-script text is a lie an
-      // earlier run recorded — treat it as a miss so the cache self-heals.
+      // earlier run recorded — treat it as a miss AND evict it, so the cache
+      // self-heals even when the re-ask fails to return a fresh record.
       const misses = strings.filter((text) => {
-        const cached = cache.get(cacheKey(text))
+        const key = cacheKey(text)
+        const cached = cache.get(key)
         if (cached == null) return true
-        return cached.sourceLanguage === 'en' && cannotBeEnglish(text)
+        if (isPoisonedEnglish(cached, text)) {
+          cache.delete(key)
+          return true
+        }
+        return false
       })
       const fresh = await translateTexts(
         model,

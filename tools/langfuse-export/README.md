@@ -150,7 +150,7 @@ Each run writes `tools/langfuse-export/output/<timestamp>/`:
 
 ## Tests & typecheck
 
-Pure modules (`env`, `normalize`, `sanitize`, `facets`, `translate`, `dataset`, `explorer`, `zip`, `cli`, `translation-cache`) are unit-tested — including the LLM-output boundaries `parseThemes` / `parseTranslations`. The I/O modules (`langfuse`, `openrouter`) are verified by a manual end-to-end run; the offline end-to-end path is exercised with `--fixture`.
+Pure modules (`env`, `normalize`, `sanitize`, `facets`, `translate`, `dataset`, `explorer`, `zip`, `cli`, `translation-cache`) are unit-tested — including the LLM-output boundaries `parseThemes` / `parseTranslations`, the `batchByCharBudget` splitter, and the `isPoisonedEnglish` cache self-heal. The I/O-driving code in `langfuse` / `openrouter` is verified by a manual end-to-end run; the offline end-to-end path is exercised with `--fixture`.
 
 ```sh
 npx vitest run --config tools/langfuse-export/vitest.config.mts --coverage=false

@@ -1,4 +1,5 @@
 import {
+  canonicalLanguageCode,
   cannotBeEnglish,
   collectTranslatable,
   scriptContradictsLanguage
@@ -120,6 +121,29 @@ describe('cannotBeEnglish', () => {
     expect(
       cannotBeEnglish('mostly english text with one word যীশু here now')
     ).toBe(false)
+  })
+})
+
+describe('canonicalLanguageCode', () => {
+  it('folds a recognised full name back onto its code', () => {
+    expect(canonicalLanguageCode('bengali')).toBe('bn')
+    expect(canonicalLanguageCode('Bengali')).toBe('bn')
+    expect(canonicalLanguageCode('  SPANISH  ')).toBe('es')
+    expect(canonicalLanguageCode('english')).toBe('en')
+    // Persian and Farsi both name the same language.
+    expect(canonicalLanguageCode('persian')).toBe('fa')
+    expect(canonicalLanguageCode('farsi')).toBe('fa')
+  })
+
+  it('passes a known code through lowercased and trimmed', () => {
+    expect(canonicalLanguageCode('bn')).toBe('bn')
+    expect(canonicalLanguageCode(' EN ')).toBe('en')
+  })
+
+  it('keeps an unrecognised code rather than dropping a real language', () => {
+    // Tamil is a real language we do not list yet — it must survive.
+    expect(canonicalLanguageCode('ta')).toBe('ta')
+    expect(canonicalLanguageCode('klingon')).toBe('klingon')
   })
 })
 
