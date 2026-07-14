@@ -245,7 +245,7 @@ describe('StatusPipeline', () => {
     expect(mockRefetch).toHaveBeenCalled()
   })
 
-  it('treats an active resumed upload disappearing from not-complete rows as recovered', async () => {
+  it('does not treat an active resumed upload disappearing from visible rows as recovered', async () => {
     const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
     let visibleUploads: unknown[] = uploadRows
     mockedUseQuery.mockImplementation(() =>
@@ -261,6 +261,36 @@ describe('StatusPipeline', () => {
     })
 
     visibleUploads = []
+    rerender(<StatusPipeline />)
+
+    await waitFor(() => {
+      expect(mockStopPolling).toHaveBeenCalled()
+    })
+    expect(mockEnqueueSnackbar).not.toHaveBeenCalled()
+  })
+
+  it('shows recovery feedback when an active resumed upload later creates a variant', async () => {
+    const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
+    let visibleUploads: unknown[] = uploadRows
+    mockedUseQuery.mockImplementation(() =>
+      createQueryResult({ videoVariantUploads: visibleUploads })
+    )
+
+    const { rerender } = render(<StatusPipeline />)
+
+    fireEvent.click(screen.getByRole('button', { name: /start processing/i }))
+
+    await waitFor(() => {
+      expect(mockResumeVideoVariantUpload).toHaveBeenCalled()
+    })
+
+    visibleUploads = [
+      {
+        ...uploadRows[0],
+        status: 'variantCreated',
+        videoVariantId: 'variant-new'
+      }
+    ]
     rerender(<StatusPipeline />)
 
     await waitFor(() => {

@@ -298,9 +298,12 @@ export function StatusPipeline(): ReactElement {
     const upload = uploads.find((row) => row.id === resumingUploadId)
     if (upload == null) {
       setResumingUploadId(null)
-      if (statusFilter === 'notComplete') {
-        enqueueSnackbar('Upload recovered', { variant: 'success' })
-      }
+      return
+    }
+
+    if (upload.status === 'variantCreated') {
+      setResumingUploadId(null)
+      enqueueSnackbar('Upload recovered', { variant: 'success' })
       return
     }
 
@@ -315,7 +318,6 @@ export function StatusPipeline(): ReactElement {
     isResumeRequestInFlight,
     loading,
     resumingUploadId,
-    statusFilter,
     uploads
   ])
 
