@@ -680,6 +680,38 @@ describe('videoAlgolia', () => {
       )
     })
 
+    it('filters a Core batch by language id', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      prismaMock.videoVariant.findMany.mockResolvedValue([])
+
+      await authClient({
+        document: CHECK_VARIANT_INDEX_BATCH_QUERY,
+        variables: {
+          input: {
+            scanType: 'core',
+            batchKey: 'variant-1',
+            batchSize: 2,
+            languageId: '529'
+          }
+        } as any
+      })
+
+      expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            id: { gt: 'variant-1' },
+            languageId: '529'
+          }
+        })
+      )
+    })
+
     it('checks an Algolia browse batch and reports extra objects', async () => {
       prismaMock.userMediaRole.findUnique.mockResolvedValue({
         id: 'userId',
