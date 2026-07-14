@@ -1,0 +1,17 @@
+{
+  "extends": "../../../tsconfig.base.ts7.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "target": "es2021",
+    "types": [
+      "node",
+      "vitest/globals"
+    ]
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

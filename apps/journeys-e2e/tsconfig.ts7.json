@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.base.ts7.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "target": "es2021",
+    "jsx": "react-jsx",
+    "emitDecoratorMetadata": true,
+    "allowImportingTsExtensions": true,
+    "types": [
+      "node",
+      "@playwright/test"
+    ]
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    ".next",
+    "vitest.config.mts"
+  ]
+}
