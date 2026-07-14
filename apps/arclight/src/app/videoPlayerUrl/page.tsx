@@ -4,6 +4,10 @@ import { getApolloClient } from '../../lib/apolloClient'
 
 import { VideoPlayer } from './VideoPlayer'
 
+function PlayerError({ message }: { message: string }) {
+  return <p role="alert">{message}</p>
+}
+
 const DEFAULT_SUB_LANGUAGE_IDS = [
   '529',
   '22658',
@@ -98,10 +102,7 @@ export default async function Page(props: {
 }) {
   const searchParams = await props.searchParams
   if (!searchParams.refId) {
-    return {
-      message: 'Missing refId parameter',
-      status: 404
-    }
+    return <PlayerError message="Missing refId parameter" />
   }
 
   // Parse start and end times, ensuring they are valid numbers
@@ -112,24 +113,15 @@ export default async function Page(props: {
 
   // Validate time parameters
   if (startTime != null && (isNaN(startTime) || startTime < 0)) {
-    return {
-      message: 'Invalid start time parameter',
-      status: 400
-    }
+    return <PlayerError message="Invalid start time parameter" />
   }
 
   if (endTime != null && (isNaN(endTime) || endTime < 0)) {
-    return {
-      message: 'Invalid end time parameter',
-      status: 400
-    }
+    return <PlayerError message="Invalid end time parameter" />
   }
 
   if (startTime != null && endTime != null && endTime <= startTime) {
-    return {
-      message: 'End time must be greater than start time',
-      status: 400
-    }
+    return <PlayerError message="End time must be greater than start time" />
   }
 
   const { data } = await getApolloClient().query({
@@ -165,10 +157,9 @@ export default async function Page(props: {
     }))
 
   if (!hlsUrl) {
-    return {
-      message: 'No video URL found for ID: ' + searchParams.refId,
-      status: 404
-    }
+    return (
+      <PlayerError message={'No video URL found for ID: ' + searchParams.refId} />
+    )
   }
 
   return (

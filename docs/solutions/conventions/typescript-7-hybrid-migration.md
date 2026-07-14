@@ -46,21 +46,34 @@ The repo runs a **hybrid** TypeScript setup:
 
 ## Config changes TS 7 forced (and how to fix them elsewhere)
 
-TS 7 removed several options; the errors and their fixes:
+TS 7 removed `baseUrl` (TS5102), non-relative `paths` (TS5090), and
+`moduleResolution: node10` (TS5108). We could NOT fix these in
+`tsconfig.base.json` itself: although TS 5 accepts baseUrl-less relative
+`paths` (since 4.1), the surrounding tooling does not —
+**vite-tsconfig-paths silently fails to resolve `@core/*` aliases without
+`baseUrl`** (vitest specs then fail with confusing runtime symptoms, e.g.
+components rendering wrong), and **Next's webpack alias resolution also
+requires `baseUrl`** (`Module not found: Can't resolve '@core/shared/gql'`).
 
-- **TS5102 `baseUrl` removed** — `tsconfig.base.json` no longer sets
-  `baseUrl`; all `paths` entries are now relative (`./libs/...`). This is
-  fully supported by TS 5 too (since 4.1), so the change is repo-wide and
-  safe.
-- **TS5090 non-relative paths** — same fix: prefix `paths` values with `./`.
-- **TS5108 `moduleResolution: node10` removed** — `tsconfig.base.json` still
-  sets `moduleResolution: "node"` for non-migrated TS 5 projects; every
-  workspace on TS 7 must override it. For the apis we use
-  `module: "esnext"` + `moduleResolution: "bundler"` (valid in both TS 5 and
-  TS 7), matching what api-journeys already used. **Do not use `nodenext`**
-  for webpack-bundled workspaces: it demands explicit `.js` extensions on
-  the dynamic `import()` calls in `src/workers/`, which is the wrong model
-  for bundled code.
+So the repo has TWO base configs:
+
+- `tsconfig.base.json` — unchanged, for the TS 5 world (baseUrl, absolute
+  paths, `moduleResolution: node`).
+- `tsconfig.base.ts7.json` — for workspaces type-checked by `pnpm tsc7`:
+  no `baseUrl`, `./`-relative `paths`, `module: esnext` +
+  `moduleResolution: bundler`. **The `paths` maps must be kept in sync by
+  hand** (JSON `extends` cannot remove keys, so the TS 7 variant cannot
+  extend the TS 5 base). Collapse back to one file when the whole repo is
+  on TS 7.
+
+Every tsconfig in a migrated workspace must extend the ts7 base — watch for
+configs like `tsconfig.stories.json` that extend `../../tsconfig.base.json`
+directly rather than via the workspace's root tsconfig.
+
+**Do not use `nodenext`** for webpack-bundled workspaces: it demands
+explicit `.js` extensions on the dynamic `import()` calls in
+`src/workers/`, the wrong model for bundled code. Use
+`esnext` + `bundler` (valid in both TS 5 and TS 7), matching api-journeys.
 
 ## Gotchas found during the pilot
 
@@ -71,6 +84,11 @@ TS 7 removed several options; the errors and their fixes:
   pulls in `libs/shared/ui` need the sibling `.storybook/preview.d.ts`
   (added in this migration). This was a pre-existing TS 5 error masked by
   stale `.tsbuildinfo` caches.
+- Touching a shared tsconfig invalidates the Nx cache for EVERY project,
+  forcing cold builds/tests repo-wide in CI. Expect latent, cache-masked
+  failures to surface (this migration flushed out an arclight page
+  component returning plain objects instead of JSX — a guaranteed runtime
+  crash that cached builds never re-checked).
 - Speed: on api-sized projects a cold `tsc -b` was ~equal under TS 5 and
   TS 7 (~4.6s vs ~4.8s for api-journeys); the TS 7 win is expected to show
   on the large Next apps and in the editor, not on small programs.
