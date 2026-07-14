@@ -5,6 +5,7 @@
   "packageManager": "pnpm@10.33.4+sha512.1c67b3b359b2d408119ba1ed289f34b8fc3c6873412bec6fd264fbdc82489e510fcbecb9ce9d22dae7f3b76269d8441046014bdca53b9979cd7a561ad631b800",
   "scripts": {
     "nx": "nx",
+    "tsc7": "node node_modules/typescript7/bin/tsc",
     "start": "nx serve",
     "build": "nx build",
     "test": "nx test",
@@ -372,6 +373,7 @@
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.0.0",
     "typescript": "^5.5.4",
+    "typescript7": "npm:typescript@^7.0.2",
     "typescript-eslint": "^8.26.0",
     "undici": "6.23.0",
     "url-loader": "^4.1.1",

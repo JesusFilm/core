@@ -4,7 +4,8 @@
     "jsx": "react-jsx",
     "esModuleInterop": true,
     "outDir": "../../dist/out-tsc",
-    "module": "commonjs",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "types": [
       "node",
       "@nx/react/typings/cssmodule.d.ts",

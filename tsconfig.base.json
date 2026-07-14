@@ -15,31 +15,30 @@
     "skipDefaultLibCheck": true,
     "strictNullChecks": true,
     "esModuleInterop": true,
-    "baseUrl": ".",
     "paths": {
       "@core/journeys/ui/*": [
-        "libs/journeys/ui/src/components/*",
-        "libs/journeys/ui/src/libs/*"
+        "./libs/journeys/ui/src/components/*",
+        "./libs/journeys/ui/src/libs/*"
       ],
-      "@core/prisma/analytics/*": ["libs/prisma/analytics/src/*"],
-      "@core/prisma/journeys/*": ["libs/prisma/journeys/src/*"],
-      "@core/prisma/languages/*": ["libs/prisma/languages/src/*"],
-      "@core/prisma/media/*": ["libs/prisma/media/src/*"],
-      "@core/prisma/users/*": ["libs/prisma/users/src/*"],
-      "@core/shared/ai/*": ["libs/shared/ai/src/*"],
-      "@core/shared/dev-hosts": ["libs/shared/dev-hosts/src"],
-      "@core/shared/gql": ["libs/shared/gql/src"],
-      "@core/shared/user-delete": ["libs/shared/user-delete/src"],
+      "@core/prisma/analytics/*": ["./libs/prisma/analytics/src/*"],
+      "@core/prisma/journeys/*": ["./libs/prisma/journeys/src/*"],
+      "@core/prisma/languages/*": ["./libs/prisma/languages/src/*"],
+      "@core/prisma/media/*": ["./libs/prisma/media/src/*"],
+      "@core/prisma/users/*": ["./libs/prisma/users/src/*"],
+      "@core/shared/ai/*": ["./libs/shared/ai/src/*"],
+      "@core/shared/dev-hosts": ["./libs/shared/dev-hosts/src"],
+      "@core/shared/gql": ["./libs/shared/gql/src"],
+      "@core/shared/user-delete": ["./libs/shared/user-delete/src"],
       "@core/shared/ui-dynamic/*": [
-        "libs/shared/ui-dynamic/src/components/*",
-        "libs/shared/ui-dynamic/src/libs/*"
+        "./libs/shared/ui-dynamic/src/components/*",
+        "./libs/shared/ui-dynamic/src/libs/*"
       ],
       "@core/shared/ui/*": [
-        "libs/shared/ui/src/components/*",
-        "libs/shared/ui/src/libs/*"
+        "./libs/shared/ui/src/components/*",
+        "./libs/shared/ui/src/libs/*"
       ],
-      "@core/shared/ui-modern/*": ["libs/shared/ui-modern/src/*"],
-      "@core/yoga/*": ["libs/yoga/src/*"]
+      "@core/shared/ui-modern/*": ["./libs/shared/ui-modern/src/*"],
+      "@core/yoga/*": ["./libs/yoga/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]
