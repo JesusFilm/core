@@ -40,40 +40,40 @@ The repo runs a **hybrid** TypeScript setup:
   which failed all 27 non-migrated `pnpm exec tsc` type-check targets with
   TS5108 (`moduleResolution=node10` removed). Isolating TS 7 in its own
   package keeps its bin out of the root `.bin` entirely. Invoke it via the
-  root script: `pnpm tsc7 -b <tsconfig>`
+  root script: `pnpm tsc7 -p <tsconfig.ts7.json>`
   (`node tools/typescript7/node_modules/typescript/bin/tsc`) — the single
   line to change when the hybrid era ends.
 
 ## Config changes TS 7 forced (and how to fix them elsewhere)
 
 TS 7 removed `baseUrl` (TS5102), non-relative `paths` (TS5090), and
-`moduleResolution: node10` (TS5108). We could NOT fix these in
-`tsconfig.base.json` itself: although TS 5 accepts baseUrl-less relative
-`paths` (since 4.1), the surrounding tooling does not —
-**vite-tsconfig-paths silently fails to resolve `@core/*` aliases without
-`baseUrl`** (vitest specs then fail with confusing runtime symptoms, e.g.
-components rendering wrong), and **Next's webpack alias resolution also
-requires `baseUrl`** (`Module not found: Can't resolve '@core/shared/gql'`).
+`moduleResolution: node10` (TS5108). These CANNOT be fixed in the shared
+tsconfigs, because the TS 5 toolchain actively depends on the removed
+options: Next's webpack alias resolution and tsconfig-paths-webpack-plugin
+(api builds) fail with `Module not found: Can't resolve '@core/...'`
+without `baseUrl`, and vite-tsconfig-paths silently misresolves aliases
+(vitest specs fail with confusing runtime symptoms). Sharing tsconfig
+files between the two compilers was tried twice and broke CI both times.
 
-So the repo has TWO base configs:
+The working shape — **complete config separation**:
 
-- `tsconfig.base.json` — unchanged, for the TS 5 world (baseUrl, absolute
-  paths, `moduleResolution: node`).
-- `tsconfig.base.ts7.json` — for workspaces type-checked by `pnpm tsc7`:
-  no `baseUrl`, `./`-relative `paths`, `module: esnext` +
-  `moduleResolution: bundler`. **The `paths` maps must be kept in sync by
-  hand** (JSON `extends` cannot remove keys, so the TS 7 variant cannot
-  extend the TS 5 base). Collapse back to one file when the whole repo is
-  on TS 7.
-
-Every tsconfig in a migrated workspace must extend the ts7 base — watch for
-configs like `tsconfig.stories.json` that extend `../../tsconfig.base.json`
-directly rather than via the workspace's root tsconfig.
+- `tsconfig.base.json` and every existing per-workspace tsconfig stay
+  byte-identical to the TS 5 world; webpack builds, tsx scripts, vitest,
+  and Storybook keep reading them.
+- `tsconfig.base.ts7.json` is a standalone TS 7 base: no `baseUrl`,
+  `./`-relative `paths`, `module: esnext` + `moduleResolution: bundler`.
+  **Keep its `paths` map in sync with `tsconfig.base.json` by hand**
+  (JSON `extends` cannot remove keys, so it cannot extend the TS 5 base).
+- Each migrated workspace gets a `tsconfig.ts7.json` extending the ts7
+  base — a single `noEmit` program over `**/*.ts(x)` (sources, specs,
+  stories together; needs `types: ["node", "vitest/globals", ...]` and
+  `allowImportingTsExtensions` for `.tsx` re-exports). Only the
+  `type-check` target reads it: `pnpm tsc7 -p <workspace>/tsconfig.ts7.json`.
 
 **Do not use `nodenext`** for webpack-bundled workspaces: it demands
 explicit `.js` extensions on the dynamic `import()` calls in
 `src/workers/`, the wrong model for bundled code. Use
-`esnext` + `bundler` (valid in both TS 5 and TS 7), matching api-journeys.
+`esnext` + `bundler`.
 
 ## Gotchas found during the pilot
 
@@ -100,12 +100,12 @@ Done (2026-07-14): all six `apis/*` `type-check` targets run `pnpm tsc7`.
 Remaining, in order, each gated on the previous:
 
 1. **apps/libs/workers type-check targets** — after the api pilot bakes in
-   CI for a few days. Each workspace needs the `moduleResolution` override
-   described above (Next apps likely already use `bundler`).
+   CI for a few days. Each workspace gets its own `tsconfig.ts7.json` as
+   described above; existing tsconfigs stay untouched.
 2. **Editor flip** — commit the TS 7 language-service setting to
    `.vscode/settings.json` only once *all* type-check targets are on TS 7,
    so editor squiggles and CI agree.
-3. **Retire TS 5 / drop the alias** — when typescript-eslint and Next
-   support the TS 7 API. Then `typescript` becomes v7, the `typescript7`
-   alias and the `tsc7` script are deleted, and targets go back to plain
-   `tsc`.
+3. **Retire TS 5** — when typescript-eslint and Next support the TS 7
+   API. Then `typescript` becomes v7, `tools/typescript7`, the `tsc7`
+   script, and the `*.ts7.json` configs are deleted, and targets go back
+   to plain `tsc` against the unified base config.
