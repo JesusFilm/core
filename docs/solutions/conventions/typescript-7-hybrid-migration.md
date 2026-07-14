@@ -32,12 +32,17 @@ The repo runs a **hybrid** TypeScript setup:
   ESLint (typescript-eslint 8), Next 16, Nx executors, and the default editor
   TS all depend on the TS 5 compiler API, which the Go-based TS 7 does not
   expose.
-- `typescript7` is a pnpm alias (`npm:typescript@^7.0.2`) used only for
-  `type-check` targets. Both packages ship a bin named `tsc`, so `.bin/tsc`
-  is ambiguous — **never call `pnpm exec tsc` expecting TS 7**. Use the root
-  script instead: `pnpm tsc7 -b <tsconfig>`. That script
-  (`node node_modules/typescript7/bin/tsc`) is the single line to change when
-  the hybrid era ends.
+- TypeScript 7 lives in its own workspace package,
+  `tools/typescript7` (`typescript-runner`), NOT in the root
+  devDependencies. Both TS packages ship a bin named `tsc`, and when both
+  were root deps, pnpm's `node_modules/.bin/tsc` resolution was
+  nondeterministic — locally it kept TS 5, but in CI it resolved to TS 7,
+  which failed all 27 non-migrated `pnpm exec tsc` type-check targets with
+  TS5108 (`moduleResolution=node10` removed). Isolating TS 7 in its own
+  package keeps its bin out of the root `.bin` entirely. Invoke it via the
+  root script: `pnpm tsc7 -b <tsconfig>`
+  (`node tools/typescript7/node_modules/typescript/bin/tsc`) — the single
+  line to change when the hybrid era ends.
 
 ## Config changes TS 7 forced (and how to fix them elsewhere)
 

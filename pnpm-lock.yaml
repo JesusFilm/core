@@ -1022,9 +1022,6 @@ importers:
       typescript-eslint:
         specifier: ^8.26.0
         version: 8.44.0(eslint@9.39.1(jiti@2.5.1))(typescript@5.9.3)
-      typescript7:
-        specifier: npm:typescript@^7.0.2
-        version: typescript@7.0.2
       undici:
         specifier: 6.23.0
         version: 6.23.0
@@ -1136,6 +1133,12 @@ importers:
       prisma:
         specifier: ^7.0.0
         version: 7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@7.0.2)
+
+  tools/typescript7:
+    dependencies:
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
 
   workers/jf-proxy: {}
 
