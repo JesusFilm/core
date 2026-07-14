@@ -947,6 +947,58 @@ describe('videoAlgolia', () => {
         })
       })
 
+      it('reports update rejections per row and continues fixing remaining variants', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoVariant.findUnique.mockResolvedValue({
+          id: 'variant-1',
+          videoId: 'video-1',
+          languageId: '529'
+        } as any)
+        mockedUpdateVideoVariantInAlgolia
+          .mockRejectedValueOnce(new Error('Algolia update failed'))
+          .mockResolvedValueOnce(true as any)
+
+        const result = await authClient({
+          document: FIX_VARIANT_INDEX_ISSUES_MUTATION,
+          variables: {
+            input: {
+              issueType: 'stale',
+              objectIds: ['variant-fail', 'variant-fixed']
+            }
+          } as any
+        })
+
+        expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith(
+          'variant-fail',
+          expect.anything()
+        )
+        expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith(
+          'variant-fixed',
+          expect.anything()
+        )
+        expect(result).toHaveProperty(
+          'data.fixAlgoliaVideoVariantIndexIssues.fixedCount',
+          1
+        )
+        expect(result).toHaveProperty(
+          'data.fixAlgoliaVideoVariantIndexIssues.failedCount',
+          1
+        )
+        expect(
+          (result as any).data.fixAlgoliaVideoVariantIndexIssues.issues
+        ).toContainEqual({
+          issueType: 'failed',
+          objectId: 'variant-fail',
+          error: 'Algolia update failed'
+        })
+      })
+
       it('re-checks Core row absence before deleting an extra Algolia object', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',

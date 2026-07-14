@@ -21,7 +21,14 @@ import {
 } from '@mui/x-data-grid'
 import NextLink from 'next/link'
 import { useSnackbar } from 'notistack'
-import { MouseEvent, ReactElement, useCallback, useMemo, useState } from 'react'
+import {
+  MouseEvent,
+  ReactElement,
+  useCallback,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 
 import { isStagingEnvironment } from '../../../../../libs/environment'
 
@@ -115,6 +122,7 @@ const FIX_VARIANT_INDEX_ISSUES = gql`
 `
 
 const BATCH_SIZE = 100
+const MAX_BATCH_ITERATIONS = 2000
 const ENGLISH_LANGUAGE_ID = '529'
 const initialSummary: SummaryCounts = {
   checked: 0,
@@ -191,6 +199,19 @@ export function AlgoliaDebugging(): ReactElement {
   const [languageId, setLanguageId] = useState<string | null>(
     isStagingEnvironment() ? ENGLISH_LANGUAGE_ID : null
   )
+  const pendingObjectIdsRef = useRef<Set<string>>(new Set())
+  const [pendingObjectIds, setPendingObjectIds] = useState<Set<string>>(
+    new Set()
+  )
+
+  const updatePendingObjectIds = useCallback(
+    (updater: (current: Set<string>) => Set<string>) => {
+      const next = updater(pendingObjectIdsRef.current)
+      pendingObjectIdsRef.current = next
+      setPendingObjectIds(next)
+    },
+    []
+  )
 
   const selectedIssues = useMemo(() => {
     const selectedIds = new Set(Array.from(selectionModel.ids).map(String))
@@ -212,6 +233,23 @@ export function AlgoliaDebugging(): ReactElement {
     selectedFixableCounts.missing > 0 ||
     selectedFixableCounts.stale > 0 ||
     selectedFixableCounts.extra > 0
+  const selectedFixablePending = useMemo(
+    () => ({
+      missing: selectedIssues.some(
+        (issue) =>
+          issue.issueType === 'missing' && pendingObjectIds.has(issue.objectId)
+      ),
+      stale: selectedIssues.some(
+        (issue) =>
+          issue.issueType === 'stale' && pendingObjectIds.has(issue.objectId)
+      ),
+      extra: selectedIssues.some(
+        (issue) =>
+          issue.issueType === 'extra' && pendingObjectIds.has(issue.objectId)
+      )
+    }),
+    [pendingObjectIds, selectedIssues]
+  )
 
   const applyBatch = useCallback((batch: BatchResult) => {
     setSummary((current) => ({
@@ -228,8 +266,16 @@ export function AlgoliaDebugging(): ReactElement {
     async (scanType: 'core' | 'algolia') => {
       let batchKey: string | null = null
       let done = false
+      let iterations = 0
 
       while (!done) {
+        iterations += 1
+        if (iterations > MAX_BATCH_ITERATIONS) {
+          throw new Error(
+            `Scan exceeded ${MAX_BATCH_ITERATIONS} batches; aborting`
+          )
+        }
+
         const { data } = await apolloClient.query<{
           checkAlgoliaVideoVariantIndexBatch: BatchResult
         }>({
@@ -281,46 +327,81 @@ export function AlgoliaDebugging(): ReactElement {
       issueType: 'missing' | 'stale' | 'extra',
       objectIds: string[]
     ): Promise<void> => {
-      const result = await fixIssues({
-        variables: { input: { issueType, objectIds } }
-      })
-      const fixedCount =
-        result.data?.fixAlgoliaVideoVariantIndexIssues?.fixedCount ?? 0
-      const failedCount =
-        result.data?.fixAlgoliaVideoVariantIndexIssues?.failedCount ?? 0
-      const failedIds = new Set(
-        (result.data?.fixAlgoliaVideoVariantIndexIssues?.issues ?? []).map(
-          (issue: { objectId: string }) => issue.objectId
-        )
-      )
-      const fixedIds = new Set(
-        objectIds.filter((objectId) => !failedIds.has(objectId))
+      const requestedObjectIds = Array.from(new Set(objectIds)).filter(
+        (objectId) => !pendingObjectIdsRef.current.has(objectId)
       )
 
-      if (fixedIds.size > 0) {
-        const fixedIssues = issues.filter((issue) =>
-          fixedIds.has(issue.objectId)
+      if (requestedObjectIds.length === 0) return
+
+      if (
+        issueType === 'extra' &&
+        !window.confirm(
+          requestedObjectIds.length === 1
+            ? 'Delete this extra Algolia record?'
+            : `Delete ${requestedObjectIds.length} extra Algolia records?`
         )
-        setIssues((current) =>
-          current.filter((issue) => !fixedIds.has(issue.objectId))
-        )
-        setSummary((current) => subtractFixedIssues(current, fixedIssues))
-        setSelectionModel((current) => ({
-          ...current,
-          ids: new Set(
-            Array.from(current.ids).filter((id) => !fixedIds.has(String(id)))
-          )
-        }))
+      ) {
+        return
       }
 
-      enqueueSnackbar(
-        failedCount > 0
-          ? `Fixed ${fixedCount}; ${failedCount} failed`
-          : `Fixed ${fixedCount}`,
-        { variant: failedCount > 0 ? 'warning' : 'success' }
+      updatePendingObjectIds(
+        (current) => new Set([...current, ...requestedObjectIds])
       )
+
+      try {
+        const result = await fixIssues({
+          variables: { input: { issueType, objectIds: requestedObjectIds } }
+        })
+        const fixedCount =
+          result.data?.fixAlgoliaVideoVariantIndexIssues?.fixedCount ?? 0
+        const failedCount =
+          result.data?.fixAlgoliaVideoVariantIndexIssues?.failedCount ?? 0
+        const failedIds = new Set(
+          (result.data?.fixAlgoliaVideoVariantIndexIssues?.issues ?? []).map(
+            (issue: { objectId: string }) => issue.objectId
+          )
+        )
+        const fixedIds = new Set(
+          requestedObjectIds.filter((objectId) => !failedIds.has(objectId))
+        )
+
+        if (fixedIds.size > 0) {
+          const fixedIssues = issues.filter((issue) =>
+            fixedIds.has(issue.objectId)
+          )
+          const fixedRowIds = new Set(fixedIssues.map((issue) => issue.id))
+          setIssues((current) =>
+            current.filter((issue) => !fixedIds.has(issue.objectId))
+          )
+          setSummary((current) => subtractFixedIssues(current, fixedIssues))
+          setSelectionModel((current) => ({
+            ...current,
+            ids: new Set(
+              Array.from(current.ids).filter(
+                (id) => !fixedRowIds.has(String(id))
+              )
+            )
+          }))
+        }
+
+        enqueueSnackbar(
+          failedCount > 0
+            ? `Fixed ${fixedCount}; ${failedCount} failed`
+            : `Fixed ${fixedCount}`,
+          { variant: failedCount > 0 ? 'warning' : 'success' }
+        )
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error)
+        enqueueSnackbar(`Fix failed: ${message}`, { variant: 'error' })
+      } finally {
+        updatePendingObjectIds((current) => {
+          const next = new Set(current)
+          requestedObjectIds.forEach((objectId) => next.delete(objectId))
+          return next
+        })
+      }
     },
-    [enqueueSnackbar, fixIssues, issues]
+    [enqueueSnackbar, fixIssues, issues, updatePendingObjectIds]
   )
 
   const handleFixSelected = useCallback(
@@ -390,6 +471,7 @@ export function AlgoliaDebugging(): ReactElement {
             <Button
               size="small"
               startIcon={<BuildRoundedIcon />}
+              disabled={scanning || pendingObjectIds.has(row.objectId)}
               onClick={() =>
                 void handleFix(row.issueType as 'missing' | 'stale' | 'extra', [
                   row.objectId
@@ -401,7 +483,7 @@ export function AlgoliaDebugging(): ReactElement {
           ) : null
       }
     ],
-    [handleFix]
+    [handleFix, pendingObjectIds, scanning]
   )
 
   return (
@@ -458,7 +540,7 @@ export function AlgoliaDebugging(): ReactElement {
                 size="small"
                 variant="outlined"
                 startIcon={<BuildRoundedIcon />}
-                disabled={scanning}
+                disabled={scanning || selectedFixablePending.missing}
                 onClick={() => void handleFixSelected('missing')}
               >
                 Fix missing ({selectedFixableCounts.missing})
@@ -469,7 +551,7 @@ export function AlgoliaDebugging(): ReactElement {
                 size="small"
                 variant="outlined"
                 startIcon={<BuildRoundedIcon />}
-                disabled={scanning}
+                disabled={scanning || selectedFixablePending.stale}
                 onClick={() => void handleFixSelected('stale')}
               >
                 Fix stale ({selectedFixableCounts.stale})
@@ -481,7 +563,7 @@ export function AlgoliaDebugging(): ReactElement {
                 variant="outlined"
                 color="secondary"
                 startIcon={<BuildRoundedIcon />}
-                disabled={scanning}
+                disabled={scanning || selectedFixablePending.extra}
                 onClick={() => void handleFixSelected('extra')}
               >
                 Delete extra ({selectedFixableCounts.extra})
