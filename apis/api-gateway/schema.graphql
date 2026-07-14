@@ -5096,6 +5096,7 @@ input CheckAlgoliaVideoVariantIndexBatchInput @join__type(graph: API_MEDIA)  {
   scanType: AlgoliaVideoVariantIndexScanType!
   batchKey: String
   batchSize: Int
+  languageId: String
 }
 
 input CloudflareR2CompleteMultipartInput @join__type(graph: API_MEDIA)  {
