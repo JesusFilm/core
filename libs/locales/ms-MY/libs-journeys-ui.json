@@ -128,6 +128,7 @@
   "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.": "Perbualan ini telah menjadi panjang. Mulakan perbualan baru untuk terus berbual — ini akan membersihkan sesi semasa.",
   "Start a new conversation": "Mulakan perbualan baru",
   "Gallery media": "Media galeri",
+  "Chat has been turned off for this part of the journey.": "Sembang telah dimatikan untuk bahagian perjalanan ini.",
   "Select at least {{count}} options._other": "Pilih sekurang‑kurangnya {{count}} pilihan.",
   "Select up to {{count}} options._other": "Pilih sehingga {{count}} pilihan.",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Templat Perjalanan</0> <1>dalam</1> <2>{{count}} Bahasa</2>",

@@ -1,4 +1,3 @@
-import { useMutation } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import MenuItem from '@mui/material/MenuItem'
@@ -17,8 +16,7 @@ import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { SUPPORTED_LANGUAGE_IDS } from '../../libs/useJourneyAiTranslateSubscription/supportedLanguages'
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
-import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
-import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
+import { useUpdateActiveTeam } from '../../libs/useUpdateActiveTeam'
 import { useTeam } from '../TeamProvider'
 import { TranslationDialogWrapper } from '../TranslationDialogWrapper'
 
@@ -87,10 +85,9 @@ export function CopyToTeamDialog({
   defaultToActiveTeam = false
 }: CopyToTeamDialogProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
-  const { query, setActiveTeam, activeTeam } = useTeam()
+  const { query, activeTeam } = useTeam()
   const teams = query?.data?.teams ?? []
-  const [updateLastActiveTeamId, { client }] =
-    useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
+  const updateTeamState = useUpdateActiveTeam()
 
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
     languageId: '529',
@@ -98,20 +95,6 @@ export function CopyToTeamDialog({
       ids: [...SUPPORTED_LANGUAGE_IDS]
     }
   })
-
-  const updateTeamState = (teamId: string): void => {
-    setActiveTeam(teams.find((team) => team.id === teamId) ?? null)
-    void updateLastActiveTeamId({
-      variables: {
-        input: {
-          lastActiveTeamId: teamId
-        }
-      },
-      onCompleted() {
-        void client.refetchQueries({ include: ['GetAdminJourneys'] })
-      }
-    })
-  }
 
   async function handleSubmit(
     values: FormValues,
@@ -123,17 +106,20 @@ export function CopyToTeamDialog({
       values.showTranslation
     )
 
-    // Update team state
-    updateTeamState(values.teamSelect)
-
     // Always reset the form after submission
     resetForm()
 
-    // Only close dialog immediately if translation is not enabled
-    // If translation is enabled, the dialog will be closed when translation completes
     if (!values.showTranslation) {
+      // Plain copy: switch to the destination team and close immediately.
+      updateTeamState(values.teamSelect)
       onClose()
+      return
     }
+
+    // Translation: the consumer switches the team and closes the dialog only
+    // when the subscription completes successfully. Switching here would both
+    // fire on an error/cancel close and refetch GetAdminJourneys, unmounting
+    // the consumer that owns the translation subscription mid-run (NES-1636).
   }
 
   const baseLanguageShape = {

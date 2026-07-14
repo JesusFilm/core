@@ -1,12 +1,15 @@
+import Backdrop from '@mui/material/Backdrop'
+import CircularProgress from '@mui/material/CircularProgress'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useCallback, useRef, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 
 import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
 import { useJourneyAiTranslateSubscription } from '@core/journeys/ui/useJourneyAiTranslateSubscription'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
+import { useUpdateActiveTeam } from '@core/journeys/ui/useUpdateActiveTeam'
 
 import { IdType } from '../../../__generated__/globalTypes'
 
@@ -56,12 +59,17 @@ function ActiveUseTemplateDeepLink({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const router = useRouter()
+  // The dialog switches teams itself for a plain copy, but defers the
+  // translation flow to the consumer so the switch fires only on success
+  // (NES-1636) — see onComplete below.
+  const updateTeamState = useUpdateActiveTeam()
 
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [translationVariables, setTranslationVariables] = useState<
     TranslationVariables | undefined
   >(undefined)
+  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null)
 
   // Set true the moment a success/error path issues `router.replace` to the
   // journey list. CopyToTeamDialog calls `onClose()` after submitAction
@@ -72,12 +80,30 @@ function ActiveUseTemplateDeepLink({
   // across deep-link sessions.
   const navigatedAwayRef = useRef(false)
 
-  const { data: journeyData } = useJourneyQuery({
+  const { data: journeyData, loading: journeyLoading } = useJourneyQuery({
     id: journeyId,
     idType: IdType.databaseId,
     options: { skipRoutingFilter: true }
   })
   const journey = journeyData?.journey
+
+  const isCustomizable = journey?.customizable === true
+
+  // Customizable templates skip the copy-to-team dialog and enter the guided
+  // customization flow — matching TemplateActionButton on the template page.
+  useEffect(() => {
+    if (journeyLoading || !isCustomizable) return
+    navigatedAwayRef.current = true
+    // Full navigation — not shallow. Shallow routing only applies to query
+    // changes on the *same* page; using it across pathnames skips
+    // getServerSideProps and surfaces a 404 on /templates/[journeyId]/customize.
+    void router.replace(`/templates/${encodeURIComponent(journeyId)}/customize`)
+  }, [journeyLoading, isCustomizable, journeyId, router])
+
+  useEffect(() => {
+    if (journeyLoading || isCustomizable) return
+    setOpen(true)
+  }, [journeyLoading, isCustomizable])
 
   const [journeyDuplicate] = useJourneyDuplicateMutation()
 
@@ -108,6 +134,10 @@ function ActiveUseTemplateDeepLink({
       setLoading(false)
       setTranslationVariables(undefined)
       setOpen(false)
+      // Switch to the destination team only on success, before navigating to
+      // its journey list.
+      if (selectedTeamId != null) updateTeamState(selectedTeamId)
+      setSelectedTeamId(null)
       navigateToJourneyList()
     },
     onError(error) {
@@ -117,6 +147,7 @@ function ActiveUseTemplateDeepLink({
       })
       setLoading(false)
       setTranslationVariables(undefined)
+      setSelectedTeamId(null)
       setOpen(false)
       // The duplicate mutation already succeeded before translation began,
       // so the (untranslated) journey exists. Take the user to the list
@@ -136,9 +167,9 @@ function ActiveUseTemplateDeepLink({
 
       // Translation needs the source journey's language metadata. Throwing
       // (instead of a plain return) halts CopyToTeamDialog's submit pipeline
-      // BEFORE updateTeamState + resetForm run, so the user's selections
-      // survive the retry. The throw fires before `setLoading(true)` and
-      // outside the try block below — no "duplication failed" snackbar leaks.
+      // BEFORE resetForm runs, so the user's selections survive the retry.
+      // The throw fires before `setLoading(true)` and outside the try block
+      // below — no "duplication failed" snackbar leaks.
       if (wantsTranslation && journey == null) {
         enqueueSnackbar(t('Loading template — please retry'), {
           variant: 'info',
@@ -182,6 +213,9 @@ function ActiveUseTemplateDeepLink({
         const currentLanguageName =
           journey.language.name.find(({ primary }) => !primary)?.value ?? ''
 
+        // Remember the destination so onComplete can switch to it on success.
+        setSelectedTeamId(teamId)
+
         setTranslationVariables({
           journeyId: data.journeyDuplicate.id,
           name: journey.title,
@@ -222,6 +256,21 @@ function ActiveUseTemplateDeepLink({
     }
     stripParamFromUrl()
   }, [loading, translationVariables, stripParamFromUrl])
+
+  // Deep links land here directly, so show a blocking spinner instead of a
+  // blank page while we decide between the dialog and the customize redirect
+  // (and while the redirect itself is in flight).
+  if (journeyLoading || isCustomizable) {
+    return (
+      <Backdrop
+        open
+        data-testid="UseTemplateDeepLinkLoading"
+        sx={{ zIndex: (theme) => theme.zIndex.modal }}
+      >
+        <CircularProgress sx={{ color: 'common.white' }} />
+      </Backdrop>
+    )
+  }
 
   return (
     <CopyToTeamDialog

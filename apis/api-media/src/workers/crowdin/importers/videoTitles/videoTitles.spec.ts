@@ -28,6 +28,7 @@ const testVideo: Video = {
   originId: null,
   restrictDownloadPlatforms: [],
   restrictViewPlatforms: [],
+  restrictTranslations: false,
   publishedAt: null,
   createdAt: new Date(),
   updatedAt: new Date()

@@ -128,6 +128,7 @@
   "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.": "Bu sohbet uzadı. Sohbete devam etmek için yeni bir sohbet başlatın — bu, mevcut oturumu kapatır.",
   "Start a new conversation": "Yeni bir sohbet başlat",
   "Gallery media": "Galeri medyası",
+  "Chat has been turned off for this part of the journey.": "Yolculuğun bu bölümünde sohbet özelliği devre dışı bırakılmıştır.",
   "Select at least {{count}} options._one": "En az {{count}} seçeneklerini seçin.",
   "Select at least {{count}} options._other": "En az {{count}} seçeneklerini seçin.",
   "Select up to {{count}} options._one": "{{count}} adresine kadar seçenek belirleyin.",

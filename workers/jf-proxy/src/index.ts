@@ -1,11 +1,14 @@
 import { Hono } from 'hono'
 
+import { resolveWatchRedirect } from './resolveWatchRedirect'
+
 const CACHE_MAX_AGE = 86400 // 24 hours
 
 const app = new Hono<{
   Bindings: {
     RESOURCES_PROXY_DEST?: string
     WATCH_PROXY_DEST?: string
+    CORE_GRAPHQL_ENDPOINT?: string
     IOS_APP_ID?: string
     ANDROID_PACKAGE_NAME?: string
     ANDROID_SHA256_CERT_FINGERPRINT?: string
@@ -63,6 +66,33 @@ app.get('/.well-known/assetlinks.json', async (c) => {
     }
   })
 })
+
+app.on(
+  'GET',
+  [
+    '/bin/jf/watch.html/:videoId/:languageId',
+    '/bin/jf/watch.html/:videoId/:languageId/',
+    '/api/jf/watch.html/:videoId/:languageId',
+    '/api/jf/watch.html/:videoId/:languageId/'
+  ],
+  async (c) => {
+    const result = await resolveWatchRedirect({
+      videoId: c.req.param('videoId'),
+      languageId: c.req.param('languageId'),
+      graphQlEndpoint: c.env.CORE_GRAPHQL_ENDPOINT
+    })
+
+    if (result.type === 'redirect') {
+      return c.redirect(result.location, 302)
+    }
+
+    if (result.type === 'notFound') {
+      return new Response('Not Found', { status: 404 })
+    }
+
+    return new Response('Service Unavailable', { status: 503 })
+  }
+)
 
 app.get('*', async (c) => {
   const url = new URL(c.req.url)

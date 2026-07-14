@@ -9,6 +9,10 @@ import { ReactElement } from 'react'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import {
+  buildCustomizeHref,
+  buildUseTemplateHref
+} from '../../../libs/adminTemplateLinks'
+import {
   GALLERY_ACTION_COLOR,
   GALLERY_ACTION_SIZE,
   GALLERY_USE_BUTTON_MIN_WIDTH
@@ -17,6 +21,8 @@ import {
 interface JourneyViewCardActionsProps {
   /** Template id used in the admin "Use Template" deep link. */
   itemId: string
+  /** When true, link into the customize flow instead of the copy-to-team deep link. */
+  customizable?: boolean | null
   /**
    * Template title — used to disambiguate the Use/Preview controls on a page
    * with many cards (every card otherwise has an identical "Use"/"Preview"
@@ -52,34 +58,20 @@ interface JourneyViewCardActionsProps {
   decorative?: boolean
 }
 
-/**
- * Build the admin "Use Template" deep link, guarding against a schemeless
- * `NEXT_PUBLIC_JOURNEYS_ADMIN_URL` value (e.g. `admin.staging.local`) which
- * would otherwise throw inside `new URL` and crash the page at render.
- * In the fallback path we re-prepend `https://` so the resulting href is an
- * absolute URL — without the scheme, the browser resolves it as a relative
- * path against the current host (`https://gallery.host/admin.staging.local/...`)
- * instead of navigating to the admin app.
- */
-function buildUseTemplateHref(adminUrl: string, itemId: string): string {
-  try {
-    const url = new URL('/', adminUrl)
-    url.searchParams.set('useTemplate', itemId)
-    return url.toString()
-  } catch {
-    // Trim whitespace before stripping `/` so a misconfigured env var with
-    // padding still produces a parsable URL — `https://  admin.local  /...`
-    // would be rejected by the browser; `https://admin.local/...` works.
-    const sanitisedBase = adminUrl
-      .trim()
-      .replace(/^\/+/, '')
-      .replace(/\/+$/, '')
-    return `https://${sanitisedBase}/?useTemplate=${encodeURIComponent(itemId)}`
+function buildUseHref(
+  adminUrl: string,
+  itemId: string,
+  customizable?: boolean | null
+): string {
+  if (customizable === true) {
+    return buildCustomizeHref(adminUrl, itemId)
   }
+  return buildUseTemplateHref(adminUrl, itemId)
 }
 
 export function JourneyViewCardActions({
   itemId,
+  customizable,
   itemTitle,
   itemSlug,
   fullWidth = false,
@@ -157,7 +149,7 @@ export function JourneyViewCardActions({
   // and the URL searchParams handle encoding the template id. Fall back to a
   // sanitised template string if the env var is ever a schemeless value
   // (e.g. `admin.staging.local`) — `new URL` would throw and crash render.
-  const useTemplateHref = buildUseTemplateHref(adminUrl, itemId)
+  const useTemplateHref = buildUseHref(adminUrl, itemId, customizable)
   // Public viewer route on the same root domain; the journeys middleware
   // rewrites `/<slug>` → `/home/<slug>`.
   const previewHref = `/${itemSlug}`

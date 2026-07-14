@@ -93,6 +93,11 @@ export interface PublicGalleryPageItem {
   title: string
   description?: string | null
   slug: string
+  /**
+   * When true, the "Use" action opens the template customization flow
+   * instead of the admin "Copy to team" deep link.
+   */
+  customizable?: boolean | null
   /** ISO timestamp; used to derive the "Month Year" meta label. */
   createdAt?: string | null
   /** Language name entries (primary + local) used for the meta label. */

@@ -1,89 +1,20 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  createHttpLink,
-  gql
-} from '@apollo/client'
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
 
 import { prisma } from '@core/prisma/media/client'
 
 import { getVideo } from '../../../schema/mux/video/service'
+import {
+  createOrUpdateVideoVariant,
+  isUnrecoverableMuxAssetLookupError
+} from '../../../schema/videoVariantUpload/service'
 import { jobName as processVideoDownloadsNowJobName } from '../../processVideoDownloads/config'
 import { queue as processVideoDownloadsQueue } from '../../processVideoDownloads/queue'
 
 const FIVE_DAYS = 5 * 24 * 60 * 60
 
-const GET_LANGUAGE_SLUG = gql`
-  query GetLanguageSlug($languageId: ID!) {
-    language(id: $languageId) {
-      id
-      slug
-    }
-  }
-`
-
-function createLanguageClient(): ApolloClient<any> {
-  if (!process.env.GATEWAY_URL) {
-    throw new Error('GATEWAY_URL environment variable is required')
-  }
-
-  const httpLink = createHttpLink({
-    uri: process.env.GATEWAY_URL,
-    headers: {
-      'x-graphql-client-name': 'api-media',
-      'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
-    }
-  })
-
-  return new ApolloClient({
-    link: httpLink,
-    cache: new InMemoryCache(),
-    defaultOptions: {
-      watchQuery: {
-        fetchPolicy: 'no-cache'
-      },
-      query: {
-        fetchPolicy: 'no-cache'
-      }
-    }
-  })
-}
-
-async function getLanguageSlug(
-  videoSlug: string,
-  languageId: string,
-  logger?: Logger
-): Promise<string> {
-  let apollo: ApolloClient<any> | null = null
-  try {
-    apollo = createLanguageClient()
-    const { data } = await apollo.query({
-      query: GET_LANGUAGE_SLUG,
-      variables: { languageId },
-      fetchPolicy: 'no-cache'
-    })
-
-    if (!data.language?.slug) {
-      throw new Error(`No language slug found for language ID: ${languageId}`)
-    }
-
-    return `${videoSlug}/${data.language.slug}`
-  } catch (error) {
-    logger?.error(
-      { error, languageId, videoSlug },
-      'Failed to get language slug for variant'
-    )
-    throw new Error(`Failed to create slug for variant: ${error as Error}`)
-  } finally {
-    if (apollo) {
-      void apollo.stop()
-    }
-  }
-}
-
 export interface ProcessVideoUploadJobData {
+  uploadId?: string
   videoId: string
   edition: string
   languageId: string
@@ -102,8 +33,15 @@ export async function service(
   job: Job<ProcessVideoUploadJobData>,
   logger?: Logger
 ): Promise<void> {
-  const { videoId, edition, languageId, version, muxVideoId, metadata } =
-    job.data
+  const {
+    uploadId,
+    videoId,
+    edition,
+    languageId,
+    version,
+    muxVideoId,
+    metadata
+  } = job.data
 
   logger?.info(
     { videoId, edition, languageId, muxVideoId },
@@ -125,34 +63,88 @@ export async function service(
       return
     }
 
-    const { finalStatus, playbackId } = await waitForMuxVideoCompletion(
+    const durableUpload =
+      uploadId != null
+        ? await prisma.videoVariantUpload.findUnique({
+            where: { id: uploadId },
+            select: { id: true, muxNonStandardInputDetectedAt: true }
+          })
+        : await prisma.videoVariantUpload.findFirst({
+            where: { muxVideoId },
+            select: { id: true, muxNonStandardInputDetectedAt: true }
+          })
+
+    const durableUploadId = uploadId ?? durableUpload?.id
+    const muxCompletion = await waitForMuxVideoCompletion(
       muxVideo,
+      {
+        uploadId: durableUploadId,
+        muxNonStandardInputDetected:
+          durableUpload?.muxNonStandardInputDetectedAt != null
+      },
       logger
     )
+    const { finalStatus, playbackId } = muxCompletion
 
     if (finalStatus === 'ready' && playbackId) {
-      await createVideoVariant({
+      if (durableUploadId != null) {
+        await prisma.videoVariantUpload.update({
+          where: { id: durableUploadId },
+          data: { status: 'muxReady', errorMessage: null }
+        })
+      }
+
+      await createOrUpdateVideoVariant({
+        uploadId: durableUploadId,
         videoId,
         edition,
         languageId,
         version,
         muxVideoId,
         playbackId,
-        metadata,
+        metadata: {
+          ...metadata,
+          duration:
+            metadata.duration > 0
+              ? metadata.duration
+              : Math.ceil(muxCompletion.duration ?? 0),
+          durationMs:
+            metadata.durationMs > 0
+              ? metadata.durationMs
+              : Math.ceil((muxCompletion.duration ?? 0) * 1000)
+        },
         logger
       })
     }
     if (finalStatus === 'errored') {
+      if (durableUploadId != null) {
+        await prisma.videoVariantUpload.update({
+          where: { id: durableUploadId },
+          data: {
+            status: 'failed',
+            errorMessage: 'Mux video processing errored'
+          }
+        })
+      }
       logger?.error(
-        { videoId, muxVideoId, finalStatus },
+        { videoId, muxVideoId, finalStatus, uploadId: durableUploadId },
         'Video upload processing failed due to Mux error'
       )
       return
     }
 
     if (finalStatus === 'timeout') {
+      if (durableUploadId != null) {
+        await prisma.videoVariantUpload.update({
+          where: { id: durableUploadId },
+          data: {
+            status: 'failed',
+            errorMessage: 'Mux video processing timed out'
+          }
+        })
+      }
       logger?.warn(
-        { videoId, muxVideoId, finalStatus },
+        { videoId, muxVideoId, finalStatus, uploadId: durableUploadId },
         'Video upload processing failed due to timeout'
       )
     }
@@ -167,9 +159,13 @@ export async function service(
 
 async function waitForMuxVideoCompletion(
   muxVideo: { id: string; assetId: string | null },
+  upload: {
+    uploadId?: string
+    muxNonStandardInputDetected: boolean
+  },
   logger?: Logger
 ): Promise<
-  | { finalStatus: 'ready'; playbackId: string }
+  | { finalStatus: 'ready'; playbackId: string; duration: number | null }
   | { finalStatus: 'errored'; playbackId: null }
   | { finalStatus: 'timeout'; playbackId: null }
 > {
@@ -189,6 +185,27 @@ async function waitForMuxVideoCompletion(
   while (attempts < maxAttempts) {
     try {
       const muxVideoAsset = await getVideo(muxVideo.assetId, false)
+
+      if (
+        !upload.muxNonStandardInputDetected &&
+        upload.uploadId != null &&
+        hasNonStandardInputReasons(muxVideoAsset)
+      ) {
+        await prisma.videoVariantUpload.update({
+          where: { id: upload.uploadId },
+          data: { muxNonStandardInputDetectedAt: new Date() }
+        })
+        upload.muxNonStandardInputDetected = true
+
+        logger?.info(
+          {
+            muxVideoId: muxVideo.id,
+            assetId: muxVideo.assetId,
+            uploadId: upload.uploadId
+          },
+          'Mux detected non-standard input for video upload'
+        )
+      }
 
       if (muxVideoAsset.status === 'errored') {
         logger?.error(
@@ -249,7 +266,8 @@ async function waitForMuxVideoCompletion(
         )
         return {
           finalStatus: 'ready',
-          playbackId
+          playbackId,
+          duration: muxVideoAsset.duration ?? null
         }
       }
 
@@ -279,6 +297,11 @@ async function waitForMuxVideoCompletion(
         },
         'Error checking Mux video status'
       )
+
+      if (isUnrecoverableMuxAssetLookupError(error)) {
+        return { finalStatus: 'errored', playbackId: null }
+      }
+
       attempts++
       await new Promise((resolve) => setTimeout(resolve, intervalMs))
     }
@@ -296,105 +319,14 @@ async function waitForMuxVideoCompletion(
   return { finalStatus: 'timeout', playbackId: null }
 }
 
-async function createVideoVariant({
-  videoId,
-  edition,
-  languageId,
-  version,
-  muxVideoId,
-  playbackId,
-  metadata,
-  logger
-}: {
-  videoId: string
-  edition: string
-  languageId: string
-  version: number
-  muxVideoId: string
-  playbackId: string
-  metadata: {
-    durationMs: number
-    duration: number
-    width: number
-    height: number
-  }
-  logger?: Logger
-}): Promise<void> {
-  const [source, ...restParts] = videoId.split('_')
-  const restOfId = restParts.join('_') || videoId
-  const variantId = `${source}_${languageId}-${restOfId}`
+function hasNonStandardInputReasons(asset: {
+  non_standard_input_reasons?: unknown
+}): boolean {
+  const reasons = asset.non_standard_input_reasons
 
-  const muxStreamBaseUrl =
-    process.env.MUX_STREAM_BASE_URL || 'https://stream.mux.com/'
-  const watchPageBaseUrl =
-    process.env.WATCH_PAGE_BASE_URL || 'http://jesusfilm.org/watch/'
-
-  const [videoInfo, existingVariant] = await Promise.all([
-    prisma.video.findUnique({
-      where: { id: videoId },
-      select: { slug: true }
-    }),
-    prisma.videoVariant.findFirst({
-      where: {
-        OR: [
-          { id: variantId },
-          {
-            videoId,
-            languageId,
-            edition
-          }
-        ]
-      },
-      select: { id: true, slug: true }
-    })
-  ])
-
-  if (!videoInfo) {
-    throw new Error(`Video not found: ${videoId}`)
-  }
-
-  if (!videoInfo.slug) {
-    throw new Error(`Video slug not found: ${videoId}`)
-  }
-
-  const slug =
-    existingVariant?.slug ||
-    (await getLanguageSlug(videoInfo.slug, languageId, logger))
-
-  const variantData = {
-    hls: `${muxStreamBaseUrl}${playbackId}.m3u8`,
-    share: `${watchPageBaseUrl}${slug}`,
-    duration: metadata.duration,
-    lengthInMilliseconds: metadata.durationMs,
-    muxVideoId,
-    published: true,
-    downloadable: true,
-    version
-  }
-
-  try {
-    if (existingVariant) {
-      await prisma.videoVariant.update({
-        where: { id: existingVariant.id },
-        data: variantData
-      })
-    } else {
-      await prisma.videoVariant.create({
-        data: {
-          id: variantId,
-          videoId,
-          edition,
-          languageId,
-          slug,
-          ...variantData
-        }
-      })
-    }
-  } catch (error) {
-    logger?.error(
-      { error, videoId, muxVideoId, variantId, languageId, edition },
-      'Failed to create video variant'
-    )
-    throw error
-  }
+  return (
+    reasons != null &&
+    typeof reasons === 'object' &&
+    Object.keys(reasons).length > 0
+  )
 }

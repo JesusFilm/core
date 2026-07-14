@@ -167,6 +167,7 @@ describe('journeyAiTranslateCreate mutation', () => {
     analysis:
       'This journey is about example content. Cultural adaptations include...',
     title: 'Título del Viaje Traducido',
+    displayTitle: '',
     description: 'Descripción del viaje traducida',
     seoTitle: '',
     seoDescription: ''
@@ -682,6 +683,671 @@ describe('journeyAiTranslateCreate mutation', () => {
       }
     })
   })
+
+  it('translates displayTitle when the journey has one', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      displayTitle: 'Original Display Title'
+    } as any)
+
+    mockTranslateJourneyMetadata.mockResolvedValueOnce({
+      ...mockAnalysisAndTranslation,
+      displayTitle: 'Título de Visualización Traducido'
+    })
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    // The journey's display title is forwarded for translation...
+    expect(mockTranslateJourneyMetadata).toHaveBeenCalledWith(
+      expect.objectContaining({
+        journeyDisplayTitle: 'Original Display Title'
+      })
+    )
+
+    // ...and written back to the journey.
+    expect(prismaMock.journey.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: mockInput.journeyId },
+        data: expect.objectContaining({
+          displayTitle: 'Título de Visualización Traducido'
+        })
+      })
+    )
+  })
+
+  it('does not set displayTitle when the journey has none', async () => {
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    expect(prismaMock.journey.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.not.objectContaining({
+          displayTitle: expect.anything()
+        })
+      })
+    )
+  })
+
+  it('does not overwrite an existing displayTitle with an empty translation', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      displayTitle: 'Original Display Title'
+    } as any)
+
+    // Translation came back empty for displayTitle (e.g. model omitted it).
+    mockTranslateJourneyMetadata.mockResolvedValueOnce({
+      ...mockAnalysisAndTranslation,
+      displayTitle: ''
+    })
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    // The real displayTitle must be preserved, not cleared.
+    expect(prismaMock.journey.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.not.objectContaining({
+          displayTitle: expect.anything()
+        })
+      })
+    )
+  })
+
+  it('re-requests blocks the model omits on the first attempt', async () => {
+    // First attempt translates only typography1 and omits the rest.
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'typography1', updates: { content: 'Contenido traducido' } }
+      ])
+    } as any)
+    // Retry attempt returns the previously-omitted blocks.
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'button1', updates: { label: 'Botón traducido' } },
+        { blockId: 'option1', updates: { label: 'Opción traducida' } },
+        {
+          blockId: 'text1',
+          updates: { label: 'Texto', placeholder: 'Escriba' }
+        }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    // A second AI call is made to fetch the omitted blocks.
+    expect(mockStreamText).toHaveBeenCalledTimes(2)
+
+    // Every block ends up translated despite the first-attempt omission.
+    for (const id of ['typography1', 'button1', 'option1', 'text1']) {
+      expect(prismaMock.block.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ id })
+        })
+      )
+    }
+  })
+
+  it('translates SignUpBlock submitLabel and TextResponseBlock hint', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'signup1',
+          typename: 'SignUpBlock',
+          parentBlockId: 'card1',
+          submitLabel: 'Submit'
+        },
+        {
+          id: 'text1',
+          typename: 'TextResponseBlock',
+          parentBlockId: 'card1',
+          label: 'Name',
+          placeholder: 'Your name',
+          hint: 'We keep it private'
+        }
+      ]
+    } as any)
+
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'signup1', updates: { submitLabel: 'Enviar' } },
+        {
+          blockId: 'text1',
+          updates: {
+            label: 'Nombre',
+            placeholder: 'Tu nombre',
+            hint: 'Lo mantenemos privado'
+          }
+        }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'signup1' }),
+        data: { submitLabel: 'Enviar' }
+      })
+    )
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'text1' }),
+        data: {
+          label: 'Nombre',
+          placeholder: 'Tu nombre',
+          hint: 'Lo mantenemos privado'
+        }
+      })
+    )
+  })
+
+  it('does not write an empty translation and re-requests the field', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'typography1',
+          typename: 'TypographyBlock',
+          parentBlockId: 'card1',
+          content: 'Hello'
+        }
+      ]
+    } as any)
+
+    // First attempt returns an empty string — a failed translation that must not
+    // blank the block or be treated as complete.
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'typography1', updates: { content: '' } }
+      ])
+    } as any)
+    // Retry returns a real translation.
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'typography1', updates: { content: 'Hola' } }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    // The empty value is never written...
+    expect(prismaMock.block.update).not.toHaveBeenCalledWith(
+      expect.objectContaining({ data: { content: '' } })
+    )
+    // ...the field stays missing, so a second call is made and the real
+    // translation lands.
+    expect(mockStreamText).toHaveBeenCalledTimes(2)
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'typography1' }),
+        data: { content: 'Hola' }
+      })
+    )
+  })
+
+  it('re-requests an individual field the model omits (field-level completeness)', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'text1',
+          typename: 'TextResponseBlock',
+          parentBlockId: 'card1',
+          label: 'Name',
+          placeholder: 'Your name',
+          hint: 'We keep it private'
+        }
+      ]
+    } as any)
+
+    // First attempt translates label + placeholder but omits hint.
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        {
+          blockId: 'text1',
+          updates: { label: 'Nombre', placeholder: 'Tu nombre' }
+        }
+      ])
+    } as any)
+    // Retry returns the omitted hint.
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'text1', updates: { hint: 'Lo mantenemos privado' } }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    // A second call is made because hint was still missing after the first.
+    expect(mockStreamText).toHaveBeenCalledTimes(2)
+
+    // The retry prompt asks only for the missing hint field.
+    const retryPrompt = (mockStreamText.mock.calls[1][0] as any).messages[1]
+      .content[0].text as string
+    expect(retryPrompt).toContain('hint:')
+    expect(retryPrompt).not.toContain('label:')
+
+    // label + placeholder written first, hint written on the retry.
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'text1' }),
+        data: { label: 'Nombre', placeholder: 'Tu nombre' }
+      })
+    )
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'text1' }),
+        data: { hint: 'Lo mantenemos privado' }
+      })
+    )
+  })
+
+  it('escalates to a per-block request when batched passes keep omitting a block', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'radio1',
+          typename: 'RadioQuestionBlock',
+          parentBlockId: 'card1',
+          label: 'Pick one'
+        },
+        {
+          id: 'option1',
+          typename: 'RadioOptionBlock',
+          parentBlockId: 'radio1',
+          label: 'Option A'
+        }
+      ]
+    } as any)
+
+    // Three batched passes all drop the option, then the per-block escalation
+    // request returns it.
+    mockStreamText
+      .mockReturnValueOnce({
+        elementStream: createMockAsyncIterator([])
+      } as any)
+      .mockReturnValueOnce({
+        elementStream: createMockAsyncIterator([])
+      } as any)
+      .mockReturnValueOnce({
+        elementStream: createMockAsyncIterator([])
+      } as any)
+      .mockReturnValueOnce({
+        elementStream: createMockAsyncIterator([
+          { blockId: 'option1', updates: { label: 'Opción A' } }
+        ])
+      } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    // 3 batched attempts + 1 per-block escalation attempt.
+    expect(mockStreamText).toHaveBeenCalledTimes(4)
+
+    // The option is ultimately translated.
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'option1' }),
+        data: { label: 'Opción A' }
+      })
+    )
+  })
+
+  it('injects the default "Submit" label for an empty submit button and translates only the result', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'button1',
+          typename: 'ButtonBlock',
+          parentBlockId: 'card1',
+          label: '',
+          submitEnabled: true
+        }
+      ]
+    } as any)
+
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'button1', updates: { label: 'Enviar' } }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    // The default is injected into the prompt sent to the model...
+    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[1]
+      .content[0].text as string
+    expect(prompt).toContain('label: "Submit"')
+
+    // ...but only the translated value is written — the English default is never
+    // persisted (no extra database write).
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'button1' }),
+        data: { label: 'Enviar' }
+      })
+    )
+    expect(prismaMock.block.update).not.toHaveBeenCalledWith(
+      expect.objectContaining({ data: { label: 'Submit' } })
+    )
+  })
+
+  it('injects the default "Button" label for an empty non-submit button', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'button1',
+          typename: 'ButtonBlock',
+          parentBlockId: 'card1',
+          label: '',
+          submitEnabled: false
+        }
+      ]
+    } as any)
+
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'button1', updates: { label: 'Botón' } }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[1]
+      .content[0].text as string
+    expect(prompt).toContain('label: "Button"')
+
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'button1' }),
+        data: { label: 'Botón' }
+      })
+    )
+  })
+
+  it('injects the default submit label for a sign-up block with no submit text', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'signup1',
+          typename: 'SignUpBlock',
+          parentBlockId: 'card1',
+          submitLabel: ''
+        }
+      ]
+    } as any)
+
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'signup1', updates: { submitLabel: 'Enviar' } }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[1]
+      .content[0].text as string
+    expect(prompt).toContain('submitLabel: "Submit"')
+
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'signup1' }),
+        data: { submitLabel: 'Enviar' }
+      })
+    )
+  })
+
+  it('leaves a button that already has a label untouched (uses its real text)', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'button1',
+          typename: 'ButtonBlock',
+          parentBlockId: 'card1',
+          label: 'Watch now',
+          submitEnabled: false
+        }
+      ]
+    } as any)
+
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'button1', updates: { label: 'Ver ahora' } }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[1]
+      .content[0].text as string
+    expect(prompt).toContain('label: "Watch now"')
+    expect(prompt).not.toContain('label: "Button"')
+  })
+
+  it('translates both radio and multiselect option labels on the same card', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'radio1',
+          typename: 'RadioQuestionBlock',
+          parentBlockId: 'card1',
+          label: 'Pick one'
+        },
+        {
+          id: 'ropt1',
+          typename: 'RadioOptionBlock',
+          parentBlockId: 'radio1',
+          label: 'Red'
+        },
+        {
+          id: 'ropt2',
+          typename: 'RadioOptionBlock',
+          parentBlockId: 'radio1',
+          label: 'Blue'
+        },
+        {
+          id: 'multi1',
+          typename: 'MultiselectBlock',
+          parentBlockId: 'card1',
+          label: 'Pick any'
+        },
+        {
+          id: 'mopt1',
+          typename: 'MultiselectOptionBlock',
+          parentBlockId: 'multi1',
+          label: 'Cat'
+        },
+        {
+          id: 'mopt2',
+          typename: 'MultiselectOptionBlock',
+          parentBlockId: 'multi1',
+          label: 'Dog'
+        }
+      ]
+    } as any)
+
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'ropt1', updates: { label: 'Rojo' } },
+        { blockId: 'ropt2', updates: { label: 'Azul' } },
+        { blockId: 'mopt1', updates: { label: 'Gato' } },
+        { blockId: 'mopt2', updates: { label: 'Perro' } }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    const expected: Array<[string, string]> = [
+      ['ropt1', 'Rojo'],
+      ['ropt2', 'Azul'],
+      ['mopt1', 'Gato'],
+      ['mopt2', 'Perro']
+    ]
+    for (const [id, label] of expected) {
+      expect(prismaMock.block.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ id }),
+          data: { label }
+        })
+      )
+    }
+  })
+
+  it('collects and translates blocks nested deeper than one level under the card', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'wrapper1',
+          typename: 'MultiselectBlock',
+          parentBlockId: 'card1'
+        },
+        // A TypographyBlock two levels under the card (card → wrapper → text).
+        // The previous one-level collection would have missed this.
+        {
+          id: 'nestedtypo',
+          typename: 'TypographyBlock',
+          parentBlockId: 'wrapper1',
+          content: 'Nested text'
+        },
+        {
+          id: 'option1',
+          typename: 'MultiselectOptionBlock',
+          parentBlockId: 'wrapper1',
+          label: 'Opt'
+        }
+      ]
+    } as any)
+
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'nestedtypo', updates: { content: 'Texto anidado' } },
+        { blockId: 'option1', updates: { label: 'Opción' } }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'nestedtypo' }),
+        data: { content: 'Texto anidado' }
+      })
+    )
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'option1' }),
+        data: { label: 'Opción' }
+      })
+    )
+  })
+
+  it('translates MultiselectOptionBlock labels nested under a MultiselectBlock', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      ...mockJourney,
+      blocks: [
+        { id: 'card1', typename: 'CardBlock', parentOrder: 0 },
+        {
+          id: 'multiselect1',
+          typename: 'MultiselectBlock',
+          parentBlockId: 'card1'
+        },
+        {
+          id: 'msoption1',
+          typename: 'MultiselectOptionBlock',
+          parentBlockId: 'multiselect1',
+          label: 'Red'
+        },
+        {
+          id: 'msoption2',
+          typename: 'MultiselectOptionBlock',
+          parentBlockId: 'multiselect1',
+          label: 'Blue'
+        }
+      ]
+    } as any)
+
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
+        { blockId: 'msoption1', updates: { label: 'Rojo' } },
+        { blockId: 'msoption2', updates: { label: 'Azul' } }
+      ])
+    } as any)
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: { input: mockInput }
+    })
+
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'msoption1' }),
+        data: { label: 'Rojo' }
+      })
+    )
+    expect(prismaMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'msoption2' }),
+        data: { label: 'Azul' }
+      })
+    )
+  })
 })
 
 describe('journeyAiTranslateCreateSubscription', () => {
@@ -783,6 +1449,7 @@ describe('journeyAiTranslateCreateSubscription', () => {
     analysis:
       'This journey is about example content. Cultural adaptations include...',
     title: 'Título del Viaje Traducido',
+    displayTitle: 'Título de Visualización Traducido',
     description: 'Descripción del viaje traducida',
     seoTitle: 'Título SEO Traducido',
     seoDescription: 'Descripción SEO Traducida'
