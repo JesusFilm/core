@@ -251,7 +251,11 @@ describe('Step', () => {
     // slash before the query string used to produce `.../Step1/?utm=...`, which
     // Plausible records as a separate page from `.../Step1`; the fix appends it
     // directly.
-    window.history.pushState({}, '', '/?utm_source=source&utm_campaign=campaign')
+    window.history.pushState(
+      {},
+      '',
+      '/?utm_source=source&utm_campaign=campaign'
+    )
     treeBlocksVar([block])
     blockHistoryVar([block])
     const mockPlausible = vi.fn()
