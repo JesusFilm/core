@@ -1,4 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
+import BugReportRoundedIcon from '@mui/icons-material/BugReportRounded'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
 import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded'
 import VideoLibraryRoundedIcon from '@mui/icons-material/VideoLibraryRounded'
@@ -38,6 +39,7 @@ interface Item {
   icon: ReactNode
   href: string
   startsWith?: boolean
+  excludedStartsWith?: string[]
 }
 
 export function MenuContent(): ReactElement {
@@ -55,6 +57,13 @@ export function MenuContent(): ReactElement {
             text: 'Video Library',
             icon: <VideoLibraryRoundedIcon />,
             href: '/videos',
+            startsWith: true,
+            excludedStartsWith: ['/videos/algolia-debugging']
+          },
+          {
+            text: 'Algolia Debugging',
+            icon: <BugReportRoundedIcon />,
+            href: '/videos/algolia-debugging',
             startsWith: true
           }
         ]
@@ -98,7 +107,11 @@ export function MenuContent(): ReactElement {
               href={item.href}
               selected={
                 pathname === item.href ||
-                (item.startsWith === true && pathname?.startsWith(item.href))
+                (item.startsWith === true &&
+                  pathname?.startsWith(item.href) &&
+                  item.excludedStartsWith?.some((excludedPath) =>
+                    pathname.startsWith(excludedPath)
+                  ) !== true)
               }
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
@@ -116,7 +129,11 @@ export function MenuContent(): ReactElement {
               href={item.href}
               selected={
                 pathname === item.href ||
-                (item.startsWith === true && pathname?.startsWith(item.href))
+                (item.startsWith === true &&
+                  pathname?.startsWith(item.href) &&
+                  item.excludedStartsWith?.some((excludedPath) =>
+                    pathname.startsWith(excludedPath)
+                  ) !== true)
               }
             >
               <ListItemIcon>{item.icon}</ListItemIcon>

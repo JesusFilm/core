@@ -56,6 +56,9 @@ describe('MenuContent', () => {
     expect(
       await screen.findByRole('link', { name: 'Video Library' })
     ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Algolia Debugging' })
+    ).toHaveAttribute('href', '/videos/algolia-debugging')
     expect(screen.getByRole('link', { name: 'Settings' })).toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Home' })).not.toBeInTheDocument()
     expect(
@@ -78,6 +81,9 @@ describe('MenuContent', () => {
       screen.queryByRole('link', { name: 'Video Library' })
     ).not.toBeInTheDocument()
     expect(
+      screen.queryByRole('link', { name: 'Algolia Debugging' })
+    ).not.toBeInTheDocument()
+    expect(
       screen.queryByRole('link', { name: 'Settings' })
     ).not.toBeInTheDocument()
   })
@@ -91,6 +97,9 @@ describe('MenuContent', () => {
 
     expect(
       await screen.findByRole('link', { name: 'Video Library' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Algolia Debugging' })
     ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Settings' })).toBeInTheDocument()
     expect(
