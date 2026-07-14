@@ -1,4 +1,13 @@
-import { prisma } from '../../../../libs/prisma/languages/src/client'
+import { prisma } from '@core/prisma/languages/client'
+
+import {
+  type WessRawRow,
+  extractWessRowArray as extractWessRowArrayShared,
+  parseWessResponseBody,
+  readNumberField,
+  readRequiredEnv,
+  readStringField
+} from './wess-import-utils'
 
 /**
  * WESS QueryRunner settings (edit here). The API token must stay in env (`WESS_API_TOKEN`).
@@ -28,8 +37,6 @@ const log = (message: string): void => {
   console.log(`[wess-country-languages-import] ${message}`)
 }
 
-type WessRawRow = Record<string, unknown>
-
 interface WessCountryLanguageRow {
   languageId: string
   geoNo: number
@@ -41,23 +48,6 @@ interface ResolvedCountryLanguageRow {
   countryId: string
   speakers: number
 }
-
-const WESS_ARRAY_WRAPPER_KEYS = [
-  'data',
-  'rows',
-  'Data',
-  'Rows',
-  'result',
-  'Result',
-  'value',
-  'Value',
-  'items',
-  'Items',
-  'values',
-  'Values',
-  'GetDataResult',
-  'getDataResult'
-] as const
 
 const WESS_LANGUAGE_ID_KEYS: string[] = [
   'languageId',
@@ -78,88 +68,6 @@ const WESS_COUNTRY_CODE_KEYS: string[] = [
   'CountryId',
   'country_id'
 ]
-
-function readRequiredEnv(name: string): string {
-  const value = process.env[name]
-  if (value == null || value.trim() === '') {
-    throw new Error(`${name} environment variable is not set`)
-  }
-  return value
-}
-
-function readStringField(
-  row: WessRawRow,
-  keys: string[],
-  options: { lowercase?: boolean; uppercase?: boolean } = {}
-): string | null {
-  for (const key of keys) {
-    const value = row[key]
-    if (typeof value === 'string') {
-      const normalized = value.trim()
-      if (normalized !== '') {
-        if (options.lowercase === true) return normalized.toLowerCase()
-        if (options.uppercase === true) return normalized.toUpperCase()
-        return normalized
-      }
-    }
-    if (typeof value === 'number') {
-      return String(value)
-    }
-  }
-  return null
-}
-
-function readNumberField(row: WessRawRow, keys: string[]): number | null {
-  for (const key of keys) {
-    const value = row[key]
-    if (typeof value === 'number' && Number.isFinite(value)) {
-      return value
-    }
-    if (typeof value === 'string') {
-      const normalized = value.trim()
-      if (normalized === '') {
-        continue
-      }
-      const parsed = Number(normalized)
-      if (Number.isFinite(parsed)) {
-        return parsed
-      }
-    }
-  }
-  return null
-}
-
-function isTabularPayload(payload: unknown[]): boolean {
-  if (payload.length === 0) {
-    return false
-  }
-  return payload.every((row) => Array.isArray(row))
-}
-
-function tabularRowsToObjects(matrix: unknown[][]): WessRawRow[] {
-  if (matrix.length < 2) {
-    return []
-  }
-
-  const headerCells = matrix[0]
-  const headers = headerCells.map((cell) => String(cell).trim())
-  const objectRows: WessRawRow[] = []
-
-  for (let r = 1; r < matrix.length; r++) {
-    const cells = matrix[r]
-    const record: WessRawRow = {}
-    for (let c = 0; c < headers.length; c++) {
-      const key = headers[c]
-      if (key === '') {
-        continue
-      }
-      record[key] = cells[c]
-    }
-    objectRows.push(record)
-  }
-
-  return objectRows
-}
 
 /**
  * Normalizes one WESS QueryId 155 row into our raw import shape. Returns null when
@@ -183,85 +91,18 @@ export function normalizeWessCountryLanguageRow(
 }
 
 /**
- * WESS GetData often returns JSON wrapped in `{ data: … }` or a tabular `[ [ "col", … ], [ … ] ]` grid.
- * This flattens those shapes into an array of row objects.
+ * WESS GetData often returns JSON wrapped in `{ data: … }` or a tabular
+ * `[ [ "col", … ], [ … ] ]` grid. This flattens those shapes into an array of
+ * row objects. A bare object counts as a single row only when it carries both a
+ * language id and a `GEO_NO`.
  */
 export function extractWessRowArray(payload: unknown): WessRawRow[] {
-  if (payload == null) {
-    return []
-  }
-
-  if (typeof payload === 'string') {
-    const trimmed = payload.trim()
-    if (trimmed === '') {
-      return []
-    }
-    let parsed: unknown
-    try {
-      parsed = JSON.parse(trimmed) as unknown
-    } catch {
-      throw new Error(
-        'Unexpected WESS response: payload string is not valid JSON'
-      )
-    }
-    return extractWessRowArray(parsed)
-  }
-
-  if (Array.isArray(payload)) {
-    if (isTabularPayload(payload)) {
-      return tabularRowsToObjects(payload as unknown[][])
-    }
-
-    return payload.filter(
-      (row): row is WessRawRow =>
-        row != null && typeof row === 'object' && !Array.isArray(row)
-    )
-  }
-
-  if (typeof payload === 'object') {
-    const record = payload as Record<string, unknown>
-
-    for (const key of WESS_ARRAY_WRAPPER_KEYS) {
-      if (!(key in record)) {
-        continue
-      }
-      const inner = record[key]
-      if (inner == null) {
-        continue
-      }
-      return extractWessRowArray(inner)
-    }
-
-    if (
-      readStringField(record as WessRawRow, WESS_LANGUAGE_ID_KEYS) != null &&
-      readNumberField(record as WessRawRow, WESS_GEO_NO_KEYS) != null
-    ) {
-      return [record as WessRawRow]
-    }
-
-    const keys = Object.keys(record).slice(0, 25).join(', ')
-    throw new Error(
-      `Unexpected WESS response: unsupported object shape (sample keys: ${keys || '(none)'})`
-    )
-  }
-
-  throw new Error(
-    `Unexpected WESS response: expected array or object, got ${typeof payload}`
+  return extractWessRowArrayShared(
+    payload,
+    (row) =>
+      readStringField(row, WESS_LANGUAGE_ID_KEYS) != null &&
+      readNumberField(row, WESS_GEO_NO_KEYS) != null
   )
-}
-
-function parseWessResponseBody(bodyText: string): unknown {
-  const trimmed = bodyText.trim()
-  if (trimmed === '') {
-    return null
-  }
-  try {
-    return JSON.parse(trimmed) as unknown
-  } catch {
-    throw new Error(
-      `WESS response is not valid JSON (first 400 chars): ${bodyText.slice(0, 400)}`
-    )
-  }
 }
 
 async function fetchWessQuery(

@@ -100,19 +100,19 @@
     "wess-languages-import": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json apis/api-languages/src/scripts/wess-languages-import.ts"
+        "command": "pnpm exec tsx apis/api-languages/src/scripts/wess-languages-import.ts"
       }
     },
     "wess-countries-import": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json apis/api-languages/src/scripts/wess-countries-import.ts"
+        "command": "pnpm exec tsx apis/api-languages/src/scripts/wess-countries-import.ts"
       }
     },
     "wess-country-languages-import": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json apis/api-languages/src/scripts/wess-country-languages-import.ts"
+        "command": "pnpm exec tsx apis/api-languages/src/scripts/wess-country-languages-import.ts"
       }
     }
   }
