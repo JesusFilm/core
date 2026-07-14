@@ -352,13 +352,18 @@ describe('LanguageForm', () => {
     expect(
       screen.getByRole('columnheader', { name: 'Video ID' })
     ).toBeInTheDocument()
-    expect(screen.getByText('JESUS')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'JESUS' })).toHaveAttribute(
+      'href',
+      '/videos/1_jf-0-0/audio/20615_1_jf-0-0'
+    )
     expect(screen.getByRole('link', { name: '3' })).toHaveAttribute(
       'href',
       '/videos/1_jf-0-0/audio/20615_1_jf-0-0'
     )
     expect(screen.getByText('1_jf-0-0')).toBeInTheDocument()
-    expect(screen.getByText("Magdalena - Director's Cut")).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: "Magdalena - Director's Cut" })
+    ).toHaveAttribute('href', '/videos/1_wl-0-0/audio/20615_1_wl-0-0')
     expect(screen.getByRole('link', { name: '4' })).toHaveAttribute(
       'href',
       '/videos/1_wl-0-0/audio/20615_1_wl-0-0'

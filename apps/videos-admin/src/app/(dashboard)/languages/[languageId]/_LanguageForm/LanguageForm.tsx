@@ -427,25 +427,30 @@ export function LanguageForm(): ReactElement {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {linkedFilms.map((linkedFilm) => (
-                  <TableRow
-                    key={`${linkedFilm.videoId}-${linkedFilm.variant.id}`}
-                  >
-                    <TableCell>{linkedFilm.title}</TableCell>
-                    <TableCell>
-                      <Link
-                        component={NextLink}
-                        href={getLanguageStudioManagedFilmPath({
-                          videoId: linkedFilm.videoId,
-                          variantId: linkedFilm.variant.id
-                        })}
-                      >
-                        {linkedFilm.variant.version}
-                      </Link>
-                    </TableCell>
-                    <TableCell>{linkedFilm.videoId}</TableCell>
-                  </TableRow>
-                ))}
+                {linkedFilms.map((linkedFilm) => {
+                  const href = getLanguageStudioManagedFilmPath({
+                    videoId: linkedFilm.videoId,
+                    variantId: linkedFilm.variant.id
+                  })
+
+                  return (
+                    <TableRow
+                      key={`${linkedFilm.videoId}-${linkedFilm.variant.id}`}
+                    >
+                      <TableCell>
+                        <Link component={NextLink} href={href}>
+                          {linkedFilm.title}
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <Link component={NextLink} href={href}>
+                          {linkedFilm.variant.version}
+                        </Link>
+                      </TableCell>
+                      <TableCell>{linkedFilm.videoId}</TableCell>
+                    </TableRow>
+                  )
+                })}
               </TableBody>
             </Table>
           </TableContainer>
