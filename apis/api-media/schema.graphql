@@ -93,6 +93,7 @@ input CheckAlgoliaVideoVariantIndexBatchInput {
   scanType: AlgoliaVideoVariantIndexScanType!
   batchKey: String
   batchSize: Int
+  languageId: String
 }
 
 type CheckAlgoliaVideoVariantIndexBatchResult {

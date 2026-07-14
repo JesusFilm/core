@@ -158,10 +158,12 @@ function getLanguageName(
 
 async function browseAlgoliaVideoVariantObjectsBatch({
   cursor,
-  batchSize
+  batchSize,
+  languageId
 }: {
   cursor: string | null | undefined
   batchSize: number
+  languageId: string | null | undefined
 }): Promise<{ hits: Array<Record<string, unknown>>; cursor: string | null }> {
   const client = getAlgoliaClient() as AlgoliaClientWithBrowse
   const algoliaConfig = getAlgoliaConfig()
@@ -177,9 +179,23 @@ async function browseAlgoliaVideoVariantObjectsBatch({
     indexName: algoliaConfig.videoVariantsIndex,
     browseParams: body
   })
+  const hits = Array.isArray(response?.hits) ? response.hits : []
+  const filteredHits =
+    languageId == null || languageId === ''
+      ? hits
+      : hits.filter(
+          (hit): hit is Record<string, unknown> =>
+            typeof hit === 'object' &&
+            hit != null &&
+            'languageId' in hit &&
+            hit.languageId === languageId
+        )
 
   return {
-    hits: Array.isArray(response?.hits) ? response.hits : [],
+    hits: filteredHits.filter(
+      (hit): hit is Record<string, unknown> =>
+        typeof hit === 'object' && hit != null
+    ),
     cursor: typeof response?.cursor === 'string' ? response.cursor : null
   }
 }
@@ -219,7 +235,8 @@ const CheckAlgoliaVideoVariantIndexBatchInput = builder.inputType(
     fields: (t) => ({
       scanType: t.field({ type: VariantIndexScanTypeEnum, required: true }),
       batchKey: t.string({ required: false }),
-      batchSize: t.int({ required: false })
+      batchSize: t.int({ required: false }),
+      languageId: t.string({ required: false })
     })
   }
 )
@@ -353,10 +370,14 @@ builder.queryFields((t) => ({
 
       if (scanType === 'core') {
         const variants = await prisma.videoVariant.findMany({
-          where:
-            input.batchKey != null && input.batchKey !== ''
+          where: {
+            ...(input.batchKey != null && input.batchKey !== ''
               ? { id: { gt: input.batchKey } }
-              : undefined,
+              : {}),
+            ...(input.languageId != null && input.languageId !== ''
+              ? { languageId: input.languageId }
+              : {})
+          },
           include: videoVariantAlgoliaInclude,
           orderBy: { id: 'asc' },
           take: batchSize
@@ -422,7 +443,8 @@ builder.queryFields((t) => ({
         try {
           const result = await browseAlgoliaVideoVariantObjectsBatch({
             cursor: input.batchKey,
-            batchSize
+            batchSize,
+            languageId: input.languageId
           })
           const objectIds = result.hits
             .map((hit) => hit.objectID)

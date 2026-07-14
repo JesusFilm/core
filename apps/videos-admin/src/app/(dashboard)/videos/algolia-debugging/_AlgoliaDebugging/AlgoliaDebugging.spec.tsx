@@ -61,6 +61,7 @@ function mockApolloHooks(): void {
 describe('AlgoliaDebugging', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    delete process.env.NEXT_PUBLIC_GATEWAY_URL
     mockApolloHooks()
     mockFixIssues.mockResolvedValue({
       data: {
@@ -125,6 +126,76 @@ describe('AlgoliaDebugging', () => {
     expect(screen.getByText('Extra 1')).toBeInTheDocument()
     await waitFor(() =>
       expect(screen.getAllByRole('button', { name: 'Fix' })).toHaveLength(2)
+    )
+  })
+
+  it('defaults staging scans to English variants', async () => {
+    process.env.NEXT_PUBLIC_GATEWAY_URL =
+      'https://api-gateway-stage.central.jesusfilm.org/'
+    mockQuery
+      .mockResolvedValueOnce({
+        data: {
+          checkAlgoliaVideoVariantIndexBatch: {
+            scanType: 'core',
+            batchKey: null,
+            nextBatchKey: null,
+            done: true,
+            checkedCount: 0,
+            missingCount: 0,
+            staleCount: 0,
+            extraCount: 0,
+            failedCount: 0,
+            issues: []
+          }
+        }
+      })
+      .mockResolvedValueOnce({
+        data: {
+          checkAlgoliaVideoVariantIndexBatch: {
+            scanType: 'algolia',
+            batchKey: null,
+            nextBatchKey: null,
+            done: true,
+            checkedCount: 0,
+            missingCount: 0,
+            staleCount: 0,
+            extraCount: 0,
+            failedCount: 0,
+            issues: []
+          }
+        }
+      })
+
+    render(<AlgoliaDebugging />)
+    fireEvent.click(screen.getByRole('button', { name: 'Start Variant Check' }))
+
+    await waitFor(() =>
+      expect(mockQuery).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          variables: {
+            input: {
+              scanType: 'core',
+              batchKey: null,
+              batchSize: 100,
+              languageId: '529'
+            }
+          }
+        })
+      )
+    )
+    expect(mockQuery).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        variables: {
+          input: {
+            scanType: 'algolia',
+            batchKey: null,
+            batchSize: 100,
+            languageId: '529'
+          }
+        }
+      })
     )
   })
 
