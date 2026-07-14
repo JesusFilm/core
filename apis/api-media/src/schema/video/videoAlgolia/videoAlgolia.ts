@@ -265,10 +265,7 @@ const VariantIndexIssueRef = builder
   .implement({
     fields: (t) => ({
       id: t.exposeString('id'),
-      issueType: t.field({
-        type: VariantIndexIssueTypeEnum,
-        resolve: (parent) => parent.issueType
-      }),
+      issueType: t.exposeString('issueType'),
       variantId: t.exposeString('variantId', { nullable: true }),
       objectId: t.exposeString('objectId'),
       videoId: t.exposeString('videoId', { nullable: true }),
@@ -319,10 +316,7 @@ const CheckAlgoliaVideoVariantIndexBatchResultRef = builder
   }>('CheckAlgoliaVideoVariantIndexBatchResult')
   .implement({
     fields: (t) => ({
-      scanType: t.field({
-        type: VariantIndexScanTypeEnum,
-        resolve: (parent) => parent.scanType
-      }),
+      scanType: t.exposeString('scanType'),
       batchKey: t.exposeString('batchKey', { nullable: true }),
       nextBatchKey: t.exposeString('nextBatchKey', { nullable: true }),
       done: t.exposeBoolean('done'),
@@ -841,25 +835,8 @@ builder.mutationFields((t) => ({
             continue
           }
 
-          try {
-            const updated = await updateVideoVariantInAlgolia(objectId, logger)
-            if (!updated) {
-              issues.push({
-                id: `failed:${objectId}`,
-                issueType: 'failed',
-                variantId: objectId,
-                objectId,
-                videoId: variant.videoId,
-                languageId: variant.languageId,
-                languageName: null,
-                mismatches: [],
-                error: 'Algolia update did not complete'
-              })
-              continue
-            }
-
-            fixed.push(objectId)
-          } catch (err) {
+          const updated = await updateVideoVariantInAlgolia(objectId, logger)
+          if (!updated) {
             issues.push({
               id: `failed:${objectId}`,
               issueType: 'failed',
@@ -869,9 +846,12 @@ builder.mutationFields((t) => ({
               languageId: variant.languageId,
               languageName: null,
               mismatches: [],
-              error: getErrorString(err)
+              error: 'Algolia update did not complete'
             })
+            continue
           }
+
+          fixed.push(objectId)
         }
 
         return {
