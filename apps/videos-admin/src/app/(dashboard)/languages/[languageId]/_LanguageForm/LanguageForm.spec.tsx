@@ -343,18 +343,27 @@ describe('LanguageForm', () => {
   it('should show linked Language Studio managed film versions', async () => {
     renderForm()
 
-    expect(await screen.findByText('JESUS:')).toBeInTheDocument()
+    expect(
+      await screen.findByRole('columnheader', { name: 'Film' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('columnheader', { name: 'Actual Version Number' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('columnheader', { name: 'Video ID' })
+    ).toBeInTheDocument()
+    expect(screen.getByText('JESUS')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: '3' })).toHaveAttribute(
       'href',
       '/videos/1_jf-0-0/audio/20615_1_jf-0-0'
     )
-    expect(screen.getByText(': 1_jf-0-0')).toBeInTheDocument()
-    expect(screen.getByText("Magdalena - Director's Cut:")).toBeInTheDocument()
+    expect(screen.getByText('1_jf-0-0')).toBeInTheDocument()
+    expect(screen.getByText("Magdalena - Director's Cut")).toBeInTheDocument()
     expect(screen.getByRole('link', { name: '4' })).toHaveAttribute(
       'href',
       '/videos/1_wl-0-0/audio/20615_1_wl-0-0'
     )
-    expect(screen.getByText(': 1_wl-0-0')).toBeInTheDocument()
+    expect(screen.getByText('1_wl-0-0')).toBeInTheDocument()
   })
 
   it('should show an empty linked films state when there are no managed film variants', async () => {

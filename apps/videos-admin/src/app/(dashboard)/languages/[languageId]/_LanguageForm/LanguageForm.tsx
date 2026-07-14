@@ -7,6 +7,12 @@ import Divider from '@mui/material/Divider'
 import Link from '@mui/material/Link'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
@@ -408,28 +414,41 @@ export function LanguageForm(): ReactElement {
         ) : linkedFilms.length === 0 ? (
           <Typography color="text.secondary">-</Typography>
         ) : (
-          <Stack spacing={0.5}>
-            {linkedFilms.map((linkedFilm) => (
-              <Stack
-                key={`${linkedFilm.videoId}-${linkedFilm.variant.id}`}
-                direction="row"
-                spacing={0.5}
-                sx={{ alignItems: 'baseline' }}
-              >
-                <Typography>{linkedFilm.title}:</Typography>
-                <Link
-                  component={NextLink}
-                  href={getLanguageStudioManagedFilmPath({
-                    videoId: linkedFilm.videoId,
-                    variantId: linkedFilm.variant.id
-                  })}
-                >
-                  {linkedFilm.variant.version}
-                </Link>
-                <Typography>: {linkedFilm.videoId}</Typography>
-              </Stack>
-            ))}
-          </Stack>
+          <TableContainer>
+            <Table
+              size="small"
+              aria-label={LINKED_LANGUAGE_STUDIO_MANAGED_FILMS_LABEL}
+            >
+              <TableHead>
+                <TableRow>
+                  <TableCell>Film</TableCell>
+                  <TableCell>Actual Version Number</TableCell>
+                  <TableCell>Video ID</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {linkedFilms.map((linkedFilm) => (
+                  <TableRow
+                    key={`${linkedFilm.videoId}-${linkedFilm.variant.id}`}
+                  >
+                    <TableCell>{linkedFilm.title}</TableCell>
+                    <TableCell>
+                      <Link
+                        component={NextLink}
+                        href={getLanguageStudioManagedFilmPath({
+                          videoId: linkedFilm.videoId,
+                          variantId: linkedFilm.variant.id
+                        })}
+                      >
+                        {linkedFilm.variant.version}
+                      </Link>
+                    </TableCell>
+                    <TableCell>{linkedFilm.videoId}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         )}
       </Paper>
 
