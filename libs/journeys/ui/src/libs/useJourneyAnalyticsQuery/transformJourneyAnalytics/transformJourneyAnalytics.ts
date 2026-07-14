@@ -94,16 +94,37 @@ export function transformJourneyAnalytics(
     targetMap.set(key, target)
   })
 
-  const stepsStats: StepStat[] = journeySteps.map((step) => {
+  // Merge the trailing-slash and non-trailing-slash Plausible pages that map to
+  // the same step block id. A given visitor only ever lands on one of the two
+  // variants for a session, so visitors sum without double counting; timeOnPage
+  // is a per-visitor average and is combined as a visitor-weighted mean.
+  const stepStatsById = new Map<string, StepStat>()
+  journeySteps.forEach((step) => {
     const stepId = getStepId(step.property, journeyId)
-    return {
-      stepId,
-      visitors: step.visitors ?? 0,
-      timeOnPage: step.timeOnPage ?? 0,
-      visitorsExitAtStep:
-        stepExits.find((step) => step.id === stepId)?.visitors ?? 0
+    const visitors = step.visitors ?? 0
+    const timeOnPage = step.timeOnPage ?? 0
+
+    const existing = stepStatsById.get(stepId)
+    if (existing == null) {
+      stepStatsById.set(stepId, {
+        stepId,
+        visitors,
+        timeOnPage,
+        visitorsExitAtStep:
+          stepExits.find((exit) => exit.id === stepId)?.visitors ?? 0
+      })
+      return
     }
+
+    const totalVisitors = existing.visitors + visitors
+    existing.timeOnPage =
+      totalVisitors === 0
+        ? 0
+        : (existing.timeOnPage * existing.visitors + timeOnPage * visitors) /
+          totalVisitors
+    existing.visitors = totalVisitors
   })
+  const stepsStats: StepStat[] = Array.from(stepStatsById.values())
 
   const qrCodeVisitors = journeyUtmCampaign.reduce(
     (sum, campaign) => sum + (campaign.visitors ?? 0),
@@ -137,7 +158,12 @@ export function transformJourneyAnalytics(
 }
 
 function getStepId(property: string, journeyId: string): string {
-  return replace(property, `/${journeyId}/`, '')
+  // Strip the `/${journeyId}/` prefix to recover the step block id, then drop
+  // any trailing slash. Visitors who arrive with a query string are recorded by
+  // Plausible under `/${journeyId}/${stepId}/` (trailing slash) while others are
+  // recorded under `/${journeyId}/${stepId}`; normalizing here collapses both
+  // pages back onto the same step block id so their stats can be merged.
+  return replace(property, `/${journeyId}/`, '').replace(/\/$/, '')
 }
 
 function getJourneyEvents(
@@ -162,15 +188,15 @@ function getStepExits(
   journeyVisitorsPageExits: JourneyVisitorsPageExit[],
   journeyId: string
 ): Array<{ id: string; visitors: number }> {
-  const stepExits = journeyVisitorsPageExits.map((page) => {
+  // Sum exits across the trailing-slash and non-trailing-slash pages that
+  // resolve to the same step block id (see getStepId).
+  const exitsById = new Map<string, number>()
+  journeyVisitorsPageExits.forEach((page) => {
     const id = getStepId(page.property, journeyId)
-    return {
-      id,
-      visitors: page.visitors ?? 0
-    }
+    exitsById.set(id, (exitsById.get(id) ?? 0) + (page.visitors ?? 0))
   })
 
-  return stepExits
+  return Array.from(exitsById, ([id, visitors]) => ({ id, visitors }))
 }
 
 function getLinkClicks(journeyEvents: PlausibleEvent[]): {

@@ -373,7 +373,7 @@ describe('Step', () => {
       expect(mockStepViewEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('pageview', {
-      u: expect.stringContaining(`/journeyId/Step1/${mockSearch}`),
+      u: expect.stringContaining(`/journeyId/Step1${mockSearch}`),
       props: {
         id: 'uuid',
         blockId: 'Step1',

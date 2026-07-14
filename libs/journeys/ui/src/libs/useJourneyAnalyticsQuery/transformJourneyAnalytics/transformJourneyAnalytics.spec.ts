@@ -695,4 +695,59 @@ describe('transformJourneyAnalytics', () => {
     expect(result?.referrers.nodes).toHaveLength(1)
     expect(result?.referrers.nodes[0].id).toBe('Direct / None')
   })
+
+  it('should merge trailing-slash and non-trailing-slash pages for the same step', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 7,
+          timeOnPage: 10
+        },
+        {
+          // Same step, recorded under a trailing slash for query-string traffic
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id/',
+          visitors: 93,
+          timeOnPage: 20
+        }
+      ],
+      journeyStepsActions: [],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 2
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id/',
+          visitors: 40
+        }
+      ],
+      journeyActionsSums: [],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 100
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    // Both pages collapse into a single step whose visitors and exits are summed
+    expect(result?.stepsStats).toHaveLength(1)
+    expect(result?.stepsStats[0]).toEqual({
+      stepId: 'step1.id',
+      visitors: 100,
+      // visitor-weighted mean: (10*7 + 20*93) / 100 = 19.3
+      timeOnPage: 19.3,
+      visitorsExitAtStep: 42
+    })
+  })
 })
