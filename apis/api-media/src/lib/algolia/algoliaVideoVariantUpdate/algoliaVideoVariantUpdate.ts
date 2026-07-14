@@ -151,6 +151,6 @@ export async function updateVideoVariantInAlgolia(
       error,
       `failed to update video variant ${videoVariantId} in algolia`
     )
-    return false
+    throw error
   }
 }
