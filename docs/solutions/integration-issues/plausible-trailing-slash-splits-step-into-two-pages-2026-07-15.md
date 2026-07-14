@@ -48,17 +48,11 @@ Two changes — one at the source, one at the consumer.
 
 ```ts
 // Before — leading slash turns into a trailing-slash pathname after Plausible strips the query
-const search =
-  window.location.search === '' || window.location.search == null
-    ? ''
-    : `/${window.location.search}`
+const search = window.location.search === '' || window.location.search == null ? '' : `/${window.location.search}`
 // u = `${origin}/${journeyId}/${blockId}${search}`  →  .../{blockId}/?utm=...  →  page /{journeyId}/{blockId}/
 
 // After — append directly; no trailing slash
-const search =
-  window.location.search === '' || window.location.search == null
-    ? ''
-    : window.location.search
+const search = window.location.search === '' || window.location.search == null ? '' : window.location.search
 // u = .../{blockId}?utm=...  →  page /{journeyId}/{blockId}
 ```
 
@@ -73,10 +67,10 @@ Because months of history are already stored under both paths, the two rows per 
 
 ## Why This Works
 
-- Plausible strips the query string from `event:page`, so the *only* thing that distinguished the two pages was the trailing slash our own code introduced. Removing the leading slash makes the pageview path match every other event emitter (Button, RadioQuestion, VideoEvents, SignUp, ChatButtons, Card all already emit the bare `/{journeyId}/{stepId}`), so **new** data lands in a single bucket.
+- Plausible strips the query string from `event:page`, so the _only_ thing that distinguished the two pages was the trailing slash our own code introduced. Removing the leading slash makes the pageview path match every other event emitter (Button, RadioQuestion, VideoEvents, SignUp, ChatButtons, Card all already emit the bare `/{journeyId}/{stepId}`), so **new** data lands in a single bucket.
 - Normalizing the trailing slash in `getStepId` reunites the historical split so old reporting windows count both buckets.
 
-**Known limitation (the caveat still stands):** summing the two variants is a *best-effort* reconciliation of historical data, not an exact figure. The `event:page` visitor metric also counts custom events, and a visitor whose pageview landed on the slash page but who also fired a non-pageview event (recorded on the slash-free page) is counted in both buckets, so summing can modestly **over-count** historical visitors. The true unique-visitor union cannot be recovered from two separate aggregate counts. The source fix removes the split for new data, so this is bounded to reporting windows that include pre-fix rows. An exact historical figure would require a server-side Plausible query that treats both page variants as one page (a combined/glob `event:page` filter) — out of scope for the client-side fix.
+**Known limitation (the caveat still stands):** summing the two variants is a _best-effort_ reconciliation of historical data, not an exact figure. The `event:page` visitor metric also counts custom events, and a visitor whose pageview landed on the slash page but who also fired a non-pageview event (recorded on the slash-free page) is counted in both buckets, so summing can modestly **over-count** historical visitors. The true unique-visitor union cannot be recovered from two separate aggregate counts. The source fix removes the split for new data, so this is bounded to reporting windows that include pre-fix rows. An exact historical figure would require a server-side Plausible query that treats both page variants as one page (a combined/glob `event:page` filter) — out of scope for the client-side fix.
 
 ## Prevention
 
