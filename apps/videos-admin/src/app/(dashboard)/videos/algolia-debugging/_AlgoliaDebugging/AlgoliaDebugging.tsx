@@ -385,7 +385,17 @@ export function AlgoliaDebugging(): ReactElement {
   )
 
   return (
-    <Stack spacing={2} sx={{ p: 3, height: 'calc(100vh - 112px)' }}>
+    <Stack
+      spacing={2}
+      sx={{
+        p: 3,
+        width: '100%',
+        maxWidth: '100%',
+        minWidth: 0,
+        boxSizing: 'border-box',
+        height: 'calc(100vh - 112px)'
+      }}
+    >
       <Stack
         direction={{ xs: 'column', md: 'row' }}
         spacing={1.5}
@@ -437,7 +447,7 @@ export function AlgoliaDebugging(): ReactElement {
       {scanning && <LinearProgress />}
       {scanError != null && <Alert severity="error">{scanError}</Alert>}
 
-      <Box sx={{ flexGrow: 1, minHeight: 360 }}>
+      <Box sx={{ flexGrow: 1, minHeight: 360, width: '100%', minWidth: 0 }}>
         <DataGrid
           rows={issues}
           columns={columns}
