@@ -78,7 +78,7 @@ explicit `.js` extensions on the dynamic `import()` calls in
 ## Gotchas found during the pilot
 
 - Prisma clients must be generated (`pnpm exec prisma generate --schema
-  libs/prisma/<db>/db/schema.prisma`) or the `@core/prisma/*/client` paths
+libs/prisma/<db>/db/schema.prisma`) or the `@core/prisma/*/client` paths
   produce TS2305/TS2724 walls followed by implicit-any cascades.
 - `.storybook/preview.js` is untyped JS; workspaces whose stories tsconfig
   pulls in `libs/shared/ui` need the sibling `.storybook/preview.d.ts`
@@ -103,7 +103,7 @@ Remaining, in order, each gated on the previous:
    CI for a few days. Each workspace gets its own `tsconfig.ts7.json` as
    described above; existing tsconfigs stay untouched.
 2. **Editor flip** — commit the TS 7 language-service setting to
-   `.vscode/settings.json` only once *all* type-check targets are on TS 7,
+   `.vscode/settings.json` only once _all_ type-check targets are on TS 7,
    so editor squiggles and CI agree.
 3. **Retire TS 5** — when typescript-eslint and Next support the TS 7
    API. Then `typescript` becomes v7, `tools/typescript7`, the `tsc7`

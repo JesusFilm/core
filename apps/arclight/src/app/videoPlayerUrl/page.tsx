@@ -158,7 +158,9 @@ export default async function Page(props: {
 
   if (!hlsUrl) {
     return (
-      <PlayerError message={'No video URL found for ID: ' + searchParams.refId} />
+      <PlayerError
+        message={'No video URL found for ID: ' + searchParams.refId}
+      />
     )
   }
 

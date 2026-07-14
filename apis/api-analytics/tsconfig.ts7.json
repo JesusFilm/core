@@ -14,12 +14,6 @@
       "@nx/react/typings/image.d.ts"
     ]
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules",
-    "vitest.config.mts"
-  ]
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "vitest.config.mts"]
 }
