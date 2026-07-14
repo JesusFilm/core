@@ -128,6 +128,7 @@
   "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.": "この会話は長くなってしまいました。引き続きお話しになりたい場合は、新しい会話を始めてください。そうすると、現在のセッションは終了します。",
   "Start a new conversation": "新しい会話を始める",
   "Gallery media": "ギャラリーのメディア",
+  "Chat has been turned off for this part of the journey.": "この区間ではチャット機能がオフになっています。",
   "Select at least {{count}} options._other": "少なくとも {{count}}。",
   "Select up to {{count}} options._other": "{{count}} 。",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>旅のテンプレート</0><1>言語</1><2>{{count}} 言語</2>",
