@@ -128,6 +128,7 @@
   "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.": "Этот разговор уже затянулся. Начни новый, чтобы продолжить общение — это очистит текущую сессию.",
   "Start a new conversation": "Начать новый разговор",
   "Gallery media": "Медиафайлы галереи",
+  "Chat has been turned off for this part of the journey.": "В этой части путешествия чат отключен.",
   "Select at least {{count}} options._one": "Выбери как минимум {{count}} вариантов.",
   "Select at least {{count}} options._few": "Выбери как минимум {{count}} вариантов.",
   "Select at least {{count}} options._many": "Выбери как минимум {{count}} вариантов.",

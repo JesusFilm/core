@@ -128,6 +128,7 @@
   "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.": "यह बातचीत लंबी हो गई है। बात जारी रखने के लिए एक नई बातचीत शुरू करें — इससे वर्तमान सत्र समाप्त हो जाएगा।",
   "Start a new conversation": "एक नई बातचीत शुरू करें",
   "Gallery media": "गैलरी मीडिया",
+  "Chat has been turned off for this part of the journey.": "यात्रा के इस हिस्से के लिए चैट बंद कर दिया गया है।",
   "Select at least {{count}} options._one": "Select at least {{count}} options.",
   "Select at least {{count}} options._other": "Select at least {{count}} options.",
   "Select up to {{count}} options._one": "Select up to {{count}} options.",
