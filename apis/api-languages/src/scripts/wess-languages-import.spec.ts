@@ -33,13 +33,15 @@ describe('extractWessRowArray', () => {
   })
 
   it('treats a single object with an id as one row', () => {
-    expect(extractWessRowArray({ id: '1', name: 'A' })).toEqual([{ id: '1', name: 'A' }])
+    expect(extractWessRowArray({ id: '1', name: 'A' })).toEqual([
+      { id: '1', name: 'A' }
+    ])
   })
 
   it('treats a single WESS row with LAN_NO as one row', () => {
-    expect(extractWessRowArray({ LAN_NO: 185035, LAN_NAME: 'Wekais' })).toEqual([
-      { LAN_NO: 185035, LAN_NAME: 'Wekais' }
-    ])
+    expect(extractWessRowArray({ LAN_NO: 185035, LAN_NAME: 'Wekais' })).toEqual(
+      [{ LAN_NO: 185035, LAN_NAME: 'Wekais' }]
+    )
   })
 
   it('throws on unsupported object shapes', () => {
