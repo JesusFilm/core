@@ -1,5 +1,3 @@
-import replace from 'lodash/replace'
-
 import { messagePlatforms } from '../../../components/Button/utils/findMessagePlatform'
 import { JourneyPlausibleEvents, reverseKeyify } from '../../plausibleHelpers'
 import {
@@ -94,10 +92,12 @@ export function transformJourneyAnalytics(
     targetMap.set(key, target)
   })
 
-  // Merge the trailing-slash and non-trailing-slash Plausible pages that map to
-  // the same step block id. A given visitor only ever lands on one of the two
-  // variants for a session, so visitors sum without double counting; timeOnPage
-  // is a per-visitor average and is combined as a visitor-weighted mean.
+  // Merge the two Plausible pages per step that differ only by a trailing slash
+  // (see getStepId). Visitors and exits are summed and timeOnPage — a per-visitor
+  // average — is combined as a visitor-weighted mean. Summing is a best-effort
+  // reconciliation of historical rows: a visitor counted on both variants (e.g.
+  // pageview on the slash page, a click on the slash-free page) is over-counted,
+  // but the Step.tsx fix removes the split for new data.
   const stepStatsById = new Map<string, StepStat>()
   journeySteps.forEach((step) => {
     const stepId = getStepId(step.property, journeyId)
@@ -117,11 +117,12 @@ export function transformJourneyAnalytics(
     }
 
     const totalVisitors = existing.visitors + visitors
-    existing.timeOnPage =
+    const mergedTimeOnPage =
       totalVisitors === 0
         ? 0
         : (existing.timeOnPage * existing.visitors + timeOnPage * visitors) /
           totalVisitors
+    existing.timeOnPage = mergedTimeOnPage
     existing.visitors = totalVisitors
   })
   const stepsStats: StepStat[] = Array.from(stepStatsById.values())
@@ -158,12 +159,10 @@ export function transformJourneyAnalytics(
 }
 
 function getStepId(property: string, journeyId: string): string {
-  // Strip the `/${journeyId}/` prefix to recover the step block id, then drop
-  // any trailing slash. Visitors who arrive with a query string are recorded by
-  // Plausible under `/${journeyId}/${stepId}/` (trailing slash) while others are
-  // recorded under `/${journeyId}/${stepId}`; normalizing here collapses both
-  // pages back onto the same step block id so their stats can be merged.
-  return replace(property, `/${journeyId}/`, '').replace(/\/$/, '')
+  // Strip the `/${journeyId}/` prefix to recover the step block id, then drop a
+  // trailing slash so the query-string (`.../${stepId}/`) and slash-free
+  // (`.../${stepId}`) Plausible pages for a step collapse onto the same id.
+  return property.replace(`/${journeyId}/`, '').replace(/\/$/, '')
 }
 
 function getJourneyEvents(
