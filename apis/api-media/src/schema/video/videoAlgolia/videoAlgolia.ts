@@ -34,13 +34,25 @@ const getErrorString = (err: unknown): string => {
 
 type VariantIndexIssueType = 'missing' | 'stale' | 'extra' | 'failed'
 type VariantIndexScanType = 'core' | 'algolia'
+type LanguageRecord = Awaited<ReturnType<typeof getLanguages>>
 
 type AlgoliaBrowseResponse = {
   hits?: unknown
   cursor?: unknown
 }
 
-type AlgoliaClientWithBrowse = ReturnType<typeof getAlgoliaClient> & {
+type AlgoliaGetObjectsResponse = {
+  results?: unknown
+}
+
+type AlgoliaClientWithVariantBatch = ReturnType<typeof getAlgoliaClient> & {
+  getObjects: (args: {
+    requests: Array<{
+      indexName: string
+      objectID: string
+      attributesToRetrieve: string[]
+    }>
+  }) => Promise<AlgoliaGetObjectsResponse>
   browse: (args: {
     indexName: string
     browseParams:
@@ -89,6 +101,17 @@ const VARIANT_INDEX_STALE_FIELDS = [
   'restrictViewPlatforms',
   'manualRanking'
 ]
+const VARIANT_INDEX_STALE_ATTRIBUTES = [
+  'objectID',
+  ...VARIANT_INDEX_STALE_FIELDS
+]
+const VARIANT_INDEX_ID_ATTRIBUTES = ['objectID', 'videoId']
+const VARIANT_INDEX_EXTRA_ATTRIBUTES = ['objectID', 'videoId', 'languageId']
+const VARIANT_INDEX_LANGUAGES_CACHE_TTL_MS = 5 * 60 * 1000
+let variantIndexLanguagesCache: {
+  expiresAt: number
+  languages: Promise<LanguageRecord>
+} | null = null
 
 const VariantIndexIssueTypeEnum = builder.enumType(
   'AlgoliaVideoVariantIndexIssueType',
@@ -113,6 +136,10 @@ function normalizeBatchSize(batchSize: number | null | undefined): number {
 function stringifyValue(value: unknown): string | null {
   if (value == null) return null
   return JSON.stringify(value)
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value != null && !Array.isArray(value)
 }
 
 function isAlgoliaNotFoundError(err: unknown): boolean {
@@ -148,12 +175,35 @@ function getVariantIndexMismatches(
 
 function getLanguageName(
   languageId: string | null | undefined,
-  languages: Record<string, { english?: string; primary?: string }>
+  languages: LanguageRecord
 ): string | null {
   if (languageId == null) return null
   return (
     languages[languageId]?.english ?? languages[languageId]?.primary ?? null
   )
+}
+
+function getVariantIndexLanguages(): Promise<LanguageRecord> {
+  const now = Date.now()
+  if (
+    variantIndexLanguagesCache != null &&
+    variantIndexLanguagesCache.expiresAt > now
+  ) {
+    return variantIndexLanguagesCache.languages
+  }
+
+  const languages = getLanguages(logger).then((result) => {
+    if (Object.keys(result).length === 0) {
+      variantIndexLanguagesCache = null
+    }
+
+    return result
+  })
+  variantIndexLanguagesCache = {
+    expiresAt: now + VARIANT_INDEX_LANGUAGES_CACHE_TTL_MS,
+    languages
+  }
+  return languages
 }
 
 async function browseAlgoliaVideoVariantObjectsBatch({
@@ -165,14 +215,14 @@ async function browseAlgoliaVideoVariantObjectsBatch({
   batchSize: number
   languageId: string | null | undefined
 }): Promise<{ hits: Array<Record<string, unknown>>; cursor: string | null }> {
-  const client = getAlgoliaClient() as AlgoliaClientWithBrowse
+  const client = getAlgoliaClient() as AlgoliaClientWithVariantBatch
   const algoliaConfig = getAlgoliaConfig()
   const body =
     cursor != null && cursor !== ''
       ? { cursor }
       : {
           hitsPerPage: batchSize,
-          attributesToRetrieve: ['objectID', ...VARIANT_INDEX_STALE_FIELDS]
+          attributesToRetrieve: VARIANT_INDEX_EXTRA_ATTRIBUTES
         }
 
   const response = await client.browse({
@@ -215,7 +265,10 @@ const VariantIndexIssueRef = builder
   .implement({
     fields: (t) => ({
       id: t.exposeString('id'),
-      issueType: t.exposeString('issueType'),
+      issueType: t.field({
+        type: VariantIndexIssueTypeEnum,
+        resolve: (parent) => parent.issueType
+      }),
       variantId: t.exposeString('variantId', { nullable: true }),
       objectId: t.exposeString('objectId'),
       videoId: t.exposeString('videoId', { nullable: true }),
@@ -266,7 +319,10 @@ const CheckAlgoliaVideoVariantIndexBatchResultRef = builder
   }>('CheckAlgoliaVideoVariantIndexBatchResult')
   .implement({
     fields: (t) => ({
-      scanType: t.exposeString('scanType'),
+      scanType: t.field({
+        type: VariantIndexScanTypeEnum,
+        resolve: (parent) => parent.scanType
+      }),
       batchKey: t.exposeString('batchKey', { nullable: true }),
       nextBatchKey: t.exposeString('nextBatchKey', { nullable: true }),
       done: t.exposeBoolean('done'),
@@ -363,7 +419,7 @@ builder.queryFields((t) => ({
     resolve: async (_parent, { input }) => {
       const scanType = input.scanType
       const batchSize = normalizeBatchSize(input.batchSize)
-      const languages = await getLanguages(logger)
+      const languages = await getVariantIndexLanguages()
       const client = getAlgoliaClient()
       const algoliaConfig = getAlgoliaConfig()
       const issues: VariantIndexIssue[] = []
@@ -383,16 +439,47 @@ builder.queryFields((t) => ({
           take: batchSize
         })
 
-        for (const variant of variants) {
-          const expected = buildVideoVariantAlgoliaObject(variant, languages)
+        if (variants.length > 0) {
           try {
-            const actual = await client.getObject({
-              indexName: algoliaConfig.videoVariantsIndex,
-              objectID: variant.id
+            const response = await (
+              client as AlgoliaClientWithVariantBatch
+            ).getObjects({
+              requests: variants.map((variant) => ({
+                indexName: algoliaConfig.videoVariantsIndex,
+                objectID: variant.id,
+                attributesToRetrieve: VARIANT_INDEX_STALE_ATTRIBUTES
+              }))
             })
-            const mismatches = getVariantIndexMismatches(expected, actual)
 
-            if (mismatches.length > 0) {
+            const results = Array.isArray(response.results)
+              ? response.results
+              : []
+
+            variants.forEach((variant, index) => {
+              const actual = results[index]
+              if (!isRecord(actual)) {
+                issues.push({
+                  id: `missing:${variant.id}`,
+                  issueType: 'missing',
+                  variantId: variant.id,
+                  objectId: variant.id,
+                  videoId: variant.videoId,
+                  languageId: variant.languageId,
+                  languageName: getLanguageName(variant.languageId, languages),
+                  mismatches: [],
+                  error: 'ObjectID does not exist'
+                })
+                return
+              }
+
+              const expected = buildVideoVariantAlgoliaObject(
+                variant,
+                languages
+              )
+              const mismatches = getVariantIndexMismatches(expected, actual)
+
+              if (mismatches.length === 0) return
+
               issues.push({
                 id: `stale:${variant.id}`,
                 issueType: 'stale',
@@ -404,19 +491,21 @@ builder.queryFields((t) => ({
                 mismatches,
                 error: null
               })
-            }
+            })
           } catch (err) {
-            const isMissing = isAlgoliaNotFoundError(err)
-            issues.push({
-              id: `${isMissing ? 'missing' : 'failed'}:${variant.id}`,
-              issueType: isMissing ? 'missing' : 'failed',
-              variantId: variant.id,
-              objectId: variant.id,
-              videoId: variant.videoId,
-              languageId: variant.languageId,
-              languageName: getLanguageName(variant.languageId, languages),
-              mismatches: [],
-              error: getErrorString(err)
+            variants.forEach((variant) => {
+              const isMissing = isAlgoliaNotFoundError(err)
+              issues.push({
+                id: `${isMissing ? 'missing' : 'failed'}:${variant.id}`,
+                issueType: isMissing ? 'missing' : 'failed',
+                variantId: variant.id,
+                objectId: variant.id,
+                videoId: variant.videoId,
+                languageId: variant.languageId,
+                languageName: getLanguageName(variant.languageId, languages),
+                mismatches: [],
+                error: getErrorString(err)
+              })
             })
           }
         }
@@ -667,21 +756,40 @@ builder.queryFields((t) => ({
 
       const missingVariants: string[] = []
 
-      for (const variant of variants) {
+      if (variants.length > 0) {
         try {
-          const record = await client.getObject({
-            indexName: algoliaConfig.videoVariantsIndex,
-            objectID: variant.id
+          const response = await (
+            client as AlgoliaClientWithVariantBatch
+          ).getObjects({
+            requests: variants.map((variant) => ({
+              indexName: algoliaConfig.videoVariantsIndex,
+              objectID: variant.id,
+              attributesToRetrieve: VARIANT_INDEX_ID_ATTRIBUTES
+            }))
           })
-          const objectIdMatches = record.objectID === variant.id
-          const videoIdMatches =
-            record.videoId == null || record.videoId === videoId
+          const results = Array.isArray(response.results)
+            ? response.results
+            : []
 
-          if (!(objectIdMatches && videoIdMatches)) {
-            missingVariants.push(variant.id)
-          }
+          variants.forEach((variant, index) => {
+            const record = results[index]
+            if (!isRecord(record)) {
+              missingVariants.push(variant.id)
+              return
+            }
+
+            const objectIdMatches = record.objectID === variant.id
+            const videoIdMatches =
+              record.videoId == null || record.videoId === videoId
+
+            if (!(objectIdMatches && videoIdMatches)) {
+              missingVariants.push(variant.id)
+            }
+          })
         } catch {
-          missingVariants.push(variant.id)
+          variants.forEach((variant) => {
+            missingVariants.push(variant.id)
+          })
         }
       }
 
@@ -733,8 +841,25 @@ builder.mutationFields((t) => ({
             continue
           }
 
-          const updated = await updateVideoVariantInAlgolia(objectId, logger)
-          if (!updated) {
+          try {
+            const updated = await updateVideoVariantInAlgolia(objectId, logger)
+            if (!updated) {
+              issues.push({
+                id: `failed:${objectId}`,
+                issueType: 'failed',
+                variantId: objectId,
+                objectId,
+                videoId: variant.videoId,
+                languageId: variant.languageId,
+                languageName: null,
+                mismatches: [],
+                error: 'Algolia update did not complete'
+              })
+              continue
+            }
+
+            fixed.push(objectId)
+          } catch (err) {
             issues.push({
               id: `failed:${objectId}`,
               issueType: 'failed',
@@ -744,12 +869,9 @@ builder.mutationFields((t) => ({
               languageId: variant.languageId,
               languageName: null,
               mismatches: [],
-              error: 'Algolia update did not complete'
+              error: getErrorString(err)
             })
-            continue
           }
-
-          fixed.push(objectId)
         }
 
         return {

@@ -257,4 +257,177 @@ describe('AlgoliaDebugging', () => {
       ).not.toBeInTheDocument()
     )
   })
+
+  it('shows an error when fixing an issue fails', async () => {
+    mockFixIssues.mockRejectedValueOnce(new Error('Network unavailable'))
+    mockQuery
+      .mockResolvedValueOnce({
+        data: {
+          checkAlgoliaVideoVariantIndexBatch: {
+            scanType: 'core',
+            batchKey: null,
+            nextBatchKey: null,
+            done: true,
+            checkedCount: 1,
+            missingCount: 0,
+            staleCount: 1,
+            extraCount: 0,
+            failedCount: 0,
+            issues: [staleIssue]
+          }
+        }
+      })
+      .mockResolvedValueOnce({
+        data: {
+          checkAlgoliaVideoVariantIndexBatch: {
+            scanType: 'algolia',
+            batchKey: null,
+            nextBatchKey: null,
+            done: true,
+            checkedCount: 0,
+            missingCount: 0,
+            staleCount: 0,
+            extraCount: 0,
+            failedCount: 0,
+            issues: []
+          }
+        }
+      })
+
+    render(<AlgoliaDebugging />)
+    fireEvent.click(screen.getByRole('button', { name: 'Start Variant Check' }))
+
+    const fixButton = await screen.findByRole('button', { name: 'Fix' })
+    fireEvent.click(fixButton)
+
+    await waitFor(() =>
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        'Fix failed: Network unavailable',
+        { variant: 'error' }
+      )
+    )
+    expect(screen.getByText('Stale 1')).toBeInTheDocument()
+  })
+
+  it('does not submit duplicate fixes while an object is pending', async () => {
+    let resolveFix:
+      | ((value: {
+          data: {
+            fixAlgoliaVideoVariantIndexIssues: {
+              fixedCount: number
+              failedCount: number
+              issues: never[]
+            }
+          }
+        }) => void)
+      | undefined
+    mockFixIssues.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveFix = resolve
+      })
+    )
+    mockQuery
+      .mockResolvedValueOnce({
+        data: {
+          checkAlgoliaVideoVariantIndexBatch: {
+            scanType: 'core',
+            batchKey: null,
+            nextBatchKey: null,
+            done: true,
+            checkedCount: 1,
+            missingCount: 0,
+            staleCount: 1,
+            extraCount: 0,
+            failedCount: 0,
+            issues: [staleIssue]
+          }
+        }
+      })
+      .mockResolvedValueOnce({
+        data: {
+          checkAlgoliaVideoVariantIndexBatch: {
+            scanType: 'algolia',
+            batchKey: null,
+            nextBatchKey: null,
+            done: true,
+            checkedCount: 0,
+            missingCount: 0,
+            staleCount: 0,
+            extraCount: 0,
+            failedCount: 0,
+            issues: []
+          }
+        }
+      })
+
+    render(<AlgoliaDebugging />)
+    fireEvent.click(screen.getByRole('button', { name: 'Start Variant Check' }))
+
+    const fixButton = await screen.findByRole('button', { name: 'Fix' })
+    fireEvent.click(fixButton)
+    fireEvent.click(fixButton)
+
+    expect(mockFixIssues).toHaveBeenCalledTimes(1)
+    resolveFix?.({
+      data: {
+        fixAlgoliaVideoVariantIndexIssues: {
+          fixedCount: 1,
+          failedCount: 0,
+          issues: []
+        }
+      }
+    })
+    await waitFor(() =>
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith('Fixed 1', {
+        variant: 'success'
+      })
+    )
+  })
+
+  it('requires confirmation before deleting an extra Algolia record', async () => {
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false)
+    mockQuery
+      .mockResolvedValueOnce({
+        data: {
+          checkAlgoliaVideoVariantIndexBatch: {
+            scanType: 'core',
+            batchKey: null,
+            nextBatchKey: null,
+            done: true,
+            checkedCount: 0,
+            missingCount: 0,
+            staleCount: 0,
+            extraCount: 0,
+            failedCount: 0,
+            issues: []
+          }
+        }
+      })
+      .mockResolvedValueOnce({
+        data: {
+          checkAlgoliaVideoVariantIndexBatch: {
+            scanType: 'algolia',
+            batchKey: null,
+            nextBatchKey: null,
+            done: true,
+            checkedCount: 1,
+            missingCount: 0,
+            staleCount: 0,
+            extraCount: 1,
+            failedCount: 0,
+            issues: [extraIssue]
+          }
+        }
+      })
+
+    render(<AlgoliaDebugging />)
+    fireEvent.click(screen.getByRole('button', { name: 'Start Variant Check' }))
+
+    const fixButton = await screen.findByRole('button', { name: 'Fix' })
+    fireEvent.click(fixButton)
+
+    expect(confirmSpy).toHaveBeenCalledWith('Delete this extra Algolia record?')
+    expect(mockFixIssues).not.toHaveBeenCalled()
+    confirmSpy.mockRestore()
+  })
 })
