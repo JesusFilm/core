@@ -208,6 +208,10 @@ export function AlgoliaDebugging(): ReactElement {
     }),
     [selectedIssues]
   )
+  const hasSelectedFixableIssues =
+    selectedFixableCounts.missing > 0 ||
+    selectedFixableCounts.stale > 0 ||
+    selectedFixableCounts.extra > 0
 
   const applyBatch = useCallback((batch: BatchResult) => {
     setSummary((current) => ({
@@ -413,53 +417,78 @@ export function AlgoliaDebugging(): ReactElement {
       }}
     >
       <Stack
-        direction={{ xs: 'column', md: 'row' }}
+        direction={{ xs: 'column', lg: 'row' }}
         spacing={1.5}
-        alignItems={{ xs: 'stretch', md: 'center' }}
+        justifyContent="space-between"
+        alignItems={{ xs: 'stretch', lg: 'center' }}
       >
-        <ToggleButtonGroup
-          exclusive
-          size="small"
-          disabled={scanning}
-          value={languageId === ENGLISH_LANGUAGE_ID ? 'english' : 'all'}
-          onChange={handleLanguageFilterChange}
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={1.5}
+          alignItems={{ xs: 'stretch', sm: 'center' }}
         >
-          <ToggleButton value="english">English</ToggleButton>
-          <ToggleButton value="all">All variants</ToggleButton>
-        </ToggleButtonGroup>
-        <Button
-          variant="contained"
-          startIcon={<PlayArrowRoundedIcon />}
-          disabled={scanning}
-          onClick={() => void handleStartScan()}
-        >
-          {scanning ? 'Checking' : 'Start Variant Check'}
-        </Button>
-        <Button
-          variant="outlined"
-          startIcon={<BuildRoundedIcon />}
-          disabled={selectedFixableCounts.missing === 0 || scanning}
-          onClick={() => void handleFixSelected('missing')}
-        >
-          Fix Missing ({selectedFixableCounts.missing})
-        </Button>
-        <Button
-          variant="outlined"
-          startIcon={<BuildRoundedIcon />}
-          disabled={selectedFixableCounts.stale === 0 || scanning}
-          onClick={() => void handleFixSelected('stale')}
-        >
-          Fix Stale ({selectedFixableCounts.stale})
-        </Button>
-        <Button
-          variant="outlined"
-          color="secondary"
-          startIcon={<BuildRoundedIcon />}
-          disabled={selectedFixableCounts.extra === 0 || scanning}
-          onClick={() => void handleFixSelected('extra')}
-        >
-          Delete Extra ({selectedFixableCounts.extra})
-        </Button>
+          <ToggleButtonGroup
+            exclusive
+            size="small"
+            disabled={scanning}
+            value={languageId === ENGLISH_LANGUAGE_ID ? 'english' : 'all'}
+            onChange={handleLanguageFilterChange}
+          >
+            <ToggleButton value="english">English</ToggleButton>
+            <ToggleButton value="all">All variants</ToggleButton>
+          </ToggleButtonGroup>
+          <Button
+            variant="contained"
+            startIcon={<PlayArrowRoundedIcon />}
+            disabled={scanning}
+            onClick={() => void handleStartScan()}
+          >
+            {scanning ? 'Checking' : 'Start Variant Check'}
+          </Button>
+        </Stack>
+
+        {hasSelectedFixableIssues && (
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={1}
+            alignItems={{ xs: 'stretch', sm: 'center' }}
+          >
+            {selectedFixableCounts.missing > 0 && (
+              <Button
+                size="small"
+                variant="outlined"
+                startIcon={<BuildRoundedIcon />}
+                disabled={scanning}
+                onClick={() => void handleFixSelected('missing')}
+              >
+                Fix missing ({selectedFixableCounts.missing})
+              </Button>
+            )}
+            {selectedFixableCounts.stale > 0 && (
+              <Button
+                size="small"
+                variant="outlined"
+                startIcon={<BuildRoundedIcon />}
+                disabled={scanning}
+                onClick={() => void handleFixSelected('stale')}
+              >
+                Fix stale ({selectedFixableCounts.stale})
+              </Button>
+            )}
+            {selectedFixableCounts.extra > 0 && (
+              <Button
+                size="small"
+                variant="outlined"
+                color="secondary"
+                startIcon={<BuildRoundedIcon />}
+                disabled={scanning}
+                onClick={() => void handleFixSelected('extra')}
+              >
+                Delete extra ({selectedFixableCounts.extra})
+              </Button>
+            )}
+          </Stack>
+        )}
       </Stack>
 
       <Stack direction="row" flexWrap="wrap" gap={1}>
