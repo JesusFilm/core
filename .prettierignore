@@ -21,6 +21,9 @@ playwright-report/
 # sync — same treatment as .cursor/ above.
 .claude/skills/
 .claude/agents/
+# Real location of the skills symlinked into .claude/skills/ — Prettier
+# resolves the symlinks, so the source directory must be ignored too.
+.agents/skills/
 
 !apis/api-languages/src/__generated__/languageSlugs.ts
 pnpm-lock.yaml

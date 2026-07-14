@@ -72,7 +72,7 @@ export function PasswordResetPage({
               <TextField
                 autoComplete="on"
                 name="email"
-                label="Email"
+                label={t('Email')}
                 placeholder={t('Enter your email address here')}
                 variant="filled"
                 value={values.email}

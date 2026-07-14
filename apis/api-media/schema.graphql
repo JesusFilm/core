@@ -1,6 +1,36 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
+type AlgoliaVideoVariantIndexIssue {
+  id: String
+  issueType: String
+  variantId: String
+  objectId: String
+  videoId: String
+  languageId: String
+  languageName: String
+  mismatches: [AlgoliaVideoVariantIndexIssueMismatch!]
+  error: String
+}
+
+type AlgoliaVideoVariantIndexIssueMismatch {
+  field: String
+  expected: String
+  actual: String
+}
+
+enum AlgoliaVideoVariantIndexIssueType {
+  missing
+  stale
+  extra
+  failed
+}
+
+enum AlgoliaVideoVariantIndexScanType {
+  core
+  algolia
+}
+
 type ArclightApiKey
   @key(fields: "key")
 {
@@ -58,6 +88,25 @@ type BibleCitation {
 The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
 scalar BigInt
+
+input CheckAlgoliaVideoVariantIndexBatchInput {
+  scanType: AlgoliaVideoVariantIndexScanType!
+  batchKey: String
+  batchSize: Int
+}
+
+type CheckAlgoliaVideoVariantIndexBatchResult {
+  scanType: String
+  batchKey: String
+  nextBatchKey: String
+  done: Boolean
+  checkedCount: Int
+  missingCount: Int
+  staleCount: Int
+  extraCount: Int
+  failedCount: Int
+  issues: [AlgoliaVideoVariantIndexIssue!]
+}
 
 type CheckVideoInAlgoliaMismatch {
   field: String
@@ -231,6 +280,17 @@ type Error implements BaseError
   message: String
 }
 
+input FixAlgoliaVideoVariantIndexIssuesInput {
+  issueType: AlgoliaVideoVariantIndexIssueType!
+  objectIds: [String!]!
+}
+
+type FixAlgoliaVideoVariantIndexIssuesResult {
+  fixedCount: Int
+  failedCount: Int
+  issues: [AlgoliaVideoVariantIndexIssue!]
+}
+
 type ForeignKeyConstraintError implements BaseError
   @shareable
 {
@@ -381,6 +441,7 @@ type Mutation {
   videoUpdate(input: VideoUpdateInput!): Video!
   videoDelete(id: ID!): Video!
   fixVideoLanguages(videoId: ID!): Boolean!
+  fixAlgoliaVideoVariantIndexIssues(input: FixAlgoliaVideoVariantIndexIssuesInput!): FixAlgoliaVideoVariantIndexIssuesResult!
   updateVideoAlgoliaIndex(videoId: ID!): Boolean!
   updateVideoVariantAlgoliaIndex(videoId: ID!): Boolean!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
@@ -795,6 +856,7 @@ type Query {
   video(id: ID!, idType: IdType = databaseId): Video!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   videosCount(where: VideosFilter): Int!
+  checkAlgoliaVideoVariantIndexBatch(input: CheckAlgoliaVideoVariantIndexBatchInput!): CheckAlgoliaVideoVariantIndexBatchResult!
   checkVideoInAlgolia(videoId: ID!): CheckVideoInAlgoliaResult!
   checkVideoVariantsInAlgolia(videoId: ID!): CheckVideoVariantsInAlgoliaResult!
   videoOrigins(where: VideoOriginsFilter, offset: Int, limit: Int): [VideoOrigin!]!

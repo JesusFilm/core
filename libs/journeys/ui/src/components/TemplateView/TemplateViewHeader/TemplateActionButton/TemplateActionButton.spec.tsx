@@ -183,9 +183,7 @@ describe('TemplateActionButton', () => {
 
       await waitFor(() => {
         expect(mockUseRouter().push).toHaveBeenCalledWith(
-          `/templates/${journey.id}/customize`,
-          undefined,
-          { shallow: true }
+          `/templates/${journey.id}/customize`
         )
       })
     })
@@ -314,9 +312,7 @@ describe('TemplateActionButton', () => {
 
       await waitFor(() => {
         expect(mockUseRouter().push).toHaveBeenCalledWith(
-          `/templates/${customizableTemplateJourney.id}/customize`,
-          undefined,
-          { shallow: true }
+          `/templates/${customizableTemplateJourney.id}/customize`
         )
       })
     })

@@ -7,9 +7,9 @@ const mockAdminResourcesData = { message: 'Mock Admin Resource' }
 interface ModuleUnderTest {
   loadJourneyLocaleResources: (
     locale: string,
-    setResources: Dispatch<SetStateAction<Record<string, Record<string, any>>>>,
-    directoryLocale: string
+    setResources: Dispatch<SetStateAction<Record<string, Record<string, any>>>>
   ) => Promise<void>
+  resolveLocaleFolder: (bcp47: string) => string
 }
 
 describe('loadJourneyLocaleResources', () => {
@@ -27,7 +27,33 @@ describe('loadJourneyLocaleResources', () => {
     vi.clearAllMocks()
   })
 
-  test('successfully loads and sets resources for a standard locale (en)', async () => {
+  describe('resolveLocaleFolder', () => {
+    test('maps short language codes to their region folder', async () => {
+      const { resolveLocaleFolder }: ModuleUnderTest = await import(
+        /* webpackChunkName: "test-loadJourneyLocaleResources" */ './loadJourneyLocaleResources'
+      )
+
+      expect(resolveLocaleFolder('fr')).toBe('fr-FR')
+      expect(resolveLocaleFolder('de')).toBe('de-DE')
+      expect(resolveLocaleFolder('zh')).toBe('zh-Hans-CN')
+      // every journey-language folder must resolve, not just the URL locales
+      expect(resolveLocaleFolder('ar')).toBe('ar-SA')
+      expect(resolveLocaleFolder('my')).toBe('my-MM')
+      expect(resolveLocaleFolder('zh-Hant')).toBe('zh-Hant-TW')
+    })
+
+    test('canonicalises casing and passes region tags through', async () => {
+      const { resolveLocaleFolder }: ModuleUnderTest = await import(
+        /* webpackChunkName: "test-loadJourneyLocaleResources" */ './loadJourneyLocaleResources'
+      )
+
+      expect(resolveLocaleFolder('zh-Hans-CN')).toBe('zh-Hans-CN')
+      expect(resolveLocaleFolder('zh-hans-cn')).toBe('zh-Hans-CN')
+      expect(resolveLocaleFolder('en')).toBe('en')
+    })
+  })
+
+  test('loads resources and keys them by the active locale (en)', async () => {
     // Mock the specific JSON files that will be dynamically imported for the 'en' locale
     vi.mock(
       '../../../../../../../../../../libs/locales/en/libs-journeys-ui.json',
@@ -43,7 +69,7 @@ describe('loadJourneyLocaleResources', () => {
       /* webpackChunkName: "test-loadJourneyLocaleResources" */ './loadJourneyLocaleResources'
     )
 
-    await loadJourneyLocaleResources('en', setResourcesMock, 'en')
+    await loadJourneyLocaleResources('en', setResourcesMock)
 
     expect(setResourcesMock).toHaveBeenCalledTimes(1)
     expect(setResourcesMock).toHaveBeenCalledWith({
@@ -54,7 +80,7 @@ describe('loadJourneyLocaleResources', () => {
     })
   })
 
-  test('correctly maps directoryLocale zh-Hans-CN to i18nKey zh-Hans', async () => {
+  test('resolves the region folder and keys by the bcp47 tag (zh-Hans-CN)', async () => {
     vi.mock(
       '../../../../../../../../../../libs/locales/zh-Hans-CN/libs-journeys-ui.json',
       () => ({ default: mockUiResourcesData })
@@ -68,53 +94,23 @@ describe('loadJourneyLocaleResources', () => {
       /* webpackChunkName: "test-loadJourneyLocaleResources" */ './loadJourneyLocaleResources'
     )
 
-    await loadJourneyLocaleResources('zh-hans', setResourcesMock, 'zh-Hans-CN')
+    await loadJourneyLocaleResources('zh-Hans-CN', setResourcesMock)
 
     expect(setResourcesMock).toHaveBeenCalledTimes(1)
     expect(setResourcesMock).toHaveBeenCalledWith({
-      'zh-Hans': {
-        // Expecting the mapped i18nKey
+      'zh-Hans-CN': {
         'libs-journeys-ui': mockUiResourcesData,
         'apps-journeys-admin': mockAdminResourcesData
       }
     })
   })
 
-  test('uses passed locale as key if no specific i18nLocale mapping applies', async () => {
-    vi.mock(
-      '../../../../../../../../../../libs/locales/ko-KR/libs-journeys-ui.json',
-      () => ({ default: mockUiResourcesData })
-    )
-    vi.mock(
-      '../../../../../../../../../../libs/locales/ko-KR/apps-journeys-admin.json',
-      () => ({ default: mockAdminResourcesData })
-    )
-
+  test('does not set resources when the locale folder has no files', async () => {
     const { loadJourneyLocaleResources }: ModuleUnderTest = await import(
       /* webpackChunkName: "test-loadJourneyLocaleResources" */ './loadJourneyLocaleResources'
     )
 
-    await loadJourneyLocaleResources('ko', setResourcesMock, 'ko-KR')
-
-    expect(setResourcesMock).toHaveBeenCalledTimes(1)
-    expect(setResourcesMock).toHaveBeenCalledWith({
-      ko: {
-        'libs-journeys-ui': mockUiResourcesData,
-        'apps-journeys-admin': mockAdminResourcesData
-      }
-    })
-  })
-
-  test('returns early without attempting imports when locale is not in LOCALE_MAP', async () => {
-    const { loadJourneyLocaleResources }: ModuleUnderTest = await import(
-      /* webpackChunkName: "test-loadJourneyLocaleResources" */ './loadJourneyLocaleResources'
-    )
-
-    await loadJourneyLocaleResources(
-      'someRandomLocale',
-      setResourcesMock,
-      'someRandomLocale'
-    )
+    await loadJourneyLocaleResources('xx', setResourcesMock)
 
     expect(setResourcesMock).not.toHaveBeenCalled()
   })
