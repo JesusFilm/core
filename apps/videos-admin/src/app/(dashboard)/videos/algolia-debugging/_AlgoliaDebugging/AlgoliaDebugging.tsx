@@ -11,6 +11,8 @@ import LinearProgress from '@mui/material/LinearProgress'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import ToggleButton from '@mui/material/ToggleButton'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import {
   DataGrid,
   GridColDef,
@@ -19,7 +21,9 @@ import {
 } from '@mui/x-data-grid'
 import NextLink from 'next/link'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useCallback, useMemo, useState } from 'react'
+import { MouseEvent, ReactElement, useCallback, useMemo, useState } from 'react'
+
+import { isStagingEnvironment } from '../../../../../libs/environment'
 
 interface VariantIndexMismatch {
   field: string
@@ -111,6 +115,7 @@ const FIX_VARIANT_INDEX_ISSUES = gql`
 `
 
 const BATCH_SIZE = 100
+const ENGLISH_LANGUAGE_ID = '529'
 const initialSummary: SummaryCounts = {
   checked: 0,
   missing: 0,
@@ -183,6 +188,9 @@ export function AlgoliaDebugging(): ReactElement {
   const [scanError, setScanError] = useState<string | null>(null)
   const [selectionModel, setSelectionModel] =
     useState<GridRowSelectionModel>(emptySelectionModel)
+  const [languageId, setLanguageId] = useState<string | null>(
+    isStagingEnvironment() ? ENGLISH_LANGUAGE_ID : null
+  )
 
   const selectedIssues = useMemo(() => {
     const selectedIds = new Set(Array.from(selectionModel.ids).map(String))
@@ -223,7 +231,7 @@ export function AlgoliaDebugging(): ReactElement {
         }>({
           query: CHECK_VARIANT_INDEX_BATCH,
           variables: {
-            input: { scanType, batchKey, batchSize: BATCH_SIZE }
+            input: { scanType, batchKey, batchSize: BATCH_SIZE, languageId }
           },
           fetchPolicy: 'no-cache'
         })
@@ -233,7 +241,15 @@ export function AlgoliaDebugging(): ReactElement {
         done = batch.done
       }
     },
-    [apolloClient, applyBatch]
+    [apolloClient, applyBatch, languageId]
+  )
+
+  const handleLanguageFilterChange = useCallback(
+    (_event: MouseEvent<HTMLElement>, value: string | null) => {
+      if (value == null) return
+      setLanguageId(value === 'english' ? ENGLISH_LANGUAGE_ID : null)
+    },
+    []
   )
 
   const handleStartScan = useCallback(async () => {
@@ -401,6 +417,16 @@ export function AlgoliaDebugging(): ReactElement {
         spacing={1.5}
         alignItems={{ xs: 'stretch', md: 'center' }}
       >
+        <ToggleButtonGroup
+          exclusive
+          size="small"
+          disabled={scanning}
+          value={languageId === ENGLISH_LANGUAGE_ID ? 'english' : 'all'}
+          onChange={handleLanguageFilterChange}
+        >
+          <ToggleButton value="english">English</ToggleButton>
+          <ToggleButton value="all">All variants</ToggleButton>
+        </ToggleButtonGroup>
         <Button
           variant="contained"
           startIcon={<PlayArrowRoundedIcon />}
