@@ -74,10 +74,15 @@ export function Step({
         }
       })
       if (journey != null) {
+        // Append the query string directly (no leading slash). A leading slash
+        // here produced a trailing-slash pathname (`.../{blockId}/?utm=...`),
+        // which Plausible records as a separate page from `.../{blockId}`,
+        // splitting a single step's traffic across two pages. See NES analytics
+        // trailing-slash bug.
         const search =
           window.location.search === '' || window.location.search == null
             ? ''
-            : `/${window.location.search}`
+            : window.location.search
         const key = keyify({
           stepId: input.blockId,
           event: 'pageview',
