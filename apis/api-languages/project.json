@@ -76,7 +76,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsc -b apis/api-languages/tsconfig.json"
+        "command": "pnpm tsc7 -p apis/api-languages/tsconfig.ts7.json"
       }
     },
     "codecov": {
