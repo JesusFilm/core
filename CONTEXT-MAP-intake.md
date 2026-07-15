@@ -30,6 +30,6 @@ ENG-3686). Distilled from 2 years of #nextsteps-bugs history (AI Bug-Intake Play
 - **T6** rendering / visual / UI display
 - **T7** editor / canvas block-state
 - **T8** i18n / translation / language lists
-- **T9** template duplication / language-id collision — *resolved by removal (#9151); reports stale*
+- **T9** template duplication / language-id collision — _resolved by removal (#9151); reports stale_
 - **T10** media / video / external-content pipeline
 - **T11** permissions / ACL / data-privacy
