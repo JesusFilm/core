@@ -57,10 +57,22 @@ have to make multiple queries (break down on one property and filter on
       }
 
       const metrics = getMetrics(info)
-      return getJourneyStatsBreakdown(journey.id, {
-        metrics,
-        ...where
-      })
+      // Page through every row. Without this, high-cardinality breakdowns —
+      // notably the per-action `event:props:key`/`event:props:simpleKey`
+      // properties — are silently capped at Plausible's default 100 rows, so
+      // lower-traffic steps' actions are dropped and the analytics overlay
+      // undercounts them. Mirrors the templateFamily* resolvers. The only
+      // caller (journeys-admin analytics) needs the full breakdown and passes
+      // no limit/page, which paginate ignores anyway.
+      return getJourneyStatsBreakdown(
+        journey.id,
+        {
+          metrics,
+          ...where
+        },
+        undefined,
+        { paginate: true }
+      )
     }
   })
 )

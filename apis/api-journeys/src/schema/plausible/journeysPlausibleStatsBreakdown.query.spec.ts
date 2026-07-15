@@ -133,23 +133,31 @@ describe('journeysPlausibleStatsBreakdown', () => {
     })
   })
 
-  it('makes a single request and does not paginate even on a full page', async () => {
+  it('paginates through every row when a page comes back full', async () => {
     prismaMock.journey.findUnique.mockResolvedValue({
       id: 'journey-id',
       userJourneys: [],
       team: { userTeams: [] }
     } as any)
-    // A full page would trigger another fetch if this passthrough paginated.
-    mockAxios.get.mockResolvedValue({
-      data: {
-        results: Array.from({ length: 1000 }, (_, i) => ({
-          goal: `event-${i}`,
-          visitors: 1
-        }))
-      }
-    } as any)
+    // A full first page (1000 rows) triggers a second fetch; the short second
+    // page ends pagination. Without paginate this stops after one request and
+    // silently drops every action key past Plausible's default row cap.
+    mockAxios.get
+      .mockResolvedValueOnce({
+        data: {
+          results: Array.from({ length: 1000 }, (_, i) => ({
+            goal: `event-${i}`,
+            visitors: 1
+          }))
+        }
+      } as any)
+      .mockResolvedValueOnce({
+        data: {
+          results: [{ goal: 'event-1000', visitors: 1 }]
+        }
+      } as any)
 
-    await authClient({
+    const result = await authClient({
       document: QUERY,
       variables: {
         id: 'journey-id',
@@ -158,7 +166,18 @@ describe('journeysPlausibleStatsBreakdown', () => {
       }
     })
 
-    expect(mockAxios.get).toHaveBeenCalledTimes(1)
+    expect(mockAxios.get).toHaveBeenCalledTimes(2)
+    // pagination forces the max page size and starts at page 1
+    expect(mockAxios.get).toHaveBeenNthCalledWith(
+      1,
+      'https://plausible.example/api/v1/stats/breakdown',
+      expect.objectContaining({
+        params: expect.objectContaining({ limit: 1000, page: 1 })
+      })
+    )
+    expect((result as any).data.journeysPlausibleStatsBreakdown).toHaveLength(
+      1001
+    )
   })
 
   it('returns error when journey not found', async () => {
