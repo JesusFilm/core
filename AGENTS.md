@@ -12,6 +12,15 @@ The five canonical triage roles use their default label strings verbatim: `needs
 
 Multi-context: `CONTEXT-MAP.md` at the repo root points to per-workspace `CONTEXT.md` files (created lazily by `/domain-modeling`). See `docs/agents/domain.md`.
 
+### Bug-diagnosis layer
+
+Selected NextSteps areas add a `CONTEXT-intake.md` beside their `CONTEXT.md` — the diagnosis layer for reported bugs (failure signatures, the question that localizes a report, where to look first, tagged by failure type T1–T11).
+
+- Read `CONTEXT.md` to understand or build in an area.
+- Read `CONTEXT-intake.md` **only** when triaging or debugging a _reported bug_ in that area.
+
+Start from the intake index (`CONTEXT-MAP-intake.md`): match the reporter's words to an area's `trigger_phrases`, then open that area's `CONTEXT-intake.md`.
+
 ## Conventions
 
 This is an **Nx monorepo** (TypeScript). Apps live in `apps/`, GraphQL APIs in `apis/`, shared libraries in `libs/`, Cloudflare Workers in `workers/`, infrastructure in `infrastructure/`.
