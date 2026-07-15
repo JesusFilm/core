@@ -1,10 +1,4 @@
----
-description: Requirement-driven e2e test writing — no defensive code
-globs: apps/**/*e2e*/**/*.ts
-alwaysApply: false
----
-
-# E2E Testing Standards
+# E2E testing (Playwright)
 
 Write tests that reflect exact user requirements. A failing test means a real bug — never hide it.
 

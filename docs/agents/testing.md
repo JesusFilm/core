@@ -1,6 +1,6 @@
-# Running Vitest Tests
+# Testing (Vitest)
 
-**Applies when:** Running Vitest tests for any app or library in this monorepo. This rule covers Vitest unit/component tests only — E2E tests use a different workflow.
+Covers Vitest unit/component tests for any app or library in this monorepo. E2E tests use a different workflow — see `docs/agents/e2e-testing.md`.
 
 Workspaces that use Vitest (have a `vitest.config.mts` at the workspace root):
 

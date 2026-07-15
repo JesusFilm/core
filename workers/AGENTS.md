@@ -1,9 +1,4 @@
----
-paths:
-  - 'workers/**/*.ts'
----
-
-# Cloudflare Workers Rules
+# Workers
 
 ## Stack
 
