@@ -1,16 +1,6 @@
----
-paths:
-  - 'apps/arclight/src/**/*.{ts,tsx}'
-  - 'apps/docs/src/**/*.{ts,tsx}'
-  - 'apps/journeys/src/**/*.{ts,tsx}'
-  - 'apps/journeys-admin/src/**/*.{ts,tsx}'
-  - 'apps/player/src/**/*.{ts,tsx}'
-  - 'apps/resources/src/**/*.{ts,tsx}'
-  - 'apps/short-links/**/*.{ts,tsx}'
-  - 'apps/video-importer/**/*.{ts,tsx}'
-  - 'apps/videos-admin/src/**/*.{ts,tsx}'
-  - 'apps/watch/src/**/*.{ts,tsx}'
----
+# Apps — shared frontend conventions
+
+Applies to the React/Next.js apps. `apps/video-importer` is a Node/tsx CLI, not React — see its own AGENTS.md.
 
 ## Stack
 
@@ -23,8 +13,11 @@ paths:
 
 ## Code Guidelines
 
-- Always use MUI components over raw HTML elements; avoid writing custom CSS or bare HTML tags.
+- Always use MUI components over raw HTML elements; avoid writing custom CSS or bare HTML tags. Use `styled()` for custom styling rather than Tailwind or shadcn/ui.
+- Use early returns whenever possible to reduce nesting.
+- Prefer dynamic imports for heavy or below-the-fold components.
 - Name event handler functions with a `handle` prefix (e.g. `handleClick`, `handleKeyDown`).
+- Components return `ReactElement`.
 - Implement accessibility on all interactive elements: `tabIndex`, `aria-label`, `onClick`, `onKeyDown`.
 
 ## Testing Guidelines

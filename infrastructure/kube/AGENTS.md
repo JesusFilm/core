@@ -1,9 +1,4 @@
----
-paths:
-  - 'infrastructure/kube/**/*.{yaml,yml,sh}'
----
-
-# Kubernetes Rules
+# Kubernetes
 
 - Use Helm charts to manage application deployments.
 - Cluster state is managed declaratively (GitOps) — change manifests/charts, don't patch clusters by hand.

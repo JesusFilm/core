@@ -1,10 +1,6 @@
----
-description: Infrastructure rules
-globs: infrastructure/**/*
-alwaysApply: false
----
+# Infrastructure (Terraform / AWS)
 
-# Terraform Rules (AWS)
+Applies to Terraform files (`.tf`, `.tfvars`, `.hcl`).
 
 - Organize resources into reusable modules; no hardcoded values — use variables.
 - Structure files into logical sections: main configuration, variables, outputs, modules.

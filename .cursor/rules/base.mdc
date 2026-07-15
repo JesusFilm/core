@@ -1,15 +1,14 @@
 ---
-description: Base Rules to include in other rules
-globs: 
+description: Conventions live in AGENTS.md
+globs:
 alwaysApply: true
 ---
 
-# Base Rules
+# Conventions live in AGENTS.md
 
-This is an **Nx monorepo** (TypeScript). Apps live in `apps/`, GraphQL APIs in `apis/`, shared libraries in `libs/`, Cloudflare Workers in `workers/`, infrastructure in `infrastructure/`.
+All project conventions and path-scoped rules live in `AGENTS.md` files (model-agnostic).
 
-## Code Style
+- Root: the repo-root `AGENTS.md`.
+- Path-scoped: the `AGENTS.md` in — or nearest above — the directory you are editing (e.g. `apis/AGENTS.md`, `apps/AGENTS.md`, `apps/<app>/AGENTS.md`, `workers/AGENTS.md`, `infrastructure/AGENTS.md`).
 
-- Use early returns to reduce nesting.
-- Use descriptive variable and function/const names.
-- Define TypeScript types; avoid `any`.
+Read the relevant `AGENTS.md` before modifying files in a directory.

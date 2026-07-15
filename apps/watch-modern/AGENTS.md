@@ -1,9 +1,4 @@
----
-paths:
-  - 'apps/watch-modern/src/**/*.{ts,tsx}'
----
-
-# Watch-Modern Rules
+# Watch Modern
 
 ## Stack
 
