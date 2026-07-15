@@ -15,13 +15,6 @@
     "strict": false,
     "jsxImportSource": "@emotion/react"
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules",
-    ".next",
-    "vitest.config.mts"
-  ]
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", ".next", "vitest.config.mts"]
 }

@@ -3,15 +3,8 @@
   "compilerOptions": {
     "noEmit": true,
     "target": "es2021",
-    "types": [
-      "node",
-      "vitest/globals"
-    ]
+    "types": ["node", "vitest/globals"]
   },
-  "include": [
-    "**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
 }

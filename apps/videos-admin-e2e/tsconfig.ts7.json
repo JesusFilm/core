@@ -6,18 +6,8 @@
     "jsx": "react-jsx",
     "emitDecoratorMetadata": true,
     "allowImportingTsExtensions": true,
-    "types": [
-      "node",
-      "@playwright/test"
-    ]
+    "types": ["node", "@playwright/test"]
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules",
-    ".next",
-    "vitest.config.mts"
-  ]
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", ".next", "vitest.config.mts"]
 }
