@@ -157,7 +157,7 @@ describe('journeysPlausibleStatsBreakdown', () => {
         }
       } as any)
 
-    const result = await authClient({
+    await authClient({
       document: QUERY,
       variables: {
         id: 'journey-id',
@@ -166,18 +166,10 @@ describe('journeysPlausibleStatsBreakdown', () => {
       }
     })
 
+    // A non-paginating resolver would stop after the first (full) page. The
+    // second request proves this resolver opted into pagination. The paging
+    // mechanics themselves are covered by service.spec.ts.
     expect(mockAxios.get).toHaveBeenCalledTimes(2)
-    // pagination forces the max page size and starts at page 1
-    expect(mockAxios.get).toHaveBeenNthCalledWith(
-      1,
-      'https://plausible.example/api/v1/stats/breakdown',
-      expect.objectContaining({
-        params: expect.objectContaining({ limit: 1000, page: 1 })
-      })
-    )
-    expect((result as any).data.journeysPlausibleStatsBreakdown).toHaveLength(
-      1001
-    )
   })
 
   it('returns error when journey not found', async () => {
