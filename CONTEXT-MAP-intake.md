@@ -10,10 +10,12 @@ trigger-phrases that route a report to it. The ENG-3707 accessor fetches an area
 
 ## Areas (NextSteps)
 
-- **journeys-admin** | domain: `apps/journeys-admin/CONTEXT.md` | intake: `apps/journeys-admin/CONTEXT-intake.md` | triggers: "block won't save", "changes not showing in preview", "have to refresh", "can't translate into <language>", "template won't let me customize", "transfer ownership", "analytics numbers are wrong", "historical data disappeared"
+- **journeys-admin** (creator/editor surface) | domain: `apps/journeys-admin/CONTEXT.md` | intake: `apps/journeys-admin/CONTEXT-intake.md` | triggers: "block won't save", "changes not showing in preview", "have to refresh", "can't translate into <language>", "template won't let me customize", "transfer ownership", "analytics numbers are wrong", "historical data disappeared"
+- **journeys (published viewer)** (audience surface) | domain: `apps/journeys/CONTEXT.md` | intake: `apps/journeys/CONTEXT-intake.md` | triggers: "button doesn't go to the next card", "goes to the wrong card", "video won't load", "video is slow", "image is cropped / wrong fit", "can't click / can't type on the card", "looks wrong when published", "custom domain / embed not working"
 
-_Seeded with journeys-admin (ENG-3685). Remaining NextSteps areas — journeys (viewer),
-api-journeys, libs/journeys/ui — are added as their `CONTEXT-intake.md` files land._
+_The two intake surfaces are where bugs are **reported** (creator editor, audience viewer). The
+backend (`api-journeys`) and shared kernel (`libs/journeys/ui`) are reached via each surface's
+"look first" pointers, not separate intake files — reporters don't file bugs against them directly._
 
 ## Failure-type taxonomy (T1–T11)
 

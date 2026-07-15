@@ -59,9 +59,11 @@ looks off.
 it to count (raw events vs unique users), and — for template families — "are you 100% sure this is
 the only journey from that template?" (aggregate-vs-child mix-ups are common).
 **Heuristic:** an analytics discrepancy is almost always a **name/unit mismatch, not bad math.**
-**Look first (fixer):** TODO — the drop-off %, card-duration, and event-aggregation code in
-`api-journeys` analytics resolvers + the Plausible integration; the Analytics-Mode overlay in
-journeys-admin. (Code-dig pending.)
+**Look first (fixer):** drop-off % and time-on-card are computed **client-side** in
+`libs/journeys/ui/src/libs/useJourneyAnalyticsQuery/transformJourneyAnalytics/transformJourneyAnalytics.ts`
+(these are the numbers shown in reports); the underlying Plausible aggregates come from
+`apis/api-journeys/src/schema/plausible/journeysPlausibleStatsAggregate.query.ts` + `plausible/service.ts`;
+the event-sync worker is `apis/api-journeys/src/workers/plausible/service.ts`.
 **Handoff:** route to a human — not safe for autonomous fixing.
 
 ## Translation & language lists — T8 (largest historical cluster)
@@ -104,12 +106,18 @@ logo, menu) lives in **Journey Appearance** in the Drawer; the shared-on-social 
 Preview**; custom-domain / microwebsite settings live in the hosting/custom-domain settings.
 **Handoff:** how-to / FAQ.
 
-## Submit-button logic — FLAGGED (low confidence, needs a code dig)
+## Submit-button / action logic — FLAGGED (low frequency; signatures unconfirmed)
 **Signatures (suspected):** questions about how submit buttons behave — the action/logic wiring is
 complex on the code side.
-**Look first (fixer):** TODO — block Actions / TextResponseBlock / button-triggered navigation.
-(Code-dig pending; confirm the real confusion before writing this up.)
-**Handoff:** unknown until dug.
+**Mental model:** every button/submit is a block **Action**. The viewer dispatches them in
+`libs/journeys/ui/src/libs/action/action.ts` + `components/Actions/Actions.tsx` (resolves
+NavigateToBlock / link / email / phone); the text-answer submit is
+`libs/journeys/ui/src/components/TextResponse/TextResponse.tsx`.
+**Look first (fixer):** viewer dispatch → `libs/journeys/ui/src/libs/action/action.ts`,
+`components/Actions/Actions.tsx`; server action schema → `apis/api-journeys/src/schema/action/`
+(`navigateToBlockAction/`, `linkAction/`, …); editor-side edits →
+`apps/journeys-admin/src/components/Editor/utils/useActionCommand/` + `src/libs/useBlockAction*UpdateMutation/`.
+**Handoff:** navigation/dispatch defects → agent-able; "how does X action work" → how-to.
 
 ## Teams / access / ownership — T11 (ACL)
 **Signatures:** invite email not arriving; "requested access" not showing; confusion over who can
@@ -138,7 +146,10 @@ the single most diagnostic auth signal.
 ## Integrations — Google Sheets Sync live; Growth Spaces dormant
 **Google Sheets Sync (real):** recurring **auth** (OAuth) issues and **sync reliability** (rows not
 created / sync not running).
-- Look first (fixer): TODO — the Google OAuth connection + the sheets-sync job. (Code-dig pending.)
+- Look first (fixer): OAuth connection → `apis/api-journeys/src/schema/integration/google/`
+  (`googleCreate.mutation.ts`, `googleUpdate.mutation.ts`); the sync worker →
+  `apis/api-journeys/src/workers/googleSheetsSync/`; the row/header build + write-to-sheet →
+  `apis/api-journeys/src/schema/journeyVisitor/export/googleSheetsLiveSync.ts`.
 - Handoff: OAuth reconnect → often human; sync-job defects → agent-able.
 **Growth Spaces:** dormant — no recent reports, believed unused. Map stays thin; route to a human.
 
