@@ -53,7 +53,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b apps/journeys-admin-e2e/tsconfig.json"
+        "command": "pnpm tsc7 -p apps/journeys-admin-e2e/tsconfig.ts7.json"
       }
     },
     "lint": {
