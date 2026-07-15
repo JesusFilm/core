@@ -1,5 +1,3 @@
-import replace from 'lodash/replace'
-
 import { messagePlatforms } from '../../../components/Button/utils/findMessagePlatform'
 import { JourneyPlausibleEvents, reverseKeyify } from '../../plausibleHelpers'
 import {
@@ -94,16 +92,40 @@ export function transformJourneyAnalytics(
     targetMap.set(key, target)
   })
 
-  const stepsStats: StepStat[] = journeySteps.map((step) => {
+  // Merge the two Plausible pages per step that differ only by a trailing slash
+  // (see getStepId). Visitors and exits are summed and timeOnPage — a per-visitor
+  // average — is combined as a visitor-weighted mean. Summing is a best-effort
+  // reconciliation of historical rows: a visitor counted on both variants (e.g.
+  // pageview on the slash page, a click on the slash-free page) is over-counted,
+  // but the Step.tsx fix removes the split for new data.
+  const stepStatsById = new Map<string, StepStat>()
+  journeySteps.forEach((step) => {
     const stepId = getStepId(step.property, journeyId)
-    return {
-      stepId,
-      visitors: step.visitors ?? 0,
-      timeOnPage: step.timeOnPage ?? 0,
-      visitorsExitAtStep:
-        stepExits.find((step) => step.id === stepId)?.visitors ?? 0
+    const visitors = step.visitors ?? 0
+    const timeOnPage = step.timeOnPage ?? 0
+
+    const existing = stepStatsById.get(stepId)
+    if (existing == null) {
+      stepStatsById.set(stepId, {
+        stepId,
+        visitors,
+        timeOnPage,
+        visitorsExitAtStep:
+          stepExits.find((exit) => exit.id === stepId)?.visitors ?? 0
+      })
+      return
     }
+
+    const totalVisitors = existing.visitors + visitors
+    const mergedTimeOnPage =
+      totalVisitors === 0
+        ? 0
+        : (existing.timeOnPage * existing.visitors + timeOnPage * visitors) /
+          totalVisitors
+    existing.timeOnPage = mergedTimeOnPage
+    existing.visitors = totalVisitors
   })
+  const stepsStats: StepStat[] = Array.from(stepStatsById.values())
 
   const qrCodeVisitors = journeyUtmCampaign.reduce(
     (sum, campaign) => sum + (campaign.visitors ?? 0),
@@ -137,7 +159,10 @@ export function transformJourneyAnalytics(
 }
 
 function getStepId(property: string, journeyId: string): string {
-  return replace(property, `/${journeyId}/`, '')
+  // Strip the `/${journeyId}/` prefix to recover the step block id, then drop a
+  // trailing slash so the query-string (`.../${stepId}/`) and slash-free
+  // (`.../${stepId}`) Plausible pages for a step collapse onto the same id.
+  return property.replace(`/${journeyId}/`, '').replace(/\/$/, '')
 }
 
 function getJourneyEvents(
@@ -162,15 +187,15 @@ function getStepExits(
   journeyVisitorsPageExits: JourneyVisitorsPageExit[],
   journeyId: string
 ): Array<{ id: string; visitors: number }> {
-  const stepExits = journeyVisitorsPageExits.map((page) => {
+  // Sum exits across the trailing-slash and non-trailing-slash pages that
+  // resolve to the same step block id (see getStepId).
+  const exitsById = new Map<string, number>()
+  journeyVisitorsPageExits.forEach((page) => {
     const id = getStepId(page.property, journeyId)
-    return {
-      id,
-      visitors: page.visitors ?? 0
-    }
+    exitsById.set(id, (exitsById.get(id) ?? 0) + (page.visitors ?? 0))
   })
 
-  return stepExits
+  return Array.from(exitsById, ([id, visitors]) => ({ id, visitors }))
 }
 
 function getLinkClicks(journeyEvents: PlausibleEvent[]): {
