@@ -39,7 +39,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsc -b apis/api-gateway/tsconfig.json"
+        "command": "pnpm tsc7 -p apis/api-gateway/tsconfig.ts7.json"
       }
     },
     "lint": {
