@@ -95,17 +95,21 @@ libs/prisma/<db>/db/schema.prisma`) or the `@core/prisma/*/client` paths
 
 ## Rollout status and remaining phases
 
-Done (2026-07-14): all six `apis/*` `type-check` targets run `pnpm tsc7`.
+Done (2026-07-14): every `type-check` target in the repo (6 apis, 21 apps
+incl. e2e, 12 libs) runs `pnpm tsc7 -p <workspace>/tsconfig.ts7.json`.
+Rollout notes: TS 7 defaults `strict: true` — workspaces whose TS 5
+config was looser need an explicit `"strict": false`; apps with their own
+`paths`/`jsxImportSource`/`baseUrl: ./src` (player, watch-modern,
+resources, journeys-admin) need those mirrored (relative form) in their
+ts7 config; mirror old include/exclude coverage (e.g. video-importer
+never type-checked specs, journeys-admin excluded stories).
 
-Remaining, in order, each gated on the previous:
+Remaining, in order:
 
-1. **apps/libs/workers type-check targets** — after the api pilot bakes in
-   CI for a few days. Each workspace gets its own `tsconfig.ts7.json` as
-   described above; existing tsconfigs stay untouched.
-2. **Editor flip** — commit the TS 7 language-service setting to
+1. **Editor flip** — commit the TS 7 language-service setting to
    `.vscode/settings.json` only once _all_ type-check targets are on TS 7,
    so editor squiggles and CI agree.
-3. **Retire TS 5** — when typescript-eslint and Next support the TS 7
+2. **Retire TS 5** — when typescript-eslint and Next support the TS 7
    API. Then `typescript` becomes v7, `tools/typescript7`, the `tsc7`
    script, and the `*.ts7.json` configs are deleted, and targets go back
    to plain `tsc` against the unified base config.
