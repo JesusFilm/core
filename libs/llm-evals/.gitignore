@@ -1,0 +1,3 @@
+# Local Doppler-managed secrets. Never commit.
+.env
+.env.local
