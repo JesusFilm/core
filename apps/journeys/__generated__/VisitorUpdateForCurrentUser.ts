@@ -15,9 +15,6 @@ export interface VisitorUpdateForCurrentUser_visitorUpdateForCurrentUser {
 }
 
 export interface VisitorUpdateForCurrentUser {
-  /**
-   * Allow current user to update specific allowable fields of their visitor record
-   */
   visitorUpdateForCurrentUser: VisitorUpdateForCurrentUser_visitorUpdateForCurrentUser;
 }
 

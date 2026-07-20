@@ -37,7 +37,7 @@ describe('Spacing', () => {
         spacing: 200
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         spacerBlockUpdate: {
           id: 'id',
@@ -45,7 +45,10 @@ describe('Spacing', () => {
           __typename: 'SpacerBlock'
         }
       }
-    }))
+    })) as MockedResponse<
+      SpacerSpacingUpdate,
+      SpacerSpacingUpdateVariables
+    >['result']
   }
 
   const spacingUpdateMock2: MockedResponse<
@@ -59,7 +62,7 @@ describe('Spacing', () => {
         spacing: 100
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         spacerBlockUpdate: {
           id: 'id',
@@ -67,16 +70,19 @@ describe('Spacing', () => {
           __typename: 'SpacerBlock'
         }
       }
-    }))
+    })) as MockedResponse<
+      SpacerSpacingUpdate,
+      SpacerSpacingUpdateVariables
+    >['result']
   }
 
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('should show spacing description and slider', () => {
     render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock }}>
-          <Spacing value={100} setValue={jest.fn()} />
+          <Spacing value={100} setValue={vi.fn()} />
         </EditorProvider>
       </MockedProvider>
     )
@@ -85,7 +91,7 @@ describe('Spacing', () => {
   })
 
   it('should change the spacing property', async () => {
-    const setValue = jest.fn()
+    const setValue = vi.fn()
 
     render(
       <MockedProvider mocks={[spacingUpdateMock]}>
@@ -105,7 +111,7 @@ describe('Spacing', () => {
   })
 
   it('should undo the spacing change', async () => {
-    const setValue = jest.fn()
+    const setValue = vi.fn()
     render(
       <MockedProvider mocks={[spacingUpdateMock, spacingUpdateMock2]}>
         <EditorProvider initialState={{ selectedBlock }}>
@@ -133,7 +139,7 @@ describe('Spacing', () => {
       maxUsageCount: 2
     }
 
-    const setValue = jest.fn()
+    const setValue = vi.fn()
     render(
       <MockedProvider mocks={[mockFirstUpdate, spacingUpdateMock2]}>
         <EditorProvider initialState={{ selectedBlock }}>
@@ -161,7 +167,7 @@ describe('Spacing', () => {
   })
 
   it('should not call mutation if no selected block', async () => {
-    const setValue = jest.fn()
+    const setValue = vi.fn()
 
     render(
       <MockedProvider mocks={[spacingUpdateMock]}>

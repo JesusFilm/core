@@ -45,7 +45,7 @@ const children: Array<TreeBlock<BlockFields>> = [typography1]
 describe('getCardHeading', () => {
   it('should return title content from children', () => {
     const cardHeadings = getCardHeadings(children)
-    expect(cardHeadings).toEqual(['title'])
+    expect(cardHeadings).toEqual(['title', undefined])
   })
 
   it('should return both title and subtitle content according to typography order', () => {

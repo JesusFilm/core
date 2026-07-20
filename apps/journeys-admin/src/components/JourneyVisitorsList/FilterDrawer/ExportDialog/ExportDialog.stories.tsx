@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import { simpleComponentConfig } from '@core/shared/ui/simpleComponentConfig'
 import { adminLight } from '@core/shared/ui/themes/journeysAdmin/theme'

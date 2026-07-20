@@ -47,7 +47,10 @@ export function VideoContentHero({
       data-testid="ContentHero"
     >
       <ContentHeader languageSlug={languageSlug?.replace('.html', '')} />
-      <HeroVideo isFullscreen={isFullscreen} key={variant?.hls} />
+      <HeroVideo
+        isFullscreen={isFullscreen}
+        key={variant?.id ?? variant?.hls}
+      />
       <div
         data-testid="ContainerHeroTitleContainer"
         className="relative mx-auto flex w-full max-w-[1920px] flex-col pb-4 sm:flex-row"

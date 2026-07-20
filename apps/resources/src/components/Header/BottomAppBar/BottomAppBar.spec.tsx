@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 
 import { BottomAppBar } from './BottomAppBar'
 
-jest.mock('../HeaderTabButtons', () => ({
+vi.mock('../HeaderTabButtons', async () => ({
   HeaderTabButtons: () => <div data-testid="MockedHeaderTabButtons" />
 }))
 

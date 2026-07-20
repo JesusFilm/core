@@ -1,25 +1,26 @@
 import { render } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import { ThemeProvider } from '../../../../ThemeProvider'
 
 import { TeamMode } from './TeamMode'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('TeamMode', () => {
-  const mockRenderList = jest.fn(() => (
+  const mockRenderList = vi.fn(() => (
     <div data-testid="rendered-list">List</div>
   ))
-  const mockSetActiveEvent = jest.fn()
-  const mockSetSortOrder = jest.fn()
-  const mockHandleStatusChange = jest.fn()
-  const mockHandleContentTypeChange = jest.fn()
+  const mockSetActiveEvent = vi.fn()
+  const mockSetSortOrder = vi.fn()
+  const mockHandleStatusChange = vi.fn()
+  const mockHandleContentTypeChange = vi.fn()
 
   const contentTypeOptions = [
     {
@@ -35,7 +36,7 @@ describe('TeamMode', () => {
   ]
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render component with correct test id and tabs with correct labels', () => {

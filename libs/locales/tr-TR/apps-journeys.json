@@ -9,5 +9,19 @@
   "Get me out of here!": "Çıkarın beni buradan!",
   "Terms & Conditions": "Şartlar ve Koşullar",
   "Privacy Policy": "Gizlilik Politikası",
-  "NextSteps © {{year}}": "NextSteps © {{year}}"
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Use": "Kullanım",
+  "Preview": "Önizleme",
+  "About this chat": "Bu sohbet hakkında",
+  "About this chat | Next Steps": "Bu sohbet hakkında | Sonraki adımlar",
+  "The chat on this journey is powered by an AI assistant. To help us improve future replies, the messages you send and the assistant’s replies are saved.": "Bu yolculukta sohbet, bir yapay zeka asistanı tarafından yürütülmektedir. Gelecekteki yanıtları iyileştirmemize yardımcı olması amacıyla, gönderdiğiniz mesajlar ve asistanın yanıtları kaydedilmektedir.",
+  "We do not save your name, email address, or any account details, and we do not link conversations to your identity.": "Adınızı, e-posta adresinizi veya herhangi bir hesap bilgisini kaydetmiyoruz ve sohbetleri kimliğinizle ilişkilendirmiyoruz.",
+  "Where the messages go": "Mesajlar nereye gidiyor?",
+  "Your messages and the assistant’s replies pass through two third-party services: an AI service that generates the replies, and an analytics service called Langfuse where the conversations are stored so the team can review them in aggregate to improve the experience. They are not sold and they are not used for advertising.": "Mesajlarınız ve asistanın yanıtları iki üçüncü taraf hizmetten geçer: yanıtları oluşturan bir yapay zeka hizmeti ve Langfuse adlı bir analiz hizmeti. Bu hizmetlerde sohbetler saklanır; böylece ekip, kullanıcı deneyimini iyileştirmek amacıyla bu verileri toplu olarak inceleyebilir. Bu veriler satılmaz ve reklam amaçlı kullanılmaz.",
+  "If you prefer not to take part": "Katılmak istemiyorsanız",
+  "There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.": "Şu anda sohbete özel bir devre dışı bırakma seçeneği bulunmamaktadır. Mesajlarınızın kaydedilmesini istemiyorsanız lütfen sohbeti kullanmayın; yolculuğun geri kalanı sohbet olmadan da devam eder.",
+  "Last updated: June 2026": "Son güncelleme tarihi: Haziran 2026",
+  "Back to Next Steps": "Geri Dön > Sonraki Adımlar",
+  "This template gallery is not available.": "Bu şablon galerisi kullanılamıyor.",
+  "<0>This page has been created to test the embed code.<strong>If youve found this page in error click the button below.</strong></0>": "<0>Bu sayfa, gömme kodunu test etmek amacıyla oluşturulmuştur.<strong>Bu sayfaya yanlışlıkla ulaştıysanız, aşağıdaki düğmeye tıklayın.</strong></0>"
 }

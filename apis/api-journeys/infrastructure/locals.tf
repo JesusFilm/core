@@ -1,24 +1,39 @@
 locals {
-  port = 4001
+  port = 4004
   environment_variables = [
     "AWS_ACCESS_KEY_ID",
     "AWS_SECRET_ACCESS_KEY",
+    "CLOUDFLARE_ACCOUNT_ID",
+    "CLOUDFLARE_IMAGES_TOKEN",
+    "CLOUDFLARE_UPLOAD_KEY",
+    "FACEBOOK_APP_ID",
+    "FACEBOOK_APP_SECRET",
     "FIREBASE_API_KEY",
+    "GATEWAY_HMAC_SECRET",
     "GATEWAY_URL",
     "GIT_BRANCH",
     "GOOGLE_APPLICATION_JSON",
+    "GOOGLE_CLIENT_ID",
+    "GOOGLE_CLIENT_SECRET",
+    "GOOGLE_GENERATIVE_AI_API_KEY",
     "GROWTH_SPACES_URL",
+    "IMAGE_DESCRIPTION_AI_MODELS",
     "INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET",
     "INTEROP_TOKEN",
     "JOURNEYS_ADMIN_URL",
+    "JOURNEYS_REVALIDATE_ACCESS_TOKEN",
     "JOURNEYS_SHORTLINK_DOMAIN",
     "JOURNEYS_URL",
     "MAILCHIMP_AUDIENCE_ID",
     "MAILCHIMP_MARKETING_API_KEY",
     "MAILCHIMP_MARKETING_API_SERVER_PREFIX",
-    "MUX_ACCESS_TOKEN_ID",
-    "MUX_SECRET_KEY",
+    "MUX_UGC_ACCESS_TOKEN_ID",
+    "MUX_UGC_SECRET_KEY",
+    "NAT_ADDRESSES",
+    "OPEN_AI_API_KEY",
+    "OPENROUTER_API_KEY",
     "PG_DATABASE_URL_JOURNEYS",
+    "PG_DATABASE_URL_USERS",
     "PLAUSIBLE_API_KEY",
     "PLAUSIBLE_URL",
     "PLAYWRIGHT_USER_ID",
@@ -38,18 +53,21 @@ locals {
     "REDIS_PORT",
     "REDIS_URL",
     "SMTP_URL",
+    "TEMPLATE_LIBRARY_EMBED_HOSTS",
+    "TRANSLATION_AI_MODELS",
     "VERCEL_JOURNEYS_PROJECT_ID",
     "VERCEL_TEAM_ID",
     "VERCEL_TOKEN"
   ]
   service_config = {
-    name                              = "api-journeys"
+    name                              = "api-journeys-modern"
+    doppler_project_name              = "api-journeys"
     is_public                         = false
     container_port                    = local.port
     host_port                         = local.port
     cpu                               = 1024
     memory                            = 2048
-    desired_count                     = var.env == "stage" ? 1 : 2
+    desired_count                     = var.env == "stage" ? 1 : 1
     zone_id                           = var.ecs_config.zone_id
     health_check_grace_period_seconds = 60
     alb_target_group = merge(var.ecs_config.alb_target_group, {
@@ -57,7 +75,7 @@ locals {
     })
     auto_scaling = {
       max_capacity = var.env == "stage" ? 1 : 4
-      min_capacity = var.env == "stage" ? 1 : 2
+      min_capacity = var.env == "stage" ? 1 : 1
       cpu = {
         target_value = 75
       }

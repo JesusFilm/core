@@ -1,120 +1,10 @@
-schema
-  @link(url: "https://specs.apollo.dev/link/v1.0")
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key", "@shareable", "@external", "@interfaceObject"])
-{
-  query: Query
-  mutation: Mutation
-}
-
-directive @link(url: String, as: String, for: link__Purpose, import: [link__Import]) repeatable on SCHEMA
-
-directive @key(fields: federation__FieldSet!, resolvable: Boolean = true) repeatable on OBJECT | INTERFACE
-
-directive @federation__requires(fields: federation__FieldSet!) on FIELD_DEFINITION
-
-directive @federation__provides(fields: federation__FieldSet!) on FIELD_DEFINITION
-
-directive @external(reason: String) on OBJECT | FIELD_DEFINITION
-
-directive @federation__tag(name: String!) repeatable on FIELD_DEFINITION | OBJECT | INTERFACE | UNION | ARGUMENT_DEFINITION | SCALAR | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION | SCHEMA
-
-directive @federation__extends on OBJECT | INTERFACE
-
-directive @shareable repeatable on OBJECT | FIELD_DEFINITION
-
-directive @federation__inaccessible on FIELD_DEFINITION | OBJECT | INTERFACE | UNION | ARGUMENT_DEFINITION | SCALAR | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
-
-directive @federation__override(from: String!) on FIELD_DEFINITION
-
-directive @federation__composeDirective(name: String) repeatable on SCHEMA
-
-directive @interfaceObject on OBJECT
-
-directive @federation__authenticated on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
-
-directive @federation__requiresScopes(scopes: [[federation__Scope!]!]!) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
-
-directive @federation__policy(policies: [[federation__Policy!]!]!) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
-
-scalar DateTime
-
-scalar Json
-
-enum ThemeMode {
-  dark
-  light
-}
-
-enum ThemeName {
-  base
-}
+extend schema
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@interfaceObject", "@key", "@shareable"])
 
 interface Action {
   parentBlockId: ID!
-  parentBlock: Block!
   gtmEventName: String
-}
-
-enum ContactActionType {
-  call
-  text
-}
-
-type NavigateToBlockAction implements Action
-  @shareable
-{
-  parentBlockId: ID!
   parentBlock: Block!
-  gtmEventName: String
-  blockId: String!
-}
-
-type LinkAction implements Action
-  @shareable
-{
-  parentBlockId: ID!
-  parentBlock: Block!
-  gtmEventName: String
-  url: String!
-  target: String
-  customizable: Boolean
-  parentStepId: String
-}
-
-type EmailAction implements Action
-  @shareable
-{
-  parentBlockId: ID!
-  parentBlock: Block!
-  gtmEventName: String
-  email: String!
-  customizable: Boolean
-  parentStepId: String
-}
-
-type PhoneAction implements Action
-  @shareable
-{
-  parentBlockId: ID!
-  parentBlock: Block!
-  gtmEventName: String
-  phone: String!
-  countryCode: String!
-  contactAction: ContactActionType!
-  customizable: Boolean
-  parentStepId: String
-}
-
-type ChatAction implements Action
-  @shareable
-{
-  parentBlockId: ID!
-  parentBlock: Block!
-  gtmEventName: String
-  chatUrl: String!
-  target: String
-  customizable: Boolean
-  parentStepId: String
 }
 
 interface Block {
@@ -122,6 +12,11 @@ interface Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+}
+
+input BlockDuplicateIdMap {
+  oldId: ID!
+  newId: ID!
 }
 
 enum BlockEventLabel {
@@ -139,190 +34,141 @@ enum BlockEventLabel {
   specialVideoComplete
 }
 
-type Journey
-  @key(fields: "id")
+input BlockUpdateActionInput {
+  gtmEventName: String
+  email: String
+  url: String
+  phone: String
+  countryCode: String
+  target: String
+  chatUrl: String
+  blockId: String
+}
+
+input BlocksFilter {
+  journeyIds: [ID!]
+  typenames: [String!]
+}
+
+type Browser
   @shareable
 {
-  blocks: [Block!] @shareable
-  primaryImageBlock: ImageBlock
-  creatorImageBlock: ImageBlock
-  logoImageBlock: ImageBlock
-  menuStepBlock: StepBlock
-  chatButtons: [ChatButton!]!
+  name: String
+  version: String
+}
+
+enum ButtonAction {
+  NavigateToBlockAction
+  LinkAction
+  EmailAction
+  PhoneAction
+  ChatAction
+}
+
+enum ButtonAlignment {
+  left
+  center
+  right
+  justify
+}
+
+type ButtonBlock implements Block
+  @shareable
+{
   id: ID!
-
-  """private title for creators"""
-  title: String! @shareable
-  language: Language! @shareable
-  languageId: String! @shareable
-  themeMode: ThemeMode!
-  themeName: ThemeName!
-  description: String @shareable
-  creatorDescription: String
-  slug: String! @shareable
-  archivedAt: DateTime
-  deletedAt: DateTime
-  publishedAt: DateTime
-  trashedAt: DateTime
-  featuredAt: DateTime
-  updatedAt: DateTime! @shareable
-  createdAt: DateTime! @shareable
-  status: JourneyStatus! @shareable
-
-  """title for seo and sharing"""
-  seoTitle: String
-  seoDescription: String
-  template: Boolean
-  host: Host
-  team: Team
-  strategySlug: String
-  tags: [Tag!]!
-  journeyCollections: [JourneyCollection!]!
-
-  """used to see if a template has a site created for it"""
-  templateSite: Boolean
-
-  """used to display quick start label on customizable templates"""
-  customizable: Boolean
-
-  """used in a plausible share link to embed report"""
-  plausibleToken: String
-  website: Boolean
-  showShareButton: Boolean
-  showLikeButton: Boolean
-  showDislikeButton: Boolean
-
-  """public title for viewers"""
-  displayTitle: String
-  showHosts: Boolean
-  showChatButtons: Boolean
-  showReactionButtons: Boolean
-  showLogo: Boolean
-  showMenu: Boolean
-  showDisplayTitle: Boolean
-  menuButtonIcon: JourneyMenuButtonIcon
-  socialNodeX: Int
-  socialNodeY: Int
-  fromTemplateId: String
-  showAssistant: Boolean
-  journeyCustomizationDescription: String
-  journeyCustomizationFields: [JourneyCustomizationField!]!
-  journeyTheme: JourneyTheme
-  userJourneys: [UserJourney!]
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  eventLabel: BlockEventLabel
+  label: String!
+  variant: ButtonVariant
+  color: ButtonColor
+  size: ButtonSize
+  startIconId: ID
+  endIconId: ID
+  submitEnabled: Boolean
+  settings: ButtonBlockSettings
+  action: Action
 }
 
-input BlockDuplicateIdMap {
-  oldId: ID!
-  newId: ID!
+input ButtonBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  eventLabel: BlockEventLabel
+  label: String!
+  variant: ButtonVariant
+  color: ButtonColor
+  size: ButtonSize
+  submitEnabled: Boolean
+  settings: ButtonBlockSettingsInput
 }
 
-type Mutation {
-  """blockRestore is used for redo/undo"""
-  blockRestore(id: ID!): [Block!]!
-  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
-  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
-  chatButtonRemove(id: ID!): ChatButton!
-  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain!
-  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain!
-  customDomainDelete(id: ID!): CustomDomain!
-  customDomainCheck(id: ID!): CustomDomainCheck!
+type ButtonBlockSettings
+  @shareable
+{
+  """Alignment of the button"""
+  alignment: ButtonAlignment
 
-  """
-  Creates a JourneyViewEvent, returns null if attempting to create another
-  JourneyViewEvent with the same userId, journeyId, and within the same 24hr
-  period of the previous JourneyViewEvent
-  """
-  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent
-  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
-  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent!
-  stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent!
-  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
-  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
-  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent!
-  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!): VideoCompleteEvent!
-  videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
-  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
-  videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
-  hostCreate(teamId: ID!, input: HostCreateInput!): Host!
-  hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
-  hostDelete(id: ID!, teamId: ID!): Host!
-  integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces!
-  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces!
-  journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
-  journeyDuplicate(id: ID!, teamId: ID!, forceNonTemplate: Boolean, duplicateAsDraft: Boolean): Journey!
-  journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
-
-  """Sets journey status to published"""
-  journeyPublish(id: ID!): Journey
-
-  """Sets journey status to featured"""
-  journeyFeature(id: ID!, feature: Boolean!): Journey
-
-  """Sets journeys statuses to archived"""
-  journeysArchive(ids: [ID!]!): [Journey]
-
-  """Sets journeys statuses to deleted"""
-  journeysDelete(ids: [ID!]!): [Journey]
-
-  """Sets journeys statuses to trashed"""
-  journeysTrash(ids: [ID!]!): [Journey]
-
-  """Sets journeys statuses to last active status"""
-  journeysRestore(ids: [ID!]!): [Journey]
-
-  """Updates template"""
-  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
-  journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection!
-  journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection!
-  journeyCollectionDelete(id: ID!): JourneyCollection!
-  journeyCustomizationFieldPublisherUpdate(journeyId: ID!, string: String!): [JourneyCustomizationField!]!
-  journeyCustomizationFieldUserUpdate(journeyId: ID!, input: [JourneyCustomizationFieldInput!]!): [JourneyCustomizationField!]!
-  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification!
-  journeyProfileCreate: JourneyProfile!
-  journeyThemeCreate(input: JourneyThemeCreateInput!): JourneyTheme!
-  journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!): JourneyTheme!
-  journeyThemeDelete(id: ID!): JourneyTheme!
-  updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference
-  qrCodeCreate(input: QrCodeCreateInput!): QrCode!
-  qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!): QrCode!
-  qrCodeDelete(id: ID!): QrCode!
-  teamCreate(input: TeamCreateInput): Team!
-  teamUpdate(id: ID!, input: TeamUpdateInput): Team!
-  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
-  userInviteRemove(id: ID!, journeyId: ID!): UserInvite!
-  userInviteAcceptAll: [UserInvite!]!
-  userJourneyApprove(id: ID!): UserJourney!
-  userJourneyPromote(id: ID!): UserJourney!
-  userJourneyRemove(id: ID!): UserJourney!
-
-  """Removes all userJourneys associated with a journeyId"""
-  userJourneyRemoveAll(id: ID!): [UserJourney!]!
-  userJourneyRequest(
-    journeyId: ID!
-
-    """drop this parameter after merging teams"""
-    idType: IdType
-  ): UserJourney!
-  userJourneyOpen(id: ID!): UserJourney
-  userTeamUpdate(id: ID!, input: UserTeamUpdateInput): UserTeam!
-  userTeamDelete(id: ID!): UserTeam!
-  userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput): UserTeamInvite
-  userTeamInviteRemove(id: ID!): UserTeamInvite!
-  userTeamInviteAcceptAll: [UserTeamInvite!]!
-
-  """Update a visitor"""
-  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
-
-  """
-  Allow current user to update specific allowable fields of their visitor record
-  """
-  visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor!
+  """Color of the button"""
+  color: String
 }
 
-enum ButtonVariant {
-  text
-  contained
-  outlined
+input ButtonBlockSettingsInput {
+  alignment: ButtonAlignment
+  color: String
+}
+
+input ButtonBlockUpdateInput {
+  parentBlockId: ID
+  eventLabel: BlockEventLabel
+  label: String
+  variant: ButtonVariant
+  color: ButtonColor
+  size: ButtonSize
+  startIconId: ID
+  endIconId: ID
+  submitEnabled: Boolean
+  settings: ButtonBlockSettingsInput
+}
+
+type ButtonClickEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  action: ButtonAction
+  actionValue: String
+}
+
+input ButtonClickEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """label of the button"""
+  value: String
+
+  """Action type of the button when it was clicked"""
+  action: ButtonAction
+
+  """
+  The label for each corresponding action, mapping below: 
+  NavigateToBlockAction - StepName (generated in client) of the StepBlock 
+  LinkAction - url of the link
+  """
+  actionValue: String
 }
 
 enum ButtonColor {
@@ -338,557 +184,105 @@ enum ButtonSize {
   large
 }
 
-enum ButtonAlignment {
-  left
-  center
-  right
-  justify
-}
-
-input ButtonBlockSettingsInput {
-  alignment: ButtonAlignment
-  color: String
-}
-
-type ButtonBlockSettings
-  @shareable
-{
-  alignment: ButtonAlignment @shareable
-  color: String @shareable
-}
-
-type ButtonBlock implements Block
-  @shareable
-{
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  eventLabel: BlockEventLabel @shareable
-  label: String! @shareable
-  variant: ButtonVariant @shareable
-  color: ButtonColor @shareable
-  size: ButtonSize @shareable
-  startIconId: ID @shareable
-  endIconId: ID @shareable
-  action: Action
-  submitEnabled: Boolean @shareable
-  settings: ButtonBlockSettings! @shareable
+enum ButtonVariant {
+  text
+  contained
+  outlined
 }
 
 type CardBlock implements Block
   @shareable
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  eventLabel: BlockEventLabel @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  eventLabel: BlockEventLabel
 
   """backgroundColor should be a HEX color value e.g #FFFFFF for white."""
-  backgroundColor: String @shareable
+  backgroundColor: String
 
   """
   backdropBlur should be a number representing blur amount in pixels e.g 20.
   """
-  backdropBlur: Int @shareable
+  backdropBlur: Int
 
   """
   coverBlockId is present if a child block should be used as a cover.
   This child block should not be rendered normally, instead it should be used
   as a background. Blocks are often of type ImageBlock or VideoBlock.
   """
-  coverBlockId: ID @shareable
+  coverBlockId: ID
 
   """
   fullscreen should control how the coverBlock is displayed. When fullscreen
   is set to true the coverBlock Image should be displayed as a blur in the
   background.
   """
-  fullscreen: Boolean! @shareable
+  fullscreen: Boolean!
 
   """
   themeMode can override journey themeMode. If nothing is set then use
   themeMode from journey
   """
-  themeMode: ThemeMode @shareable
+  themeMode: ThemeMode
 
   """
   themeName can override journey themeName. If nothing is set then use
   themeName from journey
   """
-  themeName: ThemeName @shareable
+  themeName: ThemeName
+
+  """When true, this card displays the AI chat button."""
+  showAssistant: Boolean
+
+  """When true, the chat drawer auto-opens on first visit to this card."""
+  expandChatByDefault: Boolean
 }
 
-enum GridDirection {
-  columnReverse
-  column
-  row
-  rowReverse
-}
-
-enum GridJustifyContent {
-  flexStart
-  flexEnd
-  center
-}
-
-enum GridAlignItems {
-  baseline
-  flexStart
-  flexEnd
-  center
-}
-
-type GridContainerBlock implements Block
-  @shareable
-{
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  gap: Int! @shareable
-  direction: GridDirection! @shareable
-  justifyContent: GridJustifyContent! @shareable
-  alignItems: GridAlignItems! @shareable
-}
-
-type GridItemBlock implements Block
-  @shareable
-{
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  xl: Int! @shareable
-  lg: Int! @shareable
-  sm: Int! @shareable
-}
-
-"""IconName is equivalent to the icons found in @mui/icons-material"""
-enum IconName {
-  PlayArrowRounded
-  TranslateRounded
-  CheckCircleRounded
-  RadioButtonUncheckedRounded
-  FormatQuoteRounded
-  LockOpenRounded
-  ArrowForwardRounded
-  ArrowBackRounded
-  ChatBubbleOutlineRounded
-  LiveTvRounded
-  MenuBookRounded
-  ChevronRightRounded
-  ChevronLeftRounded
-  BeenhereRounded
-  SendRounded
-  SubscriptionsRounded
-  ContactSupportRounded
-  Launch
-  MailOutline
-  ArrowLeftContained2
-  ArrowRightContained2
-  MessageChat1
-  Home4
-  LinkAngled
-  Volume5
-  Note2
-  UserProfile2
-  UsersProfiles3
-  Phone
-}
-
-enum IconColor {
-  primary
-  secondary
-  action
-  error
-  disabled
-  inherit
-}
-
-enum IconSize {
-  sm
-  md
-  lg
-  xl
-  inherit
-}
-
-type IconBlock implements Block
-  @shareable
-{
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  name: IconName @shareable
-  color: IconColor @shareable
-  size: IconSize @shareable
-}
-
-type ImageBlock implements Block
-  @shareable
-{
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  src: String @shareable
-  width: Int! @shareable
-  height: Int! @shareable
-  alt: String! @shareable
-
-  """
-  blurhash is a compact representation of a placeholder for an image.
-  Find a frontend implementation at https://github.com/woltapp/blurhash
-  """
-  blurhash: String! @shareable
-  scale: Int @shareable
-  focalTop: Int @shareable
-  focalLeft: Int @shareable
-  customizable: Boolean @shareable
-}
-
-type MultiselectBlock implements Block
-  @shareable
-{
-  id: ID!
+input CardBlockCreateInput {
+  id: ID
   journeyId: ID!
+  parentBlockId: ID!
+  eventLabel: BlockEventLabel
+  backgroundColor: String
+  backdropBlur: Int
+  fullscreen: Boolean
+  themeMode: ThemeMode
+  themeName: ThemeName
+}
+
+input CardBlockUpdateInput {
   parentBlockId: ID
-  parentOrder: Int
-  max: Int
-  min: Int
+  eventLabel: BlockEventLabel
+  coverBlockId: ID
+  backgroundColor: String
+  backdropBlur: Int
+  fullscreen: Boolean
+  themeMode: ThemeMode
+  themeName: ThemeName
+  showAssistant: Boolean
+  expandChatByDefault: Boolean
 }
 
-type MultiselectOptionBlock implements Block
+type ChatAction implements Action
   @shareable
 {
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
-  label: String!
+  parentBlockId: ID!
+  gtmEventName: String
+  parentBlock: Block!
+  chatUrl: String!
+  target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
-type RadioOptionBlock implements Block
-  @shareable
-{
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  eventLabel: BlockEventLabel @shareable
-  label: String! @shareable
-  action: Action
-  pollOptionImageBlockId: ID @shareable
-}
-
-type RadioQuestionBlock implements Block
-  @shareable
-{
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  gridView: Boolean @shareable
-}
-
-type SignUpBlock implements Block
-  @shareable
-{
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  action: Action
-  submitIconId: ID @shareable
-  submitLabel: String @shareable
-}
-
-type SpacerBlock implements Block
-  @shareable
-{
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  spacing: Int @shareable
-}
-
-type StepBlock implements Block
-  @shareable
-{
-  id: ID! @shareable
-  journeyId: ID! @shareable
-
-  """
-  nextBlockId contains the preferred block to navigate to, users will have to
-  manually set the next block they want to card to navigate to
-  """
-  nextBlockId: ID @shareable
-
-  """
-  locked will be set to true if the user should not be able to manually
-  advance to the next step.
-  """
-  locked: Boolean! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-
-  """
-  x is used to position the block horizontally in the journey flow diagram on
-  the editor.
-  """
-  x: Int @shareable
-
-  """
-  y is used to position the block vertically in the journey flow diagram on
-  the editor.
-  """
-  y: Int @shareable
-
-  """
-  Slug should be unique amongst all blocks
-  (server will throw BAD_USER_INPUT error if not)
-  If not required will use the current block id
-  If the generated slug is not unique the uuid will be placed
-  at the end of the slug guaranteeing uniqueness
-  """
-  slug: String @shareable
-}
-
-type TextResponseBlock implements Block
-  @shareable
-{
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  label: String! @shareable
-  placeholder: String @shareable
-  required: Boolean @shareable
-  hint: String @shareable
-  hideLabel: Boolean @shareable
-  minRows: Int @shareable
-  type: TextResponseType @shareable
-  routeId: String @shareable
-  integrationId: String @shareable
-}
-
-enum TextResponseType {
-  freeForm
-  name
-  email
-  phone
-}
-
-enum TypographyVariant {
-  h1
-  h2
-  h3
-  h4
-  h5
-  h6
-  subtitle1
-  subtitle2
-  body1
-  body2
-  caption
-  overline
-}
-
-enum TypographyColor {
-  primary
-  secondary
-  error
-}
-
-enum TypographyAlign {
-  left
-  center
-  right
-}
-
-input TypographyBlockSettingsInput {
-  color: String
-}
-
-type TypographyBlockSettings
-  @shareable
-{
-  color: String @shareable
-}
-
-type TypographyBlock implements Block
-  @shareable
-{
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  content: String! @shareable
-  variant: TypographyVariant @shareable
-  color: TypographyColor @shareable
-  align: TypographyAlign @shareable
-  settings: TypographyBlockSettings! @shareable
-}
-
-extend type Video
-  @key(fields: "id primaryLanguageId")
-  @shareable
-{
-  id: ID! @external
-  primaryLanguageId: ID! @external
-}
-
-enum VideoBlockSource {
-  internal
-  youTube
-  cloudflare
-  mux
-}
-
-enum VideoBlockObjectFit {
-  """
-  The video is scaled to maintain its aspect ratio while filling the
-   entire VideoBlock. If the video's aspect ratio does not match the
-   aspect ratio of the VideoBlock, then the video will be clipped to fit.
-  """
-  fill
-
-  """
-  The video is scaled to maintain its aspect ratio while fitting within the
-   VideoBlock. The entire video is made to fill the VideoBlock, while
-   preserving its aspect ratio, so the video will be "letterboxed" if its
-   aspect ratio does not match the aspect ratio of the VideoBlock.
-  """
-  fit
-
-  """
-  12.5% of either side of the video is discarded (this has the effect of
-   converting a 16:9 aspect ratio to 4:3). The remaining video is scaled to
-   maintain its new aspect ratio while fitting within the VideoBlock.  The
-   remaining video is made to fill the VideoBlock, while preserving its new
-   aspect ratio, so the video will be "letterboxed" if its new aspect ratio
-   does not match the aspect ratio of the VideoBlock.
-  """
-  zoomed
-}
-
-type VideoBlock implements Block
-  @key(fields: "id")
-  @shareable
-{
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  eventLabel: BlockEventLabel @shareable
-  endEventLabel: BlockEventLabel @shareable
-
-  """startAt dictates at which point of time the video should start playing"""
-  startAt: Int @shareable
-
-  """endAt dictates at which point of time the video should end"""
-  endAt: Int @shareable
-  muted: Boolean @shareable
-  autoplay: Boolean @shareable
-
-  """
-  posterBlockId is present if a child block should be used as a poster.
-  This child block should not be rendered normally, instead it should be used
-  as the video poster. PosterBlock should be of type ImageBlock.
-  """
-  posterBlockId: ID @shareable
-  fullsize: Boolean @shareable
-
-  """
-  internal source videos: video is only populated when videoID and
-  videoVariantLanguageId are present
-  """
-  video: Video @deprecated(reason: "use mediaVideo union instead")
-
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoId: ID @shareable
-
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoVariantLanguageId: ID @shareable
-
-  """
-  internal source: videoId, videoVariantLanguageId, and video present
-  youTube source: videoId, title, description, and duration present
-  """
-  source: VideoBlockSource! @shareable
-
-  """
-  internal source videos: this field is not populated and instead only present
-  in the video field.
-  For other sources this is automatically populated.
-  """
-  title: String @shareable
-
-  """
-  internal source videos: this field is not populated and instead only present
-  in the video field
-  For other sources this is automatically populated.
-  """
-  description: String @shareable
-
-  """
-  internal source videos: this field is not populated and instead only present
-  in the video field
-  For other sources this is automatically populated.
-  """
-  image: String @shareable
-
-  """
-  internal source videos: this field is not populated and instead only present
-  in the video field
-  For other sources this is automatically populated.
-  duration in seconds.
-  """
-  duration: Int @shareable
-
-  """action that should be performed when the video ends"""
-  action: Action
-
-  """how the video should display within the VideoBlock"""
-  objectFit: VideoBlockObjectFit @shareable
-  subtitleLanguage: Language @shareable
-  showGeneratedSubtitles: Boolean @shareable
-  customizable: Boolean @shareable
-
-  """Publisher notes for template adapters (e.g. trailer, intro)."""
-  notes: String
-}
-
-"""
-VideoTriggerBlock is a block that indicates the video to navigate
-to the next block at the designated time.
-"""
-type VideoTriggerBlock implements Block
-  @shareable
-{
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-
-  """
-  triggerStart sets the time as to when a video navigates to the next block,
-  this is the number of seconds since the start of the video
-  """
-  triggerStart: Int! @shareable
-  action: Action!
+input ChatActionInput {
+  gtmEventName: String
+  chatUrl: String!
+  target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 type ChatButton
@@ -911,36 +305,61 @@ input ChatButtonUpdateInput {
   customizable: Boolean
 }
 
+type ChatOpenEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  messagePlatform: MessagePlatform
+}
+
+input ChatOpenEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """messagePlatform of the link used for chat"""
+  value: MessagePlatform
+}
+
+enum ContactActionType {
+  call
+  text
+}
+
+input CreateGoogleSheetsSyncInput {
+  journeyId: ID!
+  integrationId: ID!
+  spreadsheetId: ID!
+  sheetName: String!
+  folderId: String
+}
+
 type CustomDomain
   @shareable
 {
   id: ID!
-  team: Team!
   name: String!
   apexName: String!
-  journeyCollection: JourneyCollection
   routeAllTeamJourneys: Boolean!
+  team: Team!
+  journeyCollection: JourneyCollection
 }
 
 type CustomDomainCheck
   @shareable
 {
-  """
-  Is the domain correctly configured in the DNS?
-  If false, A Record and CNAME Record should be added by the user.
-  """
   configured: Boolean!
-
-  """
-  Does the domain belong to the team?
-  If false, verification and verificationResponse will be populated.
-  """
   verified: Boolean!
-
-  """Verification records to be added to the DNS to confirm ownership."""
   verification: [CustomDomainVerification!]
-
-  """Reasoning as to why verification is required."""
   verificationResponse: CustomDomainVerificationResponse
 }
 
@@ -973,109 +392,960 @@ type CustomDomainVerificationResponse
   message: String!
 }
 
-type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
+"""
+scalar DateTimeISO
+
+type Device
+  @shareable
+{
+  model: String
+  type: DeviceType
+  vendor: String
 }
 
-extend type Query {
-  customDomain(id: ID!): CustomDomain!
-  customDomains(teamId: ID!): [CustomDomain!]!
-  hosts(teamId: ID!): [Host!]!
-  integrations(teamId: ID!): [Integration!]!
-  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
-  journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
-  journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
-
-  """
-  Returns distinct language IDs from published global templates.
-  Used to dynamically populate the language filter on the templates page.
-  """
-  journeyTemplateLanguageIds: [String!]!
-  journeyCollection(id: ID!): JourneyCollection!
-  journeyCollections(teamId: ID!): [JourneyCollection]!
-  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
-  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
-  journeyTheme(journeyId: ID!): JourneyTheme
-
-  """Get a list of Visitor Information by Journey"""
-  journeyVisitorsConnection(
-    """Returns the elements in the list that match the specified filter."""
-    filter: JourneyVisitorFilter!
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come after the specified cursor."""
-    after: String
-
-    """Specifies the sort field for the list."""
-    sort: JourneyVisitorSort
-  ): JourneyVisitorsConnection!
-
-  """Get a JourneyVisitor count by JourneyVisitorFilter"""
-  journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
-  journeysEmailPreference(email: String!): JourneysEmailPreference
-  qrCode(id: ID!): QrCode!
-  qrCodes(where: QrCodesFilter!): [QrCode!]!
-  teams: [Team!]!
-  team(id: ID!): Team!
-  userInvites(journeyId: ID!): [UserInvite!]
-  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
-  userTeam(id: ID!): UserTeam!
-  userTeamInvites(teamId: ID!): [UserTeamInvite!]!
-
-  """A list of visitors that are connected with a specific team."""
-  visitorsConnection(
-    """Returns the visitor items related to a specific team."""
-    teamId: String
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come after the specified cursor."""
-    after: String
-  ): VisitorsConnection!
-
-  """Get a single visitor"""
-  visitor(id: ID!): Visitor!
+enum DeviceType {
+  console
+  mobile
+  tablet
+  smarttv
+  wearable
+  embedded
 }
 
-enum ButtonAction {
-  NavigateToBlockAction
-  LinkAction
-  EmailAction
-  PhoneAction
-  ChatAction
+type EmailAction implements Action
+  @shareable
+{
+  parentBlockId: ID!
+  gtmEventName: String
+  parentBlock: Block!
+  email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
-type ButtonClickEvent implements Event
+input EmailActionInput {
+  gtmEventName: String
+  email: String!
+  customizable: Boolean
+  parentStepId: String
+}
+
+interface Event {
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+}
+
+enum EventType {
+  ButtonClickEvent
+  ChatOpenEvent
+  JourneyViewEvent
+  RadioQuestionSubmissionEvent
+  SignUpSubmissionEvent
+  StepViewEvent
+  StepNextEvent
+  StepPreviousEvent
+  MultiselectSubmissionEvent
+  TextResponseSubmissionEvent
+  VideoStartEvent
+  VideoPlayEvent
+  VideoPauseEvent
+  VideoCompleteEvent
+  VideoExpandEvent
+  VideoCollapseEvent
+  VideoProgressEvent
+}
+
+enum GoogleSheetExportMode {
+  create
+  existing
+}
+
+type GoogleSheetsSync {
+  id: ID!
+  teamId: ID!
+  journeyId: ID!
+  integrationId: ID
+  spreadsheetId: ID!
+  sheetName: String
+  folderId: String
+  email: String
+  deletedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  integration: Integration
+  journey: Journey!
+}
+
+input GoogleSheetsSyncsFilter {
+  journeyId: ID
+  integrationId: ID
+}
+
+enum GridAlignItems {
+  baseline
+  flexStart
+  flexEnd
+  center
+}
+
+type GridContainerBlock implements Block
   @shareable
 {
   id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  gap: Int!
+  direction: GridDirection!
+  justifyContent: GridJustifyContent!
+  alignItems: GridAlignItems!
+}
 
-  """ID of the journey that the buttonBlock belongs to"""
+enum GridDirection {
+  columnReverse
+  column
+  row
+  rowReverse
+}
+
+type GridItemBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  xl: Int!
+  lg: Int!
+  sm: Int!
+}
+
+enum GridJustifyContent {
+  flexStart
+  flexEnd
+  center
+}
+
+type Host
+  @shareable
+{
+  id: ID!
+  teamId: ID!
+  title: String!
+  location: String
+  src1: String
+  src2: String
+}
+
+input HostCreateInput {
+  title: String!
+  location: String
+  src1: String
+  src2: String
+}
+
+input HostUpdateInput {
+  """
+  title can be undefined as to not update title, but it cannot be null as to clear the value of title
+  """
+  title: String
+  location: String
+  src1: String
+  src2: String
+}
+
+type IconBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  name: IconName
+  color: IconColor
+  size: IconSize
+}
+
+input IconBlockCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  parentBlockId: ID!
+  journeyId: ID!
+  name: IconName
+  color: IconColor
+  size: IconSize
+}
+
+input IconBlockUpdateInput {
+  name: IconName
+  color: IconColor
+  size: IconSize
+}
+
+enum IconColor {
+  primary
+  secondary
+  action
+  error
+  disabled
+  inherit
+}
+
+enum IconName {
+  PlayArrowRounded
+  TranslateRounded
+  CheckCircleRounded
+  RadioButtonUncheckedRounded
+  FormatQuoteRounded
+  LockOpenRounded
+  ArrowForwardRounded
+  ArrowBackRounded
+  ChatBubbleOutlineRounded
+  LiveTvRounded
+  MenuBookRounded
+  ChevronRightRounded
+  ChevronLeftRounded
+  BeenhereRounded
+  SendRounded
+  SubscriptionsRounded
+  ContactSupportRounded
+  Launch
+  MailOutline
+  ArrowLeftContained2
+  ArrowRightContained2
+  MessageChat1
+  Home4
+  LinkAngled
+  Volume5
+  Note2
+  UserProfile2
+  UsersProfiles3
+  Phone
+}
+
+enum IconSize {
+  sm
+  md
+  lg
+  xl
+  inherit
+}
+
+enum IdType {
+  databaseId
+  slug
+}
+
+type ImageBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  src: String
+  alt: String!
+  width: Int!
+  height: Int!
+
+  """
+  blurhash is a compact representation of a placeholder for an image.
+  Find a frontend implementation at https://github.com/woltapp/blurhash
+    
+  """
+  blurhash: String!
+  focalTop: Int
+  focalLeft: Int
+  scale: Int
+  customizable: Boolean
+}
+
+input ImageBlockCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  parentBlockId: ID
+  journeyId: ID!
+  src: String
+  alt: String!
+
+  """
+  If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated.
+  """
+  blurhash: String
+  width: Int
+  height: Int
+
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
+  scale: Int
+  focalTop: Int
+  focalLeft: Int
+  customizable: Boolean
+}
+
+input ImageBlockUpdateInput {
+  parentBlockId: ID
+  src: String
+  alt: String
+
+  """
+  If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated.
+  """
+  blurhash: String
+  width: Int
+  height: Int
+  isCover: Boolean
+  scale: Int
+  focalTop: Int
+  focalLeft: Int
+  customizable: Boolean
+}
+
+interface Integration {
+  id: ID!
+  type: IntegrationType!
+  team: Team!
+}
+
+type IntegrationGoogle implements Integration
+  @shareable
+{
+  id: ID!
+  type: IntegrationType!
+  team: Team!
+  accountEmail: String
+  userId: ID
+  user: User
+}
+
+input IntegrationGoogleCreateInput {
+  teamId: String!
+  code: String!
+  redirectUri: String!
+}
+
+input IntegrationGoogleUpdateInput {
+  code: String!
+  redirectUri: String!
+}
+
+type IntegrationGrowthSpaces implements Integration
+  @shareable
+{
+  id: ID!
+  type: IntegrationType!
+  team: Team!
+  accessId: String
+  accessSecretPart: String
+  routes: [IntegrationGrowthSpacesRoute!]
+}
+
+input IntegrationGrowthSpacesCreateInput {
+  accessId: String!
+  accessSecret: String!
+  teamId: String!
+}
+
+type IntegrationGrowthSpacesRoute
+  @shareable
+{
+  id: String
+  name: String
+}
+
+input IntegrationGrowthSpacesUpdateInput {
+  accessId: String!
+  accessSecret: String!
+}
+
+enum IntegrationType {
+  google
+  growthSpaces
+}
+
+type Journey
+  @key(fields: "id")
+  @shareable
+{
+  id: ID! @shareable
+
+  """private title for creators"""
+  title: String!
+  description: String
+  slug: String! @shareable
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  status: JourneyStatus!
+  languageId: String!
+  language: Language!
+  blocks: [Block!]
+  chatButtons: [ChatButton!]!
+  archivedAt: DateTime
+  deletedAt: DateTime
+  publishedAt: DateTime
+  trashedAt: DateTime
+  featuredAt: DateTime
+  themeMode: ThemeMode!
+  themeName: ThemeName!
+
+  """title for seo and sharing"""
+  seoTitle: String
+  seoDescription: String
+  template: Boolean
+  primaryImageBlock: ImageBlock
+  creatorImageBlock: ImageBlock
+  logoImageBlock: ImageBlock
+  menuStepBlock: StepBlock
+  creatorDescription: String
+  website: Boolean
+  showShareButton: Boolean
+  showLikeButton: Boolean
+  showDislikeButton: Boolean
+
+  """public title for viewers"""
+  displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactionButtons: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  showAssistant: Boolean @deprecated(reason: "Use CardBlock.showAssistant. Removal tracked in NES-1624.")
+  customizable: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
+  socialNodeX: Int
+  socialNodeY: Int
+  host: Host
+  team: Team
+  tags: [Tag!]!
+  userJourneys: [UserJourney!]
+  strategySlug: String
+
+  """used to see if a template has a site created for it"""
+  templateSite: Boolean
+
+  """used in a plausible share link to embed report"""
+  plausibleToken: String
+  fromTemplateId: String
+  journeyCustomizationDescription: String
+  journeyCustomizationFields: [JourneyCustomizationField!]!
+  journeyTheme: JourneyTheme
+
+  """
+  Distinct block typenames present on this journey (non-deleted blocks only)
+  """
+  blockTypenames: [String!]!
+  journeyCollections: [JourneyCollection!]!
+}
+
+input JourneyAiTranslateInput {
+  """The ID of the journey to translate"""
   journeyId: ID!
 
-  """time event was created"""
-  createdAt: DateTime!
+  """The journey name to translate"""
+  name: String!
 
-  """stepName of the parent stepBlock"""
-  label: String
-
-  """label of the button"""
-  value: String
-
-  """Action type of the button when it was clicked"""
-  action: ButtonAction
+  """The source language name of the journey content"""
+  journeyLanguageName: String!
 
   """
-  The label for each corresponding action, mapping below:
-  NavigateToBlockAction - StepName (generated in client) of the StepBlock
-  LinkAction - url of the link
+  The target language ID for journey content (blocks, title, description)
   """
-  actionValue: String
+  textLanguageId: ID!
+
+  """
+  The target language name for journey content (blocks, title, description)
+  """
+  textLanguageName: String!
+
+  """
+  Language ID for customization text translation. Falls back to textLanguageId if not provided.
+  """
+  userLanguageId: ID
+
+  """
+  Language name for customization text translation. Falls back to textLanguageName if not provided.
+  """
+  userLanguageName: String
 }
+
+type JourneyAiTranslateProgress {
+  """Translation progress as a percentage (0-100)"""
+  progress: Float
+
+  """Current translation step message"""
+  message: String
+
+  """The journey being translated (only present when complete)"""
+  journey: Journey
+}
+
+type JourneyCollection
+  @shareable
+{
+  id: ID!
+  title: String
+  team: Team!
+  customDomains: [CustomDomain!]
+  journeys: [Journey!]
+}
+
+input JourneyCollectionCreateInput {
+  id: ID
+  teamId: String!
+  title: String
+  journeyIds: [String!]
+}
+
+input JourneyCollectionUpdateInput {
+  title: String
+  journeyIds: [String!]
+}
+
+input JourneyCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  title: String!
+  languageId: String!
+  themeMode: ThemeMode
+  themeName: ThemeName
+  description: String
+
+  """
+  Slug should be unique amongst all journeys (server will throw BAD_USER_INPUT error if not). If not required will use title formatted with kebab-case. If the generated slug is not unique the uuid will be placed at the end of the slug guaranteeing uniqueness
+  """
+  slug: String
+}
+
+input JourneyCustomizationDescriptionTranslateInput {
+  """The ID of the journey whose customization description to translate"""
+  journeyId: ID!
+
+  """The current language of the customization description"""
+  sourceLanguageName: String!
+
+  """The language to translate the customization description into"""
+  targetLanguageName: String!
+}
+
+type JourneyCustomizationField
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  key: String!
+  value: String
+  defaultValue: String
+}
+
+input JourneyCustomizationFieldInput {
+  id: ID!
+  key: String!
+  value: String
+}
+
+type JourneyEvent implements Event & Node
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  action: ButtonAction
+  actionValue: String
+  messagePlatform: MessagePlatform
+  language: Language
+  email: String
+  blockId: String
+  position: Float
+  source: VideoBlockSource
+  progress: Int
+  typename: String
+  visitorId: String
+  journeySlug: String
+  visitorName: String
+  visitorEmail: String
+  visitorPhone: String
+}
+
+type JourneyEventEdge
+  @shareable
+{
+  cursor: String!
+  node: JourneyEvent!
+}
+
+type JourneyEventsConnection
+  @shareable
+{
+  edges: [JourneyEventEdge!]!
+  pageInfo: PageInfo!
+}
+
+type JourneyEventsExportLog {
+  id: ID!
+  createdAt: DateTimeISO!
+  userId: ID!
+  journeyId: ID!
+  eventsFilter: [String!]!
+  dateRangeStart: DateTimeISO
+  dateRangeEnd: DateTimeISO
+}
+
+input JourneyEventsExportLogInput {
+  journeyId: ID!
+  eventsFilter: [EventType!]!
+  dateRangeStart: DateTimeISO
+  dateRangeEnd: DateTimeISO
+}
+
+input JourneyEventsFilter {
+  typenames: [String!]
+  periodRangeStart: DateTime
+  periodRangeEnd: DateTime
+  includeUnconnectedCards: Boolean
+}
+
+enum JourneyMenuButtonIcon {
+  menu1
+  equals
+  home3
+  home4
+  more
+  ellipsis
+  grid1
+  chevronDown
+}
+
+type JourneyNotification
+  @shareable
+{
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
+  visitorInteractionEmail: Boolean!
+}
+
+input JourneyNotificationUpdateInput {
+  journeyId: ID!
+  visitorInteractionEmail: Boolean!
+}
+
+type JourneyProfile
+  @key(fields: "id")
+  @shareable
+{
+  id: ID!
+  userId: ID!
+  acceptedTermsAt: DateTime
+  lastActiveTeamId: String
+  journeyFlowBackButtonClicked: Boolean
+  plausibleJourneyFlowViewed: Boolean
+  plausibleDashboardViewed: Boolean
+}
+
+input JourneyProfileUpdateInput {
+  lastActiveTeamId: String
+  journeyFlowBackButtonClicked: Boolean
+  plausibleJourneyFlowViewed: Boolean
+  plausibleDashboardViewed: Boolean
+}
+
+enum JourneyStatus {
+  archived
+  deleted
+  draft
+  published
+  trashed
+}
+
+input JourneyTemplateInput {
+  template: Boolean
+}
+
+type JourneyTheme
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  userId: ID!
+  headerFont: String
+  bodyFont: String
+  labelFont: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  journey: Journey!
+}
+
+input JourneyThemeCreateInput {
+  journeyId: ID!
+  bodyFont: String
+  headerFont: String
+  labelFont: String
+}
+
+input JourneyThemeUpdateInput {
+  bodyFont: String
+  headerFont: String
+  labelFont: String
+}
+
+input JourneyUpdateInput {
+  title: String
+  languageId: String
+  themeMode: ThemeMode
+  themeName: ThemeName
+  description: String
+  creatorDescription: String
+  creatorImageBlockId: ID
+  primaryImageBlockId: ID
+  slug: String
+  seoTitle: String
+  seoDescription: String
+  hostId: String
+  strategySlug: String
+  tagIds: [ID!]
+  website: Boolean
+  showShareButton: Boolean
+  showLikeButton: Boolean
+  showDislikeButton: Boolean
+  displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactionButtons: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  showAssistant: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
+  menuStepBlockId: ID
+  logoImageBlockId: ID
+  socialNodeX: Int
+  socialNodeY: Int
+}
+
+type JourneyViewEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  language: Language
+}
+
+input JourneyViewEventCreateInput {
+  id: ID
+  journeyId: ID!
+  label: String
+  value: ID
+}
+
+type JourneyVisitor
+  @key(fields: "visitorId journeyId")
+  @shareable
+{
+  journeyId: ID!
+  visitorId: ID!
+  createdAt: DateTime!
+  duration: Int
+  lastChatStartedAt: DateTime
+  lastChatPlatform: MessagePlatform
+  lastStepViewedAt: DateTime
+  lastLinkAction: String
+  lastTextResponse: String
+  lastRadioQuestion: String
+  lastRadioOptionSubmission: String
+  lastMultiselectSubmission: String
+  countryCode: String
+  messagePlatform: MessagePlatform
+  notes: String
+  visitor: Visitor!
+  events: [Event!]!
+}
+
+type JourneyVisitorEdge
+  @shareable
+{
+  cursor: String!
+  node: JourneyVisitor!
+}
+
+input JourneyVisitorExportSelect {
+  name: Boolean
+  email: Boolean
+  phone: Boolean
+  createdAt: Boolean
+}
+
+input JourneyVisitorFilter {
+  journeyId: String!
+  hasChatStarted: Boolean
+  hasPollAnswers: Boolean
+  hasMultiselectSubmission: Boolean
+  hasTextResponse: Boolean
+  hasIcon: Boolean
+  hideInactive: Boolean
+  countryCode: String
+}
+
+input JourneyVisitorGoogleSheetDestinationInput {
+  mode: GoogleSheetExportMode!
+
+  """Required when mode is "create". The title for the new spreadsheet."""
+  spreadsheetTitle: String
+
+  """
+  Optional when mode is "create". The Drive folder ID to create the spreadsheet in. If omitted, it will be created in My Drive.
+  """
+  folderId: String
+
+  """
+  Required when mode is "existing". The ID of the existing spreadsheet to export to.
+  """
+  spreadsheetId: String
+
+  """
+  Required when mode is "existing". The name of the sheet within the existing spreadsheet.
+  """
+  sheetName: String
+}
+
+type JourneyVisitorGoogleSheetExportResult {
+  spreadsheetId: ID!
+  spreadsheetUrl: String!
+  sheetName: String!
+}
+
+enum JourneyVisitorSort {
+  date
+  duration
+  activity
+}
+
+type JourneyVisitorsConnection
+  @shareable
+{
+  edges: [JourneyVisitorEdge!]!
+  pageInfo: PageInfo!
+}
+
+type JourneysEmailPreference
+  @shareable
+{
+  email: String!
+  unsubscribeAll: Boolean!
+  accountNotifications: Boolean!
+}
+
+input JourneysEmailPreferenceUpdateInput {
+  email: String!
+  preference: String!
+  value: Boolean!
+}
+
+input JourneysFilter {
+  featured: Boolean
+  template: Boolean
+  ids: [ID!]
+  tagIds: [ID!]
+  languageIds: [ID!]
+  limit: Int
+  orderByRecent: Boolean
+  fromTemplateId: ID
+  teamId: String
+}
+
+input JourneysQueryOptions {
+  """
+  hostname filters journeys to those that belong to a team with a custom domain matching the hostname.
+  """
+  hostname: String
+
+  """is this being requested from an embed url"""
+  embedded: Boolean
+
+  """
+  limit results to journeys in a journey collection (currently only available when using hostname option)
+  """
+  journeyCollection: Boolean
+
+  """skip custom domain routing filter (for admin template customization)"""
+  skipRoutingFilter: Boolean
+
+  """
+  when provided, filter the journey to only return if its status is in this list. when not provided, no status filter is applied (current behaviour).
+  """
+  status: [JourneyStatus!]
+}
+
+enum JourneysReportType {
+  multipleFull
+  multipleSummary
+  singleFull
+  singleSummary
+}
+
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar Json
+
+type Language
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+}
+
+type LinkAction implements Action
+  @shareable
+{
+  parentBlockId: ID!
+  gtmEventName: String
+  parentBlock: Block!
+  url: String!
+  target: String
+  customizable: Boolean
+  parentStepId: String
+}
+
+input LinkActionInput {
+  gtmEventName: String
+  url: String!
+  target: String
+  customizable: Boolean
+  parentStepId: String
+}
+
+union MediaVideo = MuxVideo | Video | YouTube
 
 enum MessagePlatform {
   facebook
@@ -1117,1155 +1387,742 @@ enum MessagePlatform {
   weChat
 }
 
-type ChatOpenEvent implements Event
+type MultiselectBlock implements Block
   @shareable
 {
   id: ID!
-
-  """ID of the journey that the buttonBlock belongs to"""
   journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  min: Int
+  max: Int
+}
 
-  """time event was created"""
-  createdAt: DateTime!
+input MultiselectBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+}
 
-  """null for ChatOpenEvent"""
+input MultiselectBlockUpdateInput {
+  parentBlockId: ID
+  min: Int
+  max: Int
+}
+
+type MultiselectOptionBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  label: String!
+}
+
+input MultiselectOptionBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  label: String!
+}
+
+input MultiselectOptionBlockUpdateInput {
+  parentBlockId: ID
   label: String
-
-  """messagePlatform of the link used for chat"""
-  value: String
-
-  """
-  messagePlatform of the link used for chat (based on the messagePlatform in the value field)
-  """
-  messagePlatform: MessagePlatform
 }
 
 type MultiselectSubmissionEvent implements Event
   @shareable
 {
   id: ID!
-
-  """ID of the journey that the multiselect block belongs to"""
-  journeyId: ID!
-
-  """time event was created"""
-  createdAt: DateTime!
-
-  """stepName of the parent stepBlock"""
-  label: String
-
-  """comma separated selected option labels"""
-  value: String
-}
-
-interface Event {
-  id: ID!
   journeyId: ID!
   createdAt: DateTime!
   label: String
   value: String
 }
 
-input JourneyViewEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  journeyId: ID!
-
-  """title of the journey being viewed"""
-  label: String
-
-  """languageId of the journey being viewed"""
-  value: ID
-}
-
-extend type Language
-  @key(fields: "id")
-{
-  id: ID! @external
-}
-
-type JourneyViewEvent implements Event
-  @shareable
-{
-  id: ID!
-
-  """ID of the journey being viewed"""
-  journeyId: ID!
-
-  """time event was created"""
-  createdAt: DateTime!
-
-  """title of the journey being viewed"""
-  label: String
-
-  """languageId of the journey being viewed"""
-  value: String
-
-  """
-  language of the journey being viewed (based on the ID in the value field)
-  """
-  language: Language
-}
-
-type RadioQuestionSubmissionEvent implements Event
-  @shareable
-{
-  id: ID!
-
-  """ID of the journey that the radioQuestionBlock belongs to"""
-  journeyId: ID!
-
-  """time event was created"""
-  createdAt: DateTime!
-
-  """stepName of the parent stepBlock"""
-  label: String
-
-  """label of the selected radioOptionBlock"""
-  value: String
-}
-
-type SignUpSubmissionEvent implements Event
-  @shareable
-{
-  id: ID!
-
-  """ID of the journey that the block belongs to"""
-  journeyId: ID!
-
-  """time event was created"""
-  createdAt: DateTime!
-
-  """null for signUpSubmissionEvent"""
-  label: String
-
-  """name from the signUpBlock form"""
-  value: String
-
-  """email from the signUpBlock form"""
-  email: String
-}
-
-input StepViewEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-
-  """Id of the current StepBlock"""
-  blockId: ID!
-
-  """stepName of the current stepBlock"""
-  value: String
-}
-
-type StepViewEvent implements Event
-  @shareable
-{
-  id: ID!
-
-  """ID of the journey that the stepBlock belongs to"""
-  journeyId: ID!
-
-  """time event was created"""
-  createdAt: DateTime!
-
-  """null for stepViewEvent"""
-  label: String
-
-  """stepName of the stepBlock"""
-  value: String
-}
-
-input StepNextEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-
-  """Id of the current StepBlock"""
-  blockId: ID!
-
-  """id of the next stepBlock"""
-  nextStepId: ID!
-
-  """stepName of the current stepBlock"""
-  label: String
-
-  """stepName of the next stepBlock"""
-  value: String
-}
-
-type StepNextEvent implements Event
-  @shareable
-{
-  id: ID!
-
-  """ID of the journey that the stepBlock belongs to"""
-  journeyId: ID!
-
-  """time event was created"""
-  createdAt: DateTime!
-
-  """stepName of the stepBlock"""
-  label: String
-
-  """stepName of the next stepBlock"""
-  value: String
-}
-
-input StepPreviousEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-
-  """Id of the current StepBlock"""
-  blockId: ID!
-
-  """id of the previous stepBlock"""
-  previousStepId: ID!
-
-  """stepName of the current stepBlock"""
-  label: String
-
-  """stepName of the previous stepBlock"""
-  value: String
-}
-
-type StepPreviousEvent implements Event
-  @shareable
-{
-  id: ID!
-
-  """ID of the journey that the stepBlock belongs to"""
-  journeyId: ID!
-
-  """time event was created"""
-  createdAt: DateTime!
-
-  """stepName of the current stepBlock"""
-  label: String
-
-  """stepName of the previous stepBlock"""
-  value: String
-}
-
-type TextResponseSubmissionEvent implements Event
-  @shareable
-{
-  id: ID!
-
-  """ID of the journey that the TextResponseBlock belongs to"""
-  journeyId: ID!
-
-  """time event was created"""
-  createdAt: DateTime!
-
-  """stepName of the parent stepBlock"""
-  label: String
-
-  """response from the TextResponseBlock form"""
-  value: String
-
-  """the id of the block this event originates from"""
-  blockId: String
-}
-
-input VideoStartEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
+input MultiselectSubmissionEventCreateInput {
   id: ID
   blockId: ID!
-
-  """id of the parent stepBlock"""
   stepId: ID
-
-  """duration of the video played when the VideoStartEvent is triggered"""
-  position: Float
-
-  """title of the video"""
   label: String
-
-  """source of the video"""
-  value: VideoBlockSource
+  values: [String!]!
 }
 
-type VideoStartEvent implements Event
-  @shareable
-{
-  id: ID!
+type Mutation {
+  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
+  visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor!
+  blockDelete(
+    id: ID!
 
-  """ID of the journey that the videoBlock belongs to"""
+    """drop this parameter after merging teams"""
+    journeyId: ID
+
+    """drop this parameter after merging teams"""
+    parentBlockId: ID
+  ): [Block!]!
+  blockDuplicate(
+    id: ID!
+    parentOrder: Int
+    idMap: [BlockDuplicateIdMap!]
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+    x: Int
+    y: Int
+  ): [Block!]!
+  blockRestore(id: ID!): [Block!]!
+  blockOrderUpdate(
+    id: ID!
+    parentOrder: Int!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): [Block!]!
+  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
+  buttonBlockUpdate(
+    id: ID!
+    input: ButtonBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): ButtonBlock
+  cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
+  cardBlockUpdate(
+    id: ID!
+    input: CardBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): CardBlock!
+  iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
+  iconBlockUpdate(
+    id: ID!
+    input: IconBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): IconBlock!
+  imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
+  imageBlockUpdate(
+    id: ID!
+    input: ImageBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): ImageBlock!
+  multiselectBlockCreate(input: MultiselectBlockCreateInput!): MultiselectBlock!
+  multiselectBlockUpdate(
+    id: ID!
+    input: MultiselectBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): MultiselectBlock!
+  multiselectOptionBlockCreate(input: MultiselectOptionBlockCreateInput!): MultiselectOptionBlock!
+  multiselectOptionBlockUpdate(
+    id: ID!
+    input: MultiselectOptionBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): MultiselectOptionBlock!
+  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock!
+  radioOptionBlockUpdate(
+    id: ID!
+    input: RadioOptionBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): RadioOptionBlock!
+  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock!
+  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean): RadioQuestionBlock!
+  signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
+  signUpBlockUpdate(
+    id: ID!
+    input: SignUpBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): SignUpBlock!
+  spacerBlockCreate(input: SpacerBlockCreateInput!): SpacerBlock!
+  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!): SpacerBlock!
+  stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
+  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]!
+  stepBlockUpdate(
+    id: ID!
+    input: StepBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): StepBlock!
+  textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock!
+  textResponseBlockUpdate(
+    id: ID!
+    input: TextResponseBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): TextResponseBlock!
+  typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!
+  typographyBlockUpdate(
+    id: ID!
+    input: TypographyBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): TypographyBlock!
+  videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
+  videoBlockUpdate(
+    id: ID!
+    input: VideoBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): VideoBlock!
+  blockDeleteAction(id: ID!, journeyId: ID): Block!
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!): Action!
+  blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID): EmailAction!
+  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID): LinkAction!
+  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction!
+  blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID): PhoneAction!
+  blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID): ChatAction!
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
+  chatButtonRemove(id: ID!): ChatButton!
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
+  customDomainCheck(id: ID!): CustomDomainCheck!
+  customDomainDelete(id: ID!): CustomDomain!
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain!
+  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain!
+  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
+  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent
+  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
+  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent!
+  stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent!
+  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
+  multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent!
+  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
+  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent!
+  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
+  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
+  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent!
+  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!): VideoCompleteEvent!
+  videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
+  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
+  videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
+  hostCreate(teamId: ID!, input: HostCreateInput!): Host!
+  hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
+  hostDelete(id: ID!, teamId: ID!): Host!
+  journeySimpleUpdate(id: ID!, journey: Json!): Json
+  googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!): GoogleSheetsSync!
+  googleSheetsSyncDelete(id: ID!): GoogleSheetsSync!
+
+  """
+  Triggers a backfill of the Google Sheets sync. Clears existing data and re-exports all events.
+  """
+  googleSheetsSyncBackfill(id: ID!): GoogleSheetsSync!
+  integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces!
+  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces!
+  integrationGoogleCreate(input: IntegrationGoogleCreateInput!): IntegrationGoogle!
+  integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!): IntegrationGoogle!
+  integrationDelete(id: ID!): Integration!
+  journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
+  journeyDuplicate(id: ID!, teamId: ID!, forceNonTemplate: Boolean, duplicateAsDraft: Boolean): Journey!
+  journeyFeature(id: ID!, feature: Boolean!): Journey
+  journeyPublish(id: ID!): Journey
+  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
+  journeyTransferFromAnonymous(journeyId: ID!, teamId: ID): Journey!
+  journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
+  journeysArchive(ids: [ID!]!): [Journey]!
+  journeysDelete(ids: [ID!]!): [Journey]!
+  journeysRestore(ids: [ID!]!): [Journey]!
+  journeysTrash(ids: [ID!]!): [Journey]!
+  journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
+  journeyCustomizationDescriptionTranslate(input: JourneyCustomizationDescriptionTranslateInput!): Journey!
+  journeyCustomizationFieldPublisherUpdate(journeyId: ID!, string: String!): [JourneyCustomizationField!]!
+  journeyCustomizationFieldUserUpdate(journeyId: ID!, input: [JourneyCustomizationFieldInput!]!): [JourneyCustomizationField!]!
+  journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection!
+  journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection!
+  journeyCollectionDelete(id: ID!): JourneyCollection!
+  createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
+  journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
+  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification!
+  journeyProfileCreate: JourneyProfile!
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
+  updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference
+  journeyThemeCreate(input: JourneyThemeCreateInput!): JourneyTheme!
+  journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!): JourneyTheme!
+  journeyThemeDelete(id: ID!): JourneyTheme!
+  journeyVisitorExportToGoogleSheet(
+    journeyId: ID!
+    filter: JourneyEventsFilter
+    select: JourneyVisitorExportSelect
+    destination: JourneyVisitorGoogleSheetDestinationInput!
+    integrationId: ID!
+
+    """
+    IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.
+    """
+    timezone: String
+  ): JourneyVisitorGoogleSheetExportResult!
+  qrCodeCreate(input: QrCodeCreateInput!): QrCode!
+  qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!): QrCode!
+  qrCodeDelete(id: ID!): QrCode!
+  teamCreate(input: TeamCreateInput): Team!
+  teamUpdate(id: ID!, input: TeamUpdateInput): Team!
+
+  """
+  Create a new TemplateGalleryPage in `draft` status. The server generates a unique slug from `input.title`. Initial `journeyIds` are attached as templates in the order given (cross-team and non-template ids are silently filtered out).
+  
+  Auth: caller must be authenticated and a member of `input.teamId`.
+  
+  Errors:
+  - BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.
+  - BAD_USER_INPUT (field: `slug`): the title normalizes to empty or to a reserved word.
+  """
+  templateGalleryPageCreate(input: TemplateGalleryPageCreateInput!): TemplateGalleryPage!
+
+  """
+  Update editable fields of a TemplateGalleryPage. All input fields are optional: a field omitted leaves the existing value alone, a field set to `null` clears it (where the field is nullable). When `input.journeyIds` is provided, the page's template list is replaced — existing assignments are deleted and recreated in the given order. Single-membership is enforced: if any supplied journey id is currently a member of another TemplateGalleryPage, the call fails before any write. Allowed on both `draft` and `published` pages (publishers can correct typos and curate the template list while live).
+  
+  Auth: caller must be a member of the page's team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the page's team.
+  - BAD_USER_INPUT (field: `slug`): user-supplied slug fails shape, length, reserved-word, or uniqueness checks — including the concurrent-Update race where two callers pass the same slug and the second one trips the DB unique constraint at commit time.
+  - BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.
+  - CONFLICT (field: `journeyIds`; extension `journeyId` carries the offending id): one of the supplied journeys is already a member of another TemplateGalleryPage.
+  """
+  templateGalleryPageUpdate(
+    """Stable page identifier."""
+    id: ID!
+    input: TemplateGalleryPageUpdateInput!
+  ): TemplateGalleryPage!
+
+  """
+  Transition a `draft` page to `published`, stamping `publishedAt` on the first publish only. Idempotent: calling on an already-published page is a no-op (no state change, no re-stamp of `publishedAt`).
+  
+  Auth: caller must be a member of the page's team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve, or the page was deleted between the auth-fetch and the canonical re-read.
+  - FORBIDDEN: caller is not in the page's team.
+  """
+  templateGalleryPagePublish(
+    """Stable page identifier."""
+    id: ID!
+  ): TemplateGalleryPage!
+
+  """
+  Transition a `published` page back to `draft`. `publishedAt` is intentionally NOT cleared — the historical first-publish timestamp is preserved across unpublish/republish cycles. Idempotent: calling on an already-draft page is a no-op.
+  
+  Auth: caller must be a member of the page's team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve, or the page was deleted between the auth-fetch and the canonical re-read.
+  - FORBIDDEN: caller is not in the page's team.
+  """
+  templateGalleryPageUnpublish(
+    """Stable page identifier."""
+    id: ID!
+  ): TemplateGalleryPage!
+
+  """
+  Assign a journey to a TemplateGalleryPage, or unassign it. A journey may belong to at most one page at a time (single-membership invariant).
+  
+  - `pageId` set: move the journey into that page. The new row appends at the end of the target's display order; if the journey was already in another page (cross-page move) it is removed from the source page first. Both pages are renumbered to contiguous orders 0..N-1 after the change. Allowed on both `draft` and `published` pages.
+  - `pageId` null/omitted: unassign — remove the journey from whatever page it is currently in. Returns null (idempotent no-op) if the journey is not in any page.
+  - Same-page-already: idempotent return; no row changes.
+  
+  Auth: caller must be a member of the target page's team (and, on a cross-page move, also of the source page's team).
+  
+  Errors:
+  - NOT_FOUND: target `pageId` does not resolve.
+  - NOT_FOUND (field: `journeyId`): journey does not exist or is soft-deleted.
+  - BAD_USER_INPUT (field: `journeyId`): journey is not flagged as a template.
+  - FORBIDDEN: caller is not in the target page's team.
+  - FORBIDDEN (field: `journeyId`): journey belongs to a different team than the target page.
+  """
+  templateGalleryPageAssignJourney(
+    """
+    The journey to assign or unassign. Must be a non-deleted, template-flagged journey owned by the target page's team (when assigning).
+    """
+    journeyId: ID!
+
+    """
+    Target page id. Omit or pass `null` to unassign the journey from whatever page currently owns it (returning it to the flat template list). When set, the journey is moved into this page (and removed from any current source page in the same transaction).
+    """
+    pageId: ID
+  ): TemplateGalleryPage
+
+  """
+  Reorder a single template within a TemplateGalleryPage by addressing the destination as a 0-based display index. The page is renumbered to contiguous orders 0..N-1 after the move so the next reorder sees a clean range. Allowed on both `draft` and `published` pages (the frontend gates the UX; the backend accepts unconditionally for symmetry with `templateGalleryPageUpdate` and `templateGalleryPageAssignJourney`).
+  
+  Idempotent: when the journey is already at the requested display index, the call is a no-op.
+  
+  Auth: caller must be a member of the page's team.
+  
+  Errors:
+  - NOT_FOUND: `pageId` does not resolve.
+  - FORBIDDEN: caller is not in the page's team.
+  - BAD_USER_INPUT (field: `journeyId`): journey is not currently a member of the page.
+  - BAD_USER_INPUT (field: `order`): order is out of range; must satisfy `0 <= order < count(templates in page)`.
+  """
+  templateGalleryPageReorderTemplate(
+    """Target template gallery page id."""
+    pageId: ID!
+
+    """
+    The journey whose position is being changed. Must already be a member of the page; use `templateGalleryPageAssignJourney` to add a journey first.
+    """
+    journeyId: ID!
+
+    """
+    0-based display index in the page's CURRENT template list, NOT the stored `order` column value. Range: `0 <= order < count(templates in page)`. The underlying `order` column may be gappy from prior assign/unassign churn; the resolver translates the display index into the correct splice position and renumbers the page contiguously.
+    """
+    order: Int!
+  ): TemplateGalleryPage!
+
+  """
+  Hard-delete a TemplateGalleryPage. Cascades through `TemplateGalleryPageTemplate` join rows automatically; the underlying `Journey` rows are NOT deleted. Returns the deleted page (last canonical view).
+  
+  Auth: caller must be a member of the page's team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the page's team.
+  """
+  templateGalleryPageDelete(
+    """Stable page identifier."""
+    id: ID!
+  ): TemplateGalleryPage!
+  userDeleteJourneysCheck(userId: String!): UserDeleteJourneysCheckResult!
+  userDeleteJourneysConfirm(userId: String!): UserDeleteJourneysConfirmResult!
+  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
+  userInviteRemove(id: ID!, journeyId: ID!): UserInvite!
+  userInviteAcceptAll: [UserInvite!]!
+  userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
+  userJourneyApprove(id: ID!): UserJourney!
+  userJourneyPromote(id: ID!): UserJourney!
+  userJourneyRemove(id: ID!): UserJourney!
+  userJourneyRemoveAll(id: ID!): [UserJourney!]!
+  userJourneyOpen(id: ID!): UserJourney
+  userTeamUpdate(id: ID!, input: UserTeamUpdateInput): UserTeam!
+  userTeamDelete(id: ID!): UserTeam!
+  userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput): UserTeamInvite
+  userTeamInviteRemove(id: ID!): UserTeamInvite!
+  userTeamInviteAcceptAll: [UserTeamInvite!]!
+}
+
+input MutationJourneyLanguageAiDetectInput {
   journeyId: ID!
-
-  """time event was created"""
-  createdAt: DateTime!
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: String
-
-  """duration of the video played when the VideoStartEvent is triggered"""
-  position: Float
-
-  """source of the video (based on the source in the value field)"""
-  source: VideoBlockSource
-}
-
-input VideoPlayEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoPlayEvent is triggered"""
-  position: Float
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
-}
-
-type VideoPlayEvent implements Event
-  @shareable
-{
-  id: ID!
-
-  """ID of the journey that the videoBlock belongs to"""
-  journeyId: ID!
-
-  """time event was created"""
-  createdAt: DateTime!
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: String
-
-  """duration of the video played when the VideoPlayEvent is triggered"""
-  position: Float
-
-  """source of the video (based on the source in the value field)"""
-  source: VideoBlockSource
-}
-
-input VideoPauseEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoPauseEvent is triggered"""
-  position: Float
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
-}
-
-type VideoPauseEvent implements Event
-  @shareable
-{
-  id: ID!
-
-  """ID of the journey that the videoBlock belongs to"""
-  journeyId: ID!
-
-  """time event was created"""
-  createdAt: DateTime!
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: String
-
-  """duration of the video played when the VideoPauseEvent is triggered"""
-  position: Float
-
-  """source of the video (based on the source in the value field)"""
-  source: VideoBlockSource
-}
-
-input VideoCompleteEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoCompleteEvent is triggered"""
-  position: Float
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
-}
-
-type VideoCompleteEvent implements Event
-  @shareable
-{
-  id: ID!
-
-  """ID of the journey that the videoBlock belongs to"""
-  journeyId: ID!
-
-  """time event was created"""
-  createdAt: DateTime!
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: String
-
-  """duration of the video played when the VideoCompleteEvent is triggered"""
-  position: Float
-
-  """source of the video (based on the source in the value field)"""
-  source: VideoBlockSource
-}
-
-input VideoExpandEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoExpandEvent is triggered"""
-  position: Float
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
-}
-
-type VideoExpandEvent implements Event
-  @shareable
-{
-  id: ID!
-
-  """ID of the journey that the videoBlock belongs to"""
-  journeyId: ID!
-
-  """time event was created"""
-  createdAt: DateTime!
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: String
-
-  """duration of the video played when the VideoExpandEvent is triggered"""
-  position: Float
-
-  """source of the video (based on the source in the value field)"""
-  source: VideoBlockSource
-}
-
-input VideoCollapseEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoCollapseEvent is triggered"""
-  position: Float
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
-}
-
-type VideoCollapseEvent implements Event
-  @shareable
-{
-  id: ID!
-
-  """ID of the journey that the videoBlock belongs to"""
-  journeyId: ID!
-
-  """time event was created"""
-  createdAt: DateTime!
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: String
-
-  """duration of the video played when the VideoCollapseEvent is triggered"""
-  position: Float
-
-  """source of the video (based on the source in the value field)"""
-  source: VideoBlockSource
-}
-
-input VideoProgressEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """duration of the video played when the VideoProgressEvent is triggered"""
-  position: Float
-
-  """
-  progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
-  """
-  progress: Int!
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: VideoBlockSource
-}
-
-type VideoProgressEvent implements Event
-  @shareable
-{
-  id: ID!
-
-  """ID of the journey that the videoBlock belongs to"""
-  journeyId: ID!
-
-  """time event was created"""
-  createdAt: DateTime!
-
-  """title of the video"""
-  label: String
-
-  """source of the video"""
-  value: String
-
-  """duration of the video played when the VideoProgressEvent is triggered"""
-  position: Float
-
-  """source of the video (based on the source in the value field)"""
-  source: VideoBlockSource
-
-  """
-  progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
-  """
-  progress: Int!
-}
-
-type Host
-  @shareable
-{
-  id: ID!
-  teamId: ID!
-  title: String!
-  location: String
-  src1: String
-  src2: String
-}
-
-input HostUpdateInput {
-  """
-  title can be undefined as to not update title, but it cannot be null as to clear the value of title
-  """
-  title: String
-  location: String
-  src1: String
-  src2: String
-}
-
-input HostCreateInput {
-  title: String!
-  location: String
-  src1: String
-  src2: String
-}
-
-type IntegrationGoogle implements Integration
-  @shareable
-{
-  id: ID!
-  team: Team!
-  type: IntegrationType!
-  user: User
-  userId: ID
-  accountEmail: String
-}
-
-type IntegrationGrowthSpaces implements Integration
-  @shareable
-{
-  id: ID!
-  team: Team!
-  type: IntegrationType!
-  accessId: String
-  accessSecretPart: String
-  routes: [IntegrationGrowthSpacesRoute!]!
-}
-
-input IntegrationGrowthSpacesCreateInput {
-  accessId: String!
-  accessSecret: String!
-  teamId: String!
-}
-
-input IntegrationGrowthSpacesUpdateInput {
-  accessId: String!
-  accessSecret: String!
-}
-
-type IntegrationGrowthSpacesRoute
-  @shareable
-{
-  id: String!
   name: String!
+  journeyLanguageName: String!
+  textLanguageId: ID!
+  textLanguageName: String!
 }
 
-enum IntegrationType {
-  google
-  growthSpaces
-}
-
-interface Integration {
-  id: ID!
-  team: Team!
-  type: IntegrationType!
-}
-
-extend type Tag
-  @key(fields: "id")
+type MuxVideo
+  @key(fields: "id primaryLanguageId")
+  @extends
 {
   id: ID! @external
+  primaryLanguageId: ID @external
+  source: VideoBlockSource! @shareable
 }
 
-enum JourneyMenuButtonIcon {
-  menu1
-  equals
-  home3
-  home4
-  more
-  ellipsis
-  grid1
-  chevronDown
+type NavigateToBlockAction implements Action
+  @shareable
+{
+  parentBlockId: ID!
+  gtmEventName: String
+  parentBlock: Block!
+  blockId: String!
 }
 
-enum IdType {
-  databaseId
-  slug
+input NavigateToBlockActionInput {
+  gtmEventName: String
+  blockId: String!
 }
 
-enum JourneyStatus {
-  archived
-  deleted
-  draft
-  published
-  trashed
+interface Node {
+  id: ID!
 }
 
-input JourneysFilter {
-  featured: Boolean
-  template: Boolean
-  ids: [ID!]
-  tagIds: [ID!]
-  languageIds: [ID!]
+type OperatingSystem
+  @shareable
+{
+  name: String
+  version: String
+}
+
+type PageInfo
+  @shareable
+{
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type PhoneAction implements Action
+  @shareable
+{
+  parentBlockId: ID!
+  gtmEventName: String
+  parentBlock: Block!
+  phone: String!
+  countryCode: String!
+  contactAction: ContactActionType!
+  customizable: Boolean
+  parentStepId: String
+}
+
+input PhoneActionInput {
+  gtmEventName: String
+  phone: String!
+  countryCode: String!
+  contactAction: ContactActionType = call
+  customizable: Boolean
+  parentStepId: String
+}
+
+enum PlausibleEvent {
+  footerThumbsUpButtonClick
+  footerThumbsDownButtonClick
+  shareButtonClick
+  pageview
+  navigatePreviousStep
+  navigateNextStep
+  buttonClick
+  chatButtonClick
+  footerChatButtonClick
+  radioQuestionSubmit
+  signUpSubmit
+  textResponseSubmit
+  videoPlay
+  videoPause
+  videoExpand
+  videoCollapse
+  videoStart
+  videoProgress25
+  videoProgress50
+  videoProgress75
+  videoComplete
+  videoTrigger
+  multiSelectSubmit
+  prayerRequestCapture
+  christDecisionCapture
+  gospelStartCapture
+  gospelCompleteCapture
+  rsvpCapture
+  specialVideoStartCapture
+  specialVideoCompleteCapture
+  custom1Capture
+  custom2Capture
+  custom3Capture
+  chatsClicked
+  linksClicked
+  journeyVisitors
+  journeyResponses
+}
+
+input PlausibleStatsAggregateFilter {
+  """
+  See [time periods](https://plausible.io/docs/stats-api#time-periods).
+  If not specified, it will default to 30d.
+  """
+  period: String
+
+  """
+  date in the standard ISO-8601 format (YYYY-MM-DD).
+  When using a custom range, the date parameter expects two ISO-8601 formatted dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned for the whole date range inclusive of the start and end dates.
+  """
+  date: String
+
+  """
+  See [filtering](https://plausible.io/docs/stats-api#filtering) section for more details.
+  """
+  filters: String
+
+  """
+  Off by default. You can specify `previous_period` to calculate the percent difference with the previous period for each metric. The previous period will be of the exact same length as specified in the period parameter.
+  """
+  interval: String
+}
+
+type PlausibleStatsAggregateResponse
+  @shareable
+{
+  """The number of unique visitors."""
+  visitors: PlausibleStatsAggregateValue
+
+  """The number of visits/sessions."""
+  visits: PlausibleStatsAggregateValue
+
+  """The number of pageview events."""
+  pageviews: PlausibleStatsAggregateValue
+
+  """
+  The number of pageviews divided by the number of visits. Returns a floating point number. Currently only supported in Aggregate and Timeseries endpoints.
+  """
+  viewsPerVisit: PlausibleStatsAggregateValue
+
+  """Bounce rate percentage."""
+  bounceRate: PlausibleStatsAggregateValue
+
+  """Visit duration in seconds."""
+  visitDuration: PlausibleStatsAggregateValue
+
+  """
+  The number of events (pageviews + custom events). When filtering by a goal, this metric corresponds to "Total Conversions" in the dashboard.
+  """
+  events: PlausibleStatsAggregateValue
+
+  """
+  The percentage of visitors who completed the goal. Requires an `event:goal` filter or `event:goal` property in the breakdown endpoint.
+  """
+  conversionRate: PlausibleStatsAggregateValue
+
+  """
+  The average time users spend on viewing a single page. Requires an `event:page` filter or `event:page` property in the breakdown endpoint.
+  """
+  timeOnPage: PlausibleStatsAggregateValue
+}
+
+type PlausibleStatsAggregateValue
+  @shareable
+{
+  value: Float!
+  change: Int
+}
+
+input PlausibleStatsBreakdownFilter {
+  """
+  Which [property](https://plausible.io/docs/stats-api#properties) to break down the stats by.
+  """
+  property: String!
+
+  """
+  See [time periods](https://plausible.io/docs/stats-api#time-periods).
+  If not specified, it will default to 30d.
+  """
+  period: String
+
+  """
+  date in the standard ISO-8601 format (YYYY-MM-DD).
+  When using a custom range, the date parameter expects two ISO-8601 formatted dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned for the whole date range inclusive of the start and end dates.
+  """
+  date: String
+
+  """
+  Limit the number of results. Maximum value is 1000. Defaults to 100.
+  If you want to get more than 1000 results, you can make multiple requests and paginate the results by specifying the page parameter (e.g. make the same request with page=1, then page=2, etc).
+  """
   limit: Int
-  orderByRecent: Boolean
-  fromTemplateId: ID
-  teamId: String
+
+  """
+  Number of the page, used to paginate results. Importantly, the page numbers start from 1 not 0.
+  """
+  page: Int
+
+  """
+  See [filtering](https://plausible.io/docs/stats-api#filtering) section for more details.
+  """
+  filters: String
 }
 
-input JourneysQueryOptions {
+type PlausibleStatsResponse
+  @shareable
+{
   """
-  hostname filters journeys to those that belong to a team with a custom domain
-  matching the hostname.
+  On breakdown queries, this is the property that was broken down by. On aggregate queries, this is the date the stats are for.
   """
-  hostname: String
+  property: String!
 
-  """is this being requested from an embed url"""
-  embedded: Boolean
+  """The number of unique visitors."""
+  visitors: Int
+
+  """The number of visits/sessions."""
+  visits: Int
+
+  """The number of pageview events."""
+  pageviews: Int
 
   """
-  limit results to journeys in a journey collection (currently only available when using hostname option)
+  The number of pageviews divided by the number of visits. Returns a floating point number. Currently only supported in Aggregate and Timeseries endpoints.
   """
-  journeyCollection: Boolean
+  viewsPerVisit: Float
 
-  """skip custom domain routing filter (for admin template customization)"""
-  skipRoutingFilter: Boolean
+  """Bounce rate percentage."""
+  bounceRate: Int
+
+  """Visit duration in seconds."""
+  visitDuration: Int
 
   """
-  when provided, filter the journey to only return if its status is in this list.
-  when not provided, no status filter is applied (current behaviour).
+  The number of events (pageviews + custom events). When filtering by a goal, this metric corresponds to "Total Conversions" in the dashboard.
   """
-  status: [JourneyStatus!]
+  events: Int
+
+  """
+  The percentage of visitors who completed the goal. Requires an `event:goal` filter or `event:goal` property in the breakdown endpoint.
+  """
+  conversionRate: Int
+
+  """
+  The average time users spend on viewing a single page. Requires an `event:page` filter or `event:page` property in the breakdown endpoint.
+  """
+  timeOnPage: Float
 }
 
-enum JourneysReportType {
-  multipleFull
-  multipleSummary
-  singleFull
-  singleSummary
+input PlausibleStatsTimeseriesFilter {
+  """
+  See [time periods](https://plausible.io/docs/stats-api#time-periods).
+  If not specified, it will default to 30d.
+  """
+  period: String
+
+  """
+  date in the standard ISO-8601 format (YYYY-MM-DD).
+  When using a custom range, the date parameter expects two ISO-8601 formatted dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned for the whole date range inclusive of the start and end dates.
+  """
+  date: String
+
+  """
+  See [filtering](https://plausible.io/docs/stats-api#filtering) section for more details.
+  """
+  filters: String
+
+  """
+  Choose your reporting interval. Valid options are date (always) and month (when specified period is longer than one calendar month). Defaults to month for 6mo and 12mo, otherwise falls back to date.
+  """
+  interval: String
 }
 
 type PowerBiEmbed
   @shareable
 {
-  """The report ID"""
   reportId: String!
-
-  """The name of the report"""
   reportName: String!
-
-  """The embed URL of the report"""
   embedUrl: String!
-
-  """The embed token"""
   accessToken: String!
-
-  """The date and time (UTC) of token expiration"""
   expiration: String!
-}
-
-input JourneyCreateInput {
-  """
-  ID should be unique Response UUID
-  (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  title: String!
-  languageId: String!
-  themeMode: ThemeMode
-  themeName: ThemeName
-  description: String
-
-  """
-  Slug should be unique amongst all journeys
-  (server will throw BAD_USER_INPUT error if not)
-  If not required will use title formatted with kebab-case
-  If the generated slug is not unique the uuid will be placed
-  at the end of the slug guaranteeing uniqueness
-  """
-  slug: String
-}
-
-input JourneyUpdateInput {
-  title: String
-  languageId: String
-  themeMode: ThemeMode
-  themeName: ThemeName
-  description: String
-  creatorDescription: String
-  creatorImageBlockId: ID
-  primaryImageBlockId: ID
-  slug: String
-  seoTitle: String
-  seoDescription: String
-  hostId: String
-  strategySlug: String
-  tagIds: [ID!]
-  website: Boolean
-  showShareButton: Boolean
-  showLikeButton: Boolean
-  showDislikeButton: Boolean
-  displayTitle: String
-  showHosts: Boolean
-  showChatButtons: Boolean
-  showReactionButtons: Boolean
-  showLogo: Boolean
-  showMenu: Boolean
-  showDisplayTitle: Boolean
-  menuButtonIcon: JourneyMenuButtonIcon
-  menuStepBlockId: ID
-  logoImageBlockId: ID
-  socialNodeX: Int
-  socialNodeY: Int
-}
-
-type UserJourney
-  @key(fields: "id")
-  @shareable
-{
-  journey: Journey
-  journeyNotification: JourneyNotification
-  id: ID!
-  userId: ID!
-  journeyId: ID!
-  role: UserJourneyRole!
-  user: User
-
-  """Date time of when the journey was first opened"""
-  openedAt: DateTime
-}
-
-input JourneyTemplateInput {
-  template: Boolean
-}
-
-type JourneyCollection
-  @shareable
-{
-  id: ID!
-  team: Team!
-  title: String
-  customDomains: [CustomDomain!]
-  journeys: [Journey!]
-}
-
-input JourneyCollectionCreateInput {
-  id: ID
-  teamId: String!
-  title: String
-  journeyIds: [String!]
-}
-
-input JourneyCollectionUpdateInput {
-  title: String
-  journeyIds: [String!]
-}
-
-type JourneyCustomizationField
-  @shareable
-{
-  id: ID!
-  journeyId: ID!
-  key: String!
-  value: String
-  defaultValue: String
-}
-
-input JourneyCustomizationFieldInput {
-  id: ID!
-  key: String!
-  value: String
-}
-
-"""
-JourneyEvent aggregates all event types. For detailed event type definitions,
-see the specific event files in the event module
-"""
-type JourneyEvent implements Event
-  @shareable
-{
-  """Base event fields from Event interface"""
-  id: ID!
-  journeyId: ID!
-  createdAt: DateTime!
-  label: String
-  value: String
-
-  """Additional specific event fields"""
-  action: ButtonAction
-  actionValue: String
-  messagePlatform: MessagePlatform
-  language: Language
-  email: String
-  blockId: String
-  position: Float
-  source: VideoBlockSource
-  progress: Int
-
-  """
-  database fields from table, not explicitly surfaced from any other types
-  """
-  typename: String
-  visitorId: String
-
-  """Related fields queried from relevant ids in the events table"""
-  journeySlug: String
-  visitorName: String
-  visitorEmail: String
-  visitorPhone: String
-}
-
-type JourneyEventEdge
-  @shareable
-{
-  cursor: String!
-  node: JourneyEvent!
-}
-
-type JourneyEventsConnection
-  @shareable
-{
-  edges: [JourneyEventEdge!]!
-  pageInfo: PageInfo!
-}
-
-input JourneyEventsFilter {
-  typenames: [String!]
-  periodRangeStart: DateTime
-  periodRangeEnd: DateTime
-  includeUnconnectedCards: Boolean
-}
-
-type JourneyNotification
-  @shareable
-{
-  id: ID!
-  userId: ID!
-  journeyId: ID!
-  userTeamId: ID
-  userJourneyId: ID
-  visitorInteractionEmail: Boolean!
-}
-
-type UserTeam
-  @key(fields: "id")
-  @shareable
-{
-  journeyNotification(journeyId: ID!): JourneyNotification
-  id: ID!
-  user: User!
-  role: UserTeamRole!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
-input JourneyNotificationUpdateInput {
-  journeyId: ID!
-  visitorInteractionEmail: Boolean!
-}
-
-type JourneyProfile
-  @key(fields: "id")
-  @shareable
-{
-  id: ID!
-  userId: ID!
-  acceptedTermsAt: DateTime
-  lastActiveTeamId: String
-  journeyFlowBackButtonClicked: Boolean
-  plausibleJourneyFlowViewed: Boolean
-  plausibleDashboardViewed: Boolean
-}
-
-type JourneyTheme
-  @shareable
-{
-  id: ID!
-  journeyId: ID!
-  journey: Journey!
-  userId: ID!
-  headerFont: String
-  bodyFont: String
-  labelFont: String
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
-input JourneyThemeCreateInput {
-  journeyId: ID!
-  headerFont: String
-  bodyFont: String
-  labelFont: String
-}
-
-input JourneyThemeUpdateInput {
-  headerFont: String
-  bodyFont: String
-  labelFont: String
-}
-
-type JourneyVisitor
-  @key(fields: "visitorId journeyId")
-  @shareable
-{
-  visitorId: ID!
-  journeyId: ID!
-
-  """
-  The time when the visitor created their first event on a journey connected
-  to the requested team.
-  """
-  createdAt: DateTime!
-
-  """Duration between createdAt and lastStepViewedAt in seconds"""
-  duration: Int
-
-  """
-  The last time the visitor called the ButtonClickEvent mutation where the url
-  is in the format of a recognized chat platform.
-  """
-  lastChatStartedAt: DateTime
-
-  """
-  The last message platform the visitor called the ButtonClickEvent where the
-  url is in the format of a recognized chat platform
-  """
-  lastChatPlatform: MessagePlatform
-
-  """
-  The country code of the visitor as poulated by visitor ip address detected in
-  the JourneyViewEventCreate mutation. This field country code is converted
-  from an IP address by the @maxmind/geoip2-node library. If this field is empty
-  it is likely that the JourneyViewEventCreate mutation was not called by the
-  visitor or that the country was not able to be determined based on the
-  visitor IP address.
-  """
-  countryCode: String
-
-  """
-  Message platform the visitor wishes to be connected to us on as populated by
-  VisitorUpdate mutation or ChatOpenEventCreate mutation.
-  """
-  messagePlatform: MessagePlatform
-
-  """
-  ID of the visitor as set by VisitorUpdate mutation. This could be a phone
-  number, user id or other unique identifier provided by the message platform.
-  """
-  notes: String
-
-  """
-  The last time the visitor called StepViewEvent mutation. It is populated when
-  the visitor is first created, and is updated by all event creation mutations.
-  """
-  lastStepViewedAt: DateTime
-
-  """
-  The label of a link action button of the last time the visitor clicked a
-  link action button. Populated by ButtonClickEvent
-  """
-  lastLinkAction: String
-
-  """
-  The response of the last text response block the visitor filled out,
-  populated by TextResponseSubmission mutation
-  """
-  lastTextResponse: String
-
-  """
-  The question of the last radio option the visitor filled out,
-  populated by RadioQuestionSubmission mutation
-  """
-  lastRadioQuestion: String
-
-  """
-  The selected option  of the last radio option the visitor filled out,
-  populated by RadioQuestionSubmission mutation
-  """
-  lastRadioOptionSubmission: String
-  lastMultiselectSubmission: String
-  events: [Event!]!
-  visitor: Visitor!
-}
-
-type JourneyVisitorEdge
-  @shareable
-{
-  """A cursor for use in pagination."""
-  cursor: String!
-
-  """The item at the end of the edge."""
-  node: JourneyVisitor!
-}
-
-type JourneyVisitorsConnection
-  @shareable
-{
-  """A list of edges."""
-  edges: [JourneyVisitorEdge!]!
-
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-}
-
-input JourneyVisitorFilter {
-  journeyId: String!
-  hasChatStarted: Boolean
-  hasPollAnswers: Boolean
-  hasMultiselectSubmission: Boolean
-  hasTextResponse: Boolean
-  hasIcon: Boolean
-  hideInactive: Boolean
-  countryCode: String
-}
-
-enum JourneyVisitorSort {
-  date
-  duration
-  activity
-}
-
-type JourneysEmailPreference
-  @shareable
-{
-  email: String!
-  unsubscribeAll: Boolean!
-  accountNotifications: Boolean!
-}
-
-input JourneysEmailPreferenceUpdateInput {
-  email: String!
-  preference: String!
-  value: Boolean!
-}
-
-extend type ShortLink
-  @key(fields: "id")
-{
-  id: ID! @external
 }
 
 type QrCode
   @shareable
 {
   id: ID!
-
-  """Team where the Qr Code belongs to"""
-  team: Team
-
-  """Journey where the Qr Code was created from"""
-  journey: Journey
-
-  """ShortLink that handles the redirection"""
-  shortLink: ShortLink!
+  toJourneyId: String
   color: String
   backgroundColor: String
-  toJourneyId: String
-}
-
-input QrCodesFilter {
-  journeyId: ID
-  teamId: ID
+  team: Team
+  journey: Journey
+  shortLink: ShortLink!
 }
 
 input QrCodeCreateInput {
@@ -2275,16 +2132,460 @@ input QrCodeCreateInput {
 
 input QrCodeUpdateInput {
   """
-  journey url where the QR code redirects to, will be parsed and
-  stored as ids
+  journey url where the QR code redirects to, will be parsed and stored as ids
   """
   to: String
   color: String
   backgroundColor: String
 }
 
-type Team
+input QrCodesFilter {
+  journeyId: ID
+  teamId: ID
+}
+
+type Query {
+  visitor(id: ID!): Visitor!
+  visitorsConnection(teamId: String, first: Int, after: String): VisitorsConnection!
+  block(id: ID!): Block!
+  blocks(where: BlocksFilter): [Block!]!
+  customDomains(teamId: ID!): [CustomDomain!]!
+  customDomain(id: ID!): CustomDomain!
+  node(id: ID!): Node
+  nodes(ids: [ID!]!): [Node]!
+  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
+  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
+  hosts(teamId: ID!): [Host!]!
+  journeySimpleGet(id: ID!): Json
+  googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!): [GoogleSheetsSync!]!
+  integrations(teamId: ID!): [Integration!]!
+  integrationGooglePickerToken(integrationId: ID!): String!
+  adminJourney(id: ID!, idType: IdType = slug): Journey!
+  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]!
+  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
+  journey(id: ID!, idType: IdType = slug, options: JourneysQueryOptions): Journey!
+  journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
+  journeyTemplateLanguageIds: [String!]!
+  journeyCollection(id: ID!): JourneyCollection!
+  journeyCollections(teamId: ID!): [JourneyCollection]!
+  getJourneyProfile: JourneyProfile
+  journeysEmailPreference(email: String!): JourneysEmailPreference
+  journeyTheme(journeyId: ID!): JourneyTheme
+
+  """
+  Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
+  """
+  journeyVisitorExport(
+    journeyId: ID!
+    filter: JourneyEventsFilter
+    select: JourneyVisitorExportSelect
+
+    """
+    IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.
+    """
+    timezone: String
+  ): String
+  journeyVisitorsConnection(filter: JourneyVisitorFilter!, first: Int, after: String, sort: JourneyVisitorSort): JourneyVisitorsConnection!
+  journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
+  journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter!, id: ID!, idType: IdType = slug): PlausibleStatsAggregateResponse!
+
+  """
+  This endpoint allows you to break down your stats by some property.
+  If you are familiar with SQL family databases, this endpoint corresponds to
+  running `GROUP BY` on a certain property in your stats, then ordering by the
+  count.
+  Check out the [properties](https://plausible.io/docs/stats-api#properties)
+  section for a reference of all the properties you can use in this query.
+  This endpoint can be used to fetch data for `Top sources`, `Top pages`,
+  `Top countries` and similar reports.
+  Currently, it is only possible to break down on one property at a time.
+  Using a list of properties with one query is not supported. So if you want
+  a breakdown by both `event:page` and `visit:source` for example, you would
+  have to make multiple queries (break down on one property and filter on
+   another) and then manually/programmatically group the results together in one
+   report. This also applies for breaking down by time periods. To get a daily
+   breakdown for every page, you would have to break down on `event:page` and
+   make multiple queries for each date.
+  """
+  journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter!, id: ID!, idType: IdType = slug): [PlausibleStatsResponse!]!
+  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType = slug): Int!
+
+  """
+  This endpoint provides timeseries data over a certain time period.
+  If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
+  """
+  journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType = slug): [PlausibleStatsResponse!]!
+  templateFamilyStatsAggregate(id: ID!, idType: IdType = slug, where: PlausibleStatsAggregateFilter!): TemplateFamilyStatsAggregateResponse
+  templateFamilyStatsBreakdown(
+    id: ID!
+    idType: IdType = slug
+    where: PlausibleStatsBreakdownFilter!
+
+    """
+    Filter results to only include the specified events. If null or empty, all events are returned.
+    """
+    events: [PlausibleEvent!]
+
+    """
+    Filter results to only include the specified status. If null or empty, all statuses are returned.
+    """
+    status: [JourneyStatus!]
+  ): [TemplateFamilyStatsBreakdownResponse!]
+  qrCode(id: ID!): QrCode!
+  qrCodes(where: QrCodesFilter!): [QrCode!]!
+  teams: [Team!]!
+  team(id: ID!): Team!
+
+  """
+  Read a single TemplateGalleryPage by id. Returns both `draft` and `published` rows — use this for in-team authenticated reads (e.g. an admin viewing or QA-ing their own team's drafts). Anonymous viewers must use `templateGalleryPageBySlug`, which only returns published pages.
+  
+  Auth: caller must be a member of the page's team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the page's team.
+  """
+  templateGalleryPage(
+    """Stable page identifier."""
+    id: ID!
+  ): TemplateGalleryPage!
+
+  """
+  Public, unauthenticated read by slug. Returns the TemplateGalleryPage with the given slug, but ONLY if the page is currently `published`. Returns null for: unknown slug, draft slug, malformed slug (does not match `^[a-z0-9]+(-[a-z0-9]+)*$`), or slug exceeding 200 characters. Authenticated readers fetching their own team's drafts should use `templateGalleryPage(id)` or `templateGalleryPages(teamId)` instead.
+  """
+  templateGalleryPageBySlug(
+    """
+    Case-sensitive public slug. Must match `^[a-z0-9]+(-[a-z0-9]+)*$` (lowercase letters, digits, and hyphen-separated segments only) and be at most 200 characters. Slugs that fail this shape return null without hitting the database.
+    """
+    slug: String!
+  ): TemplateGalleryPagePublic
+
+  """
+  List all TemplateGalleryPages owned by a team — both `draft` and `published` rows — ordered by `createdAt` descending.
+  
+  Auth: caller must be a member of the requested team.
+  """
+  templateGalleryPages(
+    """Owning team. Caller must be a member."""
+    teamId: ID!
+  ): [TemplateGalleryPage!]!
+
+  """
+  Resolve a pasted embed URL to its normalized iframe `embedUrl` without saving — for the collection media link-field preview. Runs the same validation and normalization as the create/update `media` link path (https check, host allowlist, provider normalization for Canva/YouTube/Google Slides). Authenticated callers only.
+  
+  Errors (same reason codes as the save path):
+  - BAD_USER_INPUT (field: `url`): URL is not https.
+  - BAD_USER_INPUT / EMBED_HOST_NOT_ALLOWED: host is not in the embed allowlist.
+  - BAD_USER_INPUT / CANVA_UNAVAILABLE, GOOGLE_SLIDES_NOT_PUBLISHED, etc.: provider normalization failed.
+  """
+  templateGalleryPageEmbedPreview(
+    """
+    The pasted embed URL to validate and normalize. Must be https and on an allowlisted host; provider URLs (Canva, YouTube, Google Slides) are normalized to their iframe form, and a canva.link short link is resolved to its design URL.
+    """
+    url: String!
+  ): String!
+  userInvites(journeyId: ID!): [UserInvite!]
+  getUserRole: UserRole
+  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
+  userTeam(id: ID!): UserTeam!
+  userTeamInvites(teamId: ID!): [UserTeamInvite!]!
+}
+
+type RadioOptionBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  eventLabel: BlockEventLabel
+  label: String!
+
+  """
+  pollOptionImageBlockId is present if a child block should be used as a poll option image.
+        This child block should not be rendered normally, instead it should be used
+        as a poll option image. Blocks are often of type ImageBlock
+  """
+  pollOptionImageBlockId: ID
+  action: Action
+}
+
+input RadioOptionBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  eventLabel: BlockEventLabel
+  label: String!
+}
+
+input RadioOptionBlockUpdateInput {
+  parentBlockId: ID
+  eventLabel: BlockEventLabel
+  label: String
+  pollOptionImageBlockId: ID
+}
+
+type RadioQuestionBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  gridView: Boolean
+}
+
+input RadioQuestionBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+}
+
+type RadioQuestionSubmissionEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+}
+
+input RadioQuestionSubmissionEventCreateInput {
+  id: ID
+  blockId: ID!
+  radioOptionBlockId: ID!
+  stepId: ID
+  label: String
+  value: String
+}
+
+enum Role {
+  publisher
+}
+
+type ShortLink
   @key(fields: "id")
+  @extends
+{
+  id: ID!
+}
+
+type SignUpBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  submitIconId: ID
+  submitLabel: String
+  action: Action
+}
+
+input SignUpBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  submitLabel: String!
+}
+
+input SignUpBlockUpdateInput {
+  parentBlockId: ID
+  submitIconId: ID
+  submitLabel: String
+}
+
+type SignUpSubmissionEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  email: String
+}
+
+input SignUpSubmissionEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  name: String!
+  email: String!
+}
+
+type SpacerBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  spacing: Int
+}
+
+input SpacerBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  spacing: Int
+}
+
+input SpacerBlockUpdateInput {
+  parentBlockId: ID
+  spacing: Int
+}
+
+type StepBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+
+  """
+  locked will be set to true if the user should not be able to manually
+  advance to the next step.
+  """
+  locked: Boolean!
+
+  """
+  nextBlockId contains the preferred block to navigate to, users will have to
+  manually set the next block they want to card to navigate to
+  """
+  nextBlockId: ID
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int
+
+  """
+  Slug should be unique amongst all blocks
+  (server will throw BAD_USER_INPUT error if not)
+  If not required will use the current block id
+  If the generated slug is not unique the uuid will be placed
+  at the end of the slug guaranteeing uniqueness
+  """
+  slug: String
+}
+
+input StepBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  nextBlockId: ID
+  locked: Boolean
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on the editor.
+  """
+  y: Int
+}
+
+input StepBlockPositionUpdateInput {
+  id: ID!
+  x: Int
+  y: Int
+}
+
+input StepBlockUpdateInput {
+  nextBlockId: ID
+  locked: Boolean
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on the editor.
+  """
+  y: Int
+
+  """
+  Slug should be unique amongst all blocks (server will throw BAD_USER_INPUT error if not). If not required will use the current block id. If the generated slug is not unique the uuid will be placed at the end of the slug guaranteeing uniqueness
+  """
+  slug: String
+}
+
+type StepNextEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+}
+
+input StepNextEventCreateInput {
+  id: ID
+  blockId: ID!
+  nextStepId: ID!
+  label: String
+  value: String
+}
+
+type StepPreviousEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+}
+
+input StepPreviousEventCreateInput {
+  id: ID
+  blockId: ID!
+  previousStepId: ID!
+  label: String
+  value: String
+}
+
+type StepViewEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+}
+
+input StepViewEventCreateInput {
+  id: ID
+  blockId: ID!
+  value: String
+}
+
+type Subscription {
+  journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!): JourneyAiTranslateProgress!
+}
+
+type Tag
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+}
+
+type Team
   @shareable
 {
   id: ID!
@@ -2304,14 +2605,518 @@ input TeamCreateInput {
 }
 
 input TeamUpdateInput {
-  title: String!
+  title: String
   publicTitle: String
 }
 
-type Translation {
-  value: String!
+type TemplateFamilyStatsAggregateResponse
+  @shareable
+{
+  childJourneysCount: Int!
+  totalJourneysViews: Int!
+  totalJourneysResponses: Int!
+}
+
+type TemplateFamilyStatsBreakdownResponse
+  @shareable
+{
+  journeyId: String!
+  journeyName: String!
+  teamName: String!
+  status: JourneyStatus
+  stats: [TemplateFamilyStatsEventResponse!]!
+}
+
+type TemplateFamilyStatsEventResponse
+  @shareable
+{
+  event: String!
+  visitors: Int!
+}
+
+"""
+A template journey assigned to a TemplateGalleryPage, narrowed to the fields the public renderer consumes. Backed by the underlying Journey row but exposed as a separate type so the public anonymous query surface cannot traverse to Journey-wide relations (userJourneys, team, blocks, etc.).
+"""
+type TemplateGalleryItem {
+  id: ID!
+  title: String!
+  description: String
+  slug: String!
+  createdAt: DateTime!
+  template: Boolean
+  customizable: Boolean
+  website: Boolean
   language: Language!
-  primary: Boolean!
+  primaryImageBlock: ImageBlock
+}
+
+"""
+A team-curated, slug-addressable public landing page that bundles a hand-picked, hand-ordered list of template journeys. The slug is mutable post-publish — changing it breaks any external links to the old URL. `publishedAt` is monotonic: stamped only on the first publish, never re-stamped on subsequent unpublish/republish, and never cleared. `creatorImageSrc` and `creatorImageAlt` are plain string columns (not a Block FK) — the avatar URL survives independently of any owning Block.
+"""
+type TemplateGalleryPage {
+  """Stable UUID identifier."""
+  id: ID!
+
+  """Display title shown in admin UI and on the public page."""
+  title: String!
+
+  """
+  Long-form description shown on the public page. Defaults to empty string.
+  """
+  description: String!
+
+  """
+  URL-safe identifier. The public page is reached at `/collections/<slug>`. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`, max 200 characters, and must not be in the reserved list. Mutable after publish — changing it breaks any external links to the old URL.
+  """
+  slug: String!
+
+  """
+  `draft` hides the page from the public renderer; `published` exposes it via `templateGalleryPageBySlug`.
+  """
+  status: TemplateGalleryPageStatus!
+
+  """Display name of the team or person credited as the page creator."""
+  creatorName: String!
+
+  """
+  Optional https URL of the creator avatar image. Plain string (not a Block FK) — survives independently of any owning Block. https-only on write.
+  """
+  creatorImageSrc: String
+
+  """Optional alt text for the creator avatar."""
+  creatorImageAlt: String
+
+  """
+  Optional https URL of a hero/cover media asset shown on the public page. https-only on write.
+  """
+  mediaUrl: String @deprecated(reason: "Superseded by the `media` relation (NES-1704). Retained on legacy rows behind the LD flag; not written by new UI.")
+
+  """
+  Timestamp of the first publish event. Monotonic — never re-set on subsequent unpublish/republish, and never cleared. Null while the page has not yet been published.
+  """
+  publishedAt: DateTimeISO
+  createdAt: DateTimeISO!
+  updatedAt: DateTimeISO!
+
+  """Owning team. The page is hard-deleted when the team is deleted."""
+  team: Team!
+
+  """
+  Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.
+  """
+  templates: [TemplateGalleryItem!]!
+
+  """
+  Embedded media with both retained payload slots and the raw `muxVideoId`, so the editor can restore a parked link/upload. `null` only when the page has no media row.
+  """
+  media: TemplateGalleryPageMedia
+}
+
+"""
+Input for creating a new TemplateGalleryPage in `draft` status. The slug is server-generated from `title`.
+"""
+input TemplateGalleryPageCreateInput {
+  """Owning team. Caller must be a member."""
+  teamId: ID!
+
+  """
+  Display title. Drives slug auto-generation: lowercased + hyphenated form of the title, max 200 characters, with the reserved-word list (`admin`, `api`, `app`, `auth`, `graphql`, `health`, `journey`, `journeys`, `public`, `sign-in`, `sign-up`, `static`, `templates`, `webhook`, `webhooks`) blocked. On collision the resolver tries `<base>-2`..`<base>-50`, then falls back to a 6-character random suffix.
+  """
+  title: String!
+
+  """
+  Optional long-form description shown on the public page. Defaults to empty string when omitted.
+  """
+  description: String
+
+  """Display name of the page creator."""
+  creatorName: String!
+
+  """Optional https URL of the creator avatar image. Rejected if not https."""
+  creatorImageSrc: String
+
+  """Optional alt text for the creator avatar."""
+  creatorImageAlt: String
+
+  """
+  Deprecated: superseded by the `media` input (NES-1704); will be removed together with the deprecated `TemplateGalleryPage.mediaUrl` field. Optional https URL of a hero/cover media asset. Rejected if not https.
+  """
+  mediaUrl: String
+
+  """
+  Optional initial template journeys to attach. Cross-team and non-template ids are silently filtered out.
+  """
+  journeyIds: [ID!]
+
+  """
+  Optional embedded media. `type` (`link`/`mux`/`none`) selects what renders; supply `url` and/or `muxVideoId` to populate either slot (both may be set at once). `url` is server-validated and normalized per provider; `muxVideoId` is validated against the media DB.
+  """
+  media: TemplateGalleryPageMediaInput
+}
+
+"""
+Authenticated media projection for the editor. Exposes the full row, including both retained payload slots and the raw `muxVideoId`, so a parked link/upload can be restored. Returned only by authenticated, team-scoped read paths.
+"""
+type TemplateGalleryPageMedia {
+  id: ID!
+
+  """Active selector for which payload renders."""
+  type: TemplateGalleryPageMediaType!
+
+  """
+  The stored link payload. May be retained while `type` is `mux`/`none` so the editor can offer switching back.
+  """
+  embedUrl: String
+
+  """
+  Raw Mux video id of the stored upload payload. Authenticated-only — never exposed on the public type.
+  """
+  muxVideoId: ID
+
+  """Mux playback ID denormalized at save time. Tracks `muxVideoId`."""
+  muxPlaybackId: String
+
+  """Video name denormalized at save time. Tracks `muxVideoId`."""
+  muxName: String
+
+  """
+  Video duration in seconds denormalized at save time. Tracks `muxVideoId`.
+  """
+  muxDuration: Int
+}
+
+"""
+Input for attaching media to a TemplateGalleryPage. `type` (`link`/`mux`/`none`) selects what renders; both payload slots may stay populated at once. For `url` and `muxVideoId`: omit to leave the stored value, pass `null` to clear that slot, or pass a value to set/replace it.
+"""
+input TemplateGalleryPageMediaInput {
+  """
+  Active selector: which payload renders (`link`/`mux`/`none`). Required.
+  """
+  type: TemplateGalleryPageMediaType!
+
+  """
+  The embed URL slot. Omit to leave unchanged, `null` to clear, or a value to set/replace (server-validated and normalized per provider). Provider verification varies: Canva and YouTube are confirmed via oEmbed, but Google Slides is shape-validated only (a published-shaped URL that is actually private or non-existent passes validation), so a stored Google Slides embed is not guaranteed to render.
+  """
+  url: String
+
+  """
+  The Mux upload slot. Omit to leave unchanged, `null` to clear, or a value to set/replace (validated against the media DB).
+  """
+  muxVideoId: ID
+}
+
+"""
+Public media attached to a TemplateGalleryPage. Exposes only the payload selected by `type` (`link` → `embedUrl`; `mux` → `muxPlaybackId`/`muxName`/`muxDuration`; `none` → nothing). Parked payloads for the non-active slot are never exposed. All fields source directly from the stored row so public-page reads never cross to the media database.
+"""
+type TemplateGalleryPageMediaPublic {
+  id: ID!
+
+  """Active selector for which payload renders."""
+  type: TemplateGalleryPageMediaType!
+
+  """Server-normalized iframe URL. Non-null only when `type` is `link`."""
+  embedUrl: String
+
+  """
+  Mux playback ID, denormalized at save time so public reads never cross to the media DB. Non-null only when `type` is `mux`.
+  """
+  muxPlaybackId: String
+
+  """
+  Video name, denormalized at save time. Non-null only when `type` is `mux` and Mux has a name.
+  """
+  muxName: String
+
+  """
+  Video duration in seconds, denormalized at save time. Non-null only when `type` is `mux` and Mux reports a duration.
+  """
+  muxDuration: Int
+}
+
+"""
+Active selector for the media attached to a TemplateGalleryPage: which payload renders. Both payload slots may stay populated regardless of this value, so switching never discards a payload.
+"""
+enum TemplateGalleryPageMediaType {
+  """Render the embed URL (`embedUrl`)."""
+  link
+
+  """Render the Mux upload (`muxPlaybackId`)."""
+  mux
+
+  """
+  Render nothing. Any stored `embedUrl`/upload payload is retained but not shown; the public page treats this as no media.
+  """
+  none
+}
+
+"""
+Public projection of a TemplateGalleryPage, returned by the unauthenticated slug read. Identical to the full type except `media` exposes only the active payload (parked payloads and the raw `muxVideoId` are never emitted).
+"""
+type TemplateGalleryPagePublic {
+  """Stable UUID identifier."""
+  id: ID!
+
+  """Display title shown in admin UI and on the public page."""
+  title: String!
+
+  """
+  Long-form description shown on the public page. Defaults to empty string.
+  """
+  description: String!
+
+  """
+  URL-safe identifier. The public page is reached at `/collections/<slug>`. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`, max 200 characters, and must not be in the reserved list. Mutable after publish — changing it breaks any external links to the old URL.
+  """
+  slug: String!
+
+  """
+  `draft` hides the page from the public renderer; `published` exposes it via `templateGalleryPageBySlug`.
+  """
+  status: TemplateGalleryPageStatus!
+
+  """Display name of the team or person credited as the page creator."""
+  creatorName: String!
+
+  """
+  Optional https URL of the creator avatar image. Plain string (not a Block FK) — survives independently of any owning Block. https-only on write.
+  """
+  creatorImageSrc: String
+
+  """Optional alt text for the creator avatar."""
+  creatorImageAlt: String
+
+  """
+  Optional https URL of a hero/cover media asset shown on the public page. https-only on write.
+  """
+  mediaUrl: String @deprecated(reason: "Superseded by the `media` relation (NES-1704). Retained on legacy rows behind the LD flag; not written by new UI.")
+
+  """
+  Timestamp of the first publish event. Monotonic — never re-set on subsequent unpublish/republish, and never cleared. Null while the page has not yet been published.
+  """
+  publishedAt: DateTimeISO
+  createdAt: DateTimeISO!
+  updatedAt: DateTimeISO!
+
+  """Owning team. The page is hard-deleted when the team is deleted."""
+  team: Team!
+
+  """
+  Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only. Each item is the narrow `TemplateGalleryItem` DTO, NOT the full `Journey` type.
+  """
+  templates: [TemplateGalleryItem!]!
+
+  """
+  Embedded media shown on the public page, or `null` when nothing renders (no media, `type: none`, or the active slot is empty). Only the active payload is ever exposed; parked payloads are not.
+  """
+  media: TemplateGalleryPageMediaPublic
+}
+
+"""
+Lifecycle state of a TemplateGalleryPage. Anonymous traffic via `templateGalleryPageBySlug` only sees `published` rows; drafts are hidden.
+"""
+enum TemplateGalleryPageStatus {
+  """Hidden from the public renderer. All edit operations are allowed."""
+  draft
+
+  """
+  Reachable at `/collections/<slug>`. `templateGalleryPageUpdate` and `templateGalleryPageAssignJourney` remain allowed (publishers can fix typos and curate the template list while live); `templateGalleryPageReorderTemplate` is rejected with CONFLICT — unpublish first to reorder.
+  """
+  published
+}
+
+"""
+Input for editing a TemplateGalleryPage. Field omitted = leave the existing value alone. Field set to `null` = clear (only meaningful for nullable fields).
+"""
+input TemplateGalleryPageUpdateInput {
+  """
+  Updated display title. Does NOT regenerate the slug — use `slug` to change the slug.
+  """
+  title: String
+
+  """Updated long-form description."""
+  description: String
+
+  """
+  Updated public slug. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`, max 200 characters, not be in the reserved list, and not be in use by another page. Changing the slug breaks any external links to the old URL.
+  """
+  slug: String
+
+  """Updated creator display name."""
+  creatorName: String
+
+  """
+  Optional https creator avatar URL. Pass `null` to clear. Rejected if not https.
+  """
+  creatorImageSrc: String
+
+  """Optional creator avatar alt text. Pass `null` to clear."""
+  creatorImageAlt: String
+
+  """
+  Deprecated: superseded by the `media` input (NES-1704); will be removed together with the deprecated `TemplateGalleryPage.mediaUrl` field. Optional https hero media URL. Pass `null` to clear. Rejected if not https.
+  """
+  mediaUrl: String
+
+  """
+  When provided, replaces the page's template list with these journeys in this exact order (existing assignments are deleted then recreated). Cross-team and non-template ids are silently filtered out. Omit to leave the template list unchanged.
+  """
+  journeyIds: [ID!]
+
+  """
+  Embedded media. Omit (or pass `null`) to leave the existing media untouched — there is no media delete. When an object is supplied, `type` (`link`/`mux`/`none`) selects what renders and each payload slot merges independently: for `url` and `muxVideoId`, omit to leave the stored value, pass `null` to clear that slot, or pass a value to set/replace it. Both slots may stay populated; hide everything with `type: none`.
+  """
+  media: TemplateGalleryPageMediaInput
+}
+
+type TextResponseBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  label: String!
+  placeholder: String
+  required: Boolean
+  hint: String
+  hideLabel: Boolean
+  minRows: Int
+  type: TextResponseType
+  routeId: String
+  integrationId: String
+}
+
+input TextResponseBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  label: String!
+}
+
+input TextResponseBlockUpdateInput {
+  parentBlockId: ID
+  label: String
+  placeholder: String
+  required: Boolean
+  hint: String
+  hideLabel: Boolean
+  minRows: Int
+  routeId: String
+  type: TextResponseType
+  integrationId: String
+}
+
+type TextResponseSubmissionEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: String
+}
+
+input TextResponseSubmissionEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  label: String
+  value: String!
+}
+
+enum TextResponseType {
+  freeForm
+  name
+  email
+  phone
+}
+
+enum ThemeMode {
+  dark
+  light
+}
+
+enum ThemeName {
+  base
+}
+
+enum TypographyAlign {
+  left
+  center
+  right
+}
+
+type TypographyBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  content: String!
+  variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
+  settings: TypographyBlockSettings
+}
+
+input TypographyBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  content: String!
+  variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
+  settings: TypographyBlockSettingsInput
+}
+
+type TypographyBlockSettings
+  @shareable
+{
+  """Color of the typography"""
+  color: String
+}
+
+input TypographyBlockSettingsInput {
+  color: String
+}
+
+input TypographyBlockUpdateInput {
+  parentBlockId: ID
+  content: String
+  variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
+  settings: TypographyBlockSettingsInput
+}
+
+enum TypographyColor {
+  primary
+  secondary
+  error
+}
+
+enum TypographyVariant {
+  h1
+  h2
+  h3
+  h4
+  h5
+  h6
+  subtitle1
+  subtitle2
+  body1
+  body2
+  caption
+  overline
+}
+
+enum USER_DELETE_LOG_LEVEL {
+  INFO
+  WARN
+  ERROR
 }
 
 type User
@@ -2319,6 +3124,39 @@ type User
   @interfaceObject
 {
   id: ID!
+}
+
+type UserAgent
+  @shareable
+{
+  browser: Browser!
+  device: Device!
+  os: OperatingSystem!
+}
+
+type UserDeleteJourneysCheckResult {
+  journeysToDelete: Int!
+  journeysToTransfer: Int!
+  journeysToRemove: Int!
+  teamsToDelete: Int!
+  teamsToTransfer: Int!
+  teamsToRemove: Int!
+  logs: [UserDeleteJourneysLogEntry!]!
+}
+
+type UserDeleteJourneysConfirmResult {
+  success: Boolean!
+  deletedJourneyIds: [String!]!
+  deletedTeamIds: [String!]!
+  deletedUserJourneyIds: [String!]!
+  deletedUserTeamIds: [String!]!
+  logs: [UserDeleteJourneysLogEntry!]!
+}
+
+type UserDeleteJourneysLogEntry {
+  message: String!
+  level: USER_DELETE_LOG_LEVEL!
+  timestamp: String!
 }
 
 type UserInvite
@@ -2337,6 +3175,19 @@ input UserInviteCreateInput {
   email: String!
 }
 
+type UserJourney
+  @shareable
+{
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  role: UserJourneyRole!
+  openedAt: DateTime
+  journey: Journey
+  user: User
+  journeyNotification: JourneyNotification
+}
+
 enum UserJourneyRole {
   inviteRequested
   editor
@@ -2352,21 +3203,15 @@ type UserRole
   roles: [Role!]
 }
 
-enum Role {
-  """
-  User can create templates and
-  add them to template library
-  """
-  publisher
-}
-
-enum UserTeamRole {
-  manager
-  member
-}
-
-input UserTeamUpdateInput {
+type UserTeam
+  @shareable
+{
+  id: ID!
   role: UserTeamRole!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  user: User!
+  journeyNotification(journeyId: ID!): JourneyNotification
 }
 
 input UserTeamFilterInput {
@@ -2385,51 +3230,340 @@ input UserTeamInviteCreateInput {
   email: String!
 }
 
-type Browser
+enum UserTeamRole {
+  manager
+  member
+}
+
+input UserTeamUpdateInput {
+  role: UserTeamRole
+}
+
+type Video
+  @key(fields: "id primaryLanguageId")
+  @extends
+{
+  id: ID! @external
+  primaryLanguageId: ID! @external
+  source: VideoBlockSource! @shareable
+}
+
+type VideoBlock implements Block
+  @key(fields: "id")
   @shareable
 {
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  eventLabel: BlockEventLabel
+  endEventLabel: BlockEventLabel
+  autoplay: Boolean
+  startAt: Int
+  endAt: Int
+  muted: Boolean
+  videoId: ID
+  videoVariantLanguageId: ID
+
+  """
+  internal source: videoId, videoVariantLanguageId, and video present
+  youTube source: videoId, title, description, and duration present
+  """
+  source: VideoBlockSource!
+  title: String
+  description: String
+  image: String
+  duration: Int
+  objectFit: VideoBlockObjectFit
+  posterBlockId: ID
+  fullsize: Boolean
+  subtitleLanguage: Language
+  action: Action
+  showGeneratedSubtitles: Boolean
+  mediaVideo: MediaVideo
+  customizable: Boolean
+
+  """Publisher notes for template adapters (e.g. trailer, intro)."""
+  notes: String
+}
+
+input VideoBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  eventLabel: BlockEventLabel
+  endEventLabel: BlockEventLabel
+  videoId: ID
+  videoVariantLanguageId: ID
+  source: VideoBlockSource
+
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
+  title: String
+  description: String
+  image: String
+  duration: Int
+  objectFit: VideoBlockObjectFit
+  startAt: Int
+  endAt: Int
+  muted: Boolean
+  autoplay: Boolean
+  fullsize: Boolean
+  posterBlockId: ID
+  subtitleLanguageId: ID
+  showGeneratedSubtitles: Boolean
+  customizable: Boolean
+
+  """Publisher notes for template adapters (e.g. trailer, intro)."""
+  notes: String
+}
+
+enum VideoBlockObjectFit {
+  fill
+  fit
+  zoomed
+}
+
+enum VideoBlockSource {
+  cloudflare
+  internal
+  youTube
+  mux
+}
+
+input VideoBlockUpdateInput {
+  parentBlockId: ID
+  eventLabel: BlockEventLabel
+  endEventLabel: BlockEventLabel
+  videoId: ID
+  videoVariantLanguageId: ID
+  posterBlockId: ID
+  title: String
+  description: String
+  image: String
+  duration: Int
+  objectFit: VideoBlockObjectFit
+  startAt: Int
+  endAt: Int
+  muted: Boolean
+  autoplay: Boolean
+  fullsize: Boolean
+  subtitleLanguageId: ID
+
+  """
+  internal source: videoId and videoVariantLanguageId required
+    youTube source: videoId required
+  """
+  source: VideoBlockSource
+  showGeneratedSubtitles: Boolean
+  customizable: Boolean
+
+  """
+  Publisher notes for template adapters (e.g. trailer, intro). Pass an empty string to clear.
+  """
+  notes: String
+}
+
+type VideoCollapseEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+}
+
+input VideoCollapseEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+type VideoCompleteEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+}
+
+input VideoCompleteEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+type VideoExpandEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+}
+
+input VideoExpandEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+type VideoPauseEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+}
+
+input VideoPauseEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+type VideoPlayEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+}
+
+input VideoPlayEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+type VideoProgressEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+  progress: Int!
+}
+
+input VideoProgressEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+  progress: Int!
+}
+
+type VideoStartEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+}
+
+input VideoStartEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+type VideoTriggerBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+
+  """
+  triggerStart sets the time as to when a video navigates to the next block,
+  this is the number of seconds since the start of the video
+  """
+  triggerStart: Int!
+  action: Action!
+}
+
+type Visitor
+  @key(fields: "id")
+  @shareable
+{
+  id: ID!
+  createdAt: DateTime!
+  duration: Int
+  lastChatStartedAt: DateTime
+  lastChatPlatform: MessagePlatform
+  userAgent: UserAgent
+  countryCode: String
   name: String
-  version: String
+  email: String
+  status: VisitorStatus
+  messagePlatform: MessagePlatform
+  messagePlatformId: String
+  notes: String
+  lastStepViewedAt: DateTime
+  lastLinkAction: String
+  lastTextResponse: String
+  lastRadioQuestion: String
+  lastRadioOptionSubmission: String
+  referrer: String
+  events: [Event!]!
 }
 
-enum DeviceType {
-  console
-  mobile
-  tablet
-  smarttv
-  wearable
-  embedded
-}
-
-type Device
+type VisitorEdge
   @shareable
 {
-  model: String
-  type: DeviceType
-  vendor: String
+  cursor: String!
+  node: Visitor!
 }
 
-type OperatingSystem
-  @shareable
-{
-  name: String
-  version: String
-}
-
-"""These types are a subset provided by the @types/ua-parser-js library."""
-type UserAgent
-  @shareable
-{
-  browser: Browser!
-  device: Device!
-  os: OperatingSystem!
-}
-
-"""
-The status of a visitor according to team members interacting with the
-visitor admin interface. This enum should map to an emoji when displayed
-(names here match Apple's emoji name)
-"""
 enum VisitorStatus {
   star
   prohibited
@@ -2443,230 +3577,30 @@ enum VisitorStatus {
   redQuestionMark
 }
 
-"""A visitor with attributes connected to a team."""
-type Visitor
-  @key(fields: "id")
-  @shareable
-{
-  id: ID!
-
-  """
-  The time when the visitor created their first event on a journey connected
-  to the requested team.
-  """
-  createdAt: DateTime!
-
-  """Duration between createdAt and lastStepViewedAt in seconds"""
-  duration: Int
-
-  """
-  The last time the visitor called the ButtonClickEvent mutation where the url
-  is in the format of a recognized chat platform.
-  """
-  lastChatStartedAt: DateTime
-
-  """
-  The last message platform the visitor called the ButtonClickEvent where the
-  url is in the format of a recognized chat platform
-  """
-  lastChatPlatform: MessagePlatform
-
-  """
-  The user agent of the visitor as poulated by the visitor's user-agent string
-  detected in the JourneyViewEventCreate mutation. This field is enriched
-  by data from the ua-parser-js library. If this field is empty it is likely
-  that the JourneyViewEventCreate mutation was not called by the visitor.
-  """
-  userAgent: UserAgent
-
-  """
-  The country code of the visitor as poulated by visitor ip address detected in
-  the JourneyViewEventCreate mutation. This field country code is converted
-  from an IP address by the @maxmind/geoip2-node library. If this field is empty
-  it is likely that the JourneyViewEventCreate mutation was not called by the
-  visitor or that the country was not able to be determined based on the
-  visitor IP address.
-  """
-  countryCode: String
-
-  """
-  The name of the visitor as populated by VisitorUpdate mutation or
-  SignUpEventSubmissionEventCreate mutation.
-  """
-  name: String
-
-  """
-  The email address of the visitor as populated by VisitorUpdate mutation or
-  SignUpEventSubmissionEventCreate mutation.
-  """
-  email: String
-
-  """Status of the visitor as populated by VisitorUpdate mutation."""
-  status: VisitorStatus
-
-  """
-  Message platform the visitor wishes to be connected to us on as populated by
-  VisitorUpdate mutation or ChatOpenEventCreate mutation.
-  """
-  messagePlatform: MessagePlatform
-
-  """
-  ID of the visitor as set by VisitorUpdate mutation. This could be a phone
-  number, user id or other unique identifier provided by the message platform.
-  """
-  messagePlatformId: String
-
-  """Private notes of the visitor as set by VisitorUpdate mutation."""
-  notes: String
-
-  """
-  The last time the visitor called StepViewEvent mutation. It is populated when
-  the visitor is first created, and is updated by all event creation mutations.
-  """
-  lastStepViewedAt: DateTime
-
-  """
-  The label of a link action button of the last time the visitor clicked a
-  link action button. Populated by ButtonClickEvent
-  """
-  lastLinkAction: String
-
-  """
-  The response of the last text response block the visitor filled out,
-  populated by TextResponseSubmission mutation
-  """
-  lastTextResponse: String
-
-  """
-  The question of the last radio option the visitor filled out,
-  populated by RadioQuestionSubmission mutation
-  """
-  lastRadioQuestion: String
-
-  """
-  The selected option  of the last radio option the visitor filled out,
-  populated by RadioQuestionSubmission mutation
-  """
-  lastRadioOptionSubmission: String
-
-  """The url visitor was referred from"""
-  referrer: String
-  events: [Event!]!
-}
-
-"""An edge in a connection."""
-type VisitorEdge
-  @shareable
-{
-  """A cursor for use in pagination."""
-  cursor: String!
-
-  """The item at the end of the edge."""
-  node: Visitor!
-}
-
-"""Information about pagination in a connection."""
-type PageInfo
-  @shareable
-{
-  """When paginating forwards, are there more items?"""
-  hasNextPage: Boolean!
-
-  """When paginating backwards, are there more items?"""
-  hasPreviousPage: Boolean!
-
-  """When paginating backwards, the cursor to continue."""
-  startCursor: String
-
-  """When paginating forwards, the cursor to continue."""
-  endCursor: String
-}
-
-"""A list of visitors connected with a team."""
-type VisitorsConnection
-  @shareable
-{
-  """A list of edges."""
-  edges: [VisitorEdge!]!
-
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-}
-
-"""
-A list of fields to update a visitor when calling the visitorUpdate mutation
-"""
 input VisitorUpdateInput {
-  """
-  The email address of the visitor (will prevent
-  SignUpEventSubmissionEventCreate mutation from updating this field
-  automatically)
-  """
   email: String
-
-  """
-  ID of the visitor. This could be a phone number, user id or other unique
-  identifier provided by the message platform.
-  """
-  messagePlatformId: String
-
-  """
-  Message platform the visitor wishes to be connected to us on (will prevent
-  ChatOpenEventCreate mutation from updating this field automatically)
-  """
-  messagePlatform: MessagePlatform
-
-  """
-  The name of the visitor (will prevent SignUpEventSubmissionEventCreate
-  mutation from updating this field automatically)
-  """
   name: String
-
-  """
-  Private notes relating to the visitor. This information is never made public
-  and only accessible by team members.
-  """
+  messagePlatform: MessagePlatform
+  messagePlatformId: String
   notes: String
-
-  """Status of the visitor."""
   status: VisitorStatus
-
-  """
-  The country code of the visitor as poulated by visitor ip address detected
-  """
   countryCode: String
-
-  """The referring url of the visitor"""
   referrer: String
-
-  """The phone number of the visitor"""
   phone: String
 }
 
-enum link__Purpose {
-  """
-  `SECURITY` features provide metadata necessary to securely resolve fields.
-  """
-  SECURITY
-
-  """
-  `EXECUTION` features provide metadata necessary for operation execution.
-  """
-  EXECUTION
+type VisitorsConnection
+  @shareable
+{
+  edges: [VisitorEdge!]!
+  pageInfo: PageInfo!
 }
 
-scalar link__Import
-
-scalar federation__FieldSet
-
-scalar federation__Scope
-
-scalar federation__Policy
-
-scalar _Any
-
-type _Service {
-  sdl: String
+type YouTube
+  @key(fields: "id primaryLanguageId")
+  @extends
+{
+  id: ID! @external
+  primaryLanguageId: ID @external
+  source: VideoBlockSource! @shareable
 }
-
-union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor

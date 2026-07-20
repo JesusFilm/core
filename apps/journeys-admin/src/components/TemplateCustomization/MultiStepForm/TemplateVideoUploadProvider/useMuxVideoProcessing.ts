@@ -1,5 +1,5 @@
 import { useLazyQuery, useMutation } from '@apollo/client'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { RefObject, useCallback, useRef } from 'react'
 
@@ -108,7 +108,7 @@ export function useMuxVideoProcessing({
         })
         updateTask(videoBlockId, {
           status: 'error',
-          error: 'Upload failed. Please try again'
+          error: t('Upload failed. Please try again')
         })
       }
     },
@@ -175,7 +175,7 @@ export function useMuxVideoProcessing({
             })
             updateTask(videoBlockId, {
               status: 'error',
-              error: 'Failed to check video status'
+              error: t('Failed to check video status')
             })
           }
         }, delay)

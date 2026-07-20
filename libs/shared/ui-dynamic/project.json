@@ -17,14 +17,14 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsc -b libs/shared/ui-dynamic/tsconfig.json"
+        "command": "pnpm tsc7 -p libs/shared/ui-dynamic/tsconfig.ts7.json"
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/libs/shared/ui"],
+      "executor": "@nx/vitest:test",
+      "outputs": ["{workspaceRoot}/coverage/libs/shared/ui-dynamic"],
       "options": {
-        "jestConfig": "libs/shared/ui-dynamic/jest.config.ts"
+        "configFile": "libs/shared/ui-dynamic/vitest.config.mts"
       }
     },
     "demo": {

@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { renderHook, waitFor } from '@testing-library/react'
 import Player from 'video.js/dist/types/player'
+import type { Mock } from 'vitest'
 
 import { VideoProvider } from '../../videoContext'
 
@@ -9,7 +10,7 @@ import { getSubtitlesMock, mockVideoContent } from './useSubtitleUpdate.mock'
 
 const createMockPlayer = (): Player & {
   textTracks?: () => TextTrackList
-  addRemoteTextTrack: jest.Mock
+  addRemoteTextTrack: Mock
 } => {
   const mockTracks = [
     {
@@ -24,23 +25,23 @@ const createMockPlayer = (): Player & {
     }
   ] as unknown as TextTrackList
 
-  const mockAddRemoteTextTrack = jest.fn()
+  const mockAddRemoteTextTrack = vi.fn()
 
   return {
-    textTracks: jest.fn(() => mockTracks),
+    textTracks: vi.fn(() => mockTracks),
     addRemoteTextTrack: mockAddRemoteTextTrack,
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn()
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn()
   } as unknown as Player & {
     textTracks?: () => TextTrackList
-    addRemoteTextTrack: jest.Mock
+    addRemoteTextTrack: Mock
   }
 }
 
 describe('useSubtitleUpdate', () => {
   let mockPlayer: Player & {
     textTracks?: () => TextTrackList
-    addRemoteTextTrack: jest.Mock
+    addRemoteTextTrack: Mock
   }
 
   beforeEach(() => {
@@ -49,7 +50,7 @@ describe('useSubtitleUpdate', () => {
   })
 
   it('should enable subtitles when subtitleLanguage is provided and subtitles are on', async () => {
-    const getSubtitlesMockResults = jest
+    const getSubtitlesMockResults = vi
       .fn()
       .mockReturnValue({ ...getSubtitlesMock.result })
 

@@ -1,0 +1,77 @@
+import { vi } from 'vitest'
+
+import { Block } from '@core/prisma/journeys/client'
+
+import { getBlockContent } from './getBlockContent'
+import { getButtonBlockContent } from './getButtonBlockContent'
+import { getImageBlockContent } from './getImageBlockContent'
+import { getRadioQuestionBlockContent } from './getRadioQuestionBlockContent'
+import { getVideoBlockContent } from './getVideoBlockContent'
+
+// Mock all helper imports
+vi.mock('./getButtonBlockContent', () => ({
+  getButtonBlockContent: vi.fn(() => 'button-content')
+}))
+vi.mock('./getImageBlockContent', () => ({
+  getImageBlockContent: vi.fn(() => Promise.resolve('image-content'))
+}))
+vi.mock('./getRadioQuestionBlockContent', () => ({
+  getRadioQuestionBlockContent: vi.fn(() => 'radio-question-content')
+}))
+vi.mock('./getVideoBlockContent', () => ({
+  getVideoBlockContent: vi.fn(() => Promise.resolve('video-content'))
+}))
+
+describe('getBlockContent', () => {
+  const blocks: Block[] = []
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('returns image content for ImageBlock', async () => {
+    const block = { typename: 'ImageBlock' } as any
+    const result = await getBlockContent({ blocks, block })
+    expect(getImageBlockContent).toHaveBeenCalledWith({ block })
+    expect(result).toBe('image-content')
+  })
+
+  it('returns video content for VideoBlock', async () => {
+    const block = { typename: 'VideoBlock' } as any
+    const result = await getBlockContent({ blocks, block })
+    expect(getVideoBlockContent).toHaveBeenCalledWith({ blocks, block })
+    expect(result).toBe('video-content')
+  })
+
+  it('returns formatted string for TypographyBlock', async () => {
+    const block = { typename: 'TypographyBlock', content: 'Hello' } as any
+    const result = await getBlockContent({ blocks, block })
+    expect(result).toBe('## Text: \n Hello\n')
+  })
+
+  it('returns button content for ButtonBlock', async () => {
+    const block = { typename: 'ButtonBlock' } as any
+    const result = await getBlockContent({ blocks, block })
+    expect(getButtonBlockContent).toHaveBeenCalledWith({ block })
+    expect(result).toBe('button-content')
+  })
+
+  it('returns radio question content for RadioQuestionBlock', async () => {
+    const block = { typename: 'RadioQuestionBlock' } as any
+    const result = await getBlockContent({ blocks, block })
+    expect(getRadioQuestionBlockContent).toHaveBeenCalledWith({ blocks, block })
+    expect(result).toBe('radio-question-content')
+  })
+
+  it('returns blank space for SpacerBlock', async () => {
+    const block = { typename: 'SpacerBlock' } as any
+    const result = await getBlockContent({ blocks, block })
+    expect(result).toBe('### Blank Space\n')
+  })
+
+  it('returns empty string for unknown block type', async () => {
+    const block = { typename: 'UnknownBlock' } as any
+    const result = await getBlockContent({ blocks, block })
+    expect(result).toBe('')
+  })
+})

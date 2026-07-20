@@ -5,8 +5,8 @@ import userEvent from '@testing-library/user-event'
 import { CREATE_KEYWORD, GET_KEYWORDS, VideoKeywords } from './VideoKeywords'
 
 // Mock notistack
-const mockEnqueueSnackbar = jest.fn()
-jest.mock('notistack', () => ({
+const mockEnqueueSnackbar = vi.fn()
+vi.mock('notistack', () => ({
   useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
 }))
 
@@ -48,7 +48,7 @@ const initialKeywords = [
 ]
 
 describe('VideoKeywords', () => {
-  afterEach(() => jest.clearAllMocks())
+  afterEach(() => vi.clearAllMocks())
 
   it('renders initial keywords as chips', () => {
     render(
@@ -56,7 +56,7 @@ describe('VideoKeywords', () => {
         <VideoKeywords
           primaryLanguageId="en"
           initialKeywords={initialKeywords}
-          onChange={jest.fn()}
+          onChange={vi.fn()}
         />
       </MockedProvider>
     )
@@ -65,7 +65,7 @@ describe('VideoKeywords', () => {
   })
 
   it('adds a new keyword when Enter is pressed', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     render(
       <MockedProvider
         mocks={[mockGetKeywords, mockCreateKeyword]}
@@ -96,7 +96,7 @@ describe('VideoKeywords', () => {
   })
 
   it('prevents duplicate keywords', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     render(
       <MockedProvider mocks={[mockGetKeywords]}>
         <VideoKeywords
@@ -112,7 +112,7 @@ describe('VideoKeywords', () => {
   })
 
   it('removes a keyword when delete icon is clicked', () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
 
     render(
       <MockedProvider mocks={[mockGetKeywords]}>
@@ -156,7 +156,7 @@ describe('VideoKeywords', () => {
         <VideoKeywords
           primaryLanguageId="en"
           initialKeywords={[]}
-          onChange={jest.fn()}
+          onChange={vi.fn()}
         />
       </MockedProvider>
     )

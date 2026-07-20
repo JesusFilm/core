@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -15,9 +16,9 @@ import { TYPOGRAPHY_BLOCK_UPDATE_VARIANT } from './Variant'
 
 import { Variant } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('Typography variant selector', () => {
@@ -71,7 +72,7 @@ describe('Typography variant selector', () => {
         color: null
       }
     }
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         typographyBlockUpdate: {
           id: 'id',
@@ -132,7 +133,7 @@ describe('Typography variant selector', () => {
         color: null
       }
     }
-    const result1 = jest.fn(() => ({
+    const result1 = vi.fn(() => ({
       data: {
         typographyBlockUpdate: {
           id: 'id',
@@ -140,7 +141,7 @@ describe('Typography variant selector', () => {
         }
       }
     }))
-    const result2 = jest.fn(() => ({
+    const result2 = vi.fn(() => ({
       data: {
         typographyBlockUpdate: {
           id: 'id',
@@ -200,7 +201,7 @@ describe('Typography variant selector', () => {
   })
 
   it('should open theme builder dialog', async () => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
 
     const { getByRole } = render(
       <MockedProvider>

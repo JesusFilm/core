@@ -53,7 +53,7 @@ describe('Details', () => {
       currentPlatform: MessagePlatform.telegram
     }
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         chatButtonUpdate: {
           __typename: 'ChatButton' as const,
@@ -105,7 +105,7 @@ describe('Details', () => {
       currentPlatform: MessagePlatform.telegram
     }
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         chatButtonUpdate: {
           __typename: 'ChatButton' as const,
@@ -158,7 +158,7 @@ describe('Details', () => {
       enableIconSelect: true
     }
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         chatButtonUpdate: {
           __typename: 'ChatButton' as const,
@@ -202,7 +202,7 @@ describe('Details', () => {
   })
 
   it('undo after link change restores previous link', async () => {
-    const executeResult = jest.fn(() => ({
+    const executeResult = vi.fn(() => ({
       data: {
         chatButtonUpdate: {
           __typename: 'ChatButton' as const,
@@ -213,7 +213,7 @@ describe('Details', () => {
         }
       }
     }))
-    const undoResult = jest.fn(() => ({
+    const undoResult = vi.fn(() => ({
       data: {
         chatButtonUpdate: {
           __typename: 'ChatButton' as const,
@@ -280,7 +280,7 @@ describe('Details', () => {
   })
 
   it('undo after platform change restores previous platform', async () => {
-    const executeResult = jest.fn(() => ({
+    const executeResult = vi.fn(() => ({
       data: {
         chatButtonUpdate: {
           __typename: 'ChatButton' as const,
@@ -291,7 +291,7 @@ describe('Details', () => {
         }
       }
     }))
-    const undoResult = jest.fn(() => ({
+    const undoResult = vi.fn(() => ({
       data: {
         chatButtonUpdate: {
           __typename: 'ChatButton' as const,
@@ -455,7 +455,7 @@ describe('Details', () => {
     })
 
     it('calls chatButtonUpdate with correct customizable value when toggled', async () => {
-      const result = jest.fn(() => ({
+      const result = vi.fn(() => ({
         data: {
           chatButtonUpdate: {
             __typename: 'ChatButton' as const,
@@ -509,7 +509,7 @@ describe('Details', () => {
     })
 
     it('undo after toggling customizable calls chatButtonUpdate with previous value', async () => {
-      const executeResult = jest.fn(() => ({
+      const executeResult = vi.fn(() => ({
         data: {
           chatButtonUpdate: {
             __typename: 'ChatButton' as const,
@@ -520,7 +520,7 @@ describe('Details', () => {
           }
         }
       }))
-      const undoResult = jest.fn(() => ({
+      const undoResult = vi.fn(() => ({
         data: {
           chatButtonUpdate: {
             __typename: 'ChatButton' as const,
@@ -586,7 +586,7 @@ describe('Details', () => {
     })
 
     it('redo after undo calls chatButtonUpdate with execute value', async () => {
-      const executeResult = jest.fn(() => ({
+      const executeResult = vi.fn(() => ({
         data: {
           chatButtonUpdate: {
             __typename: 'ChatButton' as const,
@@ -597,7 +597,7 @@ describe('Details', () => {
           }
         }
       }))
-      const undoResult = jest.fn(() => ({
+      const undoResult = vi.fn(() => ({
         data: {
           chatButtonUpdate: {
             __typename: 'ChatButton' as const,
@@ -608,7 +608,7 @@ describe('Details', () => {
           }
         }
       }))
-      const redoResult = jest.fn(() => ({
+      const redoResult = vi.fn(() => ({
         data: {
           chatButtonUpdate: {
             __typename: 'ChatButton' as const,

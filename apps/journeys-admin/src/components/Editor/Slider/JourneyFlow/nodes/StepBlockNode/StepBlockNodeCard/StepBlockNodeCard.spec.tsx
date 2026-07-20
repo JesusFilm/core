@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
+import { type MockedFunction } from 'vitest'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -19,17 +20,17 @@ import { getCardMetadata } from '../libs/getCardMetadata'
 
 import { StepBlockNodeCard } from '.'
 
-jest.mock('../libs/getCardMetadata', () => ({
-  getCardMetadata: jest.fn()
+vi.mock('../libs/getCardMetadata', () => ({
+  getCardMetadata: vi.fn()
 }))
 
-jest.mock('@core/shared/ui/deviceUtils', () => {
+vi.mock('@core/shared/ui/deviceUtils', () => {
   return {
-    isIOSTouchScreen: jest.fn()
+    isIOSTouchScreen: vi.fn()
   }
 })
 
-const mockGetCardMetadata = getCardMetadata as jest.MockedFunction<
+const mockGetCardMetadata = getCardMetadata as MockedFunction<
   typeof getCardMetadata
 >
 
@@ -50,7 +51,9 @@ const subtitleTypography = {
 const card = {
   __typename: 'CardBlock',
   id: 'card.id',
-  children: [titleTypography, subtitleTypography]
+  children: [titleTypography, subtitleTypography],
+  showAssistant: null,
+  expandChatByDefault: null
 } as unknown as TreeBlock<CardBlock>
 
 const step = {
@@ -84,7 +87,7 @@ const journey = {
 
 describe('StepBlockNodeCard', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render card content', () => {

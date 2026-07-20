@@ -4,6 +4,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
+import { type Mock } from 'vitest'
 
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
@@ -18,14 +19,14 @@ import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMu
 
 import { TeamCreateDialog } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('TeamCreateDialog', () => {
   beforeEach(() => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
   })
 
   const teamCreateMock: MockedResponse<TeamCreate> = {
@@ -107,8 +108,8 @@ describe('TeamCreateDialog', () => {
   }
 
   it('creates new team and sets it as active', async () => {
-    const handleClose = jest.fn()
-    const handleCreate = jest.fn()
+    const handleClose = vi.fn()
+    const handleCreate = vi.fn()
     const cache = new InMemoryCache()
     cache.restore({
       ROOT_QUERY: {
@@ -150,16 +151,12 @@ describe('TeamCreateDialog', () => {
   })
 
   it('validates form', async () => {
-    const handleCreate = jest.fn()
+    const handleCreate = vi.fn()
     const { getByText, getByRole, getAllByRole } = render(
       <MockedProvider mocks={[teamCreateErrorMock]}>
         <SnackbarProvider>
           <TeamProvider>
-            <TeamCreateDialog
-              open
-              onClose={jest.fn()}
-              onCreate={handleCreate}
-            />
+            <TeamCreateDialog open onClose={vi.fn()} onCreate={handleCreate} />
           </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>

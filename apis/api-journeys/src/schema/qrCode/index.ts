@@ -1,0 +1,7 @@
+import './qrCode'
+import './inputs'
+import './qrCode.query'
+import './qrCodes.query'
+import './qrCodeCreate.mutation'
+import './qrCodeUpdate.mutation'
+import './qrCodeDelete.mutation'

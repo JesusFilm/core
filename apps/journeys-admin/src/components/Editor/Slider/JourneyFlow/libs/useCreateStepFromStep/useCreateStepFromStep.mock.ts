@@ -97,7 +97,9 @@ export const mockStepBlockCreateFromStep: MockedResponse<
         themeName: ThemeName.base,
         fullscreen: false,
         backdropBlur: null,
-        eventLabel: null
+        eventLabel: null,
+        showAssistant: null,
+        expandChatByDefault: null
       },
       stepBlockUpdate: {
         id: 'originStepBlock.id',

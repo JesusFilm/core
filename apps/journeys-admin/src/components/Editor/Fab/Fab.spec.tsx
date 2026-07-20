@@ -1,5 +1,6 @@
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
@@ -14,12 +15,13 @@ import {
 
 import type { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { TestEditorState } from '../../../libs/TestEditorState'
+import { EditorLayoutProvider } from '../EditorLayoutContext'
 
 import { Fab } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('Fab', () => {
@@ -30,9 +32,7 @@ describe('Fab', () => {
   }
 
   describe('mdUp', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => true)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => true))
 
     it('should be disabled', () => {
       const step = {
@@ -54,7 +54,9 @@ describe('Fab', () => {
                 __typename: 'VideoBlock',
                 children: []
               }
-            ]
+            ],
+            showAssistant: null,
+            expandChatByDefault: null
           }
         ]
       } as unknown as TreeBlock<StepBlock>
@@ -183,10 +185,33 @@ describe('Fab', () => {
     })
   })
 
+  describe('layered layout', () => {
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => true))
+
+    it('should open the settings drawer on add', () => {
+      const selectedStep = {
+        id: 'step1.id',
+        __typename: 'StepBlock',
+        children: []
+      } as unknown as TreeBlock<StepBlock>
+      render(
+        <EditorProvider initialState={{ ...state, selectedStep }}>
+          <EditorLayoutProvider value="layered">
+            <TestEditorState />
+            <Fab variant="canvas" />
+          </EditorLayoutProvider>
+        </EditorProvider>
+      )
+      fireEvent.click(screen.getByRole('button', { name: 'Add Block' }))
+      expect(screen.getByText('activeSlide: 2')).toBeInTheDocument()
+      expect(
+        screen.getByText('activeCanvasDetailsDrawer: 2')
+      ).toBeInTheDocument()
+    })
+  })
+
   describe('mdDown', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => false)
-    )
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => false))
 
     it('should handle add', async () => {
       render(

@@ -1,56 +1,37 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { createInstance } from 'i18next'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyLocaleProvider } from './JourneyLocaleProvider'
-import { LOCALE_MAP, loadJourneyLocaleResources } from './utils'
+import { loadJourneyLocaleResources } from './utils'
 
-jest.mock('./utils', () => ({
+vi.mock('./utils', () => ({
   __esModule: true,
-  loadJourneyLocaleResources: jest.fn(),
-  LOCALE_MAP: {
-    en: 'en',
-    ko: 'ko-KR',
-    'zh-hans': 'zh-Hans-CN',
-    es: 'es-ES',
-    fr: 'fr-FR',
-    hi: 'hi-IN',
-    ar: 'ar-SA',
-    ru: 'ru-RU',
-    th: 'th-TH',
-    id: 'id-ID',
-    ja: 'ja-JP',
-    bn: 'bn-BD',
-    am: 'am-ET',
-    tl: 'tl-PH',
-    tr: 'tr-TR',
-    ur: 'ur-PK',
-    vi: 'vi-VN',
-    my: 'my-MM'
-  }
+  loadJourneyLocaleResources: vi.fn()
 }))
 
-const init = jest.fn()
+const init = vi.fn()
 const mockI18nInstance = {
   init,
   language: 'en',
   isInitialized: true,
-  t: jest.fn((key) => key)
+  t: vi.fn((key) => key)
 }
 
-jest.mock('i18next', () => ({
+vi.mock('i18next', () => ({
   __esModule: true,
-  createInstance: jest.fn()
+  createInstance: vi.fn()
 }))
 
-const mockCreateInstance = createInstance as jest.MockedFunction<
+const mockCreateInstance = createInstance as MockedFunction<
   typeof createInstance
 >
 
 const mockedLoadJourneyLocaleResources =
-  loadJourneyLocaleResources as jest.MockedFunction<
+  loadJourneyLocaleResources as MockedFunction<
     typeof loadJourneyLocaleResources
   >
-const mockedCreateInstance = createInstance as jest.MockedFunction<
+const mockedCreateInstance = createInstance as MockedFunction<
   typeof createInstance
 >
 
@@ -59,11 +40,11 @@ describe('JourneyLocaleProvider', () => {
   const defaultNamespaces = ['libs-journeys-ui', 'apps-journeys-admin']
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockCreateInstance.mockReturnValue(mockI18nInstance as any)
 
     mockedLoadJourneyLocaleResources.mockImplementation(
-      async (locale, setResources, _directoryLocale) => {
+      async (locale, setResources) => {
         const mockResources = {
           [locale]: {
             'libs-journeys-ui': { testKey: `ui loaded for ${locale}` },
@@ -75,7 +56,7 @@ describe('JourneyLocaleProvider', () => {
     )
   })
 
-  test('should render children and load resources for a locale not in LOCALE_MAP', async () => {
+  test('should render children and load resources for the locale', async () => {
     const locale = 'de'
     render(
       <JourneyLocaleProvider locale={locale}>
@@ -88,8 +69,7 @@ describe('JourneyLocaleProvider', () => {
     await waitFor(() => {
       expect(mockedLoadJourneyLocaleResources).toHaveBeenCalledWith(
         locale,
-        expect.any(Function),
-        locale
+        expect.any(Function)
       )
     })
 
@@ -112,9 +92,8 @@ describe('JourneyLocaleProvider', () => {
     })
   })
 
-  test('should use LOCALE_MAP to determine directoryLocale for resource loading', async () => {
+  test('should load resources once and key the i18n instance by the locale', async () => {
     const locale = 'ko'
-    const expectedDirectoryLocale = 'ko-KR'
 
     render(
       <JourneyLocaleProvider locale={locale}>
@@ -126,8 +105,7 @@ describe('JourneyLocaleProvider', () => {
       expect(mockedLoadJourneyLocaleResources).toHaveBeenCalledTimes(1)
       expect(mockedLoadJourneyLocaleResources).toHaveBeenCalledWith(
         locale,
-        expect.any(Function),
-        expectedDirectoryLocale
+        expect.any(Function)
       )
     })
 
@@ -157,7 +135,7 @@ describe('JourneyLocaleProvider', () => {
     const newLocale = 'fr'
     // Update mock for the new locale load
     mockedLoadJourneyLocaleResources.mockImplementationOnce(
-      async (locale, setResources, _directoryLocale) => {
+      async (locale, setResources) => {
         setResources({
           [newLocale]: {
             'libs-journeys-ui': { testKey: `ui loaded for ${newLocale}` },
@@ -176,8 +154,7 @@ describe('JourneyLocaleProvider', () => {
     await waitFor(() => {
       expect(mockedLoadJourneyLocaleResources).toHaveBeenLastCalledWith(
         newLocale,
-        expect.any(Function),
-        LOCALE_MAP[newLocale] || newLocale
+        expect.any(Function)
       )
     })
 

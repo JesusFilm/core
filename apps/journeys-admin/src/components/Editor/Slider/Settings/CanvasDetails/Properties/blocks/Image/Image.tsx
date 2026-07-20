@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import dynamic from 'next/dynamic'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'

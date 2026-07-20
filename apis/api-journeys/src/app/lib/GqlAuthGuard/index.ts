@@ -1,1 +1,0 @@
-export { GqlAuthGuard } from './GqlAuthGuard'

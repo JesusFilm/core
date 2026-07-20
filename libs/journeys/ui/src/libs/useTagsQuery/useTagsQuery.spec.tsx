@@ -7,7 +7,7 @@ import { GET_TAGS, useTagsQuery } from './useTagsQuery'
 
 describe('useTagsQuery', () => {
   it('should return the parent and child tags', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         tags: [
           {

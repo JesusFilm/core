@@ -124,6 +124,14 @@ export interface CardPollRestore_imageRestore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardPollRestore_imageRestore_IconBlock {
@@ -481,73 +489,25 @@ export interface CardPollRestore_imageRestore_VideoBlock {
   parentOrder: number | null;
   muted: boolean | null;
   autoplay: boolean | null;
-  /**
-   * startAt dictates at which point of time the video should start playing
-   */
   startAt: number | null;
-  /**
-   * endAt dictates at which point of time the video should end
-   */
   endAt: number | null;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
   source: VideoBlockSource;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field.
-   * For other sources this is automatically populated.
-   */
   title: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   description: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   image: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   * duration in seconds.
-   */
   duration: number | null;
-  /**
-   * how the video should display within the VideoBlock
-   */
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardPollRestore_imageRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_imageRestore_VideoBlock_mediaVideo | null;
-  /**
-   * action that should be performed when the video ends
-   */
   action: CardPollRestore_imageRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
@@ -735,6 +695,14 @@ export interface CardPollRestore_subtitleRestore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardPollRestore_subtitleRestore_IconBlock {
@@ -1092,73 +1060,25 @@ export interface CardPollRestore_subtitleRestore_VideoBlock {
   parentOrder: number | null;
   muted: boolean | null;
   autoplay: boolean | null;
-  /**
-   * startAt dictates at which point of time the video should start playing
-   */
   startAt: number | null;
-  /**
-   * endAt dictates at which point of time the video should end
-   */
   endAt: number | null;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
   source: VideoBlockSource;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field.
-   * For other sources this is automatically populated.
-   */
   title: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   description: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   image: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   * duration in seconds.
-   */
   duration: number | null;
-  /**
-   * how the video should display within the VideoBlock
-   */
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardPollRestore_subtitleRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_subtitleRestore_VideoBlock_mediaVideo | null;
-  /**
-   * action that should be performed when the video ends
-   */
   action: CardPollRestore_subtitleRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
@@ -1346,6 +1266,14 @@ export interface CardPollRestore_titleRestore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardPollRestore_titleRestore_IconBlock {
@@ -1703,73 +1631,25 @@ export interface CardPollRestore_titleRestore_VideoBlock {
   parentOrder: number | null;
   muted: boolean | null;
   autoplay: boolean | null;
-  /**
-   * startAt dictates at which point of time the video should start playing
-   */
   startAt: number | null;
-  /**
-   * endAt dictates at which point of time the video should end
-   */
   endAt: number | null;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
   source: VideoBlockSource;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field.
-   * For other sources this is automatically populated.
-   */
   title: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   description: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   image: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   * duration in seconds.
-   */
   duration: number | null;
-  /**
-   * how the video should display within the VideoBlock
-   */
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardPollRestore_titleRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_titleRestore_VideoBlock_mediaVideo | null;
-  /**
-   * action that should be performed when the video ends
-   */
   action: CardPollRestore_titleRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
@@ -1957,6 +1837,14 @@ export interface CardPollRestore_radioQuestionRestore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardPollRestore_radioQuestionRestore_IconBlock {
@@ -2314,73 +2202,25 @@ export interface CardPollRestore_radioQuestionRestore_VideoBlock {
   parentOrder: number | null;
   muted: boolean | null;
   autoplay: boolean | null;
-  /**
-   * startAt dictates at which point of time the video should start playing
-   */
   startAt: number | null;
-  /**
-   * endAt dictates at which point of time the video should end
-   */
   endAt: number | null;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
   source: VideoBlockSource;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field.
-   * For other sources this is automatically populated.
-   */
   title: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   description: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   image: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   * duration in seconds.
-   */
   duration: number | null;
-  /**
-   * how the video should display within the VideoBlock
-   */
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardPollRestore_radioQuestionRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_radioQuestionRestore_VideoBlock_mediaVideo | null;
-  /**
-   * action that should be performed when the video ends
-   */
   action: CardPollRestore_radioQuestionRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
@@ -2568,6 +2408,14 @@ export interface CardPollRestore_radioOption1Restore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardPollRestore_radioOption1Restore_IconBlock {
@@ -2925,73 +2773,25 @@ export interface CardPollRestore_radioOption1Restore_VideoBlock {
   parentOrder: number | null;
   muted: boolean | null;
   autoplay: boolean | null;
-  /**
-   * startAt dictates at which point of time the video should start playing
-   */
   startAt: number | null;
-  /**
-   * endAt dictates at which point of time the video should end
-   */
   endAt: number | null;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
   source: VideoBlockSource;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field.
-   * For other sources this is automatically populated.
-   */
   title: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   description: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   image: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   * duration in seconds.
-   */
   duration: number | null;
-  /**
-   * how the video should display within the VideoBlock
-   */
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardPollRestore_radioOption1Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_radioOption1Restore_VideoBlock_mediaVideo | null;
-  /**
-   * action that should be performed when the video ends
-   */
   action: CardPollRestore_radioOption1Restore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
@@ -3179,6 +2979,14 @@ export interface CardPollRestore_radioOption2Restore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardPollRestore_radioOption2Restore_IconBlock {
@@ -3536,73 +3344,25 @@ export interface CardPollRestore_radioOption2Restore_VideoBlock {
   parentOrder: number | null;
   muted: boolean | null;
   autoplay: boolean | null;
-  /**
-   * startAt dictates at which point of time the video should start playing
-   */
   startAt: number | null;
-  /**
-   * endAt dictates at which point of time the video should end
-   */
   endAt: number | null;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
   source: VideoBlockSource;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field.
-   * For other sources this is automatically populated.
-   */
   title: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   description: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   image: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   * duration in seconds.
-   */
   duration: number | null;
-  /**
-   * how the video should display within the VideoBlock
-   */
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardPollRestore_radioOption2Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_radioOption2Restore_VideoBlock_mediaVideo | null;
-  /**
-   * action that should be performed when the video ends
-   */
   action: CardPollRestore_radioOption2Restore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
@@ -3790,6 +3550,14 @@ export interface CardPollRestore_radioOption3Restore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardPollRestore_radioOption3Restore_IconBlock {
@@ -4147,73 +3915,25 @@ export interface CardPollRestore_radioOption3Restore_VideoBlock {
   parentOrder: number | null;
   muted: boolean | null;
   autoplay: boolean | null;
-  /**
-   * startAt dictates at which point of time the video should start playing
-   */
   startAt: number | null;
-  /**
-   * endAt dictates at which point of time the video should end
-   */
   endAt: number | null;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
   source: VideoBlockSource;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field.
-   * For other sources this is automatically populated.
-   */
   title: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   description: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   image: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   * duration in seconds.
-   */
   duration: number | null;
-  /**
-   * how the video should display within the VideoBlock
-   */
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardPollRestore_radioOption3Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_radioOption3Restore_VideoBlock_mediaVideo | null;
-  /**
-   * action that should be performed when the video ends
-   */
   action: CardPollRestore_radioOption3Restore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
@@ -4401,6 +4121,14 @@ export interface CardPollRestore_radioOption4Restore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardPollRestore_radioOption4Restore_IconBlock {
@@ -4758,73 +4486,25 @@ export interface CardPollRestore_radioOption4Restore_VideoBlock {
   parentOrder: number | null;
   muted: boolean | null;
   autoplay: boolean | null;
-  /**
-   * startAt dictates at which point of time the video should start playing
-   */
   startAt: number | null;
-  /**
-   * endAt dictates at which point of time the video should end
-   */
   endAt: number | null;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
   source: VideoBlockSource;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field.
-   * For other sources this is automatically populated.
-   */
   title: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   description: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   image: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   * duration in seconds.
-   */
   duration: number | null;
-  /**
-   * how the video should display within the VideoBlock
-   */
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardPollRestore_radioOption4Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_radioOption4Restore_VideoBlock_mediaVideo | null;
-  /**
-   * action that should be performed when the video ends
-   */
   action: CardPollRestore_radioOption4Restore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
@@ -5012,6 +4692,14 @@ export interface CardPollRestore_bodyRestore_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface CardPollRestore_bodyRestore_IconBlock {
@@ -5369,73 +5057,25 @@ export interface CardPollRestore_bodyRestore_VideoBlock {
   parentOrder: number | null;
   muted: boolean | null;
   autoplay: boolean | null;
-  /**
-   * startAt dictates at which point of time the video should start playing
-   */
   startAt: number | null;
-  /**
-   * endAt dictates at which point of time the video should end
-   */
   endAt: number | null;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
   source: VideoBlockSource;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field.
-   * For other sources this is automatically populated.
-   */
   title: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   description: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   image: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   * duration in seconds.
-   */
   duration: number | null;
-  /**
-   * how the video should display within the VideoBlock
-   */
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardPollRestore_bodyRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_bodyRestore_VideoBlock_mediaVideo | null;
-  /**
-   * action that should be performed when the video ends
-   */
   action: CardPollRestore_bodyRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
@@ -5509,41 +5149,14 @@ export interface CardPollRestore_bodyRestore_VideoTriggerBlock {
 export type CardPollRestore_bodyRestore = CardPollRestore_bodyRestore_GridContainerBlock | CardPollRestore_bodyRestore_ButtonBlock | CardPollRestore_bodyRestore_CardBlock | CardPollRestore_bodyRestore_IconBlock | CardPollRestore_bodyRestore_ImageBlock | CardPollRestore_bodyRestore_MultiselectOptionBlock | CardPollRestore_bodyRestore_MultiselectBlock | CardPollRestore_bodyRestore_RadioOptionBlock | CardPollRestore_bodyRestore_RadioQuestionBlock | CardPollRestore_bodyRestore_SignUpBlock | CardPollRestore_bodyRestore_SpacerBlock | CardPollRestore_bodyRestore_StepBlock | CardPollRestore_bodyRestore_TextResponseBlock | CardPollRestore_bodyRestore_TypographyBlock | CardPollRestore_bodyRestore_VideoBlock | CardPollRestore_bodyRestore_VideoTriggerBlock;
 
 export interface CardPollRestore {
-  /**
-   * blockRestore is used for redo/undo
-   */
   imageRestore: CardPollRestore_imageRestore[];
-  /**
-   * blockRestore is used for redo/undo
-   */
   subtitleRestore: CardPollRestore_subtitleRestore[];
-  /**
-   * blockRestore is used for redo/undo
-   */
   titleRestore: CardPollRestore_titleRestore[];
-  /**
-   * blockRestore is used for redo/undo
-   */
   radioQuestionRestore: CardPollRestore_radioQuestionRestore[];
-  /**
-   * blockRestore is used for redo/undo
-   */
   radioOption1Restore: CardPollRestore_radioOption1Restore[];
-  /**
-   * blockRestore is used for redo/undo
-   */
   radioOption2Restore: CardPollRestore_radioOption2Restore[];
-  /**
-   * blockRestore is used for redo/undo
-   */
   radioOption3Restore: CardPollRestore_radioOption3Restore[];
-  /**
-   * blockRestore is used for redo/undo
-   */
   radioOption4Restore: CardPollRestore_radioOption4Restore[];
-  /**
-   * blockRestore is used for redo/undo
-   */
   bodyRestore: CardPollRestore_bodyRestore[];
 }
 

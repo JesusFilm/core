@@ -18,19 +18,19 @@ import {
 
 import { VideosSection } from './VideosSection'
 
-jest.mock('next-i18next', () => ({
+vi.mock('next-i18next/pages', async () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
-jest.mock('./VideoPreviewPlayer', () => ({
+vi.mock('./VideoPreviewPlayer', async () => ({
   VideoPreviewPlayer: () => <div data-testid="VideoPreviewPlayer" />
 }))
 
-const mockStartUpload = jest.fn()
-const mockStartYouTubeLink = jest.fn()
-const mockGetUploadStatus = jest.fn()
-jest.mock('../../../../TemplateVideoUploadProvider', () => ({
-  ...jest.requireActual('../../../../TemplateVideoUploadProvider'),
+const mockStartUpload = vi.fn()
+const mockStartYouTubeLink = vi.fn()
+const mockGetUploadStatus = vi.fn()
+vi.mock('../../../../TemplateVideoUploadProvider', async () => ({
+  ...(await vi.importActual('../../../../TemplateVideoUploadProvider')),
   useTemplateVideoUpload: () => ({
     startUpload: mockStartUpload,
     startYouTubeLink: mockStartYouTubeLink,
@@ -157,12 +157,12 @@ function renderVideosSection({
 
 describe('VideosSection', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockGetUploadStatus.mockReturnValue(null)
   })
 
   afterEach(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   it('renders with VideosSection data-testid visible', () => {
@@ -344,8 +344,8 @@ describe('VideosSection', () => {
 
   it('auto-submits valid YouTube URL after 800ms debounce', async () => {
     mockStartYouTubeLink.mockResolvedValue(true)
-    jest.useFakeTimers()
-    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     renderVideosSection({
       journey: journeyWithMatchingVideoBlock,
       cardBlockId
@@ -356,7 +356,7 @@ describe('VideosSection', () => {
     await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
 
     act(() => {
-      jest.advanceTimersByTime(800)
+      vi.advanceTimersByTime(800)
     })
 
     expect(mockStartYouTubeLink).toHaveBeenCalledWith(
@@ -366,8 +366,8 @@ describe('VideosSection', () => {
   })
 
   it('shows error for invalid YouTube URL after debounce', async () => {
-    jest.useFakeTimers()
-    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     renderVideosSection({
       journey: journeyWithMatchingVideoBlock,
       cardBlockId
@@ -378,7 +378,7 @@ describe('VideosSection', () => {
     await user.type(input, 'not-a-valid-url')
 
     act(() => {
-      jest.advanceTimersByTime(800)
+      vi.advanceTimersByTime(800)
     })
 
     expect(
@@ -388,8 +388,8 @@ describe('VideosSection', () => {
   })
 
   it('clears error immediately when user types after an invalid URL', async () => {
-    jest.useFakeTimers()
-    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     renderVideosSection({
       journey: journeyWithMatchingVideoBlock,
       cardBlockId
@@ -399,7 +399,7 @@ describe('VideosSection', () => {
     await user.clear(input)
     await user.type(input, 'not-a-valid-url')
     act(() => {
-      jest.advanceTimersByTime(800)
+      vi.advanceTimersByTime(800)
     })
     expect(
       screen.getByText('Please enter a valid YouTube URL')
@@ -414,8 +414,8 @@ describe('VideosSection', () => {
 
   it('clears error and does not re-submit when re-pasting a previously-submitted valid URL after an error', async () => {
     mockStartYouTubeLink.mockResolvedValue(true)
-    jest.useFakeTimers()
-    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     renderVideosSection({
       journey: journeyWithMatchingVideoBlock,
       cardBlockId
@@ -427,7 +427,7 @@ describe('VideosSection', () => {
     await user.clear(input)
     await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
     act(() => {
-      jest.advanceTimersByTime(800)
+      vi.advanceTimersByTime(800)
     })
     expect(mockStartYouTubeLink).toHaveBeenCalledTimes(1)
     // Flush the .then() callback that writes to the dedup map
@@ -439,7 +439,7 @@ describe('VideosSection', () => {
     await user.clear(input)
     await user.type(input, 'not-valid')
     act(() => {
-      jest.advanceTimersByTime(800)
+      vi.advanceTimersByTime(800)
     })
     expect(
       screen.getByText('Please enter a valid YouTube URL')
@@ -449,7 +449,7 @@ describe('VideosSection', () => {
     await user.clear(input)
     await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
     act(() => {
-      jest.advanceTimersByTime(800)
+      vi.advanceTimersByTime(800)
     })
     expect(
       screen.queryByText('Please enter a valid YouTube URL')
@@ -459,8 +459,8 @@ describe('VideosSection', () => {
 
   it('allows retry of same URL after a failed submission', async () => {
     mockStartYouTubeLink.mockResolvedValue(false)
-    jest.useFakeTimers()
-    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     renderVideosSection({
       journey: journeyWithMatchingVideoBlock,
       cardBlockId
@@ -472,7 +472,7 @@ describe('VideosSection', () => {
     await user.clear(input)
     await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
     act(() => {
-      jest.advanceTimersByTime(800)
+      vi.advanceTimersByTime(800)
     })
     expect(mockStartYouTubeLink).toHaveBeenCalledTimes(1)
     await act(async () => {
@@ -483,14 +483,14 @@ describe('VideosSection', () => {
     await user.clear(input)
     await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
     act(() => {
-      jest.advanceTimersByTime(800)
+      vi.advanceTimersByTime(800)
     })
     expect(mockStartYouTubeLink).toHaveBeenCalledTimes(2)
   })
 
   it('resets YouTube URL when cardBlockId changes', async () => {
-    jest.useFakeTimers()
-    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
 
     const cardBlockIdB = 'card-block-2'
     const journey: Journey = {
@@ -539,7 +539,7 @@ describe('VideosSection', () => {
     )
 
     act(() => {
-      jest.advanceTimersByTime(800)
+      vi.advanceTimersByTime(800)
     })
 
     expect(mockStartYouTubeLink).not.toHaveBeenCalled()
@@ -557,14 +557,14 @@ describe('VideosSection', () => {
   })
 
   it('does not re-submit hydrated YouTube URL', () => {
-    jest.useFakeTimers()
+    vi.useFakeTimers({ shouldAdvanceTime: true })
     renderVideosSection({
       journey: journeyWithMatchingVideoBlock,
       cardBlockId
     })
 
     act(() => {
-      jest.advanceTimersByTime(800)
+      vi.advanceTimersByTime(800)
     })
 
     expect(mockStartYouTubeLink).not.toHaveBeenCalled()

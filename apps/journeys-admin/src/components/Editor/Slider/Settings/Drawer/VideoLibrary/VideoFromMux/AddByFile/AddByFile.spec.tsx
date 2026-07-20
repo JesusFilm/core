@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -15,20 +16,43 @@ import {
   VideoBlockSource
 } from '../../../../../../../../../__generated__/globalTypes'
 import { JourneyFields } from '../../../../../../../../../__generated__/JourneyFields'
-import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
+import { validateMuxLanguage } from '../../../../../../../../libs/validateMuxLanguage'
+import {
+  MuxVideoUploadProvider,
+  useMuxVideoUpload
+} from '../../../../../../../MuxVideoUploadProvider'
 
 import { AddByFile } from '.'
 
-jest.mock('@mux/upchunk', () => ({
+vi.mock('../../../../../../../MuxVideoUploadProvider', async () => {
+  const actual = await vi.importActual<
+    typeof import('../../../../../../../MuxVideoUploadProvider')
+  >('../../../../../../../MuxVideoUploadProvider')
+  return {
+    __esModule: true,
+    ...actual,
+    useMuxVideoUpload: vi.fn(actual.useMuxVideoUpload)
+  }
+})
+
+const mockUseMuxVideoUpload = useMuxVideoUpload as MockedFunction<
+  typeof useMuxVideoUpload
+>
+
+vi.mock('@mux/upchunk', async () => ({
   UpChunk: {
     createUpload: () => ({
-      on: () => jest.fn()
+      on: () => vi.fn()
     })
   }
 }))
 
-jest.mock('../../../../../../../../libs/validateMuxLanguage', () => ({
-  validateMuxLanguage: jest.fn().mockReturnValue(true)
+vi.mock('../../../../../../../../libs/validateMuxLanguage', async () => ({
+  validateMuxLanguage: vi.fn().mockReturnValue(true)
+}))
+
+vi.mock('./utils/getVideoDuration/getVideoDuration', async () => ({
+  getVideoDuration: vi.fn().mockResolvedValue(10)
 }))
 
 const mockJourney: Journey = {
@@ -156,15 +180,22 @@ const TestWrapper = ({
   </MockedProvider>
 )
 
+const actualUseMuxVideoUpload: typeof useMuxVideoUpload = (
+  await vi.importActual<
+    typeof import('../../../../../../../MuxVideoUploadProvider')
+  >('../../../../../../../MuxVideoUploadProvider')
+).useMuxVideoUpload
+
 describe('AddByFile', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
+    mockUseMuxVideoUpload.mockImplementation(actualUseMuxVideoUpload)
   })
 
   it('should render drop zone with correct text', () => {
     render(
       <TestWrapper>
-        <AddByFile onChange={jest.fn()} />
+        <AddByFile onChange={vi.fn()} />
       </TestWrapper>
     )
 
@@ -177,10 +208,64 @@ describe('AddByFile', () => {
     ).toBeInTheDocument()
   })
 
+  it.each([
+    {
+      status: 'uploading' as const,
+      progress: 42,
+      label: 'Uploading...',
+      expectedValueNow: '42'
+    },
+    {
+      status: 'waiting' as const,
+      progress: 0,
+      label: 'Waiting in queue...',
+      expectedValueNow: null
+    },
+    {
+      status: 'processing' as const,
+      progress: 0,
+      label: 'Processing...',
+      expectedValueNow: null
+    }
+  ])(
+    'should replace upload button with progress bar for each status',
+    ({ status, progress, label, expectedValueNow }) => {
+      const mockContext: ReturnType<typeof useMuxVideoUpload> = {
+        getUploadStatus: () => ({
+          videoBlockId: 'videoBlockId',
+          file: new File(['file'], 'testFile.mp4', { type: 'video/mp4' }),
+          status,
+          progress
+        }),
+        addUploadTask: vi.fn(),
+        cancelUploadForBlock: vi.fn()
+      }
+      mockUseMuxVideoUpload.mockReturnValue(mockContext)
+
+      render(
+        <TestWrapper>
+          <AddByFile onChange={vi.fn()} />
+        </TestWrapper>
+      )
+
+      expect(
+        screen.queryByRole('button', { name: /Upload file/i })
+      ).not.toBeInTheDocument()
+      const progressBar = screen.getByRole('progressbar')
+      expect(progressBar).toBeInTheDocument()
+      if (expectedValueNow != null) {
+        expect(progressBar).toHaveAttribute('aria-valuenow', expectedValueNow)
+      } else {
+        expect(progressBar).not.toHaveAttribute('aria-valuenow')
+      }
+      expect(screen.getAllByText(label).length).toBeGreaterThan(0)
+    }
+  )
+
   it('should render upload button', () => {
     render(
       <TestWrapper>
-        <AddByFile onChange={jest.fn()} />
+        <AddByFile onChange={vi.fn()} />
       </TestWrapper>
     )
 
@@ -192,7 +277,7 @@ describe('AddByFile', () => {
   it('should clear errors on drop', async () => {
     render(
       <TestWrapper>
-        <AddByFile onChange={jest.fn()} />
+        <AddByFile onChange={vi.fn()} />
       </TestWrapper>
     )
 
@@ -233,7 +318,7 @@ describe('AddByFile', () => {
   it('should show error state on file rejection - too many files', async () => {
     render(
       <TestWrapper>
-        <AddByFile onChange={jest.fn()} />
+        <AddByFile onChange={vi.fn()} />
       </TestWrapper>
     )
 
@@ -259,7 +344,7 @@ describe('AddByFile', () => {
   it('should show error for file too large', async () => {
     render(
       <TestWrapper>
-        <AddByFile onChange={jest.fn()} />
+        <AddByFile onChange={vi.fn()} />
       </TestWrapper>
     )
 
@@ -298,7 +383,7 @@ describe('AddByFile', () => {
               }}
             >
               <MuxVideoUploadProvider>
-                <AddByFile onChange={jest.fn()} />
+                <AddByFile onChange={vi.fn()} />
               </MuxVideoUploadProvider>
             </EditorProvider>
           </JourneyProvider>
@@ -314,7 +399,7 @@ describe('AddByFile', () => {
   it('should handle journey with valid Mux language', () => {
     render(
       <TestWrapper journey={mockJourney}>
-        <AddByFile onChange={jest.fn()} />
+        <AddByFile onChange={vi.fn()} />
       </TestWrapper>
     )
 
@@ -322,10 +407,7 @@ describe('AddByFile', () => {
   })
 
   it('should handle journey with invalid Mux language', () => {
-    const {
-      validateMuxLanguage
-    } = require('../../../../../../../../libs/validateMuxLanguage')
-    validateMuxLanguage.mockReturnValue(false)
+    vi.mocked(validateMuxLanguage).mockReturnValue(false)
 
     const journeyWithInvalidLanguage = {
       ...mockJourney,
@@ -346,11 +428,33 @@ describe('AddByFile', () => {
 
     render(
       <TestWrapper journey={journeyWithInvalidLanguage}>
-        <AddByFile onChange={jest.fn()} />
+        <AddByFile onChange={vi.fn()} />
       </TestWrapper>
     )
 
     expect(screen.getByTestId('AddByFile')).toBeInTheDocument()
+  })
+
+  it('should forward the active journey id to addUploadTask on drop', async () => {
+    const addUploadTask = vi.fn()
+    mockUseMuxVideoUpload.mockReturnValue({
+      getUploadStatus: () => null,
+      addUploadTask,
+      cancelUploadForBlock: vi.fn()
+    })
+
+    render(
+      <TestWrapper journey={mockJourney}>
+        <AddByFile onChange={vi.fn()} />
+      </TestWrapper>
+    )
+
+    await dropTestVideo()
+
+    await waitFor(() => expect(addUploadTask).toHaveBeenCalled())
+    // journeyId is the 6th positional argument to addUploadTask
+    expect(addUploadTask.mock.calls[0][0]).toBe('videoBlockId')
+    expect(addUploadTask.mock.calls[0][5]).toBe('journeyId')
   })
 
   it('should handle journey without language', () => {
@@ -361,7 +465,7 @@ describe('AddByFile', () => {
 
     render(
       <TestWrapper journey={journeyWithoutLanguage}>
-        <AddByFile onChange={jest.fn()} />
+        <AddByFile onChange={vi.fn()} />
       </TestWrapper>
     )
 

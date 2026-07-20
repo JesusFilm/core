@@ -24,7 +24,7 @@ export const mockUseMenuBlockDeleteMutation: MockedResponse<
       }
     }
   },
-  result: jest.fn(() => ({
+  result: vi.fn(() => ({
     data: {
       stepDelete: [],
       journeyUpdate: {

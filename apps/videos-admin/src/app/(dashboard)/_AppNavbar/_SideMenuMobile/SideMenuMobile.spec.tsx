@@ -1,51 +1,71 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 
+import { GET_NAVIGATION_ROLES } from '../../../../components/MenuContent/MenuContent'
 import { AuthProvider } from '../../../../libs/auth/AuthProvider'
 
 import { SideMenuMobile } from './SideMenuMobile'
 
-jest.mock('next/navigation', () => ({
-  ...jest.requireActual('next/navigation'),
-  useRouter: jest.fn()
+const mediaPublisherMock = {
+  request: { query: GET_NAVIGATION_ROLES },
+  result: {
+    data: {
+      me: {
+        id: 'userId',
+        __typename: 'AuthenticatedUser',
+        mediaUserRoles: ['publisher'],
+        languageUserRoles: []
+      }
+    }
+  }
+}
+
+vi.mock('next/navigation', async () => ({
+  ...(await vi.importActual('next/navigation')),
+  useRouter: vi.fn()
 }))
 
 describe('SideMenuMobile', () => {
-  it('should show menu content', () => {
-    const handleToggle = jest.fn()
+  it('should show menu content', async () => {
+    const handleToggle = vi.fn()
 
     render(
-      <AuthProvider
-        user={{
-          id: '1',
-          name: 'Nameingham',
-          email: 'nameingham@example.com',
-          photoURL: 'url-of-nameinghams-photo'
-        }}
-      >
-        <SideMenuMobile toggleDrawer={handleToggle} open />
-      </AuthProvider>
+      <MockedProvider mocks={[mediaPublisherMock]}>
+        <AuthProvider
+          user={{
+            id: '1',
+            name: 'Nameingham',
+            email: 'nameingham@example.com',
+            photoURL: 'url-of-nameinghams-photo'
+          }}
+        >
+          <SideMenuMobile toggleDrawer={handleToggle} open />
+        </AuthProvider>
+      </MockedProvider>
     )
 
-    expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument()
     expect(
-      screen.getByRole('link', { name: 'Video Library' })
+      await screen.findByRole('link', { name: 'Video Library' })
     ).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Home' })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Settings' })).toBeInTheDocument()
   })
 
   it('should show user avatar and display name', () => {
-    const handleToggle = jest.fn()
+    const handleToggle = vi.fn()
     render(
-      <AuthProvider
-        user={{
-          id: '1',
-          displayName: 'Nameingham',
-          email: 'nameingham@example.com',
-          photoURL: 'url-of-nameinghams-photo'
-        }}
-      >
-        <SideMenuMobile toggleDrawer={handleToggle} open />
-      </AuthProvider>
+      <MockedProvider mocks={[mediaPublisherMock]}>
+        <AuthProvider
+          user={{
+            id: '1',
+            displayName: 'Nameingham',
+            email: 'nameingham@example.com',
+            photoURL: 'url-of-nameinghams-photo'
+          }}
+        >
+          <SideMenuMobile toggleDrawer={handleToggle} open />
+        </AuthProvider>
+      </MockedProvider>
     )
 
     expect(screen.getByText('Nameingham')).toBeInTheDocument()

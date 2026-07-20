@@ -3,8 +3,8 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type Mock, type MockedFunction } from 'vitest'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -12,37 +12,49 @@ import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { JourneyFields } from '../../../../../../../__generated__/JourneyFields'
-import { createCloudflareUploadByUrlMock } from '../ImageBlockEditor/CustomImage/CustomUrl/data'
+import {
+  listUnsplashCollectionPhotosMock,
+  triggerUnsplashDownloadMock,
+  unsplashImageInput
+} from '../ImageBlockEditor/UnsplashGallery/data'
 
 import { ImageSource } from './ImageSource'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+  useRouter: vi.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('ImageSource', () => {
-  const onChange = jest.fn()
-  const onDelete = jest.fn()
-  const push = jest.fn()
-  const on = jest.fn()
-
-  let originalEnv
+  const onChange = vi.fn()
+  const onDelete = vi.fn()
+  const push = vi.fn()
+  const on = vi.fn()
+  const imageBlock: ImageBlock = {
+    id: 'imageBlockId',
+    __typename: 'ImageBlock',
+    parentBlockId: null,
+    parentOrder: null,
+    src: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
+    alt: 'public',
+    width: 1920,
+    height: 1080,
+    blurhash: '',
+    scale: null,
+    focalLeft: 50,
+    focalTop: 50,
+    customizable: null
+  }
 
   beforeEach(() => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
-    originalEnv = process.env
-    process.env = {
-      ...originalEnv,
-      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: 'cloudflare-key'
-    }
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
@@ -50,10 +62,6 @@ describe('ImageSource', () => {
         on
       }
     } as unknown as NextRouter)
-  })
-
-  afterEach(() => {
-    process.env = originalEnv
   })
 
   describe('No existing ImageBlock', () => {
@@ -82,115 +90,12 @@ describe('ImageSource', () => {
       await waitFor(() =>
         fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
       )
-      await waitFor(() =>
-        fireEvent.click(
-          screen.getByRole('button', { name: 'Add image by URL' })
-        )
-      )
-      const textBox = await screen.getByRole('textbox')
-      expect(textBox).toHaveValue('')
+      expect(await screen.findByTestId('ImageUpload')).toBeInTheDocument()
     })
   })
 
   describe('Existing ImageBlock', () => {
     it('shows placeholders', async () => {
-      render(
-        <MockedProvider>
-          <SnackbarProvider>
-            <ImageSource
-              selectedBlock={null}
-              onChange={onChange}
-              onDelete={onDelete}
-            />
-          </SnackbarProvider>
-        </MockedProvider>
-      )
-      fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
-      await waitFor(() =>
-        fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
-      )
-      await waitFor(() =>
-        fireEvent.click(
-          screen.getByRole('button', { name: 'Add image by URL' })
-        )
-      )
-      const textBox = await screen.getByRole('textbox')
-      expect(textBox).toHaveValue('')
-    })
-  })
-
-  it('triggers onChange', async () => {
-    render(
-      <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>
-        <SnackbarProvider>
-          <ImageSource
-            selectedBlock={null}
-            onChange={onChange}
-            onDelete={onDelete}
-          />
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
-    await waitFor(() =>
-      fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
-    )
-    await waitFor(() =>
-      fireEvent.click(screen.getByRole('button', { name: 'Add image by URL' }))
-    )
-    const textBox = await screen.getByRole('textbox')
-    fireEvent.change(textBox, {
-      target: { value: 'https://example.com/image.jpg' }
-    })
-    fireEvent.blur(textBox)
-    await waitFor(() => expect(onChange).toHaveBeenCalled())
-  })
-
-  it('triggers onChange onPaste', async () => {
-    render(
-      <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>
-        <SnackbarProvider>
-          <ImageSource
-            selectedBlock={null}
-            onChange={onChange}
-            onDelete={onDelete}
-          />
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
-    await waitFor(() =>
-      fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
-    )
-    await waitFor(() =>
-      fireEvent.click(screen.getByRole('button', { name: 'Add image by URL' }))
-    )
-    const textBox = await screen.getByRole('textbox')
-    await fireEvent.paste(textBox, {
-      clipboardData: { getData: () => 'https://example.com/image.jpg' }
-    })
-    await waitFor(() => expect(onChange).toHaveBeenCalled())
-  })
-
-  describe('BlockCustomizationToggle', () => {
-    const imageBlock: TreeBlock<ImageBlock> = {
-      id: 'image1.id',
-      __typename: 'ImageBlock',
-      parentBlockId: 'card.id',
-      parentOrder: 0,
-      src: 'https://example.com/image.jpg',
-      alt: 'image alt',
-      width: 1920,
-      height: 1080,
-      blurhash: '',
-      children: [],
-      scale: null,
-      focalLeft: 50,
-      focalTop: 50,
-      customizable: null
-    }
-
-    it('should not render BlockCustomizationToggle when journey is not a template', () => {
       render(
         <MockedProvider>
           <SnackbarProvider>
@@ -202,26 +107,83 @@ describe('ImageSource', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-
-      expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'public Selected Image 1920 x 1080 pixels'
+        })
+      )
+      await waitFor(() =>
+        fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
+      )
+      expect(await screen.findByTestId('ImageUpload')).toBeInTheDocument()
+      expect(onChange).not.toHaveBeenCalled()
     })
 
-    it('should not render BlockCustomizationToggle when selectedBlock is null (even when journey is template)', () => {
+    it('calls onChange with shouldFocus false when an image is selected', async () => {
+      const handleChange = vi.fn()
+      render(
+        <MockedProvider
+          mocks={[
+            listUnsplashCollectionPhotosMock,
+            triggerUnsplashDownloadMock
+          ]}
+        >
+          <SnackbarProvider>
+            <ImageSource
+              selectedBlock={imageBlock}
+              onChange={handleChange}
+              onDelete={onDelete}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'public Selected Image 1920 x 1080 pixels'
+        })
+      )
+      await waitFor(() =>
+        expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
+      )
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'white dome building during daytime'
+        })
+      )
+      // shouldFocus is false so the editor does not slide the canvas back, and
+      // the drawer closes itself rather than relying on a manual close.
+      await waitFor(() =>
+        expect(handleChange).toHaveBeenCalledWith(
+          expect.objectContaining({ src: unsplashImageInput.src }),
+          false
+        )
+      )
+    })
+  })
+
+  describe('BlockCustomizationToggle', () => {
+    it('does not render when journey is not a template', () => {
       render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: { template: true } as unknown as JourneyFields,
-                variant: 'admin'
-              }}
-            >
-              <ImageSource
-                selectedBlock={null}
-                onChange={onChange}
-                onDelete={onDelete}
-              />
-            </JourneyProvider>
+            <FlagsProvider flags={{ customizableMedia: true }}>
+              <JourneyProvider
+                value={{
+                  journey: { template: false } as unknown as JourneyFields,
+                  variant: 'admin'
+                }}
+              >
+                <CommandProvider>
+                  <EditorProvider>
+                    <ImageSource
+                      selectedBlock={imageBlock}
+                      onChange={onChange}
+                      onDelete={onDelete}
+                    />
+                  </EditorProvider>
+                </CommandProvider>
+              </JourneyProvider>
+            </FlagsProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
@@ -229,7 +191,7 @@ describe('ImageSource', () => {
       expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
     })
 
-    it('should not render BlockCustomizationToggle when customizableMedia flag is false', () => {
+    it('does not render when customizableMedia flag is false', () => {
       render(
         <MockedProvider>
           <SnackbarProvider>
@@ -256,6 +218,70 @@ describe('ImageSource', () => {
       )
 
       expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
+    })
+
+    it('renders when journey is a template and customizableMedia flag is true', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <FlagsProvider flags={{ customizableMedia: true }}>
+              <JourneyProvider
+                value={{
+                  journey: { template: true } as unknown as JourneyFields,
+                  variant: 'admin'
+                }}
+              >
+                <CommandProvider>
+                  <EditorProvider>
+                    <ImageSource
+                      selectedBlock={imageBlock}
+                      onChange={onChange}
+                      onDelete={onDelete}
+                    />
+                  </EditorProvider>
+                </CommandProvider>
+              </JourneyProvider>
+            </FlagsProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('Needs Customization')).toBeInTheDocument()
+      expect(
+        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+      ).not.toBeDisabled()
+    })
+
+    it('renders disabled when no image is selected', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <FlagsProvider flags={{ customizableMedia: true }}>
+              <JourneyProvider
+                value={{
+                  journey: { template: true } as unknown as JourneyFields,
+                  variant: 'admin'
+                }}
+              >
+                <CommandProvider>
+                  <EditorProvider>
+                    <ImageSource
+                      selectedBlock={null}
+                      onChange={onChange}
+                      onDelete={onDelete}
+                    />
+                  </EditorProvider>
+                </CommandProvider>
+              </JourneyProvider>
+            </FlagsProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('Needs Customization')).toBeInTheDocument()
+      expect(
+        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+      ).toBeDisabled()
     })
   })
 })

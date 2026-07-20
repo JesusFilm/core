@@ -4,17 +4,17 @@ import { EventType } from '../../../../../../__generated__/globalTypes'
 
 import { FilterForm } from './FilterForm'
 
-jest.mock('next-i18next', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (str: string) => str
   })
 }))
 
 describe('FilterForm', () => {
-  const mockSetSelectedEvents = jest.fn()
+  const mockSetSelectedEvents = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders all checkboxes with correct initial state', () => {

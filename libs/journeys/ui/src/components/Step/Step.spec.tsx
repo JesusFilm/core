@@ -1,3 +1,4 @@
+import { type FetchResult } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { render, waitFor } from '@testing-library/react'
@@ -20,38 +21,29 @@ import { StepFields } from './__generated__/StepFields'
 import { StepViewEventCreate } from './__generated__/StepViewEventCreate'
 import { STEP_VIEW_EVENT_CREATE, Step } from './Step'
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = vi.mocked(uuidv4)
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+vi.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: vi.fn()
 }))
 
-const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
-  typeof sendGTMEvent
->
+const mockedSendGTMEvent = vi.mocked(sendGTMEvent)
 
-jest.mock('next/head', () => {
-  return {
-    __esModule: true,
-    default: ({ children }: { children: React.ReactElement[] }) => {
-      return <>{children}</>
-    }
-  }
-})
+vi.mock('next-seo', () => ({
+  NextSeo: ({ title }: { title: string }) => <title>{title}</title>
+}))
 
-jest.mock('next-plausible', () => ({
+vi.mock('next-plausible', () => ({
   __esModule: true,
-  usePlausible: jest.fn()
+  usePlausible: vi.fn()
 }))
 
-const mockUsePlausible = usePlausible as jest.MockedFunction<
-  typeof usePlausible
->
+const mockUsePlausible = vi.mocked(usePlausible)
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -175,10 +167,16 @@ const block: TreeBlock<StepFields> = {
 
 describe('Step', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockUuidv4.mockReturnValueOnce('uuid')
     blockHistoryVar([])
     treeBlocksVar([])
+  })
+
+  afterEach(() => {
+    // Reset any query string a test set via history.pushState so it can't leak
+    // into another test's window.location.search.
+    window.history.pushState({}, '', '/')
   })
 
   const mockStepViewEventCreate: MockedResponse<StepViewEventCreate> = {
@@ -192,20 +190,22 @@ describe('Step', () => {
         }
       }
     },
-    result: jest.fn(() => ({
-      data: {
-        stepViewEventCreate: {
-          id: 'uuid',
-          __typename: 'StepViewEvent'
+    result: vi.fn(
+      (): FetchResult<StepViewEventCreate> => ({
+        data: {
+          stepViewEventCreate: {
+            id: 'uuid',
+            __typename: 'StepViewEvent'
+          }
         }
-      }
-    }))
+      })
+    )
   }
 
   it('should create a stepViewEvent', async () => {
     treeBlocksVar([block])
     blockHistoryVar([block])
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
     render(
@@ -219,7 +219,9 @@ describe('Step', () => {
       expect(mockStepViewEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('pageview', {
-      u: expect.stringContaining(`/journeyId/Step1`),
+      // With no query string the path must end at the block id — a trailing
+      // slash here would split this step into a separate Plausible page.
+      u: expect.stringMatching(/\/journeyId\/Step1$/),
       props: {
         id: 'uuid',
         blockId: 'Step1',
@@ -244,8 +246,44 @@ describe('Step', () => {
     })
   })
 
-  it('should call plausible with eventLabel for pageview events', async () => {
-    const mockPlausible = jest.fn()
+  it('appends the query string to the pageview URL without a trailing slash', async () => {
+    // Simulate a visitor arriving with UTM params (reset by afterEach). A leading
+    // slash before the query string used to produce `.../Step1/?utm=...`, which
+    // Plausible records as a separate page from `.../Step1`; the fix appends it
+    // directly.
+    window.history.pushState(
+      {},
+      '',
+      '/?utm_source=source&utm_campaign=campaign'
+    )
+    treeBlocksVar([block])
+    blockHistoryVar([block])
+    const mockPlausible = vi.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    render(
+      <MockedProvider mocks={[mockStepViewEventCreate]}>
+        <JourneyProvider value={{ journey }}>
+          <Step {...block} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(mockStepViewEventCreate.result).toHaveBeenCalled()
+    )
+
+    const pageviewCall = mockPlausible.mock.calls.find(
+      ([event]) => event === 'pageview'
+    )
+    const u = pageviewCall?.[1]?.u as string
+    expect(u).toContain(
+      '/journeyId/Step1?utm_source=source&utm_campaign=campaign'
+    )
+    expect(u).not.toContain('Step1/?')
+  })
+
+  it('should call plausible with the capture goal for card eventLabel', async () => {
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
     const blockWithCardBlock: TreeBlock<StepFields> = {
@@ -263,7 +301,9 @@ describe('Step', () => {
           fullscreen: false,
           backdropBlur: null,
           eventLabel: BlockEventLabel.custom1,
-          children: []
+          children: [],
+          showAssistant: null,
+          expandChatByDefault: null
         }
       ]
     }
@@ -282,7 +322,7 @@ describe('Step', () => {
       expect(mockStepViewEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('pageview', expect.any(Object))
-    expect(mockPlausible).toHaveBeenCalledWith(BlockEventLabel.custom1, {
+    expect(mockPlausible).toHaveBeenCalledWith('custom1Capture', {
       u: expect.stringContaining(`/journeyId/Step1`),
       props: {
         id: 'uuid',
@@ -290,31 +330,80 @@ describe('Step', () => {
         value: 'Step 1',
         key: keyify({
           stepId: 'Step1',
-          event: BlockEventLabel.custom1,
+          event: 'custom1Capture',
           blockId: 'Step1',
           journeyId: 'journeyId'
         }),
         simpleKey: keyify({
           stepId: 'Step1',
-          event: BlockEventLabel.custom1,
+          event: 'custom1Capture',
           blockId: 'Step1',
           journeyId: 'journeyId'
         }),
         templateKey: templateKeyify({
-          event: BlockEventLabel.custom1,
+          event: 'custom1Capture',
           journeyId: 'journeyId'
         })
       }
     })
+    // Raw event labels are no longer fired; only the registered capture goal is.
+    expect(mockPlausible).not.toHaveBeenCalledWith(
+      BlockEventLabel.custom1,
+      expect.anything()
+    )
   })
 
-  xit('should create a stepViewEvent with a UTM code', async () => {
+  it('fires only pageview for a card whose eventLabel has no capture goal', async () => {
+    const mockPlausible = vi.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const blockWithShareCard: TreeBlock<StepFields> = {
+      ...block,
+      children: [
+        {
+          __typename: 'CardBlock',
+          id: 'Card1',
+          parentBlockId: 'Step1',
+          parentOrder: 0,
+          backgroundColor: null,
+          coverBlockId: null,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          backdropBlur: null,
+          eventLabel: BlockEventLabel.share,
+          children: [],
+          showAssistant: null,
+          expandChatByDefault: null
+        }
+      ]
+    }
+
+    treeBlocksVar([blockWithShareCard])
+    blockHistoryVar([blockWithShareCard])
+
+    render(
+      <MockedProvider mocks={[mockStepViewEventCreate]}>
+        <JourneyProvider value={{ journey }}>
+          <Step {...blockWithShareCard} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(mockStepViewEventCreate.result).toHaveBeenCalled()
+    )
+    // share has no registered Plausible goal, so only pageview should fire.
+    expect(mockPlausible).toHaveBeenCalledWith('pageview', expect.any(Object))
+    expect(mockPlausible).toHaveBeenCalledTimes(1)
+  })
+
+  it.skip('should create a stepViewEvent with a UTM code', async () => {
     // disabled due to Jest v30 compatibility issues
     const mockSearch = '?utm_source=source&utm_campaign=campaign'
 
     treeBlocksVar([block])
     blockHistoryVar([block])
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
     render(
@@ -328,7 +417,7 @@ describe('Step', () => {
       expect(mockStepViewEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('pageview', {
-      u: expect.stringContaining(`/journeyId/Step1/${mockSearch}`),
+      u: expect.stringContaining(`/journeyId/Step1${mockSearch}`),
       props: {
         id: 'uuid',
         blockId: 'Step1',
@@ -354,7 +443,7 @@ describe('Step', () => {
   })
 
   it('should stepViewEvent to dataLayer', async () => {
-    mockUsePlausible.mockReturnValue(jest.fn())
+    mockUsePlausible.mockReturnValue(vi.fn())
     blockHistoryVar([block])
     treeBlocksVar([block])
     render(
@@ -377,7 +466,7 @@ describe('Step', () => {
   it('should not create a stepViewEvent if there are wrappers', async () => {
     blockHistoryVar([block])
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         stepViewEventCreate: {
           id: 'uuid',
@@ -401,14 +490,14 @@ describe('Step', () => {
     await waitFor(() => expect(result).not.toHaveBeenCalled())
   })
 
-  it('should render blocks', () => {
+  it('should render blocks', async () => {
     const { getByText } = render(
       <MockedProvider mocks={[mockStepViewEventCreate]}>
         <Step {...block} />
       </MockedProvider>
     )
 
-    expect(getByText('Button 1')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('Button 1')).toBeInTheDocument())
     expect(getByText('Button 2')).toBeInTheDocument()
   })
 
@@ -431,7 +520,7 @@ describe('Step', () => {
     treeBlocksVar([])
     blockHistoryVar([block, { ...block, id: 'Step2' }])
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         stepViewEventCreate: {
           id: 'uuid',
@@ -452,12 +541,12 @@ describe('Step', () => {
   })
 
   it('should set seoTitle to [journey name (step name)] if activeStep and on first card', () => {
-    mockUsePlausible.mockReturnValue(jest.fn())
+    mockUsePlausible.mockReturnValue(vi.fn())
     treeBlocksVar([block])
     blockHistoryVar([block])
 
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[mockStepViewEventCreate]}>
         <JourneyProvider value={{ journey }}>
           <Step {...block} />
         </JourneyProvider>
@@ -469,12 +558,12 @@ describe('Step', () => {
   })
 
   it('should set seoTitle to [step name (journey name)] if activeStep and not on first card', () => {
-    mockUsePlausible.mockReturnValue(jest.fn())
+    mockUsePlausible.mockReturnValue(vi.fn())
     treeBlocksVar([{ ...block, id: 'Step0' }, block])
     blockHistoryVar([block])
 
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[mockStepViewEventCreate]}>
         <JourneyProvider value={{ journey }}>
           <Step {...block} />
         </JourneyProvider>

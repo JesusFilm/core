@@ -1,24 +1,25 @@
 import { ApolloClient, createHttpLink } from '@apollo/client'
+import { type MockedClass, type MockedFunction } from 'vitest'
 
 import { createApolloClient } from '../apolloClient'
 
-jest.mock('@apollo/client', () => ({
-  ApolloClient: jest.fn(),
-  InMemoryCache: jest.fn(),
-  createHttpLink: jest.fn()
+vi.mock('@apollo/client', () => ({
+  ApolloClient: vi.fn(),
+  InMemoryCache: vi.fn(),
+  createHttpLink: vi.fn()
 }))
 
-const mockCreateHttpLink = createHttpLink as jest.MockedFunction<
+const mockCreateHttpLink = createHttpLink as MockedFunction<
   typeof createHttpLink
 >
 
 describe('apolloClient', () => {
   const originalEnv = { ...process.env }
-  const mockApolloClient = ApolloClient as jest.MockedClass<typeof ApolloClient>
+  const mockApolloClient = ApolloClient as MockedClass<typeof ApolloClient>
 
   beforeEach(() => {
     process.env = { ...originalEnv }
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockCreateHttpLink.mockReturnValue({} as any)
   })
 

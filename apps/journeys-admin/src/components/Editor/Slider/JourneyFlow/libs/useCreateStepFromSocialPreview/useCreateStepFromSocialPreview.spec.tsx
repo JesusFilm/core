@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
+import { type MockedFunction } from 'vitest'
 
 import { TestUseCreateStepHooks } from '../TestUseCreateStepHooks'
 
@@ -13,19 +14,19 @@ import {
   mockStepBlockRestoreFromSocialPreview
 } from './useCreateStepFromSocialPreview.mock'
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
 describe('useCreateStepFromSocialPreview', () => {
   it('should create a new step', async () => {
     mockUuidv4.mockReturnValueOnce(mockNewStepBlock.id)
     mockUuidv4.mockReturnValueOnce(mockNewCardBlock.id)
 
-    const result = jest
+    const result = vi
       .fn()
       .mockResolvedValue(mockStepBlockCreateFromSocialPreview.result)
 
@@ -45,11 +46,11 @@ describe('useCreateStepFromSocialPreview', () => {
     mockUuidv4.mockReturnValueOnce(mockNewStepBlock.id)
     mockUuidv4.mockReturnValueOnce(mockNewCardBlock.id)
 
-    const result = jest
+    const result = vi
       .fn()
       .mockResolvedValue(mockStepBlockCreateFromSocialPreview.result)
 
-    const result2 = jest
+    const result2 = vi
       .fn()
       .mockResolvedValue(mockStepBlockDeleteFromSocialPreview.result)
 
@@ -77,11 +78,11 @@ describe('useCreateStepFromSocialPreview', () => {
     mockUuidv4.mockReturnValueOnce(mockNewStepBlock.id)
     mockUuidv4.mockReturnValueOnce(mockNewCardBlock.id)
 
-    const result = jest
+    const result = vi
       .fn()
       .mockResolvedValue(mockStepBlockCreateFromSocialPreview.result)
 
-    const result2 = jest.fn().mockResolvedValue(deleteStepMock.result)
+    const result2 = vi.fn().mockResolvedValue(deleteStepMock.result)
 
     render(
       <MockedProvider
@@ -104,12 +105,12 @@ describe('useCreateStepFromSocialPreview', () => {
     mockUuidv4.mockReturnValueOnce(mockNewStepBlock.id)
     mockUuidv4.mockReturnValueOnce(mockNewCardBlock.id)
 
-    const result = jest
+    const result = vi
       .fn()
       .mockResolvedValue(mockStepBlockCreateFromSocialPreview.result)
 
-    const result2 = jest.fn().mockResolvedValue(deleteStepMock.result)
-    const result3 = jest
+    const result2 = vi.fn().mockResolvedValue(deleteStepMock.result)
+    const result3 = vi
       .fn()
       .mockResolvedValue(mockStepBlockRestoreFromSocialPreview.result)
 

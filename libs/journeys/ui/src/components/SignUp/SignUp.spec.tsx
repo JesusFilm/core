@@ -4,6 +4,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
+import { type MockedFunction } from 'vitest'
 
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { handleAction } from '../../libs/action'
@@ -21,24 +22,25 @@ import {
 import { SignUpFields } from './__generated__/SignUpFields'
 import { SIGN_UP_SUBMISSION_EVENT_CREATE, SignUp } from './SignUp'
 
-jest.mock('../../libs/action', () => {
-  const originalModule = jest.requireActual('../../libs/action')
+vi.mock('../../libs/action', async () => {
+  const originalModule =
+    await vi.importActual<typeof import('../../libs/action')>(
+      '../../libs/action'
+    )
   return {
     __esModule: true,
     ...originalModule,
-    handleAction: jest.fn()
+    handleAction: vi.fn()
   }
 })
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+vi.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: vi.fn()
 }))
 
-const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
-  typeof sendGTMEvent
->
+const mockedSendGTMEvent = sendGTMEvent as MockedFunction<typeof sendGTMEvent>
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   useRouter() {
     return {
       push: () => null
@@ -46,14 +48,12 @@ jest.mock('next/router', () => ({
   }
 }))
 
-jest.mock('next-plausible', () => ({
+vi.mock('next-plausible', () => ({
   __esModule: true,
-  usePlausible: jest.fn()
+  usePlausible: vi.fn()
 }))
 
-const mockUsePlausible = usePlausible as jest.MockedFunction<
-  typeof usePlausible
->
+const mockUsePlausible = usePlausible as MockedFunction<typeof usePlausible>
 
 const block: TreeBlock<SignUpFields> = {
   __typename: 'SignUpBlock',
@@ -259,7 +259,7 @@ describe('SignUp', () => {
   it('should create submission event on click', async () => {
     blockHistoryVar([activeBlock])
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         signUpSubmissionEventCreate: {
           id: 'uuid'
@@ -367,7 +367,7 @@ describe('SignUp', () => {
   it('should add submission event to plausible', async () => {
     blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
-    const mockPlausible = jest.fn()
+    const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
     const mocks = [

@@ -94,7 +94,7 @@ describe('Typography color selector', () => {
       },
       children: []
     }
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         typographyBlockUpdate: {
           id: 'id',
@@ -150,7 +150,7 @@ describe('Typography color selector', () => {
       },
       children: []
     }
-    const result1 = jest.fn(() => ({
+    const result1 = vi.fn(() => ({
       data: {
         typographyBlockUpdate: {
           id: 'id',
@@ -162,7 +162,7 @@ describe('Typography color selector', () => {
         }
       }
     }))
-    const result2 = jest.fn(() => ({
+    const result2 = vi.fn(() => ({
       data: {
         typographyBlockUpdate: {
           id: 'id',

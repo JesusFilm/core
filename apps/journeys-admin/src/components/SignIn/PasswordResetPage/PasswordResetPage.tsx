@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { getAuth, sendPasswordResetEmail } from 'firebase/auth'
 import { Form, Formik, FormikHelpers } from 'formik'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 import { InferType, object, string } from 'yup'
 
@@ -72,7 +72,7 @@ export function PasswordResetPage({
               <TextField
                 autoComplete="on"
                 name="email"
-                label="Email"
+                label={t('Email')}
                 placeholder={t('Enter your email address here')}
                 variant="filled"
                 value={values.email}

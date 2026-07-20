@@ -1,12 +1,13 @@
 import { ApolloQueryResult, gql, useQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useMemo } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TemplateActionButton } from '@core/journeys/ui/TemplateView/TemplateViewHeader/TemplateActionButton'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import TranslateIcon from '@core/shared/ui/icons/Translate'
@@ -36,6 +37,7 @@ import { CreateTemplateItem } from '../../../../Editor/Toolbar/Items/CreateTempl
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
+import { CopyToCollectionMenuItem } from '../../../../TemplateGalleryPageList/CopyToCollectionMenuItem'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 
 import { ArchiveJourney } from './ArchiveJourney'
@@ -117,6 +119,7 @@ export function DefaultMenu({
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
+  const { teamTemplateCollection } = useFlags()
   const { data: userRoleData } = useUserRoleQuery()
   const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
   const { hostname } = useCustomDomainsQuery({
@@ -297,6 +300,15 @@ export function DefaultMenu({
           handleCloseMenu={handleCloseMenu}
           handleKeepMounted={handleKeepMounted}
           journey={journey}
+          setHasOpenDialog={setHasOpenDialog}
+        />
+      )}
+      {teamTemplateCollection === true && template === true && (
+        <CopyToCollectionMenuItem
+          id={id}
+          journey={journey}
+          handleCloseMenu={handleCloseMenu}
+          handleKeepMounted={handleKeepMounted}
           setHasOpenDialog={setHasOpenDialog}
         />
       )}

@@ -1,13 +1,12 @@
 'use client'
 
 import { useChat } from '@ai-sdk/react'
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
-import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
+import Link from '@mui/material/Link'
+import Typography from '@mui/material/Typography'
 import { DefaultChatTransport, UIMessage } from 'ai'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import {
   FormEvent,
   ReactElement,
@@ -17,7 +16,11 @@ import {
   useRef,
   useState
 } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
+import { extractLanguageNames } from '@core/shared/ui/extractLanguageNames'
+
+import { getCardChild, useBlocks } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 import { Actions } from '../Actions'
 import { Conversation } from '../Conversation'
@@ -25,23 +28,53 @@ import { Message } from '../Message'
 import { PromptInput } from '../PromptInput'
 import { Response } from '../Response'
 
+import { ChatHeader } from './ChatHeader'
+import {
+  HEADER_WASH,
+  MUTED_FG,
+  OVERLAY_FG_MUTED,
+  OVERLAY_FG_RETRY,
+  OVERLAY_HERO_FG,
+  OVERLAY_LINK_FG,
+  SHEET_BOTTOM_FADE
+} from './chatStyles'
+import { getAboutChatHref } from './getAboutChatHref'
+
 interface AiChatProps {
   /** When provided, this message is sent automatically on first render */
   initialMessage?: string
   /**
-   * When true (default) the chat shows inline collapse controls — a drag
-   * handle on mobile and a close button on wider viewports. Callers that
-   * wrap AiChat in their own dismissible container (e.g. a Drawer with its
-   * own close button) should pass false.
-   */
-  collapsible?: boolean
-  /**
-   * `panel` (default) renders bubble messages and a flat bottom input for
-   * use inside a card/drawer. `overlay` renders plain assistant prose and
-   * a floating capsule input for the desktop ambient overlay.
+   * `panel` (default) renders the bubble layout for the pinned mobile bar
+   * (header + bubbles + capsule input). `overlay` renders plain assistant
+   * prose and a floating capsule input for the desktop ambient overlay.
    */
   variant?: 'panel' | 'overlay'
+  /**
+   * Notifies the parent when the sheet's logical state changes:
+   *  - 'idle' — no messages yet; show header + input.
+   *  - 'active' — messages present; full conversation.
+   *
+   * The pinned sheet uses this to choose the right height + animation.
+   */
+  onSheetStateChange?: (state: 'idle' | 'active') => void
+  /**
+   * When provided, the panel variant renders a close (X) button in the
+   * ChatHeader. The pinned mobile drawer uses this to dismiss the whole
+   * sheet; the desktop overlay omits it (ChatOverlay owns its own corner
+   * close button).
+   */
+  onClose?: () => void
+  /**
+   * Re-themes the `panel` variant for a dark backdrop (NES-1738 Option B:
+   * the desktop ChatOverlay renders the compact bar over a dark layer).
+   * It drops the header's red wash, lightens the header + assistant text
+   * to the overlay tokens, and is otherwise a no-op. The mobile
+   * `PinnedChatBar` leaves it false so its white sheet stays light.
+   */
+  onDark?: boolean
 }
+
+export type AiChatSheetState = 'idle' | 'active'
 
 function getTextFromMessage(message: UIMessage): string {
   return message.parts
@@ -52,7 +85,43 @@ function getTextFromMessage(message: UIMessage): string {
     .join('')
 }
 
-const TYPEWRITER_CHARS_PER_SEC = 200
+// AI SDK v6's HttpChatTransport discards the HTTP status on a non-2xx response
+// and throws `new Error(await response.text())`, so the only signal the client
+// gets is the response *body*. The server (apps/journeys/pages/api/chat) tags
+// its deterministic failures with a structured `code`; we read it back out
+// here. Transient failures (network drop, upstream 5xx, mid-stream abort)
+// arrive as non-JSON messages → no code → treated as retriable.
+function parseChatErrorCode(error: Error | undefined): string | undefined {
+  if (error?.message == null) return undefined
+  try {
+    const parsed = JSON.parse(error.message) as { code?: unknown }
+    return typeof parsed.code === 'string' ? parsed.code : undefined
+  } catch {
+    return undefined
+  }
+}
+
+// Codes whose retry would deterministically fail again — re-firing wastes a
+// request and, for the cap-hit, re-sends a max-size prompt. Retry is hidden
+// for these and shown for everything else (transient / unknown).
+const NON_RETRIABLE_CHAT_ERROR_CODES = new Set([
+  'conversation_capped',
+  'invalid_request',
+  'not_found',
+  // A card with chat disabled (NES-1679) is deterministic — re-firing 403s again.
+  'chat_disabled'
+])
+
+const CONVERSATION_CAPPED_CODE = 'conversation_capped'
+// The card's chat was turned off server-side (NES-1679). We swap the generic
+// "try again" copy for an honest "turned off" message and hide Retry (it would
+// 403 again). The input deliberately stays usable: per the kill-switch design a
+// stale tab still shows the input and each send fails closed with a visible
+// message, and locking it would strand the user if they navigate to a card
+// where chat is still enabled (the error persists in the mounted chat).
+const CHAT_DISABLED_CODE = 'chat_disabled'
+
+const TYPEWRITER_CHARS_PER_SEC = 280
 
 interface TypewriterResult {
   display: string
@@ -100,23 +169,27 @@ interface AssistantBubbleProps {
   text: string
   animate: boolean
   isStreaming: boolean
-  plain?: boolean
+  surface?: 'light' | 'dark'
 }
 
 function AssistantBubble({
   text,
   animate,
   isStreaming,
-  plain = false
+  surface = 'light'
 }: AssistantBubbleProps): ReactElement {
   const { display, isComplete } = useTypewriter(text, animate, isStreaming)
+  // Assistant always renders as plain prose (no bubble); only the
+  // text colour shifts between light and dark surfaces. Actions still
+  // tints itself to the surface via `plain`.
+  const isDark = surface === 'dark'
   return (
     <>
-      <Message role="assistant" plain={plain}>
+      <Message role="assistant" plain surface={surface}>
         <Response content={display} />
       </Message>
       {isComplete && text.length > 0 && (
-        <Actions content={text} plain={plain} />
+        <Actions content={text} plain={isDark} />
       )}
     </>
   )
@@ -146,7 +219,7 @@ function TypingIndicator(): ReactElement {
             width: 6,
             height: 6,
             borderRadius: '50%',
-            bgcolor: 'text.secondary',
+            bgcolor: MUTED_FG,
             animation: 'aiChatTypingBounce 1.2s ease-in-out infinite',
             animationDelay: `${i * 0.16}s`
           }}
@@ -158,34 +231,104 @@ function TypingIndicator(): ReactElement {
 
 export function AiChat({
   initialMessage,
-  collapsible = true,
-  variant = 'panel'
+  variant = 'panel',
+  onSheetStateChange,
+  onClose,
+  onDark = false
 }: AiChatProps): ReactElement {
   const isOverlay = variant === 'overlay'
+  const isPanel = !isOverlay
+  // Both the desktop overlay variant and the dark-themed panel (Option B)
+  // sit on a dark backdrop, so assistant prose and surface tints use the
+  // dark tokens in either case.
+  const isDarkSurface = isOverlay || onDark
+  const messageSurface: 'light' | 'dark' = isDarkSurface ? 'dark' : 'light'
   const { t } = useTranslation('libs-journeys-ui')
   const { journey } = useJourney()
   const [input, setInput] = useState('')
-  const [collapsed, setCollapsed] = useState(false)
   const initialMessageSent = useRef(false)
 
-  const handleToggleCollapse = useCallback(() => {
-    setCollapsed((prev) => !prev)
-  }, [])
-
+  // The BCP-47 code (e.g. "ur") drives the about-this-chat disclosure link,
+  // which loads locale copy from libs/locales/<bcp47>/ (NES-1724).
   const languageBcp47 = journey?.language?.bcp47 ?? undefined
-  const languageRef = useRef(languageBcp47)
-  languageRef.current = languageBcp47
+
+  // Send the journey's language to the assistant as a human-readable name
+  // (e.g. "Urdu"), not the BCP-47 code: the model resolves a language name far
+  // more reliably than a code. The system prompt defaults to this language but
+  // still answers in whatever language the user actually types (NES-1736).
+  // The journey language is queried without a languageId filter, so this is
+  // the first non-primary translation in API order, then the native (primary)
+  // name, then the BCP-47 code — any human-readable name resolves better than
+  // a code.
+  const { localName, nativeName } = extractLanguageNames(
+    journey?.language?.name ?? []
+  )
+  const language = localName ?? nativeName ?? languageBcp47 ?? undefined
+  const languageRef = useRef(language)
+  languageRef.current = language
+
+  // Also send the raw code so the server can warn (and record in Datadog) when
+  // the value reaching the prompt is only the code — i.e. the name didn't
+  // resolve — so we can spot which codes lack a usable name (NES-1736).
+  const languageBcp47Ref = useRef(languageBcp47)
+  languageBcp47Ref.current = languageBcp47
+
+  const journeyId = journey?.id
+  const journeyIdRef = useRef(journeyId)
+  journeyIdRef.current = journeyId
+
+  // The active card id (NES-1679) lets the server enforce the per-card chat
+  // kill switch. Read from the same global block history the rest of the viewer
+  // uses (Conductor, StepFooter), so it tracks card navigation without
+  // threading a prop through PinnedChatBar / ChatOverlay.
+  const { blockHistory } = useBlocks()
+  const cardId = getCardChild(blockHistory[blockHistory.length - 1])?.id
+  const cardIdRef = useRef(cardId)
+  cardIdRef.current = cardId
+
+  const [sessionId, setSessionId] = useState<string | undefined>(() => {
+    if (typeof window === 'undefined') return undefined
+    // sessionStorage can throw in Safari private mode, sandboxed
+    // iframes, and quota-exceeded states. Fall back to a fresh UUID
+    // so the chat surface still mounts.
+    try {
+      const existing = window.sessionStorage.getItem('aiChat.sessionId')
+      if (existing != null && existing.length > 0) return existing
+      const fresh = uuidv4()
+      window.sessionStorage.setItem('aiChat.sessionId', fresh)
+      return fresh
+    } catch {
+      return uuidv4()
+    }
+  })
+  const sessionIdRef = useRef(sessionId)
+  sessionIdRef.current = sessionId
 
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
         api: '/api/chat',
-        body: () => ({ language: languageRef.current })
+        body: () => ({
+          language: languageRef.current,
+          languageBcp47: languageBcp47Ref.current,
+          sessionId: sessionIdRef.current,
+          journeyId: journeyIdRef.current,
+          cardId: cardIdRef.current
+        })
       }),
     []
   )
 
-  const { messages, sendMessage, regenerate, stop, status, error } = useChat({
+  const {
+    messages,
+    sendMessage,
+    regenerate,
+    stop,
+    status,
+    error,
+    setMessages,
+    clearError
+  } = useChat({
     transport,
     onError: (err) => {
       console.error('[AiChat] useChat onError', {
@@ -199,9 +342,35 @@ export function AiChat({
   const isLoading = status === 'submitted' || status === 'streaming'
 
   const handleRetry = useCallback(() => {
-    setCollapsed(false)
     void regenerate()
   }, [regenerate])
+
+  const errorCode = useMemo(() => parseChatErrorCode(error), [error])
+  const isConversationCapped = errorCode === CONVERSATION_CAPPED_CODE
+  const isChatDisabled = errorCode === CHAT_DISABLED_CODE
+  // Retriable by default so transient failures (network/5xx/mid-stream, which
+  // carry no code) keep their Retry; hidden only for known deterministic codes.
+  const canRetry =
+    error != null && !NON_RETRIABLE_CHAT_ERROR_CODES.has(errorCode ?? '')
+
+  // Cap-hit is a terminal state — closing the mobile drawer keeps AiChat
+  // mounted (the capped conversation would still be there on reopen), so
+  // reset the conversation in place instead: clear the resent history (which
+  // clears the server-side size cap), drop the error, and rotate the
+  // sessionId so the next turn is a clean Langfuse session. Works
+  // identically on the desktop overlay and the mobile drawer.
+  const handleStartNewConversation = useCallback(() => {
+    setMessages([])
+    clearError()
+    setInput('')
+    const fresh = uuidv4()
+    try {
+      window.sessionStorage.setItem('aiChat.sessionId', fresh)
+    } catch {
+      // sessionStorage can throw (Safari private mode, sandboxed iframes).
+    }
+    setSessionId(fresh)
+  }, [setMessages, clearError])
 
   useEffect(() => {
     if (
@@ -210,7 +379,6 @@ export function AiChat({
       !initialMessageSent.current
     ) {
       initialMessageSent.current = true
-      setCollapsed(false)
       void sendMessage({ text: initialMessage })
     }
   }, [initialMessage, sendMessage])
@@ -218,12 +386,11 @@ export function AiChat({
   const handleSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault()
-      if (input.trim().length === 0 || isLoading) return
-      setCollapsed(false)
+      if (input.trim().length === 0 || isLoading || isConversationCapped) return
       void sendMessage({ text: input })
       setInput('')
     },
-    [input, isLoading, sendMessage]
+    [input, isLoading, isConversationCapped, sendMessage]
   )
 
   const lastAssistantIndex = useMemo(() => {
@@ -234,8 +401,47 @@ export function AiChat({
   }, [messages])
 
   const hasMessages = messages.length > 0
-  const showCollapseControls = collapsible && hasMessages
+  const sheetState: AiChatSheetState = hasMessages ? 'active' : 'idle'
+  useEffect(() => {
+    onSheetStateChange?.(sheetState)
+  }, [sheetState, onSheetStateChange])
 
+  const showHeader = isPanel
+  // Empty-state hero is overlay-only: gives the user a clear "this is
+  // the chat" signal when the overlay auto-opens with no messages yet
+  // (NES-1654). Hidden once a message exists, is being sent, or there's
+  // an error so it doesn't compete with conversation content.
+  const showOverlayHero =
+    isOverlay && messages.length === 0 && !isLoading && error == null
+
+  // The wave animation is a one-shot intro — it plays the first time the
+  // hero ever mounts in this AiChat instance, then stays silent. Without
+  // this gate, `handleStartNewConversation` (cap-hit reset) would re-fire
+  // the wave on every reset because `setMessages([])` + `clearError()`
+  // flips `showOverlayHero` false → true and the inner spans re-mount.
+  // Reads as deliberate ("welcome") instead of busy ("attention").
+  const heroAnimatedRef = useRef(false)
+  const shouldAnimateHero = showOverlayHero && !heroAnimatedRef.current
+  useEffect(() => {
+    if (showOverlayHero) heroAnimatedRef.current = true
+  }, [showOverlayHero])
+
+  // Whole-word stagger preserves script behaviour that per-character
+  // splitting would break — Arabic contextual shaping (initial/medial/
+  // final letterforms + ligatures) and combining marks on Devanagari /
+  // Bengali / Thai / Burmese / Urdu / Nepali (translations for all of
+  // these exist in libs/locales/<bcp47>/libs-journeys-ui.json). Each
+  // word stays in a single text run, so the renderer sees neighbouring
+  // characters and shapes correctly. For whitespace-less scripts (Thai,
+  // Burmese, CJK) the split returns a single chunk and the whole
+  // greeting wave-lifts as one unit — still on-tone.
+  const heroWords = useMemo(
+    () =>
+      t('Ask your questions about faith')
+        .split(/\s+/)
+        .filter((w) => w.length > 0),
+    [t]
+  )
   return (
     <Box
       sx={{
@@ -246,79 +452,121 @@ export function AiChat({
         position: 'relative'
       }}
     >
-      {showCollapseControls && (
+      {showHeader && (
+        // pt compensates for the removed drag handle so the header doesn't
+        // sit flush against the sheet's rounded top edge. The dark overlay
+        // (Option B) has a visible top border, so it gets a larger inset
+        // (matching the 16px corner radius) for clear separation between the
+        // border and the header; the white mobile sheet keeps the smaller
+        // inset. On dark the red HEADER_WASH would read as a red bar, so the
+        // wrapper goes transparent and the dark layer shows through.
         <Box
           sx={{
-            display: { xs: 'flex', sm: 'none' },
-            justifyContent: 'center',
-            flexShrink: 0
+            background: onDark ? 'transparent' : HEADER_WASH,
+            flexShrink: 0,
+            pt: onDark ? 2 : 1
           }}
         >
-          <IconButton
-            onClick={handleToggleCollapse}
-            tabIndex={0}
-            aria-label={collapsed ? t('Expand chat') : t('Collapse chat')}
-            aria-expanded={!collapsed}
-            disableRipple
-            sx={{
-              py: 1.25,
-              px: 3,
-              borderRadius: 9999,
-              '&:hover': { bgcolor: 'transparent' },
-              '&:hover .ChatCollapseHandle': { bgcolor: '#bdbdbd' }
-            }}
-          >
-            <Box
-              className="ChatCollapseHandle"
-              sx={{
-                width: 48,
-                height: 4,
-                borderRadius: 9999,
-                bgcolor: '#e0e0e0',
-                transition: 'background-color 150ms ease-out'
-              }}
-            />
-          </IconButton>
+          <ChatHeader thinking={isLoading} onClose={onClose} onDark={onDark} />
         </Box>
-      )}
-
-      {showCollapseControls && (
-        <IconButton
-          onClick={handleToggleCollapse}
-          tabIndex={0}
-          aria-label={collapsed ? t('Expand chat') : t('Collapse chat')}
-          aria-expanded={!collapsed}
-          size="small"
-          sx={{
-            display: { xs: 'none', sm: 'inline-flex' },
-            position: 'absolute',
-            top: 8,
-            right: 8,
-            zIndex: 2,
-            color: 'text.secondary',
-            '&:hover': { color: 'text.primary', bgcolor: 'action.hover' }
-          }}
-        >
-          {collapsed ? (
-            <KeyboardArrowUpRoundedIcon fontSize="small" />
-          ) : (
-            <CloseRoundedIcon fontSize="small" />
-          )}
-        </IconButton>
       )}
 
       <Box
         sx={{
-          display: collapsed ? 'none' : 'flex',
+          // `relative` anchors the overlay hero's absolute positioning
+          // to the conversation area rather than the viewport.
+          position: 'relative',
+          display: 'flex',
           flex: 1,
           flexDirection: 'column',
           minHeight: 0,
           width: '100%',
           maxWidth: { xs: 'none', sm: '48rem' },
-          mx: 'auto'
+          mx: 'auto',
+          // Overlay-only top inset: pushes the first message *below*
+          // the close button instead of trying to share its y-line.
+          // The earlier horizontal alignment (pt:safe-area+16 → first
+          // message at safe-area+24, same y as the close button) broke
+          // at narrow widths: the conversation column fills full
+          // viewport at xs, message text reaches the right edge, and
+          // overlaps the absolutely-positioned close button (which
+          // stays at right:24, width:32). Vertical stacking with a
+          // small visible gap is the resilient choice (NES-1654 iter).
+          //
+          // Math: close button is top:safe-area+24, height 32 → bottom
+          // edge at safe-area+56. Plus 8px breathing room, plus
+          // Conversation's own pt:1 (8px) inside, the first message
+          // lands at safe-area+72 — 16px clear of the close button at
+          // any viewport width. Panel variant keeps pt:0 because the
+          // ChatHeader + drag handle own the top spacing there.
+          pt: isOverlay ? 'calc(env(safe-area-inset-top) + 64px)' : 0
         }}
       >
-        <Conversation>
+        {showOverlayHero && (
+          <Box
+            aria-hidden
+            data-testid="overlay-hero"
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              px: 4,
+              pointerEvents: 'none',
+              // One-shot wave animation on mount: each word lifts 8px
+              // then settles, staggered left-to-right. Draws the eye to
+              // the hero when the chat opens, then stays out of the
+              // way. The base (0%/100%) is translateY(0) so each word's
+              // resting state is its natural position — no fill-mode
+              // needed.
+              '@keyframes aiChatHeroWave': {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-8px)' }
+              }
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: { xs: 22, sm: 26, md: 28 },
+                fontWeight: 500,
+                color: OVERLAY_HERO_FG,
+                textAlign: 'center',
+                lineHeight: 1.3
+              }}
+            >
+              {heroWords.map((word, i) => (
+                <Box
+                  key={`${i}-${word}`}
+                  component="span"
+                  sx={{
+                    display: 'inline-block',
+                    animation: shouldAnimateHero
+                      ? `aiChatHeroWave 700ms ease-in-out ${i * 80}ms 1`
+                      : 'none',
+                    '@media (prefers-reduced-motion: reduce)': {
+                      animation: 'none'
+                    }
+                  }}
+                >
+                  {/* Trailing nbsp keeps the visual gap between word
+                      spans (inline-block strips inter-element
+                      whitespace). The last word gets none so we don't
+                      pad the right edge. */}
+                  {word}
+                  {i < heroWords.length - 1 ? '\u00A0' : null}
+                </Box>
+              ))}
+            </Typography>
+          </Box>
+        )}
+        <Conversation
+          scrollKey={messages.length}
+          // 72px = floating capsule height (44px) + bottom offset (8px) +
+          // safe-area headroom + 16px breathing room — keeps the last
+          // message clear of the absolute-positioned PromptInput below.
+          bottomClearance={72}
+        >
           {messages.map((message, index) => {
             const text = getTextFromMessage(message)
             const isLast = index === lastAssistantIndex
@@ -329,7 +577,7 @@ export function AiChat({
                     text={text}
                     animate={isLast}
                     isStreaming={isLast && isLoading}
-                    plain={isOverlay}
+                    surface={messageSurface}
                   />
                 ) : (
                   <Message role="user">{text}</Message>
@@ -340,46 +588,94 @@ export function AiChat({
           {isLoading &&
             (messages.length === 0 ||
               messages[messages.length - 1]?.role === 'user') && (
-              <Message role="assistant" plain={isOverlay}>
+              <Message role="assistant" plain surface={messageSurface}>
                 <TypingIndicator />
               </Message>
             )}
           {error != null && !isLoading && (
             <Box>
-              <Message role="assistant" plain={isOverlay}>
+              <Message role="assistant" plain surface={messageSurface}>
                 <Box component="span" sx={{ opacity: 0.7 }}>
-                  {t('Something went wrong. Please try again.')}
+                  {isConversationCapped
+                    ? t(
+                        "This conversation's gotten long. Start a new one to keep chatting — this clears the current session."
+                      )
+                    : isChatDisabled
+                      ? t(
+                          'Chat has been turned off for this part of the journey.'
+                        )
+                      : t('Something went wrong. Please try again.')}
                 </Box>
               </Message>
-              <Box sx={{ display: 'flex', px: 2, py: 0.25 }}>
-                <Button
-                  size="small"
-                  onClick={handleRetry}
-                  aria-label={t('Retry')}
-                  sx={{
-                    fontSize: 12,
-                    color: isOverlay
-                      ? 'rgba(255, 255, 255, 0.7)'
-                      : 'text.secondary',
-                    minWidth: 0
-                  }}
-                >
-                  {t('Retry')}
-                </Button>
-              </Box>
+              {isConversationCapped ? (
+                // Always shown in the capped state — it's the only way out
+                // now that the input is disabled.
+                <Box sx={{ display: 'flex', px: 2, py: 0.25 }}>
+                  <Button
+                    size="small"
+                    onClick={handleStartNewConversation}
+                    aria-label={t('Start a new conversation')}
+                    sx={{
+                      fontSize: 12,
+                      color: isDarkSurface ? OVERLAY_FG_RETRY : MUTED_FG,
+                      minWidth: 0
+                    }}
+                  >
+                    {t('Start a new conversation')}
+                  </Button>
+                </Box>
+              ) : (
+                canRetry && (
+                  <Box sx={{ display: 'flex', px: 2, py: 0.25 }}>
+                    <Button
+                      size="small"
+                      onClick={handleRetry}
+                      aria-label={t('Retry')}
+                      sx={{
+                        fontSize: 12,
+                        color: isDarkSurface ? OVERLAY_FG_RETRY : MUTED_FG,
+                        minWidth: 0
+                      }}
+                    >
+                      {t('Retry')}
+                    </Button>
+                  </Box>
+                )
+              )}
             </Box>
           )}
         </Conversation>
       </Box>
 
+      {isPanel && (
+        <Box
+          aria-hidden
+          sx={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 140,
+            pointerEvents: 'none',
+            zIndex: 1,
+            background: SHEET_BOTTOM_FADE
+          }}
+        />
+      )}
+
       <Box
         sx={{
-          width: '100%',
-          maxWidth: { xs: 'none', sm: '48rem' },
+          position: 'absolute',
+          left: 8,
+          right: 8,
+          bottom: 'calc(env(safe-area-inset-bottom) + 8px)',
+          zIndex: 2,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'stretch',
+          gap: 0.75,
           mx: 'auto',
-          px: isOverlay ? { xs: 0, sm: 1 } : 0,
-          pb: isOverlay ? { xs: 0, sm: 1 } : 0,
-          pt: isOverlay ? { xs: 0, sm: 0.5 } : 0
+          maxWidth: { xs: 'none', sm: '48rem' }
         }}
       >
         <PromptInput
@@ -388,8 +684,50 @@ export function AiChat({
           onSubmit={handleSubmit}
           isLoading={isLoading}
           onStop={stop}
+          disabled={isConversationCapped}
           variant={isOverlay ? 'floating' : 'inline'}
         />
+        {isOverlay && (
+          // Overlay-only disclosure caption — sits directly under the
+          // floating input. On panel/mobile the same subtitle + link
+          // live in ChatHeader at the top of the sheet, so we don't
+          // duplicate them here. Inline-flow Typography lets long
+          // translations of the leading phrase wrap to a second line
+          // naturally; whiteSpace:nowrap on the link prevents the
+          // label itself from breaking mid-word.
+          <Typography
+            variant="caption"
+            sx={{
+              color: OVERLAY_FG_MUTED,
+              fontSize: 12,
+              lineHeight: '18px',
+              textAlign: 'center',
+              px: 1
+            }}
+          >
+            {t('Replies may not be perfect')}
+            {' · '}
+            <Link
+              href={getAboutChatHref(languageBcp47)}
+              target="_blank"
+              rel="noopener noreferrer"
+              underline="always"
+              sx={{
+                // OVERLAY_LINK_FG is a concrete brighter brand-red —
+                // see PANEL_LINK_FG note in ChatHeader for why we don't
+                // use 'primary.main'. The brighter variant keeps the
+                // label readable against the ~grey.900 overlay
+                // backdrop, where brandRed itself would be too dim.
+                color: OVERLAY_LINK_FG,
+                fontSize: 'inherit',
+                fontWeight: 600,
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {t('About this chat')}
+            </Link>
+          </Typography>
+        )}
       </Box>
     </Box>
   )

@@ -1,5 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
+import { formatISO } from 'date-fns'
+import { type MockedFunction } from 'vitest'
 
 import {
   GetTemplateFamilyStatsAggregate,
@@ -10,24 +12,37 @@ import { GET_TEMPLATE_FAMILY_STATS_AGGREGATE } from '../../../../libs/useTemplat
 
 import { TemplateAggregateAnalytics } from './TemplateAggregateAnalytics'
 
-jest.mock('next-i18next', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
     i18n: { language: 'en' }
   })
 }))
 
-const mockEnqueueSnackbar = jest.fn()
+vi.mock('date-fns', async () => {
+  return {
+    ...(await vi.importActual('date-fns')),
+    formatISO: vi.fn()
+  }
+})
 
-jest.mock('notistack', () => ({
+const mockFormatIso = formatISO as MockedFunction<typeof formatISO>
+
+const mockEnqueueSnackbar = vi.fn()
+
+vi.mock('notistack', () => ({
   useSnackbar: () => ({
     enqueueSnackbar: mockEnqueueSnackbar
   })
 }))
 
 describe('TemplateAggregateAnalytics', () => {
+  beforeEach(() => {
+    mockFormatIso.mockReturnValue('2024-09-26')
+  })
+
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render icons for each metric button', async () => {
@@ -54,10 +69,13 @@ describe('TemplateAggregateAnalytics', () => {
         variables: {
           id: 'journeyId',
           idType: IdType.databaseId,
-          where: {}
+          where: {
+            period: 'custom',
+            date: '2024-06-01,2024-09-26'
+          }
         }
       },
-      result: jest.fn(() => ({
+      result: vi.fn(() => ({
         data: {
           templateFamilyStatsAggregate: {
             __typename: 'TemplateFamilyStatsAggregateResponse',
@@ -66,7 +84,10 @@ describe('TemplateAggregateAnalytics', () => {
             totalJourneysResponses: 50
           }
         }
-      }))
+      })) as MockedResponse<
+        GetTemplateFamilyStatsAggregate,
+        GetTemplateFamilyStatsAggregateVariables
+      >['result']
     }
 
     render(
@@ -94,7 +115,10 @@ describe('TemplateAggregateAnalytics', () => {
         variables: {
           id: 'journeyId',
           idType: IdType.databaseId,
-          where: {}
+          where: {
+            period: 'custom',
+            date: '2024-06-01,2024-09-26'
+          }
         }
       },
       error: new Error('Failed to fetch template stats')

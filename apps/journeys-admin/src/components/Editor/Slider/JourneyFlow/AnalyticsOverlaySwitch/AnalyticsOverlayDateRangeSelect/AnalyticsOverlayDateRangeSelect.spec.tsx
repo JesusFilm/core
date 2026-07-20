@@ -6,9 +6,7 @@ import { AnalyticsOverlayDateRangeSelect } from './AnalyticsOverlayDateRangeSele
 
 describe('AnalyticsOverlayDateRangeSelect', () => {
   it('renders with the current preset label and aria label', () => {
-    render(
-      <AnalyticsOverlayDateRangeSelect value="today" onChange={jest.fn()} />
-    )
+    render(<AnalyticsOverlayDateRangeSelect value="today" onChange={vi.fn()} />)
 
     const selectRoot = screen.getByLabelText('Date range preset')
 
@@ -19,7 +17,7 @@ describe('AnalyticsOverlayDateRangeSelect', () => {
   })
 
   it('calls onChange when a different preset is selected', () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
 
     render(
       <AnalyticsOverlayDateRangeSelect value="today" onChange={handleChange} />
@@ -40,9 +38,7 @@ describe('AnalyticsOverlayDateRangeSelect', () => {
   })
 
   it('renders dividers between preset groups', () => {
-    render(
-      <AnalyticsOverlayDateRangeSelect value="today" onChange={jest.fn()} />
-    )
+    render(<AnalyticsOverlayDateRangeSelect value="today" onChange={vi.fn()} />)
 
     const selectRoot = screen.getByLabelText('Date range preset')
     const combobox = within(selectRoot).getByRole('combobox')

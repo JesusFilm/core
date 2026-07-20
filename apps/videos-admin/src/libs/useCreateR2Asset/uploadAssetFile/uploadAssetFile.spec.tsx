@@ -1,11 +1,13 @@
+import { type Mock } from 'vitest'
+
 import { uploadAssetFile } from './uploadAssetFile'
 
 const originalFetch = global.fetch
-global.fetch = jest.fn()
+global.fetch = vi.fn()
 
 describe('uploadAssetFile', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   afterAll(() => {
@@ -16,7 +18,7 @@ describe('uploadAssetFile', () => {
     const mockResponse = {
       ok: true
     }
-    ;(global.fetch as jest.Mock).mockResolvedValueOnce(mockResponse)
+    ;(global.fetch as Mock).mockResolvedValueOnce(mockResponse)
 
     const mockFile = new File(['test content'], 'test.vtt', {
       type: 'text/vtt'
@@ -39,7 +41,7 @@ describe('uploadAssetFile', () => {
     const mockResponse = {
       ok: false
     }
-    ;(global.fetch as jest.Mock).mockResolvedValueOnce(mockResponse)
+    ;(global.fetch as Mock).mockResolvedValueOnce(mockResponse)
 
     const mockFile = new File(['test content'], 'test.vtt', {
       type: 'text/vtt'
@@ -55,7 +57,7 @@ describe('uploadAssetFile', () => {
 
   it('should handle network errors', async () => {
     const networkError = new Error('Network error')
-    ;(global.fetch as jest.Mock).mockRejectedValueOnce(networkError)
+    ;(global.fetch as Mock).mockRejectedValueOnce(networkError)
 
     const mockFile = new File(['test content'], 'test.vtt', {
       type: 'text/vtt'
@@ -73,7 +75,7 @@ describe('uploadAssetFile', () => {
     const mockResponse = {
       ok: true
     }
-    ;(global.fetch as jest.Mock).mockResolvedValueOnce(mockResponse)
+    ;(global.fetch as Mock).mockResolvedValueOnce(mockResponse)
 
     const mockFile = new File(['test content'], 'test.srt', {
       type: 'application/x-subrip'

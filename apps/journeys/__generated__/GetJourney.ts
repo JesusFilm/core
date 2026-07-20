@@ -138,6 +138,14 @@ export interface GetJourney_journey_blocks_CardBlock {
    */
   fullscreen: boolean;
   eventLabel: BlockEventLabel | null;
+  /**
+   * When true, this card displays the AI chat button.
+   */
+  showAssistant: boolean | null;
+  /**
+   * When true, the chat drawer auto-opens on first visit to this card.
+   */
+  expandChatByDefault: boolean | null;
 }
 
 export interface GetJourney_journey_blocks_IconBlock {
@@ -495,73 +503,25 @@ export interface GetJourney_journey_blocks_VideoBlock {
   parentOrder: number | null;
   muted: boolean | null;
   autoplay: boolean | null;
-  /**
-   * startAt dictates at which point of time the video should start playing
-   */
   startAt: number | null;
-  /**
-   * endAt dictates at which point of time the video should end
-   */
   endAt: number | null;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
   source: VideoBlockSource;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field.
-   * For other sources this is automatically populated.
-   */
   title: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   description: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   image: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   * duration in seconds.
-   */
   duration: number | null;
-  /**
-   * how the video should display within the VideoBlock
-   */
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: GetJourney_journey_blocks_VideoBlock_subtitleLanguage | null;
   mediaVideo: GetJourney_journey_blocks_VideoBlock_mediaVideo | null;
-  /**
-   * action that should be performed when the video ends
-   */
   action: GetJourney_journey_blocks_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
@@ -693,9 +653,6 @@ export interface GetJourney_journey_userJourneys {
   __typename: "UserJourney";
   id: string;
   role: UserJourneyRole;
-  /**
-   * Date time of when the journey was first opened
-   */
   openedAt: any | null;
   user: GetJourney_journey_userJourneys_user | null;
 }
@@ -856,9 +813,6 @@ export interface GetJourney_journey {
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: GetJourney_journey_journeyCustomizationFields[];
   fromTemplateId: string | null;
-  /**
-   * used to display quick start label on customizable templates
-   */
   customizable: boolean | null;
   showAssistant: boolean | null;
 }

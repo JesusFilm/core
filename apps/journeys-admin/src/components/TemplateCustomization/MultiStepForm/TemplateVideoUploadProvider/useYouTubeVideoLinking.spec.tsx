@@ -14,12 +14,12 @@ import { VIDEO_BLOCK_UPDATE } from '../../../Editor/Slider/Settings/CanvasDetail
 import { useUploadTaskMap } from './useUploadTaskMap'
 import { useYouTubeVideoLinking } from './useYouTubeVideoLinking'
 
-jest.mock('next-i18next', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
-const mockEnqueueSnackbar = jest.fn()
-jest.mock('notistack', () => ({
+const mockEnqueueSnackbar = vi.fn()
+vi.mock('notistack', () => ({
   useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
 }))
 
@@ -93,7 +93,7 @@ function createWrapper(
 
 describe('useYouTubeVideoLinking', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('sets task to updating then removes on success', async () => {

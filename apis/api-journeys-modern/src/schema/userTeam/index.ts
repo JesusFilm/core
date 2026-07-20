@@ -1,2 +1,0 @@
-import './userTeam'
-import './inputs'

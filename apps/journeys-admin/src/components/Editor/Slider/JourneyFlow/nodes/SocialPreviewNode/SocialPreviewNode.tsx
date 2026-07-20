@@ -4,11 +4,11 @@ import CardMedia from '@mui/material/CardMedia'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { OnConnect, useStore } from '@xyflow/react'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
-import { OnConnect, useStore } from 'reactflow'
 
 import {
   ActiveContent,
@@ -20,6 +20,7 @@ import { isIOSTouchScreen } from '@core/shared/ui/deviceUtils'
 
 import { Tooltip } from '../../../../../Tooltip'
 import { getReactflowTooltipOffset } from '../../../../../Tooltip/utils/getReactflowTooltipOffset'
+import { useEditorLayout } from '../../../../EditorLayoutContext'
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
 import { BaseNode, HandleVariant } from '../BaseNode'
 
@@ -36,6 +37,7 @@ export function SocialPreviewNode(): ReactElement {
     dispatch,
     state: { activeContent, activeSlide, showAnalytics }
   } = useEditor()
+  const { isLayered } = useEditorLayout()
 
   useEffect(() => {
     const timeout = showTooltip
@@ -56,7 +58,7 @@ export function SocialPreviewNode(): ReactElement {
       dispatch({ type: 'SetSelectedStepAction', selectedStep: undefined })
       dispatch({
         type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.JourneyFlow
+        activeSlide: isLayered ? ActiveSlide.Drawer : ActiveSlide.JourneyFlow
       })
       dispatch({
         type: 'SetActiveContentAction',
@@ -65,7 +67,7 @@ export function SocialPreviewNode(): ReactElement {
     } else {
       dispatch({
         type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.Content
+        activeSlide: isLayered ? ActiveSlide.Drawer : ActiveSlide.Content
       })
     }
   }

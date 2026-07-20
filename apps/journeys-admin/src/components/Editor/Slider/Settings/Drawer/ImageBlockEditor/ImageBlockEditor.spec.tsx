@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 
@@ -12,12 +13,12 @@ import {
 
 import { ImageBlockEditor } from '.'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+  useRouter: vi.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('ImageBlockEditor', () => {
   const imageBlock: ImageBlock = {
@@ -40,7 +41,7 @@ describe('ImageBlockEditor', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
+          <ImageBlockEditor onChange={vi.fn()} selectedBlock={imageBlock} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -51,8 +52,8 @@ describe('ImageBlockEditor', () => {
   })
 
   it('should switch tabs', async () => {
-    const push = jest.fn()
-    const on = jest.fn()
+    const push = vi.fn()
+    const on = vi.fn()
 
     mockedUseRouter.mockReturnValue({
       query: { param: null },
@@ -65,7 +66,7 @@ describe('ImageBlockEditor', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
+          <ImageBlockEditor onChange={vi.fn()} selectedBlock={imageBlock} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -84,7 +85,9 @@ describe('ImageBlockEditor', () => {
       )
     })
 
-    expect(screen.getByText('Add image by URL')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getByTestId('ImageUpload')).toBeInTheDocument()
+    )
     await fireEvent.click(screen.getByRole('tab', { name: 'AI' }))
     await waitFor(() =>
       expect(screen.getByRole('button', { name: 'Prompt' })).toBeInTheDocument()
@@ -112,7 +115,7 @@ describe('ImageBlockEditor', () => {
   })
 
   it('should render the UnsplashGallery', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     render(
       <SnackbarProvider>
         <MockedProvider

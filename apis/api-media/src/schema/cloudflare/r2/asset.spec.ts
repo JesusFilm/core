@@ -1,11 +1,22 @@
+import { vi } from 'vitest'
+
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
+import { notifyMediaSlackOfOperationFailure } from '../../../lib/slack'
 
-jest.mock('@aws-sdk/s3-request-presigner', () => ({
-  getSignedUrl: jest.fn().mockResolvedValue('presignedUrl')
+vi.mock('@aws-sdk/s3-request-presigner', () => ({
+  getSignedUrl: vi.fn().mockResolvedValue('presignedUrl')
 }))
+
+vi.mock('../../../lib/slack', () => ({
+  notifyMediaSlackOfOperationFailure: vi.fn()
+}))
+
+const mockedNotifyMediaSlackOfOperationFailure = vi.mocked(
+  notifyMediaSlackOfOperationFailure
+)
 
 describe('cloudflare/r2/asset', () => {
   const client = getClient()
@@ -25,6 +36,10 @@ describe('cloudflare/r2/asset', () => {
     process.env.CLOUDFLARE_R2_SECRET = 'secret'
     process.env.CLOUDFLARE_R2_BUCKET = 'bucket'
     process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN = 'https://assets.jesusfilm.org'
+  })
+
+  beforeEach(() => {
+    mockedNotifyMediaSlackOfOperationFailure.mockClear()
   })
 
   describe('mutations', () => {
@@ -122,6 +137,45 @@ describe('cloudflare/r2/asset', () => {
           'data.cloudflareR2Create.contentLength',
           0
         )
+      })
+
+      it('notifies Slack when R2 asset creation fails', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.cloudflareR2.create.mockRejectedValueOnce(
+          new Error('database unavailable')
+        )
+
+        const result = (await authClient({
+          document: VIDEO_CLOUDFLARE_ASSETS_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              fileName: 'fileName',
+              originalFilename: 'originalFilename.jpg',
+              videoId: 'videoId',
+              contentType: 'image/jpeg',
+              contentLength: 0
+            }
+          }
+        })) as { errors?: { message: string }[] }
+
+        expect(result.errors?.[0].message).toBe('database unavailable')
+        expect(mockedNotifyMediaSlackOfOperationFailure).toHaveBeenCalledWith({
+          operation: 'R2 asset create failed',
+          error: expect.any(Error),
+          context: {
+            videoId: 'videoId',
+            fileName: 'fileName',
+            contentType: 'image/jpeg',
+            userId: 'testUserId'
+          }
+        })
       })
 
       it('should fail if not publisher', async () => {

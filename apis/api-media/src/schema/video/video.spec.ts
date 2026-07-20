@@ -1,4 +1,5 @@
 import { GraphQLError } from 'graphql'
+import { type MockedFunction, vi } from 'vitest'
 
 import {
   BibleCitation,
@@ -26,8 +27,8 @@ import { prismaMock } from '../../../test/prismaMock'
 import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
 import { getLanguageIdFromInfo } from './video'
 
-jest.mock('./lib/updateAvailableLanguages', () => ({
-  updateVideoAvailableLanguages: jest.fn()
+vi.mock('./lib/updateAvailableLanguages', () => ({
+  updateVideoAvailableLanguages: vi.fn()
 }))
 
 describe('video', () => {
@@ -79,6 +80,7 @@ describe('video', () => {
       originId: null,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      restrictTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -96,6 +98,7 @@ describe('video', () => {
       originId: null,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      restrictTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -116,6 +119,7 @@ describe('video', () => {
       originId: null,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      restrictTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -133,6 +137,7 @@ describe('video', () => {
       originId: null,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      restrictTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -153,6 +158,7 @@ describe('video', () => {
       locked: false,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      restrictTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -303,7 +309,9 @@ describe('video', () => {
           updatedAt: new Date(),
           videoId: null,
           blurhash: null,
-          blurhashAttemptedAt: null
+          blurhashAttemptedAt: null,
+          teamId: null,
+          isAi: null
         }
       ],
       cloudflareAssets: [
@@ -396,6 +404,7 @@ describe('video', () => {
     locked: false,
     restrictDownloadPlatforms: [],
     restrictViewPlatforms: [],
+    restrictTranslations: false,
     publishedAt: null
   }
 
@@ -2349,6 +2358,7 @@ describe('video', () => {
       locked: false,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      restrictTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -2784,6 +2794,132 @@ describe('video', () => {
             }
           }
         })
+        expect(result).toHaveProperty('data.videoUpdate', {
+          id: 'id'
+        })
+      })
+
+      it('should enable restrictTranslations', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.update.mockResolvedValue({
+          id: 'id',
+          restrictTranslations: true
+        } as unknown as Video)
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              restrictTranslations: true
+            }
+          }
+        })
+
+        expect(prismaMock.video.update).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: { id: 'id' },
+            data: expect.objectContaining({
+              restrictTranslations: true
+            })
+          })
+        )
+        expect(result).toHaveProperty('data.videoUpdate', {
+          id: 'id'
+        })
+      })
+
+      it('should keep restrictTranslations enabled once set', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          published: true,
+          publishedAt: null,
+          slug: 'slug',
+          restrictTranslations: true,
+          variants: []
+        } as unknown as Video)
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              restrictTranslations: false
+            }
+          }
+        })
+
+        expect(prismaMock.video.findUnique).toHaveBeenCalledWith({
+          where: { id: 'id' },
+          select: {
+            published: true,
+            publishedAt: true,
+            slug: true,
+            restrictTranslations: true,
+            variants: {
+              where: { published: true },
+              select: { languageId: true }
+            }
+          }
+        })
+        expect(prismaMock.video.update).not.toHaveBeenCalled()
+        expect(result).toHaveProperty('data', null)
+        expect(result).toHaveProperty('errors')
+        expect((result as any).errors?.[0]?.message).toBe(
+          'Translation restriction cannot be disabled once enabled'
+        )
+      })
+
+      it('should not write restrictTranslations false after a stale false read', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          published: true,
+          publishedAt: null,
+          slug: 'slug',
+          restrictTranslations: false,
+          variants: []
+        } as unknown as Video)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'id',
+          restrictTranslations: true
+        } as unknown as Video)
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              restrictTranslations: false
+            }
+          }
+        })
+
+        expect(prismaMock.video.update).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: { id: 'id' },
+            data: expect.not.objectContaining({
+              restrictTranslations: false
+            })
+          })
+        )
         expect(result).toHaveProperty('data.videoUpdate', {
           id: 'id'
         })
@@ -3320,7 +3456,7 @@ describe('video', () => {
       `)
 
       const mockUpdateVideoAvailableLanguages =
-        updateVideoAvailableLanguages as jest.MockedFunction<
+        updateVideoAvailableLanguages as MockedFunction<
           typeof updateVideoAvailableLanguages
         >
 
@@ -3393,7 +3529,6 @@ describe('video', () => {
         })
 
         expect(result).toHaveProperty('data', null)
-        expect(prismaMock.video.findUnique).not.toHaveBeenCalled()
         expect(mockUpdateVideoAvailableLanguages).not.toHaveBeenCalled()
       })
     })
@@ -3457,6 +3592,7 @@ describe('video', () => {
         originId: null,
         restrictDownloadPlatforms: [],
         restrictViewPlatforms: [],
+        restrictTranslations: false,
         publishedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -3507,6 +3643,7 @@ describe('video', () => {
         originId: null,
         restrictDownloadPlatforms: [],
         restrictViewPlatforms: [],
+        restrictTranslations: false,
         publishedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()

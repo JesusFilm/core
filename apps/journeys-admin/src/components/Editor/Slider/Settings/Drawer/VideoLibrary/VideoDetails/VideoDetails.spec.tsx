@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -16,13 +17,13 @@ import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'
 
 import { BLOCK_DELETE_FOR_COVER_IMAGE, VideoDetails } from './VideoDetails'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 describe('VideoDetails', () => {
-  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+  beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => true))
 
   const imageBlock: TreeBlock<ImageBlock> = {
     id: 'imageBlockId',
@@ -132,8 +133,8 @@ describe('VideoDetails', () => {
           id="2_Acts7302-0-0"
           source={VideoBlockSource.internal}
           open
-          onClose={jest.fn()}
-          onSelect={jest.fn()}
+          onClose={vi.fn()}
+          onSelect={vi.fn()}
         />
       </MockedProvider>
     )
@@ -157,7 +158,7 @@ describe('VideoDetails', () => {
 
   describe('onClose behavior', () => {
     it('should call onClose with true when close button is clicked', () => {
-      const onClose = jest.fn()
+      const onClose = vi.fn()
       const { getByRole } = render(
         <MockedProvider>
           <VideoDetails
@@ -165,7 +166,7 @@ describe('VideoDetails', () => {
             source={VideoBlockSource.internal}
             open
             onClose={onClose}
-            onSelect={jest.fn()}
+            onSelect={vi.fn()}
           />
         </MockedProvider>
       )
@@ -181,8 +182,8 @@ describe('VideoDetails', () => {
           id="2_Acts7302-0-0"
           source={VideoBlockSource.internal}
           open
-          onClose={jest.fn()}
-          onSelect={jest.fn()}
+          onClose={vi.fn()}
+          onSelect={vi.fn()}
         />
       </MockedProvider>
     )
@@ -191,9 +192,9 @@ describe('VideoDetails', () => {
   })
 
   it('should call onSelect select click', async () => {
-    const onSelect = jest.fn()
-    const onClose = jest.fn()
-    const result = jest.fn().mockReturnValue(getVideoMock.result)
+    const onSelect = vi.fn()
+    const onClose = vi.fn()
+    const result = vi.fn().mockReturnValue(getVideoMock.result)
     const { getByRole } = render(
       <MockedProvider mocks={[{ ...getVideoMock, result }]}>
         <VideoDetails
@@ -221,8 +222,8 @@ describe('VideoDetails', () => {
   })
 
   it('should call onClose on changeVideo click', () => {
-    const onSelect = jest.fn()
-    const onClose = jest.fn()
+    const onSelect = vi.fn()
+    const onClose = vi.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[getVideoMock]}>
         <VideoDetails
@@ -240,9 +241,9 @@ describe('VideoDetails', () => {
   })
 
   it('should clear the video on delete icon click', async () => {
-    const onSelect = jest.fn()
-    const onClose = jest.fn()
-    const result = jest.fn(() => ({
+    const onSelect = vi.fn()
+    const onClose = vi.fn()
+    const result = vi.fn(() => ({
       data: {
         coverBlockImageDelete: {
           id: 'imageBlockId'
@@ -294,7 +295,9 @@ describe('VideoDetails', () => {
                     fullscreen: false,
                     backdropBlur: null,
                     eventLabel: null,
-                    children: [videoBlock]
+                    children: [videoBlock],
+                    showAssistant: null,
+                    expandChatByDefault: null
                   }
                 ]
               }

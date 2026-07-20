@@ -117,12 +117,12 @@ Pages Router with static generation:
 
 ## Testing
 
-- Framework: Jest + `@testing-library/react`
+- Framework: Vitest + `@testing-library/react`
 - Setup: `setupTests.ts` configures `asyncUtilTimeout: 2500`, mocks `next/router`
-- CI retries: 3 attempts
+- CI retries: 3 attempts (via `retry` in vitest config)
 - Required providers in tests: `MockedProvider`, `SnackbarProvider`, `JourneyProvider` (see provider stack above)
 - Mock data: `src/libs/testData/storyData.ts` provides `basic`, `imageBlocks`, `videoBlocks` fixtures
-- Mock patterns: Apollo `MockedProvider` with explicit request/result objects, `jest.fn()` for UUID generation
+- Mock patterns: Apollo `MockedProvider` with explicit request/result objects, `vi.fn()` for UUID generation
 
 ## Quality gates
 

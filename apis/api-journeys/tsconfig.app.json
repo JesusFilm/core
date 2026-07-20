@@ -1,22 +1,18 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "esModuleInterop": true,
-    "outDir": "../../dist/out-tsc",
-    "module": "commonjs",
+    "strict": true,
     "types": [
       "node",
       "@nx/react/typings/cssmodule.d.ts",
       "@nx/react/typings/image.d.ts"
     ],
-    "emitDecoratorMetadata": true,
     "target": "es2021"
   },
   "exclude": [
     "**/*.spec.ts",
     "**/*.spec.tsx",
-    "jest.config.ts",
+    "vitest.config.mts",
     "test/**/*.ts"
   ],
   "include": ["**/*.ts", "**/*.tsx"]

@@ -9,5 +9,19 @@
   "Get me out of here!": "मलाई यहाँबाट निकाल!",
   "Terms & Conditions": "नियम तथा सर्तहरू",
   "Privacy Policy": "गोपनीयता नीति",
-  "NextSteps © {{year}}": "अर्को चरणहरू © {{year}}"
+  "NextSteps © {{year}}": "अर्को चरणहरू © {{year}}",
+  "Use": "प्रयोग गर्नुहोस्",
+  "Preview": "पूर्वावलोकन",
+  "About this chat": "यस च्याटको बारेमा",
+  "About this chat | Next Steps": "यस कुराकानीको बारेमा | आगामी कदमहरू",
+  "The chat on this journey is powered by an AI assistant. To help us improve future replies, the messages you send and the assistant’s replies are saved.": "यस यात्राको च्याट एआई सहायकद्वारा सञ्चालित छ। भविष्यका जवाफहरू सुधार गर्न मद्दत गर्न, तपाईंले पठाउनुहुने सन्देशहरू र सहायकका जवाफहरू सुरक्षित गरिन्छन्।",
+  "We do not save your name, email address, or any account details, and we do not link conversations to your identity.": "हामी तपाईंको नाम, इमेल ठेगाना, वा कुनै खाता विवरणहरू सुरक्षित राख्दैनौं, र हामी कुराकानीहरूलाई तपाईंको पहिचानसँग जोड्दैनौं।",
+  "Where the messages go": "सन्देशहरू कहाँ जान्छन्",
+  "Your messages and the assistant’s replies pass through two third-party services: an AI service that generates the replies, and an analytics service called Langfuse where the conversations are stored so the team can review them in aggregate to improve the experience. They are not sold and they are not used for advertising.": "तपाईंका सन्देशहरू र सहायकका जवाफहरू दुई तेस्रो-पक्ष सेवाहरू मार्फत जान्छन्: एउटा AI सेवा जसले जवाफहरू उत्पन्न गर्छ, र Langfuse नामक एउटा विश्लेषण सेवा जहाँ संवादहरू भण्डारण गरिन्छन् ताकि टोलीले अनुभव सुधार गर्न तिनीहरूलाई समग्रमा समीक्षा गर्न सकोस्। ती बेचिँदैनन् र विज्ञापनका लागि प्रयोग गरिँदैनन्।",
+  "If you prefer not to take part": "यदि तपाईं भाग लिन चाहनुहुन्न भने",
+  "There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.": "आज च्याट-विशेष अप्ट-आउट छैन। यदि तपाईं आफ्ना सन्देशहरू सुरक्षित नहोस् भन्ने चाहनुहुन्छ भने कृपया च्याट प्रयोग नगर्नुहोस् — बाँकी यात्रा यसबिना पनि चल्छ।",
+  "Last updated: June 2026": "अन्तिम अद्यावधिक: जुन २०२६",
+  "Back to Next Steps": "अर्को चरणमा फर्कनुहोस्",
+  "This template gallery is not available.": "यो टेम्प्लेट ग्यालरी उपलब्ध छैन।",
+  "<0>This page has been created to test the embed code.<strong>If youve found this page in error click the button below.</strong></0>": "<0>यो पृष्ठ इम्बेड कोड परीक्षण गर्न सिर्जना गरिएको हो।<strong>यदि तपाईंले यो पृष्ठ त्रुटिपूर्ण रूपमा फेला पार्नुभएको हो भने तलको बटनमा क्लिक गर्नुहोस्।</strong></0>"
 }

@@ -1,0 +1,201 @@
+import axios, { isAxiosError } from 'axios'
+import { type Mocked, type MockedFunction, vi } from 'vitest'
+
+import { getUserFromPayload } from '@core/yoga/firebaseClient'
+
+import { getClient } from '../../../test/client'
+import { prismaMock } from '../../../test/prismaMock'
+import { ability } from '../../lib/auth/ability'
+import { graphql } from '../../lib/graphql/subgraphGraphql'
+
+vi.mock('axios')
+vi.mock('@core/yoga/firebaseClient', () => ({
+  getUserFromPayload: vi.fn()
+}))
+vi.mock('../../lib/auth/ability', () => ({
+  Action: {
+    Update: 'update'
+  },
+  ability: vi.fn(),
+  subject: vi.fn((_type, object) => ({ subject: _type, object }))
+}))
+
+const mockAxios = axios as Mocked<typeof axios>
+const mockIsAxiosError = isAxiosError as unknown as MockedFunction<
+  typeof isAxiosError
+>
+const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
+  typeof getUserFromPayload
+>
+const mockAbility = ability as MockedFunction<typeof ability>
+
+describe('journeysPlausibleStatsTimeseries', () => {
+  const originalEnv = process.env
+  const mockUser = {
+    id: 'userId',
+    email: 'test@example.com',
+    emailVerified: true,
+    firstName: 'Test',
+    lastName: 'User',
+    imageUrl: null,
+    roles: []
+  }
+
+  const authClient = getClient({
+    headers: { authorization: 'token' },
+    context: { currentUser: mockUser }
+  })
+
+  const QUERY = graphql(`
+    query JourneysPlausibleStatsTimeseries(
+      $id: ID!
+      $idType: IdType
+      $where: PlausibleStatsTimeseriesFilter!
+    ) {
+      journeysPlausibleStatsTimeseries(
+        id: $id
+        idType: $idType
+        where: $where
+      ) {
+        property
+        visitors
+      }
+    }
+  `)
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    process.env = {
+      ...originalEnv,
+      PLAUSIBLE_URL: 'https://plausible.example',
+      PLAUSIBLE_API_KEY: 'plausible-key'
+    }
+    mockGetUserFromPayload.mockReturnValue(mockUser)
+    prismaMock.userRole.findUnique.mockResolvedValue({
+      userId: mockUser.id,
+      roles: []
+    } as any)
+    mockAbility.mockReturnValue(true)
+    mockAxios.get.mockResolvedValue({
+      data: {
+        results: [
+          {
+            date: '2024-01-01',
+            visitors: 12
+          }
+        ]
+      }
+    } as any)
+    mockIsAxiosError.mockReturnValue(false)
+  })
+
+  afterAll(() => {
+    process.env = originalEnv
+  })
+
+  it('returns timeseries stats for a journey', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue({
+      id: 'journey-id',
+      userJourneys: [],
+      team: { userTeams: [] }
+    } as any)
+
+    const result = await authClient({
+      document: QUERY,
+      variables: {
+        id: 'journey-id',
+        idType: 'databaseId',
+        where: { period: '30d' }
+      }
+    })
+
+    expect(mockAxios.get).toHaveBeenCalledWith(
+      'https://plausible.example/api/v1/stats/timeseries',
+      expect.objectContaining({
+        params: expect.objectContaining({
+          site_id: 'api-journeys-journey-journey-id',
+          metrics: 'visitors',
+          period: '30d'
+        })
+      })
+    )
+
+    expect(result).toEqual({
+      data: {
+        journeysPlausibleStatsTimeseries: [
+          {
+            property: '2024-01-01',
+            visitors: 12
+          }
+        ]
+      }
+    })
+  })
+
+  it('returns error when journey not found', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue(null)
+
+    const result = await authClient({
+      document: QUERY,
+      variables: { id: 'missing', where: { period: '7d' } }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'Journey not found'
+        })
+      ]
+    })
+  })
+
+  it('returns error when user cannot view journey', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue({
+      id: 'journey-id',
+      userJourneys: [],
+      team: { userTeams: [] }
+    } as any)
+    mockAbility.mockReturnValueOnce(false)
+
+    const result = await authClient({
+      document: QUERY,
+      variables: { id: 'journey-id', where: { period: '7d' } }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'User is not allowed to view journey'
+        })
+      ]
+    })
+  })
+
+  it('returns Plausible error message on API failure', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue({
+      id: 'journey-id',
+      userJourneys: [],
+      team: { userTeams: [] }
+    } as any)
+    mockIsAxiosError.mockReturnValueOnce(true)
+    mockAxios.get.mockRejectedValueOnce({
+      response: { data: { error: 'Invalid period' } }
+    } as any)
+
+    const result = await authClient({
+      document: QUERY,
+      variables: { id: 'journey-id', where: { period: '7d' } }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'Invalid period'
+        })
+      ]
+    })
+  })
+})

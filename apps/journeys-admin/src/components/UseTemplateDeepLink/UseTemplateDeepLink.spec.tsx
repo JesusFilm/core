@@ -1,0 +1,511 @@
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { type NextRouter, useRouter } from 'next/router'
+import { SnackbarProvider } from 'notistack'
+import { type Mock, type MockedFunction } from 'vitest'
+
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '@core/journeys/ui/TeamProvider'
+import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
+import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateSubscription/supportedLanguages'
+import { JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION } from '@core/journeys/ui/useJourneyAiTranslateSubscription/useJourneyAiTranslateSubscription'
+import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import { JourneyDuplicate } from '@core/journeys/ui/useJourneyDuplicateMutation/__generated__/JourneyDuplicate'
+import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
+
+import { IdType } from '../../../__generated__/globalTypes'
+import { UpdateLastActiveTeamId } from '../../../__generated__/UpdateLastActiveTeamId'
+
+import { UseTemplateDeepLink } from './UseTemplateDeepLink'
+
+vi.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: vi.fn()
+}))
+
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
+
+const teamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+  request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+  result: {
+    data: {
+      teams: [
+        {
+          __typename: 'Team',
+          id: 'team-1',
+          title: 'Team One',
+          publicTitle: 'Team One',
+          userTeams: [],
+          customDomains: []
+        }
+      ],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        id: 'profile-1',
+        lastActiveTeamId: 'team-1'
+      }
+    }
+  }
+}
+
+const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
+  request: {
+    query: UPDATE_LAST_ACTIVE_TEAM_ID,
+    variables: { input: { lastActiveTeamId: 'team-1' } }
+  },
+  result: {
+    data: {
+      journeyProfileUpdate: {
+        __typename: 'JourneyProfile',
+        id: 'profile-1'
+      }
+    }
+  }
+}
+
+const languagesMock: MockedResponse = {
+  request: {
+    query: GET_LANGUAGES,
+    variables: {
+      languageId: '529',
+      where: {
+        ids: [...SUPPORTED_LANGUAGE_IDS]
+      }
+    }
+  },
+  result: {
+    data: {
+      languages: [
+        {
+          __typename: 'Language',
+          id: '529',
+          slug: 'english',
+          name: [
+            { value: 'English', primary: true, __typename: 'LanguageName' }
+          ]
+        },
+        {
+          __typename: 'Language',
+          id: '528',
+          slug: 'spanish',
+          name: [
+            { value: 'Spanish', primary: false, __typename: 'LanguageName' },
+            { value: 'Español', primary: true, __typename: 'LanguageName' }
+          ]
+        }
+      ]
+    }
+  }
+}
+
+const sourceJourneyId = 'template-id'
+
+function buildJourneyMock(
+  options: { customizable?: boolean | null } = {}
+): MockedResponse {
+  return {
+    request: {
+      query: GET_JOURNEY,
+      variables: {
+        id: sourceJourneyId,
+        idType: IdType.databaseId,
+        options: { skipRoutingFilter: true }
+      }
+    },
+    result: {
+      data: {
+        journey: {
+          __typename: 'Journey',
+          id: sourceJourneyId,
+          title: 'Sample Template',
+          template: true,
+          customizable: options.customizable ?? false,
+          fromTemplateId: null,
+          language: {
+            __typename: 'Language',
+            id: '529',
+            name: [
+              { value: 'English', primary: true, __typename: 'LanguageName' }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
+
+function buildJourneyDuplicateMock(
+  variables: {
+    id: string
+    teamId: string
+    forceNonTemplate: boolean
+  },
+  options: { shouldError?: boolean } = {}
+): MockedResponse<JourneyDuplicate> {
+  if (options.shouldError === true) {
+    return {
+      request: { query: JOURNEY_DUPLICATE, variables },
+      error: new Error('boom')
+    }
+  }
+  return {
+    request: { query: JOURNEY_DUPLICATE, variables },
+    result: {
+      data: {
+        journeyDuplicate: {
+          __typename: 'Journey',
+          id: 'duplicated-journey-id',
+          template: false
+        }
+      }
+    }
+  }
+}
+
+function buildTranslateSubscriptionMock(options: {
+  shouldError?: boolean
+}): MockedResponse {
+  if (options.shouldError === true) {
+    return {
+      request: {
+        query: JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
+        variables: {
+          journeyId: 'duplicated-journey-id',
+          name: 'Sample Template',
+          journeyLanguageName: '',
+          textLanguageId: '528',
+          textLanguageName: 'Español',
+          userLanguageId: '529',
+          userLanguageName: ''
+        }
+      },
+      error: new Error('Translation failed')
+    }
+  }
+  return {
+    request: {
+      query: JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
+      variables: {
+        journeyId: 'duplicated-journey-id',
+        name: 'Sample Template',
+        journeyLanguageName: '',
+        textLanguageId: '528',
+        textLanguageName: 'Español',
+        userLanguageId: '529',
+        userLanguageName: ''
+      }
+    },
+    result: {
+      data: {
+        journeyAiTranslateCreateSubscription: {
+          __typename: 'JourneyAiTranslateProgress',
+          progress: 100,
+          message: 'Translation completed',
+          journey: {
+            __typename: 'Journey',
+            id: 'duplicated-journey-id',
+            title: 'Plantilla traducida',
+            description: null,
+            languageId: '528',
+            createdAt: '2026-01-01T00:00:00.000Z',
+            updatedAt: '2026-01-01T00:00:00.000Z',
+            journeyCustomizationDescription: null,
+            journeyCustomizationFields: [],
+            blocks: [],
+            language: {
+              __typename: 'Language',
+              id: '528',
+              name: [
+                { __typename: 'LanguageName', value: 'Español', primary: true }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+interface SetupOptions {
+  useTemplate?: string | string[] | null
+  duplicateError?: boolean
+  includeJourneyMock?: boolean
+  customizable?: boolean | null
+  translationError?: boolean
+  push?: Mock
+  replace?: Mock
+}
+
+function setup(options: SetupOptions = {}): {
+  push: Mock
+  replace: Mock
+} {
+  const useTemplate =
+    'useTemplate' in options ? options.useTemplate : sourceJourneyId
+  const push = options.push ?? vi.fn().mockResolvedValue(true)
+  const replace = options.replace ?? vi.fn().mockResolvedValue(true)
+  const query = useTemplate == null ? {} : { useTemplate }
+  mockUseRouter.mockReturnValue({
+    pathname: '/',
+    query,
+    push,
+    replace
+  } as unknown as NextRouter)
+
+  const mocks: MockedResponse[] = [
+    teamsMock,
+    updateLastActiveTeamIdMock,
+    languagesMock,
+    buildJourneyDuplicateMock(
+      { id: sourceJourneyId, teamId: 'team-1', forceNonTemplate: true },
+      { shouldError: options.duplicateError }
+    )
+  ]
+  if (options.includeJourneyMock !== false) {
+    mocks.push(
+      buildJourneyMock({ customizable: options.customizable ?? false })
+    )
+  }
+  if (options.translationError != null) {
+    mocks.push(
+      buildTranslateSubscriptionMock({ shouldError: options.translationError })
+    )
+  }
+
+  render(
+    <MockedProvider mocks={mocks}>
+      <SnackbarProvider>
+        <TeamProvider>
+          <UseTemplateDeepLink />
+        </TeamProvider>
+      </SnackbarProvider>
+    </MockedProvider>
+  )
+  return { push, replace }
+}
+
+async function selectTranslationSpanish(): Promise<void> {
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Translation' }))
+  await waitFor(() =>
+    expect(screen.getByTestId('LanguageAutocomplete')).not.toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
+  )
+  fireEvent.focus(screen.getByTestId('LanguageAutocomplete'))
+  fireEvent.keyDown(screen.getByTestId('LanguageAutocomplete'), {
+    key: 'ArrowDown'
+  })
+  fireEvent.click(screen.getByRole('option', { name: 'Spanish Español' }))
+}
+
+describe('UseTemplateDeepLink', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('renders nothing when useTemplate param is absent', () => {
+    setup({ useTemplate: null })
+    expect(screen.queryByTestId('CopyToTeamDialog')).not.toBeInTheDocument()
+  })
+
+  it('renders nothing when useTemplate param is an empty string', () => {
+    setup({ useTemplate: '' })
+    expect(screen.queryByTestId('CopyToTeamDialog')).not.toBeInTheDocument()
+  })
+
+  it('uses the first value when useTemplate param is an array', async () => {
+    setup({ useTemplate: [sourceJourneyId, 'second-template-id'] })
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+  })
+
+  it('opens the dialog when useTemplate is present', async () => {
+    setup()
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+  })
+
+  it('redirects customizable templates to the customize flow', async () => {
+    const { push, replace } = setup({ customizable: true })
+    await waitFor(() =>
+      expect(replace).toHaveBeenCalledWith(
+        `/templates/${sourceJourneyId}/customize`
+      )
+    )
+    expect(screen.queryByTestId('CopyToTeamDialog')).not.toBeInTheDocument()
+    expect(push).not.toHaveBeenCalled()
+  })
+
+  it('shows a loading indicator while the journey query resolves', async () => {
+    setup()
+    expect(screen.getByTestId('UseTemplateDeepLinkLoading')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+    expect(
+      screen.queryByTestId('UseTemplateDeepLinkLoading')
+    ).not.toBeInTheDocument()
+  })
+
+  it('duplicates the journey and replaces the URL with /?type=journeys&refresh=true', async () => {
+    const { push, replace } = setup()
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+
+    const submitButton = await screen.findByRole('button', { name: 'Add' })
+    fireEvent.click(submitButton)
+
+    await waitFor(() =>
+      expect(screen.getByText('Journey Copied')).toBeInTheDocument()
+    )
+
+    // Exactly once: re-firing the journey-list nav would clobber the
+    // intended `?type=journeys&refresh=true` destination.
+    expect(replace).toHaveBeenCalledTimes(1)
+    expect(replace).toHaveBeenCalledWith(
+      { pathname: '/', query: { type: 'journeys', refresh: 'true' } },
+      undefined,
+      { shallow: true }
+    )
+    expect(push).not.toHaveBeenCalled()
+  })
+
+  it('shows an error snackbar and keeps the dialog open on duplication failure', async () => {
+    const { push, replace } = setup({ duplicateError: true })
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+
+    const submitButton = await screen.findByRole('button', { name: 'Add' })
+    fireEvent.click(submitButton)
+
+    await waitFor(() =>
+      expect(screen.getByText('Journey duplication failed')).toBeInTheDocument()
+    )
+    expect(push).not.toHaveBeenCalled()
+    expect(replace).not.toHaveBeenCalled()
+    expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+  })
+
+  it('strips the useTemplate param on close without submitting', async () => {
+    const { push, replace } = setup()
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+
+    const cancelButton = screen.getByRole('button', { name: 'Cancel' })
+    fireEvent.click(cancelButton)
+
+    await waitFor(() => expect(replace).toHaveBeenCalled())
+    expect(replace).toHaveBeenCalledWith(
+      { pathname: '/', query: {} },
+      undefined,
+      { shallow: true }
+    )
+    expect(push).not.toHaveBeenCalled()
+  })
+
+  it('runs the translation subscription on submit and replaces URL on completion', async () => {
+    const { push, replace } = setup({ translationError: false })
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+
+    await selectTranslationSpanish()
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+
+    await waitFor(() =>
+      expect(screen.getByText('Journey Translated')).toBeInTheDocument()
+    )
+
+    // Exactly once: a duplicate nav after translation completes would
+    // race the success snackbar's animation and confuse the user.
+    expect(replace).toHaveBeenCalledTimes(1)
+    expect(replace).toHaveBeenCalledWith(
+      { pathname: '/', query: { type: 'journeys', refresh: 'true' } },
+      undefined,
+      { shallow: true }
+    )
+    expect(push).not.toHaveBeenCalled()
+  })
+
+  it('still navigates to the journey list when translation errors after a successful duplicate', async () => {
+    const { push, replace } = setup({ translationError: true })
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+
+    await selectTranslationSpanish()
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+
+    await waitFor(() =>
+      expect(screen.getByText('Translation failed')).toBeInTheDocument()
+    )
+
+    // Exactly once: re-firing would imply the error handler ran twice
+    // and risks a double-navigate on a partial state.
+    expect(replace).toHaveBeenCalledTimes(1)
+    expect(replace).toHaveBeenCalledWith(
+      { pathname: '/', query: { type: 'journeys', refresh: 'true' } },
+      undefined,
+      { shallow: true }
+    )
+    expect(push).not.toHaveBeenCalled()
+  })
+
+  it('surfaces a snackbar instead of silently no-oping when translation is requested before the journey resolves', async () => {
+    // Omit the GET_JOURNEY mock so `journey` stays undefined throughout.
+    const { push, replace } = setup({ includeJourneyMock: false })
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+
+    await selectTranslationSpanish()
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+
+    await waitFor(() =>
+      expect(
+        screen.getByText('Loading template — please retry')
+      ).toBeInTheDocument()
+    )
+    expect(replace).not.toHaveBeenCalled()
+    expect(push).not.toHaveBeenCalled()
+    expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+  })
+
+  it('preserves the translation form selections when journey is still loading on submit', async () => {
+    // Regression test for P2-#3: previously the early-return resolved
+    // submitAction, which let CopyToTeamDialog's pipeline run resetForm
+    // and the user had to re-toggle Translation + re-pick the language.
+    // After the fix, handleSubmit throws — the dialog stays open with
+    // the selections intact.
+    setup({ includeJourneyMock: false })
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+
+    await selectTranslationSpanish()
+    const translationCheckbox = screen.getByRole('checkbox', {
+      name: 'Translation'
+    })
+    expect(translationCheckbox).toBeChecked()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+
+    await waitFor(() =>
+      expect(
+        screen.getByText('Loading template — please retry')
+      ).toBeInTheDocument()
+    )
+
+    expect(translationCheckbox).toBeChecked()
+  })
+})

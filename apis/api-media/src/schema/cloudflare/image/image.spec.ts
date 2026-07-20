@@ -1,9 +1,10 @@
-import { Response } from 'node-fetch'
+import { type Mocked, type MockedFunction, vi } from 'vitest'
 
 import { CloudflareImage, ImageAspectRatio } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
+import { journeysPrismaMock } from '../../../../test/journeysPrismaMock'
 import { prismaMock } from '../../../../test/prismaMock'
 import { queue } from '../../../workers/processImageBlurhash/queue'
 
@@ -15,40 +16,40 @@ import {
   deleteImage
 } from './service'
 
-jest.mock('../../../workers/processImageBlurhash/queue', () => ({
+vi.mock('../../../workers/processImageBlurhash/queue', () => ({
   queue: {
-    add: jest.fn().mockResolvedValue({ id: 'job-id' })
+    add: vi.fn().mockResolvedValue({ id: 'job-id' })
   }
 }))
 
-const mockedQueue = queue as jest.Mocked<typeof queue>
+const mockedQueue = queue as Mocked<typeof queue>
 
 const mockCreateImageByDirectUpload =
-  createImageByDirectUpload as jest.MockedFunction<
-    typeof createImageByDirectUpload
-  >
-const mockCreateImageFromText = createImageFromText as jest.MockedFunction<
+  createImageByDirectUpload as MockedFunction<typeof createImageByDirectUpload>
+const mockCreateImageFromText = createImageFromText as MockedFunction<
   typeof createImageFromText
 >
-const mockCreateImageFromResponse =
-  createImageFromResponse as jest.MockedFunction<typeof createImageFromResponse>
+const mockCreateImageFromResponse = createImageFromResponse as MockedFunction<
+  typeof createImageFromResponse
+>
 
-const mockCreateImageFromUrl = createImageFromUrl as jest.MockedFunction<
+const mockCreateImageFromUrl = createImageFromUrl as MockedFunction<
   typeof createImageFromUrl
 >
 
-const mockDeleteImage = deleteImage as jest.MockedFunction<typeof deleteImage>
+const mockDeleteImage = deleteImage as MockedFunction<typeof deleteImage>
 
-jest.mock('./service', () => ({
+vi.mock('./service', () => ({
   __esModule: true,
-  createImageByDirectUpload: jest.fn(),
-  createImageFromResponse: jest.fn(),
-  createImageFromText: jest.fn(),
-  createImageFromUrl: jest.fn(),
-  deleteImage: jest.fn()
+  createImageByDirectUpload: vi.fn(),
+  createImageFromResponse: vi.fn(),
+  createImageFromText: vi.fn(),
+  createImageFromUrl: vi.fn(),
+  deleteImage: vi.fn()
 }))
 
 describe('cloudflareImage', () => {
+  const client = getClient()
   const authClient = getClient({
     headers: {
       authorization: 'token'
@@ -61,10 +62,107 @@ describe('cloudflareImage', () => {
   })
 
   describe('queries', () => {
+    describe('videoImages', () => {
+      const VIDEO_IMAGES_QUERY = graphql(`
+        query VideoImages {
+          videoImages {
+            id
+            videoId
+            aspectRatio
+            url
+            blurhash
+          }
+        }
+      `)
+
+      it('should return video images', async () => {
+        prismaMock.cloudflareImage.findMany.mockResolvedValue([
+          {
+            id: 'imageId',
+            uploaded: true,
+            userId: 'userId',
+            uploadUrl: null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            aspectRatio: null,
+            videoId: 'videoId',
+            blurhash: null,
+            blurhashAttemptedAt: null,
+            teamId: null,
+            isAi: null
+          }
+        ])
+        const result = await client({ document: VIDEO_IMAGES_QUERY })
+        expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: {
+              videoId: { not: null },
+              uploaded: true,
+              updatedAt: undefined,
+              aspectRatio: undefined
+            },
+            skip: 0,
+            take: 100,
+            orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }]
+          })
+        )
+        expect(result).toHaveProperty('data.videoImages', [
+          {
+            id: 'imageId',
+            videoId: 'videoId',
+            aspectRatio: null,
+            url: expect.any(String),
+            blurhash: null
+          }
+        ])
+      })
+
+      it('should filter by videoId', async () => {
+        const FILTERED_QUERY = graphql(`
+          query VideoImagesFiltered {
+            videoImages(where: { videoId: "specificVideoId" }) {
+              id
+            }
+          }
+        `)
+        prismaMock.cloudflareImage.findMany.mockResolvedValue([])
+        await client({ document: FILTERED_QUERY })
+        expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: expect.objectContaining({
+              videoId: 'specificVideoId'
+            })
+          })
+        )
+      })
+    })
+
+    describe('videoImagesCount', () => {
+      const VIDEO_IMAGES_COUNT_QUERY = graphql(`
+        query VideoImagesCount {
+          videoImagesCount
+        }
+      `)
+
+      it('should return video images count', async () => {
+        prismaMock.cloudflareImage.count.mockResolvedValue(5)
+        const result = await client({ document: VIDEO_IMAGES_COUNT_QUERY })
+        expect(prismaMock.cloudflareImage.count).toHaveBeenCalledWith({
+          where: {
+            videoId: { not: null },
+            uploaded: true,
+            updatedAt: undefined,
+            aspectRatio: undefined
+          }
+        })
+        expect(result).toHaveProperty('data.videoImagesCount', 5)
+      })
+    })
+
     describe('getMyCloudflareImages', () => {
       const GET_MY_CLOUDFLARE_IMAGES_QUERY = graphql(`
-        query getMyCloudflareImages($offset: Int, $limit: Int) {
-          getMyCloudflareImages(offset: $offset, limit: $limit) {
+        query getMyCloudflareImages($offset: Int, $limit: Int, $isAi: Boolean) {
+          getMyCloudflareImages(offset: $offset, limit: $limit, isAi: $isAi) {
             id
             uploadUrl
             userId
@@ -76,6 +174,7 @@ describe('cloudflareImage', () => {
             thumbnail
             videoStill
             blurhash
+            isAi
           }
         }
       `)
@@ -92,7 +191,9 @@ describe('cloudflareImage', () => {
             aspectRatio: ImageAspectRatio.hd,
             videoId: null,
             blurhash: 'testBlurhash',
-            blurhashAttemptedAt: null
+            blurhashAttemptedAt: null,
+            teamId: null,
+            isAi: null
           }
         ])
         const result = await authClient({
@@ -118,13 +219,15 @@ describe('cloudflareImage', () => {
                 videoStill: `https://imagedelivery.net/${
                   process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
                 }/testId/f=jpg,w=1920,h=1080,q=95`,
-                blurhash: 'testBlurhash'
+                blurhash: 'testBlurhash',
+                isAi: null
               }
             ]
           }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId' }
+          where: { AND: [{ userId: 'testUserId' }, {}] },
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
         })
       })
 
@@ -140,7 +243,9 @@ describe('cloudflareImage', () => {
             aspectRatio: ImageAspectRatio.banner,
             videoId: null,
             blurhash: null,
-            blurhashAttemptedAt: null
+            blurhashAttemptedAt: null,
+            teamId: null,
+            isAi: false
           }
         ])
         const result = await authClient({
@@ -172,16 +277,155 @@ describe('cloudflareImage', () => {
                 }/testId/f=webp,w=640,h=300,q=50`,
                 thumbnail: null,
                 videoStill: null,
-                blurhash: null
+                blurhash: null,
+                isAi: false
               }
             ]
           }
         })
         expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
-          where: { userId: 'testUserId' },
+          where: { AND: [{ userId: 'testUserId' }, {}] },
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
           take: 10,
           skip: 0
         })
+      })
+
+      it('should filter by isAi: true', async () => {
+        prismaMock.cloudflareImage.findMany.mockResolvedValue([])
+        await authClient({
+          document: GET_MY_CLOUDFLARE_IMAGES_QUERY,
+          variables: { isAi: true }
+        })
+        expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
+          where: { AND: [{ userId: 'testUserId' }, { isAi: true }] },
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
+        })
+      })
+
+      // The Custom tab sends `isAi: false`. Historical uploads predate the isAi
+      // column and are stored as null; `isAi = false` alone would exclude them
+      // (NULL != false in SQL). The resolver matches false-or-null so they show.
+      it('should match false-or-null (historical) rows when isAi is false', async () => {
+        prismaMock.cloudflareImage.findMany.mockResolvedValue([])
+        await authClient({
+          document: GET_MY_CLOUDFLARE_IMAGES_QUERY,
+          variables: { isAi: false }
+        })
+        expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
+          where: {
+            AND: [
+              { userId: 'testUserId' },
+              { OR: [{ isAi: false }, { isAi: null }] }
+            ]
+          },
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
+        })
+      })
+
+      it('should return a historical null-isAi upload under the Custom tab', async () => {
+        prismaMock.cloudflareImage.findMany.mockResolvedValue([
+          {
+            id: 'legacyId',
+            uploaded: true,
+            userId: 'testUserId',
+            uploadUrl: 'testUrl',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            aspectRatio: null,
+            videoId: null,
+            blurhash: null,
+            blurhashAttemptedAt: null,
+            teamId: null,
+            isAi: null
+          }
+        ])
+        const result = (await authClient({
+          document: GET_MY_CLOUDFLARE_IMAGES_QUERY,
+          variables: { isAi: false }
+        })) as { data: { getMyCloudflareImages: Array<{ id: string }> } }
+        expect(result.data.getMyCloudflareImages).toEqual([
+          expect.objectContaining({ id: 'legacyId', isAi: null })
+        ])
+      })
+
+      it('should not filter by isAi when isAi arg is null', async () => {
+        prismaMock.cloudflareImage.findMany.mockResolvedValue([])
+        await authClient({
+          document: GET_MY_CLOUDFLARE_IMAGES_QUERY,
+          variables: { isAi: null }
+        })
+        expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
+          where: { AND: [{ userId: 'testUserId' }, {}] },
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
+        })
+      })
+
+      const GET_MY_CLOUDFLARE_IMAGES_TEAM_QUERY = graphql(`
+        query getMyCloudflareImagesTeam($teamId: ID, $isAi: Boolean) {
+          getMyCloudflareImages(teamId: $teamId, isAi: $isAi) {
+            id
+          }
+        }
+      `)
+
+      it('should return the merged personal + team result when caller is a member', async () => {
+        journeysPrismaMock.userTeam.findUnique.mockResolvedValue({
+          id: 'userTeamId'
+        } as never)
+        prismaMock.cloudflareImage.findMany.mockResolvedValue([])
+
+        await authClient({
+          document: GET_MY_CLOUDFLARE_IMAGES_TEAM_QUERY,
+          variables: { teamId: 'teamId' }
+        })
+
+        expect(journeysPrismaMock.userTeam.findUnique).toHaveBeenCalledWith({
+          where: { teamId_userId: { teamId: 'teamId', userId: 'testUserId' } }
+        })
+        expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
+          where: {
+            AND: [{ OR: [{ userId: 'testUserId' }, { teamId: 'teamId' }] }, {}]
+          },
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
+        })
+      })
+
+      it('should still apply isAi alongside the merged team predicate', async () => {
+        journeysPrismaMock.userTeam.findUnique.mockResolvedValue({
+          id: 'userTeamId'
+        } as never)
+        prismaMock.cloudflareImage.findMany.mockResolvedValue([])
+
+        await authClient({
+          document: GET_MY_CLOUDFLARE_IMAGES_TEAM_QUERY,
+          variables: { teamId: 'teamId', isAi: true }
+        })
+
+        expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
+          where: {
+            AND: [
+              { OR: [{ userId: 'testUserId' }, { teamId: 'teamId' }] },
+              { isAi: true }
+            ]
+          },
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
+        })
+      })
+
+      it('should throw FORBIDDEN when caller is not a member of the team', async () => {
+        journeysPrismaMock.userTeam.findUnique.mockResolvedValue(null)
+
+        const result = (await authClient({
+          document: GET_MY_CLOUDFLARE_IMAGES_TEAM_QUERY,
+          variables: { teamId: 'teamId' }
+        })) as {
+          data: unknown
+          errors?: { extensions?: { code?: string } }[]
+        }
+
+        expect(result.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+        expect(prismaMock.cloudflareImage.findMany).not.toHaveBeenCalled()
       })
     })
 
@@ -208,7 +452,9 @@ describe('cloudflareImage', () => {
           aspectRatio: null,
           videoId: null,
           blurhash: 'testBlurhash',
-          blurhashAttemptedAt: null
+          blurhashAttemptedAt: null,
+          teamId: null,
+          isAi: null
         })
         const result = await authClient({
           document: GET_MY_CLOUDFLARE_IMAGE_QUERY
@@ -260,7 +506,9 @@ describe('cloudflareImage', () => {
           aspectRatio: ImageAspectRatio.hd,
           videoId: 'videoId',
           blurhash: null,
-          blurhashAttemptedAt: null
+          blurhashAttemptedAt: null,
+          teamId: null,
+          isAi: null
         })
         const result = await authClient({
           document: CREATE_CLOUDFLARE_UPLOAD_BY_FILE_MUTATION,
@@ -287,10 +535,74 @@ describe('cloudflareImage', () => {
             userId: 'testUserId',
             uploadUrl: 'testUrl',
             aspectRatio: ImageAspectRatio.hd,
-            videoId: 'videoId'
+            videoId: 'videoId',
+            isAi: false,
+            teamId: null
           }
         })
         expect(mockCreateImageByDirectUpload).toHaveBeenCalledWith()
+      })
+
+      const CREATE_BY_FILE_WITH_JOURNEY_MUTATION = graphql(`
+        mutation createCloudflareUploadByFileWithJourney($journeyId: ID) {
+          createCloudflareUploadByFile(journeyId: $journeyId) {
+            id
+          }
+        }
+      `)
+
+      it('should persist teamId from the journey when journeyId is provided', async () => {
+        mockCreateImageByDirectUpload.mockResolvedValue({
+          id: 'id',
+          uploadURL: 'testUrl'
+        })
+        journeysPrismaMock.journey.findUnique.mockResolvedValue({
+          teamId: 'teamId',
+          team: { userTeams: [{ id: 'userTeamId' }] }
+        } as never)
+        prismaMock.cloudflareImage.create.mockResolvedValue({
+          id: 'id'
+        } as unknown as CloudflareImage)
+
+        await authClient({
+          document: CREATE_BY_FILE_WITH_JOURNEY_MUTATION,
+          variables: { journeyId: 'journeyId' }
+        })
+
+        expect(prismaMock.cloudflareImage.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ teamId: 'teamId' })
+          })
+        )
+      })
+
+      it('should create the asset without a teamId when caller lacks access to the journey team', async () => {
+        mockCreateImageByDirectUpload.mockResolvedValue({
+          id: 'id',
+          uploadURL: 'testUrl'
+        })
+        journeysPrismaMock.journey.findUnique.mockResolvedValue({
+          teamId: 'teamId',
+          team: { userTeams: [] }
+        } as never)
+        prismaMock.cloudflareImage.create.mockResolvedValue({
+          id: 'id'
+        } as unknown as CloudflareImage)
+
+        const result = (await authClient({
+          document: CREATE_BY_FILE_WITH_JOURNEY_MUTATION,
+          variables: { journeyId: 'journeyId' }
+        })) as {
+          data: unknown
+          errors?: { extensions?: { code?: string } }[]
+        }
+
+        expect(result.errors).toBeUndefined()
+        expect(prismaMock.cloudflareImage.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ teamId: null })
+          })
+        )
       })
     })
 
@@ -322,7 +634,9 @@ describe('cloudflareImage', () => {
           aspectRatio: ImageAspectRatio.banner,
           videoId: 'videoId',
           blurhash: null,
-          blurhashAttemptedAt: null
+          blurhashAttemptedAt: null,
+          teamId: null,
+          isAi: null
         })
         const result = await authClient({
           document: CREATE_CLOUDFLARE_UPLOAD_BY_URL_MUTATION,
@@ -351,13 +665,74 @@ describe('cloudflareImage', () => {
             uploaded: true,
             userId: 'testUserId',
             aspectRatio: ImageAspectRatio.banner,
-            videoId: 'videoId'
+            videoId: 'videoId',
+            isAi: false,
+            teamId: null
           }
         })
         expect(mockCreateImageFromUrl).toHaveBeenCalledWith('testUrl')
         expect(mockedQueue.add).toHaveBeenCalledWith(
           'api-media-process-image-blurhash-job',
           { imageId: 'id' }
+        )
+      })
+
+      const CREATE_BY_URL_WITH_JOURNEY_MUTATION = graphql(`
+        mutation createCloudflareUploadByUrlWithJourney(
+          $url: String!
+          $journeyId: ID
+        ) {
+          createCloudflareUploadByUrl(url: $url, journeyId: $journeyId) {
+            id
+          }
+        }
+      `)
+
+      it('should persist teamId from the journey when journeyId is provided', async () => {
+        mockCreateImageFromUrl.mockResolvedValue({ id: 'id' })
+        journeysPrismaMock.journey.findUnique.mockResolvedValue({
+          teamId: 'teamId',
+          team: { userTeams: [{ id: 'userTeamId' }] }
+        } as never)
+        prismaMock.cloudflareImage.create.mockResolvedValue({
+          id: 'id'
+        } as unknown as CloudflareImage)
+
+        await authClient({
+          document: CREATE_BY_URL_WITH_JOURNEY_MUTATION,
+          variables: { url: 'testUrl', journeyId: 'journeyId' }
+        })
+
+        expect(prismaMock.cloudflareImage.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ teamId: 'teamId' })
+          })
+        )
+      })
+
+      it('should create the asset without a teamId when caller lacks access to the journey team', async () => {
+        mockCreateImageFromUrl.mockResolvedValue({ id: 'id' })
+        journeysPrismaMock.journey.findUnique.mockResolvedValue({
+          teamId: 'teamId',
+          team: { userTeams: [] }
+        } as never)
+        prismaMock.cloudflareImage.create.mockResolvedValue({
+          id: 'id'
+        } as unknown as CloudflareImage)
+
+        const result = (await authClient({
+          document: CREATE_BY_URL_WITH_JOURNEY_MUTATION,
+          variables: { url: 'testUrl', journeyId: 'journeyId' }
+        })) as {
+          data: unknown
+          errors?: { extensions?: { code?: string } }[]
+        }
+
+        expect(result.errors).toBeUndefined()
+        expect(prismaMock.cloudflareImage.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ teamId: null })
+          })
         )
       })
     })
@@ -392,7 +767,9 @@ describe('cloudflareImage', () => {
           aspectRatio: ImageAspectRatio.hd,
           videoId: 'videoId',
           blurhash: null,
-          blurhashAttemptedAt: null
+          blurhashAttemptedAt: null,
+          teamId: null,
+          isAi: null
         })
         const result = await authClient({
           document: CREATE_CLOUDFLARE_IMAGE_FROM_PROMPT_MUTATION,
@@ -421,12 +798,78 @@ describe('cloudflareImage', () => {
             uploaded: true,
             userId: 'testUserId',
             aspectRatio: ImageAspectRatio.hd,
-            videoId: 'videoId'
+            videoId: 'videoId',
+            isAi: true,
+            teamId: null
           }
         })
         expect(mockedQueue.add).toHaveBeenCalledWith(
           'api-media-process-image-blurhash-job',
           { imageId: 'id' }
+        )
+      })
+
+      const CREATE_FROM_PROMPT_WITH_JOURNEY_MUTATION = graphql(`
+        mutation createCloudflareImageFromPromptWithJourney(
+          $prompt: String!
+          $journeyId: ID
+        ) {
+          createCloudflareImageFromPrompt(
+            prompt: $prompt
+            journeyId: $journeyId
+          ) {
+            id
+          }
+        }
+      `)
+
+      it('should persist teamId from the journey when journeyId is provided', async () => {
+        mockCreateImageFromText.mockResolvedValue(new Response())
+        mockCreateImageFromResponse.mockResolvedValue({ id: 'id' })
+        journeysPrismaMock.journey.findUnique.mockResolvedValue({
+          teamId: 'teamId',
+          team: { userTeams: [{ id: 'userTeamId' }] }
+        } as never)
+        prismaMock.cloudflareImage.create.mockResolvedValue({
+          id: 'id'
+        } as unknown as CloudflareImage)
+
+        await authClient({
+          document: CREATE_FROM_PROMPT_WITH_JOURNEY_MUTATION,
+          variables: { prompt: 'test prompt', journeyId: 'journeyId' }
+        })
+
+        expect(prismaMock.cloudflareImage.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ teamId: 'teamId' })
+          })
+        )
+      })
+
+      it('should create the asset without a teamId when caller lacks access to the journey team', async () => {
+        mockCreateImageFromText.mockResolvedValue(new Response())
+        mockCreateImageFromResponse.mockResolvedValue({ id: 'id' })
+        journeysPrismaMock.journey.findUnique.mockResolvedValue({
+          teamId: 'teamId',
+          team: { userTeams: [] }
+        } as never)
+        prismaMock.cloudflareImage.create.mockResolvedValue({
+          id: 'id'
+        } as unknown as CloudflareImage)
+
+        const result = (await authClient({
+          document: CREATE_FROM_PROMPT_WITH_JOURNEY_MUTATION,
+          variables: { prompt: 'test prompt', journeyId: 'journeyId' }
+        })) as {
+          data: unknown
+          errors?: { extensions?: { code?: string } }[]
+        }
+
+        expect(result.errors).toBeUndefined()
+        expect(prismaMock.cloudflareImage.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ teamId: null })
+          })
         )
       })
     })

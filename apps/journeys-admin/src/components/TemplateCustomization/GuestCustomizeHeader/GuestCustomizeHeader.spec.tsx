@@ -2,9 +2,9 @@ import { fireEvent, render } from '@testing-library/react'
 
 import { GuestCustomizeHeader } from './GuestCustomizeHeader'
 
-const mockPush = jest.fn()
+const mockPush = vi.fn()
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   useRouter: () => ({
     push: mockPush,
     asPath: '/templates/123/customize',
@@ -12,7 +12,7 @@ jest.mock('next/router', () => ({
   })
 }))
 
-jest.mock('next-i18next', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (str: string) => str,
     i18n: {
@@ -21,7 +21,7 @@ jest.mock('next-i18next', () => ({
   })
 }))
 
-jest.mock('next/image', () => ({
+vi.mock('next/image', () => ({
   __esModule: true,
   default: (props: { alt: string; src: string }) => (
     // eslint-disable-next-line @next/next/no-img-element
@@ -31,7 +31,7 @@ jest.mock('next/image', () => ({
 
 describe('GuestCustomizeHeader', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render the logo in the header', () => {

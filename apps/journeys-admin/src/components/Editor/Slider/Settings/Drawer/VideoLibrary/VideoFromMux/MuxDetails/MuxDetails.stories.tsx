@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
@@ -21,6 +21,7 @@ const Template: StoryObj<typeof MuxDetails> = {
   render: ({ activeVideoBlock, onSelect }) => {
     return (
       <MuxDetails
+        id={activeVideoBlock?.videoId ?? ''}
         activeVideoBlock={activeVideoBlock}
         open
         onSelect={onSelect}

@@ -5,7 +5,7 @@ import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { useFormikContext } from 'formik'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import { TextResponseType } from '../../../__generated__/globalTypes'

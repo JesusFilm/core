@@ -8,49 +8,49 @@ import { videos } from '../../Videos/__generated__/testData'
 
 import { VideoBlockPlayer } from './VideoBlockPlayer'
 
-jest.mock('video.js', () => {
-  const originalModule = jest.requireActual('video.js')
+vi.mock('video.js', async () => {
+  const originalModule = await vi.importActual('video.js')
   const mockPlayer = {
-    on: jest.fn(),
-    off: jest.fn(),
-    dispose: jest.fn(),
-    muted: jest.fn(),
-    play: jest.fn().mockReturnValue(Promise.resolve()),
-    pause: jest.fn(),
-    currentTime: jest.fn(),
-    volume: jest.fn(),
-    userActive: jest.fn(),
-    src: jest.fn(),
-    ready: jest.fn((callback) => {
+    on: vi.fn(),
+    off: vi.fn(),
+    dispose: vi.fn(),
+    muted: vi.fn(),
+    play: vi.fn().mockReturnValue(Promise.resolve()),
+    pause: vi.fn(),
+    currentTime: vi.fn(),
+    volume: vi.fn(),
+    userActive: vi.fn(),
+    src: vi.fn(),
+    ready: vi.fn((callback) => {
       if (callback) {
         setTimeout(() => callback(), 0)
       }
     }),
-    el: jest.fn(() => ({
+    el: vi.fn(() => ({
       classList: {
-        add: jest.fn(),
-        remove: jest.fn()
+        add: vi.fn(),
+        remove: vi.fn()
       }
     })),
-    error: jest.fn(() => null),
-    paused: jest.fn(() => false),
-    textTracks: jest.fn(() => ({
+    error: vi.fn(() => null),
+    paused: vi.fn(() => false),
+    textTracks: vi.fn(() => ({
       length: 0
     }))
   }
   return {
     ...originalModule,
     __esModule: true,
-    default: jest.fn(() => mockPlayer)
+    default: vi.fn(() => mockPlayer)
   }
 })
 
-jest.mock('./VideoControls', () => ({
+vi.mock('./VideoControls', () => ({
   VideoControls: () => <div data-testid="VideoControls">VideoControls</div>,
   MuxInsertLogoOverlay: () => null
 }))
 
-jest.mock('./HeroSubtitleOverlay', () => ({
+vi.mock('./HeroSubtitleOverlay', () => ({
   HeroSubtitleOverlay: () => (
     <div data-testid="HeroSubtitleOverlay">HeroSubtitleOverlay</div>
   )
@@ -64,7 +64,7 @@ describe('VideoBlockPlayer', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render video container', () => {

@@ -1,6 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { useSnackbar as notistackModule_useSnackbar } from 'notistack'
+import { type Mock } from 'vitest'
 
 import {
   CREATE_EDITION,
@@ -11,29 +13,29 @@ import {
 } from './VideoCreateForm'
 
 // Mock router push function
-const mockRouterPush = jest.fn()
+const mockRouterPush = vi.fn()
 
 // Mock next/navigation
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(() => ({
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
     push: mockRouterPush
   })),
-  usePathname: jest.fn(() => '/videos')
+  usePathname: vi.fn(() => '/videos')
 }))
 
 // Mock notistack
-jest.mock('notistack', () => ({
-  useSnackbar: jest.fn(() => ({
-    enqueueSnackbar: jest.fn()
+vi.mock('notistack', () => ({
+  useSnackbar: vi.fn(() => ({
+    enqueueSnackbar: vi.fn()
   }))
 }))
 
 describe('VideoCreateForm', () => {
-  const mockOnCreateSuccess = jest.fn()
+  const mockOnCreateSuccess = vi.fn()
   const mockParentId = 'parent-123'
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   // Mock data for queries and mutations
@@ -158,6 +160,44 @@ describe('VideoCreateForm', () => {
         expect(screen.getByText('Slug is required')).toBeInTheDocument()
         expect(screen.getByText('Label is required')).toBeInTheDocument()
         expect(screen.getByText('Origin is required')).toBeInTheDocument()
+      })
+    })
+
+    it('warns when slug contains uppercase letters', async () => {
+      const user = userEvent.setup()
+      await user.type(screen.getByLabelText(/Slug/i), 'Jesus-walks')
+      fireEvent.click(screen.getByText('Create'))
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Slug must be all lowercase')
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('warns when slug contains spaces', async () => {
+      const user = userEvent.setup()
+      await user.type(screen.getByLabelText(/Slug/i), 'jesus walks')
+      fireEvent.click(screen.getByText('Create'))
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Slug cannot contain spaces')
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('warns when slug contains both uppercase letters and spaces', async () => {
+      const user = userEvent.setup()
+      await user.type(screen.getByLabelText(/Slug/i), 'Jesus Walks')
+      fireEvent.click(screen.getByText('Create'))
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            'Slug must be all lowercase and cannot contain spaces'
+          )
+        ).toBeInTheDocument()
       })
     })
 
@@ -363,10 +403,12 @@ describe('VideoCreateForm', () => {
     }
 
     it('displays specific error message for duplicate ID', async () => {
-      const mockEnqueueSnackbar = jest.fn()
+      const mockEnqueueSnackbar = vi.fn()
 
       // Mock notistack for this test
-      const { useSnackbar } = require('notistack')
+      const useSnackbar = vi.mocked(
+        notistackModule_useSnackbar as unknown as Mock
+      )
       useSnackbar.mockReturnValue({
         enqueueSnackbar: mockEnqueueSnackbar
       })
@@ -411,10 +453,12 @@ describe('VideoCreateForm', () => {
     })
 
     it('displays specific error message for duplicate slug', async () => {
-      const mockEnqueueSnackbar = jest.fn()
+      const mockEnqueueSnackbar = vi.fn()
 
       // Mock notistack for this test
-      const { useSnackbar } = require('notistack')
+      const useSnackbar = vi.mocked(
+        notistackModule_useSnackbar as unknown as Mock
+      )
       useSnackbar.mockReturnValue({
         enqueueSnackbar: mockEnqueueSnackbar
       })

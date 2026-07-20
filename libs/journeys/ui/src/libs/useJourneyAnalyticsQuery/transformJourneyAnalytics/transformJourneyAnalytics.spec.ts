@@ -196,21 +196,21 @@ describe('transformJourneyAnalytics', () => {
             source: 'QR Code',
             target: 'SocialPreview',
             type: 'Referrer',
-            updatable: false
+            reconnectable: false
           },
           {
             id: 'Direct / None->SocialPreview',
             source: 'Direct / None',
             target: 'SocialPreview',
             type: 'Referrer',
-            updatable: false
+            reconnectable: false
           },
           {
             id: 'other sources->SocialPreview',
             source: 'other sources',
             target: 'SocialPreview',
             type: 'Referrer',
-            updatable: false
+            reconnectable: false
           }
         ],
         nodes: [
@@ -694,5 +694,228 @@ describe('transformJourneyAnalytics', () => {
 
     expect(result?.referrers.nodes).toHaveLength(1)
     expect(result?.referrers.nodes[0].id).toBe('Direct / None')
+  })
+
+  it('should merge trailing-slash and non-trailing-slash pages for the same step', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 7,
+          timeOnPage: 10
+        },
+        {
+          // Same step, recorded under a trailing slash for query-string traffic
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id/',
+          visitors: 93,
+          timeOnPage: 20
+        }
+      ],
+      journeyStepsActions: [],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 2
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id/',
+          visitors: 40
+        }
+      ],
+      journeyActionsSums: [],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 100
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    // Both pages collapse into a single step whose visitors and exits are summed
+    expect(result?.stepsStats).toHaveLength(1)
+    expect(result?.stepsStats[0]).toEqual({
+      stepId: 'step1.id',
+      visitors: 100,
+      // visitor-weighted mean: (10*7 + 20*93) / 100 = 19.3
+      timeOnPage: 19.3,
+      visitorsExitAtStep: 42
+    })
+  })
+
+  it('merges the same regardless of which slash variant appears first', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [
+        {
+          // Trailing-slash variant listed BEFORE the slash-free one
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id/',
+          visitors: 93,
+          timeOnPage: 20
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 7,
+          timeOnPage: 10
+        }
+      ],
+      journeyStepsActions: [],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [],
+      journeyActionsSums: [],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 100
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    expect(result?.stepsStats).toHaveLength(1)
+    expect(result?.stepsStats[0]).toEqual({
+      stepId: 'step1.id',
+      visitors: 100,
+      // Same visitor-weighted mean as the reverse order: (20*93 + 10*7) / 100
+      timeOnPage: 19.3,
+      visitorsExitAtStep: 0
+    })
+  })
+
+  it('ignores a zero-visitor variant when weighting timeOnPage', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 5,
+          timeOnPage: 10
+        },
+        {
+          // Zero visitors must not drag the weighted average toward its timeOnPage
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id/',
+          visitors: 0,
+          timeOnPage: 999
+        }
+      ],
+      journeyStepsActions: [],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [],
+      journeyActionsSums: [],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 5
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    expect(result?.stepsStats).toHaveLength(1)
+    expect(result?.stepsStats[0]).toEqual({
+      stepId: 'step1.id',
+      visitors: 5,
+      timeOnPage: 10,
+      visitorsExitAtStep: 0
+    })
+  })
+
+  it('returns 0 timeOnPage when both merged variants have no visitors', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 0,
+          timeOnPage: 10
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id/',
+          visitors: 0,
+          timeOnPage: 20
+        }
+      ],
+      journeyStepsActions: [],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [],
+      journeyActionsSums: [],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 0
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    // Divide-by-zero guard: no visitors on either variant -> 0, never NaN
+    expect(result?.stepsStats[0]).toEqual({
+      stepId: 'step1.id',
+      visitors: 0,
+      timeOnPage: 0,
+      visitorsExitAtStep: 0
+    })
+  })
+
+  it('matches exits to a step even when the exit page uses the other slash variant', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [
+        {
+          // Step recorded without a trailing slash
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 8,
+          timeOnPage: 5
+        }
+      ],
+      journeyStepsActions: [],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [
+        {
+          // Exit recorded WITH a trailing slash — must still resolve to step1.id
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id/',
+          visitors: 3
+        }
+      ],
+      journeyActionsSums: [],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 8
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    expect(result?.stepsStats[0]).toEqual({
+      stepId: 'step1.id',
+      visitors: 8,
+      timeOnPage: 5,
+      visitorsExitAtStep: 3
+    })
   })
 })

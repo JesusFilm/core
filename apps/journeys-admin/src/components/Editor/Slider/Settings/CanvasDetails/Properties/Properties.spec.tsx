@@ -20,10 +20,11 @@ import {
 } from '../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
+import { EditorLayoutProvider } from '../../../../EditorLayoutContext'
 
 import { Properties } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -33,7 +34,9 @@ describe('Properties', () => {
     const block = {
       __typename: 'CardBlock',
       id: 'block.id',
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     } as unknown as TreeBlock
     const state = {
       selectedBlock: null,
@@ -63,7 +66,9 @@ describe('Properties', () => {
       id: 'block.id',
       fullscreen: false,
       backdropBlur: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const selectedStep = {}
     const state = {
@@ -93,7 +98,9 @@ describe('Properties', () => {
     const block = {
       __typename: 'CardBlock',
       id: 'block.id',
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     } as unknown as TreeBlock
 
     render(
@@ -119,7 +126,9 @@ describe('Properties', () => {
         {
           __typename: 'CardBlock',
           id: 'card.id',
-          children: []
+          children: [],
+          showAssistant: null,
+          expandChatByDefault: null
         }
       ]
     } as unknown as TreeBlock
@@ -355,7 +364,9 @@ describe('Properties', () => {
       id: 'block.id',
       fullscreen: false,
       backdropBlur: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
     const selectedStep = {}
 
@@ -369,10 +380,12 @@ describe('Properties', () => {
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={state}>
-            <MuxVideoUploadProvider>
-              <TestEditorState />
-              <Properties />
-            </MuxVideoUploadProvider>
+            <EditorLayoutProvider value="layered">
+              <MuxVideoUploadProvider>
+                <TestEditorState />
+                <Properties />
+              </MuxVideoUploadProvider>
+            </EditorLayoutProvider>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -405,7 +418,9 @@ describe('Properties', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
 
     const step: TreeBlock<StepBlock> = {
@@ -466,7 +481,9 @@ describe('Properties', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
 
     const step: TreeBlock<StepBlock> = {

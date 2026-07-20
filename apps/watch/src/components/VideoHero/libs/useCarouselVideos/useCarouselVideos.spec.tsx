@@ -1,6 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { act, renderHook } from '@testing-library/react'
 import type { ReactNode } from 'react'
+import type { MockedFunction } from 'vitest'
+
+import { getLanguageIdFromLocale } from '../../../../libs/getLanguageIdFromLocale'
 
 import { GET_COLLECTION_COUNTS, GET_SHORT_FILMS } from './queries'
 import { useCarouselVideos } from './useCarouselVideos'
@@ -14,16 +17,16 @@ import {
 } from './utils'
 
 // Mock utils
-jest.mock('./utils')
+vi.mock('./utils')
 
-jest.mock('./insertMux', () => ({
-  mergeMuxInserts: jest.fn((videos: any[]) =>
+vi.mock('./insertMux', () => ({
+  mergeMuxInserts: vi.fn((videos: any[]) =>
     videos.map((video) => ({ source: 'video', id: video.id, video }))
   )
 }))
 
-jest.mock('../../../../libs/getLanguageIdFromLocale', () => ({
-  getLanguageIdFromLocale: () => '529'
+vi.mock('../../../../libs/getLanguageIdFromLocale', () => ({
+  getLanguageIdFromLocale: vi.fn(() => '529')
 }))
 
 const mockVideo = {
@@ -98,12 +101,13 @@ const defaultMocks = [
 ]
 
 describe('useCarouselVideos', () => {
+  const getLanguageIdFromLocaleMock = vi.mocked(getLanguageIdFromLocale)
   const createDefaultConfig = () => ({
     playlistSequence: [['collection1'], ['collection2']],
     blacklistedVideoIds: [],
     version: '1.0.0'
   })
-  let apolloMocks = [...defaultMocks]
+  let apolloMocks: typeof defaultMocks | any[] = [...defaultMocks]
 
   const wrapper = ({ children }: { children: ReactNode }) => (
     <MockedProvider mocks={apolloMocks} addTypename={false}>
@@ -112,7 +116,8 @@ describe('useCarouselVideos', () => {
   )
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
+    getLanguageIdFromLocaleMock.mockReturnValue('529')
     // Clear localStorage and sessionStorage
     if (typeof window !== 'undefined') {
       localStorage.clear()
@@ -120,15 +125,13 @@ describe('useCarouselVideos', () => {
     }
 
     ;(
-      getPlaylistConfig as jest.MockedFunction<typeof getPlaylistConfig>
+      getPlaylistConfig as MockedFunction<typeof getPlaylistConfig>
     ).mockReturnValue(createDefaultConfig())
     ;(
-      getDeterministicOffset as jest.MockedFunction<
-        typeof getDeterministicOffset
-      >
+      getDeterministicOffset as MockedFunction<typeof getDeterministicOffset>
     ).mockReturnValue(0)
     ;(
-      getRandomFromMultipleCollections as jest.MockedFunction<
+      getRandomFromMultipleCollections as MockedFunction<
         typeof getRandomFromMultipleCollections
       >
     ).mockReturnValue({
@@ -136,13 +139,13 @@ describe('useCarouselVideos', () => {
       childIndex: 0
     })
     ;(
-      isVideoAlreadyPlayed as jest.MockedFunction<typeof isVideoAlreadyPlayed>
+      isVideoAlreadyPlayed as MockedFunction<typeof isVideoAlreadyPlayed>
     ).mockReturnValue(false)
     ;(
-      isPoolExhausted as jest.MockedFunction<typeof isPoolExhausted>
+      isPoolExhausted as MockedFunction<typeof isPoolExhausted>
     ).mockReturnValue(false)
     ;(
-      filterOutBlacklistedVideos as jest.MockedFunction<
+      filterOutBlacklistedVideos as MockedFunction<
         typeof filterOutBlacklistedVideos
       >
     ).mockImplementation((videos) => videos)
@@ -158,6 +161,29 @@ describe('useCarouselVideos', () => {
     expect(result.current.slides).toEqual([])
     expect(result.current.videos).toEqual([])
     expect(result.current.currentIndex).toBe(0)
+  })
+
+  it('uses direct languageId without resolving locale', () => {
+    getLanguageIdFromLocaleMock.mockImplementation(() => {
+      throw new Error(
+        'locale should not be resolved when languageId is provided'
+      )
+    })
+    apolloMocks = defaultMocks.map((mock) => ({
+      ...mock,
+      request: {
+        ...mock.request,
+        variables: { ...mock.request.variables, languageId: '496' }
+      }
+    }))
+
+    const { result } = renderHook(
+      () => useCarouselVideos({ languageId: '496' }),
+      { wrapper }
+    )
+
+    expect(result.current.loading).toBe(true)
+    expect(getLanguageIdFromLocaleMock).not.toHaveBeenCalled()
   })
 
   it('provides navigation functions', () => {

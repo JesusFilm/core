@@ -9,5 +9,19 @@
   "Get me out of here!": "Bawa saya keluar dari sini!",
   "Terms & Conditions": "Terma & Syarat",
   "Privacy Policy": "Dasar Privasi",
-  "NextSteps © {{year}}": "Langkah Seterusnya © {{year}}"
+  "NextSteps © {{year}}": "Langkah Seterusnya © {{year}}",
+  "Use": "Gunakan",
+  "Preview": "Pratonton",
+  "About this chat": "Mengenai sembang ini",
+  "About this chat | Next Steps": "Tentang sembang ini | Langkah Seterusnya",
+  "The chat on this journey is powered by an AI assistant. To help us improve future replies, the messages you send and the assistant’s replies are saved.": "Perbualan dalam perjalanan ini dikuasakan oleh pembantu AI. Untuk membantu kami memperbaiki jawapan pada masa hadapan, mesej yang anda hantar dan jawapan pembantu disimpan.",
+  "We do not save your name, email address, or any account details, and we do not link conversations to your identity.": "Kami tidak menyimpan nama anda, alamat e-mel anda, atau sebarang butiran akaun anda, dan kami tidak mengaitkan perbualan dengan identiti anda.",
+  "Where the messages go": "Ke mana mesej-mesej itu pergi",
+  "Your messages and the assistant’s replies pass through two third-party services: an AI service that generates the replies, and an analytics service called Langfuse where the conversations are stored so the team can review them in aggregate to improve the experience. They are not sold and they are not used for advertising.": "Mesej anda dan balasan pembantu melalui dua perkhidmatan pihak ketiga: perkhidmatan AI yang menjana balasan, dan perkhidmatan analitik bernama Langfuse di mana perbualan disimpan supaya pasukan boleh menyemak secara kolektif untuk meningkatkan pengalaman. Ia tidak dijual dan tidak digunakan untuk pengiklanan.",
+  "If you prefer not to take part": "Jika anda lebih suka tidak mengambil bahagian",
+  "There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.": "Hari ini tiada pilihan untuk tidak menyertai sembang. Jika anda tidak mahu mesej anda disimpan, sila jangan gunakan sembang — bahagian lain dalam perjalanan masih berfungsi tanpa ia.",
+  "Last updated: June 2026": "Dikemas kini terakhir: Jun 2026",
+  "Back to Next Steps": "Kembali ke Langkah Seterusnya",
+  "This template gallery is not available.": "Galeri templat ini tidak tersedia.",
+  "<0>This page has been created to test the embed code.<strong>If youve found this page in error click the button below.</strong></0>": "<0>Halaman ini telah diwujudkan untuk menguji kod selebihnya.<strong>Jika anda menemui halaman ini secara tidak sengaja, klik butang di bawah.</strong></0>"
 }

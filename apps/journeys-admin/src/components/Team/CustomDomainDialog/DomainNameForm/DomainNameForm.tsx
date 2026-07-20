@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import { Formik } from 'formik'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { ObjectSchema, object, string } from 'yup'
@@ -79,7 +79,7 @@ export function DomainNameForm({
         .required(t('Domain name is a required field'))
         .matches(
           // pulled from isDomainValid function
-          // apis/api-journeys/src/app/modules/customDomain/customDomain.service.ts
+          // apis/api-journeys/src/schema/customDomain/service.ts
           /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z]$/,
           t('Must be a valid URL')
         )
@@ -119,7 +119,9 @@ export function DomainNameForm({
         if (createCustomDomain?.customDomainCreate != null)
           cache.modify({
             fields: {
-              customDomains(existingCustomDomains = []) {
+              customDomains(existingCustomDomains = [] as const) {
+                if (!Array.isArray(existingCustomDomains))
+                  return existingCustomDomains
                 const newCustomDomainRef = cache.writeFragment({
                   data: createCustomDomain.customDomainCreate,
                   fragment: gql`

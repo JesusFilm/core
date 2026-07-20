@@ -2,15 +2,13 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "module": "commonjs",
-    "jsx": "react-jsx",
+    "target": "esnext",
     "types": [
-      "jest",
-      "@jest/globals",
+      "vitest/globals",
       "node",
       "@nx/react/typings/cssmodule.d.ts",
       "@nx/react/typings/image.d.ts"
     ]
   },
-  "include": ["**/*.spec.ts", "**/*.d.ts", "jest.config.ts"]
+  "include": ["**/*.spec.ts", "**/*.d.ts", "vitest.config.mts", "test/**/*.ts"]
 }

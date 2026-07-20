@@ -3,16 +3,16 @@
 import { useMutation } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, use } from 'react'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 interface StudyQuestionDeletePageProps {
-  params: {
+  params: Promise<{
     videoId: string
     studyQuestionId: string
-  }
+  }>
 }
 
 const DELETE_STUDY_QUESTION = graphql(`
@@ -24,8 +24,9 @@ const DELETE_STUDY_QUESTION = graphql(`
 `)
 
 export default function StudyQuestionDeletePage({
-  params: { videoId, studyQuestionId }
+  params
 }: StudyQuestionDeletePageProps): ReactElement {
+  const { videoId, studyQuestionId } = use(params)
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const [deleteStudyQuestion, { loading: deleteLoading }] = useMutation(

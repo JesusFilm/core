@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
@@ -8,12 +9,12 @@ import { journey as mockJourney } from '../../../libs/JourneyProvider/JourneyPro
 
 import { UseThisTemplateButton } from './UseThisTemplateButton'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 const journey: Journey = {
   ...mockJourney,
@@ -41,12 +42,12 @@ const journey: Journey = {
 }
 
 describe('UseThisTemplateButton', () => {
-  const prefetch = jest.fn()
-  const push = jest.fn().mockResolvedValue('')
+  const prefetch = vi.fn()
+  const push = vi.fn().mockResolvedValue('')
   const originalEnv = process.env
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe.each([
@@ -120,11 +121,7 @@ describe('UseThisTemplateButton', () => {
         )
 
         await waitFor(() => {
-          expect(push).toHaveBeenCalledWith(
-            `/templates/${journeyId}/customize`,
-            undefined,
-            { shallow: true }
-          )
+          expect(push).toHaveBeenCalledWith(`/templates/${journeyId}/customize`)
         })
       })
 
@@ -176,12 +173,123 @@ describe('UseThisTemplateButton', () => {
           expect(screen.getByRole('progressbar')).toBeInTheDocument()
         })
         await waitFor(() => {
-          expect(push).toHaveBeenCalledWith(
-            `/templates/${journeyId}/customize`,
-            undefined,
-            { shallow: true }
+          expect(push).toHaveBeenCalledWith(`/templates/${journeyId}/customize`)
+        })
+      })
+    })
+
+    describe('when signed in and rendered outside journeys-admin', () => {
+      // jsdom marks Location members unforgeable (assign is own,
+      // non-configurable, non-writable), so the only way to observe the
+      // cross-app hand-off is to swap the whole window.location object —
+      // the window property itself is configurable.
+      const originalLocationDescriptor = Object.getOwnPropertyDescriptor(
+        window,
+        'location'
+      )
+      const assign = vi.fn()
+
+      beforeEach(() => {
+        mockUseRouter.mockReturnValue({
+          prefetch,
+          push,
+          query: { createNew: false }
+        } as unknown as NextRouter)
+
+        Object.defineProperty(window, 'location', {
+          configurable: true,
+          enumerable: false,
+          value: { ...window.location, assign }
+        })
+      })
+
+      afterEach(() => {
+        if (originalLocationDescriptor != null) {
+          Object.defineProperty(window, 'location', originalLocationDescriptor)
+        }
+        process.env = originalEnv
+      })
+
+      it('hands off to the admin app when the env origin differs', async () => {
+        const journeyId = customizableTemplateJourney?.id ?? journey?.id ?? ''
+        process.env = {
+          ...originalEnv,
+          NEXT_PUBLIC_JOURNEYS_ADMIN_URL: 'https://admin.example.com'
+        }
+
+        render(
+          <JourneyProvider value={{ journey }}>
+            <UseThisTemplateButton
+              signedIn
+              journeyId={customizableTemplateJourney?.id}
+            />
+          </JourneyProvider>
+        )
+
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
+
+        await waitFor(() => {
+          expect(assign).toHaveBeenCalledWith(
+            `https://admin.example.com/templates/${journeyId}/customize`
           )
         })
+        expect(push).not.toHaveBeenCalled()
+      })
+
+      it('re-prepends https:// when the env value is schemeless', async () => {
+        const journeyId = customizableTemplateJourney?.id ?? journey?.id ?? ''
+        process.env = {
+          ...originalEnv,
+          NEXT_PUBLIC_JOURNEYS_ADMIN_URL: 'admin.example.com'
+        }
+
+        render(
+          <JourneyProvider value={{ journey }}>
+            <UseThisTemplateButton
+              signedIn
+              journeyId={customizableTemplateJourney?.id}
+            />
+          </JourneyProvider>
+        )
+
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
+
+        await waitFor(() => {
+          expect(assign).toHaveBeenCalledWith(
+            `https://admin.example.com/templates/${journeyId}/customize`
+          )
+        })
+        expect(push).not.toHaveBeenCalled()
+      })
+
+      it('navigates in-app when the env origin matches', async () => {
+        const journeyId = customizableTemplateJourney?.id ?? journey?.id ?? ''
+        process.env = {
+          ...originalEnv,
+          NEXT_PUBLIC_JOURNEYS_ADMIN_URL: window.location.origin
+        }
+
+        render(
+          <JourneyProvider value={{ journey }}>
+            <UseThisTemplateButton
+              signedIn
+              journeyId={customizableTemplateJourney?.id}
+            />
+          </JourneyProvider>
+        )
+
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
+
+        await waitFor(() => {
+          expect(push).toHaveBeenCalledWith(`/templates/${journeyId}/customize`)
+        })
+        expect(assign).not.toHaveBeenCalled()
       })
     })
 
@@ -195,7 +303,7 @@ describe('UseThisTemplateButton', () => {
       })
 
       afterEach(() => {
-        jest.resetAllMocks()
+        vi.resetAllMocks()
       })
 
       it('should prefetch sign in page on mount', async () => {

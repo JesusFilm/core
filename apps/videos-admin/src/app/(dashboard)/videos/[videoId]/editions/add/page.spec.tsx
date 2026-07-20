@@ -1,11 +1,14 @@
+import { useMutation } from '@apollo/client'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { useRouter } from 'next/navigation'
 import { SnackbarProvider } from 'notistack'
+import { type Mock } from 'vitest'
 
 import AddEditionPage from './page'
 
 // Mock the FormTextField component
-jest.mock('../../../../../../components/FormTextField', () => ({
+vi.mock('../../../../../../components/FormTextField', () => ({
   FormTextField: ({ name, label }) => (
     <div data-testid="form-text-field">
       <label htmlFor={name}>{label}</label>
@@ -15,20 +18,20 @@ jest.mock('../../../../../../components/FormTextField', () => ({
 }))
 
 // Mock the Apollo Client hooks
-jest.mock('@apollo/client', () => ({
-  useMutation: jest.fn(() => [jest.fn(), { loading: false }])
+vi.mock('@apollo/client', () => ({
+  useMutation: vi.fn(() => [vi.fn(), { loading: false }])
 }))
 
 // Mock the next/navigation
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(() => ({
-    push: jest.fn()
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
   })),
   useParams: () => ({ videoId: 'video-123' })
 }))
 
 // Mock Dialog component
-jest.mock('@core/shared/ui/Dialog', () => ({
+vi.mock('@core/shared/ui/Dialog', () => ({
   Dialog: ({ children, onClose, dialogTitle, testId }) => (
     <div data-testid={testId || 'dialog'}>
       <div data-testid="dialog-title">{dialogTitle.title}</div>
@@ -41,8 +44,8 @@ jest.mock('@core/shared/ui/Dialog', () => ({
 }))
 
 // Mock Formik to make it easier to test
-jest.mock('formik', () => {
-  const originalModule = jest.requireActual('formik')
+vi.mock('formik', async () => {
+  const originalModule = (await vi.importActual('formik')) as any
   return {
     ...originalModule,
     Formik: ({ initialValues, onSubmit, children }) => {
@@ -54,25 +57,25 @@ jest.mock('formik', () => {
         isSubmitting: false,
         isValidating: false,
         submitCount: 0,
-        handleChange: jest.fn(),
-        handleBlur: jest.fn(),
+        handleChange: vi.fn(),
+        handleBlur: vi.fn(),
         handleSubmit: (e) => {
           e?.preventDefault?.()
-          onSubmit(initialValues, { setSubmitting: jest.fn() })
+          onSubmit(initialValues, { setSubmitting: vi.fn() })
         },
-        handleReset: jest.fn(),
-        setFieldValue: jest.fn(),
-        setFieldError: jest.fn(),
-        setFieldTouched: jest.fn(),
-        validateForm: jest.fn(),
-        validateField: jest.fn(),
-        setErrors: jest.fn(),
-        setTouched: jest.fn(),
-        setValues: jest.fn(),
-        setStatus: jest.fn(),
-        setSubmitting: jest.fn(),
-        resetForm: jest.fn(),
-        setFormikState: jest.fn(),
+        handleReset: vi.fn(),
+        setFieldValue: vi.fn(),
+        setFieldError: vi.fn(),
+        setFieldTouched: vi.fn(),
+        validateForm: vi.fn(),
+        validateField: vi.fn(),
+        setErrors: vi.fn(),
+        setTouched: vi.fn(),
+        setValues: vi.fn(),
+        setStatus: vi.fn(),
+        setSubmitting: vi.fn(),
+        resetForm: vi.fn(),
+        setFormikState: vi.fn(),
         dirty: true,
         isValid: true
       }
@@ -87,7 +90,7 @@ jest.mock('formik', () => {
               data-testid="edition-form"
               onClick={(e) => {
                 e.preventDefault()
-                onSubmit(initialValues, { setSubmitting: jest.fn() })
+                onSubmit(initialValues, { setSubmitting: vi.fn() })
               }}
             >
               {typeof children === 'function' ? children(formikBag) : children}
@@ -132,8 +135,8 @@ describe('AddEditionPage', () => {
   })
 
   it('redirects on close button click', async () => {
-    const mockRouter = { push: jest.fn() }
-    require('next/navigation').useRouter.mockReturnValue(mockRouter)
+    const mockRouter = { push: vi.fn() }
+    vi.mocked(useRouter as unknown as Mock).mockReturnValue(mockRouter)
 
     renderComponent()
 
@@ -147,8 +150,8 @@ describe('AddEditionPage', () => {
   })
 
   it('calls create mutation on form submission', async () => {
-    const mockCreateMutation = jest.fn()
-    require('@apollo/client').useMutation.mockReturnValue([
+    const mockCreateMutation = vi.fn()
+    vi.mocked(useMutation as unknown as Mock).mockReturnValue([
       mockCreateMutation,
       { loading: false }
     ])

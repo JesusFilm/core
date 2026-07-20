@@ -5,7 +5,7 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ChangeEvent, ReactElement, useEffect, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 

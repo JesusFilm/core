@@ -5,24 +5,18 @@
     "jsxImportSource": "@emotion/react",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "types": ["node", "jest"],
+    "types": ["node", "vitest/globals"],
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
+    "target": "es2021",
     "module": "esnext",
     "moduleResolution": "bundler",
     "tsBuildInfoFile": "../../.cache/watch/tsc/.tsbuildinfo"
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.js",
-    "**/*.jsx",
-    "**/*.mjs",
-    "next-env.d.ts"
-  ],
-  "exclude": ["node_modules", "jest.config.ts"]
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.mjs"],
+  "exclude": ["node_modules", "vitest.config.mts"]
 }
