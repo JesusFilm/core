@@ -28,7 +28,24 @@ export class CardLevelActionPage {
     this.journeyName = testData.journey.firstJourneyName + this.randomNumber
   }
 
+  // The desktop layered editor keeps the card inside a closed modal drawer, so
+  // open it before touching the card iframe. No-op on the mobile slider, where
+  // every slide (including the card) stays mounted.
+  async ensureCardEditorOpen() {
+    if (
+      (await this.page.locator('div[data-testid="EditorCanvas"]').count()) > 0
+    ) {
+      return
+    }
+    await this.page.locator('[data-testid^="StepBlockNode-"]').first().click()
+    await this.page
+      .locator('div[data-testid="EditorCanvas"]')
+      .first()
+      .waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+  }
+
   async clickOnJourneyCard() {
+    await this.ensureCardEditorOpen()
     const iframes = this.page.locator(this.journeyCardFrame)
     const frame = await iframes.first().contentFrame()
     await frame
@@ -42,6 +59,7 @@ export class CardLevelActionPage {
   }
 
   async clickOnVideoJourneyCard() {
+    await this.ensureCardEditorOpen()
     const iframes = this.page.locator(this.journeyCardFrame)
     const frame = await iframes.first().contentFrame()
     await frame
@@ -59,6 +77,7 @@ export class CardLevelActionPage {
   }
 
   async clickAddBlockBtn() {
+    await this.ensureCardEditorOpen()
     await expect(
       this.page.locator('button[data-testid="Fab"]', { hasText: 'Add Block' })
     ).toHaveCount(1, { timeout: sixtySecondsTimeout })
@@ -249,13 +268,13 @@ export class CardLevelActionPage {
     if (
       await this.page
         .locator(
-          'div[data-testid="ImageSource"] + div div[data-testid="ImageBlockThumbnail"] img'
+          'div[data-testid="ImageSource"] div[data-testid="ImageBlockThumbnail"] img'
         )
         .isVisible()
     ) {
       this.uploadedImgSrc = await this.page
         .locator(
-          'div[data-testid="ImageSource"] + div div[data-testid="ImageBlockThumbnail"] img'
+          'div[data-testid="ImageSource"] div[data-testid="ImageBlockThumbnail"] img'
         )
         .getAttribute('src')
     } else {
@@ -266,11 +285,21 @@ export class CardLevelActionPage {
   async verifyImageGotChanged() {
     await expect(
       this.page.locator(
-        'div[data-testid="ImageSource"] + div div[data-testid="ImageBlockThumbnail"] img'
+        'div[data-testid="ImageSource"] div[data-testid="ImageBlockThumbnail"] img'
       )
     ).not.toHaveAttribute('src', this.uploadedImgSrc, {
       timeout: sixtySecondsTimeout
     })
+  }
+
+  // NES-1745: the image library auto-closes after upload/selection,
+  // so reopen the ImageSource before the next step that needs it open
+  async reopenImageSource() {
+    await this.page
+      .locator(
+        'div[data-testid="ImageSource"] button[data-testid="card click area"]'
+      )
+      .click()
   }
 
   async verifyImgUploadedSuccessMsg() {
@@ -296,7 +325,7 @@ export class CardLevelActionPage {
   async clickImgDeleteBtn() {
     await this.page
       .locator(
-        'div[data-testid="ImageSource"] + div svg[data-testid="imageBlockHeaderDelete"]'
+        'div[data-testid="ImageBlockHeader"] svg[data-testid="imageBlockHeaderDelete"]'
       )
       .click()
   }
@@ -304,7 +333,7 @@ export class CardLevelActionPage {
   async verifyImageIsDeleted() {
     await expect(
       this.page.locator(
-        'div[data-testid="ImageSource"] + div div[data-testid="ImageBlockThumbnail"] img'
+        'div[data-testid="ImageSource"] div[data-testid="ImageBlockThumbnail"] img'
       )
     ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
@@ -443,12 +472,6 @@ export class CardLevelActionPage {
     ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
 
-  async clickleftSideArrowIcon() {
-    await this.page
-      .locator('div[slot="container-start"] svg[data-testid="ChevronLeftIcon"]')
-      .click()
-  }
-
   async hoverOnExistingCard() {
     await this.page.locator('div[data-testid="StepBlock"]').first().hover()
   }
@@ -478,6 +501,7 @@ export class CardLevelActionPage {
   }
 
   async deleteAllAddedCardProperties() {
+    await this.ensureCardEditorOpen()
     const iframes = this.page.locator(this.journeyCardFrame)
     const frame = await iframes.first().contentFrame()
     const properties = await frame
@@ -871,6 +895,7 @@ export class CardLevelActionPage {
   }
 
   async selectWholeFooterSectionInCard() {
+    await this.ensureCardEditorOpen()
     const iframes = this.page.locator(this.journeyCardFrame)
     const frame = await iframes.first().contentFrame()
     await frame
@@ -1527,13 +1552,6 @@ export class CardLevelActionPage {
         'div[data-testid="ImageBlockHeader"]:has(img) button:has(svg[data-testid="imageBlockHeaderDelete"])'
       )
     ).toBeVisible()
-  }
-  async closeToolDrawerForFooterImage() {
-    await this.page
-      .locator(
-        'div.MuiToolbar-root:has-text("Image") button[aria-label="close-image-library"]'
-      )
-      .click()
   }
   async validateSelectedImageWithEditIcon() {
     await expect(

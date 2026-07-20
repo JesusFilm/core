@@ -1,14 +1,22 @@
-import apiConfig from '../../libs/shared/eslint/api.mjs'
+import yogaConfig from '../../libs/shared/eslint/yogaWithReactEmail.mjs'
+import { fileURLToPath } from 'node:url'
+import { dirname } from 'node:path'
+
+const tsconfigRootDir = dirname(fileURLToPath(import.meta.url))
 
 export default [
-  ...apiConfig,
+  ...yogaConfig,
+  {
+    ignores: ['apis/api-journeys/webpack.config.js']
+  },
   {
     files: ['**/*.ts', '**/*.tsx'],
-    rules: {
-      'no-void': ['error', { allowAsStatement: true }],
-      '@typescript-eslint/no-misused-promises': 'off',
-      '@typescript-eslint/no-require-imports': 'off',
-      '@typescript-eslint/require-await': 'off'
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.*'],
+        projectService: true,
+        tsconfigRootDir
+      }
     }
   }
 ]

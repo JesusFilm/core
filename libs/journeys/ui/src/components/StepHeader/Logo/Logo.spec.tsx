@@ -1,26 +1,27 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../../libs/useJourneyQuery/__generated__/GetJourney'
 
 import { Logo } from '.'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-jest.mock('next/legacy/image', () => ({
+vi.mock('next/legacy/image', () => ({
   __esModule: true,
-  default: jest.fn(
+  default: vi.fn(
     ({ priority, blurDataURL, objectFit, objectPosition, ...props }) => {
       return <img {...props} />
     }
   )
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('Logo', () => {
   it('should render logo', () => {
@@ -79,7 +80,7 @@ describe('Logo', () => {
   })
 
   it('logo should navigate back to the start of the journey', () => {
-    const mockClick = jest.fn()
+    const mockClick = vi.fn()
     mockedUseRouter.mockReturnValue({
       query: { journeySlug: 'journeySlug' },
       push: mockClick

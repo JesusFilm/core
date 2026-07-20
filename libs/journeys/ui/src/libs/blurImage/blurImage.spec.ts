@@ -1,7 +1,7 @@
 import { blurImage } from './blurImage'
 
 // Mock blurhash decode function
-jest.mock('blurhash', () => ({
+vi.mock('blurhash', () => ({
   decode: () => new Uint8ClampedArray(32 * 32 * 4).fill(128)
 }))
 
@@ -13,20 +13,20 @@ describe('blurImage', () => {
       createImageData: () => ({
         data: new Uint8ClampedArray(32 * 32 * 4)
       }),
-      putImageData: jest.fn(),
+      putImageData: vi.fn(),
       fillStyle: '',
-      fillRect: jest.fn()
+      fillRect: vi.fn()
     }
 
     // Create a mock canvas element
     const mockCanvas = {
       getContext: () => mockContext,
-      setAttribute: jest.fn(),
+      setAttribute: vi.fn(),
       toDataURL: () => 'data:image/png;base64,mockImageData'
     }
 
     // Mock document.createElement
-    document.createElement = jest.fn((tagName) => {
+    document.createElement = vi.fn((tagName) => {
       if (tagName === 'canvas') {
         return mockCanvas as unknown as HTMLCanvasElement
       }
@@ -55,11 +55,11 @@ describe('blurImage', () => {
 
   it('returns undefined as fallback', () => {
     // Override the mock to return null context
-    document.createElement = jest.fn((tagName) => {
+    document.createElement = vi.fn((tagName) => {
       if (tagName === 'canvas') {
         return {
           getContext: () => null,
-          setAttribute: jest.fn()
+          setAttribute: vi.fn()
         } as unknown as HTMLCanvasElement
       }
       return {} as HTMLElement

@@ -1,15 +1,19 @@
-import 'cloudflare/shims/node'
+// Force the Cloudflare SDK onto its "web" runtime so it uses Node's native
+// global fetch (undici) + native Response/FormData. Without this, the SDK
+// auto-detects the Node runtime and loads node-fetch@2, whose gzip stream
+// handling throws "Premature close" on the alpine/musl prod runtime. This
+// side-effect import MUST run before `cloudflare` so its setShims() wins over
+// the SDK's auto-detection. [QA-530]
+import 'cloudflare/shims/web'
 
 import Cloudflare from 'cloudflare'
-import fetch, { Response } from 'node-fetch'
 
 export function getClient(): Cloudflare {
   if (process.env.CLOUDFLARE_IMAGES_TOKEN == null)
     throw new Error('Missing CLOUDFLARE_IMAGES_TOKEN')
 
   return new Cloudflare({
-    apiToken: process.env.CLOUDFLARE_IMAGES_TOKEN,
-    fetch
+    apiToken: process.env.CLOUDFLARE_IMAGES_TOKEN
   })
 }
 

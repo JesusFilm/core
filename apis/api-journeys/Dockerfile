@@ -1,6 +1,6 @@
 FROM node:24-alpine3.23
 
-EXPOSE 4001
+EXPOSE 4004
 
 ARG SERVICE_VERSION=0.0.1
 ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
@@ -13,9 +13,10 @@ RUN apk upgrade --update-cache --available && \
 
 WORKDIR /app
 COPY ./dist/apps/api-journeys .
-COPY ./libs/prisma/journeys/db ./prisma/db
-COPY ./libs/prisma/journeys/prisma.config.ts ./prisma/prisma.config.ts
-
+COPY ./libs/prisma/journeys/db ./prisma-journeys/db
+COPY ./libs/prisma/journeys/prisma.config.ts ./prisma-journeys/prisma.config.ts
+COPY ./libs/prisma/users/db ./prisma-users/db
+COPY ./libs/prisma/users/prisma.config.ts ./prisma-users/prisma.config.ts
 COPY ./apis/api-journeys/docker-entrypoint.sh ./docker-entrypoint.sh
 
 RUN corepack enable && corepack prepare pnpm@10.33.2 --activate

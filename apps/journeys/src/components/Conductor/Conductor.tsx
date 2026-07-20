@@ -7,8 +7,15 @@ import { ReactElement, useEffect } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import { v4 as uuidv4 } from 'uuid'
 
+import { toAiChatSettings } from '@core/journeys/ui/aiChatSettings'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { blockHistoryVar, useBlocks } from '@core/journeys/ui/block'
+import {
+  blockHistoryVar,
+  getCardChild,
+  useBlocks
+} from '@core/journeys/ui/block'
+import { hasAiChatButton } from '@core/journeys/ui/Card/utils/getFooterElements'
+import { useChatOverlay } from '@core/journeys/ui/ChatOverlayProvider'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { PinnedChatBar } from '@core/journeys/ui/PinnedChatBar'
@@ -73,11 +80,53 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
 
+  const activeCard = getCardChild(activeBlock)
+
   const showPinnedChat =
     apologistChatEnabled &&
-    journey?.showAssistant === true &&
-    variant !== 'admin' &&
-    variant !== 'embed'
+    hasAiChatButton({ journey, variant, card: activeCard })
+
+  const { setOpen, shouldAutoOpen, markAutoOpened } = useChatOverlay()
+
+  // Chat auto-open. Pops open by default; only the per-card "collapse chat"
+  // opt-in (legacy `expandChatByDefault === false`) suppresses it. Bridged via
+  // the temporary aiChatSettings mapper — remove with NES-1735. Lives at the
+  // navigation chokepoint so prefetched neighbours mounted off-screen by
+  // DynamicCardList do not trigger it. `open` is shared via
+  // ChatOverlayProvider: on sm+ it shows the ChatOverlay, on xs it
+  // slides up the PinnedChatBar drawer — one effect seeds both.
+  //
+  // Deps include `apologistChatEnabled` so a late-arriving LD flag still
+  // triggers the auto-open after activeBlock has settled (the original
+  // `[activeBlock?.id]` dep set silently lost this race when LD finished
+  // loading after the first card was active). `setOpen` /
+  // `shouldAutoOpen` / `markAutoOpened` are stable callbacks from the
+  // provider — depending on them is cheap and keeps the lint happy
+  // without re-firing on every overlay open/close. `journey` is no
+  // longer in deps: `hasAiChatButton` is purely card-level since
+  // NES-1622 dropped the `Journey.showAssistant` fallback, so depending
+  // on the whole `journey` reference would re-fire on every Apollo
+  // cache write (analytics mutations, language updates, …) for no
+  // signal. Re-firing on the remaining deps is safe: `shouldAutoOpen`
+  // dedups on (journeyId, cardId) via sessionStorage, so a manual
+  // dismiss is not overridden by a later re-evaluation in the same tab.
+  useEffect(() => {
+    if (!apologistChatEnabled) return
+    if (activeCard == null || toAiChatSettings(activeCard).collapseChat) return
+    if (!hasAiChatButton({ journey, variant, card: activeCard })) return
+    if (!shouldAutoOpen(activeCard.id)) return
+    markAutoOpened(activeCard.id)
+    setOpen(true)
+    // `journey` intentionally omitted — see comment above.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    activeCard?.id,
+    apologistChatEnabled,
+    variant,
+    setOpen,
+    shouldAutoOpen,
+    markAutoOpened
+  ])
 
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
     JOURNEY_VIEW_EVENT_CREATE
@@ -223,35 +272,29 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 variant={rtl ? 'previous' : 'next'}
                 alignment="right"
               />
-              {showPinnedChat ? (
+              <StepFooter
+                selectedStep={activeBlock}
+                sx={{
+                  ...mobileNotchStyling,
+                  display: {
+                    xs: showHeaderFooter ? 'flex' : 'none',
+                    lg: 'flex'
+                  }
+                }}
+              />
+              {/* Mobile chat drawer. Rendered alongside (not instead of)
+                  the StepFooter: closed it sits off-screen and the
+                  footer's chat-button row — including the AiChatButton
+                  that opens it — stays visible; open it slides up over
+                  the footer. Stays mounted so the conversation survives
+                  close → reopen. */}
+              {showPinnedChat && (
                 <PinnedChatBar
                   sx={{
                     ...mobileNotchStyling,
                     display: {
                       xs: showHeaderFooter ? 'flex' : 'none',
                       sm: 'none'
-                    }
-                  }}
-                />
-              ) : (
-                <StepFooter
-                  sx={{
-                    ...mobileNotchStyling,
-                    display: {
-                      xs: showHeaderFooter ? 'flex' : 'none',
-                      lg: 'flex'
-                    }
-                  }}
-                />
-              )}
-              {/* On sm+, show StepFooter (with AiChatButton → ChatOverlay) when pinned chat is active on mobile */}
-              {showPinnedChat && (
-                <StepFooter
-                  sx={{
-                    ...mobileNotchStyling,
-                    display: {
-                      xs: 'none',
-                      sm: 'flex'
                     }
                   }}
                 />

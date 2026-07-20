@@ -9,12 +9,13 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
+import { useEditorLayout } from '../../../../EditorLayoutContext'
 import type { Goal } from '../Goals'
 
 import { GoalsListItem } from './GoalsListItem'
@@ -32,6 +33,7 @@ export function GoalsList({
 }: GoalsListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
+  const { isLayered } = useEditorLayout()
 
   function handleClick(): void {
     dispatch({ type: 'SetSelectedGoalUrlAction' })
@@ -41,9 +43,12 @@ export function GoalsList({
     <>
       <Stack
         sx={{
-          gap: { xs: 4, sm: variant !== 'minimal' ? 12 : 4 },
+          gap: { xs: 4, sm: variant !== 'minimal' && !isLayered ? 12 : 4 },
           mx: { xs: 0, sm: variant !== 'minimal' ? 8 : 0 },
-          overflow: 'hidden'
+          // in the layered desktop view the list fills its paper panel and
+          // scrolls within it
+          height: isLayered ? '100%' : undefined,
+          overflow: isLayered ? 'auto' : 'hidden'
         }}
         data-testid="GoalsList"
       >

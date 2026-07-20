@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { ReactFlowProvider } from 'reactflow'
+import { ReactFlowProvider } from '@xyflow/react'
 
 import { EditorState } from '@core/journeys/ui/EditorProvider'
 import {
@@ -23,6 +23,7 @@ import {
 } from '../../../../../../../__generated__/globalTypes'
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
+import { EditorLayoutProvider } from '../../../../EditorLayoutContext'
 
 import { SocialPreviewNode } from '.'
 
@@ -173,6 +174,32 @@ describe('SocialPreviewNode', () => {
     expect(screen.getByText('activeContent: canvas')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('SocialPreviewNode'))
     expect(screen.getByText('activeContent: social')).toBeInTheDocument()
+  })
+
+  it('focuses the drawer slide on click in the layered layout', () => {
+    const state: EditorState = {
+      activeSlide: ActiveSlide.JourneyFlow,
+      activeContent: ActiveContent.Canvas,
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+    }
+
+    render(
+      <ReactFlowProvider>
+        <MockedProvider>
+          <JourneyProvider value={{ journey: blankSeoJourney }}>
+            <EditorProvider initialState={state}>
+              <EditorLayoutProvider value="layered">
+                <TestEditorState />
+                <SocialPreviewNode />
+              </EditorLayoutProvider>
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </ReactFlowProvider>
+    )
+
+    fireEvent.click(screen.getByTestId('SocialPreviewNode'))
+    expect(screen.getByText('activeSlide: 2')).toBeInTheDocument()
   })
 
   it('sets active slide to content when clicking on a selected social node', () => {

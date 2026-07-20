@@ -11,7 +11,7 @@ import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE } from '../../../../../../../libs/useC
 
 import { IMAGE_BLOCK_UPDATE, ImagesSection } from './ImagesSection'
 
-jest.mock('next-i18next', () => ({
+vi.mock('next-i18next/pages', async () => ({
   __esModule: true,
   useTranslation: () => {
     return {
@@ -20,9 +20,9 @@ jest.mock('next-i18next', () => ({
   }
 }))
 
-const mockEnqueueSnackbar = jest.fn()
-jest.mock('notistack', () => ({
-  ...jest.requireActual('notistack'),
+const mockEnqueueSnackbar = vi.fn()
+vi.mock('notistack', async () => ({
+  ...(await vi.importActual('notistack')),
   useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
 }))
 
@@ -31,7 +31,7 @@ describe('ImagesSection', () => {
   const originalFetch = global.fetch
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env = {
       ...originalEnv,
       NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: ''
@@ -170,7 +170,7 @@ describe('ImagesSection', () => {
   })
 
   it('should call imageBlockUpdate mutation when handleUploadComplete is triggered', async () => {
-    const cloudflareResult = jest.fn().mockReturnValue({
+    const cloudflareResult = vi.fn().mockReturnValue({
       data: {
         createCloudflareUploadByFile: {
           uploadUrl: 'https://example.com/upload',
@@ -179,7 +179,7 @@ describe('ImagesSection', () => {
         }
       }
     })
-    const updateResult = jest.fn().mockReturnValue({
+    const updateResult = vi.fn().mockReturnValue({
       data: {
         imageBlockUpdate: {
           id: 'image1.id',
@@ -220,8 +220,8 @@ describe('ImagesSection', () => {
       }
     ]
 
-    global.fetch = jest.fn().mockResolvedValue({
-      json: jest.fn().mockResolvedValue({
+    global.fetch = vi.fn().mockResolvedValue({
+      json: vi.fn().mockResolvedValue({
         success: true,
         result: { id: 'cloudflare.id' }
       })
@@ -248,7 +248,7 @@ describe('ImagesSection', () => {
   })
 
   it('should show error snackbar when imageBlockUpdate mutation fails', async () => {
-    const cloudflareResult = jest.fn().mockReturnValue({
+    const cloudflareResult = vi.fn().mockReturnValue({
       data: {
         createCloudflareUploadByFile: {
           uploadUrl: 'https://example.com/upload',
@@ -282,8 +282,8 @@ describe('ImagesSection', () => {
       }
     ]
 
-    global.fetch = jest.fn().mockResolvedValue({
-      json: jest.fn().mockResolvedValue({
+    global.fetch = vi.fn().mockResolvedValue({
+      json: vi.fn().mockResolvedValue({
         success: true,
         result: { id: 'cloudflare.id' }
       })

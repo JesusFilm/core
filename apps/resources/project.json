@@ -124,10 +124,10 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/apps/resources"],
+      "executor": "@nx/vitest:test",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "apps/resources/jest.config.ts"
+        "configFile": "apps/resources/vitest.config.mts"
       }
     },
     "lint": {
@@ -142,7 +142,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsc -b apps/resources/tsconfig.json"
+        "command": "pnpm tsc7 -p apps/resources/tsconfig.ts7.json"
       }
     },
     "demo": {

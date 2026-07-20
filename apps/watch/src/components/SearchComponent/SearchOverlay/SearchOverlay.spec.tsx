@@ -3,17 +3,17 @@ import { createRef } from 'react'
 
 import { SearchOverlay } from './SearchOverlay'
 
-jest.mock('next-i18next', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (key: string) => key
   })
 }))
 
-jest.mock('../LanguageSelector', () => ({
+vi.mock('../LanguageSelector', () => ({
   LanguageSelector: () => <div data-testid="LanguageSelector" />
 }))
 
-jest.mock('../CategoryGrid', () => ({
+vi.mock('../CategoryGrid', () => ({
   CategoryGrid: ({
     onCategorySelect
   }: {
@@ -26,13 +26,13 @@ jest.mock('../CategoryGrid', () => ({
   )
 }))
 
-jest.mock('../SearchResultsLayout', () => ({
+vi.mock('../SearchResultsLayout', () => ({
   SearchResultsLayout: () => <div data-testid="SearchResultsLayout" />
 }))
 
 describe('SearchOverlay', () => {
   it('renders fallback trending content when trending data fails', () => {
-    const onSelect = jest.fn()
+    const onSelect = vi.fn()
     const containerRef = createRef<HTMLDivElement>()
 
     render(
@@ -40,15 +40,15 @@ describe('SearchOverlay', () => {
         open
         hasQuery={false}
         searchQuery=""
-        onBlur={jest.fn()}
+        onBlur={vi.fn()}
         onSelectQuickValue={onSelect}
         containerRef={containerRef}
         languageId="en"
-        onClose={jest.fn()}
+        onClose={vi.fn()}
         trendingSearches={['Hope', 'Faith']}
         isTrendingLoading={false}
         isTrendingFallback
-        onClearSearch={jest.fn()}
+        onClearSearch={vi.fn()}
       />
     )
 

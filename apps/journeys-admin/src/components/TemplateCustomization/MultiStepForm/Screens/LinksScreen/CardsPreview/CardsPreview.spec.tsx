@@ -20,7 +20,9 @@ function buildSteps(count: number): Array<TreeBlock<any>> {
         parentBlockId: `step-${i}`,
         parentOrder: 0,
         themeName: 'base',
-        themeMode: 'dark'
+        themeMode: 'dark',
+        showAssistant: null,
+        expandChatByDefault: null
       } as unknown as TreeBlock<any>
     ]
   })) as Array<TreeBlock<any>>
@@ -65,7 +67,7 @@ describe('CardsPreview', () => {
 
   it('should call onCardClick with the step when a card is clicked', () => {
     const steps = buildSteps(3)
-    const handleCardClick = jest.fn()
+    const handleCardClick = vi.fn()
     render(
       <JourneyProvider value={{ journey: defaultJourney, variant: 'admin' }}>
         <CardsPreview steps={steps} onCardClick={handleCardClick} />

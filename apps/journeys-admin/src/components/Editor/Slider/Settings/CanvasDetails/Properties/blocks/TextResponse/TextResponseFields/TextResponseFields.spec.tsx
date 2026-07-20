@@ -6,7 +6,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { TextResponseFields } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))

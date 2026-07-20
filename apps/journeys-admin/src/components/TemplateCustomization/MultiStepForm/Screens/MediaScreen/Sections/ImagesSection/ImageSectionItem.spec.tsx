@@ -9,7 +9,7 @@ import {
 
 import { ImageSectionItem } from './ImageSectionItem'
 
-jest.mock('next-i18next', () => ({
+vi.mock('next-i18next/pages', async () => ({
   __esModule: true,
   useTranslation: () => {
     return {
@@ -18,14 +18,14 @@ jest.mock('next-i18next', () => ({
   }
 }))
 
-const mockEnqueueSnackbar = jest.fn()
-jest.mock('notistack', () => ({
-  ...jest.requireActual('notistack'),
+const mockEnqueueSnackbar = vi.fn()
+vi.mock('notistack', async () => ({
+  ...(await vi.importActual('notistack')),
   useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
 }))
 
-jest.mock('@core/shared/ui/NextImage', () => ({
-  NextImage: jest.fn(({ src, alt, placeholder, blurDataURL }) => (
+vi.mock('@core/shared/ui/NextImage', async () => ({
+  NextImage: vi.fn(({ src, alt, placeholder, blurDataURL }) => (
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={src}
@@ -36,13 +36,13 @@ jest.mock('@core/shared/ui/NextImage', () => ({
   ))
 }))
 
-jest.mock('../../../../../../../libs/useImageUpload')
-const mockUseImageUpload = jest.mocked(useImageUpload)
+vi.mock('../../../../../../../libs/useImageUpload')
+const mockUseImageUpload = vi.mocked(useImageUpload)
 
 const defaultMockReturn = {
-  getRootProps: jest.fn(),
-  getInputProps: jest.fn(),
-  open: jest.fn(),
+  getRootProps: vi.fn(),
+  getInputProps: vi.fn(),
+  open: vi.fn(),
   isDragActive: false,
   isDragAccept: false,
   isDragReject: false,
@@ -52,7 +52,7 @@ const defaultMockReturn = {
   errorMessage: undefined,
   acceptedFiles: [],
   fileRejections: [],
-  resetState: jest.fn()
+  resetState: vi.fn()
 } as ReturnType<typeof useImageUpload>
 
 describe('ImageSectionItem', () => {
@@ -72,10 +72,10 @@ describe('ImageSectionItem', () => {
     focalLeft: null
   }
 
-  const onUploadComplete = jest.fn()
+  const onUploadComplete = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockUseImageUpload.mockReturnValue(defaultMockReturn)
   })
 
@@ -140,7 +140,7 @@ describe('ImageSectionItem', () => {
   })
 
   it('should open file picker when edit button is clicked', () => {
-    const open = jest.fn()
+    const open = vi.fn()
     mockUseImageUpload.mockReturnValue({
       ...defaultMockReturn,
       open
@@ -205,7 +205,7 @@ describe('ImageSectionItem', () => {
   })
 
   it('should call onUploadComplete when image upload finishes', () => {
-    let onUploadCompleteCallback: (url: string) => void = jest.fn()
+    let onUploadCompleteCallback: (url: string) => void = vi.fn()
     mockUseImageUpload.mockImplementation((options) => {
       onUploadCompleteCallback = options.onUploadComplete
       return defaultMockReturn

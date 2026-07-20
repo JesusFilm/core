@@ -7,7 +7,7 @@ import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import { GetServerSideProps, GetServerSidePropsContext } from 'next'
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 

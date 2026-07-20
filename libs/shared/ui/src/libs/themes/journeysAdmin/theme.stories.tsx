@@ -8,7 +8,7 @@ import {
   useTheme
 } from '@mui/material/styles'
 import Typography, { TypographyProps } from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ReactElement } from 'react'
 
 import ArrowRightIcon from '../../../components/icons/ArrowRight'

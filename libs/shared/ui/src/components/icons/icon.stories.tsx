@@ -1,6 +1,6 @@
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 // import CircularProgress from '@mui/material/CircularProgress'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
@@ -158,6 +158,7 @@ const iconNames: IconName[] = [
   'Menu1',
   'MessageChat1',
   'MessageChat2',
+  'MessageChatStars',
   'MessageCircle',
   'MessageNotifyCircle',
   'MessageNotifySquare',

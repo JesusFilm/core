@@ -15,9 +15,9 @@ import {
 
 import { Goals } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
 const blocks: Blocks[] = [
@@ -119,7 +119,9 @@ const blocks: Blocks[] = [
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
-    eventLabel: null
+    eventLabel: null,
+    showAssistant: null,
+    expandChatByDefault: null
   }
 ]
 

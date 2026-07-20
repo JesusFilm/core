@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
@@ -11,17 +12,17 @@ import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 
 import { HostAvatarsButton } from './HostAvatarsButton'
 
-jest.mock('../../../../../../../../../libs/useHostUpdateMutation', () => ({
+vi.mock('../../../../../../../../../libs/useHostUpdateMutation', () => ({
   __esModule: true,
-  useHostUpdateMutation: jest.fn()
+  useHostUpdateMutation: vi.fn()
 }))
 
-const mockUseHostUpdateMutation = useHostUpdateMutation as jest.MockedFunction<
+const mockUseHostUpdateMutation = useHostUpdateMutation as MockedFunction<
   typeof useHostUpdateMutation
 >
 
 describe('HostAvatarsButton', () => {
-  const updateHost = jest.fn()
+  const updateHost = vi.fn()
 
   beforeEach(() => {
     mockUseHostUpdateMutation.mockReturnValue({
@@ -30,7 +31,7 @@ describe('HostAvatarsButton', () => {
   })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   const defaultHost = {
@@ -162,7 +163,7 @@ describe('HostAvatarsButton', () => {
   // TODO: Add to E2E when can mock out unsplash
 
   it('should remove host image src on image delete', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         hostUpdate: {
           __typename: 'Host',
@@ -234,7 +235,7 @@ describe('HostAvatarsButton', () => {
   })
 
   it('should update order of avatar images on library close', () => {
-    const deleteResult = jest.fn(() => ({
+    const deleteResult = vi.fn(() => ({
       data: {
         hostUpdate: {
           __typename: 'Host',
@@ -247,7 +248,7 @@ describe('HostAvatarsButton', () => {
       }
     }))
 
-    const reorderResult = jest.fn(() => ({
+    const reorderResult = vi.fn(() => ({
       data: {
         hostUpdate: {
           __typename: 'Host',

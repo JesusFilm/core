@@ -9,5 +9,19 @@
   "Get me out of here!": "Get me out of here!",
   "Terms & Conditions": "Terms & Conditions",
   "Privacy Policy": "Privacy Policy",
-  "NextSteps © {{year}}": "NextSteps © {{year}}"
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Use": "ব্যবহার করুন",
+  "Preview": "Preview",
+  "About this chat": "এই চ্যাট সম্পর্কে",
+  "About this chat | Next Steps": "এই চ্যাট সম্পর্কে | পরবর্তী পদক্ষেপ",
+  "The chat on this journey is powered by an AI assistant. To help us improve future replies, the messages you send and the assistant’s replies are saved.": "এই যাত্রার চ্যাটটি একটি এআই সহকারী দ্বারা পরিচালিত হয়। ভবিষ্যতের উত্তরগুলো উন্নত করতে সাহায্য করার জন্য, আপনি যে বার্তাগুলো পাঠান এবং সহকারীের প্রতিক্রিয়াগুলো সংরক্ষণ করা হয়।",
+  "We do not save your name, email address, or any account details, and we do not link conversations to your identity.": "আমরা আপনার নাম, ইমেইল ঠিকানা বা কোনো অ্যাকাউন্টের বিবরণ সংরক্ষণ করি না, এবং আমরা কথোপকথনগুলোকে আপনার পরিচয়ের সাথে সংযুক্ত করি না।",
+  "Where the messages go": "বার্তাগুলো কোথায় যায়",
+  "Your messages and the assistant’s replies pass through two third-party services: an AI service that generates the replies, and an analytics service called Langfuse where the conversations are stored so the team can review them in aggregate to improve the experience. They are not sold and they are not used for advertising.": "আপনার বার্তা এবং অ্যাসিস্ট্যান্টের উত্তরগুলি দুইটি তৃতীয় পক্ষের সেবার মধ্য দিয়ে যায়: একটি AI সেবা যা উত্তর তৈরি করে, এবং Langfuse নামে একটি বিশ্লেষণ সেবা যেখানে কথোপকথনগুলো সংরক্ষণ করা হয় যাতে দল সেগুলো একত্রে পর্যালোচনা করে অভিজ্ঞতা উন্নত করতে পারে। এগুলো বিক্রি করা হয় না এবং বিজ্ঞাপনের জন্য ব্যবহার করা হয় না।",
+  "If you prefer not to take part": "যদি আপনি অংশগ্রহণ করতে না চান",
+  "There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.": "আজ চ্যাটের জন্য কোনো অপ্ট-আউট নেই। যদি আপনি আপনার বার্তাগুলো সংরক্ষিত হতে না চান, তবে অনুগ্রহ করে চ্যাট ব্যবহার করবেন না — বাকি যাত্রাটি এর ছাড়াই কাজ করবে।",
+  "Last updated: June 2026": "সর্বশেষ আপডেট: জুন ২০২৬",
+  "Back to Next Steps": "পরবর্তী পদক্ষেপগুলিতে ফিরে যান",
+  "This template gallery is not available.": "এই টেমপ্লেট গ্যালারিটি উপলব্ধ নেই।",
+  "<0>This page has been created to test the embed code.<strong>If youve found this page in error click the button below.</strong></0>": "<0>এই পৃষ্ঠাটি এম্বেড কোড পরীক্ষা করার জন্য তৈরি করা হয়েছে।<strong>যদি আপনি এই পৃষ্ঠাটি ভুলবশত পেয়ে থাকেন, তাহলে নিচের বোতামে ক্লিক করুন।</strong></0>"
 }

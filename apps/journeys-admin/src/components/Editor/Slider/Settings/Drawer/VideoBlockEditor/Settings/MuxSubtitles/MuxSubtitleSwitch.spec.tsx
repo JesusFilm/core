@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { type Mock } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -14,19 +15,19 @@ import {
   MuxSubtitleSwitch
 } from './MuxSubtitleSwitch'
 
-jest.mock('next-i18next', () => ({
+vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
     t: (key: string) => key
   })
 }))
 
-jest.mock('../../../../../../../../libs/validateMuxLanguage', () => ({
-  validateMuxLanguage: jest.fn()
+vi.mock('../../../../../../../../libs/validateMuxLanguage', () => ({
+  validateMuxLanguage: vi.fn()
 }))
 
-const { validateMuxLanguage } = jest.requireMock(
+const { validateMuxLanguage } = (await vi.importMock(
   '../../../../../../../../libs/validateMuxLanguage'
-)
+)) as { validateMuxLanguage: Mock }
 
 const mockVideoBlock: TreeBlock<VideoBlock> = {
   __typename: 'VideoBlock',
@@ -140,10 +141,10 @@ const mockSubtitleTrackError: MockedResponse = {
 }
 
 describe('MuxSubtitleSwitch', () => {
-  const mockOnChange = jest.fn()
+  const mockOnChange = vi.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     validateMuxLanguage.mockReturnValue(true)
   })
 

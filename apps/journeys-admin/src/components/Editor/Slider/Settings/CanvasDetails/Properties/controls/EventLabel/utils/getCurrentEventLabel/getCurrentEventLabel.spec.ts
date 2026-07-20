@@ -1,4 +1,4 @@
-import { TFunction } from 'next-i18next'
+import { TFunction } from 'next-i18next/pages'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
@@ -13,10 +13,10 @@ import { eventLabelOptions } from '../eventLabels'
 import { getCurrentEventLabel } from './getCurrentEventLabel'
 
 describe('getCurrentEventLabel', () => {
-  const t = jest.fn((key) => key) as unknown as TFunction
+  const t = vi.fn((key) => key) as unknown as TFunction
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should return the first event label option (None) by default', () => {
@@ -38,7 +38,9 @@ describe('getCurrentEventLabel', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
-      children: []
+      children: [],
+      showAssistant: null,
+      expandChatByDefault: null
     }
 
     const result = getCurrentEventLabel(t, cardBlock)

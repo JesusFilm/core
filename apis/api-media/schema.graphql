@@ -80,6 +80,8 @@ type CheckVideoVariantsInAlgoliaResult {
 
 type CloudflareImage {
   id: ID!
+  updatedAt: DateTime!
+  videoId: ID
   uploadUrl: String
   userId: ID!
   createdAt: Date!
@@ -91,6 +93,7 @@ type CloudflareImage {
   thumbnail: String
   videoStill: String
   blurhash: String
+  isAi: Boolean
 }
 
 type CloudflareR2 {
@@ -303,12 +306,13 @@ enum MaxResolutionTier {
 
 enum MediaRole {
   publisher
+  youtubeAdmin
 }
 
 type Mutation {
-  createCloudflareUploadByFile(input: ImageInput): CloudflareImage!
-  createCloudflareUploadByUrl(url: String!, input: ImageInput): CloudflareImage!
-  createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
+  createCloudflareUploadByFile(input: ImageInput, journeyId: ID): CloudflareImage!
+  createCloudflareUploadByUrl(url: String!, input: ImageInput, journeyId: ID): CloudflareImage!
+  createCloudflareImageFromPrompt(prompt: String!, input: ImageInput, journeyId: ID): CloudflareImage!
   deleteCloudflareImage(id: ID!): Boolean!
   cloudflareUploadComplete(id: ID!): Boolean!
 
@@ -330,8 +334,8 @@ type Mutation {
   bibleCitationDelete(id: ID!): Boolean
   createKeyword(value: String!, languageId: String!): Keyword!
   createMuxVideoAndQueueUpload(videoId: ID!, edition: String!, languageId: ID!, version: Int!, r2PublicUrl: String!, originalFilename: String!, durationMs: Int!, duration: Int!, width: Int!, height: Int!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = fhd): MuxVideo!
-  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd, generateSubtitlesInput: GenerateSubtitlesInput): MuxVideo!
-  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
+  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd, generateSubtitlesInput: GenerateSubtitlesInput, journeyId: ID): MuxVideo!
+  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd, journeyId: ID): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
   playlistCreate(input: PlaylistCreateInput!): MutationPlaylistCreateResult
@@ -401,6 +405,19 @@ type Mutation {
   videoEditionCreate(input: VideoEditionCreateInput!): VideoEdition!
   videoEditionUpdate(input: VideoEditionUpdateInput!): VideoEdition!
   videoEditionDelete(id: ID!): VideoEdition!
+  videoVariantUploadStart(input: VideoVariantUploadStartInput!): VideoVariantUpload!
+  videoVariantUploadMarkR2Prepared(id: ID!, r2AssetId: ID!): VideoVariantUpload!
+  videoVariantUploadMarkR2Complete(id: ID!): VideoVariantUpload!
+  videoVariantUploadCreateMux(id: ID!, muxVideoId: ID, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd): VideoVariantUpload!
+  videoVariantUploadResume(id: ID!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd): VideoVariantUpload!
+
+  """
+  Create-or-update a YoutubeVideo by youtubeVideoId. Idempotent; enforces the status invariant.
+  """
+  youtubeVideoUpsert(input: YoutubeVideoUpsertInput!): YoutubeVideo!
+
+  """Remove a YoutubeVideo row."""
+  youtubeVideoDelete(youtubeVideoId: ID!): Boolean!
 }
 
 input MutationBibleCitationCreateInput {
@@ -712,15 +729,18 @@ input PlaylistUpdateInput {
 }
 
 type Query {
-  getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
+  getMyCloudflareImages(offset: Int, limit: Int, isAi: Boolean, teamId: ID): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
+  videoImages(where: VideoImagesFilter, offset: Int, limit: Int): [CloudflareImage!]!
+  videoImagesCount(where: VideoImagesFilter): Int!
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String!], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse!
   bibleBooks(where: BibleBooksFilter): [BibleBook!]!
   bibleCitations(videoId: ID): [BibleCitation!]!
   bibleCitation(id: ID!): BibleCitation!
-  keywords(where: KeywordsFilter): [Keyword!]!
-  getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
+  keywords(where: KeywordsFilter, offset: Int, limit: Int): [Keyword!]!
+  keywordsCount(where: KeywordsFilter): Int!
+  getMyMuxVideos(offset: Int, limit: Int, teamId: ID): [MuxVideo!]!
   getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!
   getMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo
   getMyGeneratedMuxSubtitleTrack(muxVideoId: ID!, bcp47: String!, userGenerated: Boolean): QueryGetMyGeneratedMuxSubtitleTrackResult!
@@ -762,6 +782,10 @@ type Query {
     last: Int
   ): QueryShortLinksConnection!
   userMediaProfile: UserMediaProfile
+  videoSubtitles(where: VideoSubtitlesFilter, offset: Int, limit: Int): [VideoSubtitle!]!
+  videoSubtitlesCount(where: VideoSubtitlesFilter): Int!
+  videoVariantDownloads(where: VideoVariantDownloadsFilter, offset: Int, limit: Int): [VideoVariantDownload!]!
+  videoVariantDownloadsCount(where: VideoVariantDownloadsFilter): Int!
   videoVariant(id: ID!): VideoVariant!
   videoVariants(input: VideoVariantFilter, offset: Int, limit: Int): [VideoVariant!]!
   videoVariantsCount(input: VideoVariantFilter): Int!
@@ -773,12 +797,22 @@ type Query {
   videosCount(where: VideosFilter): Int!
   checkVideoInAlgolia(videoId: ID!): CheckVideoInAlgoliaResult!
   checkVideoVariantsInAlgolia(videoId: ID!): CheckVideoVariantsInAlgoliaResult!
-  videoOrigins: [VideoOrigin!]!
-  videoEditions: [VideoEdition!]!
+  videoOrigins(where: VideoOriginsFilter, offset: Int, limit: Int): [VideoOrigin!]!
+  videoOriginsCount(where: VideoOriginsFilter): Int!
+  videoEditions(where: VideoEditionsFilter, offset: Int, limit: Int): [VideoEdition!]!
+  videoEditionsCount(where: VideoEditionsFilter): Int!
   videoEdition(id: ID!): VideoEdition
+  videoVariantUpload(id: ID!): VideoVariantUpload!
+  videoVariantUploads(input: VideoVariantUploadsFilter, offset: Int, limit: Int): [VideoVariantUpload!]!
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
   youtubeClosedCaptionLanguages(videoId: ID!): QueryYoutubeClosedCaptionLanguagesResult!
+
+  """List a channel's YoutubeVideo rows (the resume-diff source)."""
+  youtubeVideos(channelId: ID!, offset: Int, limit: Int): [YoutubeVideo!]!
+
+  """Look up a single row by its youtubeVideoId."""
+  youtubeVideoByVideoId(youtubeVideoId: ID!): YoutubeVideo
   arclightApiKeys: [ArclightApiKey!]!
   arclightApiKeyByKey(key: String!): ArclightApiKey
 }
@@ -1107,6 +1141,11 @@ type Video
   id: ID!
   label: VideoLabel!
   locked: Boolean!
+
+  """
+  When true, generated translated audio variants or generated subtitle tracks should not be created for this video. Metadata translations (title, description, study questions) are unaffected.
+  """
+  restrictTranslations: Boolean!
   primaryLanguageId: ID!
   published: Boolean!
   cloudflareAssets: [CloudflareR2!]!
@@ -1184,11 +1223,21 @@ input VideoEditionUpdateInput {
   name: String
 }
 
+input VideoEditionsFilter {
+  updatedAt: DateTimeFilter
+}
+
 type VideoImageAlt {
   id: ID!
   value: String!
   primary: Boolean!
   language: Language!
+}
+
+input VideoImagesFilter {
+  updatedAt: DateTimeFilter
+  videoId: ID
+  aspectRatio: ImageAspectRatio
 }
 
 enum VideoLabel {
@@ -1204,8 +1253,13 @@ enum VideoLabel {
 
 type VideoOrigin {
   id: ID!
+  updatedAt: DateTime!
   name: String!
   description: String
+}
+
+input VideoOriginsFilter {
+  updatedAt: DateTimeFilter
 }
 
 type VideoPublishChildrenResult {
@@ -1277,6 +1331,8 @@ input VideoStudyQuestionUpdateInput {
 
 type VideoSubtitle {
   id: ID!
+  updatedAt: DateTime!
+  videoId: ID!
   languageId: ID!
   primary: Boolean!
   edition: String!
@@ -1326,6 +1382,14 @@ input VideoSubtitleUpdateInput {
   languageId: String
 }
 
+input VideoSubtitlesFilter {
+  updatedAt: DateTimeFilter
+  videoId: ID
+  languageId: ID
+  edition: String
+  primary: Boolean
+}
+
 type VideoTitle {
   id: ID!
   value: String!
@@ -1360,6 +1424,7 @@ input VideoUpdateInput {
   keywordIds: [String!]
   restrictDownloadPlatforms: [Platform!]
   restrictViewPlatforms: [Platform!]
+  restrictTranslations: Boolean
 }
 
 type VideoVariant {
@@ -1413,6 +1478,8 @@ input VideoVariantCreateInput {
 
 type VideoVariantDownload {
   id: ID!
+  updatedAt: DateTime!
+  videoVariantId: ID
 
   """master video file"""
   asset: CloudflareR2
@@ -1466,6 +1533,12 @@ input VideoVariantDownloadUpdateInput {
   version: Int
 }
 
+input VideoVariantDownloadsFilter {
+  updatedAt: DateTimeFilter
+  videoVariantId: ID
+  quality: VideoVariantDownloadQuality
+}
+
 input VideoVariantFilter {
   onlyPublished: Boolean = true
   languageId: ID
@@ -1491,6 +1564,75 @@ input VideoVariantUpdateInput {
   version: Int
 }
 
+type VideoVariantUpload {
+  id: ID!
+  source: String!
+  sourceKey: String
+  status: VideoVariantUploadStatus!
+  videoId: ID!
+  edition: String!
+  languageId: ID!
+  language: Language!
+  version: Int!
+  published: Boolean!
+  originalFilename: String
+  contentType: String
+  contentLength: BigInt
+  duration: Int
+  durationMs: Int
+  width: Int
+  height: Int
+  r2AssetId: ID
+  muxVideoId: ID
+  muxNonStandardInputDetectedAt: DateTime
+  videoVariantId: ID
+  errorMessage: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  r2Asset: CloudflareR2
+  muxVideo: MuxVideo
+  videoVariant: VideoVariant
+}
+
+input VideoVariantUploadStartInput {
+  id: ID
+  source: String!
+  sourceKey: String
+  videoId: ID!
+  edition: String!
+  languageId: ID!
+  version: Int!
+  published: Boolean
+  originalFilename: String
+  contentType: String
+  contentLength: BigInt
+  duration: Int
+  durationMs: Int
+  width: Int
+  height: Int
+  r2AssetId: ID
+}
+
+enum VideoVariantUploadStatus {
+  created
+  r2Prepared
+  r2Uploaded
+  muxCreated
+  muxReady
+  variantCreated
+  failed
+}
+
+input VideoVariantUploadsFilter {
+  status: VideoVariantUploadStatus
+  statuses: [VideoVariantUploadStatus!]
+  videoId: ID
+  languageId: ID
+  edition: String
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+}
+
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
@@ -1508,6 +1650,90 @@ type Youtube
   id: ID!
   source: VideoBlockSource @shareable
   primaryLanguageId: ID @shareable
+}
+
+enum YoutubeReasonCode {
+  NO_CATALOG_MATCH
+  NOT_APPLICABLE
+}
+
+enum YoutubeReviewState {
+  LINKED
+  DISMISSED
+  SKIPPED
+}
+
+"""
+A YouTube video an operator has seen, mirrored into Core. Absence of a row means "not yet seen"; a row count is NOT a channel video count.
+"""
+type YoutubeVideo {
+  id: ID!
+  youtubeVideoId: String!
+  channelId: ID!
+  reviewState: YoutubeReviewState!
+  videoId: ID
+  languageId: ID
+
+  """The catalog variant a LINKED row resolves to."""
+  variant: VideoVariant
+
+  """The catalog Video a LINKED row resolves to."""
+  video: Video
+  language: Language
+  reasonCode: YoutubeReasonCode
+  reasonNote: String
+  youtubeTitle: String
+  youtubeDescription: String
+  tags: [String!]!
+  thumbnailUrl: String
+  playlists: [YoutubeVideoPlaylist!]!
+  madeForKids: Boolean
+  ageRestricted: Boolean
+  fileName: String
+  privacyStatus: String
+  publishedAt: DateTime
+  reviewedBy: String
+  reviewedAt: DateTime
+  matchMethod: String
+  matchConfidence: Float
+  lastSyncedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""
+A snapshot of a playlist a YouTube video belongs to. Non-authoritative; never a match signal.
+"""
+type YoutubeVideoPlaylist {
+  playlistId: String!
+  title: String!
+}
+
+input YoutubeVideoPlaylistInput {
+  playlistId: String!
+  title: String!
+}
+
+input YoutubeVideoUpsertInput {
+  youtubeVideoId: ID!
+  channelId: ID!
+  reviewState: YoutubeReviewState!
+  videoId: ID
+  languageId: ID
+  reasonCode: YoutubeReasonCode
+  reasonNote: String
+  youtubeTitle: String
+  youtubeDescription: String
+  tags: [String!]
+  thumbnailUrl: String
+  playlists: [YoutubeVideoPlaylistInput!]
+  madeForKids: Boolean
+  ageRestricted: Boolean
+  fileName: String
+  privacyStatus: String
+  publishedAt: DateTime
+  matchMethod: String
+  matchConfidence: Float
 }
 
 type ZodError implements BaseError

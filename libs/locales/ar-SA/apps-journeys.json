@@ -9,5 +9,19 @@
   "Get me out of here!": "أخرجني من هنا!",
   "Terms & Conditions": "الشروط والأحكام",
   "Privacy Policy": "سياسة الخصوصية",
-  "NextSteps © {{year}}": "NextSteps © {{year}}"
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Use": "الاستخدام",
+  "Preview": "معاينة",
+  "About this chat": "حول هذه المحادثة",
+  "About this chat | Next Steps": "حول هذه المحادثة | الخطوات التالية",
+  "The chat on this journey is powered by an AI assistant. To help us improve future replies, the messages you send and the assistant’s replies are saved.": "يتم تشغيل الدردشة في هذه الرحلة بواسطة مساعد يعمل بالذكاء الاصطناعي. وللمساعدة في تحسين الردود المستقبلية، يتم حفظ الرسائل التي ترسلها وردود المساعد.",
+  "We do not save your name, email address, or any account details, and we do not link conversations to your identity.": "نحن لا نحتفظ باسمك أو عنوان بريدك الإلكتروني أو أي تفاصيل تتعلق بحسابك، كما أننا لا نربط المحادثات بهويتك.",
+  "Where the messages go": "أين تذهب الرسائل",
+  "Your messages and the assistant’s replies pass through two third-party services: an AI service that generates the replies, and an analytics service called Langfuse where the conversations are stored so the team can review them in aggregate to improve the experience. They are not sold and they are not used for advertising.": "تمر رسائلك وردود المساعد عبر خدمتين تابعتين لجهات خارجية: خدمة تعتمد على الذكاء الاصطناعي تقوم بإنشاء الردود، وخدمة تحليلية تُدعى Langfuse تُخزَّن فيها المحادثات حتى يتمكن الفريق من مراجعتها بشكل إجمالي بهدف تحسين التجربة. ولا يتم بيع هذه البيانات ولا استخدامها في أغراض إعلانية.",
+  "If you prefer not to take part": "إذا كنت تفضل عدم المشاركة",
+  "There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.": "لا توجد حاليًا خيار إلغاء الاشتراك خاص بالدردشة. إذا كنت تفضل عدم حفظ رسائلك، فيُرجى عدم استخدام الدردشة — حيث إن بقية الخدمة تعمل بدونها.",
+  "Last updated: June 2026": "آخر تحديث: يونيو 2026",
+  "Back to Next Steps": "العودة إلى الخطوات التالية",
+  "This template gallery is not available.": "معرض القوالب هذا غير متاح.",
+  "<0>This page has been created to test the embed code.<strong>If youve found this page in error click the button below.</strong></0>": "<0>تم إنشاء هذه الصفحة لاختبار كود التضمين.<strong>إذا وجدت هذه الصفحة عن طريق الخطأ، فانقر على الزر أدناه.</strong></0>"
 }

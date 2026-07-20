@@ -2,8 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../../dist/out-tsc",
-    "module": "commonjs",
-    "types": ["jest", "@jest/globals", "node"]
+    "types": ["node"]
   },
   "include": [
     "**/*.spec.ts",
@@ -11,7 +10,6 @@
     "**/*.spec.js",
     "**/*.spec.jsx",
     "**/*.d.ts",
-    "setupTests.ts",
-    "jest.config.ts"
+    "setupTests.ts"
   ]
 }

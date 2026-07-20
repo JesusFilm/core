@@ -48,10 +48,10 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/apis/api-users"],
       "options": {
-        "jestConfig": "apis/api-users/jest.config.ts"
+        "configFile": "apis/api-users/vitest.config.mts"
       }
     },
     "generate-graphql": {
@@ -75,7 +75,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsc -b apis/api-users/tsconfig.json"
+        "command": "pnpm tsc7 -p apis/api-users/tsconfig.ts7.json"
       }
     },
     "codecov": {

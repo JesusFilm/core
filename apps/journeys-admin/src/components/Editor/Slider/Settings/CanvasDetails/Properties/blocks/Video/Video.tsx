@@ -1,10 +1,11 @@
 import Box from '@mui/material/Box'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ActivityIcon from '@core/shared/ui/icons/Activity'
 import LinkIcon from '@core/shared/ui/icons/Link'
 import Play1Icon from '@core/shared/ui/icons/Play1'
@@ -25,6 +26,7 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
 
   const { dispatch } = useEditor()
   const { journey } = useJourney()
+  const { editJourneyTrackingMetrics } = useFlags()
 
   const selectedAction = getAction(t, block.action?.__typename)
   const startEventLabel = getEventLabelOption(t, block.eventLabel).label
@@ -39,7 +41,7 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
 
   return (
     <Box data-testid="VideoProperties">
-      {journey?.template && (
+      {(journey?.template || editJourneyTrackingMetrics) && (
         <Accordion
           icon={<ActivityIcon />}
           id={`${id}-event-label`}

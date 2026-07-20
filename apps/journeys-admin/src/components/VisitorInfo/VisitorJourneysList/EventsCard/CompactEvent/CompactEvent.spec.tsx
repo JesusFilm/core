@@ -4,7 +4,7 @@ import { CompactEvent } from '.'
 
 describe('CompactEvent', () => {
   it('should handle click', () => {
-    const onClick = jest.fn()
+    const onClick = vi.fn()
     const { getByRole } = render(
       <CompactEvent value="test value" handleClick={onClick} />
     )

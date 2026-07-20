@@ -4,13 +4,14 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { useCustomDomainsQuery } from '../../../../../../libs/useCustomDomainsQuery'
 import { Tooltip } from '../../../../../Tooltip'
+import { useEditorLayout } from '../../../../EditorLayoutContext'
 
 interface MessageBubbleProps {
   height?: number
@@ -85,11 +86,14 @@ export function Message(): ReactElement {
     skip: journey?.team?.id == null
   })
   const { t } = useTranslation('apps-journeys-admin')
+  const { isLayered } = useEditorLayout()
   return (
     <Box maxWidth={256} data-testid="SocialPreviewMessage">
       <Stack direction="column" justifyContent="start">
         <Typography
           variant="caption"
+          // the layered desktop view floats over a dark backdrop
+          color={isLayered ? 'white' : undefined}
           pb={4}
           textAlign="center"
           sx={{ fontSize: 16 }}

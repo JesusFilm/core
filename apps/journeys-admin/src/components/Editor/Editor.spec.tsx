@@ -4,8 +4,10 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/compat/router'
 import { NextRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider'
 
 import type { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import type { GetStepBlocksWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
@@ -21,17 +23,17 @@ import { GET_STEP_BLOCKS_WITH_POSITION } from './Slider/JourneyFlow/JourneyFlow'
 
 import { Editor } from '.'
 
-jest.mock('next/compat/router', () => ({
+vi.mock('next/compat/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: vi.fn()
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('Editor', () => {
   const journey: Journey = {
@@ -129,7 +131,9 @@ describe('Editor', () => {
     expect(screen.getByTestId('Toolbar')).toBeInTheDocument()
   })
 
-  it('should render the Slider', async () => {
+  it('should render the Slider on mobile', async () => {
+    ;(useMediaQuery as Mock).mockImplementation(() => false)
+
     render(
       <MockedProvider>
         <SnackbarProvider>
@@ -140,16 +144,36 @@ describe('Editor', () => {
       </MockedProvider>
     )
     expect(screen.getByTestId('Slider')).toBeInTheDocument()
+    expect(screen.queryByTestId('LayeredView')).not.toBeInTheDocument()
   })
 
-  it('should render the Fab', async () => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+  it('should render the LayeredView on desktop', async () => {
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
 
     render(
       <MockedProvider>
         <SnackbarProvider>
           <ThemeProvider>
             <Editor journey={journey} />
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('LayeredView')).toBeInTheDocument()
+    expect(screen.queryByTestId('Slider')).not.toBeInTheDocument()
+  })
+
+  it('should render the Fab when the drawer is open', async () => {
+    ;(useMediaQuery as Mock).mockImplementation(() => true)
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <Editor
+              journey={journey}
+              initialState={{ activeSlide: ActiveSlide.Content }}
+            />
           </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -182,7 +206,9 @@ describe('Editor', () => {
           themeName: ThemeName.base,
           fullscreen: false,
           backdropBlur: null,
-          eventLabel: null
+          eventLabel: null,
+          showAssistant: null,
+          expandChatByDefault: null
         },
         {
           __typename: 'TypographyBlock',

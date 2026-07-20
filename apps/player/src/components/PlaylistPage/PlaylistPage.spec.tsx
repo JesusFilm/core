@@ -5,13 +5,13 @@ import { PlaylistPage } from '.'
 
 import { createMockPlaylist } from '@/test/mockData'
 
-jest.mock('@/env', () => ({
+vi.mock('@/env', () => ({
   env: {
     NEXT_PUBLIC_IOS_APP_ID: '123456789'
   }
 }))
 
-jest.mock('@/components/VideoPlayer', () => ({
+vi.mock('@/components/VideoPlayer', () => ({
   VideoPlayer: ({
     onVideoEnd,
     videoTitle

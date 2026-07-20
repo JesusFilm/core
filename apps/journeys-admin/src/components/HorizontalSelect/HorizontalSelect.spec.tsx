@@ -5,7 +5,7 @@ import { HorizontalSelect } from '.'
 
 describe('HorizontalSelect', () => {
   it('should call onChange when step is clicked on', () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     const { getByText } = render(
       <HorizontalSelect onChange={onChange}>
         <Box id="step1.id">Option 1</Box>
@@ -18,7 +18,7 @@ describe('HorizontalSelect', () => {
 
   it('should show border around selected', () => {
     const { getByText } = render(
-      <HorizontalSelect onChange={jest.fn()} id="step1.id">
+      <HorizontalSelect onChange={vi.fn()} id="step1.id">
         <Box id="step1.id">Option 1</Box>
         <Box id="step2.id">Option 2</Box>
       </HorizontalSelect>
@@ -31,7 +31,7 @@ describe('HorizontalSelect', () => {
   it('should display footer', () => {
     const { getByTestId } = render(
       <HorizontalSelect
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         id="step1.id"
         footer={<div data-testid="this-is-a-test">Hello World</div>}
       >

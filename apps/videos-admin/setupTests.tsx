@@ -1,40 +1,83 @@
-import '@testing-library/jest-dom'
+import { ReadableStream, TransformStream, WritableStream } from 'stream/web'
+
+import {
+  toBeChecked,
+  toBeDisabled,
+  toBeEmpty,
+  toBeEmptyDOMElement,
+  toBeEnabled,
+  toBeInTheDOM,
+  toBeInTheDocument,
+  toBeInvalid,
+  toBePartiallyChecked,
+  toBePartiallyPressed,
+  toBePressed,
+  toBeRequired,
+  toBeValid,
+  toBeVisible,
+  toContainElement,
+  toContainHTML,
+  toHaveAccessibleDescription,
+  toHaveAccessibleErrorMessage,
+  toHaveAccessibleName,
+  toHaveAttribute,
+  toHaveClass,
+  toHaveDescription,
+  toHaveDisplayValue,
+  toHaveErrorMessage,
+  toHaveFocus,
+  toHaveFormValues,
+  toHaveRole,
+  toHaveSelection,
+  toHaveStyle,
+  toHaveTextContent,
+  toHaveValue
+} from '@testing-library/jest-dom/matchers'
 import { configure } from '@testing-library/react'
+import { expect } from 'vitest'
+
+expect.extend({
+  toBeChecked,
+  toBeDisabled,
+  toBeEmpty,
+  toBeEmptyDOMElement,
+  toBeEnabled,
+  toBeInTheDOM,
+  toBeInTheDocument,
+  toBeInvalid,
+  toBePartiallyChecked,
+  toBePartiallyPressed,
+  toBePressed,
+  toBeRequired,
+  toBeValid,
+  toBeVisible,
+  toContainElement,
+  toContainHTML,
+  toHaveAccessibleDescription,
+  toHaveAccessibleErrorMessage,
+  toHaveAccessibleName,
+  toHaveAttribute,
+  toHaveClass,
+  toHaveDescription,
+  toHaveDisplayValue,
+  toHaveErrorMessage,
+  toHaveFocus,
+  toHaveFormValues,
+  toHaveRole,
+  toHaveSelection,
+  toHaveStyle,
+  toHaveTextContent,
+  toHaveValue
+})
+
+if (typeof globalThis.TransformStream === 'undefined') {
+  Object.assign(globalThis, { ReadableStream, TransformStream, WritableStream })
+}
 
 configure({ asyncUtilTimeout: 2500 })
 
-jest.mock('next/image', () => ({
+vi.mock('next/image', () => ({
   __esModule: true,
   // eslint-disable-next-line @next/next/no-img-element
   default: ({ src, alt }) => <img src={src} alt={alt} />
 }))
-
-Object.defineProperty(
-  window.navigator,
-  'userAgent',
-  ((value) => ({
-    get() {
-      return value
-    },
-    set(v) {
-      value = v
-    }
-  }))(window.navigator.userAgent)
-)
-
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter: () => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-    prefetch: jest.fn(),
-    back: jest.fn(),
-    pathname: '/',
-    route: '/',
-    asPath: '/',
-    query: {}
-  })
-}))
-
-if (process.env.CI === 'true')
-  jest.retryTimes(3, { logErrorsBeforeRetry: true })

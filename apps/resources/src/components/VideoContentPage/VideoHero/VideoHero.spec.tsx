@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import fscreen from 'fscreen'
 import { SnackbarProvider } from 'notistack'
+import type { Mock } from 'vitest'
 
 import { VideoProvider } from '../../../libs/videoContext'
 import { videos } from '../../Videos/__generated__/testData'
@@ -9,18 +10,20 @@ import { videos } from '../../Videos/__generated__/testData'
 import { VideoHero } from './VideoHero'
 
 // Mock fscreen
-jest.mock('fscreen', () => ({
-  addEventListener: jest.fn(),
-  removeEventListener: jest.fn(),
-  get fullscreenElement() {
-    return null
+vi.mock('fscreen', async () => ({
+  default: {
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    get fullscreenElement() {
+      return null
+    }
   }
 }))
 
 describe('VideoHero', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
-    window.scrollTo = jest.fn()
+    vi.clearAllMocks()
+    window.scrollTo = vi.fn()
   })
 
   it('should render the video hero', () => {
@@ -64,10 +67,10 @@ describe('VideoHero', () => {
     )
 
     Object.defineProperty(fscreen, 'fullscreenElement', {
-      get: jest.fn().mockReturnValue(document.documentElement)
+      get: vi.fn().mockReturnValue(document.documentElement)
     })
 
-    const fullscreenCallback = (fscreen.addEventListener as jest.Mock).mock
+    const fullscreenCallback = (fscreen.addEventListener as Mock).mock
       .calls[0][1]
     fullscreenCallback()
 

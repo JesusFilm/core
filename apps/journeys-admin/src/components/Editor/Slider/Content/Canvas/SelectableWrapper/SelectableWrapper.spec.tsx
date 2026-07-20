@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { type MockedFunction } from 'vitest'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '@core/journeys/ui/Button'
@@ -22,24 +23,26 @@ import { RadioQuestionFields } from '../../../../../../../__generated__/RadioQue
 import { SignUpFields } from '../../../../../../../__generated__/SignUpFields'
 import { StepFields } from '../../../../../../../__generated__/StepFields'
 import { TypographyFields } from '../../../../../../../__generated__/TypographyFields'
+import { TestEditorState } from '../../../../../../libs/TestEditorState'
 import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
+import { EditorLayoutProvider } from '../../../../EditorLayoutContext'
 
 import { SelectableWrapper } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('SelectableWrapper', () => {
-  const push = jest.fn()
+  const push = vi.fn()
   mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
 
   const typographyBlock: TreeBlock<TypographyFields> = {
@@ -259,6 +262,35 @@ describe('SelectableWrapper', () => {
     expect(push).not.toHaveBeenCalled()
   })
 
+  it('should open the settings drawer on block click in the layered layout', async () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step([typographyBlock])]
+            }}
+          >
+            <MuxVideoUploadProvider>
+              <EditorLayoutProvider value="layered">
+                <TestEditorState />
+                <SelectableWrapper block={typographyBlock}>
+                  <Typography {...typographyBlock} />
+                </SelectableWrapper>
+              </EditorLayoutProvider>
+            </MuxVideoUploadProvider>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByText('typography content'))
+    expect(getByText('activeSlide: 2')).toBeInTheDocument()
+    expect(
+      getByText(`selectedBlock: ${typographyBlock.id}`)
+    ).toBeInTheDocument()
+  })
+
   it('should select radio question on radio option click', async () => {
     const { getByTestId, getByRole } = render(
       <MockedProvider>
@@ -460,6 +492,46 @@ describe('SelectableWrapper', () => {
       zIndex: '1',
       outlineColor: '#C52D3A'
     })
+    expect(push).not.toHaveBeenCalled()
+  })
+
+  // NES-1745: re-clicking an already-selected option in the layered layout
+  // dispatches SetSelectedBlockOnlyAction. selectedBlockId must follow
+  // selectedBlock to the option (and not stay on the parent question selected
+  // during event capture), otherwise the next steps refresh re-derives the
+  // selection back to the question and unmounts the inline editor.
+  it('keeps selectedBlockId on the option when re-clicking it in the layered layout', async () => {
+    const { getByText, getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: radioOption1,
+              selectedBlockId: radioOption1.id,
+              steps: [step([radioQuestionBlock])]
+            }}
+          >
+            <MuxVideoUploadProvider>
+              <EditorLayoutProvider value="layered">
+                <TestEditorState />
+                <SelectableWrapper block={radioQuestionBlock}>
+                  <RadioQuestion
+                    {...radioQuestionBlock}
+                    wrappers={{ Wrapper: SelectableWrapper }}
+                  />
+                </SelectableWrapper>
+              </EditorLayoutProvider>
+            </MuxVideoUploadProvider>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      fireEvent.click(getByRole('button', { name: 'Option 1' }))
+    )
+    expect(getByText(`selectedBlock: ${radioOption1.id}`)).toBeInTheDocument()
+    expect(getByText(`selectedBlockId: ${radioOption1.id}`)).toBeInTheDocument()
     expect(push).not.toHaveBeenCalled()
   })
 })

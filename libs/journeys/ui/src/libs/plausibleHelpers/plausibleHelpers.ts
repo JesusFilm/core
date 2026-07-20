@@ -195,7 +195,7 @@ export function templateKeyify({
 // Uses Record (not Partial) so TypeScript requires an explicit entry for every BlockEventLabel.
 // Adding a new BlockEventLabel without updating this map is a compile error.
 // Server-side counterpart: EVENT_TO_CAPTURE_MAP in
-// apis/api-journeys-modern/src/schema/plausible/templateFamilyStatsBreakdown/utils/transformBreakdownResults.ts
+// apis/api-journeys/src/schema/plausible/templateFamilyStatsBreakdown/utils/transformBreakdownResults.ts
 // Both maps must stay in sync.
 export const BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT: Record<
   BlockEventLabel,

@@ -9,5 +9,19 @@
   "Get me out of here!": "Get me out of here!",
   "Terms & Conditions": "Terms & Conditions",
   "Privacy Policy": "Privacy Policy",
-  "NextSteps © {{year}}": "NextSteps © {{year}}"
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Use": "Gamitin",
+  "Preview": "Silipin",
+  "About this chat": "Tungkol sa chat na ito",
+  "About this chat | Next Steps": "Tungkol sa chat na ito | Mga Susunod na Hakbang",
+  "The chat on this journey is powered by an AI assistant. To help us improve future replies, the messages you send and the assistant’s replies are saved.": "Ang chat sa paglalakbay na ito ay pinapagana ng isang AI assistant. Upang matulungan kaming pagbutihin ang mga susunod na tugon, iniimbak ang mga mensaheng ipinapadala mo at ang mga tugon ng assistant.",
+  "We do not save your name, email address, or any account details, and we do not link conversations to your identity.": "Hindi namin iniimbak ang iyong pangalan, email address, o anumang detalye ng account, at hindi namin iniuugnay ang mga pag-uusap sa iyong pagkakakilanlan.",
+  "Where the messages go": "Kung saan napupunta ang mga mensahe",
+  "Your messages and the assistant’s replies pass through two third-party services: an AI service that generates the replies, and an analytics service called Langfuse where the conversations are stored so the team can review them in aggregate to improve the experience. They are not sold and they are not used for advertising.": "Ang iyong mga mensahe at ang mga tugon ng katulong ay dumadaan sa dalawang third-party na serbisyo: isang AI na serbisyo na gumagawa ng mga tugon, at isang analytics na serbisyo na tinatawag na Langfuse kung saan iniimbak ang mga pag-uusap upang masuri ng koponan nang buod at mapabuti ang karanasan. Hindi ito ibinebenta at hindi ito ginagamit para sa pag-aanunsiyo.",
+  "If you prefer not to take part": "Kung mas gusto mong hindi makilahok",
+  "There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.": "Sa ngayon, walang opsyon para hindi makasali sa chat. Kung mas gusto mong hindi mai-save ang iyong mga mensahe, mangyaring huwag gamitin ang chat — gumagana naman nang maayos ang iba pang bahagi ng iyong paglalakbay kahit wala ito.",
+  "Last updated: June 2026": "Huling na-update: Hunyo 2026",
+  "Back to Next Steps": "Bumalik sa Mga Susunod na Hakbang",
+  "This template gallery is not available.": "Hindi magagamit ang galeriyang ito ng mga template.",
+  "<0>This page has been created to test the embed code.<strong>If youve found this page in error click the button below.</strong></0>": "<0>Ang pahinang ito ay nilikha upang subukan ang embed code.<strong>Kung natagpuan mo ang pahinang ito nang aksidente, i-click ang pindutan sa ibaba.</strong></0>"
 }

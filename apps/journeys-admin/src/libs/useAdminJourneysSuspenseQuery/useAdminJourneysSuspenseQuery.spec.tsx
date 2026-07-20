@@ -14,7 +14,7 @@ import { useAdminJourneysSuspenseQuery } from '.'
 
 describe('useAdminJourneysQuery', () => {
   it('should get journeys', async () => {
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journeys: [
           {

@@ -25,9 +25,9 @@ describe('TrashMenu', () => {
   })
 
   it('should call correct functions on Restore click', () => {
-    const setOpenRestoreDialog = jest.fn()
-    const setHasOpenDialog = jest.fn()
-    const handleCloseMenu = jest.fn()
+    const setOpenRestoreDialog = vi.fn()
+    const setHasOpenDialog = vi.fn()
+    const handleCloseMenu = vi.fn()
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -47,9 +47,9 @@ describe('TrashMenu', () => {
   })
 
   it('should call correct functions on Delete Forever click', () => {
-    const setOpenDeleteDialog = jest.fn()
-    const setHasOpenDialog = jest.fn()
-    const handleCloseMenu = jest.fn()
+    const setOpenDeleteDialog = vi.fn()
+    const setHasOpenDialog = vi.fn()
+    const handleCloseMenu = vi.fn()
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>

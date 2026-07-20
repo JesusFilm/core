@@ -2,7 +2,7 @@ import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { MouseEvent, ReactElement, useState } from 'react'
 

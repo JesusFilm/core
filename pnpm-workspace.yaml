@@ -2,6 +2,7 @@ packages:
   - apis/**
   - apps/**
   - libs/**
+  - tools/**
   - workers/**
 
 onlyBuiltDependencies:

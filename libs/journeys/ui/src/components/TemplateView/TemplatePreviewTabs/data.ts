@@ -13,7 +13,9 @@ export const journeyVideoBlocks: Blocks[] = [
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
-    eventLabel: null
+    eventLabel: null,
+    showAssistant: null,
+    expandChatByDefault: null
   },
   {
     __typename: 'VideoBlock',
@@ -205,7 +207,9 @@ export const journeyVideoBlocks: Blocks[] = [
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
-    eventLabel: null
+    eventLabel: null,
+    showAssistant: null,
+    expandChatByDefault: null
   },
   {
     __typename: 'StepBlock',
@@ -277,7 +281,9 @@ export const journeyVideoBlocks: Blocks[] = [
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
-    eventLabel: null
+    eventLabel: null,
+    showAssistant: null,
+    expandChatByDefault: null
   },
   {
     __typename: 'CardBlock',
@@ -290,7 +296,9 @@ export const journeyVideoBlocks: Blocks[] = [
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
-    eventLabel: null
+    eventLabel: null,
+    showAssistant: null,
+    expandChatByDefault: null
   },
   {
     __typename: 'CardBlock',
@@ -303,7 +311,9 @@ export const journeyVideoBlocks: Blocks[] = [
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
-    eventLabel: null
+    eventLabel: null,
+    showAssistant: null,
+    expandChatByDefault: null
   },
   {
     __typename: 'StepBlock',

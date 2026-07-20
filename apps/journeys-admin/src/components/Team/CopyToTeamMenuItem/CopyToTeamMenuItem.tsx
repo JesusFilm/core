@@ -1,15 +1,12 @@
-import { useMutation } from '@apollo/client'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useJourneyAiTranslateSubscription } from '@core/journeys/ui/useJourneyAiTranslateSubscription'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
-import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
-import { UpdateLastActiveTeamId } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
+import { useUpdateActiveTeam } from '@core/journeys/ui/useUpdateActiveTeam'
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
@@ -60,10 +57,7 @@ export function CopyToTeamMenuItem({
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
-  const { query, setActiveTeam } = useTeam()
-  const teams = query?.data?.teams ?? []
-  const [updateLastActiveTeamId, { client }] =
-    useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
+  const updateTeamState = useUpdateActiveTeam()
   const [loading, setLoading] = useState(false)
   const [translationVariables, setTranslationVariables] = useState<
     | {
@@ -81,20 +75,6 @@ export function CopyToTeamMenuItem({
   const { journey: journeyFromContext } = useJourney()
   const journeyData = journey ?? journeyFromContext
   const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
-
-  const updateTeamState = (teamId: string): void => {
-    setActiveTeam(teams.find((team) => team.id === teamId) ?? null)
-    void updateLastActiveTeamId({
-      variables: {
-        input: {
-          lastActiveTeamId: teamId
-        }
-      },
-      onCompleted() {
-        void client.refetchQueries({ include: ['GetAdminJourneys'] })
-      }
-    })
-  }
 
   // Set up the subscription for translation
   const { data: translationData } = useJourneyAiTranslateSubscription({
@@ -163,7 +143,7 @@ export function CopyToTeamMenuItem({
             variant: 'success',
             preventDuplicate: true
           })
-          updateTeamState(teamId) // Update team state immediately for non-translation scenarios
+          // The dialog switches to the destination team for a plain copy.
           handleCloseMenu()
           setDuplicateTeamDialogOpen(false)
           return
@@ -224,6 +204,14 @@ export function CopyToTeamMenuItem({
         onClose={() => {
           setHasOpenDialog?.(false)
           setDuplicateTeamDialogOpen(false)
+          // Cancel any in-flight translation so closing the dialog stops the
+          // subscription cleanly and a stale selectedTeamId can't drive a
+          // later team switch (defensive: the wrapper hides the buttons and
+          // blocks backdrop/escape while translating, so this isn't
+          // user-reachable mid-translation today).
+          setLoading(false)
+          setTranslationVariables(undefined)
+          setSelectedTeamId(null)
         }}
         submitAction={handleDuplicateJourney}
         translationProgress={{
@@ -233,8 +221,6 @@ export function CopyToTeamMenuItem({
             translationData?.journeyAiTranslateCreateSubscription.message ?? ''
         }}
         isTranslating={translationVariables != null}
-        journeyIsTemplate={journeyData?.template ?? false}
-        journeyFromTemplateId={journeyData?.fromTemplateId}
       />
     </>
   )

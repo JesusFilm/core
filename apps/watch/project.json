@@ -121,10 +121,10 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/apps/watch"],
       "options": {
-        "jestConfig": "apps/watch/jest.config.ts"
+        "configFile": "apps/watch/vitest.config.mts"
       }
     },
     "lint": {
@@ -139,7 +139,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsc -b apps/watch/tsconfig.json"
+        "command": "pnpm tsc7 -p apps/watch/tsconfig.ts7.json"
       }
     },
     "demo": {

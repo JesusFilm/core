@@ -1,12 +1,11 @@
 # APIs — Convention Guide
 
-GraphQL API layer for the NextSteps platform. Three services share the Prisma journeys database and are composed via Apollo Federation.
+GraphQL API layer for the NextSteps platform, composed via Apollo Federation.
 
-| Service               | Framework                  | Role                                                                        |
-| --------------------- | -------------------------- | --------------------------------------------------------------------------- |
-| `api-journeys`        | NestJS + Apollo Federation | Legacy API — resolvers, modules, CASL auth                                  |
-| `api-journeys-modern` | GraphQL Yoga + Pothos      | Modern API — code-first schema, scope auth                                  |
-| `api-gateway`         | GraphQL Hive Gateway       | Federation gateway — composes subgraphs, JWT validation, header propagation |
+| Service        | Framework             | Role                                                                        |
+| -------------- | --------------------- | --------------------------------------------------------------------------- |
+| `api-journeys` | GraphQL Yoga + Pothos | Journeys API — code-first schema, scope auth                                |
+| `api-gateway`  | GraphQL Hive Gateway  | Federation gateway — composes subgraphs, JWT validation, header propagation |
 
 ## Shared conventions
 
@@ -17,11 +16,172 @@ GraphQL API layer for the NextSteps platform. Three services share the Prisma jo
 - Migrations: `libs/prisma/journeys/db/migrations/` — timestamped SQL files, one atomic change each.
 - Soft deletes via `deletedAt` field on blocks, journeys, and other entities. Always filter `where: { deletedAt: null }` in queries.
 - Generate client: `pnpm dlx nx run prisma-journeys:prisma-generate` after schema changes.
-- Both APIs import from `@core/prisma/journeys/client`.
+- Import from `@core/prisma/journeys/client`.
+
+### Database schema changes (Prisma → GraphQL → codegen)
+
+**Applies when:** Making changes to Prisma schemas, GraphQL types/queries/mutations, or Pothos schema definitions. This includes adding fields, adding enums, changing nullability, adding models, renaming fields, or adding new queries/mutations.
+
+#### Prisma Domain Reference
+
+| Domain    | Nx Project         | Schema Path                              | DB URL Env Var              | APIs Using This Domain                                                        |
+| --------- | ------------------ | ---------------------------------------- | --------------------------- | ----------------------------------------------------------------------------- |
+| journeys  | `prisma-journeys`  | `libs/prisma/journeys/db/schema.prisma`  | `PG_DATABASE_URL_JOURNEYS`  | `api-journeys`                                                                |
+| users     | `prisma-users`     | `libs/prisma/users/db/schema.prisma`     | `PG_DATABASE_URL_USERS`     | `api-users`                                                                   |
+| analytics | `prisma-analytics` | `libs/prisma/analytics/db/schema.prisma` | `PG_DATABASE_URL_ANALYTICS` | `api-analytics` (uses `prisma-introspect`, not `prisma-migrate` — see Step 3) |
+| languages | `prisma-languages` | `libs/prisma/languages/db/schema.prisma` | `PG_DATABASE_URL_LANGUAGES` | `api-languages`                                                               |
+| media     | `prisma-media`     | `libs/prisma/media/db/schema.prisma`     | `PG_DATABASE_URL_MEDIA`     | `api-media`                                                                   |
+
+#### Which Steps Do I Need?
+
+| Change Type                              | Prisma Steps (1-3) |     GraphQL Steps (4-7)      |
+| ---------------------------------------- | :----------------: | :--------------------------: |
+| New field (exposed in GraphQL)           |        Yes         |             Yes              |
+| New field (internal only)                |        Yes         |              No              |
+| New enum                                 |        Yes         |             Yes              |
+| Change nullability                       |        Yes         | Yes (if field is in GraphQL) |
+| New model/table                          |        Yes         |       Yes (if exposed)       |
+| Rename/change field type                 |        Yes         | Yes (if field is in GraphQL) |
+| New query or mutation (no schema change) |         No         |             Yes              |
+| GraphQL-only change (no DB change)       |         No         |             Yes              |
+
+#### Workflow
+
+##### Prisma Steps (schema changes only)
+
+**Step 1: Edit the Prisma schema**
+
+Edit the relevant `schema.prisma` file from the domain reference table above.
+
+**Step 2: Generate Prisma client**
+
+```bash
+nx prisma-generate prisma-<domain>
+```
+
+**Step 3: Create and run migration**
+
+```bash
+nx prisma-migrate prisma-<domain>
+```
+
+This creates a SQL migration file with a timestamped name and runs it against your local database.
+
+> **Exception:** The `analytics` domain does not use migrations. Its database is managed externally. Use `nx prisma-introspect prisma-analytics` to pull the current schema instead of running `prisma-migrate`.
+
+##### GraphQL Steps (when the change affects GraphQL)
+
+**Step 4: Update GraphQL type definitions**
+
+This differs by API:
+
+- **api-journeys (Pothos):** Edit the Pothos schema code in `apis/api-journeys/src/schema/`. The types are defined in TypeScript.
+- **Other APIs (Pothos):** Edit the Pothos schema code in `apis/<api>/src/schema/`.
+
+**Step 5: Generate GraphQL schema for each affected API**
+
+Run `generate-graphql` for **every API whose GraphQL type definitions you updated in Step 4**:
+
+```bash
+nx generate-graphql <api-name>
+```
+
+For example, if you changed the journeys schema:
+
+```bash
+nx generate-graphql api-journeys
+```
+
+**Step 6: Recompose the gateway schema**
+
+```bash
+nx generate-graphql api-gateway
+```
+
+This uses Hive to compose all subgraph schemas into `apis/api-gateway/schema.graphql`.
+
+> If `nf start` is already running, the `gateway-watcher` process handles this automatically.
+
+**Step 7: Run frontend codegen**
+
+```bash
+nx run-many -t codegen
+```
+
+This regenerates TypeScript types for all frontend projects that depend on the gateway schema: `journeys-admin`, `journeys`, `watch`, `resources`, `journeys-ui`, and `shared-gql`.
+
+#### Troubleshooting
+
+##### "Environment is non-interactive" error during migration
+
+If `nx prisma-migrate prisma-<domain>` fails with:
+
+```text
+Error: Prisma Migrate has detected that the environment is non-interactive, which is not supported.
+```
+
+Run the migration manually by combining the database URL env var with the prisma command:
+
+```bash
+PG_DATABASE_URL_<DOMAIN>=postgresql://postgres:postgres@db:5432/<domain>?schema=public bash -c 'pnpm exec prisma migrate dev --config libs/prisma/<domain>/prisma.config.ts --name "$(date +"%Y%m%d%H%M%S")"'
+```
+
+The `--name` flag is required to avoid an interactive prompt for the migration name. The database URL above uses the default devcontainer values (`db` hostname, `postgres`/`postgres` credentials) — substitute your actual values if your local setup differs.
+
+For example, for the journeys domain:
+
+```bash
+PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public bash -c 'pnpm exec prisma migrate dev --config libs/prisma/journeys/prisma.config.ts --name "$(date +"%Y%m%d%H%M%S")"'
+```
+
+##### `P3006`: a historical migration fails to apply to the shadow database
+
+If `nx prisma-migrate prisma-<domain>` fails with `P3006` on a migration **unrelated to your change** (e.g. `constraint ... does not exist`), or `prisma migrate deploy` dies replaying history (e.g. `type "X" already exists`), the local migration history has drifted. Don't replay history — generate the migration by diffing the **live local DB** against the new schema (run from the prisma project dir so `prisma.config.ts` autoloads):
+
+```bash
+cd libs/prisma/<domain>
+export PG_DATABASE_URL_<DOMAIN>=postgresql://postgres:postgres@db:5432/<domain>?schema=public
+pnpm exec prisma migrate diff --from-config-datasource prisma.config.ts --to-schema db/schema.prisma --script
+```
+
+Write the emitted SQL (minus Prisma's banner) to `db/migrations/<timestamp>_<name>/migration.sql`, apply it with `psql -v ON_ERROR_STOP=1 -f`, then record it in `_prisma_migrations` (checksum = `sha256sum` of the file) so it isn't re-applied. Confirm the SQL is purely additive. A plain file-to-file `migrate diff --from-schema OLD --to-schema NEW` can silently return empty — use `--from-config-datasource`. Full procedure: `docs/solutions/workflow-issues/prisma7-migrate-and-nx-codegen-schema-change-gotchas-2026-06-02.md`.
+
+##### "Running generate... Error" after migration
+
+If the migration succeeds but prisma generate fails, run it separately:
+
+```bash
+nx prisma-generate prisma-<domain>
+```
+
+##### `nx codegen` serves stale output (cache hit)
+
+If `nx run-many -t codegen` logs "read the output from the cache" and the generated types (e.g. `libs/shared/gql/src/__generated__/graphql-env.d.ts`) are missing a field that **is** present in `apis/api-gateway/schema.graphql`, the codegen cache key didn't capture the upstream gateway-schema change. Re-run with the cache disabled:
+
+```bash
+nx run-many -t codegen --skip-nx-cache
+```
+
+See `docs/solutions/workflow-issues/prisma7-migrate-and-nx-codegen-schema-change-gotchas-2026-06-02.md`.
+
+##### `codegen` fails at schema load: `Directive "deprecated" may not be used on INPUT_FIELD_DEFINITION`
+
+The frontend codegen targets that use the legacy `apollo client:codegen` CLI (`journeys`, `journeys-admin`, `journeys-ui`, `resources`, `watch`) reject `@deprecated` on input fields and arguments — their bundled validator predates graphql-js 15.5, and the failure is all-or-nothing at schema load. `generate-graphql` and the gateway compose (Steps 5–6) pass; only Step 7 fails. Do not add `deprecationReason` to Pothos **input** fields — express the deprecation in the field `description` text instead, and keep `@deprecated` on output fields (legal in every consumer).
+
+See `docs/solutions/build-errors/apollo-codegen-deprecated-directive-input-field-2026-06-08.md`.
+
+#### Common Mistakes to Avoid
+
+- **Do NOT edit `schema.graphql` directly** in any API — it is auto-generated. Edit the Pothos schema code instead.
+- **Do NOT forget `generate-graphql api-gateway`** after updating any subgraph schema — the gateway supergraph must be recomposed.
+- **Do NOT forget `nx run-many -t codegen`** — frontend TypeScript types will be stale until codegen runs.
+- **Do NOT skip generating for all APIs that share a prisma domain** — when multiple APIs share one Prisma schema, regenerate GraphQL for each of them.
+- **Do NOT trust a `codegen` cache hit after a gateway-schema change** — `nx run-many -t codegen` can replay stale output; run with `--skip-nx-cache` or grep the generated artifacts for the new field.
+- **Do NOT add `deprecationReason` to Pothos input fields** — the legacy apollo CLI codegen consumers fail at schema load; put the deprecation in the field description instead (see Troubleshooting).
 
 ### GraphQL Federation
 
-- Both `api-journeys` and `api-journeys-modern` are **Federation 2.6 subgraphs**.
+- `api-journeys` is a **Federation 2.6 subgraph**.
 - Use `@key` directives for entity resolution, `@shareable` for fields exposed by multiple subgraphs.
 - Gateway composes schemas at runtime — no manual stitching.
 
@@ -33,66 +193,20 @@ GraphQL API layer for the NextSteps platform. Three services share the Prisma jo
 
 ### Logging
 
-- Pino logger everywhere — `nestjs-pino` in legacy, direct Pino in modern.
+- Pino logger everywhere.
 - Pretty-print in dev, structured JSON in production.
 
 ### Testing
 
-- Jest + `jest-mock-extended` for Prisma mocking.
-- `mockDeep<PrismaClient>()` or `mockDeep<PrismaService>()` for deep mocks.
-- Tests run with `runInBand` in api-journeys-modern (sequential, no parallelization).
+- `api-journeys`: Vitest + `vitest-mock-extended` for Prisma mocking.
+- `mockDeep<PrismaClient>()` for deep mocks.
 
----
-
-## api-journeys (NestJS)
-
-### Module organization
-
-```
-apis/api-journeys/src/app/
-  app.module.ts                    # Root NestJS module
-  lib/
-    prisma.service.ts              # PrismaClient wrapper (injected as provider)
-    CaslAuthModule/                # CASL-based authorization
-    decorators/                    # @CurrentUser, @FromPostgresql, etc.
-  modules/
-    journey/                       # One directory per domain entity
-      journey.module.ts            # NestJS module
-      journey.resolver.ts          # @Resolver with @Query/@Mutation
-      journey.graphql              # SDL schema file
-      journey.acl.ts               # CASL access rules
-      journey.resolver.spec.ts     # Tests
-      journeyCustomizable.service.ts  # Customizable sync logic
-    block/
-    action/                        # Action types
-    ...
-```
-
-### Key patterns
-
-- **Schema:** SDL-first (`.graphql` files) with `@Resolver` decorators.
-- **DI:** NestJS module system — providers, imports, exports.
-- **Auth:** CASL library with `@UseGuards(AppCaslGuard)` and `@CaslPolicy(entityAcl)`.
-- **Prisma access:** Through injected `PrismaService` wrapper.
-- **Async jobs:** BullMQ queues (e.g., `api-journeys-revalidate`).
-
-### Test pattern
-
-```typescript
-const module: TestingModule = await Test.createTestingModule({
-  imports: [CaslAuthModule.register(AppCaslFactory)],
-  providers: [JourneyResolver, { provide: PrismaService, useValue: mockDeep<PrismaService>() }, { provide: BlockService, useValue: mockDeep<BlockService>() }]
-}).compile()
-```
-
----
-
-## api-journeys-modern (Pothos + Yoga)
+## api-journeys (Pothos + Yoga)
 
 ### Schema organization
 
 ```
-apis/api-journeys-modern/src/
+apis/api-journeys/src/
   schema/
     builder.ts                     # Pothos SchemaBuilder with plugins
     journey/
@@ -166,14 +280,7 @@ Changes here are rare. When they happen, review for:
 
 **This is a guardrail — violations are Critical in reviews.**
 
-When adding or modifying a `customizable` field on a block or action type, the recalculation logic **must be updated in both APIs**:
-
-| API    | Location                                                                                            |
-| ------ | --------------------------------------------------------------------------------------------------- |
-| Legacy | `apis/api-journeys/src/app/modules/journey/journeyCustomizable.service.ts` → `recalculate()`        |
-| Modern | `apis/api-journeys-modern/src/lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable.ts` |
-
-These two implementations must produce identical results. The logic checks:
+When adding or modifying a `customizable` field on a block or action type, the recalculation logic in `apis/api-journeys/src/lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable.ts` must be updated. The logic checks:
 
 1. **Editable text fields:** `journeyCustomizationDescription` is non-empty AND `journeyCustomizationFields` count > 0
 2. **Customizable link actions:** ButtonBlock, RadioOptionBlock, VideoBlock, or VideoTriggerBlock with `action.customizable === true` AND `action.blockId == null` (excludes NavigateToBlockAction)
@@ -184,14 +291,9 @@ Any mutation that modifies `customizable` on a block, action, or chat button **m
 
 ---
 
-## ACL parity
+## ACL
 
-Authorization logic differs in implementation but must produce the same access decisions:
-
-- **Legacy (api-journeys):** CASL library with Prisma conditions — `can(Action.Update, 'Journey', { ... })`
-- **Modern (api-journeys-modern):** Pure functions — `journeyAcl(action, journey, user): boolean`
-
-When modifying access rules, update both implementations and verify with tests.
+Authorization uses pure functions — `journeyAcl(action, journey, user): boolean`. When modifying access rules, verify with tests.
 
 ---
 
@@ -202,13 +304,8 @@ When modifying access rules, update both implementations and verify with tests.
 pnpm dlx nx run api-journeys:lint
 pnpm dlx nx run api-journeys:type-check
 pnpm dlx nx run api-journeys:test
-
-# api-journeys-modern
-pnpm dlx nx run api-journeys-modern:lint
-pnpm dlx nx run api-journeys-modern:type-check
-pnpm dlx nx run api-journeys-modern:test
-pnpm dlx nx run api-journeys-modern:generate-graphql  # regenerate schema
-pnpm dlx nx run api-journeys-modern:subgraph-check    # validate against Hive
+pnpm dlx nx run api-journeys:generate-graphql  # regenerate schema
+pnpm dlx nx run api-journeys:subgraph-check    # validate against Hive
 
 # Prisma
 pnpm dlx nx run prisma-journeys:prisma-generate       # after schema changes

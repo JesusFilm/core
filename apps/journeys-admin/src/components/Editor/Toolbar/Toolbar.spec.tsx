@@ -24,7 +24,7 @@ import {
 
 import { Toolbar } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -129,11 +129,11 @@ describe('Toolbar', () => {
   }
 
   beforeEach(() => {
-    window.Beacon = jest.fn()
+    window.Beacon = vi.fn()
   })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   it('should render NextSteps logo on Toolbar', () => {
@@ -261,11 +261,11 @@ describe('Toolbar', () => {
       showAnalytics: true
     } as unknown as EditorState
 
-    const result = jest
+    const result = vi
       .fn()
       .mockReturnValue(mockUpdatePlausibleJourneyFlowViewed.result)
 
-    const result2 = jest.fn().mockReturnValue({
+    const result2 = vi.fn().mockReturnValue({
       ...mockGetPlausibleJourneyFlowViewed.result,
       data: {
         journeyProfileUpdate: {
@@ -315,7 +315,7 @@ describe('Toolbar', () => {
       showAnalytics: true
     } as unknown as EditorState
 
-    const result = jest
+    const result = vi
       .fn()
       .mockReturnValue(mockGetPlausibleJourneyFlowViewed.result)
 

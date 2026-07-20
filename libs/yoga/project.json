@@ -10,10 +10,10 @@
       "outputs": ["{options.outputFile}"]
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/libs/yoga"],
       "options": {
-        "jestConfig": "libs/yoga/jest.config.ts"
+        "configFile": "libs/yoga/vitest.config.mts"
       }
     },
     "codecov": {
@@ -25,7 +25,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsc -b libs/yoga/tsconfig.json"
+        "command": "pnpm tsc7 -p libs/yoga/tsconfig.ts7.json"
       }
     }
   }

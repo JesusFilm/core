@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import capitalize from 'lodash/capitalize'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -63,7 +63,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
             value={
               effectiveColor?.toString().startsWith('#')
                 ? effectiveColor.toString().toUpperCase()
-                : capitalize(effectiveColor?.toString() ?? ' ')
+                : t(capitalize(effectiveColor?.toString() ?? ' '))
             }
           >
             <Color />
@@ -73,7 +73,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
             id={`${id}-typography-alignment`}
             icon={getAlignIcon(align)}
             name={t('Text Alignment')}
-            value={capitalize(align?.toString() ?? 'Left')}
+            value={t(capitalize(align?.toString() ?? 'Left'))}
           >
             <Align />
           </Accordion>

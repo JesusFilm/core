@@ -1,11 +1,12 @@
 import Box from '@mui/material/Box'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { ComponentProps, ReactElement } from 'react'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import BulbIcon from '@core/shared/ui/icons/Bulb'
 
+import { useEditorLayout } from '../../../EditorLayoutContext'
 import { Item } from '../Item/Item'
 
 interface StrategyItemProps {
@@ -22,6 +23,7 @@ export function StrategyItem({
     dispatch,
     state: { showAnalytics }
   } = useEditor()
+  const { isLayered } = useEditorLayout()
 
   function handleGoalsClick(): void {
     dispatch({
@@ -30,7 +32,7 @@ export function StrategyItem({
     })
     dispatch({
       type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.Content
+      activeSlide: isLayered ? ActiveSlide.Drawer : ActiveSlide.Content
     })
     closeMenu?.()
   }

@@ -59,10 +59,6 @@
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
     },
-    "@nx/vite:test": {
-      "cache": true,
-      "inputs": ["default", "^production"]
-    },
     "build-storybook": {
       "inputs": [
         "default",
@@ -91,6 +87,10 @@
     "type-check": {
       "cache": true,
       "inputs": ["default"]
+    },
+    "@nx/vitest:test": {
+      "cache": true,
+      "inputs": ["default", "^production"]
     }
   },
   "namedInputs": {
@@ -104,7 +104,6 @@
       "!{projectRoot}/tsconfig.storybook.json",
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
       "!{projectRoot}/tsconfig.spec.json",
-      "!{projectRoot}/jest.config.[jt]s",
       "!{projectRoot}/src/test-setup.[jt]s",
       "!{projectRoot}/eslint.config.js"
     ]
@@ -121,5 +120,6 @@
   ],
   "tui": {
     "enabled": false
-  }
+  },
+  "analytics": false
 }

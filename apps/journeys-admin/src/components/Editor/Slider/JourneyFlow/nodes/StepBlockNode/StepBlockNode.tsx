@@ -2,13 +2,15 @@ import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
-import { NodeProps, useUpdateNodeInternals } from 'reactflow'
+import { NodeProps, useUpdateNodeInternals } from '@xyflow/react'
+import { ReactElement, useEffect } from 'react'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 
+import { JourneyLocaleProvider } from '../../../Content/Canvas/JourneyLocaleProvider'
 import { BaseNode, HandleVariant } from '../BaseNode'
 
 import { ActionButton } from './ActionButton'
@@ -19,8 +21,8 @@ import { StepBlockNodeMenu } from './StepBlockNodeMenu'
 
 export function StepBlockNode({
   id,
-  xPos,
-  yPos,
+  positionAbsoluteX,
+  positionAbsoluteY,
   dragging
 }: NodeProps): ReactElement {
   const {
@@ -28,12 +30,18 @@ export function StepBlockNode({
     dispatch
   } = useEditor()
   const { journey } = useJourney()
+  const { locale } = getJourneyRTL(journey)
 
   const updateNodeInternals = useUpdateNodeInternals()
 
   const step = steps?.find((step) => step.id === id)
   const actionBlocks = filterActionBlocks(step)
-  updateNodeInternals(step?.id ?? '')
+
+  useEffect(() => {
+    if (step?.id != null) {
+      updateNodeInternals(step.id)
+    }
+  }, [step?.id, actionBlocks.length, updateNodeInternals])
 
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
@@ -109,8 +117,8 @@ export function StepBlockNode({
             in={isSelected || isHovered}
             className="fab"
             step={step}
-            xPos={xPos}
-            yPos={yPos}
+            xPos={positionAbsoluteX}
+            yPos={positionAbsoluteY}
           />
         )}
         <BaseNode
@@ -126,14 +134,23 @@ export function StepBlockNode({
           {journey?.website !== true && (
             <ActionButton stepId={step.id} block={step} selected={isSelected} />
           )}
-          {actionBlocks.map((block) => (
-            <ActionButton
-              key={block.id}
-              stepId={step.id}
-              block={block}
-              selected={isSelected}
-            />
-          ))}
+          {/* Block rows preview published content, so their default titles
+              (Submit/Button/Option/Subscribe) follow the journey's language to
+              match the canvas and viewer. The step row above ("Default Next
+              Step") is editor chrome and stays in the UI language. Guarded so
+              step nodes without action blocks don't mount an i18n instance. */}
+          {actionBlocks.length > 0 && (
+            <JourneyLocaleProvider locale={locale}>
+              {actionBlocks.map((block) => (
+                <ActionButton
+                  key={block.id}
+                  stepId={step.id}
+                  block={block}
+                  selected={isSelected}
+                />
+              ))}
+            </JourneyLocaleProvider>
+          )}
         </Stack>
       </Stack>
     </Stack>

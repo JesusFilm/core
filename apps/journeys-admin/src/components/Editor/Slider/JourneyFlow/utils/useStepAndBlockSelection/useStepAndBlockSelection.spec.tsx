@@ -6,6 +6,7 @@ import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
+import { EditorLayoutProvider } from '../../../../EditorLayoutContext'
 
 import { useStepAndBlockSelection } from './useStepAndBlockSelection'
 
@@ -42,6 +43,52 @@ describe('useStepAndBlockSelection', () => {
     expect(screen.getByText('selectedStep: step1.id')).toBeInTheDocument()
     act(() => result.current(step2.id))
     expect(screen.getByText('selectedStep: step2.id')).toBeInTheDocument()
+  })
+
+  it('should open the drawer at content on step selection in the layered layout', () => {
+    const { result } = renderHook(() => useStepAndBlockSelection(), {
+      wrapper: ({ children }) => (
+        <MockedProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step1, step2],
+              selectedStep: step1
+            }}
+          >
+            <EditorLayoutProvider value="layered">
+              <TestEditorState />
+              {children}
+            </EditorLayoutProvider>
+          </EditorProvider>
+        </MockedProvider>
+      )
+    })
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
+    act(() => result.current(step2.id))
+    expect(screen.getByText('selectedStep: step2.id')).toBeInTheDocument()
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+  })
+
+  it('should not change the slide on step selection in the slider layout', () => {
+    const { result } = renderHook(() => useStepAndBlockSelection(), {
+      wrapper: ({ children }) => (
+        <MockedProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step1, step2],
+              selectedStep: step1
+            }}
+          >
+            <TestEditorState />
+            {children}
+          </EditorProvider>
+        </MockedProvider>
+      )
+    })
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
+    act(() => result.current(step2.id))
+    expect(screen.getByText('selectedStep: step2.id')).toBeInTheDocument()
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
   })
 
   it('should call select block if function is called on the selected step', () => {

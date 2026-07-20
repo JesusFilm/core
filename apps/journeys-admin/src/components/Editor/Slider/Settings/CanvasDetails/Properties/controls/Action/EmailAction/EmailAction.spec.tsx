@@ -16,7 +16,7 @@ import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoI
 
 import { EmailAction } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -65,7 +65,7 @@ describe('EmailAction', () => {
   })
 
   it('updates action email', async () => {
-    const result = jest.fn().mockReturnValue(blockActionEmailUpdateMock.result)
+    const result = vi.fn().mockReturnValue(blockActionEmailUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...blockActionEmailUpdateMock, result }]}>
         <EditorProvider initialState={{ selectedBlock, selectedStep }}>
@@ -121,7 +121,7 @@ describe('EmailAction', () => {
   })
 
   it('should handle undo', async () => {
-    const result = jest
+    const result = vi
       .fn()
       .mockReturnValue(blockActionNavigateToBlockUpdateMock.result)
     render(

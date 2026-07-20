@@ -4,12 +4,13 @@ import { addUploadToQueue } from './addUploadToQueue'
 
 describe('addUploadToQueue', () => {
   it('should add upload task to queue with waiting status', () => {
-    const setUploadTasks = jest.fn()
+    const setUploadTasks = vi.fn()
     const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
     const videoBlockId = 'block-1'
     const languageCode = 'en'
     const languageName = 'English'
-    const onComplete = jest.fn()
+    const onComplete = vi.fn()
+    const journeyId = 'journey-1'
 
     addUploadToQueue(
       videoBlockId,
@@ -17,6 +18,7 @@ describe('addUploadToQueue', () => {
       languageCode,
       languageName,
       onComplete,
+      journeyId,
       { setUploadTasks }
     )
 
@@ -32,6 +34,7 @@ describe('addUploadToQueue', () => {
       file,
       languageCode,
       languageName,
+      journeyId,
       status: 'waiting',
       progress: 0,
       onComplete
@@ -39,13 +42,21 @@ describe('addUploadToQueue', () => {
   })
 
   it('should handle undefined language code and name', () => {
-    const setUploadTasks = jest.fn()
+    const setUploadTasks = vi.fn()
     const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
     const videoBlockId = 'block-1'
 
-    addUploadToQueue(videoBlockId, file, undefined, undefined, undefined, {
-      setUploadTasks
-    })
+    addUploadToQueue(
+      videoBlockId,
+      file,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      {
+        setUploadTasks
+      }
+    )
 
     expect(setUploadTasks).toHaveBeenCalledTimes(1)
     const updateFn = setUploadTasks.mock.calls[0][0]
@@ -59,7 +70,7 @@ describe('addUploadToQueue', () => {
   })
 
   it('should add to existing map without overwriting other tasks', () => {
-    const setUploadTasks = jest.fn()
+    const setUploadTasks = vi.fn()
     const file1 = new File(['test1'], 'test1.mp4', { type: 'video/mp4' })
     const file2 = new File(['test2'], 'test2.mp4', { type: 'video/mp4' })
     const existingTask: UploadTask = {
@@ -71,7 +82,7 @@ describe('addUploadToQueue', () => {
       languageName: 'English'
     }
 
-    addUploadToQueue('block-2', file2, 'es', 'Spanish', undefined, {
+    addUploadToQueue('block-2', file2, 'es', 'Spanish', undefined, undefined, {
       setUploadTasks
     })
 

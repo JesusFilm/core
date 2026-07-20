@@ -125,10 +125,10 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/apps/videos-admin"],
       "options": {
-        "jestConfig": "apps/videos-admin/jest.config.ts"
+        "configFile": "apps/videos-admin/vitest.config.mts"
       }
     },
     "lint": {
@@ -143,7 +143,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsc -b apps/videos-admin/tsconfig.json"
+        "command": "pnpm tsc7 -p apps/videos-admin/tsconfig.ts7.json"
       }
     },
     "demo": {

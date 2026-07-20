@@ -18,14 +18,14 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsc -b libs/journeys/ui/tsconfig.json"
+        "command": "pnpm tsc7 -p libs/journeys/ui/tsconfig.ts7.json"
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nx/vitest:test",
       "outputs": ["{workspaceRoot}/coverage/libs/journeys/ui"],
       "options": {
-        "jestConfig": "libs/journeys/ui/jest.config.ts"
+        "configFile": "libs/journeys/ui/vitest.config.mts"
       }
     },
     "demo": {

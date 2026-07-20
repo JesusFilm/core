@@ -20,9 +20,9 @@ import {
 
 import { CanvasDetails } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn(() => false)
+  default: vi.fn(() => false)
 }))
 
 describe('CanvasDetails', () => {

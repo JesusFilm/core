@@ -9,5 +9,19 @@
   "Get me out of here!": "Fais-moi sortir d'ici !",
   "Terms & Conditions": "Conditions générales",
   "Privacy Policy": "Politique de confidentialité",
-  "NextSteps © {{year}}": "NextSteps © {{year}}"
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Use": "Utilise",
+  "Preview": "Aperçu",
+  "About this chat": "À propos de ce chat",
+  "About this chat | Next Steps": "À propos de cette discussion | Prochaines étapes",
+  "The chat on this journey is powered by an AI assistant. To help us improve future replies, the messages you send and the assistant’s replies are saved.": "Le chat de ce parcours est géré par un assistant IA. Afin de nous aider à améliorer les réponses futures, les messages que tu envoies et les réponses de l'assistant sont enregistrés.",
+  "We do not save your name, email address, or any account details, and we do not link conversations to your identity.": "Nous n'enregistrons ni ton nom, ni ton adresse e-mail, ni aucune information relative à ton compte, et nous ne relions pas les conversations à ton identité.",
+  "Where the messages go": "Où vont les messages",
+  "Your messages and the assistant’s replies pass through two third-party services: an AI service that generates the replies, and an analytics service called Langfuse where the conversations are stored so the team can review them in aggregate to improve the experience. They are not sold and they are not used for advertising.": "Tes messages et les réponses de l'assistant transitent par deux services tiers : un service d'IA qui génère les réponses, et un service d'analyse appelé Langfuse où les conversations sont stockées afin que l'équipe puisse les examiner dans leur ensemble pour améliorer l'expérience. Elles ne sont pas vendues et ne sont pas utilisées à des fins publicitaires.",
+  "If you prefer not to take part": "Si tu préfères ne pas participer",
+  "There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.": "Il n'existe actuellement aucune option permettant de désactiver spécifiquement le chat. Si tu préfères que tes messages ne soient pas enregistrés, merci de ne pas utiliser le chat — le reste du parcours fonctionne très bien sans.",
+  "Last updated: June 2026": "Dernière mise à jour : juin 2026",
+  "Back to Next Steps": "Retour aux étapes suivantes",
+  "This template gallery is not available.": "Cette galerie de modèles n'est pas disponible.",
+  "<0>This page has been created to test the embed code.<strong>If youve found this page in error click the button below.</strong></0>": "<0>Cette page a été créée pour tester le code d'intégration.<strong>Si tu es tombé sur cette page par erreur, clique sur le bouton ci-dessous.</strong></0>"
 }

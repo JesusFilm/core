@@ -4,7 +4,7 @@ export default [
   ...nextConfig,
   {
     ignores: [
-      'apps/watch-modern/jest.config.ts',
+      'apps/watch-modern/vitest.config.mts',
       'apps/watch-modern/next.config.mjs'
     ]
   },

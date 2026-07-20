@@ -13,7 +13,7 @@ import Skeleton from '@mui/material/Skeleton'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import type FormDataType from 'form-data'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import fetch from 'node-fetch'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
@@ -70,7 +70,9 @@ export function SocialScreenSocialImage({
     if (journey == null || file == null) return
     setLoading(true)
 
-    const { data } = await createCloudflareUploadByFile({})
+    const { data } = await createCloudflareUploadByFile({
+      variables: { journeyId: journey?.id }
+    })
     if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
       const formData = new FormData()
       formData.append('file', file)

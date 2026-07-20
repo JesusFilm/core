@@ -10,7 +10,7 @@ import { useStepAndCardBlockCreateMutation } from '.'
 
 describe('useStepAndCardBlockCreateMutation', () => {
   it('should create step and card block', async () => {
-    const mockResult = jest
+    const mockResult = vi
       .fn()
       .mockReturnValue(stepAndCardBlockCreateMock.result)
 
@@ -105,7 +105,9 @@ describe('useStepAndCardBlockCreateMutation', () => {
         parentOrder: 0,
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
-        eventLabel: null
+        eventLabel: null,
+        showAssistant: null,
+        expandChatByDefault: null
       })
     })
   })

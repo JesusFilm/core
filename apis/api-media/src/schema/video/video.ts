@@ -89,7 +89,7 @@ export function getLanguageIdFromInfo(
       )?.find(({ id }: { id: string }) => id === parentId)?.primaryLanguageId
 }
 
-const Video = builder.prismaObject('Video', {
+export const Video = builder.prismaObject('Video', {
   shareable: true,
   include: {
     childIds: true
@@ -119,6 +119,11 @@ const Video = builder.prismaObject('Video', {
     id: t.exposeID('id', { nullable: false }),
     label: t.expose('label', { type: VideoLabel, nullable: false }),
     locked: t.exposeBoolean('locked', { nullable: false }),
+    restrictTranslations: t.exposeBoolean('restrictTranslations', {
+      nullable: false,
+      description:
+        'When true, generated translated audio variants or generated subtitle tracks should not be created for this video. Metadata translations (title, description, study questions) are unaffected.'
+    }),
     primaryLanguageId: t.exposeID('primaryLanguageId', { nullable: false }),
     published: t.exposeBoolean('published', { nullable: false }),
     cloudflareAssets: t.relation('cloudflareAssets', { nullable: false }),
@@ -349,6 +354,7 @@ const Video = builder.prismaObject('Video', {
         }
 
         // Prefer per-block language set by resolveReference over the legacy batch lookup
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- `_requestedLanguageId` is set dynamically via resolveReference; not typed on the Prisma row
         const requestedLanguageId = (video as any)._requestedLanguageId as
           | string
           | undefined
@@ -729,13 +735,16 @@ builder.mutationFields((t) => ({
     resolve: async (query, _parent, { input }) => {
       // Get current video data to check if published status is changing and to prevent slug change after publish
       const currentVideo =
-        input.published !== undefined || input.slug !== undefined
+        input.published !== undefined ||
+        input.slug !== undefined ||
+        input.restrictTranslations === false
           ? await prisma.video.findUnique({
               where: { id: input.id },
               select: {
                 published: true,
                 publishedAt: true,
                 slug: true,
+                restrictTranslations: true,
                 variants: {
                   where: { published: true },
                   select: { languageId: true }
@@ -751,6 +760,15 @@ builder.mutationFields((t) => ({
         currentVideo?.publishedAt != null
       ) {
         throw new Error('Cannot change slug after video has been published')
+      }
+
+      if (
+        input.restrictTranslations === false &&
+        currentVideo?.restrictTranslations === true
+      ) {
+        throw new Error(
+          'Translation restriction cannot be disabled once enabled'
+        )
       }
 
       // If published is being set to true, we need to check if publishedAt should be set
@@ -794,6 +812,8 @@ builder.mutationFields((t) => ({
           publishedAt: publishedAtUpdate,
           slug: input.slug ?? undefined,
           noIndex: input.noIndex ?? undefined,
+          restrictTranslations:
+            input.restrictTranslations === true ? true : undefined,
           childIds: input.childIds ?? undefined,
           restrictDownloadPlatforms:
             input.restrictDownloadPlatforms ?? undefined,

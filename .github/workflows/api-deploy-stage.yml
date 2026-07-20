@@ -9,9 +9,6 @@ permissions:
 jobs:
   affected:
     runs-on: blacksmith-2vcpu-ubuntu-2204
-    strategy:
-      matrix:
-        node-version: [22]
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     outputs:
@@ -26,7 +23,7 @@ jobs:
           run_install: false
       - uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 22
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -58,22 +55,7 @@ jobs:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
       name: api-journeys
-      env: stage
-      branch: ${{ github.ref_name }}
-      endpoint_url: http://api-journeys.stage.internal:4001/graphql
-    secrets:
-      HIVE_TOKEN: ${{ secrets.HIVE_STAGE_READ_WRITE_TOKEN }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
-      JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
-      AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
-      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-  api-journeys-modern:
-    needs: affected
-    if: contains(needs.affected.outputs.matrix, 'api-journeys-modern')
-    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
-    with:
-      name: api-journeys-modern
+      service: api-journeys-modern
       env: stage
       branch: ${{ github.ref_name }}
       endpoint_url: http://api-journeys-modern.stage.internal:4004/graphql

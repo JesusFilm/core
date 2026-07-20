@@ -1,11 +1,5 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
-    "incremental": true,
-    "tsBuildInfoFile": "../../.cache/api-journeys/tsc/.tsbuildinfo"
-  },
   "files": [],
   "include": [],
   "references": [
@@ -15,5 +9,17 @@
     {
       "path": "./tsconfig.spec.json"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "allowJs": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "strict": true,
+    "incremental": true,
+    "tsBuildInfoFile": "../../.cache/api-journeys/tsc/.tsbuildinfo",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "outDir": "../../dist/out-tsc"
+  }
 }

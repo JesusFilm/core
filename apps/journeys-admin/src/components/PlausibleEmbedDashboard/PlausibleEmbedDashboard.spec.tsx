@@ -1,6 +1,7 @@
 import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
+import { type MockedFunction } from 'vitest'
 
 import type {
   GetAdminJourneyWithPlausibleToken,
@@ -11,12 +12,12 @@ import { GET_ADMIN_JOURNEY_WITH_PLAUSIBLE_TOKEN } from './PlausibleEmbedDashboar
 
 import { PlausibleEmbedDashboard } from '.'
 
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: vi.fn()
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('PlausibleEmbedDashboard', () => {
   it('should show plausible dashboard', async () => {
@@ -30,7 +31,7 @@ describe('PlausibleEmbedDashboard', () => {
       plausibleToken: 'plausible-token'
     } as unknown as Journey
 
-    const result = jest.fn(() => ({
+    const result = vi.fn(() => ({
       data: {
         journey
       }

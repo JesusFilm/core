@@ -1,0 +1,31 @@
+{
+  "name": "shared-dev-hosts",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/dev-hosts/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/dev-hosts/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm tsc7 -p libs/shared/dev-hosts/tsconfig.ts7.json"
+      }
+    },
+    "test": {
+      "executor": "@nx/vitest:test",
+      "outputs": ["{workspaceRoot}/coverage/libs/shared/dev-hosts"],
+      "options": {
+        "configFile": "libs/shared/dev-hosts/vitest.config.mts"
+      }
+    }
+  }
+}

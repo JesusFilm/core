@@ -1,9 +1,16 @@
 'use client'
 
-import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import { useApolloClient, useMutation } from '@apollo/client'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
-import { ReactNode, createContext, useContext, useReducer } from 'react'
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useContext,
+  useReducer,
+  useRef
+} from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { graphql } from '@core/shared/gql'
@@ -11,61 +18,53 @@ import { graphql } from '@core/shared/gql'
 import { getExtension } from '../(dashboard)/videos/[videoId]/audio/add/_utils/getExtension'
 import { refreshToken } from '../../app/api'
 
-export const CREATE_MUX_VIDEO_UPLOAD_BY_URL = graphql(`
-  mutation CreateMuxVideoUploadByUrl(
-    $url: String!
-    $userGenerated: Boolean
+export const START_VIDEO_VARIANT_UPLOAD = graphql(`
+  mutation StartVideoVariantUpload($input: VideoVariantUploadStartInput!) {
+    videoVariantUploadStart(input: $input) {
+      id
+      status
+    }
+  }
+`)
+
+export const MARK_VIDEO_VARIANT_UPLOAD_R2_PREPARED = graphql(`
+  mutation MarkVideoVariantUploadR2Prepared($id: ID!, $r2AssetId: ID!) {
+    videoVariantUploadMarkR2Prepared(id: $id, r2AssetId: $r2AssetId) {
+      id
+      status
+      r2AssetId
+    }
+  }
+`)
+
+export const MARK_VIDEO_VARIANT_UPLOAD_R2_COMPLETE = graphql(`
+  mutation MarkVideoVariantUploadR2Complete($id: ID!) {
+    videoVariantUploadMarkR2Complete(id: $id) {
+      id
+      status
+    }
+  }
+`)
+
+export const CREATE_VIDEO_VARIANT_UPLOAD_MUX = graphql(`
+  mutation CreateVideoVariantUploadMux(
+    $id: ID!
     $downloadable: Boolean
     $maxResolution: MaxResolutionTier
   ) {
-    createMuxVideoUploadByUrl(
-      url: $url
-      userGenerated: $userGenerated
+    videoVariantUploadCreateMux(
+      id: $id
       downloadable: $downloadable
       maxResolution: $maxResolution
     ) {
       id
-      assetId
-      playbackId
-      uploadUrl
-      readyToStream
+      status
+      muxVideoId
     }
   }
 `)
 
-export const CREATE_VIDEO_VARIANT = graphql(`
-  mutation CreateVideoVariant($input: VideoVariantCreateInput!) {
-    videoVariantCreate(input: $input) {
-      id
-      videoId
-      slug
-      hls
-      published
-      language {
-        id
-        slug
-        name {
-          value
-          primary
-        }
-      }
-    }
-  }
-`)
-
-export const GET_MY_MUX_VIDEO = graphql(`
-  query GetMyMuxVideo($id: ID!, $userGenerated: Boolean) {
-    getMyMuxVideo(id: $id, userGenerated: $userGenerated) {
-      id
-      assetId
-      playbackId
-      readyToStream
-      duration
-    }
-  }
-`)
-
-export const PREPARE_R2_MULTIPART = gql`
+export const PREPARE_R2_MULTIPART = graphql(`
   mutation PrepareCloudflareR2Multipart(
     $input: CloudflareR2MultipartPrepareInput!
   ) {
@@ -81,9 +80,9 @@ export const PREPARE_R2_MULTIPART = gql`
       }
     }
   }
-`
+`)
 
-export const COMPLETE_R2_MULTIPART = gql`
+export const COMPLETE_R2_MULTIPART = graphql(`
   mutation CloudflareR2CompleteMultipart(
     $input: CloudflareR2CompleteMultipartInput!
   ) {
@@ -93,7 +92,7 @@ export const COMPLETE_R2_MULTIPART = gql`
       publicUrl
     }
   }
-`
+`)
 
 interface UploadVideoVariantState {
   isUploading: boolean
@@ -104,7 +103,7 @@ interface UploadVideoVariantState {
   etaSeconds: number | null
   isProcessing: boolean
   error: string | null
-  muxVideoId: string | null
+  uploadId: string | null
   edition: string | null
   languageId: string | null
   languageSlug: string | null
@@ -138,7 +137,7 @@ const initialState: UploadVideoVariantState = {
   etaSeconds: null,
   isProcessing: false,
   error: null,
-  muxVideoId: null,
+  uploadId: null,
   edition: null,
   languageId: null,
   languageSlug: null,
@@ -156,6 +155,13 @@ const MIN_MULTIPART_PART_SIZE = 5 * 1024 * 1024
 const DEFAULT_MULTIPART_PART_SIZE = 64 * 1024 * 1024
 const MAX_MULTIPART_PARTS = 10000
 
+interface BrowserVideoMetadata {
+  duration: number
+  durationMs: number
+  width: number
+  height: number
+}
+
 function calculateMultipartPartSize(fileSize: number): number {
   if (fileSize <= DEFAULT_MULTIPART_PART_SIZE) {
     return Math.max(fileSize, MIN_MULTIPART_PART_SIZE)
@@ -169,6 +175,60 @@ function calculateMultipartPartSize(fileSize: number): number {
   return Math.max(MIN_MULTIPART_PART_SIZE, sizedForMaxParts)
 }
 
+function isValidVideoMetadata(metadata: BrowserVideoMetadata): boolean {
+  return (
+    Number.isFinite(metadata.duration) &&
+    Number.isFinite(metadata.durationMs) &&
+    Number.isFinite(metadata.width) &&
+    Number.isFinite(metadata.height) &&
+    metadata.duration > 0 &&
+    metadata.durationMs > 0 &&
+    metadata.width > 0 &&
+    metadata.height > 0
+  )
+}
+
+async function readBrowserVideoMetadata(
+  file: File
+): Promise<BrowserVideoMetadata> {
+  if (typeof document === 'undefined' || typeof URL === 'undefined') {
+    throw new Error('Video metadata can only be read in the browser')
+  }
+
+  const objectUrl = URL.createObjectURL(file)
+  const video = document.createElement('video')
+
+  try {
+    const metadata = await new Promise<BrowserVideoMetadata>(
+      (resolve, reject) => {
+        video.preload = 'metadata'
+        video.onloadedmetadata = () => {
+          const duration = Math.round(video.duration)
+          const durationMs = Math.round(video.duration * 1000)
+          const width = video.videoWidth
+          const height = video.videoHeight
+
+          resolve({ duration, durationMs, width, height })
+        }
+        video.onerror = () => {
+          reject(new Error('Unable to read video metadata'))
+        }
+        video.src = objectUrl
+      }
+    )
+
+    if (!isValidVideoMetadata(metadata)) {
+      throw new Error('Video metadata is missing duration or dimensions')
+    }
+
+    return metadata
+  } finally {
+    video.removeAttribute('src')
+    video.load()
+    URL.revokeObjectURL(objectUrl)
+  }
+}
+
 type UploadAction =
   | {
       type: 'START_UPLOAD'
@@ -179,6 +239,7 @@ type UploadAction =
       published: boolean
       onComplete?: () => void
       videoSlug?: string
+      uploadId?: string | null
       totalBytes: number
     }
   | {
@@ -188,7 +249,6 @@ type UploadAction =
       uploadSpeedBps?: number | null
       etaSeconds?: number | null
     }
-  | { type: 'START_PROCESSING'; muxVideoId: string }
   | { type: 'COMPLETE' }
   | { type: 'SET_ERROR'; error: string }
   | { type: 'CLEAR' }
@@ -211,6 +271,7 @@ function uploadReducer(
         languageSlug: action.languageSlug,
         edition: action.edition,
         published: action.published,
+        uploadId: action.uploadId ?? null,
         onComplete: action.onComplete,
         videoSlug: action.videoSlug ?? null
       }
@@ -225,13 +286,6 @@ function uploadReducer(
             : state.uploadSpeedBps,
         etaSeconds:
           action.etaSeconds !== undefined ? action.etaSeconds : state.etaSeconds
-      }
-    case 'START_PROCESSING':
-      return {
-        ...state,
-        isUploading: false,
-        isProcessing: true,
-        muxVideoId: action.muxVideoId
       }
     case 'COMPLETE':
       return initialState
@@ -250,174 +304,61 @@ export function UploadVideoVariantProvider({
   children: ReactNode
 }) {
   const [state, dispatch] = useReducer(uploadReducer, initialState)
+  const apolloClient = useApolloClient()
   const { enqueueSnackbar } = useSnackbar()
+  const authRefreshIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
+    null
+  )
 
   const dispatchError = (errorMessage: string) => {
     dispatch({ type: 'SET_ERROR', error: errorMessage })
     enqueueSnackbar(errorMessage, { variant: 'error' })
   }
 
+  const stopUploadAuthRefresh = useCallback(() => {
+    if (authRefreshIntervalRef.current == null) return
+
+    clearInterval(authRefreshIntervalRef.current)
+    authRefreshIntervalRef.current = null
+  }, [])
+
+  const syncUploadAuthToken = useCallback(async () => {
+    const refreshedToken = await refreshToken()
+
+    if (refreshedToken == null) return false
+
+    apolloClient.defaultContext.token = refreshedToken
+    return true
+  }, [apolloClient])
+
+  const requireUploadAuthToken = useCallback(async () => {
+    if (await syncUploadAuthToken()) return
+
+    throw new Error('Unable to refresh authentication for video upload')
+  }, [syncUploadAuthToken])
+
+  const startUploadAuthRefresh = useCallback(() => {
+    stopUploadAuthRefresh()
+
+    authRefreshIntervalRef.current = setInterval(() => {
+      void syncUploadAuthToken().catch((error) => {
+        console.warn('Failed to refresh upload auth token', { error })
+      })
+    }, 45000)
+  }, [stopUploadAuthRefresh, syncUploadAuthToken])
+
   const [prepareR2Multipart] = useMutation(PREPARE_R2_MULTIPART)
   const [completeR2Multipart] = useMutation(COMPLETE_R2_MULTIPART)
-  const [createMuxVideo] = useMutation(CREATE_MUX_VIDEO_UPLOAD_BY_URL)
-  const [createVideoVariant] = useMutation(CREATE_VIDEO_VARIANT)
-  const [getMyMuxVideo, { stopPolling }] = useLazyQuery(GET_MY_MUX_VIDEO, {
-    pollInterval: 1000,
-    notifyOnNetworkStatusChange: true,
-    onCompleted: async (data) => {
-      if (
-        data.getMyMuxVideo.playbackId != null &&
-        data.getMyMuxVideo.assetId != null &&
-        data.getMyMuxVideo.readyToStream &&
-        state.muxVideoId != null
-      ) {
-        stopPolling()
-        console.info('Mux video ready, creating video variant', {
-          muxVideoId: data.getMyMuxVideo.id,
-          assetId: data.getMyMuxVideo.assetId,
-          playbackId: data.getMyMuxVideo.playbackId,
-          duration: data.getMyMuxVideo.duration
-        })
-        await handleCreateVideoVariant(
-          data.getMyMuxVideo.id,
-          data.getMyMuxVideo.playbackId,
-          data.getMyMuxVideo.duration
-        )
-      }
-    },
-    onError: (error) => {
-      stopPolling()
-      const errorMessage = error.message || 'Failed to get Mux video status'
-      dispatchError(errorMessage)
-    }
-  })
-
-  const handleCreateVideoVariant = async (
-    muxId: string,
-    playbackId: string,
-    duration?: number | null
-  ) => {
-    const variantContext = {
-      muxId,
-      playbackId,
-      duration,
-      videoId: state.videoId,
-      languageId: state.languageId,
-      languageSlug: state.languageSlug,
-      edition: state.edition,
-      videoSlug: state.videoSlug
-    }
-
-    if (
-      state.videoId == null ||
-      state.languageId == null ||
-      state.languageSlug == null ||
-      state.edition == null ||
-      state.videoSlug == null
-    ) {
-      const missingFields = [
-        state.videoId == null && 'videoId',
-        state.languageId == null && 'languageId',
-        state.languageSlug == null && 'languageSlug',
-        state.edition == null && 'edition',
-        state.videoSlug == null && 'videoSlug'
-      ].filter(Boolean)
-
-      const errorMessage = `Failed to create video variant: missing required fields (${missingFields.join(', ')})`
-      console.error(errorMessage, variantContext)
-      dispatchError(errorMessage)
-      return
-    }
-
-    const durationInSeconds = duration ?? 0
-
-    const variantInput = {
-      id: `${state.languageId}_${state.videoId}`,
-      videoId: state.videoId,
-      edition: state.edition,
-      languageId: state.languageId,
-      slug: `${state.videoSlug}/${state.languageSlug}`,
-      downloadable: true,
-      published: state.published ?? false,
-      muxVideoId: muxId,
-      hls: `https://stream.mux.com/${playbackId}.m3u8`,
-      duration: durationInSeconds,
-      lengthInMilliseconds: durationInSeconds * 1000
-    }
-
-    console.info('Creating video variant', {
-      ...variantContext,
-      variantId: variantInput.id,
-      slug: variantInput.slug
-    })
-
-    try {
-      const result = await createVideoVariant({
-        variables: {
-          input: variantInput
-        },
-        onCompleted: () => {
-          state.onComplete?.()
-        },
-        update: (cache, { data }) => {
-          if (data?.videoVariantCreate == null || state.videoId == null) return
-          cache.modify({
-            id: cache.identify({
-              __typename: 'Video',
-              id: state.videoId
-            }),
-            fields: {
-              variants(existingVariants = []) {
-                const newVariantRef = cache.writeFragment({
-                  data: data.videoVariantCreate,
-                  fragment: graphql(`
-                    fragment NewVariant on VideoVariant {
-                      id
-                      videoId
-                      slug
-                      hls
-                      language {
-                        id
-                        slug
-                        name {
-                          value
-                          primary
-                        }
-                      }
-                    }
-                  `)
-                })
-                return [...existingVariants, newVariantRef]
-              }
-            }
-          })
-        }
-      })
-
-      if (result.errors != null && result.errors.length > 0) {
-        const gqlErrors = result.errors.map((e) => e.message).join('; ')
-        const errorMessage = `Failed to create video variant: ${gqlErrors}`
-        console.error(errorMessage, {
-          ...variantContext,
-          graphqlErrors: result.errors
-        })
-        dispatchError(errorMessage)
-        return
-      }
-
-      console.info('Video variant created successfully', {
-        ...variantContext,
-        variantId: variantInput.id
-      })
-      dispatch({ type: 'COMPLETE' })
-      enqueueSnackbar('Audio Language Added', { variant: 'success' })
-    } catch (error) {
-      const errorMessage = `Failed to create video variant: ${error instanceof Error ? error.message : 'Unknown error'}`
-      console.error(errorMessage, { ...variantContext, error })
-      dispatchError(errorMessage)
-    }
-  }
-
+  const [startVideoVariantUpload] = useMutation(START_VIDEO_VARIANT_UPLOAD)
+  const [markVideoVariantUploadR2Prepared] = useMutation(
+    MARK_VIDEO_VARIANT_UPLOAD_R2_PREPARED
+  )
+  const [markVideoVariantUploadR2Complete] = useMutation(
+    MARK_VIDEO_VARIANT_UPLOAD_R2_COMPLETE
+  )
+  const [createVideoVariantUploadMux] = useMutation(
+    CREATE_VIDEO_VARIANT_UPLOAD_MUX
+  )
   const startUpload = async (
     file: File,
     videoId: string,
@@ -440,6 +381,36 @@ export function UploadVideoVariantProvider({
 
     try {
       console.info('Starting video upload', logContext)
+      await syncUploadAuthToken()
+      startUploadAuthRefresh()
+      const metadata = await readBrowserVideoMetadata(file)
+      await requireUploadAuthToken()
+      const uploadResponse = await startVideoVariantUpload({
+        variables: {
+          input: {
+            source: 'videos-admin',
+            sourceKey: uploadTraceId,
+            videoId,
+            edition,
+            languageId,
+            version: 1,
+            published,
+            originalFilename: file.name,
+            contentType: file.type,
+            contentLength: file.size,
+            duration: metadata.duration,
+            durationMs: metadata.durationMs,
+            width: metadata.width,
+            height: metadata.height
+          }
+        }
+      })
+      const uploadId = uploadResponse.data?.videoVariantUploadStart?.id
+      if (uploadId == null) {
+        dispatchError('Failed to start video upload lifecycle')
+        return
+      }
+
       dispatch({
         type: 'START_UPLOAD',
         videoId,
@@ -447,6 +418,7 @@ export function UploadVideoVariantProvider({
         languageSlug,
         edition,
         published,
+        uploadId,
         onComplete,
         videoSlug,
         totalBytes: file.size
@@ -459,6 +431,7 @@ export function UploadVideoVariantProvider({
         ...logContext,
         r2FileName: fileName
       })
+      await requireUploadAuthToken()
       const r2Response = await prepareR2Multipart({
         variables: {
           input: {
@@ -474,9 +447,11 @@ export function UploadVideoVariantProvider({
       const multipartData = r2Response.data?.cloudflareR2MultipartPrepare
 
       if (
-        multipartData?.uploadId == null ||
-        multipartData?.publicUrl == null ||
-        multipartData?.parts == null
+        multipartData?.id == null ||
+        multipartData.fileName == null ||
+        multipartData.uploadId == null ||
+        multipartData.publicUrl == null ||
+        multipartData.parts == null
       ) {
         console.error('Failed to prepare R2 multipart upload', {
           ...logContext,
@@ -492,9 +467,26 @@ export function UploadVideoVariantProvider({
         partCount: multipartData.parts.length
       })
 
+      await requireUploadAuthToken()
+      await markVideoVariantUploadR2Prepared({
+        variables: {
+          id: uploadId,
+          r2AssetId: multipartData.id
+        }
+      })
+
       const partSize =
         multipartData.partSize ?? calculateMultipartPartSize(file.size)
-      const parts = multipartData.parts
+      const parts = multipartData.parts.map((part) => {
+        if (part.partNumber == null) {
+          throw new Error('R2 multipart upload part is missing a part number')
+        }
+        if (part.uploadUrl == null) {
+          throw new Error(`Missing upload URL for part ${part.partNumber}`)
+        }
+
+        return { partNumber: part.partNumber, uploadUrl: part.uploadUrl }
+      })
 
       if (parts.length === 0) {
         console.error('R2 multipart upload has no parts', {
@@ -507,11 +499,6 @@ export function UploadVideoVariantProvider({
       }
 
       const abortController = new AbortController()
-
-      const keepAliveInterval = setInterval(() => {
-        void refreshToken().catch(() => undefined)
-      }, 45000)
-
       const uploadedParts: Array<{ partNumber: number; eTag: string }> = []
       const totalSize = file.size
       let uploadedBytes = 0
@@ -609,10 +596,6 @@ export function UploadVideoVariantProvider({
           const end = Math.min(start + partSize, file.size)
           const chunk = file.slice(start, end)
 
-          if (part.uploadUrl == null) {
-            throw new Error(`Missing upload URL for part ${part.partNumber}`)
-          }
-
           const uploadResult = await uploadPartWithRetry(
             part.uploadUrl,
             chunk,
@@ -657,7 +640,6 @@ export function UploadVideoVariantProvider({
           })
         }
       } finally {
-        clearInterval(keepAliveInterval)
         abortController.abort()
       }
 
@@ -675,6 +657,7 @@ export function UploadVideoVariantProvider({
         r2FileName: multipartData.fileName,
         r2UploadId: multipartData.uploadId
       })
+      await requireUploadAuthToken()
       await completeR2Multipart({
         variables: {
           input: {
@@ -691,45 +674,48 @@ export function UploadVideoVariantProvider({
         r2UploadId: multipartData.uploadId
       })
 
-      const muxResponse = await createMuxVideo({
+      await requireUploadAuthToken()
+      await markVideoVariantUploadR2Complete({
+        variables: { id: uploadId }
+      })
+
+      const muxResponse = await createVideoVariantUploadMux({
         variables: {
-          url: multipartData.publicUrl,
-          userGenerated: false,
+          id: uploadId,
           downloadable: true,
           maxResolution: 'uhd'
         }
       })
 
-      if (muxResponse.data?.createMuxVideoUploadByUrl?.id == null) {
+      if (muxResponse.data?.videoVariantUploadCreateMux?.id == null) {
         console.error('Failed to create Mux video', {
           ...logContext,
+          uploadId,
           r2FileName: multipartData.fileName
         })
         dispatchError('Failed to create Mux video')
         return
       }
 
-      dispatch({
-        type: 'START_PROCESSING',
-        muxVideoId: muxResponse.data.createMuxVideoUploadByUrl.id
-      })
-      console.info('Mux video created, polling for readiness', {
+      console.info('Mux video created, upload processing handed off', {
         ...logContext,
-        muxVideoId: muxResponse.data.createMuxVideoUploadByUrl.id
+        uploadId,
+        muxVideoId: muxResponse.data.videoVariantUploadCreateMux.muxVideoId
       })
 
-      // Start polling for Mux video status
-      void getMyMuxVideo({
-        variables: {
-          id: muxResponse.data.createMuxVideoUploadByUrl.id,
-          userGenerated: false
-        }
-      })
+      dispatch({ type: 'COMPLETE' })
+      enqueueSnackbar(
+        'Upload complete. Processing will finish in the background.',
+        { variant: 'success' }
+      )
+      onComplete?.()
     } catch (error) {
       const errorMessage =
         (error instanceof Error && error.message) || 'Failed to upload video'
       console.error('Video upload failed', { ...logContext, error })
       dispatchError(errorMessage)
+    } finally {
+      stopUploadAuthRefresh()
     }
   }
 

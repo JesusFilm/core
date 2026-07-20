@@ -10,12 +10,12 @@ import { JourneyCardText } from '.'
 
 describe('JourneyCardText', () => {
   beforeAll(() => {
-    jest.useFakeTimers()
-    jest.setSystemTime(new Date(fakeDate))
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(fakeDate))
   })
 
   afterAll(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   it('should show title', () => {

@@ -9,5 +9,19 @@
   "Get me out of here!": "带我离开这里",
   "Terms & Conditions": "条款和条件",
   "Privacy Policy": "隐私政策",
-  "NextSteps © {{year}}": "NextSteps © {{year}}"
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Use": "使用",
+  "Preview": "预览",
+  "About this chat": "关于本次聊天",
+  "About this chat | Next Steps": "关于本次聊天 | 后续步骤",
+  "The chat on this journey is powered by an AI assistant. To help us improve future replies, the messages you send and the assistant’s replies are saved.": "本次旅程中的聊天功能由人工智能助手提供支持。为了帮助我们改进未来的回复，您发送的消息和助手的回复都会被保存下来。",
+  "We do not save your name, email address, or any account details, and we do not link conversations to your identity.": "我们不会保存您的姓名、电子邮件地址或任何账户信息，也不会将对话与您的身份关联起来。",
+  "Where the messages go": "消息的去向",
+  "Your messages and the assistant’s replies pass through two third-party services: an AI service that generates the replies, and an analytics service called Langfuse where the conversations are stored so the team can review them in aggregate to improve the experience. They are not sold and they are not used for advertising.": "您的消息和助手的回复会经过两个第三方服务：一个是生成回复的人工智能服务，另一个是名为 Langfuse 的分析服务——对话内容会存储在该服务中，以便团队能够汇总查看这些对话，从而优化用户体验。这些数据不会被出售，也不会用于广告目的。",
+  "If you prefer not to take part": "如果您不愿参加",
+  "There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.": "目前尚无针对聊天的专门退出选项。如果您不希望您的消息被保存，请不要使用聊天功能——其余流程在没有聊天功能的情况下照常进行。",
+  "Last updated: June 2026": "最后更新：2026年6月",
+  "Back to Next Steps": "返回下一步",
+  "This template gallery is not available.": "此模板图库不可用。",
+  "<0>This page has been created to test the embed code.<strong>If youve found this page in error click the button below.</strong></0>": "<0>创建此页面是为了测试嵌入代码。<strong>如果您误入了此页面，请点击下方的按钮。</strong></0>"
 }

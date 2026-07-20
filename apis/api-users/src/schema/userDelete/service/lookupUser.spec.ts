@@ -1,14 +1,15 @@
 import { GraphQLError } from 'graphql'
+import { vi } from 'vitest'
 
 import { prismaMock } from '../../../../test/prismaMock'
 
 import { lookupUser } from './lookupUser'
 
-const mockGetUser = jest.fn()
-const mockGetUserByEmail = jest.fn()
-const mockVerifyIdToken = jest.fn()
+const mockGetUser = vi.fn()
+const mockGetUserByEmail = vi.fn()
+const mockVerifyIdToken = vi.fn()
 
-jest.mock('@core/yoga/firebaseClient', () => ({
+vi.mock('@core/yoga/firebaseClient', () => ({
   auth: {
     getUser: (...args: unknown[]) => mockGetUser(...args),
     getUserByEmail: (...args: unknown[]) => mockGetUserByEmail(...args),

@@ -2,8 +2,9 @@ import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { LDClient } from '@launchdarkly/node-server-sdk'
 import { getApp } from 'firebase/app'
 import { getAuth, signInAnonymously } from 'firebase/auth'
-import { SSRConfig } from 'next-i18next'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { SSRConfig } from 'next-i18next/pages'
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
+import { type MockedFunction } from 'vitest'
 
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 
@@ -14,28 +15,26 @@ import { checkConditionalRedirect } from '../checkConditionalRedirect'
 
 import { ACCEPT_ALL_INVITES, initAndAuthApp } from './initAndAuthApp'
 
-jest.mock('next-i18next/serverSideTranslations')
-jest.mock('@core/shared/ui/getLaunchDarklyClient')
-jest.mock('../apolloClient')
-jest.mock('../checkConditionalRedirect')
-jest.mock('firebase/app')
-jest.mock('firebase/auth')
+vi.mock('next-i18next/pages/serverSideTranslations')
+vi.mock('@core/shared/ui/getLaunchDarklyClient')
+vi.mock('../apolloClient')
+vi.mock('../checkConditionalRedirect')
+vi.mock('firebase/app')
+vi.mock('firebase/auth')
 
-const serverSideTranslationsMock =
-  serverSideTranslations as jest.MockedFunction<typeof serverSideTranslations>
-const getLaunchDarklyClientMock = getLaunchDarklyClient as jest.MockedFunction<
+const serverSideTranslationsMock = vi.mocked(serverSideTranslations)
+const getLaunchDarklyClientMock = getLaunchDarklyClient as MockedFunction<
   typeof getLaunchDarklyClient
 >
-const createApolloClientMock = createApolloClient as jest.MockedFunction<
+const createApolloClientMock = createApolloClient as MockedFunction<
   typeof createApolloClient
 >
-const checkConditionalRedirectMock =
-  checkConditionalRedirect as jest.MockedFunction<
-    typeof checkConditionalRedirect
-  >
-const getAppMock = getApp as jest.MockedFunction<typeof getApp>
-const getAuthMock = getAuth as jest.MockedFunction<typeof getAuth>
-const signInAnonymouslyMock = signInAnonymously as jest.MockedFunction<
+const checkConditionalRedirectMock = checkConditionalRedirect as MockedFunction<
+  typeof checkConditionalRedirect
+>
+const getAppMock = getApp as MockedFunction<typeof getApp>
+const getAuthMock = getAuth as MockedFunction<typeof getAuth>
+const signInAnonymouslyMock = signInAnonymously as MockedFunction<
   typeof signInAnonymously
 >
 
@@ -72,7 +71,7 @@ describe('initAndAuthApp', () => {
     } as unknown as LDClient)
 
     // mock ApolloClient
-    apolloClient = { mutate: jest.fn() }
+    apolloClient = { mutate: vi.fn() }
     createApolloClientMock.mockReturnValueOnce(
       apolloClient as ApolloClient<NormalizedCacheObject>
     )

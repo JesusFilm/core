@@ -1,18 +1,19 @@
 import FilterList from '@mui/icons-material/FilterList'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { type Mock } from 'vitest'
 
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 import { RadioSelect, RadioSelectOption } from './RadioSelect'
 
-jest.mock('@core/shared/ui/useBreakpoints', () => ({
+vi.mock('@core/shared/ui/useBreakpoints', () => ({
   __esModule: true,
-  useBreakpoints: jest.fn()
+  useBreakpoints: vi.fn()
 }))
 
 describe('RadioSelect', () => {
-  const mockOnChange = jest.fn()
-  const mockUseBreakpoints = useBreakpoints as jest.Mock
+  const mockOnChange = vi.fn()
+  const mockUseBreakpoints = useBreakpoints as Mock
 
   const defaultOptions: RadioSelectOption<'option1' | 'option2' | 'option3'>[] =
     [
@@ -29,7 +30,7 @@ describe('RadioSelect', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockUseBreakpoints.mockReturnValue({
       xs: false,
       sm: true,

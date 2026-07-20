@@ -1,6 +1,6 @@
 import { sendGTMEvent } from '@next/third-parties/google'
 import last from 'lodash/last'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'

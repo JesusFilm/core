@@ -24,7 +24,10 @@ const ImageLibrary = dynamic(
 
 interface ImageSourceProps {
   selectedBlock?: ImageBlock | null
-  onChange: (block: ImageBlockUpdateInput) => Promise<void>
+  onChange: (
+    block: ImageBlockUpdateInput,
+    shouldFocus?: boolean
+  ) => Promise<void>
   onDelete?: () => Promise<void>
   loading?: boolean
   error?: boolean
@@ -46,6 +49,15 @@ export function ImageSource({
     if (onDelete != null) {
       await onDelete()
     }
+  }
+
+  // When an image is selected or uploaded, close only this secondary drawer and
+  // keep the block properties in place. Passing shouldFocus = false prevents the
+  // editor from re-focusing the block and sliding back to the canvas, which
+  // would shift the card behind the drawer.
+  const handleChange = async (block: ImageBlockUpdateInput): Promise<void> => {
+    await onChange(block, false)
+    setOpen(false)
   }
 
   function handleClick(): void {
@@ -96,7 +108,7 @@ export function ImageSource({
         <ImageLibrary
           open={open}
           onClose={() => setOpen(false)}
-          onChange={onChange}
+          onChange={handleChange}
           onDelete={handleImageDelete}
           selectedBlock={selectedBlock}
           loading={loading}

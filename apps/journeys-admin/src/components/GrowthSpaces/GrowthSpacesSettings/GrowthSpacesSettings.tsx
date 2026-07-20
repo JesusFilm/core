@@ -46,12 +46,12 @@ export function GrowthSpacesSettings({
     >
       <Typography variant="h5">{t('App Settings')}</Typography>
       <ConfigField
-        label="Access ID"
+        label={t('Access ID')}
         value={accessId}
         onChange={(value) => setAccessId?.(value)}
       />
       <ConfigField
-        label="Access Secret"
+        label={t('Access Secret')}
         value={accessSecret}
         onChange={(value) => setAccessSecret?.(value)}
       />

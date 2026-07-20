@@ -13,7 +13,7 @@ import { BUTTON_BLOCK_UPDATE } from './Color'
 
 import { Color } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -45,7 +45,7 @@ describe('Button color selector', () => {
         color: ButtonColor.secondary
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         buttonBlockUpdate: {
           id: 'id',
@@ -63,7 +63,7 @@ describe('Button color selector', () => {
         color: ButtonColor.primary
       }
     },
-    result: jest.fn(() => ({
+    result: vi.fn(() => ({
       data: {
         buttonBlockUpdate: {
           id: 'id',
@@ -73,7 +73,7 @@ describe('Button color selector', () => {
     }))
   }
 
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('should show button color properties', () => {
     render(

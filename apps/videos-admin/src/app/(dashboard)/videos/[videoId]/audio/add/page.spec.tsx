@@ -1,7 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { useRouter } from 'next/navigation'
 import { SnackbarProvider } from 'notistack'
+import { type Mock } from 'vitest'
 
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 
@@ -10,11 +12,11 @@ import { useUploadVideoVariant } from '../../../../../_UploadVideoVariantProvide
 import AddAudioLanguageDialog from './page'
 
 // Mock useSuspenseQuery
-jest.mock('@apollo/client', () => {
-  const originalModule = jest.requireActual('@apollo/client')
+vi.mock('@apollo/client', async () => {
+  const originalModule = await vi.importActual('@apollo/client')
   return {
     ...originalModule,
-    useSuspenseQuery: jest.fn((_query) => {
+    useSuspenseQuery: vi.fn((_query) => {
       return {
         data: {
           adminVideo: {
@@ -44,7 +46,7 @@ jest.mock('@apollo/client', () => {
 })
 
 // Mock Dialog component to make testing easier
-jest.mock('@core/shared/ui/Dialog', () => ({
+vi.mock('@core/shared/ui/Dialog', () => ({
   Dialog: ({ children, dialogTitle, slotProps, onClose }) => (
     <div data-testid="mock-dialog">
       <div data-testid="dialog-title">{dialogTitle.title}</div>
@@ -60,7 +62,7 @@ jest.mock('@core/shared/ui/Dialog', () => ({
 }))
 
 // Mock LanguageAutocomplete component
-jest.mock('@core/shared/ui/LanguageAutocomplete', () => ({
+vi.mock('@core/shared/ui/LanguageAutocomplete', () => ({
   LanguageAutocomplete: ({ onChange, disabled }) => (
     <div>
       <input
@@ -80,7 +82,7 @@ jest.mock('@core/shared/ui/LanguageAutocomplete', () => ({
 }))
 
 // Mock the audio language file upload component
-jest.mock('./_AudioLanguageFileUpload', () => ({
+vi.mock('./_AudioLanguageFileUpload', () => ({
   AudioLanguageFileUpload: ({ disabled, onFileSelect, error }) => (
     <div data-testid="AudioLanguageFileUpload">
       <input
@@ -97,7 +99,7 @@ jest.mock('./_AudioLanguageFileUpload', () => ({
 }))
 
 // Mock Select component from MUI
-jest.mock('@mui/material/Select', () => {
+vi.mock('@mui/material/Select', () => {
   return {
     __esModule: true,
     default: ({ children, onChange, disabled, value, label }) => (
@@ -118,7 +120,7 @@ jest.mock('@mui/material/Select', () => {
 })
 
 // Mock MenuItem component from MUI
-jest.mock('@mui/material/MenuItem', () => {
+vi.mock('@mui/material/MenuItem', () => {
   return {
     __esModule: true,
     default: ({ children, value }) => <option value={value}>{children}</option>
@@ -126,7 +128,7 @@ jest.mock('@mui/material/MenuItem', () => {
 })
 
 // Mock Button component from MUI
-jest.mock('@mui/material/Button', () => {
+vi.mock('@mui/material/Button', () => {
   return {
     __esModule: true,
     default: ({ children, disabled, onClick, type }) => (
@@ -143,21 +145,21 @@ jest.mock('@mui/material/Button', () => {
 })
 
 // Mock next/navigation
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: jest.fn()
-  }),
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
+  })),
   useParams: () => ({ videoId: 'video-123' })
 }))
 
 // Mock providers and hooks
-jest.mock('../../../../../_UploadVideoVariantProvider', () => ({
-  useUploadVideoVariant: jest.fn()
+vi.mock('../../../../../_UploadVideoVariantProvider', () => ({
+  useUploadVideoVariant: vi.fn()
 }))
 
 // Mock useLanguagesQuery since its imported from external module
-jest.mock('@core/journeys/ui/useLanguagesQuery', () => ({
-  useLanguagesQuery: jest.fn()
+vi.mock('@core/journeys/ui/useLanguagesQuery', () => ({
+  useLanguagesQuery: vi.fn()
 }))
 
 const mockVideoId = 'video-123'
@@ -185,10 +187,10 @@ const mockLanguages = [
 
 describe('AddAudioLanguageDialog', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Mock useLanguagesQuery
-    ;(useLanguagesQuery as jest.Mock).mockReturnValue({
+    ;(useLanguagesQuery as Mock).mockReturnValue({
       data: {
         languages: mockLanguages
       },
@@ -196,15 +198,15 @@ describe('AddAudioLanguageDialog', () => {
     })
 
     // Mock useUploadVideoVariant
-    ;(useUploadVideoVariant as jest.Mock).mockReturnValue({
+    ;(useUploadVideoVariant as Mock).mockReturnValue({
       uploadState: {
         isUploading: false,
         isProcessing: false,
         uploadProgress: 0,
         error: null
       },
-      startUpload: jest.fn(),
-      clearUploadState: jest.fn()
+      startUpload: vi.fn(),
+      clearUploadState: vi.fn()
     })
   })
 
@@ -327,15 +329,15 @@ describe('AddAudioLanguageDialog', () => {
   })
 
   it('should disable form controls during upload', async () => {
-    ;(useUploadVideoVariant as jest.Mock).mockReturnValue({
+    ;(useUploadVideoVariant as Mock).mockReturnValue({
       uploadState: {
         isUploading: true,
         isProcessing: false,
         uploadProgress: 50,
         error: null
       },
-      startUpload: jest.fn(),
-      clearUploadState: jest.fn()
+      startUpload: vi.fn(),
+      clearUploadState: vi.fn()
     })
 
     render(
@@ -356,15 +358,15 @@ describe('AddAudioLanguageDialog', () => {
   })
 
   it('should handle upload errors and show error message', async () => {
-    ;(useUploadVideoVariant as jest.Mock).mockReturnValue({
+    ;(useUploadVideoVariant as Mock).mockReturnValue({
       uploadState: {
         isUploading: false,
         isProcessing: false,
         uploadProgress: 0,
         error: 'Upload failed'
       },
-      startUpload: jest.fn(),
-      clearUploadState: jest.fn()
+      startUpload: vi.fn(),
+      clearUploadState: vi.fn()
     })
 
     render(
@@ -382,12 +384,10 @@ describe('AddAudioLanguageDialog', () => {
   })
 
   it('should navigate back on dialog close', async () => {
-    const mockRouterPush = jest.fn()
-    jest
-      .spyOn(require('next/navigation'), 'useRouter')
-      .mockImplementation(() => ({
-        push: mockRouterPush
-      }))
+    const mockRouterPush = vi.fn()
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
 
     render(
       <SnackbarProvider>
@@ -407,22 +407,20 @@ describe('AddAudioLanguageDialog', () => {
     )
   })
 
-  it('should prevent dialog close during upload or processing', async () => {
-    const mockRouterPush = jest.fn()
-    jest
-      .spyOn(require('next/navigation'), 'useRouter')
-      .mockImplementation(() => ({
-        push: mockRouterPush
-      }))
-    ;(useUploadVideoVariant as jest.Mock).mockReturnValue({
+  it('should prevent dialog close during active browser upload', async () => {
+    const mockRouterPush = vi.fn()
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
+    ;(useUploadVideoVariant as Mock).mockReturnValue({
       uploadState: {
         isUploading: true,
-        isProcessing: true,
+        isProcessing: false,
         uploadProgress: 50,
         error: null
       },
-      startUpload: jest.fn(),
-      clearUploadState: jest.fn()
+      startUpload: vi.fn(),
+      clearUploadState: vi.fn()
     })
 
     render(
@@ -438,5 +436,37 @@ describe('AddAudioLanguageDialog', () => {
 
     // Should not redirect
     expect(mockRouterPush).not.toHaveBeenCalled()
+  })
+
+  it('should allow dialog close during background processing', async () => {
+    const mockRouterPush = vi.fn()
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
+    ;(useUploadVideoVariant as Mock).mockReturnValue({
+      uploadState: {
+        isUploading: false,
+        isProcessing: true,
+        uploadProgress: 100,
+        error: null
+      },
+      startUpload: vi.fn(),
+      clearUploadState: vi.fn()
+    })
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <AddAudioLanguageDialog />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(screen.getByTestId('close-button'))
+
+    expect(mockRouterPush).toHaveBeenCalledWith(
+      `/videos/${mockVideoId}/audio`,
+      { scroll: false }
+    )
   })
 })

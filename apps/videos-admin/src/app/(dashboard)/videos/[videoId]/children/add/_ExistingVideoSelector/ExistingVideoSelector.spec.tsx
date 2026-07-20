@@ -19,8 +19,8 @@ const SEARCH_VIDEOS = graphql(`
 `)
 
 describe('ExistingVideoSelector', () => {
-  const handleSelect = jest.fn()
-  const handleCancel = jest.fn()
+  const handleSelect = vi.fn()
+  const handleCancel = vi.fn()
 
   const mocks = [
     {
@@ -106,7 +106,7 @@ describe('ExistingVideoSelector', () => {
   ]
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders the component correctly', () => {

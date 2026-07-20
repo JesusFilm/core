@@ -4,19 +4,21 @@ import { userEvent } from '@testing-library/user-event'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import {
   BlockOrderUpdate,
   BlockOrderUpdateVariables
 } from '../../../../../../../../__generated__/BlockOrderUpdate'
+import { TestEditorState } from '../../../../../../../libs/TestEditorState'
 import { blockOrderUpdateMock } from '../../../../../../../libs/useBlockOrderUpdateMutation/useBlockOrderUpdateMutation.mock'
+import { EditorLayoutProvider } from '../../../../../EditorLayoutContext'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { MoveBlock } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
@@ -82,7 +84,9 @@ describe('MoveBlockButton', () => {
     fullscreen: false,
     backdropBlur: null,
     eventLabel: null,
-    children: [block1, block2]
+    children: [block1, block2],
+    showAssistant: null,
+    expandChatByDefault: null
   }
 
   const step: TreeBlock = {
@@ -154,11 +158,11 @@ describe('MoveBlockButton', () => {
   }
 
   it('should move selected block up on click', async () => {
-    const result = jest.fn(() => ({ ...mockBlockOrderFirstMock.result }))
-    const resultUndo = jest.fn(() => ({
+    const result = vi.fn(() => ({ ...mockBlockOrderFirstMock.result }))
+    const resultUndo = vi.fn(() => ({
       ...mockBlockOrderLastMock.result
     }))
-    const resultRedo = jest.fn(() => ({
+    const resultRedo = vi.fn(() => ({
       ...mockBlockOrderFirstMock.result
     }))
     render(
@@ -189,11 +193,11 @@ describe('MoveBlockButton', () => {
   })
 
   it('should move selected block down on click', async () => {
-    const result = jest.fn(() => ({ ...mockBlockOrderLastMock.result }))
-    const resultUndo = jest.fn(() => ({
+    const result = vi.fn(() => ({ ...mockBlockOrderLastMock.result }))
+    const resultUndo = vi.fn(() => ({
       ...mockBlockOrderFirstMock.result
     }))
-    const resultRedo = jest.fn(() => ({
+    const resultRedo = vi.fn(() => ({
       ...mockBlockOrderLastMock.result
     }))
 
@@ -295,7 +299,9 @@ describe('MoveBlockButton', () => {
       fullscreen: false,
       backdropBlur: null,
       eventLabel: null,
-      children: [block1]
+      children: [block1],
+      showAssistant: null,
+      expandChatByDefault: null
     }
 
     const stepWithOneBlock = { ...step, children: [card] }
@@ -317,5 +323,30 @@ describe('MoveBlockButton', () => {
     expect(
       screen.getByRole('button', { name: 'move-block-down' })
     ).toBeDisabled()
+  })
+
+  it('keeps the settings drawer slide open on move in the layered layout', async () => {
+    const result = vi.fn(() => ({ ...mockBlockOrderFirstMock.result }))
+    render(
+      <MockedProvider mocks={[{ ...mockBlockOrderFirstMock, result }]}>
+        <EditorProvider
+          initialState={{
+            selectedBlock: block2,
+            selectedStep: step,
+            activeSlide: ActiveSlide.Drawer
+          }}
+        >
+          <EditorLayoutProvider value="layered">
+            <CommandProvider>
+              <TestEditorState />
+              <MoveBlock />
+            </CommandProvider>
+          </EditorLayoutProvider>
+        </EditorProvider>
+      </MockedProvider>
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'move-block-up' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(screen.getByText('activeSlide: 2')).toBeInTheDocument()
   })
 })
