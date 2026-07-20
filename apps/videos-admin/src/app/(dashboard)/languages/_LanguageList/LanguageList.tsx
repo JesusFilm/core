@@ -10,7 +10,6 @@ import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import {
   DataGrid,
   GridColDef,
@@ -249,111 +248,93 @@ export function LanguageList(): ReactElement {
   ]
 
   return (
-    <Stack
+    <Paper
       sx={{
         width: '100%',
-        maxWidth: { sm: '100%', md: '1700px' },
-        alignSelf: 'stretch',
-        height: { xs: 'calc(100svh - 160px)', md: 'calc(100vh - 150px)' },
+        height: '100%',
         minHeight: 0,
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
         overflow: 'hidden',
-        pt: { xs: 4, md: 0 }
+        [`& .${gridClasses.cell}:focus, & .${gridClasses.cell}:focus-within`]: {
+          outline: 'none'
+        },
+        [`& .${gridClasses.row}`]: {
+          cursor: 'pointer'
+        }
       }}
-      spacing={2}
     >
-      <Typography component="h2" variant="h6" sx={{ flexShrink: 0 }}>
-        Language Admin
-      </Typography>
-
-      <Paper
-        sx={{
-          width: '100%',
-          flex: 1,
-          minHeight: 0,
-          position: 'relative',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-          [`& .${gridClasses.cell}:focus, & .${gridClasses.cell}:focus-within`]:
-            {
-              outline: 'none'
-            },
-          [`& .${gridClasses.row}`]: {
-            cursor: 'pointer'
-          }
-        }}
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        spacing={1.5}
+        sx={{ p: 2, pb: 1, flexShrink: 0 }}
       >
-        <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          spacing={1.5}
-          sx={{ p: 2, pb: 1, flexShrink: 0 }}
+        <TextField
+          placeholder="Search by language name or ID"
+          inputProps={{ 'aria-label': 'Search languages' }}
+          value={searchTerm}
+          onChange={(event) => {
+            resetToFirstPage()
+            setSearchTerm(event.target.value)
+          }}
+          size="small"
+          sx={{ width: { xs: '100%', sm: 360 } }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" />
+              </InputAdornment>
+            )
+          }}
+        />
+        <TextField
+          select
+          label="Has videos"
+          value={hasVideosFilter}
+          onChange={(event) => {
+            resetToFirstPage()
+            setHasVideosFilter(event.target.value)
+          }}
+          size="small"
+          sx={{ width: { xs: '100%', sm: 160 } }}
         >
-          <TextField
-            placeholder="Search by language name or ID"
-            inputProps={{ 'aria-label': 'Search languages' }}
-            value={searchTerm}
-            onChange={(event) => {
-              resetToFirstPage()
-              setSearchTerm(event.target.value)
-            }}
-            size="small"
-            sx={{ width: { xs: '100%', sm: 360 } }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" />
-                </InputAdornment>
-              )
-            }}
-          />
-          <TextField
-            select
-            label="Has videos"
-            value={hasVideosFilter}
-            onChange={(event) => {
-              resetToFirstPage()
-              setHasVideosFilter(event.target.value)
-            }}
-            size="small"
-            sx={{ width: { xs: '100%', sm: 160 } }}
-          >
-            <MenuItem value="all">Any</MenuItem>
-            <MenuItem value="yes">Yes</MenuItem>
-            <MenuItem value="no">No</MenuItem>
-          </TextField>
-        </Stack>
+          <MenuItem value="all">Any</MenuItem>
+          <MenuItem value="yes">Yes</MenuItem>
+          <MenuItem value="no">No</MenuItem>
+        </TextField>
+      </Stack>
 
-        <Box sx={{ flex: '1 1 auto', minHeight: { xs: 360, sm: 420 } }}>
-          {gridMounted ? (
-            <DataGrid
-              sx={{ height: '100%', minHeight: { xs: 360, sm: 420 } }}
-              rows={rows}
-              columns={columns}
-              rowCount={data?.adminLanguagesCount ?? 0}
-              loading={loading}
-              paginationMode="server"
-              disableColumnFilter
-              paginationModel={paginationModel}
-              onPaginationModelChange={handlePaginationModelChange}
-              pageSizeOptions={[25, 50, 100]}
-              onRowClick={(params) => router.push(`/languages/${params.id}`)}
-              disableRowSelectionOnClick
-            />
-          ) : (
-            <Box
-              sx={{
-                alignItems: 'center',
-                display: 'flex',
-                height: '100%',
-                justifyContent: 'center',
-                minHeight: { xs: 360, sm: 420 }
-              }}
-            >
-              <CircularProgress size={24} />
-            </Box>
-          )}
-        </Box>
-      </Paper>
-    </Stack>
+      <Box sx={{ flex: '1 1 auto', minHeight: { xs: 360, sm: 420 } }}>
+        {gridMounted ? (
+          <DataGrid
+            sx={{ height: '100%', minHeight: { xs: 360, sm: 420 } }}
+            rows={rows}
+            columns={columns}
+            rowCount={data?.adminLanguagesCount ?? 0}
+            loading={loading}
+            paginationMode="server"
+            disableColumnFilter
+            paginationModel={paginationModel}
+            onPaginationModelChange={handlePaginationModelChange}
+            pageSizeOptions={[25, 50, 100]}
+            onRowClick={(params) => router.push(`/languages/${params.id}`)}
+            disableRowSelectionOnClick
+          />
+        ) : (
+          <Box
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+              height: '100%',
+              justifyContent: 'center',
+              minHeight: { xs: 360, sm: 420 }
+            }}
+          >
+            <CircularProgress size={24} />
+          </Box>
+        )}
+      </Box>
+    </Paper>
   )
 }
