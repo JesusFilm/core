@@ -75,7 +75,9 @@ describe('algoliaVideoVariantUpdate', () => {
       throw new Error('Algolia client failed')
     })
 
-    await updateVideoVariantInAlgolia('test-variant-id', mockLogger)
+    await expect(
+      updateVideoVariantInAlgolia('test-variant-id', mockLogger)
+    ).rejects.toThrow('Algolia client failed')
 
     expect(mockLogger.error).toHaveBeenCalledWith(
       expect.any(Error),
@@ -242,7 +244,9 @@ describe('algoliaVideoVariantUpdate', () => {
       new Error('Database error')
     )
 
-    await updateVideoVariantInAlgolia('test-variant-id', mockLogger)
+    await expect(
+      updateVideoVariantInAlgolia('test-variant-id', mockLogger)
+    ).rejects.toThrow('Database error')
 
     expect(mockLogger.error).toHaveBeenCalledWith(
       expect.any(Error),
