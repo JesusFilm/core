@@ -307,6 +307,25 @@ describe('TextResponse', () => {
     ).toBeInTheDocument()
   })
 
+  it('should align hint text flush with the label', () => {
+    const blockWithHint: TreeBlock<TextResponseFields> = {
+      ...block,
+      hint: 'Please provide your thoughts on this topic'
+    }
+
+    render(
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponse {...blockWithHint} />
+        </SnackbarProvider>
+      </JourneyProvider>
+    )
+
+    expect(
+      screen.getByText('Please provide your thoughts on this topic')
+    ).toHaveStyle({ marginLeft: '0px', marginRight: '0px' })
+  })
+
   it('should show required text in hint', () => {
     const requiredBlockWithHiddenLabel: TreeBlock<TextResponseFields> = {
       ...block,
