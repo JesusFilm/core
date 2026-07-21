@@ -73,8 +73,9 @@ jobs:
     runs-on: blacksmith-4vcpu-ubuntu-2204
     permissions:
       contents: read
-    env:
-      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+    # No NX_CLOUD_ACCESS_TOKEN here on purpose: generate-graphql and
+    # prisma-generate are not cacheable targets, so the token adds nothing —
+    # it would only expose a secret to code the PR author controls.
     steps:
       - uses: actions/checkout@v4
       - name: Setup pnpm
@@ -95,7 +96,9 @@ jobs:
         env:
           DISABLE_ERD: true
       - name: regenerate subgraph schemas
-        run: pnpm exec nx run-many -t generate-graphql --projects api-analytics,api-journeys,api-languages,api-media,api-users
+        # --exclude rather than a hardcoded project list so a future API with
+        # a generate-graphql target is guarded automatically.
+        run: pnpm exec nx run-many -t generate-graphql --exclude api-gateway
         env:
           # Schema generation writes SDL and exits before serving anything,
           # but some modules validate env or construct clients at import time
@@ -110,6 +113,9 @@ jobs:
         run: pnpm exec nx run api-gateway:generate-graphql
       - name: fail if regenerated schemas differ from committed
         run: |
+          # Make regenerated-but-untracked schema files (e.g. a schema.graphql
+          # deleted by the PR and recreated by the regen) visible to git diff.
+          git add --intent-to-add -- 'apis/*/schema.graphql'
           if git diff --exit-code -- 'apis/*/schema.graphql'; then
             echo "✅ - committed schema.graphql files match generated output"
           else
@@ -124,20 +130,40 @@ jobs:
     # edits a domain's schema to add a migration in that same domain.
     # Only meaningful on PRs (needs a base branch to diff against). The
     # 'skip-migration-check' label is the escape hatch for schema edits that
-    # genuinely need no migration (comments, formatting) — after adding the
-    # label, re-run the failed job to pick it up.
+    # genuinely need no migration (comments, formatting). The job-level if
+    # only sees labels present when the triggering event fired, so the step
+    # below re-checks labels via the API — that way adding the label and
+    # re-running the failed job works.
     runs-on: blacksmith-2vcpu-ubuntu-2204
     permissions:
       contents: read
+      issues: read
+      pull-requests: read
     if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'skip-migration-check') }}
     steps:
+      # fetch-depth: 0 fetches full history for all branches, which is what
+      # merge-base needs. No extra shallow fetch of the base branch here — a
+      # --depth-limited fetch into a full clone writes .git/shallow and can
+      # make merge-base fail once the base has advanced past the cut.
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Fetch other branches
-        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - name: check prisma schema changes include a migration
-        run: ./tools/scripts/check-prisma-migrations.sh "origin/$GITHUB_BASE_REF"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # Labels added after the triggering event are invisible to the
+          # job-level if on re-runs, so re-check them at runtime. If the API
+          # call fails we fall through and run the check (fail closed).
+          labels=$(curl -sf -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/labels" \
+            | jq -r '.[].name' || true)
+          if echo "$labels" | grep -qx 'skip-migration-check'; then
+            echo "⏭️ - 'skip-migration-check' label present; skipping migration check"
+            exit 0
+          fi
+          ./tools/scripts/check-prisma-migrations.sh "origin/$GITHUB_BASE_REF"
   test:
     runs-on: blacksmith-4vcpu-ubuntu-2204
     strategy:
