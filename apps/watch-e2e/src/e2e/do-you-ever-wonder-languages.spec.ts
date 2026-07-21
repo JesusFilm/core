@@ -26,7 +26,9 @@ test('Do You Ever Wonder exposes all eight Children in repaired languages', asyn
       await expect(children).toHaveCount(8)
       await children.first().click()
       await expect(page).toHaveURL(
-        new RegExp(`/watch/do-you-ever-wonder\\.html/.+/${language.slug}\\.html`)
+        new RegExp(
+          `/watch/do-you-ever-wonder\\.html/.+/${language.slug}\\.html`
+        )
       )
       await expect(page.locator('video').first()).toBeVisible()
     })
