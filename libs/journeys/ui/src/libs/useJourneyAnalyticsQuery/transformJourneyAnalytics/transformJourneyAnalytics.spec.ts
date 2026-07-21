@@ -1063,7 +1063,15 @@ describe('transformJourneyAnalytics', () => {
       journeyStepsActions: [],
       journeyReferrer: [],
       journeyUtmCampaign: [],
-      journeyVisitorsPageExits: [],
+      journeyVisitorsPageExits: [
+        {
+          // Below the overridden visitor count (90): the cap is a no-op and
+          // the exit count passes through unchanged
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 10
+        }
+      ],
       journeyActionsSums: [
         {
           __typename: 'PlausibleStatsResponse',
@@ -1088,7 +1096,7 @@ describe('transformJourneyAnalytics', () => {
         stepId: 'step1.id',
         visitors: 90,
         timeOnPage: 17,
-        visitorsExitAtStep: 0
+        visitorsExitAtStep: 10
       },
       {
         stepId: 'step2.id',
@@ -1097,6 +1105,59 @@ describe('transformJourneyAnalytics', () => {
         visitorsExitAtStep: 0
       }
     ])
+  })
+
+  it('caps exits at the summed visitor count on the fallback path too', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 30,
+          timeOnPage: 10
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id/',
+          visitors: 20,
+          timeOnPage: 10
+        }
+      ],
+      journeyStepsActions: [],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [
+        {
+          // Summed exits (35 + 25 = 60) exceed even the summed visitors (50):
+          // capped on the fallback path as well, so the exit rate stays <=100%
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 35
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id/',
+          visitors: 25
+        }
+      ],
+      journeyActionsSums: [],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 50
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    expect(result?.stepsStats[0]).toEqual({
+      stepId: 'step1.id',
+      visitors: 50,
+      timeOnPage: 10,
+      visitorsExitAtStep: 50
+    })
   })
 
   it('falls back to summed event:page visitors when no pageview key data exists', () => {

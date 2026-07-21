@@ -139,11 +139,13 @@ export function transformJourneyAnalytics(
   // events carried keys).
   stepStatsById.forEach((stepStat) => {
     const stepEventMap = stepMap.get(stepStat.stepId)?.eventMap
-    if (stepEventMap == null || !stepEventMap.has('pageview')) return
-    stepStat.visitors = stepEventMap.get('pageview') ?? 0
+    if (stepEventMap != null && stepEventMap.has('pageview')) {
+      stepStat.visitors = stepEventMap.get('pageview') ?? 0
+    }
     // Exits are still summed across the trailing-slash variants (getStepExits)
-    // — Plausible has no keyed dedup source for exit_page — so cap them at the
-    // deduplicated visitor count to keep the exit rate at or below 100%.
+    // — Plausible has no keyed dedup source for exit_page — so on either path
+    // they can exceed the step's visitor count; cap them to keep the exit rate
+    // at or below 100%.
     stepStat.visitorsExitAtStep = Math.min(
       stepStat.visitorsExitAtStep,
       stepStat.visitors
