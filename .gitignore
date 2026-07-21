@@ -109,3 +109,4 @@ sea-prep.blob
 # storybook
 storybook-static/
 debug-storybook.log
+.claude/settings.local.json
