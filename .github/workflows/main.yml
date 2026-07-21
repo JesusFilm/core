@@ -116,6 +116,24 @@ jobs:
             echo "To fix: run 'nx generate-graphql <api>' for each API you changed, then 'nx generate-graphql api-gateway', and commit the updated schema.graphql files."
             exit 1
           fi
+  prisma-migration-check:
+    # ENG-3690: a schema.prisma change with no matching migration passes
+    # `prisma generate` and only fails at deploy time — require every PR that
+    # edits a domain's schema to add a migration in that same domain.
+    # Only meaningful on PRs (needs a base branch to diff against). The
+    # 'skip-migration-check' label is the escape hatch for schema edits that
+    # genuinely need no migration (comments, formatting) — after adding the
+    # label, re-run the failed job to pick it up.
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'skip-migration-check') }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fetch other branches
+        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
+      - name: check prisma schema changes include a migration
+        run: ./tools/scripts/check-prisma-migrations.sh "origin/$GITHUB_BASE_REF"
   test:
     runs-on: blacksmith-4vcpu-ubuntu-2204
     strategy:
