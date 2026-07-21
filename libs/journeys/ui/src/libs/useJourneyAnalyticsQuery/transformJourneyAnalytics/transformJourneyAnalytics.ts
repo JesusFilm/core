@@ -53,13 +53,16 @@ export function transformJourneyAnalytics(
   const stepExits = getStepExits(journeyVisitorsPageExits, journeyId)
   const { chatsStarted, linksVisited } = getLinkClicks(journeyEvents)
 
-  const stepMap = new Map()
-  const blockMap = new Map()
-  const targetMap = new Map()
+  const stepMap = new Map<
+    string,
+    { eventMap: Map<string, number>; total: number }
+  >()
+  const blockMap = new Map<string, number>()
+  const targetMap = new Map<string, number>()
 
   journeyEventsSums.forEach((event) => {
     const step = stepMap.get(event.stepId) ?? {
-      eventMap: new Map(),
+      eventMap: new Map<string, number>(),
       total: 0
     }
 
@@ -126,19 +129,25 @@ export function transformJourneyAnalytics(
     existing.visitors = totalVisitors
   })
   // Prefer the pageview uniques keyed by event:props:simpleKey for each step's
-  // visitor count. The key is independent of the page pathname, so Plausible
-  // deduplicates visitors across the historical trailing-slash page split that
-  // the summed event:page rows double-count (a visitor whose pageview landed on
-  // `.../stepId/` but whose actions landed on `.../stepId` appears once in each
-  // event:page row). event:page remains the source for timeOnPage — Plausible
-  // only exposes it there — and the visitor fallback for rows recorded before
-  // pageview events carried keys.
+  // visitor count whenever that key is present. The key is independent of the
+  // page pathname, so Plausible deduplicates visitors across the historical
+  // trailing-slash page split that the summed event:page rows double-count (a
+  // visitor whose pageview landed on `.../stepId/` but whose actions landed on
+  // `.../stepId` appears once in each event:page row). event:page remains the
+  // source for timeOnPage — Plausible only exposes it there — and the visitor
+  // fallback when no keyed pageview row exists (data recorded before pageview
+  // events carried keys).
   stepStatsById.forEach((stepStat) => {
-    const pageviewVisitors =
-      stepMap.get(stepStat.stepId)?.eventMap.get('pageview') ?? 0
-    if (pageviewVisitors > 0) {
-      stepStat.visitors = pageviewVisitors
-    }
+    const stepEventMap = stepMap.get(stepStat.stepId)?.eventMap
+    if (stepEventMap == null || !stepEventMap.has('pageview')) return
+    stepStat.visitors = stepEventMap.get('pageview') ?? 0
+    // Exits are still summed across the trailing-slash variants (getStepExits)
+    // — Plausible has no keyed dedup source for exit_page — so cap them at the
+    // deduplicated visitor count to keep the exit rate at or below 100%.
+    stepStat.visitorsExitAtStep = Math.min(
+      stepStat.visitorsExitAtStep,
+      stepStat.visitors
+    )
   })
   const stepsStats: StepStat[] = Array.from(stepStatsById.values())
 

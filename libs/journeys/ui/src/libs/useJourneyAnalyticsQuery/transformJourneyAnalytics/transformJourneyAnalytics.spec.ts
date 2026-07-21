@@ -932,6 +932,173 @@ describe('transformJourneyAnalytics', () => {
     })
   })
 
+  it('caps visitorsExitAtStep at the deduplicated visitor count', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 30,
+          timeOnPage: 10
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id/',
+          visitors: 70,
+          timeOnPage: 20
+        }
+      ],
+      journeyStepsActions: [],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [
+        {
+          // Exits are summed across both slash variants (20 + 40 = 60), which
+          // can exceed the deduplicated visitor count for the same step
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 20
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id/',
+          visitors: 40
+        }
+      ],
+      journeyActionsSums: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"pageview","blockId":"step1.id","target":""}',
+          visitors: 50
+        }
+      ],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 50
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    expect(result?.stepsStats[0]).toEqual({
+      stepId: 'step1.id',
+      visitors: 50,
+      timeOnPage: 17,
+      // Summed exits (60) exceed deduplicated visitors (50): capped so the
+      // exit rate cannot render above 100%
+      visitorsExitAtStep: 50
+    })
+  })
+
+  it('treats an explicit zero-visitor pageview key as authoritative rather than falling back', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 100,
+          timeOnPage: 10
+        }
+      ],
+      journeyStepsActions: [],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [],
+      journeyActionsSums: [
+        {
+          // The keyed row exists but recorded no visitors: presence wins, so
+          // the step reports 0 instead of the (potentially inflated) page sum
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"pageview","blockId":"step1.id","target":""}',
+          visitors: 0
+        }
+      ],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 100
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    expect(result?.stepsStats[0]).toEqual({
+      stepId: 'step1.id',
+      visitors: 0,
+      timeOnPage: 10,
+      visitorsExitAtStep: 0
+    })
+  })
+
+  it('applies the override and the fallback independently across steps in one call', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 30,
+          timeOnPage: 10
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id/',
+          visitors: 70,
+          timeOnPage: 20
+        },
+        {
+          // step2 has no keyed pageview row and keeps the summed count
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step2.id',
+          visitors: 40,
+          timeOnPage: 5
+        }
+      ],
+      journeyStepsActions: [],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [],
+      journeyActionsSums: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"pageview","blockId":"step1.id","target":""}',
+          visitors: 90
+        }
+      ],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 130
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    expect(result?.stepsStats).toEqual([
+      {
+        stepId: 'step1.id',
+        visitors: 90,
+        timeOnPage: 17,
+        visitorsExitAtStep: 0
+      },
+      {
+        stepId: 'step2.id',
+        visitors: 40,
+        timeOnPage: 5,
+        visitorsExitAtStep: 0
+      }
+    ])
+  })
+
   it('falls back to summed event:page visitors when no pageview key data exists', () => {
     const data: GetJourneyAnalytics = {
       journeySteps: [
