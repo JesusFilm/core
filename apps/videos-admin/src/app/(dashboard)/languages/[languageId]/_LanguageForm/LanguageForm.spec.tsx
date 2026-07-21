@@ -1,10 +1,17 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 import { useParams, useRouter } from 'next/navigation'
 import { SnackbarProvider } from 'notistack'
 
 import {
   GET_LANGUAGE,
+  GET_LANGUAGE_STUDIO_MANAGED_FILMS,
   LanguageForm,
   UPDATE_LANGUAGE,
   UPDATE_LANGUAGE_NAME
@@ -13,6 +20,13 @@ import {
 vi.mock('next/navigation')
 
 const push = vi.fn()
+const languageStudioManagedFilmIds = [
+  '1_cl-0-0',
+  '1_jf-0-0',
+  '1_wjv-0-0',
+  '1_wl-0-0',
+  'MAG1'
+]
 
 vi.mocked(useParams).mockReturnValue({ languageId: '20615' })
 vi.mocked(useRouter).mockReturnValue({ push } as unknown as ReturnType<
@@ -75,6 +89,114 @@ const getLanguageMock = {
   result: { data: { language } }
 }
 
+const getLanguageStudioManagedFilmsMock = {
+  request: {
+    query: GET_LANGUAGE_STUDIO_MANAGED_FILMS,
+    variables: { ids: languageStudioManagedFilmIds, languageId: '529' }
+  },
+  result: {
+    data: {
+      adminVideos: [
+        {
+          id: '1_cl-0-0',
+          title: [
+            {
+              value: 'The Story of Jesus for Children',
+              __typename: 'VideoTitle'
+            }
+          ],
+          variants: [],
+          __typename: 'Video'
+        },
+        {
+          id: '1_jf-0-0',
+          title: [{ value: 'JESUS', __typename: 'VideoTitle' }],
+          variants: [
+            {
+              id: '20615_1_jf-0-0',
+              version: 3,
+              language: { id: '20615', __typename: 'Language' },
+              __typename: 'VideoVariant'
+            },
+            {
+              id: '529_1_jf-0-0',
+              version: 1,
+              language: { id: '529', __typename: 'Language' },
+              __typename: 'VideoVariant'
+            }
+          ],
+          __typename: 'Video'
+        },
+        {
+          id: '1_wjv-0-0',
+          title: [
+            {
+              value: 'Walking with Jesus (Africa)',
+              __typename: 'VideoTitle'
+            }
+          ],
+          variants: [],
+          __typename: 'Video'
+        },
+        {
+          id: '1_wl-0-0',
+          title: [
+            {
+              value: "Magdalena - Director's Cut",
+              __typename: 'VideoTitle'
+            }
+          ],
+          variants: [
+            {
+              id: '20615_1_wl-0-0',
+              version: 4,
+              language: { id: '20615', __typename: 'Language' },
+              __typename: 'VideoVariant'
+            }
+          ],
+          __typename: 'Video'
+        },
+        {
+          id: 'MAG1',
+          title: [{ value: 'Magdalena', __typename: 'VideoTitle' }],
+          variants: [
+            {
+              id: '529_MAG1',
+              version: 42,
+              language: { id: '529', __typename: 'Language' },
+              __typename: 'VideoVariant'
+            }
+          ],
+          __typename: 'Video'
+        }
+      ]
+    }
+  }
+}
+
+const getLanguageStudioManagedFilmsWithoutLanguageMock = {
+  ...getLanguageStudioManagedFilmsMock,
+  result: {
+    data: {
+      adminVideos: [
+        {
+          id: '1_jf-0-0',
+          title: [{ value: 'JESUS', __typename: 'VideoTitle' }],
+          variants: [
+            {
+              id: '529_1_jf-0-0',
+              version: 1,
+              language: { id: '529', __typename: 'Language' },
+              __typename: 'VideoVariant'
+            }
+          ],
+          __typename: 'Video'
+        }
+      ]
+    }
+  }
+}
+
 const updatedLanguage = {
   ...language,
   bcp47: 'zh-Hans',
@@ -105,6 +227,7 @@ function renderForm(): void {
     <MockedProvider
       mocks={[
         getLanguageMock,
+        getLanguageStudioManagedFilmsMock,
         {
           request: {
             query: UPDATE_LANGUAGE,
@@ -181,7 +304,9 @@ describe('LanguageForm', () => {
 
   it('should render loading state inside the editor shell', () => {
     render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider
+        mocks={[getLanguageMock, getLanguageStudioManagedFilmsMock]}
+      >
         <SnackbarProvider>
           <LanguageForm />
         </SnackbarProvider>
@@ -213,6 +338,59 @@ describe('LanguageForm', () => {
     fireEvent.click(screen.getAllByRole('button', { name: 'Save' })[0])
 
     expect(await screen.findByText('Language saved')).toBeInTheDocument()
+  })
+
+  it('should show linked Language Studio managed film versions', async () => {
+    renderForm()
+
+    expect(
+      await screen.findByRole('columnheader', { name: 'Film' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('columnheader', { name: 'Actual Version Number' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('columnheader', { name: 'Video ID' })
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'JESUS' })).toHaveAttribute(
+      'href',
+      '/videos/1_jf-0-0/audio/20615_1_jf-0-0'
+    )
+    expect(screen.getByRole('link', { name: '3' })).toHaveAttribute(
+      'href',
+      '/videos/1_jf-0-0/audio/20615_1_jf-0-0'
+    )
+    expect(screen.getByText('1_jf-0-0')).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: "Magdalena - Director's Cut" })
+    ).toHaveAttribute('href', '/videos/1_wl-0-0/audio/20615_1_wl-0-0')
+    expect(screen.getByRole('link', { name: '4' })).toHaveAttribute(
+      'href',
+      '/videos/1_wl-0-0/audio/20615_1_wl-0-0'
+    )
+    expect(screen.getByText('1_wl-0-0')).toBeInTheDocument()
+  })
+
+  it('should show an empty linked films state when there are no managed film variants', async () => {
+    render(
+      <MockedProvider
+        mocks={[
+          getLanguageMock,
+          getLanguageStudioManagedFilmsWithoutLanguageMock
+        ]}
+      >
+        <SnackbarProvider>
+          <LanguageForm />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const linkedFilmsHeading = await screen.findByRole('heading', {
+      name: 'Linked Language Studio Managed Films'
+    })
+    const linkedFilmsSection = linkedFilmsHeading.parentElement as HTMLElement
+
+    expect(within(linkedFilmsSection).getByText('-')).toBeInTheDocument()
   })
 
   it('should return to the language list', async () => {
