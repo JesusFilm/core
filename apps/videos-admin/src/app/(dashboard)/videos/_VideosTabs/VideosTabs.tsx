@@ -6,9 +6,12 @@ import Tabs from '@mui/material/Tabs'
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactElement, SyntheticEvent } from 'react'
 
-type VideosTabValue = 'library' | 'algolia'
+type VideosTabValue = 'library' | 'algolia' | 'processing'
 
 function getCurrentTabValue(pathname: string): VideosTabValue {
+  if (pathname.startsWith('/videos/processing')) {
+    return 'processing'
+  }
   if (pathname.startsWith('/videos/library')) {
     return 'library'
   }
@@ -25,7 +28,12 @@ export function VideosTabs(): ReactElement {
     _event: SyntheticEvent,
     value: VideosTabValue
   ): void => {
-    const nextPathname = value === 'algolia' ? '/videos' : '/videos/library'
+    const nextPathname =
+      value === 'algolia'
+        ? '/videos'
+        : value === 'processing'
+          ? '/videos/processing'
+          : '/videos/library'
     router.push(nextPathname)
   }
 
@@ -34,6 +42,7 @@ export function VideosTabs(): ReactElement {
       <Tabs value={currentTabValue} onChange={handleTabChange}>
         <Tab value="algolia" label="Algolia Search" />
         <Tab value="library" label="Library (Backup)" />
+        <Tab value="processing" label="Processing" />
       </Tabs>
     </Box>
   )
