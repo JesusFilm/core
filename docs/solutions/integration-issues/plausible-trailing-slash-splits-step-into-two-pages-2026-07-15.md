@@ -84,6 +84,6 @@ PR [#9398](https://github.com/JesusFilm/core/pull/9398) resolved this for the **
 ## Related Issues
 
 - PR [#9370](https://github.com/JesusFilm/core/pull/9370) — the fix and its review hardening.
-- PR [#9398](https://github.com/JesusFilm/core/pull/9398) — follow-up: card visitor counts switched to pathname-independent `event:props:simpleKey` pageview uniques, resolving the historical over-count for the visitors field (verified against Plausible CE v2.1.1 source: `event:page` visitors is `uniq(user_id)` over all events on a pathname, custom events included).
+- PR [#9398](https://github.com/JesusFilm/core/pull/9398) — follow-up: per-step visitor counts switched to pathname-independent `event:props:simpleKey` pageview uniques, resolving the historical over-count for the visitors field (verified against Plausible CE v2.1.1 source: `event:page` visitors is `uniq(user_id)` over all events on a pathname, custom events included).
 - `docs/solutions/integration-issues/plausible-default-30-day-window-when-period-omitted.md` — another Plausible-integration bug that also manifested as journeys-admin analytics disagreeing across surfaces / shrinking over time.
 - `docs/solutions/logic-errors/plausible-analytics-event-name-mismatch-qa359.md` — related class of bug: a Plausible key/name mismatch causing analytics to under-report.

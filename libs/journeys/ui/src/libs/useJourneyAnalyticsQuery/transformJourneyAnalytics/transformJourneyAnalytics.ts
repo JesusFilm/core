@@ -66,12 +66,15 @@ export function transformJourneyAnalytics(
       total: 0
     }
 
-    // Set event map for step by event type
-    let stepEvent = step.eventMap.get(event.event) ?? 0
+    // Set event map for step by event type. keyof JourneyPlausibleEvents
+    // widens to string | number (index signature), so stringify for the
+    // string-keyed map — a no-op for the JSON-parsed event names.
+    const eventName = String(event.event)
+    let stepEvent = step.eventMap.get(eventName) ?? 0
 
     stepEvent += event.events
 
-    step.eventMap.set(event.event, stepEvent)
+    step.eventMap.set(eventName, stepEvent)
 
     if (ACTION_EVENTS.includes(event.event)) {
       step.total += event.events

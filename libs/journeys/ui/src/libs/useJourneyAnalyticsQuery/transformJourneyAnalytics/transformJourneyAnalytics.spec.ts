@@ -1179,7 +1179,15 @@ describe('transformJourneyAnalytics', () => {
       journeyStepsActions: [],
       journeyReferrer: [],
       journeyUtmCampaign: [],
-      journeyVisitorsPageExits: [],
+      journeyVisitorsPageExits: [
+        {
+          // Below the summed visitor count (100): the cap is a no-op on the
+          // fallback path and the exit count passes through unchanged
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 40
+        }
+      ],
       journeyActionsSums: [
         {
           // Action rows without a pageview row must not trigger the override
@@ -1204,7 +1212,7 @@ describe('transformJourneyAnalytics', () => {
       stepId: 'step1.id',
       visitors: 100,
       timeOnPage: 17,
-      visitorsExitAtStep: 0
+      visitorsExitAtStep: 40
     })
   })
 
