@@ -28,6 +28,7 @@ import {
   handleParentVariantCleanup,
   handleParentVariantCreation
 } from '../videoVariant/videoVariant'
+import { requestVideoVariantReconciliation } from '../videoVariantUpload/requestVideoVariantReconciliation'
 
 import { Platform } from './enums/platform'
 import { VideoLabel } from './enums/videoLabel'
@@ -782,7 +783,12 @@ builder.mutationFields((t) => ({
 
       // Handle child relation synchronization if childIds is being updated
       let childRelationUpdate = {}
+      let affectedChildIds: string[] = []
       if (input.childIds !== undefined) {
+        const existingParent = await prisma.video.findUnique({
+          where: { id: input.id },
+          select: { childIds: true }
+        })
         // Get all existing video IDs to validate child IDs
         const videos = await prisma.video.findMany({
           select: { id: true }
@@ -792,6 +798,9 @@ builder.mutationFields((t) => ({
         // Filter out any child IDs that don't exist
         const validChildIds = (input.childIds || []).filter((id) =>
           existingVideoIds.has(id)
+        )
+        affectedChildIds = Array.from(
+          new Set([...(existingParent?.childIds ?? []), ...validChildIds])
         )
 
         // Update the children relation
@@ -847,6 +856,32 @@ builder.mutationFields((t) => ({
           )
         }
         throw e
+      }
+
+      if (input.childIds !== undefined && affectedChildIds.length > 0) {
+        const affectedVariants =
+          (await prisma.videoVariant.findMany({
+            where: {
+              videoId: { in: affectedChildIds },
+              published: true
+            },
+            select: {
+              id: true,
+              videoId: true,
+              languageId: true,
+              edition: true
+            }
+          })) ?? []
+        for (const variant of affectedVariants) {
+          await requestVideoVariantReconciliation({
+            videoVariantId: variant.id,
+            videoId: variant.videoId,
+            languageId: variant.languageId,
+            edition: variant.edition,
+            published: true,
+            source: 'video-relationship-change'
+          })
+        }
       }
 
       // Handle parent variant changes if video published status changed
