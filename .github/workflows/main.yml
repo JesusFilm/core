@@ -65,6 +65,57 @@ jobs:
           DOPPLER_CONFIG: stg
         with:
           targets: fetch-secrets,build
+  graphql-schema-check:
+    # ENG-3689: regenerating every schema.graphql from code must produce no
+    # diff — the committed schema files are generated artifacts, and drift
+    # between them and the code that generates them otherwise fails silently
+    # (subgraph-check only validates composition against the registry).
+    runs-on: blacksmith-4vcpu-ubuntu-2204
+    env:
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: generate prisma imports
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: prisma-generate
+          all: true
+        env:
+          DISABLE_ERD: true
+      - name: regenerate subgraph schemas
+        run: pnpm exec nx run-many -t generate-graphql --projects api-analytics,api-journeys,api-languages,api-media,api-users
+        env:
+          # Schema generation writes SDL and exits before serving anything,
+          # but some modules validate env or construct clients at import time
+          # (api-journeys env.ts, api-media crowdinClient). Values are never
+          # used during generation, so placeholders are safe here.
+          SKIP_ENV_VALIDATION: '1'
+          CROWDIN_API_KEY: ci-schema-regen-placeholder
+          CROWDIN_PROJECT_ID: '1'
+      - name: recompose gateway supergraph
+        # Runs after the subgraphs so the compose reads freshly generated
+        # schema files, not the committed ones.
+        run: pnpm exec nx run api-gateway:generate-graphql
+      - name: fail if regenerated schemas differ from committed
+        run: |
+          if git diff --exit-code -- 'apis/*/schema.graphql'; then
+            echo "✅ - committed schema.graphql files match generated output"
+          else
+            echo ""
+            echo "🛑 - committed schema.graphql files are out of date with the code that generates them (see diff above)."
+            echo "To fix: run 'nx generate-graphql <api>' for each API you changed, then 'nx generate-graphql api-gateway', and commit the updated schema.graphql files."
+            exit 1
+          fi
   test:
     runs-on: blacksmith-4vcpu-ubuntu-2204
     strategy:
