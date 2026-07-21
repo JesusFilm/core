@@ -22,11 +22,8 @@ set -euo pipefail
 # a newly added domain is guarded automatically (its initial migration is
 # required) and a domain deleted by the PR is not flagged.
 #
-# Escape hatch: schema edits that genuinely need no migration (comments,
-# formatting, attributes that don't affect the database) can add the
-# 'skip-migration-check' PR label — checked at runtime by the workflow step,
-# so adding the label and re-running the failed job works (see
-# .github/workflows/main.yml).
+# Escape hatch: the 'skip-migration-check' PR label, handled entirely by the
+# calling workflow — see .github/workflows/main.yml.
 #
 # The analytics domain is deliberately excluded: its database is managed
 # externally and its schema is pulled via `nx prisma-introspect
@@ -46,11 +43,9 @@ fi
 FAILED_DOMAINS=()
 for schema in $(git ls-tree -r --name-only "$HEAD_REF" libs/prisma | grep -E '^libs/prisma/[^/]+/db/schema\.prisma$'); do
   domain=$(basename "$(dirname "$(dirname "$schema")")")
-  for excluded in "${EXCLUDED_DOMAINS[@]}"; do
-    if [ "$domain" = "$excluded" ]; then
-      continue 2
-    fi
-  done
+  if [[ " ${EXCLUDED_DOMAINS[*]} " == *" $domain "* ]]; then
+    continue
+  fi
   migrations="libs/prisma/$domain/db/migrations"
 
   if git diff --quiet "$MERGE_BASE" "$HEAD_REF" -- "$schema"; then
@@ -59,21 +54,28 @@ for schema in $(git ls-tree -r --name-only "$HEAD_REF" libs/prisma | grep -E '^l
 
   # Only a real, deployable migration counts — a new */migration.sql — not
   # just any file added under the migrations directory (e.g. a README).
-  added_migrations=$(git diff --name-only --no-renames --diff-filter=A "$MERGE_BASE" "$HEAD_REF" -- "$migrations/*/migration.sql")
+  # core.quotePath=false keeps non-ASCII migration names usable as paths.
+  added_migrations=$(git -c core.quotePath=false diff --name-only --no-renames --diff-filter=A "$MERGE_BASE" "$HEAD_REF" -- "$migrations/*/migration.sql")
   if [ -z "$added_migrations" ]; then
     echo "🛑 - $schema changed but no migration was added in $migrations"
     FAILED_DOMAINS+=("$domain")
     continue
   fi
 
-  empty_migrations=$(echo "$added_migrations" | while read -r f; do
-    if ! git cat-file blob "$HEAD_REF:$f" | grep -q '[^[:space:]]'; then
-      echo "$f"
+  # Read each blob into a variable rather than piping into grep -q: grep
+  # exiting early would SIGPIPE git cat-file on large files and, under
+  # pipefail, misreport a real migration as empty. A genuine cat-file
+  # failure aborts the script loudly here (set -e) instead.
+  empty_migrations=""
+  while IFS= read -r f; do
+    content=$(git cat-file blob "$HEAD_REF:$f")
+    if [[ ! "$content" =~ [^[:space:]] ]]; then
+      empty_migrations+="$f"$'\n'
     fi
-  done)
+  done <<<"$added_migrations"
   if [ -n "$empty_migrations" ]; then
     echo "🛑 - $schema changed but the added migration(s) are empty:"
-    echo "$empty_migrations" | sed 's/^/      /'
+    printf '%s' "$empty_migrations" | sed 's/^/      /'
     FAILED_DOMAINS+=("$domain")
     continue
   fi
