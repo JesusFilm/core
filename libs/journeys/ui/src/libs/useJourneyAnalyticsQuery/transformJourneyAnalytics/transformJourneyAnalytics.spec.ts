@@ -271,7 +271,9 @@ describe('transformJourneyAnalytics', () => {
       stepsStats: [
         {
           stepId: 'step1.id',
-          visitors: 10,
+          // From the pageview simpleKey row (5), not the event:page row (10):
+          // keyed pageview uniques win over page-path visitors when present
+          visitors: 5,
           timeOnPage: 10,
           visitorsExitAtStep: 5
         },
@@ -873,6 +875,107 @@ describe('transformJourneyAnalytics', () => {
       stepId: 'step1.id',
       visitors: 0,
       timeOnPage: 0,
+      visitorsExitAtStep: 0
+    })
+  })
+
+  it('uses pathname-independent pageview uniques instead of the summed slash variants', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 30,
+          timeOnPage: 10
+        },
+        {
+          // Historical trailing-slash variant: visitors present on both
+          // variants are double-counted by the sum (30 + 70 = 100)
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id/',
+          visitors: 70,
+          timeOnPage: 20
+        }
+      ],
+      journeyStepsActions: [],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [],
+      journeyActionsSums: [
+        {
+          // Keyed pageview uniques are deduplicated across both page variants
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"pageview","blockId":"step1.id","target":""}',
+          visitors: 90
+        }
+      ],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 90
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    expect(result?.stepsStats).toHaveLength(1)
+    expect(result?.stepsStats[0]).toEqual({
+      stepId: 'step1.id',
+      // The keyed pageview count (90), not the double-counting sum (100)
+      visitors: 90,
+      // timeOnPage still comes from event:page: (10*30 + 20*70) / 100 = 17
+      timeOnPage: 17,
+      visitorsExitAtStep: 0
+    })
+  })
+
+  it('falls back to summed event:page visitors when no pageview key data exists', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 30,
+          timeOnPage: 10
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id/',
+          visitors: 70,
+          timeOnPage: 20
+        }
+      ],
+      journeyStepsActions: [],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [],
+      journeyActionsSums: [
+        {
+          // Action rows without a pageview row must not trigger the override
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"buttonClick","blockId":"button1.id","target":""}',
+          visitors: 40
+        }
+      ],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 100
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    expect(result?.stepsStats[0]).toEqual({
+      stepId: 'step1.id',
+      visitors: 100,
+      timeOnPage: 17,
       visitorsExitAtStep: 0
     })
   })
