@@ -4,7 +4,7 @@ import { prismaMock } from '../../../test/prismaMock'
 import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
 
-import { reconcileVideoVariantUpload } from './reconcileVideoVariantUpload'
+import { reconcileVideoVariantReconciliation } from './reconcileVideoVariantReconciliation'
 
 vi.mock('../../lib/algolia/algoliaVideoUpdate', () => ({
   updateVideoInAlgolia: vi.fn()
@@ -13,7 +13,7 @@ vi.mock('../../lib/algolia/algoliaVideoVariantUpdate', () => ({
   updateVideoVariantInAlgolia: vi.fn()
 }))
 
-describe('reconcileVideoVariantUpload', () => {
+describe('reconcileVideoVariantReconciliation', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     prismaMock.$transaction.mockImplementation(async (transaction) => {
@@ -22,8 +22,8 @@ describe('reconcileVideoVariantUpload', () => {
   })
 
   it('publishes a Variant only after its generated parent Variant and indexes are ready', async () => {
-    prismaMock.videoVariantUpload.findUniqueOrThrow.mockResolvedValue({
-      id: 'upload-1',
+    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue({
+      id: 'reconciliation-1',
       videoId: 'episode-1',
       languageId: '20770',
       published: true,
@@ -49,7 +49,7 @@ describe('reconcileVideoVariantUpload', () => {
     } as never)
     prismaMock.videoVariantDownload.count.mockResolvedValue(0)
 
-    const result = await reconcileVideoVariantUpload('upload-1')
+    const result = await reconcileVideoVariantReconciliation('reconciliation-1')
 
     expect(prismaMock.videoVariant.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
@@ -60,10 +60,9 @@ describe('reconcileVideoVariantUpload', () => {
         downloadable: false
       })
     })
-    expect(prismaMock.videoVariantUpload.create).toHaveBeenCalledWith({
+    expect(prismaMock.videoVariantReconciliation.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         source: 'generated-parent',
-        canonical: true,
         videoVariantId: '20770_series-1',
         processingStages: expect.objectContaining({
           mux: { state: 'notApplicable', attempts: 0 },
@@ -83,8 +82,8 @@ describe('reconcileVideoVariantUpload', () => {
   })
 
   it('keeps a new Variant unpublished when parent indexing fails', async () => {
-    prismaMock.videoVariantUpload.findUniqueOrThrow.mockResolvedValue({
-      id: 'upload-1',
+    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue({
+      id: 'reconciliation-1',
       videoId: 'episode-1',
       languageId: '20770',
       published: true,
@@ -112,11 +111,11 @@ describe('reconcileVideoVariantUpload', () => {
       new Error('Algolia unavailable')
     )
 
-    const result = await reconcileVideoVariantUpload('upload-1')
+    const result = await reconcileVideoVariantReconciliation('reconciliation-1')
 
     expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
-    expect(prismaMock.videoVariantUpload.update).toHaveBeenCalledWith({
-      where: { id: 'upload-1' },
+    expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith({
+      where: { id: 'reconciliation-1' },
       data: expect.objectContaining({
         status: 'degraded',
         processingStages: expect.objectContaining({
@@ -135,8 +134,8 @@ describe('reconcileVideoVariantUpload', () => {
   })
 
   it('publishes with degraded health when requested Downloads are missing', async () => {
-    prismaMock.videoVariantUpload.findUniqueOrThrow.mockResolvedValue({
-      id: 'upload-1',
+    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue({
+      id: 'reconciliation-1',
       videoId: 'episode-1',
       languageId: '20770',
       published: true,
@@ -156,14 +155,14 @@ describe('reconcileVideoVariantUpload', () => {
     prismaMock.video.findMany.mockResolvedValue([])
     prismaMock.videoVariantDownload.count.mockResolvedValue(0)
 
-    const result = await reconcileVideoVariantUpload('upload-1')
+    const result = await reconcileVideoVariantReconciliation('reconciliation-1')
 
     expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
       where: { id: 'variant-1' },
       data: { published: true }
     })
-    expect(prismaMock.videoVariantUpload.update).toHaveBeenCalledWith({
-      where: { id: 'upload-1' },
+    expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith({
+      where: { id: 'reconciliation-1' },
       data: expect.objectContaining({
         status: 'degraded',
         processingStages: expect.objectContaining({
@@ -175,8 +174,8 @@ describe('reconcileVideoVariantUpload', () => {
   })
 
   it('marks an unusable Variant failed after the Mux processing window', async () => {
-    prismaMock.videoVariantUpload.findUniqueOrThrow.mockResolvedValue({
-      id: 'upload-1',
+    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue({
+      id: 'reconciliation-1',
       videoId: 'episode-1',
       languageId: '20770',
       published: true,
@@ -194,10 +193,10 @@ describe('reconcileVideoVariantUpload', () => {
       }
     } as never)
 
-    const result = await reconcileVideoVariantUpload('upload-1')
+    const result = await reconcileVideoVariantReconciliation('reconciliation-1')
 
-    expect(prismaMock.videoVariantUpload.update).toHaveBeenCalledWith({
-      where: { id: 'upload-1' },
+    expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith({
+      where: { id: 'reconciliation-1' },
       data: expect.objectContaining({
         status: 'failed',
         processingStages: expect.objectContaining({
@@ -210,7 +209,7 @@ describe('reconcileVideoVariantUpload', () => {
   })
 
   it('reconciles generated parent indexes with media stages not applicable', async () => {
-    prismaMock.videoVariantUpload.findUniqueOrThrow.mockResolvedValue({
+    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue({
       id: 'status-1',
       source: 'generated-parent',
       videoId: 'series-1',
@@ -230,11 +229,11 @@ describe('reconcileVideoVariantUpload', () => {
       }
     } as never)
 
-    const result = await reconcileVideoVariantUpload('status-1')
+    const result = await reconcileVideoVariantReconciliation('status-1')
 
     expect(updateVideoInAlgolia).toHaveBeenCalledWith('series-1')
     expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('20770_series-1')
-    expect(prismaMock.videoVariantUpload.update).toHaveBeenCalledWith({
+    expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith({
       where: { id: 'status-1' },
       data: expect.objectContaining({
         status: 'complete',

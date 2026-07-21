@@ -20,10 +20,11 @@ const pendingStages = {
 export async function requestVideoVariantReconciliation(
   intent: ReconciliationIntent
 ): Promise<void> {
-  const canonicalStatus = await prisma.videoVariantUpload.findFirst({
-    where: { videoVariantId: intent.videoVariantId, canonical: true },
-    select: { id: true }
-  })
+  const existingReconciliation =
+    await prisma.videoVariantReconciliation.findUnique({
+      where: { videoVariantId: intent.videoVariantId },
+      select: { id: true }
+    })
   const data = {
     source: intent.source,
     status: 'processing' as const,
@@ -36,18 +37,17 @@ export async function requestVideoVariantReconciliation(
     errorMessage: null
   }
 
-  if (canonicalStatus != null) {
-    await prisma.videoVariantUpload.update({
-      where: { id: canonicalStatus.id },
+  if (existingReconciliation != null) {
+    await prisma.videoVariantReconciliation.update({
+      where: { id: existingReconciliation.id },
       data
     })
     return
   }
 
-  await prisma.videoVariantUpload.create({
+  await prisma.videoVariantReconciliation.create({
     data: {
       ...data,
-      canonical: true,
       videoVariantId: intent.videoVariantId
     }
   })

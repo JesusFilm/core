@@ -80,6 +80,10 @@ enum VideoVariantUploadStatus {
   muxCreated
   muxReady
   variantCreated
+  failed
+}
+
+enum VideoVariantReconciliationStatus {
   processing
   degraded
   complete
@@ -152,38 +156,39 @@ enum VideoLabel {
 }
 
 model Video {
-  id                        String               @id @default(uuid())
+  id                        String                       @id @default(uuid())
   label                     VideoLabel
   primaryLanguageId         String
-  published                 Boolean              @default(true)
+  published                 Boolean                      @default(true)
   title                     VideoTitle[]
   snippet                   VideoSnippet[]
   description               VideoDescription[]
   studyQuestions            VideoStudyQuestion[]
   imageAlt                  VideoImageAlt[]
-  slug                      String?              @unique
+  slug                      String?                      @unique
   noIndex                   Boolean?
   childIds                  String[] // needed for child sort order
-  locked                    Boolean              @default(false)
-  restrictTranslations      Boolean              @default(false)
+  locked                    Boolean                      @default(false)
+  restrictTranslations      Boolean                      @default(false)
   subtitles                 VideoSubtitle[]
-  children                  Video[]              @relation("ParentChild")
-  parents                   Video[]              @relation("ParentChild")
+  children                  Video[]                      @relation("ParentChild")
+  parents                   Video[]                      @relation("ParentChild")
   variants                  VideoVariant[]
   variantUploads            VideoVariantUpload[]
+  variantReconciliations    VideoVariantReconciliation[]
   bibleCitation             BibleCitation[]
-  keywords                  Keyword[]            @relation("VideoToKeyword")
+  keywords                  Keyword[]                    @relation("VideoToKeyword")
   images                    CloudflareImage[]
   cloudflareAssets          CloudflareR2[]
   videoEditions             VideoEdition[]
   availableLanguages        String[]
-  origin                    VideoOrigin?         @relation(fields: [originId], references: [id])
+  origin                    VideoOrigin?                 @relation(fields: [originId], references: [id])
   originId                  String?
-  restrictDownloadPlatforms Platform[]           @default([])
-  restrictViewPlatforms     Platform[]           @default([])
+  restrictDownloadPlatforms Platform[]                   @default([])
+  restrictViewPlatforms     Platform[]                   @default([])
   publishedAt               DateTime?
-  createdAt                 DateTime             @default(now())
-  updatedAt                 DateTime             @default(now()) @updatedAt
+  createdAt                 DateTime                     @default(now())
+  updatedAt                 DateTime                     @default(now()) @updatedAt
   userMediaProfiles         UserMediaProfile[]
 
   @@index(label)
@@ -245,11 +250,11 @@ model VideoVariantDownload {
 }
 
 model VideoVariant {
-  id                   String                 @id
+  id                   String                      @id
   hls                  String?
   dash                 String?
   share                String?
-  downloadable         Boolean                @default(true)
+  downloadable         Boolean                     @default(true)
   downloads            VideoVariantDownload[]
   duration             Int?
   lengthInMilliseconds Int?
@@ -257,23 +262,24 @@ model VideoVariant {
   masterUrl            String?
   masterWidth          Int?
   masterHeight         Int?
-  published            Boolean                @default(true)
-  version              Int                    @default(1)
-  edition              String                 @default("base")
-  videoEdition         VideoEdition           @relation(fields: [edition, videoId], references: [name, videoId])
-  slug                 String                 @unique
-  video                Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  published            Boolean                     @default(true)
+  version              Int                         @default(1)
+  edition              String                      @default("base")
+  videoEdition         VideoEdition                @relation(fields: [edition, videoId], references: [name, videoId])
+  slug                 String                      @unique
+  video                Video?                      @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId              String
-  assetId              String?                @unique
-  asset                CloudflareR2?          @relation(fields: [assetId], references: [id])
+  assetId              String?                     @unique
+  asset                CloudflareR2?               @relation(fields: [assetId], references: [id])
   muxVideoId           String?
-  muxVideo             MuxVideo?              @relation(fields: [muxVideoId], references: [id])
+  muxVideo             MuxVideo?                   @relation(fields: [muxVideoId], references: [id])
   variantUploads       VideoVariantUpload[]
+  reconciliation       VideoVariantReconciliation?
   brightcoveId         String?
   playlistItems        PlaylistItem[]
   youtubeVideos        YoutubeVideo[]
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime               @default(now()) @updatedAt
+  createdAt            DateTime                    @default(now())
+  updatedAt            DateTime                    @default(now()) @updatedAt
 
   @@unique([languageId, videoId])
   @@index(languageId(type: Hash))
@@ -287,14 +293,12 @@ model VideoVariantUpload {
   source                        String
   sourceKey                     String?
   status                        VideoVariantUploadStatus @default(created)
-  canonical                     Boolean                  @default(false)
   videoId                       String
   video                         Video                    @relation(fields: [videoId], references: [id], onDelete: Cascade)
   edition                       String                   @default("base")
   languageId                    String
   version                       Int                      @default(1)
   published                     Boolean                  @default(true)
-  processingStages              Json                     @default("{}")
   originalFilename              String?
   contentType                   String?
   contentLength                 BigInt?
@@ -308,9 +312,8 @@ model VideoVariantUpload {
   muxVideo                      MuxVideo?                @relation(fields: [muxVideoId], references: [id])
   muxNonStandardInputDetectedAt DateTime?
   videoVariantId                String?
-  videoVariant                  VideoVariant?            @relation(fields: [videoVariantId], references: [id], onDelete: SetNull)
+  videoVariant                  VideoVariant?            @relation(fields: [videoVariantId], references: [id])
   errorMessage                  String?
-  retryAt                       DateTime?
   createdAt                     DateTime                 @default(now())
   updatedAt                     DateTime                 @default(now()) @updatedAt
 
@@ -319,7 +322,28 @@ model VideoVariantUpload {
   @@index(r2AssetId)
   @@index(muxVideoId)
   @@index(videoVariantId)
-  @@index([canonical, status, updatedAt])
+}
+
+model VideoVariantReconciliation {
+  id               String                           @id @default(uuid())
+  source           String
+  status           VideoVariantReconciliationStatus @default(processing)
+  videoId          String
+  video            Video                            @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  edition          String                           @default("base")
+  languageId       String
+  published        Boolean                          @default(true)
+  processingStages Json                             @default("{}")
+  videoVariantId   String?                          @unique
+  videoVariant     VideoVariant?                    @relation(fields: [videoVariantId], references: [id], onDelete: SetNull)
+  errorMessage     String?
+  retryAt          DateTime?
+  createdAt        DateTime                         @default(now())
+  updatedAt        DateTime                         @default(now()) @updatedAt
+
+  @@index(status)
+  @@index([videoId, languageId, edition])
+  @@index([status, updatedAt])
 }
 
 model VideoEdition {
