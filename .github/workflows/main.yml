@@ -130,8 +130,7 @@ jobs:
     # edits a domain's schema to add a migration in that same domain.
     # Only meaningful on PRs (needs a base branch to diff against). The
     # 'skip-migration-check' label is the escape hatch for schema edits that
-    # genuinely need no migration (comments, formatting) — see the label
-    # re-check in the step below for why it's checked twice.
+    # genuinely need no migration (comments, formatting).
     runs-on: blacksmith-2vcpu-ubuntu-2204
     permissions:
       contents: read
@@ -154,10 +153,9 @@ jobs:
           # Labels added after the triggering event are invisible to the
           # job-level if on re-runs, so re-check them at runtime. per_page=100
           # covers GitHub's per-issue label cap in one page.
-          if ! labels=$(curl -sSf --max-time 10 --retry 3 --retry-delay 2 \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/labels?per_page=100" \
-            | jq -r '.[].name'); then
+          if ! labels=$(timeout 30 gh api \
+            "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/labels?per_page=100" \
+            --jq '.[].name'); then
             echo "⚠️ - could not fetch PR labels (error above); running the check anyway (fail closed)."
             echo "If you added the 'skip-migration-check' label, re-run this job."
             labels=""
