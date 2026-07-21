@@ -6,7 +6,9 @@ import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVaria
 
 import { reconcileVideoVariantUpload } from './reconcileVideoVariantUpload'
 
-vi.mock('../../lib/algolia/algoliaVideoUpdate', () => ({ updateVideoInAlgolia: vi.fn() }))
+vi.mock('../../lib/algolia/algoliaVideoUpdate', () => ({
+  updateVideoInAlgolia: vi.fn()
+}))
 vi.mock('../../lib/algolia/algoliaVideoVariantUpdate', () => ({
   updateVideoVariantInAlgolia: vi.fn()
 }))
@@ -21,11 +23,20 @@ describe('reconcileVideoVariantUpload', () => {
 
   it('publishes a Variant only after its generated parent Variant and indexes are ready', async () => {
     prismaMock.videoVariantUpload.findUniqueOrThrow.mockResolvedValue({
-      id: 'upload-1', videoId: 'episode-1', languageId: '20770', published: true,
-      videoVariantId: 'variant-1', processingStages: {}, createdAt: new Date(),
+      id: 'upload-1',
+      videoId: 'episode-1',
+      languageId: '20770',
+      published: true,
+      videoVariantId: 'variant-1',
+      processingStages: {},
+      createdAt: new Date(),
       videoVariant: {
-        id: 'variant-1', videoId: 'episode-1', languageId: '20770', published: false,
-        downloadable: false, muxVideo: { readyToStream: true },
+        id: 'variant-1',
+        videoId: 'episode-1',
+        languageId: '20770',
+        published: false,
+        downloadable: false,
+        muxVideo: { readyToStream: true },
         video: { id: 'episode-1', published: true, label: 'episode' }
       }
     } as never)
@@ -33,15 +44,20 @@ describe('reconcileVideoVariantUpload', () => {
       { id: 'series-1', slug: 'do-you-ever-wonder', availableLanguages: [] }
     ] as never)
     prismaMock.videoVariant.findFirst.mockResolvedValue(null)
-    prismaMock.videoVariant.create.mockResolvedValue({ id: '20770_series-1' } as never)
+    prismaMock.videoVariant.create.mockResolvedValue({
+      id: '20770_series-1'
+    } as never)
     prismaMock.videoVariantDownload.count.mockResolvedValue(0)
 
     const result = await reconcileVideoVariantUpload('upload-1')
 
     expect(prismaMock.videoVariant.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
-        id: '20770_series-1', videoId: 'series-1', languageId: '20770',
-        published: false, downloadable: false
+        id: '20770_series-1',
+        videoId: 'series-1',
+        languageId: '20770',
+        published: false,
+        downloadable: false
       })
     })
     expect(prismaMock.videoVariantUpload.create).toHaveBeenCalledWith({
@@ -59,7 +75,8 @@ describe('reconcileVideoVariantUpload', () => {
     expect(updateVideoInAlgolia).toHaveBeenCalledWith('episode-1')
     expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('20770_series-1')
     expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
-      where: { id: 'variant-1' }, data: { published: true }
+      where: { id: 'variant-1' },
+      data: { published: true }
     })
     expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('variant-1')
     expect(result).toMatchObject({ publicationReady: true, status: 'complete' })
@@ -67,11 +84,19 @@ describe('reconcileVideoVariantUpload', () => {
 
   it('keeps a new Variant unpublished when parent indexing fails', async () => {
     prismaMock.videoVariantUpload.findUniqueOrThrow.mockResolvedValue({
-      id: 'upload-1', videoId: 'episode-1', languageId: '20770', published: true,
-      videoVariantId: 'variant-1', processingStages: {},
+      id: 'upload-1',
+      videoId: 'episode-1',
+      languageId: '20770',
+      published: true,
+      videoVariantId: 'variant-1',
+      processingStages: {},
       videoVariant: {
-        id: 'variant-1', videoId: 'episode-1', languageId: '20770', published: false,
-        downloadable: false, muxVideo: { readyToStream: true },
+        id: 'variant-1',
+        videoId: 'episode-1',
+        languageId: '20770',
+        published: false,
+        downloadable: false,
+        muxVideo: { readyToStream: true },
         video: { id: 'episode-1', published: true, label: 'episode' }
       }
     } as never)
@@ -79,9 +104,13 @@ describe('reconcileVideoVariantUpload', () => {
       { id: 'series-1', slug: 'do-you-ever-wonder', availableLanguages: [] }
     ] as never)
     prismaMock.videoVariant.findFirst.mockResolvedValue(null)
-    prismaMock.videoVariant.create.mockResolvedValue({ id: '20770_series-1' } as never)
+    prismaMock.videoVariant.create.mockResolvedValue({
+      id: '20770_series-1'
+    } as never)
     prismaMock.videoVariantDownload.count.mockResolvedValue(0)
-    vi.mocked(updateVideoInAlgolia).mockRejectedValueOnce(new Error('Algolia unavailable'))
+    vi.mocked(updateVideoInAlgolia).mockRejectedValueOnce(
+      new Error('Algolia unavailable')
+    )
 
     const result = await reconcileVideoVariantUpload('upload-1')
 
@@ -92,21 +121,35 @@ describe('reconcileVideoVariantUpload', () => {
         status: 'degraded',
         processingStages: expect.objectContaining({
           algoliaVideo: expect.objectContaining({
-            state: 'failed', error: 'Algolia unavailable', attempts: 1
+            state: 'failed',
+            error: 'Algolia unavailable',
+            attempts: 1
           })
         })
       })
     })
-    expect(result).toMatchObject({ publicationReady: false, status: 'degraded' })
+    expect(result).toMatchObject({
+      publicationReady: false,
+      status: 'degraded'
+    })
   })
 
   it('publishes with degraded health when requested Downloads are missing', async () => {
     prismaMock.videoVariantUpload.findUniqueOrThrow.mockResolvedValue({
-      id: 'upload-1', videoId: 'episode-1', languageId: '20770', published: true,
-      videoVariantId: 'variant-1', processingStages: {}, createdAt: new Date(),
+      id: 'upload-1',
+      videoId: 'episode-1',
+      languageId: '20770',
+      published: true,
+      videoVariantId: 'variant-1',
+      processingStages: {},
+      createdAt: new Date(),
       videoVariant: {
-        id: 'variant-1', videoId: 'episode-1', languageId: '20770', published: false,
-        downloadable: true, muxVideo: { readyToStream: true },
+        id: 'variant-1',
+        videoId: 'episode-1',
+        languageId: '20770',
+        published: false,
+        downloadable: true,
+        muxVideo: { readyToStream: true },
         video: { id: 'episode-1', published: true, label: 'episode' }
       }
     } as never)
@@ -116,7 +159,8 @@ describe('reconcileVideoVariantUpload', () => {
     const result = await reconcileVideoVariantUpload('upload-1')
 
     expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
-      where: { id: 'variant-1' }, data: { published: true }
+      where: { id: 'variant-1' },
+      data: { published: true }
     })
     expect(prismaMock.videoVariantUpload.update).toHaveBeenCalledWith({
       where: { id: 'upload-1' },
@@ -132,12 +176,20 @@ describe('reconcileVideoVariantUpload', () => {
 
   it('marks an unusable Variant failed after the Mux processing window', async () => {
     prismaMock.videoVariantUpload.findUniqueOrThrow.mockResolvedValue({
-      id: 'upload-1', videoId: 'episode-1', languageId: '20770', published: true,
-      videoVariantId: 'variant-1', processingStages: {},
+      id: 'upload-1',
+      videoId: 'episode-1',
+      languageId: '20770',
+      published: true,
+      videoVariantId: 'variant-1',
+      processingStages: {},
       createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
       videoVariant: {
-        id: 'variant-1', videoId: 'episode-1', languageId: '20770', published: false,
-        downloadable: false, muxVideo: { readyToStream: false },
+        id: 'variant-1',
+        videoId: 'episode-1',
+        languageId: '20770',
+        published: false,
+        downloadable: false,
+        muxVideo: { readyToStream: false },
         video: { id: 'episode-1', published: true, label: 'episode' }
       }
     } as never)
@@ -159,12 +211,21 @@ describe('reconcileVideoVariantUpload', () => {
 
   it('reconciles generated parent indexes with media stages not applicable', async () => {
     prismaMock.videoVariantUpload.findUniqueOrThrow.mockResolvedValue({
-      id: 'status-1', source: 'generated-parent', videoId: 'series-1',
-      languageId: '20770', published: true, videoVariantId: '20770_series-1',
-      processingStages: {}, createdAt: new Date(),
+      id: 'status-1',
+      source: 'generated-parent',
+      videoId: 'series-1',
+      languageId: '20770',
+      published: true,
+      videoVariantId: '20770_series-1',
+      processingStages: {},
+      createdAt: new Date(),
       videoVariant: {
-        id: '20770_series-1', videoId: 'series-1', languageId: '20770',
-        published: true, downloadable: false, muxVideo: null,
+        id: '20770_series-1',
+        videoId: 'series-1',
+        languageId: '20770',
+        published: true,
+        downloadable: false,
+        muxVideo: null,
         video: { id: 'series-1', published: false, label: 'series' }
       }
     } as never)

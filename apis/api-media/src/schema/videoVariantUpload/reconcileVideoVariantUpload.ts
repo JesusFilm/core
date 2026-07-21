@@ -147,14 +147,13 @@ export async function reconcileVideoVariantUpload(
   uploadId: string
 ): Promise<VideoVariantReconciliationResult> {
   const reconciliationPrisma = prisma as unknown as ReconciliationPrisma
-  const upload = await reconciliationPrisma.videoVariantUpload.findUniqueOrThrow(
-    {
+  const upload =
+    await reconciliationPrisma.videoVariantUpload.findUniqueOrThrow({
       where: { id: uploadId },
       include: {
         videoVariant: { include: { muxVideo: true, video: true } }
       }
-    }
-  )
+    })
 
   const variant = upload.videoVariant
   if (upload.source === 'video-variant-delete') {
@@ -224,10 +223,7 @@ export async function reconcileVideoVariantUpload(
       await updateVideoInAlgolia(variant.videoId)
       stages.algoliaVideo = completedStage(stages.algoliaVideo.attempts + 1)
     } catch (error) {
-      stages.algoliaVideo = failedStage(
-        error,
-        stages.algoliaVideo.attempts + 1
-      )
+      stages.algoliaVideo = failedStage(error, stages.algoliaVideo.attempts + 1)
       await persistGeneratedStatus('degraded', stages.algoliaVideo)
       return { publicationReady: false, status: 'degraded' }
     }
@@ -240,9 +236,7 @@ export async function reconcileVideoVariantUpload(
         })
       }
       await updateVideoVariantInAlgolia(variant.id)
-      stages.algoliaVariant = completedStage(
-        stages.algoliaVariant.attempts + 1
-      )
+      stages.algoliaVariant = completedStage(stages.algoliaVariant.attempts + 1)
     } catch (error) {
       if (!variant.published) {
         await prisma.videoVariant.update({
@@ -272,9 +266,10 @@ export async function reconcileVideoVariantUpload(
     await updateVideoInAlgolia(variant.videoId)
     await updateVideoVariantInAlgolia(variant.id)
     const processingStages: ProcessingStages = {
-      mux: variant.muxVideo?.readyToStream === true
-        ? completedStage()
-        : notApplicableStage(),
+      mux:
+        variant.muxVideo?.readyToStream === true
+          ? completedStage()
+          : notApplicableStage(),
       parentSync: completedStage(),
       downloads: notApplicableStage(),
       algoliaVideo: completedStage(),

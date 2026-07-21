@@ -6,7 +6,9 @@ import { updateVideoVariantInAlgolia } from '../lib/algolia/algoliaVideoVariantU
 
 import { auditParentVariants } from './audit-parent-variants'
 
-vi.mock('../lib/algolia/algoliaVideoUpdate', () => ({ updateVideoInAlgolia: vi.fn() }))
+vi.mock('../lib/algolia/algoliaVideoUpdate', () => ({
+  updateVideoInAlgolia: vi.fn()
+}))
 vi.mock('../lib/algolia/algoliaVideoVariantUpdate', () => ({
   updateVideoVariantInAlgolia: vi.fn()
 }))
@@ -117,7 +119,9 @@ describe('auditParentVariants', () => {
       })
     })
     expect(updateVideoInAlgolia).toHaveBeenCalledWith('draft-series')
-    expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('20770_draft-series')
+    expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith(
+      '20770_draft-series'
+    )
     expect(result.deterministicGaps[0].result).toBe('applied')
     expect(result.indexingFailures).toEqual([])
   })
@@ -175,19 +179,30 @@ describe('auditParentVariants', () => {
   it('preserves database repair and reports the specific failed index stage', async () => {
     prismaMock.video.findMany.mockResolvedValue([
       {
-        id: 'series-1', slug: 'do-you-ever-wonder', published: true,
-        availableLanguages: [], variants: [],
-        children: [{
-          id: 'episode-1', published: true,
-          variants: [{
-            id: 'kurmanji-episode-1', languageId: '20770',
-            slug: 'do-you-ever-wonder/episode-1/ku', published: true
-          }]
-        }]
+        id: 'series-1',
+        slug: 'do-you-ever-wonder',
+        published: true,
+        availableLanguages: [],
+        variants: [],
+        children: [
+          {
+            id: 'episode-1',
+            published: true,
+            variants: [
+              {
+                id: 'kurmanji-episode-1',
+                languageId: '20770',
+                slug: 'do-you-ever-wonder/episode-1/ku',
+                published: true
+              }
+            ]
+          }
+        ]
       }
     ] as never)
     prismaMock.$transaction.mockImplementation(async (transaction) => {
-      if (typeof transaction === 'function') return await transaction(prismaMock)
+      if (typeof transaction === 'function')
+        return await transaction(prismaMock)
       return await Promise.all(transaction)
     })
     vi.mocked(updateVideoVariantInAlgolia).mockRejectedValueOnce(
@@ -212,7 +227,8 @@ describe('auditParentVariants', () => {
         processingStages: expect.objectContaining({
           algoliaVideo: expect.objectContaining({ state: 'complete' }),
           algoliaVariant: expect.objectContaining({
-            state: 'failed', error: 'Variant index unavailable'
+            state: 'failed',
+            error: 'Variant index unavailable'
           })
         })
       })
