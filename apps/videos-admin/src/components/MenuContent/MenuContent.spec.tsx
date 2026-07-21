@@ -56,6 +56,9 @@ describe('MenuContent', () => {
     expect(
       await screen.findByRole('link', { name: 'Video Library' })
     ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Video Status Pipeline' })
+    ).toHaveAttribute('href', '/videos/status-pipeline')
     expect(screen.getByRole('link', { name: 'Settings' })).toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Home' })).not.toBeInTheDocument()
     expect(
@@ -78,6 +81,9 @@ describe('MenuContent', () => {
       screen.queryByRole('link', { name: 'Video Library' })
     ).not.toBeInTheDocument()
     expect(
+      screen.queryByRole('link', { name: 'Video Status Pipeline' })
+    ).not.toBeInTheDocument()
+    expect(
       screen.queryByRole('link', { name: 'Settings' })
     ).not.toBeInTheDocument()
   })
@@ -91,6 +97,9 @@ describe('MenuContent', () => {
 
     expect(
       await screen.findByRole('link', { name: 'Video Library' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Video Status Pipeline' })
     ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Settings' })).toBeInTheDocument()
     expect(
