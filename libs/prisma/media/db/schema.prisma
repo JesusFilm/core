@@ -45,22 +45,22 @@ model CloudflareImage {
 }
 
 model MuxVideo {
-  id            String             @id @default(uuid())
-  playbackId    String?            @unique
-  uploadUrl     String?
-  uploadId      String?            @unique
-  assetId       String?            @unique
-  userId        String
-  name          String?
-  duration      Int                @default(0)
-  downloadable  Boolean            @default(false)
-  createdAt     DateTime           @default(now())
-  readyToStream Boolean            @default(false)
-  updatedAt     DateTime           @default(now()) @updatedAt
+  id             String               @id @default(uuid())
+  playbackId     String?              @unique
+  uploadUrl      String?
+  uploadId       String?              @unique
+  assetId        String?              @unique
+  userId         String
+  name           String?
+  duration       Int                  @default(0)
+  downloadable   Boolean              @default(false)
+  createdAt      DateTime             @default(now())
+  readyToStream  Boolean              @default(false)
+  updatedAt      DateTime             @default(now()) @updatedAt
   videoVariants  VideoVariant[]
   variantUploads VideoVariantUpload[]
   subtitles      MuxSubtitleTrack[]
-  teamId        String?
+  teamId         String?
 
   @@index(userId(type: Hash))
   @@index([userId, createdAt(sort: Desc)])
@@ -80,6 +80,9 @@ enum VideoVariantUploadStatus {
   muxCreated
   muxReady
   variantCreated
+  processing
+  degraded
+  complete
   failed
 }
 
@@ -162,7 +165,7 @@ model Video {
   noIndex                   Boolean?
   childIds                  String[] // needed for child sort order
   locked                    Boolean              @default(false)
-  restrictTranslations  Boolean              @default(false)
+  restrictTranslations      Boolean              @default(false)
   subtitles                 VideoSubtitle[]
   children                  Video[]              @relation("ParentChild")
   parents                   Video[]              @relation("ParentChild")
@@ -284,12 +287,14 @@ model VideoVariantUpload {
   source                        String
   sourceKey                     String?
   status                        VideoVariantUploadStatus @default(created)
+  canonical                     Boolean                  @default(false)
   videoId                       String
   video                         Video                    @relation(fields: [videoId], references: [id], onDelete: Cascade)
   edition                       String                   @default("base")
   languageId                    String
   version                       Int                      @default(1)
   published                     Boolean                  @default(true)
+  processingStages              Json                     @default("{}")
   originalFilename              String?
   contentType                   String?
   contentLength                 BigInt?
@@ -303,8 +308,9 @@ model VideoVariantUpload {
   muxVideo                      MuxVideo?                @relation(fields: [muxVideoId], references: [id])
   muxNonStandardInputDetectedAt DateTime?
   videoVariantId                String?
-  videoVariant                  VideoVariant?            @relation(fields: [videoVariantId], references: [id])
+  videoVariant                  VideoVariant?            @relation(fields: [videoVariantId], references: [id], onDelete: SetNull)
   errorMessage                  String?
+  retryAt                       DateTime?
   createdAt                     DateTime                 @default(now())
   updatedAt                     DateTime                 @default(now()) @updatedAt
 
@@ -313,6 +319,7 @@ model VideoVariantUpload {
   @@index(r2AssetId)
   @@index(muxVideoId)
   @@index(videoVariantId)
+  @@index([canonical, status, updatedAt])
 }
 
 model VideoEdition {
@@ -719,27 +726,27 @@ enum YoutubeReasonCode {
 }
 
 model YoutubeVideo {
-  id             String             @id @default(uuid())
-  youtubeVideoId String             @unique
-  channelId      String
-  reviewState    YoutubeReviewState
+  id                 String             @id @default(uuid())
+  youtubeVideoId     String             @unique
+  channelId          String
+  reviewState        YoutubeReviewState
   // Variant reference — present iff reviewState = LINKED (enforced on write).
   // No unique constraint: a variant may have many LINKED rows (re-uploads,
   // Shorts, alternate cuts).
-  videoId        String?
-  languageId     String?
+  videoId            String?
+  languageId         String?
   // Cascade (not SetNull): a CHECK constraint enforces the LINKED-has-variant
   // invariant at rest, so a deleted variant must remove its linked rows rather
   // than null their refs and leave an invalid LINKED row. The CHECK constraint
   // itself lives in the migration SQL (Prisma has no schema syntax for it).
-  variant        VideoVariant?      @relation(fields: [languageId, videoId], references: [languageId, videoId], onDelete: Cascade)
-  reasonCode     YoutubeReasonCode?
-  reasonNote     String?
+  variant            VideoVariant?      @relation(fields: [languageId, videoId], references: [languageId, videoId], onDelete: Cascade)
+  reasonCode         YoutubeReasonCode?
+  reasonNote         String?
   // Captured YouTube-authored facts — stored alongside, never overwriting,
   // Core canonical title/description.
   youtubeTitle       String?
   youtubeDescription String?
-  tags               String[]   @default([])
+  tags               String[]           @default([])
   thumbnailUrl       String? // YouTube-hosted URL only; the image is never downloaded
   playlists          Json? // [{ playlistId, title }] snapshots; non-authoritative
   madeForKids        Boolean? // null = unknown/unset
@@ -748,13 +755,13 @@ model YoutubeVideo {
   privacyStatus      String?
   publishedAt        DateTime?
   // Provenance
-  reviewedBy      String?
-  reviewedAt      DateTime?
-  matchMethod     String? // meaningful only on LINKED
-  matchConfidence Float? // meaningful only on LINKED
-  lastSyncedAt    DateTime? // freshness signal only, never a deletion clock
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @default(now()) @updatedAt
+  reviewedBy         String?
+  reviewedAt         DateTime?
+  matchMethod        String? // meaningful only on LINKED
+  matchConfidence    Float? // meaningful only on LINKED
+  lastSyncedAt       DateTime? // freshness signal only, never a deletion clock
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @default(now()) @updatedAt
 
   @@index(channelId(type: Hash))
   @@index(reviewState)

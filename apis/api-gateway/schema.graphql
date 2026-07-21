@@ -627,6 +627,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     maxResolution: MaxResolutionTier = uhd
   ): VideoVariantUpload! @join__field(graph: API_MEDIA) 
   videoVariantUploadResume(id: ID!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd) : VideoVariantUpload! @join__field(graph: API_MEDIA) 
+  videoVariantUploadRetry(id: ID!) : VideoVariantUpload @join__field(graph: API_MEDIA) 
   """
   Create-or-update a YoutubeVideo by youtubeVideoId. Idempotent; enforces the status invariant.
   """
@@ -1611,6 +1612,12 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
   videoVariantUpload(id: ID!) : VideoVariantUpload! @join__field(graph: API_MEDIA) 
   videoVariantUploads(input: VideoVariantUploadsFilter, offset: Int, limit: Int) : [VideoVariantUpload!]! @join__field(graph: API_MEDIA) 
+  videoVariantUploadStatuses(
+    health: VideoVariantUploadHealth
+    blockingStage: VideoVariantProcessingStage
+    olderThan: DateTime
+    minRetryCount: Int
+  ): [VideoVariantUpload!] @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
   youtubeClosedCaptionLanguages(videoId: ID!) : QueryYoutubeClosedCaptionLanguagesResult! @join__field(graph: API_MEDIA) 
@@ -2155,7 +2162,7 @@ type Video @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", 
   """
   When true, generated translated audio variants or generated subtitle tracks should not be created for this video. Metadata translations (title, description, study questions) are unaffected.
   """
-  restrictTranslations: Boolean! @join__field(graph: API_MEDIA)
+  restrictTranslations: Boolean! @join__field(graph: API_MEDIA) 
   published: Boolean! @join__field(graph: API_MEDIA) 
   cloudflareAssets: [CloudflareR2!]! @join__field(graph: API_MEDIA) 
   videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
@@ -3086,6 +3093,8 @@ type VideoVariantUpload @join__type(graph: API_MEDIA)  {
   source: String!
   sourceKey: String
   status: VideoVariantUploadStatus!
+  health: String
+  canonical: Boolean
   videoId: ID!
   edition: String!
   languageId: ID!
@@ -3104,6 +3113,8 @@ type VideoVariantUpload @join__type(graph: API_MEDIA)  {
   muxNonStandardInputDetectedAt: DateTime
   videoVariantId: ID
   errorMessage: String
+  processingStages: String
+  retryAt: DateTime
   createdAt: DateTime!
   updatedAt: DateTime!
   r2Asset: CloudflareR2
@@ -3780,6 +3791,21 @@ enum UnsplashColor @join__type(graph: API_MEDIA)  {
   blue @join__enumValue(graph: API_MEDIA) 
 }
 
+enum VideoVariantUploadHealth @join__type(graph: API_MEDIA)  {
+  processing @join__enumValue(graph: API_MEDIA) 
+  degraded @join__enumValue(graph: API_MEDIA) 
+  complete @join__enumValue(graph: API_MEDIA) 
+  failed @join__enumValue(graph: API_MEDIA) 
+}
+
+enum VideoVariantProcessingStage @join__type(graph: API_MEDIA)  {
+  mux @join__enumValue(graph: API_MEDIA) 
+  parentSync @join__enumValue(graph: API_MEDIA) 
+  downloads @join__enumValue(graph: API_MEDIA) 
+  algoliaVideo @join__enumValue(graph: API_MEDIA) 
+  algoliaVariant @join__enumValue(graph: API_MEDIA) 
+}
+
 enum VideoLabel @join__type(graph: API_MEDIA)  {
   collection @join__enumValue(graph: API_MEDIA) 
   episode @join__enumValue(graph: API_MEDIA) 
@@ -3818,6 +3844,9 @@ enum VideoVariantUploadStatus @join__type(graph: API_MEDIA)  {
   muxCreated @join__enumValue(graph: API_MEDIA) 
   muxReady @join__enumValue(graph: API_MEDIA) 
   variantCreated @join__enumValue(graph: API_MEDIA) 
+  processing @join__enumValue(graph: API_MEDIA) 
+  degraded @join__enumValue(graph: API_MEDIA) 
+  complete @join__enumValue(graph: API_MEDIA) 
   failed @join__enumValue(graph: API_MEDIA) 
 }
 

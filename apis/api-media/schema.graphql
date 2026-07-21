@@ -410,6 +410,7 @@ type Mutation {
   videoVariantUploadMarkR2Complete(id: ID!): VideoVariantUpload!
   videoVariantUploadCreateMux(id: ID!, muxVideoId: ID, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd): VideoVariantUpload!
   videoVariantUploadResume(id: ID!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd): VideoVariantUpload!
+  videoVariantUploadRetry(id: ID!): VideoVariantUpload
 
   """
   Create-or-update a YoutubeVideo by youtubeVideoId. Idempotent; enforces the status invariant.
@@ -804,6 +805,7 @@ type Query {
   videoEdition(id: ID!): VideoEdition
   videoVariantUpload(id: ID!): VideoVariantUpload!
   videoVariantUploads(input: VideoVariantUploadsFilter, offset: Int, limit: Int): [VideoVariantUpload!]!
+  videoVariantUploadStatuses(health: VideoVariantUploadHealth, blockingStage: VideoVariantProcessingStage, olderThan: DateTime, minRetryCount: Int): [VideoVariantUpload!]
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
   youtubeClosedCaptionLanguages(videoId: ID!): QueryYoutubeClosedCaptionLanguagesResult!
@@ -1545,6 +1547,14 @@ input VideoVariantFilter {
   updatedAt: DateTimeFilter
 }
 
+enum VideoVariantProcessingStage {
+  mux
+  parentSync
+  downloads
+  algoliaVideo
+  algoliaVariant
+}
+
 input VideoVariantUpdateInput {
   id: String!
   assetId: String
@@ -1569,6 +1579,8 @@ type VideoVariantUpload {
   source: String!
   sourceKey: String
   status: VideoVariantUploadStatus!
+  health: String
+  canonical: Boolean
   videoId: ID!
   edition: String!
   languageId: ID!
@@ -1587,11 +1599,20 @@ type VideoVariantUpload {
   muxNonStandardInputDetectedAt: DateTime
   videoVariantId: ID
   errorMessage: String
+  processingStages: String
+  retryAt: DateTime
   createdAt: DateTime!
   updatedAt: DateTime!
   r2Asset: CloudflareR2
   muxVideo: MuxVideo
   videoVariant: VideoVariant
+}
+
+enum VideoVariantUploadHealth {
+  processing
+  degraded
+  complete
+  failed
 }
 
 input VideoVariantUploadStartInput {
@@ -1620,6 +1641,9 @@ enum VideoVariantUploadStatus {
   muxCreated
   muxReady
   variantCreated
+  processing
+  degraded
+  complete
   failed
 }
 
