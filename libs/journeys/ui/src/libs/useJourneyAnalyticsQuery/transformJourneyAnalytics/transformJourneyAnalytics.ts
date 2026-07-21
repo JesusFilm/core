@@ -139,9 +139,14 @@ export function transformJourneyAnalytics(
   // `.../stepId` appears once in each event:page row). event:page remains the
   // source for timeOnPage — Plausible only exposes it there — and the visitor
   // fallback when no keyed pageview row exists (data recorded before pageview
-  // events carried keys).
+  // events carried keys). Not exact for a reporting window that straddles the
+  // key rollout: the keyed row covers only the keyed era, so the override
+  // slightly under-counts that step — accepted over the summed rows'
+  // over-count.
   stepStatsById.forEach((stepStat) => {
     const stepEventMap = stepMap.get(stepStat.stepId)?.eventMap
+    // A present key is trusted even at 0: Plausible never emits a zero-visitor
+    // breakdown row, so a genuine row always carries a positive count.
     if (stepEventMap != null && stepEventMap.has('pageview')) {
       stepStat.visitors = stepEventMap.get('pageview') ?? 0
     }
