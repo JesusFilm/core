@@ -11,8 +11,9 @@ set -euo pipefail
 #
 # Changes are diffed from merge-base(<base-ref>, <head-ref>) to <head-ref>, so
 # commits already on the base branch are never blamed on the PR. A migration
-# counts only when a *new* file is added under the domain's migrations
-# directory (--diff-filter=A) — edits to already-committed migrations don't.
+# counts only when a *new* <timestamp>_<name>/migration.sql is added under the
+# domain's migrations directory (--diff-filter=A) — edits to already-committed
+# migrations don't count, and neither do other added files (e.g. a README).
 #
 # Escape hatch: schema edits that genuinely need no migration (comments,
 # formatting, attributes that don't affect the database) can add the
@@ -38,7 +39,9 @@ for domain in "${DOMAINS[@]}"; do
     continue
   fi
 
-  added_migrations=$(git diff --name-only --diff-filter=A "$MERGE_BASE" "$HEAD_REF" -- "$migrations")
+  # Only a real, deployable migration counts — a new */migration.sql — not
+  # just any file added under the migrations directory (e.g. a README).
+  added_migrations=$(git diff --name-only --diff-filter=A "$MERGE_BASE" "$HEAD_REF" -- "$migrations/*/migration.sql")
   if [ -z "$added_migrations" ]; then
     echo "🛑 - $schema changed but no migration was added in $migrations"
     FAILED_DOMAINS+=("$domain")

@@ -71,6 +71,8 @@ jobs:
     # between them and the code that generates them otherwise fails silently
     # (subgraph-check only validates composition against the registry).
     runs-on: blacksmith-4vcpu-ubuntu-2204
+    permissions:
+      contents: read
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     steps:
@@ -125,6 +127,8 @@ jobs:
     # genuinely need no migration (comments, formatting) — after adding the
     # label, re-run the failed job to pick it up.
     runs-on: blacksmith-2vcpu-ubuntu-2204
+    permissions:
+      contents: read
     if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'skip-migration-check') }}
     steps:
       - uses: actions/checkout@v4
