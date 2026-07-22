@@ -93,20 +93,18 @@ export const PANEL_INPUT_SHADOW =
 // --- Dark overlay surface (desktop ChatOverlay, NES-1738 Option B) ---
 
 /** Hairline border on the dark overlay: its top edge and the header divider. */
-export const OVERLAY_INPUT_BORDER = 'rgba(255, 255, 255, 0.12)'
+export const OVERLAY_BORDER = 'rgba(255, 255, 255, 0.12)'
 /** Muted text on the dark overlay (header caption). */
 export const OVERLAY_FG_MUTED = 'rgba(255, 255, 255, 0.6)'
+/** ChatHeader title colour on the dark overlay backdrop. */
+export const OVERLAY_TITLE_FG = 'rgba(255, 255, 255, 0.85)'
+/** Dim text colour for the retry button on the dark overlay. */
+export const OVERLAY_FG_RETRY = 'rgba(255, 255, 255, 0.7)'
 
 // --- Misc chat surfaces ---
 
 /** Plain assistant text on the dark blurred overlay backdrop. */
 export const PLAIN_ASSISTANT_FG_ON_DARK = 'rgba(255, 255, 255, 0.92)'
-
-/** ChatHeader title colour on the dark overlay backdrop. */
-export const OVERLAY_HERO_FG = 'rgba(255, 255, 255, 0.85)'
-
-/** Dim text colour for the retry button on the dark overlay. */
-export const OVERLAY_FG_RETRY = 'rgba(255, 255, 255, 0.7)'
 
 /** Drop shadow on the floating "scroll to latest" pill in Conversation. */
 export const SCROLL_PILL_SHADOW = '0 4px 12px rgba(38, 38, 46, 0.12)'

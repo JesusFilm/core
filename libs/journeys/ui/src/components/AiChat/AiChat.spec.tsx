@@ -383,6 +383,28 @@ describe('AiChat', () => {
         'light'
       )
     })
+
+    it('renders the Retry action with the dark token when onDark', () => {
+      setChatState({ error: new Error('stream failed') })
+
+      render(<AiChat onDark />)
+
+      // OVERLAY_FG_RETRY — MUTED_FG grey would be near-invisible on the
+      // ~grey.900 desktop overlay backdrop.
+      expect(screen.getByRole('button', { name: 'Retry' })).toHaveStyle({
+        color: 'rgba(255, 255, 255, 0.7)'
+      })
+    })
+
+    it('renders the cap-hit reset action with the dark token when onDark', () => {
+      setChatState({ error: codedError('conversation_capped') })
+
+      render(<AiChat onDark />)
+
+      expect(
+        screen.getByRole('button', { name: 'Start a new conversation' })
+      ).toHaveStyle({ color: 'rgba(255, 255, 255, 0.7)' })
+    })
   })
 
   describe('chat request body (NES-1679)', () => {

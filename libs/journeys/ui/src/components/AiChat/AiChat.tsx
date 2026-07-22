@@ -417,9 +417,6 @@ export function AiChat({
 
       <Box
         sx={{
-          // `relative` anchors the overlay hero's absolute positioning
-          // to the conversation area rather than the viewport.
-          position: 'relative',
           display: 'flex',
           flex: 1,
           flexDirection: 'column',
