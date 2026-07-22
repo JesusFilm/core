@@ -627,6 +627,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     maxResolution: MaxResolutionTier = uhd
   ): VideoVariantUpload! @join__field(graph: API_MEDIA) 
   videoVariantUploadResume(id: ID!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd) : VideoVariantUpload! @join__field(graph: API_MEDIA) 
+  videoVariantReconciliationRetry(id: ID!) : VideoVariantReconciliation @join__field(graph: API_MEDIA)
   """
   Create-or-update a YoutubeVideo by youtubeVideoId. Idempotent; enforces the status invariant.
   """
@@ -1611,6 +1612,12 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
   videoVariantUpload(id: ID!) : VideoVariantUpload! @join__field(graph: API_MEDIA) 
   videoVariantUploads(input: VideoVariantUploadsFilter, offset: Int, limit: Int) : [VideoVariantUpload!]! @join__field(graph: API_MEDIA) 
+  videoVariantReconciliations(
+    status: VideoVariantReconciliationStatus
+    blockingStage: VideoVariantProcessingStage
+    olderThan: DateTime
+    minRetryCount: Int
+  ): [VideoVariantReconciliation!] @join__field(graph: API_MEDIA)
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
   youtubeClosedCaptionLanguages(videoId: ID!) : QueryYoutubeClosedCaptionLanguagesResult! @join__field(graph: API_MEDIA) 
@@ -3081,6 +3088,24 @@ type VideoVariantDownload @join__type(graph: API_MEDIA)  {
   version: Int!
 }
 
+type VideoVariantReconciliation @join__type(graph: API_MEDIA)  {
+  id: ID!
+  reason: String!
+  status: VideoVariantReconciliationStatus!
+  videoId: ID!
+  edition: String!
+  languageId: ID!
+  language: Language!
+  published: Boolean!
+  videoVariantId: ID
+  errorMessage: String
+  processingStages: String
+  retryAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  videoVariant: VideoVariant
+}
+
 type VideoVariantUpload @join__type(graph: API_MEDIA)  {
   id: ID!
   source: String!
@@ -3778,6 +3803,21 @@ enum UnsplashColor @join__type(graph: API_MEDIA)  {
   green @join__enumValue(graph: API_MEDIA) 
   teal @join__enumValue(graph: API_MEDIA) 
   blue @join__enumValue(graph: API_MEDIA) 
+}
+
+enum VideoVariantReconciliationStatus @join__type(graph: API_MEDIA)  {
+  processing @join__enumValue(graph: API_MEDIA) 
+  degraded @join__enumValue(graph: API_MEDIA) 
+  complete @join__enumValue(graph: API_MEDIA) 
+  failed @join__enumValue(graph: API_MEDIA) 
+}
+
+enum VideoVariantProcessingStage @join__type(graph: API_MEDIA)  {
+  mux @join__enumValue(graph: API_MEDIA) 
+  parentSync @join__enumValue(graph: API_MEDIA) 
+  downloads @join__enumValue(graph: API_MEDIA) 
+  algoliaVideo @join__enumValue(graph: API_MEDIA) 
+  algoliaVariant @join__enumValue(graph: API_MEDIA) 
 }
 
 enum VideoLabel @join__type(graph: API_MEDIA)  {
@@ -5557,4 +5597,3 @@ input MeInput @join__type(graph: API_USERS)  {
   redirect: String
   app: App
 }
-    
