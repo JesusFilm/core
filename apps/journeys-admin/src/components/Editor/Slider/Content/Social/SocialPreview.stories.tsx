@@ -28,7 +28,7 @@ const Template: Story = {
       position="relative"
       maxHeight={500}
     >
-      <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
+      <JourneyProvider value={{ journey: args.journey, renderMode: 'admin' }}>
         <EditorProvider
           initialState={{
             activeSlide: ActiveSlide.Content

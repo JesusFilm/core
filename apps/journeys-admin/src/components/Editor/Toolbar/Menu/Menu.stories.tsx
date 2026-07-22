@@ -49,7 +49,7 @@ const Template: StoryObj<
             tags: [],
             template
           } as unknown as Journey,
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <EditorProvider>

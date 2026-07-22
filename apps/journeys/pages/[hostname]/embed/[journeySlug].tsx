@@ -82,7 +82,7 @@ function HostJourneyEmbedPage({
       <JourneyPageWrapper
         journey={journey}
         theme={theme}
-        variant="embed"
+        renderMode="embed"
         rtl={rtl}
         locale={locale}
       >

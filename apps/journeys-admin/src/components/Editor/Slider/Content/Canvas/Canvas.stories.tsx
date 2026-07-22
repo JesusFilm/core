@@ -387,7 +387,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         eventLabel: null,
         children: [
           {
-            id: 'multiselectQuestion1.id',
+            id: 'multiselect1.id',
             __typename: 'MultiselectBlock',
             parentBlockId: 'multiselectCard.id',
             parentOrder: 0,
@@ -397,7 +397,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
               {
                 id: 'multiselectOption1.id',
                 __typename: 'MultiselectOptionBlock',
-                parentBlockId: 'multiselectQuestion1.id',
+                parentBlockId: 'multiselect1.id',
                 parentOrder: 0,
                 label: 'Option 1',
                 children: []
@@ -405,7 +405,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
               {
                 id: 'multiselectOption2.id',
                 __typename: 'MultiselectOptionBlock',
-                parentBlockId: 'multiselectQuestion1.id',
+                parentBlockId: 'multiselect1.id',
                 parentOrder: 1,
                 label: 'Option 2',
                 children: []
@@ -800,7 +800,7 @@ const Template: Story = {
               },
               ...journey
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps, ...state }}>

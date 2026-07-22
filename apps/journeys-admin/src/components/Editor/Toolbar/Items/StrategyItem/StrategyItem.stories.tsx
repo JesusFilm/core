@@ -21,7 +21,7 @@ const Template: StoryObj<typeof StrategyItem> = {
     <ApolloLoadingProvider>
       <MockedProvider>
         <JourneyProvider
-          value={{ journey: publishedJourney, variant: 'admin' }}
+          value={{ journey: publishedJourney, renderMode: 'admin' }}
         >
           <Box
             sx={{

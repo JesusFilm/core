@@ -44,12 +44,12 @@ The Journey Analytics events this lib originates during playback — step view/n
 
 ### Journey context & render modes
 
-**Variant (render mode)**:
-The mode a journey is being shown in, carried by the Journey Provider: `default` (audience playback), `admin` (inside the editor), `embed`, or `customize`. Component behavior forks on it. Sharply distinct from the media context's **Variant** (a language rendition) and from block style variants — on this surface, qualify the word.
-_Avoid_: bare "variant" in cross-context discussion; say "render mode"
+**Render Mode**:
+The mode a journey is being shown in, carried by the Journey Provider as `renderMode`: `default` (audience playback), `admin` (inside the editor), `embed`, or `customize`. Component behavior forks on it. Distinct from the media context's **Variant** (a language rendition) and from block style variants.
+_Avoid_: "variant" (the historical name); say "render mode"
 
 **Website Mode**:
-A journey-level boolean rendering the journey as a multi-page website rather than a linear funnel. Orthogonal to the render mode Variant.
+A journey-level boolean rendering the journey as a multi-page website rather than a linear funnel. Orthogonal to Render Mode.
 
 **Journey Customization**:
 The template feature where placeholder fields in text are resolved per-adopter (with AI-assisted translation of their descriptions). A `customize` render mode exists for editing them.
@@ -82,8 +82,8 @@ The Algolia InstantSearch wiring (search provider, search bar state, video hit t
 **Three tenants in one lib**:
 Editor state and Commands are admin-only; Block History, Action Handling, and Event Mutations are viewer-only; the Template Gallery and Algolia pieces are resources-only. Shipping together does not make them one vocabulary — say which surface a term belongs to.
 
-**Multiselect naming drift**:
-The multiple-choice question block's typename is `MultiselectBlock`, but its single-choice sibling is `RadioQuestionBlock` and the component is `MultiselectQuestion`. The "Question" suffix is not reliable; go by typename.
+**Multiselect naming**:
+The multiple-choice question block's typename is `MultiselectBlock` and its component is `Multiselect` (renamed from `MultiselectQuestion`). Its single-choice sibling is still `RadioQuestionBlock`/`RadioQuestion` — the "Question" suffix is not reliable; go by typename.
 
 **Content (overloaded)**:
 `ActiveContent` is an editor area (Canvas/Social/Goals); "content" elsewhere means journey block content or gallery carousels. Qualify it.

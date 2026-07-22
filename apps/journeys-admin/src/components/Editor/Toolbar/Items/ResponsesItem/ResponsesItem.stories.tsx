@@ -39,7 +39,7 @@ const getVisitorCountMock: MockedResponse<
 
 const Template: StoryObj<typeof ResponsesItem> = {
   render: () => (
-    <JourneyProvider value={{ journey: publishedJourney, variant: 'admin' }}>
+    <JourneyProvider value={{ journey: publishedJourney, renderMode: 'admin' }}>
       <Box
         sx={{
           p: 6,

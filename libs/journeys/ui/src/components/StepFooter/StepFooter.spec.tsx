@@ -98,7 +98,7 @@ describe('StepFooter', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <StepFooter sx={{ outline: '1px solid red' }} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -125,7 +125,7 @@ describe('StepFooter', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <StepFooter selectedStep={step} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -143,7 +143,7 @@ describe('StepFooter', () => {
           <JourneyProvider
             value={{
               journey: { ...journey, seoTitle: null },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <StepFooter onFooterClick={onFooterClick} />
@@ -164,7 +164,7 @@ describe('StepFooter', () => {
         <SnackbarProvider>
           <JourneyProvider
             value={{
-              variant: 'admin',
+              renderMode: 'admin',
               journey: { ...journey, seoTitle: 'discovery journey title' }
             }}
           >
@@ -181,7 +181,7 @@ describe('StepFooter', () => {
       render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <StepFooter />
             </JourneyProvider>
           </SnackbarProvider>
@@ -198,7 +198,7 @@ describe('StepFooter', () => {
             <JourneyProvider
               value={{
                 journey: { ...journey, displayTitle: 'Display title' },
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <StepFooter />
@@ -214,7 +214,7 @@ describe('StepFooter', () => {
       render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <StepFooter />
             </JourneyProvider>
           </SnackbarProvider>
@@ -231,7 +231,7 @@ describe('StepFooter', () => {
       render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <StepFooter />
             </JourneyProvider>
           </SnackbarProvider>
@@ -248,7 +248,7 @@ describe('StepFooter', () => {
             <JourneyProvider
               value={{
                 journey: { ...journey, menuButtonIcon: null },
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <StepFooter />
@@ -270,7 +270,7 @@ describe('StepFooter', () => {
                   website: true,
                   menuButtonIcon: JourneyMenuButtonIcon.home3
                 },
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <StepFooter />
@@ -306,7 +306,7 @@ describe('StepFooter', () => {
               }}
             >
               <JourneyProvider
-                value={{ journey: websiteJourney, variant: 'admin' }}
+                value={{ journey: websiteJourney, renderMode: 'admin' }}
               >
                 <StepFooter />
               </JourneyProvider>
@@ -333,7 +333,7 @@ describe('StepFooter', () => {
               <JourneyProvider
                 value={{
                   journey: { ...websiteJourney, menuButtonIcon: null },
-                  variant: 'admin'
+                  renderMode: 'admin'
                 }}
               >
                 <StepFooter />
@@ -358,7 +358,7 @@ describe('StepFooter', () => {
               }}
             >
               <JourneyProvider
-                value={{ journey: websiteJourney, variant: 'admin' }}
+                value={{ journey: websiteJourney, renderMode: 'admin' }}
               >
                 <StepFooter />
               </JourneyProvider>
@@ -374,7 +374,7 @@ describe('StepFooter', () => {
         <MockedProvider>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: websiteJourney, variant: 'admin' }}
+              value={{ journey: websiteJourney, renderMode: 'admin' }}
             >
               <StepFooter />
             </JourneyProvider>

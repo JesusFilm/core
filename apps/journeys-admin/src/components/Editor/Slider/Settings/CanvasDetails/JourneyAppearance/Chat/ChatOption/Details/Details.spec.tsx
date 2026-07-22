@@ -393,7 +393,7 @@ describe('Details', () => {
         <MockedProvider>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: templateJourney, variant: 'admin' }}
+              value={{ journey: templateJourney, renderMode: 'admin' }}
             >
               <CommandProvider>
                 <Details {...defaultProps} currentCustomizable={false} />
@@ -414,7 +414,7 @@ describe('Details', () => {
         <MockedProvider>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: nonTemplateJourney, variant: 'admin' }}
+              value={{ journey: nonTemplateJourney, renderMode: 'admin' }}
             >
               <CommandProvider>
                 <Details {...defaultProps} currentCustomizable={false} />
@@ -435,7 +435,7 @@ describe('Details', () => {
         <MockedProvider>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: templateJourney, variant: 'admin' }}
+              value={{ journey: templateJourney, renderMode: 'admin' }}
             >
               <CommandProvider>
                 <Details
@@ -488,7 +488,7 @@ describe('Details', () => {
         <MockedProvider mocks={[mock]}>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: templateJourney, variant: 'admin' }}
+              value={{ journey: templateJourney, renderMode: 'admin' }}
             >
               <CommandProvider>
                 <Details {...defaultProps} currentCustomizable={false} />
@@ -565,7 +565,7 @@ describe('Details', () => {
         <MockedProvider mocks={[executeMock, undoMock]}>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: templateJourney, variant: 'admin' }}
+              value={{ journey: templateJourney, renderMode: 'admin' }}
             >
               <CommandProvider>
                 <Details {...defaultProps} currentCustomizable={false} />
@@ -667,7 +667,7 @@ describe('Details', () => {
         <MockedProvider mocks={[executeMock, undoMock, redoMock]}>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: templateJourney, variant: 'admin' }}
+              value={{ journey: templateJourney, renderMode: 'admin' }}
             >
               <CommandProvider>
                 <Details {...defaultProps} currentCustomizable={false} />
@@ -696,7 +696,7 @@ describe('Details', () => {
         <MockedProvider>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: templateJourney, variant: 'admin' }}
+              value={{ journey: templateJourney, renderMode: 'admin' }}
             >
               <CommandProvider>
                 <Details {...defaultProps} currentCustomizable={true} />

@@ -26,7 +26,7 @@ const EmbedJourneyDialogComponent = ({ ...args }): ReactElement => {
       <JourneyProvider
         value={{
           journey: args.journey,
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <EmbedJourneyDialog

@@ -62,7 +62,7 @@ Top-level wrapping order (from `_app.tsx`):
 
 Editor-level additional providers:
 
-8. `JourneyProvider` — journey data (variant: `'admin'`)
+8. `JourneyProvider` — journey data (renderMode: `'admin'`)
 9. `EditorProvider` — editor UI state (selected step, active content, analytics view)
 10. `MuxVideoUploadProvider` — video upload handling
 11. `HotkeysProvider` — keyboard shortcuts

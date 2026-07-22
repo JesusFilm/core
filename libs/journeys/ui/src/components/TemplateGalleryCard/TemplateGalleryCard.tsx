@@ -17,7 +17,7 @@ import Lightning2 from '@core/shared/ui/icons/Lightning2'
 
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
 import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
-import { useNavigationState } from '../../libs/useNavigationState'
+import { useRouteChangeState } from '../../libs/useRouteChangeState'
 
 interface HoverLayerProps {
   className?: string
@@ -54,7 +54,7 @@ export function TemplateGalleryCard({
   priority
 }: TemplateGalleryCardProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
-  const isNavigating = useNavigationState()
+  const isNavigating = useRouteChangeState()
   const [isCardHovered, setIsCardHovered] = useState(false)
 
   const theme = useTheme()

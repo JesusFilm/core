@@ -36,7 +36,7 @@ const Template: Story = {
               },
               chatButtons
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <ChatButtons />
