@@ -32,7 +32,7 @@ import {
   FilterDrawer,
   GET_JOURNEY_BLOCK_TYPENAMES
 } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
-import { GoogleSheetsSyncDialog } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/GoogleSheetsSyncDialog'
+import { GoogleSheetsSyncDialog } from '../../../../src/components/JourneyVisitorsList/GoogleSheetsSyncDialog'
 import { GoogleSheetsSyncButton } from '../../../../src/components/JourneyVisitorsList/GoogleSheetsSyncButton'
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
 import { PageWrapper } from '../../../../src/components/PageWrapper'

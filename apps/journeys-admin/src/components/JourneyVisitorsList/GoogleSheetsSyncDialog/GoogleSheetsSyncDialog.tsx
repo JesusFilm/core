@@ -39,10 +39,10 @@ import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
-import { GetIntegration_integrations_IntegrationGoogle } from '../../../../../__generated__/GetIntegration'
-import { useAuth } from '../../../../libs/auth'
-import { getGoogleOAuthUrl } from '../../../../libs/googleOAuthUrl'
-import { useIntegrationQuery } from '../../../../libs/useIntegrationQuery/useIntegrationQuery'
+import { GetIntegration_integrations_IntegrationGoogle } from '../../../../__generated__/GetIntegration'
+import { useAuth } from '../../../libs/auth'
+import { getGoogleOAuthUrl } from '../../../libs/googleOAuthUrl'
+import { useIntegrationQuery } from '../../../libs/useIntegrationQuery/useIntegrationQuery'
 
 const GET_JOURNEY_CREATED_AT = gql`
   query GoogleSheetsSyncDialogJourney($id: ID!) {
