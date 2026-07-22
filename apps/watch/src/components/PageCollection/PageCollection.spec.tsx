@@ -8,6 +8,7 @@ import type { MockedFunction } from 'vitest'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { PlayerProvider } from '../../libs/playerContext'
 import { useLanguages } from '../../libs/useLanguages'
+import { GET_VARIANT_LANGUAGES_ID_AND_SLUG } from '../../libs/useVariantLanguagesIdAndSlugQuery'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
 
@@ -91,6 +92,64 @@ describe('PageCollection', () => {
     const grid = screen.getByTestId('SectionVideoGrid')
     expect(grid).toHaveAttribute('data-primary', collectionVideo.id)
     expect(grid).toHaveAttribute('data-language', 'language-1')
+  })
+
+  it('navigates to the selected collection language with an app-relative path', async () => {
+    mockRouter.query = {
+      part1: 'the-way-of-st-james.html',
+      part2: 'english.html'
+    }
+    const routerPush = vi.spyOn(mockRouter, 'push')
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_VARIANT_LANGUAGES_ID_AND_SLUG,
+              variables: { id: collectionVideo.id }
+            },
+            result: {
+              data: {
+                video: {
+                  __typename: 'Video',
+                  variantLanguages: [
+                    {
+                      __typename: 'Language',
+                      id: 'language-1',
+                      slug: 'english'
+                    },
+                    {
+                      __typename: 'Language',
+                      id: 'language-2',
+                      slug: 'spanish'
+                    }
+                  ],
+                  subtitles: []
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <PlayerProvider>
+            <VideoProvider value={{ content: collectionVideo }}>
+              <PageCollection />
+            </VideoProvider>
+          </PlayerProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await userEvent.click(await screen.findByRole('combobox'))
+    await userEvent.click(await screen.findByText('Spanish'))
+
+    expect(routerPush).toHaveBeenCalledWith(
+      '/the-way-of-st-james.html/spanish.html',
+      undefined,
+      { locale: undefined }
+    )
   })
 
   it('opens share dialog when share button clicked', async () => {
