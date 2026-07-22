@@ -3,16 +3,16 @@ import Button from '@mui/material/Button'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useCallback } from 'react'
 
-interface ActionsProps {
+interface CopyMessageButtonProps {
   content: string
   /** Use light colours suitable for a dark overlay backdrop. */
   plain?: boolean
 }
 
-export function Actions({
+export function CopyMessageButton({
   content,
   plain = false
-}: ActionsProps): ReactElement {
+}: CopyMessageButtonProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
 
   const handleCopy = useCallback(async () => {
