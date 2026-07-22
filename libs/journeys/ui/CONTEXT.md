@@ -87,3 +87,6 @@ The multiple-choice question block's typename is `MultiselectBlock` and its comp
 
 **Content (overloaded)**:
 `ActiveContent` is an editor area (Canvas/Social/Goals); "content" elsewhere means journey block content or gallery carousels. Qualify it.
+
+**Production vs test import surfaces**:
+`@core/journeys/ui/*` resolves to `src/components/*` and `src/libs/*` — production code only. Story/test scaffolding (`StoryCard`, `InstantSearchTestWrapper`, `journeyUiConfig`, `simpleComponentConfig`) lives in `src/test/`, reachable only via `@core/journeys/ui/test/*`. Never import from the `test` subpath in production code, and never add test-only helpers to `components/` or `libs/`.

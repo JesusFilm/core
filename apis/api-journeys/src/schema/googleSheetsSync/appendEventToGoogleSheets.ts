@@ -12,8 +12,15 @@ import {
 } from '../../lib/google/sheets'
 import { computeConnectedBlockIds } from '../journeyVisitor/export/connectivity'
 import { sanitizeGoogleSheetsCell } from '../journeyVisitor/export/csv'
-import { buildJourneyExportColumns, getCardHeading } from '../journeyVisitor/export/headings'
-import { type SimpleBlock, buildRenderTree, computeOrderIndex } from '../journeyVisitor/export/order'
+import {
+  buildJourneyExportColumns,
+  getCardHeading
+} from '../journeyVisitor/export/headings'
+import {
+  type SimpleBlock,
+  buildRenderTree,
+  computeOrderIndex
+} from '../journeyVisitor/export/order'
 
 import { mergeGoogleSheetsHeader } from './googleSheetsHeader'
 import {

@@ -1,4 +1,5 @@
 import { ApolloClient } from '@apollo/client'
+import { GraphQLError } from 'graphql'
 import { vi } from 'vitest'
 
 import type { JourneySimpleUpdate } from '@core/shared/ai/journeySimpleTypes'
@@ -309,8 +310,11 @@ describe('updateSimpleJourney', () => {
   })
 
   it('throws error when YouTube API fails', async () => {
+    // same rejection shape as the real fetchFieldsFromYouTube
     mockFetchFieldsFromYouTube.mockRejectedValueOnce(
-      new Error('videoId cannot be found on YouTube')
+      new GraphQLError('videoId cannot be found on YouTube', {
+        extensions: { code: 'NOT_FOUND' }
+      })
     )
 
     const videoJourney: JourneySimpleUpdate = {

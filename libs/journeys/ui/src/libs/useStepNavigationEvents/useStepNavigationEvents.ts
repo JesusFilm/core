@@ -9,8 +9,14 @@ import {
   StepNextEventCreateInput,
   StepPreviousEventCreateInput
 } from '../../../__generated__/globalTypes'
-import { StepNextEventCreate } from '../../components/Card/__generated__/StepNextEventCreate'
-import { StepPreviousEventCreate } from '../../components/Card/__generated__/StepPreviousEventCreate'
+import {
+  StepNextEventCreate,
+  StepNextEventCreateVariables
+} from '../../components/Card/__generated__/StepNextEventCreate'
+import {
+  StepPreviousEventCreate,
+  StepPreviousEventCreateVariables
+} from '../../components/Card/__generated__/StepPreviousEventCreate'
 import {
   STEP_NEXT_EVENT_CREATE,
   STEP_PREVIOUS_EVENT_CREATE
@@ -55,12 +61,14 @@ interface UseStepNavigationEventsResult {
 export function useStepNavigationEvents({
   t
 }: UseStepNavigationEventsOptions): UseStepNavigationEventsResult {
-  const [stepNextEventCreate] = useMutation<StepNextEventCreate>(
-    STEP_NEXT_EVENT_CREATE
-  )
-  const [stepPreviousEventCreate] = useMutation<StepPreviousEventCreate>(
-    STEP_PREVIOUS_EVENT_CREATE
-  )
+  const [stepNextEventCreate] = useMutation<
+    StepNextEventCreate,
+    StepNextEventCreateVariables
+  >(STEP_NEXT_EVENT_CREATE)
+  const [stepPreviousEventCreate] = useMutation<
+    StepPreviousEventCreate,
+    StepPreviousEventCreateVariables
+  >(STEP_PREVIOUS_EVENT_CREATE)
   const plausible = usePlausible<JourneyPlausibleEvents>()
   const { journey } = useJourney()
   const { getNextBlock, treeBlocks, blockHistory } = useBlocks()
