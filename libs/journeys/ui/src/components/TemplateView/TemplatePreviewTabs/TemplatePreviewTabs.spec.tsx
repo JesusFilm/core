@@ -28,7 +28,7 @@ describe('TemplatePreviewTabs', () => {
         <JourneyProvider
           value={{
             journey: journeyWithVideos as JourneyFields,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplatePreviewTabs />
@@ -49,7 +49,7 @@ describe('TemplatePreviewTabs', () => {
         <JourneyProvider
           value={{
             journey: journeyWithVideos as JourneyFields,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplatePreviewTabs />

@@ -52,7 +52,7 @@ function JourneyQuickSettingsPage({ status }): ReactElement {
       {status === 'noAccess' ? (
         <AccessDenied />
       ) : (
-        <JourneyProvider value={{ journey: data?.journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey: data?.journey, renderMode: 'admin' }}>
           <EditorProvider>
             <JourneyQuickSettings
               displayName={user?.displayName ?? undefined}

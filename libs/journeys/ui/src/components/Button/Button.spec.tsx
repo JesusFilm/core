@@ -1212,7 +1212,7 @@ describe('Button', () => {
 
       render(
         <MockedProvider>
-          <JourneyProvider value={{ journey: rtlJourney, variant: 'default' }}>
+          <JourneyProvider value={{ journey: rtlJourney, renderMode: 'default' }}>
             <Button {...iconBlock} />
           </JourneyProvider>
         </MockedProvider>
@@ -1277,7 +1277,7 @@ describe('Button', () => {
 
       render(
         <MockedProvider>
-          <JourneyProvider value={{ journey: rtlJourney, variant: 'admin' }}>
+          <JourneyProvider value={{ journey: rtlJourney, renderMode: 'admin' }}>
             <Button {...iconBlock} />
           </JourneyProvider>
         </MockedProvider>
@@ -1297,7 +1297,7 @@ describe('Button', () => {
   it('should call actionHandler on click', () => {
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <Button
             {...block}
             action={{
@@ -1523,7 +1523,7 @@ describe('Button', () => {
     }
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'default' }}>
+        <JourneyProvider value={{ journey, renderMode: 'default' }}>
           <Button {...buttonMock} />
         </JourneyProvider>
       </MockedProvider>
@@ -1539,7 +1539,7 @@ describe('Button', () => {
     }
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'default' }}>
+        <JourneyProvider value={{ journey, renderMode: 'default' }}>
           <Button {...buttonMock} />
         </JourneyProvider>
       </MockedProvider>
@@ -1556,7 +1556,7 @@ describe('Button', () => {
     }
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <Button {...buttonMock} />
         </JourneyProvider>
       </MockedProvider>
@@ -1586,7 +1586,7 @@ describe('Button', () => {
 
     render(
       <MockedProvider mocks={[]}>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <form onSubmit={handleSubmit} data-testid="test-form">
             <Button {...submitButtonMock} />
           </form>
@@ -1627,7 +1627,7 @@ describe('Button', () => {
       render(
         <MockedProvider>
           <JourneyProvider
-            value={{ journey: journeyWithFields, variant: 'default' }}
+            value={{ journey: journeyWithFields, renderMode: 'default' }}
           >
             <Button {...btn} />
           </JourneyProvider>
@@ -1664,7 +1664,7 @@ describe('Button', () => {
       render(
         <MockedProvider>
           <JourneyProvider
-            value={{ journey: journeyWithFields, variant: 'admin' }}
+            value={{ journey: journeyWithFields, renderMode: 'admin' }}
           >
             <Button {...btn} />
           </JourneyProvider>
@@ -1700,7 +1700,7 @@ describe('Button', () => {
       render(
         <MockedProvider>
           <JourneyProvider
-            value={{ journey: journeyWithFields, variant: 'default' }}
+            value={{ journey: journeyWithFields, renderMode: 'default' }}
           >
             <Button {...btn} />
           </JourneyProvider>
@@ -1736,7 +1736,7 @@ describe('Button', () => {
       render(
         <MockedProvider>
           <JourneyProvider
-            value={{ journey: journeyWithFields, variant: 'default' }}
+            value={{ journey: journeyWithFields, renderMode: 'default' }}
           >
             <Button {...btn} />
           </JourneyProvider>

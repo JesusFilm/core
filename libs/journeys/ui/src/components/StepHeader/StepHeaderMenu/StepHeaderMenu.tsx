@@ -12,7 +12,7 @@ import { useJourney } from '../../../libs/JourneyProvider'
 import { getMenuIcon } from '../utils/getMenuIcon'
 
 export function StepHeaderMenu(): ReactElement {
-  const { journey, variant } = useJourney()
+  const { journey, renderMode } = useJourney()
   const {
     state: { selectedStep }
   } = useEditor()
@@ -29,7 +29,7 @@ export function StepHeaderMenu(): ReactElement {
       menuStepBlock.id === stepSlug)
 
   let Icon: typeof SvgIcon | null =
-    variant === 'admin' ? getMenuIcon(JourneyMenuButtonIcon.menu1) : null
+    renderMode === 'admin' ? getMenuIcon(JourneyMenuButtonIcon.menu1) : null
 
   if (menuButtonIcon != null) {
     if (isMenu) {
@@ -50,7 +50,7 @@ export function StepHeaderMenu(): ReactElement {
       void router.push(`/${journey?.slug}/${slug ?? id}`)
     }
   }
-  const isEmpty = menuButtonIcon === null && variant === 'admin'
+  const isEmpty = menuButtonIcon === null && renderMode === 'admin'
 
   const getIconTestId = (
     Icon: typeof SvgIcon | null | undefined,
@@ -97,10 +97,10 @@ export function StepHeaderMenu(): ReactElement {
     >
       {Icon != null && (
         <>
-          {variant === 'default' && menuStepBlock != null ? (
+          {renderMode === 'default' && menuStepBlock != null ? (
             <IconButton onClick={handleClick}>
               <Icon
-                data-testid={getIconTestId(Icon, menuButtonIcon, variant)}
+                data-testid={getIconTestId(Icon, menuButtonIcon, renderMode)}
               />
             </IconButton>
           ) : (
@@ -109,7 +109,7 @@ export function StepHeaderMenu(): ReactElement {
                 color: ({ palette }) =>
                   isEmpty ? palette.grey[700] : undefined
               }}
-              data-testid={getIconTestId(Icon, menuButtonIcon, variant)}
+              data-testid={getIconTestId(Icon, menuButtonIcon, renderMode)}
             />
           )}
         </>

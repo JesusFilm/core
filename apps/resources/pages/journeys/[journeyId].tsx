@@ -52,7 +52,7 @@ export default function JourneyDetailsPage(): ReactElement {
               <JourneyProvider
                 value={{
                   journey: data?.journey,
-                  variant: 'admin'
+                  renderMode: 'admin'
                 }}
               >
                 <ThemeProvider

@@ -3,7 +3,7 @@ import { JourneyProviderContext } from '../../../../libs/JourneyProvider/Journey
 
 export function showHeader(
   journey?: JourneyFields,
-  variant?: JourneyProviderContext['variant']
+  variant?: JourneyProviderContext['renderMode']
 ): boolean {
   if (journey == null || variant == null) return false
 

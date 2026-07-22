@@ -27,7 +27,7 @@ export function OverlayContent({
   hasFullscreenVideo = false,
   card
 }: OverlayContentProps): ReactElement {
-  const { journey, variant } = useJourney()
+  const { journey, renderMode } = useJourney()
   const enableVerticalScroll: SxProps = {
     overflowY: 'scroll',
     // Hide on Firefox https://caniuse.com/?search=scrollbar-width
@@ -63,7 +63,7 @@ export function OverlayContent({
 
   // Adds padding with notch calculations when applicable
   const mobileNotchPadding: SxProps =
-    variant === 'default'
+    renderMode === 'default'
       ? {
           pl: {
             xs: 'calc(16px + env(safe-area-inset-left))',
@@ -79,7 +79,7 @@ export function OverlayContent({
           pr: { xs: 4, sm: 10 }
         }
 
-  const footerMobileSpacing = getFooterMobileSpacing({ journey, variant, card })
+  const footerMobileSpacing = getFooterMobileSpacing({ journey, renderMode, card })
 
   // The chat drawer no longer docks permanently to the bottom of chat
   // cards — closed it is fully off-screen and the AI chat button lives in
@@ -93,7 +93,7 @@ export function OverlayContent({
     }
   }
 
-  const hasHeader = showHeader(journey, variant)
+  const hasHeader = showHeader(journey, renderMode)
 
   const conditionalWebsiteStyles =
     journey?.website === true

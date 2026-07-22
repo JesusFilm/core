@@ -100,7 +100,7 @@ describe('TemplateViewHeader', () => {
         <JourneyProvider
           value={{
             journey: journeyWithCreatorDetails as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateViewHeader isPublisher authUser={{} as unknown as User} />
@@ -148,7 +148,7 @@ describe('TemplateViewHeader', () => {
         <JourneyProvider
           value={{
             journey: journeyWithCreatorDetails as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateViewHeader isPublisher authUser={{} as unknown as User} />
@@ -300,7 +300,7 @@ describe('TemplateViewHeader', () => {
         <JourneyProvider
           value={{
             journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateViewHeader

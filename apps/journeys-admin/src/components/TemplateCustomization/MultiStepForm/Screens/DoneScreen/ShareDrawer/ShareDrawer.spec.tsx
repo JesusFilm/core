@@ -25,7 +25,7 @@ describe('ShareDrawer', () => {
 
   it('renders when open is true', () => {
     render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
+      <JourneyProvider value={{ journey, renderMode: 'admin' }}>
         <ShareDrawer open={true} onClose={mockOnClose} />
       </JourneyProvider>
     )
@@ -36,7 +36,7 @@ describe('ShareDrawer', () => {
 
   it('does not render when open is false', () => {
     render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
+      <JourneyProvider value={{ journey, renderMode: 'admin' }}>
         <ShareDrawer open={false} onClose={mockOnClose} />
       </JourneyProvider>
     )
@@ -51,7 +51,7 @@ describe('ShareDrawer', () => {
     }
 
     render(
-      <JourneyProvider value={{ journey: journeyWithTitle, variant: 'admin' }}>
+      <JourneyProvider value={{ journey: journeyWithTitle, renderMode: 'admin' }}>
         <ShareDrawer open={true} onClose={mockOnClose} />
       </JourneyProvider>
     )
@@ -67,7 +67,7 @@ describe('ShareDrawer', () => {
     }
 
     render(
-      <JourneyProvider value={{ journey: journeyWithTitle, variant: 'admin' }}>
+      <JourneyProvider value={{ journey: journeyWithTitle, renderMode: 'admin' }}>
         <ShareDrawer open={true} onClose={mockOnClose} />
       </JourneyProvider>
     )
@@ -83,7 +83,7 @@ describe('ShareDrawer', () => {
 
     render(
       <JourneyProvider
-        value={{ journey: journeyWithDescription, variant: 'admin' }}
+        value={{ journey: journeyWithDescription, renderMode: 'admin' }}
       >
         <ShareDrawer open={true} onClose={mockOnClose} />
       </JourneyProvider>
@@ -116,7 +116,7 @@ describe('ShareDrawer', () => {
     }
 
     render(
-      <JourneyProvider value={{ journey: journeyWithImage, variant: 'admin' }}>
+      <JourneyProvider value={{ journey: journeyWithImage, renderMode: 'admin' }}>
         <ShareDrawer open={true} onClose={mockOnClose} />
       </JourneyProvider>
     )
@@ -134,7 +134,7 @@ describe('ShareDrawer', () => {
 
     render(
       <JourneyProvider
-        value={{ journey: journeyWithoutImage, variant: 'admin' }}
+        value={{ journey: journeyWithoutImage, renderMode: 'admin' }}
       >
         <ShareDrawer open={true} onClose={mockOnClose} />
       </JourneyProvider>
@@ -145,7 +145,7 @@ describe('ShareDrawer', () => {
 
   it('calls onClose when close button is clicked', () => {
     render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
+      <JourneyProvider value={{ journey, renderMode: 'admin' }}>
         <ShareDrawer open={true} onClose={mockOnClose} />
       </JourneyProvider>
     )
@@ -166,7 +166,7 @@ describe('ShareDrawer', () => {
     }
 
     render(
-      <JourneyProvider value={{ journey: minimalJourney, variant: 'admin' }}>
+      <JourneyProvider value={{ journey: minimalJourney, renderMode: 'admin' }}>
         <ShareDrawer open={true} onClose={mockOnClose} />
       </JourneyProvider>
     )

@@ -81,7 +81,7 @@ describe('NewTextResponseButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -121,7 +121,7 @@ describe('NewTextResponseButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -180,7 +180,7 @@ describe('NewTextResponseButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -221,7 +221,7 @@ describe('NewTextResponseButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -277,7 +277,7 @@ describe('NewTextResponseButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -320,7 +320,7 @@ describe('NewTextResponseButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -362,7 +362,7 @@ describe('NewTextResponseButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -422,7 +422,7 @@ describe('NewTextResponseButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -498,7 +498,7 @@ describe('NewTextResponseButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider

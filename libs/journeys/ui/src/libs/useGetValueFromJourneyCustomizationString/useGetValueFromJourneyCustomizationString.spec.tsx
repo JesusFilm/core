@@ -27,7 +27,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
       {
         initialProps: { label: '{{ name }}' },
         wrapper: ({ children }) => (
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             {children}
           </JourneyProvider>
         )
@@ -69,7 +69,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
       {
         initialProps: { label: '{{ name }}' },
         wrapper: ({ children }) => (
-          <JourneyProvider value={{ journey, variant: 'default' }}>
+          <JourneyProvider value={{ journey, renderMode: 'default' }}>
             {children}
           </JourneyProvider>
         )
@@ -106,7 +106,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
       {
         initialProps: { label: '{{ name }}' },
         wrapper: ({ children }) => (
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             {children}
           </JourneyProvider>
         )
@@ -137,7 +137,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
       {
         initialProps: { label: 'Hello {{ name }}!' },
         wrapper: ({ children }) => (
-          <JourneyProvider value={{ journey, variant: 'default' }}>
+          <JourneyProvider value={{ journey, renderMode: 'default' }}>
             {children}
           </JourneyProvider>
         )
@@ -176,7 +176,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
       {
         initialProps: { label: 'Hello {{ first }} {{ last }}!' },
         wrapper: ({ children }) => (
-          <JourneyProvider value={{ journey, variant: 'default' }}>
+          <JourneyProvider value={{ journey, renderMode: 'default' }}>
             {children}
           </JourneyProvider>
         )

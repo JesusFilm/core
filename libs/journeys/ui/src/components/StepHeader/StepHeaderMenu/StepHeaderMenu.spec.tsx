@@ -39,7 +39,7 @@ describe('StepHeaderMenu', () => {
       }
 
       render(
-        <JourneyProvider value={{ journey, variant: 'default' }}>
+        <JourneyProvider value={{ journey, renderMode: 'default' }}>
           <StepHeaderMenu />
         </JourneyProvider>
       )
@@ -59,7 +59,7 @@ describe('StepHeaderMenu', () => {
       }
 
       render(
-        <JourneyProvider value={{ journey, variant: 'default' }}>
+        <JourneyProvider value={{ journey, renderMode: 'default' }}>
           <StepHeaderMenu />
         </JourneyProvider>
       )
@@ -79,7 +79,7 @@ describe('StepHeaderMenu', () => {
       }
 
       render(
-        <JourneyProvider value={{ journey, variant: 'default' }}>
+        <JourneyProvider value={{ journey, renderMode: 'default' }}>
           <StepHeaderMenu />
         </JourneyProvider>
       )
@@ -102,7 +102,7 @@ describe('StepHeaderMenu', () => {
       }
 
       render(
-        <JourneyProvider value={{ journey, variant: 'default' }}>
+        <JourneyProvider value={{ journey, renderMode: 'default' }}>
           <StepHeaderMenu />
         </JourneyProvider>
       )
@@ -128,7 +128,7 @@ describe('StepHeaderMenu', () => {
       }
 
       render(
-        <JourneyProvider value={{ journey, variant: 'default' }}>
+        <JourneyProvider value={{ journey, renderMode: 'default' }}>
           <StepHeaderMenu />
         </JourneyProvider>
       )
@@ -147,7 +147,7 @@ describe('StepHeaderMenu', () => {
       }
 
       render(
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <StepHeaderMenu />
         </JourneyProvider>
       )
@@ -162,7 +162,7 @@ describe('StepHeaderMenu', () => {
       }
 
       render(
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <StepHeaderMenu />
         </JourneyProvider>
       )
@@ -178,7 +178,7 @@ describe('StepHeaderMenu', () => {
       }
 
       render(
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <StepHeaderMenu />
         </JourneyProvider>
       )

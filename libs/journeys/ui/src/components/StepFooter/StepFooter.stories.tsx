@@ -105,16 +105,16 @@ const rtlLanguage = {
 type Story = StoryObj<
   ComponentProps<typeof StepFooter> & {
     journey: Journey
-    variant: 'default' | 'admin' | 'embed'
+    renderMode: 'default' | 'admin' | 'embed'
   }
 >
 
 const Template: Story = {
-  render: ({ journey, variant = 'default' }) => {
+  render: ({ journey, renderMode = 'default' }) => {
     return (
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey, variant }}>
+          <JourneyProvider value={{ journey, renderMode }}>
             <Stack
               sx={{
                 position: 'relative',
@@ -141,7 +141,7 @@ export const Admin = {
   ...Template,
   args: {
     ...Default.args,
-    variant: 'admin'
+    renderMode: 'admin'
   }
 }
 
@@ -257,7 +257,7 @@ const TemplateRTL: StoryRTL = {
       <MockedProvider>
         <SnackbarProvider>
           {journeys.map((journey, i) => (
-            <JourneyProvider key={i} value={{ journey, variant: variants[i] }}>
+            <JourneyProvider key={i} value={{ journey, renderMode: variants[i] }}>
               <Stack
                 sx={{
                   position: 'relative',

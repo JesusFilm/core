@@ -53,7 +53,7 @@ describe('LanguageScreenCardPreview', () => {
   it('renders BlockRenderer with first step', async () => {
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: mockJourney, variant: 'admin' }}>
+        <JourneyProvider value={{ journey: mockJourney, renderMode: 'admin' }}>
           <LanguageScreenCardPreview />
         </JourneyProvider>
       </MockedProvider>

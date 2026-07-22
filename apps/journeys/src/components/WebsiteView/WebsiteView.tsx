@@ -30,7 +30,7 @@ interface WebsiteViewProps {
 }
 export function WebsiteView({ blocks, stepBlock }: WebsiteViewProps): ReactElement {
   const { setTreeBlocks, blockHistory } = useBlocks()
-  const { journey, variant } = useJourney()
+  const { journey, renderMode } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
   const theme = useTheme()
 
@@ -62,7 +62,7 @@ export function WebsiteView({ blocks, stepBlock }: WebsiteViewProps): ReactEleme
   }, [stepBlock, setTreeBlocks])
 
   useEffect(() => {
-    if ((variant === 'default' || variant === 'embed') && journey != null) {
+    if ((renderMode === 'default' || renderMode === 'embed') && journey != null) {
       const id = uuidv4()
       void journeyViewEventCreate({
         variables: {
@@ -117,17 +117,17 @@ export function WebsiteView({ blocks, stepBlock }: WebsiteViewProps): ReactEleme
   const mobileNotchStyling: SxProps = {
     width: {
       xs:
-        variant === 'default' || variant === 'embed'
+        renderMode === 'default' || renderMode === 'embed'
           ? 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))'
           : '100%',
       lg: 'auto'
     },
     left:
-      variant === 'default' || variant === 'embed'
+      renderMode === 'default' || renderMode === 'embed'
         ? 'env(safe-area-inset-left)'
         : undefined,
     right:
-      variant === 'default' || variant === 'embed'
+      renderMode === 'default' || renderMode === 'embed'
         ? 'env(safe-area-inset-right)'
         : undefined
   }

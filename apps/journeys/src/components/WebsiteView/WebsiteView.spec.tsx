@@ -203,7 +203,7 @@ describe('WebsiteView', () => {
           mockStepViewEventCreate
         ]}
       >
-        <JourneyProvider value={{ journey, variant: 'default' }}>
+        <JourneyProvider value={{ journey, renderMode: 'default' }}>
           <SnackbarProvider>
             <WebsiteView
               blocks={basic}

@@ -170,7 +170,7 @@ describe('ImageSource', () => {
               <JourneyProvider
                 value={{
                   journey: { template: false } as unknown as JourneyFields,
-                  variant: 'admin'
+                  renderMode: 'admin'
                 }}
               >
                 <CommandProvider>
@@ -199,7 +199,7 @@ describe('ImageSource', () => {
               <JourneyProvider
                 value={{
                   journey: { template: true } as unknown as JourneyFields,
-                  variant: 'admin'
+                  renderMode: 'admin'
                 }}
               >
                 <CommandProvider>
@@ -228,7 +228,7 @@ describe('ImageSource', () => {
               <JourneyProvider
                 value={{
                   journey: { template: true } as unknown as JourneyFields,
-                  variant: 'admin'
+                  renderMode: 'admin'
                 }}
               >
                 <CommandProvider>
@@ -260,7 +260,7 @@ describe('ImageSource', () => {
               <JourneyProvider
                 value={{
                   journey: { template: true } as unknown as JourneyFields,
-                  variant: 'admin'
+                  renderMode: 'admin'
                 }}
               >
                 <CommandProvider>

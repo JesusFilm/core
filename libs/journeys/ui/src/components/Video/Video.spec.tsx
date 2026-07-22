@@ -232,7 +232,7 @@ describe('Video', () => {
 
   it('should render video image if source is YouTube and in Next Steps Admin', () => {
     render(
-      <JourneyProvider value={{ variant: 'admin' }}>
+      <JourneyProvider value={{ renderMode: 'admin' }}>
         <Video
           {...block}
           source={VideoBlockSource.youTube}
@@ -248,7 +248,7 @@ describe('Video', () => {
 
   it('should render video image if source is YouTube and variant is customize', () => {
     render(
-      <JourneyProvider value={{ variant: 'customize' }}>
+      <JourneyProvider value={{ renderMode: 'customize' }}>
         <Video
           {...block}
           source={VideoBlockSource.youTube}

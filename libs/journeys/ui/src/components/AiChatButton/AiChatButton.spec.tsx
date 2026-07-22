@@ -80,10 +80,10 @@ const journey: Journey = {
   showAssistant: null
 }
 
-function renderButton(variant: 'default' | 'admin' | 'embed' = 'default') {
+function renderButton(renderMode: 'default' | 'admin' | 'embed' = 'default') {
   return render(
     <ChatOverlayProvider journeyId={journey.id}>
-      <JourneyProvider value={{ journey, variant }}>
+      <JourneyProvider value={{ journey, renderMode }}>
         <AiChatButton />
       </JourneyProvider>
     </ChatOverlayProvider>
@@ -140,12 +140,12 @@ describe('AiChatButton', () => {
     expect(queryByTestId('ChatOverlay-open')).not.toBeInTheDocument()
   })
 
-  it('renders nothing in admin variant', () => {
+  it('renders nothing in admin render mode', () => {
     const { container } = renderButton('admin')
     expect(container.firstChild).toBeNull()
   })
 
-  it('renders nothing in embed variant', () => {
+  it('renders nothing in embed render mode', () => {
     const { container } = renderButton('embed')
     expect(container.firstChild).toBeNull()
   })
@@ -154,7 +154,7 @@ describe('AiChatButton', () => {
     const user = userEvent.setup()
     const { getAllByRole, getAllByTestId } = render(
       <ChatOverlayProvider journeyId={journey.id}>
-        <JourneyProvider value={{ journey, variant: 'default' }}>
+        <JourneyProvider value={{ journey, renderMode: 'default' }}>
           <AiChatButton />
           <AiChatButton />
         </JourneyProvider>

@@ -800,7 +800,7 @@ const Template: Story = {
               },
               ...journey
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps, ...state }}>

@@ -97,7 +97,7 @@ describe('Typography', () => {
     const blockWithTemplate = { ...block, content: '{{ name }}' }
 
     render(
-      <JourneyProvider value={{ journey, variant: 'default' }}>
+      <JourneyProvider value={{ journey, renderMode: 'default' }}>
         <Typography {...blockWithTemplate} />
       </JourneyProvider>
     )
@@ -125,7 +125,7 @@ describe('Typography', () => {
     const blockWithTemplate = { ...block, content: '{{ name }}' }
 
     render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
+      <JourneyProvider value={{ journey, renderMode: 'admin' }}>
         <Typography {...blockWithTemplate} />
       </JourneyProvider>
     )
@@ -152,7 +152,7 @@ describe('Typography', () => {
     const blockWithTemplate = { ...block, content: 'Hello {{ name }}!' }
 
     render(
-      <JourneyProvider value={{ journey, variant: 'default' }}>
+      <JourneyProvider value={{ journey, renderMode: 'default' }}>
         <Typography {...blockWithTemplate} />
       </JourneyProvider>
     )
@@ -179,7 +179,7 @@ describe('Typography', () => {
     const blockWithTemplate = { ...block, content: '{{ title }}' }
 
     render(
-      <JourneyProvider value={{ journey, variant: 'default' }}>
+      <JourneyProvider value={{ journey, renderMode: 'default' }}>
         <Typography {...blockWithTemplate} />
       </JourneyProvider>
     )

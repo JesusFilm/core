@@ -236,7 +236,7 @@ describe('Edit Hint field', () => {
     render(
       <MockedProvider mocks={[mockHintUpdate1]} addTypename={false}>
         <JourneyProvider
-          value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}
+          value={{ journey: journeyWithCustomizableFields, renderMode: 'admin' }}
         >
           <EditorProvider
             initialState={{ selectedBlock: blockWithCustomizableHint }}
@@ -274,7 +274,7 @@ describe('Edit Hint field', () => {
     render(
       <MockedProvider mocks={[mockHintUpdate1]} addTypename={false}>
         <JourneyProvider
-          value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}
+          value={{ journey: journeyWithCustomizableFields, renderMode: 'admin' }}
         >
           <EditorProvider
             initialState={{ selectedBlock: blockWithCustomizableHint }}

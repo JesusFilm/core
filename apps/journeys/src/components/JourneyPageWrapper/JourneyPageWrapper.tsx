@@ -57,7 +57,7 @@ export function JourneyPageWrapper({
       customDomain="/plausible"
       domain={`${journeyDomain}${teamDomain}${templateDomain}`}
     >
-      <JourneyProvider value={{ journey, variant: variant ?? 'default' }}>
+      <JourneyProvider value={{ journey, renderMode: variant ?? 'default' }}>
         <ChatOverlayProvider journeyId={journeyId}>
           <ThemeProvider
             {...journeyTheme}

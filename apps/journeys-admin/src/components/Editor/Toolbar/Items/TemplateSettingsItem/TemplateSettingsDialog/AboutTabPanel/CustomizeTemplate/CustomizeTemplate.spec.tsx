@@ -32,7 +32,7 @@ describe('CustomizeTemplate', () => {
             } as unknown as FormikContextType<TemplateSettingsFormValues>
           }
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <CustomizeTemplate />
           </JourneyProvider>
         </FormikProvider>
@@ -68,7 +68,7 @@ describe('CustomizeTemplate', () => {
             } as unknown as FormikContextType<TemplateSettingsFormValues>
           }
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <CustomizeTemplate />
           </JourneyProvider>
         </FormikProvider>
@@ -114,7 +114,7 @@ describe('CustomizeTemplate', () => {
             } as unknown as FormikContextType<TemplateSettingsFormValues>
           }
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <CustomizeTemplate />
           </JourneyProvider>
         </FormikProvider>
@@ -153,7 +153,7 @@ describe('CustomizeTemplate', () => {
             } as unknown as FormikContextType<TemplateSettingsFormValues>
           }
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <CustomizeTemplate />
           </JourneyProvider>
         </FormikProvider>
@@ -194,7 +194,7 @@ describe('CustomizeTemplate', () => {
             } as unknown as FormikContextType<TemplateSettingsFormValues>
           }
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <CustomizeTemplate />
           </JourneyProvider>
         </FormikProvider>

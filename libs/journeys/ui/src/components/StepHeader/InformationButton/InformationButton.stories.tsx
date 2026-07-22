@@ -80,7 +80,7 @@ type Story = StoryObj<ComponentPropsWithoutRef<typeof InformationButton>>
 
 const Template: Story = {
   render: (args) => (
-    <JourneyProvider value={{ journey, variant: 'default' }}>
+    <JourneyProvider value={{ journey, renderMode: 'default' }}>
       <InformationButton />
     </JourneyProvider>
   )

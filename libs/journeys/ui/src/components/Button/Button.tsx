@@ -120,7 +120,7 @@ export function Button({
   >(CHAT_OPEN_EVENT_CREATE)
 
   const plausible = usePlausible<JourneyPlausibleEvents>()
-  const { variant, journey } = useJourney()
+  const { renderMode, journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
 
   const resolvedLabel = useGetValueFromJourneyCustomizationString(label)
@@ -162,13 +162,13 @@ export function Button({
   const alignment = settings?.alignment ?? ButtonAlignment.justify
 
   const buttonType = submitEnabled
-    ? variant !== 'admin'
+    ? renderMode !== 'admin'
       ? 'submit'
       : 'button'
     : 'button'
 
   function createClickEvent(): void {
-    if (variant === 'default' || variant === 'embed') {
+    if (renderMode === 'default' || renderMode === 'embed') {
       const id = uuidv4()
       const input: ButtonClickEventCreateInput = {
         id,
@@ -227,7 +227,7 @@ export function Button({
   }
 
   function createChatEvent(): void {
-    if (variant === 'default' || variant === 'embed') {
+    if (renderMode === 'default' || renderMode === 'embed') {
       const id = uuidv4()
       const input: ChatOpenEventCreateInput = {
         id,
@@ -335,7 +335,7 @@ export function Button({
 
   // In journey viewer with RTL: swap startIcon/endIcon positions so trailing icons appear on the left
   // In editor: FramePortal sets dir="rtl" on iframe, so MUI Button handles icon swapping automatically
-  const shouldSwapIcons = variant !== 'admin' && rtl
+  const shouldSwapIcons = renderMode !== 'admin' && rtl
   const leadingIcon = shouldSwapIcons ? endIcon : startIcon
   const trailingIcon = shouldSwapIcons ? startIcon : endIcon
 

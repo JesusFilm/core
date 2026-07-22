@@ -11,7 +11,7 @@ export interface TextResponseStrings {
 export function getTextResponseValues(
   textResponseStrings: TextResponseStrings,
   journeyCustomizationFields: JourneyCustomizationField[],
-  variant: JourneyProviderContext['variant'],
+  variant: JourneyProviderContext['renderMode'],
   journeyIsTemplate?: boolean | null | undefined
 ): TextResponseStrings {
   if (variant === 'admin' && journeyIsTemplate) {

@@ -146,7 +146,7 @@ const Template: StoryObj<typeof Canvas> = {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider

@@ -289,7 +289,7 @@ describe('LocalTemplateDetailsDialog', () => {
             reopen
           </button>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <LocalTemplateDetailsDialog
                 open={open}
                 onClose={() => setOpen(false)}

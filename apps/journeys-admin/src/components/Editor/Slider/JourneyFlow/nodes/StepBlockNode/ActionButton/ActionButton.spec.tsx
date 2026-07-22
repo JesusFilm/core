@@ -301,7 +301,7 @@ describe('ActionButton', () => {
     render(
       <MockedProvider>
         <JourneyProvider
-          value={{ journey: nonTemplateJourney, variant: 'default' }}
+          value={{ journey: nonTemplateJourney, renderMode: 'default' }}
         >
           <ReactFlowProvider>
             <ActionButton stepId="step.id" block={block} />
@@ -317,7 +317,7 @@ describe('ActionButton', () => {
   it('should render markdown format label when journey template is true in admin variant', () => {
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <ReactFlowProvider>
             <ActionButton stepId="step.id" block={block} />
           </ReactFlowProvider>

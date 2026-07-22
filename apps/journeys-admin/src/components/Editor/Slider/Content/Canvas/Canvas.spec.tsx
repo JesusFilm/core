@@ -91,7 +91,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={initialState}>
@@ -126,7 +126,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={initialState}>
@@ -163,7 +163,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={initialState}>
@@ -205,7 +205,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={initialState}>
@@ -255,7 +255,7 @@ describe('Canvas', () => {
                   },
                   chatButtons: []
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider
@@ -296,7 +296,7 @@ describe('Canvas', () => {
                   iso3: 'eng'
                 }
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider initialState={initialState}>
@@ -349,7 +349,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={initialState}>
@@ -419,7 +419,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider
@@ -475,7 +475,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider
