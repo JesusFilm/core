@@ -221,7 +221,7 @@ export function VideoBlockEditorSettingsPosterLibrary({
             }
           },
           update(cache, { data }) {
-            blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
+            blockDeleteUpdate(cache, journey.id, block, data?.blockDelete)
           }
         })
       },
@@ -303,10 +303,10 @@ export function VideoBlockEditorSettingsPosterLibrary({
           },
           update(cache, { data }) {
             blockDeleteUpdate(
-              selectedBlock,
-              data?.blockDelete,
               cache,
-              journeyId
+              journeyId,
+              selectedBlock,
+              data?.blockDelete
             )
           }
         })
