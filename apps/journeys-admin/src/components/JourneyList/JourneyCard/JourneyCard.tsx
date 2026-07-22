@@ -16,7 +16,7 @@ import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
-import { useNavigationState } from '@core/journeys/ui/useNavigationState'
+import { useRouteChangeState } from '@core/journeys/ui/useRouteChangeState'
 import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 import Globe from '@core/shared/ui/icons/Globe'
 import Lightning2 from '@core/shared/ui/icons/Lightning2'
@@ -113,7 +113,7 @@ export function JourneyCard({
 }: JourneyCardProps): ReactElement {
   const theme = useTheme()
   const duplicatedJourneyRef = useRef<HTMLDivElement>(null)
-  const isNavigating = useNavigationState()
+  const isNavigating = useRouteChangeState()
   const { t } = useTranslation('apps-journeys-admin')
   const [isCardHovered, setIsCardHovered] = useState(false)
   const [isImageLoading, setIsImageLoading] = useState(true)

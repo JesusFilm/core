@@ -20,7 +20,7 @@ export function PaginationBullets({
   selectedStep: selectedStepProp
 }: PaginationBulletsProps): ReactElement {
   const { treeBlocks, blockHistory } = useBlocks()
-  const { variant } = useJourney()
+  const { renderMode } = useJourney()
 
   const isPreviewMode = stepsProp != null && selectedStepProp != null
 
@@ -47,12 +47,12 @@ export function PaginationBullets({
     if (isPreviewMode) {
       return [...new Array(stepsProp.length)]
     }
-    if (variant === 'admin') {
+    if (renderMode === 'admin') {
       return adminBullets.bullets
     } else {
       return bulletsToRender(treeBlocks)
     }
-  }, [isPreviewMode, stepsProp, treeBlocks, variant, adminBullets])
+  }, [isPreviewMode, stepsProp, treeBlocks, renderMode, adminBullets])
 
   useEffect(() => {
     if (!isPreviewMode) return
@@ -78,12 +78,12 @@ export function PaginationBullets({
 
     if (hasBlockAction) {
       setActiveIndex(blockHistory.length - 1)
-    } else if (variant === 'admin') {
+    } else if (renderMode === 'admin') {
       setActiveIndex(adminBullets.activeIndex)
     } else {
       setActiveIndex(bullets.length - 1)
     }
-  }, [isPreviewMode, blockHistory, bullets.length, variant, adminBullets])
+  }, [isPreviewMode, blockHistory, bullets.length, renderMode, adminBullets])
 
   return (
     <Box
@@ -119,7 +119,7 @@ export function PaginationBullets({
               filterActionBlocks(activeBlock).some((block) => hasAction(block))
             if (hasBlockAction) {
               return blockHistory.length * BULLET_GAP
-            } else if (variant === 'admin') {
+            } else if (renderMode === 'admin') {
               return adminBullets.distance
             } else {
               return bullets.length * BULLET_GAP

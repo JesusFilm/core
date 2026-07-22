@@ -91,7 +91,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={initialState}>
@@ -126,7 +126,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={initialState}>
@@ -163,7 +163,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={initialState}>
@@ -205,7 +205,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={initialState}>
@@ -255,7 +255,7 @@ describe('Canvas', () => {
                   },
                   chatButtons: []
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider
@@ -296,7 +296,7 @@ describe('Canvas', () => {
                   iso3: 'eng'
                 }
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider initialState={initialState}>
@@ -349,7 +349,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={initialState}>
@@ -374,7 +374,7 @@ describe('Canvas', () => {
       slug: null,
       children: [
         {
-          id: 'multiselectQuestion1.id',
+          id: 'multiselect1.id',
           __typename: 'MultiselectBlock',
           parentBlockId: 'cardMulti.id',
           parentOrder: 0,
@@ -384,7 +384,7 @@ describe('Canvas', () => {
             {
               id: 'multiselectOption1.id',
               __typename: 'MultiselectOptionBlock',
-              parentBlockId: 'multiselectQuestion1.id',
+              parentBlockId: 'multiselect1.id',
               parentOrder: 0,
               label: 'Option 1',
               children: []
@@ -392,7 +392,7 @@ describe('Canvas', () => {
             {
               id: 'multiselectOption2.id',
               __typename: 'MultiselectOptionBlock',
-              parentBlockId: 'multiselectQuestion1.id',
+              parentBlockId: 'multiselect1.id',
               parentOrder: 1,
               label: 'Option 2',
               children: []
@@ -419,7 +419,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider
@@ -439,7 +439,7 @@ describe('Canvas', () => {
     const iframe = baseElement.getElementsByTagName('iframe')[0]
     await waitFor(() => {
       const el = iframe?.contentDocument?.querySelector(
-        '[data-testid="JourneysMultiselectQuestionList-multiselectQuestion1.id"]'
+        '[data-testid="JourneysMultiselectList-multiselect1.id"]'
       )
       expect(el).toBeTruthy()
     })
@@ -475,7 +475,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider

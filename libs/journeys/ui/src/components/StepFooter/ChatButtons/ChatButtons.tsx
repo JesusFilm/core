@@ -37,7 +37,7 @@ export const CHAT_BUTTON_EVENT_CREATE = gql`
 
 export function ChatButtons(): ReactElement {
   const plausible = usePlausible<JourneyPlausibleEvents>()
-  const { variant, journey } = useJourney()
+  const { renderMode, journey } = useJourney()
   const { blockHistory } = useBlocks()
   const theme = useTheme()
   const { rtl } = getJourneyRTL(journey)
@@ -45,7 +45,7 @@ export function ChatButtons(): ReactElement {
   const activeBlock = blockHistory[blockHistory.length - 1]
   const chatButtons = journey?.chatButtons
   const isWebsite = journey?.website === true
-  const showDefault = variant === 'admin' && chatButtons?.length === 0
+  const showDefault = renderMode === 'admin' && chatButtons?.length === 0
 
   const [chatButtonEventCreate] = useMutation<
     ChatButtonEventCreate,
@@ -69,7 +69,7 @@ export function ChatButtons(): ReactElement {
 
   const handleClick = (chatButton: ChatButton): void => {
     if (
-      (variant === 'default' || variant === 'embed') &&
+      (renderMode === 'default' || renderMode === 'embed') &&
       chatButton.link != null
     ) {
       window.open(chatButton.link, '_blank')

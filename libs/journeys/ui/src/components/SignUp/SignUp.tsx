@@ -75,7 +75,7 @@ export const SignUp = ({
     | undefined
 
   const plausible = usePlausible<JourneyPlausibleEvents>()
-  const { variant, journey } = useJourney()
+  const { renderMode, journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
   const { blockHistory, treeBlocks } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
@@ -103,7 +103,7 @@ export const SignUp = ({
   })
 
   const onSubmitHandler = async (values: SignUpFormValues): Promise<void> => {
-    if (variant === 'default' || variant === 'embed') {
+    if (renderMode === 'default' || renderMode === 'embed') {
       const id = uuid()
       const input: SignUpSubmissionEventCreateInput = {
         id,

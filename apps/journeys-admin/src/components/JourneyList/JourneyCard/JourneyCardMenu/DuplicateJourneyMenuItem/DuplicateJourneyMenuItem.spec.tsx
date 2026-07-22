@@ -144,7 +144,7 @@ describe('DuplicateJourneys', () => {
                 },
                 status: JourneyStatus.draft
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <TeamProvider>
@@ -369,7 +369,7 @@ describe('DuplicateJourneys', () => {
                 },
                 status: JourneyStatus.draft
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <TeamProvider>
@@ -674,7 +674,7 @@ describe('DuplicateJourneys', () => {
                 },
                 status: JourneyStatus.draft
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <TeamProvider>
@@ -784,7 +784,7 @@ describe('DuplicateJourneys', () => {
                 },
                 status: JourneyStatus.draft
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <TeamProvider>

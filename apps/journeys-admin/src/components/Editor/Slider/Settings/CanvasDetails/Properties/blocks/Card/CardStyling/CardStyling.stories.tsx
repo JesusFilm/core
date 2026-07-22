@@ -108,7 +108,7 @@ const Template: StoryObj<
   render: ({ block }) => {
     return (
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <EditorProvider
             initialState={{
               selectedBlock: block

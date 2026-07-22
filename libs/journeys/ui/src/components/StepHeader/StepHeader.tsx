@@ -26,7 +26,7 @@ export function StepHeader({
   steps,
   selectedStep
 }: StepHeaderProps): ReactElement {
-  const { journey, variant } = useJourney()
+  const { journey, renderMode } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const { menuButtonIcon } = journey ?? {}
   const hasMenuButtonIcon = menuButtonIcon != null
@@ -103,7 +103,7 @@ export function StepHeader({
         <>
           <PaginationBullets steps={steps} selectedStep={selectedStep} />
           <InformationButton
-            sx={{ px: { xs: variant === 'default' ? 6 : 3, lg: 0 } }}
+            sx={{ px: { xs: renderMode === 'default' ? 6 : 3, lg: 0 } }}
           />
         </>
       )}

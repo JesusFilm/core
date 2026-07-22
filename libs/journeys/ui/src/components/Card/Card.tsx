@@ -23,8 +23,8 @@ import {
 } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
-import { MULTISELECT_SUBMISSION_EVENT_CREATE } from '../MultiselectQuestion'
-import { MultiselectSubmissionEventCreate } from '../MultiselectQuestion/__generated__/MultiselectSubmissionEventCreate'
+import { MULTISELECT_SUBMISSION_EVENT_CREATE } from '../Multiselect'
+import { MultiselectSubmissionEventCreate } from '../Multiselect/__generated__/MultiselectSubmissionEventCreate'
 import { StepFields } from '../Step/__generated__/StepFields'
 import { TextResponseSubmissionEventCreate } from '../TextResponse/__generated__/TextResponseSubmissionEventCreate'
 import { TEXT_RESPONSE_SUBMISSION_EVENT_CREATE } from '../TextResponse/TextResponse'
@@ -108,7 +108,7 @@ export function Card({ wrappers, ...cardForFooter }: CardProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const theme = useTheme()
   const { blockHistory, treeBlocks } = useBlocks()
-  const { variant, journey } = useJourney()
+  const { renderMode, journey } = useJourney()
   const borderRadius = { xs: 'inherit', lg: journey?.website === true ? 0 : 3 }
   const activeBlock = blockHistory[
     blockHistory.length - 1
@@ -190,7 +190,7 @@ export function Card({ wrappers, ...cardForFooter }: CardProps): ReactElement {
   ): Promise<void> => {
     const { resetForm } = formikHelpers
     if (journey == null) return
-    if (variant !== 'default' && variant !== 'embed') return
+    if (renderMode !== 'default' && renderMode !== 'embed') return
 
     const submissionPromises: Array<Promise<string | null>> = [
       // Text responses

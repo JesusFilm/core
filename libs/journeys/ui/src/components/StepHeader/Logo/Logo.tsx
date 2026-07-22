@@ -9,7 +9,7 @@ import { NextImage } from '@core/shared/ui/NextImage'
 import { useJourney } from '../../../libs/JourneyProvider'
 
 export function Logo(): ReactElement {
-  const { journey, variant } = useJourney()
+  const { journey, renderMode } = useJourney()
   const router = useRouter()
 
   function handleHomeClick(): void {
@@ -21,7 +21,7 @@ export function Logo(): ReactElement {
 
   const logo = journey?.logoImageBlock
   const showLogo = logo?.src != null
-  const showEmpty = !showLogo && variant !== 'admin'
+  const showEmpty = !showLogo && renderMode !== 'admin'
 
   const children: ReactNode = showLogo ? (
     <Box

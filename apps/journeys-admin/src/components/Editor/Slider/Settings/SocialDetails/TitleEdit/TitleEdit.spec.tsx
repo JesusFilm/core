@@ -27,7 +27,7 @@ describe('TitleEdit', () => {
               title: 'journey title',
               seoTitle: 'Social share title'
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TitleEdit />
@@ -46,7 +46,7 @@ describe('TitleEdit', () => {
               title: 'journey title',
               seoTitle: null
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TitleEdit />
@@ -90,7 +90,7 @@ describe('TitleEdit', () => {
               id: 'journey.id',
               slug: 'some-slug'
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TitleEdit />
@@ -141,7 +141,7 @@ describe('TitleEdit', () => {
               id: 'journey.id',
               slug: 'some-slug'
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TitleEdit />
@@ -168,7 +168,7 @@ describe('TitleEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journey.id' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TitleEdit />

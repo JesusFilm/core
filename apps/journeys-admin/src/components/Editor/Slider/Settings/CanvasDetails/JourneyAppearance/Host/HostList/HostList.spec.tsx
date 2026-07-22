@@ -60,7 +60,7 @@ describe('HostList', () => {
     const { getByRole, getByText, getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <HostList
               teamHosts={{ hosts: [defaultHost, host2] }}
               handleSelection={vi.fn()}
@@ -92,7 +92,7 @@ describe('HostList', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <HostList
               teamHosts={{ hosts: [defaultHost, host2] }}
               handleSelection={handleSelection}
@@ -110,7 +110,7 @@ describe('HostList', () => {
     const { getByRole } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <HostList
               teamHosts={{ hosts: [defaultHost, host2] }}
               handleSelection={handleSelection}
@@ -158,7 +158,7 @@ describe('HostList', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[updateJourneyHostMock]}>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <HostList
               teamHosts={{ hosts: [defaultHost, host2] }}
               handleSelection={handleSelection}

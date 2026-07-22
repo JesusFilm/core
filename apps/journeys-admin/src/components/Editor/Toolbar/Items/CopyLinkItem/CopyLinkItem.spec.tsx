@@ -40,7 +40,7 @@ describe('CopyLinkItem', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <CopyLinkItem variant="menu-item" onClose={onClose} />
@@ -77,7 +77,7 @@ describe('CopyLinkItem', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <CopyLinkItem variant="menu-item" onClose={onClose} />
@@ -123,7 +123,7 @@ describe('CopyLinkItem', () => {
                     publicTitle: 'Team Title'
                   }
                 },
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <CopyLinkItem variant="menu-item" onClose={onClose} />

@@ -51,8 +51,8 @@ interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
  *
  * This component displays radio options in either a grid or list layout based on the
  * `gridView` property. It handles user interactions, tracks selections, and creates
- * submission events for analytics. The component supports both default/embed variants
- * (which track events) and admin variants (which don't).
+ * submission events for analytics. The component supports both default/embed render modes
+ * (which track events) and admin render mode (which doesn't).
  *
  * Features:
  * - Renders radio options as either GridVariant or ListVariant
@@ -85,7 +85,7 @@ export function RadioQuestion({
     RadioQuestionSubmissionEventCreateVariables
   >(RADIO_QUESTION_SUBMISSION_EVENT_CREATE)
   const plausible = usePlausible<JourneyPlausibleEvents>()
-  const { variant, journey } = useJourney()
+  const { renderMode, journey } = useJourney()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const { blockHistory, treeBlocks } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
@@ -105,7 +105,7 @@ export function RadioQuestion({
     radioOptionBlockId: string,
     radioOptionLabel: string
   ): void => {
-    if (variant === 'default' || variant === 'embed') {
+    if (renderMode === 'default' || renderMode === 'embed') {
       const id = uuid()
       const input: RadioQuestionSubmissionEventCreateInput = {
         id,

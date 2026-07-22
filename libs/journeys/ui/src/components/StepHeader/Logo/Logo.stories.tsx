@@ -16,13 +16,13 @@ const Demo: Meta<typeof Logo> = {
 type Story = StoryObj<
   ComponentPropsWithoutRef<typeof Logo> & {
     journey: Journey
-    variant: 'default' | 'admin' | 'embed'
+    renderMode: 'default' | 'admin' | 'embed'
   }
 >
 
 const Template: Story = {
-  render: ({ journey, variant }) => (
-    <JourneyProvider value={{ journey, variant }}>
+  render: ({ journey, renderMode }) => (
+    <JourneyProvider value={{ journey, renderMode }}>
       <Logo />
     </JourneyProvider>
   )
@@ -40,7 +40,7 @@ export const Default = {
         alt: 'Logo'
       }
     } as unknown as Journey,
-    variant: 'default'
+    renderMode: 'default'
   }
 }
 export const Placeholder = {
@@ -51,7 +51,7 @@ export const Placeholder = {
       id: 'journeyId',
       logoImageBlock: null
     } as unknown as Journey,
-    variant: 'admin'
+    renderMode: 'admin'
   }
 }
 

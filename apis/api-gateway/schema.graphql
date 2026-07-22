@@ -593,7 +593,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoUpdate(input: VideoUpdateInput!) : Video! @join__field(graph: API_MEDIA) 
   videoDelete(id: ID!) : Video! @join__field(graph: API_MEDIA) 
   fixVideoLanguages(videoId: ID!) : Boolean! @join__field(graph: API_MEDIA) 
-  fixAlgoliaVideoVariantIndexIssues(input: FixAlgoliaVideoVariantIndexIssuesInput!) : FixAlgoliaVideoVariantIndexIssuesResult! @join__field(graph: API_MEDIA)
+  fixAlgoliaVideoVariantIndexIssues(input: FixAlgoliaVideoVariantIndexIssuesInput!) : FixAlgoliaVideoVariantIndexIssuesResult! @join__field(graph: API_MEDIA) 
   updateVideoAlgoliaIndex(videoId: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   updateVideoVariantAlgoliaIndex(videoId: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   videoDescriptionCreate(input: VideoTranslationCreateInput!) : VideoDescription! @join__field(graph: API_MEDIA) 
@@ -1603,7 +1603,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   video(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
   videos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
   videosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
-  checkAlgoliaVideoVariantIndexBatch(input: CheckAlgoliaVideoVariantIndexBatchInput!) : CheckAlgoliaVideoVariantIndexBatchResult! @join__field(graph: API_MEDIA)
+  checkAlgoliaVideoVariantIndexBatch(input: CheckAlgoliaVideoVariantIndexBatchInput!) : CheckAlgoliaVideoVariantIndexBatchResult! @join__field(graph: API_MEDIA) 
   checkVideoInAlgolia(videoId: ID!) : CheckVideoInAlgoliaResult! @join__field(graph: API_MEDIA) 
   checkVideoVariantsInAlgolia(videoId: ID!) : CheckVideoVariantsInAlgoliaResult! @join__field(graph: API_MEDIA) 
   videoOrigins(where: VideoOriginsFilter, offset: Int, limit: Int) : [VideoOrigin!]! @join__field(graph: API_MEDIA) 
@@ -2427,7 +2427,7 @@ type LanguageName @join__type(graph: API_LANGUAGES)  {
 
 type AlgoliaVideoVariantIndexIssue @join__type(graph: API_MEDIA)  {
   id: String
-  issueType: String
+  issueType: AlgoliaVideoVariantIndexIssueType
   variantId: String
   objectId: String
   videoId: String
@@ -2479,7 +2479,7 @@ type BibleCitation @join__type(graph: API_MEDIA)  {
 }
 
 type CheckAlgoliaVideoVariantIndexBatchResult @join__type(graph: API_MEDIA)  {
-  scanType: String
+  scanType: AlgoliaVideoVariantIndexScanType
   batchKey: String
   nextBatchKey: String
   done: Boolean
@@ -3732,15 +3732,15 @@ enum LanguageIdType @join__type(graph: API_LANGUAGES)  {
 }
 
 enum AlgoliaVideoVariantIndexIssueType @join__type(graph: API_MEDIA)  {
-  missing @join__enumValue(graph: API_MEDIA)
-  stale @join__enumValue(graph: API_MEDIA)
-  extra @join__enumValue(graph: API_MEDIA)
-  failed @join__enumValue(graph: API_MEDIA)
+  missing @join__enumValue(graph: API_MEDIA) 
+  stale @join__enumValue(graph: API_MEDIA) 
+  extra @join__enumValue(graph: API_MEDIA) 
+  failed @join__enumValue(graph: API_MEDIA) 
 }
 
 enum AlgoliaVideoVariantIndexScanType @join__type(graph: API_MEDIA)  {
-  core @join__enumValue(graph: API_MEDIA)
-  algolia @join__enumValue(graph: API_MEDIA)
+  core @join__enumValue(graph: API_MEDIA) 
+  algolia @join__enumValue(graph: API_MEDIA) 
 }
 
 enum DefaultPlatform @join__type(graph: API_MEDIA)  {
@@ -5620,3 +5620,4 @@ input MeInput @join__type(graph: API_USERS)  {
   redirect: String
   app: App
 }
+    

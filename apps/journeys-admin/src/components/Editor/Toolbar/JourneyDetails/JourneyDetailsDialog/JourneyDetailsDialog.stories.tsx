@@ -94,7 +94,7 @@ const JourneyDetailsDialogComponent = (args): ReactElement => {
     <JourneyProvider
       value={{
         journey: defaultJourney,
-        variant: 'admin'
+        renderMode: 'admin'
       }}
     >
       <JourneyDetailsDialog open={open} onClose={() => setOpen(false)} />
