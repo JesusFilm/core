@@ -49,7 +49,7 @@ The mode a journey is being shown in, carried by the Journey Provider as `render
 _Avoid_: "variant" (the field's historical name, renamed to `renderMode`); say "render mode"
 
 **Website Mode**:
-A journey-level boolean rendering the journey as a multi-page website rather than a linear funnel. Orthogonal to the render mode Variant.
+A journey-level boolean rendering the journey as a multi-page website rather than a linear funnel. Orthogonal to Render Mode.
 
 **Journey Customization**:
 The template feature where placeholder fields in text are resolved per-adopter (with AI-assisted translation of their descriptions). A `customize` render mode exists for editing them.

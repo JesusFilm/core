@@ -3,11 +3,11 @@ import { JourneyProviderContext } from '../../../../libs/JourneyProvider/Journey
 
 export function showHeader(
   journey?: JourneyFields,
-  variant?: JourneyProviderContext['renderMode']
+  renderMode?: JourneyProviderContext['renderMode']
 ): boolean {
-  if (journey == null || variant == null) return false
+  if (journey == null || renderMode == null) return false
 
-  if (variant === 'admin') {
+  if (renderMode === 'admin') {
     return true
   } else {
     return journey.menuButtonIcon != null || journey.logoImageBlock != null

@@ -1518,7 +1518,7 @@ describe('Button', () => {
     expect(submitButton).toHaveAttribute('type', 'submit')
   })
 
-  it('should have type="submit" when submitEnabled is true and variant is not admin', () => {
+  it('should have type="submit" when submitEnabled is true and render mode is not admin', () => {
     const buttonMock = {
       ...block,
       submitEnabled: true
@@ -1534,7 +1534,7 @@ describe('Button', () => {
     expect(button).toHaveAttribute('type', 'submit')
   })
 
-  it('should have type="button" when submitEnabled is false and variant is not admin', () => {
+  it('should have type="button" when submitEnabled is false and render mode is not admin', () => {
     const buttonMock = {
       ...block,
       submitEnabled: false
@@ -1550,11 +1550,10 @@ describe('Button', () => {
     expect(button).toHaveAttribute('type', 'button')
   })
 
-  it('should have type="button" when submitEnabled is true and variant is admin', () => {
+  it('should have type="button" when submitEnabled is true and render mode is admin', () => {
     const buttonMock = {
       ...block,
-      submitEnabled: true,
-      variant: 'admin'
+      submitEnabled: true
     }
     render(
       <MockedProvider>
@@ -1603,7 +1602,7 @@ describe('Button', () => {
   })
 
   describe('customization string resolution', () => {
-    it('resolves label using journey customization fields on default variant', () => {
+    it('resolves label using journey customization fields in default render mode', () => {
       const journeyWithFields = {
         language: {
           __typename: 'Language',
@@ -1639,7 +1638,7 @@ describe('Button', () => {
       expect(screen.getByRole('button')).toHaveTextContent('Alice')
     })
 
-    it('does not resolve label on admin variant for template journeys', () => {
+    it('does not resolve label in admin render mode for template journeys', () => {
       const journeyWithFields = {
         language: {
           __typename: 'Language',

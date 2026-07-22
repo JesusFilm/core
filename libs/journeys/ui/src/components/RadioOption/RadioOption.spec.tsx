@@ -100,7 +100,7 @@ describe('RadioOption', () => {
       expect(screen.getByRole('button')).toHaveTextContent('Alice')
     })
 
-    it('does not resolve label in admin variant for template journeys', () => {
+    it('does not resolve label in admin render mode for template journeys', () => {
       const journey = {
         template: true,
         journeyCustomizationFields: [

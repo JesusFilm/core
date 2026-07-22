@@ -314,7 +314,7 @@ describe('ActionButton', () => {
     expect(screen.queryByText('{{ name }}')).not.toBeInTheDocument()
   })
 
-  it('should render markdown format label when journey template is true in admin variant', () => {
+  it('should render markdown format label when journey template is true in admin render mode', () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey, renderMode: 'admin' }}>

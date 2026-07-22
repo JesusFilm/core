@@ -80,7 +80,7 @@ describe('Typography', () => {
     ).toHaveTextContent('hello')
   })
 
-  it('resolves content using journey customization fields on default variant', () => {
+  it('resolves content using journey customization fields in default render mode', () => {
     const journey = {
       journeyCustomizationFields: [
         {
@@ -107,7 +107,7 @@ describe('Typography', () => {
     ).toBeInTheDocument()
   })
 
-  it('does not resolve content on admin variant for template journeys', () => {
+  it('does not resolve content in admin render mode for template journeys', () => {
     const journey = {
       template: true,
       journeyCustomizationFields: [

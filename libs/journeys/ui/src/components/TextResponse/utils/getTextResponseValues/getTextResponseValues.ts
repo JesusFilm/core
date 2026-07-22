@@ -11,14 +11,14 @@ export interface TextResponseStrings {
 export function getTextResponseValues(
   textResponseStrings: TextResponseStrings,
   journeyCustomizationFields: JourneyCustomizationField[],
-  variant: JourneyProviderContext['renderMode'],
+  renderMode: JourneyProviderContext['renderMode'],
   journeyIsTemplate?: boolean | null | undefined
 ): TextResponseStrings {
-  if (variant === 'admin' && journeyIsTemplate) {
+  if (renderMode === 'admin' && journeyIsTemplate) {
     return textResponseStrings
   }
 
-  const useDefaultValue = variant !== 'admin'
+  const useDefaultValue = renderMode !== 'admin'
   const options = { useDefaultValue }
 
   return {

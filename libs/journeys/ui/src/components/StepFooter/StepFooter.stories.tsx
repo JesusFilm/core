@@ -247,19 +247,19 @@ export const Long = {
 type StoryRTL = StoryObj<
   ComponentProps<typeof StepFooter> & {
     journeys: Journey[]
-    variants: Array<'default' | 'admin' | 'embed'>
+    renderModes: Array<'default' | 'admin' | 'embed'>
   }
 >
 
 const TemplateRTL: StoryRTL = {
-  render: ({ journeys, variants }) => {
+  render: ({ journeys, renderModes }) => {
     return (
       <MockedProvider>
         <SnackbarProvider>
           {journeys.map((journey, i) => (
             <JourneyProvider
               key={i}
-              value={{ journey, renderMode: variants[i] }}
+              value={{ journey, renderMode: renderModes[i] }}
             >
               <Stack
                 sx={{
@@ -290,7 +290,7 @@ export const RTL = {
       { ...(WithAdminAvatar.args.journey as Journey), language: rtlLanguage },
       { ...(Long.args.journey as Journey), language: rtlLanguage }
     ],
-    variants: [
+    renderModes: [
       'admin',
       'default',
       'default',

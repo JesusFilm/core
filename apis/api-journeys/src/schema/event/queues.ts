@@ -5,7 +5,7 @@ import type { Queue } from 'bullmq'
 // never see the test injectors below.
 
 // Queue for visitor interaction emails
-let emailQueue: Queue | null
+let emailQueue: Queue | null = null
 try {
   // Avoid requiring Redis in tests
   if (process.env.NODE_ENV !== 'test') {
@@ -17,7 +17,7 @@ try {
 }
 
 // Queue for Google Sheets sync
-let googleSheetsSyncQueue: Queue | null
+let googleSheetsSyncQueue: Queue | null = null
 try {
   // Avoid requiring Redis in tests
   if (process.env.NODE_ENV !== 'test') {
@@ -39,12 +39,14 @@ export function getGoogleSheetsSyncQueue(): Queue | null {
 
 // Test helper to inject a mock queue
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export function __setEmailQueueForTests(mockQueue: any): void {
+export function __setEmailQueueForTests(mockQueue: Queue | null): void {
   emailQueue = mockQueue
 }
 
 // Test helper to inject a mock Google Sheets sync queue
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export function __setGoogleSheetsSyncQueueForTests(mockQueue: any): void {
+export function __setGoogleSheetsSyncQueueForTests(
+  mockQueue: Queue | null
+): void {
   googleSheetsSyncQueue = mockQueue
 }

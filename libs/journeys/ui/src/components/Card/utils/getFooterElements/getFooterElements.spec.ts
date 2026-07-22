@@ -53,7 +53,7 @@ describe('getFooterElements', () => {
   })
 
   describe('hasHostAvatar', () => {
-    it('should return true is render mode is admin', () => {
+    it('should return true if render mode is admin', () => {
       expect(
         hasHostAvatar({
           renderMode: 'admin'

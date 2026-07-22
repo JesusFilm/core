@@ -9,6 +9,7 @@ import X2 from '@core/shared/ui/icons/X2'
 import { JourneyMenuButtonIcon } from '../../../../__generated__/globalTypes'
 import { useEditor } from '../../../libs/EditorProvider'
 import { useJourney } from '../../../libs/JourneyProvider'
+import type { JourneyProviderContext } from '../../../libs/JourneyProvider/JourneyProvider'
 import { getMenuIcon } from '../utils/getMenuIcon'
 
 export function StepHeaderMenu(): ReactElement {
@@ -55,7 +56,7 @@ export function StepHeaderMenu(): ReactElement {
   const getIconTestId = (
     Icon: typeof SvgIcon | null | undefined,
     menuButtonIcon: JourneyMenuButtonIcon | null | undefined,
-    variant: string | undefined
+    renderMode: JourneyProviderContext['renderMode']
   ): string | undefined => {
     // Check for specific icon components first
     if (Icon === X2) return 'X2Icon'
@@ -72,8 +73,8 @@ export function StepHeaderMenu(): ReactElement {
         break
     }
 
-    // Special case for admin variant with null menu button icon
-    if (variant === 'admin' && menuButtonIcon === null) {
+    // Special case for admin render mode with null menu button icon
+    if (renderMode === 'admin' && menuButtonIcon === null) {
       return 'Menu1Icon'
     }
 
