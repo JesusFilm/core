@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { type MockedFunction } from 'vitest'
 
-import { useNavigationState } from '.'
+import { useRouteChangeState } from '.'
 
 vi.mock('next/router', () => ({
   __esModule: true,
@@ -11,7 +11,7 @@ vi.mock('next/router', () => ({
 
 const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
-describe('useNavigationState', () => {
+describe('useRouteChangeState', () => {
   beforeEach(() => {
     mockUseRouter.mockReturnValue({
       events: {
@@ -23,7 +23,7 @@ describe('useNavigationState', () => {
   })
 
   it('should return false by default', () => {
-    const { result } = renderHook(() => useNavigationState())
+    const { result } = renderHook(() => useRouteChangeState())
     expect(result.current).toBe(false)
   })
 
@@ -39,7 +39,7 @@ describe('useNavigationState', () => {
       }
     } as unknown as NextRouter)
 
-    const { result } = renderHook(() => useNavigationState())
+    const { result } = renderHook(() => useRouteChangeState())
     expect(result.current).toBe(true)
   })
 
@@ -55,7 +55,7 @@ describe('useNavigationState', () => {
       }
     } as unknown as NextRouter)
 
-    const { result } = renderHook(() => useNavigationState())
+    const { result } = renderHook(() => useRouteChangeState())
     expect(result.current).toBe(false)
   })
 
@@ -71,7 +71,7 @@ describe('useNavigationState', () => {
       }
     } as unknown as NextRouter)
 
-    const { result } = renderHook(() => useNavigationState())
+    const { result } = renderHook(() => useRouteChangeState())
     expect(result.current).toBe(false)
   })
 
@@ -86,7 +86,7 @@ describe('useNavigationState', () => {
       }
     } as unknown as NextRouter)
 
-    const { unmount } = renderHook(() => useNavigationState())
+    const { unmount } = renderHook(() => useRouteChangeState())
     unmount()
 
     expect(onEvent).toHaveBeenCalledTimes(3)

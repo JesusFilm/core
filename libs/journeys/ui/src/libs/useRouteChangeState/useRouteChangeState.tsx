@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
-export function useNavigationState(): boolean {
+export function useRouteChangeState(): boolean {
   const router = useRouter()
   const [isNavigating, setIsNavigating] = useState(false)
 
