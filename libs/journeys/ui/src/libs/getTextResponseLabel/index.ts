@@ -1,1 +1,1 @@
-export { getTextResponseLabel } from './getTextResponseLabel'
+export { getTextResponseLabel } from '../block/getTextResponseLabel'

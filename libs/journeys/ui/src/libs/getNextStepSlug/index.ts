@@ -1,1 +1,1 @@
-export { getNextStepSlug } from './getNextStepSlug'
+export { getNextStepSlug } from '../action/getNextStepSlug'

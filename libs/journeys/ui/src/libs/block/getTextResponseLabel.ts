@@ -1,5 +1,5 @@
-import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../libs/block/__generated__/BlockFields'
-import { TreeBlock } from '../block'
+import { BlockFields_TextResponseBlock as TextResponseBlock } from './__generated__/BlockFields'
+import type { TreeBlock } from './TreeBlock'
 
 /**
  * Retrieves the label from a TextResponseBlock if the label is not empty, otherwise returns null.

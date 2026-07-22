@@ -1,1 +1,1 @@
-export { getGoalDetails } from './getGoalDetails'
+export { getGoalDetails } from '../block/getGoalDetails'

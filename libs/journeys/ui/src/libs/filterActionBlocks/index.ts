@@ -1,1 +1,1 @@
-export { filterActionBlocks } from './filterActionBlocks'
+export { filterActionBlocks } from '../block/filterActionBlocks'

@@ -1,1 +1,1 @@
-export { searchBlocks } from './searchBlocks'
+export { searchBlocks } from '../block/searchBlocks'

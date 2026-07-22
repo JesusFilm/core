@@ -1,1 +1,1 @@
-export { isActionBlock, type ActionBlock } from './isActionBlock'
+export { isActionBlock, type ActionBlock } from '../block/isActionBlock'

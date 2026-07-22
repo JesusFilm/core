@@ -1,1 +1,1 @@
-export { getStepTheme } from './getStepTheme'
+export { getStepTheme } from '../block/getStepTheme'

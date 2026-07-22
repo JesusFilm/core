@@ -1,5 +1,6 @@
-import { ActionFields } from '../action/__generated__/ActionFields'
 import { JourneyFields } from '../JourneyProvider/__generated__/JourneyFields'
+
+import { ActionFields } from './__generated__/ActionFields'
 
 export function getNextStepSlug(
   journey?: Pick<JourneyFields, 'slug' | 'blocks' | 'website'>,
