@@ -310,7 +310,7 @@ describe('AiChat', () => {
     })
   })
 
-  describe('dark panel theming (NES-1738 Option B)', () => {
+  describe('dark sheet theming (NES-1738 Option B)', () => {
     // The sheet is shared with the mobile PinnedChatBar (white sheet).
     // `onDark` re-themes only the desktop overlay's panel; the mobile
     // sheet leaves it false and stays light.

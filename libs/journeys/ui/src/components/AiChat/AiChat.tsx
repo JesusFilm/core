@@ -382,6 +382,10 @@ export function AiChat({
     return -1
   }, [messages])
 
+  // Both error actions (cap-hit reset, Retry) share the same dim colour,
+  // lightened on the dark overlay backdrop.
+  const errorActionColor = onDark ? OVERLAY_FG_RETRY : MUTED_FG
+
   const hasMessages = messages.length > 0
   const sheetState: AiChatSheetState = hasMessages ? 'active' : 'idle'
   useEffect(() => {
@@ -483,7 +487,7 @@ export function AiChat({
                     aria-label={t('Start a new conversation')}
                     sx={{
                       fontSize: 12,
-                      color: onDark ? OVERLAY_FG_RETRY : MUTED_FG,
+                      color: errorActionColor,
                       minWidth: 0
                     }}
                   >
@@ -499,7 +503,7 @@ export function AiChat({
                       aria-label={t('Retry')}
                       sx={{
                         fontSize: 12,
-                        color: onDark ? OVERLAY_FG_RETRY : MUTED_FG,
+                        color: errorActionColor,
                         minWidth: 0
                       }}
                     >

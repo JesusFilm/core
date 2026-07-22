@@ -33,7 +33,7 @@ describe('ChatOverlay', () => {
     expect(screen.queryByTestId('ChatOverlay')).not.toBeInTheDocument()
   })
 
-  it('themes the panel for the dark backdrop (onDark)', async () => {
+  it('themes AiChat for the dark backdrop (onDark)', async () => {
     render(<ChatOverlay open onClose={vi.fn()} />)
     expect(await screen.findByTestId('AiChatMock')).toHaveAttribute(
       'data-on-dark',
