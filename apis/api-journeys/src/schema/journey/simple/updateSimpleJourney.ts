@@ -11,9 +11,11 @@ import { env } from '../../../env'
 import { generateBlurhashAndMetadataFromUrl } from '../../../utils/generateBlurhashAndMetadataFromUrl'
 import { fetchFieldsFromYouTube } from '../../block/video/service'
 
-// SSRF guard for AI simple-journey image URLs. Keep in sync with
-// images.remotePatterns in apps/journeys-admin/next.config.js and
-// apps/journeys/next.config.js.
+// SSRF guard for AI simple-journey image URLs. Every host here must also
+// appear in images.remotePatterns in apps/journeys-admin/next.config.js and
+// apps/journeys/next.config.js (those lists carry additional hosts), or the
+// stored image will not render. Semantics differ: this guard also accepts
+// any subdomain of a listed host; remotePatterns match exact hostnames.
 const ALLOWED_IMAGE_HOSTNAMES = [
   'localhost',
   'unsplash.com',
