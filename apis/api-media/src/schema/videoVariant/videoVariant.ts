@@ -21,6 +21,7 @@ import {
   updateParentCollectionLanguages
 } from '../video/lib/updateAvailableLanguages'
 import { VideoSubtitle } from '../video/videoSubtitle'
+import { requestVideoVariantReconciliation } from '../videoVariantUpload/requestVideoVariantReconciliation'
 
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
 import { VideoVariantFilter } from './inputs/videoVariantFilter'
@@ -493,6 +494,7 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoVariantCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
+      const publicationIntent = input.published ?? true
       const hadAnyVariantsForLanguage =
         (await prisma.videoVariant.findFirst({
           where: { languageId: input.languageId },
@@ -506,7 +508,7 @@ builder.mutationFields((t) => ({
           data: {
             ...input,
             muxVideoId: input.muxVideoId ?? undefined,
-            published: input.published ?? true,
+            published: false,
             version: input.version ?? undefined
           }
         })
@@ -524,6 +526,14 @@ builder.mutationFields((t) => ({
         })
         throw error
       }
+      await requestVideoVariantReconciliation({
+        videoVariantId: newVariant.id,
+        videoId: newVariant.videoId,
+        languageId: newVariant.languageId,
+        edition: newVariant.edition,
+        published: publicationIntent,
+        source: 'video-variant-create'
+      })
       // Update video's availableLanguages and cascade to parent collections only for published variants
       if (newVariant.published) {
         await addLanguageToVideo(newVariant.videoId, newVariant.languageId)
@@ -542,25 +552,6 @@ builder.mutationFields((t) => ({
         }
       } catch (error) {
         console.error('Language hasVideos update error:', error)
-      }
-
-      // Handle parent variant creation for child videos
-      try {
-        await handleParentVariantCreation(
-          newVariant.videoId,
-          newVariant.languageId
-        )
-      } catch (error) {
-        console.error('Parent variant creation error:', error)
-        notifyMediaSlackOfOperationFailure({
-          operation: 'Video variant parent creation failed',
-          error,
-          context: {
-            videoId: newVariant.videoId,
-            languageId: newVariant.languageId,
-            variantId: newVariant.id
-          }
-        })
       }
 
       // Save the videoId before the try/catch block
@@ -592,7 +583,12 @@ builder.mutationFields((t) => ({
       // Get the current variant to check if published status is changing
       const currentVariant = await prisma.videoVariant.findUnique({
         where: { id: input.id },
-        select: { published: true, videoId: true, languageId: true }
+        select: {
+          published: true,
+          videoId: true,
+          languageId: true,
+          edition: true
+        }
       })
 
       if (!currentVariant) {
@@ -624,7 +620,10 @@ builder.mutationFields((t) => ({
             videoId: input.videoId ?? undefined,
             edition: input.edition ?? undefined,
             downloadable: input.downloadable ?? undefined,
-            published: input.published ?? undefined,
+            published:
+              input.published === undefined
+                ? undefined
+                : currentVariant.published,
             muxVideoId: input.muxVideoId ?? undefined,
             assetId: input.assetId ?? undefined,
             version: input.version ?? undefined,
@@ -651,71 +650,17 @@ builder.mutationFields((t) => ({
       const wasPublished = currentVariant.published
       const isNowPublished = input.published ?? currentVariant.published
 
-      if (wasPublished !== isNowPublished) {
-        try {
-          if (isNowPublished) {
-            // Variant was unpublished and is now published - create parent variants
-            await handleParentVariantCreation(
-              currentVariant.videoId,
-              currentVariant.languageId
-            )
-          } else {
-            // Variant was published and is now unpublished - cleanup parent variants
-            await handleParentVariantCleanup(
-              currentVariant.videoId,
-              currentVariant.languageId
-            )
-          }
-        } catch (error) {
-          console.error('Parent variant update error:', error)
-          notifyMediaSlackOfOperationFailure({
-            operation: 'Video variant parent update failed',
-            error,
-            context: {
-              variantId: input.id,
-              videoId: currentVariant.videoId,
-              languageId: currentVariant.languageId,
-              published: isNowPublished
-            }
-          })
-        }
-
-        // Update availableLanguages array based on published status change
-        try {
-          if (isNowPublished) {
-            await addLanguageToVideo(
-              currentVariant.videoId,
-              currentVariant.languageId
-            )
-          } else {
-            await removeLanguageFromVideoIfUnused(
-              currentVariant.videoId,
-              currentVariant.languageId
-            )
-          }
-
-          // Cascade update to parent collections
-          await updateParentCollectionLanguages(currentVariant.videoId)
-
-          // Keep videos index (hasAvailableLanguages) in sync
-          try {
-            await updateVideoInAlgolia(currentVariant.videoId)
-          } catch (error) {
-            console.error('Algolia update error:', error)
-          }
-        } catch (error) {
-          console.error('Language management update error:', error)
-          notifyMediaSlackOfOperationFailure({
-            operation: 'Video variant language update failed',
-            error,
-            context: {
-              variantId: input.id,
-              videoId: currentVariant.videoId,
-              languageId: currentVariant.languageId,
-              published: isNowPublished
-            }
-          })
-        }
+      if (wasPublished !== isNowPublished || languageChanged) {
+        await requestVideoVariantReconciliation({
+          videoVariantId: updated.id,
+          videoId: input.videoId ?? currentVariant.videoId,
+          languageId: nextLanguageId,
+          edition: input.edition ?? currentVariant.edition,
+          published: isNowPublished,
+          source: languageChanged
+            ? 'video-variant-language-change'
+            : 'video-variant-publication-change'
+        })
       }
 
       if (languageChanged && !hadAnyVariantsForNextLanguage) {
@@ -858,6 +803,15 @@ builder.mutationFields((t) => ({
           })
         }
       }
+
+      await requestVideoVariantReconciliation({
+        videoVariantId: variant.id,
+        videoId,
+        languageId,
+        edition: variant.edition,
+        published: false,
+        source: 'video-variant-delete'
+      })
 
       // Delete the video variant
       let deleted: PrismaVideoVariant

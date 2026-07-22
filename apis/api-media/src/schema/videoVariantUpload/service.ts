@@ -20,6 +20,8 @@ import {
   getVideo
 } from '../mux/video/service'
 
+import { requestVideoVariantReconciliation } from './requestVideoVariantReconciliation'
+
 const FIVE_DAYS = 5 * 24 * 60 * 60
 
 function getErrorMessage(error: unknown): string {
@@ -186,7 +188,7 @@ export async function createOrUpdateVideoVariant({
       duration: metadata.duration,
       lengthInMilliseconds: metadata.durationMs,
       muxVideoId,
-      published,
+      published: false,
       downloadable: true,
       version
     }
@@ -218,6 +220,15 @@ export async function createOrUpdateVideoVariant({
         }
       })
     }
+
+    await requestVideoVariantReconciliation({
+      videoVariantId: variant.id,
+      videoId,
+      languageId,
+      edition,
+      published,
+      source: 'process-video-upload'
+    })
 
     return variant
   } catch (error) {
