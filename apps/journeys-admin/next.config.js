@@ -36,6 +36,8 @@ const nextConfig = {
     }
   })(),
   images: {
+    // Keep in sync with ALLOWED_IMAGE_HOSTNAMES in
+    // apis/api-journeys/src/schema/journey/simple/updateSimpleJourney.ts
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
       { protocol: 'https', hostname: 'unsplash.com' },
