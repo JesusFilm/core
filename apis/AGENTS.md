@@ -69,6 +69,8 @@ This creates a SQL migration file with a timestamped name and runs it against yo
 
 > **Exception:** The `analytics` domain does not use migrations. Its database is managed externally. Use `nx prisma-introspect prisma-analytics` to pull the current schema instead of running `prisma-migrate`.
 
+CI enforces this: the `prisma-migration-check` job fails any PR that edits a `schema.prisma` without adding a migration in the same domain. If the edit genuinely needs no migration (comments, formatting), add the `skip-migration-check` label to the PR and re-run the failed job.
+
 ##### GraphQL Steps (when the change affects GraphQL)
 
 **Step 4: Update GraphQL type definitions**
@@ -172,7 +174,7 @@ See `docs/solutions/build-errors/apollo-codegen-deprecated-directive-input-field
 
 #### Common Mistakes to Avoid
 
-- **Do NOT edit `schema.graphql` directly** in any API — it is auto-generated. Edit the Pothos schema code instead.
+- **Do NOT edit `schema.graphql` directly** in any API — it is auto-generated. Edit the Pothos schema code instead. The `graphql-schema-check` CI job regenerates every schema and fails on any diff, so stale or hand-edited schema files fail CI rather than merging silently.
 - **Do NOT forget `generate-graphql api-gateway`** after updating any subgraph schema — the gateway supergraph must be recomposed.
 - **Do NOT forget `nx run-many -t codegen`** — frontend TypeScript types will be stale until codegen runs.
 - **Do NOT skip generating for all APIs that share a prisma domain** — when multiple APIs share one Prisma schema, regenerate GraphQL for each of them.
