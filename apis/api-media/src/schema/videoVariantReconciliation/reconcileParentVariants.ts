@@ -3,6 +3,7 @@ import { prisma } from '@core/prisma/media/client'
 import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
 
+import { reconcileGeneratedParentVariant } from './reconcileReasonSpecificVariant'
 import {
   ProcessingStage,
   ProcessingStages,
@@ -11,7 +12,6 @@ import {
   failedStage,
   generatedParentStages
 } from './reconciliationStages'
-import { reconcileGeneratedParentVariant } from './reconcileReasonSpecificVariant'
 import { videoVariantContainsMedia } from './videoVariantContainsMedia'
 
 type ChildVariant = {

@@ -9,7 +9,6 @@ import {
 
 import { reconcileParentVariants } from './reconcileParentVariants'
 import { reconcileReasonSpecificVariant } from './reconcileReasonSpecificVariant'
-import type { VideoVariantReconciliationReason } from './requestVideoVariantReconciliation'
 import {
   ProcessingStage,
   ProcessingStages,
@@ -20,6 +19,7 @@ import {
   persistReconciliationStatus,
   previousAttempts
 } from './reconciliationStages'
+import type { VideoVariantReconciliationReason } from './requestVideoVariantReconciliation'
 
 type ReconciliationRecord = {
   reason: VideoVariantReconciliationReason
