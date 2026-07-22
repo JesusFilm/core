@@ -2,17 +2,19 @@ import { format } from 'date-fns'
 
 import { prisma } from '@core/prisma/journeys/client'
 
-import { getTeamGoogleAccessToken } from '../../../lib/google/googleAuth'
+import { getTeamGoogleAccessToken } from '../../lib/google/googleAuth'
 import {
   columnIndexToA1,
   ensureSheet,
   readValues,
   updateRangeValues,
   writeValues
-} from '../../../lib/google/sheets'
+} from '../../lib/google/sheets'
+import { computeConnectedBlockIds } from '../journeyVisitor/export/connectivity'
+import { sanitizeGoogleSheetsCell } from '../journeyVisitor/export/csv'
+import { buildJourneyExportColumns, getCardHeading } from '../journeyVisitor/export/headings'
+import { type SimpleBlock, buildRenderTree, computeOrderIndex } from '../journeyVisitor/export/order'
 
-import { computeConnectedBlockIds } from './connectivity'
-import { sanitizeGoogleSheetsCell } from './csv'
 import { mergeGoogleSheetsHeader } from './googleSheetsHeader'
 import {
   buildNormalizedBlockHeadersFromEvents,
@@ -20,8 +22,6 @@ import {
   getDefaultBaseColumnLabelResolver,
   getDefaultBaseColumns
 } from './googleSheetsSyncShared'
-import { buildJourneyExportColumns, getCardHeading } from './headings'
-import { type SimpleBlock, buildRenderTree, computeOrderIndex } from './order'
 
 // Live Google Sheets sync: append/update row per event when a sync config exists
 //
