@@ -17,7 +17,7 @@ import { ShareDialog } from './ShareDialog'
 
 export function ShareButton(): ReactElement {
   const plausible = usePlausible<JourneyPlausibleEvents>()
-  const { journey, variant } = useJourney()
+  const { journey, renderMode } = useJourney()
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
   const { t } = useTranslation('libs-journeys-ui')
@@ -29,7 +29,7 @@ export function ShareButton(): ReactElement {
       : undefined
 
   async function handleShare(): Promise<void> {
-    if (variant === 'admin' || url == null) return
+    if (renderMode === 'admin' || url == null) return
 
     if (journey != null) {
       const input = {

@@ -27,7 +27,7 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useNavigationState } from '@core/journeys/ui/useNavigationState'
+import { useRouteChangeState } from '@core/journeys/ui/useRouteChangeState'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 
@@ -100,7 +100,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
   } = useEditor()
   const { editorAnalytics } = useFlags()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const isNavigating = useNavigationState()
+  const isNavigating = useRouteChangeState()
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [dialogOpen, setDialogOpen] = useState<boolean | null>(null)

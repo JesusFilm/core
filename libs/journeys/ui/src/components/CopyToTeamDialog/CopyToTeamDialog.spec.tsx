@@ -55,7 +55,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -136,7 +136,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -220,7 +220,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -277,7 +277,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -315,7 +315,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -363,7 +363,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -391,7 +391,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -420,7 +420,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -449,7 +449,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -478,7 +478,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -507,7 +507,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -538,7 +538,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -617,7 +617,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -754,7 +754,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -855,7 +855,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>

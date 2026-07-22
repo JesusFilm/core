@@ -19,7 +19,7 @@ import {
 import { IdType } from '../../../__generated__/globalTypes'
 import i18nConfig from '../../../next-i18next.config'
 import { JourneyPageWrapper } from '../../../src/components/JourneyPageWrapper'
-import { WebView } from '../../../src/components/WebView'
+import { WebsiteView } from '../../../src/components/WebsiteView'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { getFlags } from '../../../src/libs/getFlags'
 import { isJourneyNotFoundError } from '../../../src/libs/isJourneyNotFoundError'
@@ -95,7 +95,7 @@ function StepPage({ journey, locale, rtl }: StepPageProps): ReactElement {
       />
       <JourneyPageWrapper journey={journey} rtl={rtl} locale={locale}>
         {stepBlock != null && (
-          <WebView
+          <WebsiteView
             blocks={blocks}
             stepBlock={stepBlock as TreeBlock<StepBlock>}
           />

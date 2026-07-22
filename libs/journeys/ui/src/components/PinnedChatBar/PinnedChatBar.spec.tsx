@@ -9,7 +9,7 @@ import {
 import { PinnedChatBar } from './PinnedChatBar'
 
 const { mockUseJourney } = vi.hoisted(() => ({
-  mockUseJourney: vi.fn(() => ({ variant: 'default' }))
+  mockUseJourney: vi.fn(() => ({ renderMode: 'default' }))
 }))
 
 vi.mock('../../libs/JourneyProvider', () => ({
@@ -52,18 +52,18 @@ function renderBar() {
 
 describe('PinnedChatBar', () => {
   beforeEach(() => {
-    mockUseJourney.mockReturnValue({ variant: 'default' })
+    mockUseJourney.mockReturnValue({ renderMode: 'default' })
     window.sessionStorage.clear()
   })
 
-  it('renders nothing in admin variant', () => {
-    mockUseJourney.mockReturnValue({ variant: 'admin' })
+  it('renders nothing in admin render mode', () => {
+    mockUseJourney.mockReturnValue({ renderMode: 'admin' })
     renderBar()
     expect(screen.queryByTestId('PinnedChatBar')).not.toBeInTheDocument()
   })
 
-  it('renders nothing in embed variant', () => {
-    mockUseJourney.mockReturnValue({ variant: 'embed' })
+  it('renders nothing in embed render mode', () => {
+    mockUseJourney.mockReturnValue({ renderMode: 'embed' })
     renderBar()
     expect(screen.queryByTestId('PinnedChatBar')).not.toBeInTheDocument()
   })

@@ -5,15 +5,15 @@ import { SnackbarProvider } from 'notistack'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '@core/journeys/ui/Button'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { MultiselectQuestion } from '@core/journeys/ui/MultiselectQuestion'
+import { Multiselect } from '@core/journeys/ui/Multiselect'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
 import { SignUp } from '@core/journeys/ui/SignUp'
 import { Typography } from '@core/journeys/ui/Typography'
 
 import { ButtonFields } from '../../../../../../../__generated__/ButtonFields'
 import { TypographyVariant } from '../../../../../../../__generated__/globalTypes'
+import { MultiselectFields } from '../../../../../../../__generated__/MultiselectFields'
 import { MultiselectOptionFields } from '../../../../../../../__generated__/MultiselectOptionFields'
-import { MultiselectQuestionFields } from '../../../../../../../__generated__/MultiselectQuestionFields'
 import { RadioOptionFields } from '../../../../../../../__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../../../../../../../__generated__/RadioQuestionFields'
 import { SignUpFields } from '../../../../../../../__generated__/SignUpFields'
@@ -330,27 +330,27 @@ describe('InlineEditWrapper', () => {
   describe('Multiselect', () => {
     const option: TreeBlock<MultiselectOptionFields> = {
       __typename: 'MultiselectOptionBlock',
-      parentBlockId: 'multiselectQuestion.id',
+      parentBlockId: 'multiselect.id',
       parentOrder: 0,
       id: 'multiselectOption.id',
       label: 'option',
       children: []
     }
 
-    const block: TreeBlock<MultiselectQuestionFields> = {
+    const block: TreeBlock<MultiselectFields> = {
       __typename: 'MultiselectBlock',
       parentBlockId: 'card.id',
       parentOrder: 0,
-      id: 'multiselectQuestion.id',
+      id: 'multiselect.id',
       min: null,
       max: null,
       children: [option]
     }
 
-    const multiselectQuestion = (
+    const multiselect = (
       <SelectableWrapper block={block}>
         <InlineEditWrapper block={block}>
-          <MultiselectQuestion
+          <Multiselect
             {...block}
             wrappers={{
               Wrapper: SelectableWrapper,
@@ -374,7 +374,7 @@ describe('InlineEditWrapper', () => {
               >
                 <SelectableWrapper block={block}>
                   <InlineEditWrapper block={block}>
-                    {multiselectQuestion}
+                    {multiselect}
                   </InlineEditWrapper>
                 </SelectableWrapper>
               </EditorProvider>
@@ -404,7 +404,7 @@ describe('InlineEditWrapper', () => {
                   selectedBlockId: step(block).children[0].id
                 }}
               >
-                {multiselectQuestion}
+                {multiselect}
               </EditorProvider>
             </MuxVideoUploadProvider>
           </SnackbarProvider>
@@ -433,7 +433,7 @@ describe('InlineEditWrapper', () => {
                   selectedBlock: step(block).children[0]
                 }}
               >
-                {multiselectQuestion}
+                {multiselect}
               </EditorProvider>
             </MuxVideoUploadProvider>
           </SnackbarProvider>

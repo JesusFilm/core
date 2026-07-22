@@ -219,7 +219,7 @@ describe('TemplateSettingsDialog', () => {
                 creatorDescription: '',
                 strategySlug: ''
               },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <TemplateSettingsDialog open onClose={onClose} />
@@ -386,7 +386,7 @@ describe('TemplateSettingsDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <TemplateSettingsDialog open onClose={onClose} />
@@ -464,7 +464,7 @@ describe('TemplateSettingsDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <TemplateSettingsDialog open onClose={onClose} />
@@ -491,7 +491,7 @@ describe('TemplateSettingsDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <TemplateSettingsDialog open onClose={onClose} />
@@ -558,7 +558,7 @@ describe('TemplateSettingsDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <TemplateSettingsDialog open onClose={onClose} />

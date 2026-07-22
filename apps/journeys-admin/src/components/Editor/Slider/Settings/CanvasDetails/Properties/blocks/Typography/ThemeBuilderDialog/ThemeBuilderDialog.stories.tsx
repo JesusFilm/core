@@ -34,7 +34,7 @@ const ThemeBuilderDialogComponent = (): ReactElement => {
           },
           journeyTheme: null
         } as unknown as Journey,
-        variant: 'admin'
+        renderMode: 'admin'
       }}
     >
       <ThemeBuilderDialog open={open} onClose={() => setOpen(false)} />
@@ -63,7 +63,7 @@ const WithExistingThemeComponent = (): ReactElement => {
             labelFont: FontFamily.Nunito
           }
         } as unknown as Journey,
-        variant: 'admin'
+        renderMode: 'admin'
       }}
     >
       <ThemeBuilderDialog open={open} onClose={() => setOpen(false)} />

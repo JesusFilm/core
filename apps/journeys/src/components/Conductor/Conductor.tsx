@@ -57,7 +57,7 @@ interface ConductorProps {
 export function Conductor({ blocks }: ConductorProps): ReactElement {
   const { setTreeBlocks, blockHistory, showHeaderFooter } = useBlocks()
   const theme = useTheme()
-  const { journey, variant } = useJourney()
+  const { journey, renderMode } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
   const flags = useFlags()
   const apologistChatEnabled = flags.apologistChat === true
@@ -84,7 +84,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   const showPinnedChat =
     apologistChatEnabled &&
-    hasAiChatButton({ journey, variant, card: activeCard })
+    hasAiChatButton({ journey, renderMode, card: activeCard })
 
   const { setOpen, shouldAutoOpen, markAutoOpened } = useChatOverlay()
 
@@ -113,7 +113,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   useEffect(() => {
     if (!apologistChatEnabled) return
     if (activeCard == null || toAiChatSettings(activeCard).collapseChat) return
-    if (!hasAiChatButton({ journey, variant, card: activeCard })) return
+    if (!hasAiChatButton({ journey, renderMode, card: activeCard })) return
     if (!shouldAutoOpen(activeCard.id)) return
     markAutoOpened(activeCard.id)
     setOpen(true)
@@ -122,7 +122,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }, [
     activeCard?.id,
     apologistChatEnabled,
-    variant,
+    renderMode,
     setOpen,
     shouldAutoOpen,
     markAutoOpened
@@ -137,7 +137,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   )
 
   useEffect(() => {
-    if ((variant === 'default' || variant === 'embed') && journey != null) {
+    if (
+      (renderMode === 'default' || renderMode === 'embed') &&
+      journey != null
+    ) {
       const id = uuidv4()
       void journeyViewEventCreate({
         variables: {
@@ -192,17 +195,17 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const mobileNotchStyling: SxProps = {
     width: {
       xs:
-        variant === 'default' || variant === 'embed'
+        renderMode === 'default' || renderMode === 'embed'
           ? 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))'
           : '100%',
       lg: 'auto'
     },
     left:
-      variant === 'default' || variant === 'embed'
+      renderMode === 'default' || renderMode === 'embed'
         ? 'env(safe-area-inset-left)'
         : undefined,
     right:
-      variant === 'default' || variant === 'embed'
+      renderMode === 'default' || renderMode === 'embed'
         ? 'env(safe-area-inset-right)'
         : undefined
   }

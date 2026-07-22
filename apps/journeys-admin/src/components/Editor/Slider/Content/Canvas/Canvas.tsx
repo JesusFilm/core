@@ -364,7 +364,7 @@ export function Canvas(): ReactElement {
                                 ButtonWrapper: InlineEditWrapper,
                                 RadioQuestionWrapper: InlineEditWrapper,
                                 RadioOptionWrapper: InlineEditWrapper,
-                                MultiselectQuestionWrapper: InlineEditWrapper,
+                                MultiselectWrapper: InlineEditWrapper,
                                 MultiselectOptionWrapper: InlineEditWrapper,
                                 TextResponseWrapper: InlineEditWrapper,
                                 SignUpWrapper: InlineEditWrapper,

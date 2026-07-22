@@ -87,7 +87,7 @@ describe('RadioQuestionEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider>
@@ -163,7 +163,7 @@ describe('RadioQuestionEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider>
@@ -249,7 +249,7 @@ describe('RadioQuestionEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider>
@@ -292,7 +292,7 @@ describe('RadioQuestionEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider>

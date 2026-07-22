@@ -78,7 +78,7 @@ describe('TemplateView', () => {
         <JourneyProvider
           value={{
             journey: journeyWithStrategySlug,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateView authUser={{} as unknown as User} />
@@ -100,7 +100,7 @@ describe('TemplateView', () => {
         <JourneyProvider
           value={{
             journey: journeyWithoutStrategySlug,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateView authUser={{} as unknown as User} />
@@ -122,7 +122,7 @@ describe('TemplateView', () => {
         <JourneyProvider
           value={{
             journey: journeyWithoutStrategySlug,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateView authUser={{} as unknown as User} />
@@ -161,7 +161,7 @@ describe('TemplateView', () => {
         <JourneyProvider
           value={{
             journey: journeyWithCreatorDetails,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateView authUser={{} as unknown as User} />
@@ -209,7 +209,7 @@ describe('TemplateView', () => {
         <JourneyProvider
           value={{
             journey: journeyWithoutCreatorDescription,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateView authUser={{} as unknown as User} />
@@ -269,7 +269,7 @@ describe('TemplateView', () => {
         <JourneyProvider
           value={{
             journey: journeyWithTags,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateView authUser={{} as unknown as User} />
@@ -305,7 +305,7 @@ describe('TemplateView', () => {
         <JourneyProvider
           value={{
             journey: journeyWithTags,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateView authUser={{} as unknown as User} />
@@ -414,7 +414,7 @@ describe('TemplateView', () => {
           mocks={[buildRelatedJourneysMock([relatedJourneyBase, qaJourney])]}
         >
           <JourneyProvider
-            value={{ journey: journeyWithTags, variant: 'admin' }}
+            value={{ journey: journeyWithTags, renderMode: 'admin' }}
           >
             <TemplateView authUser={{} as unknown as User} />
           </JourneyProvider>
@@ -435,7 +435,7 @@ describe('TemplateView', () => {
           mocks={[buildRelatedJourneysMock([relatedJourneyBase])]}
         >
           <JourneyProvider
-            value={{ journey: journeyWithTags, variant: 'admin' }}
+            value={{ journey: journeyWithTags, renderMode: 'admin' }}
           >
             <TemplateView authUser={{} as unknown as User} />
           </JourneyProvider>

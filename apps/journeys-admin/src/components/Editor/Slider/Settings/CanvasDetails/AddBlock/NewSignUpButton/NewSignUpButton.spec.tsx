@@ -122,7 +122,7 @@ describe('NewSignUpButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>
@@ -212,7 +212,7 @@ describe('NewSignUpButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>
@@ -317,7 +317,7 @@ describe('NewSignUpButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>
@@ -414,7 +414,7 @@ describe('NewSignUpButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>
@@ -474,7 +474,7 @@ describe('NewSignUpButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>

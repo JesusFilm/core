@@ -49,12 +49,12 @@ export function Step({
     StepViewEventCreateVariables
   >(STEP_VIEW_EVENT_CREATE)
   const plausible = usePlausible<JourneyPlausibleEvents>()
-  const { variant, journey } = useJourney()
+  const { renderMode, journey } = useJourney()
   const { treeBlocks } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
 
   const activeJourneyStep =
-    (variant === 'default' || variant === 'embed') &&
+    (renderMode === 'default' || renderMode === 'embed') &&
     isActiveBlockOrDescendant(blockId)
 
   const stepHeading = getStepHeading(blockId, children, treeBlocks, t)
@@ -126,7 +126,7 @@ export function Step({
   }, [
     blockId,
     stepViewEventCreate,
-    variant,
+    renderMode,
     heading,
     activeJourneyStep,
     wrappers,

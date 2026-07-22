@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { appendEventToGoogleSheets, validateBlockEvent } from '../utils'
+import { appendEventToGoogleSheets, validateBlockEvent } from '../eventService'
 
 import { RadioQuestionSubmissionEventCreateInput } from './inputs/radioQuestionSubmissionEventCreateInput'
 import { RadioQuestionSubmissionEventRef } from './radioQuestionSubmissionEvent'

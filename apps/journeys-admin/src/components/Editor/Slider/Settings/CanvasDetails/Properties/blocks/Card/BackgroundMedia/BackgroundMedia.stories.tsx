@@ -237,7 +237,7 @@ const Template: StoryObj<typeof BackgroundMedia> = {
     >
       <InstantSearchTestWrapper>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <EditorProvider
               initialState={{
                 ...args

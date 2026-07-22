@@ -15,7 +15,7 @@ describe('TextResponseFields', () => {
   it('should show text response properties', () => {
     const { getByRole, getByText, getByTestId } = render(
       <MockedProvider>
-        <JourneyProvider value={{ variant: 'admin' }}>
+        <JourneyProvider value={{ renderMode: 'admin' }}>
           <EditorProvider>
             <TextResponseFields />
           </EditorProvider>

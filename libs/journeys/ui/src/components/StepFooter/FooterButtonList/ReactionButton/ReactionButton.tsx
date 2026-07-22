@@ -19,7 +19,7 @@ interface ReactionButtonProps {
 
 export function ReactionButton({ variant }: ReactionButtonProps): ReactElement {
   const plausible = usePlausible<JourneyPlausibleEvents>()
-  const { variant: journeyVariant, journey } = useJourney()
+  const { renderMode: journeyVariant, journey } = useJourney()
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
   const [clicked, setClicked] = useState(false)

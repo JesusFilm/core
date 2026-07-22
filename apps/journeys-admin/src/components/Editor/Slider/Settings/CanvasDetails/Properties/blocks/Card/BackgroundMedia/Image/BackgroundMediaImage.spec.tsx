@@ -271,7 +271,7 @@ describe('BackgroundMediaImage', () => {
           coverBlockRestoreMock
         ]}
       >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <SnackbarProvider>
             <CommandProvider>
               <BackgroundMediaImage cardBlock={card} />
@@ -393,7 +393,7 @@ describe('BackgroundMediaImage', () => {
             coverImageBlockUpdateMock
           ]}
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <SnackbarProvider>
               <CommandProvider>
                 <BackgroundMediaImage cardBlock={existingCoverBlock} />
@@ -457,7 +457,7 @@ describe('BackgroundMediaImage', () => {
             coverBlockDeleteMock
           ]}
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <SnackbarProvider>
               <CommandProvider>
                 <BackgroundMediaImage cardBlock={existingCoverBlock} />

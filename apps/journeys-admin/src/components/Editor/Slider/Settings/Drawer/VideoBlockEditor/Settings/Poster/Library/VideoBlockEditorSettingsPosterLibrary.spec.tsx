@@ -308,7 +308,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           posterImageBlockRestoreMock
         ]}
       >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <SnackbarProvider>
             <CommandProvider>
               <VideoBlockEditorSettingsPosterLibrary
@@ -421,7 +421,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
             posterImageBlockUpdateMock
           ]}
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <SnackbarProvider>
               <CommandProvider>
                 <VideoBlockEditorSettingsPosterLibrary
@@ -482,7 +482,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
             posterImageBlockDeleteMock
           ]}
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <SnackbarProvider>
               <CommandProvider>
                 <VideoBlockEditorSettingsPosterLibrary

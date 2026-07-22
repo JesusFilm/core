@@ -46,7 +46,7 @@ describe('NavigateToBlockAction', () => {
         <JourneyProvider
           value={{
             journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps }}>
@@ -65,7 +65,7 @@ describe('NavigateToBlockAction', () => {
         <JourneyProvider
           value={{
             journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider
@@ -97,7 +97,7 @@ describe('NavigateToBlockAction', () => {
         <JourneyProvider
           value={{
             journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider

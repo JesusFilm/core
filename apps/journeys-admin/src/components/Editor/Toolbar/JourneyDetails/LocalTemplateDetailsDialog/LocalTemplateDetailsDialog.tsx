@@ -75,7 +75,7 @@ export function LocalTemplateDetailsDialog({
       <JourneyProvider
         value={{
           journey: journeyProp as unknown as JourneyContext,
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <LocalTemplateDetailsDialogBody open={open} onClose={onClose} />

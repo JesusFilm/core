@@ -68,7 +68,7 @@ export function NavigationButton({
   >(STEP_PREVIOUS_EVENT_CREATE)
   const { t } = useTranslation('apps-journeys')
   const plausible = usePlausible<JourneyPlausibleEvents>()
-  const { variant: journeyVariant, journey } = useJourney()
+  const { renderMode: journeyVariant, journey } = useJourney()
   const {
     setShowNavigation,
     getNextBlock,

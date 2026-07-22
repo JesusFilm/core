@@ -48,7 +48,7 @@ export function HotkeyNavigation({ rtl }: HotkeyNavigationProps): ReactElement {
     StepPreviousEventCreateVariables
   >(STEP_PREVIOUS_EVENT_CREATE)
   const plausible = usePlausible<JourneyPlausibleEvents>()
-  const { variant, journey } = useJourney()
+  const { renderMode, journey } = useJourney()
   const {
     getNextBlock,
     treeBlocks,
@@ -63,7 +63,7 @@ export function HotkeyNavigation({ rtl }: HotkeyNavigationProps): ReactElement {
 
   const handleNavigation = useCallback(
     (direction: 'next' | 'previous'): void => {
-      if (variant === 'admin') return
+      if (renderMode === 'admin') return
 
       // should always be called with nextActiveBlock()
       // should match with other handleNextNavigationEventCreate functions
@@ -222,7 +222,7 @@ export function HotkeyNavigation({ rtl }: HotkeyNavigationProps): ReactElement {
       activeBlock,
       nextActiveBlock,
       previousActiveBlock,
-      variant,
+      renderMode,
       stepNextEventCreate,
       stepPreviousEventCreate,
       treeBlocks,
