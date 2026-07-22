@@ -493,6 +493,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   countryLanguageCreate(input: CountryLanguageCreateInput!) : CountryLanguage! @join__field(graph: API_LANGUAGES) 
   countryLanguageUpdate(input: CountryLanguageUpdateInput!) : CountryLanguage! @join__field(graph: API_LANGUAGES) 
   countryLanguageDelete(id: ID!) : CountryLanguage! @join__field(graph: API_LANGUAGES) 
+  """
+  Runs the WESS QueryRunner imports (languages, then countries, then country-languages) in the FK-safe order. Runs synchronously and can take several minutes; requires WESS_API_TOKEN in the server environment.
+  """
+  wessImport: WessImportResult! @join__field(graph: API_LANGUAGES) 
   createCloudflareUploadByFile(input: ImageInput, journeyId: ID) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareUploadByUrl(url: String!, input: ImageInput, journeyId: ID) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput, journeyId: ID) : CloudflareImage! @join__field(graph: API_MEDIA) 
@@ -2421,6 +2425,17 @@ type LanguageName @join__type(graph: API_LANGUAGES)  {
   languageId: String!
   primary: Boolean!
   language: Language!
+}
+
+"""
+Summary of a completed WESS import run.
+"""
+type WessImportResult @join__type(graph: API_LANGUAGES)  {
+  success: Boolean!
+  languagesImported: Int!
+  countriesImported: Int!
+  countryLanguagesImported: Int!
+  message: String!
 }
 
 type ArclightApiKey @join__type(graph: API_MEDIA, key: "key")  {

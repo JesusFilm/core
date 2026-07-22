@@ -170,6 +170,11 @@ type Mutation {
   countryLanguageCreate(input: CountryLanguageCreateInput!): CountryLanguage!
   countryLanguageUpdate(input: CountryLanguageUpdateInput!): CountryLanguage!
   countryLanguageDelete(id: ID!): CountryLanguage!
+
+  """
+  Runs the WESS QueryRunner imports (languages, then countries, then country-languages) in the FK-safe order. Runs synchronously and can take several minutes; requires WESS_API_TOKEN in the server environment.
+  """
+  wessImport: WessImportResult!
 }
 
 input MutationAudioPreviewCreateInput {
@@ -203,4 +208,13 @@ type Query {
 
 interface User {
   id: ID!
+}
+
+"""Summary of a completed WESS import run."""
+type WessImportResult {
+  success: Boolean!
+  languagesImported: Int!
+  countriesImported: Int!
+  countryLanguagesImported: Int!
+  message: String!
 }
