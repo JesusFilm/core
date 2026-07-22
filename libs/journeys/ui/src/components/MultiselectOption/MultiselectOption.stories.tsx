@@ -9,7 +9,7 @@ import { MultiselectOption } from '.'
 const Demo: Meta<typeof MultiselectOption> = {
   ...simpleComponentConfig,
   component: MultiselectOption,
-  title: 'Journeys-Ui/MultiselectQuestion/MultiselectOption'
+  title: 'Journeys-Ui/Multiselect/MultiselectOption'
 }
 
 type Story = StoryObj<ComponentProps<typeof MultiselectOption>>

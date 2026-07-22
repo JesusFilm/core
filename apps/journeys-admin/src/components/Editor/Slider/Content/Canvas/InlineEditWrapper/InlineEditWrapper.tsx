@@ -7,7 +7,7 @@ import { Typography } from '@core/journeys/ui/Typography'
 
 import { ButtonFields } from '../../../../../../../__generated__/ButtonFields'
 import { MultiselectOptionFields } from '../../../../../../../__generated__/MultiselectOptionFields'
-import { MultiselectQuestionFields } from '../../../../../../../__generated__/MultiselectQuestionFields'
+import { MultiselectFields } from '../../../../../../../__generated__/MultiselectFields'
 import { RadioOptionFields } from '../../../../../../../__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../../../../../../../__generated__/RadioQuestionFields'
 import { SignUpFields } from '../../../../../../../__generated__/SignUpFields'
@@ -16,7 +16,7 @@ import { TypographyFields } from '../../../../../../../__generated__/TypographyF
 
 import { ButtonEdit } from './ButtonEdit'
 import { MultiselectOptionEdit } from './MultiselectOptionEdit'
-import { MultiselectQuestionEdit } from './MultiselectQuestionEdit'
+import { MultiselectEdit } from './MultiselectEdit'
 import { RadioOptionEdit } from './RadioOptionEdit'
 import { RadioQuestionEdit } from './RadioQuestionEdit'
 import { SignUpEdit } from './SignUpEdit'
@@ -30,7 +30,7 @@ interface InlineEditWrapperProps
     | RadioOptionFields
     | TextResponseFields
     | SignUpFields
-    | MultiselectQuestionFields
+    | MultiselectFields
     | MultiselectOptionFields
   > {}
 
@@ -80,7 +80,7 @@ export function InlineEditWrapper({
     case 'MultiselectBlock':
       if (showEditable)
         component = (
-          <MultiselectQuestionEdit
+          <MultiselectEdit
             {...block}
             wrappers={(children.props as any).wrappers}
           />

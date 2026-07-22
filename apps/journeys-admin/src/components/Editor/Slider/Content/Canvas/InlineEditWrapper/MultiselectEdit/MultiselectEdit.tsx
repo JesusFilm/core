@@ -7,14 +7,14 @@ import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 import { WrappersProps } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { MultiselectQuestion } from '@core/journeys/ui/MultiselectQuestion'
+import { Multiselect } from '@core/journeys/ui/Multiselect'
 
 import { BlockFields_MultiselectOptionBlock as MultiselectOptionBlock } from '../../../../../../../../__generated__/BlockFields'
 import {
   MultiselectOptionBlockCreate,
   MultiselectOptionBlockCreateVariables
 } from '../../../../../../../../__generated__/MultiselectOptionBlockCreate'
-import { MultiselectQuestionFields } from '../../../../../../../../__generated__/MultiselectQuestionFields'
+import { MultiselectFields } from '../../../../../../../../__generated__/MultiselectFields'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 
 export const MULTISELECT_OPTION_BLOCK_CREATE = gql`
@@ -30,16 +30,16 @@ export const MULTISELECT_OPTION_BLOCK_CREATE = gql`
   }
 `
 
-interface MultiselectQuestionEditProps
-  extends TreeBlock<MultiselectQuestionFields> {
+interface MultiselectEditProps
+  extends TreeBlock<MultiselectFields> {
   wrappers?: WrappersProps
 }
 
-export function MultiselectQuestionEdit({
+export function MultiselectEdit({
   id,
   wrappers,
   ...props
-}: MultiselectQuestionEditProps): ReactElement {
+}: MultiselectEditProps): ReactElement {
   const [multiselectOptionBlockCreate] = useMutation<
     MultiselectOptionBlockCreate,
     MultiselectOptionBlockCreateVariables
@@ -107,7 +107,7 @@ export function MultiselectQuestionEdit({
   }
 
   return (
-    <MultiselectQuestion
+    <Multiselect
       {...props}
       id={id}
       addOption={

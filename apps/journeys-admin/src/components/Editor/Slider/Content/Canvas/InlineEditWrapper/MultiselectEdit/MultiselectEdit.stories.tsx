@@ -13,14 +13,14 @@ import {
   ThemeName,
   TypographyVariant
 } from '../../../../../../../../__generated__/globalTypes'
-import { MultiselectQuestionFields } from '../../../../../../../../__generated__/MultiselectQuestionFields'
+import { MultiselectFields } from '../../../../../../../../__generated__/MultiselectFields'
 import { TypographyFields } from '../../../../../../../../__generated__/TypographyFields'
 import { Canvas } from '../../Canvas'
 
-const MultiselectQuestionEditStory: Meta<typeof Canvas> = {
+const MultiselectEditStory: Meta<typeof Canvas> = {
   ...simpleComponentConfig,
   component: Canvas,
-  title: 'Journeys-Admin/Editor/Slider/Content/Canvas/MultiselectQuestionEdit'
+  title: 'Journeys-Admin/Editor/Slider/Content/Canvas/MultiselectEdit'
 }
 
 const heading: TreeBlock<TypographyFields> = {
@@ -55,8 +55,8 @@ const description: TreeBlock<TypographyFields> = {
   }
 }
 
-const block: TreeBlock<MultiselectQuestionFields> = {
-  id: 'multiselectQuestionBlockId1',
+const block: TreeBlock<MultiselectFields> = {
+  id: 'multiselectBlockId1',
   __typename: 'MultiselectBlock',
   parentBlockId: 'card0.id',
   parentOrder: 2,
@@ -67,7 +67,7 @@ const block: TreeBlock<MultiselectQuestionFields> = {
       __typename: 'MultiselectOptionBlock',
       id: 'MultiselectOption1',
       label: 'Option 1',
-      parentBlockId: 'multiselectQuestionBlockId1',
+      parentBlockId: 'multiselectBlockId1',
       parentOrder: 0,
       children: []
     },
@@ -75,7 +75,7 @@ const block: TreeBlock<MultiselectQuestionFields> = {
       __typename: 'MultiselectOptionBlock',
       id: 'MultiselectOption2',
       label: 'Option 2',
-      parentBlockId: 'multiselectQuestionBlockId1',
+      parentBlockId: 'multiselectBlockId1',
       parentOrder: 1,
       children: []
     }
@@ -172,4 +172,4 @@ export const Default = {
   }
 }
 
-export default MultiselectQuestionEditStory
+export default MultiselectEditStory

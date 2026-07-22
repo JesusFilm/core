@@ -10,7 +10,7 @@ import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { MULTISELECT_OPTION_FIELDS } from '@core/journeys/ui/MultiselectOption/multiselectOptionFields'
-import { MULTISELECT_QUESTION_FIELDS } from '@core/journeys/ui/MultiselectQuestion/multiselectQuestionFields'
+import { MULTISELECT_FIELDS } from '@core/journeys/ui/Multiselect/multiselectFields'
 import CheckSquareContainedIcon from '@core/shared/ui/icons/CheckSquareContained'
 
 import type {
@@ -36,7 +36,7 @@ import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateComman
 import { Button } from '../Button'
 
 export const MULTISELECT_BLOCK_CREATE = gql`
-  ${MULTISELECT_QUESTION_FIELDS}
+  ${MULTISELECT_FIELDS}
   ${MULTISELECT_OPTION_FIELDS}
   mutation MultiselectBlockCreate(
     $input: MultiselectBlockCreateInput!
@@ -47,7 +47,7 @@ export const MULTISELECT_BLOCK_CREATE = gql`
       id
       parentBlockId
       parentOrder
-      ...MultiselectQuestionFields
+      ...MultiselectFields
     }
     multiselectOption1: multiselectOptionBlockCreate(
       input: $multiselectOptionBlockCreateInput1
@@ -70,7 +70,7 @@ export const MULTISELECT_BLOCK_CREATE = gql`
 
 // Create Multiselect (with two options) and a Submit Button (with icons) in one go
 export const MULTISELECT_WITH_BUTTON_CREATE = gql`
-  ${MULTISELECT_QUESTION_FIELDS}
+  ${MULTISELECT_FIELDS}
   ${MULTISELECT_OPTION_FIELDS}
   ${BUTTON_FIELDS}
   ${ICON_FIELDS}
@@ -89,7 +89,7 @@ export const MULTISELECT_WITH_BUTTON_CREATE = gql`
       id
       parentBlockId
       parentOrder
-      ...MultiselectQuestionFields
+      ...MultiselectFields
     }
     multiselectOption1: multiselectOptionBlockCreate(input: $optionInput1) {
       id

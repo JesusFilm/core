@@ -13,9 +13,9 @@ import { useBlockRestoreMutationMock as blockRestoreMock } from '../../../../../
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
-import { MULTISELECT_OPTION_BLOCK_CREATE } from './MultiselectQuestionEdit'
+import { MULTISELECT_OPTION_BLOCK_CREATE } from './MultiselectEdit'
 
-import { MultiselectQuestionEdit } from '.'
+import { MultiselectEdit } from '.'
 
 vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -26,15 +26,15 @@ vi.mock('uuid', () => ({
   v4: () => 'multiselectOption.id'
 }))
 
-describe('MultiselectQuestionEdit', () => {
+describe('MultiselectEdit', () => {
   const props = (
     children?: Array<TreeBlock<MultiselectOptionFields>>
-  ): ComponentProps<typeof MultiselectQuestionEdit> => {
+  ): ComponentProps<typeof MultiselectEdit> => {
     return {
       __typename: 'MultiselectBlock',
       parentBlockId: 'card.id',
       parentOrder: 0,
-      id: 'multiselectQuestion.id',
+      id: 'multiselect.id',
       min: null,
       max: null,
       children: children ?? []
@@ -55,7 +55,7 @@ describe('MultiselectQuestionEdit', () => {
       data: {
         multiselectOptionBlockCreate: {
           id: 'multiselectOption.id',
-          parentBlockId: 'multiselectQuestion.id',
+          parentBlockId: 'multiselect.id',
           parentOrder: 0,
           journeyId: 'journeyId',
           label: ''
@@ -73,7 +73,7 @@ describe('MultiselectQuestionEdit', () => {
                 input: {
                   id: 'multiselectOption.id',
                   journeyId: 'journeyId',
-                  parentBlockId: 'multiselectQuestion.id',
+                  parentBlockId: 'multiselect.id',
                   label: ''
                 }
               }
@@ -89,7 +89,7 @@ describe('MultiselectQuestionEdit', () => {
           }}
         >
           <EditorProvider>
-            <MultiselectQuestionEdit
+            <MultiselectEdit
               {...props([
                 option,
                 { ...option, id: 'option1.id' },
@@ -122,7 +122,7 @@ describe('MultiselectQuestionEdit', () => {
       data: {
         multiselectOptionBlockCreate: {
           id: 'multiselectOption.id',
-          parentBlockId: 'multiselectQuestion.id',
+          parentBlockId: 'multiselect.id',
           parentOrder: 0,
           journeyId: 'journeyId',
           label: ''
@@ -142,7 +142,7 @@ describe('MultiselectQuestionEdit', () => {
                 input: {
                   id: 'multiselectOption.id',
                   journeyId: 'journeyId',
-                  parentBlockId: 'multiselectQuestion.id',
+                  parentBlockId: 'multiselect.id',
                   label: ''
                 }
               }
@@ -165,7 +165,7 @@ describe('MultiselectQuestionEdit', () => {
           }}
         >
           <EditorProvider>
-            <MultiselectQuestionEdit
+            <MultiselectEdit
               {...props([
                 option,
                 { ...option, id: 'option1.id' },
@@ -200,7 +200,7 @@ describe('MultiselectQuestionEdit', () => {
       data: {
         multiselectOptionBlockCreate: {
           id: 'multiselectOption.id',
-          parentBlockId: 'multiselectQuestion.id',
+          parentBlockId: 'multiselect.id',
           parentOrder: 0,
           journeyId: 'journeyId',
           label: ''
@@ -221,7 +221,7 @@ describe('MultiselectQuestionEdit', () => {
                 input: {
                   id: 'multiselectOption.id',
                   journeyId: 'journeyId',
-                  parentBlockId: 'multiselectQuestion.id',
+                  parentBlockId: 'multiselect.id',
                   label: ''
                 }
               }
@@ -251,7 +251,7 @@ describe('MultiselectQuestionEdit', () => {
           }}
         >
           <EditorProvider>
-            <MultiselectQuestionEdit
+            <MultiselectEdit
               {...props([
                 option,
                 { ...option, id: 'option1.id' },
@@ -294,7 +294,7 @@ describe('MultiselectQuestionEdit', () => {
           }}
         >
           <EditorProvider>
-            <MultiselectQuestionEdit
+            <MultiselectEdit
               {...props([
                 option,
                 { ...option, id: 'option1.id' },

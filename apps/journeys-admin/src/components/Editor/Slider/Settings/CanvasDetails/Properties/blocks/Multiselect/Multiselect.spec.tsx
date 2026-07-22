@@ -10,9 +10,9 @@ import { BlockFields_MultiselectBlock as MultiselectBlock } from '../../../../..
 import { CommandRedoItem } from '../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../Toolbar/Items/CommandUndoItem'
 
-import { MULTISELECT_BLOCK_UPDATE } from './MultiselectQuestion'
+import { MULTISELECT_BLOCK_UPDATE } from './Multiselect'
 
-import { MultiselectQuestion } from '.'
+import { Multiselect } from '.'
 
 vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -112,20 +112,20 @@ const mockUpdateBoth: MockedResponse = {
   }))
 }
 
-describe('MultiselectQuestion Properties', () => {
+describe('Multiselect Properties', () => {
   it('renders instructions and controls', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={{ selectedBlock }}>
-            <MultiselectQuestion {...selectedBlock} />
+            <Multiselect {...selectedBlock} />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
 
     expect(
-      screen.getByTestId('MultiselectQuestionProperties')
+      screen.getByTestId('MultiselectProperties')
     ).toBeInTheDocument()
     expect(
       screen.getByText(
@@ -142,7 +142,7 @@ describe('MultiselectQuestion Properties', () => {
           <EditorProvider initialState={{ selectedBlock }}>
             <CommandUndoItem variant="button" />
             <CommandRedoItem variant="button" />
-            <MultiselectQuestion {...selectedBlock} />
+            <Multiselect {...selectedBlock} />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -219,7 +219,7 @@ describe('MultiselectQuestion Properties', () => {
           <EditorProvider
             initialState={{ selectedBlock: selectedBlockDisabled }}
           >
-            <MultiselectQuestion {...selectedBlockDisabled} />
+            <Multiselect {...selectedBlockDisabled} />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -263,7 +263,7 @@ describe('MultiselectQuestion Properties', () => {
       <MockedProvider mocks={[mockClampMaxToOne]}>
         <SnackbarProvider>
           <EditorProvider initialState={{ selectedBlock }}>
-            <MultiselectQuestion {...selectedBlock} />
+            <Multiselect {...selectedBlock} />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>

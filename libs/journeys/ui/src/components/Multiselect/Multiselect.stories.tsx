@@ -9,12 +9,12 @@ import { MultiselectOptionFields } from '../MultiselectOption/__generated__/Mult
 import { StoryCard } from '../StoryCard'
 import { Typography } from '../Typography'
 
-import { MULTISELECT_SUBMISSION_EVENT_CREATE, MultiselectQuestion } from '.'
+import { MULTISELECT_SUBMISSION_EVENT_CREATE, Multiselect } from '.'
 
-const Demo: Meta<typeof MultiselectQuestion> = {
+const Demo: Meta<typeof Multiselect> = {
   ...simpleComponentConfig,
-  component: MultiselectQuestion,
-  title: 'Journeys-Ui/MultiselectQuestion',
+  component: Multiselect,
+  title: 'Journeys-Ui/Multiselect',
   parameters: {
     docs: {
       source: { type: 'code' }
@@ -93,21 +93,21 @@ const submitEventMock: MockedResponse = {
   }
 }
 
-type Story = StoryObj<typeof MultiselectQuestion>
+type Story = StoryObj<typeof Multiselect>
 
 const Template: Story = {
   render: ({ ...args }) => (
     <MockedProvider mocks={[submitEventMock]}>
       <StoryCard>
         <Typography {...typographyProps} />
-        <MultiselectQuestion
+        <Multiselect
           {...args}
           uuid={() => 'uuid'}
           submitLabel="Submit"
         />
         <Typography
           {...typographyProps}
-          content="MultiselectQuestion is just the button group above"
+          content="Multiselect is just the button group above"
           variant={TypographyVariant.body1}
           parentOrder={2}
         />

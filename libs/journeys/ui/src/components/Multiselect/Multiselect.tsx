@@ -27,7 +27,7 @@ export const MULTISELECT_SUBMISSION_EVENT_CREATE = gql`
   }
 `
 
-const StyledListMultiselectQuestion = styled(Box)<BoxProps>(({ theme }) => ({
+const StyledListMultiselect = styled(Box)<BoxProps>(({ theme }) => ({
   marginBottom: theme.spacing(4),
   '& .MuiButtonGroup-root': {
     boxShadow: 'none',
@@ -62,7 +62,7 @@ const StyledListMultiselectQuestion = styled(Box)<BoxProps>(({ theme }) => ({
   }
 }))
 
-interface MultiselectQuestionProps extends TreeBlock<any> {
+interface MultiselectProps extends TreeBlock<any> {
   uuid?: () => string
   wrappers?: WrappersProps
   addOption?: () => void
@@ -71,7 +71,7 @@ interface MultiselectQuestionProps extends TreeBlock<any> {
 const adminPrimaryColor = adminTheme.palette
   .primary as SimplePaletteColorOptions
 
-export function MultiselectQuestion({
+export function Multiselect({
   id: blockId,
   children,
   label,
@@ -79,7 +79,7 @@ export function MultiselectQuestion({
   max,
   wrappers,
   addOption
-}: MultiselectQuestionProps): ReactElement {
+}: MultiselectProps): ReactElement {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const { blockHistory } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
@@ -169,8 +169,8 @@ export function MultiselectQuestion({
 
   return (
     <>
-      <StyledListMultiselectQuestion
-        data-testid={`JourneysMultiselectQuestionList-${blockId}`}
+      <StyledListMultiselect
+        data-testid={`JourneysMultiselectList-${blockId}`}
       >
         <ButtonGroup orientation="vertical" variant="contained" fullWidth>
           {options}
@@ -208,7 +208,7 @@ export function MultiselectQuestion({
             </Typography>
           )
         })()}
-      </StyledListMultiselectQuestion>
+      </StyledListMultiselect>
     </>
   )
 }

@@ -4,10 +4,10 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL fragment: MultiselectQuestionFields
+// GraphQL fragment: MultiselectFields
 // ====================================================
 
-export interface MultiselectQuestionFields {
+export interface MultiselectFields {
   __typename: "MultiselectBlock";
   id: string;
   parentBlockId: string | null;

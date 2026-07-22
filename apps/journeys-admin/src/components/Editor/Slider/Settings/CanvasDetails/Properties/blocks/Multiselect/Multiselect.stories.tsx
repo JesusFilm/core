@@ -10,13 +10,13 @@ import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { BlockFields_MultiselectBlock as MultiselectBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Drawer } from '../../../../Drawer'
 
-import { MultiselectQuestion } from '.'
+import { Multiselect } from '.'
 
-const Demo: Meta<typeof MultiselectQuestion> = {
+const Demo: Meta<typeof Multiselect> = {
   ...simpleComponentConfig,
-  component: MultiselectQuestion,
+  component: Multiselect,
   title:
-    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/MultiselectQuestion'
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Multiselect'
 }
 
 const onClose = fn()
@@ -49,7 +49,7 @@ const block: TreeBlock<MultiselectBlock> = {
 }
 
 const Template: StoryObj<
-  ComponentProps<typeof MultiselectQuestion> & {
+  ComponentProps<typeof Multiselect> & {
     block: TreeBlock<MultiselectBlock>
   }
 > = {
@@ -58,7 +58,7 @@ const Template: StoryObj<
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock: { ...block } }}>
           <Drawer title="Multiselect Properties" onClose={onClose}>
-            <MultiselectQuestion {...block} />
+            <Multiselect {...block} />
           </Drawer>
         </EditorProvider>
       </MockedProvider>

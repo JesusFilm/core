@@ -12,23 +12,23 @@ import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { MULTISELECT_QUESTION_FIELDS } from '@core/journeys/ui/MultiselectQuestion/multiselectQuestionFields'
+import { MULTISELECT_FIELDS } from '@core/journeys/ui/Multiselect/multiselectFields'
 
 import { BlockFields_MultiselectBlock as MultiselectBlock } from '../../../../../../../../../__generated__/BlockFields'
 
 export const MULTISELECT_BLOCK_UPDATE = gql`
-  ${MULTISELECT_QUESTION_FIELDS}
+  ${MULTISELECT_FIELDS}
   mutation MultiselectBlockUpdate_SettingsPanel(
     $id: ID!
     $input: MultiselectBlockUpdateInput!
   ) {
     multiselectBlockUpdate(id: $id, input: $input) {
-      ...MultiselectQuestionFields
+      ...MultiselectFields
     }
   }
 `
 
-export function MultiselectQuestion({
+export function Multiselect({
   id,
   min,
   max,
@@ -215,7 +215,7 @@ export function MultiselectQuestion({
   )
 
   return (
-    <Box data-testid="MultiselectQuestionProperties">
+    <Box data-testid="MultiselectProperties">
       <Box sx={{ p: 4 }}>
         <Typography>
           {t('To edit multiselect content, choose each option individually')}

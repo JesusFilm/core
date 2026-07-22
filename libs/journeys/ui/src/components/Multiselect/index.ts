@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-cycle
 export {
-  MultiselectQuestion,
+  Multiselect,
   MULTISELECT_SUBMISSION_EVENT_CREATE
-} from './MultiselectQuestion'
+} from './Multiselect'
