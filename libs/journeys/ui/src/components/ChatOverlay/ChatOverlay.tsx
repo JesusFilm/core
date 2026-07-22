@@ -117,12 +117,7 @@ export function ChatOverlay({
           minHeight: 0
         }}
       >
-        <AiChat
-          variant="panel"
-          onDark
-          onSheetStateChange={setSheetState}
-          onClose={onClose}
-        />
+        <AiChat onDark onSheetStateChange={setSheetState} onClose={onClose} />
       </Box>
     </Box>
   )
