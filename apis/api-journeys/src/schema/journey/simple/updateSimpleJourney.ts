@@ -203,7 +203,8 @@ export async function updateSimpleJourney(
         if (videoId == null) {
           throw new Error('Invalid YouTube video URL')
         }
-        const { duration: videoDuration } = await fetchFieldsFromYouTube(videoId)
+        const { duration: videoDuration } =
+          await fetchFieldsFromYouTube(videoId)
         await tx.block.create({
           data: {
             journeyId,

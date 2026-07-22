@@ -1,4 +1,7 @@
-import { sanitizeCSVCell, sanitizeGoogleSheetsCell } from '../journeyVisitor/export/csv'
+import {
+  sanitizeCSVCell,
+  sanitizeGoogleSheetsCell
+} from '../journeyVisitor/export/csv'
 import {
   type BaseColumnLabelResolver,
   type JourneyExportColumn,
