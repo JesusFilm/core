@@ -19,26 +19,6 @@ import JourneysPage, { GET_JOURNEYS } from '../home'
 
 import HostJourneyPage from './[journeySlug]'
 
-interface HostSingleJourneyPageProps {
-  journey: GetJourney['journey']
-  host: string | undefined
-}
-
-function HostSingleJourneyPage({
-  journey,
-  host
-}: HostSingleJourneyPageProps): ReactElement {
-  const { rtl, locale } = getJourneyRTL(journey)
-  return (
-    <HostJourneyPage
-      journey={journey}
-      host={host ?? ''}
-      locale={locale}
-      rtl={rtl}
-    />
-  )
-}
-
 interface HostJourneysPageProps {
   host?: string
   journeys: GetJourneysSummary['journeys']
@@ -50,10 +30,16 @@ function HostJourneysPage({
   journey,
   host
 }: HostJourneysPageProps): ReactElement {
-  return journey != null ? (
-    <HostSingleJourneyPage journey={journey} host={host} />
-  ) : (
-    <JourneysPage journeys={journeys} />
+  if (journey == null) return <JourneysPage journeys={journeys} />
+
+  const { rtl, locale } = getJourneyRTL(journey)
+  return (
+    <HostJourneyPage
+      journey={journey}
+      host={host ?? ''}
+      locale={locale}
+      rtl={rtl}
+    />
   )
 }
 

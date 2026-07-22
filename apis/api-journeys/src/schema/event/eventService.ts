@@ -159,7 +159,7 @@ export async function getOrCreateVisitor(context: any): Promise<string> {
 // The call-time NODE_ENV checks below are separate from the require-time
 // guard in ./queues: specs delete NODE_ENV and inject mock queues to reach
 // the queue logic, while the ./queues guard keeps Redis out of test module
-// loads. Both are needed.
+// loads.
 export async function sendEventsEmail(
   journeyId: string,
   visitorId: string

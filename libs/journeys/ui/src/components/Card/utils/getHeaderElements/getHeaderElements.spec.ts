@@ -4,11 +4,11 @@ import { showHeader } from '.'
 
 describe('getHeaderElements', () => {
   describe('showHeader', () => {
-    it('should return false if journey or variant are nullish', () => {
+    it('should return false if journey or render mode are nullish', () => {
       expect(showHeader(undefined, undefined)).toBe(false)
     })
 
-    it('should return true if variant is admin', () => {
+    it('should return true if render mode is admin', () => {
       expect(showHeader(defaultJourney, 'admin')).toBe(true)
     })
 

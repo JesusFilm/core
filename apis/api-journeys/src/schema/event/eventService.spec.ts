@@ -28,6 +28,12 @@ const mockGoogleSheetsSyncQueue = {
   add: vi.fn()
 }
 
+// Partial mocks are not structurally Queue; cast once here so injection
+// call sites stay clean.
+const mockEmailQueueTyped = mockEmailQueue as unknown as Queue
+const mockGoogleSheetsSyncQueueTyped =
+  mockGoogleSheetsSyncQueue as unknown as Queue
+
 // Guardrail only: the real queue modules open Redis connections at import.
 // queues.ts never requires them while NODE_ENV === 'test', so these factories
 // normally stay inert — queue behavior is exercised via __set*ForTests.
@@ -58,10 +64,8 @@ describe('eventService', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     // Set up queue mocks before tests run
-    __setEmailQueueForTests(mockEmailQueue as unknown as Queue)
-    __setGoogleSheetsSyncQueueForTests(
-      mockGoogleSheetsSyncQueue as unknown as Queue
-    )
+    __setEmailQueueForTests(mockEmailQueueTyped)
+    __setGoogleSheetsSyncQueueForTests(mockGoogleSheetsSyncQueueTyped)
     // Clear NODE_ENV to allow queue to work
     delete (process.env as Record<string, string | undefined>).NODE_ENV
   })
@@ -336,7 +340,7 @@ describe('eventService', () => {
 
   describe('sendEventsEmail', () => {
     beforeEach(() => {
-      __setEmailQueueForTests(mockEmailQueue as unknown as Queue)
+      __setEmailQueueForTests(mockEmailQueueTyped)
       delete (process.env as Record<string, string | undefined>).NODE_ENV
     })
 
@@ -375,15 +379,12 @@ describe('eventService', () => {
       await sendEventsEmail('journey-id', 'visitor-id')
 
       expect(mockEmailQueue.add).not.toHaveBeenCalled()
-
-      // Restore for other tests
-      __setEmailQueueForTests(mockEmailQueue as unknown as Queue)
     })
   })
 
   describe('resetEventsEmailDelay', () => {
     beforeEach(() => {
-      __setEmailQueueForTests(mockEmailQueue as unknown as Queue)
+      __setEmailQueueForTests(mockEmailQueueTyped)
       delete (process.env as Record<string, string | undefined>).NODE_ENV
     })
 
@@ -425,18 +426,13 @@ describe('eventService', () => {
       await resetEventsEmailDelay('journey-id', 'visitor-id')
 
       expect(mockEmailQueue.getJob).not.toHaveBeenCalled()
-
-      // Restore for other tests
-      __setEmailQueueForTests(mockEmailQueue as unknown as Queue)
     })
   })
 
   describe('appendEventToGoogleSheets', () => {
     beforeEach(() => {
       vi.clearAllMocks()
-      __setGoogleSheetsSyncQueueForTests(
-        mockGoogleSheetsSyncQueue as unknown as Queue
-      )
+      __setGoogleSheetsSyncQueueForTests(mockGoogleSheetsSyncQueueTyped)
       delete (process.env as Record<string, string | undefined>).NODE_ENV
       mockLogger.warn.mockClear()
       // Pin clock to a known mid-minute time so delay calculations are deterministic
@@ -649,11 +645,6 @@ describe('eventService', () => {
 
       // Queue was set to null, so findMany should not even be called
       expect(prismaMock.googleSheetsSync.findMany).not.toHaveBeenCalled()
-
-      // Restore for other tests
-      __setGoogleSheetsSyncQueueForTests(
-        mockGoogleSheetsSyncQueue as unknown as Queue
-      )
     })
   })
 })

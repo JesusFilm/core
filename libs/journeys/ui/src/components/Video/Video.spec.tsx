@@ -246,7 +246,7 @@ describe('Video', () => {
     expect(videoImage).toHaveAttribute('alt', 'video image')
   })
 
-  it('should render video image if source is YouTube and variant is customize', () => {
+  it('should render video image if source is YouTube and render mode is customize', () => {
     render(
       <JourneyProvider value={{ renderMode: 'customize' }}>
         <Video

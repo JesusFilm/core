@@ -46,7 +46,7 @@ The Journey Analytics events this lib originates during playback — step view/n
 
 **Render Mode**:
 The mode a journey is being shown in, carried by the Journey Provider as `renderMode`: `default` (audience playback), `admin` (inside the editor), `embed`, or `customize`. Component behavior forks on it. Distinct from the media context's **Variant** (a language rendition) and from block style variants.
-_Avoid_: "variant" (the field's historical name, renamed to `renderMode`); say "render mode"
+_Avoid_: "variant" (the historical name); say "render mode"
 
 **Website Mode**:
 A journey-level boolean rendering the journey as a multi-page website rather than a linear funnel. Orthogonal to Render Mode.

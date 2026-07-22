@@ -1,8 +1,7 @@
 import type { Queue } from 'bullmq'
 
-// Internal queue holders for the event service. Not part of the event
-// service surface — production resolvers import from './eventService' and
-// never see the test injectors below.
+// Lazily-required BullMQ queues, kept out of eventService so specs can
+// inject mocks without the injectors sitting on the service surface.
 
 // Queue for visitor interaction emails
 let emailQueue: Queue | null = null
@@ -37,13 +36,11 @@ export function getGoogleSheetsSyncQueue(): Queue | null {
   return googleSheetsSyncQueue
 }
 
-// Test helper to inject a mock queue
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function __setEmailQueueForTests(mockQueue: Queue | null): void {
   emailQueue = mockQueue
 }
 
-// Test helper to inject a mock Google Sheets sync queue
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function __setGoogleSheetsSyncQueueForTests(
   mockQueue: Queue | null
