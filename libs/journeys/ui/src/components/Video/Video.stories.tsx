@@ -5,7 +5,7 @@ import { ComponentProps } from 'react'
 import { userEvent } from 'storybook/test'
 
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import { journeyUiConfig } from '../../test/journeyUiConfig'
 import { VIDEO_START_EVENT_CREATE } from '../VideoEvents/VideoEvents'
 
 import { Video } from '.'

@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ReactElement, useState } from 'react'
 
-import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
+import { InstantSearchTestWrapper } from '@core/journeys/ui/test/InstantSearchTestWrapper'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { VideoSearch } from './VideoSearch'

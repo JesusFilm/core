@@ -16,7 +16,7 @@ import {
   JourneyFields as Journey,
   JourneyFields_language as Language
 } from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import { journeyUiConfig } from '../../test/journeyUiConfig'
 
 import { StepFooter } from './StepFooter'
 

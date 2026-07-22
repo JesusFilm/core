@@ -4,8 +4,8 @@ import React, { ComponentProps } from 'react'
 
 import { watchConfig } from '@core/shared/ui/storybook'
 
-import { InstantSearchTestWrapper } from '../../../libs/algolia/InstantSearchTestWrapper'
 import { SearchBarProvider } from '../../../libs/algolia/SearchBarProvider'
+import { InstantSearchTestWrapper } from '../../../test/InstantSearchTestWrapper'
 
 import { LanguageButtons } from './LanguageButtons'
 

@@ -8,9 +8,9 @@ import {
   TypographyColor,
   TypographyVariant
 } from '../../../__generated__/globalTypes'
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
-import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import { StoryCard } from '../StoryCard'
+import { journeyUiConfig } from '../../test/journeyUiConfig'
+import { simpleComponentConfig } from '../../test/simpleComponentConfig'
+import { StoryCard } from '../../test/StoryCard'
 
 import { Typography, TypographyProps } from './Typography'
 
