@@ -54,6 +54,36 @@ describe('auditParentVariants', () => {
     expect(prismaMock.video.update).not.toHaveBeenCalled()
   })
 
+  it('ignores published Variants that belong to unpublished child Videos', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'series-1',
+        slug: 'do-you-ever-wonder',
+        published: true,
+        availableLanguages: [],
+        variants: [],
+        children: [
+          {
+            id: 'unpublished-episode',
+            published: false,
+            variants: [
+              {
+                id: 'stale-published-variant',
+                languageId: '20770',
+                slug: 'do-you-ever-wonder/unpublished-episode/ku',
+                published: true
+              }
+            ]
+          }
+        ]
+      }
+    ] as never)
+
+    const result = await auditParentVariants()
+
+    expect(result.deterministicGaps).toEqual([])
+  })
+
   it('reports a missing parent language when the parent Variant exists', async () => {
     prismaMock.video.findMany.mockResolvedValue([
       {

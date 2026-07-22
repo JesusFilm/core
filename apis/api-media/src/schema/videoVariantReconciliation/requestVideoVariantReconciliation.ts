@@ -1,12 +1,22 @@
 import { prisma } from '@core/prisma/media/client'
 
+export type VideoVariantReconciliationReason =
+  | 'process-video-upload'
+  | 'video-relationship-change'
+  | 'video-variant-create'
+  | 'video-variant-delete'
+  | 'video-variant-language-change'
+  | 'video-variant-publication-change'
+  | 'generated-parent'
+  | 'backfill-generated-parent'
+
 type ReconciliationIntent = {
   videoVariantId: string
   videoId: string
   languageId: string
   edition: string
   published: boolean
-  source: string
+  reason: VideoVariantReconciliationReason
 }
 
 const pendingStages = {
@@ -26,7 +36,7 @@ export async function requestVideoVariantReconciliation(
       select: { id: true }
     })
   const data = {
-    source: intent.source,
+    reason: intent.reason,
     status: 'processing' as const,
     videoId: intent.videoId,
     languageId: intent.languageId,

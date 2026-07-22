@@ -8,8 +8,10 @@ import {
   ProcessingStages,
   ReconciliationStatus,
   completedStage,
-  failedStage
+  failedStage,
+  generatedParentStages
 } from './reconciliationStages'
+import { reconcileGeneratedParentVariant } from './reconcileReasonSpecificVariant'
 import { videoVariantContainsMedia } from './videoVariantContainsMedia'
 
 type ChildVariant = {
@@ -70,6 +72,7 @@ async function reconcileParentVariant({
 }): Promise<ParentReconciliationResult | null> {
   const parentVariantId = `${variant.languageId}_${parentVideo.id}`
   const parentReconciliationId = `status_${parentVariantId}`
+  const generatedParentProcessingStages = generatedParentStages()
   const parentVariant = await prisma.videoVariant.findFirst({
     where: {
       videoId: parentVideo.id,
@@ -111,19 +114,13 @@ async function reconcileParentVariant({
         await transaction.videoVariantReconciliation.create({
           data: {
             id: parentReconciliationId,
-            source: 'generated-parent',
+            reason: 'generated-parent',
             status: 'processing',
             videoId: parentVideo.id,
             languageId: variant.languageId,
             published: true,
             videoVariantId: parentVariantId,
-            processingStages: {
-              mux: { state: 'notApplicable', attempts: 0 },
-              parentSync: { state: 'complete', attempts: 1 },
-              downloads: { state: 'notApplicable', attempts: 0 },
-              algoliaVideo: { state: 'pending', attempts: 0 },
-              algoliaVariant: { state: 'pending', attempts: 0 }
-            }
+            processingStages: generatedParentProcessingStages
           }
         })
         await addParentLanguage(parentVideo, variant.languageId, transaction)
@@ -138,6 +135,34 @@ async function reconcileParentVariant({
     return { publicationReady: false, status: 'degraded' }
   }
 
+  if (parentVariant == null) {
+    const result = await reconcileGeneratedParentVariant({
+      reconciliationId: parentReconciliationId,
+      reconciliation: {
+        reason: 'generated-parent',
+        videoId: parentVideo.id,
+        languageId: variant.languageId,
+        videoVariantId: parentVariantId,
+        published: true,
+        processingStages: generatedParentProcessingStages
+      },
+      variant: {
+        id: parentVariantId,
+        videoId: parentVideo.id,
+        languageId: variant.languageId,
+        published: false,
+        muxVideo: null
+      },
+      store: prisma
+    })
+    if (result.failure != null) {
+      stages[result.failure.stageName] = result.failure.stage
+      await persistStatus('degraded', result.failure.stage)
+      return { publicationReady: false, status: 'degraded' }
+    }
+    return null
+  }
+
   try {
     await updateVideoInAlgolia(parentVideo.id)
     stages.algoliaVideo = completedStage(stages.algoliaVideo.attempts + 1)
@@ -148,37 +173,8 @@ async function reconcileParentVariant({
   }
 
   try {
-    if (parentVariant == null) {
-      await prisma.videoVariant.update({
-        where: { id: parentVariantId },
-        data: { published: true }
-      })
-    }
-    await updateVideoVariantInAlgolia(parentVariant?.id ?? parentVariantId)
-    if (parentVariant == null) {
-      await prisma.videoVariantReconciliation.update({
-        where: { id: parentReconciliationId },
-        data: {
-          status: 'complete',
-          retryAt: null,
-          errorMessage: null,
-          processingStages: {
-            mux: { state: 'notApplicable', attempts: 0 },
-            parentSync: { state: 'complete', attempts: 1 },
-            downloads: { state: 'notApplicable', attempts: 0 },
-            algoliaVideo: { state: 'complete', attempts: 1 },
-            algoliaVariant: { state: 'complete', attempts: 1 }
-          }
-        }
-      })
-    }
+    await updateVideoVariantInAlgolia(parentVariant.id)
   } catch (error) {
-    if (parentVariant == null) {
-      await prisma.videoVariant.update({
-        where: { id: parentVariantId },
-        data: { published: false }
-      })
-    }
     stages.algoliaVariant = failedStage(
       error,
       stages.algoliaVariant.attempts + 1

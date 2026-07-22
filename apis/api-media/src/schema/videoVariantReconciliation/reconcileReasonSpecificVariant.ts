@@ -13,12 +13,14 @@ import {
   ReconciliationStore,
   completedStage,
   failedStage,
+  generatedParentStages,
   notApplicableStage,
   persistReconciliationStatus,
   previousAttempts
 } from './reconciliationStages'
+import type { VideoVariantReconciliationReason } from './requestVideoVariantReconciliation'
 
-type SourceVariant = {
+type ReconciledVariant = {
   id: string
   videoId: string
   languageId: string
@@ -26,8 +28,8 @@ type SourceVariant = {
   muxVideo: { readyToStream: boolean } | null
 }
 
-type SourceReconciliation = {
-  source: string
+type ReasonSpecificReconciliation = {
+  reason: VideoVariantReconciliationReason
   videoId: string
   languageId: string
   videoVariantId: string | null
@@ -35,23 +37,27 @@ type SourceReconciliation = {
   processingStages: unknown
 }
 
-export type SourceSpecificReconciliationResult = {
+export type ReasonSpecificReconciliationResult = {
   publicationReady: boolean
   status: ReconciliationStatus
+  failure?: {
+    stageName: 'algoliaVideo' | 'algoliaVariant'
+    stage: ProcessingStages['algoliaVideo' | 'algoliaVariant']
+  }
 }
 
-export async function reconcileSourceSpecificVariant({
+export async function reconcileReasonSpecificVariant({
   reconciliationId,
   reconciliation,
   variant,
   store
 }: {
   reconciliationId: string
-  reconciliation: SourceReconciliation
-  variant: SourceVariant | null
+  reconciliation: ReasonSpecificReconciliation
+  variant: ReconciledVariant | null
   store: ReconciliationStore
-}): Promise<SourceSpecificReconciliationResult | null> {
-  if (reconciliation.source === 'video-variant-delete') {
+}): Promise<ReasonSpecificReconciliationResult | null> {
+  if (reconciliation.reason === 'video-variant-delete') {
     await removeLanguageFromVideoIfUnused(
       reconciliation.videoId,
       reconciliation.languageId
@@ -83,10 +89,10 @@ export async function reconcileSourceSpecificVariant({
   if (
     variant != null &&
     ['generated-parent', 'backfill-generated-parent'].includes(
-      reconciliation.source
+      reconciliation.reason
     )
   ) {
-    return await reconcileGeneratedParent({
+    return await reconcileGeneratedParentVariant({
       reconciliationId,
       reconciliation,
       variant,
@@ -126,38 +132,18 @@ export async function reconcileSourceSpecificVariant({
   return { publicationReady: true, status: 'complete' }
 }
 
-async function reconcileGeneratedParent({
+export async function reconcileGeneratedParentVariant({
   reconciliationId,
   reconciliation,
   variant,
   store
 }: {
   reconciliationId: string
-  reconciliation: SourceReconciliation
-  variant: SourceVariant
+  reconciliation: ReasonSpecificReconciliation
+  variant: ReconciledVariant
   store: ReconciliationStore
-}): Promise<SourceSpecificReconciliationResult> {
-  const stages: ProcessingStages = {
-    mux: notApplicableStage(),
-    parentSync: completedStage(
-      previousAttempts(reconciliation.processingStages, 'parentSync') + 1
-    ),
-    downloads: notApplicableStage(),
-    algoliaVideo: {
-      state: 'pending',
-      attempts: previousAttempts(
-        reconciliation.processingStages,
-        'algoliaVideo'
-      )
-    },
-    algoliaVariant: {
-      state: 'pending',
-      attempts: previousAttempts(
-        reconciliation.processingStages,
-        'algoliaVariant'
-      )
-    }
-  }
+}): Promise<ReasonSpecificReconciliationResult> {
+  const stages = generatedParentStages(reconciliation.processingStages)
 
   try {
     await updateVideoInAlgolia(variant.videoId)
@@ -171,7 +157,14 @@ async function reconcileGeneratedParent({
       stages,
       failedStageValue: stages.algoliaVideo
     })
-    return { publicationReady: false, status: 'degraded' }
+    return {
+      publicationReady: false,
+      status: 'degraded',
+      failure: {
+        stageName: 'algoliaVideo',
+        stage: stages.algoliaVideo
+      }
+    }
   }
 
   try {
@@ -201,7 +194,14 @@ async function reconcileGeneratedParent({
       stages,
       failedStageValue: stages.algoliaVariant
     })
-    return { publicationReady: false, status: 'degraded' }
+    return {
+      publicationReady: false,
+      status: 'degraded',
+      failure: {
+        stageName: 'algoliaVariant',
+        stage: stages.algoliaVariant
+      }
+    }
   }
 
   await persistReconciliationStatus({

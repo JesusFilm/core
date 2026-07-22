@@ -26,7 +26,7 @@ export const VideoVariantReconciliation = builder.prismaObject(
   {
     fields: (t) => ({
       id: t.exposeID('id', { nullable: false }),
-      source: t.exposeString('source', { nullable: false }),
+      reason: t.exposeString('reason', { nullable: false }),
       status: t.expose('status', {
         type: VideoVariantReconciliationStatus,
         nullable: false

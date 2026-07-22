@@ -8,7 +8,8 @@ import {
 } from '../video/lib/updateAvailableLanguages'
 
 import { reconcileParentVariants } from './reconcileParentVariants'
-import { reconcileSourceSpecificVariant } from './reconcileSourceSpecificVariant'
+import { reconcileReasonSpecificVariant } from './reconcileReasonSpecificVariant'
+import type { VideoVariantReconciliationReason } from './requestVideoVariantReconciliation'
 import {
   ProcessingStage,
   ProcessingStages,
@@ -21,7 +22,7 @@ import {
 } from './reconciliationStages'
 
 type ReconciliationRecord = {
-  source: string
+  reason: VideoVariantReconciliationReason
   videoId: string
   languageId: string
   videoVariantId: string | null
@@ -77,13 +78,13 @@ export async function reconcileVideoVariantReconciliation(
     })
 
   const variant = reconciliation.videoVariant
-  const sourceSpecificResult = await reconcileSourceSpecificVariant({
+  const reasonSpecificResult = await reconcileReasonSpecificVariant({
     reconciliationId,
     reconciliation,
     variant,
     store: reconciliationPrisma
   })
-  if (sourceSpecificResult != null) return sourceSpecificResult
+  if (reasonSpecificResult != null) return reasonSpecificResult
 
   const hasUsableMedia =
     variant != null &&

@@ -62,10 +62,11 @@ describe('reconcileVideoVariantReconciliation', () => {
     })
     expect(prismaMock.videoVariantReconciliation.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
-        source: 'generated-parent',
+        reason: 'generated-parent',
         videoVariantId: '20770_series-1',
         processingStages: expect.objectContaining({
           mux: { state: 'notApplicable', attempts: 0 },
+          parentSync: expect.objectContaining({ attempts: 1 }),
           downloads: { state: 'notApplicable', attempts: 0 }
         })
       })
@@ -211,7 +212,7 @@ describe('reconcileVideoVariantReconciliation', () => {
   it('reconciles generated parent indexes with media stages not applicable', async () => {
     prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue({
       id: 'status-1',
-      source: 'generated-parent',
+      reason: 'generated-parent',
       videoId: 'series-1',
       languageId: '20770',
       published: true,

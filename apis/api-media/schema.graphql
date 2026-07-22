@@ -1557,7 +1557,7 @@ enum VideoVariantProcessingStage {
 
 type VideoVariantReconciliation {
   id: ID!
-  source: String!
+  reason: String!
   status: VideoVariantReconciliationStatus!
   videoId: ID!
   edition: String!

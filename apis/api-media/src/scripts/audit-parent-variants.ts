@@ -47,6 +47,7 @@ export async function auditParentVariants(): Promise<ParentVariantAuditResult> {
         }
       },
       children: {
+        where: { published: true },
         select: {
           id: true,
           published: true,
@@ -74,6 +75,8 @@ export async function auditParentVariants(): Promise<ParentVariantAuditResult> {
     >()
 
     for (const childVideo of parentVideo.children) {
+      if (!childVideo.published) continue
+
       for (const childVariant of childVideo.variants) {
         if (!qualifyingVariantByLanguage.has(childVariant.languageId)) {
           qualifyingVariantByLanguage.set(childVariant.languageId, {

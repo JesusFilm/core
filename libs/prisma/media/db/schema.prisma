@@ -326,7 +326,7 @@ model VideoVariantUpload {
 
 model VideoVariantReconciliation {
   id               String                           @id @default(uuid())
-  source           String
+  reason           String
   status           VideoVariantReconciliationStatus @default(processing)
   videoId          String
   video            Video                            @relation(fields: [videoId], references: [id], onDelete: Cascade)

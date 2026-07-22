@@ -7,7 +7,7 @@ CREATE TYPE "VideoVariantReconciliationStatus" AS ENUM (
 
 CREATE TABLE "VideoVariantReconciliation" (
   "id" TEXT NOT NULL,
-  "source" TEXT NOT NULL,
+  "reason" TEXT NOT NULL,
   "status" "VideoVariantReconciliationStatus" NOT NULL DEFAULT 'processing',
   "videoId" TEXT NOT NULL,
   "edition" TEXT NOT NULL DEFAULT 'base',

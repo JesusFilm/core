@@ -3090,7 +3090,7 @@ type VideoVariantDownload @join__type(graph: API_MEDIA)  {
 
 type VideoVariantReconciliation @join__type(graph: API_MEDIA)  {
   id: ID!
-  source: String!
+  reason: String!
   status: VideoVariantReconciliationStatus!
   videoId: ID!
   edition: String!

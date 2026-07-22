@@ -63,6 +63,26 @@ export function notApplicableStage(): ProcessingStage {
   return { state: 'notApplicable', attempts: 0 }
 }
 
+export function generatedParentStages(
+  processingStages: unknown = {}
+): ProcessingStages {
+  return {
+    mux: notApplicableStage(),
+    parentSync: completedStage(
+      Math.max(1, previousAttempts(processingStages, 'parentSync'))
+    ),
+    downloads: notApplicableStage(),
+    algoliaVideo: {
+      state: 'pending',
+      attempts: previousAttempts(processingStages, 'algoliaVideo')
+    },
+    algoliaVariant: {
+      state: 'pending',
+      attempts: previousAttempts(processingStages, 'algoliaVariant')
+    }
+  }
+}
+
 export function previousAttempts(
   processingStages: unknown,
   stage: string
