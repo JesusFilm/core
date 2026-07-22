@@ -17,20 +17,20 @@ import { getFlags } from '../../src/libs/getFlags'
 import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
 import JourneysPage, { GET_JOURNEYS } from '../home'
 
-import ImportedHostJourneyPage from './[journeySlug]'
+import HostJourneyPage from './[journeySlug]'
 
-interface HostJourneyPageProps {
+interface HostSingleJourneyPageProps {
   journey: GetJourney['journey']
   host: string | undefined
 }
 
-function HostJourneyPage({
+function HostSingleJourneyPage({
   journey,
   host
-}: HostJourneyPageProps): ReactElement {
+}: HostSingleJourneyPageProps): ReactElement {
   const { rtl, locale } = getJourneyRTL(journey)
   return (
-    <ImportedHostJourneyPage
+    <HostJourneyPage
       journey={journey}
       host={host ?? ''}
       locale={locale}
@@ -51,7 +51,7 @@ function HostJourneysPage({
   host
 }: HostJourneysPageProps): ReactElement {
   return journey != null ? (
-    <HostJourneyPage journey={journey} host={host} />
+    <HostSingleJourneyPage journey={journey} host={host} />
   ) : (
     <JourneysPage journeys={journeys} />
   )
