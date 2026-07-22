@@ -257,7 +257,10 @@ const TemplateRTL: StoryRTL = {
       <MockedProvider>
         <SnackbarProvider>
           {journeys.map((journey, i) => (
-            <JourneyProvider key={i} value={{ journey, renderMode: variants[i] }}>
+            <JourneyProvider
+              key={i}
+              value={{ journey, renderMode: variants[i] }}
+            >
               <Stack
                 sx={{
                   position: 'relative',

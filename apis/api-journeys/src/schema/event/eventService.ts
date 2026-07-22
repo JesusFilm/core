@@ -9,6 +9,7 @@ import {
 } from '@core/prisma/journeys/client'
 
 import { logger } from '../logger'
+
 import { getEmailQueue, getGoogleSheetsSyncQueue } from './queues'
 
 const TWO_MINUTES = 2 * 60 * 1000

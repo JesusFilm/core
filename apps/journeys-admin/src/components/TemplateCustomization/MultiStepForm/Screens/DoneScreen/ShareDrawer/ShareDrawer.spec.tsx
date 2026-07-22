@@ -51,7 +51,9 @@ describe('ShareDrawer', () => {
     }
 
     render(
-      <JourneyProvider value={{ journey: journeyWithTitle, renderMode: 'admin' }}>
+      <JourneyProvider
+        value={{ journey: journeyWithTitle, renderMode: 'admin' }}
+      >
         <ShareDrawer open={true} onClose={mockOnClose} />
       </JourneyProvider>
     )
@@ -67,7 +69,9 @@ describe('ShareDrawer', () => {
     }
 
     render(
-      <JourneyProvider value={{ journey: journeyWithTitle, renderMode: 'admin' }}>
+      <JourneyProvider
+        value={{ journey: journeyWithTitle, renderMode: 'admin' }}
+      >
         <ShareDrawer open={true} onClose={mockOnClose} />
       </JourneyProvider>
     )
@@ -116,7 +120,9 @@ describe('ShareDrawer', () => {
     }
 
     render(
-      <JourneyProvider value={{ journey: journeyWithImage, renderMode: 'admin' }}>
+      <JourneyProvider
+        value={{ journey: journeyWithImage, renderMode: 'admin' }}
+      >
         <ShareDrawer open={true} onClose={mockOnClose} />
       </JourneyProvider>
     )

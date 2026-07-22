@@ -28,7 +28,10 @@ interface WebsiteViewProps {
   blocks: TreeBlock[]
   stepBlock: TreeBlock<StepFields>
 }
-export function WebsiteView({ blocks, stepBlock }: WebsiteViewProps): ReactElement {
+export function WebsiteView({
+  blocks,
+  stepBlock
+}: WebsiteViewProps): ReactElement {
   const { setTreeBlocks, blockHistory } = useBlocks()
   const { journey, renderMode } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
@@ -62,7 +65,10 @@ export function WebsiteView({ blocks, stepBlock }: WebsiteViewProps): ReactEleme
   }, [stepBlock, setTreeBlocks])
 
   useEffect(() => {
-    if ((renderMode === 'default' || renderMode === 'embed') && journey != null) {
+    if (
+      (renderMode === 'default' || renderMode === 'embed') &&
+      journey != null
+    ) {
       const id = uuidv4()
       void journeyViewEventCreate({
         variables: {

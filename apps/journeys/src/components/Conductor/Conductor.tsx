@@ -137,7 +137,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   )
 
   useEffect(() => {
-    if ((renderMode === 'default' || renderMode === 'embed') && journey != null) {
+    if (
+      (renderMode === 'default' || renderMode === 'embed') &&
+      journey != null
+    ) {
       const id = uuidv4()
       void journeyViewEventCreate({
         variables: {

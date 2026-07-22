@@ -16,8 +16,8 @@ import { Typography } from '@core/journeys/ui/Typography'
 import { ButtonFields } from '../../../../../../../__generated__/ButtonFields'
 import { TypographyVariant } from '../../../../../../../__generated__/globalTypes'
 import { ImageFields } from '../../../../../../../__generated__/ImageFields'
-import { MultiselectOptionFields } from '../../../../../../../__generated__/MultiselectOptionFields'
 import { MultiselectFields } from '../../../../../../../__generated__/MultiselectFields'
+import { MultiselectOptionFields } from '../../../../../../../__generated__/MultiselectOptionFields'
 import { RadioOptionFields } from '../../../../../../../__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../../../../../../../__generated__/RadioQuestionFields'
 import { SignUpFields } from '../../../../../../../__generated__/SignUpFields'
@@ -346,13 +346,13 @@ describe('SelectableWrapper', () => {
     )
 
     fireEvent.click(getByTestId(`SelectableWrapper-${multiselectOption1.id}`))
-    expect(
-      getByTestId(`SelectableWrapper-${multiselectBlock.id}`)
-    ).toHaveStyle({
-      outline: '2px solid',
-      zIndex: '1',
-      outlineColor: '#C52D3A'
-    })
+    expect(getByTestId(`SelectableWrapper-${multiselectBlock.id}`)).toHaveStyle(
+      {
+        outline: '2px solid',
+        zIndex: '1',
+        outlineColor: '#C52D3A'
+      }
+    )
   })
 
   it('should select multiselect option on click when multiselect question selected', async () => {

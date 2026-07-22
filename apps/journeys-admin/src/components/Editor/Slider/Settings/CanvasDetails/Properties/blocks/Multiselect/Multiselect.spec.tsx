@@ -124,9 +124,7 @@ describe('Multiselect Properties', () => {
       </MockedProvider>
     )
 
-    expect(
-      screen.getByTestId('MultiselectProperties')
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('MultiselectProperties')).toBeInTheDocument()
     expect(
       screen.getByText(
         'To edit multiselect content, choose each option individually'

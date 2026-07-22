@@ -56,10 +56,15 @@ export function StepFooter({
   const hostDetails = hasHostDetails({ journey })
   const chat = hasChatWidget({ journey, renderMode })
   const aiChat =
-    hasAiChatButton({ journey, renderMode, card }) && flags.apologistChat === true
+    hasAiChatButton({ journey, renderMode, card }) &&
+    flags.apologistChat === true
   const title = getTitle({ journey })
 
-  const footerMobileHeight = getFooterMobileHeight({ journey, renderMode, card })
+  const footerMobileHeight = getFooterMobileHeight({
+    journey,
+    renderMode,
+    card
+  })
   const combinedFooter = hasCombinedFooter({ journey, renderMode })
 
   const { menuButtonIcon } = journey ?? {}

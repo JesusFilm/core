@@ -79,7 +79,11 @@ export function OverlayContent({
           pr: { xs: 4, sm: 10 }
         }
 
-  const footerMobileSpacing = getFooterMobileSpacing({ journey, renderMode, card })
+  const footerMobileSpacing = getFooterMobileSpacing({
+    journey,
+    renderMode,
+    card
+  })
 
   // The chat drawer no longer docks permanently to the bottom of chat
   // cards — closed it is fully off-screen and the AI chat button lives in

@@ -170,8 +170,7 @@ export function BlockRenderer({
   const ImageWrapper = wrappers?.ImageWrapper ?? DefaultWrapper
   const MultiselectOptionWrapper =
     wrappers?.MultiselectOptionWrapper ?? DefaultWrapper
-  const MultiselectWrapper =
-    wrappers?.MultiselectWrapper ?? DefaultWrapper
+  const MultiselectWrapper = wrappers?.MultiselectWrapper ?? DefaultWrapper
   const RadioOptionWrapper = wrappers?.RadioOptionWrapper ?? DefaultWrapper
   const RadioQuestionWrapper = wrappers?.RadioQuestionWrapper ?? DefaultWrapper
   const SignUpWrapper = wrappers?.SignUpWrapper ?? DefaultWrapper

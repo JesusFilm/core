@@ -10,11 +10,11 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Multiselect } from '@core/journeys/ui/Multiselect'
 
 import { BlockFields_MultiselectOptionBlock as MultiselectOptionBlock } from '../../../../../../../../__generated__/BlockFields'
+import { MultiselectFields } from '../../../../../../../../__generated__/MultiselectFields'
 import {
   MultiselectOptionBlockCreate,
   MultiselectOptionBlockCreateVariables
 } from '../../../../../../../../__generated__/MultiselectOptionBlockCreate'
-import { MultiselectFields } from '../../../../../../../../__generated__/MultiselectFields'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 
 export const MULTISELECT_OPTION_BLOCK_CREATE = gql`
@@ -30,8 +30,7 @@ export const MULTISELECT_OPTION_BLOCK_CREATE = gql`
   }
 `
 
-interface MultiselectEditProps
-  extends TreeBlock<MultiselectFields> {
+interface MultiselectEditProps extends TreeBlock<MultiselectFields> {
   wrappers?: WrappersProps
 }
 

@@ -128,9 +128,9 @@ describe('getFooterElements', () => {
     })
 
     it('should return true if render mode is admin', () => {
-      expect(hasChatWidget({ journey: defaultJourney, renderMode: 'admin' })).toBe(
-        true
-      )
+      expect(
+        hasChatWidget({ journey: defaultJourney, renderMode: 'admin' })
+      ).toBe(true)
     })
 
     it('should return true if journey has chat widgets', () => {

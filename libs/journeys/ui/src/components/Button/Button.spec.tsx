@@ -1212,7 +1212,9 @@ describe('Button', () => {
 
       render(
         <MockedProvider>
-          <JourneyProvider value={{ journey: rtlJourney, renderMode: 'default' }}>
+          <JourneyProvider
+            value={{ journey: rtlJourney, renderMode: 'default' }}
+          >
             <Button {...iconBlock} />
           </JourneyProvider>
         </MockedProvider>

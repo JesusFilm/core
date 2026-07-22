@@ -100,11 +100,7 @@ const Template: Story = {
     <MockedProvider mocks={[submitEventMock]}>
       <StoryCard>
         <Typography {...typographyProps} />
-        <Multiselect
-          {...args}
-          uuid={() => 'uuid'}
-          submitLabel="Submit"
-        />
+        <Multiselect {...args} uuid={() => 'uuid'} submitLabel="Submit" />
         <Typography
           {...typographyProps}
           content="Multiselect is just the button group above"

@@ -133,7 +133,9 @@ describe('MediaScreen', () => {
     return render(
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: journeyData, renderMode: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: journeyData, renderMode: 'admin' }}
+          >
             <MediaScreen handleNext={handleNext} />
           </JourneyProvider>
         </SnackbarProvider>

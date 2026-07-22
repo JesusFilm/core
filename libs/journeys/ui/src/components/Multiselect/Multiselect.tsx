@@ -169,9 +169,7 @@ export function Multiselect({
 
   return (
     <>
-      <StyledListMultiselect
-        data-testid={`JourneysMultiselectList-${blockId}`}
-      >
+      <StyledListMultiselect data-testid={`JourneysMultiselectList-${blockId}`}>
         <ButtonGroup orientation="vertical" variant="contained" fullWidth>
           {options}
           {addOption && (

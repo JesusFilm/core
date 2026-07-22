@@ -9,8 +9,8 @@ import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { MULTISELECT_OPTION_FIELDS } from '@core/journeys/ui/MultiselectOption/multiselectOptionFields'
 import { MULTISELECT_FIELDS } from '@core/journeys/ui/Multiselect/multiselectFields'
+import { MULTISELECT_OPTION_FIELDS } from '@core/journeys/ui/MultiselectOption/multiselectOptionFields'
 import CheckSquareContainedIcon from '@core/shared/ui/icons/CheckSquareContained'
 
 import type {

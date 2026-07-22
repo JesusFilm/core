@@ -161,7 +161,9 @@ describe('ThemeBuilderDialog', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <JourneyProvider value={{ journey: mockJourney, renderMode: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: mockJourney, renderMode: 'admin' }}
+          >
             <ThemeBuilderDialog open onClose={handleClose} />
           </JourneyProvider>
         </MockedProvider>
@@ -177,7 +179,9 @@ describe('ThemeBuilderDialog', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <JourneyProvider value={{ journey: mockJourney, renderMode: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: mockJourney, renderMode: 'admin' }}
+          >
             <ThemeBuilderDialog open onClose={handleClose} />
           </JourneyProvider>
         </MockedProvider>
@@ -223,7 +227,9 @@ describe('ThemeBuilderDialog', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <JourneyProvider value={{ journey: mockJourney, renderMode: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: mockJourney, renderMode: 'admin' }}
+          >
             <ThemeBuilderDialog open onClose={handleClose} />
           </JourneyProvider>
         </MockedProvider>
@@ -238,7 +244,9 @@ describe('ThemeBuilderDialog', () => {
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[updateMock]}>
-          <JourneyProvider value={{ journey: mockJourney, renderMode: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: mockJourney, renderMode: 'admin' }}
+          >
             <ThemeBuilderDialog open onClose={handleClose} />
           </JourneyProvider>
         </MockedProvider>
@@ -299,7 +307,9 @@ describe('ThemeBuilderDialog', () => {
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[errorMock]}>
-          <JourneyProvider value={{ journey: mockJourney, renderMode: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: mockJourney, renderMode: 'admin' }}
+          >
             <ThemeBuilderDialog open onClose={handleClose} />
           </JourneyProvider>
         </MockedProvider>
@@ -385,7 +395,9 @@ describe('ThemeBuilderDialog', () => {
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[loadingMock]}>
-          <JourneyProvider value={{ journey: mockJourney, renderMode: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: mockJourney, renderMode: 'admin' }}
+          >
             <ThemeBuilderDialog open onClose={handleClose} />
           </JourneyProvider>
         </MockedProvider>

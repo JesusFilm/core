@@ -13,8 +13,8 @@ import {
   ThemeName,
   TypographyVariant
 } from '../../../../../../../../__generated__/globalTypes'
-import { MultiselectOptionFields } from '../../../../../../../../__generated__/MultiselectOptionFields'
 import { MultiselectFields } from '../../../../../../../../__generated__/MultiselectFields'
+import { MultiselectOptionFields } from '../../../../../../../../__generated__/MultiselectOptionFields'
 import { Canvas } from '../../Canvas'
 
 const MultiselectOptionEditStory: Meta<typeof Canvas> = {
