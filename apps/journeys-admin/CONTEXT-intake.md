@@ -120,11 +120,11 @@ Preview**; custom-domain / microwebsite settings live in the hosting/custom-doma
 **Signatures (suspected):** questions about how submit buttons behave — the action/logic wiring is
 complex on the code side.
 **Mental model:** every button/submit is a block **Action**. The viewer dispatches them in
-`libs/journeys/ui/src/libs/action/action.ts` + `components/Actions/Actions.tsx` (resolves
+`libs/journeys/ui/src/libs/action/action.ts` (resolves
 NavigateToBlock / link / email / phone); the text-answer submit is
 `libs/journeys/ui/src/components/TextResponse/TextResponse.tsx`.
-**Look first (fixer):** viewer dispatch → `libs/journeys/ui/src/libs/action/action.ts`,
-`components/Actions/Actions.tsx`; server action schema → `apis/api-journeys/src/schema/action/`
+**Look first (fixer):** viewer dispatch → `libs/journeys/ui/src/libs/action/action.ts`;
+server action schema → `apis/api-journeys/src/schema/action/`
 (`navigateToBlockAction/`, `linkAction/`, …); editor-side edits →
 `apps/journeys-admin/src/components/Editor/utils/useActionCommand/` + `src/libs/useBlockAction*UpdateMutation/`.
 **Handoff:** navigation/dispatch defects → agent-able; "how does X action work" → how-to.

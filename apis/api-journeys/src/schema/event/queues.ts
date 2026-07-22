@@ -1,9 +1,11 @@
+import type { Queue } from 'bullmq'
+
 // Internal queue holders for the event service. Not part of the event
 // service surface — production resolvers import from './eventService' and
 // never see the test injectors below.
 
 // Queue for visitor interaction emails
-let emailQueue: any
+let emailQueue: Queue | null
 try {
   // Avoid requiring Redis in tests
   if (process.env.NODE_ENV !== 'test') {
@@ -15,7 +17,7 @@ try {
 }
 
 // Queue for Google Sheets sync
-let googleSheetsSyncQueue: any
+let googleSheetsSyncQueue: Queue | null
 try {
   // Avoid requiring Redis in tests
   if (process.env.NODE_ENV !== 'test') {
@@ -27,11 +29,11 @@ try {
   googleSheetsSyncQueue = null
 }
 
-export function getEmailQueue(): any {
+export function getEmailQueue(): Queue | null {
   return emailQueue
 }
 
-export function getGoogleSheetsSyncQueue(): any {
+export function getGoogleSheetsSyncQueue(): Queue | null {
   return googleSheetsSyncQueue
 }
 
