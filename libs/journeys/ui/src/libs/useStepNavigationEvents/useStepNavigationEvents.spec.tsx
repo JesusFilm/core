@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
-import { renderHook, waitFor } from '@testing-library/react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import { TOptions } from 'i18next'
 import { usePlausible } from 'next-plausible'
 import { ReactElement, ReactNode } from 'react'
@@ -135,7 +135,7 @@ describe('useStepNavigationEvents', () => {
         }
       )
 
-      hook.current.handleNextNavigationEventCreate(step1)
+      act(() => hook.current.handleNextNavigationEventCreate(step1))
 
       await waitFor(() => expect(result).toHaveBeenCalled())
       expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
@@ -179,16 +179,31 @@ describe('useStepNavigationEvents', () => {
       }
       treeBlocksVar([noNextStep])
       blockHistoryVar([noNextStep])
+      // catch-all mock so a mutation fired past the guard is detected
+      const anyMutationResult = vi.fn(() => ({ data: {} }))
 
       const { result: hook } = renderHook(
         () => useStepNavigationEvents({ t }),
         {
-          wrapper: createWrapper([], journey)
+          wrapper: createWrapper(
+            [
+              {
+                request: { query: STEP_NEXT_EVENT_CREATE },
+                variableMatcher: () => true,
+                result: anyMutationResult
+              }
+            ],
+            journey
+          )
         }
       )
 
-      hook.current.handleNextNavigationEventCreate(noNextStep)
+      await act(async () => {
+        hook.current.handleNextNavigationEventCreate(noNextStep)
+        await new Promise((resolve) => setTimeout(resolve, 0))
+      })
 
+      expect(anyMutationResult).not.toHaveBeenCalled()
       expect(mockPlausible).not.toHaveBeenCalled()
       expect(mockedSendGTMEvent).not.toHaveBeenCalled()
     })
@@ -201,7 +216,7 @@ describe('useStepNavigationEvents', () => {
         }
       )
 
-      hook.current.handleNextNavigationEventCreate(step1)
+      act(() => hook.current.handleNextNavigationEventCreate(step1))
 
       await waitFor(() => expect(mockedSendGTMEvent).toHaveBeenCalled())
       expect(mockPlausible).not.toHaveBeenCalled()
@@ -246,7 +261,7 @@ describe('useStepNavigationEvents', () => {
         }
       )
 
-      hook.current.handlePreviousNavigationEventCreate(step2)
+      act(() => hook.current.handlePreviousNavigationEventCreate(step2))
 
       await waitFor(() => expect(result).toHaveBeenCalled())
       expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
@@ -284,18 +299,49 @@ describe('useStepNavigationEvents', () => {
 
     it('does nothing when there is no previous block in history', async () => {
       blockHistoryVar([step1])
+      // catch-all mock so a mutation fired past the guard is detected
+      const anyMutationResult = vi.fn(() => ({ data: {} }))
 
       const { result: hook } = renderHook(
         () => useStepNavigationEvents({ t }),
         {
-          wrapper: createWrapper([], journey)
+          wrapper: createWrapper(
+            [
+              {
+                request: { query: STEP_PREVIOUS_EVENT_CREATE },
+                variableMatcher: () => true,
+                result: anyMutationResult
+              }
+            ],
+            journey
+          )
         }
       )
 
-      hook.current.handlePreviousNavigationEventCreate(step1)
+      await act(async () => {
+        hook.current.handlePreviousNavigationEventCreate(step1)
+        await new Promise((resolve) => setTimeout(resolve, 0))
+      })
 
+      expect(anyMutationResult).not.toHaveBeenCalled()
       expect(mockPlausible).not.toHaveBeenCalled()
       expect(mockedSendGTMEvent).not.toHaveBeenCalled()
+    })
+
+    it('skips plausible when journey is undefined', async () => {
+      blockHistoryVar([step1, step2])
+
+      const { result: hook } = renderHook(
+        () => useStepNavigationEvents({ t }),
+        {
+          wrapper: createWrapper(mocks)
+        }
+      )
+
+      act(() => hook.current.handlePreviousNavigationEventCreate(step2))
+
+      await waitFor(() => expect(mockedSendGTMEvent).toHaveBeenCalled())
+      expect(mockPlausible).not.toHaveBeenCalled()
     })
   })
 })

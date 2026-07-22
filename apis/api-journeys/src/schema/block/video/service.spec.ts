@@ -112,18 +112,20 @@ describe('video service', () => {
       })
 
       await expect(fetchFieldsFromYouTube('invalid')).rejects.toMatchObject({
-        message: 'videoId cannot be found on YouTube'
+        message: 'videoId cannot be found on YouTube',
+        extensions: { code: 'NOT_FOUND' }
       })
     })
 
-    it('throws NOT_FOUND when YouTube returns an error body without items', async () => {
-      // e.g. quota exceeded or invalid API key
+    it('throws a non-NOT_FOUND error when YouTube returns an error body', async () => {
+      // quota exceeded / invalid API key must not read as "video missing"
       globalAny.fetch.mockResolvedValue({
         json: async () => ({ error: { code: 403, message: 'quotaExceeded' } })
       })
 
       await expect(fetchFieldsFromYouTube('abc')).rejects.toMatchObject({
-        message: 'videoId cannot be found on YouTube'
+        message: 'YouTube API request failed: quotaExceeded',
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
       })
     })
 
