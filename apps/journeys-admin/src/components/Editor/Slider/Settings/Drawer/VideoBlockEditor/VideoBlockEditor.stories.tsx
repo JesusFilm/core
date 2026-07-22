@@ -3,8 +3,8 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { screen, userEvent, waitFor } from 'storybook/test'
 
-import { InstantSearchTestWrapper } from '@core/journeys/ui/test/InstantSearchTestWrapper'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { InstantSearchTestWrapper } from '@core/journeys/ui/test/InstantSearchTestWrapper'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import {
