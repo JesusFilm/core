@@ -14,6 +14,7 @@ export function filterActionBlocks(step?: TreeBlock<StepBlock>): ActionBlock[] {
       block.__typename === 'RadioQuestionBlock' ? block.children : block
     )
     .filter(
-      (child) => card.coverBlockId !== child.id && isActionBlock(child)
-    ) as ActionBlock[]
+      (child): child is ActionBlock =>
+        card.coverBlockId !== child.id && isActionBlock(child)
+    )
 }
