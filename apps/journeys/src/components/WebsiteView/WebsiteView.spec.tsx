@@ -32,7 +32,7 @@ import {
   JOURNEY_VISITOR_UPDATE
 } from '../Conductor/Conductor'
 
-import { WebView } from '.'
+import { WebsiteView } from '.'
 
 const noopJourneyViewMock: MockedResponse = {
   request: { query: JOURNEY_VIEW_EVENT_CREATE },
@@ -96,7 +96,7 @@ vi.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
-describe('WebView', () => {
+describe('WebsiteView', () => {
   beforeEach(() => {
     const useBreakpointsMock = useBreakpoints as Mock
     useBreakpointsMock.mockReturnValue({
@@ -205,7 +205,7 @@ describe('WebView', () => {
       >
         <JourneyProvider value={{ journey, variant: 'default' }}>
           <SnackbarProvider>
-            <WebView
+            <WebsiteView
               blocks={basic}
               stepBlock={basic[0] as TreeBlock<StepFields>}
             />
@@ -229,7 +229,7 @@ describe('WebView', () => {
       <MockedProvider mocks={[...sideEffectMocks]}>
         <JourneyProvider value={{ journey }}>
           <SnackbarProvider>
-            <WebView
+            <WebsiteView
               blocks={basic}
               stepBlock={basic[0] as TreeBlock<StepFields>}
             />
@@ -248,7 +248,7 @@ describe('WebView', () => {
       <MockedProvider mocks={[...sideEffectMocks]}>
         <JourneyProvider value={{ journey }}>
           <SnackbarProvider>
-            <WebView
+            <WebsiteView
               blocks={videoBlocks}
               stepBlock={videoBlocks[0] as TreeBlock<StepFields>}
             />
@@ -326,7 +326,7 @@ describe('WebView', () => {
       <MockedProvider mocks={[...sideEffectMocks]}>
         <JourneyProvider value={{ journey }}>
           <SnackbarProvider>
-            <WebView
+            <WebsiteView
               blocks={backgroundVideoBlocks}
               stepBlock={backgroundVideoBlocks[0] as TreeBlock<StepFields>}
             />
@@ -343,7 +343,7 @@ describe('WebView', () => {
       <MockedProvider mocks={[...sideEffectMocks]}>
         <JourneyProvider value={{ journey }}>
           <SnackbarProvider>
-            <WebView
+            <WebsiteView
               blocks={basic}
               stepBlock={basic[0] as TreeBlock<StepFields>}
             />

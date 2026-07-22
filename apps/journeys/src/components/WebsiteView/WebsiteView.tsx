@@ -24,11 +24,11 @@ import {
   JOURNEY_VISITOR_UPDATE
 } from '../Conductor/Conductor'
 
-interface WebViewProps {
+interface WebsiteViewProps {
   blocks: TreeBlock[]
   stepBlock: TreeBlock<StepFields>
 }
-export function WebView({ blocks, stepBlock }: WebViewProps): ReactElement {
+export function WebsiteView({ blocks, stepBlock }: WebsiteViewProps): ReactElement {
   const { setTreeBlocks, blockHistory } = useBlocks()
   const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
@@ -146,7 +146,7 @@ export function WebView({ blocks, stepBlock }: WebViewProps): ReactElement {
       nested
     >
       <Container
-        data-testid="WebView"
+        data-testid="WebsiteView"
         maxWidth="xl"
         disableGutters
         sx={{

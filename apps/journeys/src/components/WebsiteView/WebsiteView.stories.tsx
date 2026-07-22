@@ -9,19 +9,19 @@ import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__ge
 import { journeysConfig } from '../../libs/storybook'
 import { basic } from '../../libs/testData/storyData'
 
-import { WebView } from '.'
+import { WebsiteView } from '.'
 
-const Demo: Meta<typeof WebView> = {
+const Demo: Meta<typeof WebsiteView> = {
   ...journeysConfig,
-  component: WebView,
-  title: 'Journeys/WebView',
+  component: WebsiteView,
+  title: 'Journeys/WebsiteView',
   parameters: {
     ...journeysConfig.parameters,
     layout: 'fullscreen'
   }
 }
 
-type Story = StoryObj<ComponentProps<typeof WebView> & { journey: Journey }>
+type Story = StoryObj<ComponentProps<typeof WebsiteView> & { journey: Journey }>
 
 const Template: Story = {
   render: ({ journey, ...props }) => {
@@ -29,7 +29,7 @@ const Template: Story = {
       <MockedProvider>
         <JourneyProvider value={{ journey }}>
           <SnackbarProvider>
-            <WebView {...props} />
+            <WebsiteView {...props} />
           </SnackbarProvider>
         </JourneyProvider>
       </MockedProvider>
