@@ -9,43 +9,7 @@ import {
 } from '@core/prisma/journeys/client'
 
 import { logger } from '../logger'
-
-// Queue for visitor interaction emails
-let emailQueue: any
-try {
-  // Avoid requiring Redis in tests
-  if (process.env.NODE_ENV !== 'test') {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    emailQueue = require('../../workers/emailEvents/queue').queue
-  }
-} catch {
-  emailQueue = null
-}
-
-// Queue for Google Sheets sync
-let googleSheetsSyncQueue: any
-try {
-  // Avoid requiring Redis in tests
-  if (process.env.NODE_ENV !== 'test') {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    googleSheetsSyncQueue =
-      require('../../workers/googleSheetsSync/queue').queue
-  }
-} catch {
-  googleSheetsSyncQueue = null
-}
-
-// Test helper to inject a mock queue
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export function __setEmailQueueForTests(mockQueue: any): void {
-  emailQueue = mockQueue
-}
-
-// Test helper to inject a mock Google Sheets sync queue
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export function __setGoogleSheetsSyncQueueForTests(mockQueue: any): void {
-  googleSheetsSyncQueue = mockQueue
-}
+import { getEmailQueue, getGoogleSheetsSyncQueue } from './queues'
 
 const TWO_MINUTES = 2 * 60 * 1000
 export const ONE_DAY = 24 * 60 * 60 // in seconds
@@ -195,6 +159,7 @@ export async function sendEventsEmail(
   journeyId: string,
   visitorId: string
 ): Promise<void> {
+  const emailQueue = getEmailQueue()
   if (process.env.NODE_ENV === 'test' || emailQueue == null) return
   const jobId = `visitor-event-${journeyId}-${visitorId}`
   const existingJob = await emailQueue.getJob(jobId)
@@ -218,6 +183,7 @@ export async function resetEventsEmailDelay(
   visitorId: string,
   delaySeconds?: number
 ): Promise<void> {
+  const emailQueue = getEmailQueue()
   if (process.env.NODE_ENV === 'test' || emailQueue == null) return
   const jobId = `visitor-event-${journeyId}-${visitorId}`
   const existingJob = await emailQueue.getJob(jobId)
@@ -259,6 +225,7 @@ export async function appendEventToGoogleSheets({
   row: (string | number | null)[]
   sheetName?: string
 }): Promise<void> {
+  const googleSheetsSyncQueue = getGoogleSheetsSyncQueue()
   if (process.env.NODE_ENV === 'test' || googleSheetsSyncQueue == null) return
 
   // Fetch syncs with integrationId needed for backfill jobs

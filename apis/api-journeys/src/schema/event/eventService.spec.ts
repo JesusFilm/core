@@ -3,8 +3,6 @@ import { vi } from 'vitest'
 import { prismaMock } from '../../../test/prismaMock'
 
 import {
-  __setEmailQueueForTests,
-  __setGoogleSheetsSyncQueueForTests,
   appendEventToGoogleSheets,
   getByUserIdAndJourneyId,
   getEventContext,
@@ -13,7 +11,11 @@ import {
   sendEventsEmail,
   validateBlock,
   validateBlockEvent
-} from './utils'
+} from './eventService'
+import {
+  __setEmailQueueForTests,
+  __setGoogleSheetsSyncQueueForTests
+} from './queues'
 
 const mockEmailQueue = {
   getJob: vi.fn(),
@@ -46,7 +48,7 @@ vi.mock('../logger', () => ({
   }
 }))
 
-describe('event utils', () => {
+describe('eventService', () => {
   const originalNodeEnv = process.env.NODE_ENV
 
   beforeEach(() => {
