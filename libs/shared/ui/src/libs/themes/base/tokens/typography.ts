@@ -1,6 +1,7 @@
 import { ThemeOptions } from '@mui/material/styles'
 
 import { FontFamilies } from '../..'
+import { THAI_FALLBACK_FONT } from '../../fonts'
 
 // Update the Typography's variant prop options
 declare module '@mui/material/styles' {
@@ -14,15 +15,18 @@ export function createFontFamilyString(font: string): string {
   if (font !== '') {
     fonts.push(`"${font}"`)
   }
-  fonts.push('Montserrat', '"Open Sans"', 'sans-serif')
+  fonts.push('Montserrat', '"Open Sans"', THAI_FALLBACK_FONT, 'sans-serif')
   return fonts.join(',')
 }
 
 export const baseTypography: Pick<ThemeOptions, 'typography'> = {
   typography: {
+    // THAI_FALLBACK_FONT must precede Tahoma: Tahoma ships Thai glyphs on
+    // Windows and would otherwise intercept Thai before Sarabun.
     fontFamily: [
       'Montserrat',
       '"Open Sans"',
+      THAI_FALLBACK_FONT,
       'Tahoma',
       'Verdana',
       'sans-serif'
@@ -71,13 +75,13 @@ export const baseTypography: Pick<ThemeOptions, 'typography'> = {
       letterSpacing: 2
     },
     body1: {
-      fontFamily: '"Open Sans","Tahoma","Verdana",sans-serif',
+      fontFamily: `"Open Sans",${THAI_FALLBACK_FONT},"Tahoma","Verdana",sans-serif`,
       fontSize: 16,
       fontWeight: 400,
       lineHeight: '24px'
     },
     body2: {
-      fontFamily: '"Open Sans","Tahoma","Verdana",sans-serif',
+      fontFamily: `"Open Sans",${THAI_FALLBACK_FONT},"Tahoma","Verdana",sans-serif`,
       fontSize: 14,
       fontWeight: 400,
       lineHeight: '20px'
@@ -90,7 +94,7 @@ export const baseTypography: Pick<ThemeOptions, 'typography'> = {
       marginBottom: '4px'
     },
     caption: {
-      fontFamily: '"Open Sans","Tahoma","Verdana",sans-serif',
+      fontFamily: `"Open Sans",${THAI_FALLBACK_FONT},"Tahoma","Verdana",sans-serif`,
       fontSize: 12,
       fontWeight: 400,
       lineHeight: '20px'
