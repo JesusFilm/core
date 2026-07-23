@@ -28,10 +28,16 @@ test('Watch Search Monitoring: submitting JESUS returns search results', async (
 
   const searchResponsePromise = page.waitForResponse((searchResponse) => {
     const request = searchResponse.request()
+    const actionUrl = new URL(searchResponse.url())
+    const actionPayload = request.postData()
+
     return (
       request.method() === 'POST' &&
       request.headers()['next-action'] != null &&
-      new URL(searchResponse.url()).hostname === 'www.jesusfilm.org'
+      actionUrl.origin === 'https://www.jesusfilm.org' &&
+      actionUrl.pathname === '/watch' &&
+      actionPayload?.includes('"query":"JESUS"') === true &&
+      actionPayload.includes('"surface":"watch-search"')
     )
   })
 
