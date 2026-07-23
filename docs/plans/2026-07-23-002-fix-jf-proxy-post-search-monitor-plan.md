@@ -49,8 +49,9 @@ missed.
 
 - **R1.** Requests claimed by the existing Worker routes continue to select
   `WATCH_PROXY_DEST` for `/watch*` and `RESOURCES_PROXY_DEST` elsewhere.
-- **R2.** The generic proxy handles all HTTP methods, including Next.js
-  server-action `POST`s.
+- **R2.** The generic proxy handles every HTTP method on `/watch*`, including
+  Next.js server-action `POST`s, while non-Watch proxy paths retain their
+  existing GET/HEAD-only contract.
 - **R3.** The upstream request preserves path, query, method, headers, cookies,
   and body without buffering or decoding the body.
 - **R4.** Trusted forwarding metadata represents the public request origin so
@@ -103,9 +104,10 @@ missed.
 
 ### Key Technical Decisions
 
-- **KTD1. Extend the existing Hono catch-all to all methods.** The route already
-  owns `www.jesusfilm.org/watch*`; changing its generic handler fixes the
-  production boundary without creating competing infrastructure.
+- **KTD1. Extend the existing Hono catch-all for all Watch methods.** The route
+  already owns `www.jesusfilm.org/watch*`; allowing every method there fixes
+  the production boundary without widening non-Watch mutation surfaces or
+  creating competing infrastructure.
 - **KTD2. Rebuild the upstream `Request` from the incoming raw request and the
   rewritten destination URL.** The platform `Request` contract carries method,
   headers, cookies, and body stream together and avoids an allowlist that will
@@ -127,8 +129,9 @@ missed.
 ### System-Wide Impact
 
 - **Edge routing:** The catch-all is shared by all Worker-owned paths, so
-  Resources and legacy GET behavior need regression coverage even though the
-  incident is Watch-specific.
+  non-Watch non-GET requests must remain rejected and Resources/legacy GET
+  behavior needs regression coverage even though the incident is
+  Watch-specific.
 - **Request streams:** The proxy must pass the original body stream through
   once. Reading it for logging or assertions in production would consume it
   before the origin.
@@ -167,10 +170,10 @@ missed.
 - **Files:** `workers/jf-proxy/src/index.ts`,
   `workers/jf-proxy/src/index.spec.ts`.
 - **Approach:** Register the generic proxy for all methods, derive the upstream
-  URL through the existing destination selection, construct the upstream
-  request from the incoming raw `Request`, overwrite canonical forwarding
-  metadata, preserve manual redirects, and gate the existing error fallback to
-  GET requests.
+  URL through the existing destination selection, reject non-Watch non-read
+  methods before proxying, construct the upstream request from the incoming
+  raw `Request`, overwrite canonical forwarding metadata, preserve manual
+  redirects, and gate the existing error fallback to GET requests.
 - **Test scenarios:**
   - POST a representative Next action with framework headers, cookie, query,
     and body; assert the Watch mock receives each unchanged plus canonical
@@ -179,6 +182,8 @@ missed.
     content type, and body reach the caller.
   - Return 404 and 500 for non-GET Watch requests and assert no not-found fetch
     occurs.
+  - Submit a non-Watch POST and assert it retains the existing edge 404 instead
+    of reaching the Resources destination.
   - Keep current GET document, cookie forwarding, Resources destination,
     redirect, association-file, and not-found tests green.
 - **Verification:** The focused Worker suite and Worker TypeScript/lint checks

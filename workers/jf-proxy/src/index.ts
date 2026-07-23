@@ -98,6 +98,11 @@ app.all('*', async (c) => {
   const publicUrl = new URL(c.req.url)
   const pathname = publicUrl.pathname
   const isWatchPath = pathname.startsWith('/watch')
+  const isReadRequest = c.req.method === 'GET' || c.req.method === 'HEAD'
+
+  if (!isWatchPath && !isReadRequest) {
+    return c.notFound()
+  }
 
   const proxyDest = isWatchPath
     ? (c.env.WATCH_PROXY_DEST ?? publicUrl.hostname)

@@ -472,7 +472,7 @@ describe('test the worker', () => {
     let capturedHeaders: Headers | Record<string, string> | undefined
 
     fetchMock
-      .get('http://watch.example.com')
+      .get('https://watch.example.com')
       .intercept({ path: '/watch?source=synthetic', method: 'POST' })
       .reply((request) => {
         capturedBody = decodeRequestBody(request.body)
@@ -487,7 +487,7 @@ describe('test the worker', () => {
       })
 
     const res = await app.request(
-      'http://localhost/watch?source=synthetic',
+      'https://www.jesusfilm.org/watch?source=synthetic',
       {
         method: 'POST',
         headers: {
@@ -520,8 +520,8 @@ describe('test the worker', () => {
     expect(getCapturedHeader('next-action')).toBe('action-id')
     expect(getCapturedHeader('next-router-state-tree')).toBe('%5B%22%22%5D')
     expect(getCapturedHeader('origin')).toBe('https://www.jesusfilm.org')
-    expect(getCapturedHeader('x-forwarded-host')).toBe('localhost')
-    expect(getCapturedHeader('x-forwarded-proto')).toBe('http')
+    expect(getCapturedHeader('x-forwarded-host')).toBe('www.jesusfilm.org')
+    expect(getCapturedHeader('x-forwarded-proto')).toBe('https')
   })
 
   it.each([
@@ -570,6 +570,19 @@ describe('test the worker', () => {
     )
     expect(res.status).toBe(200)
     expect(await res.text()).toBe('api content')
+  })
+
+  it('should not forward non-GET requests for non-Watch paths', async () => {
+    const res = await app.request(
+      'http://localhost/api/test',
+      {
+        method: 'POST',
+        body: 'mutation-payload'
+      },
+      workerEnv()
+    )
+
+    expect(res.status).toBe(404)
   })
 
   it('should handle 404 response', async () => {
