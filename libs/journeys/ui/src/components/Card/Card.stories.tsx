@@ -15,7 +15,7 @@ import {
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import { journeyUiConfig } from '../../test/journeyUiConfig'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 

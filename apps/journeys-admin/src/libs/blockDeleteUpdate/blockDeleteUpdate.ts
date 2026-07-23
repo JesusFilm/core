@@ -19,11 +19,11 @@ const getNestedChildRefs = (
 }
 
 export const blockDeleteUpdate = (
-  selectedBlock: BlockIdentifier,
-  response: Array<BlockIdentifier & { parentOrder: number | null }> | undefined,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   cache: ApolloCache<any>,
-  journeyId: string
+  journeyId: string,
+  selectedBlock: BlockIdentifier,
+  response: Array<BlockIdentifier & { parentOrder: number | null }> | undefined
 ): void => {
   if (response != null) {
     response.forEach((block) => {

@@ -1,4 +1,3 @@
-export { algoliaVideos } from './data'
 export {
   WATCH_ALL_VIDEOS_CONFIGURE,
   WATCH_HOME_CONFIGURE,

@@ -2,8 +2,8 @@ import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentPropsWithoutRef } from 'react'
 
 import { JourneyProvider } from '../../../libs/JourneyProvider'
-import { simpleComponentConfig } from '../../../libs/simpleComponentConfig'
 import { GetJourney_journey as Journey } from '../../../libs/useJourneyQuery/__generated__/GetJourney'
+import { simpleComponentConfig } from '../../../test/simpleComponentConfig'
 
 import { Logo } from '.'
 

@@ -15,7 +15,7 @@ import {
 } from '../../../../../../../../__generated__/BlockFields'
 import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
 import { TypographyBlockCreate } from '../../../../../../../../__generated__/TypographyBlockCreate'
-import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import { blockCreateUpdate } from '../../../../../../../libs/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 

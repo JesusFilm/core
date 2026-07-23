@@ -17,8 +17,11 @@ import { textResponseWithButtonDeleteMock } from '../../../../../../../libs/useT
 import { textResponseWithButtonRestoreMock } from '../../../../../../../libs/useTextResponseWithButtonRestore/useTextResponseWithButtonRestore.mock'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
+import {
+  stepWithSubmitButton,
+  stepWithoutSubmitButton
+} from '../submitButtonFixtures'
 
-import { stepWithSubmitButton, stepWithoutSubmitButton } from './data'
 import { TEXT_RESPONSE_BLOCK_CREATE } from './NewTextResponseButton'
 
 import { NewTextResponseButton } from '.'

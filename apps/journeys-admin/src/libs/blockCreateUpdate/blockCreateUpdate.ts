@@ -1,6 +1,6 @@
 import { ApolloCache, gql } from '@apollo/client'
 
-import { BlockFields } from '../../../../../__generated__/BlockFields'
+import { BlockFields } from '../../../__generated__/BlockFields'
 
 export function blockCreateUpdate(
   // apollo gives any type to ApolloCache generic
