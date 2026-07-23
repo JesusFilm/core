@@ -159,7 +159,7 @@ const Template: StoryObj<
   render: ({ mocks, ...args }) => (
     <MockedProvider mocks={mocks}>
       <ThemeProvider>
-        <JourneyProvider value={{ ...args, variant: 'admin' }}>
+        <JourneyProvider value={{ ...args, renderMode: 'admin' }}>
           <EditorProvider>
             <Box sx={{ width: DRAWER_WIDTH }}>
               <Host />

@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.base.ts7.json",
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "target": "es2021",
+    "jsx": "react-jsx",
+    "emitDecoratorMetadata": true,
+    "types": [
+      "node",
+      "vitest/globals",
+      "@nx/react/typings/cssmodule.d.ts",
+      "@nx/react/typings/image.d.ts"
+    ]
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "vitest.config.mts"]
+}

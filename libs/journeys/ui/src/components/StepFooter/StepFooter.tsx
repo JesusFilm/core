@@ -40,7 +40,7 @@ export function StepFooter({
   sx,
   selectedStep: selectedStepProp
 }: StepFooterProps): ReactElement {
-  const { journey, variant } = useJourney()
+  const { journey, renderMode } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const {
     state: { selectedStep: editorSelectedStep }
@@ -52,15 +52,20 @@ export function StepFooter({
   const card = getCardChild(selectedStep)
 
   const flags = useFlags()
-  const hostAvatar = hasHostAvatar({ journey, variant })
+  const hostAvatar = hasHostAvatar({ journey, renderMode })
   const hostDetails = hasHostDetails({ journey })
-  const chat = hasChatWidget({ journey, variant })
+  const chat = hasChatWidget({ journey, renderMode })
   const aiChat =
-    hasAiChatButton({ journey, variant, card }) && flags.apologistChat === true
+    hasAiChatButton({ journey, renderMode, card }) &&
+    flags.apologistChat === true
   const title = getTitle({ journey })
 
-  const footerMobileHeight = getFooterMobileHeight({ journey, variant, card })
-  const combinedFooter = hasCombinedFooter({ journey, variant })
+  const footerMobileHeight = getFooterMobileHeight({
+    journey,
+    renderMode,
+    card
+  })
+  const combinedFooter = hasCombinedFooter({ journey, renderMode })
 
   const { menuButtonIcon } = journey ?? {}
   const hasMenuButtonIcon = menuButtonIcon != null
@@ -94,7 +99,7 @@ export function StepFooter({
         justifyContent="space-between"
         spacing={2}
         sx={{
-          px: { xs: variant === 'default' ? 6 : 3, lg: 0 },
+          px: { xs: renderMode === 'default' ? 6 : 3, lg: 0 },
           py: { xs: 2, lg: 0 },
 
           flexDirection: { lg: rtl ? 'row-reverse' : 'row' },
@@ -145,7 +150,7 @@ export function StepFooter({
             >
               {hostAvatar && (
                 <HostAvatars
-                  hasPlaceholder={variant === 'admin'}
+                  hasPlaceholder={renderMode === 'admin'}
                   avatarSrc1={journey?.host?.src1}
                   avatarSrc2={journey?.host?.src2}
                 />

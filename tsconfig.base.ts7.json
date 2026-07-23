@@ -1,0 +1,49 @@
+{
+  // TypeScript 7 variant of tsconfig.base.json for workspaces type-checked by
+  // `pnpm tsc7` (TS 7 removed baseUrl and node10 resolution, but the TS 5 world
+  // still needs them: vite-tsconfig-paths and Next resolve aliases via baseUrl).
+  // KEEP THE paths MAP IN SYNC with tsconfig.base.json.
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "bundler",
+    "module": "esnext",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "lib": ["es2021", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "paths": {
+      "@core/journeys/ui/*": [
+        "./libs/journeys/ui/src/components/*",
+        "./libs/journeys/ui/src/libs/*"
+      ],
+      "@core/prisma/analytics/*": ["./libs/prisma/analytics/src/*"],
+      "@core/prisma/journeys/*": ["./libs/prisma/journeys/src/*"],
+      "@core/prisma/languages/*": ["./libs/prisma/languages/src/*"],
+      "@core/prisma/media/*": ["./libs/prisma/media/src/*"],
+      "@core/prisma/users/*": ["./libs/prisma/users/src/*"],
+      "@core/shared/ai/*": ["./libs/shared/ai/src/*"],
+      "@core/shared/dev-hosts": ["./libs/shared/dev-hosts/src"],
+      "@core/shared/gql": ["./libs/shared/gql/src"],
+      "@core/shared/user-delete": ["./libs/shared/user-delete/src"],
+      "@core/shared/ui-dynamic/*": [
+        "./libs/shared/ui-dynamic/src/components/*",
+        "./libs/shared/ui-dynamic/src/libs/*"
+      ],
+      "@core/shared/ui/*": [
+        "./libs/shared/ui/src/components/*",
+        "./libs/shared/ui/src/libs/*"
+      ],
+      "@core/shared/ui-modern/*": ["./libs/shared/ui-modern/src/*"],
+      "@core/yoga/*": ["./libs/yoga/src/*"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

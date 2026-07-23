@@ -39,7 +39,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b apps/docs-e2e/tsconfig.json"
+        "command": "pnpm tsc7 -p apps/docs-e2e/tsconfig.ts7.json"
       }
     },
     "lint": {

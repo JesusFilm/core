@@ -43,7 +43,7 @@ const VariantTemplate: VariantStory = {
           themeName: ThemeName.base,
           language: args.language
         } as unknown as Journey,
-        variant: 'admin'
+        renderMode: 'admin'
       }}
     >
       <Container>

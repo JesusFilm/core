@@ -73,7 +73,7 @@ export function PageCollection(): ReactElement {
     (slug: string) => {
       if (collectionSegment == null) return
       const normalizedSlug = slug.replace('.html', '')
-      const path = `/watch/${collectionSegment}/${encodeURIComponent(
+      const path = `/${collectionSegment}/${encodeURIComponent(
         normalizedSlug
       )}.html`
       void router.push(path, undefined, { locale: router.locale })

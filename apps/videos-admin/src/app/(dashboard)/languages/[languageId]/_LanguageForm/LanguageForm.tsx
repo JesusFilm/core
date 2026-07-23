@@ -4,11 +4,19 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
+import Link from '@mui/material/Link'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
+import NextLink from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, ReactNode, useMemo } from 'react'
@@ -16,11 +24,21 @@ import { ReactElement, ReactNode, useMemo } from 'react'
 import { CancelButton } from '../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../components/SaveButton'
 import {
+  DEFAULT_LANGUAGE_ID,
+  GET_LANGUAGE_STUDIO_MANAGED_FILMS,
+  LANGUAGE_STUDIO_MANAGED_FILM_IDS,
+  LINKED_LANGUAGE_STUDIO_MANAGED_FILMS_LABEL,
+  getLanguageStudioManagedFilmPath,
+  getLinkedLanguageStudioManagedFilmsForLanguage
+} from '../../_LanguageStudioManagedFilms/languageStudioManagedFilms'
+import type {
+  GetLanguageStudioManagedFilmsData,
+  GetLanguageStudioManagedFilmsVariables
+} from '../../_LanguageStudioManagedFilms/languageStudioManagedFilms'
+import {
   CountryLanguageLink,
   LanguageCountryLinks
 } from '../_LanguageCountryLinks'
-
-const DEFAULT_LANGUAGE_ID = '529'
 
 export const GET_LANGUAGE = gql`
   query GetLanguageForAdmin($id: ID!, $nameLanguageId: ID) {
@@ -159,6 +177,15 @@ export function LanguageForm(): ReactElement {
   >(GET_LANGUAGE, {
     variables: { id: languageId, nameLanguageId: DEFAULT_LANGUAGE_ID }
   })
+  const { data: linkedFilmsData, loading: linkedFilmsLoading } = useQuery<
+    GetLanguageStudioManagedFilmsData,
+    GetLanguageStudioManagedFilmsVariables
+  >(GET_LANGUAGE_STUDIO_MANAGED_FILMS, {
+    variables: {
+      ids: LANGUAGE_STUDIO_MANAGED_FILM_IDS,
+      languageId: DEFAULT_LANGUAGE_ID
+    }
+  })
 
   const [updateLanguage] = useMutation(UPDATE_LANGUAGE)
   const [updateLanguageName] = useMutation(UPDATE_LANGUAGE_NAME)
@@ -171,6 +198,14 @@ export function LanguageForm(): ReactElement {
   const primaryName = useMemo(
     () => getPrimaryName(language?.nativeName ?? []),
     [language?.nativeName]
+  )
+  const linkedFilms = useMemo(
+    () =>
+      getLinkedLanguageStudioManagedFilmsForLanguage(
+        linkedFilmsData,
+        languageId
+      ),
+    [linkedFilmsData?.adminVideos, languageId]
   )
 
   const initialValues: LanguageFormValues = {
@@ -368,6 +403,60 @@ export function LanguageForm(): ReactElement {
         </Formik>
       </Paper>
 
+      <Paper sx={{ p: 3 }}>
+        <Typography component="h3" variant="h6" sx={{ mb: 2 }}>
+          {LINKED_LANGUAGE_STUDIO_MANAGED_FILMS_LABEL}
+        </Typography>
+        {linkedFilmsLoading ? (
+          <Typography color="text.secondary">
+            Loading film version...
+          </Typography>
+        ) : linkedFilms.length === 0 ? (
+          <Typography color="text.secondary">-</Typography>
+        ) : (
+          <TableContainer>
+            <Table
+              size="small"
+              aria-label={LINKED_LANGUAGE_STUDIO_MANAGED_FILMS_LABEL}
+            >
+              <TableHead>
+                <TableRow>
+                  <TableCell>Film</TableCell>
+                  <TableCell>Actual Version Number</TableCell>
+                  <TableCell>Video ID</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {linkedFilms.map((linkedFilm) => {
+                  const href = getLanguageStudioManagedFilmPath({
+                    videoId: linkedFilm.videoId,
+                    variantId: linkedFilm.variant.id
+                  })
+
+                  return (
+                    <TableRow
+                      key={`${linkedFilm.videoId}-${linkedFilm.variant.id}`}
+                    >
+                      <TableCell>
+                        <Link component={NextLink} href={href}>
+                          {linkedFilm.title}
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <Link component={NextLink} href={href}>
+                          {linkedFilm.variant.version}
+                        </Link>
+                      </TableCell>
+                      <TableCell>{linkedFilm.videoId}</TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+      </Paper>
+
       <LanguageCountryLinks
         languageId={loadedLanguage.id}
         countryLanguages={loadedLanguage.countryLanguages}
@@ -378,3 +467,5 @@ export function LanguageForm(): ReactElement {
     </LanguageEditorShell>
   )
 }
+
+export { GET_LANGUAGE_STUDIO_MANAGED_FILMS }

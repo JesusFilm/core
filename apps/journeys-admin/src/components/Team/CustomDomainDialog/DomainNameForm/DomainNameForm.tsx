@@ -119,7 +119,9 @@ export function DomainNameForm({
         if (createCustomDomain?.customDomainCreate != null)
           cache.modify({
             fields: {
-              customDomains(existingCustomDomains = []) {
+              customDomains(existingCustomDomains = [] as const) {
+                if (!Array.isArray(existingCustomDomains))
+                  return existingCustomDomains
                 const newCustomDomainRef = cache.writeFragment({
                   data: createCustomDomain.customDomainCreate,
                   fragment: gql`

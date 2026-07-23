@@ -23,7 +23,7 @@ describe('ChatHeader', () => {
   it('carries the journey language as ?lang on the about-this-chat link (NES-1724)', () => {
     const journey = { language: { bcp47: 'es' } } as unknown as Journey
     const { getByRole } = render(
-      <JourneyProvider value={{ journey, variant: 'default' }}>
+      <JourneyProvider value={{ journey, renderMode: 'default' }}>
         <ChatHeader />
       </JourneyProvider>
     )

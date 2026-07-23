@@ -22,7 +22,7 @@ export function InformationButton({
   sx
 }: InformationButtonProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const { journey, variant } = useJourney()
+  const { journey, renderMode } = useJourney()
 
   const theme = useTheme()
   const { t } = useTranslation('libs-journeys-ui')
@@ -30,7 +30,7 @@ export function InformationButton({
   const router = useRouter()
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>): void => {
-    if (variant === 'default' || variant === 'embed')
+    if (renderMode === 'default' || renderMode === 'embed')
       setAnchorEl(event.currentTarget)
   }
   const handleClose = (): void => {
