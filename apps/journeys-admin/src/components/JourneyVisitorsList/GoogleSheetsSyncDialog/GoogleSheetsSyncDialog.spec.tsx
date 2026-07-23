@@ -2,11 +2,11 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import mockRouter from 'next-router-mock'
 import { type Mock, type MockedFunction } from 'vitest'
 
-import { useAuth } from '../../../../libs/auth'
+import { useAuth } from '../../../libs/auth'
 
 import { GoogleSheetsSyncDialog } from './GoogleSheetsSyncDialog'
 
-vi.mock('../../../../libs/auth', () => ({
+vi.mock('../../../libs/auth', () => ({
   useAuth: vi.fn()
 }))
 
@@ -39,7 +39,7 @@ vi.mock('@apollo/client', () => ({
 
 const mockUseIntegrationQuery = vi.fn()
 
-vi.mock('../../../../libs/useIntegrationQuery/useIntegrationQuery', () => ({
+vi.mock('../../../libs/useIntegrationQuery/useIntegrationQuery', () => ({
   useIntegrationQuery: (...args: unknown[]) => mockUseIntegrationQuery(...args)
 }))
 

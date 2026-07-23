@@ -1,5 +1,5 @@
 import { SxProps } from '@mui/material/styles'
-import { ReactElement } from 'react'
+import { ComponentType, ReactElement } from 'react'
 
 import CheckBroken from '@core/shared/ui/icons/CheckBroken'
 import CheckContained from '@core/shared/ui/icons/CheckContained'
@@ -47,7 +47,12 @@ interface ChatIconProps {
 }
 
 export function MessageChatIcon({ platform, sx }: ChatIconProps): ReactElement {
-  const platformComponents = {
+  // Record<MessagePlatform, ...> so adding a MessagePlatform enum value
+  // without an icon here is a compile error, not a runtime crash
+  const platformComponents: Record<
+    MessagePlatform,
+    ComponentType<{ sx?: SxProps }>
+  > = {
     facebook: Facebook,
     telegram: Telegram,
     whatsApp: WhatsApp,

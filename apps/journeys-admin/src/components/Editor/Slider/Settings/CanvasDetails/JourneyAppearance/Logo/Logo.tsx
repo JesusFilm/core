@@ -26,7 +26,7 @@ import {
   LogoBlockCreate,
   LogoBlockCreateVariables
 } from '../../../../../../../../__generated__/LogoBlockCreate'
-import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import { blockCreateUpdate } from '../../../../../../../libs/blockCreateUpdate'
 import { ImageSource } from '../../../Drawer/ImageSource'
 import { Accordion } from '../../Properties/Accordion'
 import { FocalPoint } from '../../Properties/blocks/Card/BackgroundMedia/Image/FocalPoint'

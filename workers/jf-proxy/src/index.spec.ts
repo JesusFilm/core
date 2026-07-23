@@ -4,6 +4,15 @@ import app from '.'
 
 const graphQlEndpoint = 'http://graphql.example.com'
 
+function decodeRequestBody(body: unknown): string {
+  if (typeof body === 'string') return body
+  if (body instanceof Uint8Array) return new TextDecoder().decode(body)
+  if (body instanceof ArrayBuffer) {
+    return new TextDecoder().decode(new Uint8Array(body))
+  }
+  throw new TypeError('Expected the intercepted request to have a text body')
+}
+
 function workerEnv(
   overrides: Record<string, string | undefined> = {}
 ): Record<string, string | undefined> {
@@ -26,12 +35,7 @@ function expectGraphQlRequest(
     .get(graphQlEndpoint)
     .intercept({ path: '/', method: 'POST' })
     .reply(({ body }) => {
-      const bodyText =
-        typeof body === 'string'
-          ? body
-          : body instanceof Uint8Array
-            ? new TextDecoder().decode(body)
-            : String(body)
+      const bodyText = decodeRequestBody(body)
       const requestBody = JSON.parse(bodyText)
       assertBody?.(requestBody)
       return {
@@ -401,47 +405,46 @@ describe('test the worker', () => {
     }
   })
 
-  it('should route /watch path with EXPERIMENTAL cookie to WATCH_PROXY_DEST', async () => {
-    fetchMock
-      .get('http://watch.example.com')
-      .intercept({ path: '/watch' })
-      .reply(200, 'watch content')
+  it.each([
+    ['/watch', undefined],
+    ['/watching', undefined],
+    ['/watch/video/123', 'other=value'],
+    ['/watch/video/456', 'EXPERIMENTAL=true']
+  ])(
+    'should route %s to WATCH_PROXY_DEST regardless of cookies',
+    async (path, cookie) => {
+      fetchMock
+        .get('http://watch.example.com')
+        .intercept({ path })
+        .reply(200, 'watch content')
 
-    const res = await app.request(
-      'http://localhost/watch',
-      {
-        headers: {
-          cookie: 'EXPERIMENTAL=true'
-        }
-      },
-      {
-        RESOURCES_PROXY_DEST: 'resources.example.com',
-        WATCH_PROXY_DEST: 'watch.example.com'
-      }
-    )
-    expect(res.status).toBe(200)
-    expect(await res.text()).toBe('watch content')
-  })
+      const res = await app.request(
+        `http://localhost${path}`,
+        cookie ? { headers: { cookie } } : {},
+        workerEnv()
+      )
 
-  it('should route /watch path without EXPERIMENTAL cookie to RESOURCES_PROXY_DEST', async () => {
-    fetchMock
-      .get('http://resources.example.com')
-      .intercept({ path: '/watch' })
-      .reply(200, 'resources content')
+      expect(res.status).toBe(200)
+      expect(await res.text()).toBe('watch content')
+    }
+  )
 
-    const res = await app.request(
-      'http://localhost/watch',
-      {},
-      {
-        RESOURCES_PROXY_DEST: 'resources.example.com',
-        WATCH_PROXY_DEST: 'watch.example.com'
-      }
-    )
-    expect(res.status).toBe(200)
-    expect(await res.text()).toBe('resources content')
-  })
+  it.each(['/journeys', '/journeys/123', '/resources', '/resources/'])(
+    'should route %s to RESOURCES_PROXY_DEST',
+    async (path) => {
+      fetchMock
+        .get('http://resources.example.com')
+        .intercept({ path })
+        .reply(200, 'resources content')
 
-  it('should route /watch/subpath with EXPERIMENTAL cookie to WATCH_PROXY_DEST', async () => {
+      const res = await app.request(`http://localhost${path}`, {}, workerEnv())
+
+      expect(res.status).toBe(200)
+      expect(await res.text()).toBe('resources content')
+    }
+  )
+
+  it('should continue passing cookies through to WATCH_PROXY_DEST', async () => {
     fetchMock
       .get('http://watch.example.com')
       .intercept({ path: '/watch/video/123' })
@@ -463,29 +466,91 @@ describe('test the worker', () => {
     expect(await res.text()).toBe('watch video content')
   })
 
-  it('should route /watch/subpath without EXPERIMENTAL cookie to RESOURCES_PROXY_DEST', async () => {
+  it('should forward a Next.js server action POST to WATCH_PROXY_DEST', async () => {
+    const actionBody = '1_{"query":"JESUS"}'
+    let capturedBody: string | undefined
+    let capturedHeaders: Headers | Record<string, string> | undefined
+
     fetchMock
-      .get('http://resources.example.com')
-      .intercept({ path: '/watch/video/123' })
-      .reply(200, 'resources video content')
+      .get('https://watch.example.com')
+      .intercept({ path: '/watch?source=synthetic', method: 'POST' })
+      .reply((request) => {
+        capturedBody = decodeRequestBody(request.body)
+        capturedHeaders = request.headers
+        return {
+          statusCode: 200,
+          data: '1:{"ok":true}',
+          responseOptions: {
+            headers: { 'Content-Type': 'text/x-component' }
+          }
+        }
+      })
 
     const res = await app.request(
-      'http://localhost/watch/video/123',
+      'https://www.jesusfilm.org/watch?source=synthetic',
       {
+        method: 'POST',
         headers: {
-          cookie: 'other=value'
-        }
+          accept: 'text/x-component',
+          cookie: 'forge_web_session=session-value',
+          'next-action': 'action-id',
+          'next-router-state-tree': '%5B%22%22%5D',
+          origin: 'https://www.jesusfilm.org',
+          'x-forwarded-host': 'attacker.example.com',
+          'x-forwarded-proto': 'http'
+        },
+        body: actionBody
       },
-      {
-        RESOURCES_PROXY_DEST: 'resources.example.com',
-        WATCH_PROXY_DEST: 'watch.example.com'
-      }
+      workerEnv()
     )
+
     expect(res.status).toBe(200)
-    expect(await res.text()).toBe('resources video content')
+    expect(res.headers.get('content-type')).toBe('text/x-component')
+    expect(await res.text()).toBe('1:{"ok":true}')
+    expect(capturedBody).toBe(actionBody)
+    expect(capturedHeaders).toBeDefined()
+
+    const getCapturedHeader = (name: string): string | null | undefined =>
+      capturedHeaders instanceof Headers
+        ? capturedHeaders.get(name)
+        : capturedHeaders?.[name]
+
+    expect(getCapturedHeader('accept')).toBe('text/x-component')
+    expect(getCapturedHeader('cookie')).toBe('forge_web_session=session-value')
+    expect(getCapturedHeader('next-action')).toBe('action-id')
+    expect(getCapturedHeader('next-router-state-tree')).toBe('%5B%22%22%5D')
+    expect(getCapturedHeader('origin')).toBe('https://www.jesusfilm.org')
+    expect(getCapturedHeader('x-forwarded-host')).toBe('www.jesusfilm.org')
+    expect(getCapturedHeader('x-forwarded-proto')).toBe('https')
   })
 
-  it('should route non-/watch paths to RESOURCES_PROXY_DEST regardless of cookie', async () => {
+  it.each([
+    [404, 'action not found'],
+    [500, 'action failed']
+  ])(
+    'should pass through a %s response for a non-GET Watch request',
+    async (status, responseBody) => {
+      fetchMock
+        .get('http://watch.example.com')
+        .intercept({ path: '/watch', method: 'POST' })
+        .reply(status, responseBody)
+
+      const res = await app.request(
+        'http://localhost/watch',
+        {
+          method: 'POST',
+          headers: { 'next-action': 'stale-action-id' },
+          body: 'action-payload'
+        },
+        workerEnv()
+      )
+
+      expect(res.status).toBe(status)
+      expect(await res.text()).toBe(responseBody)
+    }
+  )
+
+  it('should route other worker paths to RESOURCES_PROXY_DEST', async () => {
     fetchMock
       .get('http://resources.example.com')
       .intercept({ path: '/api/test' })
@@ -505,6 +570,19 @@ describe('test the worker', () => {
     )
     expect(res.status).toBe(200)
     expect(await res.text()).toBe('api content')
+  })
+
+  it('should not forward non-GET requests for non-Watch paths', async () => {
+    const res = await app.request(
+      'http://localhost/api/test',
+      {
+        method: 'POST',
+        body: 'mutation-payload'
+      },
+      workerEnv()
+    )
+
+    expect(res.status).toBe(404)
   })
 
   it('should handle 404 response', async () => {

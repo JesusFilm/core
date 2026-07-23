@@ -10,8 +10,11 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
+import {
+  stepWithSubmitButton,
+  stepWithoutSubmitButton
+} from '../submitButtonFixtures'
 
-import { stepWithSubmitButton, stepWithoutSubmitButton } from './data'
 import {
   MULTISELECT_BLOCK_CREATE,
   MULTISELECT_WITH_BUTTON_CREATE,

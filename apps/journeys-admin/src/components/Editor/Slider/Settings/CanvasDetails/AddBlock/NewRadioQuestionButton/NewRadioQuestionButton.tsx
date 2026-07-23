@@ -16,7 +16,7 @@ import type {
   BlockFields_RadioQuestionBlock as RadioQuestionBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import type { RadioQuestionBlockCreate } from '../../../../../../../../__generated__/RadioQuestionBlockCreate'
-import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import { blockCreateUpdate } from '../../../../../../../libs/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 

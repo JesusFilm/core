@@ -1,6 +1,5 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { graphql } from 'gql.tada'
-import fetch from 'node-fetch'
 
 import { prisma } from '@core/prisma/journeys/client'
 import {
@@ -10,9 +9,14 @@ import {
 
 import { env } from '../../../env'
 import { generateBlurhashAndMetadataFromUrl } from '../../../utils/generateBlurhashAndMetadataFromUrl'
+import { fetchFieldsFromYouTube } from '../../block/video/service'
 
+// SSRF guard for AI simple-journey image URLs. Every host here must also
+// appear in images.remotePatterns in apps/journeys-admin/next.config.js and
+// apps/journeys/next.config.js (those lists carry additional hosts), or the
+// stored image will not render. Semantics differ: this guard also accepts
+// any subdomain of a listed host; remotePatterns match exact hostnames.
 const ALLOWED_IMAGE_HOSTNAMES = [
-  // matches jourenys-admin next.config.js
   'localhost',
   'unsplash.com',
   'images.unsplash.com',
@@ -110,37 +114,6 @@ function extractYouTubeVideoId(url: string): string | null {
   return generic ? generic[1] : null
 }
 
-// parse iso8601 duration function
-function parseISO8601Duration(duration: string): number {
-  const match = duration.match(/P(\d+Y)?(\d+W)?(\d+D)?T(\d+H)?(\d+M)?(\d+S)?/)
-  if (match == null) return 0
-  const [years, weeks, days, hours, minutes, seconds] = match
-    .slice(1)
-    .map((period) =>
-      period != null ? Number.parseInt(period.replace(/\D/, '')) : 0
-    )
-  return (
-    (((years * 365 + weeks * 7 + days) * 24 + hours) * 60 + minutes) * 60 +
-    seconds
-  )
-}
-
-// get youtube video duration
-async function getYouTubeVideoDuration(videoId: string): Promise<number> {
-  const videosQuery = new URLSearchParams({
-    part: 'contentDetails',
-    key: env.FIREBASE_API_KEY,
-    id: videoId
-  }).toString()
-  const response = await fetch(
-    `https://www.googleapis.com/youtube/v3/videos?${videosQuery}`
-  )
-  const data = await response.json()
-  const isoDuration = data.items?.[0]?.contentDetails?.duration
-  if (!isoDuration) throw new Error('Could not fetch video duration')
-  return parseISO8601Duration(isoDuration)
-}
-
 export async function updateSimpleJourney(
   journeyId: string,
   simple: JourneySimpleUpdate
@@ -232,7 +205,8 @@ export async function updateSimpleJourney(
         if (videoId == null) {
           throw new Error('Invalid YouTube video URL')
         }
-        const videoDuration = await getYouTubeVideoDuration(videoId)
+        const { duration: videoDuration } =
+          await fetchFieldsFromYouTube(videoId)
         await tx.block.create({
           data: {
             journeyId,

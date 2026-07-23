@@ -14,7 +14,7 @@ import {
   BlockFields_ImageBlock as ImageBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import { ImageBlockCreate } from '../../../../../../../../__generated__/ImageBlockCreate'
-import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import { blockCreateUpdate } from '../../../../../../../libs/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
