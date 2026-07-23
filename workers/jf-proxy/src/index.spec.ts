@@ -401,47 +401,46 @@ describe('test the worker', () => {
     }
   })
 
-  it('should route /watch path with EXPERIMENTAL cookie to WATCH_PROXY_DEST', async () => {
-    fetchMock
-      .get('http://watch.example.com')
-      .intercept({ path: '/watch' })
-      .reply(200, 'watch content')
+  it.each([
+    ['/watch', undefined],
+    ['/watching', undefined],
+    ['/watch/video/123', 'other=value'],
+    ['/watch/video/456', 'EXPERIMENTAL=true']
+  ])(
+    'should route %s to WATCH_PROXY_DEST regardless of cookies',
+    async (path, cookie) => {
+      fetchMock
+        .get('http://watch.example.com')
+        .intercept({ path })
+        .reply(200, 'watch content')
 
-    const res = await app.request(
-      'http://localhost/watch',
-      {
-        headers: {
-          cookie: 'EXPERIMENTAL=true'
-        }
-      },
-      {
-        RESOURCES_PROXY_DEST: 'resources.example.com',
-        WATCH_PROXY_DEST: 'watch.example.com'
-      }
-    )
-    expect(res.status).toBe(200)
-    expect(await res.text()).toBe('watch content')
-  })
+      const res = await app.request(
+        `http://localhost${path}`,
+        cookie ? { headers: { cookie } } : {},
+        workerEnv()
+      )
 
-  it('should route /watch path without EXPERIMENTAL cookie to RESOURCES_PROXY_DEST', async () => {
-    fetchMock
-      .get('http://resources.example.com')
-      .intercept({ path: '/watch' })
-      .reply(200, 'resources content')
+      expect(res.status).toBe(200)
+      expect(await res.text()).toBe('watch content')
+    }
+  )
 
-    const res = await app.request(
-      'http://localhost/watch',
-      {},
-      {
-        RESOURCES_PROXY_DEST: 'resources.example.com',
-        WATCH_PROXY_DEST: 'watch.example.com'
-      }
-    )
-    expect(res.status).toBe(200)
-    expect(await res.text()).toBe('resources content')
-  })
+  it.each(['/journeys', '/journeys/123', '/resources', '/resources/'])(
+    'should route %s to RESOURCES_PROXY_DEST',
+    async (path) => {
+      fetchMock
+        .get('http://resources.example.com')
+        .intercept({ path })
+        .reply(200, 'resources content')
 
-  it('should route /watch/subpath with EXPERIMENTAL cookie to WATCH_PROXY_DEST', async () => {
+      const res = await app.request(`http://localhost${path}`, {}, workerEnv())
+
+      expect(res.status).toBe(200)
+      expect(await res.text()).toBe('resources content')
+    }
+  )
+
+  it('should continue passing cookies through to WATCH_PROXY_DEST', async () => {
     fetchMock
       .get('http://watch.example.com')
       .intercept({ path: '/watch/video/123' })
@@ -463,29 +462,7 @@ describe('test the worker', () => {
     expect(await res.text()).toBe('watch video content')
   })
 
-  it('should route /watch/subpath without EXPERIMENTAL cookie to RESOURCES_PROXY_DEST', async () => {
-    fetchMock
-      .get('http://resources.example.com')
-      .intercept({ path: '/watch/video/123' })
-      .reply(200, 'resources video content')
-
-    const res = await app.request(
-      'http://localhost/watch/video/123',
-      {
-        headers: {
-          cookie: 'other=value'
-        }
-      },
-      {
-        RESOURCES_PROXY_DEST: 'resources.example.com',
-        WATCH_PROXY_DEST: 'watch.example.com'
-      }
-    )
-    expect(res.status).toBe(200)
-    expect(await res.text()).toBe('resources video content')
-  })
-
-  it('should route non-/watch paths to RESOURCES_PROXY_DEST regardless of cookie', async () => {
+  it('should route other worker paths to RESOURCES_PROXY_DEST', async () => {
     fetchMock
       .get('http://resources.example.com')
       .intercept({ path: '/api/test' })

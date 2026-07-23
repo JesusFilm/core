@@ -98,16 +98,12 @@ app.get('*', async (c) => {
   const url = new URL(c.req.url)
   const pathname = url.pathname
 
-  // Check if path is /watch and has EXPERIMENTAL cookie
   const cookieHeader = c.req.header('cookie')
-  const hasExperimentalCookie = cookieHeader?.includes('EXPERIMENTAL')
   const isWatchPath = pathname.startsWith('/watch')
 
-  // Set destination based on path and cookie
-  const proxyDest =
-    isWatchPath && hasExperimentalCookie
-      ? (c.env.WATCH_PROXY_DEST ?? url.hostname)
-      : (c.env.RESOURCES_PROXY_DEST ?? url.hostname)
+  const proxyDest = isWatchPath
+    ? (c.env.WATCH_PROXY_DEST ?? url.hostname)
+    : (c.env.RESOURCES_PROXY_DEST ?? url.hostname)
 
   url.hostname = proxyDest
 
