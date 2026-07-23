@@ -1,7 +1,7 @@
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
 
-import { appendEventToGoogleSheets } from '../../../schema/journeyVisitor/export/googleSheetsLiveSync'
+import { appendEventToGoogleSheets } from '../../../schema/googleSheetsSync/appendEventToGoogleSheets'
 import {
   GoogleSheetsSyncAppendJobData,
   GoogleSheetsSyncBackfillJobData,

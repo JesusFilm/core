@@ -157,10 +157,10 @@ export function useBlockDeleteCommand(): {
           optimisticResponse: { blockDelete: canvasSiblingsAfterDelete },
           update(cache, { data }) {
             blockDeleteUpdate(
-              currentBlock,
-              data?.blockDelete,
               cache,
-              journey.id
+              journey.id,
+              currentBlock,
+              data?.blockDelete
             )
           }
         })

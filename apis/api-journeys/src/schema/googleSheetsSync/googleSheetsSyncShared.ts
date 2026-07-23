@@ -1,8 +1,8 @@
-import { formatDateYmdInTimeZone } from './date'
+import { formatDateYmdInTimeZone } from '../journeyVisitor/export/date'
 import {
   type BaseColumnLabelResolver,
   type JourneyExportColumn
-} from './headings'
+} from '../journeyVisitor/export/headings'
 
 export interface EventHeaderRecord {
   blockId: string | null

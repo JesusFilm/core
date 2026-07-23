@@ -4,8 +4,8 @@ import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
-import { StoryCard } from '../StoryCard'
+import { journeyUiConfig } from '../../test/journeyUiConfig'
+import { StoryCard } from '../../test/StoryCard'
 
 import { Spacer } from './Spacer'
 

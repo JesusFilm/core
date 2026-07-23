@@ -112,9 +112,53 @@ describe('video service', () => {
       })
 
       await expect(fetchFieldsFromYouTube('invalid')).rejects.toMatchObject({
-        message: 'videoId cannot be found on YouTube'
+        message: 'videoId cannot be found on YouTube',
+        extensions: { code: 'NOT_FOUND' }
       })
     })
+
+    it('throws a non-NOT_FOUND error when YouTube returns an error body', async () => {
+      // quota exceeded / invalid API key must not read as "video missing"
+      globalAny.fetch.mockResolvedValue({
+        json: async () => ({ error: { code: 403, message: 'quotaExceeded' } })
+      })
+
+      await expect(fetchFieldsFromYouTube('abc')).rejects.toMatchObject({
+        message: 'YouTube API request failed: quotaExceeded',
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
+    })
+
+    it.each([
+      { duration: 'PT3M45S', expected: 225 },
+      { duration: 'PT1H30M', expected: 5400 },
+      { duration: 'PT45S', expected: 45 },
+      { duration: 'PT2H', expected: 7200 },
+      { duration: 'PT10M', expected: 600 }
+    ])(
+      'parses ISO8601 duration $duration as $expected seconds',
+      async ({ duration, expected }) => {
+        globalAny.fetch.mockResolvedValue({
+          json: async () => ({
+            items: [
+              {
+                id: 'abc',
+                snippet: {
+                  title: 'YT Title',
+                  description: 'YT Desc',
+                  thumbnails: { high: { url: 'img-url' } }
+                },
+                contentDetails: { duration }
+              }
+            ]
+          })
+        })
+
+        await expect(fetchFieldsFromYouTube('abc')).resolves.toMatchObject({
+          duration: expected
+        })
+      }
+    )
 
     it('returns fields and parses ISO8601 duration', async () => {
       globalAny.fetch.mockResolvedValue({

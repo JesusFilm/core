@@ -3,12 +3,12 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import type {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_StepBlock as StepBlock
-} from '../../../../../../../../__generated__/BlockFields'
+} from '../../../../../../../__generated__/BlockFields'
 import {
   ButtonColor,
   ButtonSize,
   ButtonVariant
-} from '../../../../../../../../__generated__/globalTypes'
+} from '../../../../../../../__generated__/globalTypes'
 
 export const submitButton: TreeBlock<ButtonBlock> = {
   id: 'submitButton.id',

@@ -192,7 +192,7 @@ export function BackgroundMediaImage({
             }
           },
           update(cache, { data }) {
-            blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
+            blockDeleteUpdate(cache, journey.id, block, data?.blockDelete)
           }
         })
       },
@@ -315,7 +315,7 @@ export function BackgroundMediaImage({
             }
           },
           update(cache, { data }) {
-            blockDeleteUpdate(coverBlock, data?.blockDelete, cache, journey.id)
+            blockDeleteUpdate(cache, journey.id, coverBlock, data?.blockDelete)
           }
         })
       },

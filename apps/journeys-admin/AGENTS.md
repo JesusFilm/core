@@ -153,7 +153,7 @@ Pages use `getServerSideProps` for auth checks and data preloading. Redirects to
 
 ## Testing
 
-- Framework: Jest + `@testing-library/react`
+- Framework: Vitest + `@testing-library/react` (mocks via `vi.mock`/`vi.fn`)
 - MSW (Mock Service Worker) for HTTP/GraphQL mocking via `test/mswServer.ts`
 - Custom test providers: `ApolloLoadingProvider` in `test/ApolloLoadingProvider.tsx`
 - Setup: `setupTests.tsx` auto-includes testing libraries, mocks Next.js
