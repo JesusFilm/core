@@ -94,56 +94,55 @@ app.on(
   }
 )
 
-app.get('*', async (c) => {
-  const url = new URL(c.req.url)
-  const pathname = url.pathname
-
-  const cookieHeader = c.req.header('cookie')
+app.all('*', async (c) => {
+  const publicUrl = new URL(c.req.url)
+  const pathname = publicUrl.pathname
   const isWatchPath = pathname.startsWith('/watch')
+  const isReadRequest = c.req.method === 'GET' || c.req.method === 'HEAD'
+
+  if (!isWatchPath && !isReadRequest) {
+    return c.notFound()
+  }
 
   const proxyDest = isWatchPath
-    ? (c.env.WATCH_PROXY_DEST ?? url.hostname)
-    : (c.env.RESOURCES_PROXY_DEST ?? url.hostname)
+    ? (c.env.WATCH_PROXY_DEST ?? publicUrl.hostname)
+    : (c.env.RESOURCES_PROXY_DEST ?? publicUrl.hostname)
 
-  url.hostname = proxyDest
+  const upstreamUrl = new URL(publicUrl)
+  upstreamUrl.hostname = proxyDest
 
   let response: Response
 
-  // Extract headers from the original request, including cookies
-  const headers = new Headers()
-
-  // Copy all headers from the original request
-  const originalHeaders = c.req.header()
-  if (originalHeaders) {
-    Object.entries(originalHeaders).forEach(([key, value]) => {
-      if (value) {
-        headers.set(key, value)
-      }
-    })
-  }
-
-  // Ensure cookies are properly passed
-  if (cookieHeader) {
-    headers.set('cookie', cookieHeader)
-  }
+  const headers = new Headers(c.req.raw.headers)
+  headers.set('x-forwarded-host', publicUrl.host)
+  headers.set('x-forwarded-proto', publicUrl.protocol.slice(0, -1))
 
   try {
+    const normalizedUpstreamUrl = upstreamUrl
+      .toString()
+      .replace(/(%[0-9A-F][0-9A-F])/g, (match) => match.toLowerCase())
+    const body =
+      c.req.method === 'GET' || c.req.method === 'HEAD'
+        ? undefined
+        : c.req.raw.body
+
     response = await fetch(
-      url
-        .toString()
-        .replace(/(%[0-9A-F][0-9A-F])/g, (match) => match.toLowerCase()),
-      {
+      new Request(normalizedUpstreamUrl, {
         method: c.req.method,
         headers,
+        body,
         redirect: 'manual'
-      }
+      })
     )
   } catch (error) {
     console.error('Proxy fetch error:', error)
     return new Response('Service Unavailable', { status: 503 })
   }
 
-  if (response.status == 404 || response.status == 500) {
+  if (
+    c.req.method === 'GET' &&
+    (response.status === 404 || response.status === 500)
+  ) {
     const notFoundUrl = new URL(c.req.url)
     notFoundUrl.pathname = '/not-found.html'
     try {
