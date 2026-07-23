@@ -32,7 +32,7 @@ describe('CardsPreview', () => {
   it('should render cards', () => {
     const steps = buildSteps(3)
     render(
-      <JourneyProvider value={{ journey: defaultJourney, variant: 'admin' }}>
+      <JourneyProvider value={{ journey: defaultJourney, renderMode: 'admin' }}>
         <CardsPreview steps={steps} />
       </JourneyProvider>
     )
@@ -44,7 +44,7 @@ describe('CardsPreview', () => {
   it('should render overflow card with correct remaining count', () => {
     const steps = buildSteps(10)
     render(
-      <JourneyProvider value={{ journey: defaultJourney, variant: 'admin' }}>
+      <JourneyProvider value={{ journey: defaultJourney, renderMode: 'admin' }}>
         <CardsPreview steps={steps} />
       </JourneyProvider>
     )
@@ -56,7 +56,7 @@ describe('CardsPreview', () => {
 
   it('should render loading skeleton when steps are empty', () => {
     render(
-      <JourneyProvider value={{ journey: defaultJourney, variant: 'admin' }}>
+      <JourneyProvider value={{ journey: defaultJourney, renderMode: 'admin' }}>
         <CardsPreview steps={[]} />
       </JourneyProvider>
     )
@@ -69,7 +69,7 @@ describe('CardsPreview', () => {
     const steps = buildSteps(3)
     const handleCardClick = vi.fn()
     render(
-      <JourneyProvider value={{ journey: defaultJourney, variant: 'admin' }}>
+      <JourneyProvider value={{ journey: defaultJourney, renderMode: 'admin' }}>
         <CardsPreview steps={steps} onCardClick={handleCardClick} />
       </JourneyProvider>
     )
@@ -82,7 +82,7 @@ describe('CardsPreview', () => {
   it('should render cards with steps prop passed to each item', () => {
     const steps = buildSteps(3)
     render(
-      <JourneyProvider value={{ journey: defaultJourney, variant: 'admin' }}>
+      <JourneyProvider value={{ journey: defaultJourney, renderMode: 'admin' }}>
         <CardsPreview steps={steps} />
       </JourneyProvider>
     )

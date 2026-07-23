@@ -197,7 +197,7 @@ describe('EmbeddedPreview', () => {
     render(
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey, variant: 'embed' }}>
+          <JourneyProvider value={{ journey, renderMode: 'embed' }}>
             <EmbeddedPreview />
           </JourneyProvider>
         </SnackbarProvider>
@@ -210,7 +210,7 @@ describe('EmbeddedPreview', () => {
     const { getByTestId } = render(
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey, variant: 'embed' }}>
+          <JourneyProvider value={{ journey, renderMode: 'embed' }}>
             <EmbeddedPreview />
           </JourneyProvider>
         </SnackbarProvider>
@@ -232,7 +232,7 @@ describe('EmbeddedPreview', () => {
     const { queryByTestId } = render(
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey, variant: 'embed' }}>
+          <JourneyProvider value={{ journey, renderMode: 'embed' }}>
             <EmbeddedPreview disableFullscreen />
           </JourneyProvider>
         </SnackbarProvider>

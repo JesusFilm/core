@@ -203,7 +203,7 @@ describe('TranslateJourneyDialog', () => {
         <SnackbarProvider>
           <TeamProvider>
             <JourneyProvider
-              value={{ journey: defaultJourney, variant: 'admin' }}
+              value={{ journey: defaultJourney, renderMode: 'admin' }}
             >
               <TranslateJourneyDialog open={true} onClose={handleClose} />
             </JourneyProvider>
@@ -293,7 +293,7 @@ describe('TranslateJourneyDialog', () => {
         <SnackbarProvider>
           <TeamProvider>
             <JourneyProvider
-              value={{ journey: defaultJourney, variant: 'admin' }}
+              value={{ journey: defaultJourney, renderMode: 'admin' }}
             >
               <TranslateJourneyDialog open={true} onClose={handleClose} />
             </JourneyProvider>
@@ -399,7 +399,7 @@ describe('TranslateJourneyDialog', () => {
         <SnackbarProvider>
           <TeamProvider>
             <JourneyProvider
-              value={{ journey: journeyWithTemplateId, variant: 'admin' }}
+              value={{ journey: journeyWithTemplateId, renderMode: 'admin' }}
             >
               <TranslateJourneyDialog
                 open={true}

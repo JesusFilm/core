@@ -76,7 +76,7 @@ const renderWithProviders = (
       <SnackbarProvider>
         <FlagsProvider flags={flags}>
           <JourneyProvider
-            value={{ journey: defaultJourney, variant: 'admin' }}
+            value={{ journey: defaultJourney, renderMode: 'admin' }}
           >
             <EditorProvider
               initialState={{ selectedBlock: selectedBlock ?? undefined }}

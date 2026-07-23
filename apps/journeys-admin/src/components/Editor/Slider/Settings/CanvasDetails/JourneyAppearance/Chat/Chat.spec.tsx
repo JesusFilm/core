@@ -22,7 +22,7 @@ const renderChat = (
   return render(
     <MockedProvider mocks={mocks}>
       <SnackbarProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <Chat />
         </JourneyProvider>
       </SnackbarProvider>

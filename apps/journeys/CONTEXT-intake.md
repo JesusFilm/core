@@ -75,8 +75,8 @@ change** that altered how cards are structured/layered → check recent commits 
 The cards are heavily layered, so these are event-bubbling bugs in that stack.
 **Look first (fixer):** `libs/journeys/ui/src/components/Card/Card.tsx` (layered cover/overlay/content
 stacking) → `Card/OverlayContent/OverlayContent.tsx` + `Card/ContainedCover/ContainedCover.tsx` (the
-layers that sit above content and intercept pointer/type events) → `components/Actions/Actions.tsx`
-(attaches the click handlers on interactive blocks).
+layers that sit above content and intercept pointer/type events) → `libs/journeys/ui/src/libs/action/action.ts`
+(the `handleAction` dispatch the interactive blocks' click handlers call).
 **Handoff:** agent-able — and bisect to the recent card-structure change first.
 
 ## Custom domains / embeds — LOW SIGNAL, thin on purpose

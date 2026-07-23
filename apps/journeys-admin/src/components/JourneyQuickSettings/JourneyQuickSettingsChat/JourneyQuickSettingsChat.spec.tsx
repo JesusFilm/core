@@ -22,7 +22,7 @@ describe('JourneyQuickSettingsChat', () => {
   it('should render elements', () => {
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <JourneyQuickSettingsChat />
         </JourneyProvider>
       </MockedProvider>
@@ -38,7 +38,7 @@ describe('JourneyQuickSettingsChat', () => {
     render(
       <MockedProvider>
         <JourneyProvider
-          value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+          value={{ journey: { ...journey, host: null }, renderMode: 'admin' }}
         >
           <JourneyQuickSettingsChat displayName="New Host Name" />
         </JourneyProvider>
@@ -54,7 +54,7 @@ describe('JourneyQuickSettingsChat', () => {
     render(
       <MockedProvider>
         <JourneyProvider
-          value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+          value={{ journey: { ...journey, host: null }, renderMode: 'admin' }}
         >
           <JourneyQuickSettingsChat />
         </JourneyProvider>
@@ -96,7 +96,7 @@ describe('JourneyQuickSettingsChat', () => {
       <MockedProvider
         mocks={[{ ...updateHostMock, result: mockHostUpdateResult }]}
       >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <JourneyQuickSettingsChat />
         </JourneyProvider>
       </MockedProvider>
@@ -147,7 +147,7 @@ describe('JourneyQuickSettingsChat', () => {
         ]}
       >
         <JourneyProvider
-          value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+          value={{ journey: { ...journey, host: null }, renderMode: 'admin' }}
         >
           <JourneyQuickSettingsChat displayName="Person1" />
         </JourneyProvider>

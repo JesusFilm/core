@@ -48,7 +48,7 @@ export const NavigateToBlock: StoryObj<typeof NavigateToBlockAction> = {
             <JourneyProvider
               value={{
                 journey: journeyTheme,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={{ steps }}>
@@ -64,7 +64,7 @@ export const NavigateToBlock: StoryObj<typeof NavigateToBlockAction> = {
             <JourneyProvider
               value={{
                 journey: journeyTheme,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={{ selectedBlock, steps }}>

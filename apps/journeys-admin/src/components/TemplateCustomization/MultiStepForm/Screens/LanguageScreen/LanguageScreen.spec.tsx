@@ -254,7 +254,7 @@ describe('LanguageScreen', () => {
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
             <JourneyProvider
-              value={{ journey: nonTemplateJourney, variant: 'customize' }}
+              value={{ journey: nonTemplateJourney, renderMode: 'customize' }}
             >
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
@@ -294,7 +294,7 @@ describe('LanguageScreen', () => {
       >
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
@@ -341,7 +341,7 @@ describe('LanguageScreen', () => {
       >
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
@@ -386,7 +386,7 @@ describe('LanguageScreen', () => {
       >
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
@@ -494,7 +494,7 @@ describe('LanguageScreen', () => {
       >
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
@@ -531,7 +531,7 @@ describe('LanguageScreen', () => {
       <MockedProvider mocks={[mockGetLastActiveTeamIdAndTeams]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
@@ -617,7 +617,7 @@ describe('LanguageScreen', () => {
       >
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
@@ -724,7 +724,7 @@ describe('LanguageScreen', () => {
       >
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
@@ -771,7 +771,7 @@ describe('LanguageScreen', () => {
       >
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
@@ -821,7 +821,7 @@ describe('LanguageScreen', () => {
       <MockedProvider mocks={[mockGetLastActiveTeamIdAndTeams]}>
         <SnackbarProvider>
           <JourneyProvider
-            value={{ journey: journeyWithImage, variant: 'admin' }}
+            value={{ journey: journeyWithImage, renderMode: 'admin' }}
           >
             <TeamProvider>
               <LanguageScreen handleNext={handleNext} />
@@ -841,7 +841,7 @@ describe('LanguageScreen', () => {
       <MockedProvider mocks={[mockGetLastActiveTeamIdAndTeams]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: false }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
@@ -874,7 +874,7 @@ describe('LanguageScreen', () => {
       <MockedProvider mocks={[mockGetLastActiveTeamIdAndTeamsEmptyTeams]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: false }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
@@ -915,7 +915,7 @@ describe('LanguageScreen', () => {
       <MockedProvider mocks={[mockStaleTeamData]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
@@ -964,7 +964,7 @@ describe('LanguageScreen', () => {
       >
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
@@ -1006,7 +1006,7 @@ describe('LanguageScreen', () => {
       >
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
@@ -1042,7 +1042,7 @@ describe('LanguageScreen', () => {
       <MockedProvider mocks={[mockTeamsQueryError]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
@@ -1070,7 +1070,7 @@ describe('LanguageScreen', () => {
       <MockedProvider mocks={[mockTeamsQueryError]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
@@ -1168,7 +1168,7 @@ describe('LanguageScreen', () => {
       >
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
@@ -1284,7 +1284,7 @@ describe('LanguageScreen', () => {
       >
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
@@ -1372,7 +1372,7 @@ describe('LanguageScreen', () => {
       >
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
@@ -1453,7 +1453,7 @@ describe('LanguageScreen', () => {
       >
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
@@ -1487,7 +1487,7 @@ describe('LanguageScreen', () => {
       <MockedProvider mocks={[mockGetLastActiveTeamIdAndTeams]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen handleNext={handleNext} />
               </TeamProvider>

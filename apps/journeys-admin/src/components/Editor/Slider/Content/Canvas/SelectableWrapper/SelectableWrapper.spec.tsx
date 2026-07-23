@@ -8,7 +8,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '@core/journeys/ui/Button'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { Image } from '@core/journeys/ui/Image'
-import { MultiselectQuestion } from '@core/journeys/ui/MultiselectQuestion'
+import { Multiselect } from '@core/journeys/ui/Multiselect'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
 import { SignUp } from '@core/journeys/ui/SignUp'
 import { Typography } from '@core/journeys/ui/Typography'
@@ -16,8 +16,8 @@ import { Typography } from '@core/journeys/ui/Typography'
 import { ButtonFields } from '../../../../../../../__generated__/ButtonFields'
 import { TypographyVariant } from '../../../../../../../__generated__/globalTypes'
 import { ImageFields } from '../../../../../../../__generated__/ImageFields'
+import { MultiselectFields } from '../../../../../../../__generated__/MultiselectFields'
 import { MultiselectOptionFields } from '../../../../../../../__generated__/MultiselectOptionFields'
-import { MultiselectQuestionFields } from '../../../../../../../__generated__/MultiselectQuestionFields'
 import { RadioOptionFields } from '../../../../../../../__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../../../../../../../__generated__/RadioQuestionFields'
 import { SignUpFields } from '../../../../../../../__generated__/SignUpFields'
@@ -152,14 +152,14 @@ describe('SelectableWrapper', () => {
     __typename: 'MultiselectOptionBlock',
     id: 'MultiselectOption1',
     label: 'Option 1',
-    parentBlockId: 'MultiselectQuestion1',
+    parentBlockId: 'Multiselect1',
     parentOrder: 0,
     children: []
   }
 
-  const multiselectQuestionBlock: TreeBlock<MultiselectQuestionFields> = {
+  const multiselectBlock: TreeBlock<MultiselectFields> = {
     __typename: 'MultiselectBlock',
-    id: 'MultiselectQuestion1',
+    id: 'Multiselect1',
     parentBlockId: 'parent.id',
     parentOrder: 0,
     min: null,
@@ -170,7 +170,7 @@ describe('SelectableWrapper', () => {
         __typename: 'MultiselectOptionBlock',
         id: 'MultiselectOption2',
         label: 'Option 2',
-        parentBlockId: 'MultiselectQuestion1',
+        parentBlockId: 'Multiselect1',
         parentOrder: 1,
         children: []
       } as unknown as TreeBlock<MultiselectOptionFields>
@@ -329,13 +329,13 @@ describe('SelectableWrapper', () => {
         <SnackbarProvider>
           <EditorProvider
             initialState={{
-              steps: [step([multiselectQuestionBlock])]
+              steps: [step([multiselectBlock])]
             }}
           >
             <MuxVideoUploadProvider>
-              <SelectableWrapper block={multiselectQuestionBlock}>
-                <MultiselectQuestion
-                  {...multiselectQuestionBlock}
+              <SelectableWrapper block={multiselectBlock}>
+                <Multiselect
+                  {...multiselectBlock}
                   wrappers={{ Wrapper: SelectableWrapper }}
                 />
               </SelectableWrapper>
@@ -346,13 +346,13 @@ describe('SelectableWrapper', () => {
     )
 
     fireEvent.click(getByTestId(`SelectableWrapper-${multiselectOption1.id}`))
-    expect(
-      getByTestId(`SelectableWrapper-${multiselectQuestionBlock.id}`)
-    ).toHaveStyle({
-      outline: '2px solid',
-      zIndex: '1',
-      outlineColor: '#C52D3A'
-    })
+    expect(getByTestId(`SelectableWrapper-${multiselectBlock.id}`)).toHaveStyle(
+      {
+        outline: '2px solid',
+        zIndex: '1',
+        outlineColor: '#C52D3A'
+      }
+    )
   })
 
   it('should select multiselect option on click when multiselect question selected', async () => {
@@ -361,15 +361,15 @@ describe('SelectableWrapper', () => {
         <SnackbarProvider>
           <EditorProvider
             initialState={{
-              selectedBlock: multiselectQuestionBlock,
-              selectedBlockId: multiselectQuestionBlock.id,
-              steps: [step([multiselectQuestionBlock])]
+              selectedBlock: multiselectBlock,
+              selectedBlockId: multiselectBlock.id,
+              steps: [step([multiselectBlock])]
             }}
           >
             <MuxVideoUploadProvider>
-              <SelectableWrapper block={multiselectQuestionBlock}>
-                <MultiselectQuestion
-                  {...multiselectQuestionBlock}
+              <SelectableWrapper block={multiselectBlock}>
+                <Multiselect
+                  {...multiselectBlock}
                   wrappers={{ Wrapper: SelectableWrapper }}
                 />
               </SelectableWrapper>
@@ -398,13 +398,13 @@ describe('SelectableWrapper', () => {
             initialState={{
               selectedBlock: multiselectOption1,
               selectedBlockId: multiselectOption1.id,
-              steps: [step([multiselectQuestionBlock])]
+              steps: [step([multiselectBlock])]
             }}
           >
             <MuxVideoUploadProvider>
-              <SelectableWrapper block={multiselectQuestionBlock}>
-                <MultiselectQuestion
-                  {...multiselectQuestionBlock}
+              <SelectableWrapper block={multiselectBlock}>
+                <Multiselect
+                  {...multiselectBlock}
                   wrappers={{ Wrapper: SelectableWrapper }}
                 />
               </SelectableWrapper>

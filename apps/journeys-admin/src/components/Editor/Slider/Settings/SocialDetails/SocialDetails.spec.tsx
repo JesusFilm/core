@@ -27,7 +27,7 @@ describe('SocialDetails', () => {
         <JourneyProvider
           value={{
             journey: { status: JourneyStatus.published } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <SocialDetails />
@@ -50,7 +50,7 @@ describe('SocialDetails', () => {
         <JourneyProvider
           value={{
             journey: { status: JourneyStatus.published } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ activeSlide: ActiveSlide.Content }}>

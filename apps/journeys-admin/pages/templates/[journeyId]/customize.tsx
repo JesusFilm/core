@@ -169,7 +169,7 @@ function CustomizePage() {
         <JourneyProvider
           value={{
             journey: data?.journey,
-            variant: 'customize'
+            renderMode: 'customize'
           }}
         >
           <DiagnosticErrorBoundary key={router.query.journeyId as string}>

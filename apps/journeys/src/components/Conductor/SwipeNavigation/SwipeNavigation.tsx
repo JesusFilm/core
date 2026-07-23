@@ -54,7 +54,7 @@ export function SwipeNavigation({
     StepPreviousEventCreateVariables
   >(STEP_PREVIOUS_EVENT_CREATE)
   const plausible = usePlausible<JourneyPlausibleEvents>()
-  const { variant, journey } = useJourney()
+  const { renderMode, journey } = useJourney()
   const {
     getNextBlock,
     treeBlocks,
@@ -66,7 +66,7 @@ export function SwipeNavigation({
 
   const handleNavigation = useCallback(
     (direction: 'next' | 'previous'): void => {
-      if (variant === 'admin') return
+      if (renderMode === 'admin') return
 
       // should always be called with nextActiveBlock()
       // should match with other handleNextNavigationEventCreate functions
@@ -227,7 +227,7 @@ export function SwipeNavigation({
       activeBlock,
       nextActiveBlock,
       previousActiveBlock,
-      variant,
+      renderMode,
       stepNextEventCreate,
       stepPreviousEventCreate,
       treeBlocks,

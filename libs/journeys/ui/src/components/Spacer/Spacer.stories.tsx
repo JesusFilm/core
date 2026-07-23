@@ -20,7 +20,7 @@ type Story = StoryObj<ComponentProps<typeof Spacer>>
 const Template: Story = {
   render: ({ ...args }) => (
     <JourneyProvider
-      value={{ journey: {} as unknown as Journey, variant: 'admin' }}
+      value={{ journey: {} as unknown as Journey, renderMode: 'admin' }}
     >
       <StoryCard>
         <Typography mb={4}>Text above Spacer</Typography>
@@ -40,7 +40,7 @@ export const Journeys: Story = {
   ...Template,
   render: ({ ...args }) => (
     <JourneyProvider
-      value={{ journey: {} as unknown as Journey, variant: 'default' }}
+      value={{ journey: {} as unknown as Journey, renderMode: 'default' }}
     >
       <StoryCard>
         <Typography mb={4}>Text above Spacer</Typography>

@@ -22,8 +22,8 @@ import { extractLanguageNames } from '@core/shared/ui/extractLanguageNames'
 
 import { getCardChild, useBlocks } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
-import { Actions } from '../Actions'
 import { Conversation } from '../Conversation'
+import { CopyMessageButton } from '../CopyMessageButton'
 import { Message } from '../Message'
 import { PromptInput } from '../PromptInput'
 import { Response } from '../Response'
@@ -180,7 +180,7 @@ function AssistantBubble({
 }: AssistantBubbleProps): ReactElement {
   const { display, isComplete } = useTypewriter(text, animate, isStreaming)
   // Assistant always renders as plain prose (no bubble); only the
-  // text colour shifts between light and dark surfaces. Actions still
+  // text colour shifts between light and dark surfaces. CopyMessageButton still
   // tints itself to the surface via `plain`.
   const isDark = surface === 'dark'
   return (
@@ -189,7 +189,7 @@ function AssistantBubble({
         <Response content={display} />
       </Message>
       {isComplete && text.length > 0 && (
-        <Actions content={text} plain={isDark} />
+        <CopyMessageButton content={text} plain={isDark} />
       )}
     </>
   )
