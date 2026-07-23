@@ -37,7 +37,10 @@ import Lock1 from '@core/shared/ui/icons/Lock1'
 
 import { PublishedChip } from '../../../../components/PublishedChip'
 import { videoLabels } from '../../../../constants'
-import { useVideoFilter } from '../../../../libs/useVideoFilter'
+import {
+  getVideoFilterQueryParams,
+  useVideoFilter
+} from '../../../../libs/useVideoFilter'
 
 import { VideoListHeader } from './_VideoListHeader'
 
@@ -397,13 +400,6 @@ export function VideoList(): ReactElement {
   }
 
   function handleFilterModelChange(model: GridFilterModel): void {
-    const params = model.items.reduce((acc, item) => {
-      acc[item.field] = {
-        [item.operator]: item.value === '' ? null : item.value
-      }
-      return acc
-    }, {})
-
     dispatch({
       type: 'PageChange',
       model: { pageSize: filters.limit, page: 0 }
@@ -413,7 +409,7 @@ export function VideoList(): ReactElement {
       model
     })
 
-    updateQueryParams({ filters: params })
+    updateQueryParams(getVideoFilterQueryParams(model))
   }
 
   const handleColumnVisibilityModelChange = (model) => {

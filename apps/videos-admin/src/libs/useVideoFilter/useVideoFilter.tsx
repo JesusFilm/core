@@ -29,6 +29,21 @@ type FilterAction =
   | { type: 'ColumnChange'; model: GridColumnVisibilityModel }
   | { type: 'FilterChange'; model: GridFilterModel }
 
+export function getVideoFilterQueryParams(
+  model: GridFilterModel
+): Record<string, unknown> {
+  const filters = model.items.reduce<Record<string, unknown>>((acc, item) => {
+    if (item.value == null || item.value === '') return acc
+
+    acc[item.field] = {
+      [item.operator]: item.value
+    }
+    return acc
+  }, {})
+
+  return { filters, page: 0 }
+}
+
 export function reducer(state: FilterState, action: FilterAction): FilterState {
   switch (action.type) {
     case 'PageChange':
@@ -83,7 +98,8 @@ const FilterModelSchema = z.object({
     .object({
       is: VideoLabelSchema
     })
-    .optional(),
+    .optional()
+    .catch(undefined),
   published: z
     .object({
       is: z.string()
@@ -99,13 +115,15 @@ function getFilterModel(params: ParsedQs): GridFilterModel {
   const result = FilterModelSchema.safeParse(params?.filters)
 
   if (result.success) {
-    const items = Object.entries(result.data).flatMap(([field, filter]) =>
-      Object.entries(filter).map(([operator, value]) => ({
+    const items = Object.entries(result.data).flatMap(([field, filter]) => {
+      if (filter == null) return []
+
+      return Object.entries(filter).map(([operator, value]) => ({
         field,
         operator,
         value: value === 'true' ? true : value === 'false' ? false : value
       }))
-    )
+    })
 
     return { items }
   }
