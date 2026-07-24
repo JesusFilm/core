@@ -66,9 +66,11 @@ The choices apply to every ticket in the set; the invoker can name per-ticket ex
 
 Fetch the full ticket: title, description, comments, labels, project milestone, parent and sub-issue relations, attachments (Linear MCP: `get_issue` with relations, plus `list_comments`).
 
+Then follow the context **one hop**: the parent's description, and any ticket the description or comments lean on — enough of each to know what it contributes. One hop is the boundary; no crawling the graph.
+
 Tickets in a `completed` or `canceled` state are reported and skipped — convert one only when the user asked for it by ID, noting the closed state in the report.
 
-Done when every ticket has every field listed above in hand (empty is fine; unfetched is not).
+Done when every ticket has every field listed above plus its one-hop context in hand (empty is fine; unfetched is not).
 
 ### 4. Check for an existing conversion
 
@@ -82,19 +84,22 @@ A hit puts that ticket in **update** mode (reuse the found issue number); a miss
 
 Done when every ticket is marked create or update, update tickets carrying their issue number.
 
-### 5. Compose the issue body
+### 5. Author the issue
 
-Build the body per the template below:
+The GitHub issue is **authored, not transcribed** — deliberately not one-to-one with the Linear description. Interpret everything step 3 fetched — description, comments, parent, leaned-on tickets — and write the issue that combines it: what to do, the context that shapes it, decisions that landed in comments or relatives. Each point taken from beyond the ticket's own description links its source. The bar: workable from GitHub alone, no Linear tab open.
 
-- **Description**: the Linear description as GitHub markdown. Rewrite Linear issue mentions as plain links — to the mention's GitHub issue if already converted (marker search as in step 4), otherwise to its Linear URL.
+Linear ticket mentions anywhere in the authored body become plain links — to the mention's GitHub issue if already converted (marker search as in step 4), otherwise to its Linear URL.
+
+The fixed sections around the authored content:
+
 - **Relations**: parent and sub-issues as links, resolved the same way. Omit the section when there are none.
 - **Attachments**: the original Linear URLs, kept rather than re-hosted (`uploads.linear.app` needs a Linear session — say so). Omit the section when there are none.
-- **History from Linear**: each comment as author, date, and text — in the body, not `gh issue comment` posts (`gh` would misattribute them to the converting account).
+- **History from Linear**: each comment as author, date, and text — the verbatim record behind the synthesis; in the body, not `gh issue comment` posts (`gh` would misattribute them to the converting account).
 - **Footer**: provenance line and marker, recording the original Linear labels and milestone as text (the backfill source for the deferred mapping below).
 
 <body-template>
 
-The Linear description, mentions rewritten.
+The authored issue: what to do and the context that shapes it, synthesized from the ticket, its comments, parent, and leaned-on tickets — sources linked.
 
 ## Relations
 
@@ -119,7 +124,7 @@ Converted from Linear [ENG-XXXX](https://linear.app/...) · Linear labels: `a`, 
 
 </body-template>
 
-Done when every ticket has a composed body ending in its provenance marker.
+Done when every ticket has an authored body that is workable standalone — every load-bearing reference distilled in or linked to a converted GitHub issue — ending in its provenance marker.
 
 ### 6. Create or update, then confirm board placement
 
