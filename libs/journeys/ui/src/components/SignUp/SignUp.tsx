@@ -13,12 +13,10 @@ import { v4 as uuidv4 } from 'uuid'
 import { object, string } from 'yup'
 
 import { SignUpSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
-import { handleAction } from '../../libs/action'
-import { useBlocks } from '../../libs/block'
+import { getNextStepSlug, handleAction } from '../../libs/action'
+import { getStepHeading, useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
-import { getNextStepSlug } from '../../libs/getNextStepSlug'
-import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import {
   JourneyPlausibleEvents,

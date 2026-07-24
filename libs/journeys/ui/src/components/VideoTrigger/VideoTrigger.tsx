@@ -6,9 +6,8 @@ import Player from 'video.js/dist/types/player'
 
 import { isIPhone } from '@core/shared/ui/deviceUtils'
 
-import { handleAction } from '../../libs/action'
+import { getNextStepSlug, handleAction } from '../../libs/action'
 import { type TreeBlock, useBlocks } from '../../libs/block'
-import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { useJourney } from '../../libs/JourneyProvider'
 import {
   JourneyPlausibleEvents,

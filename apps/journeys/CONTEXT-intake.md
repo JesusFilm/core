@@ -44,7 +44,7 @@ on the default next step?
 **Look first (fixer):** `apps/journeys/src/components/Conductor/Conductor.tsx` (advances steps,
 wires swipe/hotkey/button nav) → `libs/journeys/ui/src/libs/block/block.ts` (`getNextBlock` /
 `nextActiveBlock`: resolves `nextBlockId` or falls back to the following step) →
-`libs/journeys/ui/src/libs/getNextStepSlug/` (URL-level next-step).
+`libs/journeys/ui/src/libs/action/getNextStepSlug.ts` (URL-level next-step).
 **Handoff:** authoring "didn't link it" → how-to; genuine resolution bug → agent-able.
 
 ## Video won't load / slow to load — T10 (known weak spot)

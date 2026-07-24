@@ -10,10 +10,13 @@ import { ReactElement, useEffect, useMemo } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { MultiselectSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
-import { TreeBlock, useBlocks } from '../../libs/block'
+import {
+  TreeBlock,
+  getStepHeading,
+  getTextResponseLabel,
+  useBlocks
+} from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
-import { getStepHeading } from '../../libs/getStepHeading'
-import { getTextResponseLabel } from '../../libs/getTextResponseLabel'
 import { useJourney } from '../../libs/JourneyProvider'
 // eslint-disable-next-line import/no-cycle
 import {
