@@ -33,9 +33,9 @@ Done when every argument is expanded, the set is deduped, and the user has confi
 
 ### 2. Choose the board labels
 
-Ask the invoker (in the same exchange as step 1's confirmation) where this set belongs:
+Ask the invoker (in the same exchange as step 1's confirmation) which label the set lands under — **one is enough**. `feature:<kebab-name>` and `Bug` / `Improvement` sit at the same level: a ticket carries one **or** the other, both only when the invoker explicitly wants both.
 
-- **Feature**: which `feature:<kebab-name>` label. List the existing ones to pick from:
+- **A feature** — `feature:<kebab-name>`. List the existing ones to pick from:
 
   ```sh
   gh label list --repo JesusFilm/core --json name --jq '[.[].name | select(startswith("feature:"))]'
@@ -47,7 +47,10 @@ Ask the invoker (in the same exchange as step 1's confirmation) where this set b
   gh label create "feature:<kebab-name>" --repo JesusFilm/core --color 0e7c86
   ```
 
-- **Kind**: `Bug` / `Improvement`, for the set or for individual tickets.
+- **Or a kind** — `Bug` / `Improvement`, for the set or for individual tickets.
+
+Then, independent of that choice:
+
 - **Milestone** (one per issue; declining is fine) — list, or create a missing phase (formats in the board doc):
 
   ```sh
@@ -59,7 +62,7 @@ Ask the invoker (in the same exchange as step 1's confirmation) where this set b
 
 **New feature label → new view.** Views are UI-only — prompt the user to add the feature's view on the board (recipe in the board doc).
 
-The choices apply to every ticket in the set; the invoker can name per-ticket exceptions. Done when each ticket has its labels and milestone decided and anything newly named exists in the repo.
+The choices apply to every ticket in the set; the invoker can name per-ticket exceptions. Done when each ticket has its label and milestone decided and anything newly named exists in the repo.
 
 ### 3. Fetch each ticket from Linear
 
@@ -125,8 +128,8 @@ Done when every ticket has a composed body ending in its provenance marker.
 Write each ticket's body to its own temp file (`body-ENG-XXXX.md`), then per mode, with the step-2 labels (and `--milestone` when one was chosen):
 
 ```sh
-gh issue create --repo JesusFilm/core --title "..." --body-file body-ENG-XXXX.md --label "feature:<kebab-name>,Bug"   # create
-gh issue edit <number> --repo JesusFilm/core --title "..." --body-file body-ENG-XXXX.md --add-label "feature:<kebab-name>,Bug"   # update
+gh issue create --repo JesusFilm/core --title "..." --body-file body-ENG-XXXX.md --label "<step-2 label>"   # create
+gh issue edit <number> --repo JesusFilm/core --title "..." --body-file body-ENG-XXXX.md --add-label "<step-2 label>"   # update
 ```
 
 **Per-ticket failure**: record it in the report and continue with the remaining tickets.
