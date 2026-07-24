@@ -11,9 +11,9 @@ import {
 } from 'react'
 
 import type { TreeBlock } from '../block'
+import { searchBlocks } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
 import { CommandProvider } from '../CommandProvider'
-import { searchBlocks } from '../searchBlocks'
 import { type JourneyAnalytics } from '../useJourneyAnalyticsQuery'
 
 export enum ActiveContent {

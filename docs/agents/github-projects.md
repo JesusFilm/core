@@ -23,8 +23,8 @@ State transitions:
 - **Humans** drag cards on the board or set Status in the issue sidebar.
 - **Agents/scripts** use the `gh project` commands (see below). The token needs the
   `project` scope (`gh auth refresh -s project`).
-- **Automatic**: new `core` issues enter the project in Triage; closing an issue moves it
-  to Done and archives it (project built-in workflows).
+- **Automatic**: new `JesusFilm/core` issues enter the project in Triage; closing an
+  issue moves it to Done and archives it (project built-in workflows).
 
 Rejecting a ticket ("wontfix"): add the `Won't do` label, then close the issue as
 **not planned**. No dedicated column — the close reason is the record.
@@ -50,24 +50,62 @@ Milestones are repo-level and encode phases/buckets. One per issue.
 
 - Feature phases: `<feature>: <stage>`, where the prefix matches the feature label's
   value — e.g. `agent-pipeline: setup`, `agent-pipeline: mvp` for `feature:agent-pipeline`.
-- Rolling buckets: `bugs`, `improvements` (sectioning for the Bugs/Improvements view).
+- Rolling buckets: `bugs`, `improvements` — permanent milestones that are **never
+  closed**, unlike feature-phase milestones. They pair with the `Bug`/`Improvement`
+  labels: the **label** puts a ticket in the Bugs/Improvements view; the **milestone**
+  places it in the right swimlane. Apply **both** — a labeled ticket without the
+  milestone lands in the view's "No milestone" lane.
 - Give milestones due dates where possible; **close them when the phase ships** so the
   list stays short.
 
+## Sub-issues
+
+Use sub-issues to break a big ticket (an epic, a feature slice) into children. In the UI:
+**Create sub-issue** on the parent. Via CLI there are no native `gh` commands yet — use
+the REST endpoints with the child's **database id** (`.id`, not the `#number`):
+
+```bash
+CHILD_ID=$(gh api repos/JesusFilm/core/issues/<child-number> --jq .id)
+gh api -X POST repos/JesusFilm/core/issues/<parent-number>/sub_issues -F sub_issue_id="$CHILD_ID"
+gh api repos/JesusFilm/core/issues/<parent-number>/sub_issues        # list children
+gh api repos/JesusFilm/core/issues/<parent-number> --jq .sub_issues_summary  # progress
+```
+
+How they behave on the board:
+
+- Each sub-issue is **its own card** with its own independent Status — no visual nesting
+  on boards. Table views can **group by "Parent issue"** for epic-style sections, and the
+  **"Sub-issues progress"** field shows an X-of-Y bar on the parent (driven by children
+  being _closed_, not by their Status).
+- **Nothing is inherited.** A child does not get its parent's labels, milestone, or
+  Status — apply `feature:*`, `ai-auto-workflow`, `Bug`/`Improvement` + milestone, etc.
+  to each child explicitly.
+- Auto-add puts every sub-issue on the board individually. If a view should show only
+  top-level tickets, filter it with `no:parent-issue`.
+
 ## Views
 
-Views are saved filters over the project — they cannot be created or edited via the API,
-only in the UI. Current set:
+Views are saved filters over the project. They can be **created** via the Projects v2
+REST API, but not listed, edited, or deleted that way — configuration changes (layout
+switches, group-by, swimlanes, sort) are UI-only. Current set:
 
-| View              | Layout                                      | Filter                  |
-| ----------------- | ------------------------------------------- | ----------------------- |
-| View 1 (board)    | Board, Status columns                       | —                       |
-| Bugs/Improvements | Board, Status columns × Milestone swimlanes | `label:Bug,Improvement` |
+| View              | Layout                                      | Filter                           |
+| ----------------- | ------------------------------------------- | -------------------------------- |
+| View 1 (board)    | Board, Status columns                       | —                                |
+| Bugs/Improvements | Board, Status columns × Milestone swimlanes | `label:Bug,Improvement`          |
+| agent-pipeline    | Table                                       | `label:"feature:agent-pipeline"` |
 
-**Adding a feature ("custom milestone") view**: create the label
-(`gh label create "feature:<name>" --color 0e7c86`), then in the UI: New view → layout of
-choice → filter `label:"feature:<name>"` → Save. Anything with that label appears in the
-view automatically — the auto-add workflow puts every new issue in the project.
+**Adding a feature ("custom milestone") view** — two commands:
+
+```bash
+gh label create "feature:<name>" --color 0e7c86
+gh api -X POST orgs/JesusFilm/projectsV2/8/views \
+  -f name="<name>" -f layout="table" -f filter='label:"feature:<name>"'
+```
+
+Fine-tune (group-by, swimlanes) in the UI afterwards if needed. Anything with that label
+appears in the view automatically — the auto-add workflow puts every new `JesusFilm/core`
+issue in the project.
 
 Filter syntax reminders: comma = OR within a qualifier (`label:Bug,Improvement`);
 space = AND between qualifiers; no wildcards (you cannot express "has no feature label").
@@ -79,9 +117,13 @@ Ready. The agent then:
 
 1. **Find work**
    ```bash
-   gh project item-list 8 --owner JesusFilm --format json --limit 200 \
+   gh project item-list 8 --owner JesusFilm --format json --limit 1000 \
      | jq '[.items[] | select(.status == "Ready" and ((.labels // []) | index("ai-auto-workflow")))]'
    ```
+   `gh project item-list` has no server-side filtering — the `jq` filter runs client-side
+   over a `--limit` window. Keep the limit comfortably above the project's item count
+   (archived items don't count), or page via GraphQL `items(first:100, after:...)` if the
+   project ever outgrows it.
 2. **Claim it** — set Status to In progress (IDs below):
    ```bash
    gh project item-edit --id <ITEM_ID> --project-id PVT_kwDOBNwqhs4BeMYJ \

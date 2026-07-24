@@ -1,4 +1,4 @@
-import type { TreeBlock } from '../block'
+import type { TreeBlock } from './TreeBlock'
 
 interface SearchBlockOptions {
   filter: 'searchStepsOnly' | 'searchAll'

@@ -1,9 +1,9 @@
-import { ActionFields as Action } from '../action/__generated__/ActionFields'
 import {
   JourneyFields as Journey,
   JourneyFields_blocks_StepBlock as StepBlock
 } from '../JourneyProvider/__generated__/JourneyFields'
 
+import { ActionFields as Action } from './__generated__/ActionFields'
 import { getNextStepSlug } from './getNextStepSlug'
 
 describe('getNextStepSlug', () => {

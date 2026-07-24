@@ -2,8 +2,9 @@ import { TOptions } from 'i18next'
 import findIndex from 'lodash/findIndex'
 
 import { TypographyVariant } from '../../../__generated__/globalTypes'
-import type { TreeBlock } from '../block'
-import { BlockFields_TypographyBlock as TypographyBlock } from '../block/__generated__/BlockFields'
+
+import { BlockFields_TypographyBlock as TypographyBlock } from './__generated__/BlockFields'
+import type { TreeBlock } from './TreeBlock'
 
 export const ORDERED_TYPOGRAPHY_VARIANTS: TypographyVariant[] = [
   TypographyVariant.overline,

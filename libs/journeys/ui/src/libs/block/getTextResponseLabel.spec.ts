@@ -1,7 +1,6 @@
-import { TreeBlock } from '../block'
-import { BlockFields_TextResponseBlock as TextResponseBlock } from '../block/__generated__/BlockFields'
-
-import { getTextResponseLabel } from '.'
+import { BlockFields_TextResponseBlock as TextResponseBlock } from './__generated__/BlockFields'
+import { getTextResponseLabel } from './getTextResponseLabel'
+import type { TreeBlock } from './TreeBlock'
 
 describe('getTextResponseLabel', () => {
   const textResponseBlock: TreeBlock<TextResponseBlock> = {
