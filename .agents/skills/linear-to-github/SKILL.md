@@ -48,11 +48,12 @@ Labels carry feature membership and kind on the board (`docs/agents/github-proje
   ```
 
 - **Kind**: `Bug` / `Improvement`, for the set or for individual tickets.
+- **Milestone** (one per issue, and declining is a fine answer): an existing `<feature>: <stage>` phase or rolling bucket — list them with `gh api repos/JesusFilm/core/milestones --jq '.[].title'`, create a missing phase with `gh api repos/JesusFilm/core/milestones -f title="<feature>: <stage>"`.
 - **Anything else** the invoker wants applied (e.g. `ai-auto-workflow`).
 
 **New feature label → new view.** Views are UI-only, so prompt the user to add the feature's view now: on [the board](https://github.com/orgs/JesusFilm/projects/8), New view → layout of choice → filter `label:"feature:<kebab-name>"` → Save (recipe in `docs/agents/github-projects.md`). Every labelled ticket appears in it automatically.
 
-The choices apply to every ticket in the set; the invoker can name per-ticket exceptions. Done when each ticket has its labels decided and any new labels exist in the repo.
+The choices apply to every ticket in the set; the invoker can name per-ticket exceptions. Done when each ticket has its labels and milestone decided and anything newly named exists in the repo.
 
 ### 3. Fetch each ticket from Linear
 
@@ -60,7 +61,7 @@ Fetch the full ticket: title, description, comments, labels, project milestone, 
 
 Tickets in a `completed` or `canceled` state are reported and skipped — convert them only when the user explicitly asked for that ticket by ID, and say in the report that it was converted from a closed state.
 
-Done when every ticket has all seven fields in hand (empty is fine; unfetched is not).
+Done when every ticket has every field listed above in hand (empty is fine; unfetched is not).
 
 ### 4. Check for an existing conversion
 
@@ -72,13 +73,15 @@ gh issue list --repo JesusFilm/core --search '"linear:ENG-XXXX" in:body' --state
 
 A hit puts that ticket in **update** mode (reuse the found issue number); a miss puts it in **create** mode. Re-running the skill therefore syncs drift instead of duplicating.
 
+Done when every ticket is marked create or update, update tickets carrying their issue number.
+
 ### 5. Compose the issue body
 
 Build the body per the template below:
 
 - **Description**: the Linear description as GitHub markdown. Rewrite Linear issue mentions as plain markdown links — to the mention's GitHub issue if that ticket is already converted (search its marker as in step 4), otherwise to its Linear URL.
 - **Relations**: parent and sub-issues as links, resolved the same way (GitHub issue if converted, Linear URL otherwise). Omit the section when there are none.
-- **Attachments**: the original Linear URLs. `uploads.linear.app` links need a Linear session to view — keep them and note it, rather than re-hosting.
+- **Attachments**: the original Linear URLs. `uploads.linear.app` links need a Linear session to view — keep them and note it, rather than re-hosting. Omit the section when there are none.
 - **History from Linear**: each comment as author, date, and text. Comments live in the body, not as `gh issue comment` posts — `gh` would attribute them all to the converting account.
 - **Footer**: provenance line and marker. The footer records the original Linear labels and milestone as text so nothing is lost while automatic mapping is undecided (see below).
 
@@ -109,16 +112,20 @@ Converted from Linear [ENG-XXXX](https://linear.app/...) · Linear labels: `a`, 
 
 </body-template>
 
+Done when every ticket has a composed body ending in its provenance marker.
+
 ### 6. Create or update, then confirm board placement
 
-Write the body to a temp file, then per mode:
+Write each ticket's body to its own temp file (`body-ENG-XXXX.md`), then per mode:
 
 ```sh
-gh issue create --repo JesusFilm/core --title "..." --body-file body.md --label "feature:x,Bug"   # create
-gh issue edit <number> --repo JesusFilm/core --title "..." --body-file body.md --add-label "feature:x,Bug"   # update
+gh issue create --repo JesusFilm/core --title "..." --body-file body-ENG-XXXX.md --label "feature:<kebab-name>,Bug"   # create
+gh issue edit <number> --repo JesusFilm/core --title "..." --body-file body-ENG-XXXX.md --add-label "feature:<kebab-name>,Bug"   # update
 ```
 
-**Labels and milestone**: apply each ticket's step-2 labels as above. Milestone only when the invoker named one (`<feature>: <stage>` or the rolling buckets, per the board doc). The original Linear labels ride in the footer regardless.
+**Labels and milestone**: apply each ticket's step-2 choices as above, `--milestone` included when one was chosen. The original Linear labels ride in the footer regardless.
+
+**Per-ticket failure**: record it in the report and continue with the remaining tickets — the provenance marker makes the re-run safe.
 
 **Board placement**: new `core` issues auto-enter the Next Steps project at Status **Triage** (built-in workflow). Confirm — and backfill any update-mode issue that predates the workflow — with the idempotent:
 
@@ -136,10 +143,14 @@ Done when every ticket has an issue URL, its labels, and a confirmed board place
 
 Post one comment on each Linear ticket: `Converted to GitHub: <issue-url>`. Skip when any existing comment already contains that URL. Leave the ticket's state untouched — it stays open in Linear for the parallel-trial phase.
 
+Done when every converted ticket has a Linear comment linking its GitHub issue, freshly posted or pre-existing.
+
 ### 8. Report
 
-A table: Linear ID → GitHub issue URL, mode (created / updated / skipped + reason), board Status, labels applied. Every input ticket appears in it.
+A table: Linear ID → GitHub issue URL, mode (created / updated / skipped + reason / failed + error), board Status, labels and milestone applied.
+
+Done when every input ticket has a row.
 
 ## Automatic label & milestone mapping — deferred
 
-The GitHub-side vocabulary is settled (`docs/agents/github-projects.md`) and each run's labels come from the invoker (step 2); what stays open is inference from Linear metadata — which Linear labels imply `Bug` vs `Improvement`, which map to a `feature:<kebab-name>`, and how Linear project milestones become `<feature>: <stage>` milestones. Until that mapping is decided the originals ride in the footer, so a later pass can backfill from there. When the decision lands, record the mapping table here and apply it in step 6.
+The GitHub-side vocabulary is settled (`docs/agents/github-projects.md`) and each run's labels and milestone come from the invoker (step 2); what stays open is inference from Linear metadata — which Linear labels imply `Bug` vs `Improvement`, which map to a `feature:<kebab-name>`, and how Linear project milestones become `<feature>: <stage>` milestones. Until that mapping is decided the originals ride in the footer, so a later pass can backfill from there. When the decision lands, record the mapping table here and apply it in step 6.
