@@ -60,11 +60,11 @@ Views are saved filters over the project. They can be **created** via the Projec
 REST API, but not listed, edited, or deleted that way — configuration changes (layout
 switches, group-by, swimlanes, sort) are UI-only. Current set:
 
-| View              | Layout                                      | Filter                  |
-| ----------------- | ------------------------------------------- | ----------------------- |
-| View 1 (board)    | Board, Status columns                       | —                       |
-| Bugs/Improvements | Board, Status columns × Milestone swimlanes | `label:Bug,Improvement` |
-| agent-pipeline    | Table                                    | `label:"feature:agent-pipeline"` |
+| View              | Layout                                      | Filter                           |
+| ----------------- | ------------------------------------------- | -------------------------------- |
+| View 1 (board)    | Board, Status columns                       | —                                |
+| Bugs/Improvements | Board, Status columns × Milestone swimlanes | `label:Bug,Improvement`          |
+| agent-pipeline    | Table                                       | `label:"feature:agent-pipeline"` |
 
 **Adding a feature ("custom milestone") view** — two commands:
 
