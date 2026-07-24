@@ -76,7 +76,7 @@ How they behave on the board:
 - Each sub-issue is **its own card** with its own independent Status — no visual nesting
   on boards. Table views can **group by "Parent issue"** for epic-style sections, and the
   **"Sub-issues progress"** field shows an X-of-Y bar on the parent (driven by children
-  being *closed*, not by their Status).
+  being _closed_, not by their Status).
 - **Nothing is inherited.** A child does not get its parent's labels, milestone, or
   Status — apply `feature:*`, `ai-auto-workflow`, `Bug`/`Improvement` + milestone, etc.
   to each child explicitly.
