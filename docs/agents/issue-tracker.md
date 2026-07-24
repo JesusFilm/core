@@ -13,6 +13,12 @@ Issues and PRDs for this repo live as GitHub issues. Use the `gh` CLI for all op
 
 Infer the repo from `git remote -v` — `gh` does this automatically when run inside a clone.
 
+## Ticket state and work pickup
+
+Ticket workflow state (Triage → Ready → In progress → In review → QA → Done) lives in the
+**Status field of the Next Steps org project**, not in labels. How to read it, set it, and
+how the AI workflow picks up work: see `docs/agents/github-projects.md`.
+
 ## Pull requests as a triage surface
 
 **PRs as a request surface: no.** _(Set to `yes` if this repo treats external PRs as feature requests; `/triage` reads this flag.)_
