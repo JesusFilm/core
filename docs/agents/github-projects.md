@@ -9,14 +9,14 @@ state**. This replaces Linear for the AI workflow trial (Linear ENG-3688).
 
 One Status per ticket, moving left to right:
 
-| Status          | Meaning                                                        |
-| --------------- | -------------------------------------------------------------- |
-| **Triage**      | New or unevaluated; also covers "waiting on more info"          |
-| **Ready**       | Fully specified, up for grabs (by a human or the AI workflow)   |
-| **In progress** | Being worked, human or AI                                       |
-| **In review**   | PR up, awaiting review                                          |
-| **QA**          | Review passed, awaiting manual QA                               |
-| **Done**        | Closed — shipped, or rejected as not planned                    |
+| Status          | Meaning                                                       |
+| --------------- | ------------------------------------------------------------- |
+| **Triage**      | New or unevaluated; also covers "waiting on more info"        |
+| **Ready**       | Fully specified, up for grabs (by a human or the AI workflow) |
+| **In progress** | Being worked, human or AI                                     |
+| **In review**   | PR up, awaiting review                                        |
+| **QA**          | Review passed, awaiting manual QA                             |
+| **Done**        | Closed — shipped, or rejected as not planned                  |
 
 State transitions:
 
@@ -33,13 +33,13 @@ Rejecting a ticket ("wontfix"): add the `Won't do` label, then close the issue a
 
 Labels carry everything that is not workflow state:
 
-| Label                  | Purpose                                                                 |
-| ---------------------- | ----------------------------------------------------------------------- |
-| `ai-auto-workflow`     | Marker: this ticket may be picked up by the AI workflow. Absent = human. |
-| `feature:<kebab-name>` | Feature membership; drives that feature's project view. One or more.     |
-| `Bug` / `Improvement`  | Ticket kind; drives the Bugs/Improvements view.                          |
-| `Won't do`             | Rejected at triage; closed as not planned.                               |
-| `type: feat` / `type: fix` | Pre-existing repo taxonomy, unchanged.                              |
+| Label                      | Purpose                                                                  |
+| -------------------------- | ------------------------------------------------------------------------ |
+| `ai-auto-workflow`         | Marker: this ticket may be picked up by the AI workflow. Absent = human. |
+| `feature:<kebab-name>`     | Feature membership; drives that feature's project view. One or more.     |
+| `Bug` / `Improvement`      | Ticket kind; drives the Bugs/Improvements view.                          |
+| `Won't do`                 | Rejected at triage; closed as not planned.                               |
+| `type: feat` / `type: fix` | Pre-existing repo taxonomy, unchanged.                                   |
 
 `ready-for-agent` belongs to a separate system (Phoebe) and is **not** part of this
 workflow — do not apply or remove it here.
@@ -59,9 +59,9 @@ Milestones are repo-level and encode phases/buckets. One per issue.
 Views are saved filters over the project — they cannot be created or edited via the API,
 only in the UI. Current set:
 
-| View              | Layout                                   | Filter                     |
-| ----------------- | ---------------------------------------- | -------------------------- |
-| View 1 (board)    | Board, Status columns                    | —                          |
+| View              | Layout                                      | Filter                  |
+| ----------------- | ------------------------------------------- | ----------------------- |
+| View 1 (board)    | Board, Status columns                       | —                       |
 | Bugs/Improvements | Board, Status columns × Milestone swimlanes | `label:Bug,Improvement` |
 
 **Adding a feature ("custom milestone") view**: create the label
@@ -93,16 +93,16 @@ Ready. The agent then:
 
 ### Stable IDs
 
-| Thing                | ID                                 |
-| -------------------- | ---------------------------------- |
-| Project (Next Steps) | `PVT_kwDOBNwqhs4BeMYJ`             |
-| Status field         | `PVTSSF_lADOBNwqhs4BeMYJzhYobGA`   |
-| Status: Triage       | `e5a2c514`                         |
-| Status: Ready        | `3c63150a`                         |
-| Status: In progress  | `b9c41da0`                         |
-| Status: In review    | `ab210038`                         |
-| Status: QA           | `12a20fe3`                         |
-| Status: Done         | `5243b071`                         |
+| Thing                | ID                               |
+| -------------------- | -------------------------------- |
+| Project (Next Steps) | `PVT_kwDOBNwqhs4BeMYJ`           |
+| Status field         | `PVTSSF_lADOBNwqhs4BeMYJzhYobGA` |
+| Status: Triage       | `e5a2c514`                       |
+| Status: Ready        | `3c63150a`                       |
+| Status: In progress  | `b9c41da0`                       |
+| Status: In review    | `ab210038`                       |
+| Status: QA           | `12a20fe3`                       |
+| Status: Done         | `5243b071`                       |
 
 (If the Status options are ever edited in the project settings, these option IDs change —
 re-read them with `gh project field-list 8 --owner JesusFilm --format json`.)
