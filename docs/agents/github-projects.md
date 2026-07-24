@@ -37,7 +37,6 @@ Labels carry everything that is not workflow state:
 | -------------------------- | ------------------------------------------------------------------------ |
 | `ai-auto-workflow`         | Marker: this ticket may be picked up by the AI workflow. Absent = human. |
 | `feature:<kebab-name>`     | Feature membership; drives that feature's project view. One or more.     |
-| `Bug` / `Improvement`      | Ticket kind; drives the Bugs/Improvements view.                          |
 | `Won't do`                 | Rejected at triage; closed as not planned.                               |
 | `type: feat` / `type: fix` | Pre-existing repo taxonomy, unchanged.                                   |
 
@@ -51,10 +50,9 @@ Milestones are repo-level and encode phases/buckets. One per issue.
 - Feature phases: `<feature>: <stage>`, where the prefix matches the feature label's
   value — e.g. `agent-pipeline: setup`, `agent-pipeline: mvp` for `feature:agent-pipeline`.
 - Rolling buckets: `bugs`, `improvements` — permanent milestones that are **never
-  closed**, unlike feature-phase milestones. They pair with the `Bug`/`Improvement`
-  labels: the **label** puts a ticket in the Bugs/Improvements view; the **milestone**
-  places it in the right swimlane. Apply **both** — a labeled ticket without the
-  milestone lands in the view's "No milestone" lane.
+  closed**, unlike feature-phase milestones. The milestone is the ticket's whole home:
+  there are no `Bug`/`Improvement` labels, and the Bugs/Improvements view filters on
+  these milestones directly.
 - Give milestones due dates where possible; **close them when the phase ships** so the
   list stays short.
 
@@ -78,8 +76,8 @@ How they behave on the board:
   **"Sub-issues progress"** field shows an X-of-Y bar on the parent (driven by children
   being _closed_, not by their Status).
 - **Nothing is inherited.** A child does not get its parent's labels, milestone, or
-  Status — apply `feature:*`, `ai-auto-workflow`, `Bug`/`Improvement` + milestone, etc.
-  to each child explicitly.
+  Status — apply `feature:*`, `ai-auto-workflow`, the `bugs`/`improvements` milestone,
+  etc. to each child explicitly.
 - Auto-add puts every sub-issue on the board individually. If a view should show only
   top-level tickets, filter it with `no:parent-issue`.
 
@@ -92,7 +90,7 @@ switches, group-by, swimlanes, sort) are UI-only. Current set:
 | View              | Layout                                      | Filter                           |
 | ----------------- | ------------------------------------------- | -------------------------------- |
 | View 1 (board)    | Board, Status columns                       | —                                |
-| Bugs/Improvements | Board, Status columns × Milestone swimlanes | `label:Bug,Improvement`          |
+| Bugs/Improvements | Board, Status columns × Milestone swimlanes | `milestone:bugs,improvements`    |
 | agent-pipeline    | Table                                       | `label:"feature:agent-pipeline"` |
 
 **Adding a feature ("custom milestone") view** — two commands:
@@ -107,7 +105,7 @@ Fine-tune (group-by, swimlanes) in the UI afterwards if needed. Anything with th
 appears in the view automatically — the auto-add workflow puts every new `JesusFilm/core`
 issue in the project.
 
-Filter syntax reminders: comma = OR within a qualifier (`label:Bug,Improvement`);
+Filter syntax reminders: comma = OR within a qualifier (`milestone:bugs,improvements`);
 space = AND between qualifiers; no wildcards (you cannot express "has no feature label").
 
 ## The AI workflow
