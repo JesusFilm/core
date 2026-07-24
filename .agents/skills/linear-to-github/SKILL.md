@@ -1,6 +1,6 @@
 ---
 name: linear-to-github
-description: Convert Linear tickets — explicit IDs or whole groups (a project, label, or milestone) — into GitHub issues in JesusFilm/core on the Next Steps org project board.
+description: Convert Linear tickets — explicit IDs or whole groups (e.g. a project, label, or milestone) — into GitHub issues in JesusFilm/core on the Next Steps org project board.
 disable-model-invocation: true
 ---
 
@@ -74,13 +74,15 @@ Done when every ticket has every field listed above plus its one-hop context in 
 
 ### 4. Check for an existing conversion
 
-For each ticket, search for its provenance marker:
+For each ticket, find its converted issue: search the visible footer text, then confirm the exact marker — GitHub search does not reliably match inside HTML comments, and a false miss here duplicates the issue:
 
 ```sh
-gh issue list --repo JesusFilm/core --search '"linear:ENG-XXXX" in:body' --state all --json number,url,title
+gh issue list --repo JesusFilm/core --search 'ENG-XXXX in:body' --state all --json number,url,body
 ```
 
-A hit puts that ticket in **update** mode (reuse the found issue number); a miss puts it in **create** mode.
+A candidate counts only when its body contains the literal `<!-- linear:ENG-XXXX -->` — mere mentions of the ticket in other converted issues also match the search. Issues created earlier in the same run count without searching (search indexing lags fresh issues).
+
+A confirmed hit puts that ticket in **update** mode (reuse the found issue number); none puts it in **create** mode.
 
 Done when every ticket is marked create or update, update tickets carrying their issue number.
 
