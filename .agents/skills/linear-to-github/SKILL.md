@@ -132,17 +132,18 @@ gh issue edit <number> --repo JesusFilm/core --title "..." --body-file body-ENG-
 
 **Per-ticket failure**: record it in the report and continue with the remaining tickets.
 
-**Board placement**: new `core` issues auto-enter the project at Status **Triage**. Confirm — and backfill any update-mode issue that predates the auto-add workflow — with the idempotent:
+**Board placement**: put every issue on the board and set its Status to **Triage** explicitly — the auto-add workflow can lag or leave items at No status:
 
 ```sh
-gh project item-add 8 --owner JesusFilm --url <issue-url>
+item=$(gh project item-add 8 --owner JesusFilm --url <issue-url> --format json --jq .id)   # idempotent; returns the item id
+gh project item-edit --id "$item" --project-id <project-id> --field-id <status-field-id> --single-select-option-id <triage-option-id>   # IDs in the board doc
 ```
 
-The token needs the `project` scope (`gh auth refresh -s project`). Issues stay at Triage; set a different Status only on request, via `gh project item-edit` with the option IDs in the board doc.
+The token needs the `project` scope (`gh auth refresh -s project`). Set a different Status only on request (option IDs in the board doc).
 
 **Relation fix-up (multi-ticket runs)**: after the whole set exists, recompose and `gh issue edit` every member whose Relations or mentions still point at Linear for a ticket this run converted — the step-4 search now resolves them.
 
-Done when every ticket has an issue URL, its labels, and a confirmed board placement, and no member links to Linear for a ticket converted in this run.
+Done when every ticket has an issue URL, its step-2 home, a board placement at Triage (or the requested Status), and no member links to Linear for a ticket converted in this run.
 
 ### 7. Comment back on Linear
 
