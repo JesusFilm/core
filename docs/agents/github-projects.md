@@ -58,6 +58,31 @@ Milestones are repo-level and encode phases/buckets. One per issue.
 - Give milestones due dates where possible; **close them when the phase ships** so the
   list stays short.
 
+## Sub-issues
+
+Use sub-issues to break a big ticket (an epic, a feature slice) into children. In the UI:
+**Create sub-issue** on the parent. Via CLI there are no native `gh` commands yet — use
+the REST endpoints with the child's **database id** (`.id`, not the `#number`):
+
+```bash
+CHILD_ID=$(gh api repos/JesusFilm/core/issues/<child-number> --jq .id)
+gh api -X POST repos/JesusFilm/core/issues/<parent-number>/sub_issues -F sub_issue_id="$CHILD_ID"
+gh api repos/JesusFilm/core/issues/<parent-number>/sub_issues        # list children
+gh api repos/JesusFilm/core/issues/<parent-number> --jq .sub_issues_summary  # progress
+```
+
+How they behave on the board:
+
+- Each sub-issue is **its own card** with its own independent Status — no visual nesting
+  on boards. Table views can **group by "Parent issue"** for epic-style sections, and the
+  **"Sub-issues progress"** field shows an X-of-Y bar on the parent (driven by children
+  being *closed*, not by their Status).
+- **Nothing is inherited.** A child does not get its parent's labels, milestone, or
+  Status — apply `feature:*`, `ai-auto-workflow`, `Bug`/`Improvement` + milestone, etc.
+  to each child explicitly.
+- Auto-add puts every sub-issue on the board individually. If a view should show only
+  top-level tickets, filter it with `no:parent-issue`.
+
 ## Views
 
 Views are saved filters over the project. They can be **created** via the Projects v2
