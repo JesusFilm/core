@@ -1,6 +1,6 @@
 ---
 name: linear-to-github
-description: Convert an explicit list of Linear tickets into GitHub issues in JesusFilm/core and add them to the NextSteps GitHub Project.
+description: Convert an explicit list of Linear tickets into GitHub issues in JesusFilm/core on the Next Steps org project board.
 disable-model-invocation: true
 ---
 
@@ -11,7 +11,7 @@ Convert Linear tickets into GitHub issues, one issue per ticket, as part of the 
 <config>
 
 - **Repo**: `JesusFilm/core`
-- **Project**: the GitHub Project titled `NextSteps`, owner `JesusFilm` — the only Project converted issues are added to. Stood up by ENG-3702; until it exists, step 5 reports "project not found" and conversion still succeeds.
+- **Board**: the [Next Steps org project (#8)](https://github.com/orgs/JesusFilm/projects/8) — the only Project converted issues land on. Its Status field, label vocabulary, milestones, and stable IDs are the contract in `docs/agents/github-projects.md`; this skill follows that doc rather than restating it.
 - **Provenance marker**: `<!-- linear:ENG-XXXX -->` as the last line of the issue body — the idempotency key.
 
 </config>
@@ -81,7 +81,7 @@ Converted from Linear [ENG-XXXX](https://linear.app/...) · Linear labels: `a`, 
 
 </body-template>
 
-### 5. Create or update, then add to the Project
+### 5. Create or update, then confirm board placement
 
 Write the body to a temp file, then per mode:
 
@@ -90,18 +90,17 @@ gh issue create --repo JesusFilm/core --title "..." --body-file body.md   # crea
 gh issue edit <number> --repo JesusFilm/core --title "..." --body-file body.md   # update
 ```
 
-Apply no labels and no milestone — mapping is an open decision (see below).
+**Labels and milestone**: apply only what the invoker named, drawn from the board vocabulary in `docs/agents/github-projects.md` (`feature:<kebab-name>`, `Bug` / `Improvement`, `ai-auto-workflow`; milestones `<feature>: <stage>` or the rolling buckets). Nothing named means none applied — automatic inference from the Linear labels is the open decision below, and the originals ride in the footer either way.
 
-Add the issue to the Project (create mode and update mode alike; re-adding an existing item is a no-op):
+**Board placement**: new `core` issues auto-enter the Next Steps project at Status **Triage** (built-in workflow). Confirm — and backfill any update-mode issue that predates the workflow — with the idempotent:
 
 ```sh
-number=$(gh project list --owner JesusFilm --format json --jq '.projects[] | select(.title == "NextSteps") .number')
-gh project item-add "$number" --owner JesusFilm --url <issue-url>
+gh project item-add 8 --owner JesusFilm --url <issue-url>
 ```
 
-No `NextSteps` project yet means ENG-3702 hasn't landed: note it in the report and continue.
+The token needs the `project` scope (`gh auth refresh -s project`). Converted issues stay at Triage; when the invoker asks for a different Status (e.g. Ready), set it with the `gh project item-edit` command and stable option IDs in `docs/agents/github-projects.md`.
 
-Done when every ticket has an issue URL and a project outcome (added / already present / project not found).
+Done when every ticket has an issue URL and a confirmed board placement with its Status.
 
 ### 6. Comment back on Linear
 
@@ -109,8 +108,8 @@ Post one comment on each Linear ticket: `Converted to GitHub: <issue-url>`. Skip
 
 ### 7. Report
 
-A table: Linear ID → GitHub issue URL, mode (created / updated / skipped + reason), project outcome. Every input ticket appears in it.
+A table: Linear ID → GitHub issue URL, mode (created / updated / skipped + reason), board Status, labels applied. Every input ticket appears in it.
 
-## Label & milestone mapping — deferred
+## Automatic label & milestone mapping — deferred
 
-Deliberately undecided until the NextSteps Project (ENG-3702) is live and the views show what they need. Until then converted issues carry no labels or milestone; the originals ride in the footer, so a later mapping pass can backfill from there. When the decision lands, record the mapping table here and apply it in step 5.
+The GitHub-side vocabulary is settled (`docs/agents/github-projects.md`); what stays open is the inference from Linear metadata — which Linear labels imply `Bug` vs `Improvement`, which map to a `feature:<kebab-name>`, and how Linear project milestones become `<feature>: <stage>` milestones. Until that mapping is decided, the skill applies only invoker-named labels (step 5) and the originals ride in the footer, so a later mapping pass can backfill from there. When the decision lands, record the mapping table here and apply it in step 5.
