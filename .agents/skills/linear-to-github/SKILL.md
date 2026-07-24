@@ -31,11 +31,11 @@ Group expansion keeps open tickets (backlog, unstarted, started); completed and 
 
 Done when every argument is expanded, the set is deduped, and the user has confirmed it.
 
-### 2. Choose the board labels
+### 2. Choose the set's board home
 
-Ask the invoker (in the same exchange as step 1's confirmation) which label the set lands under — **one is enough**. `feature:<kebab-name>` and `Bug` / `Improvement` sit at the same level: a ticket carries one **or** the other, both only when the invoker explicitly wants both.
+Ask the invoker (in the same exchange as step 1's confirmation) where the set lands — **one home is enough**:
 
-- **A feature** — `feature:<kebab-name>`. List the existing ones to pick from:
+- **A feature** — the `feature:<kebab-name>` label, optionally plus its `<feature>: <stage>` phase milestone. List the existing labels to pick from:
 
   ```sh
   gh label list --repo JesusFilm/core --json name --jq '[.[].name | select(startswith("feature:"))]'
@@ -47,22 +47,20 @@ Ask the invoker (in the same exchange as step 1's confirmation) which label the 
   gh label create "feature:<kebab-name>" --repo JesusFilm/core --color 0e7c86
   ```
 
-- **Or a kind** — `Bug` / `Improvement`, for the set or for individual tickets.
+- **Or a bug/improvement** — the rolling `bugs` / `improvements` **milestones** (they are milestones, not labels; no feature label needed).
 
-Then, independent of that choice:
+Milestones are one per issue. List them, or create a missing phase (formats in the board doc):
 
-- **Milestone** (one per issue; declining is fine) — list, or create a missing phase (formats in the board doc):
+```sh
+gh api repos/JesusFilm/core/milestones --jq '.[].title'
+gh api repos/JesusFilm/core/milestones -f title="<feature>: <stage>"
+```
 
-  ```sh
-  gh api repos/JesusFilm/core/milestones --jq '.[].title'
-  gh api repos/JesusFilm/core/milestones -f title="<feature>: <stage>"
-  ```
-
-- **Anything else** the invoker wants applied (e.g. `ai-auto-workflow`).
+Plus **anything else** the invoker wants as labels (e.g. `ai-auto-workflow`).
 
 **New feature label → new view.** Views are UI-only — prompt the user to add the feature's view on the board (recipe in the board doc).
 
-The choices apply to every ticket in the set; the invoker can name per-ticket exceptions. Done when each ticket has its label and milestone decided and anything newly named exists in the repo.
+The choices apply to every ticket in the set; the invoker can name per-ticket exceptions. Done when each ticket has its home decided and anything newly named exists in the repo.
 
 ### 3. Fetch each ticket from Linear
 
@@ -125,7 +123,7 @@ Done when every ticket has a composed body ending in its provenance marker.
 
 ### 6. Create or update, then confirm board placement
 
-Write each ticket's body to its own temp file (`body-ENG-XXXX.md`), then per mode, with the step-2 labels (and `--milestone` when one was chosen):
+Write each ticket's body to its own temp file (`body-ENG-XXXX.md`), then per mode, with the step-2 home — `--label` and/or `--milestone` as chosen:
 
 ```sh
 gh issue create --repo JesusFilm/core --title "..." --body-file body-ENG-XXXX.md --label "<step-2 label>"   # create
