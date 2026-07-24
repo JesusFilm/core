@@ -50,7 +50,11 @@ Milestones are repo-level and encode phases/buckets. One per issue.
 
 - Feature phases: `<feature>: <stage>`, where the prefix matches the feature label's
   value — e.g. `agent-pipeline: setup`, `agent-pipeline: mvp` for `feature:agent-pipeline`.
-- Rolling buckets: `bugs`, `improvements` (sectioning for the Bugs/Improvements view).
+- Rolling buckets: `bugs`, `improvements` — permanent milestones that are **never
+  closed**, unlike feature-phase milestones. They pair with the `Bug`/`Improvement`
+  labels: the **label** puts a ticket in the Bugs/Improvements view; the **milestone**
+  places it in the right swimlane. Apply **both** — a labeled ticket without the
+  milestone lands in the view's "No milestone" lane.
 - Give milestones due dates where possible; **close them when the phase ships** so the
   list stays short.
 
