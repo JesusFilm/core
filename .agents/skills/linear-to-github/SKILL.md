@@ -1,6 +1,6 @@
 ---
 name: linear-to-github
-description: Convert an explicit list of Linear tickets into GitHub issues in JesusFilm/core on the Next Steps org project board.
+description: Convert Linear tickets — explicit IDs or whole groups (a project, label, or milestone) — into GitHub issues in JesusFilm/core on the Next Steps org project board.
 disable-model-invocation: true
 ---
 
@@ -18,13 +18,18 @@ Convert Linear tickets into GitHub issues, one issue per ticket, as part of the 
 
 ## Process
 
-### 1. Resolve the ticket list
+### 1. Resolve the ticket set
 
-Arguments are one or more Linear ticket IDs (`ENG-1234`) or URLs. Resolve each to an ID.
+Arguments are any mix of:
 
-**Hard guardrail — explicit lists only.** A request shaped like "all tickets in project/label/milestone X" is bulk migration, which ENG-3688 ruled out for the phased switch. Stop and ask the user to name the tickets individually.
+- **Ticket IDs or URLs** (`ENG-1234`) — taken as-is.
+- **Group selectors** — a Linear project, label, milestone, cycle, or team-plus-state; anything the Linear MCP `list_issues` can filter on. Expand each selector with the matching filter, paging until exhausted; for a project milestone, list the project's issues and keep those in that milestone.
 
-Done when every argument resolves to a ticket ID.
+Group expansion keeps open tickets (backlog, unstarted, started) — completed and canceled tickets join the set only when the user asks for them. Dedupe across selectors.
+
+**Confirmation gate.** Before converting, show the resolved set — count plus `ID — title` lines — and get the user's go-ahead. The gate is what makes a group conversion deliberate rather than accidental (ENG-3688's phased-trial stance); a fat-fingered selector costs a glance at the list, not a pile of stray issues. Interrupted runs re-run safely regardless — the provenance marker (step 3) makes conversion idempotent.
+
+Done when every argument is expanded, the set is deduped, and the user has confirmed it.
 
 ### 2. Fetch each ticket from Linear
 
@@ -100,7 +105,9 @@ gh project item-add 8 --owner JesusFilm --url <issue-url>
 
 The token needs the `project` scope (`gh auth refresh -s project`). Converted issues stay at Triage; when the invoker asks for a different Status (e.g. Ready), set it with the `gh project item-edit` command and stable option IDs in `docs/agents/github-projects.md`.
 
-Done when every ticket has an issue URL and a confirmed board placement with its Status.
+**Relation fix-up (multi-ticket runs).** Tickets converted early in a run link to Linear for relatives that are converted later in the same run. After the whole set exists, recompose and `gh issue edit` every member whose Relations or rewritten mentions still point at Linear for a ticket the run converted — the step-3 marker search now resolves them.
+
+Done when every ticket has an issue URL and a confirmed board placement, and no member links to Linear for a ticket converted in this run.
 
 ### 6. Comment back on Linear
 
