@@ -47,7 +47,7 @@ Ask the invoker (in the same exchange as step 1's confirmation) where the set la
   gh label create "feature:<kebab-name>" --repo JesusFilm/core --color 0e7c86
   ```
 
-- **Or a bug/improvement** — the rolling `bugs` / `improvements` **milestones** (they are milestones, not labels; no feature label needed).
+- **Or a bug/improvement** — the rolling `bugs` / `improvements` **milestones**. The milestone is the whole home: no label of any kind (there are no `Bug`/`Improvement` labels on this board).
 
 Milestones are one per issue. List them, or create a missing phase (formats in the board doc):
 
