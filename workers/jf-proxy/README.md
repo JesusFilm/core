@@ -1,6 +1,6 @@
 # JF Proxy Worker
 
-A Cloudflare worker that acts as a proxy server for the Jesus Film website, handling requests and managing failover to error pages.
+A Cloudflare worker that acts as a proxy server for the Jesus Film website, handling requests and managing its legacy Error Fallback.
 
 ## How It Works
 
@@ -9,7 +9,8 @@ The worker sits in front of the Jesus Film website and:
 1. Forwards incoming requests to the configured destination based on the path
 2. Routes `/watch` paths to `WATCH_PROXY_DEST`
 3. Routes `/journeys`, `/resources`, and other worker-owned paths to `RESOURCES_PROXY_DEST`
-4. Handles error cases (404, 500) by serving a custom error page
+4. Preserves Watch 404 responses and serves the legacy custom error page for
+   non-Watch 404s plus all GET 500s
 5. Preserves request properties (method, headers, body)
 6. Sanitizes response headers
 
@@ -21,10 +22,11 @@ The worker sits in front of the Jesus Film website and:
    - `WATCH_PROXY_DEST` for `/watch` paths
    - `RESOURCES_PROXY_DEST` for all other paths
 4. Worker forwards the request with all original properties
-5. If the response is a 404 or 500:
+5. If a Watch response is a 404, returns it unchanged
+6. If a non-Watch response is a 404 or any GET response is a 500:
    - Attempts to serve `/not-found.html`
-   - Falls back to a basic error message if that fails
-6. Returns the response with sanitized headers
+   - Falls back to a basic error message if that fetch fails
+7. Returns the response with sanitized headers
 
 ### Path Routing
 
@@ -99,7 +101,8 @@ The worker handles routing for various website sections including:
 
 The worker handles several types of errors:
 
-- **404 Not Found**: Attempts to serve `/not-found.html`
+- **Watch 404 Not Found**: Returns the Watch destination response unchanged
+- **Non-Watch 404 Not Found**: Attempts to serve `/not-found.html`
 - **500 Server Error**: Attempts to serve `/not-found.html`
 - **Network Errors**: Returns 503 Service Unavailable
 - **Not Found Page Errors**: Returns basic 404 message
@@ -149,7 +152,8 @@ The test suite includes verification for:
 - `/watch` paths route to `WATCH_PROXY_DEST` regardless of cookies
 - `/journeys` and `/resources` paths route to `RESOURCES_PROXY_DEST`
 - Other non-`/watch` paths route to `RESOURCES_PROXY_DEST`
-- Handling of 404 responses with custom error page
+- Passing through Watch 404 responses
+- Handling non-Watch 404 responses with the legacy custom error page
 - Handling of 500 responses with custom error page
 - Network errors during main request
 - Network errors during error page fetch

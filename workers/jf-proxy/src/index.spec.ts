@@ -466,6 +466,58 @@ describe('test the worker', () => {
     expect(await res.text()).toBe('watch video content')
   })
 
+  it.each([
+    '/watch',
+    '/watch/lumo-acts-of-the-apostles.html/lumo-acts-14-24-21-7/fgfghhh.html',
+    '/watching'
+  ])(
+    'should pass through the Watch custom 404 response for %s',
+    async (path) => {
+      const notFoundBody =
+        '<meta name="robots" content="noindex">This scene isn\'t here'
+
+      fetchMock
+        .get('http://watch.example.com')
+        .intercept({ path })
+        .reply(404, notFoundBody, {
+          headers: {
+            'content-type': 'text/html; charset=utf-8',
+            'x-middleware-rewrite': '/watch/en/en/404',
+            'x-powered-by': 'Next.js'
+          }
+        })
+
+      const res = await app.request(`http://localhost${path}`, {}, workerEnv())
+
+      expect(res.status).toBe(404)
+      expect(res.headers.get('content-type')).toBe('text/html; charset=utf-8')
+      expect(res.headers.get('x-middleware-rewrite')).toBe('/watch/en/en/404')
+      expect(res.headers.get('x-powered-by')).toBe('Next.js')
+      expect(await res.text()).toBe(notFoundBody)
+    }
+  )
+
+  it('should retain the fallback for a Watch GET 500 response', async () => {
+    fetchMock
+      .get('http://watch.example.com')
+      .intercept({ path: '/watch/broken.html' })
+      .reply(500, 'watch server error')
+
+    fetchMock
+      .get('http://localhost')
+      .intercept({ path: '/not-found.html' })
+      .reply(404, 'legacy not found content')
+
+    const res = await app.request(
+      'http://localhost/watch/broken.html',
+      {},
+      workerEnv()
+    )
+
+    expect(res.status).toBe(404)
+    expect(await res.text()).toBe('legacy not found content')
+  })
+
   it('should forward a Next.js server action POST to WATCH_PROXY_DEST', async () => {
     const actionBody = '1_{"query":"JESUS"}'
     let capturedBody: string | undefined
