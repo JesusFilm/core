@@ -13,7 +13,7 @@ The upstream hostname a request is rewritten to — the Watch destination for `/
 _Avoid_: origin, backend
 
 **Error Fallback**:
-The recovery behaviour when a non-Watch upstream answers 404 or any GET upstream answers 500: the worker retries the public host for the legacy custom not-found page, degrading to a plain error response if that also fails. A Watch 404 is terminal and passes through unchanged.
+The recovery behaviour when a non-Watch GET upstream answers 404 or any GET upstream answers 500: the worker retries the public host for the legacy custom not-found page, degrading to a plain error response if that also fails. A Watch 404 is terminal and passes through unchanged.
 _Avoid_: failover (nothing switches hosts), error page redirect
 
 **App Association Files**:

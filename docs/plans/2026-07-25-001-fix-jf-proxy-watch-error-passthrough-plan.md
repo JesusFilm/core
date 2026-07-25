@@ -3,6 +3,9 @@ title: 'Return Watch 404 responses through JF Proxy'
 type: fix
 status: active
 date: 2026-07-25
+artifact_contract: ce-unified-plan/v1
+artifact_readiness: implementation-ready
+product_contract_source: production-incident
 execution: code
 ---
 

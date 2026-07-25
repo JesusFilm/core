@@ -10,7 +10,7 @@ The worker sits in front of the Jesus Film website and:
 2. Routes `/watch` paths to `WATCH_PROXY_DEST`
 3. Routes `/journeys`, `/resources`, and other worker-owned paths to `RESOURCES_PROXY_DEST`
 4. Preserves Watch 404 responses and serves the legacy custom error page for
-   non-Watch 404s plus all GET 500s
+   non-Watch GET 404s plus all GET 500s
 5. Preserves request properties (method, headers, body)
 6. Sanitizes response headers
 
@@ -23,7 +23,7 @@ The worker sits in front of the Jesus Film website and:
    - `RESOURCES_PROXY_DEST` for all other paths
 4. Worker forwards the request with all original properties
 5. If a Watch response is a 404, returns it unchanged
-6. If a non-Watch response is a 404 or any GET response is a 500:
+6. If a non-Watch GET response is a 404 or any GET response is a 500:
    - Attempts to serve `/not-found.html`
    - Falls back to a basic error message if that fetch fails
 7. Returns the response with sanitized headers
@@ -102,8 +102,8 @@ The worker handles routing for various website sections including:
 The worker handles several types of errors:
 
 - **Watch 404 Not Found**: Returns the Watch destination response unchanged
-- **Non-Watch 404 Not Found**: Attempts to serve `/not-found.html`
-- **500 Server Error**: Attempts to serve `/not-found.html`
+- **Non-Watch GET 404 Not Found**: Attempts to serve `/not-found.html`
+- **GET 500 Server Error**: Attempts to serve `/not-found.html`
 - **Network Errors**: Returns 503 Service Unavailable
 - **Not Found Page Errors**: Returns basic 404 message
 
