@@ -181,9 +181,10 @@ flowchart TD
      headers.
   5. Browser hard navigation retains the invalid public URL while rendering
      the custom page.
-  6. Canonical controls cover one stable `/watch/_next/*` asset, one Watch
-     image or font, one `/watch/api/*` GET, one HEAD request, one representative
-     POST/RSC response, and one invalid Resources-owned path.
+  6. In addition to the valid page, canonical controls cover one stable Watch
+     asset (`/watch/_next/*`, image, or font), one `/watch/api/*` GET, one HEAD
+     request, one representative POST/RSC response, and one invalid
+     Resources-owned path.
 - **Verification:** PR completion requires the unchecked rollout checklist and
   pre-deploy baseline, not a production-fix claim. Production resolution is a
   separate tail owned by the PR author. Record the deployed commit SHA; use a
