@@ -111,7 +111,8 @@ flowchart TD
   C --> E{"Fetch produced a response?"}
   E -->|"No"| F["Return 503"]
   E -->|"Yes: 404"| G["Return Watch 404 unchanged"]
-  E -->|"Yes: 500"| I
+  E -->|"Yes: GET 500"| I
+  E -->|"Yes: other status or method"| K["Return Watch response"]
   D --> H{"GET status is 404 or 500?"}
   H -->|"Yes"| I["Fetch /not-found.html"]
   H -->|"No"| J["Return Resources response"]

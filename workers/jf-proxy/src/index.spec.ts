@@ -487,13 +487,21 @@ describe('test the worker', () => {
           }
         })
 
-      const res = await app.request(`http://localhost${path}`, {}, workerEnv())
+      const response = await app.request(
+        `http://localhost${path}`,
+        {},
+        workerEnv()
+      )
 
-      expect(res.status).toBe(404)
-      expect(res.headers.get('content-type')).toBe('text/html; charset=utf-8')
-      expect(res.headers.get('x-middleware-rewrite')).toBe('/watch/en/en/404')
-      expect(res.headers.get('x-powered-by')).toBe('Next.js')
-      expect(await res.text()).toBe(notFoundBody)
+      expect(response.status).toBe(404)
+      expect(response.headers.get('content-type')).toBe(
+        'text/html; charset=utf-8'
+      )
+      expect(response.headers.get('x-middleware-rewrite')).toBe(
+        '/watch/en/en/404'
+      )
+      expect(response.headers.get('x-powered-by')).toBe('Next.js')
+      expect(await response.text()).toBe(notFoundBody)
     }
   )
 
@@ -508,16 +516,20 @@ describe('test the worker', () => {
         }
       })
 
-    const res = await app.request(
+    const response = await app.request(
       'http://localhost/watch/missing.html',
       { method: 'HEAD' },
       workerEnv()
     )
 
-    expect(res.status).toBe(404)
-    expect(res.headers.get('content-type')).toBe('text/html; charset=utf-8')
-    expect(res.headers.get('x-middleware-rewrite')).toBe('/watch/en/en/404')
-    expect(await res.text()).toBe('')
+    expect(response.status).toBe(404)
+    expect(response.headers.get('content-type')).toBe(
+      'text/html; charset=utf-8'
+    )
+    expect(response.headers.get('x-middleware-rewrite')).toBe(
+      '/watch/en/en/404'
+    )
+    expect(await response.text()).toBe('')
   })
 
   it('should preserve a queried Watch custom 404 response and cache headers', async () => {
@@ -535,17 +547,21 @@ describe('test the worker', () => {
         }
       })
 
-    const res = await app.request(
+    const response = await app.request(
       'http://localhost/watch/missing.html?probe=review',
       {},
       workerEnv()
     )
 
-    expect(res.status).toBe(404)
-    expect(res.headers.get('cache-control')).toBe('private, no-store')
-    expect(res.headers.get('content-type')).toBe('text/html; charset=utf-8')
-    expect(res.headers.get('x-middleware-rewrite')).toBe('/watch/en/en/404')
-    expect(await res.text()).toBe(notFoundBody)
+    expect(response.status).toBe(404)
+    expect(response.headers.get('cache-control')).toBe('private, no-store')
+    expect(response.headers.get('content-type')).toBe(
+      'text/html; charset=utf-8'
+    )
+    expect(response.headers.get('x-middleware-rewrite')).toBe(
+      '/watch/en/en/404'
+    )
+    expect(await response.text()).toBe(notFoundBody)
   })
 
   it('should return 503 when the Watch upstream fetch fails', async () => {
@@ -554,14 +570,14 @@ describe('test the worker', () => {
       .intercept({ path: '/watch/unavailable.html' })
       .replyWithError(new Error('Watch network error'))
 
-    const res = await app.request(
+    const response = await app.request(
       'http://localhost/watch/unavailable.html',
       {},
       workerEnv()
     )
 
-    expect(res.status).toBe(503)
-    expect(await res.text()).toBe('Service Unavailable')
+    expect(response.status).toBe(503)
+    expect(await response.text()).toBe('Service Unavailable')
   })
 
   it('should retain the fallback for a Watch GET 500 response', async () => {
@@ -575,14 +591,14 @@ describe('test the worker', () => {
       .intercept({ path: '/not-found.html' })
       .reply(404, 'legacy not found content')
 
-    const res = await app.request(
+    const response = await app.request(
       'http://localhost/watch/broken.html',
       {},
       workerEnv()
     )
 
-    expect(res.status).toBe(404)
-    expect(await res.text()).toBe('legacy not found content')
+    expect(response.status).toBe(404)
+    expect(await response.text()).toBe('legacy not found content')
   })
 
   it('should forward a Next.js server action POST to WATCH_PROXY_DEST', async () => {
