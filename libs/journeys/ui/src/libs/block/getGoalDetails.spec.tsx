@@ -8,7 +8,7 @@ import PhoneIcon from '@core/shared/ui/icons/Phone'
 
 import { GoalType } from '../../components/Button/utils/getLinkActionGoal'
 
-import { getGoalDetails } from '.'
+import { getGoalDetails } from './getGoalDetails'
 
 describe('getGoalDetails', () => {
   const t = vi.fn((value: string): string => value) as unknown as TFunction

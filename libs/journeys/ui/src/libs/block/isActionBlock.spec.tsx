@@ -1,4 +1,4 @@
-import { isActionBlock } from '.'
+import { isActionBlock } from './isActionBlock'
 
 describe('isActionBlock', () => {
   it('should return true for valid action block', () => {

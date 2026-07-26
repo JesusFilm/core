@@ -22,8 +22,7 @@ import {
   STEP_PREVIOUS_EVENT_CREATE
 } from '../../components/Card/Card'
 import { StepFields } from '../../components/Step/__generated__/StepFields'
-import { TreeBlock, useBlocks } from '../block'
-import { getStepHeading } from '../getStepHeading'
+import { TreeBlock, getStepHeading, useBlocks } from '../block'
 import { useJourney } from '../JourneyProvider'
 import {
   JourneyPlausibleEvents,

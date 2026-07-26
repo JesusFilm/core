@@ -1,10 +1,10 @@
-import { TreeBlock } from '../block'
 import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_RadioOptionBlock as RadioOptionBlock,
   BlockFields_SignUpBlock as SignUpBlock,
   BlockFields_VideoBlock as VideoBlock
-} from '../block/__generated__/BlockFields'
+} from './__generated__/BlockFields'
+import type { TreeBlock } from './TreeBlock'
 
 export type ActionBlock =
   | TreeBlock<RadioOptionBlock>

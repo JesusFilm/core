@@ -1,15 +1,15 @@
 import { RadioOptionFields } from '../../components/RadioOption/__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../../components/RadioQuestion/__generated__/RadioQuestionFields'
-import { TreeBlock } from '../block'
+
 import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_ButtonBlock_action as ButtonBlockAction,
   BlockFields_CardBlock as CardBlock,
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_StepBlock as StepBlock
-} from '../block/__generated__/BlockFields'
-
+} from './__generated__/BlockFields'
 import { filterActionBlocks } from './filterActionBlocks'
+import type { TreeBlock } from './TreeBlock'
 
 const buttonAction: ButtonBlockAction = {
   __typename: 'LinkAction',

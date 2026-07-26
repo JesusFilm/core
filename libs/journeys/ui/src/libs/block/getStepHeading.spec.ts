@@ -1,8 +1,8 @@
 import { TypographyVariant } from '../../../__generated__/globalTypes'
-import type { TreeBlock } from '../block'
-import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
 
-import { getStepHeading } from '.'
+import { BlockFields_StepBlock as StepBlock } from './__generated__/BlockFields'
+import { getStepHeading } from './getStepHeading'
+import type { TreeBlock } from './TreeBlock'
 
 describe('getStepHeading', () => {
   const stepBlock: StepBlock = {

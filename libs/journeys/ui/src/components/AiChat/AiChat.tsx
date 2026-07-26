@@ -3,8 +3,6 @@
 import { useChat } from '@ai-sdk/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Link from '@mui/material/Link'
-import Typography from '@mui/material/Typography'
 import { DefaultChatTransport, UIMessage } from 'ai'
 import { useTranslation } from 'next-i18next/pages'
 import {
@@ -32,23 +30,13 @@ import { ChatHeader } from './ChatHeader'
 import {
   HEADER_WASH,
   MUTED_FG,
-  OVERLAY_FG_MUTED,
   OVERLAY_FG_RETRY,
-  OVERLAY_HERO_FG,
-  OVERLAY_LINK_FG,
   SHEET_BOTTOM_FADE
 } from './chatStyles'
-import { getAboutChatHref } from './getAboutChatHref'
 
 interface AiChatProps {
   /** When provided, this message is sent automatically on first render */
   initialMessage?: string
-  /**
-   * `panel` (default) renders the bubble layout for the pinned mobile bar
-   * (header + bubbles + capsule input). `overlay` renders plain assistant
-   * prose and a floating capsule input for the desktop ambient overlay.
-   */
-  variant?: 'panel' | 'overlay'
   /**
    * Notifies the parent when the sheet's logical state changes:
    *  - 'idle' — no messages yet; show header + input.
@@ -58,18 +46,17 @@ interface AiChatProps {
    */
   onSheetStateChange?: (state: 'idle' | 'active') => void
   /**
-   * When provided, the panel variant renders a close (X) button in the
-   * ChatHeader. The pinned mobile drawer uses this to dismiss the whole
-   * sheet; the desktop overlay omits it (ChatOverlay owns its own corner
-   * close button).
+   * When provided, renders a close (X) button in the ChatHeader. The pinned
+   * mobile drawer and the desktop ChatOverlay both use this to dismiss the
+   * sheet.
    */
   onClose?: () => void
   /**
-   * Re-themes the `panel` variant for a dark backdrop (NES-1738 Option B:
-   * the desktop ChatOverlay renders the compact bar over a dark layer).
-   * It drops the header's red wash, lightens the header + assistant text
-   * to the overlay tokens, and is otherwise a no-op. The mobile
-   * `PinnedChatBar` leaves it false so its white sheet stays light.
+   * Re-themes the chat for a dark backdrop (NES-1738 Option B: the desktop
+   * ChatOverlay renders the compact bar over a dark layer). It drops the
+   * header's red wash, lightens the header + assistant text to the overlay
+   * tokens, and is otherwise a no-op. The mobile `PinnedChatBar` leaves it
+   * false so its white sheet stays light.
    */
   onDark?: boolean
 }
@@ -231,18 +218,13 @@ function TypingIndicator(): ReactElement {
 
 export function AiChat({
   initialMessage,
-  variant = 'panel',
   onSheetStateChange,
   onClose,
   onDark = false
 }: AiChatProps): ReactElement {
-  const isOverlay = variant === 'overlay'
-  const isPanel = !isOverlay
-  // Both the desktop overlay variant and the dark-themed panel (Option B)
-  // sit on a dark backdrop, so assistant prose and surface tints use the
-  // dark tokens in either case.
-  const isDarkSurface = isOverlay || onDark
-  const messageSurface: 'light' | 'dark' = isDarkSurface ? 'dark' : 'light'
+  // The dark-themed sheet (Option B) sits on a dark backdrop, so assistant
+  // prose and surface tints use the dark tokens.
+  const messageSurface: 'light' | 'dark' = onDark ? 'dark' : 'light'
   const { t } = useTranslation('libs-journeys-ui')
   const { journey } = useJourney()
   const [input, setInput] = useState('')
@@ -400,48 +382,16 @@ export function AiChat({
     return -1
   }, [messages])
 
+  // Both error actions (cap-hit reset, Retry) share the same dim colour,
+  // lightened on the dark overlay backdrop.
+  const errorActionColor = onDark ? OVERLAY_FG_RETRY : MUTED_FG
+
   const hasMessages = messages.length > 0
   const sheetState: AiChatSheetState = hasMessages ? 'active' : 'idle'
   useEffect(() => {
     onSheetStateChange?.(sheetState)
   }, [sheetState, onSheetStateChange])
 
-  const showHeader = isPanel
-  // Empty-state hero is overlay-only: gives the user a clear "this is
-  // the chat" signal when the overlay auto-opens with no messages yet
-  // (NES-1654). Hidden once a message exists, is being sent, or there's
-  // an error so it doesn't compete with conversation content.
-  const showOverlayHero =
-    isOverlay && messages.length === 0 && !isLoading && error == null
-
-  // The wave animation is a one-shot intro — it plays the first time the
-  // hero ever mounts in this AiChat instance, then stays silent. Without
-  // this gate, `handleStartNewConversation` (cap-hit reset) would re-fire
-  // the wave on every reset because `setMessages([])` + `clearError()`
-  // flips `showOverlayHero` false → true and the inner spans re-mount.
-  // Reads as deliberate ("welcome") instead of busy ("attention").
-  const heroAnimatedRef = useRef(false)
-  const shouldAnimateHero = showOverlayHero && !heroAnimatedRef.current
-  useEffect(() => {
-    if (showOverlayHero) heroAnimatedRef.current = true
-  }, [showOverlayHero])
-
-  // Whole-word stagger preserves script behaviour that per-character
-  // splitting would break — Arabic contextual shaping (initial/medial/
-  // final letterforms + ligatures) and combining marks on Devanagari /
-  // Bengali / Thai / Burmese / Urdu / Nepali (translations for all of
-  // these exist in libs/locales/<bcp47>/libs-journeys-ui.json). Each
-  // word stays in a single text run, so the renderer sees neighbouring
-  // characters and shapes correctly. For whitespace-less scripts (Thai,
-  // Burmese, CJK) the split returns a single chunk and the whole
-  // greeting wave-lifts as one unit — still on-tone.
-  const heroWords = useMemo(
-    () =>
-      t('Ask your questions about faith')
-        .split(/\s+/)
-        .filter((w) => w.length > 0),
-    [t]
-  )
   return (
     <Box
       sx={{
@@ -452,117 +402,37 @@ export function AiChat({
         position: 'relative'
       }}
     >
-      {showHeader && (
-        // pt compensates for the removed drag handle so the header doesn't
-        // sit flush against the sheet's rounded top edge. The dark overlay
-        // (Option B) has a visible top border, so it gets a larger inset
-        // (matching the 16px corner radius) for clear separation between the
-        // border and the header; the white mobile sheet keeps the smaller
-        // inset. On dark the red HEADER_WASH would read as a red bar, so the
-        // wrapper goes transparent and the dark layer shows through.
-        <Box
-          sx={{
-            background: onDark ? 'transparent' : HEADER_WASH,
-            flexShrink: 0,
-            pt: onDark ? 2 : 1
-          }}
-        >
-          <ChatHeader thinking={isLoading} onClose={onClose} onDark={onDark} />
-        </Box>
-      )}
+      {/* pt compensates for the removed drag handle so the header doesn't
+          sit flush against the sheet's rounded top edge. The dark overlay
+          (Option B) has a visible top border, so it gets a larger inset
+          (matching the 16px corner radius) for clear separation between the
+          border and the header; the white mobile sheet keeps the smaller
+          inset. On dark the red HEADER_WASH would read as a red bar, so the
+          wrapper goes transparent and the dark layer shows through. */}
+      <Box
+        sx={{
+          background: onDark ? 'transparent' : HEADER_WASH,
+          flexShrink: 0,
+          pt: onDark ? 2 : 1
+        }}
+      >
+        <ChatHeader thinking={isLoading} onClose={onClose} onDark={onDark} />
+      </Box>
 
       <Box
         sx={{
-          // `relative` anchors the overlay hero's absolute positioning
-          // to the conversation area rather than the viewport.
-          position: 'relative',
           display: 'flex',
           flex: 1,
           flexDirection: 'column',
           minHeight: 0,
           width: '100%',
           maxWidth: { xs: 'none', sm: '48rem' },
-          mx: 'auto',
-          // Overlay-only top inset: pushes the first message *below*
-          // the close button instead of trying to share its y-line.
-          // The earlier horizontal alignment (pt:safe-area+16 → first
-          // message at safe-area+24, same y as the close button) broke
-          // at narrow widths: the conversation column fills full
-          // viewport at xs, message text reaches the right edge, and
-          // overlaps the absolutely-positioned close button (which
-          // stays at right:24, width:32). Vertical stacking with a
-          // small visible gap is the resilient choice (NES-1654 iter).
-          //
-          // Math: close button is top:safe-area+24, height 32 → bottom
-          // edge at safe-area+56. Plus 8px breathing room, plus
-          // Conversation's own pt:1 (8px) inside, the first message
-          // lands at safe-area+72 — 16px clear of the close button at
-          // any viewport width. Panel variant keeps pt:0 because the
-          // ChatHeader + drag handle own the top spacing there.
-          pt: isOverlay ? 'calc(env(safe-area-inset-top) + 64px)' : 0
+          mx: 'auto'
         }}
       >
-        {showOverlayHero && (
-          <Box
-            aria-hidden
-            data-testid="overlay-hero"
-            sx={{
-              position: 'absolute',
-              inset: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              px: 4,
-              pointerEvents: 'none',
-              // One-shot wave animation on mount: each word lifts 8px
-              // then settles, staggered left-to-right. Draws the eye to
-              // the hero when the chat opens, then stays out of the
-              // way. The base (0%/100%) is translateY(0) so each word's
-              // resting state is its natural position — no fill-mode
-              // needed.
-              '@keyframes aiChatHeroWave': {
-                '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-8px)' }
-              }
-            }}
-          >
-            <Typography
-              sx={{
-                fontSize: { xs: 22, sm: 26, md: 28 },
-                fontWeight: 500,
-                color: OVERLAY_HERO_FG,
-                textAlign: 'center',
-                lineHeight: 1.3
-              }}
-            >
-              {heroWords.map((word, i) => (
-                <Box
-                  key={`${i}-${word}`}
-                  component="span"
-                  sx={{
-                    display: 'inline-block',
-                    animation: shouldAnimateHero
-                      ? `aiChatHeroWave 700ms ease-in-out ${i * 80}ms 1`
-                      : 'none',
-                    '@media (prefers-reduced-motion: reduce)': {
-                      animation: 'none'
-                    }
-                  }}
-                >
-                  {/* Trailing nbsp keeps the visual gap between word
-                      spans (inline-block strips inter-element
-                      whitespace). The last word gets none so we don't
-                      pad the right edge. */}
-                  {word}
-                  {i < heroWords.length - 1 ? '\u00A0' : null}
-                </Box>
-              ))}
-            </Typography>
-          </Box>
-        )}
         <Conversation
           scrollKey={messages.length}
-          // 72px = floating capsule height (44px) + bottom offset (8px) +
+          // 72px = input capsule height (44px) + bottom offset (8px) +
           // safe-area headroom + 16px breathing room — keeps the last
           // message clear of the absolute-positioned PromptInput below.
           bottomClearance={72}
@@ -617,7 +487,7 @@ export function AiChat({
                     aria-label={t('Start a new conversation')}
                     sx={{
                       fontSize: 12,
-                      color: isDarkSurface ? OVERLAY_FG_RETRY : MUTED_FG,
+                      color: errorActionColor,
                       minWidth: 0
                     }}
                   >
@@ -633,7 +503,7 @@ export function AiChat({
                       aria-label={t('Retry')}
                       sx={{
                         fontSize: 12,
-                        color: isDarkSurface ? OVERLAY_FG_RETRY : MUTED_FG,
+                        color: errorActionColor,
                         minWidth: 0
                       }}
                     >
@@ -647,21 +517,19 @@ export function AiChat({
         </Conversation>
       </Box>
 
-      {isPanel && (
-        <Box
-          aria-hidden
-          sx={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            bottom: 0,
-            height: 140,
-            pointerEvents: 'none',
-            zIndex: 1,
-            background: SHEET_BOTTOM_FADE
-          }}
-        />
-      )}
+      <Box
+        aria-hidden
+        sx={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: 140,
+          pointerEvents: 'none',
+          zIndex: 1,
+          background: SHEET_BOTTOM_FADE
+        }}
+      />
 
       <Box
         sx={{
@@ -685,49 +553,7 @@ export function AiChat({
           isLoading={isLoading}
           onStop={stop}
           disabled={isConversationCapped}
-          variant={isOverlay ? 'floating' : 'inline'}
         />
-        {isOverlay && (
-          // Overlay-only disclosure caption — sits directly under the
-          // floating input. On panel/mobile the same subtitle + link
-          // live in ChatHeader at the top of the sheet, so we don't
-          // duplicate them here. Inline-flow Typography lets long
-          // translations of the leading phrase wrap to a second line
-          // naturally; whiteSpace:nowrap on the link prevents the
-          // label itself from breaking mid-word.
-          <Typography
-            variant="caption"
-            sx={{
-              color: OVERLAY_FG_MUTED,
-              fontSize: 12,
-              lineHeight: '18px',
-              textAlign: 'center',
-              px: 1
-            }}
-          >
-            {t('Replies may not be perfect')}
-            {' · '}
-            <Link
-              href={getAboutChatHref(languageBcp47)}
-              target="_blank"
-              rel="noopener noreferrer"
-              underline="always"
-              sx={{
-                // OVERLAY_LINK_FG is a concrete brighter brand-red —
-                // see PANEL_LINK_FG note in ChatHeader for why we don't
-                // use 'primary.main'. The brighter variant keeps the
-                // label readable against the ~grey.900 overlay
-                // backdrop, where brandRed itself would be too dim.
-                color: OVERLAY_LINK_FG,
-                fontSize: 'inherit',
-                fontWeight: 600,
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {t('About this chat')}
-            </Link>
-          </Typography>
-        )}
       </Box>
     </Box>
   )

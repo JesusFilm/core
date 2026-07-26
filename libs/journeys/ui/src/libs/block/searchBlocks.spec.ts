@@ -1,6 +1,5 @@
-import type { TreeBlock } from '../block'
-
-import { searchBlocks } from '.'
+import { searchBlocks } from './searchBlocks'
+import type { TreeBlock } from './TreeBlock'
 
 describe('searchBlocks', () => {
   it('should find block in a given tree', () => {
