@@ -135,7 +135,7 @@ describe('ShareItem', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[journeyForSharingMock]}>
           <JourneyProvider
-            value={{ journey: defaultJourney, variant: 'admin' }}
+            value={{ journey: defaultJourney, renderMode: 'admin' }}
           >
             <ShareItem variant="button" journey={defaultJourney} />
           </JourneyProvider>
@@ -181,7 +181,7 @@ describe('ShareItem', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[journeyForSharingMock]}>
           <JourneyProvider
-            value={{ journey: defaultJourney, variant: 'admin' }}
+            value={{ journey: defaultJourney, renderMode: 'admin' }}
           >
             <ShareItem variant="button" journey={defaultJourney} />
           </JourneyProvider>
@@ -242,7 +242,7 @@ describe('ShareItem', () => {
         <MockedProvider mocks={[getUserRoleMock, journeyForSharingMock]}>
           <Suspense>
             <JourneyProvider
-              value={{ journey: defaultJourney, variant: 'admin' }}
+              value={{ journey: defaultJourney, renderMode: 'admin' }}
             >
               <ShareItem variant="button" journey={defaultJourney} />
             </JourneyProvider>
@@ -284,7 +284,7 @@ describe('ShareItem', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[journeyForSharingMock]}>
           <JourneyProvider
-            value={{ journey: defaultJourney, variant: 'admin' }}
+            value={{ journey: defaultJourney, renderMode: 'admin' }}
           >
             <ShareItem variant="button" journey={defaultJourney} />
           </JourneyProvider>
@@ -361,7 +361,7 @@ describe('ShareItem', () => {
         >
           <TeamProvider>
             <JourneyProvider
-              value={{ journey: journeyWithTeam, variant: 'admin' }}
+              value={{ journey: journeyWithTeam, renderMode: 'admin' }}
             >
               <ShareItem variant="button" journey={journeyWithTeam} />
             </JourneyProvider>
@@ -395,7 +395,7 @@ describe('ShareItem', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[journeyForSharingMock]}>
           <JourneyProvider
-            value={{ journey: defaultJourney, variant: 'admin' }}
+            value={{ journey: defaultJourney, renderMode: 'admin' }}
           >
             <ShareItem
               variant="button"
@@ -419,7 +419,7 @@ describe('ShareItem', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[journeyForSharingMock]}>
           <JourneyProvider
-            value={{ journey: defaultJourney, variant: 'admin' }}
+            value={{ journey: defaultJourney, renderMode: 'admin' }}
           >
             <ShareItem
               variant="button"
@@ -445,7 +445,7 @@ describe('ShareItem', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[journeyForSharingMock]}>
           <JourneyProvider
-            value={{ journey: defaultJourney, variant: 'admin' }}
+            value={{ journey: defaultJourney, renderMode: 'admin' }}
           >
             <ShareItem
               variant="button"

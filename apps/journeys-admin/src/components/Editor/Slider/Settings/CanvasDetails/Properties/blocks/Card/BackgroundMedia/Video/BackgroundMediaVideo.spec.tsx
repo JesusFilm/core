@@ -449,7 +449,7 @@ describe('BackgroundMediaVideo', () => {
           coverBlockRestoreMock
         ]}
       >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <ThemeProvider>
             <SnackbarProvider>
               <MuxVideoUploadProvider>
@@ -583,7 +583,7 @@ describe('BackgroundMediaVideo', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <ThemeProvider>
               <SnackbarProvider>
                 <MuxVideoUploadProvider>
@@ -645,7 +645,7 @@ describe('BackgroundMediaVideo', () => {
             coverBlockDeleteMock
           ]}
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <ThemeProvider>
               <SnackbarProvider>
                 <MuxVideoUploadProvider>

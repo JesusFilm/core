@@ -57,10 +57,19 @@ have to make multiple queries (break down on one property and filter on
       }
 
       const metrics = getMetrics(info)
-      return getJourneyStatsBreakdown(journey.id, {
-        metrics,
-        ...where
-      })
+      // The analytics overlay needs the full breakdown: the per-action
+      // `event:props:key`/`event:props:simpleKey` properties can exceed
+      // Plausible's top-100 page, silently dropping low-traffic steps' actions.
+      // paginate: true pages through all rows (and ignores any client limit/page).
+      return getJourneyStatsBreakdown(
+        journey.id,
+        {
+          metrics,
+          ...where
+        },
+        undefined,
+        { paginate: true }
+      )
     }
   })
 )

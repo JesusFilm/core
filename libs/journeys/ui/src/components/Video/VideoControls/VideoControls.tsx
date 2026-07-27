@@ -69,7 +69,7 @@ export function VideoControls({
   muted: initialMuted = false,
   activeStep = false
 }: VideoControlProps): ReactElement {
-  const { variant } = useJourney()
+  const { renderMode } = useJourney()
   const [active, setActive] = useState(true)
   const [displayTime, setDisplayTime] = useState('0:00')
   const [progress, setProgress] = useState(0)
@@ -222,11 +222,11 @@ export function VideoControls({
         setShowHeaderFooter(!fullscreen)
       }
 
-      if (!fullscreen && variant === 'embed' && !isIPhone() && activeStep) {
+      if (!fullscreen && renderMode === 'embed' && !isIPhone() && activeStep) {
         player.pause()
       }
 
-      if (fullscreen && variant === 'embed' && !isIPhone() && activeStep) {
+      if (fullscreen && renderMode === 'embed' && !isIPhone() && activeStep) {
         void player.play()
       }
     }
@@ -249,7 +249,7 @@ export function VideoControls({
     state,
     setShowHeaderFooter,
     setShowNavigation,
-    variant,
+    renderMode,
     activeStep
   ])
 
@@ -281,7 +281,7 @@ export function VideoControls({
   }
 
   function handleFullscreen(): void {
-    if (variant === 'embed' && !isIPhone()) return
+    if (renderMode === 'embed' && !isIPhone()) return
     if (fullscreen) {
       if (fscreen.fullscreenEnabled) {
         void fscreen.exitFullscreen()
@@ -464,7 +464,7 @@ export function VideoControls({
                 progress={progress}
                 handleSeek={handleSeek}
                 disableProgress={!player.hasStarted_}
-                showFullscreenButton={variant !== 'embed' || isIPhone()}
+                showFullscreenButton={renderMode !== 'embed' || isIPhone()}
                 fullscreen={fullscreen}
                 handleFullscreen={handleFullscreen}
                 handleToggleStats={handleToggleStats}
@@ -488,7 +488,7 @@ export function VideoControls({
                 muted={state.muted}
                 handleMute={handleMute}
                 playerMuted={player.muted() ?? false}
-                showFullscreenButton={variant !== 'embed' || isIPhone()}
+                showFullscreenButton={renderMode !== 'embed' || isIPhone()}
                 fullscreen={fullscreen}
                 handleFullscreen={handleFullscreen}
                 handleToggleStats={handleToggleStats}

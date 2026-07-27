@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
-import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
+import { InstantSearchTestWrapper } from '@core/journeys/ui/test/InstantSearchTestWrapper'
 
 import { watchConfig } from '../../../../libs/storybook'
 

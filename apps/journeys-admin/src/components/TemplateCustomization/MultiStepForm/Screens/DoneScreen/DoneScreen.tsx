@@ -21,7 +21,7 @@ import Play3Icon from '@core/shared/ui/icons/Play3'
 import { NotificationSwitch } from '../../../../AccessDialog/NotificationSwitch'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem'
 import { useIntegrationGoogleCreate } from '../../../../Google/GoogleCreateIntegration/libs/useIntegrationGoogleCreate'
-import { GoogleSheetsSyncDialog } from '../../../../JourneyVisitorsList/FilterDrawer/GoogleSheetsSyncDialog/GoogleSheetsSyncDialog'
+import { GoogleSheetsSyncDialog } from '../../../../JourneyVisitorsList/GoogleSheetsSyncDialog'
 import { ScreenWrapper } from '../ScreenWrapper'
 
 export const GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN = gql`

@@ -6,7 +6,7 @@ import { transformer } from '@core/journeys/ui/transformer'
 
 import { StepFields } from '../../../__generated__/StepFields'
 import { Conductor } from '../Conductor'
-import { WebView } from '../WebView'
+import { WebsiteView } from '../WebsiteView'
 
 export function JourneyRenderer(): ReactElement {
   const { journey } = useJourney()
@@ -17,7 +17,7 @@ export function JourneyRenderer(): ReactElement {
       {blocks != null && (
         <>
           {journey?.website === true ? (
-            <WebView
+            <WebsiteView
               blocks={blocks}
               stepBlock={blocks[0] as TreeBlock<StepFields>}
             />

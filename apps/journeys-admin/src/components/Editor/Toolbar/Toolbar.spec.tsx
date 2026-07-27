@@ -84,7 +84,7 @@ describe('Toolbar', () => {
         ]
       }
     } as unknown as Journey,
-    variant: 'admin'
+    renderMode: 'admin'
   }
 
   const noDescriptionJourney = {
@@ -92,7 +92,7 @@ describe('Toolbar', () => {
       ...defaultJourney.journey,
       description: ''
     } as unknown as Journey,
-    variant: 'admin'
+    renderMode: 'admin'
   }
 
   const socialImageJourney = {
@@ -122,10 +122,10 @@ describe('Toolbar', () => {
           }
         ]
       },
-      variant: 'admin'
+      renderMode: 'admin'
     } as unknown as Journey,
 
-    variant: 'admin'
+    renderMode: 'admin'
   }
 
   beforeEach(() => {
@@ -173,7 +173,7 @@ describe('Toolbar', () => {
           __typename: 'Team'
         }
       } as unknown as Journey,
-      variant: 'admin'
+      renderMode: 'admin'
     }
     render(toolbar(localTemplateJourney))
     expect(screen.getByTestId('NextStepsLogo')).toHaveAttribute(
@@ -288,7 +288,7 @@ describe('Toolbar', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney.journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={initialState}>
@@ -331,7 +331,7 @@ describe('Toolbar', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney.journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={initialState}>

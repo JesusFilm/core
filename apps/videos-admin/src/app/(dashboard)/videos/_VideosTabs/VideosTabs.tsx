@@ -13,11 +13,11 @@ function getCurrentTabValue(pathname: string): VideosTabValue {
     return 'debugging'
   }
 
-  if (pathname.startsWith('/videos/algolia')) {
-    return 'algolia'
+  if (pathname.startsWith('/videos/library')) {
+    return 'library'
   }
 
-  return 'library'
+  return 'algolia'
 }
 
 export function VideosTabs(): ReactElement {
@@ -30,8 +30,8 @@ export function VideosTabs(): ReactElement {
     value: VideosTabValue
   ): void => {
     const nextPathname =
-      value === 'algolia'
-        ? '/videos/algolia'
+      value === 'library'
+        ? '/videos/library'
         : value === 'debugging'
           ? '/videos/algolia-debugging'
           : '/videos'
@@ -41,8 +41,8 @@ export function VideosTabs(): ReactElement {
   return (
     <Box sx={{ width: '100%' }}>
       <Tabs value={currentTabValue} onChange={handleTabChange}>
-        <Tab value="library" label="Library" />
-        <Tab value="algolia" label="Algolia (Experimental)" />
+        <Tab value="algolia" label="Algolia Search" />
+        <Tab value="library" label="Library (Backup)" />
         <Tab value="debugging" label="Algolia Debugging" />
       </Tabs>
     </Box>

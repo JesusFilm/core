@@ -4,9 +4,9 @@ import { ComponentProps } from 'react'
 
 import { TypographyVariant } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
-import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+import { simpleComponentConfig } from '../../test/simpleComponentConfig'
+import { StoryCard } from '../../test/StoryCard'
 import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
-import { StoryCard } from '../StoryCard'
 import { Typography } from '../Typography'
 
 import { RADIO_QUESTION_SUBMISSION_EVENT_CREATE, RadioQuestion } from '.'

@@ -123,7 +123,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsc -b apps/arclight/tsconfig.json"
+        "command": "pnpm tsc7 -p apps/arclight/tsconfig.ts7.json"
       }
     },
     "fetch-secrets": {

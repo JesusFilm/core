@@ -76,7 +76,7 @@ export function InitAndPlay({
   subtitleLanguage,
   showGeneratedSubtitles
 }: InitAndPlayProps): ReactElement {
-  const { journey, variant } = useJourney()
+  const { journey, renderMode } = useJourney()
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
   const [error, setError] = useState(false)
@@ -160,7 +160,7 @@ export function InitAndPlay({
       if (
         player?.isFullscreen() === true &&
         player != null &&
-        variant !== 'embed'
+        renderMode !== 'embed'
       ) {
         void player.exitFullscreen()
       }
@@ -194,7 +194,7 @@ export function InitAndPlay({
     activeBlock,
     blockId,
     activeStep,
-    variant,
+    renderMode,
     setLoading,
     setShowPoster
   ])

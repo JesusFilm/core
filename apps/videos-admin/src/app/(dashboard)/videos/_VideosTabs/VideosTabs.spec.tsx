@@ -18,15 +18,15 @@ describe('VideosTabs', () => {
     mockPush.mockClear()
   })
 
-  it('keeps Library selected for the main /videos tab', () => {
+  it('uses Algolia Search as the main /videos tab', () => {
     render(<VideosTabs />)
 
-    expect(screen.getByRole('tab', { name: 'Library' })).toHaveAttribute(
+    expect(screen.getByRole('tab', { name: 'Algolia Search' })).toHaveAttribute(
       'aria-selected',
       'true'
     )
     expect(
-      screen.getByRole('tab', { name: 'Algolia (Experimental)' })
+      screen.getByRole('tab', { name: 'Library (Backup)' })
     ).toHaveAttribute('aria-selected', 'false')
     expect(
       screen.getByRole('tab', { name: 'Algolia Debugging' })
@@ -41,20 +41,20 @@ describe('VideosTabs', () => {
     expect(mockPush).toHaveBeenCalledWith('/videos/algolia-debugging')
   })
 
-  it('routes Algolia Experimental to the algolia page', () => {
+  it('routes Library to the backup page', () => {
     render(<VideosTabs />)
 
-    fireEvent.click(screen.getByRole('tab', { name: 'Algolia (Experimental)' }))
+    fireEvent.click(screen.getByRole('tab', { name: 'Library (Backup)' }))
 
-    expect(mockPush).toHaveBeenCalledWith('/videos/algolia')
+    expect(mockPush).toHaveBeenCalledWith('/videos/library')
   })
 
-  it('routes Library back to the main videos page', () => {
-    mockPathname = '/videos/algolia-debugging'
+  it('routes Algolia Search back to the main videos page', () => {
+    mockPathname = '/videos/library'
 
     render(<VideosTabs />)
 
-    fireEvent.click(screen.getByRole('tab', { name: 'Library' }))
+    fireEvent.click(screen.getByRole('tab', { name: 'Algolia Search' }))
 
     expect(mockPush).toHaveBeenCalledWith('/videos')
   })

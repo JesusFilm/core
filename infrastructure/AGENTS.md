@@ -1,0 +1,12 @@
+# Infrastructure (Terraform / AWS)
+
+Applies to Terraform files (`.tf`, `.tfvars`, `.hcl`).
+
+- Organize resources into reusable modules; no hardcoded values — use variables.
+- Structure files into logical sections: main configuration, variables, outputs, modules.
+- State lives in a remote backend with locking and encryption; workspaces separate environments.
+- Lock provider versions.
+- Never commit secrets; sensitive values come from a secrets manager or environment variables.
+- Run `terraform fmt` and `terraform validate` before committing; `terraform plan` runs in CI.
+- Tag all resources for tracking and cost management.
+- Use variable `validation` blocks to reject bad inputs.

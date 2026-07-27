@@ -3,7 +3,7 @@ extend schema
 
 type AlgoliaVideoVariantIndexIssue {
   id: String
-  issueType: String
+  issueType: AlgoliaVideoVariantIndexIssueType
   variantId: String
   objectId: String
   videoId: String
@@ -97,7 +97,7 @@ input CheckAlgoliaVideoVariantIndexBatchInput {
 }
 
 type CheckAlgoliaVideoVariantIndexBatchResult {
-  scanType: String
+  scanType: AlgoliaVideoVariantIndexScanType
   batchKey: String
   nextBatchKey: String
   done: Boolean

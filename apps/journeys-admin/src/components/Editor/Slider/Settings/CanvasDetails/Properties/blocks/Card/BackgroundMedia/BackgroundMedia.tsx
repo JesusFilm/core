@@ -131,10 +131,10 @@ export function BackgroundMedia(): ReactElement {
             },
             update(cache, { data }) {
               blockDeleteUpdate(
-                coverBlock,
-                data?.blockDelete,
                 cache,
-                journey.id
+                journey.id,
+                coverBlock,
+                data?.blockDelete
               )
             }
           })
