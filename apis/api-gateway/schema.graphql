@@ -627,7 +627,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     maxResolution: MaxResolutionTier = uhd
   ): VideoVariantUpload! @join__field(graph: API_MEDIA) 
   videoVariantUploadResume(id: ID!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd) : VideoVariantUpload! @join__field(graph: API_MEDIA) 
-  videoVariantReconciliationRetry(id: ID!) : VideoVariantReconciliation @join__field(graph: API_MEDIA)
+  videoVariantReconciliationRetry(id: ID!) : VideoVariantReconciliation @join__field(graph: API_MEDIA) 
   """
   Create-or-update a YoutubeVideo by youtubeVideoId. Idempotent; enforces the status invariant.
   """
@@ -1617,7 +1617,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
     blockingStage: VideoVariantProcessingStage
     olderThan: DateTime
     minRetryCount: Int
-  ): [VideoVariantReconciliation!] @join__field(graph: API_MEDIA)
+  ): [VideoVariantReconciliation!] @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
   youtubeClosedCaptionLanguages(videoId: ID!) : QueryYoutubeClosedCaptionLanguagesResult! @join__field(graph: API_MEDIA) 
@@ -5597,3 +5597,4 @@ input MeInput @join__type(graph: API_USERS)  {
   redirect: String
   app: App
 }
+    
