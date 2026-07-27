@@ -175,6 +175,39 @@ describe('ThemeBuilderDialog', () => {
     expect(screen.getByText('Confirm')).toBeInTheDocument()
   })
 
+  it('should group the action buttons together at the end of the footer', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: mockJourney, renderMode: 'admin' }}
+          >
+            <ThemeBuilderDialog open onClose={handleClose} />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const cancelButton = screen.getByRole('button', { name: 'Cancel' })
+    const confirmButton = screen.getByRole('button', { name: 'Confirm' })
+    const actions = cancelButton.parentElement
+
+    // both buttons share one flex row pushed to the trailing edge, rather
+    // than being spread to opposite ends with space-between
+    expect(confirmButton.parentElement).toBe(actions)
+    expect(actions).toHaveStyle({
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'flex-end'
+    })
+
+    // Cancel precedes Confirm so Confirm stays the rightmost action
+    expect(
+      cancelButton.compareDocumentPosition(confirmButton) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+  })
+
   it('should initialize with journey theme values', () => {
     render(
       <SnackbarProvider>
