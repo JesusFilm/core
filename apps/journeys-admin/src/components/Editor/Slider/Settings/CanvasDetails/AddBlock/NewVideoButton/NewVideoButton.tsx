@@ -15,7 +15,7 @@ import type {
 } from '../../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 import type { VideoBlockCreate } from '../../../../../../../../__generated__/VideoBlockCreate'
-import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import { blockCreateUpdate } from '../../../../../../../libs/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 

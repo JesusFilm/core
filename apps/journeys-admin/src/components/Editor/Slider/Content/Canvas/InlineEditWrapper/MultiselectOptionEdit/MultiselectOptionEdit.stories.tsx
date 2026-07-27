@@ -13,8 +13,8 @@ import {
   ThemeName,
   TypographyVariant
 } from '../../../../../../../../__generated__/globalTypes'
+import { MultiselectFields } from '../../../../../../../../__generated__/MultiselectFields'
 import { MultiselectOptionFields } from '../../../../../../../../__generated__/MultiselectOptionFields'
-import { MultiselectQuestionFields } from '../../../../../../../../__generated__/MultiselectQuestionFields'
 import { Canvas } from '../../Canvas'
 
 const MultiselectOptionEditStory: Meta<typeof Canvas> = {
@@ -27,14 +27,14 @@ const option1: TreeBlock<MultiselectOptionFields> = {
   __typename: 'MultiselectOptionBlock',
   id: 'MultiselectOption1',
   label: 'Option 1',
-  parentBlockId: 'MultiselectQuestion1',
+  parentBlockId: 'Multiselect1',
   parentOrder: 0,
   children: []
 }
 
-const block: TreeBlock<MultiselectQuestionFields> = {
+const block: TreeBlock<MultiselectFields> = {
   __typename: 'MultiselectBlock',
-  id: 'MultiselectQuestion1',
+  id: 'Multiselect1',
   parentBlockId: 'card0.id',
   parentOrder: 0,
   min: null,
@@ -45,7 +45,7 @@ const block: TreeBlock<MultiselectQuestionFields> = {
       __typename: 'MultiselectOptionBlock',
       id: 'MultiselectOption2',
       label: 'Option 2',
-      parentBlockId: 'MultiselectQuestion1',
+      parentBlockId: 'Multiselect1',
       parentOrder: 1,
       children: []
     }
@@ -146,7 +146,7 @@ const Template: StoryObj<typeof Canvas> = {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider

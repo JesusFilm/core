@@ -1,7 +1,5 @@
-import { ReactElement } from 'react'
+import { redirect } from 'next/navigation'
 
-import { AlgoliaVideoList } from './_AlgoliaVideoList'
-
-export default function VideosAlgoliaPage(): ReactElement {
-  return <AlgoliaVideoList />
+export default function VideosAlgoliaPage(): never {
+  redirect('/videos')
 }

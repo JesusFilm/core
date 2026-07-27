@@ -11,3 +11,9 @@ trim_trailing_whitespace = true
 [*.md]
 max_line_length = off
 trim_trailing_whitespace = false
+
+# Generated GraphQL schema artifacts: the hive/pothos generators emit trailing
+# spaces on some lines; stripping them on save creates drift that the
+# graphql-schema-check CI guard rejects. Never hand-edit these files.
+[apis/*/schema.graphql]
+trim_trailing_whitespace = false

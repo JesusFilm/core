@@ -23,7 +23,7 @@ const Template: StoryObj<ComponentProps<typeof ShareItem>> = {
     <ApolloLoadingProvider>
       <MockedProvider>
         <JourneyProvider
-          value={{ journey: publishedJourney, variant: 'admin' }}
+          value={{ journey: publishedJourney, renderMode: 'admin' }}
         >
           <Box sx={{ p: 6, backgroundColor: 'background.paper' }}>
             <ShareItem {...args} />

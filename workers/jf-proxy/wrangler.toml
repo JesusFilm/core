@@ -31,7 +31,7 @@ routes = [
 
 [env.stage.vars]
 RESOURCES_PROXY_DEST = "f92c2b4c-6a7f-4d56-9c1b-dc8c1e8e0c37.jesusfilm.org"
-WATCH_PROXY_DEST = "c89a34d4-4b06-4219-ad8b-c7289106424d.jesusfilm.org"
+WATCH_PROXY_DEST = "dd541ea7-e468-4159-af6c-25a59cba326c.jesusfilm.org"
 CORE_GRAPHQL_ENDPOINT = "https://api-gateway.stage.central.jesusfilm.org/"
 IOS_APP_ID = "DQ48D9BF2V.com.InspirationalFilms.JesusFilm"
 ANDROID_PACKAGE_NAME = "com.jesusfilmmedia.android.jesusfilm.debug"
@@ -61,7 +61,7 @@ routes = [
 
 [env.prod.vars]
 RESOURCES_PROXY_DEST = "a3f6b24e-8d57-4c79-b25f-9e2a7d3f421c.jesusfilm.org"
-WATCH_PROXY_DEST = "1ee8fdb1-3cb5-40fd-9258-35d589917b4a.jesusfilm.org"
+WATCH_PROXY_DEST = "dd541ea7-e468-4159-af6c-25a59cba326c.jesusfilm.org"
 CORE_GRAPHQL_ENDPOINT = "https://api-gateway.central.jesusfilm.org/"
 IOS_APP_ID = "DQ48D9BF2V.com.InspirationalFilms.JesusFilm"
 ANDROID_PACKAGE_NAME = "com.jesusfilmmedia.android.jesusfilm"

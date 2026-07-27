@@ -143,7 +143,7 @@ describe('BackgroundColor', () => {
       render(
         <MockedProvider>
           <ThemeProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <EditorProvider initialState={{ selectedBlock: card }}>
                 <BackgroundColor />
               </EditorProvider>
@@ -167,7 +167,7 @@ describe('BackgroundColor', () => {
       render(
         <MockedProvider>
           <ThemeProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <EditorProvider initialState={{ selectedBlock: card }}>
                 <BackgroundColor isContained />
               </EditorProvider>
@@ -188,7 +188,7 @@ describe('BackgroundColor', () => {
       render(
         <MockedProvider>
           <ThemeProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <EditorProvider initialState={{ selectedBlock: cardWithColor }}>
                 <BackgroundColor isContained />
               </EditorProvider>
@@ -236,7 +236,7 @@ describe('BackgroundColor', () => {
           ]}
         >
           <ThemeProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <EditorProvider initialState={{ selectedBlock: card }}>
                 <BackgroundColor />
               </EditorProvider>
@@ -311,7 +311,7 @@ describe('BackgroundColor', () => {
           ]}
         >
           <ThemeProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <EditorProvider initialState={{ selectedBlock: card }}>
                 <BackgroundColor />
                 <CommandUndoItem variant="button" />
@@ -346,7 +346,7 @@ describe('BackgroundColor', () => {
       render(
         <MockedProvider>
           <ThemeProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <EditorProvider initialState={{ selectedBlock: card }}>
                 <BackgroundColor />
               </EditorProvider>
@@ -377,7 +377,7 @@ describe('BackgroundColor', () => {
       render(
         <MockedProvider>
           <ThemeProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <EditorProvider initialState={{ selectedBlock: card }}>
                 <BackgroundColor />
               </EditorProvider>
@@ -393,7 +393,7 @@ describe('BackgroundColor', () => {
       render(
         <MockedProvider>
           <ThemeProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <EditorProvider initialState={{ selectedBlock: fullscreenCard }}>
                 <BackgroundColor disableExpanded={true} />
               </EditorProvider>
@@ -409,7 +409,7 @@ describe('BackgroundColor', () => {
       render(
         <MockedProvider>
           <ThemeProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <EditorProvider initialState={{ selectedBlock: fullscreenCard }}>
                 <BackgroundColor />
               </EditorProvider>
@@ -429,7 +429,7 @@ describe('BackgroundColor', () => {
       render(
         <MockedProvider>
           <ThemeProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <EditorProvider initialState={{ selectedBlock: fullscreenCard }}>
                 <BackgroundColor />
               </EditorProvider>
@@ -481,7 +481,7 @@ describe('BackgroundColor', () => {
           ]}
         >
           <ThemeProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <EditorProvider initialState={{ selectedBlock: fullscreenCard }}>
                 <BackgroundColor />
               </EditorProvider>
@@ -546,7 +546,7 @@ describe('BackgroundColor', () => {
           mocks={[mockCardBlockBackgroundColorUpdate]}
         >
           <ThemeProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <EditorProvider initialState={{ selectedBlock: fullscreenCard }}>
                 <BackgroundColor />
               </EditorProvider>
@@ -603,7 +603,7 @@ describe('BackgroundColor', () => {
           ]}
         >
           <ThemeProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <EditorProvider initialState={{ selectedBlock: fullscreenCard }}>
                 <BackgroundColor />
               </EditorProvider>
@@ -659,7 +659,7 @@ describe('BackgroundColor', () => {
           ]}
         >
           <ThemeProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <EditorProvider initialState={{ selectedBlock: fullscreenCard }}>
                 <BackgroundColor />
               </EditorProvider>
@@ -745,7 +745,7 @@ describe('BackgroundColor', () => {
           ]}
         >
           <ThemeProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <EditorProvider initialState={{ selectedBlock: fullscreenCard }}>
                 <BackgroundColor />
               </EditorProvider>
@@ -786,7 +786,7 @@ describe('BackgroundColor', () => {
       render(
         <MockedProvider>
           <ThemeProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <EditorProvider initialState={{ selectedBlock: fullscreenCard }}>
                 <BackgroundColor />
               </EditorProvider>
@@ -859,7 +859,7 @@ describe('BackgroundColor', () => {
           ]}
         >
           <ThemeProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <EditorProvider initialState={{ selectedBlock: fullscreenCard }}>
                 <BackgroundColor />
                 <CommandUndoItem variant="button" />

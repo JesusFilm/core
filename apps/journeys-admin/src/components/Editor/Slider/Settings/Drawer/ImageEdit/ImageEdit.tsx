@@ -117,10 +117,10 @@ export function ImageEdit({
       },
       update(cache, { data }) {
         blockDeleteUpdate(
-          targetImageBlock,
-          data?.blockDelete,
           cache,
-          journey.id
+          journey.id,
+          targetImageBlock,
+          data?.blockDelete
         )
       }
     })

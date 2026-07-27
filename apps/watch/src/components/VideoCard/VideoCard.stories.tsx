@@ -1,7 +1,7 @@
 import Grid from '@mui/material/GridLegacy'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
+import { InstantSearchTestWrapper } from '@core/journeys/ui/test/InstantSearchTestWrapper'
 
 import { watchConfig } from '../../libs/storybook'
 import { getAlgoliaVideosHandlers } from '../PageVideos/PageVideos.handlers'

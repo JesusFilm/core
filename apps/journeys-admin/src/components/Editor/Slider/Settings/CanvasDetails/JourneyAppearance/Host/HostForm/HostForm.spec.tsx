@@ -72,7 +72,7 @@ describe('HostForm', () => {
           <JourneyProvider
             value={{
               journey: { ...journey, host: null },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <HostForm
@@ -113,7 +113,7 @@ describe('HostForm', () => {
     const { getByRole, getByAltText, getByText, getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <HostForm
               handleSelection={vi.fn()}
               getAllTeamHostsQuery={vi.fn()}
@@ -150,7 +150,7 @@ describe('HostForm', () => {
           <JourneyProvider
             value={{
               journey: { ...journey, host: null },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <HostForm
@@ -220,7 +220,7 @@ describe('HostForm', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[hostDeleteMock, updateJourneyHostMock]}>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <HostForm
               handleSelection={handleSelection}
               getAllTeamHostsQuery={mockGetAllTeamHostsQuery}
@@ -274,7 +274,7 @@ describe('HostForm', () => {
       <MockedProvider
         mocks={[{ ...updateHostMock, result: mockHostUpdateResult }]}
       >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <HostForm
             handleSelection={handleSelection}
             getAllTeamHostsQuery={mockGetAllTeamHostsQuery}
@@ -326,7 +326,7 @@ describe('HostForm', () => {
         ]}
       >
         <JourneyProvider
-          value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+          value={{ journey: { ...journey, host: null }, renderMode: 'admin' }}
         >
           <HostForm
             handleSelection={handleSelection}
@@ -378,7 +378,7 @@ describe('HostForm', () => {
       <MockedProvider
         mocks={[{ ...updateHostMock, result: mockHostUpdateResult }]}
       >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <HostForm
             handleSelection={handleSelection}
             getAllTeamHostsQuery={mockGetAllTeamHostsQuery}
@@ -430,7 +430,7 @@ describe('HostForm', () => {
         ]}
       >
         <JourneyProvider
-          value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+          value={{ journey: { ...journey, host: null }, renderMode: 'admin' }}
         >
           <HostForm
             handleSelection={handleSelection}

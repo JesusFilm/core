@@ -11,10 +11,10 @@ import { useJourney } from '../../../libs/JourneyProvider'
 import {
   ASSISTANT_FG,
   DIVIDER,
+  OVERLAY_BORDER,
   OVERLAY_FG_MUTED,
-  OVERLAY_HERO_FG,
-  OVERLAY_INPUT_BORDER,
   OVERLAY_LINK_FG,
+  OVERLAY_TITLE_FG,
   PANEL_LINK_FG,
   PRIMARY_ON,
   SPARKLE_AVATAR_SHADOW,
@@ -53,10 +53,10 @@ export function ChatHeader({
   const { t } = useTranslation('libs-journeys-ui')
   const { journey } = useJourney()
 
-  const titleColor = onDark ? OVERLAY_HERO_FG : ASSISTANT_FG
+  const titleColor = onDark ? OVERLAY_TITLE_FG : ASSISTANT_FG
   const captionColor = onDark ? OVERLAY_FG_MUTED : TEXT_SECONDARY
   const linkColor = onDark ? OVERLAY_LINK_FG : PANEL_LINK_FG
-  const borderColor = onDark ? OVERLAY_INPUT_BORDER : DIVIDER
+  const borderColor = onDark ? OVERLAY_BORDER : DIVIDER
   const closeColor = onDark ? OVERLAY_FG_MUTED : TEXT_SECONDARY
 
   return (
@@ -193,7 +193,7 @@ export function ChatHeader({
               // wraps the bullet and link to a new line when the whole
               // line overflows. On the dark overlay (Option B) PANEL_LINK_FG
               // (brandRed) is too dim, so it swaps to the brighter
-              // OVERLAY_LINK_FG that the overlay variant already uses.
+              // OVERLAY_LINK_FG.
               color: linkColor,
               fontSize: 'inherit',
               fontWeight: 600,

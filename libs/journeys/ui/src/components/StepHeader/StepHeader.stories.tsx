@@ -13,7 +13,7 @@ import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import { journeyUiConfig } from '../../test/journeyUiConfig'
 
 import { StepHeader } from '.'
 
@@ -119,18 +119,18 @@ const step3: TreeBlock<StepBlock> = {
 type Story = StoryObj<
   ComponentPropsWithoutRef<typeof StepHeader> & {
     journey: Journey
-    variant: 'default' | 'admin' | 'embed'
+    renderMode: 'default' | 'admin' | 'embed'
   }
 >
 
 const Template: Story = {
-  render: ({ journey, variant }) => {
+  render: ({ journey, renderMode }) => {
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1])
     return (
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey, variant }}>
+          <JourneyProvider value={{ journey, renderMode }}>
             <Stack
               sx={{
                 position: 'relative',
@@ -151,7 +151,7 @@ export const Default = {
   ...Template,
   args: {
     journey: defaultJourney,
-    variant: 'default'
+    renderMode: 'default'
   }
 }
 
@@ -168,7 +168,7 @@ export const Website = {
         alt: 'Logo'
       }
     },
-    variant: 'default'
+    renderMode: 'default'
   }
 }
 

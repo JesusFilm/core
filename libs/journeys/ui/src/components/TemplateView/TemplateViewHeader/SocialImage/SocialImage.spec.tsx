@@ -28,7 +28,7 @@ describe('SocialImage', () => {
               customizable: null
             }
           },
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <SocialImage />
@@ -53,7 +53,7 @@ describe('SocialImage', () => {
       <JourneyProvider
         value={{
           journey: publishedJourney,
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <SocialImage />

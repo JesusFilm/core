@@ -4,11 +4,22 @@ import userEvent from '@testing-library/user-event'
 import { useRouter } from 'next/navigation'
 import { SnackbarProvider } from 'notistack'
 
-import { GET_LANGUAGES, LanguageList } from './LanguageList'
+import {
+  GET_LANGUAGES,
+  GET_LANGUAGE_STUDIO_MANAGED_FILMS,
+  LanguageList
+} from './LanguageList'
 
 vi.mock('next/navigation')
 
 const push = vi.fn()
+const languageStudioManagedFilmIds = [
+  '1_cl-0-0',
+  '1_jf-0-0',
+  '1_wjv-0-0',
+  '1_wl-0-0',
+  'MAG1'
+]
 
 vi.mocked(useRouter).mockReturnValue({ push } as unknown as ReturnType<
   typeof useRouter
@@ -22,7 +33,7 @@ const getLanguagesMock = {
       offset: 0,
       nameLanguageId: '529',
       term: undefined,
-      where: undefined
+      where: { hasVideos: true }
     }
   },
   result: {
@@ -53,7 +64,26 @@ const getLanguagesMock = {
             }
           ],
           __typename: 'Language'
-        },
+        }
+      ],
+      adminLanguagesCount: 1
+    }
+  }
+}
+
+const allLanguagesMock = {
+  ...getLanguagesMock,
+  request: {
+    ...getLanguagesMock.request,
+    variables: {
+      ...getLanguagesMock.request.variables,
+      where: undefined
+    }
+  },
+  result: {
+    data: {
+      adminLanguages: [
+        ...getLanguagesMock.result.data.adminLanguages,
         {
           id: '12345',
           bcp47: null,
@@ -78,7 +108,7 @@ const searchLanguagesMock = {
       offset: 0,
       nameLanguageId: '529',
       term: 'eng',
-      where: undefined
+      where: { hasVideos: true }
     }
   },
   result: {
@@ -123,26 +153,7 @@ const searchLanguageIdMock = {
       limit: 25,
       offset: 0,
       nameLanguageId: '529',
-      term: '123',
-      where: undefined
-    }
-  },
-  result: {
-    data: {
-      adminLanguages: [getLanguagesMock.result.data.adminLanguages[1]],
-      adminLanguagesCount: 1
-    }
-  }
-}
-
-const hasVideosLanguagesMock = {
-  request: {
-    query: GET_LANGUAGES,
-    variables: {
-      limit: 25,
-      offset: 0,
-      nameLanguageId: '529',
-      term: undefined,
+      term: '206',
       where: { hasVideos: true }
     }
   },
@@ -150,6 +161,120 @@ const hasVideosLanguagesMock = {
     data: {
       adminLanguages: [getLanguagesMock.result.data.adminLanguages[0]],
       adminLanguagesCount: 1
+    }
+  }
+}
+
+const getLanguageStudioManagedFilmsMock = {
+  request: {
+    query: GET_LANGUAGE_STUDIO_MANAGED_FILMS,
+    variables: {
+      ids: languageStudioManagedFilmIds,
+      languageId: '529'
+    }
+  },
+  result: {
+    data: {
+      adminVideos: [
+        {
+          id: '1_cl-0-0',
+          title: [
+            {
+              value: 'The Story of Jesus for Children',
+              __typename: 'VideoTitle'
+            }
+          ],
+          variants: [],
+          __typename: 'Video'
+        },
+        {
+          id: '1_jf-0-0',
+          title: [{ value: 'JESUS', __typename: 'VideoTitle' }],
+          variants: [
+            {
+              id: '20615_1_jf-0-0',
+              version: 3,
+              language: { id: '20615', __typename: 'Language' },
+              __typename: 'VideoVariant'
+            }
+          ],
+          __typename: 'Video'
+        },
+        {
+          id: '1_wjv-0-0',
+          title: [
+            {
+              value: 'Walking with Jesus (Africa)',
+              __typename: 'VideoTitle'
+            }
+          ],
+          variants: [],
+          __typename: 'Video'
+        },
+        {
+          id: '1_wl-0-0',
+          title: [
+            {
+              value: "Magdalena - Director's Cut",
+              __typename: 'VideoTitle'
+            }
+          ],
+          variants: [
+            {
+              id: '20615_1_wl-0-0',
+              version: 4,
+              language: { id: '20615', __typename: 'Language' },
+              __typename: 'VideoVariant'
+            }
+          ],
+          __typename: 'Video'
+        },
+        {
+          id: 'MAG1',
+          title: [{ value: 'Magdalena', __typename: 'VideoTitle' }],
+          variants: [
+            {
+              id: '529_MAG1',
+              version: 42,
+              language: { id: '529', __typename: 'Language' },
+              __typename: 'VideoVariant'
+            }
+          ],
+          __typename: 'Video'
+        }
+      ]
+    }
+  }
+}
+
+const getLanguageStudioManagedFilmsWithoutLanguageMock = {
+  ...getLanguageStudioManagedFilmsMock,
+  result: {
+    data: {
+      adminVideos: [
+        {
+          id: '1_jf-0-0',
+          title: [{ value: 'JESUS', __typename: 'VideoTitle' }],
+          variants: [
+            {
+              id: '529_1_jf-0-0',
+              version: 1,
+              language: { id: '529', __typename: 'Language' },
+              __typename: 'VideoVariant'
+            }
+          ],
+          __typename: 'Video'
+        }
+      ]
+    }
+  }
+}
+
+const getLanguageStudioManagedFilmsNullMock = {
+  ...getLanguageStudioManagedFilmsMock,
+  result: {
+    data: {
+      adminVideos: null
     }
   }
 }
@@ -167,7 +292,9 @@ describe('LanguageList', () => {
 
   it('should show languages', async () => {
     render(
-      <MockedProvider mocks={[getLanguagesMock]}>
+      <MockedProvider
+        mocks={[getLanguagesMock, getLanguageStudioManagedFilmsMock]}
+      >
         <SnackbarProvider>
           <LanguageList />
         </SnackbarProvider>
@@ -177,15 +304,40 @@ describe('LanguageList', () => {
     expect(await screen.findByText('Chinese, Mandarin')).toBeInTheDocument()
     expect(screen.getByText('Putonghua')).toBeInTheDocument()
     expect(screen.getByText('mandarin-china')).toBeInTheDocument()
-    expect(screen.getByText('Yes')).toBeInTheDocument()
-    expect(screen.getByText('12345')).toBeInTheDocument()
+    expect(screen.getAllByText('Yes')).toHaveLength(2)
+    expect(
+      screen.getByRole('columnheader', {
+        name: 'Linked Language Studio Managed Films'
+      })
+    ).toBeInTheDocument()
+    expect(screen.getByText('JESUS:')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '3' })).toHaveAttribute(
+      'href',
+      '/videos/1_jf-0-0/audio/20615_1_jf-0-0'
+    )
+    expect(screen.getByText(': 1_jf-0-0')).toBeInTheDocument()
+    expect(screen.getByText("Magdalena - Director's Cut:")).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '4' })).toHaveAttribute(
+      'href',
+      '/videos/1_wl-0-0/audio/20615_1_wl-0-0'
+    )
+    expect(screen.getByText(': 1_wl-0-0')).toBeInTheDocument()
+    expect(
+      screen.getByRole('combobox', { name: 'Has videos' })
+    ).toHaveTextContent('Yes')
   })
 
   it('should search languages by name without choosing a column', async () => {
     const user = userEvent.setup()
 
     render(
-      <MockedProvider mocks={[getLanguagesMock, searchLanguagesMock]}>
+      <MockedProvider
+        mocks={[
+          getLanguagesMock,
+          getLanguageStudioManagedFilmsMock,
+          searchLanguagesMock
+        ]}
+      >
         <SnackbarProvider>
           <LanguageList />
         </SnackbarProvider>
@@ -205,7 +357,13 @@ describe('LanguageList', () => {
     const user = userEvent.setup()
 
     render(
-      <MockedProvider mocks={[getLanguagesMock, searchLanguageIdMock]}>
+      <MockedProvider
+        mocks={[
+          getLanguagesMock,
+          getLanguageStudioManagedFilmsMock,
+          searchLanguageIdMock
+        ]}
+      >
         <SnackbarProvider>
           <LanguageList />
         </SnackbarProvider>
@@ -214,18 +372,24 @@ describe('LanguageList', () => {
 
     await user.type(
       screen.getByRole('textbox', { name: 'Search languages' }),
-      '123'
+      '206'
     )
     await waitForSearchDebounce()
 
-    expect(await screen.findByText('12345')).toBeInTheDocument()
+    expect(await screen.findByText('Chinese, Mandarin')).toBeInTheDocument()
   })
 
-  it('should filter languages by has videos using the server query', async () => {
+  it('should show all languages when choosing any has videos filter', async () => {
     const user = userEvent.setup()
 
     render(
-      <MockedProvider mocks={[getLanguagesMock, hasVideosLanguagesMock]}>
+      <MockedProvider
+        mocks={[
+          getLanguagesMock,
+          getLanguageStudioManagedFilmsWithoutLanguageMock,
+          allLanguagesMock
+        ]}
+      >
         <SnackbarProvider>
           <LanguageList />
         </SnackbarProvider>
@@ -234,14 +398,32 @@ describe('LanguageList', () => {
 
     await screen.findByText('Chinese, Mandarin')
     await user.click(screen.getByRole('combobox', { name: 'Has videos' }))
-    await user.click(screen.getByRole('option', { name: 'Yes' }))
+    await user.click(screen.getByRole('option', { name: 'Any' }))
+
+    expect(await screen.findByText('12345')).toBeInTheDocument()
+    expect(screen.getAllByText('-').length).toBeGreaterThan(0)
+  })
+
+  it('should show an empty linked films state when managed films are null', async () => {
+    render(
+      <MockedProvider
+        mocks={[getLanguagesMock, getLanguageStudioManagedFilmsNullMock]}
+      >
+        <SnackbarProvider>
+          <LanguageList />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
 
     expect(await screen.findByText('Chinese, Mandarin')).toBeInTheDocument()
+    expect(screen.getByText('-')).toBeInTheDocument()
   })
 
   it('should navigate to language editor when clicking a row', async () => {
     render(
-      <MockedProvider mocks={[getLanguagesMock]}>
+      <MockedProvider
+        mocks={[getLanguagesMock, getLanguageStudioManagedFilmsMock]}
+      >
         <SnackbarProvider>
           <LanguageList />
         </SnackbarProvider>

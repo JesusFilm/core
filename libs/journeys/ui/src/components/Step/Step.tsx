@@ -8,8 +8,11 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { StepViewEventCreateInput } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
-import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
-import { getStepHeading } from '../../libs/getStepHeading'
+import {
+  getStepHeading,
+  isActiveBlockOrDescendant,
+  useBlocks
+} from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider/JourneyProvider'
 import {
   JourneyPlausibleEvents,
@@ -49,12 +52,12 @@ export function Step({
     StepViewEventCreateVariables
   >(STEP_VIEW_EVENT_CREATE)
   const plausible = usePlausible<JourneyPlausibleEvents>()
-  const { variant, journey } = useJourney()
+  const { renderMode, journey } = useJourney()
   const { treeBlocks } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
 
   const activeJourneyStep =
-    (variant === 'default' || variant === 'embed') &&
+    (renderMode === 'default' || renderMode === 'embed') &&
     isActiveBlockOrDescendant(blockId)
 
   const stepHeading = getStepHeading(blockId, children, treeBlocks, t)
@@ -126,7 +129,7 @@ export function Step({
   }, [
     blockId,
     stepViewEventCreate,
-    variant,
+    renderMode,
     heading,
     activeJourneyStep,
     wrappers,

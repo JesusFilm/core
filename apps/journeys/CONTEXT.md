@@ -11,7 +11,7 @@ The playback engine for a standard (non-website) Journey: it orchestrates which 
 _Avoid_: player, controller, carousel
 
 **Website Mode**:
-The alternate rendering of a Journey flagged `website` — a scrolling multi-page website experience instead of the Conductor's card-by-card flow. The component is named `WebView`, but say "website mode".
+The alternate rendering of a Journey flagged `website` — a scrolling multi-page website experience instead of the Conductor's card-by-card flow. The component is `WebsiteView`; say "website mode".
 _Avoid_: WebView (collides with mobile in-app webviews), site mode
 
 **Block History**:
@@ -44,9 +44,9 @@ _Avoid_: host (ambiguous — Host is a presenter identity upstream), hostname (f
 The iframe presentation of a Journey — shown as a clickable preview card that expands to fullscreen playback. A Journey page that detects it is inside an iframe redirects itself to its embed form; an oEmbed endpoint hands out the iframe HTML to third-party sites.
 _Avoid_: preview (implies the admin's preview), widget
 
-**Variant**:
-The rendering mode a Journey is mounted in: `default` (live audience), `embed` (iframe audience), `admin` (editor preview), or `customize` (template personalisation preview). Only `default` and `embed` report analytics events; `admin`/`customize` play back silently.
-_Avoid_: mode (overloaded with theme mode and website mode), environment
+**Render Mode**:
+The rendering mode a Journey is mounted in, carried by the Journey Provider as `renderMode`: `default` (live audience), `embed` (iframe audience), `admin` (editor preview), or `customize` (template personalisation preview). Only `default` and `embed` report analytics events; `admin`/`customize` play back silently.
+_Avoid_: variant (the field's historical name), mode (overloaded with theme mode and website mode), environment
 
 ### Audience
 
