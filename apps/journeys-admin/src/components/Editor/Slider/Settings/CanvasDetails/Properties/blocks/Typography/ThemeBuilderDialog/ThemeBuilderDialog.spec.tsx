@@ -407,4 +407,55 @@ describe('ThemeBuilderDialog', () => {
     fireEvent.click(screen.getByText('Confirm'))
     expect(screen.getByText('Confirm')).toBeDisabled()
   })
+
+  it('should not allow closing while fonts are saving', async () => {
+    const loadingMock = {
+      delay: 30,
+      request: {
+        query: JOURNEY_FONTS_UPDATE,
+        variables: {
+          id: 'theme-id',
+          input: {
+            headerFont: FontFamily.Montserrat,
+            bodyFont: FontFamily.Inter,
+            labelFont: FontFamily.Nunito
+          }
+        }
+      },
+      result: {
+        data: {
+          journeyThemeUpdate: {
+            __typename: 'JourneyTheme',
+            id: 'theme-id',
+            journeyId: 'journey-id',
+            headerFont: FontFamily.Montserrat,
+            bodyFont: FontFamily.Inter,
+            labelFont: FontFamily.Nunito
+          }
+        }
+      }
+    }
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[loadingMock]}>
+          <JourneyProvider
+            value={{ journey: mockJourney, renderMode: 'admin' }}
+          >
+            <ThemeBuilderDialog open onClose={handleClose} />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(screen.getByText('Confirm'))
+
+    expect(screen.getByText('Cancel')).toBeDisabled()
+    expect(screen.getByTestId('dialog-close-button')).toBeDisabled()
+
+    fireEvent.click(screen.getByText('Cancel'))
+    expect(handleClose).not.toHaveBeenCalled()
+
+    await waitFor(() => expect(handleClose).toHaveBeenCalled())
+  })
 })

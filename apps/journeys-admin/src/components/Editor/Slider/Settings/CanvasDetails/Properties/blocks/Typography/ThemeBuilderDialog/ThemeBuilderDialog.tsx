@@ -116,6 +116,13 @@ export function ThemeBuilderDialog({
     setLabelFont(font)
   }
 
+  const saving = loading || createLoading
+
+  function handleClose(): void {
+    if (saving) return
+    onClose()
+  }
+
   async function handleSubmit(): Promise<void> {
     if (journey == null) return
 
@@ -195,7 +202,7 @@ export function ThemeBuilderDialog({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       fullscreen={!smUp}
       sx={{
         '& .MuiDialog-paper': {
@@ -208,6 +215,7 @@ export function ThemeBuilderDialog({
         title: t('Select Fonts'),
         closeButton: true
       }}
+      slotProps={{ titleButton: { disabled: saving } }}
       dialogActionChildren={
         <Stack
           direction="row"
@@ -215,14 +223,19 @@ export function ThemeBuilderDialog({
           spacing={2}
           width="100%"
         >
-          <Button variant="outlined" color="secondary" onClick={onClose}>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={handleClose}
+            disabled={saving}
+          >
             {t('Cancel')}
           </Button>
           <Button
             variant="contained"
             color="primary"
             onClick={handleSubmit}
-            disabled={loading || createLoading}
+            disabled={saving}
           >
             {t('Confirm')}
           </Button>
