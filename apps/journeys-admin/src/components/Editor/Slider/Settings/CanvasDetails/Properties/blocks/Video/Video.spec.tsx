@@ -89,7 +89,7 @@ describe('Video', () => {
           <JourneyProvider
             value={{
               journey: { template: true } as unknown as JourneyFields,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider initialState={{ selectedBlock: video }}>

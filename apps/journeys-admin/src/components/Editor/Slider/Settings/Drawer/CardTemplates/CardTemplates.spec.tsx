@@ -11,7 +11,7 @@ import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes
 import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
-import { CARD_VIDEO_CREATE } from './Templates/CardVideo/CardVideo'
+import { CARD_VIDEO_CREATE } from './Layouts/CardVideo/CardVideo'
 
 import { CardTemplates } from '.'
 

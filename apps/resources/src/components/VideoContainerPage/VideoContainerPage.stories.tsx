@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
+import { InstantSearchTestWrapper } from '@core/journeys/ui/test/InstantSearchTestWrapper'
 
 import { watchConfig } from '../../libs/storybook'
 import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'

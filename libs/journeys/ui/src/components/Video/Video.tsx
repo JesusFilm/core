@@ -76,7 +76,7 @@ export function Video({
   const [activeStep, setActiveStep] = useState(false)
 
   const { blockHistory } = useBlocks()
-  const { variant, journey } = useJourney()
+  const { renderMode, journey } = useJourney()
   const {
     state: { selectedBlock }
   } = useEditor()
@@ -138,7 +138,7 @@ export function Video({
     videoFit === 'cover' && source !== VideoBlockSource.youTube
 
   const showVideoImage =
-    ((variant === 'admin' || variant === 'customize') &&
+    ((renderMode === 'admin' || renderMode === 'customize') &&
       source === VideoBlockSource.youTube) ||
     source === VideoBlockSource.internal ||
     source === VideoBlockSource.mux

@@ -36,6 +36,10 @@ const nextConfig = {
     }
   })(),
   images: {
+    // ALLOWED_IMAGE_HOSTNAMES in apis/api-journeys/src/schema/journey/
+    // simple/updateSimpleJourney.ts must stay a subset of these patterns
+    // (that guard also accepts subdomains of each host; these patterns
+    // match exact hostnames only)
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
       { protocol: 'https', hostname: 'unsplash.com' },

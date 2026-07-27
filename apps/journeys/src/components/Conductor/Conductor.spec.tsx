@@ -414,7 +414,7 @@ describe('Conductor', () => {
   })
 
   describe('per-card chat', () => {
-    // These tests use `variant: 'customize'`, so Conductor's journeyView
+    // These tests use `renderMode: 'customize'`, so Conductor's journeyView
     // effect early-returns and never calls `global.fetch` — the module-level
     // geo-data fetch above is irrelevant here.
     const perCardJourney: Journey = { ...defaultJourney }
@@ -472,7 +472,7 @@ describe('Conductor', () => {
         <FlagsProvider flags={{ apologistChat }}>
           <MockedProvider mocks={[]}>
             <SnackbarProvider>
-              <JourneyProvider value={{ journey, variant: 'customize' }}>
+              <JourneyProvider value={{ journey, renderMode: 'customize' }}>
                 <ChatOverlayProvider journeyId={journey.id}>
                   <Conductor blocks={blocks} />
                 </ChatOverlayProvider>
@@ -635,7 +635,7 @@ describe('Conductor', () => {
           <FlagsProvider flags={{ apologistChat: false }}>
             <MockedProvider mocks={[]}>
               <SnackbarProvider>
-                <JourneyProvider value={{ journey, variant: 'customize' }}>
+                <JourneyProvider value={{ journey, renderMode: 'customize' }}>
                   <ChatOverlayProvider journeyId={journey.id}>
                     <Conductor blocks={blocks} />
                   </ChatOverlayProvider>
@@ -656,7 +656,7 @@ describe('Conductor', () => {
           <FlagsProvider flags={{ apologistChat: true }}>
             <MockedProvider mocks={[]}>
               <SnackbarProvider>
-                <JourneyProvider value={{ journey, variant: 'customize' }}>
+                <JourneyProvider value={{ journey, renderMode: 'customize' }}>
                   <ChatOverlayProvider journeyId={journey.id}>
                     <Conductor blocks={blocks} />
                   </ChatOverlayProvider>

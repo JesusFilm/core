@@ -1,4 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
+import FactCheckRoundedIcon from '@mui/icons-material/FactCheckRounded'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
 import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded'
 import VideoLibraryRoundedIcon from '@mui/icons-material/VideoLibraryRounded'
@@ -40,6 +41,22 @@ interface Item {
   startsWith?: boolean
 }
 
+function isItemSelected(item: Item, pathname: string | null): boolean {
+  if (pathname == null) return false
+
+  if (
+    item.href === '/videos' &&
+    pathname.startsWith('/videos/status-pipeline')
+  ) {
+    return false
+  }
+
+  return (
+    pathname === item.href ||
+    (item.startsWith === true && pathname.startsWith(item.href))
+  )
+}
+
 export function MenuContent(): ReactElement {
   const pathname = usePathname()
   const { data } = useQuery<NavigationRolesData>(GET_NAVIGATION_ROLES)
@@ -55,6 +72,12 @@ export function MenuContent(): ReactElement {
             text: 'Video Library',
             icon: <VideoLibraryRoundedIcon />,
             href: '/videos',
+            startsWith: true
+          },
+          {
+            text: 'Video Status Pipeline',
+            icon: <FactCheckRoundedIcon />,
+            href: '/videos/status-pipeline',
             startsWith: true
           }
         ]
@@ -96,10 +119,7 @@ export function MenuContent(): ReactElement {
             <ListItemButton
               LinkComponent={Link}
               href={item.href}
-              selected={
-                pathname === item.href ||
-                (item.startsWith === true && pathname?.startsWith(item.href))
-              }
+              selected={isItemSelected(item, pathname)}
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />
@@ -114,10 +134,7 @@ export function MenuContent(): ReactElement {
             <ListItemButton
               LinkComponent={Link}
               href={item.href}
-              selected={
-                pathname === item.href ||
-                (item.startsWith === true && pathname?.startsWith(item.href))
-              }
+              selected={isItemSelected(item, pathname)}
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />

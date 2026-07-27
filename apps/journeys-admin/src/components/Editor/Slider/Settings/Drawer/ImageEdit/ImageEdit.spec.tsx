@@ -81,7 +81,7 @@ describe('ImageEdit', () => {
           <JourneyProvider
             value={{
               journey: { primaryImageBlockId: null } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <ImageEdit />
@@ -104,7 +104,7 @@ describe('ImageEdit', () => {
                   alt: 'image.alt'
                 }
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <ImageEdit size="small" />
@@ -162,7 +162,7 @@ describe('ImageEdit', () => {
                   hostname: null,
                   slug: 'journey-id'
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <ImageEdit target={target} />
@@ -234,7 +234,7 @@ describe('ImageEdit', () => {
                   slug: 'journey-id',
                   [field]: image
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <ImageEdit target={target} />
@@ -329,7 +329,7 @@ describe('ImageEdit', () => {
                 slug: 'journey-id',
                 primaryImageBlock: { ...image }
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <ImageEdit />
@@ -420,7 +420,7 @@ describe('ImageEdit', () => {
                 slug: 'journey-id',
                 creatorImageBlock: { ...image }
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <ImageEdit target="creator" />

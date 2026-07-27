@@ -22,10 +22,10 @@ import {
   ButtonVariant
 } from '../../../../../../../../__generated__/globalTypes'
 import { TextResponseBlockCreate } from '../../../../../../../../__generated__/TextResponseBlockCreate'
+import { blockCreateUpdate } from '../../../../../../../libs/blockCreateUpdate'
 import { useTextResponseWithButtonCreate } from '../../../../../../../libs/useTextResponseWithButtonCreate'
 import { useTextResponseWithButtonDelete } from '../../../../../../../libs/useTextResponseWithButtonDelete'
 import { useTextResponseWithButtonRestore } from '../../../../../../../libs/useTextResponseWithButtonRestore'
-import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand/useBlockCreateCommand'
 import { Button } from '../Button'
 

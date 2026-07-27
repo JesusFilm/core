@@ -18,8 +18,6 @@ import { Section } from '../../../../components/Section'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../constants'
 
 import { LockedVideoView } from './_LockedVideo'
-import { RestrictedDownloads } from './_RestrictedDownloads'
-import { RestrictedViews } from './_RestrictedViews'
 import { VideoBibleCitation } from './_VideoBibleCitation'
 import { VideoDescription } from './_VideoDescription'
 import { VideoViewFallback } from './_VideoFallback'
@@ -62,6 +60,7 @@ export default function VideoViewLayout({
     'audio',
     'children',
     'editions',
+    'restrictions',
     'troubleshooting'
   ]
   const segment = useSelectedLayoutSegment() ?? 'metadata'
@@ -185,12 +184,6 @@ export default function VideoViewLayout({
                 </Section>
                 <VideoBibleCitation videoId={videoId} />
                 {studyQuestions}
-                <Section title="Restricted Downloads" variant="outlined">
-                  <RestrictedDownloads videoId={videoId} />
-                </Section>
-                <Section title="Restricted Views" variant="outlined">
-                  <RestrictedViews videoId={videoId} />
-                </Section>
               </Stack>
             </>
           )}

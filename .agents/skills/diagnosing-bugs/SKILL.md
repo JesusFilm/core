@@ -9,6 +9,8 @@ A discipline for hard bugs. Skip phases only when explicitly justified.
 
 When exploring the codebase, read `CONTEXT.md` (if it exists) to get a clear mental model of the relevant modules, and check ADRs in the area you're touching.
 
+For a **reported bug**, also read the area's `CONTEXT-intake.md` (if present) — the diagnosis layer holding failure signatures, the question that localizes a report, and where to look first. Start from the `CONTEXT-MAP-intake.md` index: match the report's wording to an area's `trigger_phrases`, then open only that area's `CONTEXT-intake.md`. This feeds the diagnosis at the start of the loop rather than by luck, and the index-first fetch keeps context lean.
+
 ## Phase 1 — Build a feedback loop
 
 **This is the skill.** Everything else is mechanical. If you have a **tight** pass/fail signal for the bug — one that goes red on _this_ bug — you will find the cause; bisection, hypothesis-testing, and instrumentation all just consume it. If you don't have one, no amount of staring at code will save you.

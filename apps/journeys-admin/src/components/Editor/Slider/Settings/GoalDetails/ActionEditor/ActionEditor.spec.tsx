@@ -67,7 +67,7 @@ describe('ActionDetails', () => {
   it('should call the mutation for all the affected blocks', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={mocks}>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <ActionEditor url="https://www.google.com/" />
         </JourneyProvider>
       </MockedProvider>
@@ -83,7 +83,7 @@ describe('ActionDetails', () => {
   it('accept links without protocol as a URL', async () => {
     const { getByRole, queryByText } = render(
       <MockedProvider mocks={mocks}>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <ActionEditor url={url} />
         </JourneyProvider>
       </MockedProvider>
@@ -100,7 +100,7 @@ describe('ActionDetails', () => {
   it('accept deep links as a URL', async () => {
     const { getByRole, queryByText } = render(
       <MockedProvider mocks={mocks}>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <ActionEditor url={url} />
         </JourneyProvider>
       </MockedProvider>
@@ -119,7 +119,7 @@ describe('ActionDetails', () => {
   it('rejects mailto links as a URL', async () => {
     const { getByRole, queryByText } = render(
       <MockedProvider mocks={mocks}>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <ActionEditor url={url} />
         </JourneyProvider>
       </MockedProvider>
@@ -138,7 +138,7 @@ describe('ActionDetails', () => {
   it('should submit when enter is pressed', async () => {
     const { getByRole, queryByText } = render(
       <MockedProvider mocks={mocks}>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <ActionEditor url="https://www.google.com/" />
         </JourneyProvider>
       </MockedProvider>
