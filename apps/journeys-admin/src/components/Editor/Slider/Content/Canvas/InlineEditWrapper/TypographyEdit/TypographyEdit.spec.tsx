@@ -138,7 +138,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider>
@@ -164,7 +164,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <h1>Other content</h1>
@@ -254,7 +254,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: mockJourneyWithCustomization,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider>
@@ -279,7 +279,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: mockJourneyWithCustomization,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider>
@@ -304,7 +304,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: mockTemplateJourney,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider>

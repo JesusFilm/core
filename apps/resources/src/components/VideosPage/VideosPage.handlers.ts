@@ -1,6 +1,6 @@
 import { HttpResponse, http } from 'msw'
 
-import { algoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
+import { algoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos/data'
 
 export const getAlgoliaVideosHandlers = [
   http.post('https://algolia-dsn.algolia.net/1/indexes/*', () => {

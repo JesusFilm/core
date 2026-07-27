@@ -199,7 +199,7 @@ describe('StepBlockNodeCard', () => {
     render(
       <MockedProvider>
         <JourneyProvider
-          value={{ journey: nonTemplateJourney, variant: 'default' }}
+          value={{ journey: nonTemplateJourney, renderMode: 'default' }}
         >
           <StepBlockNodeCard step={step} selected={false} />
         </JourneyProvider>
@@ -223,7 +223,7 @@ describe('StepBlockNodeCard', () => {
 
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <StepBlockNodeCard step={step} selected={false} />
         </JourneyProvider>
       </MockedProvider>

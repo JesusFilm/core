@@ -21,8 +21,8 @@ import { SortOrder } from '../JourneySort'
 
 import { ArchivedJourneyList } from '.'
 
-vi.mock('@core/journeys/ui/useNavigationState', async () => ({
-  useNavigationState: vi.fn(() => false)
+vi.mock('@core/journeys/ui/useRouteChangeState', async () => ({
+  useRouteChangeState: vi.fn(() => false)
 }))
 
 vi.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', async () => ({

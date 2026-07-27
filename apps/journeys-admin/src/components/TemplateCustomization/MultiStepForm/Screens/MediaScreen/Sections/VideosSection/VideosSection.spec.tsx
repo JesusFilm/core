@@ -147,7 +147,7 @@ function renderVideosSection({
   return render(
     <MockedProvider>
       <SnackbarProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <VideosSection cardBlockId={cardId} showLabel={showLabel} />
         </JourneyProvider>
       </SnackbarProvider>
@@ -514,7 +514,7 @@ describe('VideosSection', () => {
     const { rerender } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <VideosSection cardBlockId={cardBlockId} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -527,7 +527,7 @@ describe('VideosSection', () => {
     rerender(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <VideosSection cardBlockId={cardBlockIdB} />
           </JourneyProvider>
         </SnackbarProvider>

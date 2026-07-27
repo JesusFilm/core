@@ -23,7 +23,7 @@ const Template: StoryObj<typeof TextResponseFields> = {
         <JourneyProvider
           value={{
             journey: { id: 'journey.id' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider

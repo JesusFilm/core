@@ -65,6 +65,106 @@ jobs:
           DOPPLER_CONFIG: stg
         with:
           targets: fetch-secrets,build
+  graphql-schema-check:
+    # ENG-3689: regenerating every schema.graphql from code must produce no
+    # diff — the committed schema files are generated artifacts, and drift
+    # between them and the code that generates them otherwise fails silently
+    # (subgraph-check only validates composition against the registry).
+    runs-on: blacksmith-4vcpu-ubuntu-2204
+    permissions:
+      contents: read
+    # No NX_CLOUD_ACCESS_TOKEN here on purpose: generate-graphql and
+    # prisma-generate are not cacheable targets, so the token adds nothing —
+    # it would only expose a secret to code the PR author controls.
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: generate prisma imports
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: prisma-generate
+          all: true
+        env:
+          DISABLE_ERD: true
+      - name: regenerate subgraph schemas
+        # --exclude rather than a hardcoded project list so a future API with
+        # a generate-graphql target is guarded automatically.
+        run: pnpm exec nx run-many -t generate-graphql --exclude api-gateway
+        env:
+          # Schema generation writes SDL and exits before serving anything,
+          # but some modules validate env or construct clients at import time
+          # (api-journeys env.ts, api-media crowdinClient). Values are never
+          # used during generation, so placeholders are safe here.
+          SKIP_ENV_VALIDATION: '1'
+          CROWDIN_API_KEY: ci-schema-regen-placeholder
+          CROWDIN_PROJECT_ID: '1'
+      - name: recompose gateway supergraph
+        # Runs after the subgraphs so the compose reads freshly generated
+        # schema files, not the committed ones.
+        run: pnpm exec nx run api-gateway:generate-graphql
+      - name: fail if regenerated schemas differ from committed
+        run: |
+          # Make regenerated-but-untracked schema files (e.g. a schema.graphql
+          # deleted by the PR and recreated by the regen) visible to git diff.
+          git add --intent-to-add -- 'apis/*/schema.graphql'
+          if git diff --exit-code -- 'apis/*/schema.graphql'; then
+            echo "✅ - committed schema.graphql files match generated output"
+          else
+            echo ""
+            echo "🛑 - committed schema.graphql files are out of date with the code that generates them (see diff above)."
+            echo "To fix: run 'nx generate-graphql <api>' for each API you changed, then 'nx generate-graphql api-gateway', and commit the updated schema.graphql files."
+            exit 1
+          fi
+  prisma-migration-check:
+    # ENG-3690: a schema.prisma change with no matching migration passes
+    # `prisma generate` and only fails at deploy time — require every PR that
+    # edits a domain's schema to add a migration in that same domain.
+    # Only meaningful on PRs (needs a base branch to diff against). The
+    # 'skip-migration-check' label is the escape hatch for schema edits that
+    # genuinely need no migration (comments, formatting).
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: read
+    if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'skip-migration-check') }}
+    steps:
+      # fetch-depth: 0 fetches full history for all branches, which is what
+      # merge-base needs. No extra shallow fetch of the base branch here — a
+      # --depth-limited fetch into a full clone writes .git/shallow and can
+      # make merge-base fail once the base has advanced past the cut.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: check prisma schema changes include a migration
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # Labels added after the triggering event are invisible to the
+          # job-level if on re-runs, so re-check them at runtime. per_page=100
+          # covers GitHub's per-issue label cap in one page.
+          if ! labels=$(timeout 30 gh api \
+            "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/labels?per_page=100" \
+            --jq '.[].name'); then
+            echo "⚠️ - could not fetch PR labels (error above); running the check anyway (fail closed)."
+            echo "If you added the 'skip-migration-check' label, re-run this job."
+            labels=""
+          fi
+          if echo "$labels" | grep -qx 'skip-migration-check'; then
+            echo "⏭️ - 'skip-migration-check' label present; skipping migration check"
+            exit 0
+          fi
+          ./tools/scripts/check-prisma-migrations.sh "origin/$GITHUB_BASE_REF"
   test:
     runs-on: blacksmith-4vcpu-ubuntu-2204
     strategy:

@@ -88,7 +88,7 @@ const Template: StoryObj<{
     return (
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <Box sx={{ width: DRAWER_WIDTH }}>
               <HostSelection {...componentProps} />
             </Box>

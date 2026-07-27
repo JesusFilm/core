@@ -36,7 +36,7 @@ edit shows in the Editor but not on the journey preview; a newly-created block n
   `apps/journeys/CONTEXT-intake.md`
   **Look first (fixer):** Network tab → the block create/update mutation (did it fire? payload
   correct? error code?); if it fired cleanly but the UI is stale → the manual cache `update` in
-  `Editor/utils/useBlockCreateCommand` and `Editor/utils/blockCreateUpdate`.
+  `Editor/utils/useBlockCreateCommand` and `src/libs/blockCreateUpdate`.
   **Handoff:** agent-able.
 
 ## Data semantics / historical data disappearing — T1
@@ -120,11 +120,11 @@ Preview**; custom-domain / microwebsite settings live in the hosting/custom-doma
 **Signatures (suspected):** questions about how submit buttons behave — the action/logic wiring is
 complex on the code side.
 **Mental model:** every button/submit is a block **Action**. The viewer dispatches them in
-`libs/journeys/ui/src/libs/action/action.ts` + `components/Actions/Actions.tsx` (resolves
+`libs/journeys/ui/src/libs/action/action.ts` (resolves
 NavigateToBlock / link / email / phone); the text-answer submit is
 `libs/journeys/ui/src/components/TextResponse/TextResponse.tsx`.
-**Look first (fixer):** viewer dispatch → `libs/journeys/ui/src/libs/action/action.ts`,
-`components/Actions/Actions.tsx`; server action schema → `apis/api-journeys/src/schema/action/`
+**Look first (fixer):** viewer dispatch → `libs/journeys/ui/src/libs/action/action.ts`;
+server action schema → `apis/api-journeys/src/schema/action/`
 (`navigateToBlockAction/`, `linkAction/`, …); editor-side edits →
 `apps/journeys-admin/src/components/Editor/utils/useActionCommand/` + `src/libs/useBlockAction*UpdateMutation/`.
 **Handoff:** navigation/dispatch defects → agent-able; "how does X action work" → how-to.
@@ -163,7 +163,7 @@ created / sync not running).
 - Look first (fixer): OAuth connection → `apis/api-journeys/src/schema/integration/google/`
   (`googleCreate.mutation.ts`, `googleUpdate.mutation.ts`); the sync worker →
   `apis/api-journeys/src/workers/googleSheetsSync/`; the row/header build + write-to-sheet →
-  `apis/api-journeys/src/schema/journeyVisitor/export/googleSheetsLiveSync.ts`.
+  `apis/api-journeys/src/schema/googleSheetsSync/appendEventToGoogleSheets.ts`.
 - Handoff: OAuth reconnect → often human; sync-job defects → agent-able.
   **Growth Spaces:** dormant — no recent reports, believed unused. Map stays thin; route to a human.
 

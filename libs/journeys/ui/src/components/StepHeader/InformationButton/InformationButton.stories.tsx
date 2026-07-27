@@ -9,7 +9,7 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { journeyUiConfig } from '../../../libs/journeyUiConfig'
+import { journeyUiConfig } from '../../../test/journeyUiConfig'
 
 import { InformationButton } from '.'
 
@@ -80,7 +80,7 @@ type Story = StoryObj<ComponentPropsWithoutRef<typeof InformationButton>>
 
 const Template: Story = {
   render: (args) => (
-    <JourneyProvider value={{ journey, variant: 'default' }}>
+    <JourneyProvider value={{ journey, renderMode: 'default' }}>
       <InformationButton />
     </JourneyProvider>
   )

@@ -27,7 +27,7 @@ const SlugDialogComponent = (args): ReactElement => {
       <JourneyProvider
         value={{
           journey: defaultJourney,
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <SlugDialog open={open} onClose={() => setOpen(false)} />

@@ -19,11 +19,6 @@ import {
 import {
   ASSISTANT_FG,
   DIVIDER,
-  OVERLAY_FG_MUTED,
-  OVERLAY_FILL_LOW,
-  OVERLAY_INPUT_BG,
-  OVERLAY_INPUT_BORDER,
-  OVERLAY_INPUT_SHADOW,
   PANEL_INPUT_BG,
   PANEL_INPUT_BORDER,
   PANEL_INPUT_SHADOW,
@@ -44,13 +39,6 @@ interface PromptInputProps {
    * only way forward is to start a new conversation, so the input is locked.
    */
   disabled?: boolean
-  /**
-   * `inline` (default) — floating rounded capsule for the pinned bar
-   * (semi-transparent white surface, drop shadow, backdrop blur).
-   * `floating` — same form-factor on a dark blurred backdrop for the
-   * desktop ambient overlay.
-   */
-  variant?: 'inline' | 'floating'
 }
 
 // Mirror of MAX_FIELD_CHARS in apps/journeys/pages/api/chat/index.ts.
@@ -78,8 +66,7 @@ export function PromptInput({
   onSubmit,
   isLoading,
   onStop,
-  disabled = false,
-  variant = 'inline'
+  disabled = false
 }: PromptInputProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const formRef = useRef<HTMLFormElement>(null)
@@ -176,16 +163,14 @@ export function PromptInput({
   )
 
   const canSubmit = input.trim().length > 0 && !disabled
-  const isFloating = variant === 'floating'
 
   const showCounter = input.length >= COUNTER_VISIBILITY_THRESHOLD
   const atCap = input.length >= MAX_MESSAGE_CHARS
-  const counterMutedColor = isFloating ? OVERLAY_FG_MUTED : TEXT_SECONDARY
   const counterColor = atCap
     ? 'error.main'
     : input.length >= COUNTER_WARNING_THRESHOLD
       ? 'warning.main'
-      : counterMutedColor
+      : TEXT_SECONDARY
 
   return (
     <Box
@@ -201,13 +186,13 @@ export function PromptInput({
         pl: 0.75,
         pr: 1.5,
         py: 0.75,
-        bgcolor: isFloating ? OVERLAY_INPUT_BG : PANEL_INPUT_BG,
+        bgcolor: PANEL_INPUT_BG,
         backdropFilter: 'blur(20px) saturate(180%)',
         WebkitBackdropFilter: 'blur(20px) saturate(180%)',
         borderRadius: 9999,
         border: '1px solid',
-        borderColor: isFloating ? OVERLAY_INPUT_BORDER : PANEL_INPUT_BORDER,
-        boxShadow: isFloating ? OVERLAY_INPUT_SHADOW : PANEL_INPUT_SHADOW,
+        borderColor: PANEL_INPUT_BORDER,
+        boxShadow: PANEL_INPUT_SHADOW,
         [`&.${SHAKE_CLASS}`]: {
           animation: `${shake} ${SHAKE_DURATION_MS}ms ease-in-out`
         },
@@ -241,7 +226,7 @@ export function PromptInput({
           minWidth: 0,
           px: '14px',
           py: '9px',
-          color: isFloating ? PRIMARY_ON : ASSISTANT_FG,
+          color: ASSISTANT_FG,
           // font-size >= 16px keeps iOS Safari from auto-zooming on focus
           // (regression guard from the M1 fix).
           fontSize: 16,
@@ -254,7 +239,7 @@ export function PromptInput({
             fontFamily: 'inherit',
             color: 'inherit',
             '&::placeholder': {
-              color: isFloating ? OVERLAY_FG_MUTED : TEXT_SECONDARY,
+              color: TEXT_SECONDARY,
               opacity: 1
             }
           },
@@ -310,26 +295,14 @@ export function PromptInput({
             height: 32,
             flexShrink: 0,
             p: 0,
-            bgcolor: canSubmit
-              ? PRIMARY
-              : isFloating
-                ? OVERLAY_FILL_LOW
-                : DIVIDER,
-            color: canSubmit
-              ? PRIMARY_ON
-              : isFloating
-                ? OVERLAY_FG_MUTED
-                : TEXT_SECONDARY,
+            bgcolor: canSubmit ? PRIMARY : DIVIDER,
+            color: canSubmit ? PRIMARY_ON : TEXT_SECONDARY,
             '&:hover': {
-              bgcolor: canSubmit
-                ? PRIMARY
-                : isFloating
-                  ? OVERLAY_FILL_LOW
-                  : DIVIDER
+              bgcolor: canSubmit ? PRIMARY : DIVIDER
             },
             '&.Mui-disabled': {
-              bgcolor: isFloating ? OVERLAY_FILL_LOW : DIVIDER,
-              color: isFloating ? OVERLAY_FG_MUTED : TEXT_SECONDARY
+              bgcolor: DIVIDER,
+              color: TEXT_SECONDARY
             }
           }}
         >
