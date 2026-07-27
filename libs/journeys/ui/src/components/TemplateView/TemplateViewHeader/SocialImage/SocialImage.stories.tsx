@@ -26,7 +26,7 @@ const Template: StoryObj<
 > = {
   render: ({ ...args }) => (
     <MockedProvider>
-      <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
+      <JourneyProvider value={{ journey: args.journey, renderMode: 'admin' }}>
         <Box sx={{ p: 5, backgroundColor: 'background.paper' }}>
           <SocialImage />
         </Box>

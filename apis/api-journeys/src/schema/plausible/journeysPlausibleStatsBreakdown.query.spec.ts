@@ -133,21 +133,29 @@ describe('journeysPlausibleStatsBreakdown', () => {
     })
   })
 
-  it('makes a single request and does not paginate even on a full page', async () => {
+  it('paginates through every row when a page comes back full', async () => {
     prismaMock.journey.findUnique.mockResolvedValue({
       id: 'journey-id',
       userJourneys: [],
       team: { userTeams: [] }
     } as any)
-    // A full page would trigger another fetch if this passthrough paginated.
-    mockAxios.get.mockResolvedValue({
-      data: {
-        results: Array.from({ length: 1000 }, (_, i) => ({
-          goal: `event-${i}`,
-          visitors: 1
-        }))
-      }
-    } as any)
+    // A full first page (1000 rows) triggers a second fetch; the short second
+    // page ends pagination. Without paginate this stops after one request and
+    // silently drops every action key past Plausible's default row cap.
+    mockAxios.get
+      .mockResolvedValueOnce({
+        data: {
+          results: Array.from({ length: 1000 }, (_, i) => ({
+            goal: `event-${i}`,
+            visitors: 1
+          }))
+        }
+      } as any)
+      .mockResolvedValueOnce({
+        data: {
+          results: [{ goal: 'event-1000', visitors: 1 }]
+        }
+      } as any)
 
     await authClient({
       document: QUERY,
@@ -158,7 +166,10 @@ describe('journeysPlausibleStatsBreakdown', () => {
       }
     })
 
-    expect(mockAxios.get).toHaveBeenCalledTimes(1)
+    // A non-paginating resolver would stop after the first (full) page. The
+    // second request proves this resolver opted into pagination. The paging
+    // mechanics themselves are covered by service.spec.ts.
+    expect(mockAxios.get).toHaveBeenCalledTimes(2)
   })
 
   it('returns error when journey not found', async () => {

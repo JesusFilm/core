@@ -115,7 +115,7 @@ const Template: StoryObj<typeof EmbeddedPreview> = {
         <JourneyProvider
           value={{
             journey,
-            variant: 'embed'
+            renderMode: 'embed'
           }}
         >
           <EmbeddedPreview {...args} />

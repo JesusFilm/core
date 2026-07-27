@@ -1,0 +1,1 @@
+export { RestrictTranslations } from './RestrictTranslations'

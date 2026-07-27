@@ -84,7 +84,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: mockJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -114,7 +114,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: { ...publishedJourney, primaryImageBlock: null },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -158,7 +158,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: mockJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -248,7 +248,7 @@ describe('SocialScreenSocialImage', () => {
                 id: 'journeyId',
                 primaryImageBlock: null
               },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -309,7 +309,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: mockJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -335,7 +335,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: mockJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -365,7 +365,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: mockJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -406,7 +406,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: mockJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />

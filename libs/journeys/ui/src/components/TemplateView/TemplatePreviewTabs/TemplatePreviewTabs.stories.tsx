@@ -27,7 +27,7 @@ const Template: StoryObj<
 > = {
   render: (args) => {
     return (
-      <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
+      <JourneyProvider value={{ journey: args.journey, renderMode: 'admin' }}>
         <TemplatePreviewTabs />
       </JourneyProvider>
     )

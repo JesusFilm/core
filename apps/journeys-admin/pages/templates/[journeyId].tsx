@@ -56,7 +56,7 @@ function TemplateDetailsPage(): ReactElement {
       <JourneyProvider
         value={{
           journey: data?.journey,
-          variant: 'customize'
+          renderMode: 'customize'
         }}
       >
         <PageWrapper

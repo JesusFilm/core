@@ -11,9 +11,9 @@ import {
 } from '../../../__generated__/globalTypes'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
-import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import { StoryCard } from '../StoryCard'
+import { journeyUiConfig } from '../../test/journeyUiConfig'
+import { simpleComponentConfig } from '../../test/simpleComponentConfig'
+import { StoryCard } from '../../test/StoryCard'
 import { Typography } from '../Typography'
 
 import {

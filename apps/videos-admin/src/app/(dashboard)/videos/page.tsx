@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 
-import { VideoList } from './_VideoList'
+import { AlgoliaVideoList } from './algolia/_AlgoliaVideoList'
 
 export default function VideosPage(): ReactElement {
-  return <VideoList />
+  return <AlgoliaVideoList />
 }

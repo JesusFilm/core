@@ -143,7 +143,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsc -b apps/videos-admin/tsconfig.json"
+        "command": "pnpm tsc7 -p apps/videos-admin/tsconfig.ts7.json"
       }
     },
     "demo": {

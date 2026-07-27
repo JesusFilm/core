@@ -37,7 +37,7 @@ describe('TextScreen', () => {
   it('renders editable tokens with initial values', () => {
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
+        <JourneyProvider value={{ journey: baseJourney, renderMode: 'admin' }}>
           <TextScreen handleNext={vi.fn()} />
         </JourneyProvider>
       </MockedProvider>
@@ -51,7 +51,7 @@ describe('TextScreen', () => {
   it('updates value on blur and on Tab/Enter', () => {
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
+        <JourneyProvider value={{ journey: baseJourney, renderMode: 'admin' }}>
           <TextScreen handleNext={vi.fn()} />
         </JourneyProvider>
       </MockedProvider>
@@ -111,7 +111,7 @@ describe('TextScreen', () => {
 
     render(
       <MockedProvider mocks={[journeyCustomizationFieldUpdate]}>
-        <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
+        <JourneyProvider value={{ journey: baseJourney, renderMode: 'admin' }}>
           <TextScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>
@@ -140,7 +140,7 @@ describe('TextScreen', () => {
     const handleNext = vi.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
+        <JourneyProvider value={{ journey: baseJourney, renderMode: 'admin' }}>
           <TextScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>
@@ -159,7 +159,7 @@ describe('TextScreen', () => {
     const handleNext = vi.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
+        <JourneyProvider value={{ journey: baseJourney, renderMode: 'admin' }}>
           <TextScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>

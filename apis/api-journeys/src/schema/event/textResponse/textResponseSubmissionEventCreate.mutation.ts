@@ -7,7 +7,7 @@ import {
   appendEventToGoogleSheets,
   sendEventsEmail,
   validateBlockEvent
-} from '../utils'
+} from '../eventService'
 
 import { TextResponseSubmissionEventCreateInput } from './inputs/textResponseSubmissionEventCreateInput'
 import { TextResponseSubmissionEventRef } from './textResponseSubmissionEvent'

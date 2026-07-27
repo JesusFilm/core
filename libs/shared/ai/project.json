@@ -17,7 +17,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsc -b libs/shared/ai/tsconfig.json"
+        "command": "pnpm tsc7 -p libs/shared/ai/tsconfig.ts7.json"
       }
     },
     "test": {
