@@ -209,12 +209,7 @@ export function ThemeBuilderDialog({
         closeButton: true
       }}
       dialogActionChildren={
-        <Stack
-          direction="row"
-          justifyContent="flex-end"
-          spacing={2}
-          width="100%"
-        >
+        <Stack direction="row" justifyContent="flex-end" gap={2}>
           <Button variant="outlined" color="secondary" onClick={onClose}>
             {t('Cancel')}
           </Button>

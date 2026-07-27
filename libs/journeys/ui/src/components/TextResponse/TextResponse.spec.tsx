@@ -303,8 +303,14 @@ describe('TextResponse', () => {
     )
 
     const hint = screen.getByText('Please provide your thoughts on this topic')
+    const label = screen.getByText('Your answer here')
     expect(hint).toBeInTheDocument()
-    expect(hint).toHaveStyle({ marginLeft: '0px', marginRight: '0px' })
+    expect(getComputedStyle(hint).marginLeft).toBe(
+      getComputedStyle(label).marginLeft
+    )
+    expect(getComputedStyle(hint).marginRight).toBe(
+      getComputedStyle(label).marginRight
+    )
   })
 
   it('should show required text in hint', () => {
