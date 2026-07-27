@@ -8,8 +8,11 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { StepViewEventCreateInput } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
-import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
-import { getStepHeading } from '../../libs/getStepHeading'
+import {
+  getStepHeading,
+  isActiveBlockOrDescendant,
+  useBlocks
+} from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider/JourneyProvider'
 import {
   JourneyPlausibleEvents,

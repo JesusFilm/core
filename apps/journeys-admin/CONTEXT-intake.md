@@ -36,7 +36,7 @@ edit shows in the Editor but not on the journey preview; a newly-created block n
   `apps/journeys/CONTEXT-intake.md`
   **Look first (fixer):** Network tab → the block create/update mutation (did it fire? payload
   correct? error code?); if it fired cleanly but the UI is stale → the manual cache `update` in
-  `Editor/utils/useBlockCreateCommand` and `Editor/utils/blockCreateUpdate`.
+  `Editor/utils/useBlockCreateCommand` and `src/libs/blockCreateUpdate`.
   **Handoff:** agent-able.
 
 ## Data semantics / historical data disappearing — T1
@@ -163,7 +163,7 @@ created / sync not running).
 - Look first (fixer): OAuth connection → `apis/api-journeys/src/schema/integration/google/`
   (`googleCreate.mutation.ts`, `googleUpdate.mutation.ts`); the sync worker →
   `apis/api-journeys/src/workers/googleSheetsSync/`; the row/header build + write-to-sheet →
-  `apis/api-journeys/src/schema/journeyVisitor/export/googleSheetsLiveSync.ts`.
+  `apis/api-journeys/src/schema/googleSheetsSync/appendEventToGoogleSheets.ts`.
 - Handoff: OAuth reconnect → often human; sync-job defects → agent-able.
   **Growth Spaces:** dormant — no recent reports, believed unused. Map stays thin; route to a human.
 

@@ -49,7 +49,7 @@ describe('ChatHeader', () => {
 
   it('lightens the title + caption for the dark overlay (onDark)', () => {
     const { getByText } = render(<ChatHeader onDark />)
-    // OVERLAY_HERO_FG / OVERLAY_FG_MUTED are raw rgba strings, so MUI emits
+    // OVERLAY_TITLE_FG / OVERLAY_FG_MUTED are raw rgba strings, so MUI emits
     // them as inline colour — assert the dark tokens are applied.
     expect(getByText('Ask your questions about faith')).toHaveStyle({
       color: 'rgba(255, 255, 255, 0.85)'

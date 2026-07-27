@@ -4,9 +4,9 @@ import { ComponentProps } from 'react'
 
 import { TypographyVariant } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
-import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+import { simpleComponentConfig } from '../../test/simpleComponentConfig'
+import { StoryCard } from '../../test/StoryCard'
 import { MultiselectOptionFields } from '../MultiselectOption/__generated__/MultiselectOptionFields'
-import { StoryCard } from '../StoryCard'
 import { Typography } from '../Typography'
 
 import { MULTISELECT_SUBMISSION_EVENT_CREATE, Multiselect } from '.'

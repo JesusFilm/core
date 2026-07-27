@@ -14,13 +14,13 @@ import {
 import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { JourneyFields_chatButtons as ChatButton } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { MessageChatIcon } from '../../../libs/MessageChatIcon'
 import {
   JourneyPlausibleEvents,
   keyify,
   templateKeyify
 } from '../../../libs/plausibleHelpers'
 import { getJourneyRTL } from '../../../libs/rtl'
+import { MessageChatIcon } from '../../MessageChatIcon'
 
 import {
   ChatButtonEventCreate,

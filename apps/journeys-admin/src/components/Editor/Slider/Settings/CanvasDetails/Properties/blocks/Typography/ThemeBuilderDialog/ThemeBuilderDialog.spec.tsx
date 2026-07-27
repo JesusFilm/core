@@ -175,6 +175,39 @@ describe('ThemeBuilderDialog', () => {
     expect(screen.getByText('Confirm')).toBeInTheDocument()
   })
 
+  it('should group the action buttons together at the end of the footer', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: mockJourney, renderMode: 'admin' }}
+          >
+            <ThemeBuilderDialog open onClose={handleClose} />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const cancelButton = screen.getByRole('button', { name: 'Cancel' })
+    const confirmButton = screen.getByRole('button', { name: 'Confirm' })
+    const actions = cancelButton.parentElement
+
+    // both buttons share one flex row pushed to the trailing edge, rather
+    // than being spread to opposite ends with space-between
+    expect(confirmButton.parentElement).toBe(actions)
+    expect(actions).toHaveStyle({
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'flex-end'
+    })
+
+    // Cancel precedes Confirm so Confirm stays the rightmost action
+    expect(
+      cancelButton.compareDocumentPosition(confirmButton) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+  })
+
   it('should initialize with journey theme values', () => {
     render(
       <SnackbarProvider>
@@ -406,5 +439,56 @@ describe('ThemeBuilderDialog', () => {
 
     fireEvent.click(screen.getByText('Confirm'))
     expect(screen.getByText('Confirm')).toBeDisabled()
+  })
+
+  it('should not allow closing while fonts are saving', async () => {
+    const loadingMock = {
+      delay: 30,
+      request: {
+        query: JOURNEY_FONTS_UPDATE,
+        variables: {
+          id: 'theme-id',
+          input: {
+            headerFont: FontFamily.Montserrat,
+            bodyFont: FontFamily.Inter,
+            labelFont: FontFamily.Nunito
+          }
+        }
+      },
+      result: {
+        data: {
+          journeyThemeUpdate: {
+            __typename: 'JourneyTheme',
+            id: 'theme-id',
+            journeyId: 'journey-id',
+            headerFont: FontFamily.Montserrat,
+            bodyFont: FontFamily.Inter,
+            labelFont: FontFamily.Nunito
+          }
+        }
+      }
+    }
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[loadingMock]}>
+          <JourneyProvider
+            value={{ journey: mockJourney, renderMode: 'admin' }}
+          >
+            <ThemeBuilderDialog open onClose={handleClose} />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(screen.getByText('Confirm'))
+
+    expect(screen.getByText('Cancel')).toBeDisabled()
+    expect(screen.getByTestId('dialog-close-button')).toBeDisabled()
+
+    fireEvent.click(screen.getByText('Cancel'))
+    expect(handleClose).not.toHaveBeenCalled()
+
+    await waitFor(() => expect(handleClose).toHaveBeenCalled())
   })
 })
