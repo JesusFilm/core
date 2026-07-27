@@ -5,9 +5,9 @@ import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 
 import { watchConfig } from '@core/shared/ui/storybook'
 
-import { InstantSearchTestWrapper } from '../../libs/algolia/InstantSearchTestWrapper'
 import { SearchBarProvider } from '../../libs/algolia/SearchBarProvider'
 import { getLanguagesContinentsMock } from '../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
+import { InstantSearchTestWrapper } from '../../test/InstantSearchTestWrapper'
 
 import { SearchBar } from './SearchBar'
 import {

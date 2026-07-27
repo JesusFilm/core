@@ -19,7 +19,8 @@
         "prisma.prisma",
         "vitest.explorer",
         "redhat.vscode-yaml",
-        "anthropic.claude-code"
+        "anthropic.claude-code",
+        "TypeScriptTeam.native-preview"
       ]
     }
   },

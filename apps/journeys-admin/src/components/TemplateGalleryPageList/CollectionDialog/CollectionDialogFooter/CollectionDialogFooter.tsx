@@ -19,10 +19,6 @@ export interface CollectionDialogFooterProps {
    *  the button silently disabled. Callers gating Publish should pass a
    *  non-null string. */
   publishBlockedReason: string | null
-  /** Number of templates currently selected — Publish stays disabled
-   *  while this is zero, with a tooltip prompting the user to add at
-   *  least one. */
-  journeyCount: number
   /** True while Formik's submitForm is in flight (Save, Publish,
    *  Create). */
   isSubmitting: boolean
@@ -67,7 +63,6 @@ export function CollectionDialogFooter({
   isPublished,
   canPublish,
   publishBlockedReason,
-  journeyCount,
   isSubmitting,
   isUnpublishing,
   onCancel,
@@ -135,17 +130,12 @@ export function CollectionDialogFooter({
 
   // edit, draft — Publish sits in the contextual middle slot (the same
   // spot Unpublish occupies for a published collection) so Save stays
-  // anchored as the primary action. Publish is gated by (a)
-  // custom-domain teams that can't host gallery pages and (b) an empty
-  // selection — the card menu's Edit always opens the dialog (the user
-  // may want to fill in metadata before adding templates); this button
-  // is what gates publishing.
-  const publishBlocked = !canPublish || journeyCount === 0
-  const publishTooltip = !canPublish
-    ? (publishBlockedReason ?? '')
-    : journeyCount === 0
-      ? t('Add at least one template before publishing')
-      : ''
+  // anchored as the primary action. Publish is gated only by
+  // custom-domain teams that can't host gallery pages — an empty
+  // collection is publishable (it just renders no templates until some
+  // are added).
+  const publishBlocked = !canPublish
+  const publishTooltip = publishBlocked ? (publishBlockedReason ?? '') : ''
   return (
     <>
       <Button onClick={onCancel} disabled={busy}>

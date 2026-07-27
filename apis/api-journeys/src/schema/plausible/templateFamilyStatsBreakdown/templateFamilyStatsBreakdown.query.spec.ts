@@ -229,6 +229,59 @@ describe('templateFamilyStatsBreakdown', () => {
     }
   })
 
+  it('ignores client-supplied limit/page so the report still fetches every page', async () => {
+    const templateJourney = {
+      id: 'template-journey-id',
+      slug: 'template-slug',
+      title: 'Template Journey',
+      userJourneys: [],
+      team: { userTeams: [] }
+    }
+
+    prismaMock.journey.findUnique.mockResolvedValue(
+      templateJourney as unknown as JourneyWithAcl
+    )
+    prismaMock.journey.findMany.mockResolvedValue([])
+    ;(prismaMock.journeyVisitor.groupBy as any).mockResolvedValue([])
+
+    // Both breakdown calls return a short first page, so each makes one request.
+    mockAxios.get.mockResolvedValue({
+      data: { results: [] }
+    } as unknown as AxiosResponse)
+
+    await authClient({
+      document: QUERY,
+      variables: {
+        id: 'template-journey-id',
+        idType: 'databaseId',
+        where: {
+          property: 'event:goal',
+          limit: 100,
+          page: 5
+        }
+      }
+    })
+
+    // The client's limit/page must be dropped: the fetch paginates from page 1
+    // at the max page size rather than honoring the client's bounded slice.
+    expect(mockAxios.get).toHaveBeenCalledWith(
+      expect.stringContaining('/api/v1/stats/breakdown'),
+      expect.objectContaining({
+        params: expect.objectContaining({
+          property: 'event:props:templateKey',
+          limit: 1000,
+          page: 1
+        })
+      })
+    )
+    expect(mockAxios.get).not.toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        params: expect.objectContaining({ limit: 100 })
+      })
+    )
+  })
+
   it('returns error when template journey not found', async () => {
     prismaMock.journey.findUnique.mockResolvedValue(null)
 

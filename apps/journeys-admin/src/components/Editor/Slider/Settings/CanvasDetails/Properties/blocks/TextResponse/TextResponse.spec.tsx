@@ -116,7 +116,7 @@ describe('TextResponse', () => {
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider
-            value={{ journey: customizableJourney, variant: 'admin' }}
+            value={{ journey: customizableJourney, renderMode: 'admin' }}
           >
             <TextResponse {...customizableBlock} />
           </JourneyProvider>
@@ -150,7 +150,7 @@ describe('TextResponse', () => {
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider
-            value={{ journey: customizableJourney, variant: 'admin' }}
+            value={{ journey: customizableJourney, renderMode: 'admin' }}
           >
             <TextResponse {...customizableBlock} />
           </JourneyProvider>

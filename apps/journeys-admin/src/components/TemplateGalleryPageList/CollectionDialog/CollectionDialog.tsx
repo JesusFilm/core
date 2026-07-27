@@ -23,6 +23,7 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
+import { sendCollectionMoreDetailsClickEvent } from '../../../libs/sendCollectionEvent'
 import {
   MuxVideoUploadProvider,
   useMuxVideoUpload
@@ -262,7 +263,6 @@ function CollectionDialogContent({
                   isPublished={isPublished}
                   canPublish={canPublish}
                   publishBlockedReason={publishBlockedReason}
-                  journeyCount={values.journeyIds.length}
                   isSubmitting={isSubmitting}
                   isUnpublishing={isUnpublishing}
                   onCancel={guardedClose}
@@ -375,7 +375,14 @@ function CollectionDialogContent({
 
                       <Stack>
                         <ButtonBase
-                          onClick={() => setMoreDetailsOpen((v) => !v)}
+                          onClick={() => {
+                            if (!moreDetailsOpen && collection != null) {
+                              sendCollectionMoreDetailsClickEvent({
+                                collectionId: collection.id
+                              })
+                            }
+                            setMoreDetailsOpen((v) => !v)
+                          }}
                           aria-expanded={moreDetailsOpen}
                           aria-label={
                             moreDetailsOpen

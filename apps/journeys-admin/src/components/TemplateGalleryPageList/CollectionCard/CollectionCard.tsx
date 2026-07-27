@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Collapse from '@mui/material/Collapse'
@@ -23,6 +22,7 @@ import MoreIcon from '@core/shared/ui/icons/More'
 
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
 import { TemplateGalleryPageStatus } from '../../../../__generated__/globalTypes'
+import { sendCollectionPreviewClickEvent } from '../../../libs/sendCollectionEvent'
 import { LabelChip } from '../../LabelChip'
 import {
   COLLECTION_CARD_BORDER_WIDTH,
@@ -111,6 +111,11 @@ function CollectionCardImpl({
   function handlePreview(): void {
     handleMenuClose()
     if (previewDisabled) return
+    sendCollectionPreviewClickEvent({
+      location: 'card_menu',
+      collectionSlug: collection.slug,
+      collectionId: collection.id
+    })
     window.open(previewHref, '_blank', 'noopener,noreferrer')
   }
   function handleOpenUngroup(): void {
@@ -300,21 +305,7 @@ function CollectionCardImpl({
             minHeight: 100
           }}
         >
-          {isEmpty ? (
-            <Box
-              sx={{
-                p: 2,
-                textAlign: 'center',
-                color: 'text.disabled'
-              }}
-            >
-              <Typography variant="caption">
-                {t('Drag templates here to add them to this collection.')}
-              </Typography>
-            </Box>
-          ) : (
-            children
-          )}
+          {children}
         </CardContent>
       </Collapse>
 

@@ -407,7 +407,7 @@ describe('AddAudioLanguageDialog', () => {
     )
   })
 
-  it('should prevent dialog close during upload or processing', async () => {
+  it('should prevent dialog close during active browser upload', async () => {
     const mockRouterPush = vi.fn()
     vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
       push: mockRouterPush
@@ -415,7 +415,7 @@ describe('AddAudioLanguageDialog', () => {
     ;(useUploadVideoVariant as Mock).mockReturnValue({
       uploadState: {
         isUploading: true,
-        isProcessing: true,
+        isProcessing: false,
         uploadProgress: 50,
         error: null
       },
@@ -436,5 +436,37 @@ describe('AddAudioLanguageDialog', () => {
 
     // Should not redirect
     expect(mockRouterPush).not.toHaveBeenCalled()
+  })
+
+  it('should allow dialog close during background processing', async () => {
+    const mockRouterPush = vi.fn()
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
+    ;(useUploadVideoVariant as Mock).mockReturnValue({
+      uploadState: {
+        isUploading: false,
+        isProcessing: true,
+        uploadProgress: 100,
+        error: null
+      },
+      startUpload: vi.fn(),
+      clearUploadState: vi.fn()
+    })
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <AddAudioLanguageDialog />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(screen.getByTestId('close-button'))
+
+    expect(mockRouterPush).toHaveBeenCalledWith(
+      `/videos/${mockVideoId}/audio`,
+      { scroll: false }
+    )
   })
 })

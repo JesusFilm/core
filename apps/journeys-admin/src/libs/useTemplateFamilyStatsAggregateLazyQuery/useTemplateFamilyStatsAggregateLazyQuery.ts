@@ -11,6 +11,7 @@ import {
   GetTemplateFamilyStatsAggregateVariables
 } from '../../../__generated__/GetTemplateFamilyStatsAggregate'
 import { IdType } from '../../../__generated__/globalTypes'
+import { buildAllTimeStatsFilter } from '../buildAllTimeStatsFilter'
 
 export const GET_TEMPLATE_FAMILY_STATS_AGGREGATE = gql`
   query GetTemplateFamilyStatsAggregate(
@@ -63,7 +64,7 @@ export function useTemplateFamilyStatsAggregateLazyQuery(): {
             variables: {
               id: templateId,
               idType: IdType.databaseId,
-              where: {}
+              where: buildAllTimeStatsFilter()
             },
             fetchPolicy: 'network-only'
           })

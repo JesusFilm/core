@@ -106,7 +106,7 @@ describe('videoVariant', () => {
     mockedVideoVariantCacheReset.mockImplementation(() => Promise.resolve())
     mockedDeleteVideo.mockResolvedValue(undefined)
     mockedDeleteR2File.mockResolvedValue(undefined)
-    mockedUpdateVideoVariantInAlgolia.mockResolvedValue(undefined)
+    mockedUpdateVideoVariantInAlgolia.mockResolvedValue(true)
     mockedAddLanguageToVideo.mockResolvedValue(undefined)
     mockedRemoveLanguageFromVideoIfUnused.mockResolvedValue(undefined)
     mockedUpdateParentCollectionLanguages.mockResolvedValue(undefined)
@@ -224,6 +224,7 @@ describe('videoVariant', () => {
             originId: null,
             restrictDownloadPlatforms: [],
             restrictViewPlatforms: [],
+            restrictTranslations: false,
             publishedAt: null
           },
           downloads: [
@@ -364,6 +365,7 @@ describe('videoVariant', () => {
             originId: null,
             restrictDownloadPlatforms: [],
             restrictViewPlatforms: [],
+            restrictTranslations: false,
             publishedAt: null
           },
           downloads: []
@@ -496,6 +498,7 @@ describe('videoVariant', () => {
             originId: null,
             restrictDownloadPlatforms: [],
             restrictViewPlatforms: [],
+            restrictTranslations: false,
             publishedAt: null
           },
           downloads: [
@@ -639,6 +642,7 @@ describe('videoVariant', () => {
             originId: null,
             restrictDownloadPlatforms: [],
             restrictViewPlatforms: [],
+            restrictTranslations: false,
             publishedAt: null
           },
           downloads: []
@@ -750,6 +754,7 @@ describe('videoVariant', () => {
             originId: null,
             restrictDownloadPlatforms: [],
             restrictViewPlatforms: [],
+            restrictTranslations: false,
             publishedAt: null
           },
           downloads: []
@@ -862,6 +867,7 @@ describe('videoVariant', () => {
             originId: null,
             restrictDownloadPlatforms: [],
             restrictViewPlatforms: [],
+            restrictTranslations: false,
             publishedAt: null
           },
           downloads: []
@@ -1199,6 +1205,7 @@ describe('videoVariant', () => {
           originId: null,
           restrictDownloadPlatforms: [],
           restrictViewPlatforms: [],
+          restrictTranslations: false,
           publishedAt: null
         })
         prismaMock.video.update.mockResolvedValue({
@@ -1216,6 +1223,7 @@ describe('videoVariant', () => {
           originId: null,
           restrictDownloadPlatforms: [],
           restrictViewPlatforms: [],
+          restrictTranslations: false,
           publishedAt: null
         })
         const result = await authClient({
@@ -1362,6 +1370,7 @@ describe('videoVariant', () => {
           originId: null,
           restrictDownloadPlatforms: [],
           restrictViewPlatforms: [],
+          restrictTranslations: false,
           publishedAt: null
         })
         prismaMock.video.update.mockResolvedValue({
@@ -1379,6 +1388,7 @@ describe('videoVariant', () => {
           originId: null,
           restrictDownloadPlatforms: [],
           restrictViewPlatforms: [],
+          restrictTranslations: false,
           publishedAt: null
         })
 

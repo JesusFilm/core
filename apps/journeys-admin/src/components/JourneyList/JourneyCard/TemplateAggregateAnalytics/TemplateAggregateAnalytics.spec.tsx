@@ -1,5 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
+import { formatISO } from 'date-fns'
+import { type MockedFunction } from 'vitest'
 
 import {
   GetTemplateFamilyStatsAggregate,
@@ -17,6 +19,15 @@ vi.mock('next-i18next/pages', () => ({
   })
 }))
 
+vi.mock('date-fns', async () => {
+  return {
+    ...(await vi.importActual('date-fns')),
+    formatISO: vi.fn()
+  }
+})
+
+const mockFormatIso = formatISO as MockedFunction<typeof formatISO>
+
 const mockEnqueueSnackbar = vi.fn()
 
 vi.mock('notistack', () => ({
@@ -26,6 +37,10 @@ vi.mock('notistack', () => ({
 }))
 
 describe('TemplateAggregateAnalytics', () => {
+  beforeEach(() => {
+    mockFormatIso.mockReturnValue('2024-09-26')
+  })
+
   afterEach(() => {
     vi.clearAllMocks()
   })
@@ -54,7 +69,10 @@ describe('TemplateAggregateAnalytics', () => {
         variables: {
           id: 'journeyId',
           idType: IdType.databaseId,
-          where: {}
+          where: {
+            period: 'custom',
+            date: '2024-06-01,2024-09-26'
+          }
         }
       },
       result: vi.fn(() => ({
@@ -97,7 +115,10 @@ describe('TemplateAggregateAnalytics', () => {
         variables: {
           id: 'journeyId',
           idType: IdType.databaseId,
-          where: {}
+          where: {
+            period: 'custom',
+            date: '2024-06-01,2024-09-26'
+          }
         }
       },
       error: new Error('Failed to fetch template stats')

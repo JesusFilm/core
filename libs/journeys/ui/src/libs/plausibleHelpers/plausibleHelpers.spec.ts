@@ -5,6 +5,7 @@ import { BlockFields_ButtonBlock_action as ButtonBlockAction } from '../block/__
 import {
   BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT,
   actionToTarget,
+  fireCaptureEvent,
   getTargetEventKey,
   templateKeyify
 } from './plausibleHelpers'
@@ -311,6 +312,55 @@ describe('PlausibleHelpers', () => {
       expect(
         BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT[BlockEventLabel.share]
       ).toBeNull()
+    })
+  })
+
+  describe('fireCaptureEvent', () => {
+    const options = {
+      u: 'https://example.com/journeyId/Step1',
+      input: { id: 'eventId' },
+      stepId: 'Step1',
+      blockId: 'Block1',
+      journeyId: 'journeyId'
+    }
+
+    it('fires the mapped capture goal for a mapped event label', () => {
+      const plausible = vi.fn()
+      fireCaptureEvent(plausible, BlockEventLabel.decisionForChrist, options)
+
+      expect(plausible).toHaveBeenCalledTimes(1)
+      expect(plausible).toHaveBeenCalledWith(
+        'christDecisionCapture',
+        expect.objectContaining({
+          u: options.u,
+          props: expect.objectContaining({
+            id: 'eventId',
+            blockId: 'Block1',
+            key: expect.any(String),
+            simpleKey: expect.any(String),
+            templateKey: expect.any(String)
+          })
+        })
+      )
+    })
+
+    it('does not fire for share (no registered Plausible goal)', () => {
+      const plausible = vi.fn()
+      fireCaptureEvent(plausible, BlockEventLabel.share, options)
+      expect(plausible).not.toHaveBeenCalled()
+    })
+
+    it('does not fire for inviteFriend (no registered Plausible goal)', () => {
+      const plausible = vi.fn()
+      fireCaptureEvent(plausible, BlockEventLabel.inviteFriend, options)
+      expect(plausible).not.toHaveBeenCalled()
+    })
+
+    it('does not fire when the event label is null or undefined', () => {
+      const plausible = vi.fn()
+      fireCaptureEvent(plausible, null, options)
+      fireCaptureEvent(plausible, undefined, options)
+      expect(plausible).not.toHaveBeenCalled()
     })
   })
 

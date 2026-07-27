@@ -1,11 +1,14 @@
 import { Hono } from 'hono'
 
+import { resolveWatchRedirect } from './resolveWatchRedirect'
+
 const CACHE_MAX_AGE = 86400 // 24 hours
 
 const app = new Hono<{
   Bindings: {
     RESOURCES_PROXY_DEST?: string
     WATCH_PROXY_DEST?: string
+    CORE_GRAPHQL_ENDPOINT?: string
     IOS_APP_ID?: string
     ANDROID_PACKAGE_NAME?: string
     ANDROID_SHA256_CERT_FINGERPRINT?: string
@@ -64,60 +67,82 @@ app.get('/.well-known/assetlinks.json', async (c) => {
   })
 })
 
-app.get('*', async (c) => {
-  const url = new URL(c.req.url)
-  const pathname = url.pathname
+app.on(
+  'GET',
+  [
+    '/bin/jf/watch.html/:videoId/:languageId',
+    '/bin/jf/watch.html/:videoId/:languageId/',
+    '/api/jf/watch.html/:videoId/:languageId',
+    '/api/jf/watch.html/:videoId/:languageId/'
+  ],
+  async (c) => {
+    const result = await resolveWatchRedirect({
+      videoId: c.req.param('videoId'),
+      languageId: c.req.param('languageId'),
+      graphQlEndpoint: c.env.CORE_GRAPHQL_ENDPOINT
+    })
 
-  // Check if path is /watch and has EXPERIMENTAL cookie
-  const cookieHeader = c.req.header('cookie')
-  const hasExperimentalCookie = cookieHeader?.includes('EXPERIMENTAL')
+    if (result.type === 'redirect') {
+      return c.redirect(result.location, 302)
+    }
+
+    if (result.type === 'notFound') {
+      return new Response('Not Found', { status: 404 })
+    }
+
+    return new Response('Service Unavailable', { status: 503 })
+  }
+)
+
+app.all('*', async (c) => {
+  const publicUrl = new URL(c.req.url)
+  const pathname = publicUrl.pathname
   const isWatchPath = pathname.startsWith('/watch')
+  const isReadRequest = c.req.method === 'GET' || c.req.method === 'HEAD'
 
-  // Set destination based on path and cookie
-  const proxyDest =
-    isWatchPath && hasExperimentalCookie
-      ? (c.env.WATCH_PROXY_DEST ?? url.hostname)
-      : (c.env.RESOURCES_PROXY_DEST ?? url.hostname)
+  if (!isWatchPath && !isReadRequest) {
+    return c.notFound()
+  }
 
-  url.hostname = proxyDest
+  const proxyDest = isWatchPath
+    ? (c.env.WATCH_PROXY_DEST ?? publicUrl.hostname)
+    : (c.env.RESOURCES_PROXY_DEST ?? publicUrl.hostname)
+
+  const upstreamUrl = new URL(publicUrl)
+  upstreamUrl.hostname = proxyDest
 
   let response: Response
 
-  // Extract headers from the original request, including cookies
-  const headers = new Headers()
-
-  // Copy all headers from the original request
-  const originalHeaders = c.req.header()
-  if (originalHeaders) {
-    Object.entries(originalHeaders).forEach(([key, value]) => {
-      if (value) {
-        headers.set(key, value)
-      }
-    })
-  }
-
-  // Ensure cookies are properly passed
-  if (cookieHeader) {
-    headers.set('cookie', cookieHeader)
-  }
+  const headers = new Headers(c.req.raw.headers)
+  headers.set('x-forwarded-host', publicUrl.host)
+  headers.set('x-forwarded-proto', publicUrl.protocol.slice(0, -1))
 
   try {
+    const normalizedUpstreamUrl = upstreamUrl
+      .toString()
+      .replace(/(%[0-9A-F][0-9A-F])/g, (match) => match.toLowerCase())
+    const body =
+      c.req.method === 'GET' || c.req.method === 'HEAD'
+        ? undefined
+        : c.req.raw.body
+
     response = await fetch(
-      url
-        .toString()
-        .replace(/(%[0-9A-F][0-9A-F])/g, (match) => match.toLowerCase()),
-      {
+      new Request(normalizedUpstreamUrl, {
         method: c.req.method,
         headers,
+        body,
         redirect: 'manual'
-      }
+      })
     )
   } catch (error) {
     console.error('Proxy fetch error:', error)
     return new Response('Service Unavailable', { status: 503 })
   }
 
-  if (response.status == 404 || response.status == 500) {
+  if (
+    c.req.method === 'GET' &&
+    (response.status === 404 || response.status === 500)
+  ) {
     const notFoundUrl = new URL(c.req.url)
     notFoundUrl.pathname = '/not-found.html'
     try {

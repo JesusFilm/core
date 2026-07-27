@@ -94,6 +94,9 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
 
       const templateSiteId = `api-journeys-template-${templateJourney.id}`
 
+      // This report aggregates every journey in the family, so it must read the
+      // full breakdown. paginate: true pages through all rows (and ignores any
+      // client-supplied limit/page) instead of collapsing to a single top-100 page.
       const breakdownResults = await getJourneyStatsBreakdown(
         templateJourney.id,
         {
@@ -101,7 +104,8 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
           property: 'event:props:templateKey',
           metrics: 'visitors'
         },
-        templateSiteId
+        templateSiteId,
+        { paginate: true }
       )
 
       const transformedResults = transformBreakdownResults(
@@ -183,7 +187,8 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
                 property: 'event:page',
                 metrics: 'visitors'
               },
-              templateSiteId
+              templateSiteId,
+              { paginate: true }
             )
           : Promise.resolve([])
       ])

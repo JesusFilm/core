@@ -9,10 +9,10 @@ import {
 } from '../../../lib/journeysAccess/journeysAccess'
 import { notifyMediaSlackOfOperationFailure } from '../../../lib/slack'
 import { queue as processVideoDownloadsQueue } from '../../../workers/processVideoDownloads/queue'
-import { jobName as processVideoUploadsJobName } from '../../../workers/processVideoUploads/config'
-import { queue as processVideoUploadsQueue } from '../../../workers/processVideoUploads/queue'
 import { builder } from '../../builder'
+import { logger } from '../../logger'
 import { VideoSource, VideoSourceShape } from '../../videoSource/videoSource'
+import { queueVideoUploadProcessing } from '../../videoVariantUpload/service'
 
 import { MaxResolutionTier } from './enums'
 import { GenerateSubtitlesInput } from './inputs/generateSubtitlesInput'
@@ -288,6 +288,30 @@ builder.mutationFields((t) => ({
         })
 
       let muxVideo: PrismaMuxVideo
+      const r2Asset = await prisma.cloudflareR2.findFirst({
+        where: { publicUrl: r2PublicUrl },
+        select: { id: true, contentType: true, contentLength: true }
+      })
+      const upload = await prisma.videoVariantUpload.create({
+        data: {
+          source: 'createMuxVideoAndQueueUpload',
+          sourceKey: r2PublicUrl,
+          status: 'r2Uploaded',
+          videoId,
+          edition,
+          languageId,
+          version,
+          published: true,
+          originalFilename,
+          contentType: r2Asset?.contentType,
+          contentLength: r2Asset?.contentLength,
+          duration,
+          durationMs,
+          width,
+          height,
+          r2AssetId: r2Asset?.id
+        }
+      })
 
       try {
         const muxAsset = await createVideoFromUrl(
@@ -296,11 +320,6 @@ builder.mutationFields((t) => ({
           '2160p',
           downloadable ?? true
         )
-
-        const r2Asset = await prisma.cloudflareR2.findFirst({
-          where: { publicUrl: r2PublicUrl },
-          select: { id: true }
-        })
 
         muxVideo = await prisma.muxVideo.create({
           ...query,
@@ -313,11 +332,28 @@ builder.mutationFields((t) => ({
             downloadable: downloadable ?? true
           }
         })
+
+        await prisma.videoVariantUpload.update({
+          where: { id: upload.id },
+          data: {
+            status: 'muxCreated',
+            muxVideoId: muxVideo.id,
+            errorMessage: null
+          }
+        })
       } catch (error) {
+        await prisma.videoVariantUpload.update({
+          where: { id: upload.id },
+          data: {
+            status: 'failed',
+            errorMessage: error instanceof Error ? error.message : String(error)
+          }
+        })
         notifyMediaSlackOfOperationFailure({
           operation: 'Mux video create from R2 failed',
           error,
           context: {
+            uploadId: upload.id,
             videoId,
             languageId,
             version,
@@ -329,36 +365,27 @@ builder.mutationFields((t) => ({
       }
 
       try {
-        await processVideoUploadsQueue.add(
-          processVideoUploadsJobName,
-          {
-            videoId,
-            edition,
-            languageId,
-            version,
-            muxVideoId: muxVideo.id,
-            metadata: {
-              durationMs,
-              duration,
-              width,
-              height
-            },
-            originalFilename
-          },
-          {
-            jobId: `mux:${muxVideo.id}`,
-            attempts: 5,
-            backoff: { type: 'exponential', delay: 2000 },
-            removeOnComplete: true,
-            removeOnFail: { age: FIVE_DAYS, count: 50 }
-          }
-        )
+        await queueVideoUploadProcessing({
+          ...upload,
+          muxVideoId: muxVideo.id
+        })
       } catch (error) {
-        console.error('Failed to queue video uploads processing:', error)
+        await prisma.videoVariantUpload.update({
+          where: { id: upload.id },
+          data: {
+            status: 'failed',
+            errorMessage: error instanceof Error ? error.message : String(error)
+          }
+        })
+        logger.error(
+          { error, uploadId: upload.id, muxVideoId: muxVideo.id },
+          'Failed to queue video uploads processing'
+        )
         notifyMediaSlackOfOperationFailure({
           operation: 'Mux video upload queue failed',
           error,
           context: {
+            uploadId: upload.id,
             videoId,
             languageId,
             version,
@@ -366,24 +393,6 @@ builder.mutationFields((t) => ({
             originalFilename
           }
         })
-        try {
-          await prisma.muxVideo.delete({
-            where: { id: muxVideo.id }
-          })
-        } catch (cleanupError) {
-          console.error('Failed to cleanup orphaned mux video:', cleanupError)
-          notifyMediaSlackOfOperationFailure({
-            operation: 'Mux video queue cleanup failed',
-            error: cleanupError,
-            context: {
-              videoId,
-              languageId,
-              version,
-              muxVideoId: muxVideo.id,
-              originalFilename
-            }
-          })
-        }
       }
 
       return muxVideo

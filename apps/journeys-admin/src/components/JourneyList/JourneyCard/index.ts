@@ -1,1 +1,1 @@
-export { JourneyCard } from './JourneyCard'
+export { JourneyCard, JourneyCardSizer } from './JourneyCard'

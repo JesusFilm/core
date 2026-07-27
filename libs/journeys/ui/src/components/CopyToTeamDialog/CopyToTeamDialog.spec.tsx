@@ -2,10 +2,13 @@ import { type FetchResult } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { type ReactElement } from 'react'
 import { type Mock } from 'vitest'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
+import { SUPPORTED_LANGUAGE_IDS } from '../../libs/useJourneyAiTranslateSubscription/supportedLanguages'
 import { GetJourney_journey as Journey } from '../../libs/useJourneyQuery/__generated__/GetJourney'
+import { GET_LANGUAGES } from '../../libs/useLanguagesQuery'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
 import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
 import {
@@ -52,7 +55,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -133,7 +136,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -217,7 +220,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -274,7 +277,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -312,7 +315,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -360,7 +363,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -388,7 +391,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -417,7 +420,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -446,7 +449,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -475,7 +478,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -504,7 +507,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -535,7 +538,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -614,7 +617,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -647,6 +650,167 @@ describe('CopyToTeamDialog', () => {
 
       // Dialog should close normally when translation is not enabled
       expect(handleCloseMenuMock).toHaveBeenCalled()
+    })
+
+    it('does not switch teams for the translation path — the consumer owns it', async () => {
+      // NES-1636: switching teams here refetches GetAdminJourneys and unmounts
+      // the consumer that owns the translation subscription before it finishes,
+      // so the copied journey lands untranslated. For the translation path the
+      // dialog must NOT switch at all; the consumer switches on its own
+      // onComplete (success only). The dialog only switches for a plain copy.
+      //
+      // Clear leaked active-team state so TeamProvider doesn't fire its own
+      // mount-sync updateLastActiveTeamId and pollute the assertion below.
+      window.sessionStorage.clear()
+
+      const teamsResult = vi.fn(() => ({
+        data: {
+          teams: [
+            { id: 'teamId', title: 'Team Name', __typename: 'Team' },
+            { id: 'teamId2', title: 'Team Name Two', __typename: 'Team' }
+          ],
+          getJourneyProfile: {
+            __typename: 'JourneyProfile',
+            lastActiveTeamId: 'teamId2'
+          }
+        }
+      }))
+
+      const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> =
+        {
+          request: {
+            query: UPDATE_LAST_ACTIVE_TEAM_ID,
+            variables: { input: { lastActiveTeamId: 'teamId' } }
+          },
+          result: vi.fn(
+            (): FetchResult<UpdateLastActiveTeamId> => ({
+              data: {
+                journeyProfileUpdate: {
+                  __typename: 'JourneyProfile',
+                  id: 'teamId'
+                }
+              }
+            })
+          )
+        }
+
+      const languagesMock = {
+        request: {
+          query: GET_LANGUAGES,
+          variables: {
+            languageId: '529',
+            where: { ids: [...SUPPORTED_LANGUAGE_IDS] }
+          }
+        },
+        result: {
+          data: {
+            languages: [
+              {
+                __typename: 'Language',
+                id: '529',
+                slug: 'english',
+                name: [
+                  {
+                    value: 'English',
+                    primary: true,
+                    __typename: 'LanguageName'
+                  }
+                ]
+              },
+              {
+                __typename: 'Language',
+                id: '21028',
+                slug: 'spanish',
+                name: [
+                  {
+                    value: 'Spanish',
+                    primary: false,
+                    __typename: 'LanguageName'
+                  },
+                  {
+                    value: 'Español',
+                    primary: true,
+                    __typename: 'LanguageName'
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+
+      const mocks = [
+        {
+          request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+          result: teamsResult
+        },
+        languagesMock,
+        updateLastActiveTeamIdMock
+      ]
+
+      const ui = (open: boolean): ReactElement => (
+        <MockedProvider mocks={mocks}>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: { id: 'journeyId' } as unknown as Journey,
+                renderMode: 'admin'
+              }}
+            >
+              <TeamProvider>
+                <CopyToTeamDialog
+                  open={open}
+                  title="Copy To Journey"
+                  submitLabel="Copy"
+                  onClose={handleCloseMenuMock}
+                  submitAction={handleSubmitActionMock}
+                />
+              </TeamProvider>
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      const { rerender } = render(ui(true))
+
+      await waitFor(() => expect(teamsResult).toHaveBeenCalled())
+
+      // Select a different team than the active one
+      fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Select Team' }))
+      fireEvent.click(screen.getByRole('option', { name: 'Team Name' }))
+
+      // Enable translation and pick a target language
+      fireEvent.click(screen.getByRole('checkbox', { name: 'Translation' }))
+      await waitFor(() =>
+        expect(screen.getByTestId('LanguageAutocomplete')).not.toHaveAttribute(
+          'aria-disabled',
+          'true'
+        )
+      )
+      fireEvent.focus(screen.getByTestId('LanguageAutocomplete'))
+      fireEvent.keyDown(screen.getByTestId('LanguageAutocomplete'), {
+        key: 'ArrowDown'
+      })
+      fireEvent.click(screen.getByRole('option', { name: 'Spanish Español' }))
+
+      fireEvent.click(screen.getByRole('button', { name: 'Copy' }))
+
+      await waitFor(() =>
+        expect(handleSubmitActionMock).toHaveBeenCalledWith(
+          'teamId',
+          expect.objectContaining({ id: '21028' }),
+          true
+        )
+      )
+
+      // The dialog does not switch teams on the translation path...
+      expect(updateLastActiveTeamIdMock.result).not.toHaveBeenCalled()
+      expect(handleCloseMenuMock).not.toHaveBeenCalled()
+
+      // ...not even once the consumer closes the dialog on completion — the
+      // consumer is responsible for the success-only switch.
+      rerender(ui(false))
+      expect(updateLastActiveTeamIdMock.result).not.toHaveBeenCalled()
     })
   })
 
@@ -691,7 +855,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>

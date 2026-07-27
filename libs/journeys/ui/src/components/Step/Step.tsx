@@ -8,11 +8,15 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { StepViewEventCreateInput } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
-import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
-import { getStepHeading } from '../../libs/getStepHeading'
+import {
+  getStepHeading,
+  isActiveBlockOrDescendant,
+  useBlocks
+} from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider/JourneyProvider'
 import {
   JourneyPlausibleEvents,
+  fireCaptureEvent,
   keyify,
   templateKeyify
 } from '../../libs/plausibleHelpers'
@@ -48,12 +52,12 @@ export function Step({
     StepViewEventCreateVariables
   >(STEP_VIEW_EVENT_CREATE)
   const plausible = usePlausible<JourneyPlausibleEvents>()
-  const { variant, journey } = useJourney()
+  const { renderMode, journey } = useJourney()
   const { treeBlocks } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
 
   const activeJourneyStep =
-    (variant === 'default' || variant === 'embed') &&
+    (renderMode === 'default' || renderMode === 'embed') &&
     isActiveBlockOrDescendant(blockId)
 
   const stepHeading = getStepHeading(blockId, children, treeBlocks, t)
@@ -73,10 +77,15 @@ export function Step({
         }
       })
       if (journey != null) {
+        // Append the query string directly (no leading slash). A leading slash
+        // here produced a trailing-slash pathname (`.../{blockId}/?utm=...`),
+        // which Plausible records as a separate page from `.../{blockId}`,
+        // splitting a single step's traffic across two pages. See NES analytics
+        // trailing-slash bug.
         const search =
           window.location.search === '' || window.location.search == null
             ? ''
-            : `/${window.location.search}`
+            : window.location.search
         const key = keyify({
           stepId: input.blockId,
           event: 'pageview',
@@ -99,26 +108,16 @@ export function Step({
           children[0]?.__typename === 'CardBlock'
             ? children[0].eventLabel
             : null
-        if (eventLabel != null) {
-          const eventLabelKey = keyify({
-            stepId: input.blockId,
-            event: eventLabel,
-            blockId: input.blockId,
-            journeyId: journey?.id
-          })
-          plausible(eventLabel, {
-            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
-            props: {
-              ...input,
-              key: eventLabelKey,
-              simpleKey: eventLabelKey,
-              templateKey: templateKeyify({
-                event: eventLabel,
-                journeyId: journey?.id
-              })
-            }
-          })
-        }
+        // Fire the registered Capture goal (e.g. christDecisionCapture) instead of
+        // the raw event label so card conversions are counted in the Plausible
+        // dashboard, matching how buttons/videos/radio questions report captures.
+        fireCaptureEvent(plausible, eventLabel, {
+          u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+          input,
+          stepId: input.blockId,
+          blockId: input.blockId,
+          journeyId: journey?.id
+        })
       }
       sendGTMEvent({
         event: 'step_view',
@@ -130,7 +129,7 @@ export function Step({
   }, [
     blockId,
     stepViewEventCreate,
-    variant,
+    renderMode,
     heading,
     activeJourneyStep,
     wrappers,

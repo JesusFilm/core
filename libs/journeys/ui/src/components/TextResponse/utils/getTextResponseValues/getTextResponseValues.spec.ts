@@ -41,7 +41,7 @@ describe('getTextResponseValues', () => {
     }
   ]
 
-  it('returns input strings unchanged for admin variant and journey is a template', () => {
+  it('returns input strings unchanged in admin render mode and journey is a template', () => {
     const input: TextResponseStrings = {
       label: '{{ name }}',
       placeholder: '{{ title }}',
@@ -57,7 +57,7 @@ describe('getTextResponseValues', () => {
     expect(result).toEqual(input)
   })
 
-  it('prefers defaultValue for default variant (end-user rendering)', () => {
+  it('prefers defaultValue in default render mode (end-user rendering)', () => {
     const input: TextResponseStrings = {
       label: '{{ name }}',
       placeholder: '{{ title }}',
@@ -69,7 +69,7 @@ describe('getTextResponseValues', () => {
     expect(result.hint).toBe('{{ unknown }}')
   })
 
-  it('prefers defaultValue for embed variant (end-user rendering)', () => {
+  it('prefers defaultValue in embed render mode (end-user rendering)', () => {
     const input: TextResponseStrings = {
       label: '  {{ name }}  ',
       placeholder: '{{ title: CTO }}',
@@ -81,7 +81,7 @@ describe('getTextResponseValues', () => {
     expect(result.hint).toBe('Some Default')
   })
 
-  it('replaces custom fields within mixed strings using defaultValue for default variant', () => {
+  it('replaces custom fields within mixed strings using defaultValue in default render mode', () => {
     const input: TextResponseStrings = {
       label: 'Hello {{ name }}!',
       placeholder: 'name',

@@ -79,7 +79,7 @@ export default function AddAudioLanguageDialog(): ReactElement {
   )
 
   const returnUrl = `/videos/${videoId}/audio`
-  const handleSubmit = async (values: FormikValues): Promise<void> => {
+  const startDialogUpload = async (values: FormikValues): Promise<void> => {
     if (values.language == null || values.file == null) return
     const videoSlug = variantsData.adminVideo.slug
     if (!videoSlug) return
@@ -99,9 +99,13 @@ export default function AddAudioLanguageDialog(): ReactElement {
     )
   }
 
-  const isUploadInProgress = uploadState.isUploading || uploadState.isProcessing
+  const handleSubmit = async (values: FormikValues): Promise<void> => {
+    await startDialogUpload(values)
+  }
+
+  const isUploadInProgress = uploadState.isUploading
   const handleDialogClose = (): void => {
-    // Don't close the dialog if upload is in progress
+    // Don't close the dialog while the browser is still transferring the file.
     if (isUploadInProgress) {
       return
     }
@@ -176,7 +180,7 @@ export default function AddAudioLanguageDialog(): ReactElement {
                     languages={availableLanguages}
                     loading={languagesLoading}
                     disabled={isUploadInProgress}
-                    value={values.language ?? undefined}
+                    value={values.language ?? null}
                     renderInput={(params) => (
                       <TextField
                         {...params}

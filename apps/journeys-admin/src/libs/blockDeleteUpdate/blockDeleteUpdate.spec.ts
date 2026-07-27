@@ -169,7 +169,7 @@ describe('blockDeleteUpdate', () => {
       'VideoBlock:videoId': { ...video },
       'ImageBlock:imageId': { ...image }
     })
-    blockDeleteUpdate(video, response, cache, journey.id)
+    blockDeleteUpdate(cache, journey.id, video, response)
     const extractedCache = cache.extract()
     expect(extractedCache['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'CardBlock:cardId' },
@@ -231,7 +231,7 @@ describe('blockDeleteUpdate', () => {
         children: []
       }
     })
-    blockDeleteUpdate(step1, response, cache, journey.id)
+    blockDeleteUpdate(cache, journey.id, step1, response)
     const extractedCache = cache.extract()
     expect(extractedCache['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'StepBlock:step2.id' }

@@ -160,6 +160,7 @@ export function FeaturedRow({
           <Box sx={{ pt: 1 }}>
             <JourneyViewCardActions
               itemId={item.id}
+              customizable={item.customizable}
               itemTitle={item.title}
               itemSlug={item.slug}
               fullWidth="responsive"

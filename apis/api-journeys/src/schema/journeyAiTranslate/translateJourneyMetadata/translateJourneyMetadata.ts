@@ -131,6 +131,7 @@ ${hardenPrompt(value)}`
 export interface JourneyMetadataTranslation {
   analysis: string
   title: string
+  displayTitle: string
   description: string
   seoTitle: string
   seoDescription: string
@@ -148,6 +149,7 @@ export async function translateJourneyMetadata({
   sourceLanguageName,
   targetLanguageName,
   journeyTitle,
+  journeyDisplayTitle,
   journeyDescription,
   seoTitle,
   seoDescription,
@@ -157,12 +159,14 @@ export async function translateJourneyMetadata({
   sourceLanguageName: string
   targetLanguageName: string
   journeyTitle: string
+  journeyDisplayTitle: string | null
   journeyDescription: string | null
   seoTitle: string | null
   seoDescription: string | null
   cardBlocksContent: string[]
   session: OpenrouterFallbackSession
 }): Promise<JourneyMetadataTranslation> {
+  const trimmedDisplayTitle = journeyDisplayTitle?.trim() ?? ''
   const trimmedDescription = journeyDescription?.trim() ?? ''
   const trimmedSeoTitle = seoTitle?.trim() ?? ''
   const trimmedSeoDescription = seoDescription?.trim() ?? ''
@@ -196,51 +200,67 @@ export async function translateJourneyMetadata({
 
   const analysis = analysisOutput.analysis
 
-  const [title, description, translatedSeoTitle, translatedSeoDescription] =
-    await Promise.all([
-      translateJourneyField({
-        fieldName: 'journey title',
-        value: journeyTitle,
-        sourceLanguageName,
-        targetLanguageName,
-        journeyAnalysis: analysis,
-        session
-      }),
-      trimmedDescription
-        ? translateJourneyField({
-            fieldName: 'journey description',
-            value: trimmedDescription,
-            sourceLanguageName,
-            targetLanguageName,
-            journeyAnalysis: analysis,
-            session
-          })
-        : Promise.resolve(''),
-      trimmedSeoTitle
-        ? translateJourneyField({
-            fieldName: 'SEO title',
-            value: trimmedSeoTitle,
-            sourceLanguageName,
-            targetLanguageName,
-            journeyAnalysis: analysis,
-            session
-          })
-        : Promise.resolve(''),
-      trimmedSeoDescription
-        ? translateJourneyField({
-            fieldName: 'SEO description',
-            value: trimmedSeoDescription,
-            sourceLanguageName,
-            targetLanguageName,
-            journeyAnalysis: analysis,
-            session
-          })
-        : Promise.resolve('')
-    ])
+  const [
+    title,
+    displayTitle,
+    description,
+    translatedSeoTitle,
+    translatedSeoDescription
+  ] = await Promise.all([
+    translateJourneyField({
+      fieldName: 'journey title',
+      value: journeyTitle,
+      sourceLanguageName,
+      targetLanguageName,
+      journeyAnalysis: analysis,
+      session
+    }),
+    trimmedDisplayTitle
+      ? translateJourneyField({
+          fieldName: 'journey display title',
+          value: trimmedDisplayTitle,
+          sourceLanguageName,
+          targetLanguageName,
+          journeyAnalysis: analysis,
+          session
+        })
+      : Promise.resolve(''),
+    trimmedDescription
+      ? translateJourneyField({
+          fieldName: 'journey description',
+          value: trimmedDescription,
+          sourceLanguageName,
+          targetLanguageName,
+          journeyAnalysis: analysis,
+          session
+        })
+      : Promise.resolve(''),
+    trimmedSeoTitle
+      ? translateJourneyField({
+          fieldName: 'SEO title',
+          value: trimmedSeoTitle,
+          sourceLanguageName,
+          targetLanguageName,
+          journeyAnalysis: analysis,
+          session
+        })
+      : Promise.resolve(''),
+    trimmedSeoDescription
+      ? translateJourneyField({
+          fieldName: 'SEO description',
+          value: trimmedSeoDescription,
+          sourceLanguageName,
+          targetLanguageName,
+          journeyAnalysis: analysis,
+          session
+        })
+      : Promise.resolve('')
+  ])
 
   return {
     analysis,
     title,
+    displayTitle,
     description,
     seoTitle: translatedSeoTitle,
     seoDescription: translatedSeoDescription

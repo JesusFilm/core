@@ -4,19 +4,22 @@ import { Logger } from 'pino'
 import { prisma } from '@core/prisma/media/client'
 
 import { getVideo } from '../../../schema/mux/video/service'
-import { createOrUpdateVideoVariant } from '../../../schema/videoVariantUpload/service'
+import {
+  createOrUpdateVideoVariant,
+  isUnrecoverableMuxAssetLookupError
+} from '../../../schema/videoVariantUpload/service'
 import { jobName as processVideoDownloadsNowJobName } from '../../processVideoDownloads/config'
 import { queue as processVideoDownloadsQueue } from '../../processVideoDownloads/queue'
 
 const FIVE_DAYS = 5 * 24 * 60 * 60
 
 export interface ProcessVideoUploadJobData {
+  uploadId?: string
   videoId: string
   edition: string
   languageId: string
   version: number
   muxVideoId: string
-  uploadId?: string
   metadata: {
     durationMs: number
     duration: number
@@ -31,12 +34,12 @@ export async function service(
   logger?: Logger
 ): Promise<void> {
   const {
+    uploadId,
     videoId,
     edition,
     languageId,
     version,
     muxVideoId,
-    uploadId,
     metadata
   } = job.data
 
@@ -60,35 +63,88 @@ export async function service(
       return
     }
 
-    const { finalStatus, playbackId } = await waitForMuxVideoCompletion(
+    const durableUpload =
+      uploadId != null
+        ? await prisma.videoVariantUpload.findUnique({
+            where: { id: uploadId },
+            select: { id: true, muxNonStandardInputDetectedAt: true }
+          })
+        : await prisma.videoVariantUpload.findFirst({
+            where: { muxVideoId },
+            select: { id: true, muxNonStandardInputDetectedAt: true }
+          })
+
+    const durableUploadId = uploadId ?? durableUpload?.id
+    const muxCompletion = await waitForMuxVideoCompletion(
       muxVideo,
+      {
+        uploadId: durableUploadId,
+        muxNonStandardInputDetected:
+          durableUpload?.muxNonStandardInputDetectedAt != null
+      },
       logger
     )
+    const { finalStatus, playbackId } = muxCompletion
 
     if (finalStatus === 'ready' && playbackId) {
+      if (durableUploadId != null) {
+        await prisma.videoVariantUpload.update({
+          where: { id: durableUploadId },
+          data: { status: 'muxReady', errorMessage: null }
+        })
+      }
+
       await createOrUpdateVideoVariant({
-        uploadId,
+        uploadId: durableUploadId,
         videoId,
         edition,
         languageId,
         version,
         muxVideoId,
         playbackId,
-        metadata,
+        metadata: {
+          ...metadata,
+          duration:
+            metadata.duration > 0
+              ? metadata.duration
+              : Math.ceil(muxCompletion.duration ?? 0),
+          durationMs:
+            metadata.durationMs > 0
+              ? metadata.durationMs
+              : Math.ceil((muxCompletion.duration ?? 0) * 1000)
+        },
         logger
       })
     }
     if (finalStatus === 'errored') {
+      if (durableUploadId != null) {
+        await prisma.videoVariantUpload.update({
+          where: { id: durableUploadId },
+          data: {
+            status: 'failed',
+            errorMessage: 'Mux video processing errored'
+          }
+        })
+      }
       logger?.error(
-        { videoId, muxVideoId, finalStatus },
+        { videoId, muxVideoId, finalStatus, uploadId: durableUploadId },
         'Video upload processing failed due to Mux error'
       )
       return
     }
 
     if (finalStatus === 'timeout') {
+      if (durableUploadId != null) {
+        await prisma.videoVariantUpload.update({
+          where: { id: durableUploadId },
+          data: {
+            status: 'failed',
+            errorMessage: 'Mux video processing timed out'
+          }
+        })
+      }
       logger?.warn(
-        { videoId, muxVideoId, finalStatus },
+        { videoId, muxVideoId, finalStatus, uploadId: durableUploadId },
         'Video upload processing failed due to timeout'
       )
     }
@@ -103,9 +159,13 @@ export async function service(
 
 async function waitForMuxVideoCompletion(
   muxVideo: { id: string; assetId: string | null },
+  upload: {
+    uploadId?: string
+    muxNonStandardInputDetected: boolean
+  },
   logger?: Logger
 ): Promise<
-  | { finalStatus: 'ready'; playbackId: string }
+  | { finalStatus: 'ready'; playbackId: string; duration: number | null }
   | { finalStatus: 'errored'; playbackId: null }
   | { finalStatus: 'timeout'; playbackId: null }
 > {
@@ -125,6 +185,27 @@ async function waitForMuxVideoCompletion(
   while (attempts < maxAttempts) {
     try {
       const muxVideoAsset = await getVideo(muxVideo.assetId, false)
+
+      if (
+        !upload.muxNonStandardInputDetected &&
+        upload.uploadId != null &&
+        hasNonStandardInputReasons(muxVideoAsset)
+      ) {
+        await prisma.videoVariantUpload.update({
+          where: { id: upload.uploadId },
+          data: { muxNonStandardInputDetectedAt: new Date() }
+        })
+        upload.muxNonStandardInputDetected = true
+
+        logger?.info(
+          {
+            muxVideoId: muxVideo.id,
+            assetId: muxVideo.assetId,
+            uploadId: upload.uploadId
+          },
+          'Mux detected non-standard input for video upload'
+        )
+      }
 
       if (muxVideoAsset.status === 'errored') {
         logger?.error(
@@ -185,7 +266,8 @@ async function waitForMuxVideoCompletion(
         )
         return {
           finalStatus: 'ready',
-          playbackId
+          playbackId,
+          duration: muxVideoAsset.duration ?? null
         }
       }
 
@@ -215,6 +297,11 @@ async function waitForMuxVideoCompletion(
         },
         'Error checking Mux video status'
       )
+
+      if (isUnrecoverableMuxAssetLookupError(error)) {
+        return { finalStatus: 'errored', playbackId: null }
+      }
+
       attempts++
       await new Promise((resolve) => setTimeout(resolve, intervalMs))
     }
@@ -230,4 +317,16 @@ async function waitForMuxVideoCompletion(
     'Mux video processing reached maximum attempts without becoming ready'
   )
   return { finalStatus: 'timeout', playbackId: null }
+}
+
+function hasNonStandardInputReasons(asset: {
+  non_standard_input_reasons?: unknown
+}): boolean {
+  const reasons = asset.non_standard_input_reasons
+
+  return (
+    reasons != null &&
+    typeof reasons === 'object' &&
+    Object.keys(reasons).length > 0
+  )
 }

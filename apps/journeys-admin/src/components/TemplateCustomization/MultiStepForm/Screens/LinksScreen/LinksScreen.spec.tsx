@@ -87,7 +87,7 @@ describe('LinksScreen', () => {
   it('renders first step card preview and chat link form when only chat buttons exist', async () => {
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <LinksScreen handleNext={vi.fn()} />
         </JourneyProvider>
       </MockedProvider>
@@ -104,7 +104,7 @@ describe('LinksScreen', () => {
     const handleNext = vi.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <LinksScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>
@@ -124,7 +124,7 @@ describe('LinksScreen', () => {
     const handleNext = vi.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <LinksScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>
@@ -138,7 +138,7 @@ describe('LinksScreen', () => {
     const handleNext = vi.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <LinksScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>
@@ -306,7 +306,7 @@ describe('LinksScreen', () => {
     render(
       <MockedProvider mocks={[linkUpdateMock, emailUpdateMock, chatUpdateMock]}>
         <JourneyProvider
-          value={{ journey: journeyWithLinks, variant: 'admin' }}
+          value={{ journey: journeyWithLinks, renderMode: 'admin' }}
         >
           <LinksScreen handleNext={handleNext} />
         </JourneyProvider>
@@ -408,7 +408,7 @@ describe('LinksScreen', () => {
     render(
       <MockedProvider mocks={[phoneUpdateMock]}>
         <JourneyProvider
-          value={{ journey: journeyWithPhone, variant: 'admin' }}
+          value={{ journey: journeyWithPhone, renderMode: 'admin' }}
         >
           <LinksScreen handleNext={handleNext} />
         </JourneyProvider>
@@ -471,7 +471,7 @@ describe('LinksScreen', () => {
                 }
               ]
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <LinksScreen handleNext={vi.fn()} />
@@ -532,7 +532,7 @@ describe('LinksScreen', () => {
 
     render(
       <MockedProvider mocks={[platformUpdateMock]}>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <LinksScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>

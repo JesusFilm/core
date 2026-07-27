@@ -188,11 +188,12 @@ export enum Service {
 }
 
 /**
- * Discriminator for the media attached to a TemplateGalleryPage. Determines which underlying fields are populated.
+ * Active selector for the media attached to a TemplateGalleryPage: which payload renders. Both payload slots may stay populated regardless of this value, so switching never discards a payload.
  */
 export enum TemplateGalleryPageMediaType {
   link = "link",
   mux = "mux",
+  none = "none",
 }
 
 export enum TextResponseType {

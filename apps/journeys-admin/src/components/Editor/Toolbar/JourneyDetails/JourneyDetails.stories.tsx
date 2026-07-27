@@ -70,7 +70,7 @@ const JourneyDetailsComponent = ({
             'Some extra long description where it will cause ellipsis to appear I hope this is long enough',
           template
         },
-        variant: 'admin'
+        renderMode: 'admin'
       }}
     >
       <Box

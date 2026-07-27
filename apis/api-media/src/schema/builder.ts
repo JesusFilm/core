@@ -54,11 +54,13 @@ export const builder = new SchemaBuilder<{
     isAuthenticated: boolean
     isAnonymous: boolean
     isPublisher: boolean
+    isYoutubeAdmin: boolean
   }
   AuthContexts: {
     isAuthenticated: Extract<Context, { type: 'authenticated' }>
     isAnonymous: Extract<Context, { type: 'authenticated' }>
     isPublisher: Extract<Context, { type: 'authenticated' }>
+    isYoutubeAdmin: Extract<Context, { type: 'authenticated' }>
     isValidInterop: Extract<Context, { type: 'interop' }>
   }
   PrismaTypes: PrismaTypes
@@ -93,6 +95,7 @@ export const builder = new SchemaBuilder<{
             isAuthenticated: context.user.email != null,
             isAnonymous: context.user.email == null,
             isPublisher: context.currentRoles.includes('publisher'),
+            isYoutubeAdmin: context.currentRoles.includes('youtubeAdmin'),
             isValidInterop: false
           }
         case 'interop':
@@ -100,6 +103,7 @@ export const builder = new SchemaBuilder<{
             isAuthenticated: false,
             isAnonymous: false,
             isPublisher: false,
+            isYoutubeAdmin: false,
             isValidInterop: true
           }
         default:
@@ -107,6 +111,7 @@ export const builder = new SchemaBuilder<{
             isAuthenticated: false,
             isAnonymous: false,
             isPublisher: false,
+            isYoutubeAdmin: false,
             isValidInterop: false
           }
       }

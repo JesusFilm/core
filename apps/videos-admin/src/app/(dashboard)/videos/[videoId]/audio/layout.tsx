@@ -16,13 +16,18 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
 
 import { PublishedChip } from '../../../../../components/PublishedChip'
-import { Section } from '../../../../../components/Section'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
+
+import {
+  IncompleteVideoVariantUploadItems,
+  type VideoVariantUploadRow,
+  incompleteUploadStatuses
+} from './_IncompleteVideoVariantUploadItems'
 
 const GET_ADMIN_VIDEO_VARIANTS = graphql(`
   query GetAdminVideoVariants($id: ID!, $languageId: ID) {
@@ -45,14 +50,62 @@ const GET_ADMIN_VIDEO_VARIANTS = graphql(`
   }
 `)
 
-const UPDATE_VIDEO_VARIANT = graphql(`
-  mutation UpdateVideoVariant($input: VideoVariantUpdateInput!) {
-    videoVariantUpdate(input: $input) {
+const GET_VIDEO_VARIANT_UPLOADS = graphql(`
+  query GetVideoVariantUploads(
+    $input: VideoVariantUploadsFilter
+    $limit: Int
+    $languageId: ID
+  ) {
+    videoVariantUploads(input: $input, limit: $limit) {
       id
-      published
+      source
+      sourceKey
+      status
+      videoId
+      languageId
+      language {
+        id
+        name(languageId: $languageId) {
+          value
+        }
+      }
+      edition
+      originalFilename
+      contentType
+      contentLength
+      errorMessage
+      r2AssetId
+      muxVideoId
+      muxNonStandardInputDetectedAt
+      videoVariantId
+      updatedAt
+      createdAt
     }
   }
 `)
+
+const RESUME_VIDEO_VARIANT_UPLOAD = graphql(`
+  mutation ResumeVideoVariantUpload(
+    $id: ID!
+    $downloadable: Boolean
+    $maxResolution: MaxResolutionTier
+  ) {
+    videoVariantUploadResume(
+      id: $id
+      downloadable: $downloadable
+      maxResolution: $maxResolution
+    ) {
+      id
+      status
+      errorMessage
+      muxVideoId
+      muxNonStandardInputDetectedAt
+      videoVariantId
+      updatedAt
+    }
+  }
+`)
+
 export default function ClientLayout({
   children
 }: {
@@ -62,17 +115,40 @@ export default function ClientLayout({
   const pathname = usePathname()
   const { enqueueSnackbar } = useSnackbar()
   const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
+  const [resumingUploadId, setResumingUploadId] = useState<string | null>(null)
+  const [isResumeRequestInFlight, setIsResumeRequestInFlight] = useState(false)
   const { videoId } = useParams<{ videoId: string }>()
 
   const { data, loading, refetch } = useQuery(GET_ADMIN_VIDEO_VARIANTS, {
     variables: { id: videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
   })
 
-  const [updateVariant, { loading: isPublishing }] =
-    useMutation(UPDATE_VIDEO_VARIANT)
+  const {
+    data: uploadsData,
+    refetch: refetchUploads,
+    startPolling: startUploadPolling,
+    stopPolling: stopUploadPolling
+  } = useQuery(GET_VIDEO_VARIANT_UPLOADS, {
+    variables: {
+      input: { videoId, statuses: incompleteUploadStatuses },
+      limit: 100,
+      languageId: DEFAULT_VIDEO_LANGUAGE_ID
+    },
+    fetchPolicy: 'cache-and-network'
+  })
+
+  const [resumeVideoVariantUpload] = useMutation(RESUME_VIDEO_VARIANT_UPLOAD)
+
+  const incompleteUploads = useMemo(
+    () => (uploadsData?.videoVariantUploads ?? []) as VideoVariantUploadRow[],
+    [uploadsData?.videoVariantUploads]
+  )
 
   useEffect(() => {
-    if (reloadOnPathChange) void refetch()
+    if (reloadOnPathChange) {
+      void refetch()
+      void refetchUploads()
+    }
     setReloadOnPathChange(
       (pathname?.includes('add') ||
         pathname?.includes('delete') ||
@@ -80,6 +156,50 @@ export default function ClientLayout({
         false
     )
   }, [pathname])
+
+  useEffect(() => {
+    if (incompleteUploads.length > 0 || resumingUploadId != null) {
+      startUploadPolling(3000)
+      return () => stopUploadPolling()
+    }
+
+    stopUploadPolling()
+  }, [
+    incompleteUploads.length,
+    resumingUploadId,
+    startUploadPolling,
+    stopUploadPolling
+  ])
+
+  const completeResumedUpload = useCallback(() => {
+    setResumingUploadId(null)
+    enqueueSnackbar('Audio language restored', { variant: 'success' })
+    void refetch()
+    void refetchUploads()
+  }, [enqueueSnackbar, refetch, refetchUploads])
+
+  useEffect(() => {
+    if (resumingUploadId == null || isResumeRequestInFlight) return
+
+    const upload = incompleteUploads.find((row) => row.id === resumingUploadId)
+    if (upload == null) {
+      completeResumedUpload()
+      return
+    }
+
+    if (upload.status === 'failed') {
+      setResumingUploadId(null)
+      enqueueSnackbar(upload.errorMessage ?? 'Video upload resume failed', {
+        variant: 'error'
+      })
+    }
+  }, [
+    completeResumedUpload,
+    enqueueSnackbar,
+    resumingUploadId,
+    isResumeRequestInFlight,
+    incompleteUploads
+  ])
 
   const handleAddAudioLanguage = useCallback((): void => {
     router.push(`/videos/${videoId}/audio/add`, {
@@ -134,6 +254,52 @@ export default function ClientLayout({
     router.push(`/videos/${videoId}/audio/publishAll`, { scroll: false })
   }, [data?.adminVideo.variants, enqueueSnackbar, router, videoId])
 
+  const handleResumeUpload = useCallback(
+    async (uploadId: string) => {
+      setIsResumeRequestInFlight(true)
+      try {
+        const result = await resumeVideoVariantUpload({
+          variables: {
+            id: uploadId,
+            downloadable: true,
+            maxResolution: 'uhd'
+          }
+        })
+        const upload = result.data?.videoVariantUploadResume
+
+        if (upload?.status === 'variantCreated') {
+          completeResumedUpload()
+          return
+        }
+
+        if (upload?.status === 'failed') {
+          setResumingUploadId(null)
+          enqueueSnackbar(upload.errorMessage ?? 'Video upload resume failed', {
+            variant: 'error'
+          })
+          return
+        }
+
+        setResumingUploadId(uploadId)
+        await refetchUploads()
+      } catch (error) {
+        setResumingUploadId(null)
+        enqueueSnackbar(
+          error instanceof Error ? error.message : 'Video upload resume failed',
+          { variant: 'error' }
+        )
+      } finally {
+        setIsResumeRequestInFlight(false)
+      }
+    },
+    [
+      completeResumedUpload,
+      enqueueSnackbar,
+      refetchUploads,
+      resumeVideoVariantUpload
+    ]
+  )
+
   const renderContent = () => {
     if (loading) {
       return (
@@ -155,7 +321,10 @@ export default function ClientLayout({
       )
     }
 
-    if (!data?.adminVideo.variants || data.adminVideo.variants.length === 0) {
+    if (
+      (!data?.adminVideo.variants || data.adminVideo.variants.length === 0) &&
+      incompleteUploads.length === 0
+    ) {
       return (
         <Box
           sx={{
@@ -177,13 +346,21 @@ export default function ClientLayout({
     return (
       <Box
         sx={{
-          height: 'calc(100% - 60px)',
+          flex: 1,
+          minHeight: 0,
           overflow: 'auto',
           mt: 1
         }}
       >
         <List disablePadding>
-          {data.adminVideo.variants.map((variant) => {
+          <IncompleteVideoVariantUploadItems
+            uploads={incompleteUploads}
+            resumingUploadId={resumingUploadId}
+            isResumeRequestInFlight={isResumeRequestInFlight}
+            onAddAudioLanguage={handleAddAudioLanguage}
+            onResumeUpload={(uploadId) => void handleResumeUpload(uploadId)}
+          />
+          {(data?.adminVideo.variants ?? []).map((variant) => {
             const canPreview =
               variant.published &&
               data?.adminVideo?.published &&
@@ -284,7 +461,9 @@ export default function ClientLayout({
           borderRadius: 1,
           width: '100%',
           p: 2,
-          height: 'calc(100vh - 400px)'
+          height: 'calc(100vh - 260px)',
+          minHeight: 420,
+          maxHeight: 'calc(100vh - 220px)'
         }}
       >
         {/* Custom header with both buttons */}
@@ -319,7 +498,9 @@ export default function ClientLayout({
         </Stack>
 
         {/* Content */}
-        <Box sx={{ flex: 1, overflow: 'auto' }}>{renderContent()}</Box>
+        <Box sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+          {renderContent()}
+        </Box>
       </Stack>
       {children}
     </>

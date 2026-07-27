@@ -23,6 +23,7 @@ import './videoVariantUpload'
 import './tag'
 import './taxonomy'
 import './youtube'
+import './youtubeVideo'
 import './arclightApiKey'
 
 import { builder } from './builder'

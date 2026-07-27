@@ -136,7 +136,7 @@ export function LanguageAutocomplete({
     HTMLDivElement,
     HTMLAttributes<HTMLElement>
   >(function ListboxComponent(props: any, ref): ReactElement {
-    const { children, ...other } = props
+    const { children, ownerState: _ownerState, ...other } = props
     const theme = useTheme()
     const smUp = useMediaQuery(theme.breakpoints.up('sm'), {
       noSsr: true

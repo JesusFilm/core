@@ -40,7 +40,7 @@ export function StepBlockNodeCard({
     bgImage,
     hasMultipleActions,
     priorityImage
-  } = getCardMetadata(card)
+  } = getCardMetadata(card, t)
 
   const resolvedTitle = useGetValueFromJourneyCustomizationString(title)
   const resolvedSubtitle = useGetValueFromJourneyCustomizationString(subtitle)
