@@ -11,6 +11,8 @@ describe('user', () => {
     }
   })
 
+  const publicClient = getClient()
+
   const VIDEO_ROLES = graphql(`
     query VideoRoles {
       _entities(
@@ -54,6 +56,16 @@ describe('user', () => {
     const data = await authClient({
       document: VIDEO_ROLES
     })
+    expect(data).toHaveProperty('data._entities[0].mediaUserRoles', [])
+  })
+
+  it('should return no media roles for an unauthenticated request', async () => {
+    // Exercises the context.type !== 'authenticated' fallback: no auth context
+    // means no currentRoles, so the resolver returns [] without a DB lookup.
+    const data = await publicClient({
+      document: VIDEO_ROLES
+    })
+    expect(prismaMock.userMediaRole.findUnique).not.toHaveBeenCalled()
     expect(data).toHaveProperty('data._entities[0].mediaUserRoles', [])
   })
 })
