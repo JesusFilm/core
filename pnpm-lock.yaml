@@ -562,9 +562,6 @@ importers:
       stylis-plugin-rtl:
         specifier: ^2.1.1
         version: 2.1.1(stylis@4.2.0)
-      subscriptions-transport-ws:
-        specifier: ^0.11.0
-        version: 0.11.0(graphql@16.10.0)
       swiper:
         specifier: ^12.0.0
         version: 12.1.4
@@ -583,9 +580,6 @@ importers:
       tw-animate-css:
         specifier: ^1.3.4
         version: 1.3.7
-      ua-parser-js:
-        specifier: ^1.0.33
-        version: 1.0.41
       unsplash-js:
         specifier: ^7.0.19
         version: 7.0.20
@@ -809,9 +803,6 @@ importers:
       '@types/stylis':
         specifier: ^4.2.0
         version: 4.2.7
-      '@types/ua-parser-js':
-        specifier: ^0.7.37
-        version: 0.7.39
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
@@ -11253,9 +11244,6 @@ packages:
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
-
-  '@types/ua-parser-js@0.7.39':
-    resolution: {integrity: sha512-P/oDfpofrdtF5xw433SPALpdSchtJmY7nsJItf8h3KXqOslkbySh8zq4dSWXH2oTjRvJ5PczVEoCZPow6GicLg==}
 
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
@@ -37193,8 +37181,6 @@ snapshots:
 
   '@types/trusted-types@2.0.7': {}
 
-  '@types/ua-parser-js@0.7.39': {}
-
   '@types/unist@2.0.11': {}
 
   '@types/unist@3.0.3': {}
@@ -39063,7 +39049,8 @@ snapshots:
       babel-plugin-jest-hoist: 30.2.0
       babel-preset-current-node-syntax: 1.2.0(@babel/core@7.29.0)
 
-  backo2@1.0.2: {}
+  backo2@1.0.2:
+    optional: true
 
   bail@2.0.2: {}
 
@@ -41940,7 +41927,8 @@ snapshots:
 
   event-target-shim@6.0.2: {}
 
-  eventemitter3@3.1.2: {}
+  eventemitter3@3.1.2:
+    optional: true
 
   eventemitter3@4.0.7: {}
 
@@ -44001,7 +43989,8 @@ snapshots:
       html-escaper: 2.0.2
       istanbul-lib-report: 3.0.1
 
-  iterall@1.3.0: {}
+  iterall@1.3.0:
+    optional: true
 
   iterator.prototype@1.1.5:
     dependencies:
@@ -50144,6 +50133,7 @@ snapshots:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
+    optional: true
 
   sucrase@3.35.0:
     dependencies:
@@ -50226,7 +50216,8 @@ snapshots:
       react: 19.2.0
       use-sync-external-store: 1.5.0(react@19.2.0)
 
-  symbol-observable@1.2.0: {}
+  symbol-observable@1.2.0:
+    optional: true
 
   symbol-observable@4.0.0: {}
 
