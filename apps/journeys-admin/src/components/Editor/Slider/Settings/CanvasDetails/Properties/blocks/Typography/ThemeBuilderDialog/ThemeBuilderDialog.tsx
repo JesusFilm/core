@@ -217,7 +217,9 @@ export function ThemeBuilderDialog({
       }}
       slotProps={{ titleButton: { disabled: saving } }}
       dialogActionChildren={
-        <Stack direction="row" justifyContent="flex-end" gap={2}>
+        // gap rather than margin: StyledDialog zeroes marginLeft on non-first
+        // DialogActions children, so margin-based spacing collapses here
+        <Stack direction="row" gap={2}>
           <Button
             variant="outlined"
             color="secondary"
@@ -230,6 +232,7 @@ export function ThemeBuilderDialog({
             variant="contained"
             color="primary"
             onClick={handleSubmit}
+            loading={saving}
             disabled={saving}
           >
             {t('Confirm')}
