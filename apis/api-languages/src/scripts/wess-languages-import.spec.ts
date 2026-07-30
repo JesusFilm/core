@@ -2,7 +2,7 @@ import {
   extractWessRowArray,
   normalizeLanguageSlugBase,
   normalizeWessLanguageRow
-} from './wess-languages-import'
+} from './wess-language-parsers'
 
 describe('extractWessRowArray', () => {
   const row = { id: '529', name: 'English' }

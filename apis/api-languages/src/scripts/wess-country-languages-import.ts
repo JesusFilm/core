@@ -1,8 +1,10 @@
-import { prisma } from '@core/prisma/languages/client'
+import { Prisma, prisma } from '@core/prisma/languages/client'
 
 import {
   type WessRawRow,
+  createWessImportLogger,
   extractWessRowArray as extractWessRowArrayShared,
+  fetchWessWithTimeout,
   parseWessResponseBody,
   readNumberField,
   readRequiredEnv,
@@ -33,9 +35,7 @@ const WESS_IMPORT_PROGRESS_LOG_EVERY = 2500
  */
 const SENTINEL_SPEAKERS_THRESHOLD = 400_000_000
 
-const log = (message: string): void => {
-  console.log(`[wess-country-languages-import] ${message}`)
-}
+const log = createWessImportLogger('country-languages')
 
 interface WessCountryLanguageRow {
   languageId: string
@@ -113,9 +113,9 @@ async function fetchWessQuery(
   const url = new URL(WESS_ENDPOINT_PATH, WESS_API_BASE_URL)
   url.searchParams.set('QueryId', queryId)
 
-  log(`Fetching ${label} (QueryId=${queryId})…`)
+  log.info(`Fetching ${label} (QueryId=${queryId})…`)
 
-  const response = await fetch(url.toString(), {
+  const response = await fetchWessWithTimeout(url.toString(), {
     method: 'GET',
     headers: { token }
   })
@@ -130,7 +130,7 @@ async function fetchWessQuery(
     )
   }
 
-  log(
+  log.info(
     `${label}: HTTP ${response.status} (${bodyText.length.toLocaleString()} chars)`
   )
   return parseWessResponseBody(bodyText)
@@ -145,7 +145,12 @@ async function fetchGeoNoToCountryIdMap(): Promise<Map<number, string>> {
     WESS_COUNTRIES_QUERY_ID,
     'countries (for GEO_NO map)'
   )
-  const rows = extractWessRowArray(payload)
+  const rows = extractWessRowArrayShared(
+    payload,
+    (row) =>
+      readNumberField(row, WESS_GEO_NO_KEYS) != null &&
+      readStringField(row, WESS_COUNTRY_CODE_KEYS) != null
+  )
   const map = new Map<number, string>()
 
   for (const row of rows) {
@@ -159,7 +164,7 @@ async function fetchGeoNoToCountryIdMap(): Promise<Map<number, string>> {
     map.set(geoNo, countryCode)
   }
 
-  log(`Built GEO_NO map with ${map.size.toLocaleString()} entries`)
+  log.info(`Built GEO_NO map with ${map.size.toLocaleString()} entries`)
   return map
 }
 
@@ -173,7 +178,7 @@ async function fetchWessCountryLanguages(): Promise<WessCountryLanguageRow[]> {
     .map(normalizeWessCountryLanguageRow)
     .filter((row): row is WessCountryLanguageRow => row != null)
 
-  log(
+  log.info(
     `Normalized ${normalized.length.toLocaleString()} country-language row(s) from ${rawRows.length.toLocaleString()} raw row(s)`
   )
 
@@ -186,6 +191,14 @@ type UpsertOutcome =
   | 'unchanged'
   | 'preserved-sentinel'
   | 'preserved-nonzero'
+
+function isPrismaForeignKeyViolation(
+  error: unknown
+): error is Prisma.PrismaClientKnownRequestError {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003'
+  )
+}
 
 /**
  * WESS QueryId 155 returns ~439 duplicate `(LAN_NO, GEO_NO)` keys with differing
@@ -259,7 +272,7 @@ async function upsertCountryLanguage(
   if (row.speakers === 0 && existing.speakers > 0) {
     return 'preserved-nonzero'
   }
-  if (existing.speakers === row.speakers) {
+  if (!shouldUpdateSpeakers(existing.speakers, row.speakers)) {
     return 'unchanged'
   }
 
@@ -284,7 +297,7 @@ async function upsertCountryLanguage(
  * calls `process.exit` and throws on failure so the caller can handle the error.
  */
 export async function runWessCountryLanguagesImport(): Promise<number> {
-  log('Starting (this can take a while over HTTP and per-row DB upserts)…')
+  log.info('Starting (this can take a while over HTTP and per-row DB upserts)…')
 
   const geoNoMap = await fetchGeoNoToCountryIdMap()
   const rawRows = await fetchWessCountryLanguages()
@@ -292,7 +305,7 @@ export async function runWessCountryLanguagesImport(): Promise<number> {
   const dedupedRows = dedupeByMaxSpeakers(rawRows)
   const dedupCollapsed = rawRows.length - dedupedRows.length
   if (dedupCollapsed > 0) {
-    log(
+    log.info(
       `Deduplicated ${rawRows.length.toLocaleString()} → ${dedupedRows.length.toLocaleString()} rows (${dedupCollapsed.toLocaleString()} duplicate (LAN_NO, GEO_NO) keys collapsed via MAX speakers)`
     )
   }
@@ -314,13 +327,13 @@ export async function runWessCountryLanguagesImport(): Promise<number> {
   }
 
   if (unresolved > 0) {
-    log(
+    log.info(
       `Skipped ${unresolved.toLocaleString()} row(s) with no matching GEO_NO in QueryId 156`
     )
   }
 
   const total = resolved.length
-  log(
+  log.info(
     `Database: upserting ${total.toLocaleString()} country-language(s) (progress every ${WESS_IMPORT_PROGRESS_LOG_EVERY.toLocaleString()} rows)…`
   )
 
@@ -336,24 +349,32 @@ export async function runWessCountryLanguagesImport(): Promise<number> {
   for (let i = 0; i < total; i++) {
     const n = i + 1
     if (n === 1 || n === total || n % WESS_IMPORT_PROGRESS_LOG_EVERY === 0) {
-      log(`Upsert ${n.toLocaleString()}/${total.toLocaleString()}…`)
+      log.info(`Upsert ${n.toLocaleString()}/${total.toLocaleString()}…`)
     }
     try {
       const outcome = await upsertCountryLanguage(resolved[i])
       outcomes[outcome] += 1
     } catch (error) {
-      // Foreign-key violation: language id not present in `Language` (e.g.
-      // a brand-new WESS language not yet imported). Log and continue.
-      fkSkipped += 1
-      const reason = error instanceof Error ? error.message : String(error)
-      log(
-        `FK-skipped ${resolved[i].languageId}/${resolved[i].countryId}: ${reason}`
-      )
+      if (isPrismaForeignKeyViolation(error)) {
+        // Foreign-key violation: language id not present in `Language` (e.g.
+        // a brand-new WESS language not yet imported). Log and continue.
+        fkSkipped += 1
+        log.warn(
+          {
+            languageId: resolved[i].languageId,
+            countryId: resolved[i].countryId,
+            reason: error.message
+          },
+          'FK-skipped country-language row'
+        )
+        continue
+      }
+      throw error
     }
   }
 
   if (resolved.length > 0) {
-    log('Updating ImportTimes (wessCountryLanguageImport)…')
+    log.info('Updating ImportTimes (wessCountryLanguageImport)…')
     await prisma.importTimes.upsert({
       where: { modelName: 'wessCountryLanguageImport' },
       update: { lastImport: new Date() },
@@ -364,7 +385,7 @@ export async function runWessCountryLanguagesImport(): Promise<number> {
     })
   }
 
-  log(
+  log.info(
     `Finished: ${outcomes.created.toLocaleString()} created, ${outcomes.updated.toLocaleString()} updated, ${outcomes.unchanged.toLocaleString()} unchanged, ${outcomes['preserved-sentinel'].toLocaleString()} sentinel-preserved, ${outcomes['preserved-nonzero'].toLocaleString()} nonzero-preserved, ${fkSkipped.toLocaleString()} FK-skipped, ${unresolved.toLocaleString()} GEO_NO-skipped of ${rawRows.length.toLocaleString()} raw row(s).`
   )
   return total

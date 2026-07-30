@@ -17,6 +17,12 @@ vi.mock('../../scripts/wess-countries-import', () => ({
 vi.mock('../../scripts/wess-country-languages-import', () => ({
   runWessCountryLanguagesImport: vi.fn()
 }))
+vi.mock('../../scripts/wess-import-lock', async () => {
+  const actual = await vi.importActual<
+    typeof import('../../scripts/wess-import-lock')
+  >('../../scripts/wess-import-lock')
+  return actual
+})
 
 const WESS_IMPORT_MUTATION = parse(`
   mutation WessImport {
@@ -87,5 +93,33 @@ describe('wessImport', () => {
 
     expect(runWessLanguagesImport).not.toHaveBeenCalled()
     expect(data).toHaveProperty('errors')
+  })
+
+  it('rejects a second concurrent import while one is in progress', async () => {
+    mockPublisher()
+
+    let releaseFirstImport: (() => void) | undefined
+    const firstImportGate = new Promise<void>((resolve) => {
+      releaseFirstImport = resolve
+    })
+
+    vi.mocked(runWessLanguagesImport)
+      .mockReset()
+      .mockImplementationOnce(async () => {
+        await firstImportGate
+        return 10
+      })
+
+    const first = authClient({ document: WESS_IMPORT_MUTATION })
+    await Promise.resolve()
+    const second = await authClient({ document: WESS_IMPORT_MUTATION })
+
+    expect(second).toHaveProperty('errors')
+    expect(runWessLanguagesImport).toHaveBeenCalledTimes(1)
+
+    releaseFirstImport?.()
+    await first
+
+    expect(runWessLanguagesImport).toHaveBeenCalledTimes(1)
   })
 })
