@@ -1,17 +1,17 @@
 import { prisma } from '@core/prisma/languages/client'
 
 import {
-  type WessLanguageRow,
-  extractWessRowArray,
-  normalizeLanguageSlugBase,
-  normalizeWessLanguageRow
-} from './wess-language-parsers'
-import {
   createWessImportLogger,
   fetchWessWithTimeout,
   parseWessResponseBody,
   readRequiredEnv
 } from './wess-import-utils'
+import {
+  type WessLanguageRow,
+  extractWessRowArray,
+  normalizeLanguageSlugBase,
+  normalizeWessLanguageRow
+} from './wess-language-parsers'
 
 export {
   extractWessRowArray,
