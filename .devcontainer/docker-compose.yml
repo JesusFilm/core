@@ -66,6 +66,7 @@ services:
     # Use "forwardPorts" in **devcontainer.json** to forward an app port locally.
     # (Adding the "ports" property to this file will not forward from a Codespace.)
     environment:
+      CODEX_HOME: /home/node/.codex
       KUBECONFIG: /workspaces/core/.kube/config
       PGHOST: db
       PGPASSWORD: postgres

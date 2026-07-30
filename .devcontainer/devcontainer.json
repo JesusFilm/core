@@ -28,12 +28,27 @@
   // Forward Claude Code auth tokens from host environment
   "remoteEnv": {
     "CLAUDE_CODE_OAUTH_TOKEN": "${localEnv:CLAUDE_CODE_OAUTH_TOKEN:}",
-    "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY:}"
+    "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY:}",
+    "CODEX_HOME": "/home/node/.codex"
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  // 9747 is the port for the NX MCP server
-  "forwardPorts": [9747],
+  // 9747 is the port for the NX MCP server. 1455/1457 are Codex OAuth loopback
+  // callback ports.
+  "forwardPorts": [9747, 1455, 1457],
+  "portsAttributes": {
+    "1455": {
+      "label": "Codex login callback",
+      "onAutoForward": "notify"
+    },
+    "1457": {
+      "label": "Codex login fallback callback",
+      "onAutoForward": "notify"
+    },
+    "9747": {
+      "label": "NX MCP server"
+    }
+  },
 
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "/workspaces/core/.devcontainer/post-create-command.sh",

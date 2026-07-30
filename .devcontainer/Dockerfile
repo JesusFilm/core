@@ -38,8 +38,14 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 # ARG EXTRA_NODE_VERSION=20
 # RUN su node -c "source /usr/local/share/nvm/nvm.sh && nvm install ${EXTRA_NODE_VERSION}"
 
-# install global node modules
-RUN su node -c "npm install -g npm@latest"
+# Keep npm on the latest Node 20-compatible major. npm 12 requires Node 22.22.2
+# or newer and prevents this image from building.
+RUN su node -c "npm install -g npm@10.9.9"
+
+# Install Codex at a stable, NVM-independent path. The devcontainer feature may
+# select a newer Node version at create time, so installing into an NVM version's
+# bin directory would make the CLI disappear when `current` moves.
+RUN npm install -g --prefix /usr/local @openai/codex@0.146.0
 
 # Install Claude Code CLI (as node user so binary lands in /home/node/.local/bin)
 USER node
@@ -59,5 +65,5 @@ RUN curl -fsSL https://get.opentofu.org/install-opentofu.sh -o /tmp/install-open
     && /tmp/install-opentofu.sh --install-method standalone \
     && rm /tmp/install-opentofu.sh
 
-RUN mkdir /home/node/.doppler \
-    && chown -R node /home/node/.doppler
+RUN mkdir /home/node/.codex /home/node/.doppler \
+    && chown -R node /home/node/.codex /home/node/.doppler

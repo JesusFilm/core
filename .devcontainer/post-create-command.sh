@@ -29,6 +29,15 @@ corepack enable && corepack prepare pnpm@10.33.2 --activate
 echo "Installing global CLIs..."
 npm i -g nx foreman apollo graphql
 
+echo "Verifying Codex CLI..."
+export CODEX_HOME="${CODEX_HOME:-/home/node/.codex}"
+mkdir -p "$CODEX_HOME"
+codex --version
+if ! codex login status; then
+  echo "Codex is installed but not authenticated."
+  echo "Run 'codex login --device-auth' in the devcontainer."
+fi
+
 # install all dependencies
 echo "Installing project dependencies..."
 pnpm install
