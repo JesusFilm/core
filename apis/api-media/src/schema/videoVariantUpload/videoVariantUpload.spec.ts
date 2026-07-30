@@ -900,7 +900,10 @@ describe('videoVariantUpload lifecycle API', () => {
       playback_ids: [{ id: 'playback-id' }],
       duration: 11.2
     })
-    prismaMock.video.findUnique.mockResolvedValue({ slug: 'video-slug' } as any)
+    prismaMock.video.findUnique
+      .mockResolvedValueOnce({ slug: 'video-slug' } as any)
+      .mockResolvedValueOnce({ availableLanguages: [] } as any)
+    prismaMock.video.findMany.mockResolvedValue([] as any)
     prismaMock.videoVariant.findFirst.mockResolvedValue({
       id: 'variant-id',
       slug: 'video-slug/en'
@@ -935,6 +938,18 @@ describe('videoVariantUpload lifecycle API', () => {
       id: 'upload-id',
       status: 'variantCreated',
       videoVariantId: 'variant-id'
+    })
+    expect(prismaMock.video.update).toHaveBeenCalledWith({
+      where: { id: 'video-id' },
+      data: { availableLanguages: { set: ['529'] } }
+    })
+    expect(prismaMock.videoVariantUpload.update).toHaveBeenCalledWith({
+      where: { id: 'upload-id' },
+      data: {
+        status: 'variantCreated',
+        videoVariantId: 'variant-id',
+        errorMessage: null
+      }
     })
   })
 
