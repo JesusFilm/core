@@ -1,5 +1,6 @@
 import { prisma } from '@core/prisma/languages/client'
 
+import { withWessImportLock } from './wess-import-lock'
 import {
   type WessRawRow,
   createWessImportLogger,
@@ -224,7 +225,7 @@ export async function runWessCountriesImport(): Promise<number> {
 
 async function main(): Promise<void> {
   try {
-    await runWessCountriesImport()
+    await withWessImportLock(runWessCountriesImport)
     process.exit(0)
   } catch (error) {
     console.error(error)
