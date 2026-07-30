@@ -196,7 +196,8 @@ function isPrismaForeignKeyViolation(
   error: unknown
 ): error is Prisma.PrismaClientKnownRequestError {
   return (
-    error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003'
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === 'P2003'
   )
 }
 
