@@ -3,10 +3,31 @@
  * (`wess-languages-import`, `wess-countries-import`,
  * `wess-country-languages-import`). Only the pieces that are genuinely identical
  * across all three scripts live here; script-specific constants, id-key lists,
- * loggers, normalizers, fetch/upsert logic and CLI bootstrap stay in each script.
+ * normalizers, fetch/upsert logic and CLI bootstrap stay in each script.
  */
 
+import type { Logger } from 'pino'
+
+import { logger as baseLogger } from '../logger'
+
 export type WessRawRow = Record<string, unknown>
+
+/** Per-request timeout for WESS HTTP calls (CLI and GraphQL mutation). */
+export const WESS_REQUEST_TIMEOUT_MS = 120_000
+
+export function createWessImportLogger(scope: string): Logger {
+  return baseLogger.child({ module: 'wess-import', scope })
+}
+
+export async function fetchWessWithTimeout(
+  url: string,
+  init: RequestInit
+): Promise<Response> {
+  return fetch(url, {
+    ...init,
+    signal: AbortSignal.timeout(WESS_REQUEST_TIMEOUT_MS)
+  })
+}
 
 export const WESS_ARRAY_WRAPPER_KEYS = [
   'data',

@@ -1,13 +1,23 @@
 import { prisma } from '@core/prisma/languages/client'
 
 import {
-  type WessRawRow,
-  extractWessRowArray as extractWessRowArrayShared,
+  type WessLanguageRow,
+  extractWessRowArray,
+  normalizeLanguageSlugBase,
+  normalizeWessLanguageRow
+} from './wess-language-parsers'
+import {
+  createWessImportLogger,
+  fetchWessWithTimeout,
   parseWessResponseBody,
-  readBooleanField,
-  readRequiredEnv,
-  readStringField
+  readRequiredEnv
 } from './wess-import-utils'
+
+export {
+  extractWessRowArray,
+  normalizeLanguageSlugBase,
+  normalizeWessLanguageRow
+} from './wess-language-parsers'
 
 /**
  * WESS QueryRunner settings (edit here). The API token must stay in env (`WESS_API_TOKEN`).
@@ -21,104 +31,25 @@ const WESS_ENGLISH_LANGUAGE_ID = '529'
 /** Log upsert progress every N rows (plus first and last). */
 const WESS_IMPORT_PROGRESS_LOG_EVERY = 2500
 
-const log = (message: string): void => {
-  console.log(`[wess-import] ${message}`)
-}
-
-interface WessLanguageRow {
-  id: string
-  name: string | null
-  bcp47: string | null
-  iso3: string | null
-  slug: string | null
-  hasVideos: boolean | null
-}
-
-/** WESS QueryRunner rows often use LAN_NO / LAN_NAME / ISO_CODE instead of id / name / iso3. */
-const WESS_LANGUAGE_ID_KEYS: string[] = [
-  'id',
-  'ID',
-  'languageId',
-  'LanguageId',
-  'LAN_NO',
-  'LanNo',
-  'lan_no'
-]
-
-/**
- * Normalizes one WESS row object into our import shape. Returns null when no language id is present.
- */
-export function normalizeWessLanguageRow(
-  row: WessRawRow
-): WessLanguageRow | null {
-  const id = readStringField(row, WESS_LANGUAGE_ID_KEYS)
-  if (id == null) {
-    return null
-  }
-
-  const name = readStringField(row, [
-    'name',
-    'Name',
-    'languageName',
-    'Language',
-    'LAN_NAME',
-    'LanName',
-    'lan_name'
-  ])
-  const bcp47 = readStringField(
-    row,
-    ['bcp47', 'BCP47', 'languageTag', 'LanguageTag', 'ietf'],
-    { lowercase: true }
-  )
-  const iso3 = readStringField(
-    row,
-    ['iso3', 'ISO3', 'iso_639_3', 'iso6393', 'ISO_CODE', 'IsoCode', 'iso_code'],
-    {
-      lowercase: true
-    }
-  )
-  const slug = readStringField(row, ['slug', 'Slug'])
-  const hasVideos = readBooleanField(row, ['hasVideos', 'HasVideos'])
-
-  return {
-    id,
-    name,
-    bcp47,
-    iso3,
-    slug,
-    hasVideos
-  }
-}
-
-/**
- * WESS GetData often returns JSON wrapped in `{ data: … }` or a tabular
- * `[ [ "col", … ], [ … ] ]` grid. This flattens those shapes into an array of
- * row objects. A bare object counts as a single row when it carries a language id.
- */
-export function extractWessRowArray(payload: unknown): WessRawRow[] {
-  return extractWessRowArrayShared(
-    payload,
-    (row) => readStringField(row, WESS_LANGUAGE_ID_KEYS) != null
-  )
-}
+const log = createWessImportLogger('languages')
 
 async function fetchWessLanguages(): Promise<WessLanguageRow[]> {
   const token = readRequiredEnv('WESS_API_TOKEN')
   const url = new URL(WESS_ENDPOINT_PATH, WESS_API_BASE_URL)
   url.searchParams.set('QueryId', WESS_LANGUAGES_QUERY_ID)
 
-  log(
+  log.info(
     `Step 1/4: requesting WESS GetData (${url.origin}${url.pathname}?QueryId=…)`
   )
 
-  const response = await fetch(url.toString(), {
+  const response = await fetchWessWithTimeout(url.toString(), {
     method: 'GET',
     headers: {
       token
     }
   })
 
-  log(
+  log.info(
     `Step 2/4: HTTP ${response.status} ${response.statusText} — reading response body…`
   )
 
@@ -132,7 +63,7 @@ async function fetchWessLanguages(): Promise<WessLanguageRow[]> {
     )
   }
 
-  log(
+  log.info(
     `Step 3/4: body received (${bodyText.length.toLocaleString()} chars), parsing JSON and rows…`
   )
 
@@ -142,26 +73,11 @@ async function fetchWessLanguages(): Promise<WessLanguageRow[]> {
     .map(normalizeWessLanguageRow)
     .filter((row): row is WessLanguageRow => row != null)
 
-  log(
+  log.info(
     `Step 4/4: normalized ${normalized.length.toLocaleString()} language row(s) from ${rawRows.length.toLocaleString()} raw row(s)`
   )
 
   return normalized
-}
-
-/**
- * Lowercase; spaces, commas, underscores → `-`; other non `[a-z0-9]` runs → `-`;
- * collapse repeated hyphens; trim `-` from ends.
- */
-export function normalizeLanguageSlugBase(raw: string): string {
-  let s = raw.trim().toLowerCase()
-  if (s === '') {
-    return ''
-  }
-  s = s.replace(/[\s,_]+/g, '-')
-  s = s.replace(/[^a-z0-9-]+/g, '-')
-  s = s.replace(/-+/g, '-')
-  return s.replace(/^-+|-+$/g, '')
 }
 
 function pickSlugSourceText(row: WessLanguageRow): string {
@@ -298,24 +214,24 @@ async function upsertLanguage(row: WessLanguageRow): Promise<void> {
  * `process.exit` and throws on failure so the caller can handle the error.
  */
 export async function runWessLanguagesImport(): Promise<number> {
-  log('Starting (this can take a while over HTTP and per-row DB upserts)…')
+  log.info('Starting (this can take a while over HTTP and per-row DB upserts)…')
   const rows = await fetchWessLanguages()
 
   const total = rows.length
-  log(
+  log.info(
     `Database: upserting ${total.toLocaleString()} language(s) (progress every ${WESS_IMPORT_PROGRESS_LOG_EVERY.toLocaleString()} rows)…`
   )
 
   for (let i = 0; i < total; i++) {
     const n = i + 1
     if (n === 1 || n === total || n % WESS_IMPORT_PROGRESS_LOG_EVERY === 0) {
-      log(`Upsert ${n.toLocaleString()}/${total.toLocaleString()}…`)
+      log.info(`Upsert ${n.toLocaleString()}/${total.toLocaleString()}…`)
     }
     await upsertLanguage(rows[i])
   }
 
   if (rows.length > 0) {
-    log('Updating ImportTimes (wessLanguageImport)…')
+    log.info('Updating ImportTimes (wessLanguageImport)…')
     await prisma.importTimes.upsert({
       where: { modelName: 'wessLanguageImport' },
       update: { lastImport: new Date() },
@@ -323,7 +239,7 @@ export async function runWessLanguagesImport(): Promise<number> {
     })
   }
 
-  log(`Finished successfully (${total.toLocaleString()} row(s)).`)
+  log.info(`Finished successfully (${total.toLocaleString()} row(s)).`)
   return total
 }
 
