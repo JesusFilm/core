@@ -1,5 +1,6 @@
 import { prisma } from '@core/prisma/languages/client'
 
+import { withWessImportLock } from './wess-import-lock'
 import {
   createWessImportLogger,
   fetchWessWithTimeout,
@@ -245,7 +246,7 @@ export async function runWessLanguagesImport(): Promise<number> {
 
 async function main(): Promise<void> {
   try {
-    await runWessLanguagesImport()
+    await withWessImportLock(runWessLanguagesImport)
     process.exit(0)
   } catch (error) {
     console.error(error)

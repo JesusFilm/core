@@ -53,10 +53,30 @@ function mockPublisher(): void {
 }
 
 describe('wessImport', () => {
+  let lockHeld = false
+
   beforeEach(() => {
     vi.mocked(runWessLanguagesImport).mockReset().mockResolvedValue(10)
     vi.mocked(runWessCountriesImport).mockReset().mockResolvedValue(5)
     vi.mocked(runWessCountryLanguagesImport).mockReset().mockResolvedValue(20)
+
+    lockHeld = false
+    prismaMock.$transaction.mockImplementation(async (fn) => {
+      const tx = {
+        $queryRaw: vi.fn().mockImplementation(async () => {
+          if (lockHeld) {
+            return [{ pg_try_advisory_lock: false }]
+          }
+          lockHeld = true
+          return [{ pg_try_advisory_lock: true }]
+        }),
+        $executeRaw: vi.fn().mockImplementation(async () => {
+          lockHeld = false
+          return 1
+        })
+      }
+      return fn(tx as never)
+    })
   })
 
   it('runs all three imports in FK-safe order and returns a summary', async () => {
