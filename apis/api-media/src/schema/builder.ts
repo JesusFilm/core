@@ -55,6 +55,7 @@ export const builder = new SchemaBuilder<{
     isAnonymous: boolean
     isPublisher: boolean
     isYoutubeAdmin: boolean
+    isValidInterop: boolean
   }
   AuthContexts: {
     isAuthenticated: Extract<Context, { type: 'authenticated' }>

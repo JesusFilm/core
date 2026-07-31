@@ -6,8 +6,8 @@ import { responseCacheTtlPerSchemaCoordinate } from '../../../yoga'
 import { schema } from '../../schema'
 
 import {
-  buildVideoSubtitleChecksumManifest,
-  type VideoSubtitleChecksumSourceRecord
+  type VideoSubtitleChecksumSourceRecord,
+  buildVideoSubtitleChecksumManifest
 } from './videoSubtitleChecksum'
 
 const MANIFEST_QUERY = parse(`

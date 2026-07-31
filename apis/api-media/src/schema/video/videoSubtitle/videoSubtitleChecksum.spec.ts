@@ -1,9 +1,9 @@
 import {
   VIDEO_SUBTITLE_CHECKSUM_VERSION,
+  type VideoSubtitleChecksumSourceRecord,
   buildVideoSubtitleChecksumManifest,
   serializeVideoSubtitleChecksumBucket,
-  serializeVideoSubtitleChecksumRoot,
-  type VideoSubtitleChecksumSourceRecord
+  serializeVideoSubtitleChecksumRoot
 } from './videoSubtitleChecksum'
 
 const GOLDEN_SOURCE: VideoSubtitleChecksumSourceRecord = {

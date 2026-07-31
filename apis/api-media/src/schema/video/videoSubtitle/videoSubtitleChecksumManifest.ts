@@ -5,11 +5,11 @@ import { prisma } from '@core/prisma/media/client'
 import { builder } from '../../builder'
 
 import {
-  buildVideoSubtitleChecksumManifest,
   type VideoSubtitleChecksumBucket,
   type VideoSubtitleChecksumDetail,
   type VideoSubtitleChecksumManifest,
-  type VideoSubtitleChecksumRecord
+  type VideoSubtitleChecksumRecord,
+  buildVideoSubtitleChecksumManifest
 } from './videoSubtitleChecksum'
 
 const MAX_DETAIL_VIDEO_IDS = 100
