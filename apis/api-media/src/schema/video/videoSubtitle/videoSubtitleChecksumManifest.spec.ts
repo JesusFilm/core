@@ -1,12 +1,14 @@
 import { parse } from 'graphql'
 
+import { getClient } from '../../../../test/client'
+import { prismaMock } from '../../../../test/prismaMock'
+import { responseCacheTtlPerSchemaCoordinate } from '../../../yoga'
+import { schema } from '../../schema'
+
 import {
   buildVideoSubtitleChecksumManifest,
   type VideoSubtitleChecksumSourceRecord
 } from './videoSubtitleChecksum'
-import { schema } from '../../schema'
-import { getClient } from '../../../../test/client'
-import { prismaMock } from '../../../../test/prismaMock'
 
 const MANIFEST_QUERY = parse(`
   query VideoSubtitleChecksumManifest(
@@ -115,6 +117,12 @@ describe('videoSubtitleChecksumManifest', () => {
     else process.env.INTEROP_TOKEN = originalInteropToken
     if (originalNatAddresses == null) delete process.env.NAT_ADDRESSES
     else process.env.NAT_ADDRESSES = originalNatAddresses
+  })
+
+  it('bypasses response caching by schema coordinate', () => {
+    expect(
+      responseCacheTtlPerSchemaCoordinate['Query.videoSubtitleChecksumManifest']
+    ).toBe(0)
   })
 
   it('exposes the exact version 1 manifest SDL and nullability', () => {

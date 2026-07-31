@@ -844,8 +844,21 @@ type Query {
     last: Int
   ): QueryShortLinksConnection!
   userMediaProfile: UserMediaProfile
+
+  """
+  Independently paginated subtitle metadata. These pages do not share the checksum manifest snapshot; use videoSubtitleChecksumManifest details for snapshot-compatible synchronization repair.
+  """
   videoSubtitles(where: VideoSubtitlesFilter, offset: Int, limit: Int): [VideoSubtitle!]!
+
+  """
+  The count at the time this independent query runs. It does not share the checksum manifest snapshot.
+  """
   videoSubtitlesCount(where: VideoSubtitlesFilter): Int!
+
+  """
+  Returns a version 1 subtitle repair manifest and optional details from one authoritative rowset. Pass expectedSnapshot to reject details when Core changed after discovery.
+  """
+  videoSubtitleChecksumManifest(detailsForVideoIds: [ID!], expectedSnapshot: String): VideoSubtitleChecksumManifest!
   videoVariantDownloads(where: VideoVariantDownloadsFilter, offset: Int, limit: Int): [VideoVariantDownload!]!
   videoVariantDownloadsCount(where: VideoVariantDownloadsFilter): Int!
   videoVariant(id: ID!): VideoVariant!
@@ -1416,6 +1429,53 @@ type VideoSubtitle {
   value: String!
   language: Language!
   videoEdition: VideoEdition!
+}
+
+"""
+The count and version 1 checksum for one source video in the authoritative synchronization projection.
+"""
+type VideoSubtitleChecksumBucket {
+  videoId: ID!
+  count: Int!
+  checksum: String!
+}
+
+"""
+Repair metadata for one requested source video, computed from the same database rowset as the manifest.
+"""
+type VideoSubtitleChecksumDetail {
+  videoId: ID!
+  count: Int!
+  checksum: String!
+  subtitles: [VideoSubtitleChecksumRecord!]!
+}
+
+"""
+A source-authoritative version 1 checksum manifest for subtitle synchronization repair metadata. The snapshot, buckets, and requested details share one database statement snapshot; object bytes are outside this contract.
+"""
+type VideoSubtitleChecksumManifest {
+  version: Int!
+  snapshot: String!
+  totalCount: Int!
+  rootChecksum: String!
+  buckets: [VideoSubtitleChecksumBucket!]!
+  details: [VideoSubtitleChecksumDetail!]!
+}
+
+"""
+A version 1 subtitle synchronization record. It covers repair metadata only and does not verify subtitle object bytes.
+"""
+type VideoSubtitleChecksumRecord {
+  id: ID!
+  videoId: ID!
+  languageId: ID!
+  edition: String!
+  primary: Boolean!
+  vttSrc: String
+  vttVersion: Int!
+  srtSrc: String
+  srtVersion: Int!
+  value: String!
 }
 
 input VideoSubtitleCreateInput {

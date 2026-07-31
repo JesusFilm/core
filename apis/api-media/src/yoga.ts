@@ -19,6 +19,12 @@ import { logger } from './logger'
 import { schema } from './schema'
 import { Context } from './schema/builder'
 
+export const responseCacheTtlPerSchemaCoordinate = {
+  'Query.getMyMuxVideo': 0,
+  'Query.getMuxVideo': 0,
+  'Query.videoSubtitleChecksumManifest': 0
+}
+
 export const yoga = createYoga<
   Record<string, unknown>,
   Context & ReturnType<typeof initContextCache>
@@ -90,10 +96,7 @@ export const yoga = createYoga<
             get(request, '_json.extensions.jwt.payload.user_id') == null &&
             request.headers.get('interop-token') == null,
           cache,
-          ttlPerSchemaCoordinate: {
-            'Query.getMyMuxVideo': 0,
-            'Query.getMuxVideo': 0
-          },
+          ttlPerSchemaCoordinate: responseCacheTtlPerSchemaCoordinate,
           ttlPerType: {
             User: 1000
           }
