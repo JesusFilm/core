@@ -152,6 +152,8 @@ export function buildVideoSubtitleChecksumManifest(
   sources: readonly VideoSubtitleChecksumSourceRecord[],
   detailsForVideoIds: readonly string[] = []
 ): VideoSubtitleChecksumManifest {
+  const requestedVideoIds = [...new Set(detailsForVideoIds)].sort(compareUtf8)
+  const requestedVideoIdSet = new Set(requestedVideoIds)
   const sourcesByVideoId = new Map<
     string,
     VideoSubtitleChecksumSourceRecord[]
@@ -173,7 +175,8 @@ export function buildVideoSubtitleChecksumManifest(
     )
     .map(([videoId, videoSources]): VideoSubtitleChecksumBucket => {
       const records = sortChecksumRecords(videoSources)
-      recordsByVideoId.set(videoId, records)
+      if (requestedVideoIdSet.has(videoId))
+        recordsByVideoId.set(videoId, records)
       return {
         videoId,
         count: records.length,
@@ -188,7 +191,6 @@ export function buildVideoSubtitleChecksumManifest(
   const bucketsByVideoId = new Map(
     buckets.map((bucket) => [bucket.videoId, bucket])
   )
-  const requestedVideoIds = [...new Set(detailsForVideoIds)].sort(compareUtf8)
   const details = requestedVideoIds.map(
     (videoId): VideoSubtitleChecksumDetail => {
       const records = recordsByVideoId.get(videoId) ?? []

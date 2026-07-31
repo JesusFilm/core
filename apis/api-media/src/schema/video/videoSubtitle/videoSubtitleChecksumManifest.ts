@@ -105,9 +105,7 @@ builder.queryFields((t) => ({
       _parent,
       { detailsForVideoIds: detailsForVideoIdsInput, expectedSnapshot }
     ) => {
-      const detailsForVideoIds = [
-        ...new Set((detailsForVideoIdsInput ?? []).map(String))
-      ]
+      const detailsForVideoIds = [...new Set(detailsForVideoIdsInput ?? [])]
 
       if (detailsForVideoIds.length > MAX_DETAIL_VIDEO_IDS) {
         throw new GraphQLError(
