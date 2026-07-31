@@ -48,6 +48,8 @@ builder.queryFields((t) => ({
   videoSubtitles: t.prismaField({
     type: ['VideoSubtitle'],
     nullable: false,
+    description:
+      'Independently paginated subtitle metadata. These pages do not share the checksum manifest snapshot; use videoSubtitleChecksumManifest details for snapshot-compatible synchronization repair.',
     args: {
       where: t.arg({ type: VideoSubtitlesFilter, required: false }),
       offset: t.arg.int({ required: false }),
@@ -71,6 +73,8 @@ builder.queryFields((t) => ({
   }),
   videoSubtitlesCount: t.int({
     nullable: false,
+    description:
+      'The count at the time this independent query runs. It does not share the checksum manifest snapshot.',
     args: {
       where: t.arg({ type: VideoSubtitlesFilter, required: false })
     },
