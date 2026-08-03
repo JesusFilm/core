@@ -13,6 +13,9 @@ interface VideoDescriptionProps {
   videoDescription: string
 }
 
+const VIDEO_DESCRIPTION_MAX_LENGTH = 139
+const COLLAPSED_LINE_COUNT = 3
+
 export const ShowMoreButton = ({
   displayMore,
   setDisplayMore
@@ -25,16 +28,17 @@ export const ShowMoreButton = ({
       variant="text"
       size="small"
       sx={{
-        background:
-          'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)',
         color: 'secondary.light',
-        position: displayMore ? 'relative' : 'absolute',
-        bottom: displayMore ? 1.7 : -6,
-        right: displayMore ? 0 : -4,
-        '&:hover': {
-          background:
-            'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)'
-        }
+        alignSelf: 'flex-start',
+        // MUI centres a button label inside a 64px minimum box, which left the
+        // toggle indented from the description text and the language chip.
+        // Start the label instead, and pull back the button's own left padding
+        // so the label is flush with the column while the padding stays as hit
+        // area.
+        minWidth: 0,
+        justifyContent: 'flex-start',
+        ml: '-5px',
+        mt: '-4px'
       }}
       onClick={() => setDisplayMore(!displayMore)}
     >
@@ -48,35 +52,54 @@ export const VideoDescription = ({
 }: VideoDescriptionProps): ReactElement => {
   const [displayMore, setDisplayMore] = useState(false)
 
-  const videoDescriptionMaxLength = 139
+  // Descriptions arrive with blank lines between paragraphs, either as raw
+  // newlines or as escaped carriage returns. Rendering them as one pre-line
+  // block turns each break into a full empty line that cannot be tightened,
+  // so split into real paragraphs and space them with a margin instead.
+  const paragraphs = videoDescription
+    .replace(/&#13;/g, '\n')
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.trim())
+    .filter((paragraph) => paragraph !== '')
+
+  const showToggle = videoDescription.length > VIDEO_DESCRIPTION_MAX_LENGTH
+
   return (
     <Box
-      sx={{
-        height:
-          !displayMore && videoDescription.length > videoDescriptionMaxLength
-            ? '70px'
-            : 'auto',
-        overflow: 'hidden',
-        position: 'relative'
-      }}
+      sx={{ display: 'flex', flexDirection: 'column' }}
       data-testid="VideoDescription"
     >
-      <Typography
-        variant="caption"
-        sx={{
-          position: 'relative',
-          whiteSpace: 'pre-line'
-        }}
+      <Box
+        sx={
+          showToggle && !displayMore
+            ? {
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: COLLAPSED_LINE_COUNT,
+                overflow: 'hidden'
+              }
+            : undefined
+        }
       >
-        {videoDescription.replace(/&#13;/g, '\n')}
-        {videoDescription.length > videoDescriptionMaxLength && displayMore && (
-          <ShowMoreButton
-            displayMore={displayMore}
-            setDisplayMore={setDisplayMore}
-          />
-        )}
-      </Typography>
-      {videoDescription.length > videoDescriptionMaxLength && !displayMore && (
+        {paragraphs.map((paragraph, index) => (
+          <Typography
+            key={index}
+            component="p"
+            variant="caption"
+            sx={{
+              // The admin theme maps caption onto an inline span, which lets
+              // the parent block's line height override the theme's 18px
+              // caption leading. Rendering a block element keeps it.
+              whiteSpace: 'pre-line',
+              mt: index === 0 ? 0 : 3
+            }}
+            data-testid="VideoDescriptionParagraph"
+          >
+            {paragraph}
+          </Typography>
+        ))}
+      </Box>
+      {showToggle && (
         <ShowMoreButton
           displayMore={displayMore}
           setDisplayMore={setDisplayMore}
