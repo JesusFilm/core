@@ -70,6 +70,21 @@ describe('VideoDescription', () => {
     expect(third).toHaveStyle('margin-top: 12px')
   })
 
+  it('should break unbreakable text rather than overflow the drawer', () => {
+    const videoDescription =
+      'Watch the complete film in your own language at https://www.jesusfilm.org/watch/jesus.html/english.html?utm_source=youtube&utm_campaign=description'
+
+    const { getAllByRole } = renderWithTheme(
+      <VideoDescription videoDescription={videoDescription} />
+    )
+
+    // A URL has no spaces, so the browser treats it as one unbreakable word.
+    // Without this it runs past the 328px drawer and gives the settings panel
+    // a horizontal scrollbar — measured at +19px in Chromium and +33px in
+    // WebKit. Firefox breaks URLs at slashes on its own and is unaffected.
+    expect(getAllByRole('paragraph')[0]).toHaveStyle('overflow-wrap: anywhere')
+  })
+
   it('should clamp the collapsed description to three lines', () => {
     const { getAllByRole } = renderWithTheme(
       <VideoDescription videoDescription={LONG_DESCRIPTION} />

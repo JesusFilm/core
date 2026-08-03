@@ -91,6 +91,10 @@ export const VideoDescription = ({
               // the parent block's line height override the theme's 18px
               // caption leading. Rendering a block element keeps it.
               whiteSpace: 'pre-line',
+              // Descriptions carry links, and a URL is one unbreakable word.
+              // Nothing clips this column, so without a break it runs past the
+              // drawer and gives the settings panel a horizontal scrollbar.
+              overflowWrap: 'anywhere',
               mt: index === 0 ? 0 : 3
             }}
           >
