@@ -53,7 +53,6 @@ describe('AlgoliaVideoList', () => {
   const originalEnv = process.env
   const mockSearchRefine = vi.fn()
   const mockPublishedRefine = vi.fn()
-  const mockLabelRefine = vi.fn()
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -81,13 +80,6 @@ describe('AlgoliaVideoList', () => {
         { label: 'false', value: 'false', count: 1, isRefined: false }
       ],
       refine: mockPublishedRefine
-    } as any)
-    mockUseRefinementList.mockReturnValue({
-      items: [
-        { label: 'series', value: 'series', count: 2, isRefined: false },
-        { label: 'collection', value: 'collection', count: 5, isRefined: false }
-      ],
-      refine: mockLabelRefine
     } as any)
   })
 
@@ -148,7 +140,7 @@ describe('AlgoliaVideoList', () => {
     ).toBeInTheDocument()
   })
 
-  it('requests one large algolia result set without pagination refinement', () => {
+  it('requests one large algolia result set without new facet or pagination refinement', () => {
     render(<AlgoliaVideoList />)
 
     const configureProps = mockConfigure.mock.calls[0]?.[0] as
@@ -168,15 +160,10 @@ describe('AlgoliaVideoList', () => {
         hitsPerPage: 1000
       })
     )
+    // `published` is already in the index's attributesForFaceting (arclight
+    // filters on it), so this component adds no new faceting requirement.
+    expect(mockUseRefinementList).not.toHaveBeenCalled()
     expect(mockUsePagination).not.toHaveBeenCalled()
-  })
-
-  it('refines the subType facet for the label filter', () => {
-    render(<AlgoliaVideoList />)
-
-    expect(mockUseRefinementList).toHaveBeenCalledWith(
-      expect.objectContaining({ attribute: 'subType' })
-    )
   })
 
   it('renders mapped hits and published draft chips', () => {
@@ -285,59 +272,6 @@ describe('AlgoliaVideoList', () => {
     fireEvent.click(screen.getByRole('option', { name: 'Both (3)' }))
 
     expect(mockPublishedRefine).toHaveBeenCalledWith('')
-  })
-
-  it('renders label facet options in canonical order with display names', () => {
-    render(<AlgoliaVideoList />)
-
-    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Label' }))
-
-    const options = screen.getAllByRole('option')
-    expect(options.map((option) => option.textContent)).toEqual([
-      'Collection (5)',
-      'Series (2)'
-    ])
-  })
-
-  it('toggles a label refinement when an option is selected', () => {
-    render(<AlgoliaVideoList />)
-
-    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Label' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Collection (5)' }))
-
-    expect(mockLabelRefine).toHaveBeenCalledWith('collection')
-  })
-
-  it('removes a label refinement when a selected option is deselected', () => {
-    mockUseRefinementList.mockReturnValue({
-      items: [
-        { label: 'collection', value: 'collection', count: 5, isRefined: true }
-      ],
-      refine: mockLabelRefine
-    } as any)
-
-    render(<AlgoliaVideoList />)
-
-    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Label' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Collection (5)' }))
-
-    expect(mockLabelRefine).toHaveBeenCalledWith('collection')
-  })
-
-  it('hides the label filter when the index exposes no facet values', () => {
-    mockUseRefinementList.mockReturnValue({
-      items: [],
-      refine: mockLabelRefine
-    } as any)
-
-    render(<AlgoliaVideoList />)
-
-    expect(
-      screen.queryByRole('combobox', { name: 'Label' })
-    ).not.toBeInTheDocument()
-    expect(
-      screen.getByRole('combobox', { name: 'Published' })
-    ).toBeInTheDocument()
   })
 
   it('hides the published filter when the index exposes no facet values', () => {

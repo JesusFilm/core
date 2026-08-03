@@ -3,10 +3,8 @@
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Checkbox from '@mui/material/Checkbox'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
-import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
@@ -28,12 +26,10 @@ import {
   useHits,
   useInstantSearch,
   useMenu,
-  useRefinementList,
   useSearchBox
 } from 'react-instantsearch'
 
 import { PublishedChip } from '../../../../../components/PublishedChip'
-import { videoLabels } from '../../../../../constants'
 
 interface AlgoliaVideoRecord {
   objectID: string
@@ -104,16 +100,6 @@ function mapAlgoliaHitToRow(hit: AlgoliaVideoRecord): AlgoliaRow {
   }
 }
 
-const videoLabelDisplayNames = new Map(
-  videoLabels.map(({ label, value }) => [value, label])
-)
-
-const videoLabelOrder = videoLabels.map(({ value }) => value)
-
-function getVideoLabelDisplayName(value: string): string {
-  return videoLabelDisplayNames.get(value) ?? value
-}
-
 /**
  * Published state as an Algolia facet rather than a filter over the fetched
  * page, so the counts describe the whole index instead of the current hits.
@@ -156,65 +142,6 @@ function PublishedFilter(): ReactElement | null {
         <MenuItem value="both">Both ({publishedCount + draftCount})</MenuItem>
         <MenuItem value="published">Published ({publishedCount})</MenuItem>
         <MenuItem value="draft">Draft ({draftCount})</MenuItem>
-      </Select>
-    </FormControl>
-  )
-}
-
-/**
- * Multi-select label facet. Renders nothing when the index exposes no
- * `subType` facet values, so the control is absent rather than empty when
- * faceting has not been configured on the index.
- */
-function LabelFilter(): ReactElement | null {
-  const { items, refine } = useRefinementList({
-    attribute: 'subType',
-    limit: videoLabels.length
-  })
-
-  if (items.length === 0) return null
-
-  const sortedItems = [...items].sort(
-    (a, b) =>
-      videoLabelOrder.indexOf(a.value) - videoLabelOrder.indexOf(b.value)
-  )
-  const selectedValues = items
-    .filter(({ isRefined }) => isRefined)
-    .map(({ value }) => value)
-
-  const handleLabelChange = (event: SelectChangeEvent<string[]>): void => {
-    const { value } = event.target
-    const nextValues = typeof value === 'string' ? value.split(',') : value
-
-    const toggled = [
-      ...nextValues.filter((next) => !selectedValues.includes(next)),
-      ...selectedValues.filter((current) => !nextValues.includes(current))
-    ]
-
-    toggled.forEach((item) => refine(item))
-  }
-
-  return (
-    <FormControl size="small" sx={{ minWidth: 220 }}>
-      <InputLabel id="label-filter-label">Label</InputLabel>
-      <Select<string[]>
-        multiple
-        labelId="label-filter-label"
-        label="Label"
-        value={selectedValues}
-        onChange={handleLabelChange}
-        renderValue={(selected) =>
-          selected.map(getVideoLabelDisplayName).join(', ')
-        }
-      >
-        {sortedItems.map(({ value, count, isRefined }) => (
-          <MenuItem key={value} value={value}>
-            <Checkbox checked={isRefined} />
-            <ListItemText
-              primary={`${getVideoLabelDisplayName(value)} (${count})`}
-            />
-          </MenuItem>
-        ))}
       </Select>
     </FormControl>
   )
@@ -277,7 +204,6 @@ function AlgoliaInstantSearchResults(): ReactElement {
           placeholder="Search by ID, title, or description"
           sx={{ flexGrow: 1 }}
         />
-        <LabelFilter />
         <PublishedFilter />
       </Stack>
       {error != null && <Alert severity="error">{error.message}</Alert>}
