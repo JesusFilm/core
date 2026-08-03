@@ -159,8 +159,9 @@ export function LanguageAutocomplete({
 
     const itemCount = itemData.length
     const getRowHeight = (index: number): number => {
-      const option = (itemData[index] as unknown as [unknown, LanguageOption])
-        ?.[1]
+      const option = (
+        itemData[index] as unknown as [unknown, LanguageOption]
+      )?.[1]
       return option?.localName != null && option?.nativeName != null
         ? TWO_LINE_ROW_HEIGHT
         : SINGLE_LINE_ROW_HEIGHT
