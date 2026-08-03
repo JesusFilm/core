@@ -945,7 +945,7 @@ describe('journeyAiTranslateCreate mutation', () => {
     expect(mockStreamText).toHaveBeenCalledTimes(2)
 
     // The retry prompt asks only for the missing hint field.
-    const retryPrompt = (mockStreamText.mock.calls[1][0] as any).messages[1]
+    const retryPrompt = (mockStreamText.mock.calls[1][0] as any).messages[0]
       .content[0].text as string
     expect(retryPrompt).toContain('hint:')
     expect(retryPrompt).not.toContain('label:')
@@ -1047,7 +1047,7 @@ describe('journeyAiTranslateCreate mutation', () => {
     })
 
     // The default is injected into the prompt sent to the model...
-    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[1]
+    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[0]
       .content[0].text as string
     expect(prompt).toContain('label: "Submit"')
 
@@ -1090,7 +1090,7 @@ describe('journeyAiTranslateCreate mutation', () => {
       variables: { input: mockInput }
     })
 
-    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[1]
+    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[0]
       .content[0].text as string
     expect(prompt).toContain('label: "Button"')
 
@@ -1127,7 +1127,7 @@ describe('journeyAiTranslateCreate mutation', () => {
       variables: { input: mockInput }
     })
 
-    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[1]
+    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[0]
       .content[0].text as string
     expect(prompt).toContain('submitLabel: "Submit"')
 
@@ -1165,7 +1165,7 @@ describe('journeyAiTranslateCreate mutation', () => {
       variables: { input: mockInput }
     })
 
-    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[1]
+    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[0]
       .content[0].text as string
     expect(prompt).toContain('label: "Watch now"')
     expect(prompt).not.toContain('label: "Button"')

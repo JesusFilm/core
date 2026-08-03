@@ -62,7 +62,12 @@ const messagePartSchema = z
 
 const messageSchema = z
   .object({
-    role: z.enum(['user', 'assistant', 'system']),
+    // `system` is deliberately absent. AI SDK v7 refuses system messages in
+    // `messages` (they belong in `instructions`), so accepting one here would
+    // guarantee a throw inside streamText and surface as a 500 upstream
+    // failure. Rejecting it up front returns the accurate 400 invalid_request
+    // and keeps the system prompt ours alone — a client can't inject one.
+    role: z.enum(['user', 'assistant']),
     content: z.string().max(MAX_FIELD_CHARS).optional(),
     parts: z.array(messagePartSchema).max(MAX_PARTS_PER_MESSAGE).optional()
   })
@@ -361,7 +366,7 @@ export default async function handler(
   try {
     const result = streamText({
       model: modelResult.resolved.model,
-      system,
+      instructions: system,
       messages: modelMessages,
       maxOutputTokens: MAX_OUTPUT_TOKENS,
       onError: async ({ error }) => {

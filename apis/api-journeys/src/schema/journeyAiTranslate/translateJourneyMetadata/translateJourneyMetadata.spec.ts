@@ -31,7 +31,7 @@ function promptOf(call: unknown): string {
   const [options] = call as [
     { messages: Array<{ content: Array<{ text: string }> }> }
   ]
-  return options.messages[1].content[0].text
+  return options.messages[0].content[0].text
 }
 
 function aiResult(output: unknown): unknown {
