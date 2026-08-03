@@ -12,6 +12,7 @@ import { z } from 'zod'
 import { VariablesOf } from '@core/shared/gql'
 
 import { GET_ADMIN_VIDEOS_AND_COUNT } from '../../app/(dashboard)/videos/_VideoList/VideoList'
+import { videoLabelValues } from '../../constants'
 
 const VIDEOS_LIMIT = 50
 
@@ -28,6 +29,21 @@ type FilterAction =
   | { type: 'PageChange'; model: GridPaginationModel }
   | { type: 'ColumnChange'; model: GridColumnVisibilityModel }
   | { type: 'FilterChange'; model: GridFilterModel }
+
+export function getVideoFilterQueryParams(
+  model: GridFilterModel
+): Record<string, unknown> {
+  const filters = model.items.reduce<Record<string, unknown>>((acc, item) => {
+    if (item.value == null || item.value === '') return acc
+
+    acc[item.field] = {
+      [item.operator]: item.value
+    }
+    return acc
+  }, {})
+
+  return { filters, page: 0 }
+}
 
 export function reducer(state: FilterState, action: FilterAction): FilterState {
   switch (action.type) {
@@ -52,27 +68,43 @@ export function reducer(state: FilterState, action: FilterAction): FilterState {
   }
 }
 
+const VideoLabelSchema = z.enum(videoLabelValues)
+
+/**
+ * Every field catches its own parse failure, so one malformed query param
+ * drops only that filter instead of discarding the whole model.
+ */
 const FilterModelSchema = z.object({
   locked: z
     .object({
       is: z.string()
     })
-    .optional(),
+    .optional()
+    .catch(undefined),
   id: z
     .object({
       equals: z.string()
     })
-    .optional(),
+    .optional()
+    .catch(undefined),
   title: z
     .object({
       equals: z.string()
     })
-    .optional(),
+    .optional()
+    .catch(undefined),
+  label: z
+    .object({
+      is: VideoLabelSchema
+    })
+    .optional()
+    .catch(undefined),
   published: z
     .object({
       is: z.string()
     })
     .optional()
+    .catch(undefined)
 })
 
 function getFilterModel(params: ParsedQs): GridFilterModel {
@@ -83,13 +115,15 @@ function getFilterModel(params: ParsedQs): GridFilterModel {
   const result = FilterModelSchema.safeParse(params?.filters)
 
   if (result.success) {
-    const items = Object.entries(result.data).flatMap(([field, filter]) =>
-      Object.entries(filter).map(([operator, value]) => ({
+    const items = Object.entries(result.data).flatMap(([field, filter]) => {
+      if (filter == null) return []
+
+      return Object.entries(filter).map(([operator, value]) => ({
         field,
         operator,
         value: value === 'true' ? true : value === 'false' ? false : value
       }))
-    )
+    })
 
     return { items }
   }
@@ -107,6 +141,7 @@ function getColumnVisibilityModel(
     'locked',
     'id',
     'title',
+    'label',
     'description',
     'published'
   ]
@@ -152,6 +187,14 @@ function getWhereArgs(model: GridFilterModel): VideosWhereFilter {
         item.value != null
       )
         where.locked = item.value
+
+      if (
+        item.field === 'label' &&
+        item.operator === 'is' &&
+        item.value != null &&
+        item.value !== ''
+      )
+        where.labels = [item.value]
     })
   }
 

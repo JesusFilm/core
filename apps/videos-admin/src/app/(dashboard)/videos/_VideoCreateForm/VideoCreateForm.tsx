@@ -14,17 +14,17 @@ import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 
 import { FormSelectField } from '../../../../components/FormSelectField'
 import { FormTextField } from '../../../../components/FormTextField'
-import { videoLabels } from '../../../../constants'
+import {
+  VideoLabelValue,
+  videoLabelValues,
+  videoLabels
+} from '../../../../constants'
 
-enum VideoLabel {
-  behindTheScenes = 'behindTheScenes',
-  collection = 'collection',
-  episode = 'episode',
-  featureFilm = 'featureFilm',
-  segment = 'segment',
-  series = 'series',
-  shortFilm = 'shortFilm',
-  trailer = 'trailer'
+type VideoLabel = VideoLabelValue
+
+interface ChildLabelOptions {
+  validChildLabels: ReadonlyArray<{ label: string; value: string }>
+  suggestedLabel: VideoLabel | undefined
 }
 
 export const CREATE_VIDEO = graphql(`
@@ -119,7 +119,7 @@ export function VideoCreateForm({
         return true
       }),
     label: mixed<VideoLabel>()
-      .oneOf(Object.values(VideoLabel))
+      .oneOf(videoLabelValues)
       .required('Label is required'),
     originId: string().trim().required('Origin is required')
   })
@@ -139,46 +139,49 @@ export function VideoCreateForm({
   const [createVideoVariant] = useMutation(CREATE_VIDEO_VARIANT)
 
   // Determine valid child labels and suggested label based on parent label
-  const { validChildLabels, suggestedLabel } = useMemo(() => {
-    if (!parentId || !parentData?.adminVideo?.label) {
-      return { validChildLabels: videoLabels, suggestedLabel: undefined }
-    }
-
-    const parentLabel = parentData.adminVideo.label
-
-    switch (parentLabel) {
-      case 'collection':
-        return {
-          validChildLabels: videoLabels.filter((vl) =>
-            ['episode', 'featureFilm', 'shortFilm', 'series'].includes(vl.value)
-          ),
-          suggestedLabel: VideoLabel.episode
-        }
-      case 'featureFilm':
-        return {
-          validChildLabels: videoLabels.filter((vl) =>
-            ['segment', 'trailer', 'behindTheScenes'].includes(vl.value)
-          ),
-          suggestedLabel: VideoLabel.segment
-        }
-      case 'series':
-        return {
-          validChildLabels: videoLabels.filter((vl) =>
-            ['episode', 'trailer', 'behindTheScenes'].includes(vl.value)
-          ),
-          suggestedLabel: VideoLabel.episode
-        }
-      case 'episode':
-        return {
-          validChildLabels: videoLabels.filter((vl) =>
-            ['segment', 'trailer', 'behindTheScenes'].includes(vl.value)
-          ),
-          suggestedLabel: VideoLabel.segment
-        }
-      default:
+  const { validChildLabels, suggestedLabel } =
+    useMemo<ChildLabelOptions>(() => {
+      if (!parentId || !parentData?.adminVideo?.label) {
         return { validChildLabels: videoLabels, suggestedLabel: undefined }
-    }
-  }, [parentId, parentData])
+      }
+
+      const parentLabel = parentData.adminVideo.label
+
+      switch (parentLabel) {
+        case 'collection':
+          return {
+            validChildLabels: videoLabels.filter((vl) =>
+              ['episode', 'featureFilm', 'shortFilm', 'series'].includes(
+                vl.value
+              )
+            ),
+            suggestedLabel: 'episode'
+          }
+        case 'featureFilm':
+          return {
+            validChildLabels: videoLabels.filter((vl) =>
+              ['segment', 'trailer', 'behindTheScenes'].includes(vl.value)
+            ),
+            suggestedLabel: 'segment'
+          }
+        case 'series':
+          return {
+            validChildLabels: videoLabels.filter((vl) =>
+              ['episode', 'trailer', 'behindTheScenes'].includes(vl.value)
+            ),
+            suggestedLabel: 'episode'
+          }
+        case 'episode':
+          return {
+            validChildLabels: videoLabels.filter((vl) =>
+              ['segment', 'trailer', 'behindTheScenes'].includes(vl.value)
+            ),
+            suggestedLabel: 'segment'
+          }
+        default:
+          return { validChildLabels: videoLabels, suggestedLabel: undefined }
+      }
+    }, [parentId, parentData])
 
   // Format origins for dropdown
   const originOptions = useMemo(() => {
