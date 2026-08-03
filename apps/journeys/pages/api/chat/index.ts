@@ -233,7 +233,7 @@ export default async function handler(
       },
       'chat conversation hit size cap'
     )
-    // Error-code contract: AI SDK v6's transport discards the HTTP status and
+    // Error-code contract: the AI SDK transport discards the HTTP status and
     // surfaces only the response body as `error.message`, so a structured
     // `code` is how the client distinguishes failures. `conversation_capped`
     // drives both the catered cap-hit message and retry-gating in
