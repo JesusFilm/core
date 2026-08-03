@@ -5,12 +5,33 @@ import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { VideoDescription } from './VideoDescription'
 
-// The admin theme is what makes the assertions below meaningful: its spacing
-// unit is 4 (so `mt: 3` is 12px, not MUI's default 24px) and it maps the
-// caption variant onto an inline span, which is the mapping `component="p"`
-// exists to override. Rendering bare would measure a theme the app never uses.
+// The admin theme is what makes the spacing assertions meaningful: its spacing
+// unit is 4, so `mt: 3` is 12px where MUI's default would give 24px. Rendering
+// bare would measure a theme the app never ships.
 function renderWithTheme(ui: ReactElement): RenderResult {
   return render(<ThemeProvider>{ui}</ThemeProvider>)
+}
+
+/**
+ * Returns the emotion rule body for an element, with whitespace stripped.
+ *
+ * jsdom's CSSOM silently drops `-webkit-box-orient`, so `getComputedStyle`
+ * reports `''` for it even when set — there is nothing for `toHaveStyle` to
+ * assert against. Emotion still writes the declaration into the stylesheet, so
+ * reading the rule text is the only way to pin it here.
+ */
+function emotionRuleFor(element: HTMLElement): string {
+  const className = Array.from(element.classList).find((name) =>
+    name.startsWith('css-')
+  )
+  if (className == null) return ''
+
+  const stylesheet = Array.from(document.querySelectorAll('style'))
+    .map((style) => style.textContent ?? '')
+    .join('')
+  const rule = new RegExp(`\\.${className}\\s*\\{([^}]*)\\}`).exec(stylesheet)
+
+  return (rule?.[1] ?? '').replace(/\s/g, '')
 }
 
 const LONG_DESCRIPTION =
@@ -80,8 +101,9 @@ describe('VideoDescription', () => {
 
     // A URL has no spaces, so the browser treats it as one unbreakable word.
     // Without this it runs past the 328px drawer and gives the settings panel
-    // a horizontal scrollbar — measured at +19px in Chromium and +33px in
-    // WebKit. Firefox breaks URLs at slashes on its own and is unaffected.
+    // a horizontal scrollbar. This string overflows a 278px column by 20px in
+    // both Chromium and WebKit; Firefox breaks URLs at slashes on its own and
+    // is unaffected.
     expect(getAllByRole('paragraph')[0]).toHaveStyle('overflow-wrap: anywhere')
   })
 
@@ -99,6 +121,11 @@ describe('VideoDescription', () => {
     expect(getComputedStyle(clamp).getPropertyValue('-webkit-line-clamp')).toBe(
       '3'
     )
+    // Without this the box is not vertical, so -webkit-line-clamp is inert and
+    // the paragraphs lay out side by side, off the edge of the drawer. Measured
+    // in Chromium and WebKit: the second paragraph moves to left: 663 in a
+    // 328px panel. Asserted against the stylesheet because jsdom drops it.
+    expect(emotionRuleFor(clamp)).toContain('-webkit-box-orient:vertical')
   })
 
   it('should remove the clamp when expanded', () => {
