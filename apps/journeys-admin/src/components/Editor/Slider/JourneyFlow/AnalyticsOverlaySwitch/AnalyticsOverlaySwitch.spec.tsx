@@ -153,7 +153,7 @@ describe('AnalyticsOverlaySwitch', () => {
     })
   })
 
-  it('shows filter button and date range select only when analytics are enabled', async () => {
+  it('shows date range select only when analytics are enabled', async () => {
     mockBuildPlausibleDateRange.mockReturnValue(
       `${earliestStatsCollected},${mockCurrentDate}`
     )
@@ -184,20 +184,13 @@ describe('AnalyticsOverlaySwitch', () => {
       </MockedProvider>
     )
 
-    expect(
-      screen.queryByRole('button', { name: 'Filter' })
-    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Date range preset')).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('checkbox'))
 
-    const filterButton = await screen.findByRole('button', { name: 'Filter' })
-
-    expect(filterButton).toBeInTheDocument()
-    expect(screen.queryByLabelText('Date range preset')).not.toBeInTheDocument()
-
-    fireEvent.click(filterButton)
-
-    expect(screen.getByLabelText('Date range preset')).toBeInTheDocument()
+    expect(
+      await screen.findByLabelText('Date range preset')
+    ).toBeInTheDocument()
   })
 
   it('shows custom date range picker when custom range is selected', async () => {
@@ -233,10 +226,8 @@ describe('AnalyticsOverlaySwitch', () => {
 
     fireEvent.click(screen.getByRole('checkbox'))
 
-    const filterButton = await screen.findByRole('button', { name: 'Filter' })
-
-    fireEvent.click(filterButton)
-    const dateRangeSelectRoot = screen.getByLabelText('Date range preset')
+    const dateRangeSelectRoot =
+      await screen.findByLabelText('Date range preset')
     const dateRangeCombobox = within(dateRangeSelectRoot).getByRole('combobox')
 
     fireEvent.mouseDown(dateRangeCombobox)
