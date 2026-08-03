@@ -93,7 +93,6 @@ export const VideoDescription = ({
               whiteSpace: 'pre-line',
               mt: index === 0 ? 0 : 3
             }}
-            data-testid="VideoDescriptionParagraph"
           >
             {paragraph}
           </Typography>
