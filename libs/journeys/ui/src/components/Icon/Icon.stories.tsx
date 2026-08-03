@@ -17,8 +17,8 @@ import {
   JourneyFields as Journey,
   JourneyFields_language as Language
 } from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
-import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+import { journeyUiConfig } from '../../test/journeyUiConfig'
+import { simpleComponentConfig } from '../../test/simpleComponentConfig'
 
 import { Icon } from '.'
 

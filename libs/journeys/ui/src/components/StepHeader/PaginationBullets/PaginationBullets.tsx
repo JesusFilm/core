@@ -2,9 +2,12 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 
-import { TreeBlock, useBlocks } from '../../../libs/block'
-import { filterActionBlocks } from '../../../libs/filterActionBlocks'
-import { ActionBlock } from '../../../libs/isActionBlock'
+import {
+  ActionBlock,
+  TreeBlock,
+  filterActionBlocks,
+  useBlocks
+} from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { StepFields } from '../../Step/__generated__/StepFields'
 

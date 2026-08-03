@@ -2,7 +2,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { simpleComponentConfig } from '../../../../libs/simpleComponentConfig'
+import { simpleComponentConfig } from '../../../../test/simpleComponentConfig'
 
 import { ReactionButton } from './ReactionButton'
 

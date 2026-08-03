@@ -21,7 +21,7 @@ import {
   ButtonSize,
   ButtonVariant
 } from '../../../../../../../../__generated__/globalTypes'
-import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import { blockCreateUpdate } from '../../../../../../../libs/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand/useBlockCreateCommand'
 import { Button } from '../Button'
 
