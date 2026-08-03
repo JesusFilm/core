@@ -4,6 +4,7 @@ import {
   Configure,
   useHits,
   useInstantSearch,
+  useMenu,
   usePagination,
   useRefinementList,
   useSearchBox
@@ -29,6 +30,7 @@ vi.mock('react-instantsearch', () => ({
   InstantSearch: ({ children }) => <>{children}</>,
   useHits: vi.fn(),
   useInstantSearch: vi.fn(),
+  useMenu: vi.fn(),
   usePagination: vi.fn(),
   useRefinementList: vi.fn(),
   useSearchBox: vi.fn()
@@ -44,11 +46,14 @@ const mockUsePagination = usePagination as MockedFunction<typeof usePagination>
 const mockUseRefinementList = useRefinementList as MockedFunction<
   typeof useRefinementList
 >
+const mockUseMenu = useMenu as MockedFunction<typeof useMenu>
 const mockAlgoliaSearch = algoliasearch as MockedFunction<typeof algoliasearch>
 
 describe('AlgoliaVideoList', () => {
   const originalEnv = process.env
   const mockSearchRefine = vi.fn()
+  const mockPublishedRefine = vi.fn()
+  const mockLabelRefine = vi.fn()
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -70,29 +75,27 @@ describe('AlgoliaVideoList', () => {
       status: 'idle',
       error: null
     } as any)
+    mockUseMenu.mockReturnValue({
+      items: [
+        { label: 'true', value: 'true', count: 2, isRefined: false },
+        { label: 'false', value: 'false', count: 1, isRefined: false }
+      ],
+      refine: mockPublishedRefine
+    } as any)
+    mockUseRefinementList.mockReturnValue({
+      items: [
+        { label: 'series', value: 'series', count: 2, isRefined: false },
+        { label: 'collection', value: 'collection', count: 5, isRefined: false }
+      ],
+      refine: mockLabelRefine
+    } as any)
   })
 
   afterAll(() => {
     process.env = originalEnv
   })
 
-  it('renders search and published filter controls with local hit counts', () => {
-    mockUseHits.mockReturnValue({
-      items: [
-        {
-          objectID: 'published-1',
-          mediaComponentId: 'published-1',
-          published: true
-        },
-        {
-          objectID: 'published-2',
-          mediaComponentId: 'published-2',
-          published: true
-        },
-        { objectID: 'draft-1', mediaComponentId: 'draft-1', published: false }
-      ]
-    } as any)
-
+  it('renders search and published filter controls with facet counts', () => {
     render(<AlgoliaVideoList />)
 
     expect(screen.getByLabelText('Search Algolia')).toBeInTheDocument()
@@ -115,7 +118,37 @@ describe('AlgoliaVideoList', () => {
     ).toBeInTheDocument()
   })
 
-  it('requests one large algolia result set without facet or pagination refinement hooks', () => {
+  it('reports published counts from the facet rather than the fetched hits', () => {
+    mockUseHits.mockReturnValue({
+      items: [
+        {
+          objectID: 'published-1',
+          mediaComponentId: 'published-1',
+          published: true
+        }
+      ]
+    } as any)
+    mockUseMenu.mockReturnValue({
+      items: [
+        { label: 'true', value: 'true', count: 900, isRefined: false },
+        { label: 'false', value: 'false', count: 100, isRefined: false }
+      ],
+      refine: mockPublishedRefine
+    } as any)
+
+    render(<AlgoliaVideoList />)
+
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Published' }))
+
+    expect(
+      screen.getByRole('option', { name: 'Both (1000)' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('option', { name: 'Published (900)' })
+    ).toBeInTheDocument()
+  })
+
+  it('requests one large algolia result set without pagination refinement', () => {
     render(<AlgoliaVideoList />)
 
     const configureProps = mockConfigure.mock.calls[0]?.[0] as
@@ -135,8 +168,15 @@ describe('AlgoliaVideoList', () => {
         hitsPerPage: 1000
       })
     )
-    expect(mockUseRefinementList).not.toHaveBeenCalled()
     expect(mockUsePagination).not.toHaveBeenCalled()
+  })
+
+  it('refines the subType facet for the label filter', () => {
+    render(<AlgoliaVideoList />)
+
+    expect(mockUseRefinementList).toHaveBeenCalledWith(
+      expect.objectContaining({ attribute: 'subType' })
+    )
   })
 
   it('renders mapped hits and published draft chips', () => {
@@ -221,31 +261,96 @@ describe('AlgoliaVideoList', () => {
     expect(mockPush).not.toHaveBeenCalled()
   })
 
-  it('filters published rows locally with dropdown selections', () => {
-    mockUseHits.mockReturnValue({
+  it('refines the published facet from dropdown selections', () => {
+    render(<AlgoliaVideoList />)
+
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Published' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Published (2)' }))
+
+    expect(mockPublishedRefine).toHaveBeenCalledWith('true')
+  })
+
+  it('clears the published refinement when selecting both', () => {
+    mockUseMenu.mockReturnValue({
       items: [
-        {
-          objectID: 'published-id',
-          mediaComponentId: 'published-id',
-          title: 'Published Title',
-          published: true
-        },
-        {
-          objectID: 'draft-id',
-          mediaComponentId: 'draft-id',
-          title: 'Draft Title',
-          published: false
-        }
-      ]
+        { label: 'true', value: '', count: 2, isRefined: true },
+        { label: 'false', value: 'false', count: 1, isRefined: false }
+      ],
+      refine: mockPublishedRefine
     } as any)
 
     render(<AlgoliaVideoList />)
 
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Published' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Published (1)' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Both (3)' }))
 
-    expect(screen.getByText('Published Title')).toBeInTheDocument()
-    expect(screen.queryByText('Draft Title')).not.toBeInTheDocument()
+    expect(mockPublishedRefine).toHaveBeenCalledWith('')
+  })
+
+  it('renders label facet options in canonical order with display names', () => {
+    render(<AlgoliaVideoList />)
+
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Label' }))
+
+    const options = screen.getAllByRole('option')
+    expect(options.map((option) => option.textContent)).toEqual([
+      'Collection (5)',
+      'Series (2)'
+    ])
+  })
+
+  it('toggles a label refinement when an option is selected', () => {
+    render(<AlgoliaVideoList />)
+
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Label' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Collection (5)' }))
+
+    expect(mockLabelRefine).toHaveBeenCalledWith('collection')
+  })
+
+  it('removes a label refinement when a selected option is deselected', () => {
+    mockUseRefinementList.mockReturnValue({
+      items: [
+        { label: 'collection', value: 'collection', count: 5, isRefined: true }
+      ],
+      refine: mockLabelRefine
+    } as any)
+
+    render(<AlgoliaVideoList />)
+
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Label' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Collection (5)' }))
+
+    expect(mockLabelRefine).toHaveBeenCalledWith('collection')
+  })
+
+  it('hides the label filter when the index exposes no facet values', () => {
+    mockUseRefinementList.mockReturnValue({
+      items: [],
+      refine: mockLabelRefine
+    } as any)
+
+    render(<AlgoliaVideoList />)
+
+    expect(
+      screen.queryByRole('combobox', { name: 'Label' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('combobox', { name: 'Published' })
+    ).toBeInTheDocument()
+  })
+
+  it('hides the published filter when the index exposes no facet values', () => {
+    mockUseMenu.mockReturnValue({
+      items: [],
+      refine: mockPublishedRefine
+    } as any)
+
+    render(<AlgoliaVideoList />)
+
+    expect(
+      screen.queryByRole('combobox', { name: 'Published' })
+    ).not.toBeInTheDocument()
   })
 
   it('shows warning when algolia env vars are missing', () => {

@@ -3,8 +3,10 @@
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
+import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
@@ -19,16 +21,19 @@ import {
 } from '@mui/x-data-grid'
 import { algoliasearch } from 'algoliasearch'
 import { useRouter } from 'next/navigation'
-import { ReactElement, useMemo, useState } from 'react'
+import { ReactElement, useMemo } from 'react'
 import {
   Configure,
   InstantSearch,
   useHits,
   useInstantSearch,
+  useMenu,
+  useRefinementList,
   useSearchBox
 } from 'react-instantsearch'
 
 import { PublishedChip } from '../../../../../components/PublishedChip'
+import { videoLabels } from '../../../../../constants'
 
 interface AlgoliaVideoRecord {
   objectID: string
@@ -99,19 +104,44 @@ function mapAlgoliaHitToRow(hit: AlgoliaVideoRecord): AlgoliaRow {
   }
 }
 
-function PublishedFilter({
-  publishedCount,
-  draftCount,
-  selectedPublishedFilter,
-  onPublishedFilterChange
-}: {
-  publishedCount: number
-  draftCount: number
-  selectedPublishedFilter: PublishedFilterValue
-  onPublishedFilterChange: (value: PublishedFilterValue) => void
-}): ReactElement {
+const videoLabelDisplayNames = new Map(
+  videoLabels.map(({ label, value }) => [value, label])
+)
+
+const videoLabelOrder = videoLabels.map(({ value }) => value)
+
+function getVideoLabelDisplayName(value: string): string {
+  return videoLabelDisplayNames.get(value) ?? value
+}
+
+/**
+ * Published state as an Algolia facet rather than a filter over the fetched
+ * page, so the counts describe the whole index instead of the current hits.
+ */
+function PublishedFilter(): ReactElement | null {
+  const { items, refine } = useMenu({ attribute: 'published' })
+
+  if (items.length === 0) return null
+
+  const publishedCount = items.find(({ label }) => label === 'true')?.count ?? 0
+  const draftCount = items.find(({ label }) => label === 'false')?.count ?? 0
+  const refinedItem = items.find(({ isRefined }) => isRefined)
+  const selectedPublishedFilter: PublishedFilterValue =
+    refinedItem == null
+      ? 'both'
+      : refinedItem.label === 'true'
+        ? 'published'
+        : 'draft'
+
   const handlePublishedChange = (event: SelectChangeEvent): void => {
-    onPublishedFilterChange(event.target.value as PublishedFilterValue)
+    const nextValue = event.target.value as PublishedFilterValue
+
+    if (nextValue === 'both') {
+      if (refinedItem != null) refine(refinedItem.value)
+      return
+    }
+
+    refine(nextValue === 'published' ? 'true' : 'false')
   }
 
   return (
@@ -131,23 +161,72 @@ function PublishedFilter({
   )
 }
 
+/**
+ * Multi-select label facet. Renders nothing when the index exposes no
+ * `subType` facet values, so the control is absent rather than empty when
+ * faceting has not been configured on the index.
+ */
+function LabelFilter(): ReactElement | null {
+  const { items, refine } = useRefinementList({
+    attribute: 'subType',
+    limit: videoLabels.length
+  })
+
+  if (items.length === 0) return null
+
+  const sortedItems = [...items].sort(
+    (a, b) =>
+      videoLabelOrder.indexOf(a.value) - videoLabelOrder.indexOf(b.value)
+  )
+  const selectedValues = items
+    .filter(({ isRefined }) => isRefined)
+    .map(({ value }) => value)
+
+  const handleLabelChange = (event: SelectChangeEvent<string[]>): void => {
+    const { value } = event.target
+    const nextValues = typeof value === 'string' ? value.split(',') : value
+
+    const toggled = [
+      ...nextValues.filter((next) => !selectedValues.includes(next)),
+      ...selectedValues.filter((current) => !nextValues.includes(current))
+    ]
+
+    toggled.forEach((item) => refine(item))
+  }
+
+  return (
+    <FormControl size="small" sx={{ minWidth: 220 }}>
+      <InputLabel id="label-filter-label">Label</InputLabel>
+      <Select<string[]>
+        multiple
+        labelId="label-filter-label"
+        label="Label"
+        value={selectedValues}
+        onChange={handleLabelChange}
+        renderValue={(selected) =>
+          selected.map(getVideoLabelDisplayName).join(', ')
+        }
+      >
+        {sortedItems.map(({ value, count, isRefined }) => (
+          <MenuItem key={value} value={value}>
+            <Checkbox checked={isRefined} />
+            <ListItemText
+              primary={`${getVideoLabelDisplayName(value)} (${count})`}
+            />
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  )
+}
+
 function AlgoliaInstantSearchResults(): ReactElement {
   const router = useRouter()
   const { query, refine } = useSearchBox()
   const { items } = useHits<AlgoliaVideoRecord>()
   const { status, error } = useInstantSearch()
-  const [selectedPublishedFilter, setSelectedPublishedFilter] =
-    useState<PublishedFilterValue>('both')
 
   const rows: GridRowsProp<AlgoliaRow> = items.map(mapAlgoliaHitToRow)
-  const publishedCount = rows.filter((row) => row.published).length
-  const draftCount = rows.length - publishedCount
-  const filteredRows =
-    selectedPublishedFilter === 'published'
-      ? rows.filter((row) => row.published)
-      : selectedPublishedFilter === 'draft'
-        ? rows.filter((row) => !row.published)
-        : rows
 
   const handleRowClick = (params: GridRowParams<AlgoliaRow>): void => {
     const selectedMediaComponentId = params.row.mediaComponentId
@@ -198,12 +277,8 @@ function AlgoliaInstantSearchResults(): ReactElement {
           placeholder="Search by ID, title, or description"
           sx={{ flexGrow: 1 }}
         />
-        <PublishedFilter
-          publishedCount={publishedCount}
-          draftCount={draftCount}
-          selectedPublishedFilter={selectedPublishedFilter}
-          onPublishedFilterChange={setSelectedPublishedFilter}
-        />
+        <LabelFilter />
+        <PublishedFilter />
       </Stack>
       {error != null && <Alert severity="error">{error.message}</Alert>}
       <Typography variant="caption" color="text.secondary">
@@ -212,7 +287,7 @@ function AlgoliaInstantSearchResults(): ReactElement {
       </Typography>
       <Box sx={{ flexGrow: 1, minHeight: 0 }}>
         <DataGrid
-          rows={filteredRows}
+          rows={rows}
           columns={columns}
           loading={status === 'loading' || status === 'stalled'}
           onRowClick={handleRowClick}
@@ -269,7 +344,11 @@ export function AlgoliaVideoList(): ReactElement {
   }
 
   return (
-    <InstantSearch searchClient={searchClient} indexName={indexName}>
+    <InstantSearch
+      searchClient={searchClient}
+      indexName={indexName}
+      routing={true}
+    >
       <Configure
         hitsPerPage={ALGOLIA_HITS_PER_PAGE}
         attributesToRetrieve={[

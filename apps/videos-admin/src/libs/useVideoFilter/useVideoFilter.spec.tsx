@@ -2,13 +2,7 @@ import { renderHook } from '@testing-library/react'
 import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
 import { type MockedFunction } from 'vitest'
 
-import { videoLabels } from '../../constants'
-
-import {
-  getVideoFilterQueryParams,
-  reducer,
-  useVideoFilter
-} from './useVideoFilter'
+import { reducer, useVideoFilter } from './useVideoFilter'
 
 vi.mock('next/navigation', () => ({
   useSearchParams: vi.fn()
@@ -41,7 +35,6 @@ describe('useVideoFilter', () => {
         locked: true,
         id: true,
         title: true,
-        label: true,
         description: true,
         published: true
       },
@@ -87,7 +80,6 @@ describe('useVideoFilter', () => {
         locked: true,
         id: true,
         title: false,
-        label: true,
         description: true,
         published: true
       },
@@ -97,43 +89,6 @@ describe('useVideoFilter', () => {
         published: false,
         title: 'Jesus'
       }
-    })
-  })
-
-  it.each(videoLabels)(
-    'should return initial state with $label filter from query params',
-    ({ value }) => {
-      const search = new URLSearchParams(
-        `filters[label][is]=${value}`
-      ) as ReadonlyURLSearchParams
-
-      mockUseSearchParams.mockReturnValue(search)
-
-      const { result } = renderHook(useVideoFilter)
-
-      expect(result.current.filters.where).toStrictEqual({
-        labels: [value]
-      })
-      expect(result.current.tableFilterProps.filterModel).toStrictEqual({
-        items: [{ field: 'label', operator: 'is', value }]
-      })
-    }
-  )
-
-  it('should ignore an invalid label without discarding valid filters', () => {
-    const search = new URLSearchParams(
-      'filters[label][is]=invalid&filters[published][is]=true'
-    ) as ReadonlyURLSearchParams
-
-    mockUseSearchParams.mockReturnValue(search)
-
-    const { result } = renderHook(useVideoFilter)
-
-    expect(result.current.filters.where).toStrictEqual({
-      published: true
-    })
-    expect(result.current.tableFilterProps.filterModel).toStrictEqual({
-      items: [{ field: 'published', operator: 'is', value: true }]
     })
   })
 
@@ -155,42 +110,6 @@ describe('useVideoFilter', () => {
     )
   })
 
-  it('should serialize label filters and reset pagination', () => {
-    expect(
-      getVideoFilterQueryParams({
-        items: [{ field: 'label', operator: 'is', value: 'collection' }]
-      })
-    ).toStrictEqual({
-      filters: { label: { is: 'collection' } },
-      page: 0
-    })
-  })
-
-  it('should omit a cleared label filter and reset pagination', () => {
-    expect(
-      getVideoFilterQueryParams({
-        items: [{ field: 'label', operator: 'is', value: '' }]
-      })
-    ).toStrictEqual({
-      filters: {},
-      page: 0
-    })
-  })
-
-  it('should retain active filters when omitting a cleared label', () => {
-    expect(
-      getVideoFilterQueryParams({
-        items: [
-          { field: 'published', operator: 'is', value: true },
-          { field: 'label', operator: 'is', value: '' }
-        ]
-      })
-    ).toStrictEqual({
-      filters: { published: { is: true } },
-      page: 0
-    })
-  })
-
   describe('state actions', () => {
     const initialState = {
       paginationModel: { page: 0, pageSize: 50 },
@@ -199,7 +118,6 @@ describe('useVideoFilter', () => {
         locked: true,
         id: true,
         title: true,
-        label: true,
         description: true,
         published: true
       },
@@ -266,25 +184,6 @@ describe('useVideoFilter', () => {
           ids: ['11_Advent'],
           title: 'Jesus',
           published: false
-        }
-      })
-    })
-
-    it('should handle FilterChange action with label filter', () => {
-      const filterModel = {
-        items: [{ field: 'label', operator: 'is', value: 'collection' }]
-      }
-
-      expect(
-        reducer(initialState, {
-          type: 'FilterChange',
-          model: filterModel
-        })
-      ).toEqual({
-        ...initialState,
-        filterModel: filterModel,
-        whereArgs: {
-          labels: ['collection']
         }
       })
     })

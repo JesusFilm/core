@@ -1,1 +1,1 @@
-export { getVideoFilterQueryParams, useVideoFilter } from './useVideoFilter'
+export { useVideoFilter } from './useVideoFilter'
