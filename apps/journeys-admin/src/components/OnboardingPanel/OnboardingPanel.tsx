@@ -21,7 +21,12 @@ export function OnboardingPanel(): ReactElement {
     <>
       <CreateJourneyButton />
       <SidePanelContainer border={false}>
-        <Stack direction="row" justifyContent="space-between">
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: 'space-between'
+          }}
+        >
           <Typography variant="subtitle1">{t('Use Template')}</Typography>
           <Link
             component={NextLink}

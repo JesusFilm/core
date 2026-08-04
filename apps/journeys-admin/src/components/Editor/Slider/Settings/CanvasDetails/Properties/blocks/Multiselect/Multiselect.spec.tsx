@@ -223,7 +223,7 @@ describe('Multiselect Properties', () => {
       </MockedProvider>
     )
 
-    const toggle = screen.getByRole('checkbox', {
+    const toggle = screen.getByRole('switch', {
       name: 'Selection Limit'
     })
     // enable

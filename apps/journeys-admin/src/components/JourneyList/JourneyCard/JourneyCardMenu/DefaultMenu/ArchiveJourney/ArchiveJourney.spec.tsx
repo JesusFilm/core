@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { useRouter } from 'next/router'
@@ -58,7 +59,8 @@ describe('ArchiveJourney', () => {
               handleClose={handeClose}
             />
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
       expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     })
@@ -99,7 +101,8 @@ describe('ArchiveJourney', () => {
               handleClose={handeClose}
             />
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(getByRole('menuitem', { name: 'Archive' }))
@@ -168,7 +171,8 @@ describe('ArchiveJourney', () => {
               handleClose={handeClose}
             />
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(getByRole('menuitem', { name: 'Archive' }))
@@ -229,7 +233,8 @@ describe('ArchiveJourney', () => {
               handleClose={handeClose}
             />
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(getByRole('menuitem', { name: 'Archive' }))
@@ -290,7 +295,8 @@ describe('ArchiveJourney', () => {
               handleClose={handeClose}
             />
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(getByRole('menuitem', { name: 'Archive' }))
@@ -342,7 +348,8 @@ describe('ArchiveJourney', () => {
               handleClose={handeClose}
             />
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(getByRole('menuitem', { name: 'Archive' }))
@@ -380,7 +387,8 @@ describe('ArchiveJourney', () => {
               handleClose={handeClose}
             />
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(getByRole('menuitem', { name: 'Archive' }))
@@ -400,7 +408,8 @@ describe('ArchiveJourney', () => {
               handleClose={handeClose}
             />
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
       expect(
         queryByRole('menuitem', { name: 'Unarchive' })
@@ -426,7 +435,8 @@ describe('ArchiveJourney', () => {
               handleClose={handeClose}
             />
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
       expect(getByRole('menuitem', { name: 'Unarchive' })).toBeInTheDocument()
     })
@@ -466,7 +476,8 @@ describe('ArchiveJourney', () => {
               handleClose={handeClose}
             />
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(getByRole('menuitem', { name: 'Unarchive' }))
@@ -510,7 +521,8 @@ describe('ArchiveJourney', () => {
               handleClose={handeClose}
             />
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(getByRole('menuitem', { name: 'Unarchive' }))
@@ -542,7 +554,8 @@ describe('ArchiveJourney', () => {
               handleClose={handeClose}
             />
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(getByRole('menuitem', { name: 'Unarchive' }))

@@ -113,9 +113,9 @@ export function Drawer({
         direction="column"
         component={Paper}
         elevation={0}
-        border={1}
-        borderColor="divider"
         sx={{
+          border: 1,
+          borderColor: 'divider',
           height: '100%',
           width: '100%',
           borderRadius: 3,
@@ -156,7 +156,6 @@ export function Drawer({
         data-testid="SettingsDrawer"
         anchor={mdUp ? 'right' : 'bottom'}
         variant={open != null ? 'persistent' : 'permanent'}
-        SlideProps={{ appear: true }}
         open={open}
         elevation={0}
         hideBackdrop
@@ -189,6 +188,9 @@ export function Drawer({
                   height: { xs: '100%', md: 'calc(100% - 20px)' }
                 })
           }
+        }}
+        slotProps={{
+          transition: { appear: true }
         }}
       >
         <DrawerTitle title={title} onClose={onClose} />

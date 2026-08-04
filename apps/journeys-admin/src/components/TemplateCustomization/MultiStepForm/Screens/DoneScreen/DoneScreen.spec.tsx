@@ -360,7 +360,7 @@ describe('DoneScreen', () => {
       </SnackbarProvider>
     )
 
-    const checkbox = screen.getByRole('checkbox')
+    const checkbox = screen.getByRole('switch')
     expect(checkbox).not.toBeChecked()
   })
 
@@ -386,7 +386,7 @@ describe('DoneScreen', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.click(screen.getByRole('checkbox'))
+    fireEvent.click(screen.getByRole('switch'))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 

@@ -315,9 +315,11 @@ function JourneyVisitorsPage({
         mainHeaderChildren={
           <Stack
             direction="row"
-            flexGrow={1}
-            alignItems="center"
-            justifyContent="space-between"
+            sx={{
+              flexGrow: 1,
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}
           >
             {/* Hide visitors count */}
             {/* {data?.journeyVisitorCount != null && (

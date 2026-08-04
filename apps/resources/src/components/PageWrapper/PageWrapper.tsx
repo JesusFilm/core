@@ -44,13 +44,13 @@ export function PageWrapper({
         />
       )}
       <Stack
-        justifyContent="space-between"
+        data-testid={testId}
         sx={{
+          justifyContent: 'space-between',
           width: '100%',
           height: '100%',
           overflowX: isFullscreen ? 'hidden' : 'clip'
         }}
-        data-testid={testId}
       >
         <Container maxWidth={false} disableGutters>
           <ThemeProvider

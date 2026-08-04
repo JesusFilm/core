@@ -32,11 +32,16 @@ export function SourceFromMux({
           Icon={VideoOnIcon}
         />
       </Box>
-      <Box flexGrow={1} minWidth={0}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          minWidth: 0
+        }}
+      >
         <Typography
           variant="subtitle2"
-          color="text.secondary"
           sx={{
+            color: 'text.secondary',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             overflow: 'hidden'
@@ -47,8 +52,8 @@ export function SourceFromMux({
 
         <Typography
           variant="caption"
-          color="text.secondary"
           sx={{
+            color: 'text.secondary',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             overflow: 'hidden'

@@ -21,7 +21,14 @@ export function IFrameTest(): ReactElement {
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
       <Container maxWidth="sm">
-        <Stack spacing={5} alignItems="center" sx={{ height: '100%', pt: 5 }}>
+        <Stack
+          spacing={5}
+          sx={{
+            alignItems: 'center',
+            height: '100%',
+            pt: 5
+          }}
+        >
           <Image
             src={logo}
             alt="Next Steps"

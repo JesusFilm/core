@@ -73,8 +73,8 @@ function VideoAdapterNote({ note }: VideoAdapterNoteProps): ReactElement {
   return (
     <Typography
       variant="subtitle3"
-      color="text.secondary"
       sx={{
+        color: 'text.secondary',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         display: '-webkit-box',
@@ -183,14 +183,28 @@ export function VideosSection({
   }, [youtubeUrl, loading, videoBlock, startYouTubeLink, t])
 
   return (
-    <Stack data-testid="VideosSection" gap={2} width="100%">
-      <Stack gap={2}>
+    <Stack
+      data-testid="VideosSection"
+      sx={{
+        gap: 2,
+        width: '100%'
+      }}
+    >
+      <Stack
+        sx={{
+          gap: 2
+        }}
+      >
         {showLabel && (
           <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
             {t('Video')}
           </Typography>
         )}
-        <Stack gap={1.5}>
+        <Stack
+          sx={{
+            gap: 1.5
+          }}
+        >
           {loading ? (
             <Box
               sx={{
@@ -221,7 +235,12 @@ export function VideosSection({
         errorMessage={errorMessage}
       />
       <Divider>
-        <Typography variant="caption" color="text.secondary">
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'text.secondary'
+          }}
+        >
           {t('or')}
         </Typography>
       </Divider>
@@ -239,7 +258,9 @@ export function VideosSection({
           youtubeUrlError ??
           t('youtube.com, youtu.be and shorts links supported')
         }
-        inputProps={{ 'aria-label': t('YouTube URL') }}
+        slotProps={{
+          htmlInput: { 'aria-label': t('YouTube URL') }
+        }}
       />
     </Stack>
   )

@@ -211,26 +211,30 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
     <Stack
       component={Paper}
       elevation={0}
+      data-testid="SettingsDrawer"
       sx={{
+        border: 1,
+        borderColor: 'divider',
         height: '100%',
         borderRadius: 3,
+
         // the layered view's settings panel floats, so keep all corners
         // rounded; the slider's panel is anchored to the bottom edge
         ...(isLayered
           ? {}
           : { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }),
+
         overflow: 'hidden'
       }}
-      border={1}
-      borderColor="divider"
-      data-testid="SettingsDrawer"
     >
       <DrawerTitle title={title} onClose={onClose} />
       <Stack
         data-testid="SettingsDrawerContent"
         className="swiper-no-swiping"
-        flexGrow={1}
-        sx={{ overflow: 'auto' }}
+        sx={{
+          flexGrow: 1,
+          overflow: 'auto'
+        }}
       >
         {component}
       </Stack>

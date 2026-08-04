@@ -134,8 +134,11 @@ export function DownloadDialog({
         <Stack
           direction={{ xs: 'column-reverse', sm: 'row' }}
           spacing={4}
-          alignItems="flex-start"
-          sx={{ mt: { xs: 0, sm: 1 }, mb: { xs: 0, sm: 5 } }}
+          sx={{
+            alignItems: 'flex-start',
+            mt: { xs: 0, sm: 1 },
+            mb: { xs: 0, sm: 5 }
+          }}
         >
           {images[0]?.mobileCinematicHigh != null && (
             <>
@@ -160,8 +163,8 @@ export function DownloadDialog({
                 />
                 <Stack
                   direction="row"
-                  alignItems="center"
                   sx={{
+                    alignItems: 'center',
                     position: 'absolute',
                     color: 'primary.contrastText',
                     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -182,7 +185,12 @@ export function DownloadDialog({
             <Typography variant="h6" sx={{ mb: 1 }}>
               {last(title)?.value}
             </Typography>
-            <Stack direction="row" alignItems="center">
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: 'center'
+              }}
+            >
               <LanguageIcon fontSize="small" sx={{ mr: 1 }} />
               <Typography variant="body1">{language.name[0].value}</Typography>
             </Stack>
@@ -226,9 +234,11 @@ export function DownloadDialog({
               </TextField>
               <Stack
                 direction={{ xs: 'column', sm: 'row' }}
-                justifyContent="space-between"
-                gap={3}
-                sx={{ mt: 6 }}
+                sx={{
+                  justifyContent: 'space-between',
+                  gap: 3,
+                  mt: 6
+                }}
               >
                 <FormGroup sx={{ flexDirection: 'row', alignItems: 'center' }}>
                   <FormControlLabel

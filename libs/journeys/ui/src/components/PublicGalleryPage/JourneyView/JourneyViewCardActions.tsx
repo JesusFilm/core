@@ -106,9 +106,11 @@ export function JourneyViewCardActions({
       <Stack
         direction="row"
         spacing={1}
-        alignItems="center"
         aria-hidden="true"
-        sx={{ width: fill ? '100%' : undefined }}
+        sx={{
+          alignItems: 'center',
+          width: fill ? '100%' : undefined
+        }}
       >
         <Box
           sx={{
@@ -173,8 +175,10 @@ export function JourneyViewCardActions({
     <Stack
       direction="row"
       spacing={1}
-      alignItems="center"
-      sx={{ width: rowWidth }}
+      sx={{
+        alignItems: 'center',
+        width: rowWidth
+      }}
     >
       <Button
         component="a"

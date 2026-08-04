@@ -1,3 +1,4 @@
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
@@ -15,7 +16,8 @@ describe('Item', () => {
           href="https://test.com/"
           icon={<Edit2Icon />}
           onClick={handleClick}
-        />
+        />,
+        { wrapper: MenuList }
       )
       const IconButtonItem = getByRole('link', { name: 'Icon Button' })
       fireEvent.click(IconButtonItem)
@@ -35,7 +37,8 @@ describe('Item', () => {
           href="https://test.com/"
           icon={<Edit2Icon />}
           onClick={handleClick}
-        />
+        />,
+        { wrapper: MenuList }
       )
       const ButtonItem = getByRole('link', { name: 'Button' })
       fireEvent.click(ButtonItem)
@@ -55,7 +58,8 @@ describe('Item', () => {
           href="https://test.com/"
           icon={<Edit2Icon />}
           onClick={handleClick}
-        />
+        />,
+        { wrapper: MenuList }
       )
       const MenuItem = getByRole('menuitem', { name: 'Menu' })
       fireEvent.click(MenuItem)

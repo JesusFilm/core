@@ -217,9 +217,11 @@ export function FilterForm({
         >
           <Stack
             direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            sx={{ pr: 2 }}
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              pr: 2
+            }}
           >
             <CheckboxOption
               checked={videoEventsSelected === 'all'}

@@ -22,7 +22,12 @@ export function defaultRenderOption(
       <Stack>
         <Typography>{localName ?? nativeName}</Typography>
         {localName != null && nativeName != null && (
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary'
+            }}
+          >
             {nativeName}
           </Typography>
         )}

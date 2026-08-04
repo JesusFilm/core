@@ -60,11 +60,24 @@ export function PasswordResetPage({
           isSubmitting
         }) => (
           <Form>
-            <Stack gap={4}>
-              <Typography variant="h6" textAlign="left">
+            <Stack
+              sx={{
+                gap: 4
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{
+                  textAlign: 'left'
+                }}
+              >
                 {t('Reset Password')}
               </Typography>
-              <Typography textAlign="left">
+              <Typography
+                sx={{
+                  textAlign: 'left'
+                }}
+              >
                 {t(
                   'Get instructions sent to this email that explain how to reset your password.'
                 )}

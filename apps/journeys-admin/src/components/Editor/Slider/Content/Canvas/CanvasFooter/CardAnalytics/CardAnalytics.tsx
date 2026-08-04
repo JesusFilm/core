@@ -101,8 +101,8 @@ function Analytic({ title, value, icon }: StatsProps): ReactElement {
     <Tooltip title={`${value} ${title}`} placement="bottom">
       <Stack
         direction="row"
-        gap={2}
         sx={{
+          gap: 2,
           px: 4,
           flex: 1,
           height: 48,

@@ -341,7 +341,7 @@ describe('VideoBlockEditor', () => {
       </ThemeProvider>
     )
     await waitFor(() =>
-      expect(getByRole('checkbox', { name: 'Autoplay' })).toBeEnabled()
+      expect(getByRole('switch', { name: 'Autoplay' })).toBeEnabled()
     )
   })
 
@@ -359,7 +359,7 @@ describe('VideoBlockEditor', () => {
       </ThemeProvider>
     )
     await waitFor(() => {
-      expect(getByRole('checkbox', { name: 'Autoplay' })).toBeInTheDocument()
+      expect(getByRole('switch', { name: 'Autoplay' })).toBeInTheDocument()
     })
   })
 
@@ -418,7 +418,7 @@ describe('VideoBlockEditor', () => {
     )
 
     await waitFor(() => {
-      expect(getByRole('checkbox', { name: 'Autoplay' })).toBeInTheDocument()
+      expect(getByRole('switch', { name: 'Autoplay' })).toBeInTheDocument()
     })
   })
 

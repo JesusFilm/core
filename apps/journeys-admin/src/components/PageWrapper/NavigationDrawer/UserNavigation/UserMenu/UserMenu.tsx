@@ -63,8 +63,11 @@ export function UserMenu({
         <Stack
           direction="row"
           spacing={2}
-          sx={{ py: 2, px: 4 }}
-          alignItems="center"
+          sx={{
+            alignItems: 'center',
+            py: 2,
+            px: 4
+          }}
         >
           <Box>
             <Avatar

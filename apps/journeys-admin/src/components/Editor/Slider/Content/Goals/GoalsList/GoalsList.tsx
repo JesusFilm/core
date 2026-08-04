@@ -134,7 +134,9 @@ export function GoalsList({
                       <Typography
                         variant="subtitle2"
                         align="center"
-                        width={100}
+                        sx={{
+                          width: 100
+                        }}
                       >
                         {t('Appears on')}
                       </Typography>

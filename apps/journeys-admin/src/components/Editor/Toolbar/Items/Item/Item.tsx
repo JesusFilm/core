@@ -43,18 +43,20 @@ export function Item({
         <Tooltip
           title={label}
           arrow
-          PopperProps={{
-            modifiers: [
-              {
-                name: 'offset',
-                options: {
-                  offset: [0, 0.5]
-                }
-              }
-            ]
-          }}
           enterTouchDelay={0}
           leaveTouchDelay={2000}
+          slotProps={{
+            popper: {
+              modifiers: [
+                {
+                  name: 'offset',
+                  options: {
+                    offset: [0, 0.5]
+                  }
+                }
+              ]
+            }
+          }}
         >
           <span>
             {count != null ? (

@@ -1,4 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, queryByRole, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
@@ -245,7 +246,8 @@ describe('DefaultMenu', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     expect(getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Access' })).toBeInTheDocument()
@@ -301,7 +303,8 @@ describe('DefaultMenu', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await waitFor(() =>
       expect(
@@ -342,7 +345,8 @@ describe('DefaultMenu', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     expect(getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
@@ -398,7 +402,8 @@ describe('DefaultMenu', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     expect(
       queryByRole('menuitem', { name: 'Make Template' })
@@ -433,7 +438,8 @@ describe('DefaultMenu', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     fireEvent.click(getByRole('menuitem', { name: 'Access' }))
@@ -462,7 +468,8 @@ describe('DefaultMenu', () => {
             </TeamProvider>
           </MockedProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await waitFor(() => expect(getTeams.result).toHaveBeenCalled())
 
@@ -501,7 +508,8 @@ describe('DefaultMenu', () => {
             </TeamProvider>
           </MockedProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await waitFor(() => expect(getTeams.result).toHaveBeenCalled())
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -522,7 +530,14 @@ describe('DefaultMenu', () => {
     const setOpenTrashDialog = vi.fn()
 
     const { getByRole } = render(
-      <MockedProvider mocks={[teamWithManagerMock]}>
+      <MockedProvider
+        mocks={[
+          teamWithManagerMock,
+          currentUserMock,
+          userRoleNonPublisherMock,
+          makeJourneyMock('journey-id')
+        ]}
+      >
         <SnackbarProvider>
           <TeamProvider>
             <DefaultMenu
@@ -539,12 +554,17 @@ describe('DefaultMenu', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
-    await waitFor(() => {
-      fireEvent.click(getByRole('menuitem', { name: 'Trash' }))
-    })
+    await waitFor(() =>
+      expect(getByRole('menuitem', { name: 'Trash' })).not.toHaveAttribute(
+        'aria-disabled',
+        'true'
+      )
+    )
+    fireEvent.click(getByRole('menuitem', { name: 'Trash' }))
 
     expect(setOpenTrashDialog).toHaveBeenCalled()
     expect(handleCloseMenu).toHaveBeenCalled()
@@ -601,7 +621,8 @@ describe('DefaultMenu', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -664,7 +685,8 @@ describe('DefaultMenu', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -727,7 +749,8 @@ describe('DefaultMenu', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -792,7 +815,8 @@ describe('DefaultMenu', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -854,7 +878,8 @@ describe('DefaultMenu', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -913,7 +938,8 @@ describe('DefaultMenu', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -974,7 +1000,8 @@ describe('DefaultMenu', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -1044,7 +1071,8 @@ describe('DefaultMenu', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -1082,12 +1110,17 @@ describe('DefaultMenu', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
-    await waitFor(() => {
-      fireEvent.click(getByRole('menuitem', { name: 'Translate' }))
-    })
+    await waitFor(() =>
+      expect(getByRole('menuitem', { name: 'Translate' })).not.toHaveAttribute(
+        'aria-disabled',
+        'true'
+      )
+    )
+    fireEvent.click(getByRole('menuitem', { name: 'Translate' }))
     expect(setOpenTranslateDialog).toHaveBeenCalled()
     expect(handleCloseMenu).toHaveBeenCalled()
   })
@@ -1130,7 +1163,8 @@ describe('DefaultMenu', () => {
               </FlagsProvider>
             </SnackbarProvider>
           </ThemeProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
     }
 

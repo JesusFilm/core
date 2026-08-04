@@ -87,9 +87,22 @@ export function RestrictedViews({
     >
       {({ values, setFieldValue, isSubmitting, dirty, resetForm }) => (
         <Form>
-          <Stack gap={2}>
-            <Stack gap={1}>
-              <Typography variant="body2" color="text.secondary">
+          <Stack
+            sx={{
+              gap: 2
+            }}
+          >
+            <Stack
+              sx={{
+                gap: 1
+              }}
+            >
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary'
+                }}
+              >
                 Select platforms where viewing should be blocked for this video.
                 When a platform is selected, users accessing from that platform
                 will not be able to view this video.
@@ -130,7 +143,13 @@ export function RestrictedViews({
                 </FormGroup>
               </FormControl>
             </Stack>
-            <Stack direction="row" justifyContent="flex-end" gap={1}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: 'flex-end',
+                gap: 1
+              }}
+            >
               <CancelButton
                 show={dirty}
                 handleCancel={() => void resetForm()}

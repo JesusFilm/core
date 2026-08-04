@@ -236,10 +236,10 @@ export function CardsPreview({
           }}
         >
           <Stack
-            alignItems="center"
-            justifyContent="center"
-            gap={2}
             sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 2,
               width: CONTAINER_WIDTH,
               height: CONTAINER_HEIGHT,
               borderRadius: 2,
@@ -249,8 +249,10 @@ export function CardsPreview({
           >
             <Typography
               variant="overline2"
-              color="background.paper"
-              textAlign="center"
+              sx={{
+                color: 'background.paper',
+                textAlign: 'center'
+              }}
             >
               {t('{{count}} more cards', {
                 count: steps.length - slidesToRender.length

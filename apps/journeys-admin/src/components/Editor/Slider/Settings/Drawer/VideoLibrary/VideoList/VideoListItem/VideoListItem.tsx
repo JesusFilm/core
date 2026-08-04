@@ -74,14 +74,16 @@ export function VideoListItem({
         <ListItemText
           primary={title}
           secondary={description}
-          secondaryTypographyProps={{
-            sx: {
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis'
+          sx={{ m: 0 }}
+          slotProps={{
+            secondary: {
+              sx: {
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }
             }
           }}
-          sx={{ m: 0 }}
         />
         {image != null && (
           <Box>

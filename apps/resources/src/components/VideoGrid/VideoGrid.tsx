@@ -1,7 +1,7 @@
 import AddRounded from '@mui/icons-material/AddRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Grid from '@mui/material/GridLegacy'
+import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
@@ -44,7 +44,14 @@ export function VideoGrid({
     >
       {(videos?.length ?? 0) > 0 &&
         videos?.map((video, index) => (
-          <Grid item key={index} xs={12} md={4} xl={3}>
+          <Grid
+            key={index}
+            size={{
+              xs: 12,
+              md: 4,
+              xl: 3
+            }}
+          >
             <VideoCard
               video={video}
               containerSlug={containerSlug}
@@ -55,34 +62,54 @@ export function VideoGrid({
         ))}
       {loading && videos?.length === 0 && (
         <>
-          <Grid item xs={12} md={4} xl={3}>
-            <VideoCard variant={variant} />
-          </Grid>
-          <Grid item xs={12} md={4} xl={3}>
-            <VideoCard variant={variant} />
-          </Grid>
           <Grid
-            item
-            xs={12}
-            md={4}
-            xl={3}
-            sx={{ display: { xs: 'none', md: 'block' } }}
+            size={{
+              xs: 12,
+              md: 4,
+              xl: 3
+            }}
           >
             <VideoCard variant={variant} />
           </Grid>
           <Grid
-            item
-            xs={12}
-            md={4}
-            xl={3}
+            size={{
+              xs: 12,
+              md: 4,
+              xl: 3
+            }}
+          >
+            <VideoCard variant={variant} />
+          </Grid>
+          <Grid
+            sx={{ display: { xs: 'none', md: 'block' } }}
+            size={{
+              xs: 12,
+              md: 4,
+              xl: 3
+            }}
+          >
+            <VideoCard variant={variant} />
+          </Grid>
+          <Grid
             sx={{ display: { xs: 'none', xl: 'block' } }}
+            size={{
+              xs: 12,
+              md: 4,
+              xl: 3
+            }}
           >
             <VideoCard variant={variant} />
           </Grid>
         </>
       )}
       {!loading && hasNoResults && (
-        <Grid item xs={12} justifyContent="center" alignItems="center">
+        <Grid
+          size={12}
+          sx={{
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
           <Paper
             elevation={0}
             variant="outlined"
@@ -107,7 +134,7 @@ export function VideoGrid({
         </Grid>
       )}
       {showLoadMore && !hasNoResults && (
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
             <Button
               variant="outlined"
