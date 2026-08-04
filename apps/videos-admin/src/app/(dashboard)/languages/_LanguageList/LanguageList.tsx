@@ -44,6 +44,7 @@ import type {
   GetLanguageStudioManagedFilmsVariables,
   LinkedLanguageStudioManagedFilm
 } from '../_LanguageStudioManagedFilms/languageStudioManagedFilms'
+import { WessImportButton } from '../_WessImportButton'
 
 const DEFAULT_PAGE_SIZE = 25
 
@@ -413,6 +414,7 @@ export function LanguageList(): ReactElement {
             <MenuItem value="yes">Yes</MenuItem>
             <MenuItem value="no">No</MenuItem>
           </TextField>
+          <WessImportButton />
         </Stack>
 
         <Box sx={{ flex: '1 1 auto', minHeight: { xs: 360, sm: 420 } }}>
