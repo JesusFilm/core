@@ -1,5 +1,7 @@
 import { vi } from 'vitest'
 
+import { Prisma, Video } from '@core/prisma/media/client'
+
 import { prismaMock } from '../../../../test/prismaMock'
 import { videoCacheReset } from '../../../lib/videoCacheReset'
 import { enqueueVideoAlgoliaSync } from '../../../workers/videoAlgoliaSync'
@@ -28,6 +30,18 @@ vi.mock('../../../lib/videoCacheReset', () => ({
 const mockedEnqueueVideoAlgoliaSync = vi.mocked(enqueueVideoAlgoliaSync)
 const mockedVideoCacheReset = vi.mocked(videoCacheReset)
 
+type AvailableLanguagesVideoPayload = Prisma.VideoGetPayload<{
+  select: {
+    label: true
+    variants: { select: { languageId: true } }
+    children: { select: { availableLanguages: true } }
+  }
+}>
+
+type ContainerParentPayload = Prisma.VideoGetPayload<{
+  select: { id: true }
+}>
+
 describe('updateVideoAvailableLanguages', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -35,7 +49,7 @@ describe('updateVideoAvailableLanguages', () => {
       label: 'series',
       variants: [],
       children: []
-    } as any)
+    } as AvailableLanguagesVideoPayload as unknown as Video)
     prismaMock.video.update.mockResolvedValue({} as any)
     mockedVideoCacheReset.mockResolvedValue(undefined)
   })
@@ -43,13 +57,17 @@ describe('updateVideoAvailableLanguages', () => {
   it('enqueues a video-only Algolia sync by default', async () => {
     await updateVideoAvailableLanguages('video-id')
 
-    expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith('video-id', {
-      syncVideoRecord: true,
-      syncAllVariants: false,
-      syncPublishedFlag: false,
-      dirtyVariantIds: [],
-      deletedVariantIds: []
-    })
+    expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+      'video-id',
+      {
+        syncVideoRecord: true,
+        syncAllVariants: false,
+        syncPublishedFlag: false,
+        dirtyVariantIds: [],
+        deletedVariantIds: []
+      },
+      expect.anything()
+    )
   })
 
   it('does not enqueue an Algolia sync when skipAlgolia is set', async () => {
@@ -64,7 +82,7 @@ describe('findContainerParentIds', () => {
     prismaMock.video.findMany.mockResolvedValueOnce([
       { id: 'parent-1' },
       { id: 'parent-2' }
-    ] as any)
+    ] as ContainerParentPayload[] as unknown as Video[])
 
     const parentIds = await findContainerParentIds('child-id')
 
@@ -84,23 +102,31 @@ describe('updateParentCollectionLanguages', () => {
     prismaMock.video.findMany.mockResolvedValueOnce([
       { id: 'parent-1' },
       { id: 'parent-2' }
-    ] as any)
+    ] as ContainerParentPayload[] as unknown as Video[])
 
     await updateParentCollectionLanguages('child-id')
 
-    expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith('parent-1', {
-      syncVideoRecord: true,
-      syncAllVariants: false,
-      syncPublishedFlag: false,
-      dirtyVariantIds: [],
-      deletedVariantIds: []
-    })
-    expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith('parent-2', {
-      syncVideoRecord: true,
-      syncAllVariants: false,
-      syncPublishedFlag: false,
-      dirtyVariantIds: [],
-      deletedVariantIds: []
-    })
+    expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+      'parent-1',
+      {
+        syncVideoRecord: true,
+        syncAllVariants: false,
+        syncPublishedFlag: false,
+        dirtyVariantIds: [],
+        deletedVariantIds: []
+      },
+      expect.anything()
+    )
+    expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+      'parent-2',
+      {
+        syncVideoRecord: true,
+        syncAllVariants: false,
+        syncPublishedFlag: false,
+        dirtyVariantIds: [],
+        deletedVariantIds: []
+      },
+      expect.anything()
+    )
   })
 })

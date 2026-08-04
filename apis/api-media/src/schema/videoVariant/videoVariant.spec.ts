@@ -1269,13 +1269,17 @@ describe('videoVariant', () => {
         expect(mockedVideoCacheReset).toHaveBeenCalledWith('videoId')
 
         // Verify Algolia sync was enqueued (not called inline) for the new variant
-        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith('videoId', {
-          syncVideoRecord: true,
-          syncAllVariants: false,
-          syncPublishedFlag: false,
-          dirtyVariantIds: ['id'],
-          deletedVariantIds: []
-        })
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+          'videoId',
+          {
+            syncVideoRecord: true,
+            syncAllVariants: false,
+            syncPublishedFlag: false,
+            dirtyVariantIds: ['id'],
+            deletedVariantIds: []
+          },
+          expect.anything()
+        )
       })
 
       it('notifies Slack when video variant creation fails', async () => {
@@ -1622,13 +1626,17 @@ describe('videoVariant', () => {
         expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('id')
 
         // Verify Algolia sync was enqueued (not called inline) for the updated variant
-        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith('videoId', {
-          syncVideoRecord: true,
-          syncAllVariants: false,
-          syncPublishedFlag: false,
-          dirtyVariantIds: ['id'],
-          deletedVariantIds: []
-        })
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+          'videoId',
+          {
+            syncVideoRecord: true,
+            syncAllVariants: false,
+            syncPublishedFlag: false,
+            dirtyVariantIds: ['id'],
+            deletedVariantIds: []
+          },
+          expect.anything()
+        )
       })
 
       it('should continue even if cache reset function throws', async () => {
@@ -1810,13 +1818,17 @@ describe('videoVariant', () => {
 
         // Verify Algolia sync was enqueued (not called inline) with the
         // deleted variant so the worker removes its stale index record
-        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith('videoId', {
-          syncVideoRecord: true,
-          syncAllVariants: false,
-          syncPublishedFlag: false,
-          dirtyVariantIds: [],
-          deletedVariantIds: ['id']
-        })
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+          'videoId',
+          {
+            syncVideoRecord: true,
+            syncAllVariants: false,
+            syncPublishedFlag: false,
+            dirtyVariantIds: [],
+            deletedVariantIds: ['id']
+          },
+          expect.anything()
+        )
       })
 
       it('should continue even if cache reset functions throw', async () => {

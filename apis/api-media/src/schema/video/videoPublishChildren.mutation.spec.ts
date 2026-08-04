@@ -289,20 +289,28 @@ describe('videoPublishChildren', () => {
       // parent and c1 are both newly published this run (videoIdsToPublish),
       // so both get the published-flag batch update plus their own newly
       // published variant
-      expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith('parent', {
-        syncVideoRecord: true,
-        syncAllVariants: false,
-        syncPublishedFlag: true,
-        dirtyVariantIds: ['pv1'],
-        deletedVariantIds: []
-      })
-      expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith('c1', {
-        syncVideoRecord: true,
-        syncAllVariants: false,
-        syncPublishedFlag: true,
-        dirtyVariantIds: ['cv1'],
-        deletedVariantIds: []
-      })
+      expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+        'parent',
+        {
+          syncVideoRecord: true,
+          syncAllVariants: false,
+          syncPublishedFlag: true,
+          dirtyVariantIds: ['pv1'],
+          deletedVariantIds: []
+        },
+        expect.anything()
+      )
+      expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+        'c1',
+        {
+          syncVideoRecord: true,
+          syncAllVariants: false,
+          syncPublishedFlag: true,
+          dirtyVariantIds: ['cv1'],
+          deletedVariantIds: []
+        },
+        expect.anything()
+      )
     })
 
     it('publishes draft variants on already published children', async () => {

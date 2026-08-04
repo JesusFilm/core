@@ -20,6 +20,7 @@ import { deleteR2File } from '../cloudflare/r2/asset'
 import { IdType, IdTypeShape } from '../enums/idType'
 import { NotUniqueError } from '../error/NotUniqueError'
 import { Language, LanguageWithSlug } from '../language'
+import { logger } from '../logger'
 import { deleteVideo } from '../mux/video/service'
 import { VideoSource, VideoSourceShape } from '../videoSource/videoSource'
 import { VideoVariantFilter } from '../videoVariant/inputs/videoVariantFilter'
@@ -691,7 +692,7 @@ builder.mutationFields((t) => ({
           ...query,
           data
         })
-        await enqueueVideoAlgoliaSync(video.id, videoOnlyScope)
+        await enqueueVideoAlgoliaSync(video.id, videoOnlyScope, logger)
 
         try {
           await videoCacheReset(video.id)
@@ -882,13 +883,17 @@ builder.mutationFields((t) => ({
         input.childIds !== undefined ||
         input.restrictViewPlatforms !== undefined
 
-      await enqueueVideoAlgoliaSync(video.id, {
-        syncVideoRecord: true,
-        syncAllVariants: variantEmbeddedFieldsChanged,
-        syncPublishedFlag: publishedChanged,
-        dirtyVariantIds: [],
-        deletedVariantIds: []
-      })
+      await enqueueVideoAlgoliaSync(
+        video.id,
+        {
+          syncVideoRecord: true,
+          syncAllVariants: variantEmbeddedFieldsChanged,
+          syncPublishedFlag: publishedChanged,
+          dirtyVariantIds: [],
+          deletedVariantIds: []
+        },
+        logger
+      )
 
       // A child's publish state isn't embedded in its own variant records,
       // but it changes whether the child shows up under its parent
@@ -898,7 +903,7 @@ builder.mutationFields((t) => ({
         const parentIds = await findContainerParentIds(video.id)
         await Promise.all(
           parentIds.map((parentId) =>
-            enqueueVideoAlgoliaSync(parentId, videoOnlyScope)
+            enqueueVideoAlgoliaSync(parentId, videoOnlyScope, logger)
           )
         )
       }
@@ -1007,7 +1012,7 @@ builder.mutationFields((t) => ({
         where: { id }
       })
 
-      await enqueueVideoAlgoliaSync(id, videoOnlyScope)
+      await enqueueVideoAlgoliaSync(id, videoOnlyScope, logger)
 
       try {
         await videoCacheReset(id)

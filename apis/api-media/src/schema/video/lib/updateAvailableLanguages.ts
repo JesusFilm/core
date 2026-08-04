@@ -10,6 +10,7 @@ import {
   enqueueVideoAlgoliaSync,
   videoOnlyScope
 } from '../../../workers/videoAlgoliaSync'
+import { logger } from '../../logger'
 
 // Calculates what availableLanguages should be for a given video
 // Does NOT update the database - only calculates the correct value
@@ -76,7 +77,7 @@ export async function updateVideoAvailableLanguages(
 
   // Update cache and search index unless skipped
   if (!options.skipAlgolia) {
-    await enqueueVideoAlgoliaSync(videoId, videoOnlyScope)
+    await enqueueVideoAlgoliaSync(videoId, videoOnlyScope, logger)
   }
 
   if (!options.skipCache) {

@@ -2615,7 +2615,8 @@ describe('video', () => {
         })
         expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
           'id',
-          expect.objectContaining({ syncVideoRecord: true })
+          expect.objectContaining({ syncVideoRecord: true }),
+          expect.anything()
         )
       })
 
@@ -2823,13 +2824,17 @@ describe('video', () => {
 
         // label/childIds changed and published flipped false -> true: full
         // variant re-index plus the published-flag batch update
-        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith('id', {
-          syncVideoRecord: true,
-          syncAllVariants: true,
-          syncPublishedFlag: true,
-          dirtyVariantIds: [],
-          deletedVariantIds: []
-        })
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+          'id',
+          {
+            syncVideoRecord: true,
+            syncAllVariants: true,
+            syncPublishedFlag: true,
+            dirtyVariantIds: [],
+            deletedVariantIds: []
+          },
+          expect.anything()
+        )
         expect(mockedFindContainerParentIds).toHaveBeenCalledWith('id')
       })
 
@@ -3387,13 +3392,17 @@ describe('video', () => {
 
         // noIndex isn't embedded in any variant's Algolia record and
         // published wasn't touched, so this should stay video-only
-        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith('id', {
-          syncVideoRecord: true,
-          syncAllVariants: false,
-          syncPublishedFlag: false,
-          dirtyVariantIds: [],
-          deletedVariantIds: []
-        })
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+          'id',
+          {
+            syncVideoRecord: true,
+            syncAllVariants: false,
+            syncPublishedFlag: false,
+            dirtyVariantIds: [],
+            deletedVariantIds: []
+          },
+          expect.anything()
+        )
         expect(mockedFindContainerParentIds).not.toHaveBeenCalled()
       })
 
@@ -3436,7 +3445,8 @@ describe('video', () => {
             syncPublishedFlag: false,
             dirtyVariantIds: [],
             deletedVariantIds: []
-          }
+          },
+          expect.anything()
         )
       })
     })
@@ -3495,7 +3505,8 @@ describe('video', () => {
         })
         expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
           'videoId',
-          expect.objectContaining({ syncVideoRecord: true })
+          expect.objectContaining({ syncVideoRecord: true }),
+          expect.anything()
         )
       })
 

@@ -410,13 +410,17 @@ export async function executeVideoPublishChildren(
   )
   await Promise.allSettled(
     affectedVideoIds.map(async (videoId) => {
-      await enqueueVideoAlgoliaSync(videoId, {
-        syncVideoRecord: true,
-        syncAllVariants: false,
-        syncPublishedFlag: videoIdsToPublish.includes(videoId),
-        dirtyVariantIds: variantIdsToPublishByVideoId.get(videoId) ?? [],
-        deletedVariantIds: []
-      })
+      await enqueueVideoAlgoliaSync(
+        videoId,
+        {
+          syncVideoRecord: true,
+          syncAllVariants: false,
+          syncPublishedFlag: videoIdsToPublish.includes(videoId),
+          dirtyVariantIds: variantIdsToPublishByVideoId.get(videoId) ?? [],
+          deletedVariantIds: []
+        },
+        logger
+      )
 
       await videoCacheReset(videoId).catch((error) => {
         logger.error({ error, videoId }, 'Video cache reset failed')
