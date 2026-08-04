@@ -724,7 +724,9 @@ describe('download processing utilities', () => {
       })
       expect(prismaMock.videoVariantDownload.create).not.toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({ quality: VideoVariantDownloadQuality.low })
+          data: expect.objectContaining({
+            quality: VideoVariantDownloadQuality.low
+          })
         })
       )
     })
