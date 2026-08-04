@@ -17,7 +17,10 @@ import {
 } from 'react'
 import { List } from 'react-window'
 
-import { extractLanguageNames } from '../../libs/extractLanguageNames'
+import {
+  extractLanguageNames,
+  isTwoLineOption
+} from '../../libs/extractLanguageNames'
 import type { Translation } from '../../libs/extractLanguageNames'
 import { ResizeObserverPolyfill } from '../ResizeObserverPolyfill'
 
@@ -162,7 +165,7 @@ export function LanguageAutocomplete({
       const option = (
         itemData[index] as unknown as [unknown, LanguageOption]
       )?.[1]
-      return option?.localName != null && option?.nativeName != null
+      return option != null && isTwoLineOption(option)
         ? TWO_LINE_ROW_HEIGHT
         : SINGLE_LINE_ROW_HEIGHT
     }

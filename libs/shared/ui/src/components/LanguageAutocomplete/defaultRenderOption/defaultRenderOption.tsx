@@ -4,6 +4,8 @@ import Typography from '@mui/material/Typography'
 import { ReactNode } from 'react'
 import type { RowComponentProps } from 'react-window'
 
+import { isTwoLineOption } from '../../../libs/extractLanguageNames'
+
 export function defaultRenderOption(
   props: RowComponentProps<{ rows: any[] }>
 ): ReactNode {
@@ -21,7 +23,7 @@ export function defaultRenderOption(
     >
       <Stack>
         <Typography>{localName ?? nativeName}</Typography>
-        {localName != null && nativeName != null && (
+        {isTwoLineOption({ localName, nativeName }) && (
           <Typography variant="body2" color="text.secondary">
             {nativeName}
           </Typography>
