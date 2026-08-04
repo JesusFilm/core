@@ -82,7 +82,7 @@ describe('LanguagesFilter', () => {
 
     expect(englishOption?.textContent).toBe('English')
     expect(germanOption?.textContent).toBe('German, StandardDeutsch')
-    expect(englishOption?.style.height).not.toBe('')
-    expect(englishOption?.style.height).not.toBe(germanOption?.style.height)
+    expect(englishOption).toHaveStyle({ height: '45px' })
+    expect(germanOption).toHaveStyle({ height: '68px' })
   })
 })

@@ -38,7 +38,7 @@ describe('defaultRenderOption', () => {
     expect(screen.getByText('Aja-Gbe-LocalName')).toBeInTheDocument()
   })
 
-  it('should show only one line when there is no native name', () => {
+  it('should show only one line when there is no local name', () => {
     render(
       defaultRenderOption({
         index: 0,
