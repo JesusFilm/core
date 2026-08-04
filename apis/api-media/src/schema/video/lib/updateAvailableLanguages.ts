@@ -5,8 +5,11 @@
 
 import { prisma } from '@core/prisma/media/client'
 
-import { updateVideoInAlgolia } from '../../../lib/algolia/algoliaVideoUpdate'
 import { videoCacheReset } from '../../../lib/videoCacheReset'
+import {
+  enqueueVideoAlgoliaSync,
+  videoOnlyScope
+} from '../../../workers/videoAlgoliaSync'
 
 // Calculates what availableLanguages should be for a given video
 // Does NOT update the database - only calculates the correct value
@@ -73,11 +76,7 @@ export async function updateVideoAvailableLanguages(
 
   // Update cache and search index unless skipped
   if (!options.skipAlgolia) {
-    try {
-      await updateVideoInAlgolia(videoId)
-    } catch (error) {
-      console.error('Algolia update error:', error)
-    }
+    await enqueueVideoAlgoliaSync(videoId, videoOnlyScope)
   }
 
   if (!options.skipCache) {
@@ -151,11 +150,12 @@ export async function removeLanguageFromVideoIfUnused(
   })
 }
 
-// Updates all parent videos (collections) when a child video's languages change
-// Ensures collections always reflect the union of their children's languages
-export async function updateParentCollectionLanguages(
+// Finds the container videos (collections/series/featureFilms) that list
+// the given video as a child. Shared by language-cascade and Algolia
+// parent-cascade callers.
+export async function findContainerParentIds(
   childVideoId: string
-): Promise<void> {
+): Promise<string[]> {
   const parents = await prisma.video.findMany({
     where: {
       children: {
@@ -168,9 +168,19 @@ export async function updateParentCollectionLanguages(
     select: { id: true }
   })
 
+  return parents.map((parent) => parent.id)
+}
+
+// Updates all parent videos (collections) when a child video's languages change
+// Ensures collections always reflect the union of their children's languages
+export async function updateParentCollectionLanguages(
+  childVideoId: string
+): Promise<void> {
+  const parentIds = await findContainerParentIds(childVideoId)
+
   // Update each parent collection
-  for (const parent of parents) {
-    await updateVideoAvailableLanguages(parent.id, {
+  for (const parentId of parentIds) {
+    await updateVideoAvailableLanguages(parentId, {
       skipCache: false,
       skipAlgolia: false
     })

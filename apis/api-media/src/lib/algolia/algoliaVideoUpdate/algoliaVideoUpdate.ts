@@ -222,6 +222,7 @@ export async function updateVideoInAlgolia(
     )
   } catch (error) {
     logger?.error(error, `failed to update video ${videoId} in algolia`)
+    throw error
   }
 }
 
@@ -267,5 +268,6 @@ export async function updateVideoPublishedStatus(
       error,
       `failed to update video published status for video ${videoId}`
     )
+    throw error
   }
 }
