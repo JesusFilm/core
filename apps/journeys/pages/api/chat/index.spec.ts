@@ -496,7 +496,9 @@ describe('/api/chat handler', () => {
         language: 'French',
         translation: 'ESV'
       })
-      expect(lastStreamConfig?.instructions).toBe('compiled-system[lang=French]')
+      expect(lastStreamConfig?.instructions).toBe(
+        'compiled-system[lang=French]'
+      )
     })
 
     it('compiles with only the ESV translation variable when no language is supplied', async () => {
