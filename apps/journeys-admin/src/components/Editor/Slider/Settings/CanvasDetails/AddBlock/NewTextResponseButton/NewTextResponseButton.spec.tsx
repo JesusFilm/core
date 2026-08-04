@@ -17,8 +17,11 @@ import { textResponseWithButtonDeleteMock } from '../../../../../../../libs/useT
 import { textResponseWithButtonRestoreMock } from '../../../../../../../libs/useTextResponseWithButtonRestore/useTextResponseWithButtonRestore.mock'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
+import {
+  stepWithSubmitButton,
+  stepWithoutSubmitButton
+} from '../submitButtonFixtures'
 
-import { stepWithSubmitButton, stepWithoutSubmitButton } from './data'
 import { TEXT_RESPONSE_BLOCK_CREATE } from './NewTextResponseButton'
 
 import { NewTextResponseButton } from '.'
@@ -81,7 +84,7 @@ describe('NewTextResponseButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -121,7 +124,7 @@ describe('NewTextResponseButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -180,7 +183,7 @@ describe('NewTextResponseButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -221,7 +224,7 @@ describe('NewTextResponseButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -277,7 +280,7 @@ describe('NewTextResponseButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -320,7 +323,7 @@ describe('NewTextResponseButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -362,7 +365,7 @@ describe('NewTextResponseButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -422,7 +425,7 @@ describe('NewTextResponseButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -498,7 +501,7 @@ describe('NewTextResponseButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider

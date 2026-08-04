@@ -49,7 +49,7 @@ describe('RemoveUser', () => {
       <JourneyProvider
         value={{
           journey: { id: 'journeyId' } as unknown as Journey,
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <MockedProvider
@@ -142,7 +142,7 @@ describe('RemoveUser', () => {
       <JourneyProvider
         value={{
           journey: { id: 'journeyId' } as unknown as Journey,
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <MockedProvider

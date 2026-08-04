@@ -14,7 +14,7 @@ import { ChatOverlay } from '../ChatOverlay'
 
 export function AiChatButton(): ReactElement | null {
   const { t } = useTranslation('libs-journeys-ui')
-  const { variant } = useJourney()
+  const { renderMode } = useJourney()
   const { open, setOpen } = useChatOverlay()
   const theme = useTheme()
   // sm+ opens the full-screen ChatOverlay; on xs the same `open` state
@@ -31,7 +31,7 @@ export function AiChatButton(): ReactElement | null {
     setOpen(false)
   }, [setOpen])
 
-  if (variant === 'admin' || variant === 'embed') {
+  if (renderMode === 'admin' || renderMode === 'embed') {
     return null
   }
 

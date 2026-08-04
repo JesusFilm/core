@@ -7,7 +7,7 @@ import { useJourney } from '../../libs/JourneyProvider'
 import { SpacerFields } from './__generated__/SpacerFields'
 
 export const Spacer = ({ spacing }: TreeBlock<SpacerFields>): ReactElement => {
-  const { variant } = useJourney()
+  const { renderMode } = useJourney()
 
   return (
     <Box
@@ -17,7 +17,9 @@ export const Spacer = ({ spacing }: TreeBlock<SpacerFields>): ReactElement => {
         bgcolor: 'rgba(0,0,0,0)',
         borderRadius: '6px',
         outline: (theme) =>
-          variant === 'admin' ? `4px dashed ${theme.palette.divider}` : 'none',
+          renderMode === 'admin'
+            ? `4px dashed ${theme.palette.divider}`
+            : 'none',
         outlineOffset: -4,
         transition: (theme) =>
           theme.transitions.create('height', { duration: 200 })

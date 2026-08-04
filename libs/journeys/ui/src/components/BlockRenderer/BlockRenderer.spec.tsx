@@ -492,7 +492,7 @@ describe('BlockRenderer', () => {
     )
   })
 
-  it('should render MultiselectQuestion', async () => {
+  it('should render Multiselect', async () => {
     const option: TreeBlock<MultiselectOptionBlock> = {
       __typename: 'MultiselectOptionBlock',
       id: 'option1',
@@ -521,7 +521,7 @@ describe('BlockRenderer', () => {
     expect(getByText('multi option 2')).toBeInTheDocument()
   })
 
-  it('should render MultiselectQuestion with general wrapper and specific wrapper', () => {
+  it('should render Multiselect with general wrapper and specific wrapper', () => {
     const block: TreeBlock = {
       __typename: 'MultiselectBlock',
       id: 'multi',
@@ -539,7 +539,7 @@ describe('BlockRenderer', () => {
             Wrapper: ({ children }) => (
               <div data-testid="general-wrapper">{children}</div>
             ),
-            MultiselectQuestionWrapper: ({ children }) => (
+            MultiselectWrapper: ({ children }) => (
               <div data-testid="multiselect-question-wrapper">{children}</div>
             )
           }}

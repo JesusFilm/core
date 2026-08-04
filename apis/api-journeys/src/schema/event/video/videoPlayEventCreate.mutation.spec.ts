@@ -4,10 +4,10 @@ import { vi } from 'vitest'
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
-import { resetEventsEmailDelay, validateBlockEvent } from '../utils'
+import { resetEventsEmailDelay, validateBlockEvent } from '../eventService'
 
-vi.mock('../utils', async () => ({
-  ...(await vi.importActual('../utils')),
+vi.mock('../eventService', async () => ({
+  ...(await vi.importActual('../eventService')),
   validateBlockEvent: vi.fn(),
   resetEventsEmailDelay: vi.fn()
 }))

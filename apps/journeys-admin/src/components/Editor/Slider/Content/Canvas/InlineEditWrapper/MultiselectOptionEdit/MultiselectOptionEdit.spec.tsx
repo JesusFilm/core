@@ -99,7 +99,7 @@ describe('MultiselectOptionEdit', () => {
 
     render(
       <MockedProvider link={link}>
-        <JourneyProvider value={{ journey: mockJourney, variant: 'admin' }}>
+        <JourneyProvider value={{ journey: mockJourney, renderMode: 'admin' }}>
           <EditorProvider>
             <CommandUndoItem variant="button" />
             <MultiselectOptionEdit {...props} />
@@ -136,7 +136,7 @@ describe('MultiselectOptionEdit', () => {
 
     render(
       <MockedProvider link={link}>
-        <JourneyProvider value={{ journey: mockJourney, variant: 'admin' }}>
+        <JourneyProvider value={{ journey: mockJourney, renderMode: 'admin' }}>
           <EditorProvider>
             <CommandUndoItem variant="button" />
             <CommandRedoItem variant="button" />
@@ -163,7 +163,7 @@ describe('MultiselectOptionEdit', () => {
 
     render(
       <MockedProvider link={link}>
-        <JourneyProvider value={{ journey: mockJourney, variant: 'admin' }}>
+        <JourneyProvider value={{ journey: mockJourney, renderMode: 'admin' }}>
           <EditorProvider>
             <MultiselectOptionEdit {...props} />
           </EditorProvider>

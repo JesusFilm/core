@@ -16,7 +16,7 @@ describe('JourneyQuickSettings', () => {
   it('should render elements', () => {
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <JourneyQuickSettings />
         </JourneyProvider>
       </MockedProvider>
@@ -35,7 +35,7 @@ describe('JourneyQuickSettings', () => {
   it('should render journeyQuickSettingsGoals on goals tab click', () => {
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <JourneyQuickSettings />
         </JourneyProvider>
       </MockedProvider>
@@ -57,7 +57,7 @@ describe('JourneyQuickSettings', () => {
   it('should open share dialog on share button click', () => {
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <JourneyQuickSettings />
         </JourneyProvider>
       </MockedProvider>

@@ -127,7 +127,7 @@ describe('NewRadioQuestionButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>
@@ -225,7 +225,7 @@ describe('NewRadioQuestionButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>
@@ -338,7 +338,7 @@ describe('NewRadioQuestionButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>
@@ -438,7 +438,7 @@ describe('NewRadioQuestionButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>
@@ -497,7 +497,7 @@ describe('NewRadioQuestionButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>

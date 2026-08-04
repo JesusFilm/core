@@ -223,7 +223,7 @@ describe('CardBlock', () => {
 
     const { getByTestId } = render(
       <MockedProvider mocks={[stepViewEventMock]}>
-        <JourneyProvider value={{ variant: 'default' }}>
+        <JourneyProvider value={{ renderMode: 'default' }}>
           <Card {...card2} />
         </JourneyProvider>
       </MockedProvider>

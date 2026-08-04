@@ -50,7 +50,7 @@ const Template: StoryObj<
               primaryImageBlock,
               tags: []
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider>

@@ -71,7 +71,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["pnpm exec tsc -b libs/prisma/users/tsconfig.json"]
+        "commands": ["pnpm tsc7 -p libs/prisma/users/tsconfig.ts7.json"]
       }
     }
   }

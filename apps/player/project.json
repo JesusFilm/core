@@ -134,7 +134,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsc -b apps/player/tsconfig.json"
+        "command": "pnpm tsc7 -p apps/player/tsconfig.ts7.json"
       }
     },
     "fetch-secrets": {

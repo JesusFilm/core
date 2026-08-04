@@ -138,7 +138,7 @@ describe('Host', () => {
           <JourneyProvider
             value={{
               journey: { ...journey, host: null },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider>
@@ -171,7 +171,7 @@ describe('Host', () => {
           <JourneyProvider
             value={{
               journey: { ...journey, host: null },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider>
@@ -208,7 +208,7 @@ describe('Host', () => {
           <JourneyProvider
             value={{
               journey: { ...journey, host: null },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider>

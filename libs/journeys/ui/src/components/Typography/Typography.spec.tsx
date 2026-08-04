@@ -80,7 +80,7 @@ describe('Typography', () => {
     ).toHaveTextContent('hello')
   })
 
-  it('resolves content using journey customization fields on default variant', () => {
+  it('resolves content using journey customization fields in default render mode', () => {
     const journey = {
       journeyCustomizationFields: [
         {
@@ -97,7 +97,7 @@ describe('Typography', () => {
     const blockWithTemplate = { ...block, content: '{{ name }}' }
 
     render(
-      <JourneyProvider value={{ journey, variant: 'default' }}>
+      <JourneyProvider value={{ journey, renderMode: 'default' }}>
         <Typography {...blockWithTemplate} />
       </JourneyProvider>
     )
@@ -107,7 +107,7 @@ describe('Typography', () => {
     ).toBeInTheDocument()
   })
 
-  it('does not resolve content on admin variant for template journeys', () => {
+  it('does not resolve content in admin render mode for template journeys', () => {
     const journey = {
       template: true,
       journeyCustomizationFields: [
@@ -125,7 +125,7 @@ describe('Typography', () => {
     const blockWithTemplate = { ...block, content: '{{ name }}' }
 
     render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
+      <JourneyProvider value={{ journey, renderMode: 'admin' }}>
         <Typography {...blockWithTemplate} />
       </JourneyProvider>
     )
@@ -152,7 +152,7 @@ describe('Typography', () => {
     const blockWithTemplate = { ...block, content: 'Hello {{ name }}!' }
 
     render(
-      <JourneyProvider value={{ journey, variant: 'default' }}>
+      <JourneyProvider value={{ journey, renderMode: 'default' }}>
         <Typography {...blockWithTemplate} />
       </JourneyProvider>
     )
@@ -179,7 +179,7 @@ describe('Typography', () => {
     const blockWithTemplate = { ...block, content: '{{ title }}' }
 
     render(
-      <JourneyProvider value={{ journey, variant: 'default' }}>
+      <JourneyProvider value={{ journey, renderMode: 'default' }}>
         <Typography {...blockWithTemplate} />
       </JourneyProvider>
     )
