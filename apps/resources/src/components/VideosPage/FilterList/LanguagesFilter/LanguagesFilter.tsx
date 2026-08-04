@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
 import type { RowComponentProps } from 'react-window'
 
+import { isTwoLineOption } from '@core/shared/ui/extractLanguageNames'
 import {
   LanguageAutocomplete,
   LanguageAutocompleteProps
@@ -28,7 +29,7 @@ export function Option(props: RowComponentProps<{ rows: any[] }>): ReactNode {
     >
       <Stack>
         <Typography variant="h6">{localName ?? nativeName}</Typography>
-        {localName != null && nativeName != null && (
+        {isTwoLineOption({ localName, nativeName }) && (
           <Typography variant="h6" color="text.secondary">
             {nativeName}
           </Typography>
