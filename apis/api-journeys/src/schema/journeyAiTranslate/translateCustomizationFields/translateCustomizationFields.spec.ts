@@ -1,6 +1,8 @@
 import { generateText } from 'ai'
 import { type MockedFunction, vi } from 'vitest'
 
+import { promptOf } from '../../../../test/promptOf'
+
 import { translateCustomizationFields } from './translateCustomizationFields'
 
 vi.mock('@openrouter/ai-sdk-provider', () => ({
@@ -24,14 +26,6 @@ vi.mock('@core/shared/ai/prompts', () => ({
   hardenPrompt: vi.fn((text) => `<hardened>${text}</hardened>`),
   preSystemPrompt: 'mocked system prompt'
 }))
-
-/**
- * The user prompt from a `generateText` call. The system prompt travels
- * separately as `instructions`, so `messages` holds the user turn alone.
- */
-function promptOf(options: any): string {
-  return options.messages[0].content[0].text
-}
 
 const baseMockResponse = {
   usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
@@ -86,7 +80,7 @@ describe('translateCustomizationFields', () => {
     const sourceLanguageName = 'English'
     const targetLanguageName = 'Spanish'
 
-    mockGenerateText.mockImplementation(async (options: any) => {
+    mockGenerateText.mockImplementation(async (options: unknown) => {
       const prompt = promptOf(options)
 
       if (prompt.includes('customization description')) {
@@ -159,7 +153,7 @@ describe('translateCustomizationFields', () => {
 
   it('should handle null customization description', async () => {
     // field1 has both value and defaultValue, so 2 batch calls
-    mockGenerateText.mockImplementation(async (options: any) => {
+    mockGenerateText.mockImplementation(async (options: unknown) => {
       const prompt = promptOf(options)
 
       if (prompt.includes('John Doe')) {
@@ -332,7 +326,7 @@ describe('translateCustomizationFields', () => {
       }
     ]
 
-    mockGenerateText.mockImplementation(async (options: any) => {
+    mockGenerateText.mockImplementation(async (options: unknown) => {
       const prompt = promptOf(options)
 
       // Values batch should target French
@@ -388,7 +382,7 @@ describe('translateCustomizationFields', () => {
       }
     ]
 
-    mockGenerateText.mockImplementation(async (options: any) => {
+    mockGenerateText.mockImplementation(async (options: unknown) => {
       const prompt = promptOf(options)
       expect(prompt).toContain('French')
       return {
@@ -425,7 +419,7 @@ describe('translateCustomizationFields', () => {
       }
     ]
 
-    mockGenerateText.mockImplementation(async (options: any) => {
+    mockGenerateText.mockImplementation(async (options: unknown) => {
       const prompt = promptOf(options)
 
       if (prompt.includes('customization description')) {
@@ -472,7 +466,7 @@ describe('translateCustomizationFields', () => {
   })
 
   it('should fall back to targetLanguageName for description when descriptionTargetLanguageName not provided', async () => {
-    mockGenerateText.mockImplementation(async (options: any) => {
+    mockGenerateText.mockImplementation(async (options: unknown) => {
       const prompt = promptOf(options)
       expect(prompt).toContain('French')
       return {
@@ -567,7 +561,7 @@ describe('translateCustomizationFields', () => {
       }
     ]
 
-    mockGenerateText.mockImplementation(async (options: any) => {
+    mockGenerateText.mockImplementation(async (options: unknown) => {
       const prompt = promptOf(options)
 
       if (prompt.includes('Hello')) {
@@ -613,7 +607,7 @@ describe('translateCustomizationFields', () => {
       }
     ]
 
-    mockGenerateText.mockImplementation(async (options: any) => {
+    mockGenerateText.mockImplementation(async (options: unknown) => {
       const prompt = promptOf(options)
 
       if (prompt.includes('Hello')) {
