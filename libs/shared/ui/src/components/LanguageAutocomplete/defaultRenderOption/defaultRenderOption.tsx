@@ -6,6 +6,11 @@ import type { RowComponentProps } from 'react-window'
 
 import { isTwoLineOption } from '../../../libs/extractLanguageNames'
 
+/**
+ * Default row renderer for `LanguageAutocomplete`'s virtualized list. Shows
+ * the native name as a second line only when one exists, matching the row
+ * height `getRowHeight` allocated for this option.
+ */
 export function defaultRenderOption(
   props: RowComponentProps<{ rows: any[] }>
 ): ReactNode {

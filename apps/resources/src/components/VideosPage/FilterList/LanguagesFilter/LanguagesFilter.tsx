@@ -14,6 +14,11 @@ import {
 } from '@core/shared/ui/LanguageAutocomplete'
 import { ResizeObserverPolyfill } from '@core/shared/ui/ResizeObserverPolyfill'
 
+/**
+ * Custom row renderer for this filter's language dropdown, styled larger
+ * than the default. Shows the native name as a second line only when one
+ * exists, matching `LanguageAutocomplete`'s per-row height.
+ */
 export function Option(props: RowComponentProps<{ rows: any[] }>): ReactNode {
   const { rows, index, style } = props
   const { id, localName, nativeName } = rows[index][1]
@@ -39,6 +44,7 @@ export function Option(props: RowComponentProps<{ rows: any[] }>): ReactNode {
   )
 }
 
+/** Language search filter for the Videos page, using {@link Option} for rows. */
 export function LanguagesFilter(
   props: LanguageAutocompleteProps
 ): ReactElement {

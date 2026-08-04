@@ -58,6 +58,11 @@ export interface LanguageAutocompleteProps {
   disableSort?: boolean
 }
 
+/**
+ * Searchable, virtualized language picker. Renders one line for a
+ * single-name option and two lines (local + native name) for a bilingual
+ * one, sizing each row to match via `getRowHeight` below.
+ */
 export function LanguageAutocomplete({
   onChange: handleChange,
   value,
@@ -161,6 +166,7 @@ export function LanguageAutocomplete({
     )
 
     const itemCount = itemData.length
+    /** Two-line options need a taller row than single-line ones. */
     const getRowHeight = (index: number): number => {
       const option = (
         itemData[index] as unknown as [unknown, LanguageOption]
