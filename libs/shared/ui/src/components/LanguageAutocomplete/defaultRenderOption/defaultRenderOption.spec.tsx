@@ -66,9 +66,7 @@ describe('defaultRenderOption', () => {
         ]
       } as any)
     )
-    expect(
-      screen.getByRole('option', { name: 'English' })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'English' })).toBeInTheDocument()
     expect(screen.getByText('English')).toBeInTheDocument()
   })
 })
