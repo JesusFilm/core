@@ -436,7 +436,9 @@ export default async function handler(
       }
     })
 
-    result.pipeUIMessageStreamToResponse(res, {
+    // AI SDK 7 resolves once the stream has finished piping — awaited so the
+    // handler stays alive until the response is fully written.
+    await result.pipeUIMessageStreamToResponse(res, {
       onError: (error) => {
         const err = error as Error
         // Pipe-step failures (write to closed socket etc.) are
