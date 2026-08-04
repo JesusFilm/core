@@ -43,8 +43,15 @@ const mockLogger: Logger = {
 } as any
 
 describe('QA-543 repro: durable Algolia indexing', () => {
+  const previousVideoVariantsIndex = process.env.ALGOLIA_INDEX_VIDEO_VARIANTS
+
   beforeEach(() => {
     vi.clearAllMocks()
+    process.env.ALGOLIA_INDEX_VIDEO_VARIANTS = 'test-video-variants'
+  })
+
+  afterEach(() => {
+    process.env.ALGOLIA_INDEX_VIDEO_VARIANTS = previousVideoVariantsIndex
   })
 
   it('propagates (does not swallow) a transient Algolia failure when updating a video record', async () => {

@@ -13,6 +13,7 @@ import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
 import { builder, toPrismaDateTimeFilter } from '../builder'
 import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
+import { logger } from '../logger'
 import { deleteVideo } from '../mux/video/service'
 import {
   addLanguageToVideo,
@@ -559,13 +560,17 @@ builder.mutationFields((t) => ({
       // Save the videoId before the try/catch block
       const { id, videoId } = newVariant
 
-      await enqueueVideoAlgoliaSync(videoId, {
-        syncVideoRecord: true,
-        syncAllVariants: false,
-        syncPublishedFlag: false,
-        dirtyVariantIds: [id],
-        deletedVariantIds: []
-      })
+      await enqueueVideoAlgoliaSync(
+        videoId,
+        {
+          syncVideoRecord: true,
+          syncAllVariants: false,
+          syncPublishedFlag: false,
+          dirtyVariantIds: [id],
+          deletedVariantIds: []
+        },
+        logger
+      )
 
       try {
         void videoVariantCacheReset(id)
@@ -717,13 +722,17 @@ builder.mutationFields((t) => ({
       // Store the videoId before the try/catch block
       const videoId = input.videoId ?? updated.videoId
 
-      await enqueueVideoAlgoliaSync(videoId, {
-        syncVideoRecord: true,
-        syncAllVariants: false,
-        syncPublishedFlag: false,
-        dirtyVariantIds: [updated.id],
-        deletedVariantIds: []
-      })
+      await enqueueVideoAlgoliaSync(
+        videoId,
+        {
+          syncVideoRecord: true,
+          syncAllVariants: false,
+          syncPublishedFlag: false,
+          dirtyVariantIds: [updated.id],
+          deletedVariantIds: []
+        },
+        logger
+      )
 
       try {
         void videoVariantCacheReset(updated.id)
@@ -904,13 +913,17 @@ builder.mutationFields((t) => ({
         })
       }
 
-      await enqueueVideoAlgoliaSync(videoId, {
-        syncVideoRecord: true,
-        syncAllVariants: false,
-        syncPublishedFlag: false,
-        dirtyVariantIds: [],
-        deletedVariantIds: [id]
-      })
+      await enqueueVideoAlgoliaSync(
+        videoId,
+        {
+          syncVideoRecord: true,
+          syncAllVariants: false,
+          syncPublishedFlag: false,
+          dirtyVariantIds: [],
+          deletedVariantIds: [id]
+        },
+        logger
+      )
       try {
         void videoVariantCacheReset(id)
         void videoCacheReset(videoId)

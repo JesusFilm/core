@@ -95,7 +95,11 @@ export async function updateVideoInAlgolia(
     })
 
     if (video == null) {
-      logger?.warn(`video ${videoId} not found`)
+      logger?.warn(`video ${videoId} not found, removing from algolia`)
+      await client.deleteObject({
+        indexName: algoliaConfig.videosIndex,
+        objectID: videoId
+      })
       return
     }
 
