@@ -246,6 +246,22 @@ export async function processDownloads(): Promise<void> {
                 }
               }
             }
+          },
+          {
+            // Variants with Mux downloads persisted with a zero size or
+            // bitrate (see VMT-239) - re-fetch from Mux in case the metadata
+            // has since propagated
+            downloads: {
+              some: {
+                quality: {
+                  notIn: ['distroLow', 'distroSd', 'distroHigh']
+                },
+                url: {
+                  startsWith: 'https://stream.mux.com'
+                },
+                OR: [{ size: 0 }, { bitrate: 0 }]
+              }
+            }
           }
         ]
       },

@@ -48,6 +48,18 @@ function getResolutionHeight(resolution: string): number {
   return parseInt(resolution.replace('p', ''))
 }
 
+// Mux can mark a static rendition file as `ready` before its filesize/bitrate
+// have propagated. Persisting those as 0 would silently serve broken download
+// metadata, so treat a `ready` file without usable metadata as not-yet-ready.
+function hasValidRenditionMetadata(file: {
+  filesize?: string | null
+  bitrate?: number | null
+}): boolean {
+  const size = file.filesize ? parseInt(file.filesize) : 0
+  const bitrate = file.bitrate ?? 0
+  return size > 0 && bitrate > 0
+}
+
 // Enhanced function that handles fallbacks for sd and high qualities
 export function mapStaticResolutionTierToDownloadQualityWithFallback(
   availableFiles: Array<{
@@ -196,17 +208,29 @@ export async function createDownloadsFromMuxAsset({
       )
 
       if (quality != null) {
-        directMappings.push({
-          videoVariantId: variantId,
-          quality,
-          url: `https://stream.mux.com/${playbackId}/${file.resolution}.mp4`,
-          version: 1,
-          size: file.filesize ? parseInt(file.filesize) : 0,
-          height: file.height ?? 0,
-          width: file.width ?? 0,
-          bitrate: file.bitrate ?? 0
-        })
-        processedQualities.add(quality)
+        if (!hasValidRenditionMetadata(file)) {
+          logger?.warn(
+            {
+              variantId,
+              resolution: file.resolution,
+              filesize: file.filesize,
+              bitrate: file.bitrate
+            },
+            'Mux static rendition is ready but missing filesize/bitrate metadata, skipping until refreshed'
+          )
+        } else {
+          directMappings.push({
+            videoVariantId: variantId,
+            quality,
+            url: `https://stream.mux.com/${playbackId}/${file.resolution}.mp4`,
+            version: 1,
+            size: file.filesize ? parseInt(file.filesize) : 0,
+            height: file.height ?? 0,
+            width: file.width ?? 0,
+            bitrate: file.bitrate ?? 0
+          })
+          processedQualities.add(quality)
+        }
       }
     }
   }
@@ -214,10 +238,16 @@ export async function createDownloadsFromMuxAsset({
   // Handle fallbacks for sd and high if they're missing
   const fallbackMappings: Prisma.VideoVariantDownloadCreateManyInput[] = []
 
+  // Fallback candidates must have usable metadata, otherwise we'd fall back
+  // into the same zero size/bitrate problem the direct mapping just avoided.
+  const filesWithValidMetadata = muxVideoAsset.static_renditions.files.filter(
+    (file) => file == null || hasValidRenditionMetadata(file)
+  )
+
   // Check for sd fallback (if 360p is not available)
   if (!processedQualities.has(VideoVariantDownloadQuality.sd)) {
     const sdFallback = mapStaticResolutionTierToDownloadQualityWithFallback(
-      muxVideoAsset.static_renditions.files,
+      filesWithValidMetadata,
       '360p'
     )
 
@@ -249,7 +279,7 @@ export async function createDownloadsFromMuxAsset({
   // Check for high fallback (if 720p is not available)
   if (!processedQualities.has(VideoVariantDownloadQuality.high)) {
     const highFallback = mapStaticResolutionTierToDownloadQualityWithFallback(
-      muxVideoAsset.static_renditions.files,
+      filesWithValidMetadata,
       '720p'
     )
 
