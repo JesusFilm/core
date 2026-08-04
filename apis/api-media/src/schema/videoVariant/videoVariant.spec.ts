@@ -12,12 +12,12 @@ import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
-import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
 import { notifyMediaSlackOfOperationFailure } from '../../lib/slack'
 import {
   videoCacheReset,
   videoVariantCacheReset
 } from '../../lib/videoCacheReset'
+import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
 import { deleteR2File } from '../cloudflare/r2/asset'
 import { deleteVideo } from '../mux/video/service'
 import {
@@ -47,9 +47,9 @@ vi.mock('../cloudflare/r2/asset', async () => ({
   deleteR2File: vi.fn()
 }))
 
-// Mock the Algolia service
-vi.mock('../../lib/algolia/algoliaVideoVariantUpdate', () => ({
-  updateVideoVariantInAlgolia: vi.fn()
+// Mock the Algolia sync enqueue boundary
+vi.mock('../../workers/videoAlgoliaSync', () => ({
+  enqueueVideoAlgoliaSync: vi.fn()
 }))
 
 // Mock the video available languages functions
@@ -67,7 +67,7 @@ const mockedVideoCacheReset = vi.mocked(videoCacheReset)
 const mockedVideoVariantCacheReset = vi.mocked(videoVariantCacheReset)
 const mockedDeleteVideo = vi.mocked(deleteVideo)
 const mockedDeleteR2File = vi.mocked(deleteR2File)
-const mockedUpdateVideoVariantInAlgolia = vi.mocked(updateVideoVariantInAlgolia)
+const mockedEnqueueVideoAlgoliaSync = vi.mocked(enqueueVideoAlgoliaSync)
 const mockedAddLanguageToVideo = vi.mocked(addLanguageToVideo)
 const mockedRemoveLanguageFromVideoIfUnused = vi.mocked(
   removeLanguageFromVideoIfUnused
@@ -106,7 +106,7 @@ describe('videoVariant', () => {
     mockedVideoVariantCacheReset.mockImplementation(() => Promise.resolve())
     mockedDeleteVideo.mockResolvedValue(undefined)
     mockedDeleteR2File.mockResolvedValue(undefined)
-    mockedUpdateVideoVariantInAlgolia.mockResolvedValue(true)
+    mockedEnqueueVideoAlgoliaSync.mockResolvedValue(undefined)
     mockedAddLanguageToVideo.mockResolvedValue(undefined)
     mockedRemoveLanguageFromVideoIfUnused.mockResolvedValue(undefined)
     mockedUpdateParentCollectionLanguages.mockResolvedValue(undefined)
@@ -1267,6 +1267,15 @@ describe('videoVariant', () => {
         // Verify cache reset functions were called
         expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('id')
         expect(mockedVideoCacheReset).toHaveBeenCalledWith('videoId')
+
+        // Verify Algolia sync was enqueued (not called inline) for the new variant
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith('videoId', {
+          syncVideoRecord: true,
+          syncAllVariants: false,
+          syncPublishedFlag: false,
+          dirtyVariantIds: ['id'],
+          deletedVariantIds: []
+        })
       })
 
       it('notifies Slack when video variant creation fails', async () => {
@@ -1611,6 +1620,15 @@ describe('videoVariant', () => {
 
         // Verify cache reset function was called
         expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('id')
+
+        // Verify Algolia sync was enqueued (not called inline) for the updated variant
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith('videoId', {
+          syncVideoRecord: true,
+          syncAllVariants: false,
+          syncPublishedFlag: false,
+          dirtyVariantIds: ['id'],
+          deletedVariantIds: []
+        })
       })
 
       it('should continue even if cache reset function throws', async () => {
@@ -1789,6 +1807,16 @@ describe('videoVariant', () => {
         // Verify cache reset functions were called
         expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('id')
         expect(mockedVideoCacheReset).toHaveBeenCalledWith('videoId')
+
+        // Verify Algolia sync was enqueued (not called inline) with the
+        // deleted variant so the worker removes its stale index record
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith('videoId', {
+          syncVideoRecord: true,
+          syncAllVariants: false,
+          syncPublishedFlag: false,
+          dirtyVariantIds: [],
+          deletedVariantIds: ['id']
+        })
       })
 
       it('should continue even if cache reset functions throw', async () => {

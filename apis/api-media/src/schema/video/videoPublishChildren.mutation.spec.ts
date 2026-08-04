@@ -1,7 +1,15 @@
 import { parse } from 'graphql'
+import { vi } from 'vitest'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
+import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
+
+vi.mock('../../workers/videoAlgoliaSync', () => ({
+  enqueueVideoAlgoliaSync: vi.fn()
+}))
+
+const mockedEnqueueVideoAlgoliaSync = vi.mocked(enqueueVideoAlgoliaSync)
 
 const authClient = getClient({
   headers: {
@@ -104,6 +112,7 @@ describe('videoPublishChildren', () => {
     prismaMock.$transaction.mockImplementation(async (callback: any) =>
       callback(prismaMock)
     )
+    mockedEnqueueVideoAlgoliaSync.mockReset().mockResolvedValue(undefined)
   })
 
   describe('childrenVideosOnly mode', () => {
@@ -276,6 +285,24 @@ describe('videoPublishChildren', () => {
         where: { id: { in: ['pv1', 'cv1'] } },
         data: { published: true }
       })
+
+      // parent and c1 are both newly published this run (videoIdsToPublish),
+      // so both get the published-flag batch update plus their own newly
+      // published variant
+      expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith('parent', {
+        syncVideoRecord: true,
+        syncAllVariants: false,
+        syncPublishedFlag: true,
+        dirtyVariantIds: ['pv1'],
+        deletedVariantIds: []
+      })
+      expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith('c1', {
+        syncVideoRecord: true,
+        syncAllVariants: false,
+        syncPublishedFlag: true,
+        dirtyVariantIds: ['cv1'],
+        deletedVariantIds: []
+      })
     })
 
     it('publishes draft variants on already published children', async () => {
@@ -338,7 +365,7 @@ describe('videoPublishChildren', () => {
           videoId: { in: ['parent', 'c1', 'c2'] },
           published: false
         },
-        select: { id: true }
+        select: { id: true, videoId: true }
       })
       expect(prismaMock.videoVariant.updateMany).toHaveBeenCalledWith({
         where: { id: { in: ['c1-spanish-draft'] } },
@@ -581,7 +608,7 @@ describe('videoPublishChildren', () => {
         videoId: { in: ['parent', 'valid-child', 'published-child'] },
         published: false
       },
-      select: { id: true }
+      select: { id: true, videoId: true }
     })
   })
 

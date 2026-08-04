@@ -306,12 +306,14 @@ describe('algoliaVideoUpdate', () => {
     })
   })
 
-  it('should handle errors gracefully', async () => {
+  it('logs and rethrows so the caller can retry', async () => {
     prismaMock.video.findUnique.mockRejectedValueOnce(
       new Error('Database error')
     )
 
-    await updateVideoInAlgolia('test-video-id', mockLogger)
+    await expect(
+      updateVideoInAlgolia('test-video-id', mockLogger)
+    ).rejects.toThrow('Database error')
 
     expect(mockLogger.error).toHaveBeenCalledWith(
       expect.any(Error),

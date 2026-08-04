@@ -9,11 +9,11 @@ import {
   prisma
 } from '@core/prisma/media/client'
 
-import {
-  updateVideoInAlgolia,
-  updateVideoPublishedStatus
-} from '../../lib/algolia/algoliaVideoUpdate'
 import { videoCacheReset } from '../../lib/videoCacheReset'
+import {
+  enqueueVideoAlgoliaSync,
+  videoOnlyScope
+} from '../../workers/videoAlgoliaSync'
 import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
 import { deleteR2File } from '../cloudflare/r2/asset'
@@ -34,7 +34,10 @@ import { VideoLabel } from './enums/videoLabel'
 import { VideoCreateInput } from './inputs/videoCreate'
 import { VideosFilter } from './inputs/videosFilter'
 import { VideoUpdateInput } from './inputs/videoUpdate'
-import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
+import {
+  findContainerParentIds,
+  updateVideoAvailableLanguages
+} from './lib/updateAvailableLanguages'
 import { videosFilter } from './lib/videosFilter'
 
 // Helper function to check if video viewing is restricted for the current platform
@@ -688,11 +691,7 @@ builder.mutationFields((t) => ({
           ...query,
           data
         })
-        try {
-          await updateVideoInAlgolia(video.id)
-        } catch (error) {
-          console.error('Algolia update error:', error)
-        }
+        await enqueueVideoAlgoliaSync(video.id, videoOnlyScope)
 
         try {
           await videoCacheReset(video.id)
@@ -850,40 +849,58 @@ builder.mutationFields((t) => ({
       }
 
       // Handle parent variant changes if video published status changed
-      if (currentVideo && input.published !== undefined) {
-        const wasPublished = currentVideo.published
-        const isNowPublished = input.published
+      const publishedChanged =
+        currentVideo != null &&
+        input.published !== undefined &&
+        currentVideo.published !== input.published
 
-        if (
-          wasPublished !== isNowPublished &&
-          currentVideo.variants.length > 0
-        ) {
-          try {
-            for (const variant of currentVideo.variants) {
-              if (isNowPublished) {
-                // Video was unpublished and is now published - create parent variants for all published variants
-                await handleParentVariantCreation(input.id, variant.languageId)
-              } else {
-                // Video was published and is now unpublished - cleanup parent variants for all variants
-                await handleParentVariantCleanup(input.id, variant.languageId)
-              }
-            }
-          } catch (error) {
-            console.error('Parent variant video update error:', error)
-          }
-        }
-        // Update variants' videoPublished status in Algolia when published status changes
+      if (
+        publishedChanged &&
+        currentVideo &&
+        currentVideo.variants.length > 0
+      ) {
         try {
-          await updateVideoPublishedStatus(input.id, isNowPublished ?? false)
+          for (const variant of currentVideo.variants) {
+            if (input.published) {
+              // Video was unpublished and is now published - create parent variants for all published variants
+              await handleParentVariantCreation(input.id, variant.languageId)
+            } else {
+              // Video was published and is now unpublished - cleanup parent variants for all variants
+              await handleParentVariantCleanup(input.id, variant.languageId)
+            }
+          }
         } catch (error) {
-          console.error('Video variants Algolia update error:', error)
+          console.error('Parent variant video update error:', error)
         }
       }
 
-      try {
-        await updateVideoInAlgolia(video.id)
-      } catch (error) {
-        console.error('Algolia update error:', error)
+      // label/childIds/restrictViewPlatforms are embedded in every variant's
+      // Algolia record (see buildVideoVariantAlgoliaObject), so changing any
+      // of them requires re-indexing all of this video's variants.
+      const variantEmbeddedFieldsChanged =
+        input.label !== undefined ||
+        input.childIds !== undefined ||
+        input.restrictViewPlatforms !== undefined
+
+      await enqueueVideoAlgoliaSync(video.id, {
+        syncVideoRecord: true,
+        syncAllVariants: variantEmbeddedFieldsChanged,
+        syncPublishedFlag: publishedChanged,
+        dirtyVariantIds: [],
+        deletedVariantIds: []
+      })
+
+      // A child's publish state isn't embedded in its own variant records,
+      // but it changes whether the child shows up under its parent
+      // collection/series - re-sync the parent(s) too so the series-level
+      // page and episode navigation reflect the newly published child.
+      if (publishedChanged) {
+        const parentIds = await findContainerParentIds(video.id)
+        await Promise.all(
+          parentIds.map((parentId) =>
+            enqueueVideoAlgoliaSync(parentId, videoOnlyScope)
+          )
+        )
       }
 
       try {
@@ -990,11 +1007,7 @@ builder.mutationFields((t) => ({
         where: { id }
       })
 
-      try {
-        await updateVideoInAlgolia(id)
-      } catch (error) {
-        console.error('Algolia update error:', error)
-      }
+      await enqueueVideoAlgoliaSync(id, videoOnlyScope)
 
       try {
         await videoCacheReset(id)

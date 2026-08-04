@@ -1,11 +1,10 @@
 import { prisma } from '@core/prisma/media/client'
 
-import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
-import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
 import {
   videoCacheReset,
   videoVariantCacheReset
 } from '../../lib/videoCacheReset'
+import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
 import { builder } from '../builder'
 import { logger } from '../logger'
 import { handleParentVariantCreation } from '../videoVariant/videoVariant'
@@ -320,15 +319,21 @@ export async function executeVideoPublishChildren(
   }
 
   let variantIdsToPublish: string[] = []
+  const variantIdsToPublishByVideoId = new Map<string, string[]>()
   if (variantVideoIds.length > 0) {
     const unpublishedVariants = await prisma.videoVariant.findMany({
       where: {
         videoId: { in: variantVideoIds },
         published: false
       },
-      select: { id: true }
+      select: { id: true, videoId: true }
     })
     variantIdsToPublish = unpublishedVariants.map((variant) => variant.id)
+    for (const variant of unpublishedVariants) {
+      const ids = variantIdsToPublishByVideoId.get(variant.videoId) ?? []
+      ids.push(variant.id)
+      variantIdsToPublishByVideoId.set(variant.videoId, ids)
+    }
   }
 
   if (
@@ -397,25 +402,21 @@ export async function executeVideoPublishChildren(
   }
 
   await Promise.allSettled(
-    variantIdsToPublish.map(async (variantId) => {
-      try {
-        await updateVideoVariantInAlgolia(variantId)
-      } catch (error) {
-        logger.error({ error, variantId }, 'Variant Algolia update failed')
-      }
-
-      await videoVariantCacheReset(variantId).catch((error) => {
+    variantIdsToPublish.map((variantId) =>
+      videoVariantCacheReset(variantId).catch((error) => {
         logger.error({ error, variantId }, 'Variant cache reset failed')
       })
-    })
+    )
   )
   await Promise.allSettled(
     affectedVideoIds.map(async (videoId) => {
-      try {
-        await updateVideoInAlgolia(videoId)
-      } catch (error) {
-        logger.error({ error, videoId }, 'Video Algolia update failed')
-      }
+      await enqueueVideoAlgoliaSync(videoId, {
+        syncVideoRecord: true,
+        syncAllVariants: false,
+        syncPublishedFlag: videoIdsToPublish.includes(videoId),
+        dirtyVariantIds: variantIdsToPublishByVideoId.get(videoId) ?? [],
+        deletedVariantIds: []
+      })
 
       await videoCacheReset(videoId).catch((error) => {
         logger.error({ error, videoId }, 'Video cache reset failed')
