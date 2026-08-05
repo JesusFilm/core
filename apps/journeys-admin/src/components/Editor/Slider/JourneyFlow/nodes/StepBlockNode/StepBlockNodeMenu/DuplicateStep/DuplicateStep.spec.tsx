@@ -31,7 +31,7 @@ vi.mock('uuid', () => ({
   v4: vi.fn()
 }))
 
-const mockV4 = uuidv4 as MockedFunction<typeof uuidv4>
+const mockV4 = uuidv4 as MockedFunction<() => string>
 
 describe('DuplicateStep', () => {
   beforeEach(() =>

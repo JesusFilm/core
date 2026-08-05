@@ -24,7 +24,7 @@ vi.mock('next/router', () => ({
   useRouter: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<() => string>
 const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
 describe('AddJourneyButton', () => {

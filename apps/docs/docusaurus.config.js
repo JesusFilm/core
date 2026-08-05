@@ -1,6 +1,6 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
-require('dotenv').config()
+require('dotenv').config({ quiet: true })
 const darkCodeTheme = require('prism-react-renderer').themes.dracula
 const lightCodeTheme = require('prism-react-renderer').themes.github
 

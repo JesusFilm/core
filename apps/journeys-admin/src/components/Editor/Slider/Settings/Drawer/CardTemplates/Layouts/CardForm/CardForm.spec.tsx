@@ -49,7 +49,7 @@ vi.mock('uuid', () => ({
   v4: vi.fn()
 }))
 
-const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<() => string>
 
 describe('CardForm', () => {
   beforeEach(() => vi.clearAllMocks())
