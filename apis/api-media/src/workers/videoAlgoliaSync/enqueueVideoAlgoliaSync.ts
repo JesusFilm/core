@@ -25,8 +25,7 @@ export function mergeScope(
   return {
     syncVideoRecord: existing.syncVideoRecord || incoming.syncVideoRecord,
     syncAllVariants: existing.syncAllVariants || incoming.syncAllVariants,
-    syncPublishedFlag:
-      existing.syncPublishedFlag || incoming.syncPublishedFlag,
+    syncPublishedFlag: existing.syncPublishedFlag || incoming.syncPublishedFlag,
     dirtyVariantIds: Array.from(
       new Set([...existing.dirtyVariantIds, ...incoming.dirtyVariantIds])
     ),
