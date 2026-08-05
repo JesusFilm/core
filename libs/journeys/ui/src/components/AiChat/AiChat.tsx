@@ -72,7 +72,7 @@ function getTextFromMessage(message: UIMessage): string {
     .join('')
 }
 
-// AI SDK v6's HttpChatTransport discards the HTTP status on a non-2xx response
+// The AI SDK's HttpChatTransport discards the HTTP status on a non-2xx response
 // and throws `new Error(await response.text())`, so the only signal the client
 // gets is the response *body*. The server (apps/journeys/pages/api/chat) tags
 // its deterministic failures with a structured `code`; we read it back out
