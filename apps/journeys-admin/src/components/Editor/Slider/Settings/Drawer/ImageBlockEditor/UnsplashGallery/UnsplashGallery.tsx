@@ -166,7 +166,7 @@ export function UnsplashGallery({
   }
 
   return (
-    <Stack sx={{ p: 6 }} data-testid="UnsplashGallery">
+    <Stack sx={{ p: 6, gap: 2 }} data-testid="UnsplashGallery">
       <UnsplashSearch value={query} handleSubmit={handleSubmit} />
       <UnsplashCollections
         selectedCollectionId={query === '' ? collectionId : undefined}
