@@ -1,12 +1,5 @@
-import {
-  Column,
-  Container,
-  Img,
-  Row,
-  Section,
-  Text
-} from '@react-email/components'
 import { ReactElement, ReactNode } from 'react'
+import { Column, Container, Img, Row, Section, Text } from 'react-email'
 
 import { User } from '../../../firebaseClient'
 
