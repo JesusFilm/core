@@ -213,10 +213,15 @@ export async function processDownloads(): Promise<void> {
   const take = 100
   let hasMore = true
   let totalProcessed = 0
+  // Track variants already attempted this run so a variant whose Mux
+  // metadata is still incomplete after processing isn't re-selected forever
+  // by the same query - it remains eligible for the next script run instead.
+  const attemptedVariantIds: string[] = []
 
   while (hasMore) {
     const variants = await prisma.videoVariant.findMany({
       where: {
+        id: { notIn: attemptedVariantIds },
         muxVideoId: { not: null },
         muxVideo: {
           downloadable: true,
@@ -246,6 +251,22 @@ export async function processDownloads(): Promise<void> {
                 }
               }
             }
+          },
+          {
+            // Variants with Mux downloads persisted with a zero size or
+            // bitrate (see VMT-239) - re-fetch from Mux in case the metadata
+            // has since propagated
+            downloads: {
+              some: {
+                quality: {
+                  notIn: ['distroLow', 'distroSd', 'distroHigh']
+                },
+                url: {
+                  startsWith: 'https://stream.mux.com'
+                },
+                OR: [{ size: 0 }, { bitrate: 0 }]
+              }
+            }
           }
         ]
       },
@@ -268,6 +289,8 @@ export async function processDownloads(): Promise<void> {
     )
 
     for (const variant of variants) {
+      attemptedVariantIds.push(variant.id)
+
       if (!variant.muxVideo?.assetId) {
         continue
       }
