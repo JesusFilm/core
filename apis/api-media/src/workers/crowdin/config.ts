@@ -60,7 +60,7 @@ export const LANGUAGE_CODES = {
   ja: '7083',
   kk: '371',
   ko: '3804',
-  mn: '143871',
+  mn: '18259',
   'pt-BR': '584',
   ru: '3934',
   th: '13169',

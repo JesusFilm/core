@@ -184,6 +184,7 @@ export const TextResponse = ({
             },
             formHelperText: {
               sx: {
+                mx: 0,
                 fontFamily: theme.typography.button.fontFamily
               }
             }
