@@ -109,9 +109,7 @@ export function ProcessingStatusList(): ReactElement {
       pollInterval: 30_000
     }
   )
-  const [retryProcessing, { loading: retrying }] = useMutation(
-    RETRY_PROCESSING
-  )
+  const [retryProcessing, { loading: retrying }] = useMutation(RETRY_PROCESSING)
 
   const handleRetry = async (id: string): Promise<void> => {
     await retryProcessing({ variables: { id } })
@@ -123,7 +121,8 @@ export function ProcessingStatusList(): ReactElement {
       <Stack spacing={0.5}>
         <Typography variant="h4">Variant processing</Typography>
         <Typography color="text.secondary">
-          Canonical Upload health, publication blockers, and monitored Download failures.
+          Canonical Upload health, publication blockers, and monitored Download
+          failures.
         </Typography>
       </Stack>
 
@@ -138,7 +137,9 @@ export function ProcessingStatusList(): ReactElement {
           >
             <MenuItem value="">All</MenuItem>
             {['processing', 'degraded', 'complete', 'failed'].map((value) => (
-              <MenuItem key={value} value={value}>{value}</MenuItem>
+              <MenuItem key={value} value={value}>
+                {value}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -151,9 +152,13 @@ export function ProcessingStatusList(): ReactElement {
             onChange={(event) => setBlockingStage(event.target.value)}
           >
             <MenuItem value="">Any</MenuItem>
-            {['mux', 'parentSync', 'algoliaVideo', 'algoliaVariant'].map((value) => (
-              <MenuItem key={value} value={value}>{value}</MenuItem>
-            ))}
+            {['mux', 'parentSync', 'algoliaVideo', 'algoliaVariant'].map(
+              (value) => (
+                <MenuItem key={value} value={value}>
+                  {value}
+                </MenuItem>
+              )
+            )}
           </Select>
         </FormControl>
         <TextField
@@ -188,7 +193,11 @@ export function ProcessingStatusList(): ReactElement {
           </TableHead>
           <TableBody>
             {loading && (
-              <TableRow><TableCell colSpan={6} align="center"><CircularProgress size={24} /></TableCell></TableRow>
+              <TableRow>
+                <TableCell colSpan={6} align="center">
+                  <CircularProgress size={24} />
+                </TableCell>
+              </TableRow>
             )}
             {data?.videoVariantUploadStatuses.map((status) => (
               <TableRow key={status.id} hover>
@@ -196,13 +205,21 @@ export function ProcessingStatusList(): ReactElement {
                   <Chip
                     size="small"
                     label={status.health}
-                    color={status.health === 'complete' ? 'success' : status.health === 'processing' ? 'info' : 'warning'}
+                    color={
+                      status.health === 'complete'
+                        ? 'success'
+                        : status.health === 'processing'
+                          ? 'info'
+                          : 'warning'
+                    }
                   />
                 </TableCell>
                 <TableCell>{status.videoVariantId ?? status.videoId}</TableCell>
                 <TableCell>{stageSummary(status.processingStages)}</TableCell>
                 <TableCell>{status.errorMessage ?? '—'}</TableCell>
-                <TableCell>{new Date(status.updatedAt).toLocaleString()}</TableCell>
+                <TableCell>
+                  {new Date(status.updatedAt).toLocaleString()}
+                </TableCell>
                 <TableCell align="right">
                   <Button
                     size="small"
