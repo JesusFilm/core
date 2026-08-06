@@ -44,7 +44,7 @@ on the default next step?
 **Look first (fixer):** `apps/journeys/src/components/Conductor/Conductor.tsx` (advances steps,
 wires swipe/hotkey/button nav) → `libs/journeys/ui/src/libs/block/block.ts` (`getNextBlock` /
 `nextActiveBlock`: resolves `nextBlockId` or falls back to the following step) →
-`libs/journeys/ui/src/libs/getNextStepSlug/` (URL-level next-step).
+`libs/journeys/ui/src/libs/action/getNextStepSlug.ts` (URL-level next-step).
 **Handoff:** authoring "didn't link it" → how-to; genuine resolution bug → agent-able.
 
 ## Video won't load / slow to load — T10 (known weak spot)
@@ -75,8 +75,8 @@ change** that altered how cards are structured/layered → check recent commits 
 The cards are heavily layered, so these are event-bubbling bugs in that stack.
 **Look first (fixer):** `libs/journeys/ui/src/components/Card/Card.tsx` (layered cover/overlay/content
 stacking) → `Card/OverlayContent/OverlayContent.tsx` + `Card/ContainedCover/ContainedCover.tsx` (the
-layers that sit above content and intercept pointer/type events) → `components/Actions/Actions.tsx`
-(attaches the click handlers on interactive blocks).
+layers that sit above content and intercept pointer/type events) → `libs/journeys/ui/src/libs/action/action.ts`
+(the `handleAction` dispatch the interactive blocks' click handlers call).
 **Handoff:** agent-able — and bisect to the recent card-structure change first.
 
 ## Custom domains / embeds — LOW SIGNAL, thin on purpose

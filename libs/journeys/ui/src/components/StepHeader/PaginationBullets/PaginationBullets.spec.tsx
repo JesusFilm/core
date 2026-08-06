@@ -161,7 +161,7 @@ describe('PaginationBullets', () => {
     treeBlocksVar([])
     blockHistoryVar([])
     render(
-      <JourneyProvider value={{ variant: 'admin' }}>
+      <JourneyProvider value={{ renderMode: 'admin' }}>
         <PaginationBullets />
       </JourneyProvider>
     )
@@ -175,7 +175,7 @@ describe('PaginationBullets', () => {
       blockHistoryVar([])
       const steps = [step1, step2, step3, step4, step5]
       render(
-        <JourneyProvider value={{ variant: 'default' }}>
+        <JourneyProvider value={{ renderMode: 'default' }}>
           <PaginationBullets steps={steps} selectedStep={step3} />
         </JourneyProvider>
       )
@@ -187,7 +187,7 @@ describe('PaginationBullets', () => {
       blockHistoryVar([])
       const steps = [step1, step2, step3]
       render(
-        <JourneyProvider value={{ variant: 'default' }}>
+        <JourneyProvider value={{ renderMode: 'default' }}>
           <PaginationBullets steps={steps} selectedStep={step1} />
         </JourneyProvider>
       )
@@ -200,7 +200,7 @@ describe('PaginationBullets', () => {
       blockHistoryVar([])
       const steps = [step1, step2, step3]
       render(
-        <JourneyProvider value={{ variant: 'default' }}>
+        <JourneyProvider value={{ renderMode: 'default' }}>
           <PaginationBullets steps={steps} selectedStep={step1} />
         </JourneyProvider>
       )

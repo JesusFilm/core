@@ -73,7 +73,7 @@ describe('HostSelection', () => {
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider
-            value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+            value={{ journey: { ...journey, host: null }, renderMode: 'admin' }}
           >
             <HostSelection
               data={data}
@@ -96,7 +96,7 @@ describe('HostSelection', () => {
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider
-            value={{ journey: { ...journey }, variant: 'admin' }}
+            value={{ journey: { ...journey }, renderMode: 'admin' }}
           >
             <HostSelection
               data={data}
@@ -121,7 +121,7 @@ describe('HostSelection', () => {
           <JourneyProvider
             value={{
               journey: { ...journey, team: null, host: null },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <HostSelection
@@ -147,7 +147,7 @@ describe('HostSelection', () => {
           <JourneyProvider
             value={{
               journey: { ...journey, host: null },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <HostSelection
@@ -174,7 +174,7 @@ describe('HostSelection', () => {
           <JourneyProvider
             value={{
               journey: { ...journey, host: null },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <HostSelection
@@ -199,7 +199,7 @@ describe('HostSelection', () => {
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider
-            value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+            value={{ journey: { ...journey, host: null }, renderMode: 'admin' }}
           >
             <HostSelection
               data={data}
@@ -223,7 +223,7 @@ describe('HostSelection', () => {
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider
-            value={{ journey: { ...journey }, variant: 'admin' }}
+            value={{ journey: { ...journey }, renderMode: 'admin' }}
           >
             <HostSelection
               data={data}

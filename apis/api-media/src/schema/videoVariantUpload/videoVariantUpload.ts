@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql'
 
-import { Prisma, prisma } from '@core/prisma/media/client'
+import { prisma } from '@core/prisma/media/client'
 
 import { DateTimeFilter, builder, toPrismaDateTimeFilter } from '../builder'
 import { Language } from '../language'
@@ -18,27 +18,7 @@ export const VideoVariantUploadStatus = builder.enumType(
       'muxCreated',
       'muxReady',
       'variantCreated',
-      'processing',
-      'degraded',
-      'complete',
       'failed'
-    ] as const
-  }
-)
-
-const VideoVariantUploadHealth = builder.enumType('VideoVariantUploadHealth', {
-  values: ['processing', 'degraded', 'complete', 'failed'] as const
-})
-
-const VideoVariantProcessingStage = builder.enumType(
-  'VideoVariantProcessingStage',
-  {
-    values: [
-      'mux',
-      'parentSync',
-      'downloads',
-      'algoliaVideo',
-      'algoliaVariant'
     ] as const
   }
 )
@@ -94,8 +74,6 @@ export const VideoVariantUpload = builder.prismaObject('VideoVariantUpload', {
       type: VideoVariantUploadStatus,
       nullable: false
     }),
-    health: t.string({ resolve: (upload) => upload.status }),
-    canonical: t.exposeBoolean('canonical'),
     videoId: t.exposeID('videoId', { nullable: false }),
     edition: t.exposeString('edition', { nullable: false }),
     languageId: t.exposeID('languageId', { nullable: false }),
@@ -126,10 +104,6 @@ export const VideoVariantUpload = builder.prismaObject('VideoVariantUpload', {
     }),
     videoVariantId: t.exposeID('videoVariantId'),
     errorMessage: t.exposeString('errorMessage'),
-    processingStages: t.string({
-      resolve: (upload) => JSON.stringify(upload.processingStages)
-    }),
-    retryAt: t.expose('retryAt', { type: 'DateTime', nullable: true }),
     createdAt: t.expose('createdAt', { type: 'DateTime', nullable: false }),
     updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     r2Asset: t.relation('r2Asset'),
@@ -179,52 +153,6 @@ builder.queryFields((t) => ({
         orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
         skip: offset ?? undefined,
         take: limit ?? undefined
-      })
-    }
-  }),
-  videoVariantUploadStatuses: t.withAuth({ isPublisher: true }).prismaField({
-    type: [VideoVariantUpload],
-    args: {
-      health: t.arg({ type: VideoVariantUploadHealth, required: false }),
-      blockingStage: t.arg({
-        type: VideoVariantProcessingStage,
-        required: false
-      }),
-      olderThan: t.arg({ type: 'DateTime', required: false }),
-      minRetryCount: t.arg.int({ required: false })
-    },
-    resolve: async (
-      query,
-      _parent,
-      { health, blockingStage, olderThan, minRetryCount }
-    ) => {
-      const stageFilters: Prisma.VideoVariantUploadWhereInput[] = []
-      if (blockingStage != null) {
-        stageFilters.push({
-          processingStages: {
-            path: [blockingStage, 'state'],
-            equals: 'failed'
-          }
-        })
-        if (minRetryCount != null) {
-          stageFilters.push({
-            processingStages: {
-              path: [blockingStage, 'attempts'],
-              gte: minRetryCount
-            }
-          })
-        }
-      }
-
-      return await prisma.videoVariantUpload.findMany({
-        ...query,
-        where: {
-          canonical: true,
-          status: health ?? undefined,
-          updatedAt: olderThan != null ? { lt: olderThan } : undefined,
-          AND: stageFilters
-        },
-        orderBy: { updatedAt: 'asc' }
       })
     }
   })
@@ -379,15 +307,5 @@ builder.mutationFields((t) => ({
         where: { id }
       })
     }
-  }),
-  videoVariantUploadRetry: t.withAuth({ isPublisher: true }).prismaField({
-    type: VideoVariantUpload,
-    args: { id: t.arg.id({ required: true }) },
-    resolve: async (query, _parent, { id }) =>
-      await prisma.videoVariantUpload.update({
-        ...query,
-        where: { id, canonical: true },
-        data: { status: 'processing', retryAt: new Date() }
-      })
   })
 }))

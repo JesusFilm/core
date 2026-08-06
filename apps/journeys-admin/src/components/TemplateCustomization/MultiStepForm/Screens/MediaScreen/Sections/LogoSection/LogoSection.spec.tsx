@@ -85,7 +85,9 @@ describe('LogoSection', () => {
     return render(
       <MockedProvider mocks={mocks} addTypename={false}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: journeyData, variant: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: journeyData, renderMode: 'admin' }}
+          >
             <LogoSection />
           </JourneyProvider>
         </SnackbarProvider>

@@ -29,7 +29,7 @@ describe('JourneyDetailsDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <JourneyDetailsDialog open onClose={onClose} />
@@ -84,7 +84,7 @@ describe('JourneyDetailsDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <JourneyDetailsDialog open onClose={onClose} />
@@ -125,7 +125,7 @@ describe('JourneyDetailsDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <JourneyDetailsDialog open onClose={onClose} />
@@ -187,7 +187,7 @@ describe('JourneyDetailsDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <JourneyDetailsDialog open onClose={onClose} />

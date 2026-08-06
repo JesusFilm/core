@@ -1,2 +1,3 @@
 export { VideoVariantUpload } from './videoVariantUpload'
-export { requestVideoVariantReconciliation } from './requestVideoVariantReconciliation'
+export { VideoVariantReconciliation } from '../videoVariantReconciliation/videoVariantReconciliation'
+export { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'

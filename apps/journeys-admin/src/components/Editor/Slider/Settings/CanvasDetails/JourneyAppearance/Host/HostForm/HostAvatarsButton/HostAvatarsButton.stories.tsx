@@ -39,7 +39,7 @@ const Template: StoryObj<typeof HostAvatarsButton> = {
         <JourneyProvider
           value={{
             journey: { ...journey, host: { ...defaultHost, ...args } },
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <HostAvatarsButton />

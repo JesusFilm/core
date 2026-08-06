@@ -29,14 +29,14 @@ const Demo: Meta<typeof StepHeaderMenu> = {
 
 type Story = StoryObj<{
   journey: Journey
-  variant: 'default' | 'admin' | 'embed'
+  renderMode: 'default' | 'admin' | 'embed'
 }>
 
 const Template: Story = {
-  render: ({ journey, variant }) => {
+  render: ({ journey, renderMode }) => {
     return (
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant }}>
+        <JourneyProvider value={{ journey, renderMode }}>
           <StepHeaderMenu />
         </JourneyProvider>
       </MockedProvider>
@@ -48,7 +48,7 @@ export const AdminFallback: Story = {
   ...Template,
   args: {
     journey: defaultJourney,
-    variant: 'admin'
+    renderMode: 'admin'
   }
 }
 
@@ -60,7 +60,7 @@ export const MenuIcon: Story = {
       menuStepBlock: menuStep,
       menuButtonIcon: JourneyMenuButtonIcon.home3
     },
-    variant: 'default'
+    renderMode: 'default'
   }
 }
 
@@ -73,7 +73,7 @@ export const CloseIcon: Story = {
       menuButtonIcon: JourneyMenuButtonIcon.home3,
       blocks: [menuStep]
     },
-    variant: 'default'
+    renderMode: 'default'
   }
 }
 

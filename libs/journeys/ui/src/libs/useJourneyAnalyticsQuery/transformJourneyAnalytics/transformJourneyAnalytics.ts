@@ -53,22 +53,28 @@ export function transformJourneyAnalytics(
   const stepExits = getStepExits(journeyVisitorsPageExits, journeyId)
   const { chatsStarted, linksVisited } = getLinkClicks(journeyEvents)
 
-  const stepMap = new Map()
-  const blockMap = new Map()
-  const targetMap = new Map()
+  const stepMap = new Map<
+    string,
+    { eventMap: Map<string, number>; total: number }
+  >()
+  const blockMap = new Map<string, number>()
+  const targetMap = new Map<string, number>()
 
   journeyEventsSums.forEach((event) => {
     const step = stepMap.get(event.stepId) ?? {
-      eventMap: new Map(),
+      eventMap: new Map<string, number>(),
       total: 0
     }
 
-    // Set event map for step by event type
-    let stepEvent = step.eventMap.get(event.event) ?? 0
+    // Set event map for step by event type. keyof JourneyPlausibleEvents
+    // widens to string | number (index signature), so stringify for the
+    // string-keyed map — a no-op for the JSON-parsed event names.
+    const eventName = String(event.event)
+    let stepEvent = step.eventMap.get(eventName) ?? 0
 
     stepEvent += event.events
 
-    step.eventMap.set(event.event, stepEvent)
+    step.eventMap.set(eventName, stepEvent)
 
     if (ACTION_EVENTS.includes(event.event)) {
       step.total += event.events
@@ -94,10 +100,10 @@ export function transformJourneyAnalytics(
 
   // Merge the two Plausible pages per step that differ only by a trailing slash
   // (see getStepId). Visitors and exits are summed and timeOnPage — a per-visitor
-  // average — is combined as a visitor-weighted mean. Summing is a best-effort
-  // reconciliation of historical rows: a visitor counted on both variants (e.g.
-  // pageview on the slash page, a click on the slash-free page) is over-counted,
-  // but the Step.tsx fix removes the split for new data.
+  // average — is combined as a visitor-weighted mean. Summing double-counts a
+  // visitor recorded on both variants (e.g. pageview on the slash page, a click
+  // on the slash-free page), so the summed visitors is only a fallback — see
+  // the pageview-key override below.
   const stepStatsById = new Map<string, StepStat>()
   journeySteps.forEach((step) => {
     const stepId = getStepId(step.property, journeyId)
@@ -124,6 +130,34 @@ export function transformJourneyAnalytics(
           totalVisitors
     existing.timeOnPage = mergedTimeOnPage
     existing.visitors = totalVisitors
+  })
+  // Prefer the pageview uniques keyed by event:props:simpleKey for each step's
+  // visitor count whenever that key is present. The key is independent of the
+  // page pathname, so Plausible deduplicates visitors across the historical
+  // trailing-slash page split that the summed event:page rows double-count (a
+  // visitor whose pageview landed on `.../stepId/` but whose actions landed on
+  // `.../stepId` appears once in each event:page row). event:page remains the
+  // source for timeOnPage — Plausible only exposes it there — and the visitor
+  // fallback when no keyed pageview row exists (data recorded before pageview
+  // events carried keys). Not exact for a reporting window that straddles the
+  // key rollout: the keyed row covers only the keyed era, so the override
+  // slightly under-counts that step — accepted over the summed rows'
+  // over-count.
+  stepStatsById.forEach((stepStat) => {
+    const stepEventMap = stepMap.get(stepStat.stepId)?.eventMap
+    // A present key is trusted even at 0: Plausible never emits a zero-visitor
+    // breakdown row, so a genuine row always carries a positive count.
+    if (stepEventMap != null && stepEventMap.has('pageview')) {
+      stepStat.visitors = stepEventMap.get('pageview') ?? 0
+    }
+    // Exits are still summed across the trailing-slash variants (getStepExits)
+    // — Plausible has no keyed dedup source for exit_page — so on either path
+    // they can exceed the step's visitor count; cap them to keep the exit rate
+    // at or below 100%.
+    stepStat.visitorsExitAtStep = Math.min(
+      stepStat.visitorsExitAtStep,
+      stepStat.visitors
+    )
   })
   const stepsStats: StepStat[] = Array.from(stepStatsById.values())
 

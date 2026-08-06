@@ -593,6 +593,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoUpdate(input: VideoUpdateInput!) : Video! @join__field(graph: API_MEDIA) 
   videoDelete(id: ID!) : Video! @join__field(graph: API_MEDIA) 
   fixVideoLanguages(videoId: ID!) : Boolean! @join__field(graph: API_MEDIA) 
+  fixAlgoliaVideoVariantIndexIssues(input: FixAlgoliaVideoVariantIndexIssuesInput!) : FixAlgoliaVideoVariantIndexIssuesResult! @join__field(graph: API_MEDIA) 
   updateVideoAlgoliaIndex(videoId: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   updateVideoVariantAlgoliaIndex(videoId: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   videoDescriptionCreate(input: VideoTranslationCreateInput!) : VideoDescription! @join__field(graph: API_MEDIA) 
@@ -627,7 +628,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     maxResolution: MaxResolutionTier = uhd
   ): VideoVariantUpload! @join__field(graph: API_MEDIA) 
   videoVariantUploadResume(id: ID!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd) : VideoVariantUpload! @join__field(graph: API_MEDIA) 
-  videoVariantUploadRetry(id: ID!) : VideoVariantUpload @join__field(graph: API_MEDIA) 
+  videoVariantReconciliationRetry(id: ID!) : VideoVariantReconciliation @join__field(graph: API_MEDIA) 
   """
   Create-or-update a YoutubeVideo by youtubeVideoId. Idempotent; enforces the status invariant.
   """
@@ -1603,6 +1604,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   video(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
   videos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
   videosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
+  checkAlgoliaVideoVariantIndexBatch(input: CheckAlgoliaVideoVariantIndexBatchInput!) : CheckAlgoliaVideoVariantIndexBatchResult! @join__field(graph: API_MEDIA) 
   checkVideoInAlgolia(videoId: ID!) : CheckVideoInAlgoliaResult! @join__field(graph: API_MEDIA) 
   checkVideoVariantsInAlgolia(videoId: ID!) : CheckVideoVariantsInAlgoliaResult! @join__field(graph: API_MEDIA) 
   videoOrigins(where: VideoOriginsFilter, offset: Int, limit: Int) : [VideoOrigin!]! @join__field(graph: API_MEDIA) 
@@ -1612,12 +1614,12 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
   videoVariantUpload(id: ID!) : VideoVariantUpload! @join__field(graph: API_MEDIA) 
   videoVariantUploads(input: VideoVariantUploadsFilter, offset: Int, limit: Int) : [VideoVariantUpload!]! @join__field(graph: API_MEDIA) 
-  videoVariantUploadStatuses(
-    health: VideoVariantUploadHealth
+  videoVariantReconciliations(
+    status: VideoVariantReconciliationStatus
     blockingStage: VideoVariantProcessingStage
     olderThan: DateTime
     minRetryCount: Int
-  ): [VideoVariantUpload!] @join__field(graph: API_MEDIA) 
+  ): [VideoVariantReconciliation!] @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
   youtubeClosedCaptionLanguages(videoId: ID!) : QueryYoutubeClosedCaptionLanguagesResult! @join__field(graph: API_MEDIA) 
@@ -2430,6 +2432,24 @@ type LanguageName @join__type(graph: API_LANGUAGES)  {
   language: Language!
 }
 
+type AlgoliaVideoVariantIndexIssue @join__type(graph: API_MEDIA)  {
+  id: String
+  issueType: AlgoliaVideoVariantIndexIssueType
+  variantId: String
+  objectId: String
+  videoId: String
+  languageId: String
+  languageName: String
+  mismatches: [AlgoliaVideoVariantIndexIssueMismatch!]
+  error: String
+}
+
+type AlgoliaVideoVariantIndexIssueMismatch @join__type(graph: API_MEDIA)  {
+  field: String
+  expected: String
+  actual: String
+}
+
 type ArclightApiKey @join__type(graph: API_MEDIA, key: "key")  {
   key: String!
   desc: String
@@ -2463,6 +2483,19 @@ type BibleCitation @join__type(graph: API_MEDIA)  {
   verseStart: Int
   verseEnd: Int
   video: Video!
+}
+
+type CheckAlgoliaVideoVariantIndexBatchResult @join__type(graph: API_MEDIA)  {
+  scanType: AlgoliaVideoVariantIndexScanType
+  batchKey: String
+  nextBatchKey: String
+  done: Boolean
+  checkedCount: Int
+  missingCount: Int
+  staleCount: Int
+  extraCount: Int
+  failedCount: Int
+  issues: [AlgoliaVideoVariantIndexIssue!]
 }
 
 type CheckVideoInAlgoliaMismatch @join__type(graph: API_MEDIA)  {
@@ -2557,6 +2590,12 @@ type CloudflareR2MultipartPreparedPart @join__type(graph: API_MEDIA)  {
   1-indexed part number
   """
   partNumber: Int
+}
+
+type FixAlgoliaVideoVariantIndexIssuesResult @join__type(graph: API_MEDIA)  {
+  fixedCount: Int
+  failedCount: Int
+  issues: [AlgoliaVideoVariantIndexIssue!]
 }
 
 type ForeignKeyConstraintError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
@@ -3088,13 +3127,29 @@ type VideoVariantDownload @join__type(graph: API_MEDIA)  {
   version: Int!
 }
 
+type VideoVariantReconciliation @join__type(graph: API_MEDIA)  {
+  id: ID!
+  reason: String!
+  status: VideoVariantReconciliationStatus!
+  videoId: ID!
+  edition: String!
+  languageId: ID!
+  language: Language!
+  published: Boolean!
+  videoVariantId: ID
+  errorMessage: String
+  processingStages: String
+  retryAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  videoVariant: VideoVariant
+}
+
 type VideoVariantUpload @join__type(graph: API_MEDIA)  {
   id: ID!
   source: String!
   sourceKey: String
   status: VideoVariantUploadStatus!
-  health: String
-  canonical: Boolean
   videoId: ID!
   edition: String!
   languageId: ID!
@@ -3113,8 +3168,6 @@ type VideoVariantUpload @join__type(graph: API_MEDIA)  {
   muxNonStandardInputDetectedAt: DateTime
   videoVariantId: ID
   errorMessage: String
-  processingStages: String
-  retryAt: DateTime
   createdAt: DateTime!
   updatedAt: DateTime!
   r2Asset: CloudflareR2
@@ -3703,6 +3756,18 @@ enum LanguageIdType @join__type(graph: API_LANGUAGES)  {
   bcp47 @join__enumValue(graph: API_LANGUAGES) 
 }
 
+enum AlgoliaVideoVariantIndexIssueType @join__type(graph: API_MEDIA)  {
+  missing @join__enumValue(graph: API_MEDIA) 
+  stale @join__enumValue(graph: API_MEDIA) 
+  extra @join__enumValue(graph: API_MEDIA) 
+  failed @join__enumValue(graph: API_MEDIA) 
+}
+
+enum AlgoliaVideoVariantIndexScanType @join__type(graph: API_MEDIA)  {
+  core @join__enumValue(graph: API_MEDIA) 
+  algolia @join__enumValue(graph: API_MEDIA) 
+}
+
 enum DefaultPlatform @join__type(graph: API_MEDIA)  {
   ios @join__enumValue(graph: API_MEDIA) 
   android @join__enumValue(graph: API_MEDIA) 
@@ -3791,7 +3856,7 @@ enum UnsplashColor @join__type(graph: API_MEDIA)  {
   blue @join__enumValue(graph: API_MEDIA) 
 }
 
-enum VideoVariantUploadHealth @join__type(graph: API_MEDIA)  {
+enum VideoVariantReconciliationStatus @join__type(graph: API_MEDIA)  {
   processing @join__enumValue(graph: API_MEDIA) 
   degraded @join__enumValue(graph: API_MEDIA) 
   complete @join__enumValue(graph: API_MEDIA) 
@@ -3844,9 +3909,6 @@ enum VideoVariantUploadStatus @join__type(graph: API_MEDIA)  {
   muxCreated @join__enumValue(graph: API_MEDIA) 
   muxReady @join__enumValue(graph: API_MEDIA) 
   variantCreated @join__enumValue(graph: API_MEDIA) 
-  processing @join__enumValue(graph: API_MEDIA) 
-  degraded @join__enumValue(graph: API_MEDIA) 
-  complete @join__enumValue(graph: API_MEDIA) 
   failed @join__enumValue(graph: API_MEDIA) 
 }
 
@@ -5070,6 +5132,13 @@ input BibleBooksFilter @join__type(graph: API_MEDIA)  {
   updatedAt: DateTimeFilter
 }
 
+input CheckAlgoliaVideoVariantIndexBatchInput @join__type(graph: API_MEDIA)  {
+  scanType: AlgoliaVideoVariantIndexScanType!
+  batchKey: String
+  batchSize: Int
+  languageId: String
+}
+
 input CloudflareR2CompleteMultipartInput @join__type(graph: API_MEDIA)  {
   """
   CloudflareR2 id for the asset being uploaded
@@ -5150,6 +5219,11 @@ input CloudflareR2MultipartUploadedPartInput @join__type(graph: API_MEDIA)  {
   ETag returned after uploading the part
   """
   eTag: String!
+}
+
+input FixAlgoliaVideoVariantIndexIssuesInput @join__type(graph: API_MEDIA)  {
+  issueType: AlgoliaVideoVariantIndexIssueType!
+  objectIds: [String!]!
 }
 
 input GenerateSubtitlesInput @join__type(graph: API_MEDIA)  {

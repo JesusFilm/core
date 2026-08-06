@@ -36,8 +36,8 @@ import {
 } from './JourneyListContent.mocks'
 import { renderJourneyListContent } from './JourneyListContent.testUtils'
 
-vi.mock('@core/journeys/ui/useNavigationState', () => ({
-  useNavigationState: vi.fn(() => false)
+vi.mock('@core/journeys/ui/useRouteChangeState', () => ({
+  useRouteChangeState: vi.fn(() => false)
 }))
 
 vi.mock('@core/journeys/ui/TeamProvider', () => ({

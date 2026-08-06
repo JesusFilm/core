@@ -85,7 +85,7 @@ const Template: StoryObj<typeof Action> = {
   render: ({ ...args }) => {
     return (
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <EditorProvider
             initialState={{
               ...args

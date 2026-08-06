@@ -219,7 +219,7 @@ describe('RadioOptionEdit', () => {
         <JourneyProvider
           value={{
             journey: mockJourneyWithCustomization,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider>
@@ -244,7 +244,7 @@ describe('RadioOptionEdit', () => {
         <JourneyProvider
           value={{
             journey: mockJourneyWithCustomization,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider>
@@ -269,7 +269,7 @@ describe('RadioOptionEdit', () => {
         <JourneyProvider
           value={{
             journey: mockTemplateJourney,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider>
