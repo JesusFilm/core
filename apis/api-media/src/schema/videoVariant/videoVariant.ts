@@ -21,7 +21,7 @@ import {
   updateParentCollectionLanguages
 } from '../video/lib/updateAvailableLanguages'
 import { VideoSubtitle } from '../video/videoSubtitle'
-import { requestVideoVariantReconciliation } from '../videoVariantUpload/requestVideoVariantReconciliation'
+import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
 
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
 import { VideoVariantFilter } from './inputs/videoVariantFilter'
@@ -532,7 +532,7 @@ builder.mutationFields((t) => ({
         languageId: newVariant.languageId,
         edition: newVariant.edition,
         published: publicationIntent,
-        source: 'video-variant-create'
+        reason: 'video-variant-create'
       })
       // Update video's availableLanguages and cascade to parent collections only for published variants
       if (newVariant.published) {
@@ -657,7 +657,7 @@ builder.mutationFields((t) => ({
           languageId: nextLanguageId,
           edition: input.edition ?? currentVariant.edition,
           published: isNowPublished,
-          source: languageChanged
+          reason: languageChanged
             ? 'video-variant-language-change'
             : 'video-variant-publication-change'
         })
@@ -810,7 +810,7 @@ builder.mutationFields((t) => ({
         languageId,
         edition: variant.edition,
         published: false,
-        source: 'video-variant-delete'
+        reason: 'video-variant-delete'
       })
 
       // Delete the video variant
