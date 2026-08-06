@@ -12,10 +12,10 @@ import { importBibleBooks } from './bibleBooks'
 vi.mock('../../importer')
 
 const testTranslation: ProcessedTranslation = {
+  stringId: 1,
   identifier: 'GEN',
   text: 'Genesis',
-  languageId: '529',
-  context: ''
+  languageId: '529'
 }
 
 const expectedBibleBookName: Omit<
@@ -60,9 +60,9 @@ describe('importBibleBooks', () => {
 
   it('should handle invalid bible book data', async () => {
     const invalidTranslation = {
+      stringId: testTranslation.stringId,
       text: testTranslation.text,
       languageId: testTranslation.languageId,
-      context: testTranslation.context,
       identifier: null
     } as unknown as ProcessedTranslation
 
