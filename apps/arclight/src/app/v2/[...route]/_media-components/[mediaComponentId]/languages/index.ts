@@ -105,10 +105,12 @@ mediaComponentLanguages.openapi(route, async (c) => {
           select: {
             id: true,
             variants: {
-              where:
-                languageIds.length > 0
-                  ? { languageId: { in: languageIds } }
-                  : undefined,
+              where: {
+                published: true,
+                ...(languageIds.length > 0 && {
+                  languageId: { in: languageIds }
+                })
+              },
               select: {
                 id: true,
                 languageId: true,
