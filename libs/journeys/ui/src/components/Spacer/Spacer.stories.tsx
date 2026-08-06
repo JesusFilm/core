@@ -4,8 +4,8 @@ import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
-import { StoryCard } from '../StoryCard'
+import { journeyUiConfig } from '../../test/journeyUiConfig'
+import { StoryCard } from '../../test/StoryCard'
 
 import { Spacer } from './Spacer'
 
@@ -20,7 +20,7 @@ type Story = StoryObj<ComponentProps<typeof Spacer>>
 const Template: Story = {
   render: ({ ...args }) => (
     <JourneyProvider
-      value={{ journey: {} as unknown as Journey, variant: 'admin' }}
+      value={{ journey: {} as unknown as Journey, renderMode: 'admin' }}
     >
       <StoryCard>
         <Typography mb={4}>Text above Spacer</Typography>
@@ -40,7 +40,7 @@ export const Journeys: Story = {
   ...Template,
   render: ({ ...args }) => (
     <JourneyProvider
-      value={{ journey: {} as unknown as Journey, variant: 'default' }}
+      value={{ journey: {} as unknown as Journey, renderMode: 'default' }}
     >
       <StoryCard>
         <Typography mb={4}>Text above Spacer</Typography>

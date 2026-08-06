@@ -1,27 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { prismaMock } from '../../test/prismaMock'
-import { updateVideoInAlgolia } from '../lib/algolia/algoliaVideoUpdate'
-import { updateVideoVariantInAlgolia } from '../lib/algolia/algoliaVideoVariantUpdate'
 
 import { auditParentVariants } from './audit-parent-variants'
-
-vi.mock('../lib/algolia/algoliaVideoUpdate', () => ({ updateVideoInAlgolia: vi.fn() }))
-vi.mock('../lib/algolia/algoliaVideoVariantUpdate', () => ({
-  updateVideoVariantInAlgolia: vi.fn()
-}))
 
 describe('auditParentVariants', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it('reports relationship-based gaps without changing Draft parents by default', async () => {
+  it('reports a missing generated parent Variant without mutating data', async () => {
     prismaMock.video.findMany.mockResolvedValue([
       {
-        id: 'draft-series',
+        id: 'series-1',
         slug: 'do-you-ever-wonder',
-        published: false,
+        published: true,
         availableLanguages: [],
         variants: [],
         children: [
@@ -47,38 +40,37 @@ describe('auditParentVariants', () => {
       applied: false,
       deterministicGaps: [
         {
-          parentVideoId: 'draft-series',
+          parentVideoId: 'series-1',
           childVideoId: 'episode-1',
           languageId: '20770',
-          variantId: '20770_draft-series',
+          variantId: '20770_series-1',
           action: 'createGeneratedParentVariant',
           result: 'proposed'
         }
       ],
-      ambiguous: [],
-      indexingFailures: []
+      ambiguous: []
     })
     expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
     expect(prismaMock.video.update).not.toHaveBeenCalled()
   })
 
-  it('applies a deterministic repair and indexes the parent records', async () => {
+  it('ignores published Variants that belong to unpublished child Videos', async () => {
     prismaMock.video.findMany.mockResolvedValue([
       {
-        id: 'draft-series',
+        id: 'series-1',
         slug: 'do-you-ever-wonder',
-        published: false,
+        published: true,
         availableLanguages: [],
         variants: [],
         children: [
           {
-            id: 'episode-1',
-            published: true,
+            id: 'unpublished-episode',
+            published: false,
             variants: [
               {
-                id: 'kurmanji-episode-1',
+                id: 'stale-published-variant',
                 languageId: '20770',
-                slug: 'do-you-ever-wonder/episode-1/ku',
+                slug: 'do-you-ever-wonder/unpublished-episode/ku',
                 published: true
               }
             ]
@@ -86,43 +78,13 @@ describe('auditParentVariants', () => {
         ]
       }
     ] as never)
-    prismaMock.$transaction.mockImplementation(async (transaction) => {
-      if (typeof transaction === 'function') {
-        return await transaction(prismaMock)
-      }
-      return await Promise.all(transaction)
-    })
 
-    const result = await auditParentVariants(true)
+    const result = await auditParentVariants()
 
-    expect(prismaMock.videoVariant.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        id: '20770_draft-series',
-        videoId: 'draft-series',
-        languageId: '20770',
-        slug: 'do-you-ever-wonder/ku',
-        published: false,
-        downloadable: false
-      })
-    })
-    expect(prismaMock.video.update).toHaveBeenCalledWith({
-      where: { id: 'draft-series' },
-      data: { availableLanguages: ['20770'] }
-    })
-    expect(prismaMock.videoVariantUpload.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        source: 'generated-parent',
-        canonical: true,
-        videoVariantId: '20770_draft-series'
-      })
-    })
-    expect(updateVideoInAlgolia).toHaveBeenCalledWith('draft-series')
-    expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('20770_draft-series')
-    expect(result.deterministicGaps[0].result).toBe('applied')
-    expect(result.indexingFailures).toEqual([])
+    expect(result.deterministicGaps).toEqual([])
   })
 
-  it('reports a media-bearing parent Variant as ambiguous without mutation', async () => {
+  it('reports a missing parent language when the parent Variant exists', async () => {
     prismaMock.video.findMany.mockResolvedValue([
       {
         id: 'series-1',
@@ -131,12 +93,15 @@ describe('auditParentVariants', () => {
         availableLanguages: [],
         variants: [
           {
-            id: 'uploaded-parent-variant',
+            id: '20770_series-1',
             languageId: '20770',
-            hls: 'https://stream.example/parent.m3u8',
+            hls: '',
             dash: '',
-            duration: 120,
-            muxVideoId: 'mux-parent',
+            share: '',
+            masterUrl: null,
+            duration: 0,
+            muxVideoId: null,
+            assetId: null,
             downloads: []
           }
         ],
@@ -157,7 +122,57 @@ describe('auditParentVariants', () => {
       }
     ] as never)
 
-    const result = await auditParentVariants(true)
+    const result = await auditParentVariants()
+
+    expect(result.deterministicGaps).toContainEqual({
+      parentVideoId: 'series-1',
+      childVideoId: 'episode-1',
+      languageId: '20770',
+      variantId: '20770_series-1',
+      action: 'addParentLanguage',
+      result: 'proposed'
+    })
+  })
+
+  it('reports a media-bearing parent Variant as ambiguous', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'series-1',
+        slug: 'do-you-ever-wonder',
+        published: true,
+        availableLanguages: [],
+        variants: [
+          {
+            id: 'uploaded-parent-variant',
+            languageId: '20770',
+            hls: 'https://stream.example/parent.m3u8',
+            dash: '',
+            share: '',
+            masterUrl: null,
+            duration: 120,
+            muxVideoId: 'mux-parent',
+            assetId: null,
+            downloads: []
+          }
+        ],
+        children: [
+          {
+            id: 'episode-1',
+            published: true,
+            variants: [
+              {
+                id: 'kurmanji-episode-1',
+                languageId: '20770',
+                slug: 'do-you-ever-wonder/episode-1/ku',
+                published: true
+              }
+            ]
+          }
+        ]
+      }
+    ] as never)
+
+    const result = await auditParentVariants()
 
     expect(result.deterministicGaps).toEqual([])
     expect(result.ambiguous).toEqual([
@@ -168,54 +183,5 @@ describe('auditParentVariants', () => {
         reason: 'existing parent Variant contains media'
       }
     ])
-    expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
-    expect(prismaMock.video.update).not.toHaveBeenCalled()
-  })
-
-  it('preserves database repair and reports the specific failed index stage', async () => {
-    prismaMock.video.findMany.mockResolvedValue([
-      {
-        id: 'series-1', slug: 'do-you-ever-wonder', published: true,
-        availableLanguages: [], variants: [],
-        children: [{
-          id: 'episode-1', published: true,
-          variants: [{
-            id: 'kurmanji-episode-1', languageId: '20770',
-            slug: 'do-you-ever-wonder/episode-1/ku', published: true
-          }]
-        }]
-      }
-    ] as never)
-    prismaMock.$transaction.mockImplementation(async (transaction) => {
-      if (typeof transaction === 'function') return await transaction(prismaMock)
-      return await Promise.all(transaction)
-    })
-    vi.mocked(updateVideoVariantInAlgolia).mockRejectedValueOnce(
-      new Error('Variant index unavailable')
-    )
-
-    const result = await auditParentVariants(true)
-
-    expect(result.deterministicGaps[0].result).toBe('applied')
-    expect(result.indexingFailures).toEqual([
-      {
-        parentVideoId: 'series-1',
-        languageId: '20770',
-        variantId: '20770_series-1',
-        error: 'Variant index unavailable'
-      }
-    ])
-    expect(prismaMock.videoVariantUpload.update).toHaveBeenLastCalledWith({
-      where: { id: 'status_20770_series-1' },
-      data: expect.objectContaining({
-        status: 'degraded',
-        processingStages: expect.objectContaining({
-          algoliaVideo: expect.objectContaining({ state: 'complete' }),
-          algoliaVariant: expect.objectContaining({
-            state: 'failed', error: 'Variant index unavailable'
-          })
-        })
-      })
-    })
   })
 })

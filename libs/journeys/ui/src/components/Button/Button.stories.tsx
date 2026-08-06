@@ -10,8 +10,8 @@ import {
   IconName,
   IconSize
 } from '../../../__generated__/globalTypes'
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
-import { StoryCard } from '../StoryCard'
+import { journeyUiConfig } from '../../test/journeyUiConfig'
+import { StoryCard } from '../../test/StoryCard'
 
 import { Button } from '.'
 

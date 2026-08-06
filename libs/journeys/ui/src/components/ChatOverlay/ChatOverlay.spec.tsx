@@ -2,29 +2,23 @@ import { fireEvent, render, screen } from '@testing-library/react'
 
 import { ChatOverlay } from './ChatOverlay'
 
-// Stand-in for the dynamically-imported AiChat. The panel variant renders
-// the ChatHeader close (X) when `onClose` is provided, and reports its sheet
-// state via `onSheetStateChange` once a conversation has messages. We expose
-// both as buttons so the spec can drive the overlay's behaviour without the
-// real chat implementation.
+// Stand-in for the dynamically-imported AiChat. It renders the ChatHeader
+// close (X) when `onClose` is provided, and reports its sheet state via
+// `onSheetStateChange` once a conversation has messages. We expose both as
+// buttons so the spec can drive the overlay's behaviour without the real
+// chat implementation.
 vi.mock('../AiChat', () => ({
   __esModule: true,
   AiChat: ({
-    variant,
     onClose,
     onSheetStateChange,
     onDark
   }: {
-    variant?: 'panel' | 'overlay'
     onClose?: () => void
     onSheetStateChange?: (state: 'idle' | 'active') => void
     onDark?: boolean
   }) => (
-    <div
-      data-testid="AiChatMock"
-      data-variant={variant}
-      data-on-dark={String(onDark === true)}
-    >
+    <div data-testid="AiChatMock" data-on-dark={String(onDark === true)}>
       <button onClick={onClose}>mock-close</button>
       <button onClick={() => onSheetStateChange?.('active')}>
         mock-activate
@@ -39,15 +33,7 @@ describe('ChatOverlay', () => {
     expect(screen.queryByTestId('ChatOverlay')).not.toBeInTheDocument()
   })
 
-  it('renders the panel variant of AiChat (compact bar layout)', async () => {
-    render(<ChatOverlay open onClose={vi.fn()} />)
-    expect(await screen.findByTestId('AiChatMock')).toHaveAttribute(
-      'data-variant',
-      'panel'
-    )
-  })
-
-  it('themes the panel for the dark backdrop (onDark)', async () => {
+  it('themes AiChat for the dark backdrop (onDark)', async () => {
     render(<ChatOverlay open onClose={vi.fn()} />)
     expect(await screen.findByTestId('AiChatMock')).toHaveAttribute(
       'data-on-dark',

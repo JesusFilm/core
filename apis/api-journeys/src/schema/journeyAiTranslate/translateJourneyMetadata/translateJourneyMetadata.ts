@@ -114,8 +114,8 @@ ${hardenPrompt(value)}`
       model,
       abortSignal,
       maxRetries: 0,
+      instructions: TRANSLATION_SYSTEM_PROMPT,
       messages: [
-        { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
         {
           role: 'user',
           content: [{ type: 'text', text: prompt }]
@@ -187,8 +187,8 @@ export async function translateJourneyMetadata({
         model,
         abortSignal,
         maxRetries: 0,
+        instructions: TRANSLATION_SYSTEM_PROMPT,
         messages: [
-          { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
           {
             role: 'user',
             content: [{ type: 'text', text: analysisPrompt }]

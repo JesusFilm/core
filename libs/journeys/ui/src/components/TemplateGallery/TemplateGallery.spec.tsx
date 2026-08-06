@@ -17,8 +17,8 @@ import {
 
 import { TemplateGallery } from '.'
 
-vi.mock('@core/journeys/ui/useNavigationState', () => ({
-  useNavigationState: vi.fn(() => false)
+vi.mock('@core/journeys/ui/useRouteChangeState', () => ({
+  useRouteChangeState: vi.fn(() => false)
 }))
 
 vi.mock('@mui/material/useMediaQuery', () => ({

@@ -278,7 +278,7 @@ describe('BackgroundMedia', () => {
     render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
               <SnackbarProvider>
                 <BackgroundMedia />
@@ -318,7 +318,7 @@ describe('BackgroundMedia', () => {
         ]}
       >
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <EditorProvider
               initialState={{
                 selectedBlock: {
@@ -398,7 +398,7 @@ describe('BackgroundMedia', () => {
         ]}
       >
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: step }}>
               <SnackbarProvider>
                 <CommandProvider>
@@ -453,7 +453,7 @@ describe('BackgroundMedia', () => {
     render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
               <SnackbarProvider>
                 <BackgroundMedia />
@@ -526,7 +526,7 @@ describe('BackgroundMedia', () => {
         mocks={[coverVideoBlockDeleteMock, coverVideoBlockRestoreMock]}
       >
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: selectedCard }}>
               <SnackbarProvider>
                 <MuxVideoUploadProvider>

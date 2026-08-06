@@ -103,7 +103,7 @@ describe('Typography variant selector', () => {
               id: 'journeyId',
               language: { bcp47: 'en' }
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedBlock }}>
@@ -184,7 +184,7 @@ describe('Typography variant selector', () => {
               id: 'journeyId',
               language: { bcp47: 'en' }
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedBlock }}>

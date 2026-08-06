@@ -172,7 +172,7 @@ const Template: StoryObj<typeof Canvas> = {
                 ]
               }
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider

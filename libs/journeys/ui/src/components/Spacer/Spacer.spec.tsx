@@ -21,7 +21,7 @@ describe('Spacer', () => {
   it('should render correctly on journeys context', () => {
     render(
       <JourneyProvider
-        value={{ journey: {} as unknown as Journey, variant: 'default' }}
+        value={{ journey: {} as unknown as Journey, renderMode: 'default' }}
       >
         <Spacer {...block} />
       </JourneyProvider>
@@ -36,7 +36,7 @@ describe('Spacer', () => {
   it('should render correctly on editor context', () => {
     render(
       <JourneyProvider
-        value={{ journey: {} as unknown as Journey, variant: 'admin' }}
+        value={{ journey: {} as unknown as Journey, renderMode: 'admin' }}
       >
         <Spacer {...block} />
       </JourneyProvider>

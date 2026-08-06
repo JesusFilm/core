@@ -55,7 +55,7 @@ export function Editor({
       : undefined
 
   return (
-    <JourneyProvider value={{ journey, variant: 'admin' }}>
+    <JourneyProvider value={{ journey, renderMode: 'admin' }}>
       <EditorProvider
         initialState={{
           steps,

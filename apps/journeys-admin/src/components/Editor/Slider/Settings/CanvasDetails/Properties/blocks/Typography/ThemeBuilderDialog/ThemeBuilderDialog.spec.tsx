@@ -161,7 +161,9 @@ describe('ThemeBuilderDialog', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <JourneyProvider value={{ journey: mockJourney, variant: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: mockJourney, renderMode: 'admin' }}
+          >
             <ThemeBuilderDialog open onClose={handleClose} />
           </JourneyProvider>
         </MockedProvider>
@@ -173,11 +175,52 @@ describe('ThemeBuilderDialog', () => {
     expect(screen.getByText('Confirm')).toBeInTheDocument()
   })
 
+  it('should group the action buttons together at the end of the footer', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: mockJourney, renderMode: 'admin' }}
+          >
+            <ThemeBuilderDialog open onClose={handleClose} />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const cancelButton = screen.getByRole('button', { name: 'Cancel' })
+    const confirmButton = screen.getByRole('button', { name: 'Confirm' })
+    const actions = cancelButton.parentElement
+
+    // both buttons share one flex row, spaced by gap rather than margins
+    // (StyledDialog zeroes marginLeft on non-first DialogActions children)
+    expect(confirmButton.parentElement).toBe(actions)
+    expect(actions).toHaveStyle({ display: 'flex', flexDirection: 'row' })
+
+    // the size is theme-derived — spacing(2) is 8px under the app theme but
+    // 16px under MUI's default, so assert a gap exists, not its exact px
+    const { gap } = getComputedStyle(actions as Element)
+    expect(['', 'normal', '0px']).not.toContain(gap)
+
+    // the row stays content-width. DialogActions already right-aligns its
+    // children, so a full-width row is what flung the buttons to opposite
+    // corners — this is the assertion that guards the original bug
+    expect(actions).not.toHaveStyle({ width: '100%' })
+
+    // Cancel precedes Confirm so Confirm stays the rightmost action
+    expect(
+      cancelButton.compareDocumentPosition(confirmButton) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+  })
+
   it('should initialize with journey theme values', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <JourneyProvider value={{ journey: mockJourney, variant: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: mockJourney, renderMode: 'admin' }}
+          >
             <ThemeBuilderDialog open onClose={handleClose} />
           </JourneyProvider>
         </MockedProvider>
@@ -200,7 +243,7 @@ describe('ThemeBuilderDialog', () => {
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
-            value={{ journey: mockJourneyWithoutTheme, variant: 'admin' }}
+            value={{ journey: mockJourneyWithoutTheme, renderMode: 'admin' }}
           >
             <ThemeBuilderDialog open onClose={handleClose} />
           </JourneyProvider>
@@ -223,7 +266,9 @@ describe('ThemeBuilderDialog', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <JourneyProvider value={{ journey: mockJourney, variant: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: mockJourney, renderMode: 'admin' }}
+          >
             <ThemeBuilderDialog open onClose={handleClose} />
           </JourneyProvider>
         </MockedProvider>
@@ -238,7 +283,9 @@ describe('ThemeBuilderDialog', () => {
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[updateMock]}>
-          <JourneyProvider value={{ journey: mockJourney, variant: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: mockJourney, renderMode: 'admin' }}
+          >
             <ThemeBuilderDialog open onClose={handleClose} />
           </JourneyProvider>
         </MockedProvider>
@@ -262,7 +309,7 @@ describe('ThemeBuilderDialog', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[createMock]}>
           <JourneyProvider
-            value={{ journey: mockJourneyWithoutTheme, variant: 'admin' }}
+            value={{ journey: mockJourneyWithoutTheme, renderMode: 'admin' }}
           >
             <ThemeBuilderDialog open onClose={handleClose} />
           </JourneyProvider>
@@ -299,7 +346,9 @@ describe('ThemeBuilderDialog', () => {
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[errorMock]}>
-          <JourneyProvider value={{ journey: mockJourney, variant: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: mockJourney, renderMode: 'admin' }}
+          >
             <ThemeBuilderDialog open onClose={handleClose} />
           </JourneyProvider>
         </MockedProvider>
@@ -335,7 +384,7 @@ describe('ThemeBuilderDialog', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[errorMock]}>
           <JourneyProvider
-            value={{ journey: mockJourneyWithoutTheme, variant: 'admin' }}
+            value={{ journey: mockJourneyWithoutTheme, renderMode: 'admin' }}
           >
             <ThemeBuilderDialog open onClose={handleClose} />
           </JourneyProvider>
@@ -352,7 +401,7 @@ describe('ThemeBuilderDialog', () => {
     })
   })
 
-  it('should disable confirm button while loading', async () => {
+  it('should disable confirm button and show a spinner while loading', async () => {
     const loadingMock = {
       delay: 30,
       request: {
@@ -385,7 +434,9 @@ describe('ThemeBuilderDialog', () => {
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[loadingMock]}>
-          <JourneyProvider value={{ journey: mockJourney, variant: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: mockJourney, renderMode: 'admin' }}
+          >
             <ThemeBuilderDialog open onClose={handleClose} />
           </JourneyProvider>
         </MockedProvider>
@@ -394,5 +445,115 @@ describe('ThemeBuilderDialog', () => {
 
     fireEvent.click(screen.getByText('Confirm'))
     expect(screen.getByText('Confirm')).toBeDisabled()
+
+    // without the spinner the whole dialog greys out with no sign of progress
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+  })
+
+  it('should disable the close affordances while fonts are saving', async () => {
+    const loadingMock = {
+      delay: 30,
+      request: {
+        query: JOURNEY_FONTS_UPDATE,
+        variables: {
+          id: 'theme-id',
+          input: {
+            headerFont: FontFamily.Montserrat,
+            bodyFont: FontFamily.Inter,
+            labelFont: FontFamily.Nunito
+          }
+        }
+      },
+      result: {
+        data: {
+          journeyThemeUpdate: {
+            __typename: 'JourneyTheme',
+            id: 'theme-id',
+            journeyId: 'journey-id',
+            headerFont: FontFamily.Montserrat,
+            bodyFont: FontFamily.Inter,
+            labelFont: FontFamily.Nunito
+          }
+        }
+      }
+    }
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[loadingMock]}>
+          <JourneyProvider
+            value={{ journey: mockJourney, renderMode: 'admin' }}
+          >
+            <ThemeBuilderDialog open onClose={handleClose} />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(screen.getByText('Confirm'))
+
+    // a disabled button swallows its own clicks, so this covers the buttons
+    // only — the handleClose guard is exercised by the test below
+    expect(screen.getByText('Cancel')).toBeDisabled()
+    expect(screen.getByTestId('dialog-close-button')).toBeDisabled()
+
+    await waitFor(() => expect(handleClose).toHaveBeenCalled())
+  })
+
+  it('should not close on escape or backdrop click while fonts are saving', async () => {
+    const loadingMock = {
+      delay: 60,
+      request: {
+        query: JOURNEY_FONTS_UPDATE,
+        variables: {
+          id: 'theme-id',
+          input: {
+            headerFont: FontFamily.Montserrat,
+            bodyFont: FontFamily.Inter,
+            labelFont: FontFamily.Nunito
+          }
+        }
+      },
+      result: {
+        data: {
+          journeyThemeUpdate: {
+            __typename: 'JourneyTheme',
+            id: 'theme-id',
+            journeyId: 'journey-id',
+            headerFont: FontFamily.Montserrat,
+            bodyFont: FontFamily.Inter,
+            labelFont: FontFamily.Nunito
+          }
+        }
+      }
+    }
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[loadingMock]}>
+          <JourneyProvider
+            value={{ journey: mockJourney, renderMode: 'admin' }}
+          >
+            <ThemeBuilderDialog open onClose={handleClose} />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(screen.getByText('Confirm'))
+
+    // escape and backdrop bypass the disabled buttons entirely, so these are
+    // the paths the handleClose guard actually has to block
+    fireEvent.keyDown(screen.getByRole('dialog'), {
+      key: 'Escape',
+      code: 'Escape'
+    })
+    expect(handleClose).not.toHaveBeenCalled()
+
+    fireEvent.click(document.querySelector('.MuiBackdrop-root') as Element)
+    expect(handleClose).not.toHaveBeenCalled()
+
+    // once the mutation settles the dialog closes itself
+    await waitFor(() => expect(handleClose).toHaveBeenCalled())
   })
 })

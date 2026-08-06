@@ -230,7 +230,7 @@ export function useCreateStepFromSocialPreview(): (
               blockOrderUpdate: steps ?? []
             },
             update(cache, { data }) {
-              blockDeleteUpdate(step, data?.blockDelete, cache, journey.id)
+              blockDeleteUpdate(cache, journey.id, step, data?.blockDelete)
             }
           })
         } else {

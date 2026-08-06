@@ -6,13 +6,12 @@ import {
   getMediaDataLangSlackConfig,
   slackChatPostMessage
 } from '../../lib/slack'
-import { reconcileVideoVariantUpload } from '../../schema/videoVariantUpload/reconcileVideoVariantUpload'
+import { reconcileVideoVariantReconciliation } from '../../schema/videoVariantReconciliation/reconcileVideoVariantReconciliation'
 import { logger as defaultLogger } from '../lib/logger'
 
 export async function service(logger: Logger = defaultLogger): Promise<void> {
-  const dueStatuses = await prisma.videoVariantUpload.findMany({
+  const dueStatuses = await prisma.videoVariantReconciliation.findMany({
     where: {
-      canonical: true,
       status: { in: ['processing', 'degraded'] },
       OR: [
         { status: 'processing', retryAt: null },
@@ -24,19 +23,20 @@ export async function service(logger: Logger = defaultLogger): Promise<void> {
 
   for (const status of dueStatuses) {
     try {
-      const result = await reconcileVideoVariantUpload(status.id)
+      const result = await reconcileVideoVariantReconciliation(status.id)
       if (result.publicationReady) continue
 
-      const currentStatus = await prisma.videoVariantUpload.findUniqueOrThrow({
-        where: { id: status.id },
-        select: {
-          id: true,
-          videoVariantId: true,
-          status: true,
-          retryAt: true,
-          errorMessage: true
-        }
-      })
+      const currentStatus =
+        await prisma.videoVariantReconciliation.findUniqueOrThrow({
+          where: { id: status.id },
+          select: {
+            id: true,
+            videoVariantId: true,
+            status: true,
+            retryAt: true,
+            errorMessage: true
+          }
+        })
       if (
         currentStatus.retryAt != null ||
         currentStatus.status === 'processing'
@@ -57,7 +57,7 @@ export async function service(logger: Logger = defaultLogger): Promise<void> {
       })
     } catch (error) {
       logger.error(
-        { error, videoVariantUploadId: status.id },
+        { error, videoVariantReconciliationId: status.id },
         'Variant reconciliation failed; continuing sweep'
       )
     }

@@ -283,8 +283,8 @@ Return exactly one entry for every block ID listed above, and translate every fi
         model,
         abortSignal,
         maxRetries: 0,
+        instructions: TRANSLATION_SYSTEM_PROMPT,
         messages: [
-          { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
           {
             role: 'user',
             content: [{ type: 'text', text: prompt }]

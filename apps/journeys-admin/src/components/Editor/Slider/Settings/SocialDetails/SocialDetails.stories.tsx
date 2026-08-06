@@ -106,7 +106,7 @@ const Template: StoryObj<typeof SocialDetails> = {
   render: ({ ...args }) => {
     return (
       <MockedProvider>
-        <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey: args.journey, renderMode: 'admin' }}>
           <EditorProvider>
             <SocialDetails />
           </EditorProvider>

@@ -106,7 +106,7 @@ describe('videoVariant', () => {
     mockedVideoVariantCacheReset.mockImplementation(() => Promise.resolve())
     mockedDeleteVideo.mockResolvedValue(undefined)
     mockedDeleteR2File.mockResolvedValue(undefined)
-    mockedUpdateVideoVariantInAlgolia.mockResolvedValue(undefined)
+    mockedUpdateVideoVariantInAlgolia.mockResolvedValue(true)
     mockedAddLanguageToVideo.mockResolvedValue(undefined)
     mockedRemoveLanguageFromVideoIfUnused.mockResolvedValue(undefined)
     mockedUpdateParentCollectionLanguages.mockResolvedValue(undefined)
