@@ -688,9 +688,7 @@ export function JourneyListContent({
           <Typography sx={{ fontWeight: 'bold' }}>
             {dialogLabels.primary.message}
           </Typography>
-          {status !== 'active' && (
-            <Typography>{t('Are you sure you want to proceed?')}</Typography>
-          )}
+          <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>
       )}
       {secondaryDialogOpen != null && (

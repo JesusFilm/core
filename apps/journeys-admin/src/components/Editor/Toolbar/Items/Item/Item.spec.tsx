@@ -46,6 +46,34 @@ describe('Item', () => {
       expect(ButtonItem.getAttribute('href')).toBe('https://test.com/')
       expect(ButtonItem.getAttribute('target')).toBe('_blank')
     })
+
+    // Labels that can break mid-string (CJK breaks between any two characters,
+    // unlike a single Latin word) wrapped to two lines once the toolbar ran out
+    // of room, doubling the button height. NES-1861.
+    it('keeps the label on one line', () => {
+      const { getByRole } = render(
+        <Item variant="button" label="战略" icon={<Edit2Icon />} />
+      )
+
+      expect(getByRole('button', { name: '战略' })).toHaveStyle({
+        whiteSpace: 'nowrap'
+      })
+    })
+
+    it('keeps the label on one line when the caller passes its own sx', () => {
+      const { getByRole } = render(
+        <Item
+          variant="button"
+          label="分享"
+          icon={<Edit2Icon />}
+          ButtonProps={{ sx: { backgroundColor: 'background.paper' } }}
+        />
+      )
+
+      expect(getByRole('button', { name: '分享' })).toHaveStyle({
+        whiteSpace: 'nowrap'
+      })
+    })
   })
 
   describe('menu item variant', () => {
