@@ -932,6 +932,7 @@ builder.mutationFields((t) => ({
           // Get data for cleanup that won't cascade automatically
           variants: {
             select: {
+              id: true,
               muxVideoId: true,
               muxVideo: {
                 select: {
@@ -1012,7 +1013,18 @@ builder.mutationFields((t) => ({
         where: { id }
       })
 
-      await enqueueVideoAlgoliaSync(id, videoOnlyScope, logger)
+      // Deleting the video cascades its variants away in the DB, but their
+      // Algolia records are not cascaded — name them explicitly so the sync
+      // removes them too, rather than leaving orphans in the variants index
+      // that Watch search still returns.
+      await enqueueVideoAlgoliaSync(
+        id,
+        {
+          ...videoOnlyScope,
+          deletedVariantIds: video.variants.map((variant) => variant.id)
+        },
+        logger
+      )
 
       try {
         await videoCacheReset(id)

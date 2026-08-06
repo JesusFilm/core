@@ -2,6 +2,8 @@ import { Job } from 'bullmq'
 import { Logger } from 'pino'
 import { vi } from 'vitest'
 
+import { Video, VideoVariant } from '@core/prisma/media/client'
+
 import { prismaMock } from '../../../../test/prismaMock'
 import {
   updateVideoInAlgolia,
@@ -84,7 +86,7 @@ describe('videoAlgoliaSync service', () => {
     prismaMock.videoVariant.findMany.mockResolvedValueOnce([
       { id: 'variant-1' },
       { id: 'variant-2' }
-    ] as any)
+    ] as unknown as VideoVariant[])
 
     await service(
       buildJob({
@@ -118,7 +120,7 @@ describe('videoAlgoliaSync service', () => {
   it('re-derives published status from the DB (not the job payload) for syncPublishedFlag', async () => {
     prismaMock.video.findUnique.mockResolvedValueOnce({
       published: true
-    } as any)
+    } as unknown as Video)
 
     await service(buildJob({ syncPublishedFlag: true }), mockLogger)
 

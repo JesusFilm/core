@@ -7,13 +7,13 @@ import { getLanguages } from '../languages'
 import { updateVideoInAlgolia } from './algoliaVideoUpdate'
 
 const saveObjectsSpy = vi.fn()
-const deleteObjectSpy = vi.fn()
+const deleteObjectsSpy = vi.fn()
 
 // Mock the algolia client helper
 vi.mock('../algoliaClient', () => ({
   getAlgoliaClient: () => ({
     saveObjects: saveObjectsSpy,
-    deleteObject: deleteObjectSpy
+    deleteObjects: deleteObjectsSpy
   }),
   getAlgoliaConfig: () => ({
     appId: 'test-app-id',
@@ -57,7 +57,7 @@ describe('algoliaVideoUpdate', () => {
 
     // Reset the spy mock return values
     saveObjectsSpy.mockResolvedValue([{ taskID: 'test-task-123' }])
-    deleteObjectSpy.mockResolvedValue({ taskID: 'test-delete-task-123' })
+    deleteObjectsSpy.mockResolvedValue([{ taskID: 'test-delete-task-123' }])
 
     mockedGetLanguages.mockResolvedValue(mockLanguages)
   })
@@ -74,9 +74,10 @@ describe('algoliaVideoUpdate', () => {
     expect(mockLogger.warn).toHaveBeenCalledWith(
       'video non-existent-video not found, removing from algolia'
     )
-    expect(deleteObjectSpy).toHaveBeenCalledWith({
+    expect(deleteObjectsSpy).toHaveBeenCalledWith({
       indexName: 'test-videos',
-      objectID: 'non-existent-video'
+      objectIDs: ['non-existent-video'],
+      waitForTasks: true
     })
     expect(saveObjectsSpy).not.toHaveBeenCalled()
   })

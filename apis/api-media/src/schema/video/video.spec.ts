@@ -3474,6 +3474,7 @@ describe('video', () => {
           publishedAt: null,
           variants: [
             {
+              id: 'variantId1',
               muxVideoId: 'muxVideoId1',
               muxVideo: { assetId: 'assetId1' }
             }
@@ -3503,9 +3504,13 @@ describe('video', () => {
         expect(result).toHaveProperty('data.videoDelete', {
           id: 'videoId'
         })
+        // the cascaded-away variants must be removed from the variants index too
         expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
           'videoId',
-          expect.objectContaining({ syncVideoRecord: true }),
+          expect.objectContaining({
+            syncVideoRecord: true,
+            deletedVariantIds: ['variantId1']
+          }),
           expect.anything()
         )
       })

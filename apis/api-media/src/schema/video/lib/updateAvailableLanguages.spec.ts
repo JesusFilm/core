@@ -42,15 +42,29 @@ type ContainerParentPayload = Prisma.VideoGetPayload<{
   select: { id: true }
 }>
 
+// The prismaMock signatures promise a full Video, but each call site here only
+// ever reads the columns its own `select` asked for. Typing the fixture as the
+// selected payload keeps the select/mock mismatch a compile error, then the
+// widening cast satisfies the mock's declared return type.
+const availableLanguagesVideo: AvailableLanguagesVideoPayload = {
+  label: 'series',
+  variants: [],
+  children: []
+}
+
+const containerParents: ContainerParentPayload[] = [
+  { id: 'parent-1' },
+  { id: 'parent-2' }
+]
+
 describe('updateVideoAvailableLanguages', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    prismaMock.video.findUnique.mockResolvedValue({
-      label: 'series',
-      variants: [],
-      children: []
-    } as AvailableLanguagesVideoPayload as unknown as Video)
-    prismaMock.video.update.mockResolvedValue({} as any)
+    prismaMock.video.findUnique.mockResolvedValue(
+      availableLanguagesVideo as unknown as Video
+    )
+    // updateVideoAvailableLanguages ignores the update() result
+    prismaMock.video.update.mockResolvedValue({} as unknown as Video)
     mockedVideoCacheReset.mockResolvedValue(undefined)
   })
 
@@ -79,10 +93,9 @@ describe('updateVideoAvailableLanguages', () => {
 
 describe('findContainerParentIds', () => {
   it('queries collection/series/featureFilm videos that list the child', async () => {
-    prismaMock.video.findMany.mockResolvedValueOnce([
-      { id: 'parent-1' },
-      { id: 'parent-2' }
-    ] as ContainerParentPayload[] as unknown as Video[])
+    prismaMock.video.findMany.mockResolvedValueOnce(
+      containerParents as unknown as Video[]
+    )
 
     const parentIds = await findContainerParentIds('child-id')
 
@@ -99,10 +112,9 @@ describe('findContainerParentIds', () => {
 
 describe('updateParentCollectionLanguages', () => {
   it('enqueues an Algolia sync for every parent found', async () => {
-    prismaMock.video.findMany.mockResolvedValueOnce([
-      { id: 'parent-1' },
-      { id: 'parent-2' }
-    ] as ContainerParentPayload[] as unknown as Video[])
+    prismaMock.video.findMany.mockResolvedValueOnce(
+      containerParents as unknown as Video[]
+    )
 
     await updateParentCollectionLanguages('child-id')
 

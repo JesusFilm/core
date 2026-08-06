@@ -36,21 +36,36 @@ export function mergeScope(
 }
 
 // Enqueues durable, retriable Algolia indexing work for a video, keyed by a
-// per-video jobId so redundant enqueues coalesce. BullMQ's default dedup
-// silently drops a second add() for an already-queued jobId — including its
-// scope — so a wider sync requested while a narrower one is still pending
-// would be lost. To avoid that, a still-waiting (or delayed, e.g. mid
-// backoff) job's scope is unioned in via updateData() instead of being
-// dropped. A job that's already active (a worker has it and already read
-// its data), or doesn't exist, falls back to a normal add() — same
-// best-effort behaviour as before for that narrower window. Fully closing
-// that residual gap needs a persisted source of truth outside the queue;
-// VMT-320 tracks that as a durable dirty-state table.
+// per-video jobId so redundant enqueues coalesce.
+//
+// BullMQ keys a job's Redis hash on its jobId and treats add() for an id that
+// still EXISTS as a no-op (see addStandardJob's handleDuplicatedJob) — the new
+// payload, and therefore the new scope, is silently discarded. That makes the
+// state of any already-present job decide what we have to do:
+//
+//   waiting / delayed (mid-backoff) — the job hasn't been read by a worker
+//     yet, so union the new scope into it via updateData().
+//   failed — attempts are exhausted but removeOnFail retains the hash for
+//     FIVE_DAYS, so a plain add() would be a no-op and every subsequent
+//     publish of this video would be dropped for days. That is exactly the
+//     QA-543 symptom, aimed at the videos already known to be failing, so
+//     carry the failed job's scope forward, drop the stale job, and re-add
+//     with a full attempt budget.
+//   active — a worker already holds the job and has read its data. add() is a
+//     no-op here too, so a scope requested during that window is still lost.
+//     The window is one job execution rather than days, and closing it
+//     properly needs a source of truth that outlives the queue: VMT-320
+//     tracks that as a durable dirty-state table.
 //
 // Errors anywhere in this (e.g. Redis unavailable) are logged and swallowed
-// rather than propagated, so a queueing blip never fails the publish
-// mutation that triggered it — mirrors how the direct Algolia calls this
-// replaces were already treated as best-effort at every call site.
+// rather than propagated, so a queueing blip never fails the publish mutation
+// that triggered it — mirrors how the direct Algolia calls this replaces were
+// already treated as best-effort at every call site. Note that swallowing
+// still loses the sync, because the failure happens before BullMQ has a job to
+// retry. Making the intent survive that requires persisting it in the same
+// transaction as the mutation (a transactional outbox), which is the durable
+// dirty-state VMT-320 introduces; a rethrow here would only fail the mutation
+// after its data has already been committed, without making the sync durable.
 export async function enqueueVideoAlgoliaSync(
   videoId: string,
   scope: VideoAlgoliaSyncScope,
@@ -63,20 +78,32 @@ export async function enqueueVideoAlgoliaSync(
       | Job<VideoAlgoliaSyncJobData>
       | undefined
 
-    if (
-      existingJob != null &&
-      ((await existingJob.isWaiting()) || (await existingJob.isDelayed()))
-    ) {
-      await existingJob.updateData({
-        videoId,
-        scope: mergeScope(existingJob.data.scope, scope)
-      } satisfies VideoAlgoliaSyncJobData)
-      return
+    let scopeToEnqueue = scope
+
+    if (existingJob != null) {
+      const [isWaiting, isDelayed, isFailed] = await Promise.all([
+        existingJob.isWaiting(),
+        existingJob.isDelayed(),
+        existingJob.isFailed()
+      ])
+
+      if (isWaiting || isDelayed) {
+        await existingJob.updateData({
+          videoId,
+          scope: mergeScope(existingJob.data.scope, scope)
+        } satisfies VideoAlgoliaSyncJobData)
+        return
+      }
+
+      if (isFailed) {
+        scopeToEnqueue = mergeScope(existingJob.data.scope, scope)
+        await existingJob.remove()
+      }
     }
 
     await queue.add(
       jobName,
-      { videoId, scope } satisfies VideoAlgoliaSyncJobData,
+      { videoId, scope: scopeToEnqueue } satisfies VideoAlgoliaSyncJobData,
       {
         jobId,
         attempts: 5,
