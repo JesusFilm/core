@@ -20,13 +20,6 @@ import {
   videoLabels
 } from '../../../../constants'
 
-type VideoLabel = VideoLabelValue
-
-interface ChildLabelOptions {
-  validChildLabels: ReadonlyArray<{ label: string; value: string }>
-  suggestedLabel: VideoLabel | undefined
-}
-
 export const CREATE_VIDEO = graphql(`
   mutation CreateVideo($input: VideoCreateInput!) {
     videoCreate(input: $input) {
@@ -118,7 +111,7 @@ export function VideoCreateForm({
         }
         return true
       }),
-    label: mixed<VideoLabel>()
+    label: mixed<VideoLabelValue>()
       .oneOf(videoLabelValues)
       .required('Label is required'),
     originId: string().trim().required('Origin is required')
@@ -139,49 +132,46 @@ export function VideoCreateForm({
   const [createVideoVariant] = useMutation(CREATE_VIDEO_VARIANT)
 
   // Determine valid child labels and suggested label based on parent label
-  const { validChildLabels, suggestedLabel } =
-    useMemo<ChildLabelOptions>(() => {
-      if (!parentId || !parentData?.adminVideo?.label) {
+  const { validChildLabels, suggestedLabel } = useMemo(() => {
+    if (!parentId || !parentData?.adminVideo?.label) {
+      return { validChildLabels: videoLabels, suggestedLabel: undefined }
+    }
+
+    const parentLabel = parentData.adminVideo.label
+
+    switch (parentLabel) {
+      case 'collection':
+        return {
+          validChildLabels: videoLabels.filter((vl) =>
+            ['episode', 'featureFilm', 'shortFilm', 'series'].includes(vl.value)
+          ),
+          suggestedLabel: 'episode' as const
+        }
+      case 'featureFilm':
+        return {
+          validChildLabels: videoLabels.filter((vl) =>
+            ['segment', 'trailer', 'behindTheScenes'].includes(vl.value)
+          ),
+          suggestedLabel: 'segment' as const
+        }
+      case 'series':
+        return {
+          validChildLabels: videoLabels.filter((vl) =>
+            ['episode', 'trailer', 'behindTheScenes'].includes(vl.value)
+          ),
+          suggestedLabel: 'episode' as const
+        }
+      case 'episode':
+        return {
+          validChildLabels: videoLabels.filter((vl) =>
+            ['segment', 'trailer', 'behindTheScenes'].includes(vl.value)
+          ),
+          suggestedLabel: 'segment' as const
+        }
+      default:
         return { validChildLabels: videoLabels, suggestedLabel: undefined }
-      }
-
-      const parentLabel = parentData.adminVideo.label
-
-      switch (parentLabel) {
-        case 'collection':
-          return {
-            validChildLabels: videoLabels.filter((vl) =>
-              ['episode', 'featureFilm', 'shortFilm', 'series'].includes(
-                vl.value
-              )
-            ),
-            suggestedLabel: 'episode'
-          }
-        case 'featureFilm':
-          return {
-            validChildLabels: videoLabels.filter((vl) =>
-              ['segment', 'trailer', 'behindTheScenes'].includes(vl.value)
-            ),
-            suggestedLabel: 'segment'
-          }
-        case 'series':
-          return {
-            validChildLabels: videoLabels.filter((vl) =>
-              ['episode', 'trailer', 'behindTheScenes'].includes(vl.value)
-            ),
-            suggestedLabel: 'episode'
-          }
-        case 'episode':
-          return {
-            validChildLabels: videoLabels.filter((vl) =>
-              ['segment', 'trailer', 'behindTheScenes'].includes(vl.value)
-            ),
-            suggestedLabel: 'segment'
-          }
-        default:
-          return { validChildLabels: videoLabels, suggestedLabel: undefined }
-      }
-    }, [parentId, parentData])
+    }
+  }, [parentId, parentData])
 
   // Format origins for dropdown
   const originOptions = useMemo(() => {
@@ -332,7 +322,7 @@ export function VideoCreateForm({
   const initialValues: InferType<typeof validationSchema> = {
     id: '',
     slug: '',
-    label: suggestedLabel || ('' as VideoLabel),
+    label: suggestedLabel || ('' as VideoLabelValue),
     originId: parentData?.adminVideo?.origin?.id || ''
   }
 

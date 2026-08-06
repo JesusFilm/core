@@ -17,11 +17,10 @@ export const videoLabels = [
 export type VideoLabelValue = (typeof videoLabels)[number]['value']
 
 /**
- * The `videoLabels` values as a non-empty tuple, so consumers that need the
- * bare values (zod enums, yup `oneOf`) derive them from the same source as the
- * display labels rather than restating the list.
+ * The `videoLabels` values on their own, so validation that needs the bare
+ * values (yup `oneOf`) derives them from the same source as the display labels
+ * rather than restating the list.
  */
-export const videoLabelValues = videoLabels.map(({ value }) => value) as [
-  VideoLabelValue,
-  ...VideoLabelValue[]
-]
+export const videoLabelValues: VideoLabelValue[] = videoLabels.map(
+  ({ value }) => value
+)
