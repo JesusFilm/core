@@ -23,6 +23,18 @@ const languagesPrismaMock =
   languagesPrisma as unknown as DeepMockProxy<LanguagesPrismaClient>
 const mockedUpdateAlgolia = vi.mocked(updateLanguageInAlgoliaFromMedia)
 
+// ensureLanguageHasVideosTrue queries with `select: { id, hasVideos }`, so the
+// resolved value is this narrow payload rather than the full Language model the
+// prisma mock is typed against.
+interface LanguageHasVideosPayload {
+  id: string
+  hasVideos: boolean
+}
+
+function mockFindUnique(language: LanguageHasVideosPayload | null): void {
+  languagesPrismaMock.language.findUnique.mockResolvedValue(language as never)
+}
+
 describe('ensureLanguageHasVideosTrue', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -36,7 +48,7 @@ describe('ensureLanguageHasVideosTrue', () => {
   })
 
   it('does nothing when the language does not exist', async () => {
-    languagesPrismaMock.language.findUnique.mockResolvedValue(null)
+    mockFindUnique(null)
 
     await ensureLanguageHasVideosTrue('missing')
 
@@ -45,10 +57,7 @@ describe('ensureLanguageHasVideosTrue', () => {
   })
 
   it('flips hasVideos and updates algolia when previously false', async () => {
-    languagesPrismaMock.language.findUnique.mockResolvedValue({
-      id: '1234',
-      hasVideos: false
-    } as any)
+    mockFindUnique({ id: '1234', hasVideos: false })
 
     await ensureLanguageHasVideosTrue('1234')
 
@@ -60,10 +69,7 @@ describe('ensureLanguageHasVideosTrue', () => {
   })
 
   it('still updates algolia when hasVideos was already true without a db write', async () => {
-    languagesPrismaMock.language.findUnique.mockResolvedValue({
-      id: '1234',
-      hasVideos: true
-    } as any)
+    mockFindUnique({ id: '1234', hasVideos: true })
 
     await ensureLanguageHasVideosTrue('1234')
 

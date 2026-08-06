@@ -27,7 +27,28 @@ vi.mock('@core/prisma/languages/client', () => ({
 const languagesPrismaMock =
   languagesPrisma as unknown as DeepMockProxy<LanguagesPrismaClient>
 
-function createLanguage(overrides: Record<string, unknown> = {}): any {
+// The exact selected-payload shape buildAlgoliaLanguageRecord consumes, so the
+// fixtures stay checked against the Algolia record contract.
+type AlgoliaLanguageInput = Parameters<typeof buildAlgoliaLanguageRecord>[0]
+
+// The prisma mock is typed against the full Language model, but every call
+// under test passes `select: languageAlgoliaSelect`, so the value that actually
+// comes back is the narrower AlgoliaLanguageInput. These two helpers keep that
+// one unavoidable widening in a single named place instead of `any` at every
+// fixture.
+function mockFindUnique(language: AlgoliaLanguageInput | null): void {
+  languagesPrismaMock.language.findUnique.mockResolvedValue(language as never)
+}
+
+function mockFindManyOnce(languages: AlgoliaLanguageInput[]): void {
+  languagesPrismaMock.language.findMany.mockResolvedValueOnce(
+    languages as never
+  )
+}
+
+function createLanguage(
+  overrides: Partial<AlgoliaLanguageInput> = {}
+): AlgoliaLanguageInput {
   return {
     id: '1234',
     bcp47: 'plu',
@@ -111,9 +132,7 @@ describe('updateLanguageInAlgolia', () => {
 
   describe('updateLanguageInAlgoliaFromMedia', () => {
     it('saves the language record to the languages index', async () => {
-      languagesPrismaMock.language.findUnique.mockResolvedValue(
-        createLanguage()
-      )
+      mockFindUnique(createLanguage())
 
       await updateLanguageInAlgoliaFromMedia('1234')
 
@@ -125,7 +144,7 @@ describe('updateLanguageInAlgolia', () => {
     })
 
     it('does not save when the language is not found', async () => {
-      languagesPrismaMock.language.findUnique.mockResolvedValue(null)
+      mockFindUnique(null)
 
       await updateLanguageInAlgoliaFromMedia('missing')
 
@@ -138,9 +157,8 @@ describe('updateLanguageInAlgolia', () => {
       const fullBatch = Array.from({ length: 1000 }, (_, index) =>
         createLanguage({ id: `id-${index}` })
       )
-      languagesPrismaMock.language.findMany
-        .mockResolvedValueOnce(fullBatch)
-        .mockResolvedValueOnce([createLanguage({ id: 'last' })])
+      mockFindManyOnce(fullBatch)
+      mockFindManyOnce([createLanguage({ id: 'last' })])
 
       const result = await reindexLanguagesWithVideosInAlgolia()
 
@@ -166,9 +184,7 @@ describe('updateLanguageInAlgolia', () => {
     })
 
     it('stops after a partial batch without an extra query', async () => {
-      languagesPrismaMock.language.findMany.mockResolvedValueOnce([
-        createLanguage({ id: 'a' })
-      ])
+      mockFindManyOnce([createLanguage({ id: 'a' })])
 
       const result = await reindexLanguagesWithVideosInAlgolia()
 
@@ -178,7 +194,7 @@ describe('updateLanguageInAlgolia', () => {
     })
 
     it('returns zero and does not save when no languages have videos', async () => {
-      languagesPrismaMock.language.findMany.mockResolvedValueOnce([])
+      mockFindManyOnce([])
 
       const result = await reindexLanguagesWithVideosInAlgolia()
 
@@ -187,9 +203,7 @@ describe('updateLanguageInAlgolia', () => {
     })
 
     it('propagates a batch failure so the caller exits non-zero', async () => {
-      languagesPrismaMock.language.findMany.mockResolvedValueOnce([
-        createLanguage({ id: 'a' })
-      ])
+      mockFindManyOnce([createLanguage({ id: 'a' })])
       saveObjectsSpy.mockRejectedValueOnce(new Error('algolia unavailable'))
 
       await expect(reindexLanguagesWithVideosInAlgolia()).rejects.toThrow(
