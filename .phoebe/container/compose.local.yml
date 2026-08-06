@@ -1,0 +1,37 @@
+# Local-engine overlay — scaffolded by `phoebe init`, consumer-owned.
+#
+# Development only. Instead of `boot` checking the engine out from GitHub, this
+# runs it straight from a checkout on your host, so an edit to the engine source
+# takes effect on the next launch with no rebuild and no push:
+#
+#   PHOEBE_ENGINE_MOUNT=/path/to/phoebe \
+#     docker compose -f compose.yml -f compose.local.yml run --rm phoebe
+#
+# It only takes effect if the mounted phoebe.config.ts also says so:
+#
+#   engine: { source: "local" }
+#
+# `boot` fails loudly when that field says "local" and nothing is mounted at
+# /opt/phoebe-engine — a missing mount is a misconfigured container, not a
+# reason to quietly fall back to GitHub.
+#
+# Two behaviours differ from the deployed topology, both by design:
+#   * No crash-loop fallback. It guards a moving github ref by pinning back to
+#     the last engine commit that ran healthily; a mount has no commit to pin,
+#     so a crashing engine here just exits.
+#   * The ref watch is inert — there is no remote to poll. `boot` still watches
+#     the config, so a config edit relaunches the engine as usual.
+
+services:
+  phoebe:
+    environment:
+      # A minute is a long time to wait when you are iterating; the reconcile
+      # poll is one stat plus (for a github source) one ls-remote, so a tight
+      # interval is cheap here.
+      PHOEBE_RECONCILE_INTERVAL_MS: '${PHOEBE_RECONCILE_INTERVAL_MS:-10000}'
+    volumes:
+      # The engine source `boot` execs for `engine: { source: "local" }`.
+      # Read-only: the engine works its target clone under /data, never its own
+      # source. Mount the repo *root* — package.json's `"type": "module"` has to
+      # sit alongside the `.ts` the engine runs under Node's type-stripping.
+      - '${PHOEBE_ENGINE_MOUNT:?PHOEBE_ENGINE_MOUNT must point at a local engine checkout}:/opt/phoebe-engine:ro'
