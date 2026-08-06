@@ -42,14 +42,19 @@ type ContainerParentPayload = Prisma.VideoGetPayload<{
   select: { id: true }
 }>
 
-// The prismaMock signatures promise a full Video, but each call site here only
-// ever reads the columns its own `select` asked for. Typing the fixture as the
-// selected payload keeps the select/mock mismatch a compile error, then the
-// widening cast satisfies the mock's declared return type.
-const availableLanguagesVideo: AvailableLanguagesVideoPayload = {
-  label: 'series',
-  variants: [],
-  children: []
+// prismaMock is typed against the full Video model, but every function under
+// test reads only the columns its own `select` asked for. These helpers take
+// the selected-payload type — so a fixture that drifts from the `select` in
+// updateAvailableLanguages.ts is a compile error — and confine the widening
+// the deep mock's signature forces to one place per query.
+function mockCalculateAvailableLanguagesQuery(
+  video: AvailableLanguagesVideoPayload
+): void {
+  prismaMock.video.findUnique.mockResolvedValue(video as unknown as Video)
+}
+
+function mockContainerParentQuery(parents: ContainerParentPayload[]): void {
+  prismaMock.video.findMany.mockResolvedValueOnce(parents as unknown as Video[])
 }
 
 const containerParents: ContainerParentPayload[] = [
@@ -60,9 +65,11 @@ const containerParents: ContainerParentPayload[] = [
 describe('updateVideoAvailableLanguages', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    prismaMock.video.findUnique.mockResolvedValue(
-      availableLanguagesVideo as unknown as Video
-    )
+    mockCalculateAvailableLanguagesQuery({
+      label: 'series',
+      variants: [],
+      children: []
+    })
     // updateVideoAvailableLanguages ignores the update() result
     prismaMock.video.update.mockResolvedValue({} as unknown as Video)
     mockedVideoCacheReset.mockResolvedValue(undefined)
@@ -93,9 +100,7 @@ describe('updateVideoAvailableLanguages', () => {
 
 describe('findContainerParentIds', () => {
   it('queries collection/series/featureFilm videos that list the child', async () => {
-    prismaMock.video.findMany.mockResolvedValueOnce(
-      containerParents as unknown as Video[]
-    )
+    mockContainerParentQuery(containerParents)
 
     const parentIds = await findContainerParentIds('child-id')
 
@@ -112,9 +117,7 @@ describe('findContainerParentIds', () => {
 
 describe('updateParentCollectionLanguages', () => {
   it('enqueues an Algolia sync for every parent found', async () => {
-    prismaMock.video.findMany.mockResolvedValueOnce(
-      containerParents as unknown as Video[]
-    )
+    mockContainerParentQuery(containerParents)
 
     await updateParentCollectionLanguages('child-id')
 
