@@ -1,6 +1,8 @@
 import { Logger } from 'pino'
 import { vi } from 'vitest'
 
+import { Video, VideoVariant } from '@core/prisma/media/client'
+
 import { prismaMock } from '../../../../test/prismaMock'
 
 import {
@@ -36,11 +38,11 @@ vi.mock('../languages', () => ({
   getLanguages: vi.fn().mockResolvedValue({})
 }))
 
-const mockLogger: Logger = {
+const mockLogger = {
   info: vi.fn(),
   warn: vi.fn(),
   error: vi.fn()
-} as any
+} as unknown as Logger
 
 describe('QA-543 repro: durable Algolia indexing', () => {
   const previousVideoVariantsIndex = process.env.ALGOLIA_INDEX_VIDEO_VARIANTS
@@ -71,7 +73,7 @@ describe('QA-543 repro: durable Algolia indexing', () => {
       images: [],
       availableLanguages: [],
       variants: []
-    } as any)
+    } as unknown as Video)
 
     await expect(updateVideoInAlgolia('video-id', mockLogger)).rejects.toThrow(
       'Algolia unavailable'
@@ -85,7 +87,7 @@ describe('QA-543 repro: durable Algolia indexing', () => {
 
   it('propagates (does not swallow) a transient Algolia failure when updating variant published status', async () => {
     prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-      { id: 'variant-id' } as any
+      { id: 'variant-id' } as unknown as VideoVariant
     ])
 
     await expect(

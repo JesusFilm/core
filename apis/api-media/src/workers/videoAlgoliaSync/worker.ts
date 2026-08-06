@@ -7,9 +7,13 @@ import { queueName } from './config'
 import { service } from './service'
 import { VideoAlgoliaSyncJobData } from './types'
 
-export const worker = new Worker(queueName, processJob, {
-  connection
-})
+export const worker = new Worker<VideoAlgoliaSyncJobData>(
+  queueName,
+  processJob,
+  {
+    connection
+  }
+)
 
 async function processJob(job: Job<VideoAlgoliaSyncJobData>): Promise<void> {
   const childLogger = logger.child({

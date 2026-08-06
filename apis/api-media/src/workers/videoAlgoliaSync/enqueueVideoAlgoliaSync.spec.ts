@@ -22,13 +22,19 @@ const mockLogger = {
 
 function fakeJob(
   data: VideoAlgoliaSyncJobData,
-  state: { isWaiting?: boolean; isDelayed?: boolean } = {}
+  state: {
+    isWaiting?: boolean
+    isDelayed?: boolean
+    isFailed?: boolean
+  } = {}
 ): Job<VideoAlgoliaSyncJobData> {
   return {
     data,
     isWaiting: vi.fn().mockResolvedValue(state.isWaiting ?? false),
     isDelayed: vi.fn().mockResolvedValue(state.isDelayed ?? false),
-    updateData: vi.fn().mockResolvedValue(undefined)
+    isFailed: vi.fn().mockResolvedValue(state.isFailed ?? false),
+    updateData: vi.fn().mockResolvedValue(undefined),
+    remove: vi.fn().mockResolvedValue(undefined)
   } as unknown as Job<VideoAlgoliaSyncJobData>
 }
 
@@ -55,7 +61,10 @@ describe('enqueueVideoAlgoliaSync', () => {
     )
   })
 
-  it('adds a fresh job when the pending job is already active (not waiting/delayed)', async () => {
+  it('does not mutate an already-active job, falling through to add()', async () => {
+    // An active job has already been read by a worker, so updateData() would
+    // not reach it. BullMQ dedups the add() away while that job's key exists —
+    // the residual window VMT-320's durable dirty-state closes.
     const activeJob = fakeJob({ videoId: 'video-id', scope: videoOnlyScope })
     mockedGetJob.mockResolvedValueOnce(activeJob)
 
@@ -130,6 +139,54 @@ describe('enqueueVideoAlgoliaSync', () => {
       }
     })
     expect(mockedQueueAdd).not.toHaveBeenCalled()
+  })
+
+  it('re-drives a retained failed job instead of letting its key block the add', async () => {
+    // removeOnFail retains an exhausted job's Redis hash for five days, and
+    // BullMQ no-ops add() while a hash for that jobId exists — so without
+    // clearing it every later publish of this video would be dropped.
+    const failedJob = fakeJob(
+      {
+        videoId: 'video-id',
+        scope: {
+          syncVideoRecord: true,
+          syncAllVariants: false,
+          syncPublishedFlag: false,
+          dirtyVariantIds: ['variant-1'],
+          deletedVariantIds: []
+        }
+      },
+      { isFailed: true }
+    )
+    mockedGetJob.mockResolvedValueOnce(failedJob)
+
+    await enqueueVideoAlgoliaSync('video-id', {
+      syncVideoRecord: false,
+      syncAllVariants: false,
+      syncPublishedFlag: true,
+      dirtyVariantIds: ['variant-2'],
+      deletedVariantIds: []
+    })
+
+    expect(failedJob.remove).toHaveBeenCalled()
+    // the failed job's scope is carried forward, not lost with the job
+    expect(mockedQueueAdd).toHaveBeenCalledWith(
+      jobName,
+      {
+        videoId: 'video-id',
+        scope: {
+          syncVideoRecord: true,
+          syncAllVariants: false,
+          syncPublishedFlag: true,
+          dirtyVariantIds: ['variant-1', 'variant-2'],
+          deletedVariantIds: []
+        }
+      },
+      expect.objectContaining({
+        jobId: 'algolia:video-id',
+        attempts: 5
+      })
+    )
   })
 
   it('logs and swallows a failed enqueue instead of throwing', async () => {
