@@ -19,8 +19,7 @@ import {
   getMaxResolutionValue,
   getVideo
 } from '../mux/video/service'
-
-import { requestVideoVariantReconciliation } from './requestVideoVariantReconciliation'
+import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
 
 const FIVE_DAYS = 5 * 24 * 60 * 60
 
@@ -227,7 +226,7 @@ export async function createOrUpdateVideoVariant({
       languageId,
       edition,
       published,
-      source: 'process-video-upload'
+      reason: 'process-video-upload'
     })
 
     return variant

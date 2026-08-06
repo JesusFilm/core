@@ -107,10 +107,9 @@ describe('processVideoUploads service', () => {
         version: 1
       })
     })
-    expect(prismaMock.videoVariantUpload.create).toHaveBeenCalledWith({
+    expect(prismaMock.videoVariantReconciliation.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
-        source: 'process-video-upload',
-        canonical: true,
+        reason: 'process-video-upload',
         published: true,
         videoVariantId: 'variant-id',
         status: 'processing'

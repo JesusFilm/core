@@ -28,7 +28,7 @@ import {
   handleParentVariantCleanup,
   handleParentVariantCreation
 } from '../videoVariant/videoVariant'
-import { requestVideoVariantReconciliation } from '../videoVariantUpload/requestVideoVariantReconciliation'
+import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
 
 import { Platform } from './enums/platform'
 import { VideoLabel } from './enums/videoLabel'
@@ -879,7 +879,7 @@ builder.mutationFields((t) => ({
             languageId: variant.languageId,
             edition: variant.edition,
             published: true,
-            source: 'video-relationship-change'
+            reason: 'video-relationship-change'
           })
         }
       }
