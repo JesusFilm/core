@@ -547,6 +547,46 @@ describe('LanguageAutocomplete', () => {
     expect(options[0]).toHaveTextContent('French')
   })
 
+  it('should give two-line options a taller row than single-line options', async () => {
+    const twoLineLanguages: Language[] = [
+      {
+        id: '529',
+        slug: 'english',
+        name: [{ value: 'English', primary: true }]
+      },
+      {
+        id: '1106',
+        slug: 'german-standard',
+        name: [
+          { value: 'Deutsch', primary: true },
+          { value: 'German, Standard', primary: false }
+        ]
+      }
+    ]
+
+    const { getByRole, getAllByRole } = render(
+      <LanguageAutocomplete
+        onChange={vi.fn()}
+        value={{ id: '529', localName: undefined, nativeName: 'English' }}
+        languages={twoLineLanguages}
+        loading={false}
+      />
+    )
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+
+    const options = getAllByRole('option')
+    const englishOption = options.find((option) =>
+      option.textContent?.includes('English')
+    )
+    const germanOption = options.find((option) =>
+      option.textContent?.includes('German, Standard')
+    )
+
+    expect(englishOption).toHaveStyle({ height: '45px' })
+    expect(germanOption).toHaveStyle({ height: '68px' })
+  })
+
   it('should have a virtualized list', () => {
     const renderInput = (params: AutocompleteRenderInputParams): ReactNode => (
       <TextField
