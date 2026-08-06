@@ -7,12 +7,18 @@ import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
 import type { RowComponentProps } from 'react-window'
 
+import { isTwoLineOption } from '@core/shared/ui/extractLanguageNames'
 import {
   LanguageAutocomplete,
   LanguageAutocompleteProps
 } from '@core/shared/ui/LanguageAutocomplete'
 import { ResizeObserverPolyfill } from '@core/shared/ui/ResizeObserverPolyfill'
 
+/**
+ * Custom row renderer for this filter's language dropdown, styled larger
+ * than the default. Shows the native name as a second line only when one
+ * exists, matching `LanguageAutocomplete`'s per-row height.
+ */
 export function Option(props: RowComponentProps<{ rows: any[] }>): ReactNode {
   const { rows, index, style } = props
   const { id, localName, nativeName } = rows[index][1]
@@ -28,7 +34,7 @@ export function Option(props: RowComponentProps<{ rows: any[] }>): ReactNode {
     >
       <Stack>
         <Typography variant="h6">{localName ?? nativeName}</Typography>
-        {localName != null && nativeName != null && (
+        {isTwoLineOption({ localName, nativeName }) && (
           <Typography variant="h6" color="text.secondary">
             {nativeName}
           </Typography>
@@ -38,6 +44,7 @@ export function Option(props: RowComponentProps<{ rows: any[] }>): ReactNode {
   )
 }
 
+/** Language search filter for the Videos page, using {@link Option} for rows. */
 export function LanguagesFilter(
   props: LanguageAutocompleteProps
 ): ReactElement {
