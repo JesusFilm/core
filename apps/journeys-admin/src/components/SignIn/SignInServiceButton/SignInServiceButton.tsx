@@ -1,5 +1,7 @@
 import { useMutation } from '@apollo/client'
+import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
 import { FirebaseError } from 'firebase/app'
 import type { AuthProvider, User } from 'firebase/auth'
 import {
@@ -35,6 +37,7 @@ export function SignInServiceButton({
   const router = useRouter()
   const [journeyPublish] = useMutation(JOURNEY_PUBLISH)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errorCode, setErrorCode] = useState<string | null>(null)
 
   async function linkAnonymousUserWithProvider(
     currentUser: User,
@@ -92,9 +95,20 @@ export function SignInServiceButton({
     await loginWithCredential(userCredential)
   }
 
+  // Surfaced next to the button so a failed sign-in is visible to the user and
+  // reportable to support. Without it every failure below re-renders this same
+  // page with no feedback, which reads as an endless sign-in loop.
+  function getErrorCode(err: unknown): string {
+    const code = (err as { code?: string })?.code
+    if (code != null) return code
+    if (err instanceof Error) return err.message
+    return 'unknown'
+  }
+
   async function handleSignIn(): Promise<void> {
     if (isSubmitting) return
     setIsSubmitting(true)
+    setErrorCode(null)
     const auth = getFirebaseAuth()
     const currentUser = auth.currentUser
     const authProvider =
@@ -140,36 +154,44 @@ export function SignInServiceButton({
         }
       }
       console.error(err)
+      setErrorCode(getErrorCode(err))
     } finally {
       setIsSubmitting(false)
     }
   }
 
   return (
-    <Button
-      variant="blockOutlined"
-      color="solid"
-      startIcon={
-        service === 'google.com' ? (
-          <GoogleIcon />
-        ) : service === 'facebook.com' ? (
-          <FacebookIcon />
-        ) : (
-          <OktaIcon />
-        )
-      }
-      onClick={handleSignIn}
-      disabled={isSubmitting}
-      fullWidth
-    >
-      {t('Continue with {{service}}', {
-        service:
-          service === 'google.com'
-            ? t('Google')
-            : service === 'facebook.com'
-              ? t('Facebook')
-              : t('Okta')
-      })}
-    </Button>
+    <Stack spacing={2}>
+      <Button
+        variant="blockOutlined"
+        color="solid"
+        startIcon={
+          service === 'google.com' ? (
+            <GoogleIcon />
+          ) : service === 'facebook.com' ? (
+            <FacebookIcon />
+          ) : (
+            <OktaIcon />
+          )
+        }
+        onClick={handleSignIn}
+        disabled={isSubmitting}
+        fullWidth
+      >
+        {t('Continue with {{service}}', {
+          service:
+            service === 'google.com'
+              ? t('Google')
+              : service === 'facebook.com'
+                ? t('Facebook')
+                : t('Okta')
+        })}
+      </Button>
+      {errorCode != null && (
+        <Alert severity="error" data-testid="SignInServiceButtonError">
+          {`${t('Something went wrong, please try again!')} (${errorCode})`}
+        </Alert>
+      )}
+    </Stack>
   )
 }

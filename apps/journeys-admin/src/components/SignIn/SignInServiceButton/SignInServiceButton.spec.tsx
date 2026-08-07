@@ -107,6 +107,54 @@ describe('SignInServiceButton', () => {
     await waitFor(() => expect(mockLoginWithCredential).toHaveBeenCalled())
   })
 
+  it('should surface the error code when sign-in fails', async () => {
+    mockSignInWithPopup.mockRejectedValueOnce({
+      code: 'auth/popup-closed-by-user'
+    })
+
+    render(
+      <MockedProvider>
+        <SignInServiceButton service="google.com" />
+      </MockedProvider>
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Continue with Google' })
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('SignInServiceButtonError')).toHaveTextContent(
+        'auth/popup-closed-by-user'
+      )
+    )
+    expect(
+      screen.getByRole('button', { name: 'Continue with Google' })
+    ).toBeEnabled()
+  })
+
+  it('should surface the error when the session cookie exchange fails', async () => {
+    mockSignInWithPopup.mockResolvedValueOnce({} as unknown as UserCredential)
+    mockLoginWithCredential.mockRejectedValueOnce(
+      new Error('/api/login responded with status 503')
+    )
+
+    render(
+      <MockedProvider>
+        <SignInServiceButton service="google.com" />
+      </MockedProvider>
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Continue with Google' })
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('SignInServiceButtonError')).toHaveTextContent(
+        '/api/login responded with status 503'
+      )
+    )
+  })
+
   it('should handle Facebook sign-in correctly', async () => {
     mockSignInWithPopup.mockResolvedValueOnce({} as unknown as UserCredential)
 
