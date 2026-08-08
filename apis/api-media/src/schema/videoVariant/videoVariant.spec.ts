@@ -887,7 +887,9 @@ describe('videoVariant', () => {
           skip: 10,
           take: 5,
           where: {
-            published: true
+            published: true,
+            languageId: undefined,
+            updatedAt: undefined
           }
         })
       )
@@ -1257,7 +1259,9 @@ describe('videoVariant', () => {
             videoId: 'videoId',
             share: 'share',
             downloadable: true,
-            published: true
+            published: false,
+            muxVideoId: undefined,
+            version: undefined
           }
         })
         expect(result).toHaveProperty('data.videoVariantCreate', {
