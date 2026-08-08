@@ -3,7 +3,7 @@ import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { FirebaseError } from 'firebase/app'
-import type { AuthProvider, User } from 'firebase/auth'
+import type { Auth, AuthProvider, OAuthCredential, User } from 'firebase/auth'
 import {
   FacebookAuthProvider,
   GoogleAuthProvider,
@@ -105,6 +105,57 @@ export function SignInServiceButton({
     return 'unknown'
   }
 
+  // Reached when the account behind the popup already exists. Signing in with
+  // the credential lifted off the error completes what the link could not.
+  async function signInWithRecoveredCredential(
+    auth: Auth,
+    oauthCredential: OAuthCredential
+  ): Promise<void> {
+    const userCredential = await signInWithCredential(auth, oauthCredential)
+    const idToken = await userCredential.user.getIdToken()
+    await login(idToken)
+
+    const pending = getPendingGuestJourney()
+    if (pending != null) {
+      const existingRedirect = router.query.redirect as string | undefined
+      const redirectUrl =
+        existingRedirect ?? `/templates/${pending.journeyId}/customize`
+      window.location.href = `/users/sign-in?redirect=${encodeURIComponent(redirectUrl)}`
+      return
+    }
+
+    window.location.reload()
+  }
+
+  // Recovery is attempted here rather than in handleSignIn's catch: a throw
+  // inside a catch block escapes it, so failures in the recovery path would
+  // bypass the error handling entirely. Letting them propagate out of this
+  // function keeps handleSignIn's catch the single sink for every failure.
+  async function signInOrRecover(
+    auth: Auth,
+    authProvider: AuthProvider,
+    currentUser: User | null
+  ): Promise<void> {
+    try {
+      if (currentUser?.isAnonymous === true) {
+        await linkAnonymousUserWithProvider(currentUser, authProvider)
+        return
+      }
+      const credential = await signInWithPopup(auth, authProvider)
+      await loginWithCredential(credential)
+    } catch (err: unknown) {
+      const firebaseErr = err as { code?: string }
+      if (firebaseErr.code !== 'auth/credential-already-in-use') throw err
+
+      const oauthCredential = OAuthProvider.credentialFromError(
+        err as FirebaseError
+      )
+      if (oauthCredential == null) throw err
+
+      await signInWithRecoveredCredential(auth, oauthCredential)
+    }
+  }
+
   async function handleSignIn(): Promise<void> {
     if (isSubmitting) return
     setIsSubmitting(true)
@@ -120,39 +171,8 @@ export function SignInServiceButton({
     authProvider.setCustomParameters({ prompt: 'select_account' })
 
     try {
-      if (currentUser?.isAnonymous === true) {
-        await linkAnonymousUserWithProvider(currentUser, authProvider)
-      } else {
-        const credential = await signInWithPopup(auth, authProvider)
-        await loginWithCredential(credential)
-      }
+      await signInOrRecover(auth, authProvider, currentUser)
     } catch (err: unknown) {
-      const firebaseErr = err as { code?: string }
-      if (firebaseErr.code === 'auth/credential-already-in-use') {
-        const oauthCredential = OAuthProvider.credentialFromError(
-          err as FirebaseError
-        )
-        if (oauthCredential != null) {
-          const userCredential = await signInWithCredential(
-            auth,
-            oauthCredential
-          )
-          const idToken = await userCredential.user.getIdToken()
-          await login(idToken)
-
-          const pending = getPendingGuestJourney()
-          if (pending != null) {
-            const existingRedirect = router.query.redirect as string | undefined
-            const redirectUrl =
-              existingRedirect ?? `/templates/${pending.journeyId}/customize`
-            window.location.href = `/users/sign-in?redirect=${encodeURIComponent(redirectUrl)}`
-            return
-          }
-
-          window.location.reload()
-          return
-        }
-      }
       console.error(err)
       setErrorCode(getErrorCode(err))
     } finally {

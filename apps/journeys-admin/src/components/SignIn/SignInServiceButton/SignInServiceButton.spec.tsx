@@ -414,5 +414,101 @@ describe('SignInServiceButton', () => {
         expect(mockLogin).toHaveBeenCalledWith('new-token')
       })
     })
+
+    it('should surface the error when the recovery path fails', async () => {
+      const credentialAlreadyInUseError = Object.assign(
+        new Error('credential already in use'),
+        { code: 'auth/credential-already-in-use' }
+      )
+      mockLinkWithPopup.mockRejectedValueOnce(credentialAlreadyInUseError)
+
+      mockCredentialFromError.mockReturnValueOnce({
+        providerId: 'google.com'
+      } as ReturnType<typeof OAuthProvider.credentialFromError>)
+
+      mockSignInWithCredential.mockResolvedValueOnce({
+        user: { getIdToken: vi.fn().mockResolvedValue('new-token') }
+      } as unknown as UserCredential)
+      mockLogin.mockRejectedValueOnce(
+        new Error('/api/login responded with status 503')
+      )
+
+      render(
+        <MockedProvider>
+          <SignInServiceButton service="google.com" />
+        </MockedProvider>
+      )
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Continue with Google' })
+      )
+
+      await waitFor(() =>
+        expect(
+          screen.getByTestId('SignInServiceButtonError')
+        ).toHaveTextContent('/api/login responded with status 503')
+      )
+      expect(
+        screen.getByRole('button', { name: 'Continue with Google' })
+      ).toBeEnabled()
+    })
+
+    it('should surface the error when signInWithCredential fails', async () => {
+      const credentialAlreadyInUseError = Object.assign(
+        new Error('credential already in use'),
+        { code: 'auth/credential-already-in-use' }
+      )
+      mockLinkWithPopup.mockRejectedValueOnce(credentialAlreadyInUseError)
+
+      mockCredentialFromError.mockReturnValueOnce({
+        providerId: 'google.com'
+      } as ReturnType<typeof OAuthProvider.credentialFromError>)
+
+      mockSignInWithCredential.mockRejectedValueOnce({
+        code: 'auth/invalid-credential'
+      })
+
+      render(
+        <MockedProvider>
+          <SignInServiceButton service="google.com" />
+        </MockedProvider>
+      )
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Continue with Google' })
+      )
+
+      await waitFor(() =>
+        expect(
+          screen.getByTestId('SignInServiceButtonError')
+        ).toHaveTextContent('auth/invalid-credential')
+      )
+    })
+
+    it('should surface the original error when no credential can be recovered', async () => {
+      const credentialAlreadyInUseError = Object.assign(
+        new Error('credential already in use'),
+        { code: 'auth/credential-already-in-use' }
+      )
+      mockLinkWithPopup.mockRejectedValueOnce(credentialAlreadyInUseError)
+      mockCredentialFromError.mockReturnValueOnce(null)
+
+      render(
+        <MockedProvider>
+          <SignInServiceButton service="google.com" />
+        </MockedProvider>
+      )
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Continue with Google' })
+      )
+
+      await waitFor(() =>
+        expect(
+          screen.getByTestId('SignInServiceButtonError')
+        ).toHaveTextContent('auth/credential-already-in-use')
+      )
+      expect(mockSignInWithCredential).not.toHaveBeenCalled()
+    })
   })
 })
