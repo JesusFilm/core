@@ -18,7 +18,7 @@ import { createPortal } from 'react-dom'
 import { prefixer } from 'stylis'
 import rtlPlugin from 'stylis-plugin-rtl'
 
-import { FontFamilies } from '@core/shared/ui/themes'
+import { DEFAULT_FONTS, FontFamilies } from '@core/shared/ui/themes'
 
 interface ContentProps {
   children: ReactNode
@@ -32,9 +32,8 @@ function Content({
   fontFamilies
 }: ContentProps): ReactElement {
   const cache = useMemo(() => {
-    const defaultFonts = ['Montserrat', 'Open Sans', 'El Messiri']
     const validFonts = getSortedValidFonts([
-      ...defaultFonts,
+      ...DEFAULT_FONTS,
       ...Object.values(fontFamilies ?? {})
     ])
 

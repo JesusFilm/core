@@ -7,6 +7,7 @@ import Document, { Head, Html, Main, NextScript } from 'next/document'
 import { ReactElement } from 'react'
 
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
+import { SARABUN_FONTS_QUERY } from '@core/shared/ui/themes'
 
 export default class MyDocument extends Document<DocumentHeadTagsProps> {
   render(): ReactElement {
@@ -20,7 +21,7 @@ export default class MyDocument extends Document<DocumentHeadTagsProps> {
             crossOrigin=""
           />
           <link
-            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Open+Sans&display=swap"
+            href={`https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Open+Sans&${SARABUN_FONTS_QUERY}&display=swap`}
             rel="stylesheet"
           />
           <link

@@ -5,6 +5,7 @@ import {
   baseTypographyArabic,
   baseTypographyUrdu
 } from '../../base/tokens/typography'
+import { THAI_FALLBACK_FONT } from '../../fonts'
 
 // should match base values until we have a need for different values
 
@@ -18,27 +19,27 @@ export const journeyUiTypography: Pick<ThemeOptions, 'typography'> = {
   typography: {
     ...baseTypography.typography,
     subtitle1: {
-      fontFamily: '"Open Sans"',
+      fontFamily: `"Open Sans",${THAI_FALLBACK_FONT},sans-serif`,
       fontSize: 12,
       fontWeight: 600,
       lineHeight: '18px',
       fontFeatureSettings: '"clig" off, "liga"'
     },
     subtitle2: {
-      fontFamily: '"Open Sans"',
+      fontFamily: `"Open Sans",${THAI_FALLBACK_FONT},sans-serif`,
       fontSize: 10,
       fontWeight: 600,
       lineHeight: '15px',
       fontFeatureSettings: '"clig" off, "liga"'
     },
     body2: {
-      fontFamily: '"Open Sans"',
+      fontFamily: `"Open Sans",${THAI_FALLBACK_FONT},sans-serif`,
       fontSize: 14,
       fontWeight: 400,
       lineHeight: '22px'
     },
     caption: {
-      fontFamily: '"Open Sans"',
+      fontFamily: `"Open Sans",${THAI_FALLBACK_FONT},sans-serif`,
       fontSize: 12,
       fontWeight: 400,
       lineHeight: '18px'

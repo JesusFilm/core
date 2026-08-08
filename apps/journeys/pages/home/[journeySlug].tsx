@@ -7,6 +7,7 @@ import { ReactElement } from 'react'
 
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
+import { DEFAULT_FONTS } from '@core/shared/ui/themes'
 
 import {
   GetJourney,
@@ -36,9 +37,8 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
   }
 
   // Get journey-specific fonts if they exist
-  const defaultFonts = ['Montserrat', 'Open Sans', 'El Messiri']
   const journeyFonts = getSortedValidFonts([
-    ...defaultFonts,
+    ...DEFAULT_FONTS,
     journey?.journeyTheme?.headerFont ?? '',
     journey?.journeyTheme?.bodyFont ?? '',
     journey?.journeyTheme?.labelFont ?? ''

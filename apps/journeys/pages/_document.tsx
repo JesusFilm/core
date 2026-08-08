@@ -7,7 +7,7 @@ import { ReactElement } from 'react'
 
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
-import { getTheme } from '@core/shared/ui/themes'
+import { SARABUN_FONTS_QUERY, getTheme } from '@core/shared/ui/themes'
 
 import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
 import { JourneyFields } from '../__generated__/JourneyFields'
@@ -35,11 +35,11 @@ export default class MyDocument extends Document<{
           {this.props.rtl && this.props.locale !== 'ur' ? (
             <>
               <link
-                href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&display=swap"
+                href={`https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&${SARABUN_FONTS_QUERY}&display=swap`}
                 rel="stylesheet"
               />
               <link
-                href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&display=swap"
+                href={`https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&${SARABUN_FONTS_QUERY}&display=swap`}
                 rel="preload"
                 as="style"
               />
@@ -47,11 +47,11 @@ export default class MyDocument extends Document<{
           ) : (
             <>
               <link
-                href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap"
+                href={`https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&${SARABUN_FONTS_QUERY}&display=swap`}
                 rel="stylesheet"
               />
               <link
-                href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap"
+                href={`https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&${SARABUN_FONTS_QUERY}&display=swap`}
                 rel="preload"
                 as="style"
               />
