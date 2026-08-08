@@ -43,10 +43,13 @@ if (typeof URL.revokeObjectURL === 'undefined') {
 
 // getRandomValues is required for powerBi unit tests, see issue:
 // https://community.powerbi.com/t5/Developer/TypeError-cryptoObj-getRandomValues-is-not-a-function-unrelated/m-p/1963294
+// The stub must fill AND return the array it is given: uuid@12+ reads the
+// return value (`crypto.getRandomValues(rnds8)`) instead of the argument.
 Object.defineProperty(window.self, 'crypto', {
   value: {
-    getRandomValues: (arr: unknown[]) => {
-      crypto.randomBytes(arr.length)
+    getRandomValues: (arr: Uint8Array): Uint8Array => {
+      arr.set(crypto.randomBytes(arr.length))
+      return arr
     }
   }
 })

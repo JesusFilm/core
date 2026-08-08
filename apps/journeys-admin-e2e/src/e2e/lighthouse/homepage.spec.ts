@@ -32,12 +32,13 @@ test('Homepage', async () => {
   await playAudit({
     page,
     config,
+    // No `pwa` threshold: Lighthouse 12 removed the PWA category entirely, and
+    // Lighthouse 13 errors on an unknown category rather than ignoring it.
     thresholds: {
       performance: 25,
       accessibility: 93,
       'best-practices': 83,
-      seo: 82,
-      pwa: 30
+      seo: 82
     },
     reports: {
       formats: { html: true },

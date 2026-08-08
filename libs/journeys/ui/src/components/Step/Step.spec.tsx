@@ -26,7 +26,7 @@ vi.mock('uuid', () => ({
   v4: vi.fn()
 }))
 
-const mockUuidv4 = vi.mocked(uuidv4)
+const mockUuidv4 = vi.mocked(uuidv4 as () => string)
 
 vi.mock('@next/third-parties/google', () => ({
   sendGTMEvent: vi.fn()

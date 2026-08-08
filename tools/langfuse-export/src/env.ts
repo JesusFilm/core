@@ -30,7 +30,7 @@ export interface ToolEnv {
 // Load the tool-local `.env` into process.env. Idempotent; existing
 // process.env values win (dotenv does not override by default).
 export function loadEnvFile(toolDir: string): void {
-  loadDotenv({ path: resolve(toolDir, '.env') })
+  loadDotenv({ path: resolve(toolDir, '.env'), quiet: true })
 }
 
 // Validate and normalise the environment. Throws a clear, actionable error

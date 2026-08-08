@@ -106,7 +106,7 @@ const journey: Journey = {
   showAssistant: null
 }
 
-const mockUuidv4 = uuidv4 as unknown as MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<() => string>
 
 global.fetch = vi.fn(
   async () =>
