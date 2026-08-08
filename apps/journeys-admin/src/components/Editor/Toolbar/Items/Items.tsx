@@ -14,13 +14,20 @@ export function Items(): ReactElement {
 
   return (
     <Stack
-      sx={{ display: { xs: 'none', md: 'flex' } }}
-      flexDirection="row"
-      gap={5}
       data-testid="ItemsStack"
-      alignItems="center"
+      sx={{
+        flexDirection: 'row',
+        gap: 5,
+        alignItems: 'center',
+        display: { xs: 'none', md: 'flex' }
+      }}
     >
-      <Stack flexDirection="row" gap={2}>
+      <Stack
+        sx={{
+          flexDirection: 'row',
+          gap: 2
+        }}
+      >
         {!isTemplate && (
           <ResponsesItem variant="icon-button" journeyId={journey?.id} />
         )}

@@ -59,7 +59,14 @@ const fullHeightSection = {
 
 function SectionLabel({ children }: { children: ReactNode }): ReactElement {
   return (
-    <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 3 }}>
+    <Stack
+      direction="row"
+      spacing={1.5}
+      sx={{
+        alignItems: 'center',
+        mb: 3
+      }}
+    >
       <Box
         sx={{
           width: 28,

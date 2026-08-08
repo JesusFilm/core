@@ -1,4 +1,4 @@
-import MailOutlineIcon from '@mui/icons-material/MailOutline'
+import MailOutlineIcon from '@mui/icons-material/MailOutlined'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -82,7 +82,11 @@ export function HomePage({
           isSubmitting
         }) => (
           <Form data-testid="EmailSignInForm">
-            <Stack gap={4}>
+            <Stack
+              sx={{
+                gap: 4
+              }}
+            >
               <div>
                 <TextField
                   id="username"

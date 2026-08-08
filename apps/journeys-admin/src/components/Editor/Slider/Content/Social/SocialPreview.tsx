@@ -35,29 +35,32 @@ export function SocialPreview(): ReactElement {
     <>
       {mdUp ? (
         <Stack
-          height={736}
-          width={isLayered ? 'auto' : contentActive ? '100%' : 387}
           data-testid="OuterStack"
-          justifyContent="space-between"
-          alignSelf="center"
-          // the layered drawer paper is pointer-events: none so empty areas
-          // close the drawer; the preview itself stays interactive
-          sx={{ pointerEvents: isLayered ? 'auto' : undefined }}
+          sx={{
+            height: 736,
+            width: isLayered ? 'auto' : contentActive ? '100%' : 387,
+            justifyContent: 'space-between',
+            alignSelf: 'center',
+            pointerEvents: isLayered ? 'auto' : undefined
+          }}
         >
           <Stack
             onClick={handleSelect}
             direction="row"
-            alignItems="center"
             data-testid="SocialPreview"
-            height={682}
-            width="100%"
-            gap={isLayered ? 2 : 0}
+            sx={{
+              alignItems: 'center',
+              height: 682,
+              width: '100%',
+              gap: isLayered ? 2 : 0
+            }}
           >
             <Stack
-              alignItems="center"
               data-testid="SocialPostColumn"
               sx={{
+                alignItems: 'center',
                 cursor: contentActive ? undefined : 'pointer',
+
                 // the layered drawer sizes to content, so the columns need
                 // fixed widths instead of the slider's flex-grow transition
                 ...(isLayered
@@ -76,10 +79,11 @@ export function SocialPreview(): ReactElement {
             </Stack>
             <Divider orientation="vertical" sx={{ height: 300 }} />
             <Stack
-              alignItems="center"
               data-testid="SocialMessageColumn"
               sx={{
+                alignItems: 'center',
                 opacity: contentActive ? 1 : 0,
+
                 ...(isLayered
                   ? { width: 387, flexShrink: 0 }
                   : {
@@ -98,10 +102,12 @@ export function SocialPreview(): ReactElement {
       ) : (
         <Box
           data-testid="SocialPreview"
-          width="100%"
-          height="100%"
-          alignItems="center"
-          display="flex"
+          sx={{
+            width: '100%',
+            height: '100%',
+            alignItems: 'center',
+            display: 'flex'
+          }}
         >
           <Swiper
             modules={[Pagination]}

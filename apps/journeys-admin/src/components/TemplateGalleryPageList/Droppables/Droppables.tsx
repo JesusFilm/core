@@ -186,10 +186,13 @@ function DropPlaceholderTile(): ReactElement {
           flex-stretch against. */}
       <JourneyCardSizer />
       <Stack
-        alignItems="center"
-        justifyContent="center"
         spacing={1}
-        sx={{ position: 'absolute', inset: 0 }}
+        sx={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'absolute',
+          inset: 0
+        }}
       >
         <Plus2Icon fontSize="large" />
         <Typography variant="body2">{t('Drag templates here')}</Typography>

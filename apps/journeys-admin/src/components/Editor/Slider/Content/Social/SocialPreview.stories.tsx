@@ -23,10 +23,12 @@ type Story = StoryObj<
 const Template: Story = {
   render: (args) => (
     <Box
-      overflow="Hidden"
-      alignItems="flex-start"
-      position="relative"
-      maxHeight={500}
+      sx={{
+        overflow: 'Hidden',
+        alignItems: 'flex-start',
+        position: 'relative',
+        maxHeight: 500
+      }}
     >
       <JourneyProvider value={{ journey: args.journey, renderMode: 'admin' }}>
         <EditorProvider

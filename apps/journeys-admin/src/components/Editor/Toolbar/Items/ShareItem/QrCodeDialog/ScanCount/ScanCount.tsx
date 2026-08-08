@@ -78,8 +78,8 @@ export function ScanCount({ shortLinkId }: ScanCountProps): ReactElement {
   return (
     <Stack
       direction="row"
-      alignItems="center"
       sx={{
+        alignItems: 'center',
         color: 'secondary.light'
       }}
     >

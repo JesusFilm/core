@@ -89,7 +89,12 @@ export function GoogleIntegrationRemoveDialog({
         closeButton: true
       }}
       dialogActionChildren={
-        <Stack direction="row" gap={2}>
+        <Stack
+          direction="row"
+          sx={{
+            gap: 2
+          }}
+        >
           <Button onClick={handleClose} disabled={loading}>
             {t('Cancel')}
           </Button>
@@ -104,7 +109,11 @@ export function GoogleIntegrationRemoveDialog({
         </Stack>
       }
     >
-      <Stack gap={2}>
+      <Stack
+        sx={{
+          gap: 2
+        }}
+      >
         <Typography variant="body1">
           {t(
             'Removing this Google integration will mark all active Google Sheets syncs as removed and unlink them from this account. This cannot be undone.'

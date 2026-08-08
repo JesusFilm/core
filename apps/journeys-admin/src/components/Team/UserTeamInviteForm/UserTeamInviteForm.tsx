@@ -128,28 +128,30 @@ export function UserTeamInviteForm({
                     : null
               }
               autoComplete="off"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      type="submit"
-                      aria-label="add user"
-                      color="primary"
-                      disabled={values.email === ''}
-                    >
-                      <AddSquare4Icon
-                        sx={{
-                          color:
-                            values.email !== '' && errors.email == null
-                              ? 'primary.main'
-                              : null
-                        }}
-                      />
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }}
               data-testid="UserTeamInviteForm"
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        type="submit"
+                        aria-label="add user"
+                        color="primary"
+                        disabled={values.email === ''}
+                      >
+                        <AddSquare4Icon
+                          sx={{
+                            color:
+                              values.email !== '' && errors.email == null
+                                ? 'primary.main'
+                                : null
+                          }}
+                        />
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }
+              }}
             />
           </Form>
           <Stack

@@ -65,7 +65,12 @@ export function ImageDisplay({
           }}
         >
           <Upload1 />
-          <Typography variant="subtitle2" fontSize={14}>
+          <Typography
+            variant="subtitle2"
+            sx={{
+              fontSize: 14
+            }}
+          >
             Upload {title}
           </Typography>
         </Stack>

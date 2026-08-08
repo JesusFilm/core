@@ -192,7 +192,13 @@ export function Details({
               onChange={(event) => handleUpdate('platform', event.target.value)}
               IconComponent={ChevronDownIcon}
               renderValue={(selected) => (
-                <Stack direction="row" spacing={5} alignItems="center">
+                <Stack
+                  direction="row"
+                  spacing={5}
+                  sx={{
+                    alignItems: 'center'
+                  }}
+                >
                   <MessageChatIcon platform={selected as MessagePlatform} />
                   <Typography>
                     {messagePlatformOptions.find(
@@ -205,7 +211,13 @@ export function Details({
             >
               {messagePlatformOptions.map(({ value, label }) => (
                 <MenuItem key={`chat-icon-${value}`} value={value}>
-                  <Stack direction="row" spacing={5} alignItems="center">
+                  <Stack
+                    direction="row"
+                    spacing={5}
+                    sx={{
+                      alignItems: 'center'
+                    }}
+                  >
                     <MessageChatIcon platform={value} />
                     <Typography>{label}</Typography>
                   </Stack>
@@ -224,11 +236,19 @@ export function Details({
           <Typography variant="caption">{helperInfo}</Typography>
         )}
         {journey?.template === true && active && (
-          <Stack direction="row" alignItems="center" gap={1}>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: 'center',
+              gap: 1
+            }}
+          >
             <Switch
               checked={currentCustomizable ?? false}
               onChange={handleCustomizableChange}
-              inputProps={{ 'aria-label': t('Toggle customizable') }}
+              slotProps={{
+                input: { 'aria-label': t('Toggle customizable') }
+              }}
             />
             <Typography variant="body1">{t('Needs Customization')}</Typography>
           </Stack>

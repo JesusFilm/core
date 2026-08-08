@@ -6,12 +6,14 @@ import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
+import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
 
 import { GetAdminJourneys_journeys } from '../../../../../__generated__/GetAdminJourneys'
 import {
   JourneyStatus,
   UserTeamRole
 } from '../../../../../__generated__/globalTypes'
+import { GET_CURRENT_USER } from '../../../../libs/useCurrentUserLazyQuery'
 import { ThemeProvider } from '../../../ThemeProvider'
 
 import { JOURNEY_ARCHIVE } from './DefaultMenu/ArchiveJourney/ArchiveJourney'
@@ -54,6 +56,40 @@ const teamMock = {
           __typename: 'Team'
         }
       ]
+    }
+  }
+}
+
+// Current user matching the manager entry in teamMock, so Archive/Trash are enabled
+const currentUserMock = {
+  request: {
+    query: GET_CURRENT_USER
+  },
+  result: {
+    data: {
+      me: {
+        __typename: 'AuthenticatedUser',
+        id: 'userId',
+        email: 'test@example.com',
+        firstName: 'Test',
+        lastName: 'User',
+        imageUrl: null
+      }
+    }
+  }
+}
+
+const userRoleMock = {
+  request: {
+    query: GET_USER_ROLE
+  },
+  result: {
+    data: {
+      getUserRole: {
+        __typename: 'UserRole',
+        id: 'user-role-id',
+        roles: []
+      }
     }
   }
 }
@@ -196,7 +232,9 @@ describe('JourneyCardMenu', () => {
 
   it('should show trash dialog on click', async () => {
     const { getByRole, queryByText, getByTestId } = render(
-      <MockedProvider mocks={[teamMock, archiveMock]}>
+      <MockedProvider
+        mocks={[teamMock, archiveMock, currentUserMock, userRoleMock]}
+      >
         <SnackbarProvider>
           <TeamProvider>
             <ThemeProvider>
@@ -425,7 +463,7 @@ describe('JourneyCardMenu', () => {
     const setHasOpenDialog = vi.fn()
 
     render(
-      <MockedProvider mocks={[teamMock]}>
+      <MockedProvider mocks={[teamMock, currentUserMock, userRoleMock]}>
         <SnackbarProvider>
           <TeamProvider>
             <ThemeProvider>

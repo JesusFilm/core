@@ -294,7 +294,12 @@ export function LanguageList(): ReactElement {
 
         if (linkedFilms.length === 0) {
           return (
-            <Typography variant="body2" color="text.secondary">
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary'
+              }}
+            >
               -
             </Typography>
           )
@@ -303,17 +308,22 @@ export function LanguageList(): ReactElement {
         return (
           <Stack
             spacing={0.25}
-            alignItems="flex-start"
-            sx={{ minWidth: 0, py: 1 }}
             onClick={handleLinkedFilmClick}
+            sx={{
+              alignItems: 'flex-start',
+              minWidth: 0,
+              py: 1
+            }}
           >
             {linkedFilms.map((linkedFilm) => (
               <Stack
                 key={`${linkedFilm.videoId}-${linkedFilm.variant.id}`}
                 direction="row"
                 spacing={0.5}
-                alignItems="center"
-                sx={{ minWidth: 0 }}
+                sx={{
+                  alignItems: 'center',
+                  minWidth: 0
+                }}
               >
                 <Typography variant="body2" noWrap>
                   {linkedFilm.title}:
@@ -382,7 +392,6 @@ export function LanguageList(): ReactElement {
         >
           <TextField
             placeholder="Search by language name or ID"
-            inputProps={{ 'aria-label': 'Search languages' }}
             value={searchTerm}
             onChange={(event) => {
               resetToFirstPage()
@@ -390,12 +399,16 @@ export function LanguageList(): ReactElement {
             }}
             size="small"
             sx={{ width: { xs: '100%', sm: 360 } }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" />
-                </InputAdornment>
-              )
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                )
+              },
+
+              htmlInput: { 'aria-label': 'Search languages' }
             }}
           />
           <TextField

@@ -394,7 +394,12 @@ export function StatusPipeline(): ReactElement {
             {params.row.upload.videoId}
           </Link>
         ) : (
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary'
+            }}
+          >
             none
           </Typography>
         )
@@ -445,7 +450,12 @@ export function StatusPipeline(): ReactElement {
           }
 
           return (
-            <Typography variant="body2" color="text.secondary">
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary'
+              }}
+            >
               No action
             </Typography>
           )
@@ -471,15 +481,21 @@ export function StatusPipeline(): ReactElement {
   return (
     <Stack
       sx={{
+        gap: 2,
         width: '100%',
         height: 'calc(100vh - 210px)',
         minHeight: 420,
         overflow: 'hidden'
       }}
-      gap={2}
     >
       <Typography variant="h4">Video Status Pipeline</Typography>
-      <Stack direction="row" spacing={1} alignItems="center">
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          alignItems: 'center'
+        }}
+      >
         <FormControl size="small" sx={{ minWidth: 220 }}>
           <InputLabel id="status-pipeline-filter-label">Status</InputLabel>
           <Select
@@ -495,7 +511,12 @@ export function StatusPipeline(): ReactElement {
             ))}
           </Select>
         </FormControl>
-        <Typography variant="caption" color="text.secondary">
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'text.secondary'
+          }}
+        >
           Showing the latest {STATUS_PIPELINE_UPLOAD_LIMIT} upload rows.
         </Typography>
       </Stack>

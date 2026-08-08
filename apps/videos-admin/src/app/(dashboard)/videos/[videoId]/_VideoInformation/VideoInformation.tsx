@@ -299,8 +299,8 @@ export function VideoInformation({
 
     return (
       <Alert severity="error" sx={{ mb: 2 }}>
-        <AlertTitle>Cannot Publish - Missing Required Fields</AlertTitle>
-        The following fields must be completed before publishing:
+        <AlertTitle>Cannot Publish - Missing Required Fields</AlertTitle>The
+        following fields must be completed before publishing:
         <List dense sx={{ mt: 1, mb: 2 }}>
           {validationAttempt.errors.map((field) => (
             <ListItem key={field} sx={{ py: 0 }}>
@@ -310,7 +310,9 @@ export function VideoInformation({
               <ListItemText
                 primary={field}
                 secondary={fieldDescriptions[field]}
-                secondaryTypographyProps={{ fontSize: '0.75rem' }}
+                slotProps={{
+                  secondary: { sx: { fontSize: '0.75rem' } }
+                }}
               />
             </ListItem>
           ))}
@@ -466,10 +468,14 @@ export function VideoInformation({
         setFieldValue
       }) => (
         <Form>
-          <Stack gap={2}>
+          <Stack
+            sx={{
+              gap: 2
+            }}
+          >
             <Stack
-              gap={2}
               sx={{
+                gap: 2,
                 flexDirection: { xs: 'col', sm: 'row' }
               }}
             >
@@ -482,13 +488,15 @@ export function VideoInformation({
                 variant="outlined"
                 error={Boolean(errors.title)}
                 onChange={handleChange}
-                inputProps={{ maxLength: 60 }}
                 helperText={
                   errors.title
                     ? (errors.title as string)
                     : `${values.title.length}/60`
                 }
                 sx={{ flexGrow: 1 }}
+                slotProps={{
+                  htmlInput: { maxLength: 60 }
+                }}
               />
               <TextField
                 id="url"
@@ -503,8 +511,8 @@ export function VideoInformation({
               />
             </Stack>
             <Stack
-              gap={2}
               sx={{
+                gap: 2,
                 flexDirection: { xs: 'col', sm: 'row' },
                 alignItems: { xs: 'start', sm: 'end' },
                 justifyContent: { sm: 'flex-end' }
@@ -578,7 +586,13 @@ export function VideoInformation({
             />
             <ValidationStatus values={values} setFieldValue={setFieldValue} />
             <Divider sx={{ mx: -4 }} />
-            <Stack direction="row" justifyContent="flex-end" gap={1}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: 'flex-end',
+                gap: 1
+              }}
+            >
               <CancelButton show={dirty} handleCancel={() => resetForm()} />
               <SaveButton
                 disabled={

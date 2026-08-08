@@ -278,11 +278,20 @@ const Template: StoryObj<typeof Icon> = {
       <Stack sx={{ ml: 30 }}>
         <Stack
           direction="row"
-          gap={10}
-          sx={{ pb: 2, width: '584px' }}
-          justifyContent="flex-end"
+          sx={{
+            gap: 10,
+            justifyContent: 'flex-end',
+            pb: 2,
+            width: '584px'
+          }}
         >
-          <Stack direction="row" gap={4} alignItems="center">
+          <Stack
+            direction="row"
+            sx={{
+              gap: 4,
+              alignItems: 'center'
+            }}
+          >
             <Typography variant="caption">small</Typography>
             <Typography variant="caption">default</Typography>
             <Typography variant="caption" sx={{ mr: 3 }}>
@@ -290,7 +299,13 @@ const Template: StoryObj<typeof Icon> = {
             </Typography>
             <Typography variant="caption">custom</Typography>
           </Stack>
-          <Stack direction="row" gap={1.5} alignItems="center">
+          <Stack
+            direction="row"
+            sx={{
+              gap: 1.5,
+              alignItems: 'center'
+            }}
+          >
             {[
               'primary',
               'secondary',
@@ -303,12 +318,10 @@ const Template: StoryObj<typeof Icon> = {
               <Typography
                 key={color}
                 variant="caption"
-                color={`${
-                  color === 'action ' || color === 'disabled'
-                    ? `text.${color}`
-                    : `${color}.main`
-                }`}
-                fontSize="8px"
+                sx={{
+                  color: `${color === 'action ' || color === 'disabled' ? `text.${color}` : `${color}.main`}`,
+                  fontSize: '8px'
+                }}
               >
                 {color}
               </Typography>
@@ -317,13 +330,22 @@ const Template: StoryObj<typeof Icon> = {
         </Stack>
 
         {[...iconNames].slice(1).map((name) => (
-          <Stack key={name} direction="row" gap={10}>
+          <Stack
+            key={name}
+            direction="row"
+            sx={{
+              gap: 10
+            }}
+          >
             <Stack
               direction="row"
-              gap={7}
-              justifyContent="flex-end"
-              alignItems="center"
-              sx={{ pb: 2, width: '320px' }}
+              sx={{
+                gap: 7,
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                pb: 2,
+                width: '320px'
+              }}
             >
               <Typography variant="body2">
                 {<Icon name={name} /> != null ? name : null}
@@ -337,7 +359,13 @@ const Template: StoryObj<typeof Icon> = {
               <Icon name={name} fontSize="large" />
               <Icon name={name} sx={{ fontSize: '48px', ml: -1 }} />
             </Stack>
-            <Stack direction="row" gap={2} alignItems="center">
+            <Stack
+              direction="row"
+              sx={{
+                gap: 2,
+                alignItems: 'center'
+              }}
+            >
               {[
                 'primary',
                 'secondary',

@@ -445,10 +445,13 @@ describe('LanguageAutocomplete', () => {
     const renderInput = (params: AutocompleteRenderInputParams): ReactNode => (
       <TextField
         {...params}
-        InputProps={{
-          ...params.InputProps
-        }}
         data-testid="test-input"
+        slotProps={{
+          ...params.slotProps,
+          input: {
+            ...params.slotProps.input
+          }
+        }}
       />
     )
 
@@ -591,10 +594,13 @@ describe('LanguageAutocomplete', () => {
     const renderInput = (params: AutocompleteRenderInputParams): ReactNode => (
       <TextField
         {...params}
-        InputProps={{
-          ...params.InputProps
-        }}
         data-testid="test-input"
+        slotProps={{
+          ...params.slotProps,
+          input: {
+            ...params.slotProps.input
+          }
+        }}
       />
     )
 

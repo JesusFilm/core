@@ -53,10 +53,13 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
       <Stack
         direction="row"
         spacing={2}
-        alignItems="center"
-        sx={{ overflow: 'hidden', flexGrow: 0 }}
         ref={anchorRef}
         data-testid="TeamSelect"
+        sx={{
+          alignItems: 'center',
+          overflow: 'hidden',
+          flexGrow: 0
+        }}
       >
         <UsersProfiles2Icon sx={{ mr: 1, ml: '3px' }} />
         <FormControl variant="standard" sx={{ minWidth: 100 }}>

@@ -107,13 +107,14 @@ export function PageWrapper({
           )}
 
           <Stack
-            flexGrow={1}
             direction={{ xs: 'column', md: 'row' }}
             sx={{
+              flexGrow: 1,
               backgroundColor: backgroundColor ?? 'background.default',
               ...(background != null && { background }),
               width: '100%',
               pt: { xs: showAppHeader ? toolbar.height : 0, md: 0 },
+
               pb: {
                 xs: bottomPanelChildren != null ? bottomPanel.height : 0,
                 md: 0
@@ -139,12 +140,14 @@ export function PageWrapper({
 
             <Stack
               component="main"
-              flexGrow={1}
               sx={{
+                flexGrow: 1,
+
                 width: {
                   xs: 'inherit',
                   md: showNavBar ? `calc(100vw - ${navbar.width})` : '100vw'
                 },
+
                 height: '100%'
               }}
             >

@@ -47,7 +47,11 @@ export default function JourneyDetailsPage(): ReactElement {
         data-testid="JourneyDetailsPage"
       >
         <Container maxWidth="xxl">
-          <Stack gap={10}>
+          <Stack
+            sx={{
+              gap: 10
+            }}
+          >
             <SnackbarProvider>
               <JourneyProvider
                 value={{

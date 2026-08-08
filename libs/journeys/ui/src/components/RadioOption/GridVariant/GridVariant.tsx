@@ -161,7 +161,11 @@ export function GridVariant({
       className={classNames}
       data-testid="JourneysRadioOptionGrid"
     >
-      <Stack gap={2}>
+      <Stack
+        sx={{
+          gap: 2
+        }}
+      >
         <Box
           sx={{
             width: '100%',

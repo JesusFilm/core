@@ -135,7 +135,13 @@ export function TemplateInfoHelper(): ReactElement {
             }
           }}
         >
-          <Stack direction="row" alignItems="center" spacing={2}>
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{
+              alignItems: 'center'
+            }}
+          >
             <InfoOutlinedIcon
               data-testid="TemplateInfoHelperTriggerInfoIcon"
               sx={{ fontSize: 24 }}

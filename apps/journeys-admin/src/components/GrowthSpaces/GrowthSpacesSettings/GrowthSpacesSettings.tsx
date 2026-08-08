@@ -56,10 +56,13 @@ export function GrowthSpacesSettings({
         onChange={(value) => setAccessSecret?.(value)}
       />
       <Stack
-        gap={4}
-        flexDirection="row"
-        justifyContent="flex-end"
-        sx={{ width: '40%', alignSelf: 'flex-end' }}
+        sx={{
+          gap: 4,
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+          width: '40%',
+          alignSelf: 'flex-end'
+        }}
       >
         {handleDelete != null && (
           <Button

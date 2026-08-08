@@ -419,10 +419,12 @@ export function VideoControls({
         data-testid="JourneysVideoControls"
       >
         <Stack
-          justifyContent="center"
-          sx={{ height: '100%' }}
-          flexGrow={1}
-          alignItems="center"
+          sx={{
+            justifyContent: 'center',
+            flexGrow: 1,
+            alignItems: 'center',
+            height: '100%'
+          }}
         >
           <PlaybackIcon state={state} loading={loading} visible={visible} />
 

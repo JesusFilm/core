@@ -160,7 +160,7 @@ describe('JourneyFlow', () => {
       expect(screen.getAllByTestId('StepBlockNodeCard')).toHaveLength(7)
     )
     expect(
-      screen.getByRole('checkbox', { name: 'Analytics Overlay' })
+      screen.getByRole('switch', { name: 'Analytics Overlay' })
     ).toBeInTheDocument()
   })
 
@@ -629,7 +629,7 @@ describe('JourneyFlow', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(
-      screen.getByRole('checkbox', { name: 'Analytics Overlay' })
+      screen.getByRole('switch', { name: 'Analytics Overlay' })
     ).toBeInTheDocument()
   })
 
@@ -783,7 +783,7 @@ describe('JourneyFlow', () => {
       ).not.toBeInTheDocument()
       // The analytics switch still renders for non-template journeys.
       expect(
-        screen.getByRole('checkbox', { name: 'Analytics Overlay' })
+        screen.getByRole('switch', { name: 'Analytics Overlay' })
       ).toBeInTheDocument()
     })
   })

@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type Mock, type MockedFunction } from 'vitest'
@@ -199,7 +200,8 @@ function renderItem(
           />
         </SnackbarProvider>
       </ThemeProvider>
-    </MockedProvider>
+    </MockedProvider>,
+    { wrapper: MenuList }
   )
   return { handleCloseMenu, setHasOpenDialog, handleKeepMounted, unmount }
 }

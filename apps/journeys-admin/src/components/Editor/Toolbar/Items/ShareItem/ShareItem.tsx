@@ -141,10 +141,12 @@ export function ShareItem({
       >
         {journey == null ? (
           <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minHeight={120}
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              minHeight: 120
+            }}
           >
             <CircularProgress />
           </Box>
