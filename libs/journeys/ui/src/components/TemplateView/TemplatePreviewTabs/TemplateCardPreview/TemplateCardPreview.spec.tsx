@@ -491,6 +491,17 @@ describe('TemplateCardPreview', () => {
       // the card's edges the way `whiteSpace: 'nowrap'` used to.
       expect(label).toHaveStyle({ width: '100%', overflowWrap: 'break-word' })
       expect(label).not.toHaveStyle({ whiteSpace: 'nowrap' })
+      // The label must sit in normal document flow below the card, not be
+      // absolutely positioned over it -- absolute positioning is what let a
+      // wrapped (multi-line) label overlap the card's own content, since a
+      // taller label grows upward from a `bottom: 0` anchor instead of
+      // pushing layout below the card.
+      expect(label).not.toHaveStyle({ position: 'absolute' })
+      const card = screen.getAllByTestId('TemplateCardPreviewItem')[0]
+      expect(
+        card.compareDocumentPosition(label) &
+          Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy()
     })
   })
 
