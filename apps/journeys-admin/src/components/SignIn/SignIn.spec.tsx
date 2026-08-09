@@ -79,4 +79,24 @@ describe('SignIn', () => {
       '/users/verify?redirect=/journeys/123'
     )
   })
+
+  it('should not redirect back to verify page when arriving from it', () => {
+    mockUseRouter.mockReturnValue({
+      asPath: '/signin?redirect=%2Fusers%2Fverify',
+      replace: mockReplace,
+      query: { redirect: '/users/verify' }
+    } as unknown as ReturnType<typeof useRouter>)
+
+    mockUseAuth.mockReturnValue({
+      user: { id: 'user-1', isAnonymous: false }
+    })
+
+    render(
+      <MockedProvider>
+        <SignIn />
+      </MockedProvider>
+    )
+
+    expect(mockReplace).not.toHaveBeenCalled()
+  })
 })
