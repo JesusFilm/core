@@ -187,7 +187,7 @@ describe('OnboardingPanel', () => {
     )
   })
 
-  it('should redirect on See all link', () => {
+  it('should redirect on See All link', () => {
     const { getByRole } = render(
       <MockedProvider mocks={mocks}>
         <TeamProvider>
@@ -196,13 +196,13 @@ describe('OnboardingPanel', () => {
       </MockedProvider>
     )
 
-    expect(getByRole('link', { name: 'See all' })).toHaveAttribute(
+    expect(getByRole('link', { name: 'See All' })).toHaveAttribute(
       'href',
       '/templates'
     )
   })
 
-  it('should redirect on See all templates button', () => {
+  it('should redirect on See All Templates button', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[getTeamsMock]}>
         <TeamProvider>
@@ -211,7 +211,7 @@ describe('OnboardingPanel', () => {
       </MockedProvider>
     )
 
-    expect(getByRole('link', { name: 'See all templates' })).toHaveAttribute(
+    expect(getByRole('link', { name: 'See All Templates' })).toHaveAttribute(
       'href',
       '/templates'
     )
