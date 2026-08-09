@@ -295,6 +295,27 @@ describe('TrashedTemplateList', () => {
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
+    it('should show the templates restored snackbar', async () => {
+      const { getByText } = render(
+        <MockedProvider
+          mocks={[trashedJourneysMock, restoreJourneysMock, noJourneysMock]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TrashedTemplateList event="restoreAllTrashed" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(getByText('Default Template Heading')).toBeInTheDocument()
+      )
+      fireEvent.click(getByText('Restore'))
+      await waitFor(() =>
+        expect(getByText('Templates Restored')).toBeInTheDocument()
+      )
+    })
+
     it('should show error', async () => {
       const { getByText } = render(
         <MockedProvider
@@ -389,6 +410,27 @@ describe('TrashedTemplateList', () => {
       )
       fireEvent.click(getByText('Delete Forever'))
       await waitFor(() => expect(result).toHaveBeenCalled())
+    })
+
+    it('should show the templates deleted snackbar', async () => {
+      const { getByText } = render(
+        <MockedProvider
+          mocks={[trashedJourneysMock, deleteJourneysMock, noJourneysMock]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TrashedTemplateList event="deleteAllTrashed" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(getByText('Default Template Heading')).toBeInTheDocument()
+      )
+      fireEvent.click(getByText('Delete Forever'))
+      await waitFor(() =>
+        expect(getByText('Templates Deleted')).toBeInTheDocument()
+      )
     })
 
     it('should show error', async () => {

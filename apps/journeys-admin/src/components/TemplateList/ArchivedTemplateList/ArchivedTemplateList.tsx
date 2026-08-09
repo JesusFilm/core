@@ -48,7 +48,7 @@ export function ArchivedTemplateList({
   const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {
-        enqueueSnackbar(t('Journeys Restored'), {
+        enqueueSnackbar(t('Templates Restored'), {
           variant: 'success'
         })
 
@@ -64,7 +64,7 @@ export function ArchivedTemplateList({
   const [trash] = useMutation(TRASH_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysTrash != null) {
-        enqueueSnackbar(t('Journeys Trashed'), {
+        enqueueSnackbar(t('Templates Trashed'), {
           variant: 'success'
         })
 
