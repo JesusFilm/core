@@ -499,8 +499,7 @@ describe('TemplateCardPreview', () => {
       expect(label).not.toHaveStyle({ position: 'absolute' })
       const card = screen.getAllByTestId('TemplateCardPreviewItem')[0]
       expect(
-        card.compareDocumentPosition(label) &
-          Node.DOCUMENT_POSITION_FOLLOWING
+        card.compareDocumentPosition(label) & Node.DOCUMENT_POSITION_FOLLOWING
       ).toBeTruthy()
     })
   })
