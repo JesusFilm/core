@@ -562,4 +562,199 @@ describe('CreateTemplateItem', () => {
       expect(push).toHaveBeenCalledWith('/?type=templates&refresh=true')
     })
   })
+
+  it('should only create one template when clicked repeatedly', async () => {
+    const push = vi.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    const result = vi.fn(() => ({
+      data: {
+        journeyTemplate: {
+          id: 'templateId',
+          template: true
+        }
+      }
+    }))
+    // Hold the duplicate mutation open so every click lands while the first
+    // chain is still in flight - this is the rapid-click scenario from the bug
+    let resolveDuplicate: (value: unknown) => void = () => undefined
+    const journeyDuplicateMock = vi.fn().mockReturnValue(
+      new Promise((resolve) => {
+        resolveDuplicate = resolve
+      })
+    )
+    mockUseJourneyDuplicateMutation.mockReturnValue([
+      journeyDuplicateMock,
+      {
+        loading: false,
+        error: undefined,
+        data: undefined,
+        called: false,
+        reset: vi.fn(),
+        client: {} as any
+      }
+    ])
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_TEMPLATE,
+              variables: {
+                id: 'duplicatedJourneyId',
+                input: {
+                  template: true
+                }
+              }
+            },
+            result
+          },
+          {
+            request: {
+              query: REMOVE_USER_JOURNEY,
+              variables: {
+                id: 'templateId'
+              }
+            },
+            result: {
+              data: {
+                userJourneyRemoveAll: {
+                  id: 'journeyId'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                team: { id: 'local-team-id' }
+              } as unknown as Journey,
+              renderMode: 'admin'
+            }}
+          >
+            <CreateTemplateItem variant="menu-item" globalPublish={true} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const menuItem = getByRole('menuitem', { name: 'Make Global Template' })
+    fireEvent.click(menuItem)
+    fireEvent.click(menuItem)
+    fireEvent.click(menuItem)
+
+    expect(journeyDuplicateMock).toHaveBeenCalledTimes(1)
+
+    resolveDuplicate({
+      data: {
+        journeyDuplicate: {
+          id: 'duplicatedJourneyId'
+        }
+      }
+    })
+
+    await waitFor(() => expect(result).toHaveBeenCalledTimes(1))
+    expect(journeyDuplicateMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('should disable the menu item while the template is being created', async () => {
+    const push = vi.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    const result = vi.fn(() => ({
+      data: {
+        journeyTemplate: {
+          id: 'templateId',
+          template: true
+        }
+      }
+    }))
+    let resolveDuplicate: (value: unknown) => void = () => undefined
+    const journeyDuplicateMock = vi.fn().mockReturnValue(
+      new Promise((resolve) => {
+        resolveDuplicate = resolve
+      })
+    )
+    mockUseJourneyDuplicateMutation.mockReturnValue([
+      journeyDuplicateMock,
+      {
+        loading: false,
+        error: undefined,
+        data: undefined,
+        called: false,
+        reset: vi.fn(),
+        client: {} as any
+      }
+    ])
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_TEMPLATE,
+              variables: {
+                id: 'duplicatedJourneyId',
+                input: {
+                  template: true
+                }
+              }
+            },
+            result
+          },
+          {
+            request: {
+              query: REMOVE_USER_JOURNEY,
+              variables: {
+                id: 'templateId'
+              }
+            },
+            result: {
+              data: {
+                userJourneyRemoveAll: {
+                  id: 'journeyId'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                team: { id: 'local-team-id' }
+              } as unknown as Journey,
+              renderMode: 'admin'
+            }}
+          >
+            <CreateTemplateItem variant="menu-item" globalPublish={true} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const menuItem = getByRole('menuitem', { name: 'Make Global Template' })
+    expect(menuItem).not.toHaveAttribute('aria-disabled', 'true')
+
+    fireEvent.click(menuItem)
+
+    await waitFor(() =>
+      expect(
+        getByRole('menuitem', { name: 'Make Global Template' })
+      ).toHaveAttribute('aria-disabled', 'true')
+    )
+
+    resolveDuplicate({
+      data: {
+        journeyDuplicate: {
+          id: 'duplicatedJourneyId'
+        }
+      }
+    })
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
 })
