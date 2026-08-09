@@ -662,6 +662,7 @@ describe('CreateTemplateItem', () => {
 
   it('should disable the menu item while the template is being created', async () => {
     const push = vi.fn()
+    const handleKeepMounted = vi.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
     const result = vi.fn(() => ({
       data: {
@@ -730,7 +731,11 @@ describe('CreateTemplateItem', () => {
               renderMode: 'admin'
             }}
           >
-            <CreateTemplateItem variant="menu-item" globalPublish={true} />
+            <CreateTemplateItem
+              variant="menu-item"
+              globalPublish={true}
+              handleKeepMounted={handleKeepMounted}
+            />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -740,6 +745,10 @@ describe('CreateTemplateItem', () => {
     expect(menuItem).not.toHaveAttribute('aria-disabled', 'true')
 
     fireEvent.click(menuItem)
+
+    // Holds the parent menu mounted, so dismissing it mid-flight can't unmount
+    // this item and reset the in-flight guard
+    expect(handleKeepMounted).toHaveBeenCalled()
 
     await waitFor(() =>
       expect(

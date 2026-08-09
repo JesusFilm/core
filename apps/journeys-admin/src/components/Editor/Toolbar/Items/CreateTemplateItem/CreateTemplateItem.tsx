@@ -35,6 +35,13 @@ interface CreateTemplateItemProps {
   variant: ComponentProps<typeof Item>['variant']
   globalPublish?: boolean
   handleCloseMenu?: () => void
+  /**
+   * Keeps the parent menu mounted for the rest of the session. Called when
+   * template creation starts, so dismissing the menu mid-flight (escape or
+   * backdrop click) doesn't unmount this item and reset the in-flight guard.
+   * Matches how ShareItem and CopyToTeamMenuItem hold the menu open.
+   */
+  handleKeepMounted?: () => void
   journey?: Journey
 }
 
@@ -42,6 +49,7 @@ export function CreateTemplateItem({
   variant,
   globalPublish = false,
   handleCloseMenu,
+  handleKeepMounted,
   journey
 }: CreateTemplateItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -66,6 +74,7 @@ export function CreateTemplateItem({
 
     isCreatingRef.current = true
     setCreating(true)
+    handleKeepMounted?.()
 
     try {
       // Detect if we're in Editor context (editing a journey) vs JourneyList context
