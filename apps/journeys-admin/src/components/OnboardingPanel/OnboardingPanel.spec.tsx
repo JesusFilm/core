@@ -36,7 +36,7 @@ vi.mock('./OnboardingList', () => ({
   OnboardingList: () => null
 }))
 
-const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<() => string>
 const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 const variables = {
   journeyId: 'createdJourneyId',

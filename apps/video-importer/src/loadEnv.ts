@@ -22,4 +22,4 @@ function getEnvFilePath(): string {
   return path.join(candidateDirs[0] ?? process.cwd(), '.env')
 }
 
-dotenv.config({ path: getEnvFilePath() })
+dotenv.config({ path: getEnvFilePath(), quiet: true })

@@ -1,7 +1,7 @@
 import { testData } from '../utils/testData'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-require('dotenv').config()
+require('dotenv').config({ quiet: true })
 
 export async function getBaseUrl(): Promise<string> {
   const baseUrl = process.env.DEPLOYMENT_URL?.toString()

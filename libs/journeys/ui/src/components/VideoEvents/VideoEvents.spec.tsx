@@ -36,7 +36,7 @@ vi.mock('uuid', () => ({
   __esModule: true,
   v4: vi.fn()
 }))
-const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
+const mockUuidv4 = uuidv4 as MockedFunction<() => string>
 mockUuidv4.mockReturnValue('uuid')
 
 vi.mock('@next/third-parties/google', () => ({
