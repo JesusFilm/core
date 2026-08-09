@@ -766,4 +766,51 @@ describe('CreateTemplateItem', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
+
+  it('should surface an error and re-enable the menu item when creation fails', async () => {
+    const push = vi.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    const journeyDuplicateMock = vi
+      .fn()
+      .mockRejectedValue(new Error('Failed to duplicate journey'))
+    mockUseJourneyDuplicateMutation.mockReturnValue([
+      journeyDuplicateMock,
+      {
+        loading: false,
+        error: undefined,
+        data: undefined,
+        called: false,
+        reset: vi.fn(),
+        client: {} as any
+      }
+    ])
+    const { getByRole, getByText } = render(
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                team: { id: 'local-team-id' }
+              } as unknown as Journey,
+              renderMode: 'admin'
+            }}
+          >
+            <CreateTemplateItem variant="menu-item" globalPublish={true} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('menuitem', { name: 'Make Global Template' }))
+
+    await waitFor(() =>
+      expect(getByText('Failed to duplicate journey')).toBeInTheDocument()
+    )
+    // Recovers rather than staying stuck disabled for the rest of the session
+    expect(
+      getByRole('menuitem', { name: 'Make Global Template' })
+    ).not.toHaveAttribute('aria-disabled', 'true')
+    expect(push).not.toHaveBeenCalled()
+  })
 })

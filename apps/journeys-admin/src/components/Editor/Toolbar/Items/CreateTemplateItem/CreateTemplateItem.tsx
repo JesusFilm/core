@@ -175,6 +175,16 @@ export function CreateTemplateItem({
           }
         }
       }
+    } catch (error) {
+      // Success already reports via snackbar. Without this, a failed mutation
+      // rejects into onClick, where React discards it - the item would silently
+      // re-enable and the user would have no idea anything went wrong.
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
     } finally {
       // Always clear, so a failed mutation doesn't leave the item permanently
       // disabled for the rest of the session.
