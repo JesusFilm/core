@@ -1,4 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
@@ -166,7 +167,7 @@ export function UnsplashGallery({
   }
 
   return (
-    <Stack sx={{ p: 6, gap: 2 }} data-testid="UnsplashGallery">
+    <Stack sx={{ p: 6 }} data-testid="UnsplashGallery">
       <UnsplashSearch value={query} handleSubmit={handleSubmit} />
       <UnsplashCollections
         selectedCollectionId={query === '' ? collectionId : undefined}
@@ -183,7 +184,9 @@ export function UnsplashGallery({
         gallery={gallery}
         onChange={onChange}
       />
-      <LoadMoreButton hasMore loading={loading} onClick={handleFetchMore} />
+      <Box sx={{ pt: 2 }}>
+        <LoadMoreButton hasMore loading={loading} onClick={handleFetchMore} />
+      </Box>
     </Stack>
   )
 }
