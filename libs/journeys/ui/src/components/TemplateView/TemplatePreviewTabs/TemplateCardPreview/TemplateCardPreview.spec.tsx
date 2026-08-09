@@ -447,6 +447,51 @@ describe('TemplateCardPreview', () => {
       )
       await waitFor(() => expect(mockSlideTo).toHaveBeenCalledWith(1, 500))
     })
+
+    it('should size the card label to wrap instead of overflowing the card', async () => {
+      const steps = [
+        {
+          id: '1',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        },
+        {
+          id: '2',
+          children: [
+            {
+              __typename: 'CardBlock',
+              showAssistant: null,
+              expandChatByDefault: null
+            }
+          ]
+        }
+      ] as Array<TreeBlock<StepBlock>>
+
+      render(
+        <ThemeProvider theme={createTheme()}>
+          <JourneyProvider value={{ journey }}>
+            <TemplateCardPreview
+              steps={steps}
+              variant="compact"
+              selectedStep={steps[0]}
+              cardLabel="Ketuk untuk melihat pratinjau"
+            />
+          </JourneyProvider>
+        </ThemeProvider>
+      )
+
+      const label = await screen.findByText('Ketuk untuk melihat pratinjau')
+      // Width is bound to the card slide (its positioned ancestor) so long
+      // translations wrap onto a second line instead of overflowing past
+      // the card's edges the way `whiteSpace: 'nowrap'` used to.
+      expect(label).toHaveStyle({ width: '100%', overflowWrap: 'break-word' })
+      expect(label).not.toHaveStyle({ whiteSpace: 'nowrap' })
+    })
   })
 
   describe('guestPreview variant', () => {

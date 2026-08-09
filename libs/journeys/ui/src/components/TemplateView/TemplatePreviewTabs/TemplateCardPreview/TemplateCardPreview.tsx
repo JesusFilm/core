@@ -237,7 +237,8 @@ export function TemplateCardPreview({
                   bottom: 0,
                   left: '50%',
                   transform: 'translateX(-50%)',
-                  whiteSpace: 'nowrap',
+                  width: '100%',
+                  overflowWrap: 'break-word',
                   animation: 'fadeSlideDown 0.3s ease 0.15s forwards',
                   opacity: 0,
                   '@keyframes fadeSlideDown': {
