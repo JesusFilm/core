@@ -15,8 +15,6 @@ import { setContext } from '@apollo/client/link/context'
 import { onError } from '@apollo/client/link/error'
 import { getMainDefinition } from '@apollo/client/utilities'
 import DebounceLink from 'apollo-link-debounce'
-import { getApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
 import { print } from 'graphql'
 import { createClient } from 'graphql-sse'
 import { useMemo } from 'react'
@@ -24,7 +22,7 @@ import { Observable } from 'zen-observable-ts'
 
 import { isDevHost } from '@core/shared/dev-hosts'
 
-import { logout } from '../auth/firebase'
+import { getFirebaseAuth, logout } from '../auth/firebase'
 
 import { cache } from './cache'
 
@@ -171,7 +169,7 @@ export function createApolloClient(
   const authLink = setContext(async (_, { headers }) => {
     const firebaseToken = ssrMode
       ? token
-      : ((await getAuth(getApp()).currentUser?.getIdToken()) ?? token)
+      : ((await getFirebaseAuth().currentUser?.getIdToken()) ?? token)
 
     return {
       headers: {
