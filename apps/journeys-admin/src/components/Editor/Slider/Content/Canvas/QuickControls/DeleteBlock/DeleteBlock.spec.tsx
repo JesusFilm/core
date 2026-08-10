@@ -8,9 +8,14 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import deTranslations from '../../../../../../../../../../libs/locales/de-DE/apps-journeys-admin.json'
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import neTranslations from '../../../../../../../../../../libs/locales/ne-NP/apps-journeys-admin.json'
 import { BlockDelete } from '../../../../../../../../__generated__/BlockDelete'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import i18n from '../../../../../../../../test/i18n'
 import { TestEditorState } from '../../../../../../../libs/TestEditorState'
 import { BLOCK_DELETE } from '../../../../../../../libs/useBlockDeleteMutation'
 import {
@@ -446,5 +451,54 @@ describe('DeleteBlock', () => {
     // undo the delete
     await userEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(restoreCardMockResult).toHaveBeenCalled())
+  })
+
+  describe('translated labels', () => {
+    afterEach(() => {
+      void i18n.changeLanguage('en')
+    })
+
+    // Regression test for NES-1789: "Delete {{ label }}" interpolates a
+    // separately-translated "Card"/"Block" into the phrase. A translation
+    // missing a space around the placeholder squishes the words together
+    // (e.g. "Cardमेटाउनुहोस्", "Kartelöschen") instead of rendering as two
+    // distinct words.
+    it('renders the fully translated Nepali "delete card" label', async () => {
+      i18n.addResourceBundle('ne', 'apps-journeys-admin', neTranslations, true, true)
+      await i18n.changeLanguage('ne')
+
+      render(
+        <SnackbarProvider>
+          <MockedProvider>
+            <MuxVideoUploadProvider>
+              <DeleteBlock variant="list-item" block={selectedStep} />
+            </MuxVideoUploadProvider>
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+
+      expect(
+        screen.getByRole('menuitem', { name: 'कार्ड मेटाउनुहोस्' })
+      ).toBeInTheDocument()
+    })
+
+    it('renders the fully translated German "delete card" label', async () => {
+      i18n.addResourceBundle('de', 'apps-journeys-admin', deTranslations, true, true)
+      await i18n.changeLanguage('de')
+
+      render(
+        <SnackbarProvider>
+          <MockedProvider>
+            <MuxVideoUploadProvider>
+              <DeleteBlock variant="list-item" block={selectedStep} />
+            </MuxVideoUploadProvider>
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+
+      expect(
+        screen.getByRole('menuitem', { name: 'Karte löschen' })
+      ).toBeInTheDocument()
+    })
   })
 })
