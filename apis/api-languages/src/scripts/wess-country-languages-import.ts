@@ -390,7 +390,7 @@ export async function runWessCountryLanguagesImport(): Promise<number> {
   log.info(
     `Finished: ${outcomes.created.toLocaleString()} created, ${outcomes.updated.toLocaleString()} updated, ${outcomes.unchanged.toLocaleString()} unchanged, ${outcomes['preserved-sentinel'].toLocaleString()} sentinel-preserved, ${outcomes['preserved-nonzero'].toLocaleString()} nonzero-preserved, ${fkSkipped.toLocaleString()} FK-skipped, ${unresolved.toLocaleString()} GEO_NO-skipped of ${rawRows.length.toLocaleString()} raw row(s).`
   )
-  return total
+  return total - fkSkipped
 }
 
 async function main(): Promise<void> {
@@ -398,14 +398,14 @@ async function main(): Promise<void> {
     await withWessImportLock(runWessCountryLanguagesImport)
     process.exit(0)
   } catch (error) {
-    console.error(error)
+    log.error({ err: error }, 'WESS country-language import failed')
     process.exit(1)
   }
 }
 
 if (require.main === module) {
   main().catch((error) => {
-    console.error(error)
+    log.error({ err: error }, 'WESS country-language import failed')
     process.exit(1)
   })
 }

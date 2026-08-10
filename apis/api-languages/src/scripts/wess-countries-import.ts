@@ -228,14 +228,14 @@ async function main(): Promise<void> {
     await withWessImportLock(runWessCountriesImport)
     process.exit(0)
   } catch (error) {
-    console.error(error)
+    log.error({ err: error }, 'WESS countries import failed')
     process.exit(1)
   }
 }
 
 if (require.main === module) {
   main().catch((error) => {
-    console.error(error)
+    log.error({ err: error }, 'WESS countries import failed')
     process.exit(1)
   })
 }
