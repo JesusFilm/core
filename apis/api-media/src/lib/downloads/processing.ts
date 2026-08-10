@@ -370,18 +370,6 @@ export async function createDownloadsFromMuxAsset({
         }
       })
 
-      if (download.size === 0 || download.bitrate === 0) {
-        logger?.warn(
-          {
-            videoVariantId: variantId,
-            quality: download.quality,
-            size: download.size,
-            bitrate: download.bitrate
-          },
-          'Mux static rendition metadata is missing size or bitrate'
-        )
-      }
-
       if (existingDownload == null) {
         await prisma.videoVariantDownload.create({
           data: download
