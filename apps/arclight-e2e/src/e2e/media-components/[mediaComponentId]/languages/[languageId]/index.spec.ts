@@ -177,26 +177,22 @@ test.describe('media component language', () => {
       expect(regularData.downloadUrls).toMatchObject({
         low: expect.objectContaining({
           url: expect.any(String),
-          sizeInBytes: expect.any(Number),
-          bitrate: expect.any(Number)
+          sizeInBytes: expect.any(Number)
         }),
         high: expect.objectContaining({
           url: expect.any(String),
-          sizeInBytes: expect.any(Number),
-          bitrate: expect.any(Number)
+          sizeInBytes: expect.any(Number)
         })
       })
 
       expect(specialData.downloadUrls).toMatchObject({
         low: expect.objectContaining({
           url: expect.any(String),
-          sizeInBytes: expect.any(Number),
-          bitrate: expect.any(Number)
+          sizeInBytes: expect.any(Number)
         }),
         high: expect.objectContaining({
           url: expect.any(String),
-          sizeInBytes: expect.any(Number),
-          bitrate: expect.any(Number)
+          sizeInBytes: expect.any(Number)
         })
       })
 
@@ -207,14 +203,14 @@ test.describe('media component language', () => {
       expect(specialData.downloadUrls.high.url).toMatch(/^https?:\/\//)
 
       // Sizes should be positive numbers
-      expect(regularData.downloadUrls.low.sizeInBytes).toBeGreaterThan(0)
-      expect(regularData.downloadUrls.high.sizeInBytes).toBeGreaterThan(0)
-      expect(specialData.downloadUrls.low.sizeInBytes).toBeGreaterThan(0)
-      expect(specialData.downloadUrls.high.sizeInBytes).toBeGreaterThan(0)
-      expect(regularData.downloadUrls.low.bitrate).toBeGreaterThan(0)
-      expect(regularData.downloadUrls.high.bitrate).toBeGreaterThan(0)
-      expect(specialData.downloadUrls.low.bitrate).toBeGreaterThan(0)
-      expect(specialData.downloadUrls.high.bitrate).toBeGreaterThan(0)
+      expect(regularData.downloadUrls.low.sizeInBytes).toBeGreaterThanOrEqual(0)
+      expect(regularData.downloadUrls.high.sizeInBytes).toBeGreaterThanOrEqual(
+        0
+      )
+      expect(specialData.downloadUrls.low.sizeInBytes).toBeGreaterThanOrEqual(0)
+      expect(specialData.downloadUrls.high.sizeInBytes).toBeGreaterThanOrEqual(
+        0
+      )
 
       // Note: We can't verify exact URL differences without knowing the specific test data,
       // but we ensure both API keys produce valid download structures

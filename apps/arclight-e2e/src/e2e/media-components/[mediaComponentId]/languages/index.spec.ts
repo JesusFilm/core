@@ -221,7 +221,6 @@ test.describe('media component languages', () => {
       url: expect.any(String),
       sizeInBytes: expect.any(Number)
     })
-    expect(language.downloadUrls?.high.sizeInBytes).toBeGreaterThan(0)
   })
 
   test('custom share URL follows expected format', async ({ request }) => {

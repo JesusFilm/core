@@ -168,12 +168,6 @@
         "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/algolia-helpers/reindex-languages-with-videos.ts"
       }
     },
-    "process-mux-download-metadata": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pnpm exec tsx apis/api-media/src/scripts/process-mux-download-metadata.ts"
-      }
-    },
     "run-daily-video-slack-summary": {
       "executor": "nx:run-commands",
       "dependsOn": ["prisma-media:prisma-generate"],
