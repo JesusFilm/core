@@ -460,42 +460,37 @@ describe('DeleteBlock', () => {
     // missing a space around the placeholder squishes the words together
     // (e.g. "Cardमेटाउनुहोस्", "Kartelöschen") instead of rendering as two
     // distinct words.
-    it('renders the fully translated Nepali "delete card" label', async () => {
-      loadLocaleBundle('ne')
-      await i18n.changeLanguage('ne')
+    it.each([
+      {
+        language: 'Nepali',
+        locale: 'ne' as const,
+        expectedLabel: 'कार्ड मेटाउनुहोस्'
+      },
+      {
+        language: 'German',
+        locale: 'de' as const,
+        expectedLabel: 'Karte löschen'
+      }
+    ])(
+      'renders the fully translated $language "delete card" label',
+      async ({ locale, expectedLabel }) => {
+        loadLocaleBundle(locale)
+        await i18n.changeLanguage(locale)
 
-      render(
-        <SnackbarProvider>
-          <MockedProvider>
-            <MuxVideoUploadProvider>
-              <DeleteBlock variant="list-item" block={selectedStep} />
-            </MuxVideoUploadProvider>
-          </MockedProvider>
-        </SnackbarProvider>
-      )
+        render(
+          <SnackbarProvider>
+            <MockedProvider>
+              <MuxVideoUploadProvider>
+                <DeleteBlock variant="list-item" block={selectedStep} />
+              </MuxVideoUploadProvider>
+            </MockedProvider>
+          </SnackbarProvider>
+        )
 
-      expect(
-        screen.getByRole('menuitem', { name: 'कार्ड मेटाउनुहोस्' })
-      ).toBeInTheDocument()
-    })
-
-    it('renders the fully translated German "delete card" label', async () => {
-      loadLocaleBundle('de')
-      await i18n.changeLanguage('de')
-
-      render(
-        <SnackbarProvider>
-          <MockedProvider>
-            <MuxVideoUploadProvider>
-              <DeleteBlock variant="list-item" block={selectedStep} />
-            </MuxVideoUploadProvider>
-          </MockedProvider>
-        </SnackbarProvider>
-      )
-
-      expect(
-        screen.getByRole('menuitem', { name: 'Karte löschen' })
-      ).toBeInTheDocument()
-    })
+        expect(
+          screen.getByRole('menuitem', { name: expectedLabel })
+        ).toBeInTheDocument()
+      }
+    )
   })
 })
