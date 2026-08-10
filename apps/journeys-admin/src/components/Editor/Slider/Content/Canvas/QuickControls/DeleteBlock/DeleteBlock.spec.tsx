@@ -464,7 +464,13 @@ describe('DeleteBlock', () => {
     // (e.g. "Cardमेटाउनुहोस्", "Kartelöschen") instead of rendering as two
     // distinct words.
     it('renders the fully translated Nepali "delete card" label', async () => {
-      i18n.addResourceBundle('ne', 'apps-journeys-admin', neTranslations, true, true)
+      i18n.addResourceBundle(
+        'ne',
+        'apps-journeys-admin',
+        neTranslations,
+        true,
+        true
+      )
       await i18n.changeLanguage('ne')
 
       render(
@@ -483,7 +489,13 @@ describe('DeleteBlock', () => {
     })
 
     it('renders the fully translated German "delete card" label', async () => {
-      i18n.addResourceBundle('de', 'apps-journeys-admin', deTranslations, true, true)
+      i18n.addResourceBundle(
+        'de',
+        'apps-journeys-admin',
+        deTranslations,
+        true,
+        true
+      )
       await i18n.changeLanguage('de')
 
       render(
