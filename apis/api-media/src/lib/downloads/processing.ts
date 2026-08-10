@@ -384,7 +384,14 @@ export async function createDownloadsFromMuxAsset({
       ) {
         await prisma.videoVariantDownload.update({
           where: { id: existingDownload.id },
-          data: download
+          data: {
+            quality: download.quality,
+            size: download.size,
+            height: download.height,
+            width: download.width,
+            bitrate: download.bitrate,
+            url: download.url
+          }
         })
         createdCount++
         continue

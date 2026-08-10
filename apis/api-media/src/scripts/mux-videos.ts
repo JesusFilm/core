@@ -305,7 +305,7 @@ export async function processDownloads(): Promise<void> {
 
       if (
         muxVideoAsset.status === 'ready' &&
-        muxVideoAsset.playback_ids?.[0].id != null &&
+        muxVideoAsset.playback_ids?.[0]?.id != null &&
         downloadsReadyToStore(muxVideoAsset)
       ) {
         if (!applyChanges) {
@@ -351,7 +351,7 @@ export async function processDownloads(): Promise<void> {
         )
       } else {
         console.log(
-          `Video not ready for download processing - variant: ${variant.id}, assetId: ${variant.muxVideo.assetId}, status: ${muxVideoAsset.status}, hasPlaybackId: ${!!muxVideoAsset.playback_ids?.[0].id}, downloadsReady: ${downloadsReadyToStore(muxVideoAsset)}`
+          `Video not ready for download processing - variant: ${variant.id}, assetId: ${variant.muxVideo.assetId}, status: ${muxVideoAsset.status}, hasPlaybackId: ${!!muxVideoAsset.playback_ids?.[0]?.id}, downloadsReady: ${downloadsReadyToStore(muxVideoAsset)}`
         )
       }
     } catch (error) {

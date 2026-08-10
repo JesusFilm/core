@@ -496,6 +496,67 @@ describe('download processing utilities', () => {
       })
     })
 
+    it('should not overwrite an existing download version greater than 1 during metadata refresh', async () => {
+      const muxVideoAsset = {
+        playback_ids: [{ id: 'test-playback-id' }],
+        static_renditions: {
+          files: [
+            {
+              resolution: '720p',
+              status: 'ready',
+              filesize: '157286400',
+              height: 720,
+              width: 1280,
+              bitrate: 2500000
+            }
+          ]
+        }
+      }
+
+      prismaMock.videoVariantDownload.findUnique
+        .mockResolvedValueOnce({
+          id: 'existing-high-download',
+          quality: VideoVariantDownloadQuality.high,
+          videoVariantId: 'variant-1',
+          url: 'https://stream.mux.com/test-playback-id/720p.mp4',
+          size: 0,
+          height: 720,
+          width: 1280,
+          bitrate: 0,
+          version: 3,
+          assetId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        .mockResolvedValueOnce({
+          id: 'existing-highest-download',
+          quality: VideoVariantDownloadQuality.highest,
+          videoVariantId: 'variant-1',
+          url: 'https://stream.mux.com/test-playback-id/720p.mp4',
+          size: 0,
+          height: 720,
+          width: 1280,
+          bitrate: 0,
+          version: 5,
+          assetId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+      prismaMock.videoVariantDownload.update.mockResolvedValue({} as any)
+
+      await createDownloadsFromMuxAsset({
+        variantId: 'variant-1',
+        muxVideoAsset
+      })
+
+      expect(prismaMock.videoVariantDownload.update).toHaveBeenCalledWith({
+        where: { id: 'existing-high-download' },
+        data: expect.not.objectContaining({
+          version: expect.anything()
+        })
+      })
+    })
+
     it('should preserve existing Mux downloads when metadata is already populated', async () => {
       const muxVideoAsset = {
         playback_ids: [{ id: 'test-playback-id' }],
