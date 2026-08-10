@@ -3,6 +3,11 @@ import { beforeEach, vi } from 'vitest'
 import { prismaMock } from '../../../test/prismaMock'
 import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
+import {
+  addLanguageToVideo,
+  findContainerParentIds,
+  updateParentCollectionLanguages
+} from '../video/lib/updateAvailableLanguages'
 
 import { reconcileVideoVariantReconciliation } from './reconcileVideoVariantReconciliation'
 
@@ -12,6 +17,11 @@ vi.mock('../../lib/algolia/algoliaVideoUpdate', () => ({
 vi.mock('../../lib/algolia/algoliaVideoVariantUpdate', () => ({
   updateVideoVariantInAlgolia: vi.fn()
 }))
+vi.mock('../video/lib/updateAvailableLanguages', () => ({
+  addLanguageToVideo: vi.fn(),
+  updateParentCollectionLanguages: vi.fn(),
+  findContainerParentIds: vi.fn()
+}))
 
 describe('reconcileVideoVariantReconciliation', () => {
   beforeEach(() => {
@@ -19,6 +29,9 @@ describe('reconcileVideoVariantReconciliation', () => {
     prismaMock.$transaction.mockImplementation(async (transaction) => {
       return await transaction(prismaMock)
     })
+    // Default to "no parent containers" so tests that don't exercise the
+    // parent-sync path don't need to know about findContainerParentIds.
+    vi.mocked(findContainerParentIds).mockResolvedValue([])
   })
 
   it('publishes a Variant only after its generated parent Variant and indexes are ready', async () => {
@@ -40,8 +53,9 @@ describe('reconcileVideoVariantReconciliation', () => {
         video: { id: 'episode-1', published: true, label: 'episode' }
       }
     } as never)
+    vi.mocked(findContainerParentIds).mockResolvedValue(['series-1'])
     prismaMock.video.findMany.mockResolvedValue([
-      { id: 'series-1', slug: 'do-you-ever-wonder', availableLanguages: [] }
+      { id: 'series-1', slug: 'do-you-ever-wonder' }
     ] as never)
     prismaMock.videoVariant.findFirst.mockResolvedValue(null)
     prismaMock.videoVariant.create.mockResolvedValue({
@@ -71,6 +85,12 @@ describe('reconcileVideoVariantReconciliation', () => {
         })
       })
     })
+    // Bug A regression coverage: the parent-language write must route through
+    // the canonical, cache-revalidating helpers rather than a hand-rolled
+    // prisma.video.update.
+    expect(addLanguageToVideo).toHaveBeenCalledWith('series-1', '20770')
+    expect(updateParentCollectionLanguages).toHaveBeenCalledWith('series-1')
+    expect(prismaMock.video.update).not.toHaveBeenCalled()
     expect(updateVideoInAlgolia).toHaveBeenCalledWith('series-1')
     expect(updateVideoInAlgolia).toHaveBeenCalledWith('episode-1')
     expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('20770_series-1')
@@ -100,8 +120,9 @@ describe('reconcileVideoVariantReconciliation', () => {
         video: { id: 'episode-1', published: true, label: 'episode' }
       }
     } as never)
+    vi.mocked(findContainerParentIds).mockResolvedValue(['series-1'])
     prismaMock.video.findMany.mockResolvedValue([
-      { id: 'series-1', slug: 'do-you-ever-wonder', availableLanguages: [] }
+      { id: 'series-1', slug: 'do-you-ever-wonder' }
     ] as never)
     prismaMock.videoVariant.findFirst.mockResolvedValue(null)
     prismaMock.videoVariant.create.mockResolvedValue({

@@ -2,6 +2,12 @@ import { prisma } from '@core/prisma/media/client'
 
 import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
+import { videoCacheReset } from '../../lib/videoCacheReset'
+import {
+  addLanguageToVideo,
+  findContainerParentIds,
+  updateParentCollectionLanguages
+} from '../video/lib/updateAvailableLanguages'
 
 import { reconcileGeneratedParentVariant } from './reconcileReasonSpecificVariant'
 import {
@@ -38,9 +44,16 @@ export async function reconcileParentVariants({
     failedStageValue?: ProcessingStage
   ) => Promise<void>
 }): Promise<ParentReconciliationResult | null> {
+  // Use the same parent-lookup as the rest of the availableLanguages machinery
+  // (findContainerParentIds) so this only ever picks up container videos —
+  // collections, series, featureFilms — rather than every video that happens
+  // to list variant.videoId in its (separately-maintained) childIds array.
+  const parentIds = await findContainerParentIds(variant.videoId)
+  if (parentIds.length === 0) return null
+
   const parentVideos = await prisma.video.findMany({
-    where: { childIds: { has: variant.videoId } },
-    select: { id: true, slug: true, availableLanguages: true }
+    where: { id: { in: parentIds } },
+    select: { id: true, slug: true }
   })
 
   for (const parentVideo of parentVideos) {
@@ -62,7 +75,7 @@ async function reconcileParentVariant({
   stages,
   persistStatus
 }: {
-  parentVideo: { id: string; slug: string | null; availableLanguages: string[] }
+  parentVideo: { id: string; slug: string | null }
   variant: ChildVariant
   stages: ProcessingStages
   persistStatus: (
@@ -123,11 +136,20 @@ async function reconcileParentVariant({
             processingStages: generatedParentProcessingStages
           }
         })
-        await addParentLanguage(parentVideo, variant.languageId, transaction)
       })
-    } else {
-      await addParentLanguage(parentVideo, variant.languageId, prisma)
     }
+
+    // Route the parent-language write through the canonical, cache-revalidating
+    // path (used everywhere else availableLanguages is mutated) instead of
+    // writing the field by hand. addLanguageToVideo sets the language on this
+    // parent directly (parentVideo's own children aren't fully in sync yet, so
+    // a recalculation-based update would drop it); updateParentCollectionLanguages
+    // cascades the change to any further-up container (nested collections);
+    // videoCacheReset is what actually revalidates the watch-app language menu
+    // for this parent's own page (VMT-318).
+    await addLanguageToVideo(parentVideo.id, variant.languageId)
+    await updateParentCollectionLanguages(parentVideo.id)
+    await videoCacheReset(parentVideo.id)
     stages.parentSync = completedStage(stages.parentSync.attempts + 1)
   } catch (error) {
     stages.parentSync = failedStage(error, stages.parentSync.attempts + 1)
@@ -184,19 +206,4 @@ async function reconcileParentVariant({
   }
 
   return null
-}
-
-async function addParentLanguage(
-  parentVideo: { id: string; availableLanguages: string[] },
-  languageId: string,
-  client: Pick<typeof prisma, 'video'>
-): Promise<void> {
-  await client.video.update({
-    where: { id: parentVideo.id },
-    data: {
-      availableLanguages: Array.from(
-        new Set([...parentVideo.availableLanguages, languageId])
-      )
-    }
-  })
 }
