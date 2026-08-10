@@ -1,5 +1,5 @@
-import { Container, Text } from '@react-email/components'
 import { ReactElement } from 'react'
+import { Container, Text } from 'react-email'
 
 interface BodyTitletProps {
   bodyTitle: string
