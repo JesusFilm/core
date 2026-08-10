@@ -8,14 +8,11 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import deTranslations from '../../../../../../../../../../libs/locales/de-DE/apps-journeys-admin.json'
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import neTranslations from '../../../../../../../../../../libs/locales/ne-NP/apps-journeys-admin.json'
 import { BlockDelete } from '../../../../../../../../__generated__/BlockDelete'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import i18n from '../../../../../../../../test/i18n'
+import { loadLocaleBundle } from '../../../../../../../../test/loadLocaleBundle'
 import { TestEditorState } from '../../../../../../../libs/TestEditorState'
 import { BLOCK_DELETE } from '../../../../../../../libs/useBlockDeleteMutation'
 import {
@@ -464,13 +461,7 @@ describe('DeleteBlock', () => {
     // (e.g. "Cardमेटाउनुहोस्", "Kartelöschen") instead of rendering as two
     // distinct words.
     it('renders the fully translated Nepali "delete card" label', async () => {
-      i18n.addResourceBundle(
-        'ne',
-        'apps-journeys-admin',
-        neTranslations,
-        true,
-        true
-      )
+      loadLocaleBundle('ne')
       await i18n.changeLanguage('ne')
 
       render(
@@ -489,13 +480,7 @@ describe('DeleteBlock', () => {
     })
 
     it('renders the fully translated German "delete card" label', async () => {
-      i18n.addResourceBundle(
-        'de',
-        'apps-journeys-admin',
-        deTranslations,
-        true,
-        true
-      )
+      loadLocaleBundle('de')
       await i18n.changeLanguage('de')
 
       render(
