@@ -220,35 +220,39 @@ export function TemplateCardPreview({
             key={step.id}
             sx={{ ...slideSx, ...selectedSlideStyles }}
           >
-            <Stack alignItems="center" sx={{ width: '100%' }}>
-              <TemplateCardPreviewItem
-                step={step}
-                variant={variant}
-                onClick={onClick}
-                selectedStep={selectedStep}
-                steps={slidesToRender}
-              />
-              {isSelected && cardLabel != null && (
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  align="center"
-                  sx={{
-                    mt: 1,
-                    width: '100%',
-                    overflowWrap: 'break-word',
-                    animation: 'fadeSlideDown 0.3s ease 0.15s forwards',
-                    opacity: 0,
-                    '@keyframes fadeSlideDown': {
-                      from: { opacity: 0, transform: 'translateY(-12px)' },
-                      to: { opacity: 1, transform: 'translateY(0)' }
-                    }
-                  }}
-                >
-                  {cardLabel}
-                </Typography>
-              )}
-            </Stack>
+            <TemplateCardPreviewItem
+              step={step}
+              variant={variant}
+              onClick={onClick}
+              selectedStep={selectedStep}
+              steps={slidesToRender}
+            />
+            {isSelected && cardLabel != null && (
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                align="center"
+                sx={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: '100%',
+                  px: 1,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  animation: 'fadeSlideDown 0.3s ease 0.15s forwards',
+                  opacity: 0,
+                  '@keyframes fadeSlideDown': {
+                    from: { opacity: 0, transform: 'translateY(-12px)' },
+                    to: { opacity: 1, transform: 'translateY(0)' }
+                  }
+                }}
+              >
+                {cardLabel}
+              </Typography>
+            )}
           </StyledSwiperSlide>
         )
       })}

@@ -448,7 +448,7 @@ describe('TemplateCardPreview', () => {
       await waitFor(() => expect(mockSlideTo).toHaveBeenCalledWith(1, 500))
     })
 
-    it('should size the card label to wrap instead of overflowing the card', async () => {
+    it('should truncate a long card label instead of overflowing the card', async () => {
       const steps = [
         {
           id: '1',
@@ -486,17 +486,20 @@ describe('TemplateCardPreview', () => {
       )
 
       const label = await screen.findByText('Ketuk untuk melihat pratinjau')
-      // Width is bound to the card slide (its positioned ancestor) so long
-      // translations wrap onto a second line instead of overflowing past
-      // the card's edges the way `whiteSpace: 'nowrap'` used to.
-      expect(label).toHaveStyle({ width: '100%', overflowWrap: 'break-word' })
-      expect(label).not.toHaveStyle({ whiteSpace: 'nowrap' })
-      // The label must sit in normal document flow below the card, not be
-      // absolutely positioned over it -- absolute positioning is what let a
-      // wrapped (multi-line) label overlap the card's own content, since a
-      // taller label grows upward from a `bottom: 0` anchor instead of
-      // pushing layout below the card.
-      expect(label).not.toHaveStyle({ position: 'absolute' })
+      // Width is bound to the slide (the label's positioned ancestor,
+      // already sized to account for the card's selected-state scale), and
+      // long translations are truncated with an ellipsis on a single line
+      // instead of overflowing past the card's edges the way an unbounded
+      // `whiteSpace: 'nowrap'` used to. Wrapping to a second line was tried
+      // and rejected: the card is enlarged via `transform: scale()`, which
+      // doesn't reserve extra layout space, so a taller wrapped label ends
+      // up overlapping the visually-scaled (but not layout-scaled) card.
+      expect(label).toHaveStyle({
+        width: '100%',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
+      })
       const card = screen.getAllByTestId('TemplateCardPreviewItem')[0]
       expect(
         card.compareDocumentPosition(label) & Node.DOCUMENT_POSITION_FOLLOWING
