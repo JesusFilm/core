@@ -111,7 +111,7 @@
   "<0>Select Card Template</0><1>or add blocks using the<1></1>button below</1>": "<0>Kartenvorlage auswählen</0><1>oder füge Blöcke über die Schaltfläche<1></1>unten hinzu</1>",
   "Edit text...": "Text bearbeiten...",
   "Add your text here...": "Füge deinen Text hier ein...",
-  "Delete {{ label }}": "{{ label }}löschen",
+  "Delete {{ label }}": "{{ label }} löschen",
   "Block Duplicated": "Block dupliziert",
   "Goals": "Ziele",
   "Every Journey has a goal": "Jede Reise hat ein Ziel",

@@ -111,7 +111,7 @@
   "<0>Select Card Template</0><1>or add blocks using the<1></1>button below</1>": "<0>कार्ड टेम्प्लेट चयन गर्नुहोस्</0> <1>वा <1> प्रयोग गरेर ब्लकहरू थप्नुहोस्</1> तलको बटन</1>",
   "Edit text...": "पाठ सम्पादन गर्नुहोस्...",
   "Add your text here...": "यहाँ आफ्नो पाठ थप्नुहोस्...",
-  "Delete {{ label }}": "{{ label }}मेटाउनुहोस्",
+  "Delete {{ label }}": "{{ label }} मेटाउनुहोस्",
   "Block Duplicated": "ब्लक डुप्लिकेट गरियो",
   "Goals": "लक्ष्यहरू",
   "Every Journey has a goal": "हरेक यात्राको एउटा लक्ष्य हुन्छ",
