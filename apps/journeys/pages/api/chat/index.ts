@@ -62,7 +62,12 @@ const messagePartSchema = z
 
 const messageSchema = z
   .object({
-    role: z.enum(['user', 'assistant', 'system']),
+    // `system` is deliberately absent. AI SDK v7 refuses system messages in
+    // `messages` (they belong in `instructions`), so accepting one here would
+    // guarantee a throw inside streamText and surface as a 500 upstream
+    // failure. Rejecting it up front returns the accurate 400 invalid_request
+    // and keeps the system prompt ours alone — a client can't inject one.
+    role: z.enum(['user', 'assistant']),
     content: z.string().max(MAX_FIELD_CHARS).optional(),
     parts: z.array(messagePartSchema).max(MAX_PARTS_PER_MESSAGE).optional()
   })
@@ -228,7 +233,7 @@ export default async function handler(
       },
       'chat conversation hit size cap'
     )
-    // Error-code contract: AI SDK v6's transport discards the HTTP status and
+    // Error-code contract: the AI SDK transport discards the HTTP status and
     // surfaces only the response body as `error.message`, so a structured
     // `code` is how the client distinguishes failures. `conversation_capped`
     // drives both the catered cap-hit message and retry-gating in
@@ -361,7 +366,7 @@ export default async function handler(
   try {
     const result = streamText({
       model: modelResult.resolved.model,
-      system,
+      instructions: system,
       messages: modelMessages,
       maxOutputTokens: MAX_OUTPUT_TOKENS,
       onError: async ({ error }) => {
@@ -431,7 +436,9 @@ export default async function handler(
       }
     })
 
-    result.pipeUIMessageStreamToResponse(res, {
+    // AI SDK 7 resolves once the stream has finished piping — awaited so the
+    // handler stays alive until the response is fully written.
+    await result.pipeUIMessageStreamToResponse(res, {
       onError: (error) => {
         const err = error as Error
         // Pipe-step failures (write to closed socket etc.) are

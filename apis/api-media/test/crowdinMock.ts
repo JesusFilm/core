@@ -16,7 +16,9 @@ export const mockSourceString = {
   identifier: 'test_string',
   text: 'Hello',
   type: 0, // Type enum value - 0 = 'text'
-  context: '1\nThis is a test',
+  // Deliberately unrelated to `id` above: Crowdin's context holds a positional
+  // key (e.g. `1_cl-0-0-1`), never the numeric string id.
+  context: '1_cl-0-0-1\nThis is a test',
   maxLength: 100,
   isHidden: false,
   isDuplicate: false,

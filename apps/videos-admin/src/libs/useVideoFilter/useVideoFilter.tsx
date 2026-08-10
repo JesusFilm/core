@@ -52,27 +52,35 @@ export function reducer(state: FilterState, action: FilterAction): FilterState {
   }
 }
 
+/**
+ * Every field catches its own parse failure, so one malformed query param
+ * drops only that filter instead of discarding the whole model.
+ */
 const FilterModelSchema = z.object({
   locked: z
     .object({
       is: z.string()
     })
-    .optional(),
+    .optional()
+    .catch(undefined),
   id: z
     .object({
       equals: z.string()
     })
-    .optional(),
+    .optional()
+    .catch(undefined),
   title: z
     .object({
       equals: z.string()
     })
-    .optional(),
+    .optional()
+    .catch(undefined),
   published: z
     .object({
       is: z.string()
     })
     .optional()
+    .catch(undefined)
 })
 
 function getFilterModel(params: ParsedQs): GridFilterModel {
@@ -83,13 +91,15 @@ function getFilterModel(params: ParsedQs): GridFilterModel {
   const result = FilterModelSchema.safeParse(params?.filters)
 
   if (result.success) {
-    const items = Object.entries(result.data).flatMap(([field, filter]) =>
-      Object.entries(filter).map(([operator, value]) => ({
+    const items = Object.entries(result.data).flatMap(([field, filter]) => {
+      if (filter == null) return []
+
+      return Object.entries(filter).map(([operator, value]) => ({
         field,
         operator,
         value: value === 'true' ? true : value === 'false' ? false : value
       }))
-    )
+    })
 
     return { items }
   }

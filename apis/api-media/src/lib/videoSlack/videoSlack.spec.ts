@@ -550,6 +550,65 @@ describe('videoSlack', () => {
     )
   })
 
+  it('should link the Production Managers watch URL to the root variant even when a child segment was updated more recently', async () => {
+    const packageRootVideo = videoRow({
+      id: 'jf-root',
+      label: 'featureFilm',
+      slug: 'jf-root',
+      title: [{ value: 'JESUS Root' }]
+    })
+    const packageChildVideo = videoRow({
+      id: 'jf-child',
+      label: 'segment',
+      title: [{ value: 'JESUS Segment' }]
+    })
+
+    mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([
+      // Child variant sorts first: it was updated more recently than the root's own variant.
+      videoVariantRow({
+        videoId: 'jf-child',
+        languageId: '529',
+        version: 1,
+        createdAt: new Date('2026-05-20T14:00:00.000Z'),
+        updatedAt: new Date('2026-05-21T10:00:00.000Z'),
+        slug: 'jf-child/english',
+        video: packageChildVideo
+      }),
+      videoVariantRow({
+        videoId: 'jf-root',
+        languageId: '529',
+        version: 1,
+        createdAt: new Date('2026-05-20T14:00:00.000Z'),
+        updatedAt: new Date('2026-05-20T15:00:00.000Z'),
+        slug: 'jf-root/english',
+        video: packageRootVideo
+      })
+    ])
+    mockMediaPrisma.video.findMany.mockResolvedValueOnce([
+      videoRow({
+        id: 'jf-root',
+        label: 'featureFilm',
+        slug: 'jf-root',
+        title: [{ value: 'JESUS Root' }],
+        children: [{ id: 'jf-child', label: 'segment' }]
+      })
+    ])
+
+    await sendProductionManagerFlagshipSummary(
+      new Date('2026-05-22T13:00:00.000Z')
+    )
+
+    expect(mockFetch).toHaveBeenCalledTimes(1)
+    const body = JSON.parse(mockFetch.mock.calls[0][1]?.body as string)
+    const blocksText = JSON.stringify(body.blocks)
+    expect(blocksText).toContain(
+      'https://www.jesusfilm.org/watch/jf-root.html/english.html'
+    )
+    expect(blocksText).not.toContain(
+      'https://www.jesusfilm.org/watch/jf-child.html/english.html'
+    )
+  })
+
   it('should split large Production Managers table reports at Slack table row limits', async () => {
     mockLanguagesPrisma.language.findMany.mockResolvedValue([])
     mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce(

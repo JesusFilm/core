@@ -1,5 +1,7 @@
 import { prisma as languagesPrisma } from '@core/prisma/languages/client'
 
+import { logger } from '../../logger'
+
 import { updateLanguageInAlgoliaFromMedia } from './updateLanguageInAlgolia'
 
 export async function ensureLanguageHasVideosTrue(
@@ -13,12 +15,16 @@ export async function ensureLanguageHasVideosTrue(
   })
 
   if (existing == null) return
-  if (existing.hasVideos === true) return
 
-  await languagesPrisma.language.update({
-    where: { id: languageId },
-    data: { hasVideos: true }
-  })
+  if (existing.hasVideos !== true) {
+    await languagesPrisma.language.update({
+      where: { id: languageId },
+      data: { hasVideos: true }
+    })
+  }
 
-  await updateLanguageInAlgoliaFromMedia(languageId)
+  // Always (re)upsert into the Algolia languages index. A language can already
+  // be hasVideos: true (the schema default) yet be absent from the index, so
+  // gating this on the flag transition leaves such languages unsearchable.
+  await updateLanguageInAlgoliaFromMedia(languageId, logger)
 }
