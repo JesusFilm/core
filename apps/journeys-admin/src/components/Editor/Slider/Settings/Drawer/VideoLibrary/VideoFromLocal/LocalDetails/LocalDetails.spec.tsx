@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { print } from 'graphql'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -69,6 +70,18 @@ describe('LocalDetails', () => {
       }
     }
   }
+
+  it('should request the variant without a published-only filter', () => {
+    // variantLanguages (below) has no publish filter, so the language picker
+    // already lists unpublished languages. If variant(languageId:) reverts to
+    // its published-only default, it resolves null for exactly those
+    // languages, duration/hls fall back to empty, and commitSelection writes
+    // a zero-length clip (see LocalDetails.tsx variant() usage). Pinning the
+    // literal query argument here fails loudly on that regression, since the
+    // MockedProvider tests below cannot: they import GET_VIDEO directly, so
+    // they'd match a reverted query just as happily.
+    expect(print(GET_VIDEO)).toContain('onlyPublished: false')
+  })
 
   it('should render details of a video', async () => {
     const { getByText, getByRole } = render(
