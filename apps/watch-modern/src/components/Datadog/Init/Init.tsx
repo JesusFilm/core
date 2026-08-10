@@ -29,6 +29,10 @@ export default function DatadogInit(): null {
           trackResources: true,
           trackLongTasks: true,
           defaultPrivacyLevel: 'mask-user-input',
+          // Browser SDK v7 turns this on by default, which would start sending
+          // user and account IDs to the gateway in a plaintext baggage header.
+          // Opt out until that propagation is deliberately reviewed.
+          propagateTraceBaggage: false,
           allowedTracingUrls: [
             {
               match: 'https://api-gateway.central.jesusfilm.org/',

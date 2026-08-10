@@ -1,4 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
+import BugReportRoundedIcon from '@mui/icons-material/BugReportRounded'
 import FactCheckRoundedIcon from '@mui/icons-material/FactCheckRounded'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
 import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded'
@@ -39,6 +40,7 @@ interface Item {
   icon: ReactNode
   href: string
   startsWith?: boolean
+  excludedStartsWith?: string[]
 }
 
 function isItemSelected(item: Item, pathname: string | null): boolean {
@@ -47,6 +49,14 @@ function isItemSelected(item: Item, pathname: string | null): boolean {
   if (
     item.href === '/videos' &&
     pathname.startsWith('/videos/status-pipeline')
+  ) {
+    return false
+  }
+
+  if (
+    item.excludedStartsWith?.some((excludedPath) =>
+      pathname.startsWith(excludedPath)
+    ) === true
   ) {
     return false
   }
@@ -72,6 +82,13 @@ export function MenuContent(): ReactElement {
             text: 'Video Library',
             icon: <VideoLibraryRoundedIcon />,
             href: '/videos',
+            startsWith: true,
+            excludedStartsWith: ['/videos/algolia-debugging']
+          },
+          {
+            text: 'Algolia Debugging',
+            icon: <BugReportRoundedIcon />,
+            href: '/videos/algolia-debugging',
             startsWith: true
           },
           {

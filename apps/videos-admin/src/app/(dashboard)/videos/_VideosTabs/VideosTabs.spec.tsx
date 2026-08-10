@@ -29,8 +29,16 @@ describe('VideosTabs', () => {
       screen.getByRole('tab', { name: 'Library (Backup)' })
     ).toHaveAttribute('aria-selected', 'false')
     expect(
-      screen.queryByRole('tab', { name: 'Video Status Pipeline' })
-    ).not.toBeInTheDocument()
+      screen.getByRole('tab', { name: 'Algolia Debugging' })
+    ).toHaveAttribute('aria-selected', 'false')
+  })
+
+  it('routes Algolia Debugging to the debugging page', () => {
+    render(<VideosTabs />)
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Algolia Debugging' }))
+
+    expect(mockPush).toHaveBeenCalledWith('/videos/algolia-debugging')
   })
 
   it('routes Library to the backup page', () => {

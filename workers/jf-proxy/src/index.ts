@@ -139,10 +139,11 @@ app.all('*', async (c) => {
     return new Response('Service Unavailable', { status: 503 })
   }
 
-  if (
+  const shouldServeLegacyNotFound =
     c.req.method === 'GET' &&
-    (response.status === 404 || response.status === 500)
-  ) {
+    (response.status === 500 || (response.status === 404 && !isWatchPath))
+
+  if (shouldServeLegacyNotFound) {
     const notFoundUrl = new URL(c.req.url)
     notFoundUrl.pathname = '/not-found.html'
     try {
