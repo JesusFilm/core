@@ -32,9 +32,13 @@ export function getFirebaseAuth(): Auth {
   // @firebase/auth 1.13.4 closes the database while the sign-in popup has
   // focus and fails sign-in with "Database is closing/hidden".
   // See: https://github.com/firebase/firebase-js-sdk/issues/10264
+  // On the server browserPopupRedirectResolver is a non-class stub and
+  // initializeAuth rejects it ("Expected a class definition").
   auth = initializeAuth(getFirebaseApp(), {
     persistence: inMemoryPersistence,
-    popupRedirectResolver: browserPopupRedirectResolver
+    ...(typeof window === 'undefined'
+      ? {}
+      : { popupRedirectResolver: browserPopupRedirectResolver })
   })
   return auth
 }

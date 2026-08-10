@@ -5,6 +5,7 @@ import {
   browserLocalPersistence,
   browserPopupRedirectResolver,
   signOut as firebaseSignOut,
+  inMemoryPersistence,
   initializeAuth
 } from 'firebase/auth'
 
@@ -24,10 +25,17 @@ export function getFirebaseAuth(): Auth {
   // document is hidden — which the sign-in popup itself triggers — so
   // persisting the signed-in user throws "Database is closing/hidden" and
   // sign-in fails. https://github.com/firebase/firebase-js-sdk/issues/10264
-  auth = initializeAuth(getFirebaseApp(), {
-    persistence: browserLocalPersistence,
-    popupRedirectResolver: browserPopupRedirectResolver
-  })
+  //
+  // On the server the browser persistence/resolver exports are non-class
+  // stubs and initializeAuth rejects them ("Expected a class definition"),
+  // so pass server-safe options there.
+  auth =
+    typeof window === 'undefined'
+      ? initializeAuth(getFirebaseApp(), { persistence: inMemoryPersistence })
+      : initializeAuth(getFirebaseApp(), {
+          persistence: browserLocalPersistence,
+          popupRedirectResolver: browserPopupRedirectResolver
+        })
   return auth
 }
 
