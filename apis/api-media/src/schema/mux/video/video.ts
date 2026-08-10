@@ -604,47 +604,6 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  enableMuxDownloads: t.withAuth({ isPublisher: true }).prismaField({
-    type: 'MuxVideo',
-    args: {
-      id: t.arg({ type: 'ID', required: true }),
-      resolutions: t.arg.stringList({ required: true })
-    },
-    resolve: async (query, _root, { id, resolutions }, { user }) => {
-      if (user == null)
-        throw new GraphQLError('User not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-
-      const uniqueResolutions = [...new Set(resolutions)]
-      validateDownloadResolutions(uniqueResolutions)
-
-      const video = await prisma.muxVideo.findUniqueOrThrow({
-        where: { id }
-      })
-      if (video.assetId == null) {
-        throw new GraphQLError('Asset not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      }
-
-      for (const resolution of uniqueResolutions) {
-        await enableDownload(video.assetId, false, resolution)
-      }
-
-      const updatedVideo = await prisma.muxVideo.update({
-        ...query,
-        where: { id },
-        data: {
-          downloadable: true
-        }
-      })
-
-      await queueVideoDownloadProcessing(updatedVideo, false)
-
-      return updatedVideo
-    }
-  }),
   deleteMuxVideo: t.withAuth({ isAuthenticated: true }).boolean({
     nullable: false,
     args: {
