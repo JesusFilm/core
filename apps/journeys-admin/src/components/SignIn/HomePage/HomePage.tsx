@@ -4,12 +4,13 @@ import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import { fetchSignInMethodsForEmail, getAuth } from 'firebase/auth'
+import { fetchSignInMethodsForEmail } from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 import { InferType, object, string } from 'yup'
 
+import { getFirebaseAuth } from '../../../libs/auth'
 import { SignInServiceButton } from '../SignInServiceButton'
 import { SignInTabs } from '../SignInTabs'
 import { PageProps } from '../types'
@@ -31,7 +32,7 @@ export function HomePage({
   async function handleEmailSignIn(
     values: InferType<typeof validationSchema>
   ): Promise<void> {
-    const auth = getAuth()
+    const auth = getFirebaseAuth()
     const result = await fetchSignInMethodsForEmail(auth, values.email)
     if (result.length === 0) {
       setActivePage?.('register')
