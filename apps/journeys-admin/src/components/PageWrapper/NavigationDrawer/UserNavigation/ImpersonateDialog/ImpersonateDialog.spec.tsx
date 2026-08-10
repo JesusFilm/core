@@ -11,11 +11,11 @@ import { ImpersonateDialog } from '.'
 const mockLoginWithCredential = vi.fn().mockResolvedValue(undefined)
 
 vi.mock('firebase/auth', () => ({
-  getAuth: vi.fn(() => ({})),
   signInWithCustomToken: vi.fn()
 }))
 
 vi.mock('../../../../../libs/auth', () => ({
+  getFirebaseAuth: vi.fn(() => ({})),
   loginWithCredential: (...args: unknown[]) => mockLoginWithCredential(...args)
 }))
 
