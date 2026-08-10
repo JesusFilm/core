@@ -2429,6 +2429,17 @@ type LanguageName @join__type(graph: API_LANGUAGES)  {
   language: Language!
 }
 
+"""
+Summary of a completed WESS import run.
+"""
+type WessImportResult @join__type(graph: API_LANGUAGES)  {
+  success: Boolean!
+  languagesImported: Int!
+  countriesImported: Int!
+  countryLanguagesImported: Int!
+  message: String!
+}
+
 type AlgoliaVideoVariantIndexIssue @join__type(graph: API_MEDIA)  {
   id: String
   issueType: AlgoliaVideoVariantIndexIssueType
@@ -2445,17 +2456,6 @@ type AlgoliaVideoVariantIndexIssueMismatch @join__type(graph: API_MEDIA)  {
   field: String
   expected: String
   actual: String
-}
-
-"""
-Summary of a completed WESS import run.
-"""
-type WessImportResult @join__type(graph: API_LANGUAGES)  {
-  success: Boolean!
-  languagesImported: Int!
-  countriesImported: Int!
-  countryLanguagesImported: Int!
-  message: String!
 }
 
 type ArclightApiKey @join__type(graph: API_MEDIA, key: "key")  {
