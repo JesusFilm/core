@@ -555,6 +555,12 @@ describe('download processing utilities', () => {
           version: expect.anything()
         })
       })
+      expect(prismaMock.videoVariantDownload.update).toHaveBeenCalledWith({
+        where: { id: 'existing-highest-download' },
+        data: expect.not.objectContaining({
+          version: expect.anything()
+        })
+      })
     })
 
     it('should preserve existing Mux downloads when metadata is already populated', async () => {
