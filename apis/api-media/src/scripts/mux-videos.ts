@@ -246,7 +246,9 @@ export async function processDownloads(): Promise<void> {
     )
   }
   if (sampleSize != null) {
-    console.log(`Sample size limit enabled: processing up to ${sampleSize} variants`)
+    console.log(
+      `Sample size limit enabled: processing up to ${sampleSize} variants`
+    )
   }
 
   type ZeroMetadataDownloadRow = Prisma.VideoVariantDownloadGetPayload<{
@@ -361,12 +363,14 @@ export async function processDownloads(): Promise<void> {
   }
 
   while (hasMore) {
-    const remainingSampleSize = sampleSize == null ? null : sampleSize - totalProcessed
+    const remainingSampleSize =
+      sampleSize == null ? null : sampleSize - totalProcessed
     if (remainingSampleSize != null && remainingSampleSize <= 0) {
       break
     }
 
-    const take = remainingSampleSize == null ? 500 : Math.max(100, remainingSampleSize * 5)
+    const take =
+      remainingSampleSize == null ? 500 : Math.max(100, remainingSampleSize * 5)
     const zeroMetadataDownloads: ZeroMetadataDownloadRow[] =
       await prisma.videoVariantDownload.findMany({
         where: zeroMetadataWhere,
@@ -389,16 +393,23 @@ export async function processDownloads(): Promise<void> {
         take
       })
 
-    const downloadsWithCarryover = [...carryoverDownloads, ...zeroMetadataDownloads]
+    const downloadsWithCarryover = [
+      ...carryoverDownloads,
+      ...zeroMetadataDownloads
+    ]
     carryoverDownloads = []
 
     let completeDownloads = downloadsWithCarryover
     const lastDownload = downloadsWithCarryover.at(-1)
-    if (zeroMetadataDownloads.length === take && lastDownload?.videoVariantId != null) {
+    if (
+      zeroMetadataDownloads.length === take &&
+      lastDownload?.videoVariantId != null
+    ) {
       let trailingIndex = downloadsWithCarryover.length - 1
       while (
         trailingIndex >= 0 &&
-        downloadsWithCarryover[trailingIndex]?.videoVariantId === lastDownload.videoVariantId
+        downloadsWithCarryover[trailingIndex]?.videoVariantId ===
+          lastDownload.videoVariantId
       ) {
         trailingIndex--
       }
@@ -422,7 +433,9 @@ export async function processDownloads(): Promise<void> {
     const variants = Array.from(downloadsByVariant.values())
       .map((downloads) => downloads[0]?.videoVariant)
       .filter(
-        (variant): variant is Prisma.VideoVariantGetPayload<{
+        (
+          variant
+        ): variant is Prisma.VideoVariantGetPayload<{
           include: {
             muxVideo: true
           }
@@ -430,14 +443,17 @@ export async function processDownloads(): Promise<void> {
       )
 
     const variantsToProcess =
-      remainingSampleSize == null ? variants : variants.slice(0, remainingSampleSize)
+      remainingSampleSize == null
+        ? variants
+        : variants.slice(0, remainingSampleSize)
 
     console.log(
       `Found ${variantsToProcess.length} variants with zero-metadata download rows to process in this batch`
     )
 
     for (const variant of variantsToProcess) {
-      const variantZeroMetadataDownloads = downloadsByVariant.get(variant.id) ?? []
+      const variantZeroMetadataDownloads =
+        downloadsByVariant.get(variant.id) ?? []
       await processVariant(variant, variantZeroMetadataDownloads)
       totalProcessed++
     }
@@ -449,7 +465,10 @@ export async function processDownloads(): Promise<void> {
     }
   }
 
-  if (carryoverDownloads.length > 0 && (sampleSize == null || totalProcessed < sampleSize)) {
+  if (
+    carryoverDownloads.length > 0 &&
+    (sampleSize == null || totalProcessed < sampleSize)
+  ) {
     const downloadsByVariant = new Map<string, ZeroMetadataDownloadRow[]>()
     for (const download of carryoverDownloads) {
       const variantId = download.videoVariantId
