@@ -253,6 +253,97 @@ describe('VideoCreateForm', () => {
     })
   })
 
+  describe('child label options', () => {
+    function parentVideoLabelMock(parentLabel: string) {
+      return {
+        request: {
+          query: GET_PARENT_VIDEO_LABEL,
+          variables: { videoId: mockParentId }
+        },
+        result: {
+          data: {
+            adminVideo: {
+              id: mockParentId,
+              label: parentLabel,
+              origin: { id: 'origin-1' }
+            }
+          }
+        }
+      }
+    }
+
+    async function renderWithParent(parentLabel: string) {
+      const user = userEvent.setup()
+
+      render(
+        <MockedProvider
+          mocks={[parentVideoLabelMock(parentLabel), getVideoOriginsMock]}
+        >
+          <VideoCreateForm parentId={mockParentId} />
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        expect(screen.getByLabelText(/Origin/i)).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByLabelText(/Label/i))
+
+      return screen.getAllByRole('option').map((option) => option.textContent)
+    }
+
+    it('offers only episodes, feature films, short films and series under a collection', async () => {
+      expect(await renderWithParent('collection')).toEqual([
+        'Episode',
+        'Feature Film',
+        'Series',
+        'Short Film'
+      ])
+    })
+
+    it('offers only clips, trailers and behind the scenes under a feature film', async () => {
+      expect(await renderWithParent('featureFilm')).toEqual([
+        'Clip',
+        'Trailer/Preview',
+        'Behind The Scenes'
+      ])
+    })
+
+    it('offers only episodes, trailers and behind the scenes under a series', async () => {
+      expect(await renderWithParent('series')).toEqual([
+        'Episode',
+        'Trailer/Preview',
+        'Behind The Scenes'
+      ])
+    })
+
+    it('offers only clips, trailers and behind the scenes under an episode', async () => {
+      expect(await renderWithParent('episode')).toEqual([
+        'Clip',
+        'Trailer/Preview',
+        'Behind The Scenes'
+      ])
+    })
+
+    it('offers every label under a parent with no child restrictions', async () => {
+      expect(await renderWithParent('segment')).toHaveLength(8)
+    })
+
+    it('pre-selects clip for a feature film parent', async () => {
+      render(
+        <MockedProvider
+          mocks={[parentVideoLabelMock('featureFilm'), getVideoOriginsMock]}
+        >
+          <VideoCreateForm parentId={mockParentId} />
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        expect(screen.getByDisplayValue('segment')).toBeInTheDocument()
+      })
+    })
+  })
+
   describe('form submission', () => {
     it('successfully submits the form with valid data', async () => {
       const user = userEvent.setup()
