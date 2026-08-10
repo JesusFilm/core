@@ -79,7 +79,7 @@ export class Publisher {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Unarchive All')
     await this.clickDialogBoxBtn('Unarchive')
-    await this.verifyToastMessage('Journeys Restored')
+    await this.verifyToastMessage('Templates Restored')
     await this.verifyEmptyMessageInArchivedTab()
     await this.clickActiveTab()
     await this.verifyAllTemplateMovedToActiveTab()
@@ -89,7 +89,7 @@ export class Publisher {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Trash All')
     await this.clickDialogBoxBtn('Trash')
-    await this.verifyToastMessage('Journeys Trashed')
+    await this.verifyToastMessage('Templates Trashed')
     await this.clickTrashTab()
     await this.verifyAllTemplateMovedToTrashTab()
   }
@@ -98,7 +98,7 @@ export class Publisher {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Restore All')
     await this.clickDialogBoxBtn('Restore')
-    await this.verifyToastMessage('Journeys Restored')
+    await this.verifyToastMessage('Templates Restored')
     await this.clickActiveTab()
     await this.verifyAllTemplateMovedToActiveTab()
   }
@@ -107,7 +107,7 @@ export class Publisher {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Delete All Forever')
     await this.clickDialogBoxBtn('Delete Forever')
-    await this.verifyToastMessage('Journeys Deleted')
+    await this.verifyToastMessage('Templates Deleted')
     await this.verifyAllTemplateAreDeletedFromTrashTab()
   }
 
