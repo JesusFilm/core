@@ -2,6 +2,7 @@ packages:
   - apis/**
   - apps/**
   - libs/**
+  - tools/**
   - workers/**
 
 onlyBuiltDependencies:
@@ -10,7 +11,6 @@ onlyBuiltDependencies:
   - '@datadog/native-iast-taint-tracking'
   - '@datadog/native-metrics'
   - '@datadog/pprof'
-  - '@nestjs/core'
   - '@parcel/watcher'
   - '@prisma/client'
   - '@prisma/engines'
@@ -23,7 +23,6 @@ onlyBuiltDependencies:
   - esbuild
   - msgpackr-extract
   - msw
-  - nestjs-pino
   - nx
   - prisma
   - protobufjs

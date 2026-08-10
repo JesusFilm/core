@@ -9,7 +9,7 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { simpleComponentConfig } from '../../../libs/simpleComponentConfig'
+import { simpleComponentConfig } from '../../../test/simpleComponentConfig'
 
 import { HostAvatars } from './HostAvatars'
 

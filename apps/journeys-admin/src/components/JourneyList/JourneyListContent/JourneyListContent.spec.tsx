@@ -36,8 +36,8 @@ import {
 } from './JourneyListContent.mocks'
 import { renderJourneyListContent } from './JourneyListContent.testUtils'
 
-vi.mock('@core/journeys/ui/useNavigationState', () => ({
-  useNavigationState: vi.fn(() => false)
+vi.mock('@core/journeys/ui/useRouteChangeState', () => ({
+  useRouteChangeState: vi.fn(() => false)
 }))
 
 vi.mock('@core/journeys/ui/TeamProvider', () => ({
@@ -188,9 +188,15 @@ describe('JourneyListContent', () => {
         event: 'archiveAllActive'
       })
 
-      await waitFor(() =>
+      await waitFor(() => {
         expect(getByText('Archive Journeys')).toBeInTheDocument()
-      )
+        expect(
+          getByText('This will archive all active journeys you own.')
+        ).toBeInTheDocument()
+        expect(
+          getByText('Are you sure you want to proceed?')
+        ).toBeInTheDocument()
+      })
     })
 
     it('should open trash dialog when event is trashAllActive', async () => {
@@ -245,6 +251,9 @@ describe('JourneyListContent', () => {
         expect(getByText('Archive Templates')).toBeInTheDocument()
         expect(
           getByText('This will archive all active templates you own.')
+        ).toBeInTheDocument()
+        expect(
+          getByText('Are you sure you want to proceed?')
         ).toBeInTheDocument()
       })
     })

@@ -36,4 +36,12 @@ describe('NavbarBreadcrumbs', () => {
 
     expect(screen.getByText('Random')).toBeInTheDocument()
   })
+
+  it('should show the video status pipeline breadcrumb label', async () => {
+    mockedUsePathname.mockReturnValue('/videos/status-pipeline')
+    render(<NavbarBreadcrumbs />)
+
+    expect(screen.getByText('Video Library')).toBeInTheDocument()
+    expect(screen.getByText('Video Status Pipeline')).toBeInTheDocument()
+  })
 })

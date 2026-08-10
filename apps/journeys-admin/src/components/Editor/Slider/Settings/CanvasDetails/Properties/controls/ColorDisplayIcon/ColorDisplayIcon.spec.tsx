@@ -67,7 +67,7 @@ describe('ColorDisplayIcon', () => {
             id: 'journey.id',
             themeMode: ThemeMode.dark
           } as unknown as Journey,
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <EditorProvider initialState={{ selectedStep: step }}>
@@ -92,7 +92,7 @@ describe('ColorDisplayIcon', () => {
             id: 'journey.id',
             themeMode: ThemeMode.light
           } as unknown as Journey,
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <EditorProvider initialState={{ selectedStep: step }}>

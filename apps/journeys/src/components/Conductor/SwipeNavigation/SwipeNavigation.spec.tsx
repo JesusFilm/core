@@ -607,7 +607,7 @@ describe('SwipeNavigation', () => {
 
     const { getByTestId } = render(
       <MockedProvider>
-        <JourneyProvider value={{ variant: 'admin' }}>
+        <JourneyProvider value={{ renderMode: 'admin' }}>
           <SwipeNavigation activeBlock={step1} rtl={false}>
             <Box data-testid="swipe-test-box" />
           </SwipeNavigation>

@@ -557,7 +557,7 @@ describe('TemplateCardPreview', () => {
       render(
         <MockedProvider>
           <ThemeProvider theme={createTheme()}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TemplateCardPreview steps={steps} variant="guestPreview" />
             </JourneyProvider>
           </ThemeProvider>
@@ -608,7 +608,7 @@ describe('TemplateCardPreview', () => {
       render(
         <MockedProvider>
           <ThemeProvider theme={createTheme()}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TemplateCardPreview
                 steps={steps}
                 variant="guestPreview"

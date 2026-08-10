@@ -33,7 +33,7 @@ const Template: StoryObj<typeof JourneyAppearance> = {
               iso3: 'eng'
             }
           } as unknown as Journey,
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <JourneyAppearance />

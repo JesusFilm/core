@@ -329,7 +329,7 @@ export function useCreateStepFromAction(): (
               }
             },
             update(cache, { data }, { variables }) {
-              blockDeleteUpdate(step, data?.blockDelete, cache, journey.id)
+              blockDeleteUpdate(cache, journey.id, step, data?.blockDelete)
               if (data?.blockUpdateAction == null) return
               cache.modify({
                 id: cache.identify({
@@ -361,7 +361,7 @@ export function useCreateStepFromAction(): (
               }
             },
             update(cache, { data }) {
-              blockDeleteUpdate(step, data?.blockDelete, cache, journey.id)
+              blockDeleteUpdate(cache, journey.id, step, data?.blockDelete)
             }
           })
         }

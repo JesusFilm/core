@@ -76,7 +76,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsc -b apis/api-journeys/tsconfig.json"
+        "command": "pnpm tsc7 -p apis/api-journeys/tsconfig.ts7.json"
       }
     },
     "codecov": {

@@ -89,7 +89,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
       `}</style>
       <JourneyPageWrapper
         journey={journey}
-        variant="embed"
+        renderMode="embed"
         theme={theme}
         rtl={rtl}
         locale={locale}

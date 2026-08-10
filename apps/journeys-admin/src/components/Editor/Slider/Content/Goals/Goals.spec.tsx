@@ -185,7 +185,7 @@ describe('Goals', () => {
 
   it('should render placeholder', () => {
     render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
+      <JourneyProvider value={{ journey, renderMode: 'admin' }}>
         <Goals />
       </JourneyProvider>
     )
@@ -200,7 +200,7 @@ describe('Goals', () => {
             ...journey,
             blocks
           },
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <Goals />

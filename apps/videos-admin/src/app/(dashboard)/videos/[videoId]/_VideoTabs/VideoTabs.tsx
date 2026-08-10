@@ -73,6 +73,12 @@ export function VideoTabView({
       href: `/videos/${videoId}/editions`
     },
     {
+      label: 'Restrictions',
+      value: 'restrictions',
+      count: null,
+      href: `/videos/${videoId}/restrictions`
+    },
+    {
       label: 'Troubleshooting',
       value: 'troubleshooting',
       count: null,

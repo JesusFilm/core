@@ -134,7 +134,7 @@ describe('Action', () => {
         <JourneyProvider
           value={{
             journey: { template: true } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider
@@ -186,7 +186,7 @@ describe('Action', () => {
         <JourneyProvider
           value={{
             journey: { template: true } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider
@@ -238,7 +238,7 @@ describe('Action', () => {
         <JourneyProvider
           value={{
             journey: { template: true } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider
@@ -340,7 +340,7 @@ describe('Action', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedBlock }}>

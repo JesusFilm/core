@@ -1,9 +1,8 @@
 import { useRouter } from 'next/router'
 import { MouseEvent, ReactElement } from 'react'
 
-import { handleAction } from '../../libs/action'
+import { getNextStepSlug, handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
-import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { useJourney } from '../../libs/JourneyProvider'
 import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 

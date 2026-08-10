@@ -75,11 +75,11 @@ const RadioOption = dynamic(
   { ssr: false }
 )
 
-const MultiselectQuestion = dynamic(
+const Multiselect = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/MultiselectQuestion" */ './blocks/MultiselectQuestion'
-    ).then((mod) => mod.MultiselectQuestion),
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Multiselect" */ './blocks/Multiselect'
+    ).then((mod) => mod.Multiselect),
   { ssr: false }
 )
 
@@ -169,7 +169,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       break
     case 'MultiselectBlock':
       title = t('Multiselect Properties')
-      component = <MultiselectQuestion {...selectedBlock} />
+      component = <Multiselect {...selectedBlock} />
       break
     case 'MultiselectOptionBlock':
       title = t('Multiselect Option Properties')

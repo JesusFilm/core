@@ -83,7 +83,7 @@ describe('ShareButton', () => {
         <JourneyProvider
           value={{
             journey: { slug: 'test-slug' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <ShareButton />

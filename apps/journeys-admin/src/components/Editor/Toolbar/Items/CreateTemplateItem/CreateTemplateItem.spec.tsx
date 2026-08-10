@@ -105,7 +105,7 @@ describe('CreateTemplateItem', () => {
                 id: 'journeyId',
                 team: { id: 'local-team-id' }
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <CreateTemplateItem variant="menu-item" globalPublish={true} />
@@ -297,7 +297,7 @@ describe('CreateTemplateItem', () => {
                 id: 'journeyId',
                 team: { id: 'local-team-id' }
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <CreateTemplateItem
@@ -542,7 +542,7 @@ describe('CreateTemplateItem', () => {
                 id: 'journeyId',
                 team: { id: 'local-team-id' }
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <CreateTemplateItem

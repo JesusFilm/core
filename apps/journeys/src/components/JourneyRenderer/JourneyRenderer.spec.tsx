@@ -67,6 +67,6 @@ describe('JourneyRenderer', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByTestId('WebView')).toBeInTheDocument()
+    expect(screen.getByTestId('WebsiteView')).toBeInTheDocument()
   })
 })
