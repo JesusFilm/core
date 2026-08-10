@@ -15,8 +15,7 @@ import {
   failedStage,
   generatedParentStages,
   notApplicableStage,
-  persistReconciliationStatus,
-  previousAttempts
+  persistReconciliationStatus
 } from './reconciliationStages'
 import type { VideoVariantReconciliationReason } from './requestVideoVariantReconciliation'
 
