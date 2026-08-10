@@ -1,8 +1,10 @@
+import { logger } from '../logger'
+
 import { auditParentVariants } from './audit-parent-variants'
 
 async function main(): Promise<void> {
   const result = await auditParentVariants()
-  console.info(JSON.stringify(result, null, 2))
+  logger.info({ result }, 'Parent variant audit result')
 }
 
 void main()

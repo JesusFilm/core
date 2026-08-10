@@ -69,7 +69,7 @@ export function generatedParentStages(
   return {
     mux: notApplicableStage(),
     parentSync: completedStage(
-      Math.max(1, previousAttempts(processingStages, 'parentSync'))
+      previousAttempts(processingStages, 'parentSync') + 1
     ),
     downloads: notApplicableStage(),
     algoliaVideo: {

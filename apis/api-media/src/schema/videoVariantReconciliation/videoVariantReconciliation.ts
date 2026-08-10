@@ -1,3 +1,5 @@
+import { GraphQLError } from 'graphql'
+
 import { Prisma, prisma } from '@core/prisma/media/client'
 
 import { builder } from '../builder'
@@ -67,13 +69,26 @@ builder.queryField('videoVariantReconciliations', (t) =>
         required: false
       }),
       olderThan: t.arg({ type: 'DateTime', required: false }),
-      minRetryCount: t.arg.int({ required: false })
+      minRetryCount: t.arg.int({
+        required: false,
+        description:
+          'Only applies when blockingStage is also supplied. Filters to reconciliations where blockingStage has been attempted at least this many times.'
+      }),
+      offset: t.arg.int({ required: false }),
+      limit: t.arg.int({ required: false })
     },
     resolve: async (
       query,
       _parent,
-      { status, blockingStage, olderThan, minRetryCount }
+      { status, blockingStage, olderThan, minRetryCount, offset, limit }
     ) => {
+      if (blockingStage == null && minRetryCount != null) {
+        throw new GraphQLError(
+          'minRetryCount requires blockingStage to be set',
+          { extensions: { code: 'BAD_USER_INPUT' } }
+        )
+      }
+
       const stageFilters: Prisma.VideoVariantReconciliationWhereInput[] = []
       if (blockingStage != null) {
         stageFilters.push({
@@ -99,6 +114,8 @@ builder.queryField('videoVariantReconciliations', (t) =>
           updatedAt: olderThan != null ? { lt: olderThan } : undefined,
           AND: stageFilters
         },
+        skip: offset ?? undefined,
+        take: limit ?? 100,
         orderBy: { updatedAt: 'asc' }
       })
     }
@@ -113,7 +130,7 @@ builder.mutationField('videoVariantReconciliationRetry', (t) =>
       await prisma.videoVariantReconciliation.update({
         ...query,
         where: { id },
-        data: { status: 'processing', retryAt: new Date() }
+        data: { status: 'processing', retryAt: new Date(), errorMessage: null }
       })
   })
 )

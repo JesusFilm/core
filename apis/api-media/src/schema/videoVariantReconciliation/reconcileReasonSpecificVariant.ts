@@ -57,32 +57,11 @@ export async function reconcileReasonSpecificVariant({
   store: ReconciliationStore
 }): Promise<ReasonSpecificReconciliationResult | null> {
   if (reconciliation.reason === 'video-variant-delete') {
-    await removeLanguageFromVideoIfUnused(
-      reconciliation.videoId,
-      reconciliation.languageId
-    )
-    await updateParentCollectionLanguages(reconciliation.videoId)
-    await updateVideoInAlgolia(reconciliation.videoId)
-    if (reconciliation.videoVariantId != null) {
-      await updateVideoVariantInAlgolia(reconciliation.videoVariantId)
-    }
-    const processingStages: ProcessingStages = {
-      mux: notApplicableStage(),
-      parentSync: completedStage(),
-      downloads: notApplicableStage(),
-      algoliaVideo: completedStage(),
-      algoliaVariant: completedStage()
-    }
-    await store.videoVariantReconciliation.update({
-      where: { id: reconciliationId },
-      data: {
-        status: 'complete',
-        processingStages,
-        retryAt: null,
-        errorMessage: null
-      }
+    return await reconcileDeleteVariant({
+      reconciliationId,
+      reconciliation,
+      store
     })
-    return { publicationReady: true, status: 'complete' }
   }
 
   if (
@@ -101,32 +80,163 @@ export async function reconcileReasonSpecificVariant({
 
   if (variant == null || reconciliation.published) return null
 
-  await prisma.videoVariant.update({
-    where: { id: variant.id },
-    data: { published: false }
+  return await reconcileUnpublishVariant({
+    reconciliationId,
+    reconciliation,
+    variant,
+    store
   })
-  await removeLanguageFromVideoIfUnused(variant.videoId, variant.languageId)
-  await updateParentCollectionLanguages(variant.videoId)
-  await updateVideoInAlgolia(variant.videoId)
-  await updateVideoVariantInAlgolia(variant.id)
-  const processingStages: ProcessingStages = {
-    mux:
-      variant.muxVideo?.readyToStream === true
-        ? completedStage()
-        : notApplicableStage(),
-    parentSync: completedStage(),
-    downloads: notApplicableStage(),
-    algoliaVideo: completedStage(),
-    algoliaVariant: completedStage()
-  }
-  await store.videoVariantReconciliation.update({
-    where: { id: reconciliationId },
-    data: {
-      status: 'complete',
-      processingStages,
-      retryAt: null,
-      errorMessage: null
+}
+
+async function reconcileDeleteVariant({
+  reconciliationId,
+  reconciliation,
+  store
+}: {
+  reconciliationId: string
+  reconciliation: ReasonSpecificReconciliation
+  store: ReconciliationStore
+}): Promise<ReasonSpecificReconciliationResult> {
+  const stages = generatedParentStages(reconciliation.processingStages)
+
+  try {
+    await removeLanguageFromVideoIfUnused(
+      reconciliation.videoId,
+      reconciliation.languageId
+    )
+    await updateParentCollectionLanguages(reconciliation.videoId)
+    await updateVideoInAlgolia(reconciliation.videoId)
+    stages.algoliaVideo = completedStage(stages.algoliaVideo.attempts + 1)
+  } catch (error) {
+    stages.algoliaVideo = failedStage(error, stages.algoliaVideo.attempts + 1)
+    await persistReconciliationStatus({
+      store,
+      reconciliationId,
+      status: 'degraded',
+      stages,
+      failedStageValue: stages.algoliaVideo
+    })
+    return {
+      publicationReady: false,
+      status: 'degraded',
+      failure: {
+        stageName: 'algoliaVideo',
+        stage: stages.algoliaVideo
+      }
     }
+  }
+
+  try {
+    if (reconciliation.videoVariantId != null) {
+      await updateVideoVariantInAlgolia(reconciliation.videoVariantId)
+    }
+    stages.algoliaVariant = completedStage(stages.algoliaVariant.attempts + 1)
+  } catch (error) {
+    stages.algoliaVariant = failedStage(
+      error,
+      stages.algoliaVariant.attempts + 1
+    )
+    await persistReconciliationStatus({
+      store,
+      reconciliationId,
+      status: 'degraded',
+      stages,
+      failedStageValue: stages.algoliaVariant
+    })
+    return {
+      publicationReady: false,
+      status: 'degraded',
+      failure: {
+        stageName: 'algoliaVariant',
+        stage: stages.algoliaVariant
+      }
+    }
+  }
+
+  await persistReconciliationStatus({
+    store,
+    reconciliationId,
+    status: 'complete',
+    stages
+  })
+  return { publicationReady: true, status: 'complete' }
+}
+
+async function reconcileUnpublishVariant({
+  reconciliationId,
+  reconciliation,
+  variant,
+  store
+}: {
+  reconciliationId: string
+  reconciliation: ReasonSpecificReconciliation
+  variant: ReconciledVariant
+  store: ReconciliationStore
+}): Promise<ReasonSpecificReconciliationResult> {
+  const stages = generatedParentStages(reconciliation.processingStages)
+  stages.mux =
+    variant.muxVideo?.readyToStream === true
+      ? completedStage()
+      : notApplicableStage()
+
+  try {
+    await prisma.videoVariant.update({
+      where: { id: variant.id },
+      data: { published: false }
+    })
+    await removeLanguageFromVideoIfUnused(variant.videoId, variant.languageId)
+    await updateParentCollectionLanguages(variant.videoId)
+    await updateVideoInAlgolia(variant.videoId)
+    stages.algoliaVideo = completedStage(stages.algoliaVideo.attempts + 1)
+  } catch (error) {
+    stages.algoliaVideo = failedStage(error, stages.algoliaVideo.attempts + 1)
+    await persistReconciliationStatus({
+      store,
+      reconciliationId,
+      status: 'degraded',
+      stages,
+      failedStageValue: stages.algoliaVideo
+    })
+    return {
+      publicationReady: false,
+      status: 'degraded',
+      failure: {
+        stageName: 'algoliaVideo',
+        stage: stages.algoliaVideo
+      }
+    }
+  }
+
+  try {
+    await updateVideoVariantInAlgolia(variant.id)
+    stages.algoliaVariant = completedStage(stages.algoliaVariant.attempts + 1)
+  } catch (error) {
+    stages.algoliaVariant = failedStage(
+      error,
+      stages.algoliaVariant.attempts + 1
+    )
+    await persistReconciliationStatus({
+      store,
+      reconciliationId,
+      status: 'degraded',
+      stages,
+      failedStageValue: stages.algoliaVariant
+    })
+    return {
+      publicationReady: false,
+      status: 'degraded',
+      failure: {
+        stageName: 'algoliaVariant',
+        stage: stages.algoliaVariant
+      }
+    }
+  }
+
+  await persistReconciliationStatus({
+    store,
+    reconciliationId,
+    status: 'complete',
+    stages
   })
   return { publicationReady: true, status: 'complete' }
 }
@@ -177,10 +287,14 @@ export async function reconcileGeneratedParentVariant({
     stages.algoliaVariant = completedStage(stages.algoliaVariant.attempts + 1)
   } catch (error) {
     if (!variant.published) {
-      await prisma.videoVariant.update({
-        where: { id: variant.id },
-        data: { published: false }
-      })
+      try {
+        await prisma.videoVariant.update({
+          where: { id: variant.id },
+          data: { published: false }
+        })
+      } catch {
+        // fall through; the persisted degraded status below records the failure
+      }
     }
     stages.algoliaVariant = failedStage(
       error,

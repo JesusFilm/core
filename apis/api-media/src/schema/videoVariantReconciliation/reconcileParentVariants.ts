@@ -56,6 +56,7 @@ export async function reconcileParentVariants({
     select: { id: true, slug: true }
   })
 
+  let firstFailure: ParentReconciliationResult | null = null
   for (const parentVideo of parentVideos) {
     const failure = await reconcileParentVariant({
       parentVideo,
@@ -63,10 +64,10 @@ export async function reconcileParentVariants({
       stages,
       persistStatus
     })
-    if (failure != null) return failure
+    if (failure != null && firstFailure == null) firstFailure = failure
   }
 
-  return null
+  return firstFailure
 }
 
 async function reconcileParentVariant({

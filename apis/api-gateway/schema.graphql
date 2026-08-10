@@ -1618,7 +1618,12 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
     status: VideoVariantReconciliationStatus
     blockingStage: VideoVariantProcessingStage
     olderThan: DateTime
+    """
+    Only applies when blockingStage is also supplied. Filters to reconciliations where blockingStage has been attempted at least this many times.
+    """
     minRetryCount: Int
+    offset: Int
+    limit: Int
   ): [VideoVariantReconciliation!] @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 

@@ -21,7 +21,7 @@ import {
 } from './reconciliationStages'
 import type { VideoVariantReconciliationReason } from './requestVideoVariantReconciliation'
 
-type ReconciliationRecord = {
+export type ReconciliationRecord = {
   reason: VideoVariantReconciliationReason
   videoId: string
   languageId: string
@@ -115,7 +115,10 @@ export async function reconcileVideoVariantReconciliation(
       data: {
         status,
         processingStages,
-        retryAt: muxTimedOut ? null : new Date(Date.now() + 60_000),
+        // The worker sweeps every 15 minutes (see config.ts `repeat`), so a
+        // shorter retryAt here would not be honored -- align it with the
+        // real cadence to avoid implying tighter polling than we provide.
+        retryAt: muxTimedOut ? null : new Date(Date.now() + 15 * 60 * 1000),
         errorMessage: muxStage.error ?? null
       }
     })

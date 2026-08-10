@@ -27,12 +27,14 @@ export type ParentVariantAuditResult = {
 export async function auditParentVariants(): Promise<ParentVariantAuditResult> {
   const parentVideos = await prisma.video.findMany({
     where: { childIds: { isEmpty: false } },
+    orderBy: { id: 'asc' },
     select: {
       id: true,
       slug: true,
       published: true,
       availableLanguages: true,
       variants: {
+        orderBy: { id: 'asc' },
         select: {
           id: true,
           languageId: true,
@@ -48,11 +50,13 @@ export async function auditParentVariants(): Promise<ParentVariantAuditResult> {
       },
       children: {
         where: { published: true },
+        orderBy: { id: 'asc' },
         select: {
           id: true,
           published: true,
           variants: {
             where: { published: true },
+            orderBy: { id: 'asc' },
             select: {
               id: true,
               languageId: true,

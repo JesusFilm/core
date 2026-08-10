@@ -9,6 +9,7 @@ import {
   updateParentCollectionLanguages
 } from '../video/lib/updateAvailableLanguages'
 
+import type { ReconciliationRecord } from './reconcileVideoVariantReconciliation'
 import { reconcileVideoVariantReconciliation } from './reconcileVideoVariantReconciliation'
 
 vi.mock('../../lib/algolia/algoliaVideoUpdate', () => ({
@@ -35,8 +36,8 @@ describe('reconcileVideoVariantReconciliation', () => {
   })
 
   it('publishes a Variant only after its generated parent Variant and indexes are ready', async () => {
-    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue({
-      id: 'reconciliation-1',
+    const reconciliation: ReconciliationRecord = {
+      reason: 'video-variant-publication-change',
       videoId: 'episode-1',
       languageId: '20770',
       published: true,
@@ -47,12 +48,17 @@ describe('reconcileVideoVariantReconciliation', () => {
         id: 'variant-1',
         videoId: 'episode-1',
         languageId: '20770',
+        slug: 'episode-1/20770',
         published: false,
         downloadable: false,
-        muxVideo: { readyToStream: true },
-        video: { id: 'episode-1', published: true, label: 'episode' }
+        hls: '',
+        share: '',
+        muxVideo: { readyToStream: true }
       }
-    } as never)
+    }
+    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+      reconciliation as never
+    )
     vi.mocked(findContainerParentIds).mockResolvedValue(['series-1'])
     prismaMock.video.findMany.mockResolvedValue([
       { id: 'series-1', slug: 'do-you-ever-wonder' }
@@ -103,23 +109,29 @@ describe('reconcileVideoVariantReconciliation', () => {
   })
 
   it('keeps a new Variant unpublished when parent indexing fails', async () => {
-    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue({
-      id: 'reconciliation-1',
+    const reconciliation: ReconciliationRecord = {
+      reason: 'video-variant-publication-change',
       videoId: 'episode-1',
       languageId: '20770',
       published: true,
       videoVariantId: 'variant-1',
       processingStages: {},
+      createdAt: new Date(),
       videoVariant: {
         id: 'variant-1',
         videoId: 'episode-1',
         languageId: '20770',
+        slug: 'episode-1/20770',
         published: false,
         downloadable: false,
-        muxVideo: { readyToStream: true },
-        video: { id: 'episode-1', published: true, label: 'episode' }
+        hls: '',
+        share: '',
+        muxVideo: { readyToStream: true }
       }
-    } as never)
+    }
+    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+      reconciliation as never
+    )
     vi.mocked(findContainerParentIds).mockResolvedValue(['series-1'])
     prismaMock.video.findMany.mockResolvedValue([
       { id: 'series-1', slug: 'do-you-ever-wonder' }
@@ -156,8 +168,8 @@ describe('reconcileVideoVariantReconciliation', () => {
   })
 
   it('publishes with degraded health when requested Downloads are missing', async () => {
-    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue({
-      id: 'reconciliation-1',
+    const reconciliation: ReconciliationRecord = {
+      reason: 'video-variant-publication-change',
       videoId: 'episode-1',
       languageId: '20770',
       published: true,
@@ -168,12 +180,17 @@ describe('reconcileVideoVariantReconciliation', () => {
         id: 'variant-1',
         videoId: 'episode-1',
         languageId: '20770',
+        slug: 'episode-1/20770',
         published: false,
         downloadable: true,
-        muxVideo: { readyToStream: true },
-        video: { id: 'episode-1', published: true, label: 'episode' }
+        hls: '',
+        share: '',
+        muxVideo: { readyToStream: true }
       }
-    } as never)
+    }
+    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+      reconciliation as never
+    )
     prismaMock.video.findMany.mockResolvedValue([])
     prismaMock.videoVariantDownload.count.mockResolvedValue(0)
 
@@ -196,8 +213,8 @@ describe('reconcileVideoVariantReconciliation', () => {
   })
 
   it('marks an unusable Variant failed after the Mux processing window', async () => {
-    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue({
-      id: 'reconciliation-1',
+    const reconciliation: ReconciliationRecord = {
+      reason: 'video-variant-publication-change',
       videoId: 'episode-1',
       languageId: '20770',
       published: true,
@@ -208,12 +225,17 @@ describe('reconcileVideoVariantReconciliation', () => {
         id: 'variant-1',
         videoId: 'episode-1',
         languageId: '20770',
+        slug: 'episode-1/20770',
         published: false,
         downloadable: false,
-        muxVideo: { readyToStream: false },
-        video: { id: 'episode-1', published: true, label: 'episode' }
+        hls: '',
+        share: '',
+        muxVideo: { readyToStream: false }
       }
-    } as never)
+    }
+    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+      reconciliation as never
+    )
 
     const result = await reconcileVideoVariantReconciliation('reconciliation-1')
 
@@ -231,8 +253,7 @@ describe('reconcileVideoVariantReconciliation', () => {
   })
 
   it('reconciles generated parent indexes with media stages not applicable', async () => {
-    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue({
-      id: 'status-1',
+    const reconciliation: ReconciliationRecord = {
       reason: 'generated-parent',
       videoId: 'series-1',
       languageId: '20770',
@@ -244,12 +265,17 @@ describe('reconcileVideoVariantReconciliation', () => {
         id: '20770_series-1',
         videoId: 'series-1',
         languageId: '20770',
+        slug: 'series-1/20770',
         published: true,
         downloadable: false,
-        muxVideo: null,
-        video: { id: 'series-1', published: false, label: 'series' }
+        hls: '',
+        share: '',
+        muxVideo: null
       }
-    } as never)
+    }
+    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+      reconciliation as never
+    )
 
     const result = await reconcileVideoVariantReconciliation('status-1')
 

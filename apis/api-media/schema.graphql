@@ -868,7 +868,18 @@ type Query {
   videoEdition(id: ID!): VideoEdition
   videoVariantUpload(id: ID!): VideoVariantUpload!
   videoVariantUploads(input: VideoVariantUploadsFilter, offset: Int, limit: Int): [VideoVariantUpload!]!
-  videoVariantReconciliations(status: VideoVariantReconciliationStatus, blockingStage: VideoVariantProcessingStage, olderThan: DateTime, minRetryCount: Int): [VideoVariantReconciliation!]
+  videoVariantReconciliations(
+    status: VideoVariantReconciliationStatus
+    blockingStage: VideoVariantProcessingStage
+    olderThan: DateTime
+
+    """
+    Only applies when blockingStage is also supplied. Filters to reconciliations where blockingStage has been attempted at least this many times.
+    """
+    minRetryCount: Int
+    offset: Int
+    limit: Int
+  ): [VideoVariantReconciliation!]
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
   youtubeClosedCaptionLanguages(videoId: ID!): QueryYoutubeClosedCaptionLanguagesResult!
