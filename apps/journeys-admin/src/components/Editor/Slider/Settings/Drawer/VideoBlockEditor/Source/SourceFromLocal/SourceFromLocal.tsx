@@ -104,7 +104,11 @@ export function SourceFromLocal({
         </Typography>
         <Typography
           variant="caption"
+          // NES-1860: variant="caption" renders as an inline <span>, where
+          // overflow and text-overflow have no effect. Language names can be
+          // long, so this must be block-level for the truncation below to apply.
           sx={{
+            display: 'block',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             overflow: 'hidden'

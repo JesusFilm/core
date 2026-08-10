@@ -226,6 +226,28 @@ describe('LocalDetails', () => {
     expect(getByRole('button', { name: 'Select' })).not.toBeDisabled()
   })
 
+  it('should pin the select button width so a long language name cannot squeeze it', async () => {
+    const result = vi.fn().mockReturnValue(getVideoMock.result)
+    render(
+      <MockedProvider mocks={[{ ...getVideoMock, result }]}>
+        <LocalDetails id="2_Acts7302-0-0" open onSelect={vi.fn()} />
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    // NES-1860: the chip label is an arbitrarily long language name, so the
+    // chip must be the flex item that gives way. Without flexShrink: 0 the
+    // Select button collapses to MUI's 64px min-width floor and its label
+    // wraps onto two lines — visible in CJK locales, where text can break
+    // between characters.
+    //
+    // Only the button is asserted: jsdom reports min-width as 0px by default,
+    // so an equivalent assertion on the chip would pass whether or not the
+    // style is present. The chip side is verified visually in Storybook.
+    expect(screen.getByRole('button', { name: 'Select' })).toHaveStyle({
+      flexShrink: 0
+    })
+  })
+
   it('should commit the language change and close the picker when Apply is clicked', async () => {
     const onSelect = vi.fn()
     const result = vi.fn().mockReturnValue(getVideoMock.result)

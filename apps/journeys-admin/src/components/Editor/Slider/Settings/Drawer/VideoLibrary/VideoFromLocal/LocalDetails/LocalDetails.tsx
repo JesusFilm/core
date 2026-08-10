@@ -249,7 +249,7 @@ export function LocalDetails({
       <Stack
         direction="row"
         spacing={2}
-        sx={{ justifyContent: 'space-between' }}
+        sx={{ justifyContent: 'space-between', minWidth: 0 }}
       >
         <Chip
           label={selectedLanguage?.localName ?? selectedLanguage?.nativeName}
@@ -257,6 +257,8 @@ export function LocalDetails({
           avatar={<ChevronDownIcon />}
           disabled={loading}
           sx={{
+            minWidth: 0,
+            flexShrink: 1,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis'
@@ -267,7 +269,12 @@ export function LocalDetails({
           startIcon={<CheckIcon />}
           onClick={handleSelect}
           size="small"
-          sx={{ backgroundColor: 'secondary.dark' }}
+          // NES-1860: language names can be arbitrarily long, so the chip
+          // above absorbs the squeeze and this button never shrinks. Without
+          // flexShrink it collapses to MUI's 64px min-width and the label
+          // wraps onto two lines — visible in CJK locales, where text can
+          // break between characters.
+          sx={{ backgroundColor: 'secondary.dark', flexShrink: 0 }}
           disabled={loading && !isPreselected}
         >
           {t('Select')}
