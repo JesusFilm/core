@@ -695,7 +695,7 @@ describe('JourneyListContent', () => {
       )
     })
 
-    it('should show "Journeys Restored" snackbar after restoring', async () => {
+    it('should show "Journeys Unarchived" snackbar after unarchiving', async () => {
       const { getByText, getByRole } = renderJourneyListContent({
         mocks: [
           archivedJourneysMock,
@@ -715,7 +715,7 @@ describe('JourneyListContent', () => {
       fireEvent.click(getByRole('button', { name: 'Unarchive' }))
 
       await waitFor(() =>
-        expect(getByText('Journeys Restored')).toBeInTheDocument()
+        expect(getByText('Journeys Unarchived')).toBeInTheDocument()
       )
     })
 
@@ -743,7 +743,7 @@ describe('JourneyListContent', () => {
       )
     })
 
-    it('should show "Templates Restored" snackbar after restoring', async () => {
+    it('should show "Templates Unarchived" snackbar after unarchiving', async () => {
       const { getByText, getByRole } = renderJourneyListContent({
         mocks: [
           archivedTemplatesMock,
@@ -762,7 +762,7 @@ describe('JourneyListContent', () => {
       fireEvent.click(getByRole('button', { name: 'Unarchive' }))
 
       await waitFor(() =>
-        expect(getByText('Templates Restored')).toBeInTheDocument()
+        expect(getByText('Templates Unarchived')).toBeInTheDocument()
       )
     })
 

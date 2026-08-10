@@ -48,7 +48,7 @@ export function ArchivedTemplateList({
   const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {
-        enqueueSnackbar(t('Templates Restored'), {
+        enqueueSnackbar(t('Templates Unarchived'), {
           variant: 'success'
         })
 

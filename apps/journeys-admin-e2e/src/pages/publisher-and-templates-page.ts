@@ -79,7 +79,7 @@ export class Publisher {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Unarchive All')
     await this.clickDialogBoxBtn('Unarchive')
-    await this.verifyToastMessage('Templates Restored')
+    await this.verifyToastMessage('Templates Unarchived')
     await this.verifyEmptyMessageInArchivedTab()
     await this.clickActiveTab()
     await this.verifyAllTemplateMovedToActiveTab()

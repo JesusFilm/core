@@ -246,7 +246,7 @@ describe('ArchivedTemplateList', () => {
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
-    it('should show the templates restored snackbar', async () => {
+    it('should show the templates unarchived snackbar', async () => {
       const { getByText } = render(
         <MockedProvider
           mocks={[archivedJourneysMock, archiveJourneysMock, noJourneysMock]}
@@ -263,7 +263,7 @@ describe('ArchivedTemplateList', () => {
       )
       fireEvent.click(getByText('Unarchive'))
       await waitFor(() =>
-        expect(getByText('Templates Restored')).toBeInTheDocument()
+        expect(getByText('Templates Unarchived')).toBeInTheDocument()
       )
     })
 
