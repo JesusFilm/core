@@ -3,17 +3,17 @@ import compact from 'lodash/compact'
 import { Platform, prisma } from '@core/prisma/media/client'
 import type { VideoVariant as PrismaVideoVariant } from '@core/prisma/media/client'
 
-import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
-import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
 import { ensureLanguageHasVideosTrue } from '../../lib/languages/ensureLanguageHasVideos'
 import { notifyMediaSlackOfOperationFailure } from '../../lib/slack'
 import {
   videoCacheReset,
   videoVariantCacheReset
 } from '../../lib/videoCacheReset'
+import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
 import { builder, toPrismaDateTimeFilter } from '../builder'
 import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
+import { logger } from '../logger'
 import { deleteVideo } from '../mux/video/service'
 import {
   addLanguageToVideo,
@@ -528,12 +528,6 @@ builder.mutationFields((t) => ({
       if (newVariant.published) {
         await addLanguageToVideo(newVariant.videoId, newVariant.languageId)
         await updateParentCollectionLanguages(newVariant.videoId)
-        // Keep videos index (hasAvailableLanguages) in sync
-        try {
-          await updateVideoInAlgolia(newVariant.videoId)
-        } catch (error) {
-          console.error('Algolia update error:', error)
-        }
       }
 
       try {
@@ -566,11 +560,17 @@ builder.mutationFields((t) => ({
       // Save the videoId before the try/catch block
       const { id, videoId } = newVariant
 
-      try {
-        await updateVideoVariantInAlgolia(id)
-      } catch (error) {
-        console.error('Algolia update error:', error)
-      }
+      await enqueueVideoAlgoliaSync(
+        videoId,
+        {
+          syncVideoRecord: true,
+          syncAllVariants: false,
+          syncPublishedFlag: false,
+          dirtyVariantIds: [id],
+          deletedVariantIds: []
+        },
+        logger
+      )
 
       try {
         void videoVariantCacheReset(id)
@@ -696,13 +696,6 @@ builder.mutationFields((t) => ({
 
           // Cascade update to parent collections
           await updateParentCollectionLanguages(currentVariant.videoId)
-
-          // Keep videos index (hasAvailableLanguages) in sync
-          try {
-            await updateVideoInAlgolia(currentVariant.videoId)
-          } catch (error) {
-            console.error('Algolia update error:', error)
-          }
         } catch (error) {
           console.error('Language management update error:', error)
           notifyMediaSlackOfOperationFailure({
@@ -729,11 +722,17 @@ builder.mutationFields((t) => ({
       // Store the videoId before the try/catch block
       const videoId = input.videoId ?? updated.videoId
 
-      try {
-        await updateVideoVariantInAlgolia(updated.id)
-      } catch (error) {
-        console.error('Algolia update error:', error)
-      }
+      await enqueueVideoAlgoliaSync(
+        videoId,
+        {
+          syncVideoRecord: true,
+          syncAllVariants: false,
+          syncPublishedFlag: false,
+          dirtyVariantIds: [updated.id],
+          deletedVariantIds: []
+        },
+        logger
+      )
 
       try {
         void videoVariantCacheReset(updated.id)
@@ -901,13 +900,6 @@ builder.mutationFields((t) => ({
 
         // Cascade update to parent collections
         await updateParentCollectionLanguages(videoId)
-
-        // Keep videos index (hasAvailableLanguages) in sync
-        try {
-          await updateVideoInAlgolia(videoId)
-        } catch (error) {
-          console.error('Algolia update error:', error)
-        }
       } catch (error) {
         console.error('Language management cleanup error:', error)
         notifyMediaSlackOfOperationFailure({
@@ -921,11 +913,17 @@ builder.mutationFields((t) => ({
         })
       }
 
-      try {
-        await updateVideoVariantInAlgolia(id)
-      } catch (error) {
-        console.error('Algolia update error:', error)
-      }
+      await enqueueVideoAlgoliaSync(
+        videoId,
+        {
+          syncVideoRecord: true,
+          syncAllVariants: false,
+          syncPublishedFlag: false,
+          dirtyVariantIds: [],
+          deletedVariantIds: [id]
+        },
+        logger
+      )
       try {
         void videoVariantCacheReset(id)
         void videoCacheReset(videoId)
