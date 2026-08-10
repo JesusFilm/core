@@ -27,11 +27,14 @@ const errorMock: MockedResponse = {
   error: new Error('WESS_API_TOKEN environment variable is not set')
 }
 
-function renderButton(mocks: MockedResponse[] = []): RenderResult {
+function renderButton(
+  mocks: MockedResponse[] = [],
+  onImportComplete?: () => void
+): RenderResult {
   return render(
     <MockedProvider mocks={mocks}>
       <SnackbarProvider>
-        <WessImportButton />
+        <WessImportButton onImportComplete={onImportComplete} />
       </SnackbarProvider>
     </MockedProvider>
   )
@@ -90,5 +93,28 @@ describe('WessImportButton', () => {
     await user.click(screen.getByRole('button', { name: 'Run import' }))
 
     expect(await screen.findByText(/WESS import failed/)).toBeInTheDocument()
+  })
+
+  it('calls onImportComplete after a successful import', async () => {
+    const user = userEvent.setup()
+    const onImportComplete = vi.fn()
+    renderButton([successMock], onImportComplete)
+
+    await user.click(screen.getByRole('button', { name: 'Run WESS import' }))
+    await user.click(screen.getByRole('button', { name: 'Run import' }))
+
+    await waitFor(() => expect(onImportComplete).toHaveBeenCalledTimes(1))
+  })
+
+  it('does not call onImportComplete when the import fails', async () => {
+    const user = userEvent.setup()
+    const onImportComplete = vi.fn()
+    renderButton([errorMock], onImportComplete)
+
+    await user.click(screen.getByRole('button', { name: 'Run WESS import' }))
+    await user.click(screen.getByRole('button', { name: 'Run import' }))
+
+    await screen.findByText(/WESS import failed/)
+    expect(onImportComplete).not.toHaveBeenCalled()
   })
 })

@@ -34,13 +34,21 @@ interface WessImportData {
   }
 }
 
-export function WessImportButton(): ReactElement {
+interface WessImportButtonProps {
+  /** Called after a successful import so the caller can refresh its data. */
+  onImportComplete?: () => void
+}
+
+export function WessImportButton({
+  onImportComplete
+}: WessImportButtonProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const [confirmOpen, setConfirmOpen] = useState(false)
 
   const [runImport, { loading }] = useMutation<WessImportData>(WESS_IMPORT, {
     onCompleted: (data) => {
       enqueueSnackbar(data.wessImport.message, { variant: 'success' })
+      onImportComplete?.()
     },
     onError: (error) => {
       enqueueSnackbar(`WESS import failed: ${error.message}`, {
