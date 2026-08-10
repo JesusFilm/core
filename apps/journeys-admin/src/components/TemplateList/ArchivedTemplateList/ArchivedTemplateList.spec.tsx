@@ -244,24 +244,6 @@ describe('ArchivedTemplateList', () => {
       )
       fireEvent.click(getByText('Unarchive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
-    })
-
-    it('should show the templates unarchived snackbar', async () => {
-      const { getByText } = render(
-        <MockedProvider
-          mocks={[archivedJourneysMock, archiveJourneysMock, noJourneysMock]}
-        >
-          <ThemeProvider>
-            <SnackbarProvider>
-              <ArchivedTemplateList event="restoreAllArchived" />
-            </SnackbarProvider>
-          </ThemeProvider>
-        </MockedProvider>
-      )
-      await waitFor(() =>
-        expect(getByText('Default Template Heading')).toBeInTheDocument()
-      )
-      fireEvent.click(getByText('Unarchive'))
       await waitFor(() =>
         expect(getByText('Templates Unarchived')).toBeInTheDocument()
       )
@@ -376,24 +358,6 @@ describe('ArchivedTemplateList', () => {
       )
       fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
-    })
-
-    it('should show the templates trashed snackbar', async () => {
-      const { getByText, getByRole } = render(
-        <MockedProvider
-          mocks={[archivedJourneysMock, trashJourneysMock, noJourneysMock]}
-        >
-          <ThemeProvider>
-            <SnackbarProvider>
-              <ArchivedTemplateList event="trashAllArchived" />
-            </SnackbarProvider>
-          </ThemeProvider>
-        </MockedProvider>
-      )
-      await waitFor(() =>
-        expect(getByText('Default Template Heading')).toBeInTheDocument()
-      )
-      fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() =>
         expect(getByText('Templates Trashed')).toBeInTheDocument()
       )

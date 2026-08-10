@@ -244,37 +244,6 @@ describe('ArchivedJourneyList', () => {
       )
       fireEvent.click(getByText('Unarchive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
-    })
-
-    it('should show the journeys unarchived snackbar', async () => {
-      const { getByText } = render(
-        <MockedProvider
-          mocks={[archivedJourneysMock, archiveJourneysMock, noJourneysMock]}
-        >
-          <ThemeProvider>
-            <SnackbarProvider>
-              <ArchivedJourneyList
-                event="restoreAllArchived"
-                user={
-                  {
-                    id: 'user-id1',
-                    email: null,
-                    displayName: null,
-                    photoURL: null,
-                    phoneNumber: null,
-                    emailVerified: false,
-                    token: 'mock-token'
-                  } as unknown as User
-                }
-              />
-            </SnackbarProvider>
-          </ThemeProvider>
-        </MockedProvider>
-      )
-      await waitFor(() =>
-        expect(getByText('Default Journey Heading')).toBeInTheDocument()
-      )
-      fireEvent.click(getByText('Unarchive'))
       await waitFor(() =>
         expect(getByText('Journeys Unarchived')).toBeInTheDocument()
       )
