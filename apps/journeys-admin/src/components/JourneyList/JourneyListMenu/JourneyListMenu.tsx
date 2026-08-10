@@ -84,7 +84,14 @@ export function JourneyListMenu({
               paper: {
                 sx: {
                   mt: '6px',
-                  borderRadius: '8px'
+                  borderRadius: '8px',
+                  // Medium rather than the theme's SemiBold default, so this
+                  // menu matches the sort/filter options beside it. Scoped
+                  // here on purpose: the MuiListItemText override in the admin
+                  // theme is shared by every list in the app (NES-1217)
+                  '& .MuiListItemText-primary': {
+                    fontWeight: 500
+                  }
                 }
               },
 

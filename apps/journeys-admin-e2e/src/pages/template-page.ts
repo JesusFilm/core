@@ -33,7 +33,7 @@ export class TemplatePage {
 
   // New template library page (landing page)
   async seeAllTemplates(): Promise<void> {
-    await this.page.getByRole('link', { name: 'See all', exact: true }).click()
+    await this.page.getByRole('link', { name: 'See All', exact: true }).click()
   }
 
   async templateGalleryCarouselVisible(): Promise<void> {

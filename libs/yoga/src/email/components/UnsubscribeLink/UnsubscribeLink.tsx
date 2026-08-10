@@ -1,5 +1,5 @@
-import { Column, Link, Row, Section, Text } from '@react-email/components'
 import { ReactElement } from 'react'
+import { Column, Link, Row, Section, Text } from 'react-email'
 
 interface UnsubscribeLinkProps {
   recipientEmail: string

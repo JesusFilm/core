@@ -14,18 +14,11 @@ import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 
 import { FormSelectField } from '../../../../components/FormSelectField'
 import { FormTextField } from '../../../../components/FormTextField'
-import { videoLabels } from '../../../../constants'
-
-enum VideoLabel {
-  behindTheScenes = 'behindTheScenes',
-  collection = 'collection',
-  episode = 'episode',
-  featureFilm = 'featureFilm',
-  segment = 'segment',
-  series = 'series',
-  shortFilm = 'shortFilm',
-  trailer = 'trailer'
-}
+import {
+  VideoLabelValue,
+  videoLabelValues,
+  videoLabels
+} from '../../../../constants'
 
 export const CREATE_VIDEO = graphql(`
   mutation CreateVideo($input: VideoCreateInput!) {
@@ -118,8 +111,8 @@ export function VideoCreateForm({
         }
         return true
       }),
-    label: mixed<VideoLabel>()
-      .oneOf(Object.values(VideoLabel))
+    label: mixed<VideoLabelValue>()
+      .oneOf(videoLabelValues)
       .required('Label is required'),
     originId: string().trim().required('Origin is required')
   })
@@ -152,28 +145,28 @@ export function VideoCreateForm({
           validChildLabels: videoLabels.filter((vl) =>
             ['episode', 'featureFilm', 'shortFilm', 'series'].includes(vl.value)
           ),
-          suggestedLabel: VideoLabel.episode
+          suggestedLabel: 'episode' as const
         }
       case 'featureFilm':
         return {
           validChildLabels: videoLabels.filter((vl) =>
             ['segment', 'trailer', 'behindTheScenes'].includes(vl.value)
           ),
-          suggestedLabel: VideoLabel.segment
+          suggestedLabel: 'segment' as const
         }
       case 'series':
         return {
           validChildLabels: videoLabels.filter((vl) =>
             ['episode', 'trailer', 'behindTheScenes'].includes(vl.value)
           ),
-          suggestedLabel: VideoLabel.episode
+          suggestedLabel: 'episode' as const
         }
       case 'episode':
         return {
           validChildLabels: videoLabels.filter((vl) =>
             ['segment', 'trailer', 'behindTheScenes'].includes(vl.value)
           ),
-          suggestedLabel: VideoLabel.segment
+          suggestedLabel: 'segment' as const
         }
       default:
         return { validChildLabels: videoLabels, suggestedLabel: undefined }
@@ -329,7 +322,7 @@ export function VideoCreateForm({
   const initialValues: InferType<typeof validationSchema> = {
     id: '',
     slug: '',
-    label: suggestedLabel || ('' as VideoLabel),
+    label: suggestedLabel || ('' as VideoLabelValue),
     originId: parentData?.adminVideo?.origin?.id || ''
   }
 

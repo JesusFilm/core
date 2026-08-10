@@ -18,11 +18,16 @@ export function getFirebaseAuth(): Auth {
 }
 
 export async function login(token: string): Promise<void> {
-  await fetch('/api/login', {
+  const response = await fetch('/api/login', {
     method: 'GET',
     headers: { Authorization: `Bearer ${token}` },
     cache: 'no-store'
   })
+  // A non-ok response means the session cookie was never minted. Without this
+  // check the caller reloads onto a page it is not authenticated for, which
+  // presents to the user as an endless sign-in loop instead of an error.
+  if (!response.ok)
+    throw new Error(`/api/login responded with status ${response.status}`)
 }
 
 export async function loginWithCredential(
