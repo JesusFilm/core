@@ -17,9 +17,7 @@ vi.mock('../schema/mux/video/service', () => ({
 
 vi.mock('../lib/downloads', async () => {
   const actual =
-    await vi.importActual<typeof import('../lib/downloads')>(
-      '../lib/downloads'
-    )
+    await vi.importActual<typeof import('../lib/downloads')>('../lib/downloads')
   return {
     ...actual,
     createDownloadsFromMuxAsset: vi.fn(),
@@ -277,9 +275,8 @@ describe('processDownloads', () => {
     await runProcessDownloads()
 
     expect(prismaMock.videoVariantDownload.findMany).toHaveBeenCalledTimes(2)
-    const secondCallArgs = (
-      prismaMock.videoVariantDownload.findMany as Mock
-    ).mock.calls[1][0]
+    const secondCallArgs = (prismaMock.videoVariantDownload.findMany as Mock)
+      .mock.calls[1][0]
     expect(secondCallArgs.cursor).toEqual({ id: 'v2-49' })
     expect(secondCallArgs.skip).toBe(1)
 
