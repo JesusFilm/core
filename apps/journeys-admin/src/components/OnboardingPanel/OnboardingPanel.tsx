@@ -30,7 +30,7 @@ export function OnboardingPanel(): ReactElement {
             variant="subtitle2"
             sx={{ display: 'flex', alignItems: 'center' }}
           >
-            {t('See all')}
+            {t('See All')}
             <ChevronRightIcon />
           </Link>
         </Stack>
@@ -47,7 +47,7 @@ export function OnboardingPanel(): ReactElement {
           startIcon={<Grid1Icon />}
           sx={{ width: 'max-content', alignSelf: 'center' }}
         >
-          {t('See all templates')}
+          {t('See All Templates')}
         </Button>
       </SidePanelContainer>
     </>
