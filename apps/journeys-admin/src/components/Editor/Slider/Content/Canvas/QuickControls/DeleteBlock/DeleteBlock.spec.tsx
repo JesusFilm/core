@@ -455,11 +455,9 @@ describe('DeleteBlock', () => {
       void i18n.changeLanguage('en')
     })
 
-    // Regression test for NES-1789: "Delete {{ label }}" interpolates a
-    // separately-translated "Card"/"Block" into the phrase. A translation
-    // missing a space around the placeholder squishes the words together
-    // (e.g. "Cardमेटाउनुहोस्", "Kartelöschen") instead of rendering as two
-    // distinct words.
+    // "Delete {{ label }}" interpolates a separately-translated word. A
+    // translation missing a space around the placeholder squishes the two
+    // words together instead of rendering them distinctly.
     it.each([
       {
         language: 'Nepali',
