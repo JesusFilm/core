@@ -91,29 +91,25 @@ export async function updateVideoAvailableLanguages(
   return availableLanguages
 }
 
-// Adds a language to a video's availableLanguages if not already present
-// Uses atomic operation to prevent duplicates
+// Adds a language to a video's availableLanguages if not already present.
+//
+// Concurrent published uploads for the same video (different languages
+// finishing around the same time) must not lose each other's language. A
+// read-then-set (`findUnique` -> `set: [...current, next]`) is a classic
+// lost-update race: both transactions read the same array and the second
+// write clobbers the first. Instead, do the read-modify-write as a single
+// atomic UPDATE so Postgres serializes concurrent callers on the row.
+// COALESCE handles the nullable column so array_append always has a base array.
 export async function addLanguageToVideo(
   videoId: string,
   languageId: string
 ): Promise<void> {
-  // availableLanguages is nullable in the DB. If it's NULL, Prisma filters like
-  // "NOT { availableLanguages: { has: ... } }" can silently no-op due to SQL NULL
-  // semantics. Coalesce NULL -> [] in code, then set the updated array.
-  const video = await prisma.video.findUnique({
-    where: { id: videoId },
-    select: { availableLanguages: true }
-  })
-
-  if (video == null) return
-
-  const currentLanguages = video.availableLanguages ?? []
-  if (currentLanguages.includes(languageId)) return
-
-  await prisma.video.update({
-    where: { id: videoId },
-    data: { availableLanguages: { set: [...currentLanguages, languageId] } }
-  })
+  await prisma.$executeRaw`
+    UPDATE "Video"
+    SET "availableLanguages" = array_append(COALESCE("availableLanguages", ARRAY[]::TEXT[]), ${languageId})
+    WHERE id = ${videoId}
+      AND NOT (${languageId} = ANY(COALESCE("availableLanguages", ARRAY[]::TEXT[])))
+  `
 }
 
 // Removes a language from a video's availableLanguages if no published variants use it

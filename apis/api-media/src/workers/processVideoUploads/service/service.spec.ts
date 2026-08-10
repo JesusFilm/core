@@ -21,12 +21,8 @@ vi.mock('../../processVideoDownloads/queue', () => ({
   }
 }))
 
-vi.mock('../../../lib/algolia/algoliaVideoUpdate', () => ({
-  updateVideoInAlgolia: vi.fn()
-}))
-
-vi.mock('../../../lib/algolia/algoliaVideoVariantUpdate', () => ({
-  updateVideoVariantInAlgolia: vi.fn()
+vi.mock('../../../workers/videoAlgoliaSync', () => ({
+  enqueueVideoAlgoliaSync: vi.fn()
 }))
 
 vi.mock('../../../lib/videoCacheReset', () => ({
@@ -78,10 +74,11 @@ describe('processVideoUploads service', () => {
     })
 
     prismaMock.muxVideo.update.mockResolvedValue({} as any)
-    prismaMock.video.findUnique
-      .mockResolvedValueOnce({ slug: 'video-slug' } as any)
-      .mockResolvedValueOnce({ availableLanguages: [] } as any)
+    prismaMock.video.findUnique.mockResolvedValueOnce({
+      slug: 'video-slug'
+    } as any)
     prismaMock.video.findMany.mockResolvedValue([] as any)
+    prismaMock.$executeRaw.mockResolvedValue(1)
     prismaMock.videoVariant.findFirst.mockResolvedValue({
       id: 'variant-id',
       slug: 'variant-slug'
@@ -124,10 +121,13 @@ describe('processVideoUploads service', () => {
         version: 1
       })
     })
-    expect(prismaMock.video.update).toHaveBeenCalledWith({
-      where: { id: 'video-id' },
-      data: { availableLanguages: { set: ['529'] } }
-    })
+    expect(prismaMock.$executeRaw).toHaveBeenCalledTimes(1)
+    const [sqlParts, ...values] = prismaMock.$executeRaw.mock.calls[0] as [
+      readonly string[],
+      ...unknown[]
+    ]
+    expect(sqlParts.join(' ')).toContain('array_append')
+    expect(values).toEqual(['529', 'video-id', '529'])
   })
 
   it('updates an existing variant idempotently and marks the durable upload complete', async () => {

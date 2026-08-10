@@ -11,8 +11,6 @@ import { Logger } from 'pino'
 import { prisma } from '@core/prisma/media/client'
 import type { MuxVideo, VideoVariantUpload } from '@core/prisma/media/client'
 
-import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
-import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
 import { notifyMediaSlackOfOperationFailure } from '../../lib/slack'
 import {
   videoCacheReset,
@@ -20,6 +18,7 @@ import {
 } from '../../lib/videoCacheReset'
 import { jobName as processVideoUploadsJobName } from '../../workers/processVideoUploads/config'
 import { queue as processVideoUploadsQueue } from '../../workers/processVideoUploads/queue'
+import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
 import {
   createVideoFromUrl,
   getMaxResolutionValue,
@@ -184,17 +183,21 @@ async function syncPublishedVariantState({
     throw error
   }
 
-  try {
-    await updateVideoInAlgolia(videoId)
-  } catch (error) {
-    console.error('Algolia video update error:', error)
-  }
-
-  try {
-    await updateVideoVariantInAlgolia(variantId)
-  } catch (error) {
-    console.error('Algolia video variant update error:', error)
-  }
+  // Durable, retriable Algolia sync (QA-543) — matches the videoVariant
+  // create/update mutations rather than calling updateVideoInAlgolia /
+  // updateVideoVariantInAlgolia directly, so a transient Algolia outage
+  // gets BullMQ retries instead of being silently dropped.
+  await enqueueVideoAlgoliaSync(
+    videoId,
+    {
+      syncVideoRecord: true,
+      syncAllVariants: false,
+      syncPublishedFlag: false,
+      dirtyVariantIds: [variantId],
+      deletedVariantIds: []
+    },
+    logger
+  )
 
   try {
     void videoVariantCacheReset(variantId)

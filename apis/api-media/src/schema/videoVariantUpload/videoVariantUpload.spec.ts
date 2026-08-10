@@ -20,12 +20,8 @@ vi.mock('../../workers/processVideoUploads/queue', () => ({
   }
 }))
 
-vi.mock('../../lib/algolia/algoliaVideoUpdate', () => ({
-  updateVideoInAlgolia: vi.fn()
-}))
-
-vi.mock('../../lib/algolia/algoliaVideoVariantUpdate', () => ({
-  updateVideoVariantInAlgolia: vi.fn()
+vi.mock('../../workers/videoAlgoliaSync', () => ({
+  enqueueVideoAlgoliaSync: vi.fn()
 }))
 
 vi.mock('../../lib/videoCacheReset', () => ({
@@ -900,10 +896,11 @@ describe('videoVariantUpload lifecycle API', () => {
       playback_ids: [{ id: 'playback-id' }],
       duration: 11.2
     })
-    prismaMock.video.findUnique
-      .mockResolvedValueOnce({ slug: 'video-slug' } as any)
-      .mockResolvedValueOnce({ availableLanguages: [] } as any)
+    prismaMock.video.findUnique.mockResolvedValueOnce({
+      slug: 'video-slug'
+    } as any)
     prismaMock.video.findMany.mockResolvedValue([] as any)
+    prismaMock.$executeRaw.mockResolvedValue(1)
     prismaMock.videoVariant.findFirst.mockResolvedValue({
       id: 'variant-id',
       slug: 'video-slug/en'
@@ -939,10 +936,12 @@ describe('videoVariantUpload lifecycle API', () => {
       status: 'variantCreated',
       videoVariantId: 'variant-id'
     })
-    expect(prismaMock.video.update).toHaveBeenCalledWith({
-      where: { id: 'video-id' },
-      data: { availableLanguages: { set: ['529'] } }
-    })
+    expect(prismaMock.$executeRaw).toHaveBeenCalledWith(
+      expect.anything(),
+      '529',
+      'video-id',
+      '529'
+    )
     expect(prismaMock.videoVariantUpload.update).toHaveBeenCalledWith({
       where: { id: 'upload-id' },
       data: {
@@ -983,10 +982,11 @@ describe('videoVariantUpload lifecycle API', () => {
         playbackId: 'playback-id'
       }
     } as any)
-    prismaMock.video.findUnique
-      .mockResolvedValueOnce({ slug: 'video-slug' } as any)
-      .mockResolvedValueOnce({ availableLanguages: [] } as any)
+    prismaMock.video.findUnique.mockResolvedValueOnce({
+      slug: 'video-slug'
+    } as any)
     prismaMock.video.findMany.mockResolvedValue([] as any)
+    prismaMock.$executeRaw.mockResolvedValue(1)
     prismaMock.videoVariant.findFirst.mockResolvedValue({
       id: 'variant-id',
       slug: 'video-slug/en'
@@ -1015,10 +1015,12 @@ describe('videoVariantUpload lifecycle API', () => {
       where: { id: 'variant-id' },
       data: expect.objectContaining({ muxVideoId: 'mux-id' })
     })
-    expect(prismaMock.video.update).toHaveBeenCalledWith({
-      where: { id: 'video-id' },
-      data: { availableLanguages: { set: ['529'] } }
-    })
+    expect(prismaMock.$executeRaw).toHaveBeenCalledWith(
+      expect.anything(),
+      '529',
+      'video-id',
+      '529'
+    )
     expect(prismaMock.videoVariantUpload.update).toHaveBeenCalledWith({
       where: { id: 'upload-id' },
       data: {
