@@ -705,15 +705,33 @@ describe('videoPublishChildren', () => {
   })
 
   describe('parentVariantsOnly mode', () => {
+    // getRequiredParentLanguages (shared with the catalog audit) reads the
+    // required languages straight off published child Variants rather than
+    // walking the parent's children relation.
+    function mockChildVariants(
+      rows: Array<{ languageId: string; videoId: string }>
+    ): void {
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce(
+        rows.map(({ languageId, videoId }) => ({
+          languageId,
+          videoId,
+          hls: `https://example.com/${videoId}.m3u8`,
+          dash: null,
+          muxVideoId: null,
+          duration: 120
+        })) as any
+      )
+    }
+
     function mockParentAndChildren(): void {
       prismaMock.video.findUnique.mockResolvedValueOnce({
         id: 'parent',
-        variants: [{ languageId: 'en' }],
-        children: [
-          { id: 'c1', variants: [{ languageId: 'en' }] },
-          { id: 'c2', variants: [{ languageId: 'es' }] }
-        ]
+        variants: [{ languageId: 'en' }]
       } as any)
+      mockChildVariants([
+        { languageId: 'en', videoId: 'c1' },
+        { languageId: 'es', videoId: 'c2' }
+      ])
     }
 
     // Backs the real (unmocked) createEmptyParentVariant helper so apply
@@ -789,17 +807,13 @@ describe('videoPublishChildren', () => {
         }
       })
 
-      expect(prismaMock.video.findUnique).toHaveBeenCalledWith(
+      expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { id: 'parent' },
-          select: expect.objectContaining({
-            children: expect.objectContaining({
-              where: { published: true },
-              select: expect.objectContaining({
-                variants: expect.objectContaining({
-                  where: { published: true }
-                })
-              })
+          where: expect.objectContaining({
+            published: true,
+            video: expect.objectContaining({
+              published: true,
+              parents: { some: { id: 'parent' } }
             })
           })
         })
@@ -898,12 +912,12 @@ describe('videoPublishChildren', () => {
       })
       prismaMock.video.findUnique.mockResolvedValueOnce({
         id: 'parent',
-        variants: [],
-        children: [
-          { id: 'c1', variants: [{ languageId: 'en' }] },
-          { id: 'c2', variants: [{ languageId: 'es' }] }
-        ]
+        variants: []
       } as any)
+      mockChildVariants([
+        { languageId: 'en', videoId: 'c1' },
+        { languageId: 'es', videoId: 'c2' }
+      ])
       mockCreateEmptyParentVariantPrisma()
       ;(prismaMock.videoVariant.create as any).mockImplementation(
         async (args: any) => {
@@ -941,12 +955,12 @@ describe('videoPublishChildren', () => {
       })
       prismaMock.video.findUnique.mockResolvedValueOnce({
         id: 'parent',
-        variants: [{ languageId: 'en' }, { languageId: 'es' }],
-        children: [
-          { id: 'c1', variants: [{ languageId: 'en' }] },
-          { id: 'c2', variants: [{ languageId: 'es' }] }
-        ]
+        variants: [{ languageId: 'en' }, { languageId: 'es' }]
       } as any)
+      mockChildVariants([
+        { languageId: 'en', videoId: 'c1' },
+        { languageId: 'es', videoId: 'c2' }
+      ])
 
       const res = await authClient({
         document: VIDEO_PUBLISH_CHILDREN,

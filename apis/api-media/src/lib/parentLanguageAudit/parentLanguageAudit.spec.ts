@@ -29,6 +29,13 @@ const emptyPlaceholder = {
   downloads: []
 }
 
+const unknownDiagnostics = {
+  childVariantValidity: 'unknown',
+  muxReadiness: 'unknown',
+  downloadsStatus: 'unknown',
+  algoliaStatus: 'unknown'
+}
+
 describe('parentLanguageAudit', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -56,7 +63,8 @@ describe('parentLanguageAudit', () => {
           childVideoId: 'direct-child',
           languageId: '529',
           existingVariantId: null,
-          action: 'create'
+          action: 'create',
+          diagnostics: unknownDiagnostics
         }
       ])
     })
@@ -95,7 +103,14 @@ describe('parentLanguageAudit', () => {
           published: true,
           video: { published: true, parents: { some: { id: 'parent' } } }
         },
-        select: { languageId: true, videoId: true }
+        select: {
+          languageId: true,
+          videoId: true,
+          hls: true,
+          dash: true,
+          muxVideoId: true,
+          duration: true
+        }
       })
     })
 
@@ -144,7 +159,8 @@ describe('parentLanguageAudit', () => {
             childVideoId: 'direct-child',
             languageId: '529',
             existingVariantId: 'en_parent',
-            action: 'normalize'
+            action: 'normalize',
+            diagnostics: unknownDiagnostics
           }
         ])
       }
@@ -179,7 +195,8 @@ describe('parentLanguageAudit', () => {
             childVideoId: 'direct-child',
             languageId: '529',
             existingVariantId: 'en_parent',
-            action: 'ambiguous'
+            action: 'ambiguous',
+            diagnostics: unknownDiagnostics
           }
         ])
       }
@@ -207,6 +224,7 @@ describe('parentLanguageAudit', () => {
           languageId: '529',
           existingVariantId: null,
           action: 'create',
+          diagnostics: unknownDiagnostics,
           variantId: null,
           result: 'proposed',
           indexResult: 'skipped'

@@ -1,5 +1,6 @@
 import { prisma } from '@core/prisma/media/client'
 
+import { getRequiredParentLanguages } from '../../lib/parentLanguageAudit/parentLanguageAudit'
 import {
   videoCacheReset,
   videoVariantCacheReset
@@ -262,23 +263,13 @@ async function ensureParentEmptyVariantsForPublishedChildren(
 async function computeMissingParentLanguages(
   parentId: string
 ): Promise<MissingParentLanguage[]> {
-  const parent = await prisma.video.findUnique({
-    where: { id: parentId },
-    select: {
-      id: true,
-      variants: { select: { languageId: true } },
-      children: {
-        where: { published: true },
-        select: {
-          id: true,
-          variants: {
-            where: { published: true },
-            select: { languageId: true }
-          }
-        }
-      }
-    }
-  })
+  const [parent, requiredLanguages] = await Promise.all([
+    prisma.video.findUnique({
+      where: { id: parentId },
+      select: { variants: { select: { languageId: true } } }
+    }),
+    getRequiredParentLanguages(parentId)
+  ])
 
   if (parent == null) {
     throw new Error(`Video with id ${parentId} not found`)
@@ -287,21 +278,10 @@ async function computeMissingParentLanguages(
   const existingLanguageIds = new Set(
     parent.variants.map(({ languageId }: { languageId: string }) => languageId)
   )
-  const missingByLanguage = new Map<string, string>()
 
-  for (const child of parent.children) {
-    for (const variant of child.variants) {
-      if (existingLanguageIds.has(variant.languageId)) continue
-      if (!missingByLanguage.has(variant.languageId)) {
-        missingByLanguage.set(variant.languageId, child.id)
-      }
-    }
-  }
-
-  return Array.from(missingByLanguage, ([languageId, childVideoId]) => ({
-    languageId,
-    childVideoId
-  }))
+  return requiredLanguages
+    .filter(({ languageId }) => !existingLanguageIds.has(languageId))
+    .map(({ languageId, childVideoId }) => ({ languageId, childVideoId }))
 }
 
 async function executeParentVariantsOnly(

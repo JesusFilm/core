@@ -1,12 +1,31 @@
-import { prisma } from '@core/prisma/media/client'
+import { Prisma, prisma } from '@core/prisma/media/client'
 
 import { createEmptyParentVariant } from '../../schema/videoVariant/videoVariant'
 import { updateVideoInAlgolia } from '../algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../algolia/algoliaVideoVariantUpdate'
 
 export type ParentLanguageAction = 'create' | 'normalize' | 'ambiguous'
-export type ParentLanguageResult = 'proposed' | 'applied' | 'failed' | 'reported'
+export type ParentLanguageResult =
+  | 'proposed'
+  | 'applied'
+  | 'failed'
+  | 'reported'
 export type ParentLanguageIndexResult = 'indexed' | 'indexFailed' | 'skipped'
+
+// Reports the other reconstructable processing stages the PRD asks the
+// audit to cover. This tool only repairs the parent-Variant stage; the rest
+// are reported `unknown` rather than inferred or silently omitted -- deeper
+// verification (a live Mux readiness check, a Download-completeness check,
+// a standing Algolia-drift scan independent of any parent-Variant repair)
+// is deferred to the phase 2/3 reconciliation pipeline. A standing scan for
+// Video/Variant Algolia drift already exists via the Algolia reconciliation
+// runner (checkAlgoliaVideoVariantIndexBatch, #9362).
+export type ParentLanguageDiagnostics = {
+  childVariantValidity: 'valid' | 'unknown'
+  muxReadiness: 'ready' | 'unknown' | 'notApplicable'
+  downloadsStatus: 'unknown'
+  algoliaStatus: 'unknown'
+}
 
 export type ParentLanguageFinding = {
   parentId: string
@@ -14,6 +33,7 @@ export type ParentLanguageFinding = {
   languageId: string
   existingVariantId: string | null
   action: ParentLanguageAction
+  diagnostics: ParentLanguageDiagnostics
 }
 
 export type ParentLanguageAuditEntry = ParentLanguageFinding & {
@@ -23,17 +43,34 @@ export type ParentLanguageAuditEntry = ParentLanguageFinding & {
   error?: string
 }
 
-type ExistingParentVariant = {
-  id: string
-  languageId: string
-  hls: string | null
-  dash: string | null
-  muxVideoId: string | null
-  duration: number | null
-  published: boolean
-  downloadable: boolean
-  downloads: Array<{ id: string }>
-}
+const childVariantSelect = {
+  languageId: true,
+  videoId: true,
+  hls: true,
+  dash: true,
+  muxVideoId: true,
+  duration: true
+} satisfies Prisma.VideoVariantSelect
+
+type ChildVariantForRequirement = Prisma.VideoVariantGetPayload<{
+  select: typeof childVariantSelect
+}>
+
+const parentVariantSelect = {
+  id: true,
+  languageId: true,
+  hls: true,
+  dash: true,
+  muxVideoId: true,
+  duration: true,
+  published: true,
+  downloadable: true,
+  downloads: { select: { id: true }, take: 1 }
+} satisfies Prisma.VideoVariantSelect
+
+type ExistingParentVariant = Prisma.VideoVariantGetPayload<{
+  select: typeof parentVariantSelect
+}>
 
 function hasRealMediaIndicators(variant: ExistingParentVariant): boolean {
   return (
@@ -56,6 +93,60 @@ function needsNormalization(
   )
 }
 
+function diagnoseChildVariant(
+  child: ChildVariantForRequirement
+): ParentLanguageDiagnostics {
+  const hasPlayableStream = (child.hls ?? '') !== '' || (child.dash ?? '') !== ''
+  const childVariantValidity: ParentLanguageDiagnostics['childVariantValidity'] =
+    hasPlayableStream || (child.duration ?? 0) > 0 ? 'valid' : 'unknown'
+  const muxReadiness: ParentLanguageDiagnostics['muxReadiness'] =
+    child.muxVideoId != null
+      ? 'unknown'
+      : hasPlayableStream
+        ? 'notApplicable'
+        : 'unknown'
+  return {
+    childVariantValidity,
+    muxReadiness,
+    downloadsStatus: 'unknown',
+    algoliaStatus: 'unknown'
+  }
+}
+
+// The single source of truth for "which parent languages does this Video
+// require" -- one qualifying direct published child Variant in a language
+// is sufficient. Shared by the single-parent parentVariantsOnly mutation
+// mode (#9382) and the catalog-wide audit (#9468) so the invariant is
+// defined once, not reimplemented per caller.
+export async function getRequiredParentLanguages(parentId: string): Promise<
+  Array<{
+    languageId: string
+    childVideoId: string
+    diagnostics: ParentLanguageDiagnostics
+  }>
+> {
+  const childVariants = await prisma.videoVariant.findMany({
+    where: {
+      published: true,
+      video: { published: true, parents: { some: { id: parentId } } }
+    },
+    select: childVariantSelect
+  })
+
+  const requiredLanguages = new Map<string, ChildVariantForRequirement>()
+  for (const child of childVariants) {
+    if (!requiredLanguages.has(child.languageId)) {
+      requiredLanguages.set(child.languageId, child)
+    }
+  }
+
+  return [...requiredLanguages.values()].map((child) => ({
+    languageId: child.languageId,
+    childVideoId: child.videoId,
+    diagnostics: diagnoseChildVariant(child)
+  }))
+}
+
 // Discovers required parent languages by relationship (direct published
 // children of published Videos), never by container Label, and classifies
 // each required language against the parent's existing Variant.
@@ -68,43 +159,20 @@ export async function findParentLanguageFindings(
   })
   if (parent == null) return []
 
-  const [childVariants, parentVariants] = await Promise.all([
-    prisma.videoVariant.findMany({
-      where: {
-        published: true,
-        video: { published: true, parents: { some: { id: parentId } } }
-      },
-      select: { languageId: true, videoId: true }
-    }),
+  const [requiredLanguages, parentVariants] = await Promise.all([
+    getRequiredParentLanguages(parentId),
     prisma.videoVariant.findMany({
       where: { videoId: parentId },
-      select: {
-        id: true,
-        languageId: true,
-        hls: true,
-        dash: true,
-        muxVideoId: true,
-        duration: true,
-        published: true,
-        downloadable: true,
-        downloads: { select: { id: true }, take: 1 }
-      }
-    }) as unknown as Promise<ExistingParentVariant[]>
+      select: parentVariantSelect
+    })
   ])
-
-  const requiredLanguages = new Map<string, string>()
-  for (const { languageId, videoId } of childVariants) {
-    if (!requiredLanguages.has(languageId)) {
-      requiredLanguages.set(languageId, videoId)
-    }
-  }
 
   const parentVariantByLanguage = new Map(
     parentVariants.map((variant) => [variant.languageId, variant])
   )
 
   const findings: ParentLanguageFinding[] = []
-  for (const [languageId, childVideoId] of requiredLanguages) {
+  for (const { languageId, childVideoId, diagnostics } of requiredLanguages) {
     const existing = parentVariantByLanguage.get(languageId)
     if (existing == null) {
       findings.push({
@@ -112,7 +180,8 @@ export async function findParentLanguageFindings(
         childVideoId,
         languageId,
         existingVariantId: null,
-        action: 'create'
+        action: 'create',
+        diagnostics
       })
       continue
     }
@@ -122,7 +191,8 @@ export async function findParentLanguageFindings(
         childVideoId,
         languageId,
         existingVariantId: existing.id,
-        action: 'ambiguous'
+        action: 'ambiguous',
+        diagnostics
       })
       continue
     }
@@ -132,7 +202,8 @@ export async function findParentLanguageFindings(
         childVideoId,
         languageId,
         existingVariantId: existing.id,
-        action: 'normalize'
+        action: 'normalize',
+        diagnostics
       })
     }
   }
@@ -221,8 +292,12 @@ export async function auditAndRepairParent(
     try {
       const variantId =
         finding.action === 'create'
-          ? (await createEmptyParentVariant(finding.parentId, finding.languageId))
-              .id
+          ? (
+              await createEmptyParentVariant(
+                finding.parentId,
+                finding.languageId
+              )
+            ).id
           : await normalizeParentVariant(finding)
       const indexResult = await indexParentVariant(finding.parentId, variantId)
       entries.push({
