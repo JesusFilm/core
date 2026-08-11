@@ -383,32 +383,47 @@ describe('processVideoDownloads service', () => {
       expect(prismaMock.videoVariantDownload.create).toHaveBeenCalledTimes(2)
     })
 
-    it('should handle duplicate download creation gracefully', async () => {
+    it('should refresh existing Mux downloads gracefully', async () => {
       prismaMock.muxVideo.findUnique.mockResolvedValue(mockMuxVideo)
       prismaMock.muxVideo.update.mockResolvedValue(mockMuxVideo)
       prismaMock.videoVariant.findMany.mockResolvedValue([mockVideoVariants[0]])
       ;(getVideo as Mock).mockResolvedValue(mockMuxVideoAsset)
 
-      // Mock P2002 constraint violation for duplicate
-      prismaMock.videoVariantDownload.create
-        .mockResolvedValueOnce({} as any) // First succeeds
-        .mockRejectedValueOnce({ code: 'P2002' }) // Second fails with constraint violation
-        .mockResolvedValueOnce({} as any) // Third succeeds
+      prismaMock.videoVariantDownload.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({
+          id: 'existing-sd-download',
+          quality: 'sd',
+          videoVariantId: 'variant-1',
+          url: 'https://stream.mux.com/test-playback-id/360p.mp4',
+          size: 0,
+          height: 360,
+          width: 640,
+          bitrate: 0,
+          version: 0,
+          assetId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        } as any)
+        .mockResolvedValueOnce(null)
+      prismaMock.videoVariantDownload.create.mockResolvedValue({} as any)
+      prismaMock.videoVariantDownload.update.mockResolvedValue({} as any)
 
       await service(mockJob, mockLogger)
 
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        expect.objectContaining({
-          videoVariantId: 'variant-1',
-          quality: expect.any(String)
-        }),
-        'Download already exists, skipping'
-      )
+      expect(prismaMock.videoVariantDownload.update).toHaveBeenCalledWith({
+        where: { id: 'existing-sd-download' },
+        data: expect.objectContaining({
+          quality: 'sd',
+          size: 52428800,
+          bitrate: 800000
+        })
+      })
       expect(mockLogger.info).toHaveBeenCalledWith(
         expect.objectContaining({
           videoId: 'test-video-id',
           videoVariantId: 'variant-1',
-          downloadsCount: 2
+          downloadsCount: 3
         }),
         'Successfully created video downloads'
       )
@@ -433,7 +448,7 @@ describe('processVideoDownloads service', () => {
           error: expect.objectContaining({ code: 'P1001' }),
           videoVariantId: 'variant-1'
         }),
-        'Failed to create individual download'
+        'Failed to create or update individual download'
       )
     })
 

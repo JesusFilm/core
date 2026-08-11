@@ -10,6 +10,8 @@ import { queue as processVideoDownloadsQueue } from '../../processVideoDownloads
 import { ProcessVideoUploadJobData, service } from './service'
 
 vi.mock('../../../schema/mux/video/service', () => ({
+  createVideoFromUrl: vi.fn(),
+  getMaxResolutionValue: vi.fn(),
   getVideo: vi.fn()
 }))
 
@@ -17,6 +19,19 @@ vi.mock('../../processVideoDownloads/queue', () => ({
   queue: {
     add: vi.fn()
   }
+}))
+
+vi.mock('../../../workers/videoAlgoliaSync', () => ({
+  enqueueVideoAlgoliaSync: vi.fn()
+}))
+
+vi.mock('../../../lib/videoCacheReset', () => ({
+  videoCacheReset: vi.fn(),
+  videoVariantCacheReset: vi.fn()
+}))
+
+vi.mock('../../../lib/slack', () => ({
+  notifyMediaSlackOfOperationFailure: vi.fn()
 }))
 
 const mockLogger = {
@@ -59,7 +74,11 @@ describe('processVideoUploads service', () => {
     })
 
     prismaMock.muxVideo.update.mockResolvedValue({} as any)
-    prismaMock.video.findUnique.mockResolvedValue({ slug: 'video-slug' } as any)
+    prismaMock.video.findUnique.mockResolvedValueOnce({
+      slug: 'video-slug'
+    } as any)
+    prismaMock.video.findMany.mockResolvedValue([] as any)
+    prismaMock.$executeRaw.mockResolvedValue(1)
     prismaMock.videoVariant.findFirst.mockResolvedValue({
       id: 'variant-id',
       slug: 'variant-slug'
@@ -102,6 +121,13 @@ describe('processVideoUploads service', () => {
         version: 1
       })
     })
+    expect(prismaMock.$executeRaw).toHaveBeenCalledTimes(1)
+    const [sqlParts, ...values] = prismaMock.$executeRaw.mock.calls[0] as [
+      readonly string[],
+      ...unknown[]
+    ]
+    expect(sqlParts.join(' ')).toContain('array_append')
+    expect(values).toEqual(['529', 'video-id', '529'])
   })
 
   it('updates an existing variant idempotently and marks the durable upload complete', async () => {
@@ -125,6 +151,7 @@ describe('processVideoUploads service', () => {
     prismaMock.muxVideo.update.mockResolvedValue({} as any)
     prismaMock.videoVariantUpload.update.mockResolvedValue({} as any)
     prismaMock.video.findUnique.mockResolvedValue({ slug: 'video-slug' } as any)
+    prismaMock.video.findMany.mockResolvedValue([] as any)
     prismaMock.videoVariant.findFirst.mockResolvedValue({
       id: 'variant-id',
       slug: 'variant-slug'

@@ -12,13 +12,22 @@ import { prisma } from '@core/prisma/media/client'
 import type { MuxVideo, VideoVariantUpload } from '@core/prisma/media/client'
 
 import { notifyMediaSlackOfOperationFailure } from '../../lib/slack'
+import {
+  videoCacheReset,
+  videoVariantCacheReset
+} from '../../lib/videoCacheReset'
 import { jobName as processVideoUploadsJobName } from '../../workers/processVideoUploads/config'
 import { queue as processVideoUploadsQueue } from '../../workers/processVideoUploads/queue'
+import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
 import {
   createVideoFromUrl,
   getMaxResolutionValue,
   getVideo
 } from '../mux/video/service'
+import {
+  addLanguageToVideo,
+  updateParentCollectionLanguages
+} from '../video/lib/updateAvailableLanguages'
 
 const FIVE_DAYS = 5 * 24 * 60 * 60
 
@@ -133,6 +142,71 @@ function getVariantId(videoId: string, languageId: string): string {
   return `${source}_${languageId}-${restOfId}`
 }
 
+async function syncPublishedVariantState({
+  variantId,
+  videoId,
+  languageId,
+  published,
+  muxVideoId,
+  uploadId,
+  logger
+}: {
+  variantId: string
+  videoId: string
+  languageId: string
+  published: boolean
+  muxVideoId: string
+  uploadId?: string
+  logger?: Logger
+}): Promise<void> {
+  if (!published) return
+
+  try {
+    await addLanguageToVideo(videoId, languageId)
+    await updateParentCollectionLanguages(videoId)
+  } catch (error) {
+    logger?.error(
+      { error, videoId, languageId, variantId, muxVideoId, uploadId },
+      'Failed to sync video available languages after upload variant creation'
+    )
+    notifyMediaSlackOfOperationFailure({
+      operation: 'Video variant upload language sync failed',
+      error,
+      context: {
+        videoId,
+        languageId,
+        variantId,
+        muxVideoId,
+        uploadId
+      }
+    })
+    throw error
+  }
+
+  // Durable, retriable Algolia sync (QA-543) — matches the videoVariant
+  // create/update mutations rather than calling updateVideoInAlgolia /
+  // updateVideoVariantInAlgolia directly, so a transient Algolia outage
+  // gets BullMQ retries instead of being silently dropped.
+  await enqueueVideoAlgoliaSync(
+    videoId,
+    {
+      syncVideoRecord: true,
+      syncAllVariants: false,
+      syncPublishedFlag: false,
+      dirtyVariantIds: [variantId],
+      deletedVariantIds: []
+    },
+    logger
+  )
+
+  try {
+    void videoVariantCacheReset(variantId)
+    void videoCacheReset(videoId)
+  } catch (error) {
+    console.error('Cache reset error:', error)
+  }
+}
+
 export async function createOrUpdateVideoVariant({
   videoId,
   edition,
@@ -207,6 +281,16 @@ export async function createOrUpdateVideoVariant({
               ...variantData
             }
           })
+
+    await syncPublishedVariantState({
+      variantId: variant.id,
+      videoId,
+      languageId,
+      published,
+      muxVideoId,
+      uploadId,
+      logger
+    })
 
     if (uploadId != null) {
       await prisma.videoVariantUpload.update({
