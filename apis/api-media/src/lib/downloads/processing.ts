@@ -7,6 +7,20 @@ import {
   prisma
 } from '@core/prisma/media/client'
 
+const MUX_STREAM_BASE_URL = 'https://stream.mux.com/'
+
+function hasMissingDownloadMetadata(download: {
+  size?: number | null
+  bitrate?: number | null
+}): boolean {
+  return (
+    download.size == null ||
+    download.size === 0 ||
+    download.bitrate == null ||
+    download.bitrate === 0
+  )
+}
+
 export const qualityEnumToOrder: Record<VideoVariantDownloadQuality, number> = {
   [VideoVariantDownloadQuality.distroLow]: 0,
   [VideoVariantDownloadQuality.distroSd]: 1,
@@ -176,20 +190,22 @@ export interface CreateDownloadsFromMuxAssetOptions {
   logger?: Logger
 }
 
-export async function createDownloadsFromMuxAsset({
+function buildMuxDownloadRows({
   variantId,
   muxVideoAsset,
   logger
-}: CreateDownloadsFromMuxAssetOptions): Promise<number> {
+}: CreateDownloadsFromMuxAssetOptions):
+  | Prisma.VideoVariantDownloadCreateManyInput[]
+  | null {
   if (muxVideoAsset.static_renditions?.files == null) {
     logger?.info({ variantId }, 'No static renditions files available')
-    return 0
+    return null
   }
 
   const playbackId = muxVideoAsset.playback_ids?.[0]?.id
   if (!playbackId) {
     logger?.info({ variantId }, 'No playback ID available')
-    return 0
+    return null
   }
 
   // First, process files with direct mappings
@@ -312,41 +328,92 @@ export async function createDownloadsFromMuxAsset({
 
   if (validDownloads.length === 0) {
     logger?.info({ variantId }, 'No valid downloads to create')
-    return 0
+    return null
   }
 
   // Find the highest quality by enum up to uhd since mux doesn't generate highest enum
   const highest = getHighestResolutionDownload(validDownloads)
-  const data = [...validDownloads, highest]
+  return [...validDownloads, highest]
+}
+
+export function previewMuxDownloadsFromAsset(
+  options: CreateDownloadsFromMuxAssetOptions
+): Prisma.VideoVariantDownloadCreateManyInput[] {
+  return buildMuxDownloadRows(options) ?? []
+}
+
+export async function createDownloadsFromMuxAsset({
+  variantId,
+  muxVideoAsset,
+  logger
+}: CreateDownloadsFromMuxAssetOptions): Promise<number> {
+  const data = buildMuxDownloadRows({
+    variantId,
+    muxVideoAsset,
+    logger
+  })
+
+  if (data == null) {
+    return 0
+  }
 
   // Create downloads individually to handle duplicates gracefully
   let createdCount = 0
   for (const download of data) {
     try {
-      await prisma.videoVariantDownload.create({
-        data: download
+      const existingDownload = await prisma.videoVariantDownload.findUnique({
+        where: {
+          quality_videoVariantId: {
+            quality: download.quality,
+            videoVariantId: variantId
+          }
+        }
       })
-      createdCount++
-    } catch (error: any) {
-      // Skip if already exists (P2002 constraint violation)
-      if (error?.code === 'P2002') {
-        logger?.info(
-          {
-            videoVariantId: variantId,
-            quality: download.quality
-          },
-          'Download already exists, skipping'
-        )
-      } else {
-        logger?.error(
-          {
-            error,
-            videoVariantId: variantId,
-            quality: download.quality
-          },
-          'Failed to create individual download'
-        )
+
+      if (existingDownload == null) {
+        await prisma.videoVariantDownload.create({
+          data: download
+        })
+        createdCount++
+        continue
       }
+
+      if (
+        existingDownload.url.startsWith(MUX_STREAM_BASE_URL) &&
+        hasMissingDownloadMetadata(existingDownload)
+      ) {
+        await prisma.videoVariantDownload.update({
+          where: { id: existingDownload.id },
+          data: {
+            quality: download.quality,
+            size: download.size,
+            height: download.height,
+            width: download.width,
+            bitrate: download.bitrate,
+            url: download.url
+          }
+        })
+        createdCount++
+        continue
+      }
+
+      logger?.info(
+        {
+          videoVariantId: variantId,
+          quality: download.quality,
+          isMuxDownload: existingDownload.url.startsWith(MUX_STREAM_BASE_URL)
+        },
+        'Existing download does not need Mux metadata refresh'
+      )
+    } catch (error: any) {
+      logger?.error(
+        {
+          error,
+          videoVariantId: variantId,
+          quality: download.quality
+        },
+        'Failed to create or update individual download'
+      )
     }
   }
 
