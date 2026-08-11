@@ -6,8 +6,13 @@ import { type MockedFunction } from 'vitest'
 import { HomePage } from './HomePage'
 
 vi.mock('firebase/auth', () => ({
-  getAuth: vi.fn(),
   fetchSignInMethodsForEmail: vi.fn()
+}))
+
+vi.mock('../../../libs/auth', () => ({
+  getFirebaseAuth: vi.fn(() => ({ currentUser: null })),
+  login: vi.fn(),
+  loginWithCredential: vi.fn()
 }))
 
 describe('Home', () => {

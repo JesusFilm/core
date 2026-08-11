@@ -1353,5 +1353,9 @@
   "Access Secret": "Access Secret",
   "Failed to check video status": "Failed to check video status",
   "Justify": "Justify",
-  "{{width}} x {{height}} pixels": "{{width}} x {{height}} pixels"
+  "{{width}} x {{height}} pixels": "{{width}} x {{height}} pixels",
+  "Templates Restored": "Templates Restored",
+  "Templates Deleted": "Templates Deleted",
+  "Templates Unarchived": "Templates Unarchived",
+  "Journeys Unarchived": "Journeys Unarchived"
 }

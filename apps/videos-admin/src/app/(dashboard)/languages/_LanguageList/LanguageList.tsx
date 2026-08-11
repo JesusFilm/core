@@ -44,6 +44,7 @@ import type {
   GetLanguageStudioManagedFilmsVariables,
   LinkedLanguageStudioManagedFilm
 } from '../_LanguageStudioManagedFilms/languageStudioManagedFilms'
+import { WessImportButton } from '../_WessImportButton'
 
 const DEFAULT_PAGE_SIZE = 25
 
@@ -194,18 +195,18 @@ export function LanguageList(): ReactElement {
     []
   )
 
-  const { data, loading } = useQuery<GetLanguagesData, GetLanguagesVariables>(
-    GET_LANGUAGES,
-    {
-      variables: {
-        limit: paginationModel.pageSize,
-        offset: paginationModel.page * paginationModel.pageSize,
-        nameLanguageId: DEFAULT_LANGUAGE_ID,
-        term,
-        where
-      }
+  const { data, loading, refetch } = useQuery<
+    GetLanguagesData,
+    GetLanguagesVariables
+  >(GET_LANGUAGES, {
+    variables: {
+      limit: paginationModel.pageSize,
+      offset: paginationModel.page * paginationModel.pageSize,
+      nameLanguageId: DEFAULT_LANGUAGE_ID,
+      term,
+      where
     }
-  )
+  })
   const { data: linkedFilmsData, loading: linkedFilmsLoading } = useQuery<
     GetLanguageStudioManagedFilmsData,
     GetLanguageStudioManagedFilmsVariables
@@ -413,6 +414,7 @@ export function LanguageList(): ReactElement {
             <MenuItem value="yes">Yes</MenuItem>
             <MenuItem value="no">No</MenuItem>
           </TextField>
+          <WessImportButton onImportComplete={() => void refetch()} />
         </Stack>
 
         <Box sx={{ flex: '1 1 auto', minHeight: { xs: 360, sm: 420 } }}>

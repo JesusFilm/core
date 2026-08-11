@@ -1,5 +1,5 @@
-import { render } from '@react-email/render'
 import { Job } from 'bullmq'
+import { render } from 'react-email'
 
 import {
   UserJourneyRole,
