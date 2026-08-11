@@ -58,12 +58,19 @@ export default function IndexPage(): ReactElement {
         mainHeaderChildren={
           <Stack
             direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            width="100%"
+            sx={{
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: '100%'
+            }}
           >
             <TeamSelect onboarding={showOnboardingPopover} />
-            <Stack direction="row" alignItems="center">
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: 'center'
+              }}
+            >
               <TeamMenu />
             </Stack>
           </Stack>

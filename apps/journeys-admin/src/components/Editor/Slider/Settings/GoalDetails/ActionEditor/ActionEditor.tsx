@@ -116,7 +116,14 @@ export function ActionEditor({
         validationSchema={linkActionSchema}
         onSubmit={handleSubmit}
       />
-      <Stack gap={2} direction="row" alignItems="center" sx={{ pt: 3 }}>
+      <Stack
+        direction="row"
+        sx={{
+          gap: 2,
+          alignItems: 'center',
+          pt: 3
+        }}
+      >
         {icon}
         <Typography variant="subtitle2">{label}</Typography>
       </Stack>

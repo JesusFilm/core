@@ -109,17 +109,18 @@ export function Header({
           onClose={() => setDrawerOpen(false)}
           onOpen={() => setDrawerOpen(true)}
           slotProps={{
-            backdrop: { sx: { backgroundColor: 'rgba(0, 0, 0, 0.13)' } }
-          }}
-          PaperProps={{
-            sx: {
-              width: '100%',
-              background: 'transparent',
-              boxShadow: 'none',
-              overflowX: 'hidden',
-              overscrollBehaviorY: 'none'
-            },
-            onClick: () => setDrawerOpen(false)
+            backdrop: { sx: { backgroundColor: 'rgba(0, 0, 0, 0.13)' } },
+
+            paper: {
+              sx: {
+                width: '100%',
+                background: 'transparent',
+                boxShadow: 'none',
+                overflowX: 'hidden',
+                overscrollBehaviorY: 'none'
+              },
+              onClick: () => setDrawerOpen(false)
+            }
           }}
         >
           <Container

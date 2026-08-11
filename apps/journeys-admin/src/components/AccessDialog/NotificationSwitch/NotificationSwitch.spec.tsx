@@ -25,11 +25,8 @@ describe('NotificationSwitch', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(screen.getByRole('checkbox')).toHaveAttribute(
-      'aria-checked',
-      'false'
-    )
-    fireEvent.click(screen.getByRole('checkbox'))
+    expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'false')
+    fireEvent.click(screen.getByRole('switch'))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
@@ -47,7 +44,7 @@ describe('NotificationSwitch', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.mouseOver(screen.getByRole('checkbox'))
+    fireEvent.mouseOver(screen.getByRole('switch'))
     await waitFor(() =>
       expect(
         screen.getByRole('tooltip', { name: 'Only username can change this' })
@@ -64,7 +61,7 @@ describe('NotificationSwitch', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.mouseOver(screen.getByRole('checkbox'))
+    fireEvent.mouseOver(screen.getByRole('switch'))
     await waitFor(() =>
       expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
     )
@@ -83,6 +80,6 @@ describe('NotificationSwitch', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(screen.getByRole('checkbox')).toBeDisabled()
+    expect(screen.getByRole('switch')).toBeDisabled()
   })
 })

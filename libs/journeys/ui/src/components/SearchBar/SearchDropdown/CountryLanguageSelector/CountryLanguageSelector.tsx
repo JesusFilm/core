@@ -68,8 +68,11 @@ export function CountryLanguageSelector({
           <Stack
             spacing={4}
             direction={{ xs: 'column', sm: 'row' }}
-            alignItems={{ xs: 'flex-start', sm: 'center' }}
-            sx={{ pt: 6, pb: 3 }}
+            sx={{
+              alignItems: { xs: 'flex-start', sm: 'center' },
+              pt: 6,
+              pb: 3
+            }}
           >
             <Box
               sx={{

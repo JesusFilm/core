@@ -501,13 +501,17 @@ export function AlgoliaDebugging(): ReactElement {
       <Stack
         direction={{ xs: 'column', lg: 'row' }}
         spacing={1.5}
-        justifyContent="space-between"
-        alignItems={{ xs: 'stretch', lg: 'center' }}
+        sx={{
+          justifyContent: 'space-between',
+          alignItems: { xs: 'stretch', lg: 'center' }
+        }}
       >
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
           spacing={1.5}
-          alignItems={{ xs: 'stretch', sm: 'center' }}
+          sx={{
+            alignItems: { xs: 'stretch', sm: 'center' }
+          }}
         >
           <ToggleButtonGroup
             exclusive
@@ -533,7 +537,9 @@ export function AlgoliaDebugging(): ReactElement {
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
             spacing={1}
-            alignItems={{ xs: 'stretch', sm: 'center' }}
+            sx={{
+              alignItems: { xs: 'stretch', sm: 'center' }
+            }}
           >
             {selectedFixableCounts.missing > 0 && (
               <Button
@@ -573,7 +579,7 @@ export function AlgoliaDebugging(): ReactElement {
         )}
       </Stack>
 
-      <Stack direction="row" flexWrap="wrap" gap={1}>
+      <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>
         <Chip label={`Checked ${summary.checked}`} />
         <Chip color="warning" label={`Missing ${summary.missing}`} />
         <Chip color="info" label={`Stale ${summary.stale}`} />

@@ -87,15 +87,20 @@ export function SourceFromLocal({
           Icon={VideoOnIcon}
         />
       </Box>
-      <Box flexGrow={1} minWidth={0}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          minWidth: 0
+        }}
+      >
         <Typography
           variant="subtitle2"
           sx={{
+            color: 'text.secondary',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             overflow: 'hidden'
           }}
-          color="text.secondary"
         >
           {
             (selectedBlock?.mediaVideo as VideoFields_mediaVideo_Video)
@@ -105,11 +110,11 @@ export function SourceFromLocal({
         <Typography
           variant="caption"
           sx={{
+            color: 'text.secondary',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             overflow: 'hidden'
           }}
-          color="text.secondary"
         >
           {language}
           &nbsp;

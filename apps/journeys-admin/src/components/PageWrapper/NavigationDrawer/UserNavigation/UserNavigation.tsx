@@ -129,7 +129,9 @@ export function UserNavigation({
           </ListItemIcon>
           <ListItemText
             primary={t('Publisher')}
-            primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+            slotProps={{
+              primary: { style: { whiteSpace: 'nowrap' } }
+            }}
           />
         </ListItemButton>
       )}
@@ -144,7 +146,9 @@ export function UserNavigation({
             </ListItemIcon>
             <ListItemText
               primary={t('Impersonate')}
-              primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+              slotProps={{
+                primary: { style: { whiteSpace: 'nowrap' } }
+              }}
             />
           </ListItemButton>
         )}
@@ -161,7 +165,9 @@ export function UserNavigation({
             </ListItemIcon>
             <ListItemText
               primary={t('Delete User')}
-              primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+              slotProps={{
+                primary: { style: { whiteSpace: 'nowrap' } }
+              }}
             />
           </ListItemButton>
         )}
@@ -179,7 +185,9 @@ export function UserNavigation({
           </ListItemIcon>
           <ListItemText
             primary={t('Profile')}
-            primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+            slotProps={{
+              primary: { style: { whiteSpace: 'nowrap' } }
+            }}
           />
         </ListItemButton>
       )}

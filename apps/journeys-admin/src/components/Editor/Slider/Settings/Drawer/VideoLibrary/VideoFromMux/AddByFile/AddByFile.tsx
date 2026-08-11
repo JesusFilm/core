@@ -157,17 +157,20 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
 
   return (
     <Stack
-      alignItems="center"
-      gap={1}
-      sx={{ px: 6, py: 3 }}
       data-testid="AddByFile"
+      sx={{
+        alignItems: 'center',
+        gap: 1,
+        px: 6,
+        py: 3
+      }}
     >
       <UploadDropZoneShell
+        {...getRootProps()}
         data-testid="drop zone"
         isDragAccept={isDragAccept}
         isActive={uploading || processing || waiting}
         hasError={hasError}
-        {...getRootProps()}
       >
         <input {...getInputProps()} />
         {hasError ? (
@@ -187,16 +190,26 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
             }}
           />
         )}
-        <Stack alignItems="center" sx={{ display: { xs: 'none', sm: 'flex' } }}>
+        <Stack
+          sx={{
+            alignItems: 'center',
+            display: { xs: 'none', sm: 'flex' }
+          }}
+        >
           {statusLabel != null ? (
             <Typography
+              sx={{ color: hasError ? 'error.main' : 'secondary.main' }}
               variant="body1"
-              color={hasError ? 'error.main' : 'secondary.main'}
             >
               {statusLabel}
             </Typography>
           ) : (
-            <Typography variant="body1" color="secondary.main">
+            <Typography
+              variant="body1"
+              sx={{
+                color: 'secondary.main'
+              }}
+            >
               {t('Drop a video here')}
             </Typography>
           )}
@@ -244,8 +257,11 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
       <Stack
         direction="row"
         spacing={1}
-        color={hasError ? 'error.main' : 'secondary.light'}
-        sx={{ mt: 1, alignItems: 'flex-start' }}
+        sx={{
+          color: hasError ? 'error.main' : 'secondary.light',
+          mt: 1,
+          alignItems: 'flex-start'
+        }}
       >
         <AlertTriangleIcon
           fontSize="small"

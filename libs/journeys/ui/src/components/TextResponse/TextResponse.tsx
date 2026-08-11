@@ -134,8 +134,10 @@ export const TextResponse = ({
     <Box sx={{ mb: 4 }} data-testid="JourneysTextResponse">
       <Stack
         data-testid={`textResponse-${blockId}`}
-        flexDirection="column"
         spacing={1}
+        sx={{
+          flexDirection: 'column'
+        }}
       >
         {hideLabel !== true && (
           <Typography

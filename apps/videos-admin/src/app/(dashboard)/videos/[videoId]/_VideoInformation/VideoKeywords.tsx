@@ -173,8 +173,10 @@ export function VideoKeywords({
             '& .MuiInputBase-root': { p: 0 },
             '& textarea': { p: 0, background: 'transparent' }
           }}
-          InputProps={{
-            disableUnderline: true
+          slotProps={{
+            input: {
+              disableUnderline: true
+            }
           }}
         />
       </Box>

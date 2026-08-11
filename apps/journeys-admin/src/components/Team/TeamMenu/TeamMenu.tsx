@@ -114,10 +114,10 @@ export function TeamMenu(): ReactElement {
       {activeTeam != null && activeTeam?.customDomains[0]?.name != null && (
         <Stack
           direction="row"
-          alignItems="center"
-          justifyContent="flex-end"
-          gap={1}
           sx={{
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            gap: 1,
             mr: { xs: 0, sm: 4 },
             display: { xs: 'none', sm: 'flex' },
             width: { xs: 0, sm: 300, md: 250 }
@@ -159,9 +159,6 @@ export function TeamMenu(): ReactElement {
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
-        MenuListProps={{
-          'aria-labelledby': 'edit-journey-actions'
-        }}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'right'
@@ -171,6 +168,11 @@ export function TeamMenu(): ReactElement {
           horizontal: 'right'
         }}
         data-testid="TeamMenu"
+        slotProps={{
+          list: {
+            'aria-labelledby': 'edit-journey-actions'
+          }
+        }}
       >
         <MenuItem
           disabled={activeTeam == null}

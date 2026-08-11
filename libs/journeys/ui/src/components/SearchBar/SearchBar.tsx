@@ -195,27 +195,29 @@ export function SearchBar({
                   onMouseEnter={prepareDropdown}
                   onTouchStart={prepareDropdown}
                   showLanguageButton={showLanguageButton}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search1Icon />
-                      </InputAdornment>
-                    ),
-                    endAdornment: showLanguageButton ? (
-                      <InputAdornment
-                        position="end"
-                        sx={{
-                          [theme.breakpoints.down('lg')]: { display: 'none' }
-                        }}
-                      >
-                        <LanguageButtons
-                          onClick={handleLanguageClick}
-                          refinements={refinements}
-                        />
-                      </InputAdornment>
-                    ) : (
-                      <></>
-                    )
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Search1Icon />
+                        </InputAdornment>
+                      ),
+                      endAdornment: showLanguageButton ? (
+                        <InputAdornment
+                          position="end"
+                          sx={{
+                            [theme.breakpoints.down('lg')]: { display: 'none' }
+                          }}
+                        >
+                          <LanguageButtons
+                            onClick={handleLanguageClick}
+                            refinements={refinements}
+                          />
+                        </InputAdornment>
+                      ) : (
+                        <></>
+                      )
+                    }
                   }}
                   {...props}
                 />

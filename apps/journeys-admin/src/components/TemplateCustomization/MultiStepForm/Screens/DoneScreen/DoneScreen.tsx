@@ -207,8 +207,10 @@ export function DoneScreen(): ReactElement {
             {isEmailResponseEnabled && (
               <Stack
                 direction="row"
-                justifyContent="space-between"
-                alignItems="center"
+                sx={{
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}
               >
                 <Typography variant="body2">{t('Send to my email')}</Typography>
                 <NotificationSwitch journeyId={journey?.id} />
@@ -216,8 +218,10 @@ export function DoneScreen(): ReactElement {
             )}
             <Stack
               direction="row"
-              justifyContent="space-between"
-              alignItems="center"
+              sx={{
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
             >
               <Typography variant="body2">
                 {t('Sync to Google Sheets')}

@@ -42,29 +42,41 @@ export function AccessDenied(): ReactElement {
   return (
     <>
       <Stack
-        alignItems="center"
-        justifyContent="center"
-        sx={{ width: '100%', height: '100vh' }}
         data-testid="JourneysAdminAccessDenied"
+        sx={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          height: '100vh'
+        }}
       >
         <Box sx={{ width: { xs: '296px', sm: '587px', md: '759px' } }}>
           <Stack
             direction="row"
-            alignItems="center"
-            display={{ xs: 'none', sm: 'flex' }}
-            sx={{ mb: 8 }}
+            sx={{
+              alignItems: 'center',
+              display: { xs: 'none', sm: 'flex' },
+              mb: 8
+            }}
           >
             <Lock1Icon
               sx={{ width: '40px', ml: 5, mr: 3, color: 'secondary.light' }}
             />
-            <Typography variant="h3" color="text.primary">
+            <Typography
+              variant="h3"
+              sx={{
+                color: 'text.primary'
+              }}
+            >
               {t(`You can't edit this journey`)}
             </Typography>
           </Stack>
           <Stack
-            alignItems="center"
-            display={{ xs: 'flex', sm: 'none' }}
-            sx={{ mb: 7 }}
+            sx={{
+              alignItems: 'center',
+              display: { xs: 'flex', sm: 'none' },
+              mb: 7
+            }}
           >
             <Lock1Icon
               sx={{
@@ -75,7 +87,13 @@ export function AccessDenied(): ReactElement {
                 mb: 4.5
               }}
             />
-            <Typography variant="h4" color="text.primary" align="center">
+            <Typography
+              variant="h4"
+              align="center"
+              sx={{
+                color: 'text.primary'
+              }}
+            >
               {t(`You can't edit this journey`)}
             </Typography>
           </Stack>
@@ -122,8 +140,18 @@ export function AccessDenied(): ReactElement {
               )}
             />
           </List>
-          <Stack direction="row" justifyContent="space-between" sx={{ mt: 7 }}>
-            <Box display={{ xs: 'none', sm: 'flex' }}>
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: 'space-between',
+              mt: 7
+            }}
+          >
+            <Box
+              sx={{
+                display: { xs: 'none', sm: 'flex' }
+              }}
+            >
               <Button
                 LinkComponent={NextLink}
                 href="/"
@@ -134,7 +162,11 @@ export function AccessDenied(): ReactElement {
                 {t('Back to my journeys')}
               </Button>
             </Box>
-            <Box display={{ xs: 'flex', sm: 'none' }}>
+            <Box
+              sx={{
+                display: { xs: 'flex', sm: 'none' }
+              }}
+            >
               <Button
                 LinkComponent={NextLink}
                 href="/"

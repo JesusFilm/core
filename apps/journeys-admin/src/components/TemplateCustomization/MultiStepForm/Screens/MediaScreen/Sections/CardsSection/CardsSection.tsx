@@ -37,9 +37,9 @@ export function CardsSection({
   return (
     <Stack
       direction="column"
-      gap={4}
       data-testid="CardsSection"
       sx={{
+        gap: 4,
         width: '100%',
         overflow: 'visible'
       }}
