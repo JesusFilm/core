@@ -48,7 +48,7 @@ export function TrashedTemplateList({
   const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {
-        enqueueSnackbar(t('Journeys Restored'), {
+        enqueueSnackbar(t('Templates Restored'), {
           variant: 'success'
         })
         const templateIds = extractTemplateIdsFromJourneys(data.journeysRestore)
@@ -63,7 +63,7 @@ export function TrashedTemplateList({
   const [deleteTrashed] = useMutation(DELETE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysDelete != null) {
-        enqueueSnackbar(t('Journeys Deleted'), {
+        enqueueSnackbar(t('Templates Deleted'), {
           variant: 'success'
         })
         void refetch()
