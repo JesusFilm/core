@@ -244,6 +244,9 @@ describe('ArchivedTemplateList', () => {
       )
       fireEvent.click(getByText('Unarchive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Templates Unarchived')).toBeInTheDocument()
+      )
     })
 
     it('should show error', async () => {
@@ -355,6 +358,9 @@ describe('ArchivedTemplateList', () => {
       )
       fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Templates Trashed')).toBeInTheDocument()
+      )
     })
 
     it('should show error', async () => {
