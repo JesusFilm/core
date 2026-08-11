@@ -100,11 +100,26 @@ describe('LanguageSwitcher', () => {
       <LanguageSwitcher open handleClose={handleClose} />
     )
     fireEvent.mouseDown(getByRole('combobox'))
+    const callsBeforeSwitch = t.mock.calls.length
     await waitFor(() => fireEvent.click(getByText('Japanese')))
 
-    expect(t).not.toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({ lng: expect.anything() })
+    const callsAfterSwitch = t.mock.calls.slice(callsBeforeSwitch)
+    expect(callsAfterSwitch).toEqual(
+      expect.arrayContaining([
+        expect.arrayContaining(['Change Language']),
+        expect.arrayContaining(['Revert']),
+        expect.arrayContaining([
+          'Would you like to revert to previous language?'
+        ])
+      ])
+    )
+    expect(callsAfterSwitch).not.toEqual(
+      expect.arrayContaining([
+        expect.arrayContaining([
+          expect.anything(),
+          expect.objectContaining({ lng: expect.anything() })
+        ])
+      ])
     )
   })
 })
