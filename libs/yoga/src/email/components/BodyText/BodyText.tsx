@@ -1,5 +1,5 @@
-import { Container, Text } from '@react-email/components'
 import { ReactElement, ReactNode } from 'react'
+import { Container, Text } from 'react-email'
 
 interface BodyTextProps {
   children: ReactNode
