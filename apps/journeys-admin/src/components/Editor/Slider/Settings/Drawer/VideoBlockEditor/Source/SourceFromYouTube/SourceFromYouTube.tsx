@@ -46,9 +46,9 @@ export function SourceFromYouTube({
         <Typography
           variant="caption"
           color="text.secondary"
-          // NES-1860: variant="caption" renders as an inline <span>, where
-          // overflow and text-overflow have no effect. Block-level so the
-          // truncation below actually applies.
+          // variant="caption" renders as an inline <span>, where overflow and
+          // text-overflow have no effect. Block-level so the truncation below
+          // actually applies.
           sx={{
             display: 'block',
             textOverflow: 'ellipsis',

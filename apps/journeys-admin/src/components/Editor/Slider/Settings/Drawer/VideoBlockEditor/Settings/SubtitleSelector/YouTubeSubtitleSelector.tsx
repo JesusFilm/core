@@ -79,10 +79,10 @@ export function YouTubeSubtitleSelector({
         displayEmpty
         aria-label={t('Subtitle language selector')}
         sx={{
-          // NES-1860: MUI already truncates the selected value with an
-          // ellipsis, but only while this element is a block box — making it a
-          // flex container silently disables text-overflow. Long subtitle
-          // language names must truncate, so it stays block-level.
+          // MUI already truncates the selected value with an ellipsis, but
+          // only while this element is a block box — making it a flex
+          // container silently disables text-overflow. Long subtitle language
+          // names must truncate, so it stays block-level.
           //
           // The right padding is explicit because MUI reserves 32px for the
           // dropdown arrow, and a `padding: '16px 12px'` shorthand would reset

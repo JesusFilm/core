@@ -205,9 +205,9 @@ const mockGetVideoVariantLanguages: MockedResponse<GetVideoVariantLanguages> = {
   }
 }
 
-// NES-1860: the reported failure case. SourceFromLocal composes
-// "<localName> (<nativeName>)", so supplying both names produces a string long
-// enough that the video source card has to truncate it.
+// The reported failure case. SourceFromLocal composes
+// "<localName> (<nativeName>)", so supplying both names produces a string
+// long enough that the video source card has to truncate it.
 const videoLanguagesLongName: GetVideoVariantLanguages_video = {
   __typename: 'Video',
   id: '2_0-FallingPlates',

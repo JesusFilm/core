@@ -50,9 +50,9 @@ const selectedBlock: TreeBlock<VideoBlock> = {
   children: []
 }
 
-// NES-1860: a long language name is the reported failure case. The component
-// composes "<localName> (<nativeName>)", so both names are supplied here to
-// produce the full-length string the card has to truncate.
+// A long language name is the reported failure case. The component composes
+// "<localName> (<nativeName>)", so both names are supplied here to produce
+// the full-length string the card has to truncate.
 const getLongVariantLanguagesMock = {
   request: {
     query: GET_VIDEO_VARIANT_LANGUAGES,
@@ -106,10 +106,10 @@ describe('SourceFromLocal', () => {
       </MockedProvider>
     )
     const language = await screen.findByText(/Arabic, Egyptian Colloquial/)
-    // NES-1860: MUI renders variant="caption" as a <span>, and overflow /
-    // text-overflow have no effect on an inline element. Without an explicit
-    // block display the ellipsis rules alongside it are inert and the name
-    // spills outside the card.
+    // MUI renders variant="caption" as a <span>, and overflow / text-overflow
+    // have no effect on an inline element. Without an explicit block display
+    // the ellipsis rules alongside it are inert and the name spills outside
+    // the card.
     //
     // Only display and overflow are asserted: jsdom's computed style does not
     // implement text-overflow or white-space, so asserting those would fail

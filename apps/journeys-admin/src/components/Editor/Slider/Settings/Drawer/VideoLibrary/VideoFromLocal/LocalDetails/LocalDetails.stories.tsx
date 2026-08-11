@@ -129,10 +129,10 @@ export const Default = {
   }
 }
 
-// NES-1860: the chip label is the selected language's name, so a long name
-// pushes the row past its width. The chip must ellipsise and the Select button
-// must keep its label on one line. Check this story at the narrowest viewport —
-// the desktop settings drawer is only 328px wide.
+// The chip label is the selected language's name, so a long name pushes the
+// row past its width. The chip must ellipsise and the Select button must keep
+// its label on one line. Check this story at the narrowest viewport — the
+// desktop settings drawer is only 328px wide.
 const LONG_LANGUAGE_ID = '21754'
 
 const languagesWithLongName: Language[] = [

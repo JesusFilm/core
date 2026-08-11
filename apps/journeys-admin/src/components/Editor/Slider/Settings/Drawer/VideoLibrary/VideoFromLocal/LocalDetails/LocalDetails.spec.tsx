@@ -247,11 +247,10 @@ describe('LocalDetails', () => {
       </MockedProvider>
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
-    // NES-1860: the chip label is an arbitrarily long language name, so the
-    // chip must be the flex item that gives way. Without flexShrink: 0 the
-    // Select button collapses to MUI's 64px min-width floor and its label
-    // wraps onto two lines — visible in CJK locales, where text can break
-    // between characters.
+    // The chip label is an arbitrarily long language name, so the chip must be
+    // the flex item that gives way. Without flexShrink: 0 the Select button
+    // collapses to MUI's 64px min-width floor and its label wraps onto two
+    // lines — visible in CJK locales, where text can break between characters.
     //
     // Only the button is asserted: jsdom reports min-width as 0px by default,
     // so an equivalent assertion on the chip would pass whether or not the
