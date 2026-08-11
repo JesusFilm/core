@@ -7,6 +7,7 @@ import { videoCacheReset } from '../../../lib/videoCacheReset'
 import { enqueueVideoAlgoliaSync } from '../../../workers/videoAlgoliaSync'
 
 import {
+  addLanguageToVideo,
   findContainerParentIds,
   updateParentCollectionLanguages,
   updateVideoAvailableLanguages
@@ -95,6 +96,50 @@ describe('updateVideoAvailableLanguages', () => {
     await updateVideoAvailableLanguages('video-id', { skipAlgolia: true })
 
     expect(mockedEnqueueVideoAlgoliaSync).not.toHaveBeenCalled()
+  })
+})
+
+describe('addLanguageToVideo', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    prismaMock.$executeRaw.mockResolvedValue(1)
+  })
+
+  it('issues a single atomic conditional UPDATE instead of a read-then-write', async () => {
+    await addLanguageToVideo('video-id', 'lang-1')
+
+    // Regression guard for the lost-update race: two concurrent published
+    // uploads for the same video must not read the same availableLanguages
+    // snapshot and clobber each other's language. There must be no
+    // separate read before the write.
+    expect(prismaMock.video.findUnique).not.toHaveBeenCalled()
+    expect(prismaMock.video.update).not.toHaveBeenCalled()
+    expect(prismaMock.$executeRaw).toHaveBeenCalledTimes(1)
+
+    const [sqlParts, ...values] = prismaMock.$executeRaw.mock.calls[0] as [
+      readonly string[],
+      ...unknown[]
+    ]
+    const sql = sqlParts.join(' ')
+    expect(sql).toContain('array_append')
+    expect(sql).toContain('ANY')
+    expect(values).toEqual(['lang-1', 'video-id', 'lang-1'])
+  })
+
+  it('does not clobber a language added by a concurrent call for the same video', async () => {
+    // Each call is an independent atomic statement handled entirely by
+    // Postgres — there is no shared client-side array read between the two
+    // calls that a "last write wins" bug could stomp on.
+    await Promise.all([
+      addLanguageToVideo('video-id', 'lang-en'),
+      addLanguageToVideo('video-id', 'lang-fr')
+    ])
+
+    expect(prismaMock.$executeRaw).toHaveBeenCalledTimes(2)
+    const calledLanguages = prismaMock.$executeRaw.mock.calls.map(
+      (call) => (call as [readonly string[], ...unknown[]])[1]
+    )
+    expect(calledLanguages.sort()).toEqual(['lang-en', 'lang-fr'])
   })
 })
 
