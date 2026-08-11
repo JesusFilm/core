@@ -51,6 +51,26 @@ const mockYouTubeLanguages = [
   }
 ]
 
+// NES-1860: Esther's QA finding — some YouTube videos expose subtitle
+// languages whose composed name is long enough to run under the dropdown arrow.
+const longNameLanguage = {
+  id: 'lang-fa',
+  bcp47: 'fa',
+  name: [
+    {
+      value: 'Farsi, Western',
+      primary: true,
+      __typename: 'LanguageName' as const
+    },
+    {
+      value: 'فارسی',
+      primary: false,
+      __typename: 'LanguageName' as const
+    }
+  ],
+  __typename: 'Language' as const
+}
+
 describe('YouTubeSubtitleSelector', () => {
   it('renders with "Off" selected when selectedSubtitleId is null', () => {
     render(
@@ -211,5 +231,24 @@ describe('YouTubeSubtitleSelector', () => {
     )
 
     expect(screen.getByRole('combobox')).toHaveTextContent('English (Inglés)')
+  })
+
+  it('renders a long language name with a non-Latin script', () => {
+    render(
+      <YouTubeSubtitleSelector
+        selectedSubtitleId="lang-fa"
+        availableLanguages={[...mockYouTubeLanguages, longNameLanguage]}
+        onChange={vi.fn()}
+      />
+    )
+
+    // NES-1860: this covers the composed name only. Whether it truncates
+    // instead of running under the dropdown arrow cannot be asserted here —
+    // the styles live behind a `& .MuiSelect-select` descendant selector, which
+    // jsdom's computed style does not apply, so any toHaveStyle assertion
+    // passes whether or not the fix is present. Verified manually instead.
+    expect(screen.getByRole('combobox')).toHaveTextContent(
+      'Farsi, Western (فارسی)'
+    )
   })
 })
