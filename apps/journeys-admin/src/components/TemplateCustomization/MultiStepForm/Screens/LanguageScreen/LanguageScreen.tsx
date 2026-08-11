@@ -5,8 +5,7 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { getApp } from 'firebase/app'
-import { getAuth, signInAnonymously } from 'firebase/auth'
+import { signInAnonymously } from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
@@ -31,7 +30,7 @@ import Translate from '@core/shared/ui/icons/Translate'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { LOCALE_LANGUAGES } from '../../../../../../proxy'
-import { useAuth } from '../../../../../libs/auth'
+import { getFirebaseAuth, useAuth } from '../../../../../libs/auth'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useTeamCreateMutation } from '../../../../../libs/useTeamCreateMutation'
 import { usePageWrapperStyles } from '../../../../PageWrapper/utils/usePageWrapperStyles'
@@ -134,7 +133,7 @@ export function LanguageScreen({
     const isAnonymous = user?.isAnonymous ?? false
     if (!isAnonymous) {
       try {
-        await signInAnonymously(getAuth(getApp()))
+        await signInAnonymously(getFirebaseAuth())
       } catch {
         throw new Error('Could not create firebase user')
       }

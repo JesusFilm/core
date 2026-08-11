@@ -244,6 +244,9 @@ describe('ArchivedJourneyList', () => {
       )
       fireEvent.click(getByText('Unarchive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Journeys Unarchived')).toBeInTheDocument()
+      )
     })
 
     it('should show error', async () => {
