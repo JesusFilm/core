@@ -292,6 +292,7 @@ export function RegisterPage({
                   type="submit"
                   fullWidth
                   disabled={!isValid || isSubmitting}
+                  loading={isSubmitting}
                 >
                   {t('Sign Up')}
                 </Button>

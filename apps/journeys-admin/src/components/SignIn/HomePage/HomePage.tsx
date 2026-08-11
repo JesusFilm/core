@@ -128,6 +128,7 @@ export function HomePage({
                 startIcon={<MailOutlineIcon />}
                 type="submit"
                 disabled={!isValid || isSubmitting}
+                loading={isSubmitting}
               >
                 {t('Continue with email')}
               </Button>

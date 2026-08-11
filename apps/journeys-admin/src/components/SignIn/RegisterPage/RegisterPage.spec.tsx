@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { FirebaseError } from 'firebase/app'
 import {
   UserCredential,
@@ -138,6 +138,42 @@ describe('PasswordPage', () => {
     })
     await waitFor(() => {
       expect(mockSignInWithEmailAndPassword).toHaveBeenCalled()
+    })
+  })
+
+  it('should show a loading indicator on the button while submitting', async () => {
+    const mockCreateUserWithEmailAndPassword =
+      createUserWithEmailAndPassword as MockedFunction<
+        typeof createUserWithEmailAndPassword
+      >
+    let resolveCreate!: (result: UserCredential) => void
+    mockCreateUserWithEmailAndPassword.mockReturnValue(
+      new Promise((resolve) => {
+        resolveCreate = resolve
+      })
+    )
+
+    render(
+      <MockedProvider>
+        <RegisterPage setActivePage={vi.fn()} userEmail="example@example.com" />
+      </MockedProvider>
+    )
+
+    fireEvent.change(screen.getByLabelText('Name'), {
+      target: { value: 'First name last name' }
+    })
+    fireEvent.change(screen.getByLabelText('Password'), {
+      target: { value: 'Password' }
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Sign Up' }))
+
+    await waitFor(() =>
+      expect(screen.getByRole('progressbar')).toBeInTheDocument()
+    )
+
+    await act(async () => {
+      resolveCreate({ user: { uid: '123' } } as unknown as UserCredential)
+      await Promise.resolve()
     })
   })
 

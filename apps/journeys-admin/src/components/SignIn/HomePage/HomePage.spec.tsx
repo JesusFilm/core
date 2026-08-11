@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { fetchSignInMethodsForEmail } from 'firebase/auth'
 import { type MockedFunction } from 'vitest'
 
@@ -107,5 +107,36 @@ describe('Home', () => {
     await waitFor(() =>
       expect(mockFetchSignInMethodsForEmail).toHaveBeenCalled()
     )
+  })
+
+  it('should show a loading indicator on the button while submitting', async () => {
+    const mockFetchSignInMethodsForEmail =
+      fetchSignInMethodsForEmail as MockedFunction<
+        typeof fetchSignInMethodsForEmail
+      >
+    let resolveFetch!: (result: string[]) => void
+    mockFetchSignInMethodsForEmail.mockReturnValue(
+      new Promise((resolve) => {
+        resolveFetch = resolve
+      })
+    )
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <HomePage />
+      </MockedProvider>
+    )
+
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'example@example.com' }
+    })
+    fireEvent.click(getByRole('button', { name: 'Continue with email' }))
+
+    await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
+
+    await act(async () => {
+      resolveFetch([])
+      await Promise.resolve()
+    })
   })
 })
