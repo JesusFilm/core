@@ -68,7 +68,7 @@ export class Publisher {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Archive All')
     await this.clickDialogBoxBtn('Archive')
-    await this.verifyToastMessage('Journeys Archived')
+    await this.verifyToastMessage('Templates Archived')
     await this.verifyActiveTabShowsEmptyMessage()
     await this.clickArchivedTab()
     await this.verifyAllTemplateMovedToArchivedTab()
