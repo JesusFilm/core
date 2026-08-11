@@ -80,13 +80,6 @@ export function LanguageSwitcher({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentLanguageCode])
 
-  console.log('DEBUG LanguageSwitcher render', {
-    i18nLanguage: i18n.language,
-    currentLanguageCode,
-    previousLanguageCode,
-    translatedTitle: t('Change Language')
-  })
-
   return (
     <>
       <Dialog
