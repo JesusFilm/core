@@ -44,9 +44,12 @@ export function SideMenu(): ReactElement {
     >
       <Stack
         direction="row"
-        sx={{ px: 1.5, pt: 1.5 }}
-        alignItems="center"
-        gap={1}
+        sx={{
+          alignItems: 'center',
+          gap: 1,
+          px: 1.5,
+          pt: 1.5
+        }}
       >
         <Image
           src={minimalLogo}
@@ -76,8 +79,8 @@ export function SideMenu(): ReactElement {
           sx={{ width: 36, height: 36 }}
         />
         <Box
-          flexGrow={1}
           sx={{
+            flexGrow: 1,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis'

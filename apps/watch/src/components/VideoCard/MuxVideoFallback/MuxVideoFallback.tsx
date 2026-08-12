@@ -61,7 +61,13 @@ export function MuxVideoFallback({
           <Typography variant="overline2" sx={{ opacity: 0.8 }}>
             {overlay.label}
           </Typography>
-          <Typography component="h3" variant="h6" fontWeight="bold">
+          <Typography
+            component="h3"
+            variant="h6"
+            sx={{
+              fontWeight: 'bold'
+            }}
+          >
             {overlay.title}
           </Typography>
           <Typography variant="subtitle2" sx={{ opacity: 0.8 }}>

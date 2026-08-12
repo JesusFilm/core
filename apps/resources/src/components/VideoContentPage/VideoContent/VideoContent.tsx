@@ -53,7 +53,12 @@ export function VideoContent(): ReactElement {
   }, [description])
 
   return (
-    <Box width="100%" data-testid="VideoContent">
+    <Box
+      data-testid="VideoContent"
+      sx={{
+        width: '100%'
+      }}
+    >
       <Tabs
         value={tabValue}
         onChange={handleTabChange}
@@ -141,8 +146,10 @@ export function VideoContent(): ReactElement {
               <Stack
                 direction="row"
                 spacing={4}
-                alignItems="center"
                 key={index}
+                sx={{
+                  alignItems: 'center'
+                }}
               >
                 <Box
                   sx={{
@@ -160,7 +167,9 @@ export function VideoContent(): ReactElement {
                 <Typography
                   key={index}
                   variant="subtitle1"
-                  color="text.secondary"
+                  sx={{
+                    color: 'text.secondary'
+                  }}
                 >
                   {question.value}
                 </Typography>

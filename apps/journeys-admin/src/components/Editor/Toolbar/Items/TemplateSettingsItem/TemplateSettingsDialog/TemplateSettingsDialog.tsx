@@ -184,13 +184,23 @@ export function TemplateSettingsDialog({
                 />
               </Tabs>
               <TabPanel name="metadata" value={tab} index={0}>
-                <Stack sx={{ pt: 6 }} gap={5}>
+                <Stack
+                  sx={{
+                    gap: 5,
+                    pt: 6
+                  }}
+                >
                   <MetadataTabPanel showFeaturedSettings={isGlobalTemplate} />
                 </Stack>
               </TabPanel>
               {isGlobalTemplate && (
                 <TabPanel name="categories" value={tab} index={1}>
-                  <Stack sx={{ pt: 6 }} gap={5}>
+                  <Stack
+                    sx={{
+                      gap: 5,
+                      pt: 6
+                    }}
+                  >
                     <CategoriesTabPanel />
                   </Stack>
                 </TabPanel>
@@ -200,7 +210,12 @@ export function TemplateSettingsDialog({
                 value={tab}
                 index={isGlobalTemplate ? 2 : 1}
               >
-                <Stack sx={{ pt: 6 }} gap={5}>
+                <Stack
+                  sx={{
+                    gap: 5,
+                    pt: 6
+                  }}
+                >
                   <AboutTabPanel />
                 </Stack>
               </TabPanel>

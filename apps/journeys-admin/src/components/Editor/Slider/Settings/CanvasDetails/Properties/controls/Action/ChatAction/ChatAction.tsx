@@ -88,8 +88,11 @@ export function ChatAction({ ref }: ChatActionProps): ReactElement {
     <>
       <Typography
         variant="caption"
-        color="secondary.main"
-        sx={{ mt: 1, mb: 3 }}
+        sx={{
+          color: 'secondary.main',
+          mt: 1,
+          mb: 3
+        }}
       >
         {t('Start a chat with the provided URL.')}
       </Typography>

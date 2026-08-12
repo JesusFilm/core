@@ -369,7 +369,11 @@ export function BackgroundMediaImage({
     coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
 
   return (
-    <Stack gap={4}>
+    <Stack
+      sx={{
+        gap: 4
+      }}
+    >
       <ImageSource
         selectedBlock={imageCoverBlock}
         onChange={handleChange}

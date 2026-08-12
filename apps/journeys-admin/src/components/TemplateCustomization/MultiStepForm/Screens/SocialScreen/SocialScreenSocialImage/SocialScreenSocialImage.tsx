@@ -281,8 +281,8 @@ export function SocialScreenSocialImage({
         </Typography>
         <Typography
           variant="body2"
-          color="text.secondary"
           sx={{
+            color: 'text.secondary',
             mb: 1,
             overflow: 'hidden',
             display: '-webkit-box',
@@ -294,8 +294,10 @@ export function SocialScreenSocialImage({
         </Typography>
         <Typography
           variant="caption"
-          color="text.secondary"
-          sx={{ fontWeight: 600 }}
+          sx={{
+            color: 'text.secondary',
+            fontWeight: 600
+          }}
         >
           {t('your.nextstep.is')}
         </Typography>

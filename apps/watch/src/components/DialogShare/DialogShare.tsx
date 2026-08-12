@@ -81,10 +81,12 @@ export function DialogShare({
         id="shareLink"
         defaultValue={shareLink}
         variant="outlined"
-        InputProps={{
-          readOnly: true
-        }}
         sx={{ mb: 4 }}
+        slotProps={{
+          input: {
+            readOnly: true
+          }
+        }}
       />
       <Button
         variant="contained"
@@ -112,8 +114,10 @@ export function DialogShare({
         <Stack
           direction="row"
           spacing={4}
-          alignItems="flex-start"
-          sx={{ mb: 4 }}
+          sx={{
+            alignItems: 'flex-start',
+            mb: 4
+          }}
         >
           {images[0]?.mobileCinematicHigh != null && (
             <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
@@ -185,10 +189,12 @@ export function DialogShare({
                     id="embedCode"
                     defaultValue={getEmbedCode()}
                     variant="outlined"
-                    InputProps={{
-                      readOnly: true
-                    }}
                     sx={{ mb: 4 }}
+                    slotProps={{
+                      input: {
+                        readOnly: true
+                      }
+                    }}
                   />
                   <Button
                     variant="contained"

@@ -190,9 +190,18 @@ export function DefaultJourneyForm({
   }
 
   return (
-    <Box flexGrow={1}>
+    <Box
+      sx={{
+        flexGrow: 1
+      }}
+    >
       <CustomDomainDialogTitle title={t('Default Journey')} />
-      <Stack direction="row" justifyContent="space-between">
+      <Stack
+        direction="row"
+        sx={{
+          justifyContent: 'space-between'
+        }}
+      >
         <FormControl variant="filled" fullWidth hiddenLabel>
           <Autocomplete
             disabled={currentUserTeamRole !== UserTeamRole.manager}

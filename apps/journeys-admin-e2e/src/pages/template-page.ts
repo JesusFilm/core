@@ -33,7 +33,7 @@ export class TemplatePage {
 
   // New template library page (landing page)
   async seeAllTemplates(): Promise<void> {
-    await this.page.getByRole('link', { name: 'See all', exact: true }).click()
+    await this.page.getByRole('link', { name: 'See All', exact: true }).click()
   }
 
   async templateGalleryCarouselVisible(): Promise<void> {
@@ -297,7 +297,7 @@ export class TemplatePage {
   async clickDropDownOpenIconForFilters(filterOption: string) {
     await this.page
       .locator(
-        'div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]',
+        'div[class*="MuiGrid-root"] > div[class*="MuiAutocomplete-root"]',
         { hasText: filterOption }
       )
       .locator('button[aria-label="Open"]')
@@ -320,7 +320,7 @@ export class TemplatePage {
   async clickDropDownCloseIconForFilters(filterOption: string) {
     await this.page
       .locator(
-        'div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]',
+        'div[class*="MuiGrid-root"] > div[class*="MuiAutocomplete-root"]',
         { hasText: filterOption }
       )
       .locator('button[aria-label="Close"]')
@@ -351,7 +351,7 @@ export class TemplatePage {
 
   async hoverTheTopicFilterField() {
     await this.page
-      .locator('div[class*="MuiGrid-item"]', {
+      .locator('div[class*="MuiAutocomplete-root"]', {
         hasText: 'Topics, holidays, felt needs, collections'
       })
       .hover()

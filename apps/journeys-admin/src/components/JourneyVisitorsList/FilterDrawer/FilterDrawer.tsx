@@ -77,7 +77,14 @@ export function FilterDrawer({
   return (
     <Stack sx={{ height: '100vh' }} data-testid="FilterDrawer">
       <Box sx={{ display: { sm: 'block', md: 'none' } }}>
-        <Stack direction="row" sx={{ px: 6, py: 2 }} alignItems="center">
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: 'center',
+            px: 6,
+            py: 2
+          }}
+        >
           <Typography variant="subtitle1">{t('Refine Results')}</Typography>
           <IconButton sx={{ ml: 'auto' }}>
             <X2Icon onClick={handleClose} />
@@ -89,8 +96,10 @@ export function FilterDrawer({
       <Box sx={{ px: 6, py: 5 }}>
         <Stack
           direction="row"
-          justifyContent="space-between"
-          alignItems="center"
+          sx={{
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
         >
           <Typography variant="subtitle2">{t('Filter By')}</Typography>
           <ClearAllButton handleClearAll={handleClearAll} />

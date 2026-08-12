@@ -289,7 +289,7 @@ function setup(options: SetupOptions = {}): {
 }
 
 async function selectTranslationSpanish(): Promise<void> {
-  fireEvent.click(screen.getByRole('checkbox', { name: 'Translation' }))
+  fireEvent.click(screen.getByRole('switch', { name: 'Translation' }))
   await waitFor(() =>
     expect(screen.getByTestId('LanguageAutocomplete')).not.toHaveAttribute(
       'aria-disabled',
@@ -493,7 +493,7 @@ describe('UseTemplateDeepLink', () => {
     )
 
     await selectTranslationSpanish()
-    const translationCheckbox = screen.getByRole('checkbox', {
+    const translationCheckbox = screen.getByRole('switch', {
       name: 'Translation'
     })
     expect(translationCheckbox).toBeChecked()

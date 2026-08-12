@@ -97,7 +97,6 @@ export function TagsFilter({
 
   return (
     <Autocomplete
-      PopperComponent={popperElementId != null ? Popper : undefined}
       loading={loading}
       limitTags={hasMultipleColumns ? 4 : 1}
       disableCloseOnSelect
@@ -116,22 +115,26 @@ export function TagsFilter({
         <TextField
           {...params}
           label={label}
-          InputProps={{
-            ...params.InputProps,
-            sx: {
-              minWidth: 0,
-              '.MuiInputBase-input.MuiOutlinedInput-input': {
-                minWidth: 0
-              }
-            },
-            endAdornment: (
-              <>
-                {loading ? (
-                  <CircularProgress color="inherit" size={20} />
-                ) : null}
-                {params.InputProps.endAdornment}
-              </>
-            )
+          slotProps={{
+            ...params.slotProps,
+
+            input: {
+              ...params.slotProps.input,
+              sx: {
+                minWidth: 0,
+                '.MuiInputBase-input.MuiOutlinedInput-input': {
+                  minWidth: 0
+                }
+              },
+              endAdornment: (
+                <>
+                  {loading ? (
+                    <CircularProgress color="inherit" size={20} />
+                  ) : null}
+                  {params.slotProps.input.endAdornment}
+                </>
+              )
+            }
           }}
         />
       )}
@@ -161,9 +164,12 @@ export function TagsFilter({
                 <Box component="ul" sx={{ p: 0 }}>
                   <Stack
                     direction="row"
-                    alignItems="center"
                     component="li"
-                    sx={{ px: 4, py: 2 }}
+                    sx={{
+                      alignItems: 'center',
+                      px: 4,
+                      py: 2
+                    }}
                   >
                     <ParentTagIcon name={parentTagName} sx={{ width: 38 }} />
                     <Typography variant="subtitle1">{parentTagName}</Typography>
@@ -200,14 +206,6 @@ export function TagsFilter({
           </Typography>
         </Stack>
       )}
-      ChipProps={{
-        size: 'small',
-        sx: {
-          '&.MuiChip-root': {
-            maxWidth: 'calc(100% - 15px)'
-          }
-        }
-      }}
       slotProps={{
         popper: {
           sx: {
@@ -237,7 +235,19 @@ export function TagsFilter({
               }
             }
           }
+        },
+
+        chip: {
+          size: 'small',
+          sx: {
+            '&.MuiChip-root': {
+              maxWidth: 'calc(100% - 15px)'
+            }
+          }
         }
+      }}
+      slots={{
+        popper: popperElementId != null ? Popper : undefined
       }}
     />
   )

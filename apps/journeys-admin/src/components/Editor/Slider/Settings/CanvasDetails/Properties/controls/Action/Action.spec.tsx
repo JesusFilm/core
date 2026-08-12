@@ -158,7 +158,7 @@ describe('Action', () => {
     await waitFor(() => {
       expect(getByText('Needs Customization')).toBeInTheDocument()
       expect(
-        getByRole('checkbox', { name: 'Toggle customizable' })
+        getByRole('switch', { name: 'Toggle customizable' })
       ).toBeInTheDocument()
     })
   })
@@ -210,7 +210,7 @@ describe('Action', () => {
     await waitFor(() => {
       expect(getByText('Needs Customization')).toBeInTheDocument()
       expect(
-        getByRole('checkbox', { name: 'Toggle customizable' })
+        getByRole('switch', { name: 'Toggle customizable' })
       ).toBeInTheDocument()
     })
   })
@@ -262,7 +262,7 @@ describe('Action', () => {
     await waitFor(() => {
       expect(getByText('Needs Customization')).toBeInTheDocument()
       expect(
-        getByRole('checkbox', { name: 'Toggle customizable' })
+        getByRole('switch', { name: 'Toggle customizable' })
       ).toBeInTheDocument()
     })
   })

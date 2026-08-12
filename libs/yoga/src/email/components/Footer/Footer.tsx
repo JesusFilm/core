@@ -1,5 +1,5 @@
-import { Button, Column, Container, Row } from '@react-email/components'
 import { ReactElement } from 'react'
+import { Button, Column, Container, Row } from 'react-email'
 
 export function Footer(): ReactElement {
   return (

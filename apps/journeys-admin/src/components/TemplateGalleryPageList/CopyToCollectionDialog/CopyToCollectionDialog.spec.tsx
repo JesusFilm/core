@@ -263,7 +263,7 @@ describe('CopyToCollectionDialog', () => {
     )
 
     fireEvent.click(
-      screen.getByRole('checkbox', {
+      screen.getByRole('switch', {
         name: 'Translate the copy to another language'
       })
     )
@@ -378,7 +378,7 @@ describe('CopyToCollectionDialog', () => {
     )
 
     fireEvent.click(
-      screen.getByRole('checkbox', {
+      screen.getByRole('switch', {
         name: 'Translate the copy to another language'
       })
     )

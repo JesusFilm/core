@@ -48,7 +48,7 @@ export function ArchivedJourneyList({
   const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {
-        enqueueSnackbar(t('Journeys Restored'), {
+        enqueueSnackbar(t('Journeys Unarchived'), {
           variant: 'success'
         })
 
@@ -192,7 +192,11 @@ export function ArchivedJourneyList({
           )}
         </Box>
       )}
-      <Stack alignItems="center">
+      <Stack
+        sx={{
+          alignItems: 'center'
+        }}
+      >
         <Typography
           variant="caption"
           align="center"

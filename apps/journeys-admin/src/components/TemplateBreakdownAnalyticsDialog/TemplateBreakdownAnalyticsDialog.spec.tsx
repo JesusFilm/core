@@ -136,7 +136,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
       ).toBeInTheDocument()
     })
 
-    const switchElement = screen.getByRole('checkbox')
+    const switchElement = screen.getByRole('switch')
     expect(switchElement).toBeChecked()
 
     await user.click(switchElement)

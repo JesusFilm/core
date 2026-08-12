@@ -1,4 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import {
   fireEvent,
   render,
@@ -296,7 +297,8 @@ describe('CopyToTeamMenuItem', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await waitFor(() =>
       expect(getLastActiveTeamIdAndTeamsMock.result).toHaveBeenCalled()
@@ -374,7 +376,8 @@ describe('CopyToTeamMenuItem', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -388,7 +391,7 @@ describe('CopyToTeamMenuItem', () => {
       name: 'Team Name'
     })
     fireEvent.click(muiSelectOptions)
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Translation' }))
+    fireEvent.click(screen.getByRole('switch', { name: 'Translation' }))
 
     await waitFor(() => {
       expect(screen.getByTestId('LanguageAutocomplete')).not.toHaveAttribute(
@@ -476,7 +479,8 @@ describe('CopyToTeamMenuItem', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -573,7 +577,8 @@ describe('CopyToTeamMenuItem', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -587,7 +592,7 @@ describe('CopyToTeamMenuItem', () => {
       name: 'Team Name'
     })
     fireEvent.click(muiSelectOptions)
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Translation' }))
+    fireEvent.click(screen.getByRole('switch', { name: 'Translation' }))
 
     await waitFor(() => {
       expect(screen.getByTestId('LanguageAutocomplete')).not.toHaveAttribute(
@@ -659,7 +664,8 @@ describe('CopyToTeamMenuItem', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -736,7 +742,8 @@ describe('CopyToTeamMenuItem', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -813,7 +820,8 @@ describe('CopyToTeamMenuItem', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -880,7 +888,8 @@ describe('CopyToTeamMenuItem', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() =>
@@ -941,7 +950,8 @@ describe('CopyToTeamMenuItem', () => {
             />
           </TeamProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
 
     fireEvent.click(screen.getByRole('menuitem', { name: 'Copy to ...' }))

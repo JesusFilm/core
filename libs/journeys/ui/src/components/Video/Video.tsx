@@ -224,16 +224,19 @@ export function Video({
       {videoId != null ? (
         <>
           <Box
-            height={{
-              xs: isFillAndNotYoutube() ? hundredVh : '100%',
-              sm: '100%'
-            }}
-            width="100%"
-            minHeight="-webkit-fill-available"
-            overflow="hidden"
-            marginX={0}
-            position={isFillAndNotYoutube() ? 'absolute' : 'inherit'}
             data-testid="video-container"
+            sx={{
+              height: {
+                xs: isFillAndNotYoutube() ? hundredVh : '100%',
+                sm: '100%'
+              },
+
+              width: '100%',
+              minHeight: '-webkit-fill-available',
+              overflow: 'hidden',
+              marginX: 0,
+              position: isFillAndNotYoutube() ? 'absolute' : 'inherit'
+            }}
           >
             <StyledVideo
               ref={videoRef}

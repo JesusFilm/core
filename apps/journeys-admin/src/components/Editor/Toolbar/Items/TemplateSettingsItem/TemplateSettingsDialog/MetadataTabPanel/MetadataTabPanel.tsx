@@ -81,8 +81,10 @@ export function MetadataTabPanel({
       {showFeaturedSettings && (
         <Stack
           direction="row"
-          justifyContent="space-between"
-          alignItems="center"
+          sx={{
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
         >
           <FormGroup>
             <FormControlLabel
@@ -96,10 +98,10 @@ export function MetadataTabPanel({
                   name="featured"
                 />
               }
-              componentsProps={{
+              label={t('Featured')}
+              slotProps={{
                 typography: { color: 'secondary.main', variant: 'subtitle2' }
               }}
-              label={t('Featured')}
             />
           </FormGroup>
           {journey?.publishedAt != null && (
@@ -107,8 +109,10 @@ export function MetadataTabPanel({
               hiddenLabel
               variant="filled"
               value={format(parseISO(journey?.publishedAt as string), 'P')}
-              InputProps={{
-                readOnly: true
+              slotProps={{
+                input: {
+                  readOnly: true
+                }
               }}
             />
           )}

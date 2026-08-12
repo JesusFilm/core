@@ -158,7 +158,11 @@ function VariantDialogContent({
         >
           {({ handleChange, dirty, resetForm }) => (
             <Form>
-              <Stack gap={4}>
+              <Stack
+                sx={{
+                  gap: 4
+                }}
+              >
                 <Box
                   sx={{
                     width: '100%',
@@ -167,7 +171,13 @@ function VariantDialogContent({
                     alignItems: 'center'
                   }}
                 >
-                  <Stack direction="column" alignItems="start" gap={1}>
+                  <Stack
+                    direction="column"
+                    sx={{
+                      alignItems: 'start',
+                      gap: 1
+                    }}
+                  >
                     <Typography
                       variant="h2"
                       data-testid="VariantLanguageDisplay"
@@ -180,12 +190,26 @@ function VariantDialogContent({
                       />
                     )}
                   </Stack>
-                  <Stack direction="column" spacing={1} alignItems="end">
-                    <Stack direction="row" spacing={1} alignItems="center">
+                  <Stack
+                    direction="column"
+                    spacing={1}
+                    sx={{
+                      alignItems: 'end'
+                    }}
+                  >
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      sx={{
+                        alignItems: 'center'
+                      }}
+                    >
                       <Typography
                         variant="subtitle2"
-                        color="text.secondary"
-                        sx={{ mr: 1 }}
+                        sx={{
+                          color: 'text.secondary',
+                          mr: 1
+                        }}
                       >
                         Status
                       </Typography>

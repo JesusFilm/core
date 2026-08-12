@@ -56,13 +56,19 @@ export function Fallback({
             {icon}
           </Box>
         )}
-        <Stack alignItems="center">
+        <Stack
+          sx={{
+            alignItems: 'center'
+          }}
+        >
           <Typography variant="h4">{title}</Typography>
           {subtitle != null && (
             <Typography
               variant="subtitle2"
-              fontSize={16}
-              color="text.secondary"
+              sx={{
+                fontSize: 16,
+                color: 'text.secondary'
+              }}
             >
               {subtitle}
             </Typography>

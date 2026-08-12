@@ -161,11 +161,25 @@
         "command": "pnpm exec tsx apis/api-media/src/scripts/mux-videos.ts"
       }
     },
+    "reindex-languages-algolia": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["prisma-languages:prisma-generate"],
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/algolia-helpers/reindex-languages-with-videos.ts"
+      }
+    },
     "run-daily-video-slack-summary": {
       "executor": "nx:run-commands",
       "dependsOn": ["prisma-media:prisma-generate"],
       "options": {
         "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/run-daily-video-slack-summary.ts"
+      }
+    },
+    "audit-parent-variants": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["prisma-media:prisma-generate"],
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/run-parent-variant-audit.ts"
       }
     },
     "populate-crowdin-ids": {

@@ -104,7 +104,11 @@ export function MediaSection({
   const committedVideo = media.muxVideoId !== '' || savedPlaybackId != null
 
   return (
-    <Stack gap={1}>
+    <Stack
+      sx={{
+        gap: 1
+      }}
+    >
       <Typography sx={headerSx}>{t('Media')}</Typography>
 
       {/* Full-width equal-width 3-way toggle. textTransform none so it reads
@@ -178,7 +182,13 @@ export function MediaSection({
         )}
 
         {media.type === TemplateGalleryPageMediaType.link && (
-          <Stack direction="row" spacing={2} alignItems="flex-start">
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{
+              alignItems: 'flex-start'
+            }}
+          >
             {/* No edit button on Link, so no grey frame — the preview fills the
                 whole box. */}
             <Box
@@ -199,11 +209,13 @@ export function MediaSection({
                 fullWidth
                 variant="filled"
                 hiddenLabel
-                inputProps={{ 'aria-label': t('Media link') }}
                 error={error != null}
                 helperText={
                   error ?? t('We support YouTube, Canva, and Google Slides.')
                 }
+                slotProps={{
+                  htmlInput: { 'aria-label': t('Media link') }
+                }}
               />
               <Button
                 size="small"
@@ -220,16 +232,23 @@ export function MediaSection({
 
         {media.type === TemplateGalleryPageMediaType.none && (
           <Stack
-            alignItems="center"
-            justifyContent="center"
-            sx={{ height: MEDIA_BOX_HEIGHT }}
             data-testid="MediaSectionNone"
             // Announce the empty state to assistive tech when the user toggles
             // to None — the aria-pressed toggle alone doesn't read out the
             // "nothing will show" consequence.
             role="status"
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: MEDIA_BOX_HEIGHT
+            }}
           >
-            <Typography variant="caption" color="text.secondary">
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary'
+              }}
+            >
               {t('No media will be shown on the public page.')}
             </Typography>
           </Stack>

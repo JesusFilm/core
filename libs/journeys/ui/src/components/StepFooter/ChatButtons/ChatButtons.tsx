@@ -120,7 +120,9 @@ export function ChatButtons(): ReactElement {
     <Stack
       data-testid="StepFooterChatButtons"
       direction={rtl ? 'row' : 'row-reverse'}
-      gap={2}
+      sx={{
+        gap: 2
+      }}
     >
       {chatButtons?.map((chatButton, index) => (
         <IconButton

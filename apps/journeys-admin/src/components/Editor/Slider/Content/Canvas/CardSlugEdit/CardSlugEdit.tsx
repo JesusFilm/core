@@ -116,7 +116,13 @@ export function CardSlugEdit({
             input: {
               startAdornment: (
                 <InputAdornment position="start">
-                  <Typography fontSize={26}>/</Typography>
+                  <Typography
+                    sx={{
+                      fontSize: 26
+                    }}
+                  >
+                    /
+                  </Typography>
                 </InputAdornment>
               )
             }

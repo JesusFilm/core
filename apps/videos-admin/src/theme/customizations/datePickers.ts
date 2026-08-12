@@ -2,7 +2,7 @@ import { menuItemClasses } from '@mui/material/MenuItem'
 import { Theme, alpha } from '@mui/material/styles'
 import {
   monthCalendarClasses,
-  pickersDayClasses,
+  pickerDayClasses,
   yearCalendarClasses
 } from '@mui/x-date-pickers'
 import type { PickerComponents } from '@mui/x-date-pickers/themeAugmentation'
@@ -137,7 +137,7 @@ export const datePickersCustomizations: PickerComponents<Theme> = {
       })
     }
   },
-  MuiPickersDay: {
+  MuiPickerDay: {
     styleOverrides: {
       root: ({ theme }) => ({
         fontSize: theme.typography.body1.fontSize,
@@ -147,7 +147,7 @@ export const datePickersCustomizations: PickerComponents<Theme> = {
         '&:hover': {
           backgroundColor: theme.palette.action.hover
         },
-        [`&.${pickersDayClasses.selected}`]: {
+        [`&.${pickerDayClasses.selected}`]: {
           backgroundColor: grey[700],
           fontWeight: theme.typography.fontWeightMedium
         },
@@ -155,14 +155,14 @@ export const datePickersCustomizations: PickerComponents<Theme> = {
           outline: `3px solid ${alpha(brand[500], 0.5)}`,
           outlineOffset: '2px',
           backgroundColor: 'transparent',
-          [`&.${pickersDayClasses.selected}`]: { backgroundColor: grey[700] }
+          [`&.${pickerDayClasses.selected}`]: { backgroundColor: grey[700] }
         },
         ...theme.applyStyles('dark', {
           color: theme.palette.grey[300],
           '&:hover': {
             backgroundColor: theme.palette.action.hover
           },
-          [`&.${pickersDayClasses.selected}`]: {
+          [`&.${pickerDayClasses.selected}`]: {
             color: theme.palette.common.black,
             fontWeight: theme.typography.fontWeightMedium,
             backgroundColor: grey[300]
@@ -171,7 +171,7 @@ export const datePickersCustomizations: PickerComponents<Theme> = {
             outline: `3px solid ${alpha(brand[500], 0.5)}`,
             outlineOffset: '2px',
             backgroundColor: 'transparent',
-            [`&.${pickersDayClasses.selected}`]: { backgroundColor: grey[300] }
+            [`&.${pickerDayClasses.selected}`]: { backgroundColor: grey[300] }
           }
         })
       })

@@ -133,22 +133,21 @@ export function TemplateGalleryCard({
       >
         {journey != null ? (
           <Stack
-            justifyContent="center"
-            alignItems="center"
             sx={{
+              justifyContent: 'center',
+              alignItems: 'center',
               position: 'relative',
               aspectRatio: 1,
               overflow: 'hidden',
               borderRadius: 2,
-              alignItems: 'center',
               backgroundColor: 'background.default'
             }}
           >
             <Stack
               direction="column"
               spacing={1}
-              alignItems="flex-start"
               sx={{
+                alignItems: 'flex-start',
                 position: 'absolute',
                 top: { xs: 4, md: 6 },
                 left: { xs: 4, md: 6 },

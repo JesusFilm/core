@@ -1,3 +1,4 @@
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 import { type MockedFunction } from 'vitest'
@@ -66,7 +67,8 @@ describe('UseThisTemplateButton', () => {
             variant="button"
             journeyId={customizableTemplateJourney?.id}
           />
-        </JourneyProvider>
+        </JourneyProvider>,
+        { wrapper: MenuList }
       )
 
       expect(screen.getByTestId('UseThisTemplateButton')).toBeInTheDocument()
@@ -87,7 +89,8 @@ describe('UseThisTemplateButton', () => {
             variant="menu-item"
             journeyId={customizableTemplateJourney?.id}
           />
-        </JourneyProvider>
+        </JourneyProvider>,
+        { wrapper: MenuList }
       )
 
       expect(screen.getByTestId('UseThisTemplateMenuItem')).toBeInTheDocument()
@@ -113,7 +116,8 @@ describe('UseThisTemplateButton', () => {
               signedIn
               journeyId={customizableTemplateJourney?.id}
             />
-          </JourneyProvider>
+          </JourneyProvider>,
+          { wrapper: MenuList }
         )
 
         fireEvent.click(
@@ -133,7 +137,8 @@ describe('UseThisTemplateButton', () => {
               signedIn
               journeyId={customizableTemplateJourney?.id}
             />
-          </JourneyProvider>
+          </JourneyProvider>,
+          { wrapper: MenuList }
         )
 
         fireEvent.mouseEnter(
@@ -162,7 +167,8 @@ describe('UseThisTemplateButton', () => {
               signedIn
               journeyId={customizableTemplateJourney?.id}
             />
-          </JourneyProvider>
+          </JourneyProvider>,
+          { wrapper: MenuList }
         )
 
         fireEvent.click(
@@ -223,7 +229,8 @@ describe('UseThisTemplateButton', () => {
               signedIn
               journeyId={customizableTemplateJourney?.id}
             />
-          </JourneyProvider>
+          </JourneyProvider>,
+          { wrapper: MenuList }
         )
 
         fireEvent.click(
@@ -251,7 +258,8 @@ describe('UseThisTemplateButton', () => {
               signedIn
               journeyId={customizableTemplateJourney?.id}
             />
-          </JourneyProvider>
+          </JourneyProvider>,
+          { wrapper: MenuList }
         )
 
         fireEvent.click(
@@ -279,7 +287,8 @@ describe('UseThisTemplateButton', () => {
               signedIn
               journeyId={customizableTemplateJourney?.id}
             />
-          </JourneyProvider>
+          </JourneyProvider>,
+          { wrapper: MenuList }
         )
 
         fireEvent.click(
@@ -312,7 +321,8 @@ describe('UseThisTemplateButton', () => {
             <UseThisTemplateButton
               journeyId={customizableTemplateJourney?.id}
             />
-          </JourneyProvider>
+          </JourneyProvider>,
+          { wrapper: MenuList }
         )
 
         await waitFor(() => {
@@ -326,7 +336,8 @@ describe('UseThisTemplateButton', () => {
             <UseThisTemplateButton
               journeyId={customizableTemplateJourney?.id}
             />
-          </JourneyProvider>
+          </JourneyProvider>,
+          { wrapper: MenuList }
         )
 
         fireEvent.click(
@@ -346,7 +357,8 @@ describe('UseThisTemplateButton', () => {
             <UseThisTemplateButton
               journeyId={customizableTemplateJourney?.id}
             />
-          </JourneyProvider>
+          </JourneyProvider>,
+          { wrapper: MenuList }
         )
 
         fireEvent.click(
@@ -379,7 +391,8 @@ describe('UseThisTemplateButton', () => {
             <UseThisTemplateButton
               journeyId={customizableTemplateJourney?.id}
             />
-          </JourneyProvider>
+          </JourneyProvider>,
+          { wrapper: MenuList }
         )
 
         fireEvent.click(
@@ -431,7 +444,8 @@ describe('UseThisTemplateButton', () => {
             <UseThisTemplateButton
               journeyId={customizableTemplateJourney?.id}
             />
-          </JourneyProvider>
+          </JourneyProvider>,
+          { wrapper: MenuList }
         )
 
         fireEvent.click(
@@ -464,7 +478,8 @@ describe('UseThisTemplateButton', () => {
             <UseThisTemplateButton
               journeyId={customizableTemplateJourney?.id}
             />
-          </JourneyProvider>
+          </JourneyProvider>,
+          { wrapper: MenuList }
         )
 
         fireEvent.click(
@@ -516,7 +531,8 @@ describe('UseThisTemplateButton', () => {
             <UseThisTemplateButton
               journeyId={customizableTemplateJourney?.id}
             />
-          </JourneyProvider>
+          </JourneyProvider>,
+          { wrapper: MenuList }
         )
 
         fireEvent.click(
@@ -549,7 +565,8 @@ describe('UseThisTemplateButton', () => {
             <UseThisTemplateButton
               journeyId={customizableTemplateJourney?.id}
             />
-          </JourneyProvider>
+          </JourneyProvider>,
+          { wrapper: MenuList }
         )
 
         fireEvent.click(
@@ -586,7 +603,8 @@ describe('UseThisTemplateButton', () => {
       render(
         <JourneyProvider value={{}}>
           <UseThisTemplateButton signedIn />
-        </JourneyProvider>
+        </JourneyProvider>,
+        { wrapper: MenuList }
       )
 
       await waitFor(() => {
@@ -600,7 +618,8 @@ describe('UseThisTemplateButton', () => {
       render(
         <JourneyProvider value={{ journey }}>
           <UseThisTemplateButton journeyId={customizableTemplateJourney?.id} />
-        </JourneyProvider>
+        </JourneyProvider>,
+        { wrapper: MenuList }
       )
 
       expect(screen.getByTestId('UseThisTemplateButton')).toBeInTheDocument()
