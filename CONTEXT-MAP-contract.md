@@ -3,7 +3,7 @@
 The fixed structure that map consumers — the ENG-3707 accessor, its validator, and any future
 harness (intake, build, QA) — are written against. Audience: **map authors** (humans and agents
 editing the intake layer) and **consumer code**. This file is the contract; `CONTEXT-MAP-intake.md`
-is the data. This file is *not* always-in-context — only the INDEX is.
+is the data. This file is _not_ always-in-context — only the INDEX is.
 
 Versioning: additive edits to the map need no contract change. A breaking change (see
 §Compatibility) bumps the version in this title and must land only after consumers are updated.
@@ -36,14 +36,14 @@ Versioning: additive edits to the map need no contract change. A breaking change
 
 YAML frontmatter delimited by `---` lines, starting at byte 0 of the file. Required keys:
 
-| key | shape | meaning |
-| --- | --- | --- |
-| `area` | string | identity; must equal the index entry's `<area name>` |
-| `domain_ref` | relative path | the sibling domain `CONTEXT.md` |
-| `code_paths` | block list of glob strings | where this area's code lives; each glob's fixed (pre-wildcard) directory prefix must exist in the repo |
-| `trigger_phrases` | block list of quoted strings | **authoritative** reporter vocabulary for this area |
-| `type_tags` | inline list, e.g. `[T1, T4]` | the failure types this file covers |
-| `updated` | `YYYY-MM-DD` | date of last substantive edit |
+| key               | shape                        | meaning                                                                                                |
+| ----------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `area`            | string                       | identity; must equal the index entry's `<area name>`                                                   |
+| `domain_ref`      | relative path                | the sibling domain `CONTEXT.md`                                                                        |
+| `code_paths`      | block list of glob strings   | where this area's code lives; each glob's fixed (pre-wildcard) directory prefix must exist in the repo |
+| `trigger_phrases` | block list of quoted strings | **authoritative** reporter vocabulary for this area                                                    |
+| `type_tags`       | inline list, e.g. `[T1, T4]` | the failure types this file covers                                                                     |
+| `updated`         | `YYYY-MM-DD`                 | date of last substantive edit                                                                          |
 
 Authors may add further keys freely (additive); consumers must ignore unknown keys.
 
