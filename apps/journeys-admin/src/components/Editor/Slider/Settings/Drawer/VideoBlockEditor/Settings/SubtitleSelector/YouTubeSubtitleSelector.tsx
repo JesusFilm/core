@@ -108,9 +108,11 @@ export function YouTubeSubtitleSelector({
         }}
         MenuProps={{
           autoFocus: false,
-          PaperProps: {
-            sx: {
-              maxHeight: 400
+          slotProps: {
+            paper: {
+              sx: {
+                maxHeight: 400
+              }
             }
           }
         }}
@@ -154,7 +156,12 @@ export function YouTubeSubtitleSelector({
         })}
       </Select>
       {hasNoSubtitles && (
-        <Typography variant="caption" color="primary.main">
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'primary.main'
+          }}
+        >
           {t('This video does not have any subtitles')}
         </Typography>
       )}

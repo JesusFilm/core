@@ -55,23 +55,22 @@ export function StepHeader({
     >
       {isWebsite ? (
         <Stack
-          justifyContent="space-between"
           spacing={2}
           sx={{
-            flexDirection: { lg: rtl ? 'row-reverse' : 'row' },
             justifyContent: 'space-between',
+            flexDirection: { lg: rtl ? 'row-reverse' : 'row' },
             alignItems: { xs: 'flex-start', lg: 'center' },
             width: '100%'
           }}
         >
           <Stack
             sx={{
+              gap: 4,
               width: '100%',
               height: 52,
               flexDirection: rtl ? 'row-reverse' : 'row',
               alignItems: 'center'
             }}
-            gap={4}
           >
             <Logo />
             <Stack

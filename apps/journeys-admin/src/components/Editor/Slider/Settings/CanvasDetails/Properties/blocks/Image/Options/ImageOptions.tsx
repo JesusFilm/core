@@ -93,7 +93,12 @@ export function ImageOptions(): ReactElement {
 
   return (
     <Box sx={{ px: 4, pb: 4 }}>
-      <Stack direction="column" gap={4}>
+      <Stack
+        direction="column"
+        sx={{
+          gap: 4
+        }}
+      >
         <ImageSource
           selectedBlock={imageBlock}
           onChange={async (input, shouldFocus) =>

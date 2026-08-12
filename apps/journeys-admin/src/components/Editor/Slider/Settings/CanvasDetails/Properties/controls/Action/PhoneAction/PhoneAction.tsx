@@ -256,8 +256,11 @@ export function PhoneAction(): ReactElement {
     <>
       <Typography
         variant="caption"
-        color="secondary.main"
-        sx={{ mt: 1, mb: 3 }}
+        sx={{
+          color: 'secondary.main',
+          mt: 1,
+          mb: 3
+        }}
       >
         {t('This will open the phone dialer with the provided phone number.')}
       </Typography>

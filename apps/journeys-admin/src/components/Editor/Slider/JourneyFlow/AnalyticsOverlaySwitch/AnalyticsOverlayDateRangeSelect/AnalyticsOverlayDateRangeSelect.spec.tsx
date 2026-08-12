@@ -23,8 +23,9 @@ describe('AnalyticsOverlayDateRangeSelect', () => {
       <AnalyticsOverlayDateRangeSelect value="today" onChange={handleChange} />
     )
 
-    const selectRoot = screen.getByLabelText('Date range preset')
-    const combobox = within(selectRoot).getByRole('combobox')
+    const combobox = screen.getByRole('combobox', {
+      name: 'Date range preset'
+    })
 
     fireEvent.mouseDown(combobox)
 
@@ -40,8 +41,9 @@ describe('AnalyticsOverlayDateRangeSelect', () => {
   it('renders dividers between preset groups', () => {
     render(<AnalyticsOverlayDateRangeSelect value="today" onChange={vi.fn()} />)
 
-    const selectRoot = screen.getByLabelText('Date range preset')
-    const combobox = within(selectRoot).getByRole('combobox')
+    const combobox = screen.getByRole('combobox', {
+      name: 'Date range preset'
+    })
 
     fireEvent.mouseDown(combobox)
 

@@ -55,7 +55,7 @@ describe('ActionCustomizationToggle', () => {
     )
 
     expect(screen.getByText('Needs Customization')).toBeInTheDocument()
-    const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
+    const toggle = screen.getByRole('switch', { name: 'Toggle customizable' })
     expect(toggle).toBeChecked()
   })
 
@@ -81,7 +81,7 @@ describe('ActionCustomizationToggle', () => {
       </EditorProvider>
     )
     expect(screen.getByText('Needs Customization')).toBeInTheDocument()
-    const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
+    const toggle = screen.getByRole('switch', { name: 'Toggle customizable' })
     expect(toggle).not.toBeChecked()
   })
 
@@ -113,7 +113,7 @@ describe('ActionCustomizationToggle', () => {
     )
 
     expect(screen.getByText('Needs Customization')).toBeInTheDocument()
-    const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
+    const toggle = screen.getByRole('switch', { name: 'Toggle customizable' })
     expect(toggle).not.toBeChecked()
   })
 
@@ -149,7 +149,7 @@ describe('ActionCustomizationToggle', () => {
       </EditorProvider>
     )
 
-    const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
+    const toggle = screen.getByRole('switch', { name: 'Toggle customizable' })
     fireEvent.click(toggle)
 
     expect(addAction).toHaveBeenCalledWith(
@@ -197,7 +197,7 @@ describe('ActionCustomizationToggle', () => {
       </EditorProvider>
     )
 
-    const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
+    const toggle = screen.getByRole('switch', { name: 'Toggle customizable' })
     fireEvent.click(toggle)
 
     expect(addAction).toHaveBeenCalledWith(
@@ -244,7 +244,7 @@ describe('ActionCustomizationToggle', () => {
       </EditorProvider>
     )
 
-    const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
+    const toggle = screen.getByRole('switch', { name: 'Toggle customizable' })
     expect(toggle).toBeChecked()
   })
 
@@ -275,7 +275,7 @@ describe('ActionCustomizationToggle', () => {
     )
 
     expect(screen.getByText('Needs Customization')).toBeInTheDocument()
-    const toggle = screen.getByRole('checkbox', {
+    const toggle = screen.getByRole('switch', {
       name: 'Toggle customizable'
     })
     expect(toggle).toBeChecked()
@@ -313,7 +313,7 @@ describe('ActionCustomizationToggle', () => {
       </EditorProvider>
     )
 
-    const toggle = screen.getByRole('checkbox', {
+    const toggle = screen.getByRole('switch', {
       name: 'Toggle customizable'
     })
     fireEvent.click(toggle)
@@ -360,7 +360,7 @@ describe('ActionCustomizationToggle', () => {
     )
 
     expect(screen.getByText('Needs Customization')).toBeInTheDocument()
-    const toggle = screen.getByRole('checkbox', {
+    const toggle = screen.getByRole('switch', {
       name: 'Toggle customizable'
     })
     expect(toggle).not.toBeChecked()
@@ -397,7 +397,7 @@ describe('ActionCustomizationToggle', () => {
       </EditorProvider>
     )
 
-    const toggle = screen.getByRole('checkbox', {
+    const toggle = screen.getByRole('switch', {
       name: 'Toggle customizable'
     })
     fireEvent.click(toggle)

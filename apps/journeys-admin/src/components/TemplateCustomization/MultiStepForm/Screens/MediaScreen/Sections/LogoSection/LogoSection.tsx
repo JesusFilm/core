@@ -70,11 +70,23 @@ export function LogoSection(): ReactElement {
   })
 
   return (
-    <Stack data-testid="LogoSection" gap={4} sx={{ width: '100%' }}>
+    <Stack
+      data-testid="LogoSection"
+      sx={{
+        gap: 4,
+        width: '100%'
+      }}
+    >
       <Typography variant="h6" sx={{ color: 'text.primary' }}>
         {t('Logo')}
       </Typography>
-      <Stack direction="row" alignItems="center" gap={7}>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: 'center',
+          gap: 7
+        }}
+      >
         <Box sx={{ pl: { xs: 0, sm: 10 }, pr: { xs: 0, sm: 6 } }}>
           <Box
             sx={{
@@ -96,9 +108,12 @@ export function LogoSection(): ReactElement {
               />
             ) : (
               <Stack
-                alignItems="center"
-                justifyContent="center"
-                sx={{ width: '100%', height: '100%' }}
+                sx={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%',
+                  height: '100%'
+                }}
               >
                 <GridEmptyIcon
                   sx={{ fontSize: 48, color: 'action.disabled' }}
@@ -120,7 +135,13 @@ export function LogoSection(): ReactElement {
             )}
           </Box>
         </Box>
-        <Stack spacing={0.5} alignItems="flex-start" sx={{ flex: 1 }}>
+        <Stack
+          spacing={0.5}
+          sx={{
+            alignItems: 'flex-start',
+            flex: 1
+          }}
+        >
           <input {...getInputProps()} data-testid="LogoSection-file-input" />
           <Button
             variant="blockOutlined"
@@ -133,7 +154,12 @@ export function LogoSection(): ReactElement {
           >
             {t('Upload File')}
           </Button>
-          <Typography variant="caption" color="text.secondary">
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary'
+            }}
+          >
             {t('Supports JPG, PNG, and GIF files.')}
           </Typography>
         </Stack>

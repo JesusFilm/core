@@ -131,9 +131,11 @@ export function HeaderTabButtons(): ReactElement {
         >
           <Stack
             direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            width="100%"
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%'
+            }}
           >
             {buttonIcon}
             <Typography variant="inherit">{buttonLabel}</Typography>
@@ -157,14 +159,23 @@ export function HeaderTabButtons(): ReactElement {
             onClick={handleCloseMenu}
             selected={router?.pathname?.startsWith(href)}
           >
-            <Stack direction="row" alignItems="center" width="100%" px={2.5}>
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: 'center',
+                width: '100%',
+                px: 2.5
+              }}
+            >
               <ListItemIcon>{icon}</ListItemIcon>
               <ListItemText
                 primary={label}
-                primaryTypographyProps={{
-                  variant: 'h6',
-                  sx: {
-                    textAlign: 'center'
+                slotProps={{
+                  primary: {
+                    variant: 'h6',
+                    sx: {
+                      textAlign: 'center'
+                    }
                   }
                 }}
               />

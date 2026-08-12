@@ -103,7 +103,11 @@ export default function StudyQuestionsAddPage(): ReactElement {
       >
         {({ values, errors, handleChange, isValid, isSubmitting, dirty }) => (
           <Form>
-            <Stack gap={3}>
+            <Stack
+              sx={{
+                gap: 3
+              }}
+            >
               <TextField
                 id="value"
                 name="value"
@@ -124,7 +128,13 @@ export default function StudyQuestionsAddPage(): ReactElement {
                   }
                 }}
               />
-              <Stack direction="row" gap={2} justifyContent="flex-end">
+              <Stack
+                direction="row"
+                sx={{
+                  gap: 2,
+                  justifyContent: 'flex-end'
+                }}
+              >
                 <Button
                   type="submit"
                   variant="outlined"

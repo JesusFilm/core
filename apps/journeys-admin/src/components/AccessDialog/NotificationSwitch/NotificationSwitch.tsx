@@ -63,10 +63,12 @@ export function NotificationSwitch({
   const switchElement = (
     <Box>
       <Switch
-        inputProps={{ 'aria-checked': checked }}
         checked={checked}
         onChange={handleChange}
         disabled={loading || disabled}
+        slotProps={{
+          input: { 'aria-checked': checked }
+        }}
       />
     </Box>
   )

@@ -174,7 +174,12 @@ export function VideoBibleCitation({
           ))}
         </OrderedList>
       )}
-      <Stack direction="row" justifyContent="flex-end">
+      <Stack
+        direction="row"
+        sx={{
+          justifyContent: 'flex-end'
+        }}
+      >
         <Button
           variant="outlined"
           onClick={() =>

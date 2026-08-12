@@ -85,9 +85,22 @@ export function RestrictTranslations({
     >
       {({ values, setFieldValue, isSubmitting, dirty, resetForm }) => (
         <Form>
-          <Stack gap={2}>
-            <Stack gap={1}>
-              <Typography variant="body2" color="text.secondary">
+          <Stack
+            sx={{
+              gap: 2
+            }}
+          >
+            <Stack
+              sx={{
+                gap: 1
+              }}
+            >
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary'
+                }}
+              >
                 When enabled, generated translated audio variants or generated
                 subtitle tracks should not be created for this video. Metadata
                 translations (title, description, study questions) are
@@ -110,7 +123,13 @@ export function RestrictTranslations({
                 label="Restrict translations"
               />
             </Stack>
-            <Stack direction="row" justifyContent="flex-end" gap={1}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: 'flex-end',
+                gap: 1
+              }}
+            >
               <CancelButton
                 show={dirty}
                 handleCancel={() => void resetForm()}

@@ -100,7 +100,12 @@ export function PlausibleEmbedDashboard({
             background: (theme) => theme.palette.background.default
           }}
         >
-          <Typography variant="overline" color="secondary.light">
+          <Typography
+            variant="overline"
+            sx={{
+              color: 'secondary.light'
+            }}
+          >
             {error != null
               ? t('There was an error loading the report')
               : t('The report is loading...')}

@@ -16,9 +16,26 @@ const DrawerStory: Meta<typeof Drawer> = {
 const Template: StoryObj<ComponentProps<typeof Drawer>> = {
   render: ({ ...args }) => (
     <Drawer {...args}>
-      <Stack justifyContent="center" alignItems="center" height="100%">
-        <Stack direction="row" justifyContent="center" alignItems="center">
-          <Typography variant="body1" p="2">
+      <Stack
+        sx={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%'
+        }}
+      >
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <Typography
+            variant="body1"
+            sx={{
+              p: '2'
+            }}
+          >
             Drawer Content
           </Typography>
         </Stack>

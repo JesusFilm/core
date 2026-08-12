@@ -84,7 +84,13 @@ export function Accordion({
         expandIcon={<ExpandMoreIcon sx={{ color: 'primary.main' }} />}
         data-testid="AccordionSummary"
       >
-        <Stack spacing={3} alignItems="center" direction="row">
+        <Stack
+          spacing={3}
+          direction="row"
+          sx={{
+            alignItems: 'center'
+          }}
+        >
           {icon}
           <Box
             sx={{
@@ -96,7 +102,13 @@ export function Accordion({
           >
             {value != null ? (
               <>
-                <Typography variant="caption" color="text.secondary" noWrap>
+                <Typography
+                  variant="caption"
+                  noWrap
+                  sx={{
+                    color: 'text.secondary'
+                  }}
+                >
                   {name}
                 </Typography>
                 <Typography noWrap>

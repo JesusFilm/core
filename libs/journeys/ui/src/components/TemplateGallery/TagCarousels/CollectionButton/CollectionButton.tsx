@@ -65,18 +65,18 @@ export function CollectionButton({
       }}
     >
       <Stack
-        gap={3}
-        alignItems="center"
         sx={{
+          gap: 3,
+          alignItems: 'center',
           [theme.breakpoints.up('md')]: { flexDirection: 'row' },
           p: 2
         }}
       >
         {tag != null ? (
           <Stack
-            justifyContent="center"
-            alignItems="center"
             sx={{
+              justifyContent: 'center',
+              alignItems: 'center',
               position: 'relative',
               backgroundColor: 'grey',
               height: '64px',

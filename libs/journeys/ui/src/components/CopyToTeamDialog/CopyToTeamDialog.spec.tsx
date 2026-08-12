@@ -1,5 +1,6 @@
 import { type FetchResult } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type ReactElement } from 'react'
@@ -68,7 +69,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       await waitFor(() => expect(result).toHaveBeenCalled())
@@ -150,7 +152,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
       await waitFor(() => expect(result).toHaveBeenCalled())
 
@@ -234,7 +237,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
       await waitFor(() => expect(result).toHaveBeenCalled())
 
@@ -296,7 +300,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       await waitFor(() => expect(result).toHaveBeenCalled())
@@ -329,7 +334,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
       await waitFor(() => fireEvent.click(getByText('Copy')))
       await waitFor(() =>
@@ -376,7 +382,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
       await waitFor(() => expect(result).toHaveBeenCalled())
       await waitFor(() => fireEvent.click(getByText('Cancel')))
@@ -405,7 +412,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       const dialog = getByTestId('CopyToTeamDialog')
@@ -434,7 +442,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       const dialog = getByTestId('CopyToTeamDialog')
@@ -463,7 +472,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       const dialog = getByTestId('CopyToTeamDialog')
@@ -492,7 +502,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       const dialog = getByTestId('CopyToTeamDialog')
@@ -520,11 +531,12 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(
-        screen.getByRole('checkbox', {
+        screen.getByRole('switch', {
           name: 'Translation'
         })
       )
@@ -552,11 +564,12 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(
-        screen.getByRole('checkbox', {
+        screen.getByRole('switch', {
           name: 'Translation'
         })
       )
@@ -631,7 +644,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       await waitFor(() => expect(result).toHaveBeenCalled())
@@ -771,7 +785,7 @@ describe('CopyToTeamDialog', () => {
         </MockedProvider>
       )
 
-      const { rerender } = render(ui(true))
+      const { rerender } = render(ui(true), { wrapper: MenuList })
 
       await waitFor(() => expect(teamsResult).toHaveBeenCalled())
 
@@ -780,7 +794,7 @@ describe('CopyToTeamDialog', () => {
       fireEvent.click(screen.getByRole('option', { name: 'Team Name' }))
 
       // Enable translation and pick a target language
-      fireEvent.click(screen.getByRole('checkbox', { name: 'Translation' }))
+      fireEvent.click(screen.getByRole('switch', { name: 'Translation' }))
       await waitFor(() =>
         expect(screen.getByTestId('LanguageAutocomplete')).not.toHaveAttribute(
           'aria-disabled',
@@ -869,7 +883,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
       return { ...utils, queryResult }
     }

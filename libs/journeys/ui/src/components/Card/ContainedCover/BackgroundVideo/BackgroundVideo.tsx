@@ -138,12 +138,14 @@ export function BackgroundVideo({
 
   return (
     <Box
-      height="100%"
-      width="100%"
-      minHeight="-webkit-fill-available"
-      overflow="hidden"
-      position="absolute"
       data-testid="CardContainedBackgroundVideo"
+      sx={{
+        height: '100%',
+        width: '100%',
+        minHeight: '-webkit-fill-available',
+        overflow: 'hidden',
+        position: 'absolute'
+      }}
     >
       <StyledVideo
         ref={videoRef}

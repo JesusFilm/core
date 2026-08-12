@@ -27,18 +27,34 @@ export function HostInfo({ handleSelection }: HostInfoTabProps): ReactElement {
       >
         {t('Back')}
       </Button>
-      <Stack direction="row" alignItems="center" gap={3} sx={{ mb: 4 }}>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: 'center',
+          gap: 3,
+          mb: 4
+        }}
+      >
         <UserProfileCircleIcon />
         <Typography variant="subtitle2">
           {t('Why does your journey need a host?')}
         </Typography>
       </Stack>
-      <Typography gutterBottom color="secondary.light">
+      <Typography
+        gutterBottom
+        sx={{
+          color: 'secondary.light'
+        }}
+      >
         {t(
           'A great way to add personality to your content is to include both male and female journey creators. Diverse creators, especially with a local feel, are more likely to engage users in conversation.'
         )}
       </Typography>
-      <Typography color="secondary.light">
+      <Typography
+        sx={{
+          color: 'secondary.light'
+        }}
+      >
         {t(
           'In countries with security concerns, it is advisable to create fake personas for your own safety.'
         )}

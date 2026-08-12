@@ -109,7 +109,12 @@ export function LanguageSwitcher({
                   {languageCode !== currentLanguageCode &&
                     localName != null &&
                     nativeName != null && (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary'
+                        }}
+                      >
                         {nativeName}
                       </Typography>
                     )}
@@ -119,7 +124,12 @@ export function LanguageSwitcher({
           </Select>
         </FormControl>
 
-        <Stack gap={2} sx={{ pt: 2 }}>
+        <Stack
+          sx={{
+            gap: 2,
+            pt: 2
+          }}
+        >
           {previousLanguageCode != null && (
             <Alert
               severity="warning"

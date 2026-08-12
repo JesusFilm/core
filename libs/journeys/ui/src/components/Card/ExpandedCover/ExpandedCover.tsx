@@ -81,8 +81,8 @@ export function ExpandedCover({
       >
         <Stack
           data-testid="overlay-content-container"
-          justifyContent="center"
           sx={{
+            justifyContent: 'center',
             flexGrow: 1,
             pt: journey?.website === true ? 0 : { xs: 10, sm: 8 },
             ...enableVerticalScroll

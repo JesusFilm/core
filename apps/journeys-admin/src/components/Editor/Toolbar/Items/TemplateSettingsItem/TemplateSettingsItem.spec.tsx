@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -51,7 +52,8 @@ describe('TemplateSettingsItem', () => {
             <TemplateSettingsItem variant="menu-item" />
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     fireEvent.click(getByRole('menuitem'))
     await waitFor(() =>
@@ -76,7 +78,8 @@ describe('TemplateSettingsItem', () => {
             <TemplateSettingsItem variant="menu-item" />
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     fireEvent.click(getByRole('menuitem'))

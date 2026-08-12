@@ -58,9 +58,10 @@ function PublisherIndexPage(): ReactElement {
         mainHeaderChildren={
           <Stack
             direction="row"
-            justifyContent="flex-end"
-            flexGrow={1}
             sx={{
+              justifyContent: 'flex-end',
+              flexGrow: 1,
+
               display: {
                 xs: 'none',
                 md: 'flex'

@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -49,7 +50,8 @@ describe('AccessItem', () => {
             <AccessItem variant="menu-item" />
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     fireEvent.click(getByText('Manage Access'))
@@ -81,7 +83,8 @@ describe('AccessItem', () => {
             <AccessItem variant="menu-item" />
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => expect(getByTestId('AccessDialog')).toBeInTheDocument())
@@ -96,7 +99,8 @@ describe('AccessItem', () => {
             <AccessItem variant="menu-item" />
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     fireEvent.click(getByText('Manage Access'))

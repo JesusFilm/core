@@ -258,9 +258,11 @@ export const Complete = {
     mainHeaderChildren: (
       <Stack
         direction="row"
-        alignItems="center"
-        justifyContent="flex-end"
-        flexGrow={1}
+        sx={{
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          flexGrow: 1
+        }}
       >
         <Typography variant="caption" sx={{ pl: 4 }}>
           custom content

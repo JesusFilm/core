@@ -44,18 +44,19 @@ export function MessageBubble({
   return (
     <Box
       ref={ref}
-      position="relative"
-      width={width}
-      height={height}
-      bgcolor="background.paper"
-      border="0.5px solid #DEDFE0"
-      borderRadius={direction === 'left' ? '8px 8px 8px 0' : '8px 8px 0 8px'}
-      mx={5}
-      mb={5}
-      px={2}
-      pt={2}
-      pb={1}
       sx={{
+        position: 'relative',
+        width: width,
+        height: height,
+        bgcolor: 'background.paper',
+        border: '0.5px solid #DEDFE0',
+        borderRadius: direction === 'left' ? '8px 8px 8px 0' : '8px 8px 0 8px',
+        mx: 5,
+        mb: 5,
+        px: 2,
+        pt: 2,
+        pb: 1,
+
         '&:before': {
           ...triangleBase,
           borderTop: `12px solid #FFF`,
@@ -63,6 +64,7 @@ export function MessageBubble({
           borderRight: direction === 'left' ? '12px solid transparent' : '',
           borderLeft: direction === 'right' ? '12px solid transparent' : ''
         },
+
         '&:after': {
           ...triangleBase,
           borderTop: `13px solid #DEDFE0`,
@@ -88,35 +90,65 @@ export function Message(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { isLayered } = useEditorLayout()
   return (
-    <Box maxWidth={256} data-testid="SocialPreviewMessage">
-      <Stack direction="column" justifyContent="start">
+    <Box
+      data-testid="SocialPreviewMessage"
+      sx={{
+        maxWidth: 256
+      }}
+    >
+      <Stack
+        direction="column"
+        sx={{
+          justifyContent: 'start'
+        }}
+      >
         <Typography
           variant="caption"
           // the layered desktop view floats over a dark backdrop
-          color={isLayered ? 'white' : undefined}
-          pb={4}
-          textAlign="center"
-          sx={{ fontSize: 16 }}
+          sx={{
+            color: isLayered ? 'white' : undefined,
+            pb: 4,
+            textAlign: 'center',
+            fontSize: 16
+          }}
         >
           {t('Message View')}
         </Typography>
-        <Stack alignItems="center">
+        <Stack
+          sx={{
+            alignItems: 'center'
+          }}
+        >
           <MessageBubble width={252} height={54} direction="left" />
           {journey != null && (
             <MessageBubble width={315} direction="right">
               <Stack direction="column" sx={{ p: 1 }}>
-                <Stack direction="row" gap={2} alignItems="center">
+                <Stack
+                  direction="row"
+                  sx={{
+                    gap: 2,
+                    alignItems: 'center'
+                  }}
+                >
                   <Tooltip title={t('Social Image')}>
                     {journey?.primaryImageBlock?.src == null ? (
                       <Box
-                        width={78}
-                        height={78}
                         data-testid="social-preview-message-empty"
-                        bgcolor="rgba(0, 0, 0, 0.1)"
-                        borderRadius="6px"
+                        sx={{
+                          width: 78,
+                          height: 78,
+                          bgcolor: 'rgba(0, 0, 0, 0.1)',
+                          borderRadius: '6px'
+                        }}
                       />
                     ) : (
-                      <Box width={78} height={78} sx={{ position: 'relative' }}>
+                      <Box
+                        sx={{
+                          width: 78,
+                          height: 78,
+                          position: 'relative'
+                        }}
+                      >
                         <Image
                           src={journey.primaryImageBlock.src}
                           alt={journey.primaryImageBlock.alt ?? ''}
@@ -131,27 +163,33 @@ export function Message(): ReactElement {
                     )}
                   </Tooltip>
                   <Stack
-                    width={164}
-                    flexGrow={1}
-                    gap={1.5}
                     data-testid="SecondaryText"
+                    sx={{
+                      width: 164,
+                      flexGrow: 1,
+                      gap: 1.5
+                    }}
                   >
                     <Tooltip title={t('Headline')}>
                       {isEmpty(journey?.seoTitle?.trim()) ? (
                         <Box
-                          width={205}
-                          height={15}
-                          bgcolor="#EFEFEF"
-                          borderRadius="5px"
                           data-testid="HeadlineSkeleton"
+                          sx={{
+                            width: 205,
+                            height: 15,
+                            bgcolor: '#EFEFEF',
+                            borderRadius: '5px'
+                          }}
                         />
                       ) : (
                         <Typography
                           variant="body1"
-                          fontWeight={600}
-                          fontSize={12}
-                          lineHeight="15px"
                           noWrap
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: 12,
+                            lineHeight: '15px'
+                          }}
                         >
                           {journey.seoTitle}
                         </Typography>
@@ -161,18 +199,22 @@ export function Message(): ReactElement {
                     <Tooltip title={t('Secondary Text')}>
                       {isEmpty(journey?.seoDescription?.trim()) ? (
                         <Box
-                          width={144}
-                          height={15}
-                          bgcolor="#EFEFEF"
-                          borderRadius="5px"
                           data-testid="SecondaryTextSkeleton"
+                          sx={{
+                            width: 144,
+                            height: 15,
+                            bgcolor: '#EFEFEF',
+                            borderRadius: '5px'
+                          }}
                         />
                       ) : (
                         <Typography
                           variant="body2"
-                          fontSize={8}
-                          lineHeight="15px"
-                          sx={{ wordBreak: 'break-word' }}
+                          sx={{
+                            fontSize: 8,
+                            lineHeight: '15px',
+                            wordBreak: 'break-word'
+                          }}
                         >
                           {journey.seoDescription}
                         </Typography>
@@ -183,10 +225,12 @@ export function Message(): ReactElement {
                 <Box>
                   <Typography
                     variant="body1"
-                    fontSize={10.5}
-                    lineHeight="16px"
-                    mt={2}
-                    color="#C52D3A"
+                    sx={{
+                      fontSize: 10.5,
+                      lineHeight: '16px',
+                      mt: 2,
+                      color: '#C52D3A'
+                    }}
                   >
                     {journey?.slug != null
                       ? `${

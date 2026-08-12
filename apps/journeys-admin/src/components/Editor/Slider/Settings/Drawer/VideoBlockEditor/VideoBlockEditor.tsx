@@ -64,7 +64,14 @@ export function VideoBlockEditor({
 
   return (
     <>
-      <Stack sx={{ p: 4, pt: 0 }} gap={4} data-testid="VideoBlockEditor">
+      <Stack
+        data-testid="VideoBlockEditor"
+        sx={{
+          gap: 4,
+          p: 4,
+          pt: 0
+        }}
+      >
         <Source
           key={selectedBlock?.videoId}
           selectedBlock={selectedBlock}
@@ -85,15 +92,17 @@ export function VideoBlockEditor({
                 value={notesInputValue}
                 onChange={(e) => setNotesInputValue(e.target.value)}
                 onBlur={handleNotesBlur}
-                inputProps={{
-                  'aria-label': t('Template Adapter Notes'),
-                  maxLength: 100
-                }}
                 helperText={
                   notesInputValue.length >= 100
                     ? t('Maximum 100 characters')
                     : undefined
                 }
+                slotProps={{
+                  htmlInput: {
+                    'aria-label': t('Template Adapter Notes'),
+                    maxLength: 100
+                  }
+                }}
               />
             </Collapse>
           </>
@@ -101,7 +110,11 @@ export function VideoBlockEditor({
       </Stack>
 
       {videoBlock?.videoId != null && (
-        <Box pb={4}>
+        <Box
+          sx={{
+            pb: 4
+          }}
+        >
           <VideoBlockEditorSettings
             selectedBlock={selectedBlock}
             posterBlock={posterBlock}

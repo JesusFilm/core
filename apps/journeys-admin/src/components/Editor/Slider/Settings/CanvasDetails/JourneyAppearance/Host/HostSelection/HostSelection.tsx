@@ -61,7 +61,14 @@ export function HostSelection({
           />
         )}
         {!userInTeam && journey?.team != null && (
-          <Stack direction="row" alignItems="center" gap={3} sx={{ mt: 4 }}>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: 'center',
+              gap: 3,
+              mt: 4
+            }}
+          >
             <AlertCircleIcon />
             <Typography variant="subtitle2">
               {data?.userTeams.length === 0

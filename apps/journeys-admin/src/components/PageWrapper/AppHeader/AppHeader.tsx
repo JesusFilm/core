@@ -45,8 +45,20 @@ export function AppHeader({
         }}
       >
         <Toolbar variant={toolbar.variant}>
-          <Stack direction="row" alignItems="center" width="100%">
-            <Stack direction="row" flexGrow={1} justifyContent="left">
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: 'center',
+              width: '100%'
+            }}
+          >
+            <Stack
+              direction="row"
+              sx={{
+                flexGrow: 1,
+                justifyContent: 'left'
+              }}
+            >
               <IconButton
                 size="large"
                 edge="start"
@@ -57,7 +69,13 @@ export function AppHeader({
                 <Menu1Icon sx={{ color: 'background.paper' }} />
               </IconButton>
             </Stack>
-            <Stack direction="row" flexGrow={1} justifyContent="center">
+            <Stack
+              direction="row"
+              sx={{
+                flexGrow: 1,
+                justifyContent: 'center'
+              }}
+            >
               <Image
                 src={taskbarIcon}
                 width={32}
@@ -65,7 +83,13 @@ export function AppHeader({
                 alt="Next Steps"
               />
             </Stack>
-            <Stack direction="row" flexGrow={1} justifyContent="right">
+            <Stack
+              direction="row"
+              sx={{
+                flexGrow: 1,
+                justifyContent: 'right'
+              }}
+            >
               <IconButton
                 size="large"
                 edge="start"

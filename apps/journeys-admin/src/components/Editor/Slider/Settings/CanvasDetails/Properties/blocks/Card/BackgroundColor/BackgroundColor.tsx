@@ -388,7 +388,13 @@ export function BackgroundColor({
         <>
           <Divider />
           <Stack sx={{ p: 4, pt: 2 }} data-testid="BackdropBlurSlider">
-            <Stack direction="row" alignItems="center" spacing={3}>
+            <Stack
+              direction="row"
+              spacing={3}
+              sx={{
+                alignItems: 'center'
+              }}
+            >
               <Tooltip
                 title={t('Adjust the blur level of your background image.')}
                 slotProps={{

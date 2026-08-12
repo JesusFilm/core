@@ -1068,9 +1068,7 @@ describe('Button', () => {
     )
     expect(screen.getByRole('button')).toHaveClass('MuiButton-root')
     expect(screen.getByRole('button')).toHaveClass('MuiButton-contained')
-    expect(screen.getByRole('button')).toHaveClass(
-      'MuiButton-containedSizeSmall'
-    )
+    expect(screen.getByRole('button')).toHaveClass('MuiButton-sizeSmall')
     expect(screen.getByText('This is a button')).toBeInTheDocument()
   })
 
@@ -1089,9 +1087,7 @@ describe('Button', () => {
         <Button {...block} size={ButtonSize.small} />
       </MockedProvider>
     )
-    expect(screen.getByRole('button')).toHaveClass(
-      'MuiButton-containedSizeSmall'
-    )
+    expect(screen.getByRole('button')).toHaveClass('MuiButton-sizeSmall')
   })
 
   it('should render the default color value', () => {
@@ -1100,7 +1096,7 @@ describe('Button', () => {
         <Button {...block} buttonColor={null} />
       </MockedProvider>
     )
-    expect(screen.getByRole('button')).toHaveClass('MuiButton-containedPrimary')
+    expect(screen.getByRole('button')).toHaveClass('MuiButton-colorPrimary')
   })
 
   it('should render the start icon', () => {

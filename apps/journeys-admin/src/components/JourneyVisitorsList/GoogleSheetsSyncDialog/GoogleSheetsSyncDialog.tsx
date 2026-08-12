@@ -1413,7 +1413,6 @@ export function GoogleSheetsSyncDialog({
                           onBlur={handleBlur}
                           label={t('Sheet name')}
                           placeholder={t('Sheet name')}
-                          inputProps={{ 'aria-label': t('Sheet title') }}
                           fullWidth
                           required
                           error={
@@ -1426,6 +1425,9 @@ export function GoogleSheetsSyncDialog({
                               ? (errors.spreadsheetTitle as string)
                               : undefined
                           }
+                          slotProps={{
+                            htmlInput: { 'aria-label': t('Sheet title') }
+                          }}
                         />
                       )}
                       <TextField
@@ -1435,7 +1437,6 @@ export function GoogleSheetsSyncDialog({
                         onBlur={handleBlur}
                         label={t('Sheet tab name')}
                         placeholder={t('Sheet tab name')}
-                        inputProps={{ 'aria-label': t('Sheet tab name') }}
                         fullWidth
                         required
                         error={
@@ -1446,6 +1447,9 @@ export function GoogleSheetsSyncDialog({
                             ? (errors.sheetName as string)
                             : t('Data will sync in this tab.')
                         }
+                        slotProps={{
+                          htmlInput: { 'aria-label': t('Sheet tab name') }
+                        }}
                       />
                     </Box>
                   )}
