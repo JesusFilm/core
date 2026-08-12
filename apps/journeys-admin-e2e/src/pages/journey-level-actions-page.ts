@@ -341,18 +341,14 @@ export class JourneyLevelActions {
 
   async verifyNavigationSideMenuOpened(): Promise<void> {
     await expect(
-      this.page.locator(
-        'div[data-testid="NavigationDrawer"] div[aria-hidden="true"][style*="visibility: hidden"]'
-      )
-    ).toBeHidden()
+      this.page.locator('div[data-testid="NavigationDrawer"] .MuiDrawer-paper')
+    ).toHaveCSS('width', '237px')
   }
 
   async verifyNavigationSideMenuClosed(): Promise<void> {
     await expect(
-      this.page.locator(
-        'div[data-testid="NavigationDrawer"] div[aria-hidden="true"][style*="visibility: hidden"]'
-      )
-    ).toHaveCount(1)
+      this.page.locator('div[data-testid="NavigationDrawer"] .MuiDrawer-paper')
+    ).toHaveCSS('width', '72px')
   }
 
   async clickHelpBtn(): Promise<void> {
