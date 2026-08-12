@@ -29,19 +29,29 @@ export function VideosSubHero(): ReactElement {
   const { t } = useTranslation('apps-watch')
   return (
     <Stack
-      py={12}
       direction={{ xs: 'column-reverse', sm: 'row' }}
       spacing={9}
       data-testid="VideosSubHero"
+      sx={{
+        py: 12
+      }}
     >
-      <Box flex={1}>
+      <Box
+        sx={{
+          flex: 1
+        }}
+      >
         <Typography variant="subtitle1">
           {t(
             'We believe film is the most dynamic way to hear and see the greatest story ever lived — so we are driven to bring Christ-centered video to the ends of the earth.'
           )}
         </Typography>
       </Box>
-      <Box flex={1}>
+      <Box
+        sx={{
+          flex: 1
+        }}
+      >
         <VideosSubHeroStats />
       </Box>
     </Stack>

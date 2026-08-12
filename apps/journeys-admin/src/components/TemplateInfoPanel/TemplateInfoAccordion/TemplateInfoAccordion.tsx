@@ -69,7 +69,12 @@ export function TemplateInfoAccordion({
           '.MuiAccordionSummary-content.Mui-expanded': { m: 0 }
         }}
       >
-        <Typography variant="subtitle2" color="text.primary">
+        <Typography
+          variant="subtitle2"
+          sx={{
+            color: 'text.primary'
+          }}
+        >
           {title}
         </Typography>
       </AccordionSummary>

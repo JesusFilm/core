@@ -23,7 +23,13 @@ const Template: Story = {
       value={{ journey: {} as unknown as Journey, renderMode: 'admin' }}
     >
       <StoryCard>
-        <Typography mb={4}>Text above Spacer</Typography>
+        <Typography
+          sx={{
+            mb: 4
+          }}
+        >
+          Text above Spacer
+        </Typography>
         <Spacer {...args} />
         <Typography>Text below Spacer</Typography>
       </StoryCard>
@@ -43,7 +49,13 @@ export const Journeys: Story = {
       value={{ journey: {} as unknown as Journey, renderMode: 'default' }}
     >
       <StoryCard>
-        <Typography mb={4}>Text above Spacer</Typography>
+        <Typography
+          sx={{
+            mb: 4
+          }}
+        >
+          Text above Spacer
+        </Typography>
         <Spacer {...args} />
         <Typography>Text below Spacer</Typography>
       </StoryCard>

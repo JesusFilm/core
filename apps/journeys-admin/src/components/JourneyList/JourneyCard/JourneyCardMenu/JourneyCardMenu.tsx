@@ -226,9 +226,6 @@ export function JourneyCardMenu({
         open={open ?? false}
         onClose={handleCloseMenu}
         keepMounted={keepMounted}
-        MenuListProps={{
-          'aria-labelledby': 'journey-actions'
-        }}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'right'
@@ -238,6 +235,11 @@ export function JourneyCardMenu({
           horizontal: 'right'
         }}
         data-testid="JourneyCardMenu"
+        slotProps={{
+          list: {
+            'aria-labelledby': 'journey-actions'
+          }
+        }}
       >
         {status === JourneyStatus.trashed
           ? TrashMenuItemsComponent && (

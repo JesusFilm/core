@@ -1,3 +1,4 @@
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { UnsplashSearch } from '.'
@@ -5,7 +6,9 @@ import { UnsplashSearch } from '.'
 describe('UnsplashSearch', () => {
   it('should call handle submit with field value', async () => {
     const handleSubmit = vi.fn()
-    render(<UnsplashSearch handleSubmit={handleSubmit} />)
+    render(<UnsplashSearch handleSubmit={handleSubmit} />, {
+      wrapper: MenuList
+    })
     fireEvent.change(screen.getByRole('textbox', { name: 'UnsplashSearch' }), {
       target: { value: 'Jesus' }
     })

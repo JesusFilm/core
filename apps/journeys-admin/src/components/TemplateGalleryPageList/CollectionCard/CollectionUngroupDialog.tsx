@@ -41,7 +41,11 @@ export function CollectionUngroupDialog({
           )}
         </Typography>
         {wasPublished && (
-          <Typography color="text.secondary">
+          <Typography
+            sx={{
+              color: 'text.secondary'
+            }}
+          >
             {t('Any public URL for this Collection will return 404.')}
           </Typography>
         )}

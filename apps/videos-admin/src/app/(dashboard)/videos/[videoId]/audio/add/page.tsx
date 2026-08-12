@@ -137,8 +137,16 @@ export default function AddAudioLanguageDialog(): ReactElement {
       >
         {({ values, errors, touched, setFieldValue }) => (
           <Form>
-            <Stack gap={4}>
-              <Stack gap={2}>
+            <Stack
+              sx={{
+                gap: 4
+              }}
+            >
+              <Stack
+                sx={{
+                  gap: 2
+                }}
+              >
                 <FormControl
                   fullWidth
                   error={touched.edition && errors.edition != null}

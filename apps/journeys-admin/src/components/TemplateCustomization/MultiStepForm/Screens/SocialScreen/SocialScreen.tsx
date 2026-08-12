@@ -39,10 +39,10 @@ export function SocialScreen({ handleNext }: SocialScreenProps): ReactElement {
       }
     >
       <Stack
-        alignItems="center"
-        gap={5}
         data-testid="SocialShareAppearance"
         sx={{
+          alignItems: 'center',
+          gap: 5,
           width: '100%'
         }}
       >

@@ -30,10 +30,12 @@ export default function ReportsVisitorsPage(): ReactElement {
         mainHeaderChildren={
           <Stack
             direction="row"
-            justifyContent="flex-end"
-            flexGrow={1}
-            alignItems="center"
-            gap={3}
+            sx={{
+              justifyContent: 'flex-end',
+              flexGrow: 1,
+              alignItems: 'center',
+              gap: 3
+            }}
           >
             <ReportsNavigation destination="journey" />
             <Box

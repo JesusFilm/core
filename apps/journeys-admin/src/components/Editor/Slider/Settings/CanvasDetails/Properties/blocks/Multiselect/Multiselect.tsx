@@ -265,8 +265,10 @@ export function Multiselect({
                 commitUpdate({ min: normalizedMin, max: defaultMax })
               }
             }}
-            inputProps={{ 'aria-label': t('Selection Limit') }}
             sx={{ ml: 'auto' }}
+            slotProps={{
+              input: { 'aria-label': t('Selection Limit') }
+            }}
           />
         </Box>
         {limitEnabled && (
@@ -329,8 +331,10 @@ export function Multiselect({
               />
               <Typography
                 variant="caption"
-                color="text.secondary"
                 align="center"
+                sx={{
+                  color: 'text.secondary'
+                }}
               >
                 {t('Min')}
               </Typography>
@@ -358,8 +362,10 @@ export function Multiselect({
               />
               <Typography
                 variant="caption"
-                color="text.secondary"
                 align="center"
+                sx={{
+                  color: 'text.secondary'
+                }}
               >
                 {t('Max')}
               </Typography>

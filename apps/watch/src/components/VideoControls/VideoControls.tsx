@@ -617,9 +617,11 @@ export function VideoControls({
               />
               <Stack
                 direction="row"
-                gap={5}
-                justifyContent={{ xs: 'space-between', md: 'none' }}
-                alignItems="center"
+                sx={{
+                  gap: 5,
+                  justifyContent: { xs: 'space-between', md: 'none' },
+                  alignItems: 'center'
+                }}
               >
                 <IconButton
                   id={play ? 'pause-button' : 'play-button'}
@@ -657,8 +659,12 @@ export function VideoControls({
                 {player != null && (
                   <Typography
                     variant="body2"
-                    color="secondary.contrastText"
-                    sx={{ display: 'flex', gap: 1, zIndex: 2 }}
+                    sx={{
+                      color: 'secondary.contrastText',
+                      display: 'flex',
+                      gap: 1,
+                      zIndex: 2
+                    }}
                   >
                     <span className="font-sans">{currentTime ?? '0:00'}</span>
                     <span>/</span>
@@ -671,10 +677,10 @@ export function VideoControls({
                 )}
                 <Stack direction="row" spacing={2}>
                   <Stack
-                    alignItems="center"
                     spacing={2}
                     direction="row"
                     sx={{
+                      alignItems: 'center',
                       display: { xs: 'flex', md: 'none' }
                     }}
                   >
@@ -691,16 +697,18 @@ export function VideoControls({
                     </IconButton>
                   </Stack>
                   <Stack
-                    alignItems="center"
                     spacing={2}
                     direction="row"
                     sx={{
+                      alignItems: 'center',
                       display: { xs: 'none', md: 'flex' },
+
                       '> .MuiSlider-root': {
                         width: 0,
                         opacity: 0,
                         transition: 'all 0.2s ease-out'
                       },
+
                       '&:hover': {
                         '> .MuiSlider-root': {
                           width: 70,

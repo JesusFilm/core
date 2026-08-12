@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import Grid from '@mui/material/GridLegacy'
+import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentProps } from 'react'
@@ -51,17 +51,25 @@ const VariantTemplate: VariantStory = {
           {args.variants.map((variant, i) => (
             <Grid
               container
-              item
               key={i}
-              xs={2}
-              sm={4}
-              md={4}
-              direction="column"
-              justifyContent="center"
-              alignItems="center"
+              size={{
+                xs: 2,
+                sm: 4,
+                md: 4
+              }}
+              sx={{
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
             >
               <Icon {...args} iconName={variant} />
-              <Typography mt={1} variant="caption">{`${
+              <Typography
+                variant="caption"
+                sx={{
+                  mt: 1
+                }}
+              >{`${
                 variant === IconName.ArrowBackRounded
                   ? 'ArrowLeftRounded'
                   : variant === IconName.ArrowForwardRounded

@@ -133,8 +133,17 @@ function ValidateEmail({
         >
           {({ values, handleChange, handleBlur, errors, touched }) => (
             <Form noValidate autoComplete="off" data-testid="EmailInviteForm">
-              <Stack textAlign="center">
-                <Stack textAlign="left" spacing={4}>
+              <Stack
+                sx={{
+                  textAlign: 'center'
+                }}
+              >
+                <Stack
+                  spacing={4}
+                  sx={{
+                    textAlign: 'left'
+                  }}
+                >
                   <Typography variant="subtitle2">{email}</Typography>
                   <Typography variant="body1">
                     {t(
@@ -168,12 +177,21 @@ function ValidateEmail({
                     expandIcon={<ExpandMoreIcon />}
                     data-testid="VerifyCodeAccordionSummary"
                   >
-                    <Typography px={4}>
+                    <Typography
+                      sx={{
+                        px: 4
+                      }}
+                    >
                       {t('Verify With Code Instead')}
                     </Typography>
                   </AccordionSummary>
                   <AccordionDetails sx={{ textAlign: 'left' }}>
-                    <Stack spacing={4} px={4}>
+                    <Stack
+                      spacing={4}
+                      sx={{
+                        px: 4
+                      }}
+                    >
                       <Typography variant="body1">
                         {t('Enter verification code from email')}
                       </Typography>

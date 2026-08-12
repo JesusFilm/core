@@ -197,7 +197,11 @@ export function TrashedJourneyList({
           )}
         </Box>
       )}
-      <Stack alignItems="center">
+      <Stack
+        sx={{
+          alignItems: 'center'
+        }}
+      >
         <Typography
           variant="caption"
           align="center"

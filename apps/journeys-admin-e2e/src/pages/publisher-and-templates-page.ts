@@ -621,7 +621,7 @@ export class Publisher {
   async clickDropDownOpenIconForFilters(filterOption: string) {
     await this.page
       .locator(
-        'div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]',
+        'div[class*="MuiGrid-root"] > div[class*="MuiAutocomplete-root"]',
         { hasText: filterOption }
       )
       .locator('button[aria-label="Open"]')
@@ -666,7 +666,7 @@ export class Publisher {
   async clickDropDownCloseIconForFilters(filterOption: string) {
     await this.page
       .locator(
-        'div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]',
+        'div[class*="MuiGrid-root"] > div[class*="MuiAutocomplete-root"]',
         { hasText: filterOption }
       )
       .locator('button[aria-label="Close"]')

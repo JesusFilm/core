@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Fade from '@mui/material/Fade'
-import Grid from '@mui/material/GridLegacy'
+import Grid from '@mui/material/Grid'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
@@ -42,7 +42,12 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
       <NextSeo nofollow noindex />
       <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
         <Container maxWidth="xxl">
-          <Stack spacing={8} py={8}>
+          <Stack
+            spacing={8}
+            sx={{
+              py: 8
+            }}
+          >
             <Image
               src={logo}
               alt="Next Steps"
@@ -57,7 +62,15 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
             <Box>
               <Grid container spacing={{ xs: 2, sm: 4 }}>
                 {journeys.map(({ id, slug }, index) => (
-                  <Grid item key={id} xs={12} sm={6} md={4} lg={3}>
+                  <Grid
+                    key={id}
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                      md: 4,
+                      lg: 3
+                    }}
+                  >
                     <Box sx={{ position: 'relative' }}>
                       <Box
                         sx={{
@@ -98,8 +111,10 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
             <Stack
               direction={{ xs: 'column', sm: 'row' }}
               spacing={2}
-              justifyContent="center"
-              alignItems="center"
+              sx={{
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
             >
               <Link
                 component={NextLink}

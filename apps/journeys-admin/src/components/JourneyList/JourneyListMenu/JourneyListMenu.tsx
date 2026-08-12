@@ -72,9 +72,6 @@ export function JourneyListMenu({
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
             onClose={handleCloseMenu}
-            MenuListProps={{
-              'aria-labelledby': 'edit-journey-actions'
-            }}
             anchorOrigin={{
               vertical: 'bottom',
               horizontal: 'right'
@@ -96,6 +93,10 @@ export function JourneyListMenu({
                     fontWeight: 500
                   }
                 }
+              },
+
+              list: {
+                'aria-labelledby': 'edit-journey-actions'
               }
             }}
             data-testid="JourneyListMenu"

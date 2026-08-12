@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -57,7 +58,8 @@ describe('TemplateActionButton', () => {
               <TemplateActionButton signedIn={signedIn} />
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       expect(screen.getByTestId('UseThisTemplateButton')).toBeInTheDocument()
@@ -77,7 +79,8 @@ describe('TemplateActionButton', () => {
               <TemplateActionButton signedIn={signedOut} />
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       expect(screen.getByTestId('UseThisTemplateButton')).toBeInTheDocument()
@@ -97,7 +100,8 @@ describe('TemplateActionButton', () => {
               <TemplateActionButton signedIn={signedIn} />
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       expect(screen.getByTestId('CreateJourneyButton')).toBeInTheDocument()
@@ -117,7 +121,8 @@ describe('TemplateActionButton', () => {
               <TemplateActionButton signedIn={signedOut} />
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       expect(screen.getByTestId('CreateJourneyButton')).toBeInTheDocument()
@@ -137,7 +142,8 @@ describe('TemplateActionButton', () => {
               <TemplateActionButton signedIn={signedIn} journey={undefined} />
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       expect(
@@ -159,7 +165,8 @@ describe('TemplateActionButton', () => {
               <TemplateActionButton variant="menu-item" />
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       expect(screen.getByTestId('UseThisTemplateMenuItem')).toBeInTheDocument()
@@ -176,7 +183,8 @@ describe('TemplateActionButton', () => {
               <TemplateActionButton variant="menu-item" />
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(screen.getByTestId('UseThisTemplateMenuItem'))
@@ -196,7 +204,8 @@ describe('TemplateActionButton', () => {
               <TemplateActionButton variant="button" signedIn={false} />
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
@@ -216,7 +225,8 @@ describe('TemplateActionButton', () => {
               <TemplateActionButton variant="menu-item" />
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(
@@ -236,7 +246,8 @@ describe('TemplateActionButton', () => {
               <TemplateActionButton variant="button" signedIn={true} />
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
@@ -259,7 +270,8 @@ describe('TemplateActionButton', () => {
               />
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       expect(screen.getByTestId('UseThisTemplateButton')).toBeInTheDocument()
@@ -284,7 +296,8 @@ describe('TemplateActionButton', () => {
               />
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       expect(screen.getByTestId('CreateJourneyButton')).toBeInTheDocument()
@@ -305,7 +318,8 @@ describe('TemplateActionButton', () => {
               />
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))

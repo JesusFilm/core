@@ -173,7 +173,11 @@ export function ActiveTemplateList({
       ) : (
         <LoadingJourneyList hideHelperText />
       )}
-      <Stack alignItems="center">
+      <Stack
+        sx={{
+          alignItems: 'center'
+        }}
+      >
         <Typography
           variant="caption"
           align="center"

@@ -22,15 +22,21 @@ export function TagItem({
   return (
     <Stack
       direction="row"
-      alignItems="center"
-      sx={{ width: 'max-content', height: '93px' }}
       data-testid={`TagItem${name ?? ''}`}
+      sx={{
+        alignItems: 'center',
+        width: 'max-content',
+        height: '93px'
+      }}
     >
       <Stack
-        gap={2}
-        alignItems="center"
-        justifyContent="center"
-        sx={{ minWidth: '77px', height: '93px' }}
+        sx={{
+          gap: 2,
+          alignItems: 'center',
+          justifyContent: 'center',
+          minWidth: '77px',
+          height: '93px'
+        }}
       >
         {loading === true ? (
           <>

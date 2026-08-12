@@ -248,7 +248,7 @@ describe('ImageSource', () => {
 
       expect(screen.getByText('Needs Customization')).toBeInTheDocument()
       expect(
-        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+        screen.getByRole('switch', { name: 'Toggle customizable' })
       ).not.toBeDisabled()
     })
 
@@ -280,7 +280,7 @@ describe('ImageSource', () => {
 
       expect(screen.getByText('Needs Customization')).toBeInTheDocument()
       expect(
-        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+        screen.getByRole('switch', { name: 'Toggle customizable' })
       ).toBeDisabled()
     })
   })

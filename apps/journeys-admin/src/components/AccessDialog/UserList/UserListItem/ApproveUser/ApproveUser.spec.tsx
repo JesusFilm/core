@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -103,7 +104,8 @@ describe('ApproveUser', () => {
             journeyId="journeyId"
           />
         </MockedProvider>
-      </JourneyProvider>
+      </JourneyProvider>,
+      { wrapper: MenuList }
     )
     fireEvent.click(getByRole('menuitem'))
     await waitFor(() => expect(result).toHaveBeenCalled())

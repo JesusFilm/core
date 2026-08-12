@@ -59,19 +59,20 @@ export function IntegrationsButton({
     <Stack
       component={NextLink}
       href={url}
-      justifyContent="center"
-      alignItems="center"
+      data-testid={`${type != null ? type : (titleOverride ?? 'Add')}-IntegrationsButton`}
       sx={{
+        justifyContent: 'center',
+        alignItems: 'center',
         p: 4,
         width: 150,
         height: 180,
         borderRadius: 2,
+
         '&:hover': {
           cursor: 'pointer',
           backgroundColor: (theme) => theme.palette.grey[100]
         }
       }}
-      data-testid={`${type != null ? type : (titleOverride ?? 'Add')}-IntegrationsButton`}
     >
       <Box
         sx={{

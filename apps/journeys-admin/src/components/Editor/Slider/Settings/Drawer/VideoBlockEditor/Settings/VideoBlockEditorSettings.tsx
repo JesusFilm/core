@@ -209,7 +209,13 @@ export function VideoBlockEditorSettings({
           >
             {t('Timing')}
           </Typography>
-          <Stack direction="row" justifyContent="space-around" spacing={3}>
+          <Stack
+            direction="row"
+            spacing={3}
+            sx={{
+              justifyContent: 'space-around'
+            }}
+          >
             <TimeField
               showSeconds
               value={values.startAt}
@@ -222,12 +228,14 @@ export function VideoBlockEditorSettings({
                   value={values.startAt}
                   variant="filled"
                   disabled={selectedBlock == null}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Play2Icon />
-                      </InputAdornment>
-                    )
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Play2Icon />
+                        </InputAdornment>
+                      )
+                    }
                   }}
                 />
               }
@@ -244,12 +252,14 @@ export function VideoBlockEditorSettings({
                   value={values.endAt}
                   variant="filled"
                   disabled={selectedBlock == null}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <StopCircleContainedIcon />
-                      </InputAdornment>
-                    )
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <StopCircleContainedIcon />
+                        </InputAdornment>
+                      )
+                    }
                   }}
                 />
               }
@@ -274,7 +284,12 @@ export function VideoBlockEditorSettings({
             </Typography>
             {(selectedBlock?.source === VideoBlockSource.youTube ||
               isWebsite) && (
-              <Typography variant="caption" color="action.disabled">
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'action.disabled'
+                }}
+              >
                 {isWebsite
                   ? t('This option is not available for microwebsites')
                   : t('This option is not available for YouTube videos')}
@@ -332,7 +347,12 @@ export function VideoBlockEditorSettings({
 
         {/* Autoplay */}
         <Stack direction="column" spacing={4}>
-          <Stack direction="row" justifyContent="space-between">
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: 'space-between'
+            }}
+          >
             <Stack direction="column">
               <Typography
                 variant="subtitle2"
@@ -364,13 +384,20 @@ export function VideoBlockEditorSettings({
               disabled={
                 selectedBlock == null || selectedBlock.parentOrder == null
               }
-              inputProps={{
-                'aria-label': 'Autoplay'
+              slotProps={{
+                input: {
+                  'aria-label': 'Autoplay'
+                }
               }}
             />
           </Stack>
           <Divider />
-          <Stack direction="row" justifyContent="space-between">
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: 'space-between'
+            }}
+          >
             <Stack direction="column">
               <Typography
                 variant="subtitle2"
@@ -402,13 +429,21 @@ export function VideoBlockEditorSettings({
               disabled={
                 selectedBlock == null || selectedBlock.parentOrder == null
               }
-              inputProps={{
-                'aria-label': 'Muted'
+              slotProps={{
+                input: {
+                  'aria-label': 'Muted'
+                }
               }}
             />
           </Stack>
           {values.autoplay && !values.muted && (
-            <Stack direction="row" alignItems="center" color="text.secondary">
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: 'center',
+                color: 'text.secondary'
+              }}
+            >
               <InformationCircleContainedIcon sx={{ mr: 4 }} />
               <Typography variant="caption">
                 {t(

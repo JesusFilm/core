@@ -186,8 +186,12 @@ function CollectionPreviewPaneImpl({
       <Stack
         direction="row"
         spacing={1}
-        alignItems="center"
-        sx={{ width: 287, mb: 1.5, flexShrink: 0 }}
+        sx={{
+          alignItems: 'center',
+          width: 287,
+          mb: 1.5,
+          flexShrink: 0
+        }}
       >
         <TextField
           value={publicUrl ?? ''}
@@ -195,29 +199,32 @@ function CollectionPreviewPaneImpl({
           size="small"
           variant="outlined"
           hiddenLabel
-          inputProps={{
-            readOnly: true,
-            'aria-label': t('Public URL')
-          }}
           sx={{ bgcolor: 'white' }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <Tooltip title={t('Copy link')}>
-                  <span>
-                    <IconButton
-                      aria-label={t('Copy link')}
-                      onClick={handleCopy}
-                      disabled={publicUrl == null}
-                      edge="end"
-                      size="small"
-                    >
-                      <CopyRightIcon fontSize="small" />
-                    </IconButton>
-                  </span>
-                </Tooltip>
-              </InputAdornment>
-            )
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Tooltip title={t('Copy link')}>
+                    <span>
+                      <IconButton
+                        aria-label={t('Copy link')}
+                        onClick={handleCopy}
+                        disabled={publicUrl == null}
+                        edge="end"
+                        size="small"
+                      >
+                        <CopyRightIcon fontSize="small" />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
+                </InputAdornment>
+              )
+            },
+
+            htmlInput: {
+              readOnly: true,
+              'aria-label': t('Public URL')
+            }
           }}
         />
         <Tooltip

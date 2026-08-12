@@ -196,10 +196,12 @@ export const SignUp = ({
               onClick={(e) => e.stopPropagation()}
               onChange={handleChange}
               onBlur={handleBlur}
-              InputProps={{
-                readOnly: selectedBlock !== undefined,
-                sx: {
-                  pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+              slotProps={{
+                input: {
+                  readOnly: selectedBlock !== undefined,
+                  sx: {
+                    pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+                  }
                 }
               }}
             />
@@ -211,10 +213,12 @@ export const SignUp = ({
               name="email"
               label={t('Email')}
               onClick={(e) => e.stopPropagation()}
-              InputProps={{
-                readOnly: selectedBlock !== undefined,
-                sx: {
-                  pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+              slotProps={{
+                input: {
+                  readOnly: selectedBlock !== undefined,
+                  sx: {
+                    pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+                  }
                 }
               }}
             />

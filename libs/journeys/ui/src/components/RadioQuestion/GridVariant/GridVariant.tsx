@@ -47,10 +47,10 @@ export function GridVariant({
           <Box sx={{ minHeight: '130px', minWidth: '130px' }}>
             <StyledGridRadioOption onClick={addOption}>
               <Stack
-                alignItems="center"
-                justifyContent="center"
-                gap={3}
                 sx={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 3,
                   height: '100%'
                 }}
               >

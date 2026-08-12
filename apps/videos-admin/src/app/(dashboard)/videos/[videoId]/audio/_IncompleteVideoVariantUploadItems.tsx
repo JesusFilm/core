@@ -344,8 +344,20 @@ export function IncompleteVideoVariantUploadItems({
         }}
       >
         <Box sx={{ minWidth: 0 }}>
-          <Stack direction="row" gap={1} alignItems="center" flexWrap="wrap">
-            <Typography variant="body2" fontWeight={600}>
+          <Stack
+            direction="row"
+            sx={{
+              gap: 1,
+              alignItems: 'center',
+              flexWrap: 'wrap'
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 600
+              }}
+            >
               {getUploadLanguageLabel(upload)}
             </Typography>
             <Chip
@@ -354,7 +366,12 @@ export function IncompleteVideoVariantUploadItems({
               color={displayState.color}
             />
           </Stack>
-          <Typography variant="caption" color="text.secondary">
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary'
+            }}
+          >
             {upload.language?.name?.[0]?.value != null
               ? `${upload.languageId} • `
               : ''}
@@ -366,8 +383,10 @@ export function IncompleteVideoVariantUploadItems({
           {displayState.message != null && (
             <Typography
               variant="caption"
-              color="text.secondary"
-              sx={{ display: 'block' }}
+              sx={{
+                color: 'text.secondary',
+                display: 'block'
+              }}
             >
               {displayState.message}
             </Typography>
@@ -375,8 +394,10 @@ export function IncompleteVideoVariantUploadItems({
           {displayState.processingDurationLabel != null && (
             <Typography
               variant="caption"
-              color="text.secondary"
-              sx={{ display: 'block' }}
+              sx={{
+                color: 'text.secondary',
+                display: 'block'
+              }}
             >
               {displayState.processingDurationLabel}
             </Typography>
@@ -384,14 +405,23 @@ export function IncompleteVideoVariantUploadItems({
           {upload.errorMessage != null && (
             <Typography
               variant="caption"
-              color="error.main"
-              sx={{ display: 'block' }}
+              sx={{
+                color: 'error.main',
+                display: 'block'
+              }}
             >
               {upload.errorMessage}
             </Typography>
           )}
         </Box>
-        <Stack direction="row" gap={0.5} alignItems="center" sx={{ ml: 1 }}>
+        <Stack
+          direction="row"
+          sx={{
+            gap: 0.5,
+            alignItems: 'center',
+            ml: 1
+          }}
+        >
           <Tooltip title={getUploadDebugTooltip(upload)} placement="left" arrow>
             <IconButton size="small" aria-label="view upload details">
               <InfoOutlinedIcon fontSize="small" />

@@ -191,7 +191,12 @@ export function QrCodeDialog({
             loading={loading}
             handleGenerateQrCode={handleGenerateQrCode}
           />
-          <Typography variant="body2" color="secondary.main">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'secondary.main'
+            }}
+          >
             {t(
               'Here is the unique QR code for your Journey. You can change the Journey URL without needing to re-generate the QR code'
             )}

@@ -102,13 +102,16 @@ export default function VideoViewLayout({
 
   return (
     <Stack
-      gap={2}
-      sx={{ width: '100%', maxWidth: 1700 }}
       data-testid="VideoView"
+      sx={{
+        gap: 2,
+        width: '100%',
+        maxWidth: 1700
+      }}
     >
       <Stack
-        gap={2}
         sx={{
+          gap: 2,
           mb: 2,
           alignItems: { xs: 'start', sm: 'center' },
           flexDirection: { xs: 'column', sm: 'row' },
@@ -116,8 +119,8 @@ export default function VideoViewLayout({
         }}
       >
         <Stack
-          gap={2}
           sx={{
+            gap: 2,
             alignItems: { xs: 'start', sm: 'center' },
             flexDirection: { xs: 'column', sm: 'row' }
           }}
@@ -160,18 +163,36 @@ export default function VideoViewLayout({
         </Stack>
       </Stack>
 
-      <Stack gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
-        <Box width="100%">
+      <Stack
+        sx={{
+          gap: 2,
+          flexDirection: { xs: 'column', sm: 'row' }
+        }}
+      >
+        <Box
+          sx={{
+            width: '100%'
+          }}
+        >
           <VideoTabView currentTab={currentTab} videoId={videoId} />
           {currentTab == 'metadata' && (
             <>
               <Divider sx={{ mb: 4 }} />
-              <Stack gap={2} data-testid="VideoMetadata">
+              <Stack
+                data-testid="VideoMetadata"
+                sx={{
+                  gap: 2
+                }}
+              >
                 <Section title="Information" variant="outlined">
                   <VideoInformation videoId={videoId} />
                 </Section>
                 <Section title="Images" variant="outlined">
-                  <Stack gap={4}>
+                  <Stack
+                    sx={{
+                      gap: 4
+                    }}
+                  >
                     <VideoImages videoId={videoId} />
                     <VideoImageAlt videoId={videoId} />
                   </Stack>

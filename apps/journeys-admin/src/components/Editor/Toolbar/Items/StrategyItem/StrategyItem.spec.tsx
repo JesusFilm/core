@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -40,7 +41,8 @@ describe('StrategyItem', () => {
             </JourneyProvider>
           </EditorProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     expect(screen.getByText('activeContent: canvas')).toBeInTheDocument()
@@ -77,7 +79,8 @@ describe('StrategyItem', () => {
             </JourneyProvider>
           </EditorProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     fireEvent.click(screen.getByRole('button'))
@@ -90,7 +93,8 @@ describe('StrategyItem', () => {
     render(
       <EditorProvider initialState={{ showAnalytics: true }}>
         <StrategyItem variant="button" />
-      </EditorProvider>
+      </EditorProvider>,
+      { wrapper: MenuList }
     )
     const strategyItemButton = screen.getByRole('button')
     expect(strategyItemButton).toBeDisabled()
@@ -100,7 +104,8 @@ describe('StrategyItem', () => {
     render(
       <EditorProvider initialState={{ showAnalytics: true }}>
         <StrategyItem variant="menu-item" />
-      </EditorProvider>
+      </EditorProvider>,
+      { wrapper: MenuList }
     )
 
     const strategyMenuItem = screen.getByRole('menuitem')

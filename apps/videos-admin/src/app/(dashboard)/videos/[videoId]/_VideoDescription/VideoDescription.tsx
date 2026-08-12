@@ -190,7 +190,11 @@ export function VideoDescription({
         resetForm
       }) => (
         <Form>
-          <Stack gap={2}>
+          <Stack
+            sx={{
+              gap: 2
+            }}
+          >
             <ResizableTextField
               name="description"
               aria-label="description"
@@ -205,7 +209,13 @@ export function VideoDescription({
               disabled={isSubmitting}
             />
             <Divider sx={{ mx: -4 }} />
-            <Stack direction="row" justifyContent="flex-end" gap={1}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: 'flex-end',
+                gap: 1
+              }}
+            >
               <CancelButton show={dirty} handleCancel={() => resetForm()} />
               <SaveButton
                 disabled={!isValid || isSubmitting || !dirty}

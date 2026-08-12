@@ -1,3 +1,4 @@
+import MenuList from '@mui/material/MenuList'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
@@ -13,7 +14,9 @@ const MenuItemStory: Meta<typeof MenuItem> = {
 
 const Template: StoryObj<typeof MenuItem> = {
   render: ({ ...args }) => (
-    <MenuItem label={args.label} icon={args.icon} disabled={args.disabled} />
+    <MenuList>
+      <MenuItem label={args.label} icon={args.icon} disabled={args.disabled} />
+    </MenuList>
   )
 }
 

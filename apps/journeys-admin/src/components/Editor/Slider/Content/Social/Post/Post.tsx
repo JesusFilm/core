@@ -22,17 +22,21 @@ export function Post(): ReactElement {
     <Box data-testid="SocialPreviewPost">
       <Stack
         direction="column"
-        justifyContent="flex-start"
-        alignContent="center"
-        alignItems="center"
+        sx={{
+          justifyContent: 'flex-start',
+          alignContent: 'center',
+          alignItems: 'center'
+        }}
       >
         <Typography
           variant="caption"
           // the layered desktop view floats over a dark backdrop
-          color={isLayered ? 'white' : undefined}
-          pb={4}
-          textAlign="center"
-          sx={{ fontSize: 16 }}
+          sx={{
+            color: isLayered ? 'white' : undefined,
+            pb: 4,
+            textAlign: 'center',
+            fontSize: 16
+          }}
         >
           {t('Social Post View')}
         </Typography>
@@ -50,33 +54,45 @@ export function Post(): ReactElement {
           >
             <Stack
               direction="row"
-              height="30px"
-              mb={2.5}
-              justifyContent="space-between"
-              alignItems="center"
               spacing={1}
+              sx={{
+                height: '30px',
+                mb: 2.5,
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
             >
               <Box
-                width={22}
-                height={22}
-                borderRadius={4}
-                mr={0}
-                bgcolor="background.default"
+                sx={{
+                  width: 22,
+                  height: 22,
+                  borderRadius: 4,
+                  mr: 0,
+                  bgcolor: 'background.default'
+                }}
               />
-              <Box flexGrow={1}>
+              <Box
+                sx={{
+                  flexGrow: 1
+                }}
+              >
                 <Box
-                  width={80}
-                  height={16}
-                  borderRadius="8px"
-                  bgcolor="background.default"
+                  sx={{
+                    width: 80,
+                    height: 16,
+                    borderRadius: '8px',
+                    bgcolor: 'background.default'
+                  }}
                 />
               </Box>
               <Box
-                width={16}
-                height={16}
-                borderRadius="8px"
-                mr={0}
-                bgcolor="background.default"
+                sx={{
+                  width: 16,
+                  height: 16,
+                  borderRadius: '8px',
+                  mr: 0,
+                  bgcolor: 'background.default'
+                }}
               />
             </Stack>
             <Tooltip title={t('Social Image')}>
@@ -92,14 +108,22 @@ export function Post(): ReactElement {
                 {journey?.primaryImageBlock?.src == null ? (
                   <Box
                     data-testid="social-preview-post-empty"
-                    display="block"
-                    width={208}
-                    height={158}
-                    borderRadius="5px"
-                    bgcolor="background.default"
+                    sx={{
+                      display: 'block',
+                      width: 208,
+                      height: 158,
+                      borderRadius: '5px',
+                      bgcolor: 'background.default'
+                    }}
                   />
                 ) : (
-                  <Box width={208} height={158} sx={{ position: 'relative' }}>
+                  <Box
+                    sx={{
+                      width: 208,
+                      height: 158,
+                      position: 'relative'
+                    }}
+                  >
                     <Image
                       src={journey.primaryImageBlock.src}
                       alt={journey.primaryImageBlock.alt ?? ''}
@@ -115,23 +139,32 @@ export function Post(): ReactElement {
                 )}
               </CardMedia>
             </Tooltip>
-            <Stack gap={1.5} sx={{ mb: 2.75 }}>
+            <Stack
+              sx={{
+                gap: 1.5,
+                mb: 2.75
+              }}
+            >
               <Tooltip title={t('Headline')}>
                 {isEmpty(journey?.seoTitle?.trim()) ? (
                   <Box
-                    width={208}
-                    height={15}
-                    borderRadius={1.25}
-                    bgcolor="background.default"
                     data-testid="HeadlineSkeleton"
+                    sx={{
+                      width: 208,
+                      height: 15,
+                      borderRadius: 1.25,
+                      bgcolor: 'background.default'
+                    }}
                   />
                 ) : (
                   <Typography
                     variant="subtitle1"
-                    fontSize={12}
-                    lineHeight="15px"
-                    color="#26262E"
                     noWrap
+                    sx={{
+                      fontSize: 12,
+                      lineHeight: '15px',
+                      color: '#26262E'
+                    }}
                   >
                     {journey.seoTitle}
                   </Typography>
@@ -140,19 +173,23 @@ export function Post(): ReactElement {
               <Tooltip title={t('Secondary Text')}>
                 {isEmpty(journey?.seoDescription?.trim()) ? (
                   <Box
-                    width={208}
-                    height={15}
-                    borderRadius={1.25}
-                    bgcolor="background.default"
                     data-testid="SecondaryTextSkeleton"
+                    sx={{
+                      width: 208,
+                      height: 15,
+                      borderRadius: 1.25,
+                      bgcolor: 'background.default'
+                    }}
                   />
                 ) : (
                   <Typography
                     variant="body2"
-                    fontSize={8}
-                    lineHeight="15px"
-                    color="#6D6D7D"
                     noWrap
+                    sx={{
+                      fontSize: 8,
+                      lineHeight: '15px',
+                      color: '#6D6D7D'
+                    }}
                   >
                     {journey.seoDescription}
                   </Typography>
@@ -160,19 +197,23 @@ export function Post(): ReactElement {
               </Tooltip>
             </Stack>
             <Stack
-              flexDirection="row"
-              justifyContent="space-around"
-              color="background.default"
-              mb={2.5}
+              sx={{
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+                color: 'background.default',
+                mb: 2.5
+              }}
             >
               {[0, 1, 2].map((i) => (
                 <Box
                   key={i}
-                  width={16}
-                  height={16}
-                  bgcolor="background.default"
-                  borderRadius="8px"
-                  mr={0}
+                  sx={{
+                    width: 16,
+                    height: 16,
+                    bgcolor: 'background.default',
+                    borderRadius: '8px',
+                    mr: 0
+                  }}
                 />
               ))}
             </Stack>
