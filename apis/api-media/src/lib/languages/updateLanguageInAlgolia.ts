@@ -66,7 +66,7 @@ type AlgoliaLanguage = Prisma.LanguageGetPayload<{
 // stays assignable to Algolia's `Record<string, unknown>` object type.
 type AlgoliaLanguageRecord = {
   objectID: string
-  languageId: string
+  languageId: number
   bcp47: string | null
   iso3: string | null
   nameNative: string
@@ -107,7 +107,12 @@ export function buildAlgoliaLanguageRecord(
 
   return {
     objectID: language.id,
-    languageId: language.id,
+    // Numeric to match every other record in the index and the `languageId:
+    // number` contract arclight declares in _resources/index.ts. Prisma types
+    // Language.id as a String, so it needs coercing here. Every id in the index
+    // is a numeric string, and arclight already relies on that via
+    // `Number(hit.objectID)`, so this cannot produce NaN in practice.
+    languageId: Number(language.id),
     bcp47: language.bcp47,
     iso3: language.iso3,
     nameNative,
