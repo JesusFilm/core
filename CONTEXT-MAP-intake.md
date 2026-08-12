@@ -7,6 +7,7 @@ trigger-phrases that route a report to it. The ENG-3707 accessor fetches an area
 `triggers`, then open that area's intake file.
 
 **Line format:** `area | domain: <path> | intake: <path> | triggers: …`
+**Structure contract** (map authors + accessor code): `CONTEXT-MAP-contract.md` — not always-in-context.
 
 ## Areas (NextSteps)
 
