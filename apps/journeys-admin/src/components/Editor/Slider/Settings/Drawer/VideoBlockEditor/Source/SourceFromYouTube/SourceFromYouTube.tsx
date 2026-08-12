@@ -50,8 +50,12 @@ export function SourceFromYouTube({
 
         <Typography
           variant="caption"
+          // variant="caption" renders as an inline <span>, where overflow and
+          // text-overflow have no effect. Block-level so the truncation below
+          // actually applies.
           sx={{
             color: 'text.secondary',
+            display: 'block',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             overflow: 'hidden'
