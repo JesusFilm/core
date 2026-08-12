@@ -65,11 +65,13 @@ export function VideoList({
                       <Skeleton variant="text" width="85%" />
                     </>
                   }
-                  secondaryTypographyProps={{
-                    style: {
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
+                  slotProps={{
+                    secondary: {
+                      style: {
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }
                     }
                   }}
                 />

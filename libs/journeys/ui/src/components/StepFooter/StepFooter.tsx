@@ -96,14 +96,12 @@ export function StepFooter({
       }}
     >
       <Stack
-        justifyContent="space-between"
         spacing={2}
         sx={{
+          justifyContent: 'space-between',
           px: { xs: renderMode === 'default' ? 6 : 3, lg: 0 },
           py: { xs: 2, lg: 0 },
-
           flexDirection: { lg: rtl ? 'row-reverse' : 'row' },
-          justifyContent: 'space-between',
           alignItems: { xs: 'flex-start', lg: 'center' },
           width: '100%'
         }}
@@ -116,17 +114,19 @@ export function StepFooter({
 
         <Stack
           sx={{
+            gap: 4,
             width: '100%',
             height: { xs: footerMobileHeight, sm: 52 },
             flexDirection: rtl ? 'row-reverse' : 'row',
             alignItems: 'center',
+
             justifyContent:
               isWebsite && isMenu && hasMenuButtonIcon
                 ? 'space-between'
                 : 'flex-end',
+
             mt: '0px !important'
           }}
-          gap={4}
         >
           {!isWebsite && combinedFooter && (
             <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
@@ -141,12 +141,12 @@ export function StepFooter({
           {!isWebsite && (
             <Stack
               sx={{
+                gap: 2,
                 width: '100%',
                 minWidth: 0,
                 flexDirection: 'row',
                 alignItems: 'center'
               }}
-              gap={2}
             >
               {hostAvatar && (
                 <HostAvatars
@@ -188,8 +188,10 @@ export function StepFooter({
             // separate box pushed out by the row's larger gap.
             <Stack
               direction={rtl ? 'row-reverse' : 'row'}
-              alignItems="center"
-              gap={2}
+              sx={{
+                alignItems: 'center',
+                gap: 2
+              }}
             >
               {chat && <ChatButtons />}
               {aiChat && <AiChatButton />}

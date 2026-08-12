@@ -219,13 +219,17 @@ function CountryLanguageRow({
     <TableRow>
       <TableCell>
         <Typography variant="body2">{getCountryName(link.country)}</Typography>
-        <Typography variant="caption" color="text.secondary">
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'text.secondary'
+          }}
+        >
           {link.country.id}
         </Typography>
       </TableCell>
       <TableCell sx={{ width: 130 }}>
         <TextField
-          inputProps={{ 'aria-label': `Speakers for ${link.country.id}` }}
           type="number"
           size="small"
           value={values.speakers}
@@ -236,13 +240,13 @@ function CountryLanguageRow({
             }))
           }
           fullWidth
+          slotProps={{
+            htmlInput: { 'aria-label': `Speakers for ${link.country.id}` }
+          }}
         />
       </TableCell>
       <TableCell sx={{ width: 150 }}>
         <TextField
-          inputProps={{
-            'aria-label': `Display speakers for ${link.country.id}`
-          }}
           type="number"
           size="small"
           value={values.displaySpeakers}
@@ -253,11 +257,15 @@ function CountryLanguageRow({
             }))
           }
           fullWidth
+          slotProps={{
+            htmlInput: {
+              'aria-label': `Display speakers for ${link.country.id}`
+            }
+          }}
         />
       </TableCell>
       <TableCell align="center" sx={{ width: 92 }}>
         <Checkbox
-          inputProps={{ 'aria-label': `Primary for ${link.country.id}` }}
           checked={values.primary}
           onChange={(event) =>
             setValues((current) => ({
@@ -265,11 +273,13 @@ function CountryLanguageRow({
               primary: event.target.checked
             }))
           }
+          slotProps={{
+            input: { 'aria-label': `Primary for ${link.country.id}` }
+          }}
         />
       </TableCell>
       <TableCell align="center" sx={{ width: 104 }}>
         <Checkbox
-          inputProps={{ 'aria-label': `Suggested for ${link.country.id}` }}
           checked={values.suggested}
           onChange={(event) =>
             setValues((current) => ({
@@ -277,11 +287,13 @@ function CountryLanguageRow({
               suggested: event.target.checked
             }))
           }
+          slotProps={{
+            input: { 'aria-label': `Suggested for ${link.country.id}` }
+          }}
         />
       </TableCell>
       <TableCell sx={{ width: 100 }}>
         <TextField
-          inputProps={{ 'aria-label': `Order for ${link.country.id}` }}
           type="number"
           size="small"
           value={values.order}
@@ -289,10 +301,19 @@ function CountryLanguageRow({
             setValues((current) => ({ ...current, order: event.target.value }))
           }
           fullWidth
+          slotProps={{
+            htmlInput: { 'aria-label': `Order for ${link.country.id}` }
+          }}
         />
       </TableCell>
       <TableCell align="right" sx={{ width: 150 }}>
-        <Stack direction="row" justifyContent="flex-end" gap={1}>
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: 'flex-end',
+            gap: 1
+          }}
+        >
           <Button
             size="small"
             variant="contained"
@@ -455,8 +476,10 @@ export function LanguageCountryLinks({
         <Stack
           direction={{ xs: 'column', md: 'row' }}
           spacing={1.5}
-          alignItems={{ md: 'center' }}
-          sx={{ width: '100%' }}
+          sx={{
+            alignItems: { md: 'center' },
+            width: '100%'
+          }}
         >
           <Autocomplete<CountryOption, false, false, false>
             sx={{ minWidth: { md: 280 }, flex: 1, width: '100%' }}
@@ -474,16 +497,20 @@ export function LanguageCountryLinks({
               <TextField
                 {...params}
                 label="Add country"
-                InputProps={{
-                  ...params.InputProps,
-                  endAdornment: (
-                    <>
-                      {countriesLoading ? (
-                        <CircularProgress color="inherit" size={20} />
-                      ) : null}
-                      {params.InputProps.endAdornment}
-                    </>
-                  )
+                slotProps={{
+                  ...params.slotProps,
+
+                  input: {
+                    ...params.slotProps.input,
+                    endAdornment: (
+                      <>
+                        {countriesLoading ? (
+                          <CircularProgress color="inherit" size={20} />
+                        ) : null}
+                        {params.slotProps.input.endAdornment}
+                      </>
+                    )
+                  }
                 }}
               />
             )}
@@ -496,8 +523,10 @@ export function LanguageCountryLinks({
                   </Typography>
                   <Typography
                     variant="caption"
-                    color="text.secondary"
-                    sx={{ ml: 1 }}
+                    sx={{
+                      color: 'text.secondary',
+                      ml: 1
+                    }}
                   >
                     {option.id}
                   </Typography>
@@ -588,7 +617,11 @@ export function LanguageCountryLinks({
         </Stack>
 
         {sortedCountryLanguages.length === 0 ? (
-          <Typography color="text.secondary">
+          <Typography
+            sx={{
+              color: 'text.secondary'
+            }}
+          >
             No countries linked yet.
           </Typography>
         ) : (

@@ -461,10 +461,12 @@ export function LanguageScreen({
           >
             <Typography
               variant="subtitle2"
-              color="text.secondary"
               align="center"
               gutterBottom
-              sx={{ mb: { xs: 0, sm: 2 } }}
+              sx={{
+                color: 'text.secondary',
+                mb: { xs: 0, sm: 2 }
+              }}
             >
               {`'${journey?.title ?? ''}'`}
             </Typography>
@@ -476,7 +478,12 @@ export function LanguageScreen({
                   alignSelf: 'center'
                 }}
               >
-                <Stack gap={2} sx={{ px: { xs: 0 } }}>
+                <Stack
+                  sx={{
+                    gap: 2,
+                    px: { xs: 0 }
+                  }}
+                >
                   <LanguageAutocomplete
                     value={values.languageSelect}
                     languages={languagesData?.languages}
@@ -489,14 +496,17 @@ export function LanguageScreen({
                         hiddenLabel
                         placeholder={t('Search Language')}
                         variant="filled"
-                        InputProps={{
-                          ...params.InputProps,
-                          sx: { paddingBottom: 2 },
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <Translate />
-                            </InputAdornment>
-                          )
+                        slotProps={{
+                          ...params.slotProps,
+                          input: {
+                            ...params.slotProps.input,
+                            sx: { paddingBottom: 2 },
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <Translate />
+                              </InputAdornment>
+                            )
+                          }
                         }}
                       />
                     )}

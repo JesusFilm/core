@@ -695,18 +695,23 @@ export function TemplateGalleryPageList({
         {showCollectionsSection && (
           <Stack
             direction="row"
-            justifyContent="space-between"
-            alignItems="center"
             spacing={2}
-            sx={{ mb: 3 }}
+            sx={{
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              mb: 3
+            }}
           >
             {/* min-width: 0 lets the title row shrink instead of pushing into
               the button on narrow viewports (NES-1652). */}
             <Stack
               direction="row"
-              alignItems="center"
               spacing={0.5}
-              sx={{ minWidth: 0, flex: 1 }}
+              sx={{
+                alignItems: 'center',
+                minWidth: 0,
+                flex: 1
+              }}
             >
               <Typography variant="h4">{t('Collections')}</Typography>
               {onOpenInfo != null && (

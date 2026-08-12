@@ -115,8 +115,10 @@ export function UnsplashList({
                 target="_blank"
                 rel="noreferrer"
                 variant="caption"
-                fontWeight="bold"
-                color="primary.contrastText"
+                sx={{
+                  fontWeight: 'bold',
+                  color: 'primary.contrastText'
+                }}
               >
                 {item.user.first_name} {item.user.last_name}
               </Link>

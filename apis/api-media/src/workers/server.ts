@@ -97,6 +97,18 @@ async function main(): Promise<void> {
           './processImageBlurhash'
         )
       )
+      run(
+        await import(
+          /* webpackChunkName: "video-variant-reconciliation" */
+          './videoVariantReconciliation'
+        )
+      )
+      run(
+        await import(
+          /* webpackChunkName: "parent-variant-audit" */
+          './parentVariantAudit'
+        )
+      )
     })
   }
 

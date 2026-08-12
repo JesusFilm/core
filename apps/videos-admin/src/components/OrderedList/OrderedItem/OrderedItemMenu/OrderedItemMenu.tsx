@@ -42,9 +42,11 @@ export const OrderedItemMenu = memo(function OrderedItemMenu({
         anchorEl={anchorEl}
         open={open}
         onClose={() => setAnchorEl(null)}
-        MenuListProps={{
-          'aria-labelledby': 'ordered-item-actions',
-          'aria-label': 'ordered-item-actions-menu'
+        slotProps={{
+          list: {
+            'aria-labelledby': 'ordered-item-actions',
+            'aria-label': 'ordered-item-actions-menu'
+          }
         }}
       >
         {actionItems.map(({ label, handler }) => (

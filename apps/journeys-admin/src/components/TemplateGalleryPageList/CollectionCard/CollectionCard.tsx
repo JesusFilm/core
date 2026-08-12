@@ -173,9 +173,11 @@ function CollectionCardImpl({
     >
       <Stack
         direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ mb: collapsed ? 0 : 1 }}
+        sx={{
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: collapsed ? 0 : 1
+        }}
       >
         {/* The whole header (chevron + title + chips) is the toggle, so it's
             an easy touch target. It's a div with role="button" — not a real
@@ -184,7 +186,6 @@ function CollectionCardImpl({
         <Stack
           direction="row"
           spacing={2}
-          alignItems="center"
           role="button"
           tabIndex={0}
           aria-expanded={!collapsed}
@@ -205,6 +206,7 @@ function CollectionCardImpl({
           onKeyDown={handleToggleKeyDown}
           data-testid={`CollectionCardToggle-${collection.id}`}
           sx={{
+            alignItems: 'center',
             flex: 1,
             minWidth: 0,
             cursor: busy === true ? 'default' : 'pointer',
@@ -285,8 +287,8 @@ function CollectionCardImpl({
         {collection.description != null && collection.description !== '' && (
           <Typography
             variant="body2"
-            color="text.secondary"
             sx={{
+              color: 'text.secondary',
               mb: 1,
               display: '-webkit-box',
               WebkitLineClamp: 2,

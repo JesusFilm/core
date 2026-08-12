@@ -73,17 +73,19 @@ export function ConfigField({
                 onMouseLeave={() => setHover(false)}
                 error={Boolean(errors.value)}
                 helperText={<>{errors.value}</>}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={handleIconClick}>
-                        {visible ? <EyeOpenIcon /> : <EyeClosedIcon />}
-                      </IconButton>
-                    </InputAdornment>
-                  )
-                }}
                 sx={{
                   width: '100%'
+                }}
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={handleIconClick}>
+                          {visible ? <EyeOpenIcon /> : <EyeClosedIcon />}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }
                 }}
               />
               {hover && !visible && (

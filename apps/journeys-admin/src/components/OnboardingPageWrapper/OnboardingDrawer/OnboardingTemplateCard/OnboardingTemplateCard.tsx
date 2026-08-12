@@ -28,13 +28,13 @@ export function OnboardingTemplateCard({
       {templateId != null && (
         <Stack
           spacing={{ xs: 5, md: 0 }}
-          justifyContent={{ xs: 'flex-start', sm: 'center' }}
           direction={{ xs: 'row', md: 'column' }}
+          data-testid="OnboardingTemplateCard"
           sx={{
+            justifyContent: { xs: 'flex-start', sm: 'center' },
             width: '100%',
             height: 'inherit'
           }}
-          data-testid="OnboardingTemplateCard"
         >
           <Stack
             sx={{

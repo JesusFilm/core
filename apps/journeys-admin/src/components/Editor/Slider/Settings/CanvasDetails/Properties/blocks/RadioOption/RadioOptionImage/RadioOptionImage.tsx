@@ -412,7 +412,12 @@ export function RadioOptionImage({
   }
 
   return (
-    <Stack gap={4} sx={{ px: 4 }}>
+    <Stack
+      sx={{
+        gap: 4,
+        px: 4
+      }}
+    >
       <ImageSource
         selectedBlock={
           imageBlock?.__typename === 'ImageBlock' ? imageBlock : null

@@ -92,7 +92,11 @@ export function DNSConfigSection({
   }
 
   return (
-    <Box flexGrow={1}>
+    <Box
+      sx={{
+        flexGrow: 1
+      }}
+    >
       <CustomDomainDialogTitle title={t('DNS Config')}>
         {data != null ? (
           <>
@@ -180,8 +184,10 @@ export function DNSConfigSection({
                     <StyledTableCell align="left" sx={{ maxWidth: 200 }}>
                       <Stack
                         direction="row"
-                        alignItems="center"
-                        justifyContent="space-between"
+                        sx={{
+                          alignItems: 'center',
+                          justifyContent: 'space-between'
+                        }}
                       >
                         <Typography
                           sx={{
@@ -202,8 +208,10 @@ export function DNSConfigSection({
                     <StyledTableCell align="left">
                       <Stack
                         direction="row"
-                        alignItems="center"
-                        justifyContent="space-between"
+                        sx={{
+                          alignItems: 'center',
+                          justifyContent: 'space-between'
+                        }}
                       >
                         {customDomain.apexName === customDomain.name
                           ? '76.76.21.21'
@@ -240,8 +248,10 @@ export function DNSConfigSection({
                     <StyledTableCell align="left" sx={{ maxWidth: 200 }}>
                       <Stack
                         direction="row"
-                        alignItems="center"
-                        justifyContent="space-between"
+                        sx={{
+                          alignItems: 'center',
+                          justifyContent: 'space-between'
+                        }}
                       >
                         <Typography
                           sx={{
@@ -264,8 +274,10 @@ export function DNSConfigSection({
                     <StyledTableCell align="left">
                       <Stack
                         direction="row"
-                        alignItems="center"
-                        justifyContent="space-between"
+                        sx={{
+                          alignItems: 'center',
+                          justifyContent: 'space-between'
+                        }}
                       >
                         {customDomain.apexName === customDomain.name
                           ? '76.76.21.21'
@@ -315,8 +327,10 @@ export function DNSConfigSection({
                       <StyledTableCell align="left">
                         <Stack
                           direction="row"
-                          alignItems="center"
-                          justifyContent="space-between"
+                          sx={{
+                            alignItems: 'center',
+                            justifyContent: 'space-between'
+                          }}
                         >
                           {domainError.value}
                           <IconButton
@@ -358,8 +372,10 @@ export function DNSConfigSection({
                       <StyledTableCell align="left">
                         <Stack
                           direction="row"
-                          alignItems="center"
-                          justifyContent="space-between"
+                          sx={{
+                            alignItems: 'center',
+                            justifyContent: 'space-between'
+                          }}
                         >
                           {domainError.value}
                           <IconButton

@@ -1,4 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { render, waitFor } from '@testing-library/react'
 import { formatISO } from 'date-fns'
 import { SnackbarProvider } from 'notistack'
@@ -64,7 +65,8 @@ describe('AnalyticsItem', () => {
             <AnalyticsItem variant="menu-item" journeyId={defaultJourney.id} />
           </TeamProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
     expect(
       getByRole('menuitem', { name: 'Analytics 0 visitors' })
@@ -82,7 +84,8 @@ describe('AnalyticsItem', () => {
             <AnalyticsItem variant="button" journeyId={defaultJourney.id} />
           </TeamProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
     expect(getByRole('link', { name: 'Analytics' })).toBeInTheDocument()
     expect(getByRole('link', { name: 'Analytics' })).toHaveAttribute(
@@ -103,7 +106,8 @@ describe('AnalyticsItem', () => {
             />
           </TeamProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
     expect(getByRole('link', { name: 'Analytics' })).toBeInTheDocument()
     expect(getByRole('link', { name: 'Analytics' })).toHaveAttribute(
@@ -129,7 +133,8 @@ describe('AnalyticsItem', () => {
             />
           </TeamProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(getByRole('link')).toHaveTextContent('10')

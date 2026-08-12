@@ -682,7 +682,13 @@ export function VideoList(): ReactElement {
   }
 
   return (
-    <Stack sx={{ height: 'calc(100vh - 150px)', width: '100%' }} gap={2}>
+    <Stack
+      sx={{
+        gap: 2,
+        height: 'calc(100vh - 150px)',
+        width: '100%'
+      }}
+    >
       <VideoListHeader />
       <DataGrid
         getRowClassName={(params) =>

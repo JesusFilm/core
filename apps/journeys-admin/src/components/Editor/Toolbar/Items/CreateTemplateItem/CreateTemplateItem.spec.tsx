@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -111,7 +112,8 @@ describe('CreateTemplateItem', () => {
             <CreateTemplateItem variant="menu-item" globalPublish={true} />
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     fireEvent.click(getByRole('menuitem', { name: 'Make Global Template' }))
     await waitFor(() => expect(journeyDuplicateMock).toHaveBeenCalled())
@@ -202,7 +204,8 @@ describe('CreateTemplateItem', () => {
             />
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     fireEvent.click(getByRole('menuitem', { name: 'Make Global Template' }))
     await waitFor(() => expect(journeyDuplicateMock).toHaveBeenCalled())
@@ -307,7 +310,8 @@ describe('CreateTemplateItem', () => {
             />
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() =>
@@ -426,7 +430,8 @@ describe('CreateTemplateItem', () => {
             journey={defaultJourney}
           />
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() =>
@@ -552,7 +557,8 @@ describe('CreateTemplateItem', () => {
             />
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     fireEvent.click(getByRole('menuitem', { name: 'Make Template' }))

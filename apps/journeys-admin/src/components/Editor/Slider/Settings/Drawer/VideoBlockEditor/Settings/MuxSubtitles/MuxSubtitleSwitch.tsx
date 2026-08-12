@@ -162,20 +162,33 @@ export function MuxSubtitleSwitch({
 
   return (
     <Stack direction="column" spacing={2}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
+      <Stack
+        direction="row"
+        sx={{
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
+      >
         <Typography variant="subtitle2">{t('Subtitles')}</Typography>
         <Switch
           data-testid="MuxSubtitleSwitch"
           checked={toggleChecked}
           onChange={handleToggleChange}
           disabled={isToggleDisabled}
-          inputProps={{
-            'aria-label': 'Subtitles'
+          slotProps={{
+            input: {
+              'aria-label': 'Subtitles'
+            }
           }}
         />
       </Stack>
       {labelText && (
-        <Typography variant="caption" color="text.secondary">
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'text.secondary'
+          }}
+        >
           {labelText}
         </Typography>
       )}

@@ -404,7 +404,7 @@ describe('Details', () => {
       )
 
       expect(
-        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+        screen.getByRole('switch', { name: 'Toggle customizable' })
       ).toBeInTheDocument()
       expect(screen.getByText('Needs Customization')).toBeInTheDocument()
     })
@@ -498,7 +498,7 @@ describe('Details', () => {
         </MockedProvider>
       )
 
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       expect(toggle).not.toBeChecked()
@@ -577,7 +577,7 @@ describe('Details', () => {
       )
 
       fireEvent.click(
-        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+        screen.getByRole('switch', { name: 'Toggle customizable' })
       )
       await waitFor(() => expect(executeResult).toHaveBeenCalled())
 
@@ -680,7 +680,7 @@ describe('Details', () => {
       )
 
       fireEvent.click(
-        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+        screen.getByRole('switch', { name: 'Toggle customizable' })
       )
       await waitFor(() => expect(executeResult).toHaveBeenCalled())
 
@@ -706,7 +706,7 @@ describe('Details', () => {
         </MockedProvider>
       )
 
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       expect(toggle).toBeChecked()

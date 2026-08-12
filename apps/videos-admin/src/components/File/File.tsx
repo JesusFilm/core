@@ -70,7 +70,12 @@ export function File({ file, type, actions }: FileProps): ReactElement {
           {getFileIcon()}
         </Box>
         <Stack>
-          <Typography variant="subtitle2" fontWeight={600}>
+          <Typography
+            variant="subtitle2"
+            sx={{
+              fontWeight: 600
+            }}
+          >
             {file.name}
           </Typography>
           <Typography variant="body2">{bytesToSize(file.size)}</Typography>

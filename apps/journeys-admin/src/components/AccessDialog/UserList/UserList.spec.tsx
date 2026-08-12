@@ -120,6 +120,6 @@ describe('UserList', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(getByRole('checkbox')).toBeDisabled()
+    expect(getByRole('switch')).toBeDisabled()
   })
 })

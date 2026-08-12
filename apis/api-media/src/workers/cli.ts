@@ -80,6 +80,26 @@ export async function cli(argv = process.argv): Promise<void> {
       queue = new Queue(queueName, { connection })
       break
     }
+    case 'video-variant-reconciliation': {
+      const config = await import(
+        /* webpackChunkName: "video-variant-reconciliation" */
+        './videoVariantReconciliation'
+      )
+      queueName = config.queueName
+      jobName = config.jobName
+      queue = new Queue(queueName, { connection })
+      break
+    }
+    case 'parent-variant-audit': {
+      const config = await import(
+        /* webpackChunkName: "parent-variant-audit" */
+        './parentVariantAudit'
+      )
+      queueName = config.queueName
+      jobName = config.jobName
+      queue = new Queue(queueName, { connection })
+      break
+    }
     default:
       throw new Error('unknown queue')
   }

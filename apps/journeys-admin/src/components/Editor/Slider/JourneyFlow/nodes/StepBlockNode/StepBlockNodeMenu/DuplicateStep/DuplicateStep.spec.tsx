@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import noop from 'lodash/noop'
@@ -102,7 +103,8 @@ describe('DuplicateStep', () => {
             </EditorProvider>
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     const duplicateButton = screen.getByRole('menuitem', {
@@ -151,7 +153,8 @@ describe('DuplicateStep', () => {
             </EditorProvider>
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     const duplicateButton = screen.getByRole('menuitem', {
@@ -219,7 +222,8 @@ describe('DuplicateStep', () => {
             </EditorProvider>
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     const duplicateButton = screen.getByRole('menuitem', {
@@ -273,7 +277,8 @@ describe('DuplicateStep', () => {
             </EditorProvider>
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     const duplicateButton = screen.getByRole('menuitem', {
@@ -321,7 +326,8 @@ describe('DuplicateStep', () => {
             </JourneyProvider>
           </SnackbarProvider>
         </EditorProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     const duplicateButton = screen.getByRole('menuitem', {
@@ -356,7 +362,8 @@ describe('DuplicateStep', () => {
             </JourneyProvider>
           </SnackbarProvider>
         </EditorProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     expect(screen.getByText('hoveredStep: stepId')).toBeInTheDocument()

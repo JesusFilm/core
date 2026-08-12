@@ -80,12 +80,14 @@ export function Menu({ user }: MenuProps): ReactElement {
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
         keepMounted
-        MenuListProps={{
-          'aria-labelledby': 'edit-journey-actions'
-        }}
         sx={{
           '& .MuiList-root': {
             py: 2
+          }
+        }}
+        slotProps={{
+          list: {
+            'aria-labelledby': 'edit-journey-actions'
           }
         }}
       >

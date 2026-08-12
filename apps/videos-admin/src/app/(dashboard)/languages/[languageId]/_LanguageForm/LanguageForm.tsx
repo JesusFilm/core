@@ -390,7 +390,13 @@ export function LanguageForm(): ReactElement {
                   />
                 </Stack>
                 <Divider />
-                <Stack direction="row" justifyContent="flex-end" gap={1}>
+                <Stack
+                  direction="row"
+                  sx={{
+                    justifyContent: 'flex-end',
+                    gap: 1
+                  }}
+                >
                   <CancelButton show={dirty} handleCancel={() => resetForm()} />
                   <SaveButton
                     disabled={!isValid || isSubmitting || !dirty}
@@ -408,11 +414,21 @@ export function LanguageForm(): ReactElement {
           {LINKED_LANGUAGE_STUDIO_MANAGED_FILMS_LABEL}
         </Typography>
         {linkedFilmsLoading ? (
-          <Typography color="text.secondary">
+          <Typography
+            sx={{
+              color: 'text.secondary'
+            }}
+          >
             Loading film version...
           </Typography>
         ) : linkedFilms.length === 0 ? (
-          <Typography color="text.secondary">-</Typography>
+          <Typography
+            sx={{
+              color: 'text.secondary'
+            }}
+          >
+            -
+          </Typography>
         ) : (
           <TableContainer>
             <Table

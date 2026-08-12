@@ -83,10 +83,12 @@ export function GuestPreviewScreen({
       >
         <Typography
           variant="subtitle2"
-          color="text.secondary"
           align="center"
           gutterBottom
-          sx={{ mb: { xs: 0, sm: 2 } }}
+          sx={{
+            color: 'text.secondary',
+            mb: { xs: 0, sm: 2 }
+          }}
         >
           {`'${journey?.title ?? ''}'`}
         </Typography>
@@ -114,8 +116,10 @@ export function GuestPreviewScreen({
           <Typography
             variant="body2"
             align="center"
-            color="text.secondary"
-            display={{ xs: 'block', sm: 'none' }}
+            sx={{
+              color: 'text.secondary',
+              display: { xs: 'block', sm: 'none' }
+            }}
           >
             {t(
               "To keep going, save your progress, customize media, and get a sharing link, you'll need an account."
@@ -124,8 +128,10 @@ export function GuestPreviewScreen({
           <Typography
             variant="body1"
             align="center"
-            color="text.secondary"
-            display={{ xs: 'none', sm: 'block' }}
+            sx={{
+              color: 'text.secondary',
+              display: { xs: 'none', sm: 'block' }
+            }}
           >
             {t(
               "To keep going, save your progress, customize media, and get a sharing link, you'll need an account."
@@ -144,8 +150,11 @@ export function GuestPreviewScreen({
           <Typography
             variant="body2"
             align="center"
-            color="text.secondary"
-            sx={{ fontStyle: 'italic', fontWeight: 700 }}
+            sx={{
+              color: 'text.secondary',
+              fontStyle: 'italic',
+              fontWeight: 700
+            }}
           >
             {t('100% FREE. No payment required.')}
           </Typography>

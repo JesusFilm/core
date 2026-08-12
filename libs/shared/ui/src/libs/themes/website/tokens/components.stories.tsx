@@ -82,7 +82,12 @@ const ComponentStories = (): ReactElement => {
   ]
 
   return (
-    <Stack spacing={8} alignItems="flex-start">
+    <Stack
+      spacing={8}
+      sx={{
+        alignItems: 'flex-start'
+      }}
+    >
       <Typography variant="h1">Header 1</Typography>
       <Typography variant="body1">body 1</Typography>
       {/* BUTTONS */}
@@ -165,8 +170,10 @@ const ComponentStories = (): ReactElement => {
         id="embedLink"
         defaultValue="Embed TextField (Read only)"
         variant="outlined"
-        InputProps={{
-          readOnly: true
+        slotProps={{
+          input: {
+            readOnly: true
+          }
         }}
       />
       {/* SELECT FIELD */}

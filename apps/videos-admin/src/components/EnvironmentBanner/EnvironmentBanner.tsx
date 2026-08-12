@@ -41,7 +41,12 @@ export function EnvironmentBanner(): ReactElement | null {
         justifyContent: 'center'
       }}
     >
-      <Typography variant="body2" fontWeight="bold">
+      <Typography
+        variant="body2"
+        sx={{
+          fontWeight: 'bold'
+        }}
+      >
         {environmentName} ENVIRONMENT
       </Typography>
     </Box>

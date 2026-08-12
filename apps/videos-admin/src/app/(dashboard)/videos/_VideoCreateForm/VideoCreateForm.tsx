@@ -334,7 +334,11 @@ export function VideoCreateForm({
       enableReinitialize={true}
     >
       <Form data-testid="VideoCreateForm">
-        <Stack gap={2}>
+        <Stack
+          sx={{
+            gap: 2
+          }}
+        >
           <FormSelectField
             name="originId"
             label="Origin"
@@ -361,10 +365,20 @@ export function VideoCreateForm({
             fullWidth
           />
           {parentId && (
-            <Typography variant="caption" color="text.secondary"></Typography>
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary'
+              }}
+            ></Typography>
           )}
           {parentId && (
-            <Typography variant="caption" color="text.secondary">
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary'
+              }}
+            >
               This video will be added as a child to video with ID: {parentId}
             </Typography>
           )}

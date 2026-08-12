@@ -646,7 +646,12 @@ export function JourneyListContent({
           </Typography>
         </Box>
       )}
-      <Stack alignItems="center" sx={{ pb: { xs: 3, sm: 5 } }}>
+      <Stack
+        sx={{
+          alignItems: 'center',
+          pb: { xs: 3, sm: 5 }
+        }}
+      >
         <Typography
           variant="caption"
           align="center"
