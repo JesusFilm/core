@@ -120,11 +120,11 @@ export function TranslationDialogWrapper({
     >
       {loading && isTranslation ? (
         <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
           sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
             py: 6,
             px: 4,
             minHeight: 200

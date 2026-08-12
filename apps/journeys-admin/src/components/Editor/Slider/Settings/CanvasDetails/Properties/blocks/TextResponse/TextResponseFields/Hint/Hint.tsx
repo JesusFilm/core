@@ -115,12 +115,14 @@ export function Hint(): ReactElement {
         variant="filled"
         label={t('Hint')}
         fullWidth
-        inputProps={{ maxLength: 250 }}
         value={useGetValueFromJourneyCustomizationString(value)}
         onFocus={resetCommandInput}
         onChange={(e) => {
           setValue(e.target.value)
           handleSubmit(e.target.value)
+        }}
+        slotProps={{
+          htmlInput: { maxLength: 250 }
         }}
       />
     </Box>

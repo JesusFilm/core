@@ -16,10 +16,12 @@ export function TemplateFooter({
 
   return (
     <Stack
-      alignItems="center"
-      gap={6}
-      sx={{ py: 9 }}
       data-testid="TemplateFooter"
+      sx={{
+        alignItems: 'center',
+        gap: 6,
+        py: 9
+      }}
     >
       <Typography
         variant="subtitle1"

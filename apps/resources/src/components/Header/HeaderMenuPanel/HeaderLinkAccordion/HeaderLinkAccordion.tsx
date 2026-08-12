@@ -31,15 +31,22 @@ export function HeaderLinkAccordion({
 }: HeaderLinkAccordionProps): ReactElement {
   if (!subLinks?.length) {
     return (
-      <Stack alignItems="flex-end" sx={{ pr: 8 }}>
+      <Stack
+        sx={{
+          alignItems: 'flex-end',
+          pr: 8
+        }}
+      >
         <MuiLink
           variant="h5"
           href={url}
           underline="none"
           rel="noopener"
-          color="text.secondary"
           onClick={onClose}
-          sx={{ fontSize: { xs: 30, sm: 38 } }}
+          sx={{
+            color: 'text.secondary',
+            fontSize: { xs: 30, sm: 38 }
+          }}
         >
           {label}
         </MuiLink>
@@ -116,8 +123,8 @@ export function HeaderLinkAccordion({
           }}
         >
           <Stack
-            alignItems="flex-end"
             sx={{
+              alignItems: 'flex-end',
               gap: { xs: 4, sm: 3 }
             }}
           >
@@ -128,10 +135,11 @@ export function HeaderLinkAccordion({
                 href={subLink.url}
                 underline="none"
                 rel="noopener"
-                color="text.secondary"
                 onClick={onClose}
                 sx={{
+                  color: 'text.secondary',
                   fontSize: { xs: 22, sm: 27 },
+
                   '&:hover': {
                     color: 'primary.main'
                   }

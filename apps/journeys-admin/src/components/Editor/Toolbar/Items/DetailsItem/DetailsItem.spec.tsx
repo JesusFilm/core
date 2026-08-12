@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -45,7 +46,8 @@ describe('DetailsItem', () => {
         <JourneyProvider value={{ journey: defaultJourney }}>
           <DetailsItem variant="menu-item" />
         </JourneyProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     fireEvent.click(screen.getByText('Edit Details'))
@@ -62,7 +64,7 @@ describe('DetailsItem', () => {
   })
 
   it('should handle helpscout params on click', async () => {
-    render(<DetailsItem variant="menu-item" />)
+    render(<DetailsItem variant="menu-item" />, { wrapper: MenuList })
 
     fireEvent.click(screen.getByText('Edit Details'))
     expect(push).toHaveBeenCalledWith(
@@ -82,7 +84,8 @@ describe('DetailsItem', () => {
             <DetailsItem variant="menu-item" />
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     fireEvent.click(screen.getByText('Edit Details'))

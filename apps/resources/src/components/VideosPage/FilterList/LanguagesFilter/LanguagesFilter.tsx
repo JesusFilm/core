@@ -35,7 +35,12 @@ export function Option(props: RowComponentProps<{ rows: any[] }>): ReactNode {
       <Stack>
         <Typography variant="h6">{localName ?? nativeName}</Typography>
         {isTwoLineOption({ localName, nativeName }) && (
-          <Typography variant="h6" color="text.secondary">
+          <Typography
+            variant="h6"
+            sx={{
+              color: 'text.secondary'
+            }}
+          >
             {nativeName}
           </Typography>
         )}
@@ -57,15 +62,16 @@ export function LanguagesFilter(
         props.helperText !== undefined ? props.helperText : '2000+ languages'
       }
       slotProps={{
+        ...params.slotProps,
         input: {
-          ...params.InputProps,
+          ...params.slotProps.input,
           sx: { paddingBottom: 2 },
           endAdornment: (
             <>
               {props.loading ? (
                 <CircularProgress color="inherit" size={20} />
               ) : null}
-              {params.InputProps.endAdornment}
+              {params.slotProps.input.endAdornment}
             </>
           )
         }

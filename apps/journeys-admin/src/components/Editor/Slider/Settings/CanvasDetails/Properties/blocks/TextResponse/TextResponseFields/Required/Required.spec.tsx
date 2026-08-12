@@ -66,7 +66,7 @@ describe('Required', () => {
       </MockedProvider>
     )
 
-    const toggle = getByRole('checkbox')
+    const toggle = getByRole('switch')
     expect(toggle).toHaveAttribute('aria-checked', 'false')
   })
 })

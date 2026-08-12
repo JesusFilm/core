@@ -84,10 +84,12 @@ function JourneyReportsPage({ flags, plausibleDashboardViewed }): ReactElement {
         mainHeaderChildren={
           <Stack
             direction="row"
-            justifyContent="flex-end"
-            flexGrow={1}
-            alignItems="center"
-            gap={3}
+            sx={{
+              justifyContent: 'flex-end',
+              flexGrow: 1,
+              alignItems: 'center',
+              gap: 3
+            }}
           >
             <ReportsNavigation destination="visitor" journeyId={journeyId} />
             <Box ref={ref} sx={{ display: { xs: 'none', md: 'flex' } }}>

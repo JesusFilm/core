@@ -213,10 +213,13 @@ export function ImageUpload({
   return (
     <Stack
       {...getRootProps({ isDragAccept })}
-      alignItems="center"
-      gap={1}
-      sx={{ px: 6, py: 3 }}
       data-testid="ImageUpload"
+      sx={{
+        alignItems: 'center',
+        gap: 1,
+        px: 6,
+        py: 3
+      }}
     >
       <input {...getInputProps()} />
       <UploadDropZoneShell
@@ -251,17 +254,22 @@ export function ImageUpload({
             }}
           />
         )}
-        <Stack alignItems="center" sx={{ display: { xs: 'none', sm: 'flex' } }}>
+        <Stack
+          sx={{
+            alignItems: 'center',
+            display: { xs: 'none', sm: 'flex' }
+          }}
+        >
           {loading || uploadSuccess || hasError ? (
             <Typography
-              variant="body1"
-              color={
-                loading
+              sx={{
+                color: loading
                   ? 'secondary.main'
                   : uploadSuccess
                     ? 'success.main'
                     : 'error.main'
-              }
+              }}
+              variant="body1"
             >
               {loading
                 ? t('Uploading...')
@@ -270,7 +278,12 @@ export function ImageUpload({
                   : t('Upload Failed!')}
             </Typography>
           ) : (
-            <Typography variant="body1" color="secondary.main">
+            <Typography
+              variant="body1"
+              sx={{
+                color: 'secondary.main'
+              }}
+            >
               {t('Drop an image here')}
             </Typography>
           )}
@@ -292,8 +305,11 @@ export function ImageUpload({
       <Stack
         direction="row"
         spacing={1}
-        color={hasError ? 'error.main' : 'secondary.light'}
-        sx={{ mt: 1, alignItems: 'flex-start' }}
+        sx={{
+          color: hasError ? 'error.main' : 'secondary.light',
+          mt: 1,
+          alignItems: 'flex-start'
+        }}
       >
         <AlertTriangleIcon
           fontSize="small"

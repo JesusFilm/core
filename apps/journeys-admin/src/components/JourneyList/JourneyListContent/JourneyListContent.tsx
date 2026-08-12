@@ -227,7 +227,9 @@ export function JourneyListContent({
         if (status === 'active') {
           messageKey = isTemplate ? 'Templates Archived' : 'Journeys Archived'
         } else if (status === 'archived') {
-          messageKey = isTemplate ? 'Templates Restored' : 'Journeys Restored'
+          messageKey = isTemplate
+            ? 'Templates Unarchived'
+            : 'Journeys Unarchived'
         } else {
           messageKey = isTemplate ? 'Templates Restored' : 'Journeys Restored'
         }
@@ -644,7 +646,12 @@ export function JourneyListContent({
           </Typography>
         </Box>
       )}
-      <Stack alignItems="center" sx={{ pb: { xs: 3, sm: 5 } }}>
+      <Stack
+        sx={{
+          alignItems: 'center',
+          pb: { xs: 3, sm: 5 }
+        }}
+      >
         <Typography
           variant="caption"
           align="center"

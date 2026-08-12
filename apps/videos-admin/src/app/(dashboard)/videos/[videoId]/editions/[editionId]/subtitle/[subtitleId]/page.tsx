@@ -252,7 +252,11 @@ export default function SubtitlePage({ params }: SubtitlePageProps) {
         onSubmit={handleSubmit}
       >
         <Form data-testid="SubtitleForm">
-          <Stack gap={2}>
+          <Stack
+            sx={{
+              gap: 2
+            }}
+          >
             <FormLanguageSelect
               name="language"
               label="Language"

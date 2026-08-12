@@ -116,26 +116,28 @@ export function EmailInviteForm({
                 ? (errors.email as string)
                 : t('New users get access instantly.')
             }
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    type="submit"
-                    aria-label="add user"
-                    color="primary"
-                    disabled={values.email === ''}
-                  >
-                    <AddSquare4Icon
-                      sx={{
-                        color:
-                          values.email !== '' && errors.email == null
-                            ? 'primary.main'
-                            : 'secondary.light'
-                      }}
-                    />
-                  </IconButton>
-                </InputAdornment>
-              )
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      type="submit"
+                      aria-label="add user"
+                      color="primary"
+                      disabled={values.email === ''}
+                    >
+                      <AddSquare4Icon
+                        sx={{
+                          color:
+                            values.email !== '' && errors.email == null
+                              ? 'primary.main'
+                              : 'secondary.light'
+                        }}
+                      />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }
             }}
           />
         </Form>

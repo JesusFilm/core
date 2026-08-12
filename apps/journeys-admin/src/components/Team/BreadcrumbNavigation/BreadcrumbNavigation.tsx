@@ -70,15 +70,18 @@ export function BreadcrumbNavigation(): ReactElement {
                 component={NextLink}
                 href={item.path}
                 variant="h4"
-                color="primary.main"
-                sx={{ cursor: 'pointer', textDecoration: 'none' }}
+                sx={{
+                  color: 'primary.main',
+                  cursor: 'pointer',
+                  textDecoration: 'none'
+                }}
               >
                 {item.label}
               </Typography>
             ) : (
               <Typography
+                sx={{ color: isLastItem ? 'text.primary' : 'primary.main' }}
                 variant="h4"
-                color={isLastItem ? 'text.primary' : 'primary.main'}
               >
                 {item.label}
               </Typography>

@@ -65,8 +65,8 @@ export function ContainerHero({
           <Stack direction="column" sx={{ pb: { xs: 4, sm: 0 } }}>
             <Typography
               variant="overline1"
-              color="secondary.contrastText"
               sx={{
+                color: 'secondary.contrastText',
                 opacity: 0.7,
                 zIndex: 2
               }}
@@ -75,8 +75,8 @@ export function ContainerHero({
             </Typography>
             <Typography
               variant="h1"
-              color="secondary.contrastText"
               sx={{
+                color: 'secondary.contrastText',
                 zIndex: 2,
                 fontSize: { xs: 28, sm: 36, md: 48, xl: 64 }
               }}

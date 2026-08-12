@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
@@ -16,7 +17,8 @@ describe('TrashMenu', () => {
             handleCloseMenu={noop}
           />
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     expect(getByRole('menuitem', { name: 'Restore' })).toBeInTheDocument()
     expect(
@@ -38,7 +40,8 @@ describe('TrashMenu', () => {
             setHasOpenDialog={setHasOpenDialog}
           />
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     fireEvent.click(getByRole('menuitem', { name: 'Restore' }))
     expect(setOpenRestoreDialog).toHaveBeenCalled()
@@ -60,7 +63,8 @@ describe('TrashMenu', () => {
             setHasOpenDialog={setHasOpenDialog}
           />
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     fireEvent.click(getByRole('menuitem', { name: 'Delete Forever' }))
     expect(setOpenDeleteDialog).toHaveBeenCalled()

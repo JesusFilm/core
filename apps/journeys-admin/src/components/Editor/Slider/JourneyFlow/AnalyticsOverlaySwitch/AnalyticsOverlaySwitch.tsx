@@ -96,8 +96,20 @@ export function AnalyticsOverlaySwitch(): ReactElement {
   }
 
   return (
-    <Stack direction="column" spacing={2} alignItems="flex-start">
-      <Stack direction="row" spacing={2} alignItems="center">
+    <Stack
+      direction="column"
+      spacing={2}
+      sx={{
+        alignItems: 'flex-start'
+      }}
+    >
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{
+          alignItems: 'center'
+        }}
+      >
         <FormControlLabel
           control={
             <Switch

@@ -91,7 +91,7 @@ describe('BlockCustomizationToggle', () => {
       )
 
       expect(screen.getByText('Needs Customization')).toBeInTheDocument()
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       expect(toggle).toBeChecked()
@@ -107,7 +107,7 @@ describe('BlockCustomizationToggle', () => {
         </MockedProvider>
       )
 
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       expect(toggle).not.toBeChecked()
@@ -126,7 +126,7 @@ describe('BlockCustomizationToggle', () => {
         </MockedProvider>
       )
 
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       expect(toggle).not.toBeChecked()
@@ -146,7 +146,7 @@ describe('BlockCustomizationToggle', () => {
       )
 
       expect(screen.getByText('Needs Customization')).toBeInTheDocument()
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       expect(toggle).toBeChecked()
@@ -162,7 +162,7 @@ describe('BlockCustomizationToggle', () => {
         </MockedProvider>
       )
 
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       expect(toggle).not.toBeChecked()
@@ -178,7 +178,7 @@ describe('BlockCustomizationToggle', () => {
       )
 
       expect(screen.getByText('Needs Customization')).toBeInTheDocument()
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       expect(toggle).not.toBeChecked()
@@ -257,7 +257,7 @@ describe('BlockCustomizationToggle', () => {
         </MockedProvider>
       )
 
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       fireEvent.click(toggle)
@@ -302,7 +302,7 @@ describe('BlockCustomizationToggle', () => {
         </MockedProvider>
       )
 
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       fireEvent.click(toggle)
@@ -340,7 +340,7 @@ describe('BlockCustomizationToggle', () => {
         </MockedProvider>
       )
 
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       fireEvent.click(toggle)
@@ -379,7 +379,7 @@ describe('BlockCustomizationToggle', () => {
         </MockedProvider>
       )
 
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       fireEvent.click(toggle)
@@ -447,7 +447,7 @@ describe('BlockCustomizationToggle', () => {
       )
 
       fireEvent.click(
-        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+        screen.getByRole('switch', { name: 'Toggle customizable' })
       )
       await waitFor(() => expect(executeResult).toHaveBeenCalled())
 
@@ -534,7 +534,7 @@ describe('BlockCustomizationToggle', () => {
       )
 
       fireEvent.click(
-        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+        screen.getByRole('switch', { name: 'Toggle customizable' })
       )
       await waitFor(() => expect(executeResult).toHaveBeenCalled())
 
@@ -589,7 +589,7 @@ describe('BlockCustomizationToggle', () => {
       )
 
       fireEvent.click(
-        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+        screen.getByRole('switch', { name: 'Toggle customizable' })
       )
       await waitFor(() => expect(executeResult).toHaveBeenCalled())
 
@@ -658,7 +658,7 @@ describe('BlockCustomizationToggle', () => {
       )
 
       fireEvent.click(
-        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+        screen.getByRole('switch', { name: 'Toggle customizable' })
       )
       await waitFor(() => expect(executeResult).toHaveBeenCalled())
 

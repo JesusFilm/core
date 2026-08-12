@@ -264,8 +264,8 @@ export function JourneyCard({
             <Stack
               direction="column"
               spacing={1.5}
-              alignItems="flex-start"
               sx={{
+                alignItems: 'flex-start',
                 position: 'absolute',
                 top: 8,
                 left: 8,
@@ -479,10 +479,10 @@ export function JourneyCard({
           {isTemplateCard ? (
             <Stack
               direction="row"
-              gap={1}
-              justifyContent="space-between"
-              alignItems="center"
               sx={{
+                gap: 1,
+                justifyContent: 'space-between',
+                alignItems: 'center',
                 pb: 1
               }}
             >

@@ -5,6 +5,7 @@ import './language'
 import './country'
 import './continent'
 import './countryLanguage'
+import './wessImport'
 
 import './user'
 

@@ -87,15 +87,20 @@ export function SourceFromLocal({
           Icon={VideoOnIcon}
         />
       </Box>
-      <Box flexGrow={1} minWidth={0}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          minWidth: 0
+        }}
+      >
         <Typography
           variant="subtitle2"
           sx={{
+            color: 'text.secondary',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             overflow: 'hidden'
           }}
-          color="text.secondary"
         >
           {
             (selectedBlock?.mediaVideo as VideoFields_mediaVideo_Video)
@@ -104,12 +109,16 @@ export function SourceFromLocal({
         </Typography>
         <Typography
           variant="caption"
+          // variant="caption" renders as an inline <span>, where overflow and
+          // text-overflow have no effect. Language names can be long, so this
+          // must be block-level for the truncation below to apply.
           sx={{
+            color: 'text.secondary',
+            display: 'block',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             overflow: 'hidden'
           }}
-          color="text.secondary"
         >
           {language}
           &nbsp;

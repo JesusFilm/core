@@ -163,23 +163,33 @@ export function ExistingVideoSelector({
             {...params}
             label="Search videos by title"
             fullWidth
-            InputProps={{
-              ...params.InputProps,
-              endAdornment: (
-                <>
-                  {loading ? (
-                    <CircularProgress color="inherit" size={20} />
-                  ) : null}
-                  {params.InputProps.endAdornment}
-                </>
-              )
+            slotProps={{
+              ...params.slotProps,
+
+              input: {
+                ...params.slotProps.input,
+                endAdornment: (
+                  <>
+                    {loading ? (
+                      <CircularProgress color="inherit" size={20} />
+                    ) : null}
+                    {params.slotProps.input.endAdornment}
+                  </>
+                )
+              }
             }}
           />
         )}
         renderOption={(props, option: VideoOption) => (
           <Box component="li" {...props}>
             <Typography variant="body1">{option.title}</Typography>
-            <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+                ml: 1
+              }}
+            >
               ({option.id})
             </Typography>
           </Box>

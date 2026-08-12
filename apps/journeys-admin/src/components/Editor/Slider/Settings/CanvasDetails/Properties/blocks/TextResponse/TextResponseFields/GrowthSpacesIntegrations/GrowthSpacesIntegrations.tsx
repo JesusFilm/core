@@ -20,7 +20,13 @@ export function GrowthSpacesIntegrations(): ReactElement {
     <>
       {(selectedBlock?.type === TextResponseType.email ||
         selectedBlock?.type === TextResponseType.name) && (
-        <Stack gap={4} sx={{ p: 4, pt: 0 }}>
+        <Stack
+          sx={{
+            gap: 4,
+            p: 4,
+            pt: 0
+          }}
+        >
           <App />
           <Route />
         </Stack>

@@ -1,6 +1,5 @@
 import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
-import { getApp } from 'firebase/app'
-import { getAuth, signInAnonymously } from 'firebase/auth'
+import { signInAnonymously } from 'firebase/auth'
 import { Redirect } from 'next'
 import { SSRConfig } from 'next-i18next/pages'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
@@ -12,6 +11,7 @@ import { AcceptAllInvites } from '../../../__generated__/AcceptAllInvites'
 import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../apolloClient'
 import { User } from '../auth/authContext'
+import { getFirebaseAuth } from '../auth/firebase'
 import { checkConditionalRedirect } from '../checkConditionalRedirect'
 
 interface InitAndAuthAppProps {
@@ -50,7 +50,7 @@ export async function initAndAuthApp({
   allowGuest = false
 }: InitAndAuthAppProps): Promise<InitAndAuth> {
   if (user == null && makeAccountOnAnonymous) {
-    await signInAnonymously(getAuth(getApp()))
+    await signInAnonymously(getFirebaseAuth())
   }
 
   const ldUser =

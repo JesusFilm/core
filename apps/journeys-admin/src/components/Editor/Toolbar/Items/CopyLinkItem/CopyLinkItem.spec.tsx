@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -47,7 +48,8 @@ describe('CopyLinkItem', () => {
             </JourneyProvider>
           </TeamProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
 
     fireEvent.click(getByRole('menuitem', { name: 'Copy Link' }))
@@ -84,7 +86,8 @@ describe('CopyLinkItem', () => {
             </JourneyProvider>
           </TeamProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
 
     fireEvent.click(getByRole('menuitem', { name: 'Copy Link' }))
@@ -130,7 +133,8 @@ describe('CopyLinkItem', () => {
             </JourneyProvider>
           </TeamProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(getByRole('menuitem', { name: 'Copy Link' }))

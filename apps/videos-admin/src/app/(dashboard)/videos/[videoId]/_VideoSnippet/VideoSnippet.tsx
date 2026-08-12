@@ -181,7 +181,11 @@ export function VideoSnippet({ videoId }: VideoSnippetProps): ReactElement {
         resetForm
       }) => (
         <Form>
-          <Stack gap={2}>
+          <Stack
+            sx={{
+              gap: 2
+            }}
+          >
             <ResizableTextField
               name="snippet"
               aria-label="snippet"
@@ -195,7 +199,13 @@ export function VideoSnippet({ videoId }: VideoSnippetProps): ReactElement {
               placeholder="Please enter a short description, up to 160 characters."
             />
             <Divider sx={{ mx: -4 }} />
-            <Stack direction="row" justifyContent="flex-end" gap={1}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: 'flex-end',
+                gap: 1
+              }}
+            >
               <CancelButton show={dirty} handleCancel={() => resetForm()} />
               <SaveButton disabled={!isValid || isSubmitting || !dirty} />
             </Stack>

@@ -16,15 +16,30 @@ const Template: StoryObj<typeof ReactionButton> = {
   render: () => (
     <Stack
       direction="row"
-      gap={12}
-      sx={{ pb: 2, width: '584px' }}
-      justifyContent="start"
+      sx={{
+        gap: 12,
+        justifyContent: 'start',
+        pb: 2,
+        width: '584px'
+      }}
     >
-      <Stack direction="column" gap={4} justifyContent="center">
+      <Stack
+        direction="column"
+        sx={{
+          gap: 4,
+          justifyContent: 'center'
+        }}
+      >
         <Typography>ThumbsUp Icon</Typography>
         <Typography>ThumbsDown Icon</Typography>
       </Stack>
-      <Stack direction="column" gap={4} alignItems="center">
+      <Stack
+        direction="column"
+        sx={{
+          gap: 4,
+          alignItems: 'center'
+        }}
+      >
         <ReactionButton variant="thumbsup" />
         <ReactionButton variant="thumbsdown" />
       </Stack>

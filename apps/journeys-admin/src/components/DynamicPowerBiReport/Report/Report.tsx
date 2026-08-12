@@ -125,7 +125,12 @@ export function Report({ reportType, journeyId }: ReportProps): ReactElement {
               background: (theme) => theme.palette.background.default
             }}
           >
-            <Typography variant="overline" color="secondary.light">
+            <Typography
+              variant="overline"
+              sx={{
+                color: 'secondary.light'
+              }}
+            >
               {error
                 ? t('There was an error loading the report')
                 : t('The report is loading...')}

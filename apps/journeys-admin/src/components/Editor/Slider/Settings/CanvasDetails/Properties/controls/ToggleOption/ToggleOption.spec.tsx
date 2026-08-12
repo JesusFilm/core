@@ -43,9 +43,9 @@ describe('ToggleOption', () => {
       </MockedProvider>
     )
 
-    expect(getByRole('checkbox')).toHaveAttribute('aria-checked', 'false')
+    expect(getByRole('switch')).toHaveAttribute('aria-checked', 'false')
 
-    fireEvent.click(getByRole('checkbox'))
+    fireEvent.click(getByRole('switch'))
     expect(toggleOptionProps.handleChange).toHaveBeenCalled()
   })
 })

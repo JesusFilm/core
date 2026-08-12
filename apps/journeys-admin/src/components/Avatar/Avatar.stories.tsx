@@ -15,7 +15,12 @@ const AvatarDemo: Meta<typeof Avatar> = {
 const Template: StoryObj<typeof Avatar> = {
   render: ({ ...args }) => (
     <Paper elevation={0} sx={{ p: 2 }}>
-      <Stack direction="row" gap={2}>
+      <Stack
+        direction="row"
+        sx={{
+          gap: 2
+        }}
+      >
         <Avatar {...args} />
         <Avatar
           {...args}

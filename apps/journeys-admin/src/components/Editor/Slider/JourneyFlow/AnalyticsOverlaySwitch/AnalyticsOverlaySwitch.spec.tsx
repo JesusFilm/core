@@ -1,11 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within
-} from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { formatISO } from 'date-fns'
 import { type MockedFunction } from 'vitest'
@@ -85,7 +79,7 @@ describe('AnalyticsOverlaySwitch', () => {
     const showAnalytics = screen.getByTestId('showAnalytics')
     const analytics = screen.getByTestId('analytics')
     expect(showAnalytics).toHaveTextContent('')
-    screen.getByRole('checkbox').click()
+    screen.getByRole('switch').click()
     expect(showAnalytics).toHaveTextContent('true')
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(JSON.parse(analytics.textContent ?? '')).toMatchObject({
@@ -98,7 +92,7 @@ describe('AnalyticsOverlaySwitch', () => {
       blockMap: {},
       targetMap: {}
     })
-    screen.getByRole('checkbox').click()
+    screen.getByRole('switch').click()
     expect(showAnalytics).toHaveTextContent('false')
   })
 
@@ -144,7 +138,7 @@ describe('AnalyticsOverlaySwitch', () => {
       </MockedProvider>
     )
 
-    const analyticsCheckbox = screen.getByRole('checkbox')
+    const analyticsCheckbox = screen.getByRole('switch')
     fireEvent.click(analyticsCheckbox)
 
     // Verify the network call was made with the mocked date range
@@ -186,7 +180,7 @@ describe('AnalyticsOverlaySwitch', () => {
 
     expect(screen.queryByLabelText('Date range preset')).not.toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('checkbox'))
+    fireEvent.click(screen.getByRole('switch'))
 
     expect(
       await screen.findByLabelText('Date range preset')
@@ -224,11 +218,11 @@ describe('AnalyticsOverlaySwitch', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('checkbox'))
+    fireEvent.click(screen.getByRole('switch'))
 
-    const dateRangeSelectRoot =
-      await screen.findByLabelText('Date range preset')
-    const dateRangeCombobox = within(dateRangeSelectRoot).getByRole('combobox')
+    const dateRangeCombobox = await screen.findByRole('combobox', {
+      name: 'Date range preset'
+    })
 
     fireEvent.mouseDown(dateRangeCombobox)
 

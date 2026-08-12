@@ -56,7 +56,7 @@ export function AnalyticsOverlayDateRangeSelect({
           vertical: 'top',
           horizontal: 'left'
         },
-        MenuListProps: { dense: true }
+        slotProps: { list: { dense: true } }
       }}
     >
       {dateRangePresetGroups.flatMap((group, groupIndex) => [

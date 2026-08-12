@@ -3,7 +3,7 @@ import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { getAuth, signInWithCustomToken } from 'firebase/auth'
+import { signInWithCustomToken } from 'firebase/auth'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
@@ -15,7 +15,7 @@ import {
   UserImpersonate,
   UserImpersonateVariables
 } from '../../../../../../__generated__/UserImpersonate'
-import { loginWithCredential } from '../../../../../libs/auth'
+import { getFirebaseAuth, loginWithCredential } from '../../../../../libs/auth'
 
 export const USER_IMPERSONATE = gql`
   mutation UserImpersonate($email: String!) {
@@ -50,7 +50,7 @@ export function ImpersonateDialog({
         }
       })
       if (data?.userImpersonate != null) {
-        const auth = getAuth()
+        const auth = getFirebaseAuth()
         const credential = await signInWithCustomToken(
           auth,
           data.userImpersonate

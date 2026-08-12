@@ -1,7 +1,6 @@
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { LDClient } from '@launchdarkly/node-server-sdk'
-import { getApp } from 'firebase/app'
-import { getAuth, signInAnonymously } from 'firebase/auth'
+import { signInAnonymously } from 'firebase/auth'
 import { SSRConfig } from 'next-i18next/pages'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { type MockedFunction } from 'vitest'
@@ -11,6 +10,7 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../apolloClient'
 import { User } from '../auth/authContext'
+import { getFirebaseAuth } from '../auth/firebase'
 import { checkConditionalRedirect } from '../checkConditionalRedirect'
 
 import { ACCEPT_ALL_INVITES, initAndAuthApp } from './initAndAuthApp'
@@ -19,8 +19,8 @@ vi.mock('next-i18next/pages/serverSideTranslations')
 vi.mock('@core/shared/ui/getLaunchDarklyClient')
 vi.mock('../apolloClient')
 vi.mock('../checkConditionalRedirect')
-vi.mock('firebase/app')
 vi.mock('firebase/auth')
+vi.mock('../auth/firebase')
 
 const serverSideTranslationsMock = vi.mocked(serverSideTranslations)
 const getLaunchDarklyClientMock = getLaunchDarklyClient as MockedFunction<
@@ -32,8 +32,9 @@ const createApolloClientMock = createApolloClient as MockedFunction<
 const checkConditionalRedirectMock = checkConditionalRedirect as MockedFunction<
   typeof checkConditionalRedirect
 >
-const getAppMock = getApp as MockedFunction<typeof getApp>
-const getAuthMock = getAuth as MockedFunction<typeof getAuth>
+const getFirebaseAuthMock = getFirebaseAuth as MockedFunction<
+  typeof getFirebaseAuth
+>
 const signInAnonymouslyMock = signInAnonymously as MockedFunction<
   typeof signInAnonymously
 >
@@ -83,8 +84,7 @@ describe('initAndAuthApp', () => {
     })
 
     // mock Firebase functions
-    getAppMock.mockReturnValue({} as any)
-    getAuthMock.mockReturnValue({} as any)
+    getFirebaseAuthMock.mockReturnValue({} as any)
     signInAnonymouslyMock.mockResolvedValue({} as any)
   })
 

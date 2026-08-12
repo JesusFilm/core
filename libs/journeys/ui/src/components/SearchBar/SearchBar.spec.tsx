@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ClearRefinementsRenderState } from 'instantsearch.js/es/connectors/clear-refinements/connectClearRefinements'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
@@ -75,7 +76,8 @@ describe('SearchBar', () => {
         <SearchBarProvider>
           <SearchBar />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     expect(screen.getByDisplayValue('Hello World!')).toBeVisible()
   })
@@ -86,7 +88,8 @@ describe('SearchBar', () => {
         <SearchBarProvider>
           <SearchBar />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     const inputElement = screen.getByPlaceholderText(
       /Search by topic, occasion, or audience .../i
@@ -100,7 +103,8 @@ describe('SearchBar', () => {
         <SearchBarProvider>
           <SearchBar />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     const searchIcon = screen.getByTestId('Search1Icon')
     expect(searchIcon).toBeInTheDocument()
@@ -112,7 +116,8 @@ describe('SearchBar', () => {
         <SearchBarProvider>
           <SearchBar />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     const input = screen.getByDisplayValue('Hello World!')
     fireEvent.change(input, { target: { value: 'Testing' } })
@@ -125,7 +130,8 @@ describe('SearchBar', () => {
         <SearchBarProvider>
           <SearchBar />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     const input = screen.getByDisplayValue('Hello World!')
     fireEvent.change(input, { target: { value: 'J' } })
@@ -140,7 +146,8 @@ describe('SearchBar', () => {
         <SearchBarProvider>
           <SearchBar showLanguageButton />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     expect(screen.getByTestId('SearchBar')).toBeInTheDocument()
   })
@@ -151,7 +158,8 @@ describe('SearchBar', () => {
         <SearchBarProvider>
           <SearchBar showLanguageButton />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     expect(screen.getAllByText('Language')[0]).toBeVisible()
   })
@@ -162,7 +170,8 @@ describe('SearchBar', () => {
         <SearchBarProvider>
           <SearchBar />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     expect(screen.queryByTestId('SearchBarDropdown')).not.toBeInTheDocument()
   })
@@ -173,7 +182,8 @@ describe('SearchBar', () => {
         <SearchBarProvider>
           <SearchBar showDropdown />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await clickOnSearchBar()
     await waitFor(() =>
@@ -187,7 +197,8 @@ describe('SearchBar', () => {
         <SearchBarProvider>
           <SearchBar showDropdown />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await clickOnSearchBar()
     await waitFor(() =>
@@ -202,7 +213,8 @@ describe('SearchBar', () => {
         <SearchBarProvider>
           <SearchBar showDropdown showLanguageButton />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     expect(screen.getAllByText('Language')[0]).toBeInTheDocument()
     fireEvent.click(screen.getAllByText('Language')[0])
@@ -219,7 +231,8 @@ describe('SearchBar', () => {
         <SearchBarProvider>
           <SearchBar showDropdown showLanguageButton />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     fireEvent.click(screen.getAllByText('Language')[0])
     expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
@@ -233,7 +246,8 @@ describe('SearchBar', () => {
         <SearchBarProvider>
           <SearchBar showDropdown showLanguageButton />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     fireEvent.click(screen.getAllByText('Language')[0])
     expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
@@ -248,7 +262,8 @@ describe('SearchBar', () => {
         <SearchBarProvider>
           <SearchBar showDropdown showLanguageButton />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await clickOnSearchBar()
     expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
@@ -269,7 +284,8 @@ describe('SearchBar', () => {
         <SearchBarProvider>
           <SearchBar showDropdown showLanguageButton />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await clickOnSearchBar()
     fireEvent.keyDown(screen.getByDisplayValue('Hello World!'), enterKey)
@@ -282,7 +298,8 @@ describe('SearchBar', () => {
         <SearchBarProvider>
           <SearchBar showDropdown showLanguageButton />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await clickOnSearchBar()
     fireEvent.keyDown(screen.getByDisplayValue('Hello World!'), enterKey)

@@ -1,7 +1,7 @@
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
-import Grid from '@mui/material/GridLegacy'
+import Grid from '@mui/material/Grid'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -40,15 +40,27 @@ export function UserTeamInviteListItem({
       <Grid
         container
         spacing={1}
-        alignItems="center"
         data-testId="UserTeamInviteListItem"
+        sx={{
+          alignItems: 'center'
+        }}
       >
-        <Grid xs={2} sm={1}>
+        <Grid
+          size={{
+            xs: 2,
+            sm: 1
+          }}
+        >
           <Avatar src={undefined} alt={email}>
             {email.charAt(0).toUpperCase()}
           </Avatar>
         </Grid>
-        <Grid xs={7} sm={9}>
+        <Grid
+          size={{
+            xs: 7,
+            sm: 9
+          }}
+        >
           <Stack sx={{ ml: 2 }}>
             <Typography
               variant="body1"
@@ -63,7 +75,16 @@ export function UserTeamInviteListItem({
             </Typography>
           </Stack>
         </Grid>
-        <Grid xs={3} sm={2} justifyContent="flex-end" sx={{ display: 'flex' }}>
+        <Grid
+          size={{
+            xs: 3,
+            sm: 2
+          }}
+          sx={{
+            justifyContent: 'flex-end',
+            display: 'flex'
+          }}
+        >
           <Button
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"

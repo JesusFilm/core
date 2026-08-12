@@ -271,11 +271,11 @@ export function HeaderAndLanguageFilter({
   return (
     <>
       <Stack
-        gap={{ xs: 0, md: 2 }}
-        alignItems="center"
         direction="row"
-        flexWrap={{ xs: 'wrap', md: 'initial' }}
         sx={{
+          gap: { xs: 0, md: 2 },
+          alignItems: 'center',
+          flexWrap: { xs: 'wrap', md: 'initial' },
           pb: { xs: 6, md: 9 },
           position: 'relative'
         }}
