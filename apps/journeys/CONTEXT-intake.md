@@ -9,12 +9,13 @@ trigger_phrases:
   - 'goes to the wrong card'
   - "video won't load"
   - 'video is slow to load'
+  - 'video plays the wrong language'
   - 'image is cropped / wrong fit'
   - "can't click / can't type on the card"
   - 'looks wrong when published'
   - 'custom domain / embed not working'
 type_tags: [T6, T10]
-updated: 2026-07-15
+updated: 2026-08-13
 ---
 
 > Diagnosis layer for reported bugs in the **published journey viewer** (what the audience sees).
@@ -29,6 +30,10 @@ updated: 2026-07-15
 **Signatures:** a block/card renders correctly in the Editor but wrong only in the published/preview
 view (the "saved fine, wrong only in preview" branch handed over from journeys-admin).
 **Localizing question (reporter):** does it look right while editing but wrong once published?
+**Then ask:** an annotated screenshot (mark what's wrong on it); device/browser/OS **from the
+reporter** — never guess it from context (the guess is often wrong); cosmetic, or does it block
+interaction? For image bugs, also the image's file format.
+**Ready when:** annotated screenshot + the affected block/card + confirmed device/viewport.
 **Look first (fixer):** the shared Block Renderer + Card rendering in `libs/journeys/ui`
 (`src/components/BlockRenderer`, `src/components/Card/Card.tsx`) — the viewer injects different
 Wrappers than the admin, so a divergence is usually in render-mode / wrapper handling, not the data.
@@ -50,11 +55,17 @@ wires swipe/hotkey/button nav) → `libs/journeys/ui/src/libs/block/block.ts` (`
 ## Video won't load / slow to load — T10 (known weak spot)
 
 **Signatures:** videos don't load fast enough; a video won't play; background video doesn't render
-(notably first card / Android).
+(notably first card / Android); a video plays in the wrong language.
 **Status:** preloading is a **known weak spot** — attempted a few times, never much success. Treat
 "slow to load" as a known limitation, not a fresh regression, unless something clearly broke.
 **Localizing question (reporter):** which video source (library / YouTube / upload), which
 device/OS/browser, and a **working-vs-failing** example if possible.
+**Then ask:** background cover video or a video block — and is it the first card? What changed
+recently (an edit, a new upload, "started Monday" → bisect to a deploy)? For wrong-language: which
+language is set on the video vs on the journey? A very old browser/OS (e.g. a 7-year-old WebKit) ⇒
+likely not-a-code-bug — close with an explanation.
+**Ready when:** a failing-vs-working URL pair + video source + device/OS/browser + any recent
+change are recorded.
 **Look first (fixer):** `libs/journeys/ui/src/components/Video/Video.tsx` (video.js setup, poster,
 autoplay/preload) → `libs/journeys/ui/src/components/Video/InitAndPlay/InitAndPlay.tsx` (init + play
 lifecycle — load/preload timing) → `libs/journeys/ui/src/components/Card/ContainedCover/BackgroundVideo/BackgroundVideo.tsx`

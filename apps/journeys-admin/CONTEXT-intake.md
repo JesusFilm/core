@@ -14,15 +14,23 @@ trigger_phrases:
   - 'transfer ownership'
   - 'analytics numbers are wrong'
   - 'historical data disappeared'
+  - "can't log in"
+  - 'name shows Unknown'
+  - 'works in incognito'
+  - 'invite email never arrived'
+  - "I can see another team's data"
 type_tags: [T1, T2, T3, T4, T5, T8, T11]
-updated: 2026-07-15
+updated: 2026-08-13
 ---
 
 > Diagnosis layer for reported bugs in journeys-admin. Read this when triaging or debugging a
 > reported issue — not for feature work. Domain model: ./CONTEXT.md.
 > Failure types (T1–T11) reference the shared taxonomy in the repo-root AGENTS.md.
 > Each entry: what it looks like → the question that localizes it (reporter can answer) →
-> where the fixer looks first → whether it is safe for an autonomous agent.
+> the follow-up asks in order ("Then ask") → the readiness gate ("Ready when" — stop asking and
+> hand off once met) → where the fixer looks first → whether it is safe for an autonomous agent.
+> A working-vs-broken pair (row, URL, journey) is the highest-leverage artifact for any type —
+> ask for a counter-example whenever one could exist.
 
 ## Saving / preview / cache — T4 (cache) · T5 (optimistic drift)
 
@@ -34,6 +42,17 @@ edit shows in the Editor but not on the journey preview; a newly-created block n
 - refresh doesn't fix it, the change is gone → it genuinely didn't save
 - saved, correct in the Editor, wrong only in preview → rendering bug, not here — see
   `apps/journeys/CONTEXT-intake.md`
+  **Then ask (T4, stale view):** which exact edit/action went stale, and where the stale value shows
+  — the Editor itself, the admin list, or the published page? Before fixing, enumerate **every**
+  mutation that feeds the stale view (NES-1199: the template journey-count had nine feeding paths —
+  patching one is not a fix).
+  **Then ask (T5, optimistic drift):** what action across what — e.g. "moved journey A→B and it
+  shows in both until refresh." "Right only after refresh" plus a duplicate/leftover is the
+  optimistic-update tell; ask them to reproduce it across a second pair of collections.
+  **Ready when (T4):** "after mutation M, view V doesn't reflect it without a refresh" — M and V
+  named, all mutations feeding V enumerated, refresh-test result recorded.
+  **Ready when (T5):** "after action A there's a stale duplicate/missing item until refresh" —
+  refresh confirmed to fix it (Apollo client-cache bug).
   **Look first (fixer):** Network tab → the block create/update mutation (did it fire? payload
   correct? error code?); if it fired cleanly but the UI is stale → the manual cache `update` in
   `Editor/utils/useBlockCreateCommand` and `src/libs/blockCreateUpdate`.
@@ -47,6 +66,12 @@ forget. Any future migration can reintroduce it.
 rows — usually shortly after a schema change / migration.
 **Localizing question (reporter):** is it _all_ the old data and only the old data (recent fine)?
 That "all-historical-vs-recent-fine" split is the tell.
+**Then ask:** which list/view exactly; when were the missing rows created vs when the suspect
+migration/feature shipped; and one working row + one broken row (the working-vs-broken pair makes
+the cutoff date checkable).
+**Ready when:** "rows created before X are gone, rows after X are fine" is pinned on a named view,
+with a working-vs-broken row pair — the NULL-vs-false filter hypothesis is directly testable from
+there.
 **Look first (fixer):** the recent migration + the query filter on the affected list. Classic cause:
 a new column is `NULL` on existing rows but the query filters `column = false/true`, and `NULL`
 matches neither in SQL, so old rows vanish.
@@ -63,6 +88,12 @@ looks off.
 it to count (raw events vs unique users), and — for template families — "are you 100% sure this is
 the only journey from that template?" (aggregate-vs-child mix-ups are common).
 **Heuristic:** an analytics discrepancy is almost always a **name/unit mismatch, not bad math.**
+**Then ask:** which event on which card, and which goal/label it is expected to map to; was the
+journey **edited after** events were already collected; what date range is being read.
+**Ready when (for the human handoff):** aggregation level (template aggregate vs single journey) +
+expected semantics (raw events vs unique users) + the event→goal mapping + post-edit status are all
+recorded. Hand off even without a diagnosis — the goal here is a well-framed question for a human,
+not a root cause.
 **Look first (fixer):** drop-off % and time-on-card are computed **client-side** in
 `libs/journeys/ui/src/libs/useJourneyAnalyticsQuery/transformJourneyAnalytics/transformJourneyAnalytics.ts`
 (these are the numbers shown in reports); the underlying Plausible aggregates come from
@@ -83,6 +114,12 @@ the event-sync worker is `apis/api-journeys/src/workers/plausible/service.ts`.
 - template-gallery filter = the gallery's own list
   **Localizing question (reporter):** is the wrong/missing text the _journey's own content_ (blocks,
   titles) or the _app's UI/labels_? And which language?
+  **Then ask:** the exact language (name, plus the JF language ID if visible); which surface
+  (builder, AI-translate dialog, published journey, template gallery); team-scoped or public.
+  **Quota branch:** a suddenly **broad** failure — many/all languages at once, recent onset, usage
+  spike — points at provider quota/billing, not code → route to ops; don't debug the allowlist.
+  **Ready when:** the affected list + language ID + surface are identified and a quota/ops cause is
+  ruled out (an isolated language on one list, not a sudden broad failure).
   **Look first (fixer):** content translation → `apis/api-journeys/.../journeyAiTranslate.ts` +
   `translateCustomizationFields`. "Can't translate into language X" is usually X not being in
   `SUPPORTED_LANGUAGE_IDS` — the fix is often just adding the ID.
@@ -138,6 +175,12 @@ another team — it stays in its owning team. This is by design (a known limitat
 frequently reported as a bug.
 **High severity:** any cross-team data exposure ("I can see another team's data") → escalate to a
 human, never auto-fix.
+**Then ask:** the reporter's role (team member / manager / journey owner); what exactly is exposed
+or blocked; what they expected — i.e. which rule they think applies. For invite emails: the invitee
+address and whether a resend was tried.
+**Ready when (invite-email path):** "role R invited address X, no email arrived after a resend" —
+with addresses and rough timestamps. Cross-team exposure is never held to a gate: capture role +
+what's visible, then escalate immediately.
 **Look first (fixer):** the resolver auth guard + `UserJourney` / `UserTeam` roles in api-journeys;
 for invite emails, the invite-email pipeline.
 **Handoff:** how-to / access → human or FAQ; invite-email pipeline → agent-able; cross-team exposure
@@ -150,6 +193,11 @@ for invite emails, the invite-email pipeline.
 Auth** — the two can diverge (a record existing in one but not the other causes odd behavior).
 **Localizing question (reporter): does it work in incognito?** Incognito working ⇒ a stale token —
 the single most diagnostic auth signal.
+**Then ask:** the exact entry path (which page/button started sign-in); the account email and
+whether it has signed in successfully before; which product/environment (infer from the URL,
+challenge mismatches); and "is it still happening right now?" — many auth reports are transient.
+**Ready when:** the failing path reproduces reliably, the incognito result is recorded, and
+product/env is confirmed.
 **Look first (fixer):** `getAuthTokens.ts`, `checkConditionalRedirect.ts`, `verify.tsx`,
 `SignIn.tsx`, `findOrFetchUser.ts`, `firebase.ts` (the projection reconciliation lives around
 `findOrFetchUser`).
