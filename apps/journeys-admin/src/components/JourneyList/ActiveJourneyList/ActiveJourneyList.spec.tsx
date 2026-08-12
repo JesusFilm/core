@@ -109,10 +109,10 @@ describe('ActiveJourneyList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByText('No journeys to display.')).toBeInTheDocument()
+      expect(getByText('No Journeys to display.')).toBeInTheDocument()
     )
     expect(
-      getByText('Create a journey, then find it here.')
+      getByText('Create a Journey, then find it here.')
     ).toBeInTheDocument()
   })
 

@@ -108,7 +108,7 @@ describe('JourneyListContent', () => {
       })
 
       await waitFor(() =>
-        expect(screen.getByText('No journeys to display.')).toBeInTheDocument()
+        expect(screen.getByText('No Journeys to display.')).toBeInTheDocument()
       )
 
       expect(
@@ -124,7 +124,7 @@ describe('JourneyListContent', () => {
       })
 
       await waitFor(() =>
-        expect(screen.getByText('No archived templates.')).toBeInTheDocument()
+        expect(screen.getByText('No archived Templates.')).toBeInTheDocument()
       )
 
       expect(
@@ -141,7 +141,7 @@ describe('JourneyListContent', () => {
 
       await waitFor(() =>
         expect(
-          screen.getByText('Your trashed templates will appear here.')
+          screen.getByText('Your trashed Templates will appear here.')
         ).toBeInTheDocument()
       )
 
@@ -175,7 +175,7 @@ describe('JourneyListContent', () => {
       })
 
       await waitFor(() =>
-        expect(getByText('No journeys to display.')).toBeInTheDocument()
+        expect(getByText('No Journeys to display.')).toBeInTheDocument()
       )
     })
 
@@ -191,7 +191,7 @@ describe('JourneyListContent', () => {
       await waitFor(() => {
         expect(getByText('Archive Journeys')).toBeInTheDocument()
         expect(
-          getByText('This will archive all active journeys you own.')
+          getByText('This will archive all active Journeys you own.')
         ).toBeInTheDocument()
         expect(
           getByText('Are you sure you want to proceed?')
@@ -235,7 +235,7 @@ describe('JourneyListContent', () => {
       })
 
       await waitFor(() =>
-        expect(getByText('Make your first template.')).toBeInTheDocument()
+        expect(getByText('Make your first Template.')).toBeInTheDocument()
       )
     })
 
@@ -250,7 +250,7 @@ describe('JourneyListContent', () => {
       await waitFor(() => {
         expect(getByText('Archive Templates')).toBeInTheDocument()
         expect(
-          getByText('This will archive all active templates you own.')
+          getByText('This will archive all active Templates you own.')
         ).toBeInTheDocument()
         expect(
           getByText('Are you sure you want to proceed?')
@@ -282,7 +282,7 @@ describe('JourneyListContent', () => {
       })
 
       await waitFor(() =>
-        expect(getByText('No archived journeys.')).toBeInTheDocument()
+        expect(getByText('No archived Journeys.')).toBeInTheDocument()
       )
     })
 
@@ -312,7 +312,7 @@ describe('JourneyListContent', () => {
       await waitFor(() => {
         expect(getByText('Trash Journeys')).toBeInTheDocument()
         expect(
-          getByText('This will trash all archived journeys you own.')
+          getByText('This will trash all archived Journeys you own.')
         ).toBeInTheDocument()
         expect(
           getByText('Are you sure you want to proceed?')
@@ -345,7 +345,7 @@ describe('JourneyListContent', () => {
 
       await waitFor(() =>
         expect(
-          getByText('Your trashed journeys will appear here.')
+          getByText('Your trashed Journeys will appear here.')
         ).toBeInTheDocument()
       )
     })
@@ -400,7 +400,7 @@ describe('JourneyListContent', () => {
       })
 
       await waitFor(() =>
-        expect(getByText('No archived templates.')).toBeInTheDocument()
+        expect(getByText('No archived Templates.')).toBeInTheDocument()
       )
     })
 
@@ -415,7 +415,7 @@ describe('JourneyListContent', () => {
       await waitFor(() => {
         expect(getByText('Unarchive Templates')).toBeInTheDocument()
         expect(
-          getByText('This will unarchive all archived templates you own.')
+          getByText('This will unarchive all archived Templates you own.')
         ).toBeInTheDocument()
         expect(
           getByText('Are you sure you want to proceed?')
@@ -434,7 +434,7 @@ describe('JourneyListContent', () => {
       await waitFor(() => {
         expect(getByText('Trash Templates')).toBeInTheDocument()
         expect(
-          getByText('This will trash all archived templates you own.')
+          getByText('This will trash all archived Templates you own.')
         ).toBeInTheDocument()
         expect(
           getByText('Are you sure you want to proceed?')
@@ -465,7 +465,7 @@ describe('JourneyListContent', () => {
 
       await waitFor(() =>
         expect(
-          getByText('Your trashed templates will appear here.')
+          getByText('Your trashed Templates will appear here.')
         ).toBeInTheDocument()
       )
     })
@@ -481,7 +481,7 @@ describe('JourneyListContent', () => {
       await waitFor(() => {
         expect(getByText('Restore Templates')).toBeInTheDocument()
         expect(
-          getByText('This will restore all trashed templates you own.')
+          getByText('This will restore all trashed Templates you own.')
         ).toBeInTheDocument()
         expect(
           getByText('Are you sure you want to proceed?')
@@ -501,7 +501,7 @@ describe('JourneyListContent', () => {
         expect(getByText('Delete Templates Forever')).toBeInTheDocument()
         expect(
           getByText(
-            'This will permanently delete all trashed templates you own.'
+            'This will permanently delete all trashed Templates you own.'
           )
         ).toBeInTheDocument()
         expect(
@@ -556,7 +556,7 @@ describe('JourneyListContent', () => {
 
       await waitFor(() =>
         expect(
-          getByText('Trashed journeys are moved here for up to 40 days.')
+          getByText('Trashed Journeys are moved here for up to 40 days.')
         ).toBeInTheDocument()
       )
     })
@@ -570,7 +570,7 @@ describe('JourneyListContent', () => {
 
       await waitFor(() => {
         expect(
-          getByText('Templates let your team reuse and share projects.')
+          getByText('Templates let your team reuse and share Projects.')
         ).toBeInTheDocument()
       })
     })
@@ -584,7 +584,7 @@ describe('JourneyListContent', () => {
 
       await waitFor(() =>
         expect(
-          getByText('Archived templates are hidden from the Template Library.')
+          getByText('Archived Templates are hidden from the Template Library.')
         ).toBeInTheDocument()
       )
     })
@@ -598,7 +598,7 @@ describe('JourneyListContent', () => {
 
       await waitFor(() =>
         expect(
-          getByText('Trashed templates are moved here for up to 40 days.')
+          getByText('Trashed Templates are moved here for up to 40 days.')
         ).toBeInTheDocument()
       )
     })

@@ -181,7 +181,7 @@ describe('ArchivedTemplateList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByText('No archived templates.')).toBeInTheDocument()
+      expect(getByText('No archived Templates.')).toBeInTheDocument()
     )
   })
 

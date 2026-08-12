@@ -156,7 +156,7 @@ describe('CollectionCard', () => {
     )
     const dialog = screen.getByTestId('CollectionUngroupDialog')
     expect(
-      within(dialog).getByText('Remove this collection?')
+      within(dialog).getByText('Remove this Collection?')
     ).toBeInTheDocument()
     await userEvent.click(
       within(dialog).getByRole('button', { name: 'Remove' })
@@ -178,7 +178,7 @@ describe('CollectionCard', () => {
       screen.getByRole('menuitem', { name: 'Remove Collection' })
     )
     expect(
-      screen.getByText('Any public URL for this collection will return 404.')
+      screen.getByText('Any public URL for this Collection will return 404.')
     ).toBeInTheDocument()
   })
 

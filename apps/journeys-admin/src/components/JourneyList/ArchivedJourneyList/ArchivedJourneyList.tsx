@@ -185,7 +185,7 @@ export function ArchivedJourneyList({
                 }}
               >
                 <Typography variant="subtitle1" align="center">
-                  {t('No archived journeys.')}
+                  {t('No archived Journeys.')}
                 </Typography>
               </Box>
             </>
@@ -219,7 +219,7 @@ export function ArchivedJourneyList({
           }}
         >
           <Typography sx={{ fontWeight: 'bold' }}>
-            {t('This will unarchive all archived journeys you own.')}
+            {t('This will unarchive all archived Journeys you own.')}
           </Typography>
           <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>
@@ -239,7 +239,7 @@ export function ArchivedJourneyList({
           }}
         >
           <Typography sx={{ fontWeight: 'bold' }}>
-            {t('This will trash all archived journeys you own.')}
+            {t('This will trash all archived Journeys you own.')}
           </Typography>
           <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>
