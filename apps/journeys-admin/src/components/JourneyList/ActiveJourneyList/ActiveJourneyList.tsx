@@ -171,10 +171,10 @@ export function ActiveJourneyList({
               }}
             >
               <Typography variant="subtitle1" align="center" gutterBottom>
-                {t('No journeys to display.')}
+                {t('No Journeys to display.')}
               </Typography>
               <Typography variant="caption" align="center" gutterBottom>
-                {t('Create a journey, then find it here.')}
+                {t('Create a Journey, then find it here.')}
               </Typography>
               <AddJourneyButton />
             </Card>
@@ -212,7 +212,7 @@ export function ActiveJourneyList({
           }}
         >
           <Typography sx={{ fontWeight: 'bold' }}>
-            {t('This will archive all active journeys you own.')}
+            {t('This will archive all active Journeys you own.')}
           </Typography>
           <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>
@@ -232,7 +232,7 @@ export function ActiveJourneyList({
           }}
         >
           <Typography sx={{ fontWeight: 'bold' }}>
-            {t('This will trash all active journeys you own.')}
+            {t('This will trash all active Journeys you own.')}
           </Typography>
           <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>

@@ -348,7 +348,7 @@ export class Publisher {
   async verifyActiveTabShowsEmptyMessage() {
     await expect(
       this.page.locator('div[aria-labelledby*="active-status-panel-tab"] h6', {
-        hasText: 'No templates to display.'
+        hasText: 'No Templates to display.'
       })
     ).toBeVisible()
   }
@@ -393,7 +393,7 @@ export class Publisher {
   async verifyEmptyMessageInArchivedTab() {
     await expect(
       this.page.locator('div[id*="archived-status-panel-tabpanel"] h6', {
-        hasText: 'No archived templates.'
+        hasText: 'No archived Templates.'
       })
     ).toBeVisible()
   }
@@ -465,7 +465,7 @@ export class Publisher {
     ).toHaveCount(0)
     await expect(
       this.page.locator('div[id*="trashed-status-panel-tabpanel"] h6', {
-        hasText: 'Your trashed templates will appear here.'
+        hasText: 'Your trashed Templates will appear here.'
       })
     ).toBeVisible()
   }
