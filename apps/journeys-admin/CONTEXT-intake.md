@@ -208,11 +208,11 @@ product/env is confirmed.
 **Google Sheets Sync (real):** recurring **auth** (OAuth) issues and **sync reliability** (rows not
 created / sync not running).
 
-- Look first (fixer): OAuth connection → `apis/api-journeys/src/schema/integration/google/`
+- **Look first (fixer):** OAuth connection → `apis/api-journeys/src/schema/integration/google/`
   (`googleCreate.mutation.ts`, `googleUpdate.mutation.ts`); the sync worker →
   `apis/api-journeys/src/workers/googleSheetsSync/`; the row/header build + write-to-sheet →
   `apis/api-journeys/src/schema/googleSheetsSync/appendEventToGoogleSheets.ts`.
-- Handoff: OAuth reconnect → often human; sync-job defects → agent-able.
+- **Handoff:** OAuth reconnect → often human; sync-job defects → agent-able.
   **Growth Spaces:** dormant — no recent reports, believed unused. Map stays thin; route to a human.
 
 ## Email notifications
