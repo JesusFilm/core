@@ -31,9 +31,9 @@ This is an **Nx monorepo** (TypeScript). Apps live in `apps/`, GraphQL APIs in `
 - Use descriptive variable and function/const names.
 - Define TypeScript types; avoid `any`.
 
-### Lint before commit
+### Lint before push
 
-Run `pnpm lint:changed` before committing — scoped ESLint over changed files only (`--fix` applies autofixes; full `nx lint` is far too slow). Deliberately not a git hook; [autofix.ci](https://autofix.ci) stays the CI backstop and owns Prettier formatting.
+Agents are lint-gated at push: `.husky/pre-push` runs `pnpm lint:changed --committed` (scoped ESLint over changed files only; full `nx lint` is far too slow) when an agent environment is detected (`CLAUDECODE`/`CURSOR_AGENT`) — manual human pushes skip it, and `git push --no-verify` skips everything. Run `pnpm lint:changed [--fix]` yourself anytime; [autofix.ci](https://autofix.ci) stays the CI backstop and owns Prettier formatting.
 
 ### Documented Solutions
 

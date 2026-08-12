@@ -7,13 +7,14 @@
 # pattern base is the cwd). Workspaces are linted in parallel.
 #
 # Usage:
-#   tools/scripts/lint-changed.sh           # all changes vs merge-base with origin/main (incl. uncommitted + untracked)
-#   tools/scripts/lint-changed.sh --staged  # staged files only (lints their working-tree contents)
-#   tools/scripts/lint-changed.sh --fix     # apply autofixes
+#   tools/scripts/lint-changed.sh              # all changes vs merge-base with origin/main (incl. uncommitted + untracked)
+#   tools/scripts/lint-changed.sh --committed  # committed changes only (what a push would send)
+#   tools/scripts/lint-changed.sh --staged     # staged files only (lints their working-tree contents)
+#   tools/scripts/lint-changed.sh --fix        # apply autofixes
 #
 # Expect roughly 5-20s per touched workspace: type-aware lint rules build a
-# TypeScript program per workspace on every run. That is why this is a manual
-# pre-commit step, not a git hook.
+# TypeScript program per workspace on every run. That is why the only hook on
+# this is the agent-gated pre-push (.husky/pre-push), not a per-commit hook.
 
 set -u
 
@@ -24,10 +25,11 @@ FIX=""
 for arg in "$@"; do
   case "$arg" in
     --staged) MODE=staged ;;
+    --committed) MODE=committed ;;
     --fix) FIX="--fix" ;;
     *)
       echo "unknown option: $arg" >&2
-      echo "usage: tools/scripts/lint-changed.sh [--staged] [--fix]" >&2
+      echo "usage: tools/scripts/lint-changed.sh [--staged|--committed] [--fix]" >&2
       exit 2
       ;;
   esac
@@ -35,6 +37,9 @@ done
 
 if [ "$MODE" = "staged" ]; then
   FILES=$(git diff --name-only --cached --diff-filter=ACMR)
+elif [ "$MODE" = "committed" ]; then
+  BASE=$(git merge-base HEAD origin/main) || exit 1
+  FILES=$(git diff --name-only --diff-filter=ACMR "$BASE" HEAD)
 else
   BASE=$(git merge-base HEAD origin/main) || exit 1
   FILES=$(
