@@ -55,7 +55,9 @@ edit shows in the Editor but not on the journey preview; a newly-created block n
   refresh confirmed to fix it (Apollo client-cache bug).
   **Look first (fixer):** Network tab → the block create/update mutation (did it fire? payload
   correct? error code?); if it fired cleanly but the UI is stale → the manual cache `update` in
-  `Editor/utils/useBlockCreateCommand` and `src/libs/blockCreateUpdate`.
+  `Editor/utils/useBlockCreateCommand` and `src/libs/blockCreateUpdate`. For non-block stale views
+  (admin lists, counts, the published page) there is no single pointer yet — start from the
+  enumerated feeding mutations and their cache `update` / `refetchQueries` handling.
   **Handoff:** agent-able.
 
 ## Data semantics / historical data disappearing — T1

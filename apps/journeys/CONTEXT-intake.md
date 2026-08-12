@@ -33,7 +33,7 @@ view (the "saved fine, wrong only in preview" branch handed over from journeys-a
 **Then ask:** an annotated screenshot (mark what's wrong on it); device/browser/OS **from the
 reporter** — never guess it from context (the guess is often wrong); cosmetic, or does it block
 interaction? For image bugs, also the image's file format.
-**Ready when:** annotated screenshot + the affected block/card + confirmed device/viewport.
+**Ready when:** annotated screenshot + the affected block/card + confirmed device/browser/OS/viewport.
 **Look first (fixer):** the shared Block Renderer + Card rendering in `libs/journeys/ui`
 (`src/components/BlockRenderer`, `src/components/Card/Card.tsx`) — the viewer injects different
 Wrappers than the admin, so a divergence is usually in render-mode / wrapper handling, not the data.
