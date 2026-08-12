@@ -31,6 +31,10 @@ This is an **Nx monorepo** (TypeScript). Apps live in `apps/`, GraphQL APIs in `
 - Use descriptive variable and function/const names.
 - Define TypeScript types; avoid `any`.
 
+### Lint before commit
+
+Run `pnpm lint:changed` before committing — scoped ESLint over changed files only (`--fix` applies autofixes; full `nx lint` is far too slow). Deliberately not a git hook; [autofix.ci](https://autofix.ci) stays the CI backstop and owns Prettier formatting.
+
 ### Documented Solutions
 
 The context map (`CONTEXT.md`, and `CONTEXT-intake.md` when diagnosing) is the primary knowledge source — rely on it by default. `docs/solutions/` is a **secondary, opt-in** archive of past problem write-ups (bugs, best practices, workflow patterns), organized by category with descriptive filenames and YAML frontmatter (`module`, `tags`, `problem_type`).
