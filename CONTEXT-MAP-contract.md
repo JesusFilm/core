@@ -18,18 +18,19 @@ Versioning: additive edits to the map need no contract change. A breaking change
 
 ## INDEX format (`CONTEXT-MAP-intake.md`)
 
-- Area entries are single-line bullets under the `## Areas` heading:
+- Area entries are single-line bullets under the level-2 heading beginning `Areas` (today
+  `## Areas (NextSteps)` — heading suffixes are free, the prefix is the anchor):
 
-  ```
+  ```text
   - **<area name>** (<role>) | domain: `<path>` | intake: `<path>` | triggers: "<phrase>", "<phrase>", …
   ```
 
 - Parsers key on the literal field tokens `| domain:`, `| intake:`, `| triggers:`. Never reorder,
   rename, or wrap an entry across lines. `<area name>` is the entry's identity and must equal the
   `area` frontmatter key of the file `intake:` points to.
-- The taxonomy list under the `## Failure-type taxonomy` heading has bullets beginning
-  `- **T<n>**` followed by the type's name; an em-dash note may follow (used today for retirement
-  / not-live status, e.g. T9).
+- The taxonomy list under the level-2 heading beginning `Failure-type taxonomy` (today
+  `## Failure-type taxonomy (T1–T11)`) has bullets beginning `- **T<n>**` followed by the type's
+  name; an em-dash note may follow (used today for retirement / not-live status, e.g. T9).
 - Anything else in the INDEX (prose, extra headings) is free-form; consumers ignore it.
 
 ## Intake-file frontmatter
@@ -49,7 +50,8 @@ Authors may add further keys freely (additive); consumers must ignore unknown ke
 
 ## Section anatomy
 
-- A **section** is one `## ` heading plus its body (up to the next `## ` or end of file).
+- A **section** is one level-2 `##` heading plus its body (up to the next level-2 heading or end
+  of file).
 - A typed section carries its T-tags in the heading text (any `T<n>` token counts, e.g.
   `— T4 (cache) · T5 (optimistic drift)`, `— T6, expectation mismatch`). Sections with no T-token
   are untyped (how-to / FAQ / flagged entries) — allowed.
@@ -88,6 +90,7 @@ same commit.
 - renaming/removing any required frontmatter key, or emitting non-YAML frontmatter
 - changing or reordering the index field tokens (`| domain:`, `| intake:`, `| triggers:`), or
   splitting an area entry across lines
-- renaming `## Areas` / `## Failure-type taxonomy`, or moving/renaming `CONTEXT-MAP-intake.md`
-  or an intake file without updating the index in the same commit
+- changing the `Areas` / `Failure-type taxonomy` heading prefixes (suffix text is free), or
+  moving/renaming `CONTEXT-MAP-intake.md` or an intake file without updating the index in the
+  same commit
 - repurposing the `Handoff:` label
