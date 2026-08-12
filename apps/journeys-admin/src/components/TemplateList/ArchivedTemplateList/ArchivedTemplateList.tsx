@@ -172,7 +172,7 @@ export function ArchivedTemplateList({
               }}
             >
               <Typography variant="subtitle1" align="center" gutterBottom>
-                {t('No archived templates.')}
+                {t('No archived Templates.')}
               </Typography>
             </Box>
           )}
@@ -191,7 +191,7 @@ export function ArchivedTemplateList({
           component="div"
           sx={{ py: { xs: 3, sm: 5 }, maxWidth: 290 }}
         >
-          {t('Archived templates are delisted from the Template Library.')}
+          {t('Archived Templates are delisted from the Template Library.')}
         </Typography>
       </Stack>
       {openRestoreDialog != null && (
@@ -210,7 +210,7 @@ export function ArchivedTemplateList({
         >
           <Typography>
             {t(
-              'Are you sure you would like to unarchive all archived templates immediately?'
+              'Are you sure you would like to unarchive all archived Templates immediately?'
             )}
           </Typography>
         </Dialog>
@@ -231,7 +231,7 @@ export function ArchivedTemplateList({
         >
           <Typography>
             {t(
-              'Are you sure you would like to trash all archived templates immediately?'
+              'Are you sure you would like to trash all archived Templates immediately?'
             )}
           </Typography>
         </Dialog>

@@ -179,7 +179,7 @@ export function TrashedTemplateList({
               }}
             >
               <Typography variant="subtitle1" align="center" gutterBottom>
-                {t('Your trashed templates will appear here.')}
+                {t('Your trashed Templates will appear here.')}
               </Typography>
             </Box>
           )}
@@ -198,7 +198,7 @@ export function TrashedTemplateList({
           component="div"
           sx={{ py: { xs: 3, sm: 5 }, maxWidth: 290 }}
         >
-          {t('Trashed templates are moved here for up to 40 days.')}
+          {t('Trashed Templates are moved here for up to 40 days.')}
         </Typography>
       </Stack>
       {restoreDialogOpen != null && (
@@ -217,7 +217,7 @@ export function TrashedTemplateList({
         >
           <Typography>
             {t(
-              'Are you sure you would like to restore all trashed templates immediately?'
+              'Are you sure you would like to restore all trashed Templates immediately?'
             )}
           </Typography>
         </Dialog>
@@ -238,7 +238,7 @@ export function TrashedTemplateList({
         >
           <Typography>
             {t(
-              'Are you sure you would like to permanently delete all trashed templates immediately?'
+              'Are you sure you would like to permanently delete all trashed Templates immediately?'
             )}
           </Typography>
         </Dialog>

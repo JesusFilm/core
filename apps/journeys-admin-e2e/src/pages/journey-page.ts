@@ -731,7 +731,7 @@ export class JourneyPage {
   async verifyActiveTabShowsEmptyMessage() {
     await expect(
       this.page.locator('div[aria-labelledby*="active-status-panel-tab"] h6', {
-        hasText: 'No journeys to display.'
+        hasText: 'No Journeys to display.'
       })
     ).toBeVisible()
   }
@@ -820,7 +820,7 @@ export class JourneyPage {
     ).toHaveCount(0)
     await expect(
       this.page.locator('div[aria-labelledby*="trashed-status-panel-tab"] h6', {
-        hasText: 'Your trashed journeys will appear here.'
+        hasText: 'Your trashed Journeys will appear here.'
       })
     ).toBeVisible()
   }
@@ -838,7 +838,7 @@ export class JourneyPage {
     await expect(
       this.page.locator(
         'div[aria-labelledby*="archived-status-panel-tab"] h6',
-        { hasText: 'No archived journeys.' }
+        { hasText: 'No archived Journeys.' }
       )
     ).toBeVisible()
   }
