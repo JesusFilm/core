@@ -116,7 +116,9 @@ describe('updateLanguageInAlgolia', () => {
     })
 
     it('emits languageId as a number while objectID stays a string', () => {
-      const record = buildAlgoliaLanguageRecord(createLanguage({ id: '143846' }))
+      const record = buildAlgoliaLanguageRecord(
+        createLanguage({ id: '143846' })
+      )
 
       // The rest of the index stores languageId numerically and arclight's
       // AlgoliaLanguageHit types it as a number, so a string here would make
