@@ -60,11 +60,11 @@ Authors may add further keys freely (additive); consumers must ignore unknown ke
   fixed set or order — with one exception:
 - **`Handoff:` is reserved.** Every section closes its diagnosis with a `**Handoff:**` verdict
   (agent-able / human / how-to-FAQ / ops), the one label consumers may key on semantically.
-  - _Known deviations on `main` today (flagged, to be fixed by a map edit, not by loosening the
-    contract): `apps/journeys/CONTEXT-intake.md` § "Chat / AI assistant" embeds its verdict in
-    `**Status:**` with no `**Handoff:**` line; `apps/journeys-admin/CONTEXT-intake.md`
-    § "Integrations" writes `- Look first (fixer):` / `- Handoff:` as plain list items, not bold
-    labels. The validator reports these as warnings until fixed._
+  - _Known deviation on `main` today: `apps/journeys/CONTEXT-intake.md` § "Chat / AI assistant"
+    embeds its verdict in `**Status:**` with no `**Handoff:**` line — left as-is deliberately
+    (unreleased feature, plan not settled; Siyang, 2026-08-13). The validator reports it as a
+    warning until the section gets a real diagnosis layer. (A second deviation — unbolded
+    `- Handoff:` in the admin "Integrations" section — is fixed by the ENG-3708 map PR.)_
 
 ## Index ↔ frontmatter sync
 
