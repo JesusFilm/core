@@ -644,7 +644,8 @@ describe('CreateTemplateItem', () => {
             <CreateTemplateItem variant="menu-item" globalPublish={true} />
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     const menuItem = getByRole('menuitem', { name: 'Make Global Template' })
@@ -744,7 +745,8 @@ describe('CreateTemplateItem', () => {
             />
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     const menuItem = getByRole('menuitem', { name: 'Make Global Template' })
@@ -805,7 +807,8 @@ describe('CreateTemplateItem', () => {
             <CreateTemplateItem variant="menu-item" globalPublish={true} />
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     fireEvent.click(getByRole('menuitem', { name: 'Make Global Template' }))
