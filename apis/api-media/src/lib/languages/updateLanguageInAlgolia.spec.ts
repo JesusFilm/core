@@ -102,7 +102,7 @@ describe('updateLanguageInAlgolia', () => {
 
       expect(record).toEqual({
         objectID: '1234',
-        languageId: '1234',
+        languageId: 1234,
         bcp47: 'plu',
         iso3: 'plu',
         nameNative: 'Parikwaki',
@@ -113,6 +113,16 @@ describe('updateLanguageInAlgolia', () => {
           { value: 'Parikwaki', languageId: '1234', bcp47: 'plu' }
         ]
       })
+    })
+
+    it('emits languageId as a number while objectID stays a string', () => {
+      const record = buildAlgoliaLanguageRecord(createLanguage({ id: '143846' }))
+
+      // The rest of the index stores languageId numerically and arclight's
+      // AlgoliaLanguageHit types it as a number, so a string here would make
+      // the index heterogeneous.
+      expect(record.languageId).toBe(143846)
+      expect(record.objectID).toBe('143846')
     })
 
     it('only counts speakers from non-suggested country languages', () => {
