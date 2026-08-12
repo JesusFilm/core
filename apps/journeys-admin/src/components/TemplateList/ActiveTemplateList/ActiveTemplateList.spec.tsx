@@ -182,7 +182,7 @@ describe('ActiveTemplateList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByText('No templates to display.')).toBeInTheDocument()
+      expect(getByText('No Templates to display.')).toBeInTheDocument()
     )
   })
 

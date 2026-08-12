@@ -229,7 +229,7 @@ describe('TrashedTemplateList', () => {
     )
     await waitFor(() =>
       expect(
-        getByText('Your trashed templates will appear here.')
+        getByText('Your trashed Templates will appear here.')
       ).toBeInTheDocument()
     )
   })
