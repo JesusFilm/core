@@ -4,13 +4,14 @@
 # Groups files by their nearest eslint.config.mjs and runs ESLint once per
 # workspace from the repo root with --config, which is how flat-config path
 # patterns like 'apps/journeys-admin/**' resolve correctly (with --config the
-# pattern base is the cwd). Workspaces are linted in parallel.
+# pattern base is the cwd). Workspaces are linted in parallel (capped at
+# LINT_CHANGED_JOBS, default 4 — each run builds its own TypeScript program).
 #
 # Usage:
 #   tools/scripts/lint-changed.sh              # all changes vs merge-base with origin/main (incl. uncommitted + untracked)
-#   tools/scripts/lint-changed.sh --committed  # committed changes only (what a push would send); refreshes origin/main first
+#   tools/scripts/lint-changed.sh --committed  # committed changes vs origin/main (refreshed first); what the pre-push gate lints
 #   tools/scripts/lint-changed.sh --staged     # staged files only (lints their working-tree contents)
-#   tools/scripts/lint-changed.sh --fix        # apply autofixes (after --staged --fix, re-stage the fixed files yourself)
+#   tools/scripts/lint-changed.sh --fix        # apply autofixes to the working tree (re-stage/re-commit them yourself)
 #
 # Expect roughly 5-20s per touched workspace: type-aware lint rules build a
 # TypeScript program per workspace on every run. That is why the only hook on
@@ -18,7 +19,8 @@
 
 set -euo pipefail
 
-cd "$(git rev-parse --show-toplevel)"
+REPO_ROOT=$(git rev-parse --show-toplevel)
+cd "$REPO_ROOT"
 
 MODE=all
 FIX_ARGS=()
@@ -40,9 +42,14 @@ for arg in "$@"; do
   esac
 done
 
+diff_names() {
+  git diff --name-only --diff-filter=ACMR "$@"
+}
+
 resolve_base() {
   if [ "$MODE" = "committed" ]; then
-    # refresh the ref the push will be judged against; tolerate being offline
+    # refresh the ref the gate lints against; tolerate being offline (an
+    # offline push would fail moments later anyway)
     git fetch origin main --quiet 2>/dev/null || true
   fi
   if ! BASE=$(git merge-base HEAD origin/main 2>/dev/null); then
@@ -53,15 +60,15 @@ resolve_base() {
 }
 
 if [ "$MODE" = "staged" ]; then
-  RAW=$(git diff --name-only --cached --diff-filter=ACMR)
+  RAW=$(diff_names --cached)
 elif [ "$MODE" = "committed" ]; then
   resolve_base
-  RAW=$(git diff --name-only --diff-filter=ACMR "$BASE" HEAD)
+  RAW=$(diff_names "$BASE" HEAD)
 else
   resolve_base
   RAW=$(
     {
-      git diff --name-only --diff-filter=ACMR "$BASE"
+      diff_names "$BASE"
       git ls-files --others --exclude-standard
     } | sort -u
   )
@@ -123,17 +130,19 @@ fi
 OUTDIR=$(mktemp -d)
 trap 'rm -rf "$OUTDIR"' EXIT
 
+MAX_JOBS=${LINT_CHANGED_JOBS:-4}
 i=0
 for ws in "${WS_LIST[@]}"; do
   ws_files=()
   while IFS= read -r f; do ws_files+=("$f"); done <<<"${WS_FILES[$i]}"
-  tag=${ws//\//-}
   echo "linting $ws (${#ws_files[@]} file(s))..."
+  while [ "$(jobs -rp | wc -l)" -ge "$MAX_JOBS" ]; do sleep 0.2; done
   (
     set +e
     pnpm exec eslint --config "$ws/eslint.config.mjs" --no-warn-ignored \
-      ${FIX_ARGS[@]+"${FIX_ARGS[@]}"} "${ws_files[@]}" >"$OUTDIR/$tag.out" 2>&1
-    echo $? >"$OUTDIR/$tag.code"
+      ${FIX_ARGS[@]+"${FIX_ARGS[@]}"} "${ws_files[@]}" \
+      >"$OUTDIR/$i-${ws//\//-}.out" 2>&1
+    echo $? >"$OUTDIR/$i-${ws//\//-}.code"
   ) &
   i=$((i + 1))
 done
@@ -141,12 +150,20 @@ done
 wait
 
 FAILED=0
+i=0
 for ws in "${WS_LIST[@]}"; do
-  tag=${ws//\//-}
-  cat "$OUTDIR/$tag.out"
-  if [ "$(cat "$OUTDIR/$tag.code")" != "0" ]; then
-    FAILED=1
+  tag="$i-${ws//\//-}"
+  if [ -f "$OUTDIR/$tag.out" ]; then
+    cat "$OUTDIR/$tag.out"
   fi
+  code=$(cat "$OUTDIR/$tag.code" 2>/dev/null || echo missing)
+  if [ "$code" != "0" ]; then
+    FAILED=1
+    if [ "$code" = "missing" ]; then
+      echo "🛑 - lint worker for $ws produced no result (killed?); treating as failure"
+    fi
+  fi
+  i=$((i + 1))
 done
 
 if [ "$FAILED" = "1" ]; then
