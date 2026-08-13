@@ -14,7 +14,7 @@ trigger_phrases:
   - "can't click / can't type on the card"
   - 'looks wrong when published'
   - 'custom domain / embed not working'
-type_tags: [T6, T10]
+type_tags: [T6, T8, T10]
 updated: 2026-08-13
 ---
 
@@ -52,7 +52,7 @@ wires swipe/hotkey/button nav) → `libs/journeys/ui/src/libs/block/block.ts` (`
 `libs/journeys/ui/src/libs/action/getNextStepSlug.ts` (URL-level next-step).
 **Handoff:** authoring "didn't link it" → how-to; genuine resolution bug → agent-able.
 
-## Video won't load / slow to load — T10 (known weak spot)
+## Video won't load / slow to load / wrong language — T10 (known weak spot) · T8 (language variant)
 
 **Signatures:** videos don't load fast enough; a video won't play; background video doesn't render
 (notably first card / Android); a video plays in the wrong language.
@@ -64,12 +64,16 @@ device/OS/browser, and a **working-vs-failing** example if possible.
 recently (an edit, a new upload, "started Monday" → bisect to a deploy)? For wrong-language: which
 language is set on the video vs on the journey? A very old browser/OS (e.g. a 7-year-old WebKit) ⇒
 likely not-a-code-bug — close with an explanation.
-**Ready when:** a failing-vs-working URL pair + video source + device/OS/browser + any recent
-change are recorded.
+**Ready when:** video source + device/OS/browser + any recent change are recorded, plus a
+failing-vs-working URL pair where one exists — if every video fails, record that instead; it is
+the stronger signal.
 **Look first (fixer):** `libs/journeys/ui/src/components/Video/Video.tsx` (video.js setup, poster,
 autoplay/preload) → `libs/journeys/ui/src/components/Video/InitAndPlay/InitAndPlay.tsx` (init + play
 lifecycle — load/preload timing) → `libs/journeys/ui/src/components/Card/ContainedCover/BackgroundVideo/BackgroundVideo.tsx`
-(cover-card background video).
+(cover-card background video). Wrong-language playback is **not** in those playback files — the
+language variant is chosen by the block's `videoVariantLanguageId` (set in the editor), resolved in
+`apis/api-journeys/src/schema/block/video/video.ts` (fetches the video's content in that language)
+with variant-by-language selection in `apis/api-media/src/schema/video/video.ts`.
 **Handoff:** old browser/OS → not-a-code-bug (explain); genuine load bug → agent-able.
 
 ## Image fit (crop / fit / fill) — T6, expectation mismatch
