@@ -23,16 +23,21 @@ vi.mock('child_process', () => ({
   })
 }))
 
+type CommandArgs = Record<string, unknown>
+
 vi.mock('@aws-sdk/client-s3', () => {
   return {
-    CopyObjectCommand: vi.fn(function (args) {
-      return args
+    // Assign onto `this` rather than returning a replacement object: a
+    // constructor that returns an object discards the instance, and the
+    // `command instanceof HeadObjectCommand` checks below would never match.
+    CopyObjectCommand: vi.fn(function (this: CommandArgs, args: CommandArgs) {
+      Object.assign(this, args)
     }),
-    HeadObjectCommand: vi.fn(function (args) {
-      return args
+    HeadObjectCommand: vi.fn(function (this: CommandArgs, args: CommandArgs) {
+      Object.assign(this, args)
     }),
-    PutObjectCommand: vi.fn(function (args) {
-      return args
+    PutObjectCommand: vi.fn(function (this: CommandArgs, args: CommandArgs) {
+      Object.assign(this, args)
     }),
     S3Client: vi.fn(function () {
       return { send: vi.fn().mockResolvedValue({}) }
@@ -308,9 +313,16 @@ describe('dataExport service', () => {
       })
     )
 
-    // Instead of checking that CopyObjectCommand wasn't called at all,
-    // we should check that PutObjectCommand was still called properly
-    // Since the implementation tries to back up both files, but continues when they don't exist
+    // The HeadObject rejection must actually reach backupExistingFile's catch
+    // branch — without this the test passes just as well when the file exists,
+    // which is exactly what it is meant to distinguish.
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringMatching(/No existing file found at/)
+    )
+    expect(CopyObjectCommand).not.toHaveBeenCalled()
+
+    // The upload still proceeds: the implementation tries to back up both
+    // files but continues when they don't exist.
     expect(PutObjectCommand).toHaveBeenCalledWith(
       expect.objectContaining({
         Bucket: 'test-bucket',
