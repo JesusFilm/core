@@ -240,42 +240,58 @@ export const JourneyRef = builder.prismaObject('Journey', {
         return journeyTags.map((jt) => ({ id: jt.tagId }))
       }
     }),
-    userJourneys: t.field({
-      type: [UserJourneyRef],
+    // Batched across every Journey in the response. Resolving this per journey
+    // fired one query per journey (each re-loading the journey, its
+    // userJourneys and its team's userTeams), so a large adminJourneys result
+    // opened hundreds of concurrent connections and exhausted the pg pool.
+    userJourneys: t.loadableGroup({
+      type: UserJourneyRef,
       nullable: true,
-      resolve: async (journey, _args, context) => {
+      resolve: (journey) => journey.id,
+      group: (userJourney) => userJourney.journeyId,
+      load: async (journeyIds: string[], context) => {
         if (context.type !== 'authenticated') return []
-
-        const userJourneys = await prisma.userJourney.findMany({
-          where: { journeyId: journey.id },
-          include: {
-            journey: {
-              include: {
-                userJourneys: true,
-                team: { include: { userTeams: true } }
-              }
-            }
-          }
-        })
-
         const userId = context.user.id
-        return userJourneys.filter((uj) => {
-          const isTeamMember = uj.journey?.team?.userTeams.some(
-            (ut) =>
-              ut.userId === userId &&
-              (ut.role === UserTeamRole.manager ||
-                ut.role === UserTeamRole.member)
-          )
-          if (isTeamMember === true) return true
 
-          const isJourneyOwnerOrEditor = uj.journey?.userJourneys?.some(
-            (j) =>
-              j.userId === userId &&
-              (j.role === UserJourneyRole.owner ||
-                j.role === UserJourneyRole.editor)
-          )
-          return isJourneyOwnerOrEditor === true
-        })
+        const [userJourneys, teamAccessibleJourneys] = await Promise.all([
+          prisma.userJourney.findMany({
+            where: { journeyId: { in: journeyIds } }
+          }),
+          prisma.journey.findMany({
+            where: {
+              id: { in: journeyIds },
+              team: {
+                userTeams: {
+                  some: {
+                    userId,
+                    role: { in: [UserTeamRole.manager, UserTeamRole.member] }
+                  }
+                }
+              }
+            },
+            select: { id: true }
+          })
+        ])
+
+        const teamAccessibleJourneyIds = new Set(
+          teamAccessibleJourneys.map(({ id }) => id)
+        )
+        const ownedOrEditedJourneyIds = new Set(
+          userJourneys
+            .filter(
+              (uj) =>
+                uj.userId === userId &&
+                (uj.role === UserJourneyRole.owner ||
+                  uj.role === UserJourneyRole.editor)
+            )
+            .map((uj) => uj.journeyId)
+        )
+
+        return userJourneys.filter(
+          (uj) =>
+            teamAccessibleJourneyIds.has(uj.journeyId) ||
+            ownedOrEditedJourneyIds.has(uj.journeyId)
+        )
       }
     }),
     // journeyCollections field will be added via extension in journeyCollection module
