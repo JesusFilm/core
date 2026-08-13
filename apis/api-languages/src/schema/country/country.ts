@@ -47,7 +47,8 @@ const Country = builder.prismaObject('Country', {
       query: {
         where: {
           language: {
-            hasVideos: true
+            hasVideos: true,
+            searchable: true
           }
         }
       }
@@ -58,7 +59,10 @@ const Country = builder.prismaObject('Country', {
     }),
     languageHavingMediaCount: t.relationCount('countryLanguages', {
       nullable: false,
-      where: { suggested: false, language: { hasVideos: true } }
+      where: {
+        suggested: false,
+        language: { hasVideos: true, searchable: true }
+      }
     })
   })
 })

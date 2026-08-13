@@ -41,14 +41,16 @@ type AlgoliaLanguageInput = Parameters<typeof buildAlgoliaLanguageRecord>[0]
 // comes back is the narrower AlgoliaLanguageInput. These two helpers keep that
 // one unavoidable widening in a single named place instead of `any` at every
 // fixture.
-// updateLanguageInAlgoliaFromMedia additionally selects hasVideos, which
-// defaults to true in the schema, so fixtures opt out rather than opt in.
+// updateLanguageInAlgoliaFromMedia additionally selects the two visibility
+// flags, both of which default to true in the schema, so fixtures opt out
+// rather than opt in.
 function mockFindUnique(
   language: AlgoliaLanguageInput | null,
-  hasVideos = true
+  visibility: { hasVideos?: boolean; searchable?: boolean } = {}
 ): void {
+  const { hasVideos = true, searchable = true } = visibility
   languagesPrismaMock.language.findUnique.mockResolvedValue(
-    (language == null ? null : { ...language, hasVideos }) as never
+    (language == null ? null : { ...language, hasVideos, searchable }) as never
   )
 }
 
@@ -182,10 +184,9 @@ describe('updateLanguageInAlgolia', () => {
     })
 
     it('removes the record when hasVideos is false', async () => {
-      // Hiding a language is done by hand-editing hasVideos to false. Since the
-      // sync is otherwise upsert-only, skipping the write here would leave an
-      // already-indexed language searchable forever.
-      mockFindUnique(createLanguage(), false)
+      // The sync is otherwise upsert-only, so skipping the write here would
+      // leave an already-indexed language searchable forever.
+      mockFindUnique(createLanguage(), { hasVideos: false })
 
       await updateLanguageInAlgoliaFromMedia('1234')
 
@@ -194,6 +195,29 @@ describe('updateLanguageInAlgolia', () => {
         indexName: 'languages-index',
         objectID: '1234'
       })
+    })
+
+    it('removes the record when an operator has hidden the language', async () => {
+      // searchable: false is the operator's decision and outranks content:
+      // the language has videos, but must not be publicly visible.
+      mockFindUnique(createLanguage(), { searchable: false })
+
+      await updateLanguageInAlgoliaFromMedia('1234')
+
+      expect(saveObjectsSpy).not.toHaveBeenCalled()
+      expect(deleteObjectSpy).toHaveBeenCalledWith({
+        indexName: 'languages-index',
+        objectID: '1234'
+      })
+    })
+
+    it('saves when both flags are true', async () => {
+      mockFindUnique(createLanguage(), { hasVideos: true, searchable: true })
+
+      await updateLanguageInAlgoliaFromMedia('1234')
+
+      expect(deleteObjectSpy).not.toHaveBeenCalled()
+      expect(saveObjectsSpy).toHaveBeenCalled()
     })
   })
 
@@ -212,7 +236,10 @@ describe('updateLanguageInAlgolia', () => {
       // first page: no cursor
       expect(languagesPrismaMock.language.findMany).toHaveBeenNthCalledWith(
         1,
-        expect.objectContaining({ where: { hasVideos: true }, take: 1000 })
+        expect.objectContaining({
+          where: { hasVideos: true, searchable: true },
+          take: 1000
+        })
       )
       // second page: continues from the last id of the previous batch
       expect(languagesPrismaMock.language.findMany).toHaveBeenNthCalledWith(
