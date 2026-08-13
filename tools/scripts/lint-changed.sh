@@ -27,11 +27,12 @@ FIX_ARGS=()
 for arg in "$@"; do
   case "$arg" in
     --staged | --committed)
-      if [ "$MODE" != "all" ]; then
+      new_mode="${arg#--}"
+      if [ "$MODE" != "all" ] && [ "$MODE" != "$new_mode" ]; then
         echo "conflicting options: --$MODE and $arg" >&2
         exit 2
       fi
-      MODE="${arg#--}"
+      MODE="$new_mode"
       ;;
     --fix) FIX_ARGS=(--fix) ;;
     *)
@@ -41,6 +42,12 @@ for arg in "$@"; do
       ;;
   esac
 done
+
+MAX_JOBS=${LINT_CHANGED_JOBS:-4}
+if ! [ "$MAX_JOBS" -gt 0 ] 2>/dev/null; then
+  echo "LINT_CHANGED_JOBS must be a positive integer (got '$MAX_JOBS')" >&2
+  exit 2
+fi
 
 diff_names() {
   git diff --name-only --diff-filter=ACMR "$@"
@@ -130,19 +137,19 @@ fi
 OUTDIR=$(mktemp -d)
 trap 'rm -rf "$OUTDIR"' EXIT
 
-MAX_JOBS=${LINT_CHANGED_JOBS:-4}
 i=0
 for ws in "${WS_LIST[@]}"; do
   ws_files=()
   while IFS= read -r f; do ws_files+=("$f"); done <<<"${WS_FILES[$i]}"
+  tag="$i-${ws//\//-}"
   echo "linting $ws (${#ws_files[@]} file(s))..."
   while [ "$(jobs -rp | wc -l)" -ge "$MAX_JOBS" ]; do sleep 0.2; done
   (
     set +e
     pnpm exec eslint --config "$ws/eslint.config.mjs" --no-warn-ignored \
       ${FIX_ARGS[@]+"${FIX_ARGS[@]}"} "${ws_files[@]}" \
-      >"$OUTDIR/$i-${ws//\//-}.out" 2>&1
-    echo $? >"$OUTDIR/$i-${ws//\//-}.code"
+      >"$OUTDIR/$tag.out" 2>&1
+    echo $? >"$OUTDIR/$tag.code"
   ) &
   i=$((i + 1))
 done
