@@ -12,6 +12,7 @@
     "demo": "nx demo",
     "lint": "nx run-many --target=lint",
     "lint:fix": "nx run-many --target=lint --fix",
+    "lint:changed": "tools/scripts/lint-changed.sh",
     "prettier": "npx prettier .",
     "prettier:fix": "npx prettier . --write",
     "e2e": "nx e2e",
