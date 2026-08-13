@@ -23,7 +23,7 @@ The Linear ticket plus Siyang's five canonical Figma frames specify the panel ch
 
 ## Requirements
 
-- R1. Render `TemplateInfoPanel` on the local template tab (`/?type=templates`, also labeled "Team Templates") when the `templateInfoSidePanel` LaunchDarkly flag is on. The panel mounts as a sibling of the templates grid and shifts the grid narrower; it does not overlay.
+- R1. Render `TemplateInfoPanel` on the local template tab (`/?type=templates`, also labelled "Team Templates") when the `templateInfoSidePanel` LaunchDarkly flag is on. The panel mounts as a sibling of the templates grid and shifts the grid narrower; it does not overlay.
 - R2. The panel renders an **always-visible header** with the exact ticket copy:
   - Title: `What templates are about:`
   - Body: `You can share projects created on our platform with others. This allows you to track the performance of every project generated from your template.`
