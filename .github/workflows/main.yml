@@ -205,9 +205,10 @@ jobs:
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: test
-          # jf-proxy has a single Vitest test file, and Vitest 3 errors when a
-          # project has fewer test files than the shard count. Exclude it from
-          # the sharded run and execute it unsharded in the step below.
+          # jf-proxy has a single Vitest test file, and Vitest errors when a
+          # project has fewer test files than the shard count (still true on
+          # Vitest 4). Exclude it from the sharded run and execute it unsharded
+          # in the step below.
           args: --ci --max-workers ${{ steps.cpu-cores.outputs.count }} --shard=${{ matrix.shard }} --exclude=jf-proxy
           parallel: 1
       - name: run jf-proxy tests (too few files to shard)

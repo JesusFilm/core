@@ -25,12 +25,18 @@ vi.mock('child_process', () => ({
 
 vi.mock('@aws-sdk/client-s3', () => {
   return {
-    CopyObjectCommand: vi.fn().mockImplementation((args) => args),
-    HeadObjectCommand: vi.fn().mockImplementation((args) => args),
-    PutObjectCommand: vi.fn().mockImplementation((args) => args),
-    S3Client: vi.fn().mockImplementation(() => ({
-      send: vi.fn().mockResolvedValue({})
-    }))
+    CopyObjectCommand: vi.fn(function (args) {
+      return args
+    }),
+    HeadObjectCommand: vi.fn(function (args) {
+      return args
+    }),
+    PutObjectCommand: vi.fn(function (args) {
+      return args
+    }),
+    S3Client: vi.fn(function () {
+      return { send: vi.fn().mockResolvedValue({}) }
+    })
   }
 })
 
@@ -95,12 +101,9 @@ describe('dataExport service', () => {
 
     // Access the mocked S3 client's send method
     mockS3Send = vi.fn().mockResolvedValue({})
-    vi.mocked(S3Client).mockImplementation(
-      () =>
-        ({
-          send: mockS3Send
-        }) as unknown as S3Client
-    )
+    vi.mocked(S3Client).mockImplementation(function () {
+      return { send: mockS3Send } as unknown as S3Client
+    })
 
     // Reset mocks
     mockSpawn.mockClear()
