@@ -29,6 +29,7 @@ const WESS_IMPORT_MUTATION = parse(`
     wessImport {
       success
       languagesImported
+      nativeNamesImported
       countriesImported
       countryLanguagesImported
       message
@@ -56,7 +57,9 @@ describe('wessImport', () => {
   let lockHeld = false
 
   beforeEach(() => {
-    vi.mocked(runWessLanguagesImport).mockReset().mockResolvedValue(10)
+    vi.mocked(runWessLanguagesImport)
+      .mockReset()
+      .mockResolvedValue({ languagesImported: 10, nativeNamesImported: 3 })
     vi.mocked(runWessCountriesImport).mockReset().mockResolvedValue(5)
     vi.mocked(runWessCountryLanguagesImport).mockReset().mockResolvedValue(20)
 
@@ -101,10 +104,11 @@ describe('wessImport', () => {
     expect(data).toHaveProperty('data.wessImport', {
       success: true,
       languagesImported: 10,
+      nativeNamesImported: 3,
       countriesImported: 5,
       countryLanguagesImported: 20,
       message:
-        'Imported 10 language(s), 5 country(ies), and 20 country-language(s).'
+        'Imported 10 language(s) (3 native name(s)), 5 country(ies), and 20 country-language(s).'
     })
   })
 
@@ -127,7 +131,7 @@ describe('wessImport', () => {
       .mockReset()
       .mockImplementationOnce(async () => {
         await firstImportGate
-        return 10
+        return { languagesImported: 10, nativeNamesImported: 3 }
       })
 
     const first = authClient({ document: WESS_IMPORT_MUTATION })

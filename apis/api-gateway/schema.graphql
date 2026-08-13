@@ -2447,6 +2447,10 @@ Summary of a completed WESS import run.
 type WessImportResult @join__type(graph: API_LANGUAGES)  {
   success: Boolean!
   languagesImported: Int!
+  """
+  Number of autonym (native-name) LanguageName rows created or updated during this run.
+  """
+  nativeNamesImported: Int!
   countriesImported: Int!
   countryLanguagesImported: Int!
   message: String!
