@@ -148,7 +148,7 @@ describe('countries', () => {
           include: {
             language: true
           },
-          where: { language: { hasVideos: true } }
+          where: { language: { hasVideos: true, searchable: true } }
         },
         name: {
           include: {
@@ -185,7 +185,7 @@ describe('countries', () => {
         },
         countryLanguages: [
           {
-            language: omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
+            language: omit(language, ['createdAt', 'updatedAt', 'hasVideos', 'searchable']),
             speakers: 100,
             displaySpeakers: 100,
             primary: true,
@@ -284,7 +284,7 @@ describe('countries', () => {
           include: {
             language: true
           },
-          where: { language: { hasVideos: true } }
+          where: { language: { hasVideos: true, searchable: true } }
         },
         name: {
           include: {
@@ -330,7 +330,7 @@ describe('countries', () => {
         },
         countryLanguages: [
           {
-            language: omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
+            language: omit(language, ['createdAt', 'updatedAt', 'hasVideos', 'searchable']),
             speakers: 100,
             displaySpeakers: 100,
             primary: true,
