@@ -109,7 +109,7 @@ describe('country', () => {
         },
         countryLanguages: {
           include: { language: true },
-          where: { language: { hasVideos: true } }
+          where: { language: { hasVideos: true, searchable: true } }
         },
         name: {
           include: {
@@ -145,7 +145,7 @@ describe('country', () => {
       },
       countryLanguages: [
         {
-          language: omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
+          language: omit(language, ['createdAt', 'updatedAt', 'hasVideos', 'searchable']),
           speakers: 100,
           displaySpeakers: 100,
           primary: true,
