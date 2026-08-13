@@ -130,11 +130,22 @@ export async function updateLanguageInAlgoliaFromMedia(
     const { client, languagesIndex } = getAlgoliaLanguagesClient()
     const language = await languagesPrisma.language.findUnique({
       where: { id: languageId },
-      select: languageAlgoliaSelect
+      select: { ...languageAlgoliaSelect, hasVideos: true }
     })
 
-    if (language == null) {
-      logger?.warn(`language ${languageId} not found`)
+    // A language that is gone, or that hasVideos says must not be searchable,
+    // has to be removed rather than skipped. The sync is otherwise upsert-only,
+    // so a language that was indexed while hasVideos was true stays searchable
+    // forever once the flag is turned back off — which is how a language gets
+    // hidden today, by hand-editing hasVideos to false.
+    if (language == null || !language.hasVideos) {
+      logger?.info(
+        `removing language ${languageId} from algolia (${language == null ? 'not found' : 'hasVideos false'})`
+      )
+      await client.deleteObject({
+        indexName: languagesIndex,
+        objectID: languageId
+      })
       return
     }
 
@@ -195,4 +206,40 @@ export async function reindexLanguagesWithVideosInAlgolia(
   }
 
   return { count }
+}
+
+interface RemoveLanguagesResult {
+  removed: number
+}
+
+/**
+ * Removes the given languages from the Algolia languages index.
+ *
+ * Deleting an objectID that is not in the index is a no-op, so callers can pass
+ * every candidate rather than first working out which are actually indexed --
+ * the api-media Algolia key cannot browse, so that check is not available.
+ */
+export async function removeLanguagesFromAlgolia(
+  languageIds: string[],
+  logger?: Logger
+): Promise<RemoveLanguagesResult> {
+  if (languageIds.length === 0) return { removed: 0 }
+
+  const { client, languagesIndex } = getAlgoliaLanguagesClient()
+
+  for (let i = 0; i < languageIds.length; i += REINDEX_BATCH_SIZE) {
+    const batch = languageIds.slice(i, i + REINDEX_BATCH_SIZE)
+
+    await client.deleteObjects({
+      indexName: languagesIndex,
+      objectIDs: batch,
+      waitForTasks: true
+    })
+
+    logger?.info(
+      `removed ${Math.min(i + REINDEX_BATCH_SIZE, languageIds.length)} of ${languageIds.length} languages from algolia`
+    )
+  }
+
+  return { removed: languageIds.length }
 }
