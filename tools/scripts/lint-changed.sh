@@ -8,25 +8,30 @@
 #
 # Usage:
 #   tools/scripts/lint-changed.sh              # all changes vs merge-base with origin/main (incl. uncommitted + untracked)
-#   tools/scripts/lint-changed.sh --committed  # committed changes only (what a push would send)
+#   tools/scripts/lint-changed.sh --committed  # committed changes only (what a push would send); refreshes origin/main first
 #   tools/scripts/lint-changed.sh --staged     # staged files only (lints their working-tree contents)
-#   tools/scripts/lint-changed.sh --fix        # apply autofixes
+#   tools/scripts/lint-changed.sh --fix        # apply autofixes (after --staged --fix, re-stage the fixed files yourself)
 #
 # Expect roughly 5-20s per touched workspace: type-aware lint rules build a
 # TypeScript program per workspace on every run. That is why the only hook on
 # this is the agent-gated pre-push (.husky/pre-push), not a per-commit hook.
 
-set -u
+set -euo pipefail
 
-cd "$(git rev-parse --show-toplevel)" || exit 1
+cd "$(git rev-parse --show-toplevel)"
 
 MODE=all
-FIX=""
+FIX_ARGS=()
 for arg in "$@"; do
   case "$arg" in
-    --staged) MODE=staged ;;
-    --committed) MODE=committed ;;
-    --fix) FIX="--fix" ;;
+    --staged | --committed)
+      if [ "$MODE" != "all" ]; then
+        echo "conflicting options: --$MODE and $arg" >&2
+        exit 2
+      fi
+      MODE="${arg#--}"
+      ;;
+    --fix) FIX_ARGS=(--fix) ;;
     *)
       echo "unknown option: $arg" >&2
       echo "usage: tools/scripts/lint-changed.sh [--staged|--committed] [--fix]" >&2
@@ -35,30 +40,45 @@ for arg in "$@"; do
   esac
 done
 
+resolve_base() {
+  if [ "$MODE" = "committed" ]; then
+    # refresh the ref the push will be judged against; tolerate being offline
+    git fetch origin main --quiet 2>/dev/null || true
+  fi
+  if ! BASE=$(git merge-base HEAD origin/main 2>/dev/null); then
+    echo "🛑 - could not resolve merge-base with origin/main" >&2
+    echo "    run \`git fetch origin main\` and check that the 'origin' remote exists" >&2
+    exit 1
+  fi
+}
+
 if [ "$MODE" = "staged" ]; then
-  FILES=$(git diff --name-only --cached --diff-filter=ACMR)
+  RAW=$(git diff --name-only --cached --diff-filter=ACMR)
 elif [ "$MODE" = "committed" ]; then
-  BASE=$(git merge-base HEAD origin/main) || exit 1
-  FILES=$(git diff --name-only --diff-filter=ACMR "$BASE" HEAD)
+  resolve_base
+  RAW=$(git diff --name-only --diff-filter=ACMR "$BASE" HEAD)
 else
-  BASE=$(git merge-base HEAD origin/main) || exit 1
-  FILES=$(
-    (
+  resolve_base
+  RAW=$(
+    {
       git diff --name-only --diff-filter=ACMR "$BASE"
       git ls-files --others --exclude-standard
-    ) | sort -u
+    } | sort -u
   )
 fi
 
-LINTABLE=""
-SKIPPED=""
-for f in $FILES; do
+# group lintable files by their nearest workspace eslint config; parallel
+# arrays because macOS ships bash 3.2 (no associative arrays)
+WS_LIST=()
+WS_FILES=() # newline-joined file list per WS_LIST entry
+SKIPPED=()
+while IFS= read -r f; do
+  if [ -z "$f" ]; then continue; fi
   case "$f" in
     *.ts | *.tsx | *.js | *.jsx | *.cjs | *.mjs) ;;
     *) continue ;;
   esac
-  [ -f "$f" ] || continue
-  # find the nearest workspace eslint config above the file
+  if [ ! -f "$f" ]; then continue; fi
   d=$(dirname "$f")
   ws=""
   while [ "$d" != "." ] && [ "$d" != "/" ]; do
@@ -69,20 +89,33 @@ for f in $FILES; do
     d=$(dirname "$d")
   done
   if [ -z "$ws" ]; then
-    SKIPPED="$SKIPPED $f"
+    SKIPPED+=("$f")
     continue
   fi
-  LINTABLE="$LINTABLE$ws|$f
-"
-done
+  idx=-1
+  i=0
+  for existing in ${WS_LIST[@]+"${WS_LIST[@]}"}; do
+    if [ "$existing" = "$ws" ]; then
+      idx=$i
+      break
+    fi
+    i=$((i + 1))
+  done
+  if [ "$idx" -eq -1 ]; then
+    WS_LIST+=("$ws")
+    WS_FILES+=("$f")
+  else
+    WS_FILES[$idx]="${WS_FILES[$idx]}
+$f"
+  fi
+done <<<"$RAW"
 
-if [ -n "$SKIPPED" ]; then
+if [ ${#SKIPPED[@]} -gt 0 ]; then
   echo "skipped (no workspace eslint.config.mjs):"
-  for f in $SKIPPED; do echo "  $f"; done
+  printf '  %s\n' "${SKIPPED[@]}"
 fi
 
-WORKSPACES=$(printf '%s' "$LINTABLE" | cut -d'|' -f1 | sort -u)
-if [ -z "$WORKSPACES" ]; then
+if [ ${#WS_LIST[@]} -eq 0 ]; then
   echo "✅ - no changed lintable files"
   exit 0
 fi
@@ -91,27 +124,29 @@ OUTDIR=$(mktemp -d)
 trap 'rm -rf "$OUTDIR"' EXIT
 
 i=0
-PIDS=""
-for ws in $WORKSPACES; do
-  i=$((i + 1))
-  ws_files=$(printf '%s' "$LINTABLE" | grep "^$ws|" | cut -d'|' -f2-)
-  echo "linting $ws ($(echo "$ws_files" | wc -l | tr -d ' ') file(s))..."
+for ws in "${WS_LIST[@]}"; do
+  ws_files=()
+  while IFS= read -r f; do ws_files+=("$f"); done <<<"${WS_FILES[$i]}"
+  tag=${ws//\//-}
+  echo "linting $ws (${#ws_files[@]} file(s))..."
   (
-    # shellcheck disable=SC2086 # ws_files is a list of paths without spaces
-    pnpm exec eslint --config "$ws/eslint.config.mjs" --no-warn-ignored $FIX $ws_files \
-      >"$OUTDIR/$i.out" 2>&1
-    echo $? >"$OUTDIR/$i.code"
+    set +e
+    pnpm exec eslint --config "$ws/eslint.config.mjs" --no-warn-ignored \
+      ${FIX_ARGS[@]+"${FIX_ARGS[@]}"} "${ws_files[@]}" >"$OUTDIR/$tag.out" 2>&1
+    echo $? >"$OUTDIR/$tag.code"
   ) &
-  PIDS="$PIDS $!"
+  i=$((i + 1))
 done
 
-wait $PIDS
+wait
 
 FAILED=0
-for out in "$OUTDIR"/*.out; do
-  cat "$out"
-  code=$(cat "${out%.out}.code")
-  [ "$code" = "0" ] || FAILED=1
+for ws in "${WS_LIST[@]}"; do
+  tag=${ws//\//-}
+  cat "$OUTDIR/$tag.out"
+  if [ "$(cat "$OUTDIR/$tag.code")" != "0" ]; then
+    FAILED=1
+  fi
 done
 
 if [ "$FAILED" = "1" ]; then
