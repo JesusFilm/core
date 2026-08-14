@@ -50,9 +50,15 @@ type VideoPublishChildrenResultType = {
   publishedVariantsCount: number
   dryRun: boolean
   videosFailedValidation: VideoPublishValidationFailure[]
+  missingParentLanguageIds: string[]
 }
 
 type VideoPublishPlanMode = 'childrenVideosOnly' | 'childrenVideosAndVariants'
+
+type MissingParentLanguage = {
+  languageId: string
+  childVideoId: string
+}
 
 function getMissingRequiredFields(
   video: PublishValidationVideo,
@@ -244,11 +250,103 @@ async function ensureParentEmptyVariantsForPublishedChildren(
   )
 }
 
+// Compares a parent Video against its direct published children and returns
+// the language IDs present on a published child Variant but absent from any
+// existing Variant on the parent (empty or otherwise). Only direct published
+// children participate — unpublished children and deeper descendants never
+// contribute a language.
+async function computeMissingParentLanguages(
+  parentId: string
+): Promise<MissingParentLanguage[]> {
+  const parent = await prisma.video.findUnique({
+    where: { id: parentId },
+    select: {
+      id: true,
+      variants: { select: { languageId: true } },
+      children: {
+        where: { published: true },
+        select: {
+          id: true,
+          variants: {
+            where: { published: true },
+            select: { languageId: true }
+          }
+        }
+      }
+    }
+  })
+
+  if (parent == null) {
+    throw new Error(`Video with id ${parentId} not found`)
+  }
+
+  const existingLanguageIds = new Set(
+    parent.variants.map(({ languageId }: { languageId: string }) => languageId)
+  )
+  const missingByLanguage = new Map<string, string>()
+
+  for (const child of parent.children) {
+    for (const variant of child.variants) {
+      if (existingLanguageIds.has(variant.languageId)) continue
+      if (!missingByLanguage.has(variant.languageId)) {
+        missingByLanguage.set(variant.languageId, child.id)
+      }
+    }
+  }
+
+  return Array.from(missingByLanguage, ([languageId, childVideoId]) => ({
+    languageId,
+    childVideoId
+  }))
+}
+
+async function executeParentVariantsOnly(
+  id: string,
+  dryRun: boolean
+): Promise<VideoPublishChildrenResultType> {
+  const missing = await computeMissingParentLanguages(id)
+  const missingParentLanguageIds = missing.map((entry) => entry.languageId)
+
+  const result: VideoPublishChildrenResultType = {
+    parentId: id,
+    publishedVideoIds: [],
+    publishedVideoCount: 0,
+    publishedVariantIds: [],
+    publishedVariantsCount: 0,
+    dryRun,
+    videosFailedValidation: [],
+    missingParentLanguageIds
+  }
+
+  if (dryRun || missing.length === 0) {
+    return result
+  }
+
+  // Reuse the existing tested parent-Variant creation behavior instead of
+  // duplicating its slug/publication/language semantics here. This never
+  // publishes a Video or child Variant and leaves existing parent Variants
+  // untouched — handleParentVariantCreation is itself a no-op for any
+  // language that already has a parent Variant.
+  await Promise.allSettled(
+    missing.map(({ childVideoId, languageId }) =>
+      handleParentVariantCreation(childVideoId, languageId).catch((error) => {
+        logger.error(
+          { error, parentId: id, childVideoId, languageId },
+          'Parent variant recovery failed'
+        )
+      })
+    )
+  )
+
+  return result
+}
+
 const VideoPublishModeEnum = builder.enumType('VideoPublishMode', {
   values: [
     'childrenVideosOnly',
     'childrenVideosAndVariants',
-    'variantsOnly'
+    'variantsOnly',
+    'parentVariantsOnly'
   ] as const
 })
 
@@ -289,6 +387,11 @@ VideoPublishChildrenResult.implement({
       type: [VideoPublishChildrenUnpublishedVideo],
       nullable: false,
       resolve: (obj) => obj.videosFailedValidation
+    }),
+    missingParentLanguageIds: t.idList({
+      description:
+        'Language IDs present on a direct published child Variant but missing an empty parent Variant. Populated by parentVariantsOnly mode.',
+      resolve: (obj) => obj.missingParentLanguageIds
     })
   })
 })
@@ -297,12 +400,17 @@ export type VideoPublishMode =
   | 'childrenVideosOnly'
   | 'childrenVideosAndVariants'
   | 'variantsOnly'
+  | 'parentVariantsOnly'
 
 export async function executeVideoPublishChildren(
   id: string,
   mode: VideoPublishMode,
   dryRun: boolean
 ): Promise<VideoPublishChildrenResultType> {
+  if (mode === 'parentVariantsOnly') {
+    return executeParentVariantsOnly(id, dryRun)
+  }
+
   const parent = await getVideoPublishParent(id)
   const plan =
     mode !== 'variantsOnly'
@@ -347,7 +455,8 @@ export async function executeVideoPublishChildren(
       publishedVariantIds: variantIdsToPublish,
       publishedVariantsCount: variantIdsToPublish.length,
       dryRun,
-      videosFailedValidation
+      videosFailedValidation,
+      missingParentLanguageIds: []
     }
   }
 
@@ -435,7 +544,8 @@ export async function executeVideoPublishChildren(
     publishedVariantIds: variantIdsToPublish,
     publishedVariantsCount: variantIdsToPublish.length,
     dryRun: false,
-    videosFailedValidation
+    videosFailedValidation,
+    missingParentLanguageIds: []
   }
 }
 

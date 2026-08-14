@@ -4,12 +4,19 @@ import { vi } from 'vitest'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
+import { handleParentVariantCreation } from '../videoVariant/videoVariant'
 
 vi.mock('../../workers/videoAlgoliaSync', () => ({
   enqueueVideoAlgoliaSync: vi.fn()
 }))
 
+vi.mock('../videoVariant/videoVariant', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../videoVariant/videoVariant')>()),
+  handleParentVariantCreation: vi.fn()
+}))
+
 const mockedEnqueueVideoAlgoliaSync = vi.mocked(enqueueVideoAlgoliaSync)
+const mockedHandleParentVariantCreation = vi.mocked(handleParentVariantCreation)
 
 const authClient = getClient({
   headers: {
@@ -41,6 +48,7 @@ describe('videoPublishChildren', () => {
           missingFields
           message
         }
+        missingParentLanguageIds
       }
     }
   `) as AuthClientDocument
@@ -113,6 +121,7 @@ describe('videoPublishChildren', () => {
       callback(prismaMock)
     )
     mockedEnqueueVideoAlgoliaSync.mockReset().mockResolvedValue(undefined)
+    mockedHandleParentVariantCreation.mockReset().mockResolvedValue(undefined)
   })
 
   describe('childrenVideosOnly mode', () => {
@@ -690,6 +699,156 @@ describe('videoPublishChildren', () => {
         []
       )
       expect(prismaMock.videoVariant.updateMany).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('parentVariantsOnly mode', () => {
+    function mockParentAndChildren(): void {
+      prismaMock.video.findUnique.mockResolvedValueOnce({
+        id: 'parent',
+        variants: [{ languageId: 'en' }],
+        children: [
+          { id: 'c1', variants: [{ languageId: 'en' }] },
+          { id: 'c2', variants: [{ languageId: 'es' }] }
+        ]
+      } as any)
+    }
+
+    it('dry run reports missing language IDs without writing', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      mockParentAndChildren()
+
+      const res = await authClient({
+        document: VIDEO_PUBLISH_CHILDREN,
+        variables: {
+          id: 'parent',
+          mode: 'parentVariantsOnly',
+          dryRun: true
+        }
+      })
+
+      expect((res as any).data.videoPublishChildren.dryRun).toBe(true)
+      expect(
+        (res as any).data.videoPublishChildren.missingParentLanguageIds
+      ).toEqual(['es'])
+      expect((res as any).data.videoPublishChildren.publishedVideoIds).toEqual(
+        []
+      )
+      expect((res as any).data.videoPublishChildren.publishedVideoCount).toBe(0)
+      expect(
+        (res as any).data.videoPublishChildren.publishedVariantIds
+      ).toEqual([])
+      expect(
+        (res as any).data.videoPublishChildren.publishedVariantsCount
+      ).toBe(0)
+      expect(mockedHandleParentVariantCreation).not.toHaveBeenCalled()
+      expect(prismaMock.$transaction).not.toHaveBeenCalled()
+      expect(prismaMock.video.updateMany).not.toHaveBeenCalled()
+      expect(prismaMock.videoVariant.updateMany).not.toHaveBeenCalled()
+    })
+
+    it('only considers direct published children and their published variants', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      mockParentAndChildren()
+
+      await authClient({
+        document: VIDEO_PUBLISH_CHILDREN,
+        variables: {
+          id: 'parent',
+          mode: 'parentVariantsOnly',
+          dryRun: true
+        }
+      })
+
+      expect(prismaMock.video.findUnique).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'parent' },
+          select: expect.objectContaining({
+            children: expect.objectContaining({
+              where: { published: true },
+              select: expect.objectContaining({
+                variants: expect.objectContaining({
+                  where: { published: true }
+                })
+              })
+            })
+          })
+        })
+      )
+    })
+
+    it('apply creates only the missing parent Variants via the existing recovery helper', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      mockParentAndChildren()
+
+      const res = await authClient({
+        document: VIDEO_PUBLISH_CHILDREN,
+        variables: {
+          id: 'parent',
+          mode: 'parentVariantsOnly',
+          dryRun: false
+        }
+      })
+
+      expect((res as any).data.videoPublishChildren.dryRun).toBe(false)
+      expect(
+        (res as any).data.videoPublishChildren.missingParentLanguageIds
+      ).toEqual(['es'])
+      expect(mockedHandleParentVariantCreation).toHaveBeenCalledTimes(1)
+      expect(mockedHandleParentVariantCreation).toHaveBeenCalledWith('c2', 'es')
+      expect(prismaMock.video.updateMany).not.toHaveBeenCalled()
+      expect(prismaMock.videoVariant.updateMany).not.toHaveBeenCalled()
+      expect(prismaMock.$transaction).not.toHaveBeenCalled()
+    })
+
+    it('is idempotent when no parent languages are missing', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      prismaMock.video.findUnique.mockResolvedValueOnce({
+        id: 'parent',
+        variants: [{ languageId: 'en' }, { languageId: 'es' }],
+        children: [
+          { id: 'c1', variants: [{ languageId: 'en' }] },
+          { id: 'c2', variants: [{ languageId: 'es' }] }
+        ]
+      } as any)
+
+      const res = await authClient({
+        document: VIDEO_PUBLISH_CHILDREN,
+        variables: {
+          id: 'parent',
+          mode: 'parentVariantsOnly',
+          dryRun: false
+        }
+      })
+
+      expect(
+        (res as any).data.videoPublishChildren.missingParentLanguageIds
+      ).toEqual([])
+      expect(mockedHandleParentVariantCreation).not.toHaveBeenCalled()
     })
   })
 

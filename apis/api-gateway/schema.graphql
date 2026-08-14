@@ -3032,6 +3032,10 @@ type VideoPublishChildrenResult @join__type(graph: API_MEDIA)  {
   publishedVariantsCount: Int
   dryRun: Boolean
   videosFailedValidation: [VideoPublishChildrenUnpublishedVideo!]!
+  """
+  Language IDs present on a direct published child Variant but missing an empty parent Variant. Populated by parentVariantsOnly mode.
+  """
+  missingParentLanguageIds: [ID!]
 }
 
 type VideoPublishChildrenUnpublishedVideo @join__type(graph: API_MEDIA)  {
@@ -3821,6 +3825,7 @@ enum VideoPublishMode @join__type(graph: API_MEDIA)  {
   childrenVideosOnly @join__enumValue(graph: API_MEDIA) 
   childrenVideosAndVariants @join__enumValue(graph: API_MEDIA) 
   variantsOnly @join__enumValue(graph: API_MEDIA) 
+  parentVariantsOnly @join__enumValue(graph: API_MEDIA) 
 }
 
 enum Service @join__type(graph: API_MEDIA)  {

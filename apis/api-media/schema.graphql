@@ -1346,6 +1346,11 @@ type VideoPublishChildrenResult {
   publishedVariantsCount: Int
   dryRun: Boolean
   videosFailedValidation: [VideoPublishChildrenUnpublishedVideo!]!
+
+  """
+  Language IDs present on a direct published child Variant but missing an empty parent Variant. Populated by parentVariantsOnly mode.
+  """
+  missingParentLanguageIds: [ID!]
 }
 
 type VideoPublishChildrenUnpublishedVideo {
@@ -1358,6 +1363,7 @@ enum VideoPublishMode {
   childrenVideosOnly
   childrenVideosAndVariants
   variantsOnly
+  parentVariantsOnly
 }
 
 enum VideoRedirectType {
