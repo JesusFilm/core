@@ -7,6 +7,7 @@ import { builder } from '../builder'
 interface WessImportResultShape {
   success: boolean
   languagesImported: number
+  nativeNamesImported: number
   countriesImported: number
   countryLanguagesImported: number
   message: string
@@ -19,6 +20,9 @@ const WessImportResult = builder
     fields: (t) => ({
       success: t.exposeBoolean('success', { nullable: false }),
       languagesImported: t.exposeInt('languagesImported', { nullable: false }),
+      nativeNamesImported: t.exposeInt('nativeNamesImported', {
+        nullable: false
+      }),
       countriesImported: t.exposeInt('countriesImported', { nullable: false }),
       countryLanguagesImported: t.exposeInt('countryLanguagesImported', {
         nullable: false
@@ -37,16 +41,18 @@ builder.mutationFields((t) => ({
       'take several minutes; requires WESS_API_TOKEN in the server environment.',
     resolve: async () =>
       withWessImportLock(async () => {
-        const languagesImported = await runWessLanguagesImport()
+        const { languagesImported, nativeNamesImported } =
+          await runWessLanguagesImport()
         const countriesImported = await runWessCountriesImport()
         const countryLanguagesImported = await runWessCountryLanguagesImport()
 
         return {
           success: true,
           languagesImported,
+          nativeNamesImported,
           countriesImported,
           countryLanguagesImported,
-          message: `Imported ${languagesImported.toLocaleString()} language(s), ${countriesImported.toLocaleString()} country(ies), and ${countryLanguagesImported.toLocaleString()} country-language(s).`
+          message: `Imported ${languagesImported.toLocaleString()} language(s) (${nativeNamesImported.toLocaleString()} native name(s)), ${countriesImported.toLocaleString()} country(ies), and ${countryLanguagesImported.toLocaleString()} country-language(s).`
         }
       })
   })

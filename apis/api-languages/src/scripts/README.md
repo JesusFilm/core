@@ -67,13 +67,14 @@ Each WESS import maps one WESS QueryRunner query id (`QueryId=…`) to a Prisma 
 
 ### WESS Languages Import (QueryId 154)
 
-Imports language rows into `Language` and `LanguageName` (English label, `languageId=529`).
+Imports language rows into `Language` and `LanguageName` (English label, `languageId=529`; native name/autonym, `languageId=<the language's own id>`).
 
 ```bash
 nx run api-languages:wess-languages-import
 ```
 
 - **Slug:** derived from WESS `slug` if set, otherwise display name, otherwise `id` — lowercased, spaces/commas/underscores and other non-alphanumeric runs become `-`, collisions get `-2`, `-3`, … . Set on **create**, and on **update** only when `slug` is currently null or empty (existing non-empty slugs are not overwritten).
+- **`NATIVE_LAN_NAME`** (native name / autonym): when present, upserted as a second `LanguageName` row where `languageId` equals the language's own id (`parentLanguageId === languageId`) and `primary: true`. This becomes the language's Primary Name; the English `LanguageName` row (`languageId=529`) is written with `primary: false` instead. Blank/whitespace-only values are treated as absent, same as every other field read via `readStringField`. A later WESS response that temporarily omits `NATIVE_LAN_NAME` does not delete or blank out a previously-imported autonym row — the write is conditional on the value being present, so absence is a no-op. English's own WESS row carries `NATIVE_LAN_NAME: "English"`, so it flows through this same path (no special case) and produces one row: `parentLanguageId: '529', languageId: '529', value: 'English', primary: true`.
 - `ImportTimes.modelName`: `wessLanguageImport`.
 
 ### WESS Countries Import (QueryId 156)
