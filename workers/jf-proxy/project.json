@@ -18,7 +18,7 @@
       "options": {
         "reportsDirectory": "../../coverage/workers/jf-proxy",
         "config": "workers/jf-proxy/vite.config.ts",
-        "configFile": "workers/jf-proxy/vitest.config.ts"
+        "configFile": "workers/jf-proxy/vitest.config.mts"
       }
     },
     "deploy": {

@@ -28,9 +28,9 @@ vi.mock('firebase/auth', () => {
   const OAuthProviderMock: Mock & {
     credentialFromError: Mock
   } = Object.assign(
-    vi.fn().mockImplementation(() => ({
-      setCustomParameters: vi.fn()
-    })),
+    vi.fn(function () {
+      return { setCustomParameters: vi.fn() }
+    }),
     { credentialFromError }
   )
   return {
@@ -38,12 +38,12 @@ vi.mock('firebase/auth', () => {
     signInWithCredential: vi.fn(),
     linkWithPopup: vi.fn(),
     OAuthProvider: OAuthProviderMock,
-    GoogleAuthProvider: vi.fn().mockImplementation(() => ({
-      setCustomParameters: vi.fn()
-    })),
-    FacebookAuthProvider: vi.fn().mockImplementation(() => ({
-      setCustomParameters: vi.fn()
-    }))
+    GoogleAuthProvider: vi.fn(function () {
+      return { setCustomParameters: vi.fn() }
+    }),
+    FacebookAuthProvider: vi.fn(function () {
+      return { setCustomParameters: vi.fn() }
+    })
   }
 })
 

@@ -41,7 +41,7 @@ describe('useIsInViewport hook', () => {
     mockDisconnect.mockClear()
     mockIntersectionObserver.mockClear()
 
-    mockIntersectionObserver.mockImplementation((callback) => {
+    mockIntersectionObserver.mockImplementation(function () {
       const instance = {
         observe: mockObserve,
         unobserve: mockUnobserve,

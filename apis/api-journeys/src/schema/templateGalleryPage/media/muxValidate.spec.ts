@@ -4,7 +4,9 @@ import { muxValidate } from './muxValidate'
 // fetchFieldsFromMux test in block/video/service.spec.ts.
 const mockQuery = vi.fn()
 vi.mock('@apollo/client', () => ({
-  ApolloClient: vi.fn().mockImplementation(() => ({ query: mockQuery })),
+  ApolloClient: vi.fn(function () {
+    return { query: mockQuery }
+  }),
   InMemoryCache: vi.fn(),
   createHttpLink: vi.fn()
 }))

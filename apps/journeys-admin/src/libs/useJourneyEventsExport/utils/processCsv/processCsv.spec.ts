@@ -19,7 +19,9 @@ describe('processCsv', () => {
   it('should process the CSV file', () => {
     // Mock Blob and URL.createObjectURL
     const mockBlob = {}
-    global.Blob = vi.fn(() => mockBlob) as any
+    global.Blob = vi.fn(function () {
+      return mockBlob
+    }) as any
     global.URL.createObjectURL = vi.fn(() => 'mock-url')
 
     const eventData = [
