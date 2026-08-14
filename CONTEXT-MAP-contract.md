@@ -78,8 +78,8 @@ Authors may add further keys freely (additive); consumers must ignore unknown ke
 - `trigger_phrases` in frontmatter is authoritative. The index entry's `triggers:` list carries
   the same phrases for routing, each **verbatim or shortened**: every index phrase must be a
   substring of one of that area's `trigger_phrases` (today every index phrase is verbatim;
-  shortening remains allowed). When a section gains a phrase, add it to **both** places in the
-  same commit.
+  shortening remains allowed). When an area gains a trigger phrase, add it to **both**
+  `trigger_phrases` and the index `triggers:` list in the same commit.
 - The index entry's `domain:` path and the frontmatter `domain_ref` (resolved against the intake
   file's directory) must resolve to the same file.
 
