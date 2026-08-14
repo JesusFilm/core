@@ -1,1 +1,0 @@
-export { DialogLangSwitch } from './DialogLangSwitch'
