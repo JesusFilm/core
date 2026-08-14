@@ -6,14 +6,15 @@
   "tags": [],
   "targets": {
     "serve": {
-      "executor": "@naxodev/nx-cloudflare:serve",
+      "executor": "nx:run-commands",
       "options": {
-        "port": 8787
+        "command": "wrangler dev --port=8787",
+        "cwd": "workers/jf-proxy"
       }
     },
     "test": {
       "executor": "@nx/vitest:test",
-      "outputs": ["{options.reportsDirectory}"],
+      "outputs": ["{workspaceRoot}/coverage/workers/jf-proxy"],
       "options": {
         "reportsDirectory": "../../coverage/workers/jf-proxy",
         "config": "workers/jf-proxy/vite.config.ts",
@@ -21,13 +22,14 @@
       }
     },
     "deploy": {
-      "executor": "@naxodev/nx-cloudflare:deploy",
+      "executor": "nx:run-commands",
       "options": {
-        "env": "stage"
+        "command": "wrangler deploy --env=stage",
+        "cwd": "workers/jf-proxy"
       },
       "configurations": {
         "production": {
-          "env": "prod"
+          "command": "wrangler deploy --env=prod"
         }
       }
     }

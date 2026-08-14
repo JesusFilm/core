@@ -31,6 +31,12 @@ This is an **Nx monorepo** (TypeScript). Apps live in `apps/`, GraphQL APIs in `
 - Use descriptive variable and function/const names.
 - Define TypeScript types; avoid `any`.
 
+### Lint before push
+
+Agent pushes are lint-gated. When an agent environment is detected (`CLAUDECODE`/`CURSOR_AGENT`), `.husky/pre-push` runs the `lint:changed` script on committed changes. It lints only changed files, scoped per workspace; full `nx lint` is far too slow. Manual human pushes skip the gate, and `git push --no-verify` skips everything. Run `pnpm lint:changed [--fix]` yourself anytime. [autofix.ci](https://autofix.ci) stays the CI backstop and owns Prettier formatting.
+
+Contract of the gate: it lints the branch diff against `origin/main`, refreshed when the network allows. It does not lint the literal ref-range of the push. Forks, other remotes, and branches cut from `stage` are all judged against `origin/main`, so a `stage`-cut branch may over-lint (use `git push --no-verify` if that blocks you). `LINT_CHANGED_JOBS` caps parallel workspaces (default 4).
+
 ### Documented Solutions
 
 The context map (`CONTEXT.md`, and `CONTEXT-intake.md` when diagnosing) is the primary knowledge source — rely on it by default. `docs/solutions/` is a **secondary, opt-in** archive of past problem write-ups (bugs, best practices, workflow patterns), organized by category with descriptive filenames and YAML frontmatter (`module`, `tags`, `problem_type`).
