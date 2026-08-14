@@ -2,6 +2,11 @@ import fetch from 'node-fetch'
 
 import type { HttpSizeClient, ResolveSizeResult } from './types'
 
+// A host that accepts the connection but never sends headers would otherwise
+// hold a concurrency slot indefinitely. Both HEAD and Range requests carry a
+// deadline so they always settle.
+const HTTP_REQUEST_TIMEOUT_MS = 10_000
+
 function parseContentRangeTotal(header: string | null): number | null {
   if (header == null) return null
   const match = /\/(\d+)\s*$/.exec(header)
@@ -19,18 +24,34 @@ function parseContentRangeTotal(header: string | null): number | null {
 export function createFetchHttpSizeClient(): HttpSizeClient {
   return {
     async head(url) {
-      const response = await fetch(url, { method: 'HEAD' })
-      return {
-        ok: response.ok,
-        status: response.status,
-        contentLength: response.headers.get('content-length'),
-        contentRangeTotal: parseContentRangeTotal(
-          response.headers.get('content-range')
-        )
+      const controller = new AbortController()
+      const timer = setTimeout(
+        () => controller.abort(),
+        HTTP_REQUEST_TIMEOUT_MS
+      )
+      try {
+        const response = await fetch(url, {
+          method: 'HEAD',
+          signal: controller.signal
+        })
+        return {
+          ok: response.ok,
+          status: response.status,
+          contentLength: response.headers.get('content-length'),
+          contentRangeTotal: parseContentRangeTotal(
+            response.headers.get('content-range')
+          )
+        }
+      } finally {
+        clearTimeout(timer)
       }
     },
     async rangeGet(url) {
       const controller = new AbortController()
+      const timer = setTimeout(
+        () => controller.abort(),
+        HTTP_REQUEST_TIMEOUT_MS
+      )
       try {
         const response = await fetch(url, {
           method: 'GET',
@@ -46,6 +67,7 @@ export function createFetchHttpSizeClient(): HttpSizeClient {
           )
         }
       } finally {
+        clearTimeout(timer)
         controller.abort()
       }
     }

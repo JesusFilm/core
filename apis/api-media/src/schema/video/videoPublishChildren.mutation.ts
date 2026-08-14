@@ -7,7 +7,10 @@ import {
 import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
 import { builder } from '../builder'
 import { logger } from '../logger'
-import { handleParentVariantCreation } from '../videoVariant/videoVariant'
+import {
+  createEmptyParentVariant,
+  handleParentVariantCreation
+} from '../videoVariant/videoVariant'
 
 import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
 
@@ -51,6 +54,7 @@ type VideoPublishChildrenResultType = {
   dryRun: boolean
   videosFailedValidation: VideoPublishValidationFailure[]
   missingParentLanguageIds: string[]
+  recoveredParentLanguageIds: string[]
 }
 
 type VideoPublishPlanMode = 'childrenVideosOnly' | 'childrenVideosAndVariants'
@@ -315,30 +319,39 @@ async function executeParentVariantsOnly(
     publishedVariantsCount: 0,
     dryRun,
     videosFailedValidation: [],
-    missingParentLanguageIds
+    missingParentLanguageIds,
+    recoveredParentLanguageIds: []
   }
 
   if (dryRun || missing.length === 0) {
     return result
   }
 
-  // Reuse the existing tested parent-Variant creation behavior instead of
-  // duplicating its slug/publication/language semantics here. This never
-  // publishes a Video or child Variant and leaves existing parent Variants
-  // untouched — handleParentVariantCreation is itself a no-op for any
-  // language that already has a parent Variant.
-  await Promise.allSettled(
-    missing.map(({ childVideoId, languageId }) =>
-      handleParentVariantCreation(childVideoId, languageId).catch((error) => {
-        logger.error(
-          { error, parentId: id, childVideoId, languageId },
-          'Parent variant recovery failed'
-        )
-      })
-    )
+  // Create the missing Variant directly on the requested parent `id`,
+  // reusing createEmptyParentVariant's slug/language semantics instead of
+  // duplicating them. handleParentVariantCreation is unsuitable here: it
+  // discovers and writes to *every* parent of a child Video, so a child
+  // shared by multiple parents could create a Variant on a parent other
+  // than the one requested. createEmptyParentVariant is itself a no-op
+  // once a Variant exists for that language, so this stays idempotent.
+  const outcomes = await Promise.allSettled(
+    missing.map(({ languageId }) => createEmptyParentVariant(id, languageId))
   )
 
-  return result
+  const recoveredParentLanguageIds: string[] = []
+  outcomes.forEach((outcome, index) => {
+    const { languageId, childVideoId } = missing[index]
+    if (outcome.status === 'fulfilled') {
+      recoveredParentLanguageIds.push(languageId)
+      return
+    }
+    logger.error(
+      { error: outcome.reason, parentId: id, childVideoId, languageId },
+      'Parent variant recovery failed'
+    )
+  })
+
+  return { ...result, recoveredParentLanguageIds }
 }
 
 const VideoPublishModeEnum = builder.enumType('VideoPublishMode', {
@@ -392,6 +405,11 @@ VideoPublishChildrenResult.implement({
       description:
         'Language IDs present on a direct published child Variant but missing an empty parent Variant. Populated by parentVariantsOnly mode.',
       resolve: (obj) => obj.missingParentLanguageIds
+    }),
+    recoveredParentLanguageIds: t.idList({
+      description:
+        'Subset of missingParentLanguageIds whose parent Variant was successfully created. Populated by parentVariantsOnly mode when dryRun is false; a language missing from this list relative to missingParentLanguageIds failed and was logged.',
+      resolve: (obj) => obj.recoveredParentLanguageIds
     })
   })
 })
@@ -456,7 +474,8 @@ export async function executeVideoPublishChildren(
       publishedVariantsCount: variantIdsToPublish.length,
       dryRun,
       videosFailedValidation,
-      missingParentLanguageIds: []
+      missingParentLanguageIds: [],
+      recoveredParentLanguageIds: []
     }
   }
 
@@ -545,7 +564,8 @@ export async function executeVideoPublishChildren(
     publishedVariantsCount: variantIdsToPublish.length,
     dryRun: false,
     videosFailedValidation,
-    missingParentLanguageIds: []
+    missingParentLanguageIds: [],
+    recoveredParentLanguageIds: []
   }
 }
 

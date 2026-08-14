@@ -30,4 +30,13 @@ describe('createConcurrencyLimiter', () => {
       })
     ).rejects.toThrow('boom')
   })
+
+  it.each([NaN, Infinity, -Infinity, 1.5, 0, -1])(
+    'rejects a non-finite, non-integer, or non-positive limit (%p)',
+    (limit) => {
+      expect(() => createConcurrencyLimiter(limit)).toThrow(
+        'createConcurrencyLimiter requires a finite positive integer'
+      )
+    }
+  )
 })

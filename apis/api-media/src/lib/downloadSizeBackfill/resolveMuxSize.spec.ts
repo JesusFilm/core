@@ -96,4 +96,44 @@ describe('resolveMuxSize', () => {
 
     expect(result).toEqual({ size: null, errorCode: 'httpUnreachable' })
   })
+
+  it('falls back to HTTP verification when the rendition is still preparing', async () => {
+    const muxAsset: MuxAssetLike = {
+      static_renditions: {
+        files: [
+          { resolution: '720p', filesize: '1296505318', status: 'preparing' }
+        ]
+      }
+    }
+    const httpClient = makeHttpClient({
+      head: vi
+        .fn()
+        .mockResolvedValue({ ok: true, status: 200, contentLength: '500', contentRangeTotal: null })
+    })
+
+    const result = await resolveMuxSize(URL, muxAsset, httpClient)
+
+    expect(result).toEqual({ size: 500, errorCode: null })
+    expect(httpClient.head).toHaveBeenCalled()
+  })
+
+  it.each(['500bytes', '1e3', '0x10', ' 500', '500.5', ''])(
+    'falls back to HTTP verification for a malformed filesize (%p)',
+    async (filesize) => {
+      const muxAsset: MuxAssetLike = {
+        static_renditions: {
+          files: [{ resolution: '720p', filesize, status: 'ready' }]
+        }
+      }
+      const httpClient = makeHttpClient({
+        head: vi
+          .fn()
+          .mockResolvedValue({ ok: true, status: 200, contentLength: '500', contentRangeTotal: null })
+      })
+
+      const result = await resolveMuxSize(URL, muxAsset, httpClient)
+
+      expect(result).toEqual({ size: 500, errorCode: null })
+    }
+  )
 })

@@ -1,5 +1,10 @@
-import { resolveHttpSize } from './httpSize'
+import fetch from 'node-fetch'
+import { type MockedFunction, vi } from 'vitest'
+
+import { createFetchHttpSizeClient, resolveHttpSize } from './httpSize'
 import type { HttpHeadersResult, HttpSizeClient } from './types'
+
+vi.mock('node-fetch')
 
 function makeHeaders(overrides: Partial<HttpHeadersResult>): HttpHeadersResult {
   return {
@@ -102,5 +107,60 @@ describe('resolveHttpSize', () => {
     const result = await resolveHttpSize('https://example.com/file.mp4', client)
 
     expect(result).toEqual({ size: null, errorCode: 'httpUnreachable' })
+  })
+})
+
+describe('createFetchHttpSizeClient', () => {
+  const mockFetch = fetch as MockedFunction<typeof fetch>
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('aborts a HEAD request that never receives headers', async () => {
+    mockFetch.mockImplementation(
+      (_url, init) =>
+        new Promise((_resolve, reject) => {
+          const signal = (init as { signal?: AbortSignal } | undefined)
+            ?.signal
+          signal?.addEventListener('abort', () => {
+            reject(new Error('The operation was aborted'))
+          })
+        })
+    )
+
+    const client = createFetchHttpSizeClient()
+    const assertion = expect(
+      client.head('https://example.com/file.mp4')
+    ).rejects.toThrow('The operation was aborted')
+
+    await vi.advanceTimersByTimeAsync(10_000)
+    await assertion
+  })
+
+  it('aborts a Range request that never receives headers', async () => {
+    mockFetch.mockImplementation(
+      (_url, init) =>
+        new Promise((_resolve, reject) => {
+          const signal = (init as { signal?: AbortSignal } | undefined)
+            ?.signal
+          signal?.addEventListener('abort', () => {
+            reject(new Error('The operation was aborted'))
+          })
+        })
+    )
+
+    const client = createFetchHttpSizeClient()
+    const assertion = expect(
+      client.rangeGet('https://example.com/file.mp4')
+    ).rejects.toThrow('The operation was aborted')
+
+    await vi.advanceTimersByTimeAsync(10_000)
+    await assertion
   })
 })

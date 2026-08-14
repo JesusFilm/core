@@ -49,6 +49,7 @@ describe('videoPublishChildren', () => {
           message
         }
         missingParentLanguageIds
+        recoveredParentLanguageIds
       }
     }
   `) as AuthClientDocument
@@ -59,6 +60,7 @@ describe('videoPublishChildren', () => {
         if (args?.where?.id === 'parent') {
           return {
             id: 'parent',
+            slug: 'parent-slug',
             label: 'collection',
             publishedAt: null,
             children: [
@@ -714,6 +716,21 @@ describe('videoPublishChildren', () => {
       } as any)
     }
 
+    // Backs the real (unmocked) createEmptyParentVariant helper so apply
+    // tests exercise the actual scoped-write path instead of the
+    // multi-parent-walking handleParentVariantCreation mock.
+    function mockCreateEmptyParentVariantPrisma(): void {
+      ;(prismaMock.videoVariant.findFirst as any).mockImplementation(
+        async (args: any) => {
+          if (args?.where?.videoId != null) return null
+          return { slug: `lang/${args?.where?.languageId}` }
+        }
+      )
+      ;(prismaMock.videoVariant.create as any).mockResolvedValue({
+        id: 'created-variant'
+      })
+    }
+
     it('dry run reports missing language IDs without writing', async () => {
       prismaMock.userMediaRole.findUnique.mockResolvedValue({
         id: 'userId',
@@ -789,7 +806,7 @@ describe('videoPublishChildren', () => {
       )
     })
 
-    it('apply creates only the missing parent Variants via the existing recovery helper', async () => {
+    it('apply creates only the missing parent Variant, scoped to the requested parent', async () => {
       prismaMock.userMediaRole.findUnique.mockResolvedValue({
         id: 'userId',
         userId: 'userId',
@@ -798,6 +815,7 @@ describe('videoPublishChildren', () => {
         updatedAt: new Date()
       })
       mockParentAndChildren()
+      mockCreateEmptyParentVariantPrisma()
 
       const res = await authClient({
         document: VIDEO_PUBLISH_CHILDREN,
@@ -812,11 +830,105 @@ describe('videoPublishChildren', () => {
       expect(
         (res as any).data.videoPublishChildren.missingParentLanguageIds
       ).toEqual(['es'])
-      expect(mockedHandleParentVariantCreation).toHaveBeenCalledTimes(1)
-      expect(mockedHandleParentVariantCreation).toHaveBeenCalledWith('c2', 'es')
+      expect(
+        (res as any).data.videoPublishChildren.recoveredParentLanguageIds
+      ).toEqual(['es'])
+      // handleParentVariantCreation walks every parent of the child Video —
+      // the scoped recovery path must never use it.
+      expect(mockedHandleParentVariantCreation).not.toHaveBeenCalled()
+      expect(prismaMock.videoVariant.create).toHaveBeenCalledTimes(1)
+      expect(prismaMock.videoVariant.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            videoId: 'parent',
+            languageId: 'es'
+          })
+        })
+      )
       expect(prismaMock.video.updateMany).not.toHaveBeenCalled()
       expect(prismaMock.videoVariant.updateMany).not.toHaveBeenCalled()
-      expect(prismaMock.$transaction).not.toHaveBeenCalled()
+    })
+
+    it('creates the Variant only for the requested parent, never a sibling parent of a shared child', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      mockParentAndChildren()
+      mockCreateEmptyParentVariantPrisma()
+      // c2 is also a child of a different parent — handleParentVariantCreation
+      // would discover it via this query and write there too.
+      prismaMock.video.findMany.mockResolvedValueOnce([
+        { id: 'parent' },
+        { id: 'other-parent' }
+      ] as any)
+
+      await authClient({
+        document: VIDEO_PUBLISH_CHILDREN,
+        variables: {
+          id: 'parent',
+          mode: 'parentVariantsOnly',
+          dryRun: false
+        }
+      })
+
+      expect(prismaMock.videoVariant.create).toHaveBeenCalledTimes(1)
+      expect(prismaMock.videoVariant.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ videoId: 'parent' })
+        })
+      )
+      expect(prismaMock.videoVariant.create).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ videoId: 'other-parent' })
+        })
+      )
+    })
+
+    it('reports a failed recovery separately and still creates the others', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      prismaMock.video.findUnique.mockResolvedValueOnce({
+        id: 'parent',
+        variants: [],
+        children: [
+          { id: 'c1', variants: [{ languageId: 'en' }] },
+          { id: 'c2', variants: [{ languageId: 'es' }] }
+        ]
+      } as any)
+      mockCreateEmptyParentVariantPrisma()
+      ;(prismaMock.videoVariant.create as any).mockImplementation(
+        async (args: any) => {
+          if (args?.data?.languageId === 'es') {
+            throw new Error('create failed')
+          }
+          return { id: 'created-variant' }
+        }
+      )
+
+      const res = await authClient({
+        document: VIDEO_PUBLISH_CHILDREN,
+        variables: {
+          id: 'parent',
+          mode: 'parentVariantsOnly',
+          dryRun: false
+        }
+      })
+
+      expect(
+        (res as any).data.videoPublishChildren.missingParentLanguageIds.sort()
+      ).toEqual(['en', 'es'])
+      expect(
+        (res as any).data.videoPublishChildren.recoveredParentLanguageIds
+      ).toEqual(['en'])
     })
 
     it('is idempotent when no parent languages are missing', async () => {

@@ -5,7 +5,12 @@
  * R2 metadata lookups can run with more headroom).
  */
 export function createConcurrencyLimiter(limit: number) {
-  const boundedLimit = Math.max(1, limit)
+  if (!Number.isInteger(limit) || limit < 1) {
+    throw new Error(
+      `createConcurrencyLimiter requires a finite positive integer, got ${limit}`
+    )
+  }
+  const boundedLimit = limit
   let active = 0
   const queue: Array<() => void> = []
 

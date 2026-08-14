@@ -5,6 +5,17 @@ import type { HttpSizeClient, MuxAssetLike, ResolveSizeResult } from './types'
 // https://stream.mux.com/{playbackId}/{resolution}.mp4
 const MUX_RENDITION_URL_PATTERN = /\/([0-9]+p)\.mp4(?:$|\?)/
 
+// Mux's filesize field is a decimal-string byte count. Only accept a
+// strictly digit string — parseInt/Number would also accept trailing
+// garbage ("500bytes"), exponential notation ("1e3"), or hex ("0x10").
+const MUX_FILESIZE_PATTERN = /^[0-9]+$/
+
+function parseMuxFilesize(filesize: string | null | undefined): number | null {
+  if (filesize == null || !MUX_FILESIZE_PATTERN.test(filesize)) return null
+  const size = Number(filesize)
+  return Number.isSafeInteger(size) && size > 0 ? size : null
+}
+
 export function extractMuxResolutionFromUrl(url: string): string | null {
   const match = MUX_RENDITION_URL_PATTERN.exec(url)
   return match?.[1] ?? null
@@ -21,10 +32,12 @@ function resolveFromRenditionMetadata(
     (candidate) => candidate?.resolution === resolution
   )
   if (file == null) return null
-  if (file.status === 'skipped' || file.status === 'errored') return null
+  // Only a `ready` rendition is download-ready; `preparing`, `skipped`, and
+  // `errored` renditions must fall back to HTTP verification.
+  if (file.status !== 'ready') return null
 
-  const filesize = file.filesize != null ? parseInt(file.filesize, 10) : 0
-  if (Number.isFinite(filesize) && filesize > 0) {
+  const filesize = parseMuxFilesize(file.filesize)
+  if (filesize != null) {
     return { size: filesize, errorCode: null }
   }
 

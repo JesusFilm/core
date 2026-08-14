@@ -50,6 +50,24 @@ const DEFAULT_MUX_CONCURRENCY = 3
 const DEFAULT_R2_CONCURRENCY = 10
 const DEFAULT_LEGACY_CONCURRENCY = 3
 
+/**
+ * Rejects an invalid batch size before it can reach the Prisma query. A
+ * zero, negative, non-finite, fractional, or unsafe value would make
+ * `take: batchSize` return no rows while `hasMore` stays true forever,
+ * looping without ever advancing the cursor.
+ */
+export function assertValidBatchSize(
+  batchSize: number | undefined
+): number {
+  if (batchSize == null) return DEFAULT_BATCH_SIZE
+  if (!Number.isSafeInteger(batchSize) || batchSize < 1) {
+    throw new Error(
+      `Invalid batchSize: ${batchSize}. Expected a finite positive safe integer.`
+    )
+  }
+  return batchSize
+}
+
 function createDefaultMuxAssetFetcher(): MuxAssetFetcher {
   return {
     async getAsset(muxAssetId) {
@@ -239,7 +257,7 @@ async function processCandidate(
 export async function runDownloadSizeBackfill(
   options: DownloadSizeBackfillOptions
 ): Promise<DownloadSizeBackfillResult> {
-  const batchSize = options.batchSize ?? DEFAULT_BATCH_SIZE
+  const batchSize = assertValidBatchSize(options.batchSize)
   const httpClient = options.httpClient ?? createFetchHttpSizeClient()
   const muxAssetFetcher =
     options.muxAssetFetcher ?? createDefaultMuxAssetFetcher()

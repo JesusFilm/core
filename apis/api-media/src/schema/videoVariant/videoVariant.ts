@@ -52,7 +52,7 @@ function extractLanguageSlugFromVariantSlug(
 }
 
 // Helper function to create empty video variant for parent video
-async function createEmptyParentVariant(
+export async function createEmptyParentVariant(
   parentVideoId: string,
   languageId: string,
   languageSlug?: string

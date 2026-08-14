@@ -5,6 +5,7 @@ export { resolveLegacySize } from './resolveLegacySize'
 export { extractMuxResolutionFromUrl, resolveMuxSize } from './resolveMuxSize'
 export { resolveR2Size } from './resolveR2Size'
 export {
+  assertValidBatchSize,
   runDownloadSizeBackfill,
   type DownloadSizeBackfillFilters,
   type DownloadSizeBackfillOptions,

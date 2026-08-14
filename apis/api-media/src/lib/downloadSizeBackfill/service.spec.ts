@@ -313,6 +313,17 @@ describe('runDownloadSizeBackfill', () => {
     expect(result.lastProcessedId).toBe('d2')
   })
 
+  it.each([0, -1, NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    'rejects an invalid batch size before querying (%p)',
+    async (batchSize) => {
+      await expect(
+        runDownloadSizeBackfill({ apply: false, batchSize })
+      ).rejects.toThrow('Invalid batchSize')
+
+      expect(prismaMock.videoVariantDownload.findMany).not.toHaveBeenCalled()
+    }
+  )
+
   it('applies optional filters for focused validation', async () => {
     prismaMock.videoVariantDownload.findMany.mockResolvedValue([])
 
