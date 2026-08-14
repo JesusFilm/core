@@ -1,9 +1,9 @@
 # .hatsu — Hatsu pipeline descriptor
 
 [Hatsu](https://github.com/JesusFilm/hatsu) is the autonomous bug-fixing
-pipeline (intake → build → QA) that works this repo's issues. This folder is
-how core **self-describes** to it, so the engine stays generic and everything
-repo-specific lives here, versioned alongside the code it describes
+pipeline (intake → build → QA) that processes issues in this repo. This folder
+is how core **self-describes** to the pipeline, so the engine stays generic and
+all repo-specific data lives here, versioned alongside the code it describes
 (ENG-3699 / ENG-3733).
 
 - `target.json` — the target descriptor: repo identity, default branch, and

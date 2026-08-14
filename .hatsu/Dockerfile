@@ -13,4 +13,8 @@ RUN corepack enable && apt-get update && apt-get install -y --no-install-recomme
     git ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+# Non-root by default (Sandcastle precedent: agents never run as root; any
+# mounted worktree must be owned compatibly with the node user).
+RUN mkdir -p /workspace && chown node:node /workspace
 WORKDIR /workspace
+USER node
