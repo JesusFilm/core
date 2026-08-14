@@ -194,6 +194,21 @@ async function upsertLanguage(row: WessLanguageRow): Promise<boolean> {
   const englishLanguageId = WESS_ENGLISH_LANGUAGE_ID
   const hasNativeName = row.nativeName != null
 
+  // A later WESS response can temporarily omit NATIVE_LAN_NAME for a language that already
+  // has a persisted autonym. Don't promote English back to primary in that case — check
+  // whether an autonym row already exists before deciding.
+  const hasPersistedAutonym =
+    !hasNativeName &&
+    (await prisma.languageName.findUnique({
+      where: {
+        parentLanguageId_languageId: {
+          parentLanguageId: row.id,
+          languageId: row.id
+        }
+      },
+      select: { id: true }
+    })) != null
+
   if (row.name != null && row.id !== englishLanguageId) {
     // WESS only gives one label per row; store it as the English `LanguageName` (GraphQL default uses `languageId` 529).
     // Once a native name is known for this language it becomes the Primary Name instead.
@@ -201,7 +216,7 @@ async function upsertLanguage(row: WessLanguageRow): Promise<boolean> {
       parentLanguageId: row.id,
       languageId: englishLanguageId,
       value: row.name,
-      primary: !hasNativeName
+      primary: !hasNativeName && !hasPersistedAutonym
     })
   }
 
