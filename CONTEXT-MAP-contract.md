@@ -25,7 +25,9 @@ Versioning: additive edits to the map need no contract change. A breaking change
   - **<area name>** (<role>) | domain: `<path>` | intake: `<path>` | triggers: "<phrase>", "<phrase>", …
   ```
 
-- Parsers key on the literal field tokens `| domain:`, `| intake:`, `| triggers:`. Never reorder,
+- Parsers key on the literal field tokens `| domain:`, `| intake:`, `| triggers:` — but only
+  inside bullet entries under the `Areas` heading. Lines anywhere else are never entries, even
+  when they contain the tokens (the index's own `**Line format:**` prose does). Never reorder,
   rename, or wrap an entry across lines. `<area name>` is the entry's identity and must equal the
   `area` frontmatter key of the file `intake:` points to.
 - The taxonomy list under the level-2 heading beginning `Failure-type taxonomy` (today
@@ -58,6 +60,10 @@ Authors may add further keys freely (additive); consumers must ignore unknown ke
 - `type_tags` in frontmatter equals the union of T-tags found in the file's headings.
 - Bodies are built from bold-label lines (`**Signatures:**`, `**Localizing question (reporter):**`,
   `**Then ask:**`, `**Ready when:**`, `**Status:**`, `**Look first (fixer):**`, `**Handoff:**`, …).
+  A label line matches after stripping leading indentation and an optional `- ` list marker — the
+  flush-left, indented (list-item continuation), and list-bullet (`- **Handoff:** …`) forms all
+  occur on `main` today. The bold may extend past the label over the whole line, label and value
+  together (e.g. `**Localizing question (reporter): does a refresh fix it?**`).
   The label vocabulary is **open** — authors may introduce new labels; consumers must not assume a
   fixed set or order — with one exception:
 - **`Handoff:` is reserved.** Every section closes its diagnosis with a `**Handoff:**` verdict
@@ -65,22 +71,24 @@ Authors may add further keys freely (additive); consumers must ignore unknown ke
   - _Known deviation on `main` today: `apps/journeys/CONTEXT-intake.md` § "Chat / AI assistant"
     embeds its verdict in `**Status:**` with no `**Handoff:**` line — left as-is deliberately
     (unreleased feature, plan not settled; Siyang, 2026-08-13). The validator reports it as a
-    warning until the section gets a real diagnosis layer. (A second deviation — unbolded
-    `- Handoff:` in the admin "Integrations" section — is fixed by the ENG-3708 map PR.)_
+    warning until the section gets a real diagnosis layer._
 
 ## Index ↔ frontmatter sync
 
-`trigger_phrases` in frontmatter is authoritative. The index entry's `triggers:` list carries the
-same phrases for routing, each **verbatim or shortened**: every index phrase must be a substring of
-one of that area's `trigger_phrases` (today e.g. index `"have to refresh"` ↔ frontmatter
-`'have to refresh to see it'`). When a section gains a phrase, add it to **both** places in the
-same commit.
+- `trigger_phrases` in frontmatter is authoritative. The index entry's `triggers:` list carries
+  the same phrases for routing, each **verbatim or shortened**: every index phrase must be a
+  substring of one of that area's `trigger_phrases` (today every index phrase is verbatim;
+  shortening remains allowed). When a section gains a phrase, add it to **both** places in the
+  same commit.
+- The index entry's `domain:` path and the frontmatter `domain_ref` (resolved against the intake
+  file's directory) must resolve to the same file.
 
 ## Compatibility
 
 **Safe — add freely, no consumer changes needed:**
 
-- new sections; new bold labels inside section bodies; new prose anywhere in a body
+- new sections (a typed section's T-tags must join `type_tags` in the same commit — §Section
+  anatomy); new bold labels inside section bodies; new prose anywhere in a body
 - new trigger phrases (added to both frontmatter and index)
 - new frontmatter keys; new areas (a new index bullet in the entry format + a conforming file)
 - em-dash notes on taxonomy bullets; heading suffix text alongside T-tags
