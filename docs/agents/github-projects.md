@@ -9,15 +9,15 @@ state**. This replaces Linear for the AI workflow trial (Linear ENG-3688).
 
 One Status per ticket, moving left to right:
 
-| Status          | Meaning                                                                                              |
-| --------------- | ---------------------------------------------------------------------------------------------------- |
-| **Triage**      | New or unevaluated; also covers "waiting on more info"                                               |
-| **Ready**       | Fully specified, up for grabs (by a human or the AI workflow)                                        |
-| **In progress** | Being worked, human or AI                                                                            |
-| **In review**   | PR up, awaiting review                                                                               |
-| **QA**          | Review passed, awaiting **human QA team** approval                                                   |
-| **Needs human** | The AI workflow bailed out — a human must decide/unblock before the ticket can proceed (see step 4)  |
-| **Done**        | Closed — shipped, or rejected as not planned                                                         |
+| Status          | Meaning                                                                                             |
+| --------------- | --------------------------------------------------------------------------------------------------- |
+| **Triage**      | New or unevaluated; also covers "waiting on more info"                                              |
+| **Ready**       | Fully specified, up for grabs (by a human or the AI workflow)                                       |
+| **In progress** | Being worked, human or AI                                                                           |
+| **In review**   | PR up, awaiting review                                                                              |
+| **QA**          | Review passed, awaiting **human QA team** approval                                                  |
+| **Needs human** | The AI workflow bailed out — a human must decide/unblock before the ticket can proceed (see step 4) |
+| **Done**        | Closed — shipped, or rejected as not planned                                                        |
 
 **QA always means the human QA team.** The AI pipeline's own automated verification (the
 Vera QA harness) is _not_ this column — it runs inside **In progress**, before a PR is
@@ -142,17 +142,17 @@ Ready. The agent then:
 
 ### Stable IDs
 
-| Thing                | ID                               |
-| -------------------- | -------------------------------- |
-| Project (Next Steps) | `PVT_kwDOBNwqhs4BeMYJ`           |
-| Status field         | `PVTSSF_lADOBNwqhs4BeMYJzhYobGA` |
-| Status: Triage       | `e5a2c514`                       |
-| Status: Ready        | `3c63150a`                       |
-| Status: In progress  | `b9c41da0`                       |
-| Status: In review    | `ab210038`                       |
-| Status: QA           | `12a20fe3`                       |
+| Thing                | ID                                                             |
+| -------------------- | -------------------------------------------------------------- |
+| Project (Next Steps) | `PVT_kwDOBNwqhs4BeMYJ`                                         |
+| Status field         | `PVTSSF_lADOBNwqhs4BeMYJzhYobGA`                               |
+| Status: Triage       | `e5a2c514`                                                     |
+| Status: Ready        | `3c63150a`                                                     |
+| Status: In progress  | `b9c41da0`                                                     |
+| Status: In review    | `ab210038`                                                     |
+| Status: QA           | `12a20fe3`                                                     |
 | Status: Needs human  | _(added 2026-08-16 — fetch with the field-list command below)_ |
-| Status: Done         | `5243b071`                       |
+| Status: Done         | `5243b071`                                                     |
 
 (If the Status options are ever edited in the project settings, these option IDs change —
 re-read them with `gh project field-list 8 --owner JesusFilm --format json`.)
