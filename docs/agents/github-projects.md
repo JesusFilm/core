@@ -9,14 +9,20 @@ state**. This replaces Linear for the AI workflow trial (Linear ENG-3688).
 
 One Status per ticket, moving left to right:
 
-| Status          | Meaning                                                       |
-| --------------- | ------------------------------------------------------------- |
-| **Triage**      | New or unevaluated; also covers "waiting on more info"        |
-| **Ready**       | Fully specified, up for grabs (by a human or the AI workflow) |
-| **In progress** | Being worked, human or AI                                     |
-| **In review**   | PR up, awaiting review                                        |
-| **QA**          | Review passed, awaiting manual QA                             |
-| **Done**        | Closed — shipped, or rejected as not planned                  |
+| Status          | Meaning                                                                                              |
+| --------------- | ---------------------------------------------------------------------------------------------------- |
+| **Triage**      | New or unevaluated; also covers "waiting on more info"                                               |
+| **Ready**       | Fully specified, up for grabs (by a human or the AI workflow)                                        |
+| **In progress** | Being worked, human or AI                                                                            |
+| **In review**   | PR up, awaiting review                                                                               |
+| **QA**          | Review passed, awaiting **human QA team** approval                                                   |
+| **Needs human** | The AI workflow bailed out — a human must decide/unblock before the ticket can proceed (see step 4)  |
+| **Done**        | Closed — shipped, or rejected as not planned                                                         |
+
+**QA always means the human QA team.** The AI pipeline's own automated verification (the
+Vera QA harness) is _not_ this column — it runs inside **In progress**, before a PR is
+marked ready for review; its verdict rides the PR as evidence. Agents never set Status
+to QA.
 
 State transitions:
 
@@ -128,8 +134,11 @@ Ready. The agent then:
      --field-id PVTSSF_lADOBNwqhs4BeMYJzhYobGA --single-select-option-id b9c41da0
    ```
 3. **Work it**, open a PR, set Status to In review (`ab210038`).
-4. **Bail out** if stuck: remove `ai-auto-workflow`, set Status back to Ready, and leave
-   a handoff comment on the issue — the ticket becomes ordinary human work.
+4. **Bail out** if stuck: set Status to **Needs human** and leave a handoff comment on
+   the issue explaining what's blocking. Keep the `ai-auto-workflow` label — the ticket
+   stays visibly in the AI lane (and scannable by the watchdog). A human then either
+   resolves the blocker and sets Status back to Ready (the workflow retries), or removes
+   the label and works it as ordinary human work.
 
 ### Stable IDs
 
@@ -142,6 +151,7 @@ Ready. The agent then:
 | Status: In progress  | `b9c41da0`                       |
 | Status: In review    | `ab210038`                       |
 | Status: QA           | `12a20fe3`                       |
+| Status: Needs human  | _(added 2026-08-16 — fetch with the field-list command below)_ |
 | Status: Done         | `5243b071`                       |
 
 (If the Status options are ever edited in the project settings, these option IDs change —
