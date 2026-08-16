@@ -13,10 +13,9 @@ vi.mock('../../src/libs/apolloClient', () => ({
 
 // Mock Redis
 vi.mock('@upstash/redis', () => ({
-  Redis: vi.fn().mockImplementation(() => ({
-    get: vi.fn(),
-    setex: vi.fn()
-  }))
+  Redis: vi.fn(function () {
+    return { get: vi.fn(), setex: vi.fn() }
+  })
 }))
 
 describe('Languages API', () => {
@@ -41,7 +40,9 @@ describe('Languages API', () => {
     }
 
     vi.mocked(createApolloClient).mockReturnValue(mockApolloClient)
-    ;(Redis as unknown as Mock).mockImplementation(() => mockRedis)
+    ;(Redis as unknown as Mock).mockImplementation(function () {
+      return mockRedis
+    })
   })
 
   afterEach(() => {

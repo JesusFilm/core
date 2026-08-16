@@ -12,7 +12,9 @@ import {
 const mockQuery = vi.fn()
 vi.mock('@apollo/client', () => {
   return {
-    ApolloClient: vi.fn().mockImplementation(() => ({ query: mockQuery })),
+    ApolloClient: vi.fn(function () {
+      return { query: mockQuery }
+    }),
     InMemoryCache: vi.fn(),
     createHttpLink: vi.fn()
   }
