@@ -16,7 +16,7 @@ One Status per ticket, moving left to right:
 | **In progress** | Being worked, human or AI                                                                           |
 | **In review**   | PR up, awaiting review                                                                              |
 | **QA**          | Review passed, awaiting **human QA team** approval                                                  |
-| **Needs human** | The AI workflow bailed out — a human must decide/unblock before the ticket can proceed (see step 4) |
+| **Needs Human** | The AI workflow bailed out — a human must decide/unblock before the ticket can proceed (see step 4) |
 | **Done**        | Closed — shipped, or rejected as not planned                                                        |
 
 **QA always means the human QA team.** The AI pipeline's own automated verification (the
@@ -134,7 +134,7 @@ Ready. The agent then:
      --field-id PVTSSF_lADOBNwqhs4BeMYJzhYobGA --single-select-option-id b9c41da0
    ```
 3. **Work it**, open a PR, set Status to In review (`ab210038`).
-4. **Bail out** if stuck: set Status to **Needs human** and leave a handoff comment on
+4. **Bail out** if stuck: set Status to **Needs Human** (`f3e5a000`) and leave a handoff comment on
    the issue explaining what's blocking. Keep the `ai-auto-workflow` label — the ticket
    stays visibly in the AI lane (and scannable by the watchdog). A human then either
    resolves the blocker and sets Status back to Ready (the workflow retries), or removes
@@ -151,7 +151,7 @@ Ready. The agent then:
 | Status: In progress  | `b9c41da0`                                                     |
 | Status: In review    | `ab210038`                                                     |
 | Status: QA           | `12a20fe3`                                                     |
-| Status: Needs human  | _(added 2026-08-16 — fetch with the field-list command below)_ |
+| Status: Needs Human  | `f3e5a000`                                                     |
 | Status: Done         | `5243b071`                                                     |
 
 (If the Status options are ever edited in the project settings, these option IDs change —
