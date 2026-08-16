@@ -134,11 +134,17 @@ Ready. The agent then:
      --field-id PVTSSF_lADOBNwqhs4BeMYJzhYobGA --single-select-option-id b9c41da0
    ```
 3. **Work it**, open a PR, set Status to In review (`ab210038`).
-4. **Bail out** if stuck: set Status to **Needs Human** (`f3e5a000`) and leave a handoff comment on
-   the issue explaining what's blocking. Keep the `ai-auto-workflow` label — the ticket
-   stays visibly in the AI lane (and scannable by the watchdog). A human then either
+4. **Bail out** if stuck: set Status to **Needs Human** and leave a handoff comment on
+   the issue explaining what's blocking.
+   ```bash
+   gh project item-edit --id <ITEM_ID> --project-id PVT_kwDOBNwqhs4BeMYJ \
+     --field-id PVTSSF_lADOBNwqhs4BeMYJzhYobGA --single-select-option-id f3e5a000
+   ```
+   Keep the `ai-auto-workflow` label — the ticket stays visibly in the AI lane (and
+   scannable by the watchdog). It is not re-picked while parked: step 1 matches on Status
+   `Ready`, so Needs Human is ineligible until a human moves it. A human then either
    resolves the blocker and sets Status back to Ready (the workflow retries), or removes
-   the label and works it as ordinary human work.
+   the label, sets Status to In progress, and takes ownership as ordinary human work.
 
 ### Stable IDs
 
