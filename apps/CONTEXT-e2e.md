@@ -1,6 +1,6 @@
 # E2E Testing
 
-The end-to-end verification surface: eleven Playwright suites (`apps/*-e2e`), one per app surface, that exercise a _deployed_ app through a browser (or its public HTTP API) rather than mocking. Owns no product entities — journey, video, and language vocabulary in specs is the owning contexts'; this context owns only the vocabulary of how the suites target, run, and report.
+The end-to-end verification surface: nine Playwright suites (`apps/*-e2e`), one per app surface, that exercise a _deployed_ app through a browser (or its public HTTP API) rather than mocking. Owns no product entities — journey, video, and language vocabulary in specs is the owning contexts'; this context owns only the vocabulary of how the suites target, run, and report.
 
 ## Language
 

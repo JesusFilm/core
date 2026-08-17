@@ -103,7 +103,7 @@
             "command": "nf start"
           },
           {
-            "command": "nx serve watch-modern"
+            "command": "nx serve player"
           }
         ],
         "parallel": true
