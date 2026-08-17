@@ -31,19 +31,29 @@ This is an **Nx monorepo** (TypeScript). Apps live in `apps/`, GraphQL APIs in `
 - Use descriptive variable and function/const names.
 - Define TypeScript types; avoid `any`.
 
-### Lint before push
+### Lint before push (agents)
 
-Agent pushes are lint-gated. When an agent environment is detected (`CLAUDECODE`, `CURSOR_AGENT`, `CODEX_SANDBOX`, or `CODEX_SESSION_ID`), `.husky/pre-push` runs the `lint:changed` script on committed changes. Manual human pushes skip the gate, and `git push --no-verify` skips everything. Run `pnpm lint:changed [--fix]` yourself anytime.
+**Agents: before every `git push`, run this and push the result as one unit.**
 
-The script mirrors the autofix.ci steps that can write a file, in the same order, so a clean run means autofix.ci has nothing left to commit:
+```bash
+pnpm lint:changed --fix        # applies formatting, lint fixes and translation extraction
+git add -A && git commit -m "chore: lint fixes"   # only if it changed anything
+git push
+```
+
+There is deliberately **no pre-push hook**. A git hook cannot do this job: git resolves which commits to push _before_ running the hook, so fixes a hook commits are left behind and never reach the remote. Doing it in the agent, before the push is issued, is the only way the fixes actually travel with the branch. Humans are not gated at all — this is an agent instruction, not enforcement.
+
+What the fixes are: everything [autofix.ci](https://autofix.ci) would otherwise commit to your PR. It is generated output, not opinion, so it belongs in your commit rather than in a bot commit afterwards. `lint:changed` mirrors those steps in the same order:
 
 1. **Prettier** on every changed file of any type (`.md`, `.json`, `.yaml`, `.css`, … — not just JS/TS). Under a second.
 2. **ESLint** on changed JS/TS only, scoped per workspace; full `nx lint` is far too slow. Roughly 5–20s per touched workspace.
-3. **i18next extraction** for changed projects only, via `--dry-run --ci` so drift is reported by exit code without touching the working tree. Roughly 2–3s per touched project.
+3. **i18next extraction** for changed projects only. Roughly 2–3s per touched project.
 
 All three are load-bearing. ESLint **cannot** catch a formatting problem — the repo uses `eslint-config-prettier`, which exists to switch every formatting rule off, and there is no `eslint-plugin-prettier`. Formatting belongs to Prettier alone. And a new `t()` string that was never extracted is invisible to both.
 
-Contract of the gate: it lints the branch diff against `origin/main`, refreshed when the network allows. It does not lint the literal ref-range of the push. Forks, other remotes, and branches cut from `stage` are all judged against `origin/main`, so a `stage`-cut branch may over-lint (use `git push --no-verify` if that blocks you). `LINT_CHANGED_JOBS` caps parallel workspaces (default 4).
+Without `--fix` the script only reports, and leaves the working tree untouched. Note extraction is **project-wide**, not per-file: `--fix` can pull in a `t()` string someone else left unextracted in the same project. That is intended — it is exactly what autofix.ci would have committed.
+
+Scope: it compares the branch diff against `origin/main`, refreshed when the network allows. Forks, other remotes, and branches cut from `stage` are all judged against `origin/main`, so a `stage`-cut branch may over-lint. `LINT_CHANGED_JOBS` caps parallel workspaces (default 4).
 
 Not covered locally: **`codegen`** is the one autofix.ci step that can still commit to your PR. Run `nx codegen <project>` after changing a GraphQL schema or query.
 

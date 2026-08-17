@@ -30,15 +30,22 @@
 #
 # Usage:
 #   tools/scripts/lint-changed.sh              # all changes vs merge-base with origin/main (incl. uncommitted + untracked)
-#   tools/scripts/lint-changed.sh --committed  # committed changes vs origin/main (refreshed first); what the pre-push gate lints
+#   tools/scripts/lint-changed.sh --committed  # committed changes vs origin/main (refreshed first)
 #   tools/scripts/lint-changed.sh --staged     # staged files only (lints their working-tree contents)
-#   tools/scripts/lint-changed.sh --fix        # apply autofixes to the working tree (re-stage/re-commit them yourself)
+#   tools/scripts/lint-changed.sh --fix        # apply the fixes to the working tree (commit them yourself)
+#
+# Note --fix runs i18next extraction project-wide, not per-file, so it can pull
+# in a t() string someone else left unextracted in the same project. That is
+# intended: it is what autofix.ci would have committed anyway.
+#
+# There is no git hook on this. Agents run it themselves before pushing (see
+# "Lint before push" in AGENTS.md) — a hook cannot work here, because git
+# resolves which commits to push before hooks run, so fixes a hook commits are
+# left behind and never reach the remote. Humans are not gated.
 #
 # Prettier costs well under a second, and i18next extraction roughly 2-3s per
 # touched project. ESLint costs roughly 5-20s per touched workspace: type-aware
-# lint rules build a TypeScript program per workspace on every run. That is why
-# the only hook on this is the agent-gated pre-push (.husky/pre-push), not a
-# per-commit hook.
+# lint rules build a TypeScript program per workspace on every run.
 
 set -euo pipefail
 
@@ -80,6 +87,18 @@ if ! resolve_bin_dir; then
   echo "    run \`pnpm install\` in the main checkout" >&2
   exit 1
 fi
+
+# A partial install (--prod, a pruned image) leaves .bin present but missing
+# these. Without this check the invocation exits 127 and gets folded into
+# "formatting issues" or "translations are out of date" — an install problem
+# wearing the mask of a content problem.
+for required_bin in prettier eslint i18next-cli; do
+  if [ ! -x "$BIN_DIR/$required_bin" ]; then
+    echo "🛑 - $required_bin missing from $BIN_DIR" >&2
+    echo "    run \`pnpm install\`" >&2
+    exit 1
+  fi
+done
 
 MODE=all
 FIX_ARGS=()
