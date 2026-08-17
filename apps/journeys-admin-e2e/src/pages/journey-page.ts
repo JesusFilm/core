@@ -449,7 +449,7 @@ export class JourneyPage {
     await expect(
       this.page
         .locator(
-          'div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+          'div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
           { hasText: journeyName }
         )
         .first()
@@ -457,10 +457,12 @@ export class JourneyPage {
   }
 
   async clickThreeDotOfCreatedNewTemple() {
+    // The menu box sits before the card link, and the inner IconButton is
+    // pointer-events: none, so click the box that owns the handler instead.
     await this.page
-      .locator(
-        `//h6[text()='${journeyName}']//ancestor::a/following-sibling::div//button[@id='journey-actions']`
-      )
+      .locator('div[aria-label="journey-card"]', { hasText: journeyName })
+      .getByTestId('JourneyCardMenuButton')
+      .first()
       .click()
   }
 
@@ -497,7 +499,7 @@ export class JourneyPage {
   async verifyCreatedNewTemplateMovedToArchiveOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="archived-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="archived-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: journeyName }
       )
     ).toBeVisible()
@@ -538,7 +540,7 @@ export class JourneyPage {
   async verifyCreatedNewTemplateMovedToTrashTabOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: journeyName }
       )
     ).toBeVisible()
@@ -608,7 +610,7 @@ export class JourneyPage {
   async verifyCreatedNewTemplateRemovedFromTrashTabOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: journeyName }
       )
     ).toBeHidden()
