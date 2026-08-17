@@ -33,7 +33,7 @@ This is an **Nx monorepo** (TypeScript). Apps live in `apps/`, GraphQL APIs in `
 
 ### Lint before push
 
-Agent pushes are lint-gated. When an agent environment is detected (`CLAUDECODE`/`CURSOR_AGENT`), `.husky/pre-push` runs the `lint:changed` script on committed changes. Manual human pushes skip the gate, and `git push --no-verify` skips everything. Run `pnpm lint:changed [--fix]` yourself anytime.
+Agent pushes are lint-gated. When an agent environment is detected (`CLAUDECODE`, `CURSOR_AGENT`, `CODEX_SANDBOX`, or `CODEX_SESSION_ID`), `.husky/pre-push` runs the `lint:changed` script on committed changes. Manual human pushes skip the gate, and `git push --no-verify` skips everything. Run `pnpm lint:changed [--fix]` yourself anytime.
 
 The script mirrors the two passes autofix.ci runs, in the same order, so a clean run means autofix.ci has no formatting or linting changes left to commit:
 

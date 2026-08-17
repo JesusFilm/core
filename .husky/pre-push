@@ -4,6 +4,14 @@
 # Agent-gated lint (ENG-3691): agents must lint what they push; manual human
 # pushes are not gated (run `pnpm lint:changed` yourself anytime). Escape
 # hatch for emergencies: `git push --no-verify`.
-if [ -n "${CLAUDECODE:-}" ] || [ -n "${CURSOR_AGENT:-}" ]; then
+#
+# One marker per agent: Claude Code, Cursor, then Codex. Codex needs two —
+# CODEX_SANDBOX is only set when the sandbox is active, so a run started with
+# --dangerously-bypass-approvals-and-sandbox would slip past it on its own.
+# Same pair the vendored CE skills use to detect a Codex session.
+if [ -n "${CLAUDECODE:-}" ] ||
+  [ -n "${CURSOR_AGENT:-}" ] ||
+  [ -n "${CODEX_SANDBOX:-}" ] ||
+  [ -n "${CODEX_SESSION_ID:-}" ]; then
   tools/scripts/lint-changed.sh --committed
 fi
