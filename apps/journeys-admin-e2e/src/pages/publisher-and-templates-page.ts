@@ -351,7 +351,7 @@ export class Publisher {
     // a casing regression would go undetected (NES-1876).
     await expect(
       this.page
-        .locator('div[aria-labelledby*="active-status-panel-tab"]')
+        .getByRole('tabpanel', { name: 'Active' })
         .getByRole('heading', { name: 'No Templates to display.', exact: true })
     ).toBeVisible()
   }
@@ -394,9 +394,9 @@ export class Publisher {
   }
 
   async verifyEmptyMessageInArchivedTab() {
-    const archivedTabPanel = this.page.locator(
-      'div[id*="archived-status-panel-tabpanel"]'
-    )
+    const archivedTabPanel = this.page.getByRole('tabpanel', {
+      name: 'Archived'
+    })
     // exact: true pins the casing — see verifyActiveTabShowsEmptyMessage.
     await expect(
       archivedTabPanel.getByRole('heading', {
@@ -472,12 +472,12 @@ export class Publisher {
   }
 
   async verifyAllTemplateAreDeletedFromTrashTab() {
-    const trashedTabPanel = this.page.locator(
-      'div[id*="trashed-status-panel-tabpanel"]'
-    )
+    // The tab is labelled 'Trash', not 'Trashed' — a tab panel takes its
+    // accessible name from the tab that labels it.
+    const trashedTabPanel = this.page.getByRole('tabpanel', { name: 'Trash' })
     await expect(
-      this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+      trashedTabPanel.locator(
+        'div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
       )
     ).toHaveCount(0)
     // exact: true pins the casing — see verifyActiveTabShowsEmptyMessage.
