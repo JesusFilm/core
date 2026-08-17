@@ -8,6 +8,8 @@ trigger-phrases that route a report to it. The ENG-3707 accessor fetches an area
 
 **Line format:** `area | domain: <path> | intake: <path> | triggers: …`
 
+**Structure contract** (map authors + accessor code): `CONTEXT-MAP-contract.md` — not always-in-context.
+
 ## Areas (NextSteps)
 
 - **journeys-admin** (creator/editor surface) | domain: `apps/journeys-admin/CONTEXT.md` | intake: `apps/journeys-admin/CONTEXT-intake.md` | triggers: "block won't save", "changes not showing in preview", "have to refresh to see it", "can't translate into <language>", "template won't let me customize", "transfer ownership", "analytics numbers are wrong", "historical data disappeared", "can't log in", "name shows Unknown", "works in incognito", "invite email never arrived", "I can see another team's data"
