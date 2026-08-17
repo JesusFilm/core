@@ -126,7 +126,7 @@ Review changed files (using the priority order from step 1.5 for large PRs). For
 | Category | When to flag | Example |
 |----------|-------------|---------|
 | **Critical** | Bugs, security holes, data loss, broken logic, missing error handling that will bite in production, **guardrail rule violations** | Race condition, SQL injection, unchecked null on a critical path, customizable block change missing sync |
-| **Concern** | Design issues, maintainability risks, unclear intent, missing tests for important behaviour, **convention violations from loaded rules** | Tight coupling, duplicated logic across files, using MUI in watch-modern, missing i18n wrapping |
+| **Concern** | Design issues, maintainability risks, unclear intent, missing tests for important behaviour, **convention violations from loaded rules** | Tight coupling, duplicated logic across files, missing i18n wrapping |
 | **Nit** | Style preference, minor naming, formatting — **only flag if pervasive pattern** | Single inconsistent variable name (skip), systematic naming convention violation across the PR (flag) |
 | **Skip** | Acceptable as-is. Readable, works, follows project conventions — or too subjective to be worth raising | Preferring `forEach` over `for...of`, minor comment wording |
 
