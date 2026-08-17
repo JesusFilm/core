@@ -5,13 +5,15 @@
 # pushes are not gated (run `pnpm lint:changed` yourself anytime). Escape
 # hatch for emergencies: `git push --no-verify`.
 #
-# One marker per agent: Claude Code, Cursor, then Codex. Codex needs two —
-# CODEX_SANDBOX is only set when the sandbox is active, so a run started with
-# --dangerously-bypass-approvals-and-sandbox would slip past it on its own.
-# Same pair the vendored CE skills use to detect a Codex session.
+# Claude Code and Cursor each set one known marker. Codex is matched on the
+# CODEX_ prefix instead of specific names: the documented ones (CODEX_SANDBOX,
+# CODEX_SESSION_ID) are conditional — CODEX_SANDBOX is only set while the
+# sandbox is active — and nobody here runs Codex to confirm the full set. A
+# missed name would fail silently by leaving those pushes ungated, so match
+# the namespace rather than guess its members. A false positive only means
+# running a lint we wanted to run anyway.
 if [ -n "${CLAUDECODE:-}" ] ||
   [ -n "${CURSOR_AGENT:-}" ] ||
-  [ -n "${CODEX_SANDBOX:-}" ] ||
-  [ -n "${CODEX_SESSION_ID:-}" ]; then
+  env | grep -q '^CODEX_'; then
   tools/scripts/lint-changed.sh --committed
 fi
