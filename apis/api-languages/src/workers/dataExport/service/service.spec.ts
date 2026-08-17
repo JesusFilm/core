@@ -73,23 +73,20 @@ vi.mock('@aws-sdk/client-s3', () => {
     }
     return {}
   })
-  const MockS3Client = vi.fn().mockImplementation(() => ({
-    send: mockSend
-  }))
+  const MockS3Client = vi.fn(function () {
+    return { send: mockSend }
+  })
   return {
     S3Client: MockS3Client,
-    HeadObjectCommand: vi.fn().mockImplementation((params) => ({
-      constructor: { name: 'HeadObjectCommand' },
-      ...params
-    })),
-    CopyObjectCommand: vi.fn().mockImplementation((params) => ({
-      constructor: { name: 'CopyObjectCommand' },
-      ...params
-    })),
-    PutObjectCommand: vi.fn().mockImplementation((params) => ({
-      constructor: { name: 'PutObjectCommand' },
-      ...params
-    }))
+    HeadObjectCommand: vi.fn(function (params) {
+      return { constructor: { name: 'HeadObjectCommand' }, ...params }
+    }),
+    CopyObjectCommand: vi.fn(function (params) {
+      return { constructor: { name: 'CopyObjectCommand' }, ...params }
+    }),
+    PutObjectCommand: vi.fn(function (params) {
+      return { constructor: { name: 'PutObjectCommand' }, ...params }
+    })
   }
 })
 
@@ -222,9 +219,9 @@ describe('Database Export Service', () => {
       }
       return {}
     })
-    ;(S3Client as Mock).mockImplementation(() => ({
-      send: mockSend
-    }))
+    ;(S3Client as Mock).mockImplementation(function () {
+      return { send: mockSend }
+    })
 
     const mockLogger = {
       info: vi.fn(),
