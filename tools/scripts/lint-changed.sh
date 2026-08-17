@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # Lint only changed files (full `nx lint` is far too slow for commit-time feedback).
-# Mirrors the autofix.ci steps that can write a file, in the same order, so a
-# clean run here means autofix.ci has nothing left to commit:
+# Mirrors the autofix.ci steps this can apply — Prettier, ESLint and i18next —
+# in the same order, so a clean run here leaves autofix.ci nothing to commit
+# except codegen (see below):
 #
 #   1. Prettier   — formatting, across every changed file of any type.
 #   2. ESLint     — code rules, across changed JS/TS only.
@@ -13,7 +14,7 @@
 # token); prisma-generate writes nothing that is tracked. codegen is the one
 # real gap — it can commit, but it `rm -rf`s a project's whole __generated__
 # directory before regenerating from a deprecated global apollo CLI, which is
-# not something a push hook should do to a working tree. It stays with CI.
+# not something a pre-push step should do to a working tree. It stays with CI.
 #
 # All three passes are needed. ESLint cannot report a formatting problem: the repo
 # uses eslint-config-prettier, which exists to switch every formatting rule off,

@@ -43,7 +43,7 @@ This is an **Nx monorepo** (TypeScript). Apps live in `apps/`, GraphQL APIs in `
 
 ```bash
 # Commit your own work first, so anything dirty afterwards is a generated fix.
-pnpm lint:changed --fix
+pnpm lint:changed --fix || { echo "unfixable errors above — fix them, then re-run"; exit 1; }
 
 if [ -n "$(git status --porcelain)" ]; then
   git add -A && git commit -m "chore: lint fixes"
