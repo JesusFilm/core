@@ -42,14 +42,21 @@ This is an **Nx monorepo** (TypeScript). Apps live in `apps/`, GraphQL APIs in `
 **Agents: before every `git push`, run this and push the result as one unit.**
 
 ```bash
-pnpm lint:changed --fix        # applies formatting, lint fixes and translation extraction
-git add -A && git commit -m "chore: lint fixes"   # only if it changed anything
+# Commit your own work first, so anything dirty afterwards is a generated fix.
+pnpm lint:changed --fix
+
+if [ -n "$(git status --porcelain)" ]; then
+  git add -A && git commit -m "chore: lint fixes"
+fi
+
 git push
 ```
 
+Commit your own changes _before_ running this. The `git add -A` above stages whatever is dirty, so if you leave unrelated work uncommitted it will be swept into the lint commit.
+
 There is deliberately **no pre-push hook**. A git hook cannot do this job: git resolves which commits to push _before_ running the hook, so fixes a hook commits are left behind and never reach the remote. Doing it in the agent, before the push is issued, is the only way the fixes actually travel with the branch. Humans are not gated at all — this is an agent instruction, not enforcement.
 
-What the fixes are: everything [autofix.ci](https://autofix.ci) would otherwise commit to your PR. It is generated output, not opinion, so it belongs in your commit rather than in a bot commit afterwards. `lint:changed` mirrors those steps in the same order:
+What the fixes are: [autofix.ci](https://autofix.ci)'s Prettier, ESLint and i18next steps — everything it would otherwise commit to your PR **except `codegen`**, which is not covered locally (see below). It is generated output, not opinion, so it belongs in your commit rather than in a bot commit afterwards. `lint:changed` mirrors those three steps in the same order:
 
 1. **Prettier** on every changed file of any type (`.md`, `.json`, `.yaml`, `.css`, … — not just JS/TS). Under a second.
 2. **ESLint** on changed JS/TS only, scoped per workspace; full `nx lint` is far too slow. Roughly 5–20s per touched workspace.
