@@ -33,9 +33,18 @@ This is an **Nx monorepo** (TypeScript). Apps live in `apps/`, GraphQL APIs in `
 
 ### Lint before push
 
-Agent pushes are lint-gated. When an agent environment is detected (`CLAUDECODE`/`CURSOR_AGENT`), `.husky/pre-push` runs the `lint:changed` script on committed changes. It lints only changed files, scoped per workspace; full `nx lint` is far too slow. Manual human pushes skip the gate, and `git push --no-verify` skips everything. Run `pnpm lint:changed [--fix]` yourself anytime. [autofix.ci](https://autofix.ci) stays the CI backstop and owns Prettier formatting.
+Agent pushes are lint-gated. When an agent environment is detected (`CLAUDECODE`/`CURSOR_AGENT`), `.husky/pre-push` runs the `lint:changed` script on committed changes. Manual human pushes skip the gate, and `git push --no-verify` skips everything. Run `pnpm lint:changed [--fix]` yourself anytime.
+
+The script mirrors the two passes autofix.ci runs, in the same order, so a clean run means autofix.ci has nothing left to commit:
+
+1. **Prettier** on every changed file of any type (`.md`, `.json`, `.yaml`, `.css`, … — not just JS/TS). Costs well under a second.
+2. **ESLint** on changed JS/TS only, scoped per workspace; full `nx lint` is far too slow.
+
+Both passes are load-bearing. ESLint **cannot** catch a formatting problem — the repo uses `eslint-config-prettier`, which exists to switch every formatting rule off, and there is no `eslint-plugin-prettier`. Formatting belongs to Prettier alone. [autofix.ci](https://autofix.ci) stays the CI backstop, but it should no longer have formatting left to fix.
 
 Contract of the gate: it lints the branch diff against `origin/main`, refreshed when the network allows. It does not lint the literal ref-range of the push. Forks, other remotes, and branches cut from `stage` are all judged against `origin/main`, so a `stage`-cut branch may over-lint (use `git push --no-verify` if that blocks you). `LINT_CHANGED_JOBS` caps parallel workspaces (default 4).
+
+Not covered locally: autofix.ci also runs `codegen`, `prisma-generate`, and `extract-translations`. Adding a new `t()` string without regenerating still leaves `libs/locales/*.json` churn for CI to commit.
 
 ### Documented Solutions
 
