@@ -114,4 +114,53 @@ describe('useDeleteOnKeyPress', () => {
     })
     await waitFor(async () => expect(deleteBlock).toHaveBeenCalled())
   })
+
+  it('should delete the selected card when a previously selected edge is deselected', async () => {
+    mockUseKeyPress.mockReturnValue(false)
+    const stepBlock = {
+      __typename: 'StepBlock',
+      id: 'step.id'
+    } as unknown as TreeBlock<StepBlock>
+    const initialState = {
+      selectedBlock: stepBlock,
+      activeSlide: ActiveSlide.JourneyFlow,
+      steps: [stepBlock]
+    } as unknown as EditorState
+    const edge = {
+      id: 'edge.id',
+      source: 'source',
+      target: 'target'
+    } as unknown as Edge
+
+    const { result, rerender } = renderHook(() => useDeleteOnKeyPress(), {
+      wrapper: ({ children }) => (
+        <JourneyProvider value={{ journey: defaultJourney }}>
+          <EditorProvider initialState={initialState}>
+            <MockedProvider>
+              <MuxVideoUploadProvider>{children}</MuxVideoUploadProvider>
+            </MockedProvider>
+          </EditorProvider>
+        </JourneyProvider>
+      )
+    })
+
+    // select the edge, then deselect it (empty selection)
+    await act(async () =>
+      result.current.onSelectionChange({
+        edges: [edge]
+      } as unknown as OnSelectionChangeParams)
+    )
+    await act(async () =>
+      result.current.onSelectionChange({
+        edges: []
+      } as unknown as OnSelectionChangeParams)
+    )
+
+    // pressing delete should now remove the selected card, not the edge
+    mockUseKeyPress.mockReturnValue(true)
+    rerender()
+
+    await waitFor(async () => expect(deleteBlock).toHaveBeenCalled())
+    expect(deleteEdge).not.toHaveBeenCalled()
+  })
 })

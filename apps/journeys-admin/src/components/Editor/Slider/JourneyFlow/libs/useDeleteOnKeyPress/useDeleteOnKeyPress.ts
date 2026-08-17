@@ -25,6 +25,10 @@ export function useDeleteOnKeyPress(): {
   const onSelectionChange: OnSelectionChangeFunc = ({ edges }) => {
     if (edges.length > 0) {
       setSelected(edges[0])
+    } else if (selectedBlock?.__typename === 'StepBlock') {
+      setSelected(selectedBlock)
+    } else {
+      setSelected(undefined)
     }
   }
 
