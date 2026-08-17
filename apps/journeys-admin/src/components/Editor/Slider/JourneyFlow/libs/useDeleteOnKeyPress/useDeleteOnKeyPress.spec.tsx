@@ -53,6 +53,7 @@ describe('useDeleteOnKeyPress', () => {
   const deleteResult = {} as unknown as MutationResult<BlockDelete>
 
   beforeEach(() => {
+    vi.clearAllMocks()
     mockUseDeleteEdge.mockReturnValue(deleteEdge)
     mockUseBlockDeleteMutation.mockReturnValue([deleteBlock, deleteResult])
   })
