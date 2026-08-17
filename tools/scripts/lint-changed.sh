@@ -75,6 +75,27 @@ resolve_bin_dir() {
   esac
   MAIN_ROOT=$(dirname "$common")
   if [ -d "$MAIN_ROOT/node_modules/.bin" ]; then
+    # Borrowing the binaries only works if node can also reach the main
+    # checkout's node_modules when it resolves what the *configs* import
+    # (.prettierrc's prettier-plugin-tailwindcss, eslint plugins, i18next's
+    # glob). Node resolves those by walking up from the worktree, so it only
+    # reaches MAIN_ROOT if the worktree sits inside it. A sibling worktree
+    # (git worktree add ../core-feature) resolves nothing, and the tools then
+    # exit non-zero in a way that is indistinguishable from a real lint
+    # failure — so refuse up front instead.
+    case "$REPO_ROOT/" in
+      "$MAIN_ROOT"/*) ;;
+      *)
+        echo "🛑 - this worktree is not inside the main checkout, so tool plugins cannot resolve" >&2
+        echo "    worktree:      $REPO_ROOT" >&2
+        echo "    main checkout: $MAIN_ROOT" >&2
+        echo "    create worktrees under the main checkout (.claude/worktrees/<branch>)," >&2
+        echo "    or run \`pnpm install\` here to give this checkout its own node_modules" >&2
+        # exit rather than return: the caller's "could not find node_modules/.bin"
+        # would be wrong here — we found it, it just isn't reachable from this path
+        exit 1
+        ;;
+    esac
     BIN_DIR="$MAIN_ROOT/node_modules/.bin"
     echo "note: using the main checkout's toolchain ($MAIN_ROOT/node_modules)"
     return 0

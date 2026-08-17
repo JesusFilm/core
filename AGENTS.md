@@ -1,3 +1,9 @@
+## Before you push
+
+**Asked to push? Run `pnpm lint:changed --fix` first, commit anything it changes, and push that in the same go.** Never push without it.
+
+It applies the same fixes [autofix.ci](https://autofix.ci) would otherwise commit to your PR afterwards — formatting, lint fixes, translation extraction. They are generated output, so they belong in your commit, not in a bot commit on top of it. There is no pre-push hook and nothing will stop you: if you skip this, the bot does it for you and the PR grows a `fix: lint issues` commit. Details in [Lint before push](#lint-before-push-agents).
+
 ## Agent skills
 
 ### Issue tracker
