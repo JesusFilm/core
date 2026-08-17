@@ -35,7 +35,7 @@ This is an **Nx monorepo** (TypeScript). Apps live in `apps/`, GraphQL APIs in `
 
 Agent pushes are lint-gated. When an agent environment is detected (`CLAUDECODE`/`CURSOR_AGENT`), `.husky/pre-push` runs the `lint:changed` script on committed changes. Manual human pushes skip the gate, and `git push --no-verify` skips everything. Run `pnpm lint:changed [--fix]` yourself anytime.
 
-The script mirrors the two passes autofix.ci runs, in the same order, so a clean run means autofix.ci has nothing left to commit:
+The script mirrors the two passes autofix.ci runs, in the same order, so a clean run means autofix.ci has no formatting or linting changes left to commit:
 
 1. **Prettier** on every changed file of any type (`.md`, `.json`, `.yaml`, `.css`, … — not just JS/TS). Costs well under a second.
 2. **ESLint** on changed JS/TS only, scoped per workspace; full `nx lint` is far too slow.

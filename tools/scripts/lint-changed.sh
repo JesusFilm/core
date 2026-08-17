@@ -2,7 +2,7 @@
 
 # Lint only changed files (full `nx lint` is far too slow for commit-time feedback).
 # Mirrors the two passes autofix.ci runs, in the same order, so a clean run here
-# means autofix.ci has nothing left to commit:
+# means autofix.ci has no formatting or linting changes left to commit:
 #
 #   1. Prettier — formatting, across every changed file of any type.
 #   2. ESLint   — code rules, across changed JS/TS only.
