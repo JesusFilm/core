@@ -45,7 +45,11 @@ All three are load-bearing. ESLint **cannot** catch a formatting problem — the
 
 Contract of the gate: it lints the branch diff against `origin/main`, refreshed when the network allows. It does not lint the literal ref-range of the push. Forks, other remotes, and branches cut from `stage` are all judged against `origin/main`, so a `stage`-cut branch may over-lint (use `git push --no-verify` if that blocks you). `LINT_CHANGED_JOBS` caps parallel workspaces (default 4).
 
-Not covered locally: **`codegen`** is the one autofix.ci step that can still commit to your PR. Run `nx codegen <project>` after changing a GraphQL schema or query. Note it is environment-sensitive: it works in the devcontainer, but on a plain host checkout `npx apollo client:codegen` can fail with `EOVERRIDE` from the `next` override in `package.json`, because `apollo` is not a declared dependency (autofix.ci installs it globally at runtime via `npm i -g apollo graphql`). The remaining steps cannot produce a commit at all: `type-check` and `subgraph-check` only report (and `subgraph-check` needs a Hive token), and `prisma-generate` writes nothing that is tracked.
+Not covered locally: **`codegen`** is the one autofix.ci step that can still commit to your PR. Run `nx codegen <project>` after changing a GraphQL schema or query.
+
+It is deliberately not gated, because it only works where `apollo` is already installed globally. The devcontainer installs it in [`post-create-command.sh`](.devcontainer/post-create-command.sh) (`npm i -g nx foreman apollo graphql`) and autofix.ci does the same, which is why it works in both. On a plain host checkout `apollo` is absent, so `npx` tries to fetch it and fails with `EOVERRIDE` from the `next` override in `package.json` — gating it would mean requiring that global install everywhere, which we chose not to do. Work in the devcontainer, or expect autofix.ci to commit the regenerated files.
+
+The remaining steps cannot produce a commit at all: `type-check` and `subgraph-check` only report (and `subgraph-check` needs a Hive token), and `prisma-generate` writes nothing that is tracked.
 
 ### Documented Solutions
 
