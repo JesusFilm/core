@@ -67,6 +67,9 @@ export class Publisher {
     await this.getTemplateListOfActiveTab()
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Archive All')
+    await this.verifyBulkActionDialogText(
+      'Are you sure you would like to archive all active Templates immediately?'
+    )
     await this.clickDialogBoxBtn('Archive')
     await this.verifyToastMessage('Templates Archived')
     await this.verifyActiveTabShowsEmptyMessage()
@@ -78,6 +81,9 @@ export class Publisher {
     await this.getTemplateListOfArchivedTab()
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Unarchive All')
+    await this.verifyBulkActionDialogText(
+      'Are you sure you would like to unarchive all archived Templates immediately?'
+    )
     await this.clickDialogBoxBtn('Unarchive')
     await this.verifyToastMessage('Templates Unarchived')
     await this.verifyEmptyMessageInArchivedTab()
@@ -85,9 +91,16 @@ export class Publisher {
     await this.verifyAllTemplateMovedToActiveTab()
   }
 
-  async verifyAllJourneysMovedToTrash() {
+  // 'Trash All' is reachable from both the active and archived tabs and the
+  // dialog wording differs, so the caller says which one it is.
+  async verifyAllJourneysMovedToTrash(fromStatus: 'active' | 'archived') {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Trash All')
+    await this.verifyBulkActionDialogText(
+      fromStatus === 'active'
+        ? 'Are you sure you would like to trash all active Templates immediately?'
+        : 'Are you sure you would like to trash all archived Templates immediately?'
+    )
     await this.clickDialogBoxBtn('Trash')
     await this.verifyToastMessage('Templates Trashed')
     await this.clickTrashTab()
@@ -97,6 +110,9 @@ export class Publisher {
   async verifyAllTemplateRestoredToActiveTab() {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Restore All')
+    await this.verifyBulkActionDialogText(
+      'Are you sure you would like to restore all trashed Templates immediately?'
+    )
     await this.clickDialogBoxBtn('Restore')
     await this.verifyToastMessage('Templates Restored')
     await this.clickActiveTab()
@@ -106,6 +122,9 @@ export class Publisher {
   async verifyAlltemplateDeletedForeverFromTrashTab() {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Delete All Forever')
+    await this.verifyBulkActionDialogText(
+      'Are you sure you would like to permanently delete all trashed Templates immediately?'
+    )
     await this.clickDialogBoxBtn('Delete Forever')
     await this.verifyToastMessage('Templates Deleted')
     await this.verifyAllTemplateAreDeletedFromTrashTab()
@@ -336,6 +355,14 @@ export class Publisher {
         hasText: option
       })
       .click()
+  }
+
+  // Publisher bulk dialogs are a single sentence, worded differently from the
+  // team pages — the two sets cannot share a check.
+  async verifyBulkActionDialogText(message: string) {
+    await expect(
+      this.page.getByRole('dialog').getByText(message, { exact: true })
+    ).toBeVisible()
   }
 
   async clickDialogBoxBtn(buttonName) {

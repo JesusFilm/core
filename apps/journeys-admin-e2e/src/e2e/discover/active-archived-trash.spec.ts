@@ -69,12 +69,12 @@ test.describe('Verify user able to Active, Archived, Trash the journeys', () => 
     await journeyPage.clickArchivedTab()
     await journeyPage.getJourneyListOfArchivedTab()
     // Verify the user able to move the all journeys from Archived to Trash page
-    await journeyPage.verifyAllJourneysMovedToTrash()
+    await journeyPage.verifyAllJourneysMovedToTrash('archived')
     // Verify the user able to restore the all journeys from Trash to active page
     await journeyPage.verifyAllJourneysRestored()
     await journeyPage.getJourneyListOfActiveTab()
     // Verify the user able to move the all journeys from Active to Trash page
-    await journeyPage.verifyAllJourneysMovedToTrash()
+    await journeyPage.verifyAllJourneysMovedToTrash('active')
     // Verify the user able to delete the all file permanently in Trash page
     await journeyPage.verifyAllJourneysDeletedForeverFromTrashTab()
     await journeyPage.clickActiveTab() // clickin on active tab

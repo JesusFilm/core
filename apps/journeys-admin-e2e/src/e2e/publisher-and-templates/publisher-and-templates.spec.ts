@@ -76,14 +76,14 @@ test.describe('Publisher page - All Templates', () => {
     await publisherPage.verifyAllTemplateMovedUnarchieToActiveTab()
     await publisherPage.getTemplateListOfActiveTab()
     // Verify the user able to move the all journeys from Active to Trash page
-    await publisherPage.verifyAllJourneysMovedToTrash()
+    await publisherPage.verifyAllJourneysMovedToTrash('active')
     await publisherPage.getTemplateListOfTrashTab()
     // Verify the user able to restore the all journeys from Trash to active page
     await publisherPage.verifyAllTemplateRestoredToActiveTab()
     await publisherPage.verifyAllTemplateMovedActiveToArchivedTab()
     await publisherPage.getTemplateListOfArchivedTab()
     // Verify the user able to move the all journeys from Archived to Trash page
-    await publisherPage.verifyAllJourneysMovedToTrash()
+    await publisherPage.verifyAllJourneysMovedToTrash('archived')
     // Verify the user able to delete the all file permanently in templates admin page
     await publisherPage.verifyAlltemplateDeletedForeverFromTrashTab()
   })

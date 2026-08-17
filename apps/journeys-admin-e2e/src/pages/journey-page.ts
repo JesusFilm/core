@@ -165,6 +165,9 @@ export class JourneyPage {
     await this.getJourneyListOfActiveTab()
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Archive All')
+    await this.verifyBulkActionDialogText(
+      'This will archive all active Journeys you own.'
+    )
     await this.clickDialogBoxBtn('Archive')
     await this.verifySnackbarToastMessage('Journeys Archived')
     await this.verifyActiveTabShowsEmptyMessage()
@@ -172,9 +175,16 @@ export class JourneyPage {
     await this.verifyAllJourneyMovedToArchivedTab()
   }
 
-  async verifyAllJourneysMovedToTrash() {
+  // 'Trash All' is reachable from both the active and archived views and the
+  // dialog wording differs, so the caller says which one it is.
+  async verifyAllJourneysMovedToTrash(fromStatus: 'active' | 'archived') {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Trash All')
+    await this.verifyBulkActionDialogText(
+      fromStatus === 'active'
+        ? 'This will trash all active Journeys you own.'
+        : 'This will trash all archived Journeys you own.'
+    )
     await this.clickDialogBoxBtn('Trash')
     await this.verifySnackbarToastMessage('Journeys Trashed')
     await this.clickTrashTab()
@@ -185,6 +195,9 @@ export class JourneyPage {
     await this.getJourneyListOfTrashTab()
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Restore All')
+    await this.verifyBulkActionDialogText(
+      'This will restore all trashed Journeys you own.'
+    )
     await this.clickDialogBoxBtn('Restore')
     await this.verifySnackbarToastMessage('Journeys Restored')
     await this.clickActiveTab()
@@ -194,6 +207,9 @@ export class JourneyPage {
   async verifyAllJourneysDeletedForeverFromTrashTab() {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Delete All Forever')
+    await this.verifyBulkActionDialogText(
+      'This will permanently delete all trashed Journeys you own.'
+    )
     await this.clickDialogBoxBtn('Delete Forever')
     await this.verifySnackbarToastMessage('Journeys Deleted')
     await this.verifyAlljourneysAreDeletedFromTrashTab()
@@ -202,6 +218,9 @@ export class JourneyPage {
   async verifyAllJourneysMovedFromArchivedToActiveTab() {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Unarchive All')
+    await this.verifyBulkActionDialogText(
+      'This will unarchive all archived Journeys you own.'
+    )
     await this.clickDialogBoxBtn('Unarchive')
     await this.verifyToastMessage()
     await this.verifyEmptyMessageInArchivedTab()
@@ -701,6 +720,17 @@ export class JourneyPage {
 
   async getJourneyListOfActiveTab() {
     await this.captureJourneyList()
+  }
+
+  // Team-page bulk dialogs pair a specific sentence with a shared prompt, so
+  // both lines are checked. exact: true means a casing or wording change fails
+  // instead of slipping through a substring match.
+  async verifyBulkActionDialogText(message: string) {
+    const dialog = this.page.getByRole('dialog')
+    await expect(dialog.getByText(message, { exact: true })).toBeVisible()
+    await expect(
+      dialog.getByText('Are you sure you want to proceed?', { exact: true })
+    ).toBeVisible()
   }
 
   async clickDialogBoxBtn(buttonName) {
