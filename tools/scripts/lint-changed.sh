@@ -1,13 +1,21 @@
 #!/bin/bash
 
 # Lint only changed files (full `nx lint` is far too slow for commit-time feedback).
-# Mirrors the two passes autofix.ci runs, in the same order, so a clean run here
-# means autofix.ci has no formatting or linting changes left to commit:
+# Mirrors the autofix.ci steps that can write a file, in the same order, so a
+# clean run here means autofix.ci has nothing left to commit:
 #
-#   1. Prettier — formatting, across every changed file of any type.
-#   2. ESLint   — code rules, across changed JS/TS only.
+#   1. Prettier   — formatting, across every changed file of any type.
+#   2. ESLint     — code rules, across changed JS/TS only.
+#   3. i18next    — extracted translations, for changed projects only.
 #
-# Both passes are needed. ESLint cannot report a formatting problem: the repo
+# Deliberately not mirrored, because none of them can produce a commit:
+# type-check and subgraph-check only report (and subgraph-check needs a Hive
+# token); prisma-generate writes nothing that is tracked. codegen is the one
+# real gap — it can commit, but it `rm -rf`s a project's whole __generated__
+# directory before regenerating from a deprecated global apollo CLI, which is
+# not something a push hook should do to a working tree. It stays with CI.
+#
+# All three passes are needed. ESLint cannot report a formatting problem: the repo
 # uses eslint-config-prettier, which exists to switch every formatting rule off,
 # and there is no eslint-plugin-prettier anywhere. Formatting is Prettier's job
 # alone, and Prettier also covers the file types ESLint never sees (.md, .json,
@@ -26,10 +34,11 @@
 #   tools/scripts/lint-changed.sh --staged     # staged files only (lints their working-tree contents)
 #   tools/scripts/lint-changed.sh --fix        # apply autofixes to the working tree (re-stage/re-commit them yourself)
 #
-# Prettier costs well under a second. ESLint costs roughly 5-20s per touched
-# workspace: type-aware lint rules build a TypeScript program per workspace on
-# every run. That is why the only hook on this is the agent-gated pre-push
-# (.husky/pre-push), not a per-commit hook.
+# Prettier costs well under a second, and i18next extraction roughly 2-3s per
+# touched project. ESLint costs roughly 5-20s per touched workspace: type-aware
+# lint rules build a TypeScript program per workspace on every run. That is why
+# the only hook on this is the agent-gated pre-push (.husky/pre-push), not a
+# per-commit hook.
 
 set -euo pipefail
 
@@ -212,20 +221,15 @@ if [ ${#SKIPPED[@]} -gt 0 ]; then
   printf '  %s\n' "${SKIPPED[@]}"
 fi
 
-if [ ${#WS_LIST[@]} -eq 0 ]; then
-  if [ "$PRETTIER_FAILED" = "1" ]; then
-    echo "🛑 - formatting issues in the file(s) above; rerun with --fix"
-    exit 1
-  fi
-  echo "✅ - formatting checked; no changed JS/TS for eslint"
-  exit 0
-fi
-
 OUTDIR=$(mktemp -d)
 trap 'rm -rf "$OUTDIR"' EXIT
 
+if [ ${#WS_LIST[@]} -eq 0 ]; then
+  echo "no changed JS/TS for eslint"
+fi
+
 i=0
-for ws in "${WS_LIST[@]}"; do
+for ws in ${WS_LIST[@]+"${WS_LIST[@]}"}; do
   ws_files=()
   while IFS= read -r f; do ws_files+=("$f"); done <<<"${WS_FILES[$i]}"
   tag="$i-${ws//\//-}"
@@ -245,7 +249,7 @@ wait
 
 FAILED=0
 i=0
-for ws in "${WS_LIST[@]}"; do
+for ws in ${WS_LIST[@]+"${WS_LIST[@]}"}; do
   tag="$i-${ws//\//-}"
   if [ -f "$OUTDIR/$tag.out" ]; then
     cat "$OUTDIR/$tag.out"
@@ -260,14 +264,72 @@ for ws in "${WS_LIST[@]}"; do
   i=$((i + 1))
 done
 
-if [ "$FAILED" = "1" ] || [ "$PRETTIER_FAILED" = "1" ]; then
+# ---------------------------------------------------------------------------
+# Pass 3: i18next extraction (translations) — changed projects only.
+# ---------------------------------------------------------------------------
+# autofix.ci runs `extract-translations` and commits whatever it writes, so a
+# new t() string that was never extracted arrives as a bot commit on the PR.
+# The extractor reads only js/jsx/ts/tsx, so reuse the file list ESLint built
+# its groups from, regrouped by nearest i18next.config.js.
+#
+# --dry-run --ci reports drift by exit code without touching the working tree;
+# under --fix we let it write, exactly as the bot would.
+I18N_LIST=()
+while IFS= read -r f; do
+  if [ -z "$f" ]; then continue; fi
+  case "$f" in
+    *.ts | *.tsx | *.js | *.jsx) ;;
+    *) continue ;;
+  esac
+  if [ ! -f "$f" ]; then continue; fi
+  d=$(dirname "$f")
+  cfg=""
+  while [ "$d" != "." ] && [ "$d" != "/" ]; do
+    if [ -f "$d/i18next.config.js" ]; then
+      cfg="$d/i18next.config.js"
+      break
+    fi
+    d=$(dirname "$d")
+  done
+  if [ -z "$cfg" ]; then continue; fi
+  seen=0
+  for existing in ${I18N_LIST[@]+"${I18N_LIST[@]}"}; do
+    if [ "$existing" = "$cfg" ]; then
+      seen=1
+      break
+    fi
+  done
+  if [ "$seen" -eq 0 ]; then I18N_LIST+=("$cfg"); fi
+done <<<"$RAW"
+
+I18N_FAILED=0
+if [ ${#I18N_LIST[@]} -eq 0 ]; then
+  echo "no changed files in a project with translations"
+else
+  I18N_ARGS=(--quiet)
+  if [ ${#FIX_ARGS[@]} -eq 0 ]; then
+    I18N_ARGS+=(--dry-run --ci)
+  fi
+  for cfg in "${I18N_LIST[@]}"; do
+    echo "extracting translations for $(dirname "$cfg")..."
+    if ! "$BIN_DIR/i18next-cli" extract --config "$cfg" "${I18N_ARGS[@]}"; then
+      I18N_FAILED=1
+      echo "  ^ translations are stale for $(dirname "$cfg")"
+    fi
+  done
+fi
+
+if [ "$FAILED" = "1" ] || [ "$PRETTIER_FAILED" = "1" ] || [ "$I18N_FAILED" = "1" ]; then
   if [ "$PRETTIER_FAILED" = "1" ]; then
     echo "🛑 - formatting issues (prettier, files named above)"
   fi
   if [ "$FAILED" = "1" ]; then
     echo "🛑 - lint failed (file and rule named above)"
   fi
+  if [ "$I18N_FAILED" = "1" ]; then
+    echo "🛑 - extracted translations are out of date (projects named above)"
+  fi
   echo "    fix, or rerun with --fix for autofixable issues"
   exit 1
 fi
-echo "✅ - format and lint passed"
+echo "✅ - format, lint and translations passed"
