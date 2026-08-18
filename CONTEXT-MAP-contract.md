@@ -58,13 +58,12 @@ Authors may add further keys freely (additive); consumers must ignore unknown ke
   `— T4 (cache) · T5 (optimistic drift)`, `— T6, expectation mismatch`). Sections with no T-token
   are untyped (how-to / FAQ / flagged entries) — allowed.
 - `type_tags` in frontmatter equals the union of T-tags found in the file's headings.
-- Bodies are prose. Bold labels (`**Signatures:**`, `**Localizing question (reporter):**`,
-  `**Then ask:**`, `**Ready when:**`, `**Status:**`, `**Look first (fixer):**`, …) are the
-  recommended layout so a reader knows where to look; the vocabulary is open, and consumers read
-  bodies as prose — they do not parse labels.
-- **One exception: `Handoff:`.** Every section closes with a `**Handoff:**` verdict
-  (agent-able / human / how-to-FAQ / ops). The validator warns when a section lacks one, and
-  recognises it flush-left, indented, or as a `- ` bullet.
+- Bodies are prose. Bold labels (`**Signatures:**`, `**Look first (fixer):**`, …) are a
+  recommended layout so a reader knows where to look — the vocabulary is open, and consumers
+  read bodies as prose rather than parsing labels.
+- **One exception: `Handoff:`.** Every section carries a `**Handoff:**` verdict
+  (agent-able / human / how-to-FAQ / ops), closing its diagnosis. The validator warns when a
+  section lacks one.
   - A section with no diagnosis layer yet still closes with one: route it to a human, and let a
     `**Status:**` line explain why there is nothing more to say.
 
