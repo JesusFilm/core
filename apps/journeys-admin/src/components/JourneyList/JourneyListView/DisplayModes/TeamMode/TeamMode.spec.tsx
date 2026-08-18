@@ -2,8 +2,6 @@ import { render } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { type MockedFunction } from 'vitest'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
 import { ThemeProvider } from '../../../../ThemeProvider'
 
 import { TeamMode } from './TeamMode'
@@ -140,7 +138,7 @@ describe('TeamMode', () => {
     expect(mockRenderList).toHaveBeenCalledWith('templates', selectedStatus)
   })
 
-  it('should show Sort and bulk-actions menu on Team Templates when teamTemplateCollection is off', () => {
+  it('should show Sort and bulk-actions menu on Team Templates when listControlsOwnedByContent is not set', () => {
     const routerMock = {
       query: { type: 'templates' }
     } as unknown as NextRouter
@@ -169,29 +167,28 @@ describe('TeamMode', () => {
     ).toBeInTheDocument()
   })
 
-  it('should hide Sort and bulk-actions menu on Team Templates when teamTemplateCollection is on (NES-1872)', () => {
+  it('should hide Sort and bulk-actions menu on Team Templates when listControlsOwnedByContent is true (NES-1872)', () => {
     const routerMock = {
       query: { type: 'templates' }
     } as unknown as NextRouter
     mockedUseRouter.mockReturnValue(routerMock)
 
     const { queryByRole } = render(
-      <FlagsProvider flags={{ teamTemplateCollection: true }}>
-        <ThemeProvider>
-          <TeamMode
-            activeContentTypeTab={1}
-            handleContentTypeChange={mockHandleContentTypeChange}
-            contentTypeOptions={contentTypeOptions}
-            selectedStatus="active"
-            handleStatusChange={mockHandleStatusChange}
-            sortOrder={undefined}
-            setSortOrder={mockSetSortOrder}
-            setActiveEvent={mockSetActiveEvent}
-            router={routerMock}
-            renderList={mockRenderList}
-          />
-        </ThemeProvider>
-      </FlagsProvider>
+      <ThemeProvider>
+        <TeamMode
+          activeContentTypeTab={1}
+          handleContentTypeChange={mockHandleContentTypeChange}
+          contentTypeOptions={contentTypeOptions}
+          selectedStatus="active"
+          handleStatusChange={mockHandleStatusChange}
+          sortOrder={undefined}
+          setSortOrder={mockSetSortOrder}
+          setActiveEvent={mockSetActiveEvent}
+          router={routerMock}
+          renderList={mockRenderList}
+          listControlsOwnedByContent
+        />
+      </ThemeProvider>
     )
 
     expect(queryByRole('button', { name: 'Sort By' })).not.toBeInTheDocument()
@@ -200,29 +197,28 @@ describe('TeamMode', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should still show Sort and bulk-actions menu on Team Projects when teamTemplateCollection is on', () => {
+  it('should still show Sort and bulk-actions menu on Team Projects when listControlsOwnedByContent is false', () => {
     const routerMock = {
       query: { type: 'journeys' }
     } as unknown as NextRouter
     mockedUseRouter.mockReturnValue(routerMock)
 
     const { getByRole } = render(
-      <FlagsProvider flags={{ teamTemplateCollection: true }}>
-        <ThemeProvider>
-          <TeamMode
-            activeContentTypeTab={0}
-            handleContentTypeChange={mockHandleContentTypeChange}
-            contentTypeOptions={contentTypeOptions}
-            selectedStatus="active"
-            handleStatusChange={mockHandleStatusChange}
-            sortOrder={undefined}
-            setSortOrder={mockSetSortOrder}
-            setActiveEvent={mockSetActiveEvent}
-            router={routerMock}
-            renderList={mockRenderList}
-          />
-        </ThemeProvider>
-      </FlagsProvider>
+      <ThemeProvider>
+        <TeamMode
+          activeContentTypeTab={0}
+          handleContentTypeChange={mockHandleContentTypeChange}
+          contentTypeOptions={contentTypeOptions}
+          selectedStatus="active"
+          handleStatusChange={mockHandleStatusChange}
+          sortOrder={undefined}
+          setSortOrder={mockSetSortOrder}
+          setActiveEvent={mockSetActiveEvent}
+          router={routerMock}
+          renderList={mockRenderList}
+          listControlsOwnedByContent={false}
+        />
+      </ThemeProvider>
     )
 
     expect(getByRole('button', { name: 'Sort By' })).toBeInTheDocument()

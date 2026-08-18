@@ -3,7 +3,6 @@ import Tabs from '@mui/material/Tabs'
 import { useRouter } from 'next/router'
 import { ReactElement, SyntheticEvent } from 'react'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import type { ContentType } from '../../JourneyListView'
@@ -33,6 +32,13 @@ export interface TeamModeProps extends SharedModeProps {
    * shrinks so the icon stays clear of the panel.
    */
   infoPanelActive?: boolean
+  /**
+   * True when TemplateGalleryPageList owns its own Sort/bulk-actions menu
+   * for the currently active tab — computed once in JourneyList (see its
+   * showTemplateInfoPanel) and passed down rather than re-derived here from
+   * the flag + route (NES-1872 review).
+   */
+  listControlsOwnedByContent?: boolean
 }
 
 export const TeamMode = ({
@@ -46,16 +52,15 @@ export const TeamMode = ({
   setActiveEvent,
   router,
   renderList,
-  infoPanelActive = false
+  infoPanelActive = false,
+  listControlsOwnedByContent = false
 }: TeamModeProps): ReactElement => {
-  const { teamTemplateCollection } = useFlags()
   // Sort and the bulk-actions menu here act on every active template,
   // collections and unsectioned alike — too blunt once the Collections
   // panel is showing (NES-1872). They move down into TemplateGalleryPageList,
   // scoped to just the All Templates (unsectioned) section, instead of
   // sitting in this shared row. The status filter is unaffected.
-  const hideListControls =
-    router?.query?.type === 'templates' && teamTemplateCollection === true
+  const hideListControls = listControlsOwnedByContent
 
   return (
     <>
