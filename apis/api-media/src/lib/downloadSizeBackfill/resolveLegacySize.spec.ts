@@ -4,14 +4,12 @@ import type { HttpSizeClient } from './types'
 describe('resolveLegacySize', () => {
   it('resolves from the final URL Content-Length', async () => {
     const httpClient: HttpSizeClient = {
-      head: vi
-        .fn()
-        .mockResolvedValue({
-          ok: true,
-          status: 200,
-          contentLength: '12345',
-          contentRangeTotal: null
-        }),
+      head: vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        contentLength: '12345',
+        contentRangeTotal: null
+      }),
       rangeGet: vi.fn()
     }
 
@@ -26,22 +24,18 @@ describe('resolveLegacySize', () => {
 
   it('falls back to a Range request when HEAD is unusable', async () => {
     const httpClient: HttpSizeClient = {
-      head: vi
-        .fn()
-        .mockResolvedValue({
-          ok: false,
-          status: 403,
-          contentLength: null,
-          contentRangeTotal: null
-        }),
-      rangeGet: vi
-        .fn()
-        .mockResolvedValue({
-          ok: true,
-          status: 206,
-          contentLength: '1',
-          contentRangeTotal: 987654
-        })
+      head: vi.fn().mockResolvedValue({
+        ok: false,
+        status: 403,
+        contentLength: null,
+        contentRangeTotal: null
+      }),
+      rangeGet: vi.fn().mockResolvedValue({
+        ok: true,
+        status: 206,
+        contentLength: '1',
+        contentRangeTotal: 987654
+      })
     }
 
     const result = await resolveLegacySize(

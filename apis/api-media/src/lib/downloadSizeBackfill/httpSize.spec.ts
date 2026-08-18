@@ -62,15 +62,13 @@ describe('resolveHttpSize', () => {
   it('uses Content-Length when the server ignores the Range header (200)', async () => {
     const client: HttpSizeClient = {
       head: vi.fn().mockResolvedValue(makeHeaders({ ok: false, status: 405 })),
-      rangeGet: vi
-        .fn()
-        .mockResolvedValue(
-          makeHeaders({
-            status: 200,
-            contentLength: '999',
-            contentRangeTotal: null
-          })
-        )
+      rangeGet: vi.fn().mockResolvedValue(
+        makeHeaders({
+          status: 200,
+          contentLength: '999',
+          contentRangeTotal: null
+        })
+      )
     }
 
     const result = await resolveHttpSize('https://example.com/file.mp4', client)

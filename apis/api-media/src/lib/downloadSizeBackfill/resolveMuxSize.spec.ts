@@ -7,22 +7,18 @@ function makeHttpClient(
   overrides: Partial<HttpSizeClient> = {}
 ): HttpSizeClient {
   return {
-    head: vi
-      .fn()
-      .mockResolvedValue({
-        ok: false,
-        status: 500,
-        contentLength: null,
-        contentRangeTotal: null
-      }),
-    rangeGet: vi
-      .fn()
-      .mockResolvedValue({
-        ok: false,
-        status: 500,
-        contentLength: null,
-        contentRangeTotal: null
-      }),
+    head: vi.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+      contentLength: null,
+      contentRangeTotal: null
+    }),
+    rangeGet: vi.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+      contentLength: null,
+      contentRangeTotal: null
+    }),
     ...overrides
   }
 }
@@ -61,14 +57,12 @@ describe('resolveMuxSize', () => {
       }
     }
     const httpClient = makeHttpClient({
-      head: vi
-        .fn()
-        .mockResolvedValue({
-          ok: true,
-          status: 200,
-          contentLength: '243808898',
-          contentRangeTotal: null
-        })
+      head: vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        contentLength: '243808898',
+        contentRangeTotal: null
+      })
     })
 
     const result = await resolveMuxSize(URL, muxAsset, httpClient)
@@ -83,14 +77,12 @@ describe('resolveMuxSize', () => {
       }
     }
     const httpClient = makeHttpClient({
-      head: vi
-        .fn()
-        .mockResolvedValue({
-          ok: true,
-          status: 200,
-          contentLength: '500',
-          contentRangeTotal: null
-        })
+      head: vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        contentLength: '500',
+        contentRangeTotal: null
+      })
     })
 
     const result = await resolveMuxSize(URL, muxAsset, httpClient)
@@ -100,14 +92,12 @@ describe('resolveMuxSize', () => {
 
   it('falls back to HTTP verification when there is no Mux asset metadata at all', async () => {
     const httpClient = makeHttpClient({
-      head: vi
-        .fn()
-        .mockResolvedValue({
-          ok: true,
-          status: 200,
-          contentLength: '700',
-          contentRangeTotal: null
-        })
+      head: vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        contentLength: '700',
+        contentRangeTotal: null
+      })
     })
 
     const result = await resolveMuxSize(URL, null, httpClient)
@@ -137,14 +127,12 @@ describe('resolveMuxSize', () => {
       }
     }
     const httpClient = makeHttpClient({
-      head: vi
-        .fn()
-        .mockResolvedValue({
-          ok: true,
-          status: 200,
-          contentLength: '500',
-          contentRangeTotal: null
-        })
+      head: vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        contentLength: '500',
+        contentRangeTotal: null
+      })
     })
 
     const result = await resolveMuxSize(URL, muxAsset, httpClient)
@@ -162,14 +150,12 @@ describe('resolveMuxSize', () => {
         }
       }
       const httpClient = makeHttpClient({
-        head: vi
-          .fn()
-          .mockResolvedValue({
-            ok: true,
-            status: 200,
-            contentLength: '500',
-            contentRangeTotal: null
-          })
+        head: vi.fn().mockResolvedValue({
+          ok: true,
+          status: 200,
+          contentLength: '500',
+          contentRangeTotal: null
+        })
       })
 
       const result = await resolveMuxSize(URL, muxAsset, httpClient)
