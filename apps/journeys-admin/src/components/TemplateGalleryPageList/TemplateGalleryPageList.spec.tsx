@@ -179,7 +179,7 @@ const journeysMockWithArchivedJourney: MockedResponse<GetAdminJourneys> = {
   }
 }
 
-// A second journey, deliberately later-alphabetical but earlier-dated than
+// A second journey, deliberately earlier-alphabetical but earlier-dated than
 // journey-1 ("Welcome Tour") — TITLE sort and the default (updatedAt desc)
 // sort disagree on the order of these two, so a test using this pair can
 // prove sortOrder is actually being applied rather than coincidentally
