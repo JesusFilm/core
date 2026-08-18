@@ -36,6 +36,8 @@ const commonConfig = [
     // Parse every file with the TypeScript parser, including plain .js/.cjs/.mjs.
     // eslint-config-love used to supply this as its only surviving contribution;
     // it is inlined here so the policy is explicit rather than inherited.
+    // Deliberately without tsconfigRootDir — love set none either, and the
+    // **/*.ts,tsx block below adds one only for the files it matches.
     languageOptions: {
       parser: tsParser,
       parserOptions: { projectService: true }
@@ -112,6 +114,9 @@ const commonConfig = [
       'import/no-named-as-default-member': 'error',
       'import/no-mutable-exports': 'error',
       'import/no-amd': 'error',
+      // import/no-unused-modules is deliberately absent: ESLint 10 removed the
+      // FileEnumerator API it depends on, so the plugin no-ops and warns on
+      // every run. Nothing replaces dead-export detection for now.
       'import/first': 'error',
       'import/no-duplicates': 'error',
       'import/no-namespace': 'error',

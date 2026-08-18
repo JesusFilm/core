@@ -852,7 +852,7 @@ importers:
         specifier: 7.37.5
         version: 7.37.5(eslint@10.8.1(jiti@2.5.1))
       eslint-plugin-react-hooks:
-        specifier: ^7.1.1
+        specifier: 7.1.1
         version: 7.1.1(eslint@10.8.1(jiti@2.5.1))
       eslint-plugin-storybook:
         specifier: ^10.5.9
