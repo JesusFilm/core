@@ -824,6 +824,53 @@ describe('TemplateGalleryPageList', () => {
       ).toBeInTheDocument()
     })
 
+    it('closes quietly without firing a mutation when the unsectioned pool is empty on submit', async () => {
+      // A mock that WOULD succeed if the mutation were actually called with
+      // an empty ids list — if the guard didn't work, this mock would match
+      // and "Templates Archived" would show. Its absence is what proves the
+      // mutation was never fired, not just that some request failed.
+      const wouldSucceedIfCalledMock: MockedResponse = {
+        request: {
+          query: ARCHIVE_ACTIVE_JOURNEYS,
+          variables: { ids: [] }
+        },
+        result: {
+          data: {
+            journeysArchive: []
+          }
+        }
+      }
+
+      const { getByText, getByRole, queryByText } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMockWithTemplate,
+            journeysMock,
+            wouldSucceedIfCalledMock
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList event="archiveAllActive" />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Archive Templates')).toBeInTheDocument()
+      )
+      fireEvent.click(getByRole('button', { name: 'Archive' }))
+
+      await waitFor(() =>
+        expect(queryByText('Archive Templates')).not.toBeInTheDocument()
+      )
+      expect(queryByText('Templates Archived')).not.toBeInTheDocument()
+    })
+
     it('opens the archive confirmation dialog scoped to unsectioned templates when archiveAllActive fires', async () => {
       const { getByText } = render(
         <MockedProvider

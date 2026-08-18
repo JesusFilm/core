@@ -829,26 +829,32 @@ export function TemplateGalleryPageList({
   // affected by NES-1780/1778/1781) so those defects aren't inherited.
   const actionConfig = STATUS_ACTION_CONFIG[status]
 
-  const [safeMutation] = useMutation(actionConfig.safe.mutation, {
-    update(_cache, { data }) {
-      if (data?.[actionConfig.safe.mutationField] != null) {
-        enqueueSnackbar(t(actionConfig.safe.successMessageKey), {
-          variant: 'success'
-        })
-        void journeysQuery.refetch()
+  const [safeMutation, { loading: safeSubmitting }] = useMutation(
+    actionConfig.safe.mutation,
+    {
+      update(_cache, { data }) {
+        if (data?.[actionConfig.safe.mutationField] != null) {
+          enqueueSnackbar(t(actionConfig.safe.successMessageKey), {
+            variant: 'success'
+          })
+          void journeysQuery.refetch()
+        }
       }
     }
-  })
-  const [destructiveMutation] = useMutation(actionConfig.destructive.mutation, {
-    update(_cache, { data }) {
-      if (data?.[actionConfig.destructive.mutationField] != null) {
-        enqueueSnackbar(t(actionConfig.destructive.successMessageKey), {
-          variant: 'success'
-        })
-        void journeysQuery.refetch()
+  )
+  const [destructiveMutation, { loading: destructiveSubmitting }] = useMutation(
+    actionConfig.destructive.mutation,
+    {
+      update(_cache, { data }) {
+        if (data?.[actionConfig.destructive.mutationField] != null) {
+          enqueueSnackbar(t(actionConfig.destructive.successMessageKey), {
+            variant: 'success'
+          })
+          void journeysQuery.refetch()
+        }
       }
     }
-  })
+  )
 
   function handleCloseTemplateDialogs(): void {
     setSafeDialogOpen(false)
@@ -856,6 +862,14 @@ export function TemplateGalleryPageList({
   }
 
   async function handleSafeSubmit(): Promise<void> {
+    // Nothing to act on — the pool emptied out (e.g. everything got dragged
+    // into a collection) while the dialog was open. Close quietly rather
+    // than firing a mutation with an empty ids list and showing a success
+    // snackbar for a no-op.
+    if (unsectionedIds.length === 0) {
+      handleCloseTemplateDialogs()
+      return
+    }
     try {
       await safeMutation({ variables: { ids: unsectionedIds } })
     } catch (error) {
@@ -870,6 +884,10 @@ export function TemplateGalleryPageList({
   }
 
   async function handleDestructiveSubmit(): Promise<void> {
+    if (unsectionedIds.length === 0) {
+      handleCloseTemplateDialogs()
+      return
+    }
     try {
       await destructiveMutation({ variables: { ids: unsectionedIds } })
     } catch (error) {
@@ -1198,6 +1216,7 @@ export function TemplateGalleryPageList({
           <Dialog
             open={safeDialogOpen}
             onClose={handleCloseTemplateDialogs}
+            loading={safeSubmitting}
             dialogTitle={{
               title: dialogLabels.safe.title,
               closeButton: true
@@ -1218,6 +1237,7 @@ export function TemplateGalleryPageList({
           <Dialog
             open={destructiveDialogOpen}
             onClose={handleCloseTemplateDialogs}
+            loading={destructiveSubmitting}
             dialogTitle={{
               title: dialogLabels.destructive.title,
               closeButton: true
