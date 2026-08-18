@@ -494,6 +494,17 @@ export function TemplateGalleryPageList({
     [handleCardDialogOpenChange]
   )
 
+  // Bulk-action confirmation dialogs for the All Templates section
+  // (NES-1872). Declared here, ahead of `dialogOpen`, so opening one of
+  // these also locks drag-and-drop below — otherwise a template could be
+  // dragged into/out of a collection while e.g. "Archive All Templates not
+  // in a collection" is open, the same class of bug NES-1653/NES-1666
+  // already fixed for the other dialogs on this page.
+  const [safeDialogOpen, setSafeDialogOpen] = useState<boolean | undefined>()
+  const [destructiveDialogOpen, setDestructiveDialogOpen] = useState<
+    boolean | undefined
+  >()
+
   // True when any modal is open. While modal is open, page-level draggables
   // and droppables are disabled and any in-flight drag state is cleared
   // (NES-1653): cursor moves inside the dialog were continuing to drive
@@ -503,7 +514,9 @@ export function TemplateGalleryPageList({
   const dialogOpen =
     editTargetId != null ||
     publishSuccessCollection != null ||
-    openDialogCardIds.size > 0
+    openDialogCardIds.size > 0 ||
+    safeDialogOpen === true ||
+    destructiveDialogOpen === true
   const interactionsLocked = dragInFlight || dialogOpen
 
   useEffect(() => {
@@ -836,11 +849,6 @@ export function TemplateGalleryPageList({
       }
     }
   })
-
-  const [safeDialogOpen, setSafeDialogOpen] = useState<boolean | undefined>()
-  const [destructiveDialogOpen, setDestructiveDialogOpen] = useState<
-    boolean | undefined
-  >()
 
   function handleCloseTemplateDialogs(): void {
     setSafeDialogOpen(false)

@@ -22,7 +22,15 @@ import {
 import { GET_ADMIN_JOURNEYS } from '../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { getTemplateGalleryPageCreateMock } from '../../libs/useTemplateGalleryPageCreateMutation/useTemplateGalleryPageCreateMutation.mock'
 import { GET_TEMPLATE_GALLERY_PAGES } from '../../libs/useTemplateGalleryPagesQuery'
-import { ARCHIVE_ACTIVE_JOURNEYS } from '../JourneyList/JourneyListContent/JourneyListContent'
+import {
+  ARCHIVE_ACTIVE_JOURNEYS,
+  DELETE_TRASHED_JOURNEYS,
+  RESTORE_ARCHIVED_JOURNEYS,
+  RESTORE_TRASHED_JOURNEYS,
+  TRASH_ACTIVE_JOURNEYS,
+  TRASH_ARCHIVED_JOURNEYS
+} from '../JourneyList/JourneyListContent/JourneyListContent'
+import { SortOrder } from '../JourneyList/JourneySort'
 import { ThemeProvider } from '../ThemeProvider'
 
 import { TemplateGalleryPageList } from './TemplateGalleryPageList'
@@ -165,6 +173,83 @@ const journeysMockWithArchivedJourney: MockedResponse<GetAdminJourneys> = {
           ...(journeysMock.result as { data: GetAdminJourneys }).data
             .journeys[0],
           status: JourneyStatus.archived
+        }
+      ]
+    }
+  }
+}
+
+// A second journey, deliberately later-alphabetical but earlier-dated than
+// journey-1 ("Welcome Tour") — TITLE sort and the default (updatedAt desc)
+// sort disagree on the order of these two, so a test using this pair can
+// prove sortOrder is actually being applied rather than coincidentally
+// matching one ordering.
+const journeyAlpha = {
+  ...(journeysMock.result as { data: GetAdminJourneys }).data.journeys[0],
+  id: 'journey-2',
+  title: 'Alpha Editor',
+  createdAt: '2026-04-01T00:00:00.000Z',
+  updatedAt: '2026-04-02T00:00:00.000Z'
+}
+
+const journeysMockTwoActive: MockedResponse<GetAdminJourneys> = {
+  request: {
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      template: true,
+      teamId: TEAM_ID,
+      status: [JourneyStatus.draft, JourneyStatus.published]
+    }
+  },
+  result: {
+    data: {
+      journeys: [
+        (journeysMock.result as { data: GetAdminJourneys }).data.journeys[0],
+        journeyAlpha
+      ]
+    }
+  }
+}
+
+const journeysMockArchived: MockedResponse<GetAdminJourneys> = {
+  request: {
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      template: true,
+      teamId: TEAM_ID,
+      status: [JourneyStatus.archived]
+    }
+  },
+  result: {
+    data: {
+      journeys: [
+        {
+          ...(journeysMock.result as { data: GetAdminJourneys }).data
+            .journeys[0],
+          status: JourneyStatus.archived
+        }
+      ]
+    }
+  }
+}
+
+const journeysMockTrashed: MockedResponse<GetAdminJourneys> = {
+  request: {
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      template: true,
+      teamId: TEAM_ID,
+      status: [JourneyStatus.trashed]
+    }
+  },
+  result: {
+    data: {
+      journeys: [
+        {
+          ...(journeysMock.result as { data: GetAdminJourneys }).data
+            .journeys[0],
+          status: JourneyStatus.trashed,
+          trashedAt: '2026-08-01T00:00:00.000Z'
         }
       ]
     }
@@ -814,6 +899,459 @@ describe('TemplateGalleryPageList', () => {
       await waitFor(() =>
         expect(getByText('Templates Archived')).toBeInTheDocument()
       )
+    })
+  })
+
+  describe('Sort actually reorders the All Templates section (NES-1872)', () => {
+    // Regression: the original bug was that Sort By visibly changed
+    // selection but had no effect on order, since sortOrder never reached
+    // this component. journey-1 has a later updatedAt but an
+    // alphabetically-later title than journey-2 — TITLE sort and the
+    // default (updatedAt desc) sort put them in opposite orders, so this
+    // pair can only pass if sortOrder is genuinely applied.
+    it('orders by updatedAt (default) with the more-recently-updated template first', async () => {
+      const { getAllByTestId, getByTestId } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMock,
+            journeysMockTwoActive
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByTestId('JourneyCard-journey-1')).toBeInTheDocument()
+      )
+      const cards = getAllByTestId(/^JourneyCard-/)
+      expect(cards[0]).toHaveAttribute('data-testid', 'JourneyCard-journey-1')
+      expect(cards[1]).toHaveAttribute('data-testid', 'JourneyCard-journey-2')
+    })
+
+    it('orders by title when sortOrder is TITLE', async () => {
+      const { getAllByTestId, getByTestId } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMock,
+            journeysMockTwoActive
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList sortOrder={SortOrder.TITLE} />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByTestId('JourneyCard-journey-1')).toBeInTheDocument()
+      )
+      const cards = getAllByTestId(/^JourneyCard-/)
+      // "Alpha Editor" sorts before "Welcome Tour" — the opposite of the
+      // default-sort test above, proving sortOrder changed the result.
+      expect(cards[0]).toHaveAttribute('data-testid', 'JourneyCard-journey-2')
+      expect(cards[1]).toHaveAttribute('data-testid', 'JourneyCard-journey-1')
+    })
+  })
+
+  describe('Bulk actions exclude collection-grouped templates (NES-1872)', () => {
+    // journey-2 lives inside a collection; journey-1 is unsectioned. If the
+    // bulk action ever included journey-2, this exact-match mutation mock
+    // would fail to match and the test would time out waiting for the
+    // success snackbar — the collection template must never appear in ids.
+    const collectionsMockWithJourneyTwo: MockedResponse<GetTemplateGalleryPages> =
+      {
+        request: {
+          query: GET_TEMPLATE_GALLERY_PAGES,
+          variables: { teamId: TEAM_ID }
+        },
+        result: {
+          data: {
+            templateGalleryPages: [
+              {
+                ...(collectionsMock.result as { data: GetTemplateGalleryPages })
+                  .data.templateGalleryPages[0],
+                templates: [
+                  {
+                    __typename: 'TemplateGalleryItem',
+                    id: 'journey-2',
+                    title: 'Alpha Editor',
+                    primaryImageBlock: null
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+
+    it('archives only the unsectioned template, not the one grouped in a collection', async () => {
+      const archiveMock: MockedResponse = {
+        request: {
+          query: ARCHIVE_ACTIVE_JOURNEYS,
+          variables: { ids: ['journey-1'] }
+        },
+        result: {
+          data: {
+            journeysArchive: [
+              {
+                __typename: 'Journey',
+                id: 'journey-1',
+                status: JourneyStatus.archived,
+                fromTemplateId: null
+              }
+            ]
+          }
+        }
+      }
+
+      const { getByText, getByRole } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMockWithJourneyTwo,
+            journeysMockTwoActive,
+            archiveMock,
+            journeysMockTwoActive
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList event="archiveAllActive" />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Archive Templates')).toBeInTheDocument()
+      )
+      fireEvent.click(getByRole('button', { name: 'Archive' }))
+
+      await waitFor(() =>
+        expect(getByText('Templates Archived')).toBeInTheDocument()
+      )
+    })
+  })
+
+  describe('Remaining bulk-action events (NES-1872)', () => {
+    it('opens the Trash confirmation for trashAllActive and trashes only the unsectioned template', async () => {
+      const trashMock: MockedResponse = {
+        request: {
+          query: TRASH_ACTIVE_JOURNEYS,
+          variables: { ids: ['journey-1'] }
+        },
+        result: {
+          data: {
+            journeysTrash: [
+              {
+                __typename: 'Journey',
+                id: 'journey-1',
+                status: JourneyStatus.trashed,
+                fromTemplateId: null
+              }
+            ]
+          }
+        }
+      }
+
+      const { getByText, getByRole } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMock,
+            journeysMock,
+            trashMock,
+            journeysMock
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList event="trashAllActive" />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Trash Templates')).toBeInTheDocument()
+      )
+      expect(
+        getByText('This will trash all active Templates not in a collection.')
+      ).toBeInTheDocument()
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
+
+      await waitFor(() =>
+        expect(getByText('Templates Trashed')).toBeInTheDocument()
+      )
+    })
+
+    it('opens the Unarchive confirmation for restoreAllArchived and restores only the unsectioned template', async () => {
+      const restoreMock: MockedResponse = {
+        request: {
+          query: RESTORE_ARCHIVED_JOURNEYS,
+          variables: { ids: ['journey-1'] }
+        },
+        result: {
+          data: {
+            journeysRestore: [
+              {
+                __typename: 'Journey',
+                id: 'journey-1',
+                status: JourneyStatus.published,
+                fromTemplateId: null
+              }
+            ]
+          }
+        }
+      }
+
+      const { getByText, getByRole } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            journeysMockArchived,
+            restoreMock,
+            journeysMockArchived
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList
+                  status="archived"
+                  event="restoreAllArchived"
+                />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Unarchive Templates')).toBeInTheDocument()
+      )
+      expect(
+        getByText(
+          'This will unarchive all archived Templates not in a collection.'
+        )
+      ).toBeInTheDocument()
+      fireEvent.click(getByRole('button', { name: 'Unarchive' }))
+
+      await waitFor(() =>
+        expect(getByText('Templates Unarchived')).toBeInTheDocument()
+      )
+    })
+
+    it('opens the Trash confirmation for trashAllArchived and trashes only the unsectioned template', async () => {
+      const trashMock: MockedResponse = {
+        request: {
+          query: TRASH_ARCHIVED_JOURNEYS,
+          variables: { ids: ['journey-1'] }
+        },
+        result: {
+          data: {
+            journeysTrash: [
+              {
+                __typename: 'Journey',
+                id: 'journey-1',
+                status: JourneyStatus.trashed,
+                fromTemplateId: null
+              }
+            ]
+          }
+        }
+      }
+
+      const { getByText, getByRole } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            journeysMockArchived,
+            trashMock,
+            journeysMockArchived
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList
+                  status="archived"
+                  event="trashAllArchived"
+                />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Trash Templates')).toBeInTheDocument()
+      )
+      expect(
+        getByText('This will trash all archived Templates not in a collection.')
+      ).toBeInTheDocument()
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
+
+      await waitFor(() =>
+        expect(getByText('Templates Trashed')).toBeInTheDocument()
+      )
+    })
+
+    it('opens the Restore confirmation for restoreAllTrashed and restores only the unsectioned template', async () => {
+      const restoreMock: MockedResponse = {
+        request: {
+          query: RESTORE_TRASHED_JOURNEYS,
+          variables: { ids: ['journey-1'] }
+        },
+        result: {
+          data: {
+            journeysRestore: [
+              {
+                __typename: 'Journey',
+                id: 'journey-1',
+                status: JourneyStatus.published,
+                fromTemplateId: null
+              }
+            ]
+          }
+        }
+      }
+
+      const { getByText, getByRole } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            journeysMockTrashed,
+            restoreMock,
+            journeysMockTrashed
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList
+                  status="trashed"
+                  event="restoreAllTrashed"
+                />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Restore Templates')).toBeInTheDocument()
+      )
+      expect(
+        getByText(
+          'This will restore all trashed Templates not in a collection.'
+        )
+      ).toBeInTheDocument()
+      fireEvent.click(getByRole('button', { name: 'Restore' }))
+
+      await waitFor(() =>
+        expect(getByText('Templates Restored')).toBeInTheDocument()
+      )
+    })
+
+    it('opens the Delete Forever confirmation for deleteAllTrashed and deletes only the unsectioned template', async () => {
+      const deleteMock: MockedResponse = {
+        request: {
+          query: DELETE_TRASHED_JOURNEYS,
+          variables: { ids: ['journey-1'] }
+        },
+        result: {
+          data: {
+            journeysDelete: [
+              {
+                __typename: 'Journey',
+                id: 'journey-1',
+                status: JourneyStatus.deleted,
+                fromTemplateId: null
+              }
+            ]
+          }
+        }
+      }
+
+      const { getByText, getByRole } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            journeysMockTrashed,
+            deleteMock,
+            journeysMockTrashed
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList
+                  status="trashed"
+                  event="deleteAllTrashed"
+                />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Delete Templates Forever')).toBeInTheDocument()
+      )
+      fireEvent.click(getByRole('button', { name: 'Delete Forever' }))
+
+      await waitFor(() =>
+        expect(getByText('Templates Deleted')).toBeInTheDocument()
+      )
+    })
+  })
+
+  describe('Interaction lock during bulk-action dialogs (CodeRabbit)', () => {
+    // A template could otherwise be dragged into/out of a collection while
+    // e.g. "Archive All Templates not in a collection" is open — the same
+    // class of bug NES-1653/NES-1666 already fixed for the other dialogs
+    // on this page.
+    it('marks the DnD subtree inert while a bulk-action confirmation dialog is open', async () => {
+      const { getByTestId, getByText } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMock,
+            journeysMock
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList event="archiveAllActive" />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Archive Templates')).toBeInTheDocument()
+      )
+      expect(getByTestId('TemplateGalleryDndScope')).toHaveAttribute('inert')
     })
   })
 })
