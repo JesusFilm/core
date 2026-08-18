@@ -27,8 +27,8 @@ The relaxations granted to `*.spec.*` and `*.stories.*` files — Jest-plugin ru
 **Import plugin is the `-x` fork**:
 Rules are still written `import/...`, but the plugin behind that name is `eslint-plugin-import-x`; upstream `eslint-plugin-import` calls APIs ESLint 10 removed. Settings use the fork's own namespace (`import-x/internal-regex`), so a stray `import/internal-regex` is silently ignored.
 
-**No dead-export detection**:
-`import/no-unused-modules` was dropped, not disabled by preference: ESLint 10 removed the `FileEnumerator` API it needs, so the plugin no-ops and prints a banner on every run. Nothing currently replaces it.
+**No dead-export detection, and never was**:
+`import/no-unused-modules` was dropped because ESLint 10 removed the `FileEnumerator` API it needs, so the rule no-ops and prints a banner on every run. Note it reported nothing here _before_ the upgrade either: it was configured as bare `'error'`, and the rule returns early unless given `unusedExports` or `missingExports`. So no coverage was lost — the repo has never had dead-export detection. Adding it means a dedicated tool (knip or similar), not a lint rule.
 
 **`projectService`, never `project`**:
 Type-aware linting resolves programs through `projectService`. `typescript-eslint` errors outright if a config supplies both, so no `eslint.config.mjs` may reintroduce `project`.

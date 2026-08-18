@@ -116,7 +116,9 @@ const commonConfig = [
       'import/no-amd': 'error',
       // import/no-unused-modules is deliberately absent: ESLint 10 removed the
       // FileEnumerator API it depends on, so the plugin no-ops and warns on
-      // every run. Nothing replaces dead-export detection for now.
+      // every run. It reported nothing before the upgrade either — bare
+      // 'error' is inert without `unusedExports`/`missingExports` — so this
+      // removes a rule that never fired, not working coverage.
       'import/first': 'error',
       'import/no-duplicates': 'error',
       'import/no-namespace': 'error',
