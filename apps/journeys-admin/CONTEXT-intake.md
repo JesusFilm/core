@@ -214,7 +214,7 @@ created / sync not running).
   (`googleCreate.mutation.ts`, `googleUpdate.mutation.ts`); the sync worker →
   `apis/api-journeys/src/workers/googleSheetsSync/`; the row/header build + write-to-sheet →
   `apis/api-journeys/src/schema/googleSheetsSync/appendEventToGoogleSheets.ts`.
-- **Handoff:** OAuth reconnect → often human; sync-job defects → agent-able.
+  **Handoff:** OAuth reconnect → often human; sync-job defects → agent-able.
   **Growth Spaces:** dormant — no recent reports, believed unused. Map stays thin; route to a human.
 
 ## Email notifications
