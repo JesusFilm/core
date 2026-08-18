@@ -61,18 +61,15 @@ Authors may add further keys freely (additive); consumers must ignore unknown ke
 - Bodies are built from bold-label lines (`**Signatures:**`, `**Localizing question (reporter):**`,
   `**Then ask:**`, `**Ready when:**`, `**Status:**`, `**Look first (fixer):**`, `**Handoff:**`, …).
   A label line matches after stripping leading indentation and an optional `- ` list marker — the
-  flush-left, indented (list-item continuation), and list-bullet (`- **Look first (fixer):** …`)
-  forms are all accepted. The reserved `Handoff:` label below is the exception: consumers key on it
-  semantically, so it is written flush-left or indented, never as a list bullet. The bold may
-  extend past the label over the whole line, label and value together (e.g.
-  `**Localizing question (reporter): does a refresh fix it?**`).
+  flush-left, indented (list-item continuation), and list-bullet (`- **Handoff:** …`) forms are
+  all accepted. The bold may extend past the label over the whole line, label and value
+  together (e.g. `**Localizing question (reporter): does a refresh fix it?**`).
   The label vocabulary is **open** — authors may introduce new labels; consumers must not assume a
   fixed set or order — with one exception:
 - **`Handoff:` is reserved.** Every section closes its diagnosis with a `**Handoff:**` verdict
   (agent-able / human / how-to-FAQ / ops), the one label consumers may key on semantically.
-  - A section with no diagnosis layer yet still closes with one. "Too new to diagnose", "too
-    low-signal to encode" and "dormant, route to a human" are verdicts; a `**Status:**` line
-    explaining why there is nothing more to say does not replace one.
+  - A section with no diagnosis layer yet still closes with one: route it to a human, and let a
+    `**Status:**` line explain why there is nothing more to say.
 
 ## Index ↔ frontmatter sync
 
