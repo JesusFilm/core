@@ -114,6 +114,11 @@ const STATUS_FILTER_TO_JOURNEY_STATUSES: Record<
   trashed: [JourneyStatus.trashed]
 }
 
+// All six bulk-action mutations below take the same {ids: string[]}
+// variables shape. Named generically since it backs every one of them, not
+// just ArchiveActiveJourneys.
+type BulkMutationVariables = ArchiveActiveJourneysVariables
+
 // Dialog copy + event routing for the All Templates (unsectioned) section
 // (NES-1872), one lookup replacing what would otherwise be parallel `switch
 // (status)` statements. "safe" is always the less-destructive action for a
@@ -272,6 +277,50 @@ function getScrollParent(node: HTMLElement): HTMLElement | null {
     parent = parent.parentElement
   }
   return null
+}
+
+interface BulkActionDialogLabels {
+  title: string
+  submitLabel: string
+  message: string
+}
+
+interface BulkActionDialogProps {
+  open: boolean | undefined
+  submitting: boolean
+  labels: BulkActionDialogLabels
+  onClose: () => void
+  onSubmit: () => Promise<void>
+}
+
+// Shared shape behind the two bulk-action confirmation dialogs (Archive/
+// Restore vs Trash/Delete Forever) — same title/message/submit-label
+// layout, only the copy and handler differ per call site (NES-1872).
+function BulkActionDialog({
+  open,
+  submitting,
+  labels,
+  onClose,
+  onSubmit
+}: BulkActionDialogProps): ReactElement | null {
+  const { t } = useTranslation('apps-journeys-admin')
+  if (open == null) return null
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      loading={submitting}
+      dialogTitle={{ title: labels.title, closeButton: true }}
+      dialogAction={{
+        onSubmit,
+        submitLabel: labels.submitLabel,
+        closeLabel: t('Cancel')
+      }}
+    >
+      <Typography sx={{ fontWeight: 'bold' }}>{labels.message}</Typography>
+      <Typography>{t('Are you sure you want to proceed?')}</Typography>
+    </Dialog>
+  )
 }
 
 export function TemplateGalleryPageList({
@@ -823,10 +872,10 @@ export function TemplateGalleryPageList({
   // each mutation's response field differs by name, so a single generic
   // useMutation<TData, TVariables> call can't honestly describe every
   // branch at once. Variables are the same {ids: string[]} shape for all
-  // six, so ArchiveActiveJourneysVariables is reused rather than importing
-  // six near-identical Variables types.
+  // six, so BulkMutationVariables (aliased below) is reused rather than
+  // importing six near-identical Variables types.
   const [archiveActiveMutation, { loading: archiveActiveSubmitting }] =
-    useMutation<ArchiveActiveJourneys, ArchiveActiveJourneysVariables>(
+    useMutation<ArchiveActiveJourneys, BulkMutationVariables>(
       ARCHIVE_ACTIVE_JOURNEYS,
       {
         update(_cache, { data }) {
@@ -839,7 +888,7 @@ export function TemplateGalleryPageList({
     )
   const [trashActiveMutation, { loading: trashActiveSubmitting }] = useMutation<
     TrashActiveJourneys,
-    ArchiveActiveJourneysVariables
+    BulkMutationVariables
   >(TRASH_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysTrash != null) {
@@ -849,7 +898,7 @@ export function TemplateGalleryPageList({
     }
   })
   const [restoreArchivedMutation, { loading: restoreArchivedSubmitting }] =
-    useMutation<RestoreArchivedJourneys, ArchiveActiveJourneysVariables>(
+    useMutation<RestoreArchivedJourneys, BulkMutationVariables>(
       RESTORE_ARCHIVED_JOURNEYS,
       {
         update(_cache, { data }) {
@@ -861,7 +910,7 @@ export function TemplateGalleryPageList({
       }
     )
   const [trashArchivedMutation, { loading: trashArchivedSubmitting }] =
-    useMutation<TrashArchivedJourneys, ArchiveActiveJourneysVariables>(
+    useMutation<TrashArchivedJourneys, BulkMutationVariables>(
       TRASH_ARCHIVED_JOURNEYS,
       {
         update(_cache, { data }) {
@@ -873,7 +922,7 @@ export function TemplateGalleryPageList({
       }
     )
   const [restoreTrashedMutation, { loading: restoreTrashedSubmitting }] =
-    useMutation<RestoreTrashedJourneys, ArchiveActiveJourneysVariables>(
+    useMutation<RestoreTrashedJourneys, BulkMutationVariables>(
       RESTORE_TRASHED_JOURNEYS,
       {
         update(_cache, { data }) {
@@ -885,7 +934,7 @@ export function TemplateGalleryPageList({
       }
     )
   const [deleteTrashedMutation, { loading: deleteTrashedSubmitting }] =
-    useMutation<DeleteTrashedJourneys, ArchiveActiveJourneysVariables>(
+    useMutation<DeleteTrashedJourneys, BulkMutationVariables>(
       DELETE_TRASHED_JOURNEYS,
       {
         update(_cache, { data }) {
@@ -945,7 +994,9 @@ export function TemplateGalleryPageList({
     setDestructiveDialogOpen(false)
   }
 
-  async function handleSafeSubmit(): Promise<void> {
+  async function submitBulkAction(
+    mutate: (ids: string[]) => Promise<unknown>
+  ): Promise<void> {
     // Nothing to act on — the pool emptied out (e.g. everything got dragged
     // into a collection) while the dialog was open. Close quietly rather
     // than firing a mutation with an empty ids list and showing a success
@@ -955,7 +1006,7 @@ export function TemplateGalleryPageList({
       return
     }
     try {
-      await safeMutate(unsectionedIds)
+      await mutate(unsectionedIds)
     } catch (error) {
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {
@@ -967,23 +1018,9 @@ export function TemplateGalleryPageList({
     handleCloseTemplateDialogs()
   }
 
-  async function handleDestructiveSubmit(): Promise<void> {
-    if (unsectionedIds.length === 0) {
-      handleCloseTemplateDialogs()
-      return
-    }
-    try {
-      await destructiveMutate(unsectionedIds)
-    } catch (error) {
-      if (error instanceof Error) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      }
-    }
-    handleCloseTemplateDialogs()
-  }
+  const handleSafeSubmit = (): Promise<void> => submitBulkAction(safeMutate)
+  const handleDestructiveSubmit = (): Promise<void> =>
+    submitBulkAction(destructiveMutate)
 
   useEffect(() => {
     if (event === actionConfig.safe.event) {
@@ -1296,48 +1333,20 @@ export function TemplateGalleryPageList({
           }
           onClose={handleClosePublishSuccess}
         />
-        {safeDialogOpen != null && (
-          <Dialog
-            open={safeDialogOpen}
-            onClose={handleCloseTemplateDialogs}
-            loading={safeSubmitting}
-            dialogTitle={{
-              title: dialogLabels.safe.title,
-              closeButton: true
-            }}
-            dialogAction={{
-              onSubmit: handleSafeSubmit,
-              submitLabel: dialogLabels.safe.submitLabel,
-              closeLabel: t('Cancel')
-            }}
-          >
-            <Typography sx={{ fontWeight: 'bold' }}>
-              {dialogLabels.safe.message}
-            </Typography>
-            <Typography>{t('Are you sure you want to proceed?')}</Typography>
-          </Dialog>
-        )}
-        {destructiveDialogOpen != null && (
-          <Dialog
-            open={destructiveDialogOpen}
-            onClose={handleCloseTemplateDialogs}
-            loading={destructiveSubmitting}
-            dialogTitle={{
-              title: dialogLabels.destructive.title,
-              closeButton: true
-            }}
-            dialogAction={{
-              onSubmit: handleDestructiveSubmit,
-              submitLabel: dialogLabels.destructive.submitLabel,
-              closeLabel: t('Cancel')
-            }}
-          >
-            <Typography sx={{ fontWeight: 'bold' }}>
-              {dialogLabels.destructive.message}
-            </Typography>
-            <Typography>{t('Are you sure you want to proceed?')}</Typography>
-          </Dialog>
-        )}
+        <BulkActionDialog
+          open={safeDialogOpen}
+          submitting={safeSubmitting}
+          labels={dialogLabels.safe}
+          onClose={handleCloseTemplateDialogs}
+          onSubmit={handleSafeSubmit}
+        />
+        <BulkActionDialog
+          open={destructiveDialogOpen}
+          submitting={destructiveSubmitting}
+          labels={dialogLabels.destructive}
+          onClose={handleCloseTemplateDialogs}
+          onSubmit={handleDestructiveSubmit}
+        />
       </Box>
     </GalleryDialogLockContext.Provider>
   )
