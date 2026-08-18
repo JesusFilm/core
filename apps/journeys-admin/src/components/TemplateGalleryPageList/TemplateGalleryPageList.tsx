@@ -837,18 +837,17 @@ export function TemplateGalleryPageList({
         }
       }
     )
-  const [trashActiveMutation, { loading: trashActiveSubmitting }] =
-    useMutation<TrashActiveJourneys, ArchiveActiveJourneysVariables>(
-      TRASH_ACTIVE_JOURNEYS,
-      {
-        update(_cache, { data }) {
-          if (data?.journeysTrash != null) {
-            enqueueSnackbar(t('Templates Trashed'), { variant: 'success' })
-            void journeysQuery.refetch()
-          }
-        }
+  const [trashActiveMutation, { loading: trashActiveSubmitting }] = useMutation<
+    TrashActiveJourneys,
+    ArchiveActiveJourneysVariables
+  >(TRASH_ACTIVE_JOURNEYS, {
+    update(_cache, { data }) {
+      if (data?.journeysTrash != null) {
+        enqueueSnackbar(t('Templates Trashed'), { variant: 'success' })
+        void journeysQuery.refetch()
       }
-    )
+    }
+  })
   const [restoreArchivedMutation, { loading: restoreArchivedSubmitting }] =
     useMutation<RestoreArchivedJourneys, ArchiveActiveJourneysVariables>(
       RESTORE_ARCHIVED_JOURNEYS,
