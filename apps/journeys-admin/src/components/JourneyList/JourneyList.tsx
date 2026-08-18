@@ -139,20 +139,25 @@ export function JourneyList({
     contentType: ContentType,
     status: JourneyStatusFilter
   ): ReactElement => {
+    // Only pass event to the currently active content type to prevent duplicate actions
+    const eventForThisContentType =
+      contentType === currentContentType ? event : undefined
+
     if (contentType === 'templates' && teamTemplateCollection === true) {
       return (
         <TemplateGalleryPageList
           visible={contentType === currentContentType}
           status={status}
+          sortOrder={sortOrder}
+          onSortOrderChange={handleSetSortOrder}
+          event={eventForThisContentType}
+          onEvent={handleClick}
           onOpenInfo={
             showTemplateInfoPanel ? handleOpenTemplateInfoDrawer : undefined
           }
         />
       )
     }
-    // Only pass event to the currently active content type to prevent duplicate actions
-    const eventForThisContentType =
-      contentType === currentContentType ? event : undefined
     return (
       <JourneyListContent
         contentType={contentType}

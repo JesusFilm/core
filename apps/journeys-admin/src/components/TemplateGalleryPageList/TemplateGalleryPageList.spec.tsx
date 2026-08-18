@@ -22,6 +22,7 @@ import {
 import { GET_ADMIN_JOURNEYS } from '../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { getTemplateGalleryPageCreateMock } from '../../libs/useTemplateGalleryPageCreateMutation/useTemplateGalleryPageCreateMutation.mock'
 import { GET_TEMPLATE_GALLERY_PAGES } from '../../libs/useTemplateGalleryPagesQuery'
+import { ARCHIVE_ACTIVE_JOURNEYS } from '../JourneyList/JourneyListContent/JourneyListContent'
 import { ThemeProvider } from '../ThemeProvider'
 
 import { TemplateGalleryPageList } from './TemplateGalleryPageList'
@@ -673,6 +674,145 @@ describe('TemplateGalleryPageList', () => {
       expect(second.getByTestId('CollectionCardToggle-page-1')).toHaveAttribute(
         'aria-expanded',
         'false'
+      )
+    })
+  })
+
+  describe('All Templates header (NES-1872)', () => {
+    // page-1 holds journey-1, so the unsectioned pool is empty — the header
+    // (title, Sort, bulk-actions menu) must still render, or those controls
+    // would vanish along with the empty section.
+    const collectionsMockWithTemplate: MockedResponse<GetTemplateGalleryPages> =
+      {
+        request: {
+          query: GET_TEMPLATE_GALLERY_PAGES,
+          variables: { teamId: TEAM_ID }
+        },
+        result: {
+          data: {
+            templateGalleryPages: [
+              {
+                ...(collectionsMock.result as { data: GetTemplateGalleryPages })
+                  .data.templateGalleryPages[0],
+                templates: [
+                  {
+                    __typename: 'TemplateGalleryItem',
+                    id: 'journey-1',
+                    title: 'Welcome Tour',
+                    primaryImageBlock: null
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+
+    it('renders Sort and the bulk-actions menu even when every template is in a collection', async () => {
+      const { getByText, getByRole } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMockWithTemplate,
+            journeysMock
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(
+          getByText('All templates are in collections.')
+        ).toBeInTheDocument()
+      )
+      expect(getByText('All Templates')).toBeInTheDocument()
+      expect(getByRole('button', { name: 'Sort By' })).toBeInTheDocument()
+      expect(
+        getByRole('button', { name: 'Journey list actions' })
+      ).toBeInTheDocument()
+    })
+
+    it('opens the archive confirmation dialog scoped to unsectioned templates when archiveAllActive fires', async () => {
+      const { getByText } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMock,
+            journeysMock
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList event="archiveAllActive" />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Archive Templates')).toBeInTheDocument()
+      )
+      expect(
+        getByText('This will archive all active Templates not in a collection.')
+      ).toBeInTheDocument()
+    })
+
+    it('archives only the unsectioned template IDs on submit', async () => {
+      const archiveMock: MockedResponse = {
+        request: {
+          query: ARCHIVE_ACTIVE_JOURNEYS,
+          variables: { ids: ['journey-1'] }
+        },
+        result: {
+          data: {
+            journeysArchive: [
+              {
+                __typename: 'Journey',
+                id: 'journey-1',
+                status: JourneyStatus.archived,
+                fromTemplateId: null
+              }
+            ]
+          }
+        }
+      }
+
+      const { getByText, getByRole } = render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            collectionsMock,
+            journeysMock,
+            archiveMock,
+            journeysMock
+          ]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TemplateGalleryPageList event="archiveAllActive" />
+              </TeamProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Archive Templates')).toBeInTheDocument()
+      )
+      fireEvent.click(getByRole('button', { name: 'Archive' }))
+
+      await waitFor(() =>
+        expect(getByText('Templates Archived')).toBeInTheDocument()
       )
     })
   })

@@ -1,3 +1,4 @@
+import { useMutation } from '@apollo/client'
 import {
   CollisionDetection,
   DndContext,
@@ -17,6 +18,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import {
@@ -46,7 +48,19 @@ import { useCanPublishCollection } from '../../libs/useCanPublishCollection'
 import { useTemplateGalleryPageCreateMutation } from '../../libs/useTemplateGalleryPageCreateMutation'
 import { useTemplateGalleryPagesQuery } from '../../libs/useTemplateGalleryPagesQuery'
 import { JourneyCard } from '../JourneyList/JourneyCard'
+import type { JourneyListEvent } from '../JourneyList/JourneyList'
+import {
+  ARCHIVE_ACTIVE_JOURNEYS,
+  DELETE_TRASHED_JOURNEYS,
+  RESTORE_ARCHIVED_JOURNEYS,
+  RESTORE_TRASHED_JOURNEYS,
+  TRASH_ACTIVE_JOURNEYS,
+  TRASH_ARCHIVED_JOURNEYS
+} from '../JourneyList/JourneyListContent/JourneyListContent'
+import { JourneyListMenu } from '../JourneyList/JourneyListMenu'
 import type { JourneyStatusFilter } from '../JourneyList/JourneyListView'
+import { JourneySort, SortOrder } from '../JourneyList/JourneySort'
+import { sortJourneys } from '../JourneyList/JourneySort/utils/sortJourneys'
 
 import { CollectionCard } from './CollectionCard'
 import { CollectionDialog } from './CollectionDialog'
@@ -69,6 +83,15 @@ import {
 import { useCollectionCollapse } from './useCollectionCollapse'
 import { useCollectionMutations } from './useCollectionMutations'
 import { useDragEndHandler } from './useDragEndHandler'
+
+const Dialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "core/shared/ui-dynamic/Dialog" */
+      '@core/shared/ui-dynamic/Dialog'
+    ).then((mod) => mod.Dialog),
+  { ssr: false }
+)
 
 // Map the page-level status filter (active / archived / trashed) to the
 // underlying JourneyStatus enum values that useAdminJourneysQuery expects.
@@ -117,6 +140,30 @@ export interface TemplateGalleryPageListProps {
    * trigger.
    */
   onOpenInfo?: () => void
+  /**
+   * Sort order for the All Templates (unsectioned) section only (NES-1872).
+   * Collections keep their own drag-and-drop order regardless.
+   */
+  sortOrder?: SortOrder
+  /**
+   * Shared with the Team Projects tab's own Sort By (same sessionStorage-
+   * backed state in JourneyList) — changing sort here changes that tab
+   * too, which is expected (NES-1872).
+   */
+  onSortOrderChange?: (order: SortOrder) => void
+  /**
+   * Bulk-action event from the All Templates header's ⋮ menu (NES-1872),
+   * scoped to unsectioned templates only — collections are excluded from
+   * bulk archive/trash/restore/delete.
+   */
+  event?: JourneyListEvent
+  /**
+   * Dispatches an event up to JourneyList's shared `event` state, which
+   * flows back down as the `event` prop above — the same round-trip
+   * JourneyListContent uses, since the ⋮ menu now lives in this
+   * component's own header rather than the shared toolbar (NES-1872).
+   */
+  onEvent?: (event: JourneyListEvent) => void
 }
 
 // Type-level fallback for `journeysByCollection.get()` — the memoized map
@@ -142,7 +189,11 @@ function getScrollParent(node: HTMLElement): HTMLElement | null {
 export function TemplateGalleryPageList({
   visible = true,
   status = 'active',
-  onOpenInfo
+  onOpenInfo,
+  sortOrder,
+  onSortOrderChange,
+  event,
+  onEvent
 }: TemplateGalleryPageListProps = {}): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
@@ -463,6 +514,18 @@ export function TemplateGalleryPageList({
     [allTemplates, templateIdToCollection]
   )
 
+  // All Templates header (NES-1872): sort and bulk actions are scoped to
+  // this unsectioned pool only — collections keep their own drag order and
+  // are excluded from bulk archive/trash/restore/delete.
+  const sortedUnsectioned = useMemo(
+    () => sortJourneys([...unsectioned], sortOrder),
+    [unsectioned, sortOrder]
+  )
+  const unsectionedIds = useMemo(
+    () => unsectioned.map((journey) => journey.id),
+    [unsectioned]
+  )
+
   const editTarget =
     editTargetId != null ? (collectionsById.get(editTargetId) ?? null) : null
 
@@ -647,6 +710,230 @@ export function TemplateGalleryPageList({
     setActiveDragId,
     isCollectionCollapsed: isCollapsed
   })
+
+  // Bulk actions for the All Templates (unsectioned) section (NES-1872).
+  // Reuses the same ID-based mutations JourneyListContent uses for Team
+  // Projects/legacy Templates — scoped to unsectionedIds instead of every
+  // journey of this status, and with its own dialog copy (not the strings
+  // affected by NES-1780/1778/1781) so those defects aren't inherited.
+  const getMutations = (): {
+    primary: typeof ARCHIVE_ACTIVE_JOURNEYS
+    secondary: typeof TRASH_ACTIVE_JOURNEYS
+  } => {
+    switch (status) {
+      case 'archived':
+        return {
+          primary: RESTORE_ARCHIVED_JOURNEYS,
+          secondary: TRASH_ARCHIVED_JOURNEYS
+        }
+      case 'trashed':
+        return {
+          primary: RESTORE_TRASHED_JOURNEYS,
+          secondary: DELETE_TRASHED_JOURNEYS
+        }
+      case 'active':
+      default:
+        return {
+          primary: ARCHIVE_ACTIVE_JOURNEYS,
+          secondary: TRASH_ACTIVE_JOURNEYS
+        }
+    }
+  }
+  const mutations = getMutations()
+
+  const getPrimaryMutationField = (): string => {
+    switch (status) {
+      case 'archived':
+      case 'trashed':
+        return 'journeysRestore'
+      case 'active':
+      default:
+        return 'journeysArchive'
+    }
+  }
+  const getSecondaryMutationField = (): string => {
+    switch (status) {
+      case 'trashed':
+        return 'journeysDelete'
+      case 'archived':
+      case 'active':
+      default:
+        return 'journeysTrash'
+    }
+  }
+
+  const [primaryMutation] = useMutation(mutations.primary, {
+    update(_cache, { data }) {
+      const mutationField = getPrimaryMutationField()
+      if (data?.[mutationField] != null) {
+        const messageKey =
+          status === 'active'
+            ? 'Templates Archived'
+            : status === 'archived'
+              ? 'Templates Unarchived'
+              : 'Templates Restored'
+        enqueueSnackbar(t(messageKey), { variant: 'success' })
+        void journeysQuery.refetch()
+      }
+    }
+  })
+  const [secondaryMutation] = useMutation(mutations.secondary, {
+    update(_cache, { data }) {
+      const mutationField = getSecondaryMutationField()
+      if (data?.[mutationField] != null) {
+        const messageKey =
+          status === 'trashed' ? 'Templates Deleted' : 'Templates Trashed'
+        enqueueSnackbar(t(messageKey), { variant: 'success' })
+        void journeysQuery.refetch()
+      }
+    }
+  })
+
+  const [primaryDialogOpen, setPrimaryDialogOpen] = useState<
+    boolean | undefined
+  >()
+  const [secondaryDialogOpen, setSecondaryDialogOpen] = useState<
+    boolean | undefined
+  >()
+
+  function handleCloseTemplateDialogs(): void {
+    setPrimaryDialogOpen(false)
+    setSecondaryDialogOpen(false)
+  }
+
+  async function handlePrimarySubmit(): Promise<void> {
+    try {
+      await primaryMutation({ variables: { ids: unsectionedIds } })
+    } catch (error) {
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
+    }
+    handleCloseTemplateDialogs()
+  }
+
+  async function handleSecondarySubmit(): Promise<void> {
+    try {
+      await secondaryMutation({ variables: { ids: unsectionedIds } })
+    } catch (error) {
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
+    }
+    handleCloseTemplateDialogs()
+  }
+
+  useEffect(() => {
+    switch (status) {
+      case 'active':
+        switch (event) {
+          case 'archiveAllActive':
+            setPrimaryDialogOpen(true)
+            break
+          case 'trashAllActive':
+            setSecondaryDialogOpen(true)
+            break
+          case 'refetchActive':
+            void journeysQuery.refetch()
+            break
+        }
+        break
+      case 'archived':
+        switch (event) {
+          case 'restoreAllArchived':
+            setPrimaryDialogOpen(true)
+            break
+          case 'trashAllArchived':
+            setSecondaryDialogOpen(true)
+            break
+          case 'refetchArchived':
+            void journeysQuery.refetch()
+            break
+        }
+        break
+      case 'trashed':
+        switch (event) {
+          case 'restoreAllTrashed':
+            setPrimaryDialogOpen(true)
+            break
+          case 'deleteAllTrashed':
+            setSecondaryDialogOpen(true)
+            break
+          case 'refetchTrashed':
+            void journeysQuery.refetch()
+            break
+        }
+        break
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [event, status])
+
+  const getDialogLabels = (): {
+    primary: { title: string; submitLabel: string; message: string }
+    secondary: { title: string; submitLabel: string; message: string }
+  } => {
+    switch (status) {
+      case 'archived':
+        return {
+          primary: {
+            title: t('Unarchive Templates'),
+            submitLabel: t('Unarchive'),
+            message: t(
+              'This will unarchive all archived Templates not in a collection.'
+            )
+          },
+          secondary: {
+            title: t('Trash Templates'),
+            submitLabel: t('Trash'),
+            message: t(
+              'This will trash all archived Templates not in a collection.'
+            )
+          }
+        }
+      case 'trashed':
+        return {
+          primary: {
+            title: t('Restore Templates'),
+            submitLabel: t('Restore'),
+            message: t(
+              'This will restore all trashed Templates not in a collection.'
+            )
+          },
+          secondary: {
+            title: t('Delete Templates Forever'),
+            submitLabel: t('Delete Forever'),
+            message: t(
+              'This will permanently delete all trashed Templates not in a collection.'
+            )
+          }
+        }
+      case 'active':
+      default:
+        return {
+          primary: {
+            title: t('Archive Templates'),
+            submitLabel: t('Archive'),
+            message: t(
+              'This will archive all active Templates not in a collection.'
+            )
+          },
+          secondary: {
+            title: t('Trash Templates'),
+            submitLabel: t('Trash'),
+            message: t(
+              'This will trash all active Templates not in a collection.'
+            )
+          }
+        }
+    }
+  }
+  const dialogLabels = getDialogLabels()
 
   if (teamId == null) {
     return (
@@ -834,6 +1121,33 @@ export function TemplateGalleryPageList({
                 </Stack>
               ))}
 
+            {/* Renders unconditionally, even when every template is in a
+              collection (unsectioned.length === 0) — otherwise Sort and
+              the bulk-actions menu would vanish along with the empty
+              section instead of just being unused (NES-1872). */}
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 2
+              }}
+            >
+              <Typography variant="h4">{t('All Templates')}</Typography>
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ alignItems: 'center', flexShrink: 0 }}
+              >
+                <JourneySort
+                  sortOrder={sortOrder}
+                  onChange={onSortOrderChange ?? (() => undefined)}
+                />
+                <JourneyListMenu onClick={onEvent ?? (() => undefined)} />
+              </Stack>
+            </Stack>
+
             <UnsectionedDroppable disabled={interactionsLocked}>
               {unsectioned.length === 0 ? (
                 <Box sx={{ p: 2, color: 'text.disabled', textAlign: 'center' }}>
@@ -845,7 +1159,7 @@ export function TemplateGalleryPageList({
                 </Box>
               ) : (
                 <DraggableJourneysGrid
-                  journeys={unsectioned}
+                  journeys={sortedUnsectioned}
                   dragInFlight={interactionsLocked}
                 />
               )}
@@ -902,6 +1216,46 @@ export function TemplateGalleryPageList({
           }
           onClose={handleClosePublishSuccess}
         />
+        {primaryDialogOpen != null && (
+          <Dialog
+            open={primaryDialogOpen}
+            onClose={handleCloseTemplateDialogs}
+            dialogTitle={{
+              title: dialogLabels.primary.title,
+              closeButton: true
+            }}
+            dialogAction={{
+              onSubmit: handlePrimarySubmit,
+              submitLabel: dialogLabels.primary.submitLabel,
+              closeLabel: t('Cancel')
+            }}
+          >
+            <Typography sx={{ fontWeight: 'bold' }}>
+              {dialogLabels.primary.message}
+            </Typography>
+            <Typography>{t('Are you sure you want to proceed?')}</Typography>
+          </Dialog>
+        )}
+        {secondaryDialogOpen != null && (
+          <Dialog
+            open={secondaryDialogOpen}
+            onClose={handleCloseTemplateDialogs}
+            dialogTitle={{
+              title: dialogLabels.secondary.title,
+              closeButton: true
+            }}
+            dialogAction={{
+              onSubmit: handleSecondarySubmit,
+              submitLabel: dialogLabels.secondary.submitLabel,
+              closeLabel: t('Cancel')
+            }}
+          >
+            <Typography sx={{ fontWeight: 'bold' }}>
+              {dialogLabels.secondary.message}
+            </Typography>
+            <Typography>{t('Are you sure you want to proceed?')}</Typography>
+          </Dialog>
+        )}
       </Box>
     </GalleryDialogLockContext.Provider>
   )
