@@ -34,11 +34,20 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import {
+  ArchiveActiveJourneys,
+  ArchiveActiveJourneysVariables
+} from '../../../__generated__/ArchiveActiveJourneys'
+import { DeleteTrashedJourneys } from '../../../__generated__/DeleteTrashedJourneys'
+import {
   GetAdminJourneysVariables,
   GetAdminJourneys_journeys as Journey
 } from '../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../__generated__/GetTemplateGalleryPages'
 import { JourneyStatus } from '../../../__generated__/globalTypes'
+import { RestoreArchivedJourneys } from '../../../__generated__/RestoreArchivedJourneys'
+import { RestoreTrashedJourneys } from '../../../__generated__/RestoreTrashedJourneys'
+import { TrashActiveJourneys } from '../../../__generated__/TrashActiveJourneys'
+import { TrashArchivedJourneys } from '../../../__generated__/TrashArchivedJourneys'
 import {
   sendCollectionCreateEvent,
   sendCollectionEditOpenEvent
@@ -105,20 +114,19 @@ const STATUS_FILTER_TO_JOURNEY_STATUSES: Record<
   trashed: [JourneyStatus.trashed]
 }
 
-// Bulk-action config for the All Templates (unsectioned) section (NES-1872),
-// one lookup replacing what would otherwise be five parallel `switch
-// (status)` statements (mutation choice, mutation response field, success
-// snackbar copy, dialog copy, and event routing). "safe" is always the
-// less-destructive action for a given status (Archive/Restore/Restore, all
-// reversible), "destructive" is always the one that removes further
-// (Trash/Trash/Delete Forever, the last of which is permanent) — this axis
-// holds consistently even though the concrete action differs per status.
-// Dialog/snackbar values are raw English strings, translated at the point
-// of use via t(), per this app's inline-string-as-i18n-key convention.
+// Dialog copy + event routing for the All Templates (unsectioned) section
+// (NES-1872), one lookup replacing what would otherwise be parallel `switch
+// (status)` statements. "safe" is always the less-destructive action for a
+// given status (Archive/Restore/Restore, all reversible), "destructive" is
+// always the one that removes further (Trash/Trash/Delete Forever, the last
+// of which is permanent) — this axis holds consistently even though the
+// concrete action differs per status. The mutation itself, its response
+// field, and its success copy live next to their own `useMutation` call
+// below instead of in here, so each is backed by its real generated type
+// rather than a runtime-keyed lookup. Dialog values are raw English
+// strings, translated at the point of use via t(), per this app's
+// inline-string-as-i18n-key convention.
 interface StatusActionConfig {
-  mutation: typeof ARCHIVE_ACTIVE_JOURNEYS
-  mutationField: string
-  successMessageKey: string
   event: JourneyListEvent
   dialogTitleKey: string
   dialogSubmitLabelKey: string
@@ -135,9 +143,6 @@ const STATUS_ACTION_CONFIG: Record<
   active: {
     refetchEvent: 'refetchActive',
     safe: {
-      mutation: ARCHIVE_ACTIVE_JOURNEYS,
-      mutationField: 'journeysArchive',
-      successMessageKey: 'Templates Archived',
       event: 'archiveAllActive',
       dialogTitleKey: 'Archive Templates',
       dialogSubmitLabelKey: 'Archive',
@@ -145,9 +150,6 @@ const STATUS_ACTION_CONFIG: Record<
         'This will archive all active Templates not in a collection.'
     },
     destructive: {
-      mutation: TRASH_ACTIVE_JOURNEYS,
-      mutationField: 'journeysTrash',
-      successMessageKey: 'Templates Trashed',
       event: 'trashAllActive',
       dialogTitleKey: 'Trash Templates',
       dialogSubmitLabelKey: 'Trash',
@@ -158,9 +160,6 @@ const STATUS_ACTION_CONFIG: Record<
   archived: {
     refetchEvent: 'refetchArchived',
     safe: {
-      mutation: RESTORE_ARCHIVED_JOURNEYS,
-      mutationField: 'journeysRestore',
-      successMessageKey: 'Templates Unarchived',
       event: 'restoreAllArchived',
       dialogTitleKey: 'Unarchive Templates',
       dialogSubmitLabelKey: 'Unarchive',
@@ -168,9 +167,6 @@ const STATUS_ACTION_CONFIG: Record<
         'This will unarchive all archived Templates not in a collection.'
     },
     destructive: {
-      mutation: TRASH_ARCHIVED_JOURNEYS,
-      mutationField: 'journeysTrash',
-      successMessageKey: 'Templates Trashed',
       event: 'trashAllArchived',
       dialogTitleKey: 'Trash Templates',
       dialogSubmitLabelKey: 'Trash',
@@ -181,9 +177,6 @@ const STATUS_ACTION_CONFIG: Record<
   trashed: {
     refetchEvent: 'refetchTrashed',
     safe: {
-      mutation: RESTORE_TRASHED_JOURNEYS,
-      mutationField: 'journeysRestore',
-      successMessageKey: 'Templates Restored',
       event: 'restoreAllTrashed',
       dialogTitleKey: 'Restore Templates',
       dialogSubmitLabelKey: 'Restore',
@@ -191,9 +184,6 @@ const STATUS_ACTION_CONFIG: Record<
         'This will restore all trashed Templates not in a collection.'
     },
     destructive: {
-      mutation: DELETE_TRASHED_JOURNEYS,
-      mutationField: 'journeysDelete',
-      successMessageKey: 'Templates Deleted',
       event: 'deleteAllTrashed',
       dialogTitleKey: 'Delete Templates Forever',
       dialogSubmitLabelKey: 'Delete Forever',
@@ -829,32 +819,127 @@ export function TemplateGalleryPageList({
   // affected by NES-1780/1778/1781) so those defects aren't inherited.
   const actionConfig = STATUS_ACTION_CONFIG[status]
 
-  const [safeMutation, { loading: safeSubmitting }] = useMutation(
-    actionConfig.safe.mutation,
-    {
-      update(_cache, { data }) {
-        if (data?.[actionConfig.safe.mutationField] != null) {
-          enqueueSnackbar(t(actionConfig.safe.successMessageKey), {
-            variant: 'success'
-          })
-          void journeysQuery.refetch()
+  // Six explicitly-typed hooks rather than two dynamically-selected ones —
+  // each mutation's response field differs by name, so a single generic
+  // useMutation<TData, TVariables> call can't honestly describe every
+  // branch at once. Variables are the same {ids: string[]} shape for all
+  // six, so ArchiveActiveJourneysVariables is reused rather than importing
+  // six near-identical Variables types.
+  const [archiveActiveMutation, { loading: archiveActiveSubmitting }] =
+    useMutation<ArchiveActiveJourneys, ArchiveActiveJourneysVariables>(
+      ARCHIVE_ACTIVE_JOURNEYS,
+      {
+        update(_cache, { data }) {
+          if (data?.journeysArchive != null) {
+            enqueueSnackbar(t('Templates Archived'), { variant: 'success' })
+            void journeysQuery.refetch()
+          }
         }
       }
-    }
-  )
-  const [destructiveMutation, { loading: destructiveSubmitting }] = useMutation(
-    actionConfig.destructive.mutation,
-    {
-      update(_cache, { data }) {
-        if (data?.[actionConfig.destructive.mutationField] != null) {
-          enqueueSnackbar(t(actionConfig.destructive.successMessageKey), {
-            variant: 'success'
-          })
-          void journeysQuery.refetch()
+    )
+  const [trashActiveMutation, { loading: trashActiveSubmitting }] =
+    useMutation<TrashActiveJourneys, ArchiveActiveJourneysVariables>(
+      TRASH_ACTIVE_JOURNEYS,
+      {
+        update(_cache, { data }) {
+          if (data?.journeysTrash != null) {
+            enqueueSnackbar(t('Templates Trashed'), { variant: 'success' })
+            void journeysQuery.refetch()
+          }
         }
       }
+    )
+  const [restoreArchivedMutation, { loading: restoreArchivedSubmitting }] =
+    useMutation<RestoreArchivedJourneys, ArchiveActiveJourneysVariables>(
+      RESTORE_ARCHIVED_JOURNEYS,
+      {
+        update(_cache, { data }) {
+          if (data?.journeysRestore != null) {
+            enqueueSnackbar(t('Templates Unarchived'), { variant: 'success' })
+            void journeysQuery.refetch()
+          }
+        }
+      }
+    )
+  const [trashArchivedMutation, { loading: trashArchivedSubmitting }] =
+    useMutation<TrashArchivedJourneys, ArchiveActiveJourneysVariables>(
+      TRASH_ARCHIVED_JOURNEYS,
+      {
+        update(_cache, { data }) {
+          if (data?.journeysTrash != null) {
+            enqueueSnackbar(t('Templates Trashed'), { variant: 'success' })
+            void journeysQuery.refetch()
+          }
+        }
+      }
+    )
+  const [restoreTrashedMutation, { loading: restoreTrashedSubmitting }] =
+    useMutation<RestoreTrashedJourneys, ArchiveActiveJourneysVariables>(
+      RESTORE_TRASHED_JOURNEYS,
+      {
+        update(_cache, { data }) {
+          if (data?.journeysRestore != null) {
+            enqueueSnackbar(t('Templates Restored'), { variant: 'success' })
+            void journeysQuery.refetch()
+          }
+        }
+      }
+    )
+  const [deleteTrashedMutation, { loading: deleteTrashedSubmitting }] =
+    useMutation<DeleteTrashedJourneys, ArchiveActiveJourneysVariables>(
+      DELETE_TRASHED_JOURNEYS,
+      {
+        update(_cache, { data }) {
+          if (data?.journeysDelete != null) {
+            enqueueSnackbar(t('Templates Deleted'), { variant: 'success' })
+            void journeysQuery.refetch()
+          }
+        }
+      }
+    )
+
+  // Dispatch tables selecting which typed mutation backs "safe"/
+  // "destructive" for the current status — built from the hook results
+  // above, kept separate from STATUS_ACTION_CONFIG since that map is
+  // module-level data and this depends on hook state.
+  const safeMutationByStatus: Record<
+    JourneyStatusFilter,
+    { mutate: (ids: string[]) => Promise<unknown>; submitting: boolean }
+  > = {
+    active: {
+      mutate: (ids) => archiveActiveMutation({ variables: { ids } }),
+      submitting: archiveActiveSubmitting
+    },
+    archived: {
+      mutate: (ids) => restoreArchivedMutation({ variables: { ids } }),
+      submitting: restoreArchivedSubmitting
+    },
+    trashed: {
+      mutate: (ids) => restoreTrashedMutation({ variables: { ids } }),
+      submitting: restoreTrashedSubmitting
     }
-  )
+  }
+  const destructiveMutationByStatus: Record<
+    JourneyStatusFilter,
+    { mutate: (ids: string[]) => Promise<unknown>; submitting: boolean }
+  > = {
+    active: {
+      mutate: (ids) => trashActiveMutation({ variables: { ids } }),
+      submitting: trashActiveSubmitting
+    },
+    archived: {
+      mutate: (ids) => trashArchivedMutation({ variables: { ids } }),
+      submitting: trashArchivedSubmitting
+    },
+    trashed: {
+      mutate: (ids) => deleteTrashedMutation({ variables: { ids } }),
+      submitting: deleteTrashedSubmitting
+    }
+  }
+  const { mutate: safeMutate, submitting: safeSubmitting } =
+    safeMutationByStatus[status]
+  const { mutate: destructiveMutate, submitting: destructiveSubmitting } =
+    destructiveMutationByStatus[status]
 
   function handleCloseTemplateDialogs(): void {
     setSafeDialogOpen(false)
@@ -871,7 +956,7 @@ export function TemplateGalleryPageList({
       return
     }
     try {
-      await safeMutation({ variables: { ids: unsectionedIds } })
+      await safeMutate(unsectionedIds)
     } catch (error) {
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {
@@ -889,7 +974,7 @@ export function TemplateGalleryPageList({
       return
     }
     try {
-      await destructiveMutation({ variables: { ids: unsectionedIds } })
+      await destructiveMutate(unsectionedIds)
     } catch (error) {
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {
