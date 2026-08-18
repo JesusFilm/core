@@ -49,9 +49,9 @@ describe('resolveHttpSize', () => {
   it('falls back to Range when HEAD reports a zero length', async () => {
     const client: HttpSizeClient = {
       head: vi.fn().mockResolvedValue(makeHeaders({ contentLength: '0' })),
-      rangeGet: vi.fn().mockResolvedValue(
-        makeHeaders({ status: 206, contentRangeTotal: 555 })
-      )
+      rangeGet: vi
+        .fn()
+        .mockResolvedValue(makeHeaders({ status: 206, contentRangeTotal: 555 }))
     }
 
     const result = await resolveHttpSize('https://example.com/file.mp4', client)
@@ -62,9 +62,15 @@ describe('resolveHttpSize', () => {
   it('uses Content-Length when the server ignores the Range header (200)', async () => {
     const client: HttpSizeClient = {
       head: vi.fn().mockResolvedValue(makeHeaders({ ok: false, status: 405 })),
-      rangeGet: vi.fn().mockResolvedValue(
-        makeHeaders({ status: 200, contentLength: '999', contentRangeTotal: null })
-      )
+      rangeGet: vi
+        .fn()
+        .mockResolvedValue(
+          makeHeaders({
+            status: 200,
+            contentLength: '999',
+            contentRangeTotal: null
+          })
+        )
     }
 
     const result = await resolveHttpSize('https://example.com/file.mp4', client)
@@ -75,9 +81,11 @@ describe('resolveHttpSize', () => {
   it('reports an invalid length when a 206 response has no parseable Content-Range', async () => {
     const client: HttpSizeClient = {
       head: vi.fn().mockResolvedValue(makeHeaders({ ok: false, status: 500 })),
-      rangeGet: vi.fn().mockResolvedValue(
-        makeHeaders({ status: 206, contentRangeTotal: null })
-      )
+      rangeGet: vi
+        .fn()
+        .mockResolvedValue(
+          makeHeaders({ status: 206, contentRangeTotal: null })
+        )
     }
 
     const result = await resolveHttpSize('https://example.com/file.mp4', client)
@@ -99,9 +107,9 @@ describe('resolveHttpSize', () => {
   it('reports unreachable when the Range response is neither ok nor partial', async () => {
     const client: HttpSizeClient = {
       head: vi.fn().mockResolvedValue(makeHeaders({ ok: false, status: 404 })),
-      rangeGet: vi.fn().mockResolvedValue(
-        makeHeaders({ ok: false, status: 404 })
-      )
+      rangeGet: vi
+        .fn()
+        .mockResolvedValue(makeHeaders({ ok: false, status: 404 }))
     }
 
     const result = await resolveHttpSize('https://example.com/file.mp4', client)
@@ -126,8 +134,7 @@ describe('createFetchHttpSizeClient', () => {
     mockFetch.mockImplementation(
       (_url, init) =>
         new Promise((_resolve, reject) => {
-          const signal = (init as { signal?: AbortSignal } | undefined)
-            ?.signal
+          const signal = (init as { signal?: AbortSignal } | undefined)?.signal
           signal?.addEventListener('abort', () => {
             reject(new Error('The operation was aborted'))
           })
@@ -147,8 +154,7 @@ describe('createFetchHttpSizeClient', () => {
     mockFetch.mockImplementation(
       (_url, init) =>
         new Promise((_resolve, reject) => {
-          const signal = (init as { signal?: AbortSignal } | undefined)
-            ?.signal
+          const signal = (init as { signal?: AbortSignal } | undefined)?.signal
           signal?.addEventListener('abort', () => {
             reject(new Error('The operation was aborted'))
           })

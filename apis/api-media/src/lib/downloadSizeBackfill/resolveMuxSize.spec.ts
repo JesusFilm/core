@@ -3,14 +3,26 @@ import type { HttpSizeClient, MuxAssetLike } from './types'
 
 const URL = 'https://stream.mux.com/playback123/720p.mp4'
 
-function makeHttpClient(overrides: Partial<HttpSizeClient> = {}): HttpSizeClient {
+function makeHttpClient(
+  overrides: Partial<HttpSizeClient> = {}
+): HttpSizeClient {
   return {
     head: vi
       .fn()
-      .mockResolvedValue({ ok: false, status: 500, contentLength: null, contentRangeTotal: null }),
+      .mockResolvedValue({
+        ok: false,
+        status: 500,
+        contentLength: null,
+        contentRangeTotal: null
+      }),
     rangeGet: vi
       .fn()
-      .mockResolvedValue({ ok: false, status: 500, contentLength: null, contentRangeTotal: null }),
+      .mockResolvedValue({
+        ok: false,
+        status: 500,
+        contentLength: null,
+        contentRangeTotal: null
+      }),
     ...overrides
   }
 }
@@ -21,7 +33,9 @@ describe('extractMuxResolutionFromUrl', () => {
   })
 
   it('returns null for a URL without a resolution segment', () => {
-    expect(extractMuxResolutionFromUrl('https://stream.mux.com/playback123.m3u8')).toBeNull()
+    expect(
+      extractMuxResolutionFromUrl('https://stream.mux.com/playback123.m3u8')
+    ).toBeNull()
   })
 })
 
@@ -49,7 +63,12 @@ describe('resolveMuxSize', () => {
     const httpClient = makeHttpClient({
       head: vi
         .fn()
-        .mockResolvedValue({ ok: true, status: 200, contentLength: '243808898', contentRangeTotal: null })
+        .mockResolvedValue({
+          ok: true,
+          status: 200,
+          contentLength: '243808898',
+          contentRangeTotal: null
+        })
     })
 
     const result = await resolveMuxSize(URL, muxAsset, httpClient)
@@ -59,12 +78,19 @@ describe('resolveMuxSize', () => {
 
   it('falls back to HTTP verification when no rendition matches the URL resolution', async () => {
     const muxAsset: MuxAssetLike = {
-      static_renditions: { files: [{ resolution: '1080p', filesize: '9999', status: 'ready' }] }
+      static_renditions: {
+        files: [{ resolution: '1080p', filesize: '9999', status: 'ready' }]
+      }
     }
     const httpClient = makeHttpClient({
       head: vi
         .fn()
-        .mockResolvedValue({ ok: true, status: 200, contentLength: '500', contentRangeTotal: null })
+        .mockResolvedValue({
+          ok: true,
+          status: 200,
+          contentLength: '500',
+          contentRangeTotal: null
+        })
     })
 
     const result = await resolveMuxSize(URL, muxAsset, httpClient)
@@ -76,7 +102,12 @@ describe('resolveMuxSize', () => {
     const httpClient = makeHttpClient({
       head: vi
         .fn()
-        .mockResolvedValue({ ok: true, status: 200, contentLength: '700', contentRangeTotal: null })
+        .mockResolvedValue({
+          ok: true,
+          status: 200,
+          contentLength: '700',
+          contentRangeTotal: null
+        })
     })
 
     const result = await resolveMuxSize(URL, null, httpClient)
@@ -108,7 +139,12 @@ describe('resolveMuxSize', () => {
     const httpClient = makeHttpClient({
       head: vi
         .fn()
-        .mockResolvedValue({ ok: true, status: 200, contentLength: '500', contentRangeTotal: null })
+        .mockResolvedValue({
+          ok: true,
+          status: 200,
+          contentLength: '500',
+          contentRangeTotal: null
+        })
     })
 
     const result = await resolveMuxSize(URL, muxAsset, httpClient)
@@ -128,7 +164,12 @@ describe('resolveMuxSize', () => {
       const httpClient = makeHttpClient({
         head: vi
           .fn()
-          .mockResolvedValue({ ok: true, status: 200, contentLength: '500', contentRangeTotal: null })
+          .mockResolvedValue({
+            ok: true,
+            status: 200,
+            contentLength: '500',
+            contentRangeTotal: null
+          })
       })
 
       const result = await resolveMuxSize(URL, muxAsset, httpClient)

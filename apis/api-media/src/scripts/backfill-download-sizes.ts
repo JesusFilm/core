@@ -25,10 +25,14 @@ type SavedCursor = {
   filters: DownloadSizeBackfillFilters
 }
 
-function parseProviderFilter(value: string | undefined): BackfillProvider | undefined {
+function parseProviderFilter(
+  value: string | undefined
+): BackfillProvider | undefined {
   if (value == null || value === '') return undefined
   if (value === 'mux' || value === 'r2' || value === 'legacy') return value
-  throw new Error(`Invalid provider filter: ${value}. Expected mux, r2, or legacy`)
+  throw new Error(
+    `Invalid provider filter: ${value}. Expected mux, r2, or legacy`
+  )
 }
 
 function parseBatchSizeEnv(value: string | undefined): number | undefined {
@@ -236,7 +240,8 @@ async function main(): Promise<void> {
   )
 
   const filters: DownloadSizeBackfillFilters = {
-    downloadId: process.env.DOWNLOAD_SIZE_BACKFILL_DOWNLOAD_ID?.trim() || undefined,
+    downloadId:
+      process.env.DOWNLOAD_SIZE_BACKFILL_DOWNLOAD_ID?.trim() || undefined,
     videoVariantId:
       process.env.DOWNLOAD_SIZE_BACKFILL_VARIANT_ID?.trim() || undefined,
     provider: parseProviderFilter(process.env.DOWNLOAD_SIZE_BACKFILL_PROVIDER)

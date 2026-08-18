@@ -33,10 +33,7 @@ export async function recoverParentVariants(
   )
 
   if (result.missingParentLanguageIds.length === 0) {
-    logger.info(
-      { parentId },
-      'No missing parent language Variants found'
-    )
+    logger.info({ parentId }, 'No missing parent language Variants found')
     return true
   }
 

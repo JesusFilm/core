@@ -8,7 +8,9 @@ import type {
   MuxAssetFetcher
 } from './types'
 
-function makeHeaders(overrides: Partial<HttpHeadersResult> = {}): HttpHeadersResult {
+function makeHeaders(
+  overrides: Partial<HttpHeadersResult> = {}
+): HttpHeadersResult {
   return {
     ok: true,
     status: 200,
@@ -193,7 +195,9 @@ describe('runDownloadSizeBackfill', () => {
     const muxAssetFetcher: MuxAssetFetcher = {
       getAsset: vi.fn().mockResolvedValue({
         static_renditions: {
-          files: [{ resolution: '720p', filesize: '1296505318', status: 'ready' }]
+          files: [
+            { resolution: '720p', filesize: '1296505318', status: 'ready' }
+          ]
         }
       })
     }
@@ -248,7 +252,10 @@ describe('runDownloadSizeBackfill', () => {
 
   it('emits a redacted audit record with no raw URL or credentials', async () => {
     prismaMock.videoVariantDownload.findMany.mockResolvedValue([
-      candidate({ id: 'd1', url: 'https://legacy.example.com/secret?token=abc' })
+      candidate({
+        id: 'd1',
+        url: 'https://legacy.example.com/secret?token=abc'
+      })
     ] as any)
 
     const httpClient = unreachableHttpClient()

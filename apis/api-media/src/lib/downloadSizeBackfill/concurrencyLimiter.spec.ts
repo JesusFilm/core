@@ -13,9 +13,7 @@ describe('createConcurrencyLimiter', () => {
       active--
     }
 
-    await Promise.all(
-      Array.from({ length: 6 }, () => limit(task))
-    )
+    await Promise.all(Array.from({ length: 6 }, () => limit(task)))
 
     expect(maxActive).toBeLessThanOrEqual(2)
   })

@@ -56,9 +56,7 @@ const DEFAULT_LEGACY_CONCURRENCY = 3
  * `take: batchSize` return no rows while `hasMore` stays true forever,
  * looping without ever advancing the cursor.
  */
-export function assertValidBatchSize(
-  batchSize: number | undefined
-): number {
+export function assertValidBatchSize(batchSize: number | undefined): number {
   if (batchSize == null) return DEFAULT_BATCH_SIZE
   if (!Number.isSafeInteger(batchSize) || batchSize < 1) {
     throw new Error(
