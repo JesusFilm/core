@@ -104,7 +104,7 @@ describe('blockUpdateLinkAction mutation', () => {
 
   describe('errors', () => {
     it('returns error if block not found', async () => {
-      prismaMock.block.findUnique.mockResolvedValueOnce(null as any)
+      prismaMock.block.findUnique.mockResolvedValueOnce(null)
 
       const result = await authClient({
         document: MUTATION,

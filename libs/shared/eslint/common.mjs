@@ -1,12 +1,10 @@
 import eslint from '@eslint/js'
 import nxEslintPlugin from '@nx/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
-import loveConfig from 'eslint-config-love'
 import prettierConfig from 'eslint-config-prettier'
 import i18next from 'eslint-plugin-i18next'
-import eslintPluginImport from 'eslint-plugin-import'
+import importX from 'eslint-plugin-import-x'
 import pluginJest from 'eslint-plugin-jest'
-import jestFormatting from 'eslint-plugin-jest-formatting'
 import nodePlugin from 'eslint-plugin-n'
 import promisePlugin from 'eslint-plugin-promise'
 import storybook from 'eslint-plugin-storybook'
@@ -27,26 +25,34 @@ const commonConfig = [
   i18next.configs['flat/recommended'],
   ...storybook.configs['flat/recommended'],
   {
-    ...loveConfig,
     ...prettierConfig,
     plugins: {
       '@nx': nxEslintPlugin,
-      import: eslintPluginImport,
+      import: importX,
       n: nodePlugin,
       promise: promisePlugin
+    },
+
+    // Parse every file with the TypeScript parser, including plain .js/.cjs/.mjs.
+    // eslint-config-love used to supply this as its only surviving contribution;
+    // it is inlined here so the policy is explicit rather than inherited.
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: { projectService: true }
     },
 
     linterOptions: {
       reportUnusedDisableDirectives: 'off'
     }
   },
-  { settings: { 'import/internal-regex': '^(@core|.prisma)' } },
+  { settings: { 'import-x/internal-regex': '^(@core|.prisma)' } },
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: ['./tsconfig.*'],
+        // `project` is intentionally absent: projectService supersedes it, and
+        // typescript-eslint >=8.56 errors when both are set.
         projectService: true,
         tsconfigRootDir: import.meta.dirname
       }
@@ -105,7 +111,6 @@ const commonConfig = [
       'import/no-named-as-default': 'error',
       'import/no-named-as-default-member': 'error',
       'import/no-mutable-exports': 'error',
-      'import/no-unused-modules': 'error',
       'import/no-amd': 'error',
       'import/first': 'error',
       'import/no-duplicates': 'error',
@@ -210,10 +215,18 @@ const commonConfig = [
   },
   {
     files: ['**/*.spec.ts', '**/*.spec.tsx', '**/*.spec.js', '**/*.spec.jsx'],
-    plugins: { jest: pluginJest, 'jest-formatting': jestFormatting },
+    plugins: { jest: pluginJest },
     languageOptions: { globals: pluginJest.environments.globals.globals },
     rules: {
-      ...jestFormatting.configs.recommended.overrides[0].rules,
+      // Formerly eslint-plugin-jest-formatting's recommended set. That plugin
+      // was last released in 2023 and calls ESLint APIs removed in v10;
+      // eslint-plugin-jest ships the same six rules under its own namespace.
+      'jest/padding-around-after-all-blocks': 'error',
+      'jest/padding-around-after-each-blocks': 'error',
+      'jest/padding-around-before-all-blocks': 'error',
+      'jest/padding-around-before-each-blocks': 'error',
+      'jest/padding-around-describe-blocks': 'error',
+      'jest/padding-around-test-blocks': 'error',
       'jest/no-disabled-tests': 'off',
       'jest/require-top-level-describe': 'error',
       'i18next/no-literal-string': 'off',

@@ -37,7 +37,7 @@ describe('lookupUser', () => {
   })
 
   it('should find user by email with firebase by UID', async () => {
-    prismaMock.user.findUnique.mockResolvedValueOnce(mockUser as any)
+    prismaMock.user.findUnique.mockResolvedValueOnce(mockUser)
     mockGetUser.mockResolvedValueOnce({
       uid: 'firebase-uid-1',
       email: 'john@example.com',
@@ -57,7 +57,7 @@ describe('lookupUser', () => {
 
   it('should find user by databaseId', async () => {
     const validUuid = '123e4567-e89b-12d3-a456-426614174001'
-    prismaMock.user.findUnique.mockResolvedValueOnce(mockUser as any)
+    prismaMock.user.findUnique.mockResolvedValueOnce(mockUser)
     mockGetUser.mockResolvedValueOnce({
       uid: 'firebase-uid-1',
       email: 'john@example.com',
@@ -74,7 +74,7 @@ describe('lookupUser', () => {
   })
 
   it('should fall back to firebase email lookup when UID not found', async () => {
-    prismaMock.user.findUnique.mockResolvedValueOnce(mockUser as any)
+    prismaMock.user.findUnique.mockResolvedValueOnce(mockUser)
     mockGetUser.mockRejectedValueOnce({ code: 'auth/user-not-found' })
     mockGetUserByEmail.mockResolvedValueOnce({
       uid: 'different-uid',
@@ -126,7 +126,7 @@ describe('lookupUser', () => {
   })
 
   it('should report no firebase record when both UID and email fail', async () => {
-    prismaMock.user.findUnique.mockResolvedValueOnce(mockUser as any)
+    prismaMock.user.findUnique.mockResolvedValueOnce(mockUser)
     mockGetUser.mockRejectedValueOnce({ code: 'auth/user-not-found' })
     mockGetUserByEmail.mockRejectedValueOnce({ code: 'auth/user-not-found' })
 
@@ -139,7 +139,7 @@ describe('lookupUser', () => {
   describe('jwt idType', () => {
     it('should find user by verified JWT token', async () => {
       mockVerifyIdToken.mockResolvedValueOnce({ uid: 'firebase-uid-1' })
-      prismaMock.user.findUnique.mockResolvedValueOnce(mockUser as any)
+      prismaMock.user.findUnique.mockResolvedValueOnce(mockUser)
       mockGetUser.mockResolvedValueOnce({
         uid: 'firebase-uid-1',
         email: 'john@example.com',

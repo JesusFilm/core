@@ -65,7 +65,7 @@ describe('NewButtonButton', () => {
         children: [],
         showAssistant: null,
         expandChatByDefault: null
-      } as TreeBlock<CardBlock>
+      }
     ]
   }
 

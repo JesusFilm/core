@@ -38,9 +38,7 @@ function mockScrollMetrics({
 
 function fireResizeObservers(): void {
   act(() => {
-    observers.forEach((cb) =>
-      cb([] as unknown as ResizeObserverEntry[], {} as ResizeObserver)
-    )
+    observers.forEach((cb) => cb([], {} as ResizeObserver))
   })
 }
 
@@ -59,16 +57,14 @@ describe('Conversation', () => {
   beforeEach(() => {
     observers.length = 0
     originalResizeObserver = window.ResizeObserver
-    window.ResizeObserver =
-      ResizeObserverMock as unknown as typeof ResizeObserver
+    window.ResizeObserver = ResizeObserverMock
     // jsdom does not implement Element.prototype.scrollTo, so we install
     // a fresh vi.fn() each test instead of spying on a missing prop.
     originalScrollTo = (
       Element.prototype as { scrollTo?: typeof Element.prototype.scrollTo }
     ).scrollTo
     scrollToSpy = vi.fn()
-    Element.prototype.scrollTo =
-      scrollToSpy as unknown as typeof Element.prototype.scrollTo
+    Element.prototype.scrollTo = scrollToSpy
   })
 
   afterEach(() => {

@@ -176,7 +176,7 @@ describe('NavigationDrawer', () => {
       const anonymousUser = {
         ...user,
         isAnonymous: true
-      } as unknown as User
+      }
       render(
         <MockedProvider
           mocks={[getMeMock, getUserRoleMock, getAdminJourneysMock]}

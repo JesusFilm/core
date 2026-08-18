@@ -95,7 +95,7 @@ const renderEditableText = (
                     parent.querySelectorAll('[contenteditable="true"]')
                   )
                 : []
-            const index = editables.indexOf(e.currentTarget as HTMLElement)
+            const index = editables.indexOf(e.currentTarget)
             const nextIndex = e.shiftKey ? index - 1 : index + 1
             const nextEl = editables[nextIndex]
             if (nextEl != null) {

@@ -77,7 +77,7 @@ describe('processVideoUploads service', () => {
     prismaMock.video.findUnique.mockResolvedValueOnce({
       slug: 'video-slug'
     } as any)
-    prismaMock.video.findMany.mockResolvedValue([] as any)
+    prismaMock.video.findMany.mockResolvedValue([])
     prismaMock.$executeRaw.mockResolvedValue(1)
     prismaMock.videoVariant.findFirst.mockResolvedValue({
       id: 'variant-id',
@@ -151,7 +151,7 @@ describe('processVideoUploads service', () => {
     prismaMock.muxVideo.update.mockResolvedValue({} as any)
     prismaMock.videoVariantUpload.update.mockResolvedValue({} as any)
     prismaMock.video.findUnique.mockResolvedValue({ slug: 'video-slug' } as any)
-    prismaMock.video.findMany.mockResolvedValue([] as any)
+    prismaMock.video.findMany.mockResolvedValue([])
     prismaMock.videoVariant.findFirst.mockResolvedValue({
       id: 'variant-id',
       slug: 'variant-slug'
