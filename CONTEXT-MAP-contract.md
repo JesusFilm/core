@@ -58,16 +58,13 @@ Authors may add further keys freely (additive); consumers must ignore unknown ke
   `— T4 (cache) · T5 (optimistic drift)`, `— T6, expectation mismatch`). Sections with no T-token
   are untyped (how-to / FAQ / flagged entries) — allowed.
 - `type_tags` in frontmatter equals the union of T-tags found in the file's headings.
-- Bodies are built from bold-label lines (`**Signatures:**`, `**Localizing question (reporter):**`,
-  `**Then ask:**`, `**Ready when:**`, `**Status:**`, `**Look first (fixer):**`, `**Handoff:**`, …).
-  A label line matches after stripping leading indentation and an optional `- ` list marker — the
-  flush-left, indented (list-item continuation), and list-bullet (`- **Handoff:** …`) forms are
-  all accepted. The bold may extend past the label over the whole line, label and value
-  together (e.g. `**Localizing question (reporter): does a refresh fix it?**`).
-  The label vocabulary is **open** — authors may introduce new labels; consumers must not assume a
-  fixed set or order — with one exception:
-- **`Handoff:` is reserved.** Every section closes its diagnosis with a `**Handoff:**` verdict
-  (agent-able / human / how-to-FAQ / ops), the one label consumers may key on semantically.
+- Bodies are prose. Bold labels (`**Signatures:**`, `**Localizing question (reporter):**`,
+  `**Then ask:**`, `**Ready when:**`, `**Status:**`, `**Look first (fixer):**`, …) are the
+  recommended layout so a reader knows where to look; the vocabulary is open, and consumers read
+  bodies as prose — they do not parse labels.
+- **One exception: `Handoff:`.** Every section closes with a `**Handoff:**` verdict
+  (agent-able / human / how-to-FAQ / ops). The validator warns when a section lacks one, and
+  recognises it flush-left, indented, or as a `- ` bullet.
   - A section with no diagnosis layer yet still closes with one: route it to a human, and let a
     `**Status:**` line explain why there is nothing more to say.
 
