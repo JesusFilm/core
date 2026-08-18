@@ -716,32 +716,37 @@ export function TemplateGalleryPageList({
   // Projects/legacy Templates — scoped to unsectionedIds instead of every
   // journey of this status, and with its own dialog copy (not the strings
   // affected by NES-1780/1778/1781) so those defects aren't inherited.
+  // "safe" is always the less-destructive of the pair on offer for a given
+  // status (Archive / Restore / Restore — all reversible), "destructive" is
+  // always the more-destructive one (Trash / Trash / Delete Forever, the
+  // last of which is permanent). This axis holds consistently across all
+  // three statuses even though the concrete action differs per status.
   const getMutations = (): {
-    primary: typeof ARCHIVE_ACTIVE_JOURNEYS
-    secondary: typeof TRASH_ACTIVE_JOURNEYS
+    safe: typeof ARCHIVE_ACTIVE_JOURNEYS
+    destructive: typeof TRASH_ACTIVE_JOURNEYS
   } => {
     switch (status) {
       case 'archived':
         return {
-          primary: RESTORE_ARCHIVED_JOURNEYS,
-          secondary: TRASH_ARCHIVED_JOURNEYS
+          safe: RESTORE_ARCHIVED_JOURNEYS,
+          destructive: TRASH_ARCHIVED_JOURNEYS
         }
       case 'trashed':
         return {
-          primary: RESTORE_TRASHED_JOURNEYS,
-          secondary: DELETE_TRASHED_JOURNEYS
+          safe: RESTORE_TRASHED_JOURNEYS,
+          destructive: DELETE_TRASHED_JOURNEYS
         }
       case 'active':
       default:
         return {
-          primary: ARCHIVE_ACTIVE_JOURNEYS,
-          secondary: TRASH_ACTIVE_JOURNEYS
+          safe: ARCHIVE_ACTIVE_JOURNEYS,
+          destructive: TRASH_ACTIVE_JOURNEYS
         }
     }
   }
   const mutations = getMutations()
 
-  const getPrimaryMutationField = (): string => {
+  const getSafeMutationField = (): string => {
     switch (status) {
       case 'archived':
       case 'trashed':
@@ -751,7 +756,7 @@ export function TemplateGalleryPageList({
         return 'journeysArchive'
     }
   }
-  const getSecondaryMutationField = (): string => {
+  const getDestructiveMutationField = (): string => {
     switch (status) {
       case 'trashed':
         return 'journeysDelete'
@@ -762,9 +767,9 @@ export function TemplateGalleryPageList({
     }
   }
 
-  const [primaryMutation] = useMutation(mutations.primary, {
+  const [safeMutation] = useMutation(mutations.safe, {
     update(_cache, { data }) {
-      const mutationField = getPrimaryMutationField()
+      const mutationField = getSafeMutationField()
       if (data?.[mutationField] != null) {
         const messageKey =
           status === 'active'
@@ -777,9 +782,9 @@ export function TemplateGalleryPageList({
       }
     }
   })
-  const [secondaryMutation] = useMutation(mutations.secondary, {
+  const [destructiveMutation] = useMutation(mutations.destructive, {
     update(_cache, { data }) {
-      const mutationField = getSecondaryMutationField()
+      const mutationField = getDestructiveMutationField()
       if (data?.[mutationField] != null) {
         const messageKey =
           status === 'trashed' ? 'Templates Deleted' : 'Templates Trashed'
@@ -789,21 +794,19 @@ export function TemplateGalleryPageList({
     }
   })
 
-  const [primaryDialogOpen, setPrimaryDialogOpen] = useState<
-    boolean | undefined
-  >()
-  const [secondaryDialogOpen, setSecondaryDialogOpen] = useState<
+  const [safeDialogOpen, setSafeDialogOpen] = useState<boolean | undefined>()
+  const [destructiveDialogOpen, setDestructiveDialogOpen] = useState<
     boolean | undefined
   >()
 
   function handleCloseTemplateDialogs(): void {
-    setPrimaryDialogOpen(false)
-    setSecondaryDialogOpen(false)
+    setSafeDialogOpen(false)
+    setDestructiveDialogOpen(false)
   }
 
-  async function handlePrimarySubmit(): Promise<void> {
+  async function handleSafeSubmit(): Promise<void> {
     try {
-      await primaryMutation({ variables: { ids: unsectionedIds } })
+      await safeMutation({ variables: { ids: unsectionedIds } })
     } catch (error) {
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {
@@ -815,9 +818,9 @@ export function TemplateGalleryPageList({
     handleCloseTemplateDialogs()
   }
 
-  async function handleSecondarySubmit(): Promise<void> {
+  async function handleDestructiveSubmit(): Promise<void> {
     try {
-      await secondaryMutation({ variables: { ids: unsectionedIds } })
+      await destructiveMutation({ variables: { ids: unsectionedIds } })
     } catch (error) {
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {
@@ -834,10 +837,10 @@ export function TemplateGalleryPageList({
       case 'active':
         switch (event) {
           case 'archiveAllActive':
-            setPrimaryDialogOpen(true)
+            setSafeDialogOpen(true)
             break
           case 'trashAllActive':
-            setSecondaryDialogOpen(true)
+            setDestructiveDialogOpen(true)
             break
           case 'refetchActive':
             void journeysQuery.refetch()
@@ -847,10 +850,10 @@ export function TemplateGalleryPageList({
       case 'archived':
         switch (event) {
           case 'restoreAllArchived':
-            setPrimaryDialogOpen(true)
+            setSafeDialogOpen(true)
             break
           case 'trashAllArchived':
-            setSecondaryDialogOpen(true)
+            setDestructiveDialogOpen(true)
             break
           case 'refetchArchived':
             void journeysQuery.refetch()
@@ -860,10 +863,10 @@ export function TemplateGalleryPageList({
       case 'trashed':
         switch (event) {
           case 'restoreAllTrashed':
-            setPrimaryDialogOpen(true)
+            setSafeDialogOpen(true)
             break
           case 'deleteAllTrashed':
-            setSecondaryDialogOpen(true)
+            setDestructiveDialogOpen(true)
             break
           case 'refetchTrashed':
             void journeysQuery.refetch()
@@ -875,20 +878,20 @@ export function TemplateGalleryPageList({
   }, [event, status])
 
   const getDialogLabels = (): {
-    primary: { title: string; submitLabel: string; message: string }
-    secondary: { title: string; submitLabel: string; message: string }
+    safe: { title: string; submitLabel: string; message: string }
+    destructive: { title: string; submitLabel: string; message: string }
   } => {
     switch (status) {
       case 'archived':
         return {
-          primary: {
+          safe: {
             title: t('Unarchive Templates'),
             submitLabel: t('Unarchive'),
             message: t(
               'This will unarchive all archived Templates not in a collection.'
             )
           },
-          secondary: {
+          destructive: {
             title: t('Trash Templates'),
             submitLabel: t('Trash'),
             message: t(
@@ -898,14 +901,14 @@ export function TemplateGalleryPageList({
         }
       case 'trashed':
         return {
-          primary: {
+          safe: {
             title: t('Restore Templates'),
             submitLabel: t('Restore'),
             message: t(
               'This will restore all trashed Templates not in a collection.'
             )
           },
-          secondary: {
+          destructive: {
             title: t('Delete Templates Forever'),
             submitLabel: t('Delete Forever'),
             message: t(
@@ -916,14 +919,14 @@ export function TemplateGalleryPageList({
       case 'active':
       default:
         return {
-          primary: {
+          safe: {
             title: t('Archive Templates'),
             submitLabel: t('Archive'),
             message: t(
               'This will archive all active Templates not in a collection.'
             )
           },
-          secondary: {
+          destructive: {
             title: t('Trash Templates'),
             submitLabel: t('Trash'),
             message: t(
@@ -1216,42 +1219,42 @@ export function TemplateGalleryPageList({
           }
           onClose={handleClosePublishSuccess}
         />
-        {primaryDialogOpen != null && (
+        {safeDialogOpen != null && (
           <Dialog
-            open={primaryDialogOpen}
+            open={safeDialogOpen}
             onClose={handleCloseTemplateDialogs}
             dialogTitle={{
-              title: dialogLabels.primary.title,
+              title: dialogLabels.safe.title,
               closeButton: true
             }}
             dialogAction={{
-              onSubmit: handlePrimarySubmit,
-              submitLabel: dialogLabels.primary.submitLabel,
+              onSubmit: handleSafeSubmit,
+              submitLabel: dialogLabels.safe.submitLabel,
               closeLabel: t('Cancel')
             }}
           >
             <Typography sx={{ fontWeight: 'bold' }}>
-              {dialogLabels.primary.message}
+              {dialogLabels.safe.message}
             </Typography>
             <Typography>{t('Are you sure you want to proceed?')}</Typography>
           </Dialog>
         )}
-        {secondaryDialogOpen != null && (
+        {destructiveDialogOpen != null && (
           <Dialog
-            open={secondaryDialogOpen}
+            open={destructiveDialogOpen}
             onClose={handleCloseTemplateDialogs}
             dialogTitle={{
-              title: dialogLabels.secondary.title,
+              title: dialogLabels.destructive.title,
               closeButton: true
             }}
             dialogAction={{
-              onSubmit: handleSecondarySubmit,
-              submitLabel: dialogLabels.secondary.submitLabel,
+              onSubmit: handleDestructiveSubmit,
+              submitLabel: dialogLabels.destructive.submitLabel,
               closeLabel: t('Cancel')
             }}
           >
             <Typography sx={{ fontWeight: 'bold' }}>
-              {dialogLabels.secondary.message}
+              {dialogLabels.destructive.message}
             </Typography>
             <Typography>{t('Are you sure you want to proceed?')}</Typography>
           </Dialog>
