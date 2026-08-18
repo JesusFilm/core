@@ -49,8 +49,9 @@ if [ -n "$(git status --porcelain)" ]; then
   git add -A || { echo "could not stage generated fixes; aborting push"; exit 1; }
   # --no-verify because husky's .husky/_ bootstrap only exists where pnpm install
   # has run, so this commit fails in a worktree. The hooks would pass on content:
-  # the branch name was validated at creation and commitlint accepts this exact
-  # message. Do not carry --no-verify over to your own commits.
+  # the branch name is checked by autofix.ci on the PR, and commitlint accepts
+  # this exact message. Do not carry --no-verify over to your own commits — though
+  # in a worktree those hit the same missing bootstrap today; tracked separately.
   git commit --no-verify -m "chore: lint fixes" || { echo "could not commit generated fixes; aborting push"; exit 1; }
 fi
 
