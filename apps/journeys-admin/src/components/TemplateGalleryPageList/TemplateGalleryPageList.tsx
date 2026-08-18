@@ -105,6 +105,104 @@ const STATUS_FILTER_TO_JOURNEY_STATUSES: Record<
   trashed: [JourneyStatus.trashed]
 }
 
+// Bulk-action config for the All Templates (unsectioned) section (NES-1872),
+// one lookup replacing what would otherwise be five parallel `switch
+// (status)` statements (mutation choice, mutation response field, success
+// snackbar copy, dialog copy, and event routing). "safe" is always the
+// less-destructive action for a given status (Archive/Restore/Restore, all
+// reversible), "destructive" is always the one that removes further
+// (Trash/Trash/Delete Forever, the last of which is permanent) — this axis
+// holds consistently even though the concrete action differs per status.
+// Dialog/snackbar values are raw English strings, translated at the point
+// of use via t(), per this app's inline-string-as-i18n-key convention.
+interface StatusActionConfig {
+  mutation: typeof ARCHIVE_ACTIVE_JOURNEYS
+  mutationField: string
+  successMessageKey: string
+  event: JourneyListEvent
+  dialogTitleKey: string
+  dialogSubmitLabelKey: string
+  dialogMessageKey: string
+}
+const STATUS_ACTION_CONFIG: Record<
+  JourneyStatusFilter,
+  {
+    refetchEvent: JourneyListEvent
+    safe: StatusActionConfig
+    destructive: StatusActionConfig
+  }
+> = {
+  active: {
+    refetchEvent: 'refetchActive',
+    safe: {
+      mutation: ARCHIVE_ACTIVE_JOURNEYS,
+      mutationField: 'journeysArchive',
+      successMessageKey: 'Templates Archived',
+      event: 'archiveAllActive',
+      dialogTitleKey: 'Archive Templates',
+      dialogSubmitLabelKey: 'Archive',
+      dialogMessageKey:
+        'This will archive all active Templates not in a collection.'
+    },
+    destructive: {
+      mutation: TRASH_ACTIVE_JOURNEYS,
+      mutationField: 'journeysTrash',
+      successMessageKey: 'Templates Trashed',
+      event: 'trashAllActive',
+      dialogTitleKey: 'Trash Templates',
+      dialogSubmitLabelKey: 'Trash',
+      dialogMessageKey:
+        'This will trash all active Templates not in a collection.'
+    }
+  },
+  archived: {
+    refetchEvent: 'refetchArchived',
+    safe: {
+      mutation: RESTORE_ARCHIVED_JOURNEYS,
+      mutationField: 'journeysRestore',
+      successMessageKey: 'Templates Unarchived',
+      event: 'restoreAllArchived',
+      dialogTitleKey: 'Unarchive Templates',
+      dialogSubmitLabelKey: 'Unarchive',
+      dialogMessageKey:
+        'This will unarchive all archived Templates not in a collection.'
+    },
+    destructive: {
+      mutation: TRASH_ARCHIVED_JOURNEYS,
+      mutationField: 'journeysTrash',
+      successMessageKey: 'Templates Trashed',
+      event: 'trashAllArchived',
+      dialogTitleKey: 'Trash Templates',
+      dialogSubmitLabelKey: 'Trash',
+      dialogMessageKey:
+        'This will trash all archived Templates not in a collection.'
+    }
+  },
+  trashed: {
+    refetchEvent: 'refetchTrashed',
+    safe: {
+      mutation: RESTORE_TRASHED_JOURNEYS,
+      mutationField: 'journeysRestore',
+      successMessageKey: 'Templates Restored',
+      event: 'restoreAllTrashed',
+      dialogTitleKey: 'Restore Templates',
+      dialogSubmitLabelKey: 'Restore',
+      dialogMessageKey:
+        'This will restore all trashed Templates not in a collection.'
+    },
+    destructive: {
+      mutation: DELETE_TRASHED_JOURNEYS,
+      mutationField: 'journeysDelete',
+      successMessageKey: 'Templates Deleted',
+      event: 'deleteAllTrashed',
+      dialogTitleKey: 'Delete Templates Forever',
+      dialogSubmitLabelKey: 'Delete Forever',
+      dialogMessageKey:
+        'This will permanently delete all trashed Templates not in a collection.'
+    }
+  }
+}
+
 // Build the shareable public URL for a published collection. Mirrors the
 // pattern in JourneyQuickSettings: respect NEXT_PUBLIC_JOURNEYS_URL,
 // fall back to your.nextstep.is. The path is `/template-gallery/<slug>`
@@ -716,79 +814,24 @@ export function TemplateGalleryPageList({
   // Projects/legacy Templates — scoped to unsectionedIds instead of every
   // journey of this status, and with its own dialog copy (not the strings
   // affected by NES-1780/1778/1781) so those defects aren't inherited.
-  // "safe" is always the less-destructive of the pair on offer for a given
-  // status (Archive / Restore / Restore — all reversible), "destructive" is
-  // always the more-destructive one (Trash / Trash / Delete Forever, the
-  // last of which is permanent). This axis holds consistently across all
-  // three statuses even though the concrete action differs per status.
-  const getMutations = (): {
-    safe: typeof ARCHIVE_ACTIVE_JOURNEYS
-    destructive: typeof TRASH_ACTIVE_JOURNEYS
-  } => {
-    switch (status) {
-      case 'archived':
-        return {
-          safe: RESTORE_ARCHIVED_JOURNEYS,
-          destructive: TRASH_ARCHIVED_JOURNEYS
-        }
-      case 'trashed':
-        return {
-          safe: RESTORE_TRASHED_JOURNEYS,
-          destructive: DELETE_TRASHED_JOURNEYS
-        }
-      case 'active':
-      default:
-        return {
-          safe: ARCHIVE_ACTIVE_JOURNEYS,
-          destructive: TRASH_ACTIVE_JOURNEYS
-        }
-    }
-  }
-  const mutations = getMutations()
+  const actionConfig = STATUS_ACTION_CONFIG[status]
 
-  const getSafeMutationField = (): string => {
-    switch (status) {
-      case 'archived':
-      case 'trashed':
-        return 'journeysRestore'
-      case 'active':
-      default:
-        return 'journeysArchive'
-    }
-  }
-  const getDestructiveMutationField = (): string => {
-    switch (status) {
-      case 'trashed':
-        return 'journeysDelete'
-      case 'archived':
-      case 'active':
-      default:
-        return 'journeysTrash'
-    }
-  }
-
-  const [safeMutation] = useMutation(mutations.safe, {
+  const [safeMutation] = useMutation(actionConfig.safe.mutation, {
     update(_cache, { data }) {
-      const mutationField = getSafeMutationField()
-      if (data?.[mutationField] != null) {
-        const messageKey =
-          status === 'active'
-            ? 'Templates Archived'
-            : status === 'archived'
-              ? 'Templates Unarchived'
-              : 'Templates Restored'
-        enqueueSnackbar(t(messageKey), { variant: 'success' })
+      if (data?.[actionConfig.safe.mutationField] != null) {
+        enqueueSnackbar(t(actionConfig.safe.successMessageKey), {
+          variant: 'success'
+        })
         void journeysQuery.refetch()
       }
     }
   })
-  const [destructiveMutation] = useMutation(mutations.destructive, {
+  const [destructiveMutation] = useMutation(actionConfig.destructive.mutation, {
     update(_cache, { data }) {
-      const mutationField = getDestructiveMutationField()
-      if (data?.[mutationField] != null) {
-        const messageKey =
-          status === 'trashed' ? 'Templates Deleted' : 'Templates Trashed'
-        enqueueSnackbar(t(messageKey), { variant: 'success' })
+      if (data?.[actionConfig.destructive.mutationField] != null) {
+        enqueueSnackbar(t(actionConfig.destructive.successMessageKey), {
+          variant: 'success'
+        })
         void journeysQuery.refetch()
       }
     }
@@ -833,110 +876,28 @@ export function TemplateGalleryPageList({
   }
 
   useEffect(() => {
-    switch (status) {
-      case 'active':
-        switch (event) {
-          case 'archiveAllActive':
-            setSafeDialogOpen(true)
-            break
-          case 'trashAllActive':
-            setDestructiveDialogOpen(true)
-            break
-          case 'refetchActive':
-            void journeysQuery.refetch()
-            break
-        }
-        break
-      case 'archived':
-        switch (event) {
-          case 'restoreAllArchived':
-            setSafeDialogOpen(true)
-            break
-          case 'trashAllArchived':
-            setDestructiveDialogOpen(true)
-            break
-          case 'refetchArchived':
-            void journeysQuery.refetch()
-            break
-        }
-        break
-      case 'trashed':
-        switch (event) {
-          case 'restoreAllTrashed':
-            setSafeDialogOpen(true)
-            break
-          case 'deleteAllTrashed':
-            setDestructiveDialogOpen(true)
-            break
-          case 'refetchTrashed':
-            void journeysQuery.refetch()
-            break
-        }
-        break
+    if (event === actionConfig.safe.event) {
+      setSafeDialogOpen(true)
+    } else if (event === actionConfig.destructive.event) {
+      setDestructiveDialogOpen(true)
+    } else if (event === actionConfig.refetchEvent) {
+      void journeysQuery.refetch()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [event, status])
+  }, [event, actionConfig])
 
-  const getDialogLabels = (): {
-    safe: { title: string; submitLabel: string; message: string }
-    destructive: { title: string; submitLabel: string; message: string }
-  } => {
-    switch (status) {
-      case 'archived':
-        return {
-          safe: {
-            title: t('Unarchive Templates'),
-            submitLabel: t('Unarchive'),
-            message: t(
-              'This will unarchive all archived Templates not in a collection.'
-            )
-          },
-          destructive: {
-            title: t('Trash Templates'),
-            submitLabel: t('Trash'),
-            message: t(
-              'This will trash all archived Templates not in a collection.'
-            )
-          }
-        }
-      case 'trashed':
-        return {
-          safe: {
-            title: t('Restore Templates'),
-            submitLabel: t('Restore'),
-            message: t(
-              'This will restore all trashed Templates not in a collection.'
-            )
-          },
-          destructive: {
-            title: t('Delete Templates Forever'),
-            submitLabel: t('Delete Forever'),
-            message: t(
-              'This will permanently delete all trashed Templates not in a collection.'
-            )
-          }
-        }
-      case 'active':
-      default:
-        return {
-          safe: {
-            title: t('Archive Templates'),
-            submitLabel: t('Archive'),
-            message: t(
-              'This will archive all active Templates not in a collection.'
-            )
-          },
-          destructive: {
-            title: t('Trash Templates'),
-            submitLabel: t('Trash'),
-            message: t(
-              'This will trash all active Templates not in a collection.'
-            )
-          }
-        }
+  const dialogLabels = {
+    safe: {
+      title: t(actionConfig.safe.dialogTitleKey),
+      submitLabel: t(actionConfig.safe.dialogSubmitLabelKey),
+      message: t(actionConfig.safe.dialogMessageKey)
+    },
+    destructive: {
+      title: t(actionConfig.destructive.dialogTitleKey),
+      submitLabel: t(actionConfig.destructive.dialogSubmitLabelKey),
+      message: t(actionConfig.destructive.dialogMessageKey)
     }
   }
-  const dialogLabels = getDialogLabels()
 
   if (teamId == null) {
     return (
@@ -1143,6 +1104,12 @@ export function TemplateGalleryPageList({
                 spacing={1}
                 sx={{ alignItems: 'center', flexShrink: 0 }}
               >
+                {/* onSortOrderChange/onEvent are optional here so this
+                  component stays renderable prop-less in isolation (specs,
+                  Storybook) — JourneyList, the only real caller, always
+                  supplies both. JourneySort/JourneyListMenu themselves
+                  require a handler, hence the no-op fallback rather than
+                  leaving it undefined. */}
                 <JourneySort
                   sortOrder={sortOrder}
                   onChange={onSortOrderChange ?? (() => undefined)}
