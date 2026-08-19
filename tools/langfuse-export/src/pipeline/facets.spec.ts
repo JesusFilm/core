@@ -1,4 +1,9 @@
-import { buildFacets } from './facets'
+import {
+  buildFacets,
+  isNonContentPhrase,
+  isEnglishStopword,
+  normalizeLanguageLabel
+} from './facets'
 import type { ConversationTurn, SanitisedConversation } from '../types'
 
 function turn(userMessage: string): ConversationTurn {
@@ -111,7 +116,7 @@ describe('buildFacets', () => {
     expect(result.sessionCountryKeys.get('s4')).toEqual([])
   })
 
-  it('builds journey-language facets from the language field', () => {
+  it('builds journey-language facets from the language field, normalised', () => {
     const result = buildFacets([
       conv('s1', ['hello'], 'US', 'en'),
       conv('s2', ['hello'], 'NZ', 'en'),
@@ -119,12 +124,30 @@ describe('buildFacets', () => {
       conv('s4', ['hello'], 'US') // no language -> no language facet
     ])
     expect(result.languageFacets.map((f) => `${f.label}=${f.count}`)).toEqual([
-      'en=2',
-      'es=1'
+      'English=2',
+      'Spanish=1'
     ])
     expect(result.languageFacets.every((f) => f.kind === 'language')).toBe(true)
-    expect(result.sessionLanguageKeys.get('s1')).toEqual(['language:en'])
+    expect(result.sessionLanguageKeys.get('s1')).toEqual(['language:English'])
     expect(result.sessionLanguageKeys.get('s4')).toEqual([])
+  })
+
+  // Production sends both spellings for one language. Before normalisation the
+  // rail showed `English` and `en` as separate rows, so filtering `English`
+  // silently dropped every `en` session.
+  it('folds the code and display-name spellings of one language into one facet', () => {
+    const result = buildFacets([
+      conv('s1', ['hello'], 'US', 'en'),
+      conv('s2', ['hello'], 'US', 'English'),
+      conv('s3', ['hello'], 'MX', 'es'),
+      conv('s4', ['hello'], 'AR', 'Spanish, Latin American')
+    ])
+    expect(result.languageFacets.map((f) => `${f.label}=${f.count}`)).toEqual([
+      'English=2',
+      'Spanish=2'
+    ])
+    expect(result.sessionLanguageKeys.get('s2')).toEqual(['language:English'])
+    expect(result.sessionLanguageKeys.get('s4')).toEqual(['language:Spanish'])
   })
 
   it('respects the maxFacets cap, keeping the highest-frequency terms', () => {
@@ -143,5 +166,71 @@ describe('buildFacets', () => {
     const result = buildFacets(chatty)
     // df 1 each (only one session contains each) -> below MIN_DF -> no facets.
     expect(result.keywordFacets).toEqual([])
+  })
+})
+
+describe('isEnglishStopword', () => {
+  it('matches English function words case- and whitespace-insensitively', () => {
+    expect(isEnglishStopword('that')).toBe(true)
+    expect(isEnglishStopword('  You  ')).toBe(true)
+    expect(isEnglishStopword('HELLO')).toBe(true)
+  })
+
+  // The apologetics vocabulary must survive: a Spanish `dios` glossed to `god`
+  // is exactly the facet a reader wants.
+  it('does not match apologetics content words', () => {
+    for (const term of ['god', 'jesus', 'christ', 'bible', 'faith', 'exists']) {
+      expect(isEnglishStopword(term)).toBe(false)
+    }
+  })
+})
+
+describe('normalizeLanguageLabel', () => {
+  // Production sends both spellings; left raw they split one language in two.
+  it('folds BCP-47 codes onto their English display name', () => {
+    expect(normalizeLanguageLabel('en')).toBe('English')
+    expect(normalizeLanguageLabel('es')).toBe('Spanish')
+    expect(normalizeLanguageLabel('af')).toBe('Afrikaans')
+    expect(normalizeLanguageLabel('pt-BR')).toBe('Portuguese')
+    expect(normalizeLanguageLabel('es_419')).toBe('Spanish')
+  })
+
+  it('strips the regional qualifier from display names', () => {
+    expect(normalizeLanguageLabel('Spanish, Latin American')).toBe('Spanish')
+    expect(normalizeLanguageLabel('Bengali (Indian)')).toBe('Bengali')
+    expect(normalizeLanguageLabel('Arabic, Modern Standard')).toBe('Arabic')
+    expect(normalizeLanguageLabel('Farsi, Western')).toBe('Farsi')
+  })
+
+  it('makes the two spellings of one language agree', () => {
+    expect(normalizeLanguageLabel('es')).toBe(
+      normalizeLanguageLabel('Spanish, Latin American')
+    )
+    expect(normalizeLanguageLabel('en')).toBe(normalizeLanguageLabel('English'))
+    expect(normalizeLanguageLabel('fr')).toBe(normalizeLanguageLabel('French'))
+  })
+
+  it('passes through an unknown value rather than guessing', () => {
+    expect(normalizeLanguageLabel('Klingon')).toBe('Klingon')
+    expect(normalizeLanguageLabel('zz')).toBe('zz')
+  })
+})
+
+describe('isNonContentPhrase', () => {
+  it('suppresses multi-word glosses made only of function words', () => {
+    expect(isNonContentPhrase('to do')).toBe(true)
+    expect(isNonContentPhrase('i can')).toBe(true)
+    expect(isNonContentPhrase('and the')).toBe(true)
+  })
+
+  it('keeps a gloss carrying any content word', () => {
+    expect(isNonContentPhrase('the book')).toBe(false)
+    expect(isNonContentPhrase('god')).toBe(false)
+    expect(isNonContentPhrase('holy')).toBe(false)
+  })
+
+  it('does not suppress empty or letterless input', () => {
+    expect(isNonContentPhrase('')).toBe(false)
+    expect(isNonContentPhrase('123')).toBe(false)
   })
 })
