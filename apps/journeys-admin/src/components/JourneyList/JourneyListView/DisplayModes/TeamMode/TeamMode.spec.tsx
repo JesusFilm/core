@@ -137,4 +137,93 @@ describe('TeamMode', () => {
     )
     expect(mockRenderList).toHaveBeenCalledWith('templates', selectedStatus)
   })
+
+  it('should show Sort and bulk-actions menu on Team Templates when listControlsOwnedByContent is not set', () => {
+    const routerMock = {
+      query: { type: 'templates' }
+    } as unknown as NextRouter
+    mockedUseRouter.mockReturnValue(routerMock)
+
+    const { getByRole } = render(
+      <ThemeProvider>
+        <TeamMode
+          activeContentTypeTab={1}
+          handleContentTypeChange={mockHandleContentTypeChange}
+          contentTypeOptions={contentTypeOptions}
+          selectedStatus="active"
+          handleStatusChange={mockHandleStatusChange}
+          sortOrder={undefined}
+          setSortOrder={mockSetSortOrder}
+          setActiveEvent={mockSetActiveEvent}
+          router={routerMock}
+          renderList={mockRenderList}
+        />
+      </ThemeProvider>
+    )
+
+    expect(getByRole('button', { name: 'Sort By' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Journey list actions' })
+    ).toBeInTheDocument()
+  })
+
+  it('should hide Sort and bulk-actions menu on Team Templates when listControlsOwnedByContent is true (NES-1872)', () => {
+    const routerMock = {
+      query: { type: 'templates' }
+    } as unknown as NextRouter
+    mockedUseRouter.mockReturnValue(routerMock)
+
+    const { queryByRole } = render(
+      <ThemeProvider>
+        <TeamMode
+          activeContentTypeTab={1}
+          handleContentTypeChange={mockHandleContentTypeChange}
+          contentTypeOptions={contentTypeOptions}
+          selectedStatus="active"
+          handleStatusChange={mockHandleStatusChange}
+          sortOrder={undefined}
+          setSortOrder={mockSetSortOrder}
+          setActiveEvent={mockSetActiveEvent}
+          router={routerMock}
+          renderList={mockRenderList}
+          listControlsOwnedByContent
+        />
+      </ThemeProvider>
+    )
+
+    expect(queryByRole('button', { name: 'Sort By' })).not.toBeInTheDocument()
+    expect(
+      queryByRole('button', { name: 'Journey list actions' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should still show Sort and bulk-actions menu on Team Projects when listControlsOwnedByContent is false', () => {
+    const routerMock = {
+      query: { type: 'journeys' }
+    } as unknown as NextRouter
+    mockedUseRouter.mockReturnValue(routerMock)
+
+    const { getByRole } = render(
+      <ThemeProvider>
+        <TeamMode
+          activeContentTypeTab={0}
+          handleContentTypeChange={mockHandleContentTypeChange}
+          contentTypeOptions={contentTypeOptions}
+          selectedStatus="active"
+          handleStatusChange={mockHandleStatusChange}
+          sortOrder={undefined}
+          setSortOrder={mockSetSortOrder}
+          setActiveEvent={mockSetActiveEvent}
+          router={routerMock}
+          renderList={mockRenderList}
+          listControlsOwnedByContent={false}
+        />
+      </ThemeProvider>
+    )
+
+    expect(getByRole('button', { name: 'Sort By' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Journey list actions' })
+    ).toBeInTheDocument()
+  })
 })
