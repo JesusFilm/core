@@ -905,6 +905,9 @@ importers:
       nx-mcp:
         specifier: ^0.6.0
         version: 0.6.3
+      phoebe-agent:
+        specifier: 0.1.1
+        version: 0.1.1
       pino-pretty:
         specifier: ^13.0.0
         version: 13.0.0
@@ -18510,6 +18513,11 @@ packages:
 
   pgpass@1.0.5:
     resolution: {integrity: sha512-FdW9r/jQZhSeohs1Z3sI1yxFQNFvMcnmfuj4WBMUTxOrAyLMaTcE1aAMBiTlbMNaXvBCQuVi0R7hd8udDSP7ug==}
+
+  phoebe-agent@0.1.1:
+    resolution: {integrity: sha512-4WW/foFHdwXl+mVlokxaztKraAPId1eKv1TTciiOr3eOFgujf1LRAFDt59Vv5NPcERT7wnaEqi4dN9pOvQkoMg==}
+    engines: {node: '>=24'}
+    hasBin: true
 
   picocolors@1.0.0:
     resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}
@@ -45724,6 +45732,8 @@ snapshots:
   pgpass@1.0.5:
     dependencies:
       split2: 4.2.0
+
+  phoebe-agent@0.1.1: {}
 
   picocolors@1.0.0: {}
 
