@@ -349,8 +349,8 @@ describe('journeyAcl', () => {
 })
 
 describe('canManageTemplateField', () => {
-  const user = { id: 'userId' }
-  const publisher = { id: 'userId', roles: ['publisher'] }
+  const user = { id: 'userId', firstName: 'Test', emailVerified: true }
+  const publisher = { ...user, roles: ['publisher'] }
 
   const jfpTemplateNoRoles = {
     id: 'journeyId',

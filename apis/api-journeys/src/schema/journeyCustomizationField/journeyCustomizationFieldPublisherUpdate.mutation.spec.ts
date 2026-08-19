@@ -1,7 +1,11 @@
 import { ExecutionResult } from 'graphql'
 import { type MockedFunction, vi } from 'vitest'
 
-import { UserJourneyRole, UserTeamRole } from '@core/prisma/journeys/client'
+import {
+  Role,
+  UserJourneyRole,
+  UserTeamRole
+} from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../test/client'
@@ -71,7 +75,7 @@ describe('journeyCustomizationFieldPublisherUpdate', () => {
     }
   }
 
-  function mockRoles(roles: string[]): void {
+  function mockRoles(roles: Role[]): void {
     prismaMock.userRole.findUnique.mockResolvedValue({
       id: 'userRoleId',
       userId: mockUser.id,
