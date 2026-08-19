@@ -57,7 +57,7 @@ export function NewSignUpButton(): ReactElement {
   function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
-    ) as TreeBlock<CardBlock> | undefined
+    )
     if (card == null || journey == null) return
 
     const signUpBlock: SignUpBlock = {

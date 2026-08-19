@@ -109,7 +109,8 @@ async function getLanguageSlug(
       'Failed to get language slug for variant'
     )
     throw new Error(
-      `Failed to create slug for variant: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to create slug for variant: ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error }
     )
   } finally {
     if (apollo != null) void apollo.stop()

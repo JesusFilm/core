@@ -82,7 +82,7 @@ async function fetchOEmbedSrc(url: string): Promise<string | null> {
       typeof data === 'object' &&
       data !== null &&
       'html' in data &&
-      typeof (data as { html: unknown }).html === 'string'
+      typeof data.html === 'string'
         ? (data as { html: string }).html
         : undefined
     return extractIframeSrc(html)

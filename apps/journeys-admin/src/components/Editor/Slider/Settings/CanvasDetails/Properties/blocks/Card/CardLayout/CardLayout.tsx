@@ -46,13 +46,12 @@ export function CardLayout({
     CardBlockLayoutUpdateVariables
   >(CARD_BLOCK_LAYOUT_UPDATE)
 
-  const cardBlock = (
+  const cardBlock =
     selectedBlock?.__typename === 'CardBlock'
       ? selectedBlock
       : selectedBlock?.children.find(
           (child) => child.__typename === 'CardBlock'
         )
-  ) as TreeBlock<CardBlock> | undefined
 
   function handleLayoutChange(fullscreen: boolean): void {
     if (cardBlock == null) return

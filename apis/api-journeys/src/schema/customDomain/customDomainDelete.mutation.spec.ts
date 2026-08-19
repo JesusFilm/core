@@ -79,10 +79,8 @@ describe('customDomainDelete', () => {
   })
 
   it('should delete custom domain when authorized', async () => {
-    prismaMock.customDomain.findUnique.mockResolvedValue(
-      mockCustomDomain as any
-    )
-    prismaMock.customDomain.delete.mockResolvedValue(mockCustomDomain as any)
+    prismaMock.customDomain.findUnique.mockResolvedValue(mockCustomDomain)
+    prismaMock.customDomain.delete.mockResolvedValue(mockCustomDomain)
 
     const result = await authClient({
       document: CUSTOM_DOMAIN_DELETE_MUTATION,
@@ -149,7 +147,7 @@ describe('customDomainDelete', () => {
     }
 
     prismaMock.customDomain.findUnique.mockResolvedValue(
-      unauthorizedCustomDomain as any
+      unauthorizedCustomDomain
     )
 
     const result = await authClient({
@@ -179,9 +177,7 @@ describe('customDomainDelete', () => {
       }
     }
 
-    prismaMock.customDomain.findUnique.mockResolvedValue(
-      noAccessCustomDomain as any
-    )
+    prismaMock.customDomain.findUnique.mockResolvedValue(noAccessCustomDomain)
 
     const result = await authClient({
       document: CUSTOM_DOMAIN_DELETE_MUTATION,

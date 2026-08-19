@@ -39,7 +39,7 @@ export function MinRows(): ReactElement {
     if (selectedBlock == null) return
     add({
       parameters: {
-        execute: { minRows: minRows as number | null },
+        execute: { minRows: minRows },
         undo: {
           minRows: selectedBlock.minRows
         }

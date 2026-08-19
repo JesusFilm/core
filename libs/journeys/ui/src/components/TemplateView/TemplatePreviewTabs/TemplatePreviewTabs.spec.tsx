@@ -27,7 +27,7 @@ describe('TemplatePreviewTabs', () => {
       <MockedProvider>
         <JourneyProvider
           value={{
-            journey: journeyWithVideos as JourneyFields,
+            journey: journeyWithVideos,
             renderMode: 'admin'
           }}
         >
@@ -48,7 +48,7 @@ describe('TemplatePreviewTabs', () => {
       <MockedProvider>
         <JourneyProvider
           value={{
-            journey: journeyWithVideos as JourneyFields,
+            journey: journeyWithVideos,
             renderMode: 'admin'
           }}
         >

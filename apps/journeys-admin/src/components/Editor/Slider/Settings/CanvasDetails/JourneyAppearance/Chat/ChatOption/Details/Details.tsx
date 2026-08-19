@@ -199,12 +199,11 @@ export function Details({
                     alignItems: 'center'
                   }}
                 >
-                  <MessageChatIcon platform={selected as MessagePlatform} />
+                  <MessageChatIcon platform={selected} />
                   <Typography>
                     {messagePlatformOptions.find(
                       (opt) => opt.value === selected
-                    )?.label ??
-                      messagePlatformToLabel(selected as MessagePlatform, t)}
+                    )?.label ?? messagePlatformToLabel(selected, t)}
                   </Typography>
                 </Stack>
               )}
@@ -227,7 +226,7 @@ export function Details({
           </FormControl>
         )}
         <TextFieldForm
-          id={currentPlatform as string}
+          id={currentPlatform}
           label={t('Paste URL here')}
           initialValue={currentLink}
           onSubmit={(value) => handleUpdate('link', value)}

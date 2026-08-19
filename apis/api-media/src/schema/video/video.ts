@@ -843,7 +843,8 @@ builder.mutationFields((t) => ({
           e.code === 'P2025'
         ) {
           throw new Error(
-            'Translation restriction cannot be disabled once enabled'
+            'Translation restriction cannot be disabled once enabled',
+            { cause: e }
           )
         }
         throw e

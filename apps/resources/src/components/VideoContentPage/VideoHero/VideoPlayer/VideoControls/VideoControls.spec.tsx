@@ -198,6 +198,9 @@ describe('VideoControls', () => {
     vi.spyOn(player, 'requestFullscreen').mockImplementation(function () {
       this.trigger('requestFullscreen')
     })
+    // ESLint's projectService and the type-check/build tsconfig resolve
+    // different type info here; tsc still needs this assertion.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     ;(global.navigator.userAgent as unknown as string) = 'iPhone'
 
     const { getByTestId } = render(
@@ -225,6 +228,9 @@ describe('VideoControls', () => {
   })
 
   it('fullscreens the video player on fullscreen icon click when desktop', async () => {
+    // ESLint's projectService and the type-check/build tsconfig resolve
+    // different type info here; tsc still needs this assertion.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     ;(global.navigator.userAgent as unknown as string) = 'Mac'
     const { getByTestId } = render(
       <MockedProvider>

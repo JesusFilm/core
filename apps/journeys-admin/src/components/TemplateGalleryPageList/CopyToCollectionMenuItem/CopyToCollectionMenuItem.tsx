@@ -180,7 +180,7 @@ export function CopyToCollectionMenuItem({
       setErrorMessage(null)
     }
 
-    let duplicatedId: string | null = null
+    let duplicatedId: string | null
     try {
       const result = await journeyDuplicate({
         variables: { id: journeyId, teamId }

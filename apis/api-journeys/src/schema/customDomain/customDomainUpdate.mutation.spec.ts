@@ -66,13 +66,11 @@ describe('customDomainUpdate', () => {
   })
 
   it('should update routeAllTeamJourneys', async () => {
-    prismaMock.customDomain.findUnique.mockResolvedValue(
-      mockCustomDomain as any
-    )
+    prismaMock.customDomain.findUnique.mockResolvedValue(mockCustomDomain)
     prismaMock.customDomain.update.mockResolvedValue({
       ...mockCustomDomain,
       routeAllTeamJourneys: false
-    } as any)
+    })
 
     const result = await authClient({
       document: CUSTOM_DOMAIN_UPDATE_MUTATION,
@@ -105,9 +103,7 @@ describe('customDomainUpdate', () => {
   })
 
   it('should update journeyCollectionId', async () => {
-    prismaMock.customDomain.findUnique.mockResolvedValue(
-      mockCustomDomain as any
-    )
+    prismaMock.customDomain.findUnique.mockResolvedValue(mockCustomDomain)
     prismaMock.journeyCollection.findFirst.mockResolvedValue({
       id: 'collectionId',
       teamId: 'teamId'
@@ -115,7 +111,7 @@ describe('customDomainUpdate', () => {
     prismaMock.customDomain.update.mockResolvedValue({
       ...mockCustomDomain,
       journeyCollectionId: 'collectionId'
-    } as any)
+    })
 
     const result = await authClient({
       document: CUSTOM_DOMAIN_UPDATE_MUTATION,
@@ -151,13 +147,11 @@ describe('customDomainUpdate', () => {
   })
 
   it('should disconnect journeyCollection when journeyCollectionId is null', async () => {
-    prismaMock.customDomain.findUnique.mockResolvedValue(
-      mockCustomDomain as any
-    )
+    prismaMock.customDomain.findUnique.mockResolvedValue(mockCustomDomain)
     prismaMock.customDomain.update.mockResolvedValue({
       ...mockCustomDomain,
       journeyCollectionId: null
-    } as any)
+    })
 
     const result = await authClient({
       document: CUSTOM_DOMAIN_UPDATE_MUTATION,
@@ -190,9 +184,7 @@ describe('customDomainUpdate', () => {
   })
 
   it('should return FORBIDDEN when journeyCollectionId belongs to another team', async () => {
-    prismaMock.customDomain.findUnique.mockResolvedValue(
-      mockCustomDomain as any
-    )
+    prismaMock.customDomain.findUnique.mockResolvedValue(mockCustomDomain)
     prismaMock.journeyCollection.findFirst.mockResolvedValue(null)
 
     const result = await authClient({
@@ -258,7 +250,7 @@ describe('customDomainUpdate', () => {
     }
 
     prismaMock.customDomain.findUnique.mockResolvedValue(
-      unauthorizedCustomDomain as any
+      unauthorizedCustomDomain
     )
 
     const result = await authClient({
@@ -290,9 +282,7 @@ describe('customDomainUpdate', () => {
       }
     }
 
-    prismaMock.customDomain.findUnique.mockResolvedValue(
-      noAccessCustomDomain as any
-    )
+    prismaMock.customDomain.findUnique.mockResolvedValue(noAccessCustomDomain)
 
     const result = await authClient({
       document: CUSTOM_DOMAIN_UPDATE_MUTATION,
