@@ -1,4 +1,4 @@
-import { type MockedFunction, vi } from 'vitest'
+import { vi } from 'vitest'
 
 import {
   BibleCitation,
@@ -26,12 +26,12 @@ import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
 
 import {
   findContainerParentIds,
-  updateVideoAvailableLanguages
+  recalculateAvailableLanguagesCascade
 } from './lib/updateAvailableLanguages'
 import { getLanguageIdFromInfo } from './video'
 
 vi.mock('./lib/updateAvailableLanguages', () => ({
-  updateVideoAvailableLanguages: vi.fn(),
+  recalculateAvailableLanguagesCascade: vi.fn(),
   findContainerParentIds: vi.fn().mockResolvedValue([])
 }))
 
@@ -48,6 +48,9 @@ vi.mock('../../workers/videoAlgoliaSync', () => ({
 
 const mockedFindContainerParentIds = vi.mocked(findContainerParentIds)
 const mockedEnqueueVideoAlgoliaSync = vi.mocked(enqueueVideoAlgoliaSync)
+const mockRecalculateAvailableLanguagesCascade = vi.mocked(
+  recalculateAvailableLanguagesCascade
+)
 
 describe('video', () => {
   const client = getClient()
@@ -744,6 +747,9 @@ describe('video', () => {
             }
           },
           variants: {
+            where: {
+              published: true
+            },
             select: {
               languageId: true
             }
@@ -940,6 +946,9 @@ describe('video', () => {
             }
           },
           variants: {
+            where: {
+              published: true
+            },
             select: {
               languageId: true
             }
@@ -1148,6 +1157,34 @@ describe('video', () => {
           ]
         }
       ])
+    })
+
+    it('should only return languages from published variants for video.variantLanguages', async () => {
+      prismaMock.video.findMany.mockResolvedValueOnce(videos)
+
+      await client({
+        document: graphql(`
+          query VideoVariantLanguages {
+            videos {
+              id
+              variantLanguages {
+                id
+              }
+            }
+          }
+        `)
+      })
+
+      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include: expect.objectContaining({
+            variants: {
+              where: { published: true },
+              select: { languageId: true }
+            }
+          })
+        })
+      )
     })
 
     it('should query video.variants with languageId in filter', async () => {
@@ -2025,6 +2062,9 @@ describe('video', () => {
             }
           },
           variants: {
+            where: {
+              published: true
+            },
             select: {
               languageId: true
             }
@@ -2243,6 +2283,9 @@ describe('video', () => {
             }
           },
           variants: {
+            where: {
+              published: true
+            },
             select: {
               languageId: true
             }
@@ -3065,6 +3108,66 @@ describe('video', () => {
         })
       })
 
+      it('recomputes and cascades availableLanguages when childIds changes, so a removed child does not leave a stale language behind', async () => {
+        mockRecalculateAvailableLanguagesCascade.mockClear()
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findMany.mockResolvedValue([
+          { id: 'child1' },
+          { id: 'parent-id' }
+        ] as any)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'parent-id'
+        } as unknown as Video)
+
+        await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'parent-id',
+              // child2 (which used to provide a language) is no longer
+              // listed - the relation just got severed by this very update.
+              childIds: ['child1']
+            }
+          }
+        })
+
+        expect(mockRecalculateAvailableLanguagesCascade).toHaveBeenCalledWith(
+          'parent-id'
+        )
+      })
+
+      it('does not recompute availableLanguages when childIds is not part of the update', async () => {
+        mockRecalculateAvailableLanguagesCascade.mockClear()
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.update.mockResolvedValue({
+          id: 'parent-id'
+        } as unknown as Video)
+
+        await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'parent-id',
+              slug: 'new-slug'
+            }
+          }
+        })
+
+        expect(mockRecalculateAvailableLanguagesCascade).not.toHaveBeenCalled()
+      })
+
       it('should set publishedAt when updating from unpublished to published', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
@@ -3651,16 +3754,11 @@ describe('video', () => {
         }
       `)
 
-      const mockUpdateVideoAvailableLanguages =
-        updateVideoAvailableLanguages as MockedFunction<
-          typeof updateVideoAvailableLanguages
-        >
-
       beforeEach(() => {
-        mockUpdateVideoAvailableLanguages.mockClear()
+        mockRecalculateAvailableLanguagesCascade.mockClear()
       })
 
-      it('should fix video languages successfully', async () => {
+      it('should fix video languages successfully, cascading to the root', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -3671,7 +3769,7 @@ describe('video', () => {
         prismaMock.video.findUnique.mockResolvedValue({
           id: 'videoId'
         } as any)
-        mockUpdateVideoAvailableLanguages.mockResolvedValue([])
+        mockRecalculateAvailableLanguagesCascade.mockResolvedValue([])
 
         const result = await authClient({
           document: FIX_VIDEO_LANGUAGES_MUTATION,
@@ -3684,7 +3782,7 @@ describe('video', () => {
           where: { id: 'videoId' },
           select: { id: true }
         })
-        expect(mockUpdateVideoAvailableLanguages).toHaveBeenCalledWith(
+        expect(mockRecalculateAvailableLanguagesCascade).toHaveBeenCalledWith(
           'videoId'
         )
         expect(result).toHaveProperty('data.fixVideoLanguages', true)
@@ -3711,7 +3809,7 @@ describe('video', () => {
           where: { id: 'nonExistentId' },
           select: { id: true }
         })
-        expect(mockUpdateVideoAvailableLanguages).not.toHaveBeenCalled()
+        expect(mockRecalculateAvailableLanguagesCascade).not.toHaveBeenCalled()
         expect(result).toHaveProperty('data', null)
         expect(result).toHaveProperty('errors')
       })
@@ -3725,7 +3823,7 @@ describe('video', () => {
         })
 
         expect(result).toHaveProperty('data', null)
-        expect(mockUpdateVideoAvailableLanguages).not.toHaveBeenCalled()
+        expect(mockRecalculateAvailableLanguagesCascade).not.toHaveBeenCalled()
       })
     })
 

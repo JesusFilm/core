@@ -37,7 +37,7 @@ import { VideosFilter } from './inputs/videosFilter'
 import { VideoUpdateInput } from './inputs/videoUpdate'
 import {
   findContainerParentIds,
-  updateVideoAvailableLanguages
+  recalculateAvailableLanguagesCascade
 } from './lib/updateAvailableLanguages'
 import { videosFilter } from './lib/videosFilter'
 
@@ -221,6 +221,7 @@ export const Video = builder.prismaObject('Video', {
       nullable: false,
       select: () => ({
         variants: {
+          where: { published: true },
           select: {
             languageId: true
           }
@@ -849,6 +850,20 @@ builder.mutationFields((t) => ({
         throw e
       }
 
+      // A container's own children relation changing (adding or removing a
+      // child) can change what languages it should offer. Recompute this
+      // video's own availableLanguages from current source data and cascade
+      // upward - otherwise a language provided only by a just-removed child
+      // sticks around forever, since by the time anything else would look
+      // for it the relation to that child is already severed.
+      if (input.childIds !== undefined) {
+        try {
+          await recalculateAvailableLanguagesCascade(video.id)
+        } catch (error) {
+          console.error('Language management update error:', error)
+        }
+      }
+
       // Handle parent variant changes if video published status changed
       const publishedChanged =
         currentVideo != null &&
@@ -1052,9 +1067,12 @@ builder.mutationFields((t) => ({
         throw new GraphQLError(`Video with id ${videoId} not found`)
       }
 
-      // Use shared helper to recalculate and update availableLanguages
+      // Use shared helper to recalculate and update availableLanguages,
+      // cascading all the way to the root of the container hierarchy - not
+      // just this video - so the admin repair tool doesn't itself
+      // reintroduce the single-hop cascade bug it exists to fix.
       try {
-        await updateVideoAvailableLanguages(videoId)
+        await recalculateAvailableLanguagesCascade(videoId)
       } catch (error) {
         console.error('Language management update error:', error)
       }

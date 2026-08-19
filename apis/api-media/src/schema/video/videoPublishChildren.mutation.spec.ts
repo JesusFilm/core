@@ -11,6 +11,18 @@ vi.mock('../../workers/videoAlgoliaSync', () => ({
 
 const mockedEnqueueVideoAlgoliaSync = vi.mocked(enqueueVideoAlgoliaSync)
 
+// The mutation's validation query (`video.findMany({ where: { id: { in: ... } } })`)
+// and the availableLanguages cascade's ancestor lookup
+// (`findContainerParentIds` -> `video.findMany({ where: { children: ... } })`)
+// share the same mocked `video.findMany`. None of this fixture's videos have
+// a further container above `parent`, so the ancestor lookup should always
+// resolve empty; only the validation-query shape returns the fixture list.
+function mockVideosForValidation(videos: unknown[]): void {
+  ;(prismaMock.video.findMany as any).mockImplementation(async (args: any) =>
+    args?.where?.children != null ? [] : videos
+  )
+}
+
 const authClient = getClient({
   headers: {
     authorization: 'token'
@@ -73,7 +85,7 @@ describe('videoPublishChildren', () => {
         } as any
       }
     )
-    prismaMock.video.findMany.mockResolvedValue([
+    mockVideosForValidation([
       {
         id: 'parent',
         label: 'collection',
@@ -104,7 +116,7 @@ describe('videoPublishChildren', () => {
         images: [{ id: 'c3-banner' }],
         variants: [{ id: 'c3-variant' }]
       }
-    ] as any)
+    ])
     prismaMock.videoVariant.findMany.mockResolvedValue([] as any)
     prismaMock.video.update.mockResolvedValue({} as any)
     prismaMock.video.updateMany.mockResolvedValue({ count: 2 } as any)
@@ -331,7 +343,7 @@ describe('videoPublishChildren', () => {
           { id: 'c2', published: true }
         ]
       } as any)
-      prismaMock.video.findMany.mockResolvedValue([
+      mockVideosForValidation([
         {
           id: 'parent',
           label: 'series',
@@ -342,7 +354,7 @@ describe('videoPublishChildren', () => {
           images: [{ id: 'parent-banner' }],
           variants: []
         }
-      ] as any)
+      ])
       prismaMock.videoVariant.findMany
         .mockResolvedValueOnce([
           { id: 'c1-spanish-draft', videoId: 'c1' }
@@ -399,7 +411,7 @@ describe('videoPublishChildren', () => {
           { id: 'c2', published: true }
         ]
       } as any)
-      prismaMock.video.findMany.mockResolvedValue([
+      mockVideosForValidation([
         {
           id: 'parent',
           label: 'series',
@@ -410,7 +422,7 @@ describe('videoPublishChildren', () => {
           images: [{ id: 'parent-banner' }],
           variants: []
         }
-      ] as any)
+      ])
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { id: 'c1-spanish-draft', videoId: 'c1' }
       ] as any)
@@ -471,7 +483,7 @@ describe('videoPublishChildren', () => {
         createdAt: new Date(),
         updatedAt: new Date()
       })
-      prismaMock.video.findMany.mockResolvedValue([
+      mockVideosForValidation([
         {
           id: 'parent',
           label: 'collection',
@@ -502,7 +514,7 @@ describe('videoPublishChildren', () => {
           images: [{ id: 'c3-banner' }],
           variants: [{ id: 'c3-variant' }]
         }
-      ] as any)
+      ])
       prismaMock.videoVariant.findMany
         .mockResolvedValueOnce([
           { id: 'pv1', videoId: 'parent' },
@@ -550,7 +562,7 @@ describe('videoPublishChildren', () => {
         { id: 'published-child', published: true }
       ]
     } as any)
-    prismaMock.video.findMany.mockResolvedValue([
+    mockVideosForValidation([
       {
         id: 'parent',
         label: 'series',
@@ -581,7 +593,7 @@ describe('videoPublishChildren', () => {
         images: [{ id: 'invalid-child-banner' }],
         variants: [{ id: 'invalid-child-draft-variant' }]
       }
-    ] as any)
+    ])
     prismaMock.videoVariant.findMany.mockResolvedValueOnce([
       { id: 'valid-child-draft-variant', videoId: 'valid-child' },
       { id: 'published-child-draft-variant', videoId: 'published-child' }
@@ -702,7 +714,7 @@ describe('videoPublishChildren', () => {
         createdAt: new Date(),
         updatedAt: new Date()
       })
-      prismaMock.video.findMany.mockResolvedValue([
+      mockVideosForValidation([
         {
           id: 'parent',
           label: 'collection',
@@ -733,7 +745,7 @@ describe('videoPublishChildren', () => {
           images: [{ id: 'c3-banner' }],
           variants: [{ id: 'c3-published-variant' }]
         }
-      ] as any)
+      ])
 
       const res = await authClient({
         document: VIDEO_PUBLISH_CHILDREN,
@@ -777,7 +789,7 @@ describe('videoPublishChildren', () => {
         publishedAt: null,
         children: []
       } as any)
-      prismaMock.video.findMany.mockResolvedValue([
+      mockVideosForValidation([
         {
           id: 'parent',
           label: 'featureFilm',
@@ -788,7 +800,7 @@ describe('videoPublishChildren', () => {
           images: [],
           variants: []
         }
-      ] as any)
+      ])
 
       const res = await authClient({
         document: VIDEO_PUBLISH_CHILDREN,
