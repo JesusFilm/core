@@ -64,14 +64,12 @@ export async function runCatalogParentLanguageAudit(
   options: CatalogAuditOptions,
   overrides: Partial<Dependencies> = {}
 ): Promise<CatalogAuditSummary> {
-  const reportPath =
-    options.reportPath ?? 'catalog-parent-language-audit.jsonl'
+  const reportPath = options.reportPath ?? 'catalog-parent-language-audit.jsonl'
   if (overrides.emit == null) await writeFile(reportPath, '')
   const dependencies: Dependencies = {
     findParentIdsBatch,
     auditAndRepairParent,
-    emit: async (entry) =>
-      appendFile(reportPath, `${JSON.stringify(entry)}\n`),
+    emit: async (entry) => appendFile(reportPath, `${JSON.stringify(entry)}\n`),
     ...overrides
   }
 

@@ -96,7 +96,8 @@ function needsNormalization(
 function diagnoseChildVariant(
   child: ChildVariantForRequirement
 ): ParentLanguageDiagnostics {
-  const hasPlayableStream = (child.hls ?? '') !== '' || (child.dash ?? '') !== ''
+  const hasPlayableStream =
+    (child.hls ?? '') !== '' || (child.dash ?? '') !== ''
   const childVariantValidity: ParentLanguageDiagnostics['childVariantValidity'] =
     hasPlayableStream || (child.duration ?? 0) > 0 ? 'valid' : 'unknown'
   const muxReadiness: ParentLanguageDiagnostics['muxReadiness'] =
@@ -233,10 +234,7 @@ async function normalizeParentVariant(
       await tx.video.update({
         where: { id: finding.parentId },
         data: {
-          availableLanguages: [
-            ...parent.availableLanguages,
-            finding.languageId
-          ]
+          availableLanguages: [...parent.availableLanguages, finding.languageId]
         }
       })
     }
