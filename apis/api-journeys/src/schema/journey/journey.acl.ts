@@ -241,11 +241,14 @@ export function canManageTemplateField(
 
   if (isLocalTemplate && (hasJourneyRole || hasTeamRole)) return true
 
-  if (
-    user.roles?.includes('publisher') === true &&
-    (hasJourneyRole || hasTeamRole)
-  )
-    return true
+  if (user.roles?.includes('publisher') !== true) return false
 
-  return false
+  // Publishers manage any existing template without needing a team/journey
+  // role: in the legacy CASL, can(Manage, 'Journey', { template: true }) was
+  // declared after cannot(Manage, 'Journey', 'template'), so it re-unlocked
+  // the template field for every template (QA-563).
+  if (journey.template === true) return true
+
+  // Converting their own journey to a template still requires a role on it.
+  return hasJourneyRole || hasTeamRole
 }
