@@ -22,6 +22,8 @@ import { deleteR2File } from '../cloudflare/r2/asset'
 import { deleteVideo } from '../mux/video/service'
 import {
   addLanguageToVideo,
+  findContainerParentIds,
+  recalculateAvailableLanguagesCascade,
   removeLanguageFromVideoIfUnused,
   updateParentCollectionLanguages
 } from '../video/lib/updateAvailableLanguages'
@@ -56,7 +58,9 @@ vi.mock('../../workers/videoAlgoliaSync', () => ({
 vi.mock('../video/lib/updateAvailableLanguages', () => ({
   addLanguageToVideo: vi.fn(),
   removeLanguageFromVideoIfUnused: vi.fn(),
-  updateParentCollectionLanguages: vi.fn()
+  updateParentCollectionLanguages: vi.fn(),
+  findContainerParentIds: vi.fn(),
+  recalculateAvailableLanguagesCascade: vi.fn()
 }))
 
 // Get the mocked functions for testing
@@ -74,6 +78,10 @@ const mockedRemoveLanguageFromVideoIfUnused = vi.mocked(
 )
 const mockedUpdateParentCollectionLanguages = vi.mocked(
   updateParentCollectionLanguages
+)
+const mockedFindContainerParentIds = vi.mocked(findContainerParentIds)
+const mockedRecalculateAvailableLanguagesCascade = vi.mocked(
+  recalculateAvailableLanguagesCascade
 )
 
 type VideoVariantAndIncludes = VideoVariant & {
@@ -110,6 +118,8 @@ describe('videoVariant', () => {
     mockedAddLanguageToVideo.mockResolvedValue(undefined)
     mockedRemoveLanguageFromVideoIfUnused.mockResolvedValue(undefined)
     mockedUpdateParentCollectionLanguages.mockResolvedValue(undefined)
+    mockedFindContainerParentIds.mockResolvedValue([])
+    mockedRecalculateAvailableLanguagesCascade.mockResolvedValue([])
   })
 
   describe('videoVariants', () => {
@@ -2458,57 +2468,153 @@ describe('videoVariant', () => {
     })
 
     describe('parent variant management', () => {
-      it('should have helper functions for managing parent video variants', async () => {
-        // Test that the helper functions exist and are exported
-        const { handleParentVariantCreation, handleParentVariantCleanup } =
-          await import(/* webpackChunkName: "videoVariant" */ './videoVariant')
+      describe('handleParentVariantCreation', () => {
+        it('creates an empty variant for every container parent and recomputes each parent', async () => {
+          const { handleParentVariantCreation } = await import(
+            /* webpackChunkName: "videoVariant" */ './videoVariant'
+          )
 
-        expect(typeof handleParentVariantCreation).toBe('function')
-        expect(typeof handleParentVariantCleanup).toBe('function')
+          mockedFindContainerParentIds.mockResolvedValue(['parent-1'])
+          prismaMock.video.findUnique
+            // video itself (label/published)
+            .mockResolvedValueOnce({
+              label: 'series',
+              published: true
+            } as unknown as Video)
+            // parentVideo lookup inside createEmptyParentVariant
+            .mockResolvedValueOnce({ slug: 'jesus-film' } as unknown as Video)
+          prismaMock.videoVariant.findFirst
+            // childVariant published check
+            .mockResolvedValueOnce({
+              published: true
+            } as unknown as VideoVariant)
+            // existingVariantWithLanguage, used to derive the language slug
+            .mockResolvedValueOnce({
+              slug: 'jesus/english'
+            } as unknown as VideoVariant)
+            // existingVariant check inside createEmptyParentVariant - none yet
+            .mockResolvedValueOnce(null)
+          prismaMock.videoVariant.create.mockResolvedValueOnce({
+            id: 'languageId_parent-1',
+            videoId: 'parent-1',
+            languageId: 'languageId'
+          } as unknown as VideoVariant)
+
+          await handleParentVariantCreation('child-1', 'languageId')
+
+          expect(prismaMock.videoVariant.create).toHaveBeenCalledWith({
+            data: expect.objectContaining({
+              id: 'languageId_parent-1',
+              videoId: 'parent-1',
+              languageId: 'languageId',
+              slug: 'jesus-film/english',
+              published: true,
+              hls: '',
+              dash: '',
+              share: ''
+            })
+          })
+          expect(
+            mockedRecalculateAvailableLanguagesCascade
+          ).toHaveBeenCalledWith('parent-1')
+        })
+
+        it('does nothing when the video is a featureFilm', async () => {
+          const { handleParentVariantCreation } = await import(
+            /* webpackChunkName: "videoVariant" */ './videoVariant'
+          )
+
+          mockedFindContainerParentIds.mockResolvedValue(['parent-1'])
+          prismaMock.video.findUnique.mockResolvedValueOnce({
+            label: 'featureFilm',
+            published: true
+          } as unknown as Video)
+          prismaMock.videoVariant.findFirst.mockResolvedValueOnce({
+            published: true
+          } as unknown as VideoVariant)
+
+          await handleParentVariantCreation('child-1', 'languageId')
+
+          expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
+          expect(
+            mockedRecalculateAvailableLanguagesCascade
+          ).not.toHaveBeenCalled()
+        })
+
+        it('does nothing when the video has no container parents', async () => {
+          const { handleParentVariantCreation } = await import(
+            /* webpackChunkName: "videoVariant" */ './videoVariant'
+          )
+
+          mockedFindContainerParentIds.mockResolvedValue([])
+          prismaMock.video.findUnique.mockResolvedValueOnce({
+            label: 'series',
+            published: true
+          } as unknown as Video)
+          prismaMock.videoVariant.findFirst.mockResolvedValueOnce({
+            published: true
+          } as unknown as VideoVariant)
+
+          await handleParentVariantCreation('child-1', 'languageId')
+
+          expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
+          expect(
+            mockedRecalculateAvailableLanguagesCascade
+          ).not.toHaveBeenCalled()
+        })
       })
 
-      it('should document expected parent variant behavior', () => {
-        // This test documents the expected behavior of parent variant management
-        // The actual functionality is tested through integration tests
+      describe('handleParentVariantCleanup', () => {
+        it('removes an empty parent variant and recomputes when no sibling still provides the language', async () => {
+          const { handleParentVariantCleanup } = await import(
+            /* webpackChunkName: "videoVariant" */ './videoVariant'
+          )
 
-        const expectedBehavior = {
-          // When creating video variants for child videos (segments, clips, etc.)
-          onCreate: [
-            'Check if video has parent relationships (via childIds)',
-            'Skip videos with label "featureFilm"',
-            'Only proceed if both child video and variant are published',
-            'Create empty parent variants with same languageId',
-            'Update parent video availableLanguages array'
-          ],
+          mockedFindContainerParentIds.mockResolvedValue(['parent-1'])
+          prismaMock.video.findUnique
+            // video itself (label)
+            .mockResolvedValueOnce({ label: 'series' } as unknown as Video)
+            // parentVideo children, read via the relation
+            .mockResolvedValueOnce({
+              children: [{ id: 'child-1' }, { id: 'child-2' }]
+            } as unknown as Video)
+          prismaMock.videoVariant.count.mockResolvedValueOnce(0)
+          prismaMock.videoVariant.findFirst.mockResolvedValueOnce({
+            id: 'languageId_parent-1',
+            hls: '',
+            muxVideoId: null
+          } as unknown as VideoVariant)
 
-          // When updating video variant published status
-          onUpdate: [
-            'Check if published status changed',
-            'If changed from unpublished to published: create parent variants',
-            'If changed from published to unpublished: cleanup parent variants'
-          ],
+          await handleParentVariantCleanup('child-1', 'languageId')
 
-          // When deleting video variants
-          onDelete: [
-            'Check if other child videos still have variants in same language',
-            'If no other children have variants in that language: remove parent variant',
-            'Update parent video availableLanguages array'
-          ],
+          expect(prismaMock.videoVariant.delete).toHaveBeenCalledWith({
+            where: { id: 'languageId_parent-1' }
+          })
+          expect(
+            mockedRecalculateAvailableLanguagesCascade
+          ).toHaveBeenCalledWith('parent-1')
+        })
 
-          // When updating video published status
-          onVideoUpdate: [
-            'Check if video published status changed',
-            'If video becomes published: create parent variants for all published variants',
-            'If video becomes unpublished: cleanup all parent variants',
-            'Update parent videos availableLanguages arrays'
-          ]
-        }
+        it('leaves the parent variant when a sibling child still has a published variant in that language', async () => {
+          const { handleParentVariantCleanup } = await import(
+            /* webpackChunkName: "videoVariant" */ './videoVariant'
+          )
 
-        // Assert that the expected behavior is documented
-        expect(expectedBehavior.onCreate).toHaveLength(5)
-        expect(expectedBehavior.onUpdate).toHaveLength(3)
-        expect(expectedBehavior.onDelete).toHaveLength(3)
-        expect(expectedBehavior.onVideoUpdate).toHaveLength(4)
+          mockedFindContainerParentIds.mockResolvedValue(['parent-1'])
+          prismaMock.video.findUnique
+            .mockResolvedValueOnce({ label: 'series' } as unknown as Video)
+            .mockResolvedValueOnce({
+              children: [{ id: 'child-1' }, { id: 'child-2' }]
+            } as unknown as Video)
+          prismaMock.videoVariant.count.mockResolvedValueOnce(1)
+
+          await handleParentVariantCleanup('child-1', 'languageId')
+
+          expect(prismaMock.videoVariant.delete).not.toHaveBeenCalled()
+          expect(
+            mockedRecalculateAvailableLanguagesCascade
+          ).not.toHaveBeenCalled()
+        })
       })
     })
   })

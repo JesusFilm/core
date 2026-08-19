@@ -28,8 +28,13 @@ export async function service(logger?: Logger): Promise<void> {
       await prisma.video.update({
         where: { id: video.id },
         data: {
+          // `set`, not `connect`: this must exactly match the children
+          // relation to the current childIds, including disconnecting any
+          // id that was removed from childIds since the last run. `connect`
+          // is additive-only and can never remove a stale edge, so a child
+          // removed by any other write path would stay connected forever.
           children: {
-            connect: video.childIds
+            set: video.childIds
               .filter((id) => videoIds.includes(id))
               .map((id) => ({ id }))
           }

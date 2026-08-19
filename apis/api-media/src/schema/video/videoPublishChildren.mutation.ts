@@ -9,7 +9,10 @@ import { builder } from '../builder'
 import { logger } from '../logger'
 import { handleParentVariantCreation } from '../videoVariant/videoVariant'
 
-import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
+import {
+  recalculateAvailableLanguagesCascade,
+  updateVideoAvailableLanguages
+} from './lib/updateAvailableLanguages'
 
 type PublishValidationVideo = {
   id: string
@@ -372,14 +375,27 @@ export async function executeVideoPublishChildren(
   ]
 
   try {
+    // Children must commit their own recompute before `id` (their parent)
+    // recomputes, so a parent recomputed in the same request can't race a
+    // just-published child's write and read a stale value. `id`'s own sync
+    // is intentionally skipped here (the loop further below already syncs
+    // Algolia/cache for every id in `affectedVideoIds`) but its recompute
+    // still cascades past `id` to any further container ancestors (e.g. a
+    // featureFilm above this series), which aren't covered by that loop.
+    const childVideoIds = affectedVideoIds.filter((videoId) => videoId !== id)
     await Promise.all(
-      affectedVideoIds.map(async (videoId) => {
+      childVideoIds.map(async (videoId) => {
         await updateVideoAvailableLanguages(videoId, {
           skipAlgolia: true,
           skipCache: true
         })
       })
     )
+
+    await recalculateAvailableLanguagesCascade(id, {
+      skipAlgolia: true,
+      skipCache: true
+    })
   } catch (error) {
     logger.error(
       { error, videoIds: affectedVideoIds },
