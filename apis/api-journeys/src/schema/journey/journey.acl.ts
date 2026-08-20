@@ -243,11 +243,13 @@ export function canManageTemplateField(
 
   if (user.roles?.includes('publisher') !== true) return false
 
-  // Publishers manage any existing template without needing a team/journey
-  // role: in the legacy CASL, can(Manage, 'Journey', { template: true }) was
-  // declared after cannot(Manage, 'Journey', 'template'), so it re-unlocked
-  // the template field for every template (QA-563).
-  if (journey.template === true) return true
+  // Publishers manage global (jfp-team) templates without needing a
+  // team/journey role (QA-563). Deliberately narrower than the legacy CASL,
+  // which — via rule ordering, can(Manage, 'Journey', { template: true })
+  // declared after cannot(Manage, 'Journey', 'template') — accidentally
+  // unlocked every team's templates; publishers only govern the global
+  // template library, so other teams' local templates stay membership-only.
+  if (journey.template === true && journey.teamId === 'jfp-team') return true
 
   // Converting their own journey to a template still requires a role on it.
   return hasJourneyRole || hasTeamRole
