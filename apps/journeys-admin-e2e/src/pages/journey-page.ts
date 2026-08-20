@@ -165,6 +165,9 @@ export class JourneyPage {
     await this.getJourneyListOfActiveTab()
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Archive All')
+    await this.verifyBulkActionDialogText(
+      'This will archive all active Journeys you own.'
+    )
     await this.clickDialogBoxBtn('Archive')
     await this.verifySnackbarToastMessage('Journeys Archived')
     await this.verifyActiveTabShowsEmptyMessage()
@@ -172,9 +175,16 @@ export class JourneyPage {
     await this.verifyAllJourneyMovedToArchivedTab()
   }
 
-  async verifyAllJourneysMovedToTrash() {
+  // 'Trash All' is reachable from both the active and archived views and the
+  // dialog wording differs, so the caller says which one it is.
+  async verifyAllJourneysMovedToTrash(fromStatus: 'active' | 'archived') {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Trash All')
+    await this.verifyBulkActionDialogText(
+      fromStatus === 'active'
+        ? 'This will trash all active Journeys you own.'
+        : 'This will trash all archived Journeys you own.'
+    )
     await this.clickDialogBoxBtn('Trash')
     await this.verifySnackbarToastMessage('Journeys Trashed')
     await this.clickTrashTab()
@@ -185,6 +195,9 @@ export class JourneyPage {
     await this.getJourneyListOfTrashTab()
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Restore All')
+    await this.verifyBulkActionDialogText(
+      'This will restore all trashed Journeys you own.'
+    )
     await this.clickDialogBoxBtn('Restore')
     await this.verifySnackbarToastMessage('Journeys Restored')
     await this.clickActiveTab()
@@ -194,6 +207,9 @@ export class JourneyPage {
   async verifyAllJourneysDeletedForeverFromTrashTab() {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Delete All Forever')
+    await this.verifyBulkActionDialogText(
+      'This will permanently delete all trashed Journeys you own.'
+    )
     await this.clickDialogBoxBtn('Delete Forever')
     await this.verifySnackbarToastMessage('Journeys Deleted')
     await this.verifyAlljourneysAreDeletedFromTrashTab()
@@ -202,6 +218,9 @@ export class JourneyPage {
   async verifyAllJourneysMovedFromArchivedToActiveTab() {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Unarchive All')
+    await this.verifyBulkActionDialogText(
+      'This will unarchive all archived Journeys you own.'
+    )
     await this.clickDialogBoxBtn('Unarchive')
     await this.verifyToastMessage()
     await this.verifyEmptyMessageInArchivedTab()
@@ -449,7 +468,7 @@ export class JourneyPage {
     await expect(
       this.page
         .locator(
-          'div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+          'div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
           { hasText: journeyName }
         )
         .first()
@@ -457,10 +476,12 @@ export class JourneyPage {
   }
 
   async clickThreeDotOfCreatedNewTemple() {
+    // The menu box sits before the card link, and the inner IconButton is
+    // pointer-events: none, so click the box that owns the handler instead.
     await this.page
-      .locator(
-        `//h6[text()='${journeyName}']//ancestor::a/following-sibling::div//button[@id='journey-actions']`
-      )
+      .locator('div[aria-label="journey-card"]', { hasText: journeyName })
+      .getByTestId('JourneyCardMenuButton')
+      .first()
       .click()
   }
 
@@ -470,34 +491,68 @@ export class JourneyPage {
       .click()
   }
 
-  async clickArchivedTab() {
-    const archivedTab = this.page.locator(
-      'button[id*="archived-status-panel-tab"]'
-    )
-    const visible = await archivedTab
-      .first()
-      .isVisible()
-      .catch(() => false)
+  // Discover renders a single 'Team Projects' panel whose contents change with
+  // the status filter — the per-status tab panels only exist on Publisher now.
+  // Matched by regex because the label is 'Team Projects' above the sm
+  // breakpoint and 'Projects' below it.
+  journeysTabPanel() {
+    return this.page.getByRole('tabpanel', { name: /Projects/ })
+  }
+
+  // All three status views are the same panel now, so capturing and comparing
+  // the visible journeys no longer varies by status — only the filter set
+  // beforehand does. Kept behind the per-status method names the specs call.
+  async captureJourneyList() {
+    const journeys = this.journeysTabPanel().locator(this.journeyNamePath)
+    await expect(journeys.first()).toBeVisible({
+      timeout: thirtySecondsTimeout
+    })
+    this.journeyList = await journeys.allInnerTexts()
+  }
+
+  async verifyCapturedJourneysArePresent() {
+    const journeys = this.journeysTabPanel().locator(this.journeyNamePath)
+    await expect(journeys.first()).toBeVisible({
+      timeout: thirtySecondsTimeout
+    })
+    const visibleJourneys = await journeys.allInnerTexts()
+    const matchCount = this.journeyList.filter((journey) =>
+      visibleJourneys.includes(journey)
+    ).length
+    expect(matchCount === this.journeyList.length).toBeTruthy()
+  }
+
+  // Status is a filter on Discover, not a tab. Driven the same way as the sort
+  // control in clickSortByIcon/clickSortOpion — both are the same RadioSelect.
+  async selectJourneyStatus(status: string) {
+    const statusFilter = this.page.getByRole('button', {
+      name: 'Filter by status'
+    })
+    const visible = await statusFilter.isVisible().catch(() => false)
     if (!visible) {
       const baseUrl = await getBaseUrl()
       const discoverUrl = baseUrl.replace(/\/$/, '') + '/?type=journeys'
       await this.page.goto(discoverUrl, { waitUntil: 'domcontentloaded' })
     }
-    await expect(archivedTab.first()).toBeVisible({
-      timeout: sixtySecondsTimeout
+    await expect(statusFilter).toBeVisible({ timeout: sixtySecondsTimeout })
+    await statusFilter.click()
+    const option = this.page.getByRole('radio', { name: status })
+    await expect(option).toBeVisible({ timeout: thirtySecondsTimeout })
+    await option.click()
+    // The trigger renders the selected label, so this confirms the filter took.
+    await expect(statusFilter).toContainText(status, {
+      timeout: thirtySecondsTimeout
     })
-    await archivedTab.first().click()
-    await expect(
-      this.page.locator(
-        'button[id*="archived-status-panel-tab"][aria-selected="true"]'
-      )
-    ).toBeVisible()
+  }
+
+  async clickArchivedTab() {
+    await this.selectJourneyStatus('Archived')
   }
 
   async verifyCreatedNewTemplateMovedToArchiveOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="archived-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="archived-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: journeyName }
       )
     ).toBeVisible()
@@ -525,20 +580,13 @@ export class JourneyPage {
   }
 
   async clickTrashTab() {
-    const trashTab = this.page.locator('button[id*="trashed-status-panel-tab"]')
-    await expect(trashTab).toBeVisible({ timeout: sixtySecondsTimeout })
-    await trashTab.click()
-    await expect(
-      this.page.locator(
-        'button[id*="trashed-status-panel-tab"][aria-selected="true"]'
-      )
-    ).toBeVisible()
+    await this.selectJourneyStatus('Trash')
   }
 
   async verifyCreatedNewTemplateMovedToTrashTabOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: journeyName }
       )
     ).toBeVisible()
@@ -564,22 +612,14 @@ export class JourneyPage {
 
   async verifyCreatedNewJourneyMovedToTrashTabOrNot() {
     await expect(
-      this.page.locator(
-        `div[id*="trashed-status-panel-tabpanel"] ${this.journeyNamePath}`,
-        { hasText: journeyName }
-      )
+      this.journeysTabPanel().locator(this.journeyNamePath, {
+        hasText: journeyName
+      })
     ).toBeVisible()
   }
 
   async clickActiveTab() {
-    const activeTab = this.page.locator('button[id*="active-status-panel-tab"]')
-    await expect(activeTab).toBeVisible({ timeout: sixtySecondsTimeout })
-    await activeTab.click()
-    await expect(
-      this.page.locator(
-        'button[id*="active-status-panel-tab"][aria-selected="true"]'
-      )
-    ).toBeVisible()
+    await this.selectJourneyStatus('Active')
   }
 
   async clickRestoreBtn() {
@@ -590,10 +630,9 @@ export class JourneyPage {
 
   async verifyCreatedNewJourneyMovedToActiveTabOrNot() {
     await expect(
-      this.page.locator(
-        `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`,
-        { hasText: journeyName }
-      )
+      this.journeysTabPanel().locator(this.journeyNamePath, {
+        hasText: journeyName
+      })
     ).toBeVisible()
   }
 
@@ -608,7 +647,7 @@ export class JourneyPage {
   async verifyCreatedNewTemplateRemovedFromTrashTabOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: journeyName }
       )
     ).toBeHidden()
@@ -641,19 +680,17 @@ export class JourneyPage {
 
   async verifyJourneyMovedToArchiveOrNot() {
     await expect(
-      this.page.locator(
-        `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`,
-        { hasText: journeyName }
-      )
+      this.journeysTabPanel().locator(this.journeyNamePath, {
+        hasText: journeyName
+      })
     ).toBeVisible()
   }
 
   async verifyJourneyDeletedForeverInTrashTab() {
     await expect(
-      this.page.locator(
-        `div[id*="trashed-status-panel-tabpanel"] ${this.journeyNamePath}`,
-        { hasText: journeyName }
-      )
+      this.journeysTabPanel().locator(this.journeyNamePath, {
+        hasText: journeyName
+      })
     ).toHaveCount(0)
   }
 
@@ -664,9 +701,11 @@ export class JourneyPage {
   }
 
   async clickThreeDotBesideSortByOption() {
+    // 'journey status tabs' is StatusTabPanel, which only Publisher renders.
+    // Discover's tab strip is labelled 'journey content type tabs'.
     await this.page
       .locator(
-        'div[aria-label="journey status tabs"] button[data-testid="JourneyListMenuButton"]'
+        'div[aria-label="journey content type tabs"] button[data-testid="JourneyListMenuButton"]'
       )
       .click()
   }
@@ -680,18 +719,18 @@ export class JourneyPage {
   }
 
   async getJourneyListOfActiveTab() {
+    await this.captureJourneyList()
+  }
+
+  // Team-page bulk dialogs pair a specific sentence with a shared prompt, so
+  // both lines are checked. exact: true means a casing or wording change fails
+  // instead of slipping through a substring match.
+  async verifyBulkActionDialogText(message: string) {
+    const dialog = this.page.getByRole('dialog')
+    await expect(dialog.getByText(message, { exact: true })).toBeVisible()
     await expect(
-      this.page
-        .locator(
-          `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
-        )
-        .first()
-    ).toBeVisible({ timeout: thirtySecondsTimeout })
-    this.journeyList = await this.page
-      .locator(
-        `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
-      )
-      .allInnerTexts()
+      dialog.getByText('Are you sure you want to proceed?', { exact: true })
+    ).toBeVisible()
   }
 
   async clickDialogBoxBtn(buttonName) {
@@ -707,120 +746,46 @@ export class JourneyPage {
   }
 
   async verifyAllJourneyMovedToArchivedTab() {
-    let matchCount = 0
-    await expect(
-      this.page
-        .locator(
-          `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`
-        )
-        .first()
-    ).toBeVisible({ timeout: thirtySecondsTimeout })
-    const archiveTabJournetList = await this.page
-      .locator(
-        `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`
-      )
-      .allInnerTexts()
-    for (let journey = 0; journey < this.journeyList.length; journey++) {
-      if (archiveTabJournetList.includes(this.journeyList[journey])) {
-        matchCount = matchCount + 1
-      }
-    }
-    expect(matchCount === this.journeyList.length).toBeTruthy()
+    await this.verifyCapturedJourneysArePresent()
   }
 
   async verifyActiveTabShowsEmptyMessage() {
+    // exact: true pins the casing — see verifyActiveTabShowsEmptyMessage in
+    // publisher-and-templates-page.ts for why hasText was not enough.
     await expect(
-      this.page.locator('div[aria-labelledby*="active-status-panel-tab"] h6', {
-        hasText: 'No Journeys to display.'
+      this.journeysTabPanel().getByRole('heading', {
+        name: 'No Journeys to display.',
+        exact: true
       })
     ).toBeVisible()
   }
 
   async getJourneyListOfArchivedTab() {
-    await expect(
-      this.page
-        .locator(
-          `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`
-        )
-        .first()
-    ).toBeVisible()
-    this.journeyList = await this.page
-      .locator(
-        `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`
-      )
-      .allInnerTexts()
+    await this.captureJourneyList()
   }
 
   async verifyAllJourneyMovedToTrashTab() {
-    let matchCount = 0
-    await expect(
-      this.page
-        .locator(
-          `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
-        )
-        .first()
-    ).toBeVisible({ timeout: thirtySecondsTimeout })
-    const TrashTabJournetList = await this.page
-      .locator(
-        `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
-      )
-      .allInnerTexts()
-    for (let journey = 0; journey < this.journeyList.length; journey++) {
-      if (TrashTabJournetList.includes(this.journeyList[journey])) {
-        matchCount = matchCount + 1
-      }
-    }
-    expect(matchCount === this.journeyList.length).toBeTruthy()
+    await this.verifyCapturedJourneysArePresent()
   }
 
   async getJourneyListOfTrashTab() {
-    await expect(
-      this.page
-        .locator(
-          `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
-        )
-        .first()
-    ).toBeVisible()
-    this.journeyList = await this.page
-      .locator(
-        `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
-      )
-      .allInnerTexts()
+    await this.captureJourneyList()
   }
 
   async verifyAllJourneyMovedToActiveTab() {
-    let matchCount = 0
-    await expect(
-      this.page
-        .locator(
-          `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
-        )
-        .first()
-    ).toBeVisible({ timeout: thirtySecondsTimeout })
-    const activeTabJournetList = await this.page
-      .locator(
-        `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
-      )
-      .allInnerTexts()
-    for (let journey = 0; journey < this.journeyList.length; journey++) {
-      if (activeTabJournetList.includes(this.journeyList[journey])) {
-        matchCount = matchCount + 1
-      }
-    }
-    expect(matchCount === this.journeyList.length).toBeTruthy()
+    await this.verifyCapturedJourneysArePresent()
   }
 
   async verifyAlljourneysAreDeletedFromTrashTab() {
+    // Dropped .first() — it resolves to at most one element, so toHaveCount(0)
+    // could never see more than one leftover journey.
     await expect(
-      this.page
-        .locator(
-          `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
-        )
-        .first()
+      this.journeysTabPanel().locator(this.journeyNamePath)
     ).toHaveCount(0)
     await expect(
-      this.page.locator('div[aria-labelledby*="trashed-status-panel-tab"] h6', {
-        hasText: 'Your trashed Journeys will appear here.'
+      this.journeysTabPanel().getByRole('heading', {
+        name: 'Your trashed Journeys will appear here.',
+        exact: true
       })
     ).toBeVisible()
   }
@@ -836,10 +801,10 @@ export class JourneyPage {
 
   async verifyEmptyMessageInArchivedTab() {
     await expect(
-      this.page.locator(
-        'div[aria-labelledby*="archived-status-panel-tab"] h6',
-        { hasText: 'No archived Journeys.' }
-      )
+      this.journeysTabPanel().getByRole('heading', {
+        name: 'No archived Journeys.',
+        exact: true
+      })
     ).toBeVisible()
   }
 
