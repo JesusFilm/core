@@ -29,6 +29,7 @@ import {
   handleParentVariantCleanup,
   handleParentVariantCreation
 } from '../videoVariant/videoVariant'
+import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
 
 import { Platform } from './enums/platform'
 import { VideoLabel } from './enums/videoLabel'
@@ -782,7 +783,12 @@ builder.mutationFields((t) => ({
 
       // Handle child relation synchronization if childIds is being updated
       let childRelationUpdate = {}
+      let affectedChildIds: string[] = []
       if (input.childIds !== undefined) {
+        const existingParent = await prisma.video.findUnique({
+          where: { id: input.id },
+          select: { childIds: true }
+        })
         // Get all existing video IDs to validate child IDs
         const videos = await prisma.video.findMany({
           select: { id: true }
@@ -792,6 +798,9 @@ builder.mutationFields((t) => ({
         // Filter out any child IDs that don't exist
         const validChildIds = (input.childIds || []).filter((id) =>
           existingVideoIds.has(id)
+        )
+        affectedChildIds = Array.from(
+          new Set([...(existingParent?.childIds ?? []), ...validChildIds])
         )
 
         // Update the children relation
@@ -847,6 +856,42 @@ builder.mutationFields((t) => ({
           )
         }
         throw e
+      }
+
+      // Known gap (not fixed here, needs a product/design decision): this
+      // fires reconciliation for every child added to OR removed from
+      // childIds, but reconcileParentVariants only ever ADDS a language to
+      // the parent's availableLanguages — it never removes one. So removing
+      // the last child providing a given language leaves that language
+      // stale on the parent indefinitely. See PR #9386 discussion.
+      if (input.childIds !== undefined && affectedChildIds.length > 0) {
+        const affectedVariants =
+          (await prisma.videoVariant.findMany({
+            where: {
+              videoId: { in: affectedChildIds },
+              published: true
+            },
+            select: {
+              id: true,
+              videoId: true,
+              languageId: true,
+              edition: true
+            }
+          })) ?? []
+        for (const variant of affectedVariants) {
+          try {
+            await requestVideoVariantReconciliation({
+              videoVariantId: variant.id,
+              videoId: variant.videoId,
+              languageId: variant.languageId,
+              edition: variant.edition,
+              published: true,
+              reason: 'video-relationship-change'
+            })
+          } catch (error) {
+            console.error('Video variant reconciliation request error:', error)
+          }
+        }
       }
 
       // Handle parent variant changes if video published status changed
