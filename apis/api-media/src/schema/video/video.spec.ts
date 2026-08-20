@@ -746,6 +746,9 @@ describe('video', () => {
           variants: {
             select: {
               languageId: true
+            },
+            where: {
+              published: true
             }
           },
           videoEditions: true,
@@ -942,6 +945,9 @@ describe('video', () => {
           variants: {
             select: {
               languageId: true
+            },
+            where: {
+              published: true
             }
           },
           videoEditions: true,
@@ -1278,6 +1284,67 @@ describe('video', () => {
         {
           id: 'videoId',
           variantLanguagesCount: 2
+        }
+      ])
+    })
+
+    it('should query video.variantLanguages filtered to published variants', async () => {
+      prismaMock.video.findMany.mockResolvedValueOnce(videos)
+
+      await client({
+        document: graphql(`
+          query VideoWithVariantLanguages {
+            videos {
+              id
+              variantLanguages {
+                id
+              }
+            }
+          }
+        `)
+      })
+      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include: {
+            variants: {
+              select: {
+                languageId: true
+              },
+              where: {
+                published: true
+              }
+            }
+          }
+        })
+      )
+    })
+
+    it('should only return the published variant language when a video has one published and one unpublished variant', async () => {
+      const videoWithOnlyPublishedVariant: VideoAndIncludes = {
+        ...videos[0],
+        // simulates prisma applying the resolver's published: true filter
+        variants: videos[0].variants.filter(({ published }) => published)
+      }
+      prismaMock.video.findMany.mockResolvedValueOnce([
+        videoWithOnlyPublishedVariant
+      ])
+
+      const data = await client({
+        document: graphql(`
+          query VideoWithVariantLanguages {
+            videos {
+              id
+              variantLanguages {
+                id
+              }
+            }
+          }
+        `)
+      })
+      expect(data).toHaveProperty('data.videos', [
+        {
+          id: 'videoId',
+          variantLanguages: [{ id: 'languageId2' }]
         }
       ])
     })
@@ -2027,6 +2094,9 @@ describe('video', () => {
           variants: {
             select: {
               languageId: true
+            },
+            where: {
+              published: true
             }
           },
           bibleCitation: {
@@ -2245,6 +2315,9 @@ describe('video', () => {
           variants: {
             select: {
               languageId: true
+            },
+            where: {
+              published: true
             }
           },
           imageAlt: {
