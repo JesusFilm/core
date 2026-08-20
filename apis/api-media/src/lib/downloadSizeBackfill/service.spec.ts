@@ -123,17 +123,17 @@ describe('runDownloadSizeBackfill', () => {
     // fail — a scripted mock-return-value sequence would not catch either.
     const row = { size: null as number | null }
 
-    prismaMock.videoVariantDownload.findMany.mockImplementation(
+    ;(prismaMock.videoVariantDownload.findMany as any).mockImplementation(
       async () =>
-        (row.size == null || row.size <= 0
+        row.size == null || row.size <= 0
           ? [candidate({ id: 'd1', size: row.size })]
-          : []) as any
+          : []
     )
-    prismaMock.videoVariantDownload.updateMany.mockImplementation(
+    ;(prismaMock.videoVariantDownload.updateMany as any).mockImplementation(
       async (args: any) => {
-        if (row.size != null && row.size > 0) return { count: 0 } as any
+        if (row.size != null && row.size > 0) return { count: 0 }
         row.size = args.data.size
-        return { count: 1 } as any
+        return { count: 1 }
       }
     )
 

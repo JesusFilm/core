@@ -36,20 +36,27 @@ function resolveFromRenditionMetadata(
   if (readyFiles.length === 0) return null
 
   const filesizes = new Set<number>()
+  let hasUnparseableFilesize = false
   for (const file of readyFiles) {
     const filesize = parseMuxFilesize(file?.filesize)
-    if (filesize != null) filesizes.add(filesize)
+    if (filesize == null) hasUnparseableFilesize = true
+    else filesizes.add(filesize)
   }
 
-  // Two ready renditions for the same resolution reporting different
-  // filesizes is a data conflict, not a value to guess between — skip and
-  // report it rather than picking one arbitrarily.
-  if (filesizes.size > 1) {
+  // No ready rendition reports a usable filesize — fall back to HTTP
+  // verification rather than treating an absence of data as a conflict.
+  if (filesizes.size === 0) return null
+
+  // A parseable filesize alongside either a disagreeing filesize or an
+  // unparseable one on another ready rendition is inconsistent metadata,
+  // not a value to guess between — skip and report it rather than
+  // silently trusting whichever rendition happened to parse.
+  if (filesizes.size > 1 || hasUnparseableFilesize) {
     return { size: null, errorCode: 'sizeConflict' }
   }
 
   const [filesize] = filesizes
-  return filesize != null ? { size: filesize, errorCode: null } : null
+  return { size: filesize, errorCode: null }
 }
 
 /**

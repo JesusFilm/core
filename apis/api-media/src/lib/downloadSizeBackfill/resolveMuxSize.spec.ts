@@ -158,6 +158,46 @@ describe('resolveMuxSize', () => {
     expect(httpClient.head).not.toHaveBeenCalled()
   })
 
+  it('reports a size conflict when a ready rendition has a malformed filesize alongside a valid one', async () => {
+    const muxAsset: MuxAssetLike = {
+      static_renditions: {
+        files: [
+          { resolution: '720p', filesize: '1296505318', status: 'ready' },
+          { resolution: '720p', filesize: '500bytes', status: 'ready' }
+        ]
+      }
+    }
+    const httpClient = makeHttpClient()
+
+    const result = await resolveMuxSize(URL, muxAsset, httpClient)
+
+    expect(result).toEqual({ size: null, errorCode: 'sizeConflict' })
+    expect(httpClient.head).not.toHaveBeenCalled()
+  })
+
+  it('falls back to HTTP verification when every ready rendition has an unparseable filesize', async () => {
+    const muxAsset: MuxAssetLike = {
+      static_renditions: {
+        files: [
+          { resolution: '720p', filesize: '500bytes', status: 'ready' },
+          { resolution: '720p', filesize: '0x10', status: 'ready' }
+        ]
+      }
+    }
+    const httpClient = makeHttpClient({
+      head: vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        contentLength: '500',
+        contentRangeTotal: null
+      })
+    })
+
+    const result = await resolveMuxSize(URL, muxAsset, httpClient)
+
+    expect(result).toEqual({ size: 500, errorCode: null })
+  })
+
   it('deduplicates agreeing ready renditions rather than reporting a conflict', async () => {
     const muxAsset: MuxAssetLike = {
       static_renditions: {
