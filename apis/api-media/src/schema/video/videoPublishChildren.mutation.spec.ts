@@ -5,8 +5,17 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
 
+import { executeVideoPublishChildren } from './videoPublishChildren.mutation'
+
 vi.mock('../../workers/videoAlgoliaSync', () => ({
-  enqueueVideoAlgoliaSync: vi.fn()
+  enqueueVideoAlgoliaSync: vi.fn(),
+  videoOnlyScope: {
+    syncVideoRecord: true,
+    syncAllVariants: false,
+    syncPublishedFlag: false,
+    dirtyVariantIds: [],
+    deletedVariantIds: []
+  }
 }))
 
 const mockedEnqueueVideoAlgoliaSync = vi.mocked(enqueueVideoAlgoliaSync)
@@ -835,6 +844,191 @@ describe('videoPublishChildren', () => {
         }
       ])
       expect(prismaMock.$transaction).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('grandparent cascade race safety', () => {
+    // Exercises a real three-level hierarchy (grandparent -> parent ->
+    // child) through the actual, unmocked availableLanguages cascade, to
+    // catch two regressions at once:
+    //  - the cascade stopping at the immediate parent instead of reaching
+    //    the grandparent (the single-hop bug this mutation must not
+    //    reintroduce), and
+    //  - a parent recompute racing a same-request child recompute and
+    //    reading the child's stale, pre-write value instead of its
+    //    just-committed one.
+    //
+    // `child`'s own `video.update` write is deliberately deferred onto the
+    // next macrotask (a real `setTimeout`, not a manually-released gate) so
+    // that any read of `child`'s availableLanguages issued *before* that
+    // write lands - exactly what a reintroduced unordered `Promise.all`
+    // over children and the parent together would do - would observe the
+    // pre-publish value and produce a wrong grandparent result. The current
+    // code only reads `child`'s value after explicitly awaiting its update,
+    // so it always observes the post-publish value regardless of this
+    // delay.
+    it('propagates a child variant published in the same request through the parent to the grandparent, without racing the child write', async () => {
+      const labels: Record<string, string> = {
+        grandparent: 'collection',
+        parent: 'featureFilm',
+        child: 'featureFilm'
+      }
+      const childIdsByParent: Record<string, string[]> = {
+        grandparent: ['parent'],
+        parent: ['child']
+      }
+      const publishedState = new Map<string, boolean>([
+        ['grandparent', true],
+        ['parent', true],
+        ['child', true]
+      ])
+      const availableLanguagesByVideo = new Map<string, string[]>([
+        ['grandparent', []],
+        ['parent', []],
+        ['child', ['529']]
+      ])
+      const variantsByVideo: Record<
+        string,
+        Array<{ id: string; languageId: string; published: boolean }>
+      > = {
+        parent: [],
+        child: [
+          { id: 'child-v1', languageId: '529', published: true },
+          { id: 'child-v2', languageId: '21028', published: false }
+        ]
+      }
+
+      ;(prismaMock.video.findUnique as any).mockImplementation(
+        async ({ where, select }: any) => {
+          const id = where?.id
+          if (id == null) return null
+
+          // getVideoPublishParent's shape: a plain id+published children select.
+          if (
+            select?.children?.select?.id != null &&
+            select?.children?.where == null
+          ) {
+            return {
+              id,
+              label: labels[id],
+              published: publishedState.get(id) ?? false,
+              publishedAt: new Date(),
+              children: (childIdsByParent[id] ?? []).map((childId) => ({
+                id: childId,
+                published: publishedState.get(childId) ?? false
+              }))
+            }
+          }
+
+          // calculateAvailableLanguages' shape: published-only variants and
+          // published-only children, selected down to availableLanguages.
+          if (select?.children?.where != null) {
+            return {
+              variants: (variantsByVideo[id] ?? [])
+                .filter((variant) => variant.published)
+                .map((variant) => ({ languageId: variant.languageId })),
+              children: (childIdsByParent[id] ?? [])
+                .filter((childId) => publishedState.get(childId) === true)
+                .map((childId) => ({
+                  availableLanguages:
+                    availableLanguagesByVideo.get(childId) ?? []
+                }))
+            }
+          }
+
+          // getStoredAvailableLanguages' shape (the cascade's before/after
+          // change check). videoCacheReset's `{ slug: true }` shape falls
+          // through to `null` below, which it already handles safely.
+          if (select?.availableLanguages != null) {
+            return {
+              availableLanguages: availableLanguagesByVideo.get(id) ?? []
+            }
+          }
+
+          return null
+        }
+      )
+      ;(prismaMock.video.update as any).mockImplementation(
+        async ({ where, data }: any) => {
+          const id = where?.id
+          const next = data?.availableLanguages?.set
+          if (id === 'child') {
+            // Force this write onto the macrotask queue so a concurrent
+            // read issued from the same microtask turn would observe the
+            // pre-write value - the exact shape of the race this test
+            // guards against.
+            await new Promise((resolve) => setTimeout(resolve, 0))
+          }
+          if (id != null && next != null) {
+            availableLanguagesByVideo.set(id, next)
+          }
+          return {}
+        }
+      )
+      ;(prismaMock.video.findMany as any).mockImplementation(
+        async ({ where }: any) => {
+          if (where?.children?.some?.id != null) {
+            const childId = where.children.some.id
+            return Object.entries(childIdsByParent)
+              .filter(([, kids]) => kids.includes(childId))
+              .map(([parentId]) => ({ id: parentId }))
+          }
+
+          // The publish-validation query - `parent` is already published so
+          // it's the only candidate, and its fields only need to pass
+          // validation, not exercise it.
+          return [
+            {
+              id: 'parent',
+              label: 'featureFilm',
+              title: [{ value: 'Parent title' }],
+              snippet: [{ value: 'Parent snippet' }],
+              description: [{ value: 'Parent description' }],
+              imageAlt: [{ value: 'Parent image alt' }],
+              images: [{ id: 'parent-banner' }],
+              variants: [{ id: 'parent-variant' }]
+            }
+          ]
+        }
+      )
+      ;(prismaMock.videoVariant.findMany as any).mockImplementation(
+        async ({ where }: any) => {
+          const videoIds: string[] = where?.videoId?.in ?? []
+          return videoIds.flatMap((videoId) =>
+            (variantsByVideo[videoId] ?? [])
+              .filter((variant) => !variant.published)
+              .map((variant) => ({ id: variant.id, videoId }))
+          )
+        }
+      )
+      ;(prismaMock.videoVariant.updateMany as any).mockImplementation(
+        async ({ where }: any) => {
+          const ids: string[] = where?.id?.in ?? []
+          let count = 0
+          for (const variants of Object.values(variantsByVideo)) {
+            for (const variant of variants) {
+              if (ids.includes(variant.id)) {
+                variant.published = true
+                count++
+              }
+            }
+          }
+          return { count }
+        }
+      )
+
+      await executeVideoPublishChildren(
+        'parent',
+        'childrenVideosAndVariants',
+        false
+      )
+
+      expect(availableLanguagesByVideo.get('child')).toEqual(['529', '21028'])
+      expect(availableLanguagesByVideo.get('parent')).toEqual(['529', '21028'])
+      expect(availableLanguagesByVideo.get('grandparent')).toEqual([
+        '529',
+        '21028'
+      ])
     })
   })
 })
