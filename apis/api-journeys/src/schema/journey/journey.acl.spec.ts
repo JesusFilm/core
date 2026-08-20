@@ -409,9 +409,20 @@ describe('canManageTemplateField', () => {
   } as unknown as Journey
 
   describe('publisher', () => {
-    it('allows any template without team or journey roles (QA-563)', () => {
+    it('allows jfp-team templates without team or journey roles (QA-563)', () => {
       expect(canManageTemplateField(jfpTemplateNoRoles, publisher)).toBe(true)
-      expect(canManageTemplateField(localTemplateNoRoles, publisher)).toBe(true)
+    })
+
+    it('denies other teams local templates without team or journey roles', () => {
+      expect(canManageTemplateField(localTemplateNoRoles, publisher)).toBe(
+        false
+      )
+    })
+
+    it('allows local templates through team or journey roles', () => {
+      expect(canManageTemplateField(localTemplateTeamMember, publisher)).toBe(
+        true
+      )
     })
 
     it('allows converting an owned journey to a template', () => {
