@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { ReactElement } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
@@ -585,5 +586,117 @@ describe('TemplateSettingsDialog', () => {
       </MockedProvider>
     )
     expect(queryByRole('tab', { name: 'Categories' })).not.toBeInTheDocument()
+  })
+
+  // QA-564: the checkbox was uncontrolled (defaultChecked), so its visual
+  // state could diverge from Formik's — a cache-driven reinitialize would
+  // reset values.featured while the box still displayed the user's tick,
+  // making Save skip journeyFeature and report success without saving.
+  it('keeps the featured checkbox in sync with journey.featuredAt', async () => {
+    const tree = (featuredAt: string | null): ReactElement => (
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { ...defaultJourney, featuredAt },
+              renderMode: 'admin'
+            }}
+          >
+            <TemplateSettingsDialog open onClose={onClose} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const { getByRole, rerender } = render(tree(null))
+    expect(getByRole('checkbox')).not.toBeChecked()
+
+    rerender(tree('2026-08-20T00:00:00.000Z'))
+    await waitFor(() => expect(getByRole('checkbox')).toBeChecked())
+  })
+
+  // QA-564: the customization update triggers an unawaited refetch of
+  // GetPublisherTemplate. If it were issued before journeyFeature, it could
+  // read pre-feature state and land after journeyFeature's response,
+  // overwriting featuredAt in the cache with a stale null.
+  it('applies the featured change before the customization update fires its refetch', async () => {
+    const journeyUpdateResult = vi.fn(() => ({
+      data: {
+        journeyUpdate: {
+          __typename: 'Journey',
+          id: defaultJourney.id,
+          title: defaultJourney.title,
+          description: defaultJourney.description
+        }
+      }
+    }))
+    const customizationResult = vi.fn(() => ({
+      data: { journeyCustomizationFieldPublisherUpdate: [] }
+    }))
+    const featureResult = vi.fn(() => ({
+      data: {
+        journeyFeature: {
+          __typename: 'Journey',
+          id: defaultJourney.id,
+          featuredAt: '2026-08-20T00:00:00.000Z'
+        }
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_SETTINGS_UPDATE,
+              variables: {
+                id: defaultJourney.id,
+                input: {
+                  title: defaultJourney.title,
+                  description: defaultJourney.description,
+                  strategySlug: null,
+                  tagIds: [],
+                  creatorDescription: null,
+                  languageId: '529'
+                }
+              }
+            },
+            result: journeyUpdateResult
+          },
+          {
+            request: {
+              query: JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE,
+              variables: { journeyId: defaultJourney.id, string: '' }
+            },
+            result: customizationResult
+          },
+          {
+            request: {
+              query: JOURNEY_FEATURE_UPDATE,
+              variables: { id: defaultJourney.id, feature: true }
+            },
+            result: featureResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{ journey: defaultJourney, renderMode: 'admin' }}
+          >
+            <TemplateSettingsDialog open onClose={onClose} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('checkbox'))
+    fireEvent.click(getByRole('button', { name: 'Save' }))
+
+    await waitFor(() => expect(customizationResult).toHaveBeenCalled())
+    expect(featureResult).toHaveBeenCalled()
+    expect(journeyUpdateResult).toHaveBeenCalled()
+    expect(featureResult.mock.invocationCallOrder[0]).toBeLessThan(
+      customizationResult.mock.invocationCallOrder[0]
+    )
   })
 })

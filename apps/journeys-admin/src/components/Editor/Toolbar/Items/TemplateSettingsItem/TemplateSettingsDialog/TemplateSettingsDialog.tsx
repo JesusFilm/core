@@ -101,6 +101,14 @@ export function TemplateSettingsDialog({
           }
         }
       })
+      if (Boolean(journey.featuredAt) !== values.featured)
+        await journeyFeature({
+          variables: { id: journey.id, feature: values.featured }
+        })
+      // Must run after journeyFeature: the refetch it triggers is not awaited,
+      // so if it were issued first it could read pre-feature state and land
+      // after journeyFeature's response, overwriting featuredAt in the cache
+      // with a stale null for the rest of the session (QA-564).
       await journeyCustomizationDescriptionUpdate({
         variables: {
           journeyId: journey.id,
@@ -108,10 +116,6 @@ export function TemplateSettingsDialog({
         },
         refetchQueries: ['GetPublisherTemplate']
       })
-      if (Boolean(journey.featuredAt) !== values.featured)
-        await journeyFeature({
-          variables: { id: journey.id, feature: values.featured }
-        })
       enqueueSnackbar(t('Template settings have been saved'), {
         variant: 'success',
         preventDuplicate: true
