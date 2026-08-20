@@ -155,6 +155,12 @@
         "command": "pnpm exec tsx apis/api-media/src/scripts/update-arcgt-urls.ts"
       }
     },
+    "catalog-parent-language-audit": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx apis/api-media/src/scripts/catalog-parent-language-audit.ts"
+      }
+    },
     "mux-videos": {
       "executor": "nx:run-commands",
       "options": {
