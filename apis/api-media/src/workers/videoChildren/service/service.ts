@@ -19,17 +19,23 @@ export async function service(logger?: Logger): Promise<void> {
     return
   }
 
-  const children = await prisma.video.findMany({
+  // A video is relevant if it currently declares children via childIds, or
+  // if it still has stale children connected from a previous run whose
+  // childIds has since shrunk to empty — both need their children relation
+  // replaced to match childIds exactly.
+  const videos = await prisma.video.findMany({
     select: { id: true, childIds: true },
-    where: { childIds: { isEmpty: false } }
+    where: {
+      OR: [{ childIds: { isEmpty: false } }, { children: { some: {} } }]
+    }
   })
-  for (const video of children) {
+  for (const video of videos) {
     try {
       await prisma.video.update({
         where: { id: video.id },
         data: {
           children: {
-            connect: video.childIds
+            set: video.childIds
               .filter((id) => videoIds.includes(id))
               .map((id) => ({ id }))
           }
