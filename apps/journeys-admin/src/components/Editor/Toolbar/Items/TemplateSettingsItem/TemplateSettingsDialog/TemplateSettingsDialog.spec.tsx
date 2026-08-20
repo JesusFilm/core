@@ -615,11 +615,36 @@ describe('TemplateSettingsDialog', () => {
     await waitFor(() => expect(getByRole('checkbox')).toBeChecked())
   })
 
-  // QA-564: the customization update triggers an unawaited refetch of
-  // GetPublisherTemplate. If it were issued before journeyFeature, it could
-  // read pre-feature state and land after journeyFeature's response,
-  // overwriting featuredAt in the cache with a stale null.
-  it('applies the featured change before the customization update fires its refetch', async () => {
+  // QA-564: the reported symptom — user ticks the box, a cache-driven
+  // reinitialize resets Formik's values, and the (previously uncontrolled)
+  // box kept displaying the tick, so Save saw "no change" and skipped
+  // journeyFeature while reporting success. The controlled box must snap
+  // back so display and form state never diverge.
+  it('snaps the checkbox back when a reinitialize resets the form mid-edit', async () => {
+    const tree = (journey: typeof defaultJourney): ReactElement => (
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
+            <TemplateSettingsDialog open onClose={onClose} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const { getByRole, rerender } = render(tree(defaultJourney))
+    fireEvent.click(getByRole('checkbox'))
+    expect(getByRole('checkbox')).toBeChecked()
+
+    // A translation-poll/cache update changes another field while
+    // featuredAt is still null — enableReinitialize resets the form.
+    rerender(tree({ ...defaultJourney, title: 'Updated Title' }))
+    await waitFor(() => expect(getByRole('checkbox')).not.toBeChecked())
+  })
+
+  // QA-564: mutations run via Promise.allSettled so one failure cannot
+  // silently drop the others — a journeyFeature rejection must not lose the
+  // user's customization edit.
+  it('still saves the customization description when journeyFeature fails', async () => {
     const journeyUpdateResult = vi.fn(() => ({
       data: {
         journeyUpdate: {
@@ -633,17 +658,8 @@ describe('TemplateSettingsDialog', () => {
     const customizationResult = vi.fn(() => ({
       data: { journeyCustomizationFieldPublisherUpdate: [] }
     }))
-    const featureResult = vi.fn(() => ({
-      data: {
-        journeyFeature: {
-          __typename: 'Journey',
-          id: defaultJourney.id,
-          featuredAt: '2026-08-20T00:00:00.000Z'
-        }
-      }
-    }))
 
-    const { getByRole } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
           {
@@ -675,7 +691,7 @@ describe('TemplateSettingsDialog', () => {
               query: JOURNEY_FEATURE_UPDATE,
               variables: { id: defaultJourney.id, feature: true }
             },
-            result: featureResult
+            error: new Error('user is not allowed to update featured date')
           }
         ]}
       >
@@ -692,11 +708,13 @@ describe('TemplateSettingsDialog', () => {
     fireEvent.click(getByRole('checkbox'))
     fireEvent.click(getByRole('button', { name: 'Save' }))
 
-    await waitFor(() => expect(customizationResult).toHaveBeenCalled())
-    expect(featureResult).toHaveBeenCalled()
-    expect(journeyUpdateResult).toHaveBeenCalled()
-    expect(featureResult.mock.invocationCallOrder[0]).toBeLessThan(
-      customizationResult.mock.invocationCallOrder[0]
+    await waitFor(() =>
+      expect(
+        getByText('Field update failed. Reload the page or try again.')
+      ).toBeInTheDocument()
     )
+    expect(customizationResult).toHaveBeenCalled()
+    expect(journeyUpdateResult).toHaveBeenCalled()
+    expect(onClose).not.toHaveBeenCalled()
   })
 })
