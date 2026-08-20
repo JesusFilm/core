@@ -127,7 +127,7 @@ export default function AddChildren(): ReactElement {
             id="add-method-select"
             value={addMethod}
             label="Select method"
-            onChange={(e) => setAddMethod(e.target.value as AddMethod)}
+            onChange={(e) => setAddMethod(e.target.value)}
           >
             <MenuItem value="new">Create new video</MenuItem>
             <MenuItem value="existing">Find existing video by title</MenuItem>

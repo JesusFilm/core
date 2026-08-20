@@ -31,6 +31,13 @@
     "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY:}"
   },
 
+  // A cold type-aware lint of journeys-admin (~2.6k files in one ESLint
+  // process) exceeds Node's default ~4GB heap cap. autofix.ci already sets
+  // the same value; this keeps `nx run journeys-admin:lint` working locally.
+  "containerEnv": {
+    "NODE_OPTIONS": "--max-old-space-size=8192"
+  },
+
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // 9747 is the port for the NX MCP server
   "forwardPorts": [9747],

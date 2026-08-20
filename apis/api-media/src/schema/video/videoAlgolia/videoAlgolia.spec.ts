@@ -121,7 +121,7 @@ describe('videoAlgolia', () => {
     browseSpy.mockReset()
     deleteObjectSpy.mockReset()
     mockedUpdateVideoInAlgolia.mockResolvedValue(undefined)
-    mockedUpdateVideoVariantInAlgolia.mockResolvedValue(true as any)
+    mockedUpdateVideoVariantInAlgolia.mockResolvedValue(true)
   })
 
   afterEach(() => {
@@ -921,7 +921,7 @@ describe('videoAlgolia', () => {
           videoId: 'video-1',
           languageId: '529'
         } as any)
-        mockedUpdateVideoVariantInAlgolia.mockResolvedValueOnce(false as any)
+        mockedUpdateVideoVariantInAlgolia.mockResolvedValueOnce(false)
 
         const result = await authClient({
           document: FIX_VARIANT_INDEX_ISSUES_MUTATION,
@@ -962,7 +962,7 @@ describe('videoAlgolia', () => {
         } as any)
         mockedUpdateVideoVariantInAlgolia
           .mockRejectedValueOnce(new Error('Algolia update failed'))
-          .mockResolvedValueOnce(true as any)
+          .mockResolvedValueOnce(true)
 
         const result = await authClient({
           document: FIX_VARIANT_INDEX_ISSUES_MUTATION,

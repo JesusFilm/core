@@ -35,7 +35,7 @@ export function PhoneAction(): ReactElement {
   } = useEditor()
   const selectedBlock =
     stateSelectedBlock && isActionBlock(stateSelectedBlock)
-      ? (stateSelectedBlock as ActionBlock)
+      ? stateSelectedBlock
       : undefined
   const { addAction } = useActionCommand()
 

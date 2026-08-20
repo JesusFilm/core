@@ -45,7 +45,7 @@ describe('PathnamePage', () => {
         {
           hostname: 'short.link',
           pathname: 'test'
-        } as VariablesOf<typeof GET_SHORT_LINK_QUERY>
+        }
       )
     )
     await PathnamePage({
@@ -62,12 +62,12 @@ describe('PathnamePage', () => {
           shortLink: {
             __typename: 'NotFoundError'
           }
-        } as ResultOf<typeof GET_SHORT_LINK_QUERY>,
+        },
         GET_SHORT_LINK_QUERY,
         {
           hostname: 'short.link',
           pathname: 'test'
-        } as VariablesOf<typeof GET_SHORT_LINK_QUERY>
+        }
       )
     )
     await PathnamePage({

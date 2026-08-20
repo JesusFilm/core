@@ -104,11 +104,14 @@ builder.queryFields((t) => ({
               return [{ id: '529' }]
             }
             throw new Error(
-              'YouTube API quota exceeded. Please try again later.'
+              'YouTube API quota exceeded. Please try again later.',
+              { cause: error }
             )
           }
         }
-        throw new Error('Failed to fetch YouTube closed caption language IDs')
+        throw new Error('Failed to fetch YouTube closed caption language IDs', {
+          cause: error
+        })
       }
 
       let ytClosedCaptionResponse: YouTubeCaptionsResponse
