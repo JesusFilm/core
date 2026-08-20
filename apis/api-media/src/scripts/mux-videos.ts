@@ -10,6 +10,7 @@ import {
   downloadsReadyToStore,
   previewMuxDownloadsFromAsset
 } from '../lib/downloads'
+import { videoVariantCacheReset } from '../lib/videoCacheReset'
 import { getVideo } from '../schema/mux/video/service'
 
 const MUX_STREAM_BASE_URL = 'https://stream.mux.com'
@@ -349,6 +350,10 @@ export async function processDownloads(): Promise<void> {
         console.log(
           `Successfully created or refreshed ${createdCount} video downloads for variant ${variant.id}, muxVideoId: ${variant.muxVideo.id}`
         )
+
+        if (createdCount > 0) {
+          await videoVariantCacheReset(variant.id)
+        }
       } else {
         console.log(
           `Video not ready for download processing - variant: ${variant.id}, assetId: ${variant.muxVideo.assetId}, status: ${muxVideoAsset.status}, hasPlaybackId: ${!!muxVideoAsset.playback_ids?.[0]?.id}, downloadsReady: ${downloadsReadyToStore(muxVideoAsset)}`
