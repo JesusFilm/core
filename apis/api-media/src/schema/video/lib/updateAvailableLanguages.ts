@@ -100,6 +100,16 @@ export async function updateVideoAvailableLanguages(
 // write clobbers the first. Instead, do the read-modify-write as a single
 // atomic UPDATE so Postgres serializes concurrent callers on the row.
 // COALESCE handles the nullable column so array_append always has a base array.
+//
+// This is kept as a hot-path primitive for a video's *own* value
+// deliberately, rather than retired in favor of `calculateAvailableLanguages`
+// everywhere: a plain recompute (read current variants, write the union) does
+// not have the same serialization guarantee as this single atomic statement -
+// two independent read/write pairs can still interleave and clobber each
+// other's write. The "always fully recompute, never incrementally mutate"
+// principle is applied at the cascade level instead (see
+// `updateParentCollectionLanguages` below), which isn't on this hot
+// concurrent-write path.
 export async function addLanguageToVideo(
   videoId: string,
   languageId: string
@@ -168,18 +178,73 @@ export async function findContainerParentIds(
   return parents.map((parent) => parent.id)
 }
 
-// Updates all parent videos (collections) when a child video's languages change
-// Ensures collections always reflect the union of their children's languages
+// True when two availableLanguages values represent the same set of
+// languages, irrespective of order or duplicates. Used to decide whether a
+// recompute actually changed a video's stored value, and therefore whether
+// the cascade needs to keep walking upward past it.
+export function sameLanguageSet(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) return false
+  const setA = new Set(a)
+  return b.every((languageId) => setA.has(languageId))
+}
+
+async function getStoredAvailableLanguages(videoId: string): Promise<string[]> {
+  const video = await prisma.video.findUnique({
+    where: { id: videoId },
+    select: { availableLanguages: true }
+  })
+  return video?.availableLanguages ?? []
+}
+
+// Updates all parent videos (collections) when a child video's languages
+// change, cascading all the way to the root of the container hierarchy - a
+// three-or-more-level-deep hierarchy (e.g. featureFilm -> series -> video)
+// gets every level updated, not just the immediate parent.
+//
+// Each parent's value is always fully recomputed from its own current
+// source data (own published variants union its live children's current
+// values) rather than incrementally mutated, so a level whose recomputed
+// value doesn't change stops the cascade from walking past it - there is
+// nothing further up that could be affected.
+//
+// `visitedPath` tracks the video ids already on the current traversal
+// branch, starting with the video whose change triggered this call. If a
+// parent is already on that path, the children/parents relation has a
+// cycle; that branch is logged and abandoned instead of recursing forever.
+// (A diamond - two branches sharing a common ancestor - is not a cycle and
+// is not affected: each branch carries its own path.)
 export async function updateParentCollectionLanguages(
   childVideoId: string
 ): Promise<void> {
+  await cascadeParentCollectionLanguages(childVideoId, new Set([childVideoId]))
+}
+
+async function cascadeParentCollectionLanguages(
+  childVideoId: string,
+  visitedPath: ReadonlySet<string>
+): Promise<void> {
   const parentIds = await findContainerParentIds(childVideoId)
 
-  // Update each parent collection
   for (const parentId of parentIds) {
-    await updateVideoAvailableLanguages(parentId, {
+    if (visitedPath.has(parentId)) {
+      logger.error(
+        { videoId: parentId, path: Array.from(visitedPath) },
+        'Cycle detected in video children/parents relation while cascading availableLanguages - stopping this branch'
+      )
+      continue
+    }
+
+    const before = await getStoredAvailableLanguages(parentId)
+    const after = await updateVideoAvailableLanguages(parentId, {
       skipCache: false,
       skipAlgolia: false
     })
+
+    if (!sameLanguageSet(before, after)) {
+      await cascadeParentCollectionLanguages(
+        parentId,
+        new Set([...visitedPath, parentId])
+      )
+    }
   }
 }
