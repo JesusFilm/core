@@ -1,5 +1,7 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
+import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -691,7 +693,13 @@ describe('TemplateSettingsDialog', () => {
               query: JOURNEY_FEATURE_UPDATE,
               variables: { id: defaultJourney.id, feature: true }
             },
-            error: new Error('user is not allowed to update featured date')
+            // GraphQL error, not a network error — models the real ACL
+            // rejection shape and exercises the generic-message branch.
+            result: {
+              errors: [
+                new GraphQLError('user is not allowed to update featured date')
+              ]
+            }
           }
         ]}
       >
@@ -710,11 +718,95 @@ describe('TemplateSettingsDialog', () => {
 
     await waitFor(() =>
       expect(
-        getByText('Field update failed. Reload the page or try again.')
+        getByText('Something went wrong, please reload the page and try again')
       ).toBeInTheDocument()
     )
     expect(customizationResult).toHaveBeenCalled()
     expect(journeyUpdateResult).toHaveBeenCalled()
     expect(onClose).not.toHaveBeenCalled()
+  })
+
+  // QA-564: the cache.modify patch replaced the GetPublisherTemplate refetch
+  // and is what keeps journey.journeyCustomizationDescription fresh — without
+  // it, saving then reopening the dialog shows the pre-save description.
+  it('patches journeyCustomizationDescription into the Journey cache entity on save', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      [`Journey:${defaultJourney.id}`]: {
+        __typename: 'Journey',
+        id: defaultJourney.id,
+        journeyCustomizationDescription: 'stale cache value'
+      }
+    })
+
+    const journeyWithDescription = {
+      ...defaultJourney,
+      journeyCustomizationDescription: 'Share this with {{ name }}'
+    }
+    const customizationResult = vi.fn(() => ({
+      data: { journeyCustomizationFieldPublisherUpdate: [] }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_SETTINGS_UPDATE,
+              variables: {
+                id: defaultJourney.id,
+                input: {
+                  title: defaultJourney.title,
+                  description: defaultJourney.description,
+                  strategySlug: null,
+                  tagIds: [],
+                  creatorDescription: null,
+                  languageId: '529'
+                }
+              }
+            },
+            result: {
+              data: {
+                journeyUpdate: {
+                  __typename: 'Journey',
+                  id: defaultJourney.id,
+                  title: defaultJourney.title,
+                  description: defaultJourney.description
+                }
+              }
+            }
+          },
+          {
+            request: {
+              query: JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE,
+              variables: {
+                journeyId: defaultJourney.id,
+                string: 'Share this with {{ name }}'
+              }
+            },
+            result: customizationResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{ journey: journeyWithDescription, renderMode: 'admin' }}
+          >
+            <TemplateSettingsDialog open onClose={onClose} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Save' }))
+
+    await waitFor(() => expect(customizationResult).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        cache.extract()[`Journey:${defaultJourney.id}`]
+          ?.journeyCustomizationDescription
+      ).toBe('Share this with {{ name }}')
+    )
   })
 })

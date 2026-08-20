@@ -137,9 +137,8 @@ export function TemplateSettingsDialog({
     )
 
     const results = await Promise.allSettled(tasks)
-    const failed = results.find((result) => result.status === 'rejected')
 
-    if (failed == null) {
+    if (results.every((result) => result.status === 'fulfilled')) {
       enqueueSnackbar(t('Template settings have been saved'), {
         variant: 'success',
         preventDuplicate: true
@@ -148,8 +147,14 @@ export function TemplateSettingsDialog({
       return
     }
 
-    const networkError =
-      failed.reason instanceof ApolloError && failed.reason.networkError != null
+    // Prefer the network-error message whichever task it came from — it is
+    // the actionable one, so it must not lose to an earlier GraphQL error.
+    const networkError = results.some(
+      (result) =>
+        result.status === 'rejected' &&
+        result.reason instanceof ApolloError &&
+        result.reason.networkError != null
+    )
     enqueueSnackbar(
       networkError
         ? t('Field update failed. Reload the page or try again.')
