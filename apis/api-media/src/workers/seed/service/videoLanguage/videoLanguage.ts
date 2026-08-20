@@ -1,56 +1,30 @@
-import { prisma } from '@core/prisma/media/client'
+import { verifyAvailableLanguages } from '../../../../schema/video/lib/verifyAvailableLanguages'
+import { logger } from '../../../lib/logger'
 
-import { calculateAvailableLanguages } from '../../../../schema/video/lib/updateAvailableLanguages'
-
-const BATCH_SIZE = 100
-const MAX_RETRIES = 3
-
-async function updateBatch(
-  videos: { id: string; availableLanguages: string[] }[],
-  retries = 0
-): Promise<void> {
-  try {
-    await prisma.$transaction(
-      videos.map(({ id, availableLanguages }) =>
-        prisma.video.update({
-          where: { id },
-          data: { availableLanguages }
-        })
-      )
-    )
-  } catch (error) {
-    if (retries < MAX_RETRIES) {
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      return updateBatch(videos, retries + 1)
-    }
-    console.error('Failed to update batch after retries:', error)
-    throw error
-  }
-}
-
-// Reseeds every video's availableLanguages using the same canonical
-// calculation every other write path uses (own published variants unioned
-// with each live child's currently stored availableLanguages), rather than
-// hand-deriving it from this video's own variants only - which would
-// silently zero out every child-derived language on any
-// collection/series/featureFilm this job touches.
+// Reseeds every video's availableLanguages using the batch verifier's
+// bottom-up, dependency-ordered recompute (verifyAvailableLanguages with
+// fix: true) rather than this job's own per-video loop. A per-video loop
+// that computes every value before writing any of them reads each child's
+// pre-seed *stored* availableLanguages, not the value this run computes for
+// it - so a container is seeded from stale/drifted child rows, and a
+// multi-level hierarchy never converges in one pass. The verifier already
+// solves this (batched, level-by-level, writing each level before the level
+// above it reads it), so this job delegates to it instead of maintaining a
+// second, subtly different definition of "compute in dependency order".
 export async function seedVideoLanguages(): Promise<void> {
-  const videos = await prisma.video.findMany({ select: { id: true } })
+  const result = await verifyAvailableLanguages({ fix: true })
 
-  const updates: Array<{ id: string; availableLanguages: string[] }> = []
-  for (const { id } of videos) {
-    updates.push({
-      id,
-      availableLanguages: await calculateAvailableLanguages(id)
-    })
+  if (result.cycleVideoIds.length > 0) {
+    logger.error(
+      { cycleVideoIds: result.cycleVideoIds },
+      'seedVideoLanguages: videos on a children/parents cycle were skipped'
+    )
   }
 
-  for (let i = 0; i < updates.length; i += BATCH_SIZE) {
-    const batch = updates.slice(i, i + BATCH_SIZE)
-    try {
-      await updateBatch(batch)
-    } catch (error) {
-      console.error(`Failed to process batch ${i / BATCH_SIZE + 1}:`, error)
-    }
+  if (result.blockedAncestorVideoIds.length > 0) {
+    logger.error(
+      { blockedAncestorVideoIds: result.blockedAncestorVideoIds },
+      'seedVideoLanguages: videos blocked by a descendant cycle were skipped'
+    )
   }
 }

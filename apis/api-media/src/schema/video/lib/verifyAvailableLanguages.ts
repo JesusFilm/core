@@ -13,9 +13,9 @@
 // already been resolved are fetched (and, if fixing, written) in one query
 // per level - rather than one query per video, so running it against the
 // full catalog doesn't generate an unbounded number of round trips. A video
-// never reachable this way (because it sits on a cycle in the
-// children/parents relation) is reported separately rather than hanging the
-// walk.
+// never reachable this way sits on a cycle in the children/parents relation,
+// or depends (transitively) on one - the two are reported separately, since
+// only the former is actually cyclic.
 
 import { prisma } from '@core/prisma/media/client'
 
@@ -34,17 +34,24 @@ export interface VerifyAvailableLanguagesOptions {
 }
 
 export interface VerifyAvailableLanguagesResult {
-  // Number of videos reached by the walk (excludes cycle members).
+  // Number of videos reached by the walk (excludes cycle members and
+  // blocked ancestors).
   checked: number
   mismatches: AvailableLanguagesMismatch[]
   // Video ids that were mismatched and successfully written; only
   // populated when `fix: true`.
   fixed: string[]
-  // Video ids never reached by the walk because they sit on a cycle in the
-  // children/parents relation - the walk cannot compute a value for these
-  // without an arbitrary tie-break, so they're surfaced for manual/data
-  // repair instead.
+  // Video ids that actually sit on a cycle in the children/parents relation
+  // (they can reach themselves by following child edges) - the walk cannot
+  // compute a value for these without an arbitrary tie-break, so they're
+  // surfaced for manual/data repair instead.
   cycleVideoIds: string[]
+  // Video ids never reached by the walk *because* one of their descendants
+  // sits on a cycle - these aren't cyclic themselves, they're just stuck
+  // waiting on a dependency that never resolves. Reported separately from
+  // cycleVideoIds so repair work targets the actual cycle, not every
+  // ancestor blocked by it.
+  blockedAncestorVideoIds: string[]
 }
 
 function calculateFromSourceData(
@@ -59,6 +66,99 @@ function calculateFromSourceData(
     }
   }
   return Array.from(languageSet).sort((a, b) => Number(a) - Number(b))
+}
+
+// Tarjan's algorithm, restricted to the subgraph of ids the level-order walk
+// never resolved. Being unresolved only means "this id's dependency chain
+// never bottomed out" - it does not mean the id itself is on a cycle: an
+// ancestor of a cycle is just as unresolved as the cycle's own members, but
+// it isn't cyclic. A strongly connected component of size > 1 (or a
+// single-node component with a self-edge) is an actual cycle; every other
+// unresolved id is merely blocked by one.
+function findCycleMembers(
+  unresolvedIds: readonly string[],
+  childIdsOf: ReadonlyMap<string, string[]>
+): Set<string> {
+  const unresolvedSet = new Set(unresolvedIds)
+  const index = new Map<string, number>()
+  const lowlink = new Map<string, number>()
+  const onStack = new Set<string>()
+  const stack: string[] = []
+  const cycleMembers = new Set<string>()
+  let counter = 0
+
+  // Iterative DFS (explicit stack) so a long dependency chain can't blow
+  // the call stack - the recursive formulation of Tarjan's algorithm would
+  // recurse once per edge on the walk.
+  for (const start of unresolvedIds) {
+    if (index.has(start)) continue
+
+    const callStack: Array<{ id: string; childIndex: number }> = [
+      { id: start, childIndex: 0 }
+    ]
+    index.set(start, counter)
+    lowlink.set(start, counter)
+    counter++
+    stack.push(start)
+    onStack.add(start)
+
+    while (callStack.length > 0) {
+      const frame = callStack[callStack.length - 1]
+      const children = (childIdsOf.get(frame.id) ?? []).filter((id) =>
+        unresolvedSet.has(id)
+      )
+
+      if (frame.childIndex < children.length) {
+        const child = children[frame.childIndex]
+        frame.childIndex++
+
+        if (!index.has(child)) {
+          index.set(child, counter)
+          lowlink.set(child, counter)
+          counter++
+          stack.push(child)
+          onStack.add(child)
+          callStack.push({ id: child, childIndex: 0 })
+        } else if (onStack.has(child)) {
+          lowlink.set(
+            frame.id,
+            Math.min(lowlink.get(frame.id)!, index.get(child)!)
+          )
+        }
+        continue
+      }
+
+      // All of frame.id's children are processed - propagate its lowlink to
+      // its own caller, then close its component if it's a root.
+      callStack.pop()
+      const caller = callStack[callStack.length - 1]
+      if (caller != null) {
+        lowlink.set(
+          caller.id,
+          Math.min(lowlink.get(caller.id)!, lowlink.get(frame.id)!)
+        )
+      }
+
+      if (lowlink.get(frame.id) === index.get(frame.id)) {
+        const component: string[] = []
+        let member: string
+        do {
+          member = stack.pop()!
+          onStack.delete(member)
+          component.push(member)
+        } while (member !== frame.id)
+
+        const isCycle =
+          component.length > 1 ||
+          (childIdsOf.get(component[0]) ?? []).includes(component[0])
+        if (isCycle) {
+          for (const id of component) cycleMembers.add(id)
+        }
+      }
+    }
+  }
+
+  return cycleMembers
 }
 
 export async function verifyAvailableLanguages(
@@ -148,14 +248,20 @@ export async function verifyAvailableLanguages(
     level = Array.from(nextLevel)
   }
 
-  const cycleVideoIds = graphNodes
+  const unresolvedIds = graphNodes
     .map((node) => node.id)
     .filter((id) => !computed.has(id))
+  const cycleMembers = findCycleMembers(unresolvedIds, childIdsOf)
+  const cycleVideoIds = unresolvedIds.filter((id) => cycleMembers.has(id))
+  const blockedAncestorVideoIds = unresolvedIds.filter(
+    (id) => !cycleMembers.has(id)
+  )
 
   return {
     checked: computed.size,
     mismatches,
     fixed,
-    cycleVideoIds
+    cycleVideoIds,
+    blockedAncestorVideoIds
   }
 }

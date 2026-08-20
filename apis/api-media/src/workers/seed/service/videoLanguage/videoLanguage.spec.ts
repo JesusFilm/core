@@ -1,49 +1,73 @@
-import { Video } from '@core/prisma/media/client'
+import { vi } from 'vitest'
 
-import { prismaMock } from '../../../../../test/prismaMock'
+import { verifyAvailableLanguages } from '../../../../schema/video/lib/verifyAvailableLanguages'
+import { logger } from '../../../lib/logger'
 
 import { seedVideoLanguages } from './videoLanguage'
 
+vi.mock('../../../../schema/video/lib/verifyAvailableLanguages', () => ({
+  verifyAvailableLanguages: vi.fn()
+}))
+
+vi.mock('../../../lib/logger', () => ({
+  logger: { error: vi.fn() }
+}))
+
+const mockedVerifyAvailableLanguages = vi.mocked(verifyAvailableLanguages)
+
 describe('seedVideoLanguages', () => {
-  it('routes every video through the shared recompute, so a container keeps its child-derived languages', async () => {
-    // A container video (e.g. a series) has no variants of its own - if
-    // this job derived availableLanguages from a video's own variants only,
-    // it would zero this out even though the child legitimately provides
-    // the language.
-    prismaMock.video.findMany.mockResolvedValueOnce([
-      { id: 'container' } as unknown as Video,
-      { id: 'child' } as unknown as Video
-    ])
-    ;(prismaMock.video.findUnique as any).mockImplementation(
-      async ({ where }: { where: { id?: string } }) => {
-        if (where.id === 'container') {
-          return {
-            variants: [],
-            children: [{ availableLanguages: ['529'] }]
-          }
-        }
-        if (where.id === 'child') {
-          return {
-            variants: [{ languageId: '529' }],
-            children: []
-          }
-        }
-        return null
-      }
-    )
-    ;(prismaMock.$transaction as any).mockImplementation(
-      async (updates: Array<Promise<unknown>>) => Promise.all(updates)
-    )
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('delegates to the batch verifier in fix mode, so seeding uses the same dependency-ordered recompute', async () => {
+    mockedVerifyAvailableLanguages.mockResolvedValueOnce({
+      checked: 2,
+      mismatches: [],
+      fixed: [],
+      cycleVideoIds: [],
+      blockedAncestorVideoIds: []
+    })
 
     await seedVideoLanguages()
 
-    expect(prismaMock.video.update).toHaveBeenCalledWith({
-      where: { id: 'container' },
-      data: { availableLanguages: ['529'] }
+    expect(mockedVerifyAvailableLanguages).toHaveBeenCalledWith({
+      fix: true
     })
-    expect(prismaMock.video.update).toHaveBeenCalledWith({
-      where: { id: 'child' },
-      data: { availableLanguages: ['529'] }
+    expect(logger.error).not.toHaveBeenCalled()
+  })
+
+  it('logs videos left unresolved by a children/parents cycle instead of silently dropping them', async () => {
+    mockedVerifyAvailableLanguages.mockResolvedValueOnce({
+      checked: 1,
+      mismatches: [],
+      fixed: [],
+      cycleVideoIds: ['cyclic-a', 'cyclic-b'],
+      blockedAncestorVideoIds: []
     })
+
+    await seedVideoLanguages()
+
+    expect(logger.error).toHaveBeenCalledWith(
+      { cycleVideoIds: ['cyclic-a', 'cyclic-b'] },
+      'seedVideoLanguages: videos on a children/parents cycle were skipped'
+    )
+  })
+
+  it('logs ancestors blocked by a descendant cycle separately from the cycle itself', async () => {
+    mockedVerifyAvailableLanguages.mockResolvedValueOnce({
+      checked: 1,
+      mismatches: [],
+      fixed: [],
+      cycleVideoIds: ['cyclic-a', 'cyclic-b'],
+      blockedAncestorVideoIds: ['parent']
+    })
+
+    await seedVideoLanguages()
+
+    expect(logger.error).toHaveBeenCalledWith(
+      { blockedAncestorVideoIds: ['parent'] },
+      'seedVideoLanguages: videos blocked by a descendant cycle were skipped'
+    )
   })
 })

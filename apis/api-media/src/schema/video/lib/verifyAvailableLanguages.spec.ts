@@ -96,6 +96,7 @@ describe('verifyAvailableLanguages', () => {
     expect(result.cycleVideoIds).toEqual([])
     // report-only mode must not write anything back
     expect(db.get('parent')?.availableLanguages).toEqual([])
+    expect(prismaMock.video.update).not.toHaveBeenCalled()
   })
 
   it('does not report a video whose stored value already matches the computed one', async () => {
@@ -187,9 +188,39 @@ describe('verifyAvailableLanguages', () => {
     const result = await verifyAvailableLanguages()
 
     expect(result.cycleVideoIds.sort()).toEqual(['a', 'b'])
+    expect(result.blockedAncestorVideoIds).toEqual([])
     expect(result.checked).toBe(1)
     expect(
       result.mismatches.find((mismatch) => mismatch.videoId === 'independent')
     ).toBeUndefined()
+  })
+
+  it('reports a video blocked by a descendant cycle separately from the cycle itself', async () => {
+    // parent -> cyclic-a -> cyclic-b -> cyclic-a: parent depends on the
+    // cycle but never loops back to itself, so it isn't a cycle member -
+    // just permanently blocked by one.
+    installCatalog({
+      'cyclic-a': {
+        availableLanguages: [],
+        variantLanguageIds: [],
+        childIds: ['cyclic-b']
+      },
+      'cyclic-b': {
+        availableLanguages: [],
+        variantLanguageIds: [],
+        childIds: ['cyclic-a']
+      },
+      parent: {
+        availableLanguages: [],
+        variantLanguageIds: [],
+        childIds: ['cyclic-a']
+      }
+    })
+
+    const result = await verifyAvailableLanguages()
+
+    expect(result.cycleVideoIds.sort()).toEqual(['cyclic-a', 'cyclic-b'])
+    expect(result.blockedAncestorVideoIds).toEqual(['parent'])
+    expect(result.checked).toBe(0)
   })
 })
