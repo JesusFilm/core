@@ -139,20 +139,25 @@ export function JourneyList({
     contentType: ContentType,
     status: JourneyStatusFilter
   ): ReactElement => {
+    // Only pass event to the currently active content type to prevent duplicate actions
+    const eventForThisContentType =
+      contentType === currentContentType ? event : undefined
+
     if (contentType === 'templates' && teamTemplateCollection === true) {
       return (
         <TemplateGalleryPageList
           visible={contentType === currentContentType}
           status={status}
+          sortOrder={sortOrder}
+          onSortOrderChange={handleSetSortOrder}
+          event={eventForThisContentType}
+          onEvent={handleClick}
           onOpenInfo={
             showTemplateInfoPanel ? handleOpenTemplateInfoDrawer : undefined
           }
         />
       )
     }
-    // Only pass event to the currently active content type to prevent duplicate actions
-    const eventForThisContentType =
-      contentType === currentContentType ? event : undefined
     return (
       <JourneyListContent
         contentType={contentType}
@@ -185,6 +190,12 @@ export function JourneyList({
           setSortOrder={handleSetSortOrder}
           sortOrder={sortOrder}
           infoPanelActive={showTemplateInfoPanel}
+          // Same predicate as showTemplateInfoPanel above: true exactly when
+          // TemplateGalleryPageList (which owns its own Sort/bulk-actions
+          // menu) renders instead of JourneyListContent. Computed once here
+          // and threaded down to TeamMode rather than re-derived there
+          // (NES-1872 review).
+          listControlsOwnedByContent={showTemplateInfoPanel}
         />
       </Box>
       {activeTab === 'active' && currentContentType === 'journeys' && (

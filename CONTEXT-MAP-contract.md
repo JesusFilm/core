@@ -58,20 +58,14 @@ Authors may add further keys freely (additive); consumers must ignore unknown ke
   `— T4 (cache) · T5 (optimistic drift)`, `— T6, expectation mismatch`). Sections with no T-token
   are untyped (how-to / FAQ / flagged entries) — allowed.
 - `type_tags` in frontmatter equals the union of T-tags found in the file's headings.
-- Bodies are built from bold-label lines (`**Signatures:**`, `**Localizing question (reporter):**`,
-  `**Then ask:**`, `**Ready when:**`, `**Status:**`, `**Look first (fixer):**`, `**Handoff:**`, …).
-  A label line matches after stripping leading indentation and an optional `- ` list marker — the
-  flush-left, indented (list-item continuation), and list-bullet (`- **Handoff:** …`) forms all
-  occur on `main` today. The bold may extend past the label over the whole line, label and value
-  together (e.g. `**Localizing question (reporter): does a refresh fix it?**`).
-  The label vocabulary is **open** — authors may introduce new labels; consumers must not assume a
-  fixed set or order — with one exception:
-- **`Handoff:` is reserved.** Every section closes its diagnosis with a `**Handoff:**` verdict
-  (agent-able / human / how-to-FAQ / ops), the one label consumers may key on semantically.
-  - _Known deviation on `main` today: `apps/journeys/CONTEXT-intake.md` § "Chat / AI assistant"
-    embeds its verdict in `**Status:**` with no `**Handoff:**` line — left as-is deliberately
-    (unreleased feature, plan not settled; Siyang, 2026-08-13). The validator reports it as a
-    warning until the section gets a real diagnosis layer._
+- Bodies are prose. Bold labels (`**Signatures:**`, `**Look first (fixer):**`, …) are a
+  recommended layout so a reader knows where to look — the vocabulary is open, and consumers
+  read bodies as prose rather than parsing labels.
+- **One exception: `Handoff:`.** Every section carries a `**Handoff:**` verdict
+  (agent-able / human / how-to-FAQ / ops), closing its diagnosis. The validator warns when a
+  section lacks one.
+  - A section with no diagnosis layer yet still closes with one: route it to a human, and let a
+    `**Status:**` line explain why there is nothing more to say.
 
 ## Index ↔ frontmatter sync
 

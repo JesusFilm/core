@@ -104,3 +104,4 @@ oEmbed-shape — but treat as human-diagnosed until we have real cases.)
 
 **Status:** still new, behind a flag, not widely used, not officially released → no accurate failure
 data yet. Don't encode a diagnosis layer; route to a human. Revisit after release.
+**Handoff:** route to a human.

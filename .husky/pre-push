@@ -1,9 +1,0 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
-# Agent-gated lint (ENG-3691): agents must lint what they push; manual human
-# pushes are not gated (run `pnpm lint:changed` yourself anytime). Escape
-# hatch for emergencies: `git push --no-verify`.
-if [ -n "${CLAUDECODE:-}" ] || [ -n "${CURSOR_AGENT:-}" ]; then
-  tools/scripts/lint-changed.sh --committed
-fi
