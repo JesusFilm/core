@@ -28,20 +28,28 @@ function resolveFromRenditionMetadata(
   const resolution = extractMuxResolutionFromUrl(url)
   if (resolution == null) return null
 
-  const file = muxAsset?.static_renditions?.files?.find(
-    (candidate) => candidate?.resolution === resolution
-  )
-  if (file == null) return null
   // Only a `ready` rendition is download-ready; `preparing`, `skipped`, and
   // `errored` renditions must fall back to HTTP verification.
-  if (file.status !== 'ready') return null
+  const readyFiles = (muxAsset?.static_renditions?.files ?? []).filter(
+    (file) => file?.resolution === resolution && file.status === 'ready'
+  )
+  if (readyFiles.length === 0) return null
 
-  const filesize = parseMuxFilesize(file.filesize)
-  if (filesize != null) {
-    return { size: filesize, errorCode: null }
+  const filesizes = new Set<number>()
+  for (const file of readyFiles) {
+    const filesize = parseMuxFilesize(file?.filesize)
+    if (filesize != null) filesizes.add(filesize)
   }
 
-  return null
+  // Two ready renditions for the same resolution reporting different
+  // filesizes is a data conflict, not a value to guess between — skip and
+  // report it rather than picking one arbitrarily.
+  if (filesizes.size > 1) {
+    return { size: null, errorCode: 'sizeConflict' }
+  }
+
+  const [filesize] = filesizes
+  return filesize != null ? { size: filesize, errorCode: null } : null
 }
 
 /**

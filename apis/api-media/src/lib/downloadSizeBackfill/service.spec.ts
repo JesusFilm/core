@@ -112,6 +112,33 @@ describe('runDownloadSizeBackfill', () => {
     expect(result.summary.applied).toBe(1)
   })
 
+  it('performs no additional writes when apply runs a second time against the same row', async () => {
+    prismaMock.videoVariantDownload.findMany.mockResolvedValue([
+      candidate({ id: 'd1' })
+    ] as any)
+    prismaMock.videoVariantDownload.updateMany
+      .mockResolvedValueOnce({ count: 1 } as any)
+      .mockResolvedValueOnce({ count: 0 } as any)
+
+    const httpClient = unreachableHttpClient()
+    httpClient.head = vi
+      .fn()
+      .mockResolvedValue(makeHeaders({ contentLength: '500' }))
+
+    const first = await runDownloadSizeBackfill({ apply: true, httpClient })
+    expect(first.records[0]).toMatchObject({ outcome: 'applied' })
+    expect(first.summary.applied).toBe(1)
+
+    const second = await runDownloadSizeBackfill({ apply: true, httpClient })
+
+    expect(prismaMock.videoVariantDownload.updateMany).toHaveBeenCalledTimes(
+      2
+    )
+    expect(second.records[0]).toMatchObject({ outcome: 'alreadyCorrected' })
+    expect(second.summary.applied).toBe(0)
+    expect(second.summary.alreadyCorrected).toBe(1)
+  })
+
   it('records alreadyCorrected without overwriting when the row was corrected concurrently', async () => {
     prismaMock.videoVariantDownload.findMany.mockResolvedValue([
       candidate({ id: 'd1' })

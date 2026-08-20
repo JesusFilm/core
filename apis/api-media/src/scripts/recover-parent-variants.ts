@@ -6,6 +6,8 @@ import {
   executeVideoPublishChildren
 } from '../schema/video/videoPublishChildren.mutation'
 
+import { hasFlag } from './cliFlags'
+
 const PARENT_VARIANTS_ONLY_MODE: VideoPublishMode = 'parentVariantsOnly'
 const DEFAULT_PARENT_VIDEO_ID = '6_Acts'
 
@@ -14,7 +16,7 @@ const DEFAULT_PARENT_VIDEO_ID = '6_Acts'
  * parentVariantsOnly mode. Reusable for any parent Video ID; the initial
  * production audit target is `6_Acts`.
  *
- * Defaults to dry-run. Set PARENT_VARIANT_RECOVERY_APPLY=true to write.
+ * Defaults to dry-run. Pass --apply to write.
  * Set PARENT_VARIANT_RECOVERY_ID to target a different parent Video.
  *
  * Returns false when apply mode leaves any requested language unrecovered,
@@ -69,7 +71,7 @@ export async function recoverParentVariants(
 async function main(): Promise<void> {
   const parentId =
     process.env.PARENT_VARIANT_RECOVERY_ID?.trim() || DEFAULT_PARENT_VIDEO_ID
-  const dryRun = process.env.PARENT_VARIANT_RECOVERY_APPLY !== 'true'
+  const dryRun = !hasFlag(process.argv, 'apply')
 
   try {
     const succeeded = await recoverParentVariants(parentId, dryRun)

@@ -11,9 +11,12 @@ import {
   type BackfillSummary,
   type DownloadSizeBackfillFilters,
   assertValidBatchSize,
+  emptyBackfillSummary,
   runDownloadSizeBackfill
 } from '../lib/downloadSizeBackfill'
 import { logger } from '../logger'
+
+import { hasFlag } from './cliFlags'
 
 const REPORT_DIR = path.resolve('.cache/api-media')
 const REPORT_PATH = path.join(REPORT_DIR, 'download-size-backfill-report.jsonl')
@@ -181,56 +184,18 @@ function mergeSummary(target: BackfillSummary, batch: BackfillSummary): void {
   }
 }
 
-function emptySummary(): BackfillSummary {
-  return {
-    totalCandidates: 0,
-    repairable: 0,
-    applied: 0,
-    alreadyCorrected: 0,
-    skipped: 0,
-    failed: 0,
-    byProvider: {
-      mux: {
-        totalCandidates: 0,
-        repairable: 0,
-        applied: 0,
-        alreadyCorrected: 0,
-        skipped: 0,
-        failed: 0
-      },
-      r2: {
-        totalCandidates: 0,
-        repairable: 0,
-        applied: 0,
-        alreadyCorrected: 0,
-        skipped: 0,
-        failed: 0
-      },
-      legacy: {
-        totalCandidates: 0,
-        repairable: 0,
-        applied: 0,
-        alreadyCorrected: 0,
-        skipped: 0,
-        failed: 0
-      }
-    }
-  }
-}
-
 /**
  * Standalone Download-size backfill command. Repairs null/nonpositive
  * `size` values on existing Downloads from authoritative Mux, R2, and
  * legacy-URL provider data.
  *
  * Defaults to dry-run and processes all eligible rows globally in
- * resumable batches. Set DOWNLOAD_SIZE_BACKFILL_APPLY=true to write.
- * Optional filters (DOWNLOAD_SIZE_BACKFILL_DOWNLOAD_ID,
- * DOWNLOAD_SIZE_BACKFILL_VARIANT_ID, DOWNLOAD_SIZE_BACKFILL_PROVIDER)
- * scope a run for focused validation.
+ * resumable batches. Pass --apply to write. Optional filters
+ * (DOWNLOAD_SIZE_BACKFILL_DOWNLOAD_ID, DOWNLOAD_SIZE_BACKFILL_VARIANT_ID,
+ * DOWNLOAD_SIZE_BACKFILL_PROVIDER) scope a run for focused validation.
  */
 async function main(): Promise<void> {
-  const apply = process.env.DOWNLOAD_SIZE_BACKFILL_APPLY === 'true'
+  const apply = hasFlag(process.argv, 'apply')
   const resume = process.env.DOWNLOAD_SIZE_BACKFILL_RESUME === 'true'
   // Validate at the command boundary, before any I/O — an invalid batch
   // size must never reach the query loop, where it can return zero rows
@@ -257,7 +222,7 @@ async function main(): Promise<void> {
     flags: resume ? 'a' : 'w'
   })
 
-  const totalSummary = emptySummary()
+  const totalSummary = emptyBackfillSummary()
   let startAfterId = resume ? await loadCursor(apply, filters) : null
   let hasMore = true
   let batchNumber = 0

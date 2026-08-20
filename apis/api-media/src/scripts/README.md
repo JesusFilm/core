@@ -155,16 +155,16 @@ and never touches an existing parent Variant.
 nx run api-media:recover-parent-variants
 
 # Apply the recovery
-PARENT_VARIANT_RECOVERY_APPLY=true nx run api-media:recover-parent-variants
+nx run api-media:recover-parent-variants -- --apply
 
 # Target a different parent Video
-PARENT_VARIANT_RECOVERY_ID=some_other_series nx run api-media:recover-parent-variants
+PARENT_VARIANT_RECOVERY_ID=some_other_series nx run api-media:recover-parent-variants -- --apply
 ```
 
-### Environment Variables
+### Flags and Environment Variables
 
+- `--apply`: CLI flag — pass it to write; otherwise dry-run only
 - `PARENT_VARIANT_RECOVERY_ID`: parent Video ID to audit/recover (default: `6_Acts`)
-- `PARENT_VARIANT_RECOVERY_APPLY`: set to `true` to write; otherwise dry-run only
 
 ## Download Size Backfill Script
 
@@ -181,15 +181,15 @@ overwrites a row that was corrected concurrently.
 nx run api-media:backfill-download-sizes
 
 # Apply writes
-DOWNLOAD_SIZE_BACKFILL_APPLY=true nx run api-media:backfill-download-sizes
+nx run api-media:backfill-download-sizes -- --apply
 
 # Resume a previous run from its saved cursor
-DOWNLOAD_SIZE_BACKFILL_APPLY=true DOWNLOAD_SIZE_BACKFILL_RESUME=true nx run api-media:backfill-download-sizes
+DOWNLOAD_SIZE_BACKFILL_RESUME=true nx run api-media:backfill-download-sizes -- --apply
 ```
 
-### Environment Variables
+### Flags and Environment Variables
 
-- `DOWNLOAD_SIZE_BACKFILL_APPLY`: set to `true` to write; otherwise dry-run only
+- `--apply`: CLI flag — pass it to write; otherwise dry-run only
 - `DOWNLOAD_SIZE_BACKFILL_RESUME`: set to `true` to continue from the saved cursor
   instead of starting from the beginning
 - `DOWNLOAD_SIZE_BACKFILL_BATCH_SIZE`: rows fetched per database batch (default: 500)

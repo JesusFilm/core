@@ -141,6 +141,56 @@ describe('resolveMuxSize', () => {
     expect(httpClient.head).toHaveBeenCalled()
   })
 
+  it('reports a size conflict when two ready renditions disagree on filesize', async () => {
+    const muxAsset: MuxAssetLike = {
+      static_renditions: {
+        files: [
+          { resolution: '720p', filesize: '1296505318', status: 'ready' },
+          { resolution: '720p', filesize: '999', status: 'ready' }
+        ]
+      }
+    }
+    const httpClient = makeHttpClient()
+
+    const result = await resolveMuxSize(URL, muxAsset, httpClient)
+
+    expect(result).toEqual({ size: null, errorCode: 'sizeConflict' })
+    expect(httpClient.head).not.toHaveBeenCalled()
+  })
+
+  it('deduplicates agreeing ready renditions rather than reporting a conflict', async () => {
+    const muxAsset: MuxAssetLike = {
+      static_renditions: {
+        files: [
+          { resolution: '720p', filesize: '1296505318', status: 'ready' },
+          { resolution: '720p', filesize: '1296505318', status: 'ready' }
+        ]
+      }
+    }
+    const httpClient = makeHttpClient()
+
+    const result = await resolveMuxSize(URL, muxAsset, httpClient)
+
+    expect(result).toEqual({ size: 1296505318, errorCode: null })
+  })
+
+  it('falls back to a later ready rendition when an earlier match for the same resolution is not ready', async () => {
+    const muxAsset: MuxAssetLike = {
+      static_renditions: {
+        files: [
+          { resolution: '720p', filesize: '9999', status: 'errored' },
+          { resolution: '720p', filesize: '1296505318', status: 'ready' }
+        ]
+      }
+    }
+    const httpClient = makeHttpClient()
+
+    const result = await resolveMuxSize(URL, muxAsset, httpClient)
+
+    expect(result).toEqual({ size: 1296505318, errorCode: null })
+    expect(httpClient.head).not.toHaveBeenCalled()
+  })
+
   it.each(['500bytes', '1e3', '0x10', ' 500', '500.5', ''])(
     'falls back to HTTP verification for a malformed filesize (%p)',
     async (filesize) => {

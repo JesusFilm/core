@@ -6,6 +6,7 @@ export { extractMuxResolutionFromUrl, resolveMuxSize } from './resolveMuxSize'
 export { resolveR2Size } from './resolveR2Size'
 export {
   assertValidBatchSize,
+  emptyBackfillSummary,
   runDownloadSizeBackfill,
   type DownloadSizeBackfillFilters,
   type DownloadSizeBackfillOptions,
