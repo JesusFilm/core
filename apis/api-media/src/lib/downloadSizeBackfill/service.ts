@@ -280,7 +280,10 @@ export async function runDownloadSizeBackfill(
   const httpClient = options.httpClient ?? createFetchHttpSizeClient()
   const muxAssetFetcher =
     options.muxAssetFetcher ?? createDefaultMuxAssetFetcher()
-  const limiters: Record<BackfillProvider, ReturnType<typeof createConcurrencyLimiter>> = {
+  const limiters: Record<
+    BackfillProvider,
+    ReturnType<typeof createConcurrencyLimiter>
+  > = {
     mux: createConcurrencyLimiter(DEFAULT_MUX_CONCURRENCY),
     r2: createConcurrencyLimiter(DEFAULT_R2_CONCURRENCY),
     legacy: createConcurrencyLimiter(DEFAULT_LEGACY_CONCURRENCY)

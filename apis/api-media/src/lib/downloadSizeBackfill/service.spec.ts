@@ -152,9 +152,7 @@ describe('runDownloadSizeBackfill', () => {
 
     const second = await runDownloadSizeBackfill({ apply: true, httpClient })
 
-    expect(prismaMock.videoVariantDownload.updateMany).toHaveBeenCalledTimes(
-      1
-    )
+    expect(prismaMock.videoVariantDownload.updateMany).toHaveBeenCalledTimes(1)
     expect(second.records).toEqual([])
     expect(second.summary.totalCandidates).toBe(0)
     expect(second.summary.applied).toBe(0)

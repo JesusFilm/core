@@ -47,8 +47,7 @@ vi.mock('fs/promises', () => ({
   })
 }))
 
-const mockedRunDownloadSizeBackfill =
-  runDownloadSizeBackfill as unknown as Mock
+const mockedRunDownloadSizeBackfill = runDownloadSizeBackfill as unknown as Mock
 
 const ORIGINAL_ARGV = process.argv
 const ORIGINAL_ENV = { ...process.env }
