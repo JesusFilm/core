@@ -38,7 +38,11 @@ describe('UnpublishedVideoDialog', () => {
 
   it('should not render its content when closed', () => {
     const { queryByText } = render(
-      <UnpublishedVideoDialog open={false} onClose={vi.fn()} onConfirm={vi.fn()} />
+      <UnpublishedVideoDialog
+        open={false}
+        onClose={vi.fn()}
+        onConfirm={vi.fn()}
+      />
     )
 
     expect(queryByText('Unpublished Video')).not.toBeInTheDocument()
