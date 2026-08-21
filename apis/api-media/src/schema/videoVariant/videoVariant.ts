@@ -530,7 +530,15 @@ builder.mutationFields((t) => ({
           await addLanguageToVideo(newVariant.videoId, newVariant.languageId)
           await updateParentCollectionLanguages(newVariant.videoId)
         } catch (error) {
-          console.error('Language management update error:', error)
+          logger.error(
+            {
+              error,
+              variantId: newVariant.id,
+              videoId: newVariant.videoId,
+              languageId: newVariant.languageId
+            },
+            'Language management update error'
+          )
           notifyMediaSlackOfOperationFailure({
             operation: 'Video variant language update failed',
             error,
