@@ -1012,10 +1012,7 @@ describe('videoPublishChildren', () => {
       )
 
       expect(availableLanguagesByVideo.get('child')).toEqual(['529', '21028'])
-      expect(availableLanguagesByVideo.get('parent')).toEqual([
-        '529',
-        '21028'
-      ])
+      expect(availableLanguagesByVideo.get('parent')).toEqual(['529', '21028'])
       expect(availableLanguagesByVideo.get('grandparent')).toEqual([
         '529',
         '21028'
