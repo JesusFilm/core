@@ -109,6 +109,12 @@ async function main(): Promise<void> {
           './parentVariantAudit'
         )
       )
+      run(
+        await import(
+          /* webpackChunkName: "verify-available-languages" */
+          './verifyAvailableLanguages'
+        )
+      )
     })
   }
 
