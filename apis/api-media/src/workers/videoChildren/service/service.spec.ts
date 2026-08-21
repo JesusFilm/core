@@ -72,6 +72,12 @@ describe('videoChildren/service', () => {
           { id: 'video1', childIds: [] } as unknown as Video
         ])
       await service()
+      expect(prismaMock.video.findMany).toHaveBeenNthCalledWith(2, {
+        select: { id: true, childIds: true },
+        where: {
+          OR: [{ childIds: { isEmpty: false } }, { children: { some: {} } }]
+        }
+      })
       expect(prismaMock.video.update).toHaveBeenCalledWith({
         where: { id: 'video1' },
         data: {
