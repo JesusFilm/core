@@ -12,15 +12,21 @@ import {
 } from '../../../workers/videoAlgoliaSync'
 import { logger } from '../../logger'
 
-// Calculates what availableLanguages should be for a given video
-// Does NOT update the database - only calculates the correct value
-export async function calculateAvailableLanguages(
-  videoId: string
-): Promise<string[]> {
+// Calculates what availableLanguages should be for a given video, and
+// returns it alongside the value currently stored on the row. Both come off
+// a single `findUnique` - the caller (e.g. the cascade walker) needs the
+// stored ("previous") value too, and adding it to this same select avoids a
+// second dedicated read of the same row immediately before/after this one.
+// Does NOT update the database - only calculates the correct value.
+export async function calculateAvailableLanguages(videoId: string): Promise<{
+  languages: string[]
+  previousLanguages: string[]
+}> {
   const video = await prisma.video.findUnique({
     where: { id: videoId },
     select: {
       label: true,
+      availableLanguages: true,
       variants: {
         where: { published: true },
         select: { languageId: true }
@@ -33,7 +39,7 @@ export async function calculateAvailableLanguages(
   })
 
   if (video == null) {
-    return []
+    return { languages: [], previousLanguages: [] }
   }
 
   const languageSet = new Set<string>()
@@ -51,7 +57,10 @@ export async function calculateAvailableLanguages(
     }
   }
 
-  return Array.from(languageSet).sort((a, b) => Number(a) - Number(b))
+  return {
+    languages: Array.from(languageSet).sort((a, b) => Number(a) - Number(b)),
+    previousLanguages: video.availableLanguages
+  }
 }
 
 // Updates a video's availableLanguages field based on current state
@@ -62,8 +71,9 @@ export async function updateVideoAvailableLanguages(
     skipCache?: boolean
     skipAlgolia?: boolean
   } = {}
-): Promise<string[]> {
-  const availableLanguages = await calculateAvailableLanguages(videoId)
+): Promise<{ before: string[]; after: string[] }> {
+  const { languages: availableLanguages, previousLanguages } =
+    await calculateAvailableLanguages(videoId)
 
   // Update the video
   await prisma.video.update({
@@ -88,7 +98,7 @@ export async function updateVideoAvailableLanguages(
     }
   }
 
-  return availableLanguages
+  return { before: previousLanguages, after: availableLanguages }
 }
 
 // Adds a language to a video's availableLanguages if not already present.
@@ -183,17 +193,10 @@ export async function findContainerParentIds(
 // recompute actually changed a video's stored value, and therefore whether
 // the cascade needs to keep walking upward past it.
 export function sameLanguageSet(a: string[], b: string[]): boolean {
-  if (a.length !== b.length) return false
   const setA = new Set(a)
-  return b.every((languageId) => setA.has(languageId))
-}
-
-async function getStoredAvailableLanguages(videoId: string): Promise<string[]> {
-  const video = await prisma.video.findUnique({
-    where: { id: videoId },
-    select: { availableLanguages: true }
-  })
-  return video?.availableLanguages ?? []
+  const setB = new Set(b)
+  if (setA.size !== setB.size) return false
+  return [...setA].every((languageId) => setB.has(languageId))
 }
 
 // Updates all parent videos (collections) when a child video's languages
@@ -234,17 +237,27 @@ async function cascadeParentCollectionLanguages(
       continue
     }
 
-    const before = await getStoredAvailableLanguages(parentId)
-    const after = await updateVideoAvailableLanguages(parentId, {
-      skipCache: false,
-      skipAlgolia: false
-    })
-
-    if (!sameLanguageSet(before, after)) {
-      await cascadeParentCollectionLanguages(
+    try {
+      const { before, after } = await updateVideoAvailableLanguages(
         parentId,
-        new Set([...visitedPath, parentId])
+        {
+          skipCache: false,
+          skipAlgolia: false
+        }
       )
+
+      if (!sameLanguageSet(before, after)) {
+        await cascadeParentCollectionLanguages(
+          parentId,
+          new Set([...visitedPath, parentId])
+        )
+      }
+    } catch (error) {
+      logger.error(
+        { videoId: parentId, path: Array.from(visitedPath), error },
+        'Failed to cascade availableLanguages to parent while walking video children/parents relation - abandoning this branch'
+      )
+      continue
     }
   }
 }

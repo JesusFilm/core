@@ -41,6 +41,7 @@ const mockedLoggerError = vi.mocked(logger.error)
 type AvailableLanguagesVideoPayload = Prisma.VideoGetPayload<{
   select: {
     label: true
+    availableLanguages: true
     variants: { select: { languageId: true } }
     children: { select: { availableLanguages: true } }
   }
@@ -93,22 +94,18 @@ function buildFixtureGraph(
     const video = store[args.where.id]
     if (video == null) return Promise.resolve(null)
 
-    // calculateAvailableLanguages' query asks for variants/children;
-    // getStoredAvailableLanguages' query asks for availableLanguages only.
-    if (args.select?.variants != null) {
-      return Promise.resolve({
-        label: 'series',
-        variants: video.variants.map((languageId) => ({ languageId })),
-        children: video.childIds
-          .filter((childId) => store[childId] != null)
-          .map((childId) => ({
-            availableLanguages: store[childId].availableLanguages
-          }))
-      } as unknown as Video)
-    }
-
+    // calculateAvailableLanguages' single query asks for variants/children
+    // (to compute the new value) and availableLanguages (the stored
+    // "before" value) together, in one findUnique.
     return Promise.resolve({
-      availableLanguages: video.availableLanguages
+      label: 'series',
+      availableLanguages: video.availableLanguages,
+      variants: video.variants.map((languageId) => ({ languageId })),
+      children: video.childIds
+        .filter((childId) => store[childId] != null)
+        .map((childId) => ({
+          availableLanguages: store[childId].availableLanguages
+        }))
     } as unknown as Video)
   })
   ;(prismaMock.video.findMany as any).mockImplementation((args: any) => {
@@ -136,6 +133,7 @@ describe('updateVideoAvailableLanguages', () => {
     vi.clearAllMocks()
     mockCalculateAvailableLanguagesQuery({
       label: 'series',
+      availableLanguages: [],
       variants: [],
       children: []
     })
@@ -271,6 +269,10 @@ describe('sameLanguageSet', () => {
   it('treats same-length arrays with different members as different', () => {
     expect(sameLanguageSet(['529', '496'], ['529', '21754'])).toBe(false)
   })
+
+  it('treats arrays as different when a duplicate makes their raw lengths equal but their sets differ', () => {
+    expect(sameLanguageSet(['529', '496'], ['529', '529'])).toBe(false)
+  })
 })
 
 describe('cascading availableLanguages upward to the root', () => {
@@ -357,6 +359,120 @@ describe('cascading availableLanguages upward to the root', () => {
       expect.anything()
     )
   })
+
+  it('walks two independent parent branches to completion, each to its own further ancestor', async () => {
+    // leaf has two direct parents, A and B, each with its own further
+    // ancestor beyond it (A -> A_parent, B -> B_parent). Both branches must
+    // be walked all the way to their respective root independently of one
+    // another.
+    const store = buildFixtureGraph({
+      leaf: {
+        variants: ['529', '496'],
+        childIds: [],
+        availableLanguages: ['529', '496']
+      },
+      A: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      A_parent: {
+        variants: [],
+        childIds: ['A'],
+        availableLanguages: ['529']
+      },
+      B: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      B_parent: {
+        variants: [],
+        childIds: ['B'],
+        availableLanguages: ['529']
+      }
+    })
+
+    await updateParentCollectionLanguages('leaf')
+
+    expect(store.A.availableLanguages.slice().sort()).toEqual(['496', '529'])
+    expect(store.A_parent.availableLanguages.slice().sort()).toEqual([
+      '496',
+      '529'
+    ])
+    expect(store.B.availableLanguages.slice().sort()).toEqual(['496', '529'])
+    expect(store.B_parent.availableLanguages.slice().sort()).toEqual([
+      '496',
+      '529'
+    ])
+    // A, A_parent, B, B_parent - every level on both branches got written.
+    expect(prismaMock.video.update).toHaveBeenCalledTimes(4)
+  })
+
+  it('isolates a failure in one sibling branch so the other sibling still completes', async () => {
+    // Two sibling parents of leaf, A and B. A's update fails; B's branch
+    // must still run to completion rather than being aborted by A's error.
+    const store = buildFixtureGraph({
+      leaf: {
+        variants: ['529', '496'],
+        childIds: [],
+        availableLanguages: ['529', '496']
+      },
+      A: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      B: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] }
+    })
+
+    const storeBackedUpdate = (
+      prismaMock.video.update as unknown as { getMockImplementation: any }
+    ).getMockImplementation()
+
+    ;(prismaMock.video.update as any).mockImplementation((args: any) => {
+      if (args.where.id === 'A') {
+        return Promise.reject(new Error('simulated update failure for A'))
+      }
+      return storeBackedUpdate(args)
+    })
+
+    await expect(
+      updateParentCollectionLanguages('leaf')
+    ).resolves.toBeUndefined()
+
+    // A's failure was caught and logged rather than thrown out of the cascade.
+    expect(mockedLoggerError).toHaveBeenCalledWith(
+      expect.objectContaining({ videoId: 'A' }),
+      expect.any(String)
+    )
+    // A was never actually written, since its update rejected.
+    expect(store.A.availableLanguages).toEqual(['529'])
+    // B's sibling branch still ran to completion, unaffected by A's failure.
+    expect(store.B.availableLanguages.slice().sort()).toEqual(['496', '529'])
+  })
+
+  it('produces a correct final value at a shared grandparent visited via two diamond branches', async () => {
+    // leaf's two direct parents, A and B, both list a shared grandparent C
+    // as their own parent. C is not a cycle - it's visited once per branch
+    // (via A, then via B) - but the cascade must terminate and C's final
+    // availableLanguages must reflect the correct union after both branches
+    // have run.
+    const store = buildFixtureGraph({
+      leaf: {
+        variants: ['529', '496'],
+        childIds: [],
+        availableLanguages: ['529', '496']
+      },
+      A: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      B: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      C: {
+        variants: [],
+        childIds: ['A', 'B'],
+        availableLanguages: ['529']
+      }
+    })
+
+    await expect(
+      updateParentCollectionLanguages('leaf')
+    ).resolves.toBeUndefined()
+
+    expect(store.C.availableLanguages.slice().sort()).toEqual(['496', '529'])
+
+    // C is recomputed once per incoming branch (via A, then via B).
+    const cUpdateCalls = prismaMock.video.update.mock.calls.filter(
+      (call) => (call[0] as any).where.id === 'C'
+    )
+    expect(cUpdateCalls).toHaveLength(2)
+  })
 })
 
 describe('calculateAvailableLanguages via a container with overlapping-language children', () => {
@@ -380,7 +496,7 @@ describe('calculateAvailableLanguages via a container with overlapping-language 
 
     const result = await updateVideoAvailableLanguages('container')
 
-    expect(result).toEqual(['529'])
+    expect(result.after).toEqual(['529'])
   })
 
   it('keeps a language still provided by the sibling that remains', async () => {
@@ -399,6 +515,6 @@ describe('calculateAvailableLanguages via a container with overlapping-language 
 
     const result = await updateVideoAvailableLanguages('container')
 
-    expect(result.slice().sort()).toEqual(['496', '529'])
+    expect(result.after.slice().sort()).toEqual(['496', '529'])
   })
 })
