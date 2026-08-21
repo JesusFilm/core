@@ -26,12 +26,14 @@ import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
 
 import {
   findContainerParentIds,
+  updateParentCollectionLanguages,
   updateVideoAvailableLanguages
 } from './lib/updateAvailableLanguages'
 import { getLanguageIdFromInfo } from './video'
 
 vi.mock('./lib/updateAvailableLanguages', () => ({
   updateVideoAvailableLanguages: vi.fn(),
+  updateParentCollectionLanguages: vi.fn(),
   findContainerParentIds: vi.fn().mockResolvedValue([])
 }))
 
@@ -47,6 +49,9 @@ vi.mock('../../workers/videoAlgoliaSync', () => ({
 }))
 
 const mockedFindContainerParentIds = vi.mocked(findContainerParentIds)
+const mockedUpdateParentCollectionLanguages = vi.mocked(
+  updateParentCollectionLanguages
+)
 const mockedEnqueueVideoAlgoliaSync = vi.mocked(enqueueVideoAlgoliaSync)
 
 describe('video', () => {
@@ -3658,9 +3663,11 @@ describe('video', () => {
 
       beforeEach(() => {
         mockUpdateVideoAvailableLanguages.mockClear()
+        mockedUpdateParentCollectionLanguages.mockClear()
+        mockedUpdateParentCollectionLanguages.mockResolvedValue(undefined)
       })
 
-      it('should fix video languages successfully', async () => {
+      it('should fix video languages successfully and cascade to ancestors', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -3690,6 +3697,17 @@ describe('video', () => {
         expect(mockUpdateVideoAvailableLanguages).toHaveBeenCalledWith(
           'videoId'
         )
+        // The recompute must cascade past the immediate parent, so a leaf's
+        // language change reaches its grandparent too, not just the fixed
+        // video's own value.
+        expect(mockedUpdateParentCollectionLanguages).toHaveBeenCalledWith(
+          'videoId'
+        )
+        expect(
+          mockUpdateVideoAvailableLanguages.mock.invocationCallOrder[0]
+        ).toBeLessThan(
+          mockedUpdateParentCollectionLanguages.mock.invocationCallOrder[0]
+        )
         expect(result).toHaveProperty('data.fixVideoLanguages', true)
       })
 
@@ -3715,6 +3733,7 @@ describe('video', () => {
           select: { id: true }
         })
         expect(mockUpdateVideoAvailableLanguages).not.toHaveBeenCalled()
+        expect(mockedUpdateParentCollectionLanguages).not.toHaveBeenCalled()
         expect(result).toHaveProperty('data', null)
         expect(result).toHaveProperty('errors')
       })
@@ -3729,6 +3748,7 @@ describe('video', () => {
 
         expect(result).toHaveProperty('data', null)
         expect(mockUpdateVideoAvailableLanguages).not.toHaveBeenCalled()
+        expect(mockedUpdateParentCollectionLanguages).not.toHaveBeenCalled()
       })
     })
 

@@ -9,7 +9,10 @@ import { builder } from '../builder'
 import { logger } from '../logger'
 import { handleParentVariantCreation } from '../videoVariant/videoVariant'
 
-import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
+import {
+  updateParentCollectionLanguages,
+  updateVideoAvailableLanguages
+} from './lib/updateAvailableLanguages'
 
 type PublishValidationVideo = {
   id: string
@@ -370,16 +373,31 @@ export async function executeVideoPublishChildren(
   const affectedVideoIds = [
     ...new Set([id, ...videoIdsToPublish, ...variantVideoIds])
   ]
+  // `id` is the parent of every other affected video here (its own
+  // children, published as part of this request); its recompute reads
+  // those children's stored `availableLanguages`, so it must not run until
+  // every child's own recompute has committed. Running the children first,
+  // then the parent, then cascading past the parent avoids racing a
+  // same-request child write - recomputing all of them together in one
+  // `Promise.all` (as before) gave no such ordering guarantee.
+  const childVideoIds = affectedVideoIds.filter((videoId) => videoId !== id)
 
   try {
     await Promise.all(
-      affectedVideoIds.map(async (videoId) => {
-        await updateVideoAvailableLanguages(videoId, {
+      childVideoIds.map((videoId) =>
+        updateVideoAvailableLanguages(videoId, {
           skipAlgolia: true,
           skipCache: true
         })
-      })
+      )
     )
+    await updateVideoAvailableLanguages(id, {
+      skipAlgolia: true,
+      skipCache: true
+    })
+    // Cascade past `id` to any further ancestors (grandparent and beyond),
+    // not just the immediate parent this mutation was called on.
+    await updateParentCollectionLanguages(id)
   } catch (error) {
     logger.error(
       { error, videoIds: affectedVideoIds },
