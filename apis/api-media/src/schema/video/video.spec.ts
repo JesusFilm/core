@@ -3671,7 +3671,10 @@ describe('video', () => {
         prismaMock.video.findUnique.mockResolvedValue({
           id: 'videoId'
         } as any)
-        mockUpdateVideoAvailableLanguages.mockResolvedValue([])
+        mockUpdateVideoAvailableLanguages.mockResolvedValue({
+          before: [],
+          after: []
+        })
 
         const result = await authClient({
           document: FIX_VIDEO_LANGUAGES_MUTATION,
