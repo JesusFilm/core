@@ -238,13 +238,10 @@ async function cascadeParentCollectionLanguages(
     }
 
     try {
-      const { before, after } = await updateVideoAvailableLanguages(
-        parentId,
-        {
-          skipCache: false,
-          skipAlgolia: false
-        }
-      )
+      const { before, after } = await updateVideoAvailableLanguages(parentId, {
+        skipCache: false,
+        skipAlgolia: false
+      })
 
       if (!sameLanguageSet(before, after)) {
         await cascadeParentCollectionLanguages(
