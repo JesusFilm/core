@@ -91,7 +91,7 @@ function installCatalog(
             )))
 
       if (stillMatches && args.data.availableLanguages != null) {
-        video!.availableLanguages = args.data.availableLanguages.set
+        video.availableLanguages = args.data.availableLanguages.set
         return { count: 1 }
       }
       return { count: 0 }
