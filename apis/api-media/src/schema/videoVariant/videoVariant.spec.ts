@@ -2556,6 +2556,11 @@ describe('videoVariant', () => {
           where: { id: 'parent-1' },
           data: { availableLanguages: { set: ['529'] } }
         })
+        // Cascades past the immediate parent so a grandparent is kept in
+        // sync too, regardless of whether the caller cascades itself.
+        expect(mockedUpdateParentCollectionLanguages).toHaveBeenCalledWith(
+          'parent-1'
+        )
       })
 
       it('cleaning up an empty parent variant results in the correct availableLanguages after removal', async () => {
@@ -2614,6 +2619,11 @@ describe('videoVariant', () => {
           where: { id: 'parent-1' },
           data: { availableLanguages: { set: [] } }
         })
+        // Cascades past the immediate parent so a grandparent is kept in
+        // sync too, regardless of whether the caller cascades itself.
+        expect(mockedUpdateParentCollectionLanguages).toHaveBeenCalledWith(
+          'parent-1'
+        )
       })
 
       it('does not locate parents through the childIds scalar array', async () => {

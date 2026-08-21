@@ -133,6 +133,12 @@ async function createEmptyParentVariant(
 
   await updateVideoAvailableLanguages(parentVideoId)
 
+  // Not every caller of handleParentVariantCreation cascades further up the
+  // container hierarchy itself (e.g. a video's own publish-status toggle in
+  // video.ts does not), so cascade from here to keep grandparents in sync
+  // regardless of caller.
+  await updateParentCollectionLanguages(parentVideoId)
+
   return newVariant
 }
 
@@ -293,6 +299,12 @@ async function checkAndRemoveEmptyParentVariant(
     // Let the shared recompute engine derive the parent's availableLanguages
     // from current source data, rather than hand-rolling the array filter.
     await updateVideoAvailableLanguages(parentVideoId)
+
+    // Not every caller of handleParentVariantCleanup cascades further up the
+    // container hierarchy itself (e.g. a video's own publish-status toggle in
+    // video.ts does not), so cascade from here to keep grandparents in sync
+    // regardless of caller.
+    await updateParentCollectionLanguages(parentVideoId)
   }
 }
 
