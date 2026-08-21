@@ -526,8 +526,30 @@ builder.mutationFields((t) => ({
       }
       // Update video's availableLanguages and cascade to parent collections only for published variants
       if (newVariant.published) {
-        await addLanguageToVideo(newVariant.videoId, newVariant.languageId)
-        await updateParentCollectionLanguages(newVariant.videoId)
+        try {
+          await addLanguageToVideo(newVariant.videoId, newVariant.languageId)
+          await updateParentCollectionLanguages(newVariant.videoId)
+        } catch (error) {
+          logger.error(
+            {
+              error,
+              variantId: newVariant.id,
+              videoId: newVariant.videoId,
+              languageId: newVariant.languageId
+            },
+            'Language management update error'
+          )
+          notifyMediaSlackOfOperationFailure({
+            operation: 'Video variant language update failed',
+            error,
+            context: {
+              variantId: newVariant.id,
+              videoId: newVariant.videoId,
+              languageId: newVariant.languageId,
+              published: newVariant.published
+            }
+          })
+        }
       }
 
       try {
