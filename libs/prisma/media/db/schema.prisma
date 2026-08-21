@@ -181,7 +181,7 @@ model Video {
   images                    CloudflareImage[]
   cloudflareAssets          CloudflareR2[]
   videoEditions             VideoEdition[]
-  availableLanguages        String[]
+  availableLanguages        String[]                     @default([])
   origin                    VideoOrigin?                 @relation(fields: [originId], references: [id])
   originId                  String?
   restrictDownloadPlatforms Platform[]                   @default([])
@@ -196,6 +196,7 @@ model Video {
   @@index(published(type: Hash))
   @@index(originId(type: Hash))
   @@index([updatedAt, id])
+  @@index([availableLanguages], type: Gin)
 }
 
 model VideoTitle {
