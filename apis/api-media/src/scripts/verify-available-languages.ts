@@ -4,10 +4,18 @@
 // results into one summary. Used by both the on-demand CLI entrypoint
 // (run-verify-available-languages.ts) and the scheduled worker
 // (workers/verifyAvailableLanguages).
+//
+// The graph (level assignment + unresolved ids) is computed once here and
+// reused across every call this run makes, rather than each call rederiving
+// it from scratch -- a catalog with N videos and a pageSize of P would
+// otherwise pay for the graph load and topological sort N/P times per run.
+// See computeAvailableLanguagesGraph and the `graph` option for what a
+// fixed-per-run graph trades away.
 import { Logger } from 'pino'
 
 import {
   VerifyAvailableLanguagesCursor,
+  computeAvailableLanguagesGraph,
   verifyAvailableLanguages
 } from '../schema/video/lib/verifyAvailableLanguages'
 
@@ -40,6 +48,7 @@ export async function runVerifyAvailableLanguages(
   logger?: Logger
 ): Promise<RunVerifyAvailableLanguagesResult> {
   const maxCalls = options.maxCalls ?? DEFAULT_MAX_CALLS
+  const graph = await computeAvailableLanguagesGraph()
 
   let cursor: VerifyAvailableLanguagesCursor | null = null
   let checked = 0
@@ -52,7 +61,8 @@ export async function runVerifyAvailableLanguages(
     const result = await verifyAvailableLanguages({
       fix: options.fix,
       pageSize: options.pageSize,
-      cursor
+      cursor,
+      graph
     })
 
     checked += result.checked

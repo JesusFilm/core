@@ -1,18 +1,28 @@
 import { vi } from 'vitest'
 
-import { verifyAvailableLanguages } from '../schema/video/lib/verifyAvailableLanguages'
+import {
+  computeAvailableLanguagesGraph,
+  verifyAvailableLanguages
+} from '../schema/video/lib/verifyAvailableLanguages'
 
 import { runVerifyAvailableLanguages } from './verify-available-languages'
 
 vi.mock('../schema/video/lib/verifyAvailableLanguages', () => ({
-  verifyAvailableLanguages: vi.fn()
+  verifyAvailableLanguages: vi.fn(),
+  computeAvailableLanguagesGraph: vi.fn()
 }))
 
 const mockedVerifyAvailableLanguages = vi.mocked(verifyAvailableLanguages)
+const mockedComputeAvailableLanguagesGraph = vi.mocked(
+  computeAvailableLanguagesGraph
+)
+
+const graph = { levels: [['a', 'b']], unresolvedVideoIds: [] }
 
 describe('runVerifyAvailableLanguages', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockedComputeAvailableLanguagesGraph.mockResolvedValue(graph)
   })
 
   it('makes a single call and returns completed when the walk finishes immediately', async () => {
@@ -30,7 +40,8 @@ describe('runVerifyAvailableLanguages', () => {
     expect(mockedVerifyAvailableLanguages).toHaveBeenCalledWith({
       fix: undefined,
       pageSize: undefined,
-      cursor: null
+      cursor: null,
+      graph
     })
     expect(result).toEqual({
       checked: 3,
@@ -39,6 +50,29 @@ describe('runVerifyAvailableLanguages', () => {
       unresolvedVideoIds: [],
       completed: true
     })
+  })
+
+  it('computes the graph once per run regardless of how many calls the walk takes', async () => {
+    mockedVerifyAvailableLanguages
+      .mockResolvedValueOnce({
+        checked: 2,
+        mismatches: [],
+        fixed: [],
+        unresolvedVideoIds: [],
+        nextCursor: { level: 0, afterId: 'b' }
+      })
+      .mockResolvedValueOnce({
+        checked: 1,
+        mismatches: [],
+        fixed: [],
+        unresolvedVideoIds: [],
+        nextCursor: null
+      })
+
+    await runVerifyAvailableLanguages()
+
+    expect(mockedComputeAvailableLanguagesGraph).toHaveBeenCalledTimes(1)
+    expect(mockedVerifyAvailableLanguages).toHaveBeenCalledTimes(2)
   })
 
   it('threads the cursor through repeated calls until the walk completes', async () => {
@@ -64,12 +98,14 @@ describe('runVerifyAvailableLanguages', () => {
     expect(mockedVerifyAvailableLanguages).toHaveBeenNthCalledWith(1, {
       fix: true,
       pageSize: undefined,
-      cursor: null
+      cursor: null,
+      graph
     })
     expect(mockedVerifyAvailableLanguages).toHaveBeenNthCalledWith(2, {
       fix: true,
       pageSize: undefined,
-      cursor: { level: 0, afterId: 'b' }
+      cursor: { level: 0, afterId: 'b' },
+      graph
     })
     expect(result).toEqual({
       checked: 3,

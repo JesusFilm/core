@@ -15,7 +15,19 @@ import { runVerifyAvailableLanguages } from './verify-available-languages'
 async function main(): Promise<void> {
   const fix = process.argv.includes('--fix')
   const result = await runVerifyAvailableLanguages({ fix }, logger)
-  logger.info({ result }, 'availableLanguages verification result')
+  // Log summary fields rather than the full result -- unresolvedVideoIds is
+  // unbounded and would otherwise dump one line per stuck video into
+  // structured logs.
+  logger.info(
+    {
+      checked: result.checked,
+      mismatchCount: result.mismatchCount,
+      fixedCount: result.fixedCount,
+      unresolvedCount: result.unresolvedVideoIds.length,
+      completed: result.completed
+    },
+    'availableLanguages verification result'
+  )
 }
 
 main().catch((error) => {

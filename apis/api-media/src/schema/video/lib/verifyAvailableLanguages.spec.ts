@@ -2,6 +2,7 @@ import { prismaMock } from '../../../../test/prismaMock'
 
 import {
   VerifyAvailableLanguagesCursor,
+  computeAvailableLanguagesGraph,
   verifyAvailableLanguages
 } from './verifyAvailableLanguages'
 
@@ -71,16 +72,29 @@ function installCatalog(
       })
     }
   )
-  ;(prismaMock.video.update as any).mockImplementation(
+  ;(prismaMock.video.updateMany as any).mockImplementation(
     async (args: {
-      where: { id: string }
+      where: {
+        id: string
+        availableLanguages?: { equals?: string[] }
+      }
       data: { availableLanguages?: { set: string[] } }
     }) => {
       const video = db.get(args.where.id)
-      if (video != null && args.data.availableLanguages != null) {
-        video.availableLanguages = args.data.availableLanguages.set
+      const expectedStored = args.where.availableLanguages?.equals
+      const stillMatches =
+        video != null &&
+        (expectedStored == null ||
+          (video.availableLanguages.length === expectedStored.length &&
+            video.availableLanguages.every(
+              (languageId, index) => languageId === expectedStored[index]
+            )))
+
+      if (stillMatches && args.data.availableLanguages != null) {
+        video!.availableLanguages = args.data.availableLanguages.set
+        return { count: 1 }
       }
-      return {}
+      return { count: 0 }
     }
   )
 
@@ -113,7 +127,7 @@ describe('verifyAvailableLanguages', () => {
     expect(result.nextCursor).toBeNull()
     // report-only mode must not write anything back
     expect(db.get('parent')?.availableLanguages).toEqual([])
-    expect(prismaMock.video.update).not.toHaveBeenCalled()
+    expect(prismaMock.video.updateMany).not.toHaveBeenCalled()
   })
 
   it('does not report a video whose stored value already matches the computed one', async () => {
@@ -311,5 +325,83 @@ describe('verifyAvailableLanguages', () => {
     )
     expect(ownDataCall[0].cursor).toEqual({ id: 'a' })
     expect(ownDataCall[0].skip).toBe(1)
+  })
+
+  it('rejects a non-positive pageSize instead of looping forever with no progress', async () => {
+    await expect(verifyAvailableLanguages({ pageSize: 0 })).rejects.toThrow(
+      /pageSize must be a positive integer/
+    )
+    await expect(verifyAvailableLanguages({ pageSize: -5 })).rejects.toThrow(
+      /pageSize must be a positive integer/
+    )
+  })
+
+  it('reuses a precomputed graph instead of re-deriving it from the catalog', async () => {
+    installCatalog({
+      child: {
+        availableLanguages: ['529'],
+        variantLanguageIds: ['529'],
+        childIds: []
+      },
+      parent: {
+        availableLanguages: [],
+        variantLanguageIds: [],
+        childIds: ['child']
+      }
+    })
+
+    const graph = await computeAvailableLanguagesGraph()
+    ;(prismaMock.video.findMany as any).mockClear()
+
+    const result = await verifyAvailableLanguages({ graph })
+
+    expect(result.mismatches).toEqual([
+      { videoId: 'parent', stored: [], computed: ['529'] }
+    ])
+    // No graph-shape query (a findMany with no `where`) this time -- only
+    // the per-level own-data queries.
+    const graphShapeCalls = (
+      prismaMock.video.findMany as any
+    ).mock.calls.filter((call: any[]) => call[0]?.where?.id?.in == null)
+    expect(graphShapeCalls).toEqual([])
+  })
+
+  it('does not overwrite a value changed by a concurrent write since it was read', async () => {
+    const db = installCatalog({
+      child: {
+        availableLanguages: ['529'],
+        variantLanguageIds: ['529'],
+        childIds: []
+      },
+      parent: {
+        availableLanguages: [],
+        variantLanguageIds: [],
+        childIds: ['child']
+      }
+    })
+
+    // Simulate a concurrent publish landing on `parent` between this
+    // verifier's read and its guarded write: by the time the guarded
+    // update runs, the row no longer holds the value the verifier read.
+    ;(prismaMock.video.updateMany as any).mockImplementation(
+      async (args: { where: { id: string } }) => {
+        if (args.where.id === 'parent') {
+          db.get('parent')!.availableLanguages = ['21028']
+          return { count: 0 }
+        }
+        return { count: 1 }
+      }
+    )
+
+    const result = await verifyAvailableLanguages({ fix: true })
+
+    expect(result.mismatches).toEqual([
+      { videoId: 'parent', stored: [], computed: ['529'] }
+    ])
+    // Not fixed -- the guarded update's WHERE no longer matched once the
+    // concurrent write landed, so the correction was skipped rather than
+    // clobbering it.
+    expect(result.fixed).toEqual([])
+    expect(db.get('parent')?.availableLanguages).toEqual(['21028'])
   })
 })

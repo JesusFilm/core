@@ -31,6 +31,14 @@
 // forever -- and every id like that is reported in `unresolvedVideoIds` for
 // separate investigation/repair; it is never included in `checked`, and
 // never compared or fixed.
+//
+// The graph (level assignment + unresolved ids) is derived fresh from the
+// children/parents relation on every call by default -- cheap on its own
+// (ids only), but repeating it for every page of a large catalog is
+// wasteful. A caller that already knows the graph for this run (the
+// runVerifyAvailableLanguages driver does) can pass it in via the `graph`
+// option to skip that recomputation; see the note on `graph` below for what
+// that trades away.
 
 import { prisma } from '@core/prisma/media/client'
 
@@ -43,9 +51,31 @@ export interface AvailableLanguagesMismatch {
 // Identifies where a paginated walk left off: the level index being
 // processed, and the last video id already handled within that level (null
 // means "start of the level").
+//
+// This cursor is only meaningful relative to a specific graph. Level
+// membership is derived from the children/parents relation, so if a video
+// is published, unpublished, or reparented between the call that produced
+// this cursor and the call resuming from it, level membership can shift
+// under the cursor -- resuming can then skip a video or re-check one
+// already covered. Two cases in practice:
+// - Calling verifyAvailableLanguages() directly across multiple calls
+//   without passing `graph`: each call re-derives the graph fresh, so this
+//   is a real (if narrow) risk. Full coverage is only guaranteed for a walk
+//   that completes within one stable window.
+// - Calling it via the graph option (as runVerifyAvailableLanguages does):
+//   the graph is fixed for the whole run, so the cursor's meaning can't
+//   drift mid-run -- but the run also won't notice a structural change
+//   until its next fresh run picks up a new graph.
 export interface VerifyAvailableLanguagesCursor {
   level: number
   afterId: string | null
+}
+
+// The topologically-ordered levels (bottom-up: leaves first) and the ids
+// the walk can never reach, as computed by computeAvailableLanguagesGraph.
+export interface AvailableLanguagesGraph {
+  levels: string[][]
+  unresolvedVideoIds: string[]
 }
 
 export interface VerifyAvailableLanguagesOptions {
@@ -60,6 +90,14 @@ export interface VerifyAvailableLanguagesOptions {
   // smaller value to force multi-call pagination (as a large catalog would
   // hit naturally).
   pageSize?: number
+  // Reuse a graph computed by an earlier call in the same run instead of
+  // deriving it again from the children/parents relation. Passing this in
+  // turns a multi-call walk from one graph load per page into one per run,
+  // at the cost of that run no longer reacting to videos published,
+  // unpublished, or reparented after the graph was computed -- see the
+  // caveat on VerifyAvailableLanguagesCursor. Omit to derive the graph
+  // fresh, as every call did before this option existed.
+  graph?: AvailableLanguagesGraph
 }
 
 export interface VerifyAvailableLanguagesResult {
@@ -72,8 +110,10 @@ export interface VerifyAvailableLanguagesResult {
   // populated when `fix: true`.
   fixed: string[]
   // Video ids the walk could not reach because they sit on a cycle in the
-  // children/parents relation, or depend on one. Recomputed fresh on every
-  // call (cheap -- it only needs ids), regardless of pagination progress.
+  // children/parents relation, or depend on one. Derived from the graph for
+  // this call -- fresh every time by default, or fixed for the run when the
+  // caller supplied `graph` (see the `graph` option) -- regardless of
+  // pagination progress.
   unresolvedVideoIds: string[]
   // Pass this back in to continue the walk. Null means the whole catalog
   // (everything reachable, i.e. everything not in unresolvedVideoIds) has
@@ -91,18 +131,15 @@ function sameLanguageSet(a: string[], b: string[]): boolean {
   return b.every((languageId) => setA.has(languageId))
 }
 
-export async function verifyAvailableLanguages(
-  options: VerifyAvailableLanguagesOptions = {}
-): Promise<VerifyAvailableLanguagesResult> {
-  const pageSize = options.pageSize ?? DEFAULT_PAGE_SIZE
-  const startLevel = options.cursor?.level ?? 0
-  let afterId = options.cursor?.afterId ?? null
-
-  // One lightweight query for the whole catalog's shape -- id and live
-  // (published) children ids only. This is what determines processing
-  // order and can't be discovered any other way, but it's a single round
-  // trip returning ids alone, not the heavier per-video data (variants,
-  // stored availableLanguages) fetched in bounded pages below.
+// Derives the topologically-ordered levels (Kahn's algorithm over the
+// children/parents relation) and the ids the walk can never reach. This is
+// a single lightweight query for the whole catalog's shape -- id and live
+// (published) children ids only, not the heavier per-video data (variants,
+// stored availableLanguages) fetched in bounded pages by verifyAvailableLanguages
+// itself. Exported so a multi-call driver can compute it once per run and
+// pass it to every call via the `graph` option, instead of paying for this
+// on every page.
+export async function computeAvailableLanguagesGraph(): Promise<AvailableLanguagesGraph> {
   const graphNodes = await prisma.video.findMany({
     select: {
       id: true,
@@ -149,6 +186,22 @@ export async function verifyAvailableLanguages(
   const unresolvedVideoIds = graphNodes
     .map((node) => node.id)
     .filter((id) => !resolvedIds.has(id))
+
+  return { levels, unresolvedVideoIds }
+}
+
+export async function verifyAvailableLanguages(
+  options: VerifyAvailableLanguagesOptions = {}
+): Promise<VerifyAvailableLanguagesResult> {
+  const pageSize = options.pageSize ?? DEFAULT_PAGE_SIZE
+  if (!Number.isInteger(pageSize) || pageSize < 1) {
+    throw new Error(`pageSize must be a positive integer, received ${pageSize}`)
+  }
+  const startLevel = options.cursor?.level ?? 0
+  let afterId = options.cursor?.afterId ?? null
+
+  const { levels, unresolvedVideoIds } =
+    options.graph ?? (await computeAvailableLanguagesGraph())
 
   const mismatches: AvailableLanguagesMismatch[] = []
   const fixed: string[] = []
@@ -203,11 +256,23 @@ export async function verifyAvailableLanguages(
         })
 
         if (options.fix) {
-          await prisma.video.update({
-            where: { id: video.id },
+          // Guard against a concurrent publish/unpublish landing between
+          // this read and this write: only apply the correction if
+          // availableLanguages still holds the exact value we just read
+          // it as. If it doesn't, some other write already changed it out
+          // from under us -- leave it alone rather than clobbering
+          // whatever that write produced; the next verification pass will
+          // re-check it against its now-current state.
+          const updateResult = await prisma.video.updateMany({
+            where: {
+              id: video.id,
+              availableLanguages: { equals: video.availableLanguages }
+            },
             data: { availableLanguages: { set: computed } }
           })
-          fixed.push(video.id)
+          if (updateResult.count > 0) {
+            fixed.push(video.id)
+          }
         }
       }
     }
