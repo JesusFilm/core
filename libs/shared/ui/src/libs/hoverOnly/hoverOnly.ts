@@ -20,6 +20,15 @@ export interface HoverOnlyStyles {
  *
  * Hybrid devices (an iPad with a trackpad, a touchscreen laptop) report
  * `hover: hover`, so a tap there can still leave a stale highlight. Accepted.
+ *
+ * Two hazards to know about, both silent:
+ *
+ * - The returned object's only key is `@media (hover: hover)`, so spreading two
+ *   `hoverOnly()` results into the same style object makes the second replace
+ *   the first. Merge the styles into a single call instead.
+ * - Pairing this with a hand-written `&:hover` in the same object does *not*
+ *   collide - the two keys differ, so both apply and the hand-written block
+ *   stays unguarded. Route every hover style for an element through here.
  */
 export function hoverOnly(styles: CSSObject): HoverOnlyStyles {
   return {

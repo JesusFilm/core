@@ -15,36 +15,23 @@ import {
   getPollOptionBorderStyles
 } from '../utils/getPollOptionBorderStyles'
 
-const StyledListRadioQuestion = styled(Box)<BoxProps>(({ theme }) => {
-  const borderColors = getPollOptionBorderColors(theme)
-  const optionBorderStyles = {
-    ...getPollOptionBorderStyles(theme),
-    ...hoverOnly({ borderColor: borderColors.hover }),
-    '&:active': { borderColor: borderColors.active },
-    '&.disabled': { borderColor: borderColors.disabled }
-  }
-
-  return {
-    marginBottom: theme.spacing(4),
-    '& .MuiButtonGroup-root': {
-      boxShadow: 'none',
-      gap: theme.spacing(2),
-      '& .MuiButtonGroup-grouped': {
-        border: 'none',
-        borderBottom: 'none',
-        borderRight: 'none',
-        borderRadius: '12px',
-        margin: '0 !important',
-        '&:not(:last-of-type)': {
-          borderBottom: 'none'
-        },
-        '& .MuiButtonGroup-firstButton': optionBorderStyles,
-        '& .MuiButtonGroup-middleButton': optionBorderStyles,
-        '& .MuiButtonGroup-lastButton': optionBorderStyles
+const StyledListRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
+  marginBottom: theme.spacing(4),
+  '& .MuiButtonGroup-root': {
+    boxShadow: 'none',
+    gap: theme.spacing(2),
+    '& .MuiButtonGroup-grouped': {
+      border: 'none',
+      borderBottom: 'none',
+      borderRight: 'none',
+      borderRadius: '12px',
+      margin: '0 !important',
+      '&:not(:last-of-type)': {
+        borderBottom: 'none'
       }
     }
   }
-})
+}))
 
 const adminPrimaryColor = adminTheme.palette
   .primary as SimplePaletteColorOptions
@@ -88,8 +75,7 @@ export function ListVariant({
                   borderBottomRightRadius: 8,
                   ...getPollOptionBorderStyles(theme, { important: true }),
                   ...hoverOnly({ borderColor: borderColors.hover }),
-                  '&:active': { borderColor: borderColors.active },
-                  '&.disabled': { borderColor: borderColors.disabled }
+                  '&:active': { borderColor: borderColors.active }
                 }
               }}
             >

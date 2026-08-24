@@ -6,8 +6,11 @@ import { hoverOnly } from '.'
  * after a card transition - cannot make poll and multiselect options read as
  * already-selected (NES-1894).
  *
- * These tests pin the wrapper shape: if the media query is ever simplified
- * away, the bug returns silently.
+ * Scope: these tests pin this helper's return shape only. They do not reach the
+ * call sites, so they will not catch a component reverting to a bare `&:hover`
+ * (how the bug returned after #1793), nor a guarded block being clobbered by a
+ * second `@media (hover: hover)` spread. Catching either needs an assertion on
+ * emitted CSS, which this repo has no precedent for.
  */
 describe('hoverOnly', () => {
   it('should wrap styles in a hover media query', () => {
