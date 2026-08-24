@@ -149,9 +149,7 @@ describe('GuestPreviewScreen', () => {
 
   it('includes journey customize URL for next screen in redirect', () => {
     render(
-      <JourneyProvider
-        value={{ journey: { ...journey, id: 'journey-123' } as never }}
-      >
+      <JourneyProvider value={{ journey: { ...journey, id: 'journey-123' } }}>
         <GuestPreviewScreen screens={defaultScreens} />
       </JourneyProvider>
     )

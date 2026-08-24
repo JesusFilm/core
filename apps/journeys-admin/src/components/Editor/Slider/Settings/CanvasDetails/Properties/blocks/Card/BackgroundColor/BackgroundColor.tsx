@@ -114,13 +114,12 @@ export function BackgroundColor({
   )
   const { t } = useTranslation('apps-journeys-admin')
 
-  const cardBlock = (
+  const cardBlock =
     selectedBlock?.__typename === 'CardBlock'
       ? selectedBlock
       : selectedBlock?.children.find(
           (child) => child.__typename === 'CardBlock'
         )
-  ) as TreeBlock<CardFields> | undefined
 
   const cardTheme = getTheme({
     themeName: cardBlock?.themeName ?? journey?.themeName ?? ThemeName.base,

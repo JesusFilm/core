@@ -105,7 +105,10 @@ export function getCardMetadata(
       // Use posterBlockId image or default poster image on video
       posterBlockImage ??
       (priorityBlock?.mediaVideo?.__typename === 'Video'
-        ? (priorityBlock?.mediaVideo?.images[0]?.mobileCinematicHigh as string)
+        ? // ESLint's projectService and the type-check/build tsconfig resolve
+          // different type info here; tsc still needs this assertion.
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+          (priorityBlock?.mediaVideo?.images[0]?.mobileCinematicHigh as string)
         : (priorityBlock.image ?? undefined))
 
     return {

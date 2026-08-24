@@ -71,13 +71,12 @@ export function BackgroundMedia(): ReactElement {
   const [deleteBlock] = useCoverBlockDeleteMutation()
   const [restoreBlock] = useCoverBlockRestoreMutation()
 
-  const cardBlock = (
+  const cardBlock =
     selectedBlock?.__typename === 'CardBlock'
       ? selectedBlock
       : selectedBlock?.children.find(
           (child) => child.__typename === 'CardBlock'
         )
-  ) as TreeBlock<CardBlock> | undefined
   const coverBlock = cardBlock?.children.find(
     (child) => child.id === cardBlock?.coverBlockId
   ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock> | undefined
