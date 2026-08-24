@@ -16,6 +16,7 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { MessagePlatform } from '../../../../../../../../../../__generated__/globalTypes'
 import { JourneyChatButtonUpdate } from '../../../../../../../../../../__generated__/JourneyChatButtonUpdate'
+import { normalizeChatButtonLink } from '../../../../../../../../../libs/normalizeChatButtonLink'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 import { messagePlatformToLabel } from '../../../../../../../../VisitorInfo/VisitorJourneysList/utils/messagePlatformToLabel'
 import { getMessagePlatformOptions } from '../../utils/getMessagePlatformOptions'
@@ -81,13 +82,7 @@ export function Details({
     if (chatButtonId == null) return
 
     if (type === 'link') {
-      const hasProtocolPrefix = /^\w+:\/\//
-      const newLink =
-        value === ''
-          ? ''
-          : hasProtocolPrefix.test(value ?? '')
-            ? (value ?? '')
-            : `https://${value}`
+      const newLink = normalizeChatButtonLink(value)
       const oldLink = currentLink
 
       add({
