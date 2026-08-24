@@ -99,8 +99,8 @@ export function useJourneyEventsExport(): {
   }: Pick<GetJourneyEventsVariables, 'journeyId' | 'filter'>): Promise<void> {
     const events: JourneyEventEdge[] = []
     let cursor: string | null = null
-    let hasNextPage = false
-    let total = 0
+    let hasNextPage: boolean
+    let total: number
 
     const filterTypenames = filter?.typenames ?? []
     const typenames =
@@ -175,9 +175,8 @@ export function useJourneyEventsExport(): {
           }
         }
       })
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
-      throw new Error(t('Failed to retrieve data for export.'))
+      throw new Error(t('Failed to retrieve data for export.'), { cause: e })
     } finally {
       setDownloading(false)
     }

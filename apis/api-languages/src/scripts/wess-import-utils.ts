@@ -218,8 +218,8 @@ export function extractWessRowArray(
       return extractWessRowArray(inner, isSingleRow)
     }
 
-    if (isSingleRow(record as WessRawRow)) {
-      return [record as WessRawRow]
+    if (isSingleRow(record)) {
+      return [record]
     }
 
     const keys = Object.keys(record).slice(0, 25).join(', ')

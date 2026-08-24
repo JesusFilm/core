@@ -94,7 +94,7 @@ export async function findOrFetchUser(
     emailVerified
   }
 
-  let user: User | null = null
+  let user: User | null
   let retry = 0
   let userCreated = false
   // this function can run in parallel as such it is possible for multiple

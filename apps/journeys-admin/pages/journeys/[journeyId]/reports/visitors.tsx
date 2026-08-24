@@ -407,7 +407,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
   if (redirect != null) return { redirect }
 
-  let journey: Journey | null = null
+  let journey: Journey | null
 
   try {
     const { data } = await apolloClient.query<GetAdminJourney>({

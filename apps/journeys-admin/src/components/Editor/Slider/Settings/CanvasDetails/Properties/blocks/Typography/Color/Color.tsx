@@ -63,7 +63,7 @@ export function Color(): ReactElement {
 
   const card = selectedStep?.children.find(
     (block) => block.__typename === 'CardBlock'
-  ) as TreeBlock<CardBlock> | undefined
+  )
 
   function enumToHex(enumColor: TypographyColor | null): string {
     const theme = getTheme({

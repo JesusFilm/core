@@ -215,6 +215,9 @@ async function browseAlgoliaVideoVariantObjectsBatch({
   batchSize: number
   languageId: string | null | undefined
 }): Promise<{ hits: Array<Record<string, unknown>>; cursor: string | null }> {
+  // ESLint's projectService and the type-check/build tsconfig resolve
+  // different type info here; tsc still needs this assertion.
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const client = getAlgoliaClient() as AlgoliaClientWithVariantBatch
   const algoliaConfig = getAlgoliaConfig()
   const body =
@@ -441,15 +444,17 @@ builder.queryFields((t) => ({
 
         if (variants.length > 0) {
           try {
-            const response = await (
-              client as AlgoliaClientWithVariantBatch
-            ).getObjects({
-              requests: variants.map((variant) => ({
-                indexName: algoliaConfig.videoVariantsIndex,
-                objectID: variant.id,
-                attributesToRetrieve: VARIANT_INDEX_STALE_ATTRIBUTES
-              }))
-            })
+            const response =
+              await // ESLint's projectService and the type-check/build tsconfig resolve
+              // different type info here; tsc still needs this assertion.
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+              (client as AlgoliaClientWithVariantBatch).getObjects({
+                requests: variants.map((variant) => ({
+                  indexName: algoliaConfig.videoVariantsIndex,
+                  objectID: variant.id,
+                  attributesToRetrieve: VARIANT_INDEX_STALE_ATTRIBUTES
+                }))
+              })
 
             const results = Array.isArray(response.results)
               ? response.results
@@ -758,15 +763,17 @@ builder.queryFields((t) => ({
 
       if (variants.length > 0) {
         try {
-          const response = await (
-            client as AlgoliaClientWithVariantBatch
-          ).getObjects({
-            requests: variants.map((variant) => ({
-              indexName: algoliaConfig.videoVariantsIndex,
-              objectID: variant.id,
-              attributesToRetrieve: VARIANT_INDEX_ID_ATTRIBUTES
-            }))
-          })
+          const response =
+            await // ESLint's projectService and the type-check/build tsconfig resolve
+            // different type info here; tsc still needs this assertion.
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+            (client as AlgoliaClientWithVariantBatch).getObjects({
+              requests: variants.map((variant) => ({
+                indexName: algoliaConfig.videoVariantsIndex,
+                objectID: variant.id,
+                attributesToRetrieve: VARIANT_INDEX_ID_ATTRIBUTES
+              }))
+            })
           const results = Array.isArray(response.results)
             ? response.results
             : []

@@ -79,7 +79,7 @@ export async function importMuxVideos(mux: Mux): Promise<void> {
     for (const variant of variants) {
       console.log(`Importing mux video for variant ${variant.id}`)
       await new Promise((resolve) => setTimeout(resolve, 2000)) // wait 2 sec to avoid rate limit
-      let muxVideoId: string | null = null
+      let muxVideoId: string | null
       try {
         muxVideoId = await createMuxAsset(variant.masterUrl as string, mux)
       } catch (error) {
@@ -174,7 +174,7 @@ export async function updateHls(mux: Mux): Promise<void> {
       console.log(`Attempting to update hls for variant ${variant.id}`)
       await new Promise((resolve) => setTimeout(resolve, 2000)) // wait 2 sec to avoid rate limit
 
-      let muxVideo: Mux.Video.Asset | null = null
+      let muxVideo: Mux.Video.Asset | null
       try {
         muxVideo = await mux.video.assets.retrieve(
           variant.muxVideo?.assetId as string
