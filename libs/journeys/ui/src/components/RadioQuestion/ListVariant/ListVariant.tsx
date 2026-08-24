@@ -5,38 +5,46 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
+import { hoverOnly } from '@core/shared/ui/hoverOnly'
 import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { StyledListRadioOption } from '../../RadioOption/ListVariant'
-import { getPollOptionBorderStyles } from '../utils/getPollOptionBorderStyles'
+import {
+  getPollOptionBorderColors,
+  getPollOptionBorderStyles
+} from '../utils/getPollOptionBorderStyles'
 
-const StyledListRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
-  marginBottom: theme.spacing(4),
-  '& .MuiButtonGroup-root': {
-    boxShadow: 'none',
-    gap: theme.spacing(2),
-    '& .MuiButtonGroup-grouped': {
-      border: 'none',
-      borderBottom: 'none',
-      borderRight: 'none',
-      borderRadius: '12px',
-      margin: '0 !important',
-      '&:not(:last-of-type)': {
-        borderBottom: 'none'
-      },
-      '& .MuiButtonGroup-firstButton': {
-        ...getPollOptionBorderStyles(theme)
-      },
-      '& .MuiButtonGroup-middleButton': {
-        ...getPollOptionBorderStyles(theme)
-      },
-      '& .MuiButtonGroup-lastButton': {
-        ...getPollOptionBorderStyles(theme)
+const StyledListRadioQuestion = styled(Box)<BoxProps>(({ theme }) => {
+  const borderColors = getPollOptionBorderColors(theme)
+  const optionBorderStyles = {
+    ...getPollOptionBorderStyles(theme),
+    ...hoverOnly({ borderColor: borderColors.hover }),
+    '&:active': { borderColor: borderColors.active },
+    '&.disabled': { borderColor: borderColors.disabled }
+  }
+
+  return {
+    marginBottom: theme.spacing(4),
+    '& .MuiButtonGroup-root': {
+      boxShadow: 'none',
+      gap: theme.spacing(2),
+      '& .MuiButtonGroup-grouped': {
+        border: 'none',
+        borderBottom: 'none',
+        borderRight: 'none',
+        borderRadius: '12px',
+        margin: '0 !important',
+        '&:not(:last-of-type)': {
+          borderBottom: 'none'
+        },
+        '& .MuiButtonGroup-firstButton': optionBorderStyles,
+        '& .MuiButtonGroup-middleButton': optionBorderStyles,
+        '& .MuiButtonGroup-lastButton': optionBorderStyles
       }
     }
   }
-}))
+})
 
 const adminPrimaryColor = adminTheme.palette
   .primary as SimplePaletteColorOptions
@@ -70,11 +78,20 @@ export function ListVariant({
                 <AddSquare4Icon sx={{ color: `${adminPrimaryColor.main}` }} />
               }
               onClick={addOption}
-              sx={(theme) => ({
-                borderBottomLeftRadius: 8,
-                borderBottomRightRadius: 8,
-                ...getPollOptionBorderStyles(theme, { important: true })
-              })}
+              sx={(theme) => {
+                const borderColors = getPollOptionBorderColors(theme, {
+                  important: true
+                })
+
+                return {
+                  borderBottomLeftRadius: 8,
+                  borderBottomRightRadius: 8,
+                  ...getPollOptionBorderStyles(theme, { important: true }),
+                  ...hoverOnly({ borderColor: borderColors.hover }),
+                  '&:active': { borderColor: borderColors.active },
+                  '&.disabled': { borderColor: borderColors.disabled }
+                }
+              }}
             >
               <Typography variant="body1">{t('Add Option')}</Typography>
             </StyledListRadioOption>
