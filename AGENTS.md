@@ -1,6 +1,6 @@
 ## Before you push
 
-**Asked to push? Run `pnpm lint:changed --fix` first, commit anything it changes, and push that in the same go.** Never push without it.
+**Asked to push? Run `pnpm lint:changed --fix` first, commit anything it changes, type-check the affected projects, and push that in the same go.** Never push without it.
 
 It applies the same fixes [autofix.ci](https://autofix.ci) would otherwise commit to your PR afterwards — formatting, lint fixes, translation extraction. They are generated output, so they belong in your commit, not in a bot commit on top of it. There is no pre-push hook and nothing will stop you: if you skip this, the bot does it for you and the PR grows a `fix: lint issues` commit. Details in [Lint before push](#lint-before-push-agents).
 
@@ -55,6 +55,11 @@ if [ -n "$(git status --porcelain)" ]; then
   git commit --no-verify -m "chore: lint fixes" || { echo "could not commit generated fixes; aborting push"; exit 1; }
 fi
 
+# Type-check what the branch touched — CI's lint-work job runs this exact
+# target, and lint:changed cannot catch type errors (see below).
+git fetch origin main --quiet || true
+pnpm exec nx affected --target=type-check --base=origin/main || { echo "type-check failed — either real type errors above, or an environment gap (origin/main unfetched, node_modules not installed in this worktree)"; exit 1; }
+
 git push
 ```
 
@@ -78,7 +83,9 @@ Not covered locally: **`codegen`** is the one autofix.ci step that can still com
 
 It is deliberately not gated, because it only works where `apollo` is already installed globally. The devcontainer installs it in [`post-create-command.sh`](.devcontainer/post-create-command.sh) (`npm i -g nx foreman apollo graphql`) and autofix.ci does the same, which is why it works in both. On a plain host checkout `apollo` is absent, so `npx` tries to fetch it and fails with `EOVERRIDE` from the `next` override in `package.json` — gating it would mean requiring that global install everywhere, which we chose not to do. Work in the devcontainer, or expect autofix.ci to commit the regenerated files.
 
-The remaining steps cannot produce a commit at all: `type-check` and `subgraph-check` only report (and `subgraph-check` needs a Hive token), and `prisma-generate` writes nothing that is tracked.
+**`type-check`** cannot produce a commit (it only reports), but it is still gated in the ritual above because CI's `lint-work` job fails on it and nothing in `lint:changed` covers types. It is the slowest step of the four — expect tens of seconds for a typical branch (a few seconds per affected project, plus nx overhead), so a pause is normal. Two traps: each project's `type-check` target runs `tsc7` (the TypeScript 7 preview via `tsconfig.ts7.json`), which is stricter than editor tsc — code your IDE accepts can still fail it. And nx prints the same trailing summary block on success and failure, so never judge the outcome from the tail of piped output — check the exit code. The command also exits non-zero on environment gaps (`origin/main` not fetched, `node_modules` missing in a fresh worktree) — rule those out before hunting for type errors.
+
+The remaining steps cannot produce a commit at all: `subgraph-check` only reports (and needs a Hive token), and `prisma-generate` writes nothing that is tracked.
 
 ### Documented Solutions
 
