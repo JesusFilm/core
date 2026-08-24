@@ -21,6 +21,7 @@ import {
   MessagePlatform
 } from '../../../../../../__generated__/globalTypes'
 import { JourneyChatButtonUpdate } from '../../../../../../__generated__/JourneyChatButtonUpdate'
+import { normalizeChatButtonLink } from '../../../../../libs/normalizeChatButtonLink'
 import { useBlockActionEmailUpdateMutation } from '../../../../../libs/useBlockActionEmailUpdateMutation'
 import { useBlockActionLinkUpdateMutation } from '../../../../../libs/useBlockActionLinkUpdateMutation'
 import { useBlockActionPhoneUpdateMutation } from '../../../../../libs/useBlockActionPhoneUpdateMutation'
@@ -115,12 +116,6 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
       true
     )
 
-    const hasProtocolPrefix = /^\w+:\/\//
-    const normalizeChatLink = (val: string): string => {
-      if (val === '') return ''
-      return hasProtocolPrefix.test(val) ? val : `https://${val}`
-    }
-
     const updatePromises = links.map((link) => {
       const oldValueRaw = (link.url ?? '').trim()
       const newValueRaw =
@@ -152,8 +147,8 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
 
         if (chatButton == null) return Promise.resolve(undefined)
 
-        const normalizedLink = normalizeChatLink(newValueRaw)
-        const normalizedOldLink = normalizeChatLink(oldValueRaw)
+        const normalizedLink = normalizeChatButtonLink(newValueRaw)
+        const normalizedOldLink = normalizeChatButtonLink(oldValueRaw)
 
         if (normalizedLink === normalizedOldLink)
           return Promise.resolve(undefined)
