@@ -154,53 +154,56 @@ describe('Details', () => {
   it.each([
     ['mailto:eli.perez@jesusfilm.org', 'mailto:eli.perez@jesusfilm.org'],
     ['eli.perez@jesusfilm.org', 'mailto:eli.perez@jesusfilm.org']
-  ])('should save %s as %s rather than prefixing https', async (typed, saved) => {
-    const props = {
-      ...defaultProps,
-      currentPlatform: MessagePlatform.mail1
-    }
-
-    const result = vi.fn(() => ({
-      data: {
-        chatButtonUpdate: {
-          __typename: 'ChatButton' as const,
-          id: 'chat.id',
-          link: saved,
-          platform: MessagePlatform.mail1,
-          customizable: null
-        }
+  ])(
+    'should save %s as %s rather than prefixing https',
+    async (typed, saved) => {
+      const props = {
+        ...defaultProps,
+        currentPlatform: MessagePlatform.mail1
       }
-    }))
 
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: JOURNEY_CHAT_BUTTON_UPDATE,
-              variables: {
-                chatButtonUpdateId: 'chat.id',
-                journeyId: 'journeyId',
-                input: { link: saved }
-              }
-            },
-            result
+      const result = vi.fn(() => ({
+        data: {
+          chatButtonUpdate: {
+            __typename: 'ChatButton' as const,
+            id: 'chat.id',
+            link: saved,
+            platform: MessagePlatform.mail1,
+            customizable: null
           }
-        ]}
-      >
-        <SnackbarProvider>
-          <CommandProvider>
-            <Details {...props} />
-          </CommandProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
+        }
+      }))
 
-    fireEvent.change(getByRole('textbox'), { target: { value: typed } })
-    fireEvent.blur(getByRole('textbox'))
+      const { getByRole } = render(
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: JOURNEY_CHAT_BUTTON_UPDATE,
+                variables: {
+                  chatButtonUpdateId: 'chat.id',
+                  journeyId: 'journeyId',
+                  input: { link: saved }
+                }
+              },
+              result
+            }
+          ]}
+        >
+          <SnackbarProvider>
+            <CommandProvider>
+              <Details {...props} />
+            </CommandProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
-  })
+      fireEvent.change(getByRole('textbox'), { target: { value: typed } })
+      fireEvent.blur(getByRole('textbox'))
+
+      await waitFor(() => expect(result).toHaveBeenCalled())
+    }
+  )
 
   it('should update platform', async () => {
     const props = {
