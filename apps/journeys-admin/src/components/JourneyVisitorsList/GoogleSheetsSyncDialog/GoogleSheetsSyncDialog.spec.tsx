@@ -351,7 +351,7 @@ describe('GoogleSheetsSyncDialog', () => {
   it('shows no integration options when user is not authenticated', async () => {
     mockUseAuth.mockReturnValue({
       user: null
-    } as unknown as ReturnType<typeof useAuth>)
+    })
     mockUseIntegrationQuery.mockReturnValue({
       data: {
         integrations: [

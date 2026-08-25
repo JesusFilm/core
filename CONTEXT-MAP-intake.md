@@ -8,10 +8,12 @@ trigger-phrases that route a report to it. The ENG-3707 accessor fetches an area
 
 **Line format:** `area | domain: <path> | intake: <path> | triggers: …`
 
+**Structure contract** (map authors + accessor code): `CONTEXT-MAP-contract.md` — not always-in-context.
+
 ## Areas (NextSteps)
 
-- **journeys-admin** (creator/editor surface) | domain: `apps/journeys-admin/CONTEXT.md` | intake: `apps/journeys-admin/CONTEXT-intake.md` | triggers: "block won't save", "changes not showing in preview", "have to refresh", "can't translate into <language>", "template won't let me customize", "transfer ownership", "analytics numbers are wrong", "historical data disappeared"
-- **journeys (published viewer)** (audience surface) | domain: `apps/journeys/CONTEXT.md` | intake: `apps/journeys/CONTEXT-intake.md` | triggers: "button doesn't go to the next card", "goes to the wrong card", "video won't load", "video is slow", "image is cropped / wrong fit", "can't click / can't type on the card", "looks wrong when published", "custom domain / embed not working"
+- **journeys-admin** (creator/editor surface) | domain: `apps/journeys-admin/CONTEXT.md` | intake: `apps/journeys-admin/CONTEXT-intake.md` | triggers: "block won't save", "changes not showing in preview", "have to refresh to see it", "can't translate into <language>", "template won't let me customize", "transfer ownership", "analytics numbers are wrong", "historical data disappeared", "can't log in", "name shows Unknown", "works in incognito", "invite email never arrived", "I can see another team's data"
+- **journeys (published viewer)** (audience surface) | domain: `apps/journeys/CONTEXT.md` | intake: `apps/journeys/CONTEXT-intake.md` | triggers: "button doesn't go to the next card", "goes to the wrong card", "video won't load", "video is slow to load", "video plays the wrong language", "image is cropped / wrong fit", "can't click / can't type on the card", "looks wrong when published", "custom domain / embed not working"
 
 _The two intake surfaces are where bugs are **reported** (creator editor, audience viewer). The
 backend (`api-journeys`) and shared kernel (`libs/journeys/ui`) are reached via each surface's
@@ -28,7 +30,7 @@ ENG-3686). Distilled from 2 years of #nextsteps-bugs history (AI Bug-Intake Play
 - **T4** cache / revalidation / stale page
 - **T5** client-side state sync / optimistic-update drift
 - **T6** rendering / visual / UI display
-- **T7** editor / canvas block-state
+- **T7** editor / canvas block-state — _no longer a live class (confirmed 2026-08-13, ENG-3704); no intake section_
 - **T8** i18n / translation / language lists
 - **T9** template duplication / language-id collision — _resolved by removal (#9151); reports stale_
 - **T10** media / video / external-content pipeline

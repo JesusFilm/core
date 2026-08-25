@@ -156,7 +156,7 @@ describe('CollectionCard', () => {
     )
     const dialog = screen.getByTestId('CollectionUngroupDialog')
     expect(
-      within(dialog).getByText('Remove this collection?')
+      within(dialog).getByText('Remove this Collection?')
     ).toBeInTheDocument()
     await userEvent.click(
       within(dialog).getByRole('button', { name: 'Remove' })
@@ -178,7 +178,7 @@ describe('CollectionCard', () => {
       screen.getByRole('menuitem', { name: 'Remove Collection' })
     )
     expect(
-      screen.getByText('Any public URL for this collection will return 404.')
+      screen.getByText('Any public URL for this Collection will return 404.')
     ).toBeInTheDocument()
   })
 
@@ -191,7 +191,7 @@ describe('CollectionCard', () => {
 
   it('renders a Preview menu item that opens the proxy URL in a new tab when published', async () => {
     const originalOpen = window.open
-    window.open = vi.fn() as unknown as typeof window.open
+    window.open = vi.fn()
     try {
       render(
         <CollectionCard

@@ -164,8 +164,8 @@ describe('sortRows', () => {
 
     numericColumns.forEach((column) => {
       const rows: ProcessedRow[] = [
-        createMockProcessedRow('A', { [column]: 100 } as Partial<ProcessedRow>),
-        createMockProcessedRow('B', { [column]: 50 } as Partial<ProcessedRow>)
+        createMockProcessedRow('A', { [column]: 100 }),
+        createMockProcessedRow('B', { [column]: 50 })
       ]
 
       const sortedAsc = sortRows(rows, column, 'asc')

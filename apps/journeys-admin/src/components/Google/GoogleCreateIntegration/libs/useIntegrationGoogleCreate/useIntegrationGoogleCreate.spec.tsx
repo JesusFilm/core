@@ -265,7 +265,9 @@ describe('useIntegrationGoogleCreate', () => {
     )
 
     await waitFor(() => {
-      expect(onError).toHaveBeenCalledWith(new Error('Network error'))
+      expect(onError).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'Network error' })
+      )
     })
   })
 

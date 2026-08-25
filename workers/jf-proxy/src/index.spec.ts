@@ -1,4 +1,4 @@
-import { fetchMock } from 'cloudflare:test'
+import { fetchMock } from '../test/fetchMock'
 
 import app from '.'
 
@@ -51,10 +51,11 @@ function expectGraphQlRequest(
 }
 
 describe('test the worker', () => {
-  beforeAll(() => {
-    fetchMock.activate()
-    fetchMock.disableNetConnect()
-  })
+  // `activate` stubs `globalThis.fetch`; anything the interceptors below don't
+  // match throws, so no request escapes to the real network.
+  beforeAll(() => fetchMock.activate())
+
+  afterAll(() => fetchMock.deactivate())
 
   afterEach(() => fetchMock.assertNoPendingInterceptors())
 

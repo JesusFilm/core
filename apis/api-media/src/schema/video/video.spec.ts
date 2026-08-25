@@ -1,4 +1,3 @@
-import { GraphQLError } from 'graphql'
 import { type MockedFunction, vi } from 'vitest'
 
 import {
@@ -1657,7 +1656,9 @@ describe('video', () => {
       })
 
       expect(data).toHaveProperty('errors', [
-        new GraphQLError('Video not found with id slug:slug')
+        expect.objectContaining({
+          message: 'Video not found with id slug:slug'
+        })
       ])
     })
   })

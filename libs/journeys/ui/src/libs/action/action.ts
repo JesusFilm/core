@@ -38,7 +38,12 @@ export function handleAction(
       }
       break
     case 'EmailAction':
-      window.open(`mailto:${action.email}`, '_blank')
+      // Assign location rather than window.open: mailto: is a non-HTTP scheme,
+      // so a popup is blocked outright on iOS Safari and leaves a stranded blank
+      // tab on Android Chrome. Assignment also needs no transient user
+      // activation, which VideoTrigger and SignUp have already lost by the time
+      // they call handleAction. Same reason PhoneAction below assigns location.
+      window.location.href = `mailto:${action.email}`
       break
     case 'ChatAction':
       if (

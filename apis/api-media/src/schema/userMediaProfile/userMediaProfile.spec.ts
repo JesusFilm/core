@@ -159,7 +159,7 @@ describe('userMediaProfile', () => {
             countryInterestIds: ['CA'],
             userInterestIds: ['video-id-1', 'video-id-2']
           }
-        } as never
+        }
       })
 
       expect(prismaMock.userMediaProfile.upsert).toHaveBeenCalledWith(
@@ -204,7 +204,7 @@ describe('userMediaProfile', () => {
         document: USER_MEDIA_PROFILE_UPDATE_MUTATION,
         variables: {
           input: { userInterestIds: [] }
-        } as never
+        }
       })
 
       expect(prismaMock.userMediaProfile.upsert).toHaveBeenCalledWith(
@@ -237,7 +237,7 @@ describe('userMediaProfile', () => {
         document: USER_MEDIA_PROFILE_UPDATE_MUTATION,
         variables: {
           input: { languageInterestIds: ['529'] }
-        } as never
+        }
       })
 
       expect(prismaMock.userMediaProfile.upsert).toHaveBeenCalledWith(
@@ -255,7 +255,7 @@ describe('userMediaProfile', () => {
     it('returns error when not authenticated', async () => {
       const result = await publicClient({
         document: USER_MEDIA_PROFILE_UPDATE_MUTATION,
-        variables: { input: {} } as never
+        variables: { input: {} }
       })
 
       expect((result as { data?: unknown }).data).toBeNull()

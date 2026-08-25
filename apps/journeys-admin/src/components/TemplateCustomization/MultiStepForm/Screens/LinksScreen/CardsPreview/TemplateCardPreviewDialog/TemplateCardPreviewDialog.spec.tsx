@@ -42,7 +42,7 @@ function buildSteps(count: number): Array<TreeBlock<StepBlock>> {
     nextBlockId: null,
     slug: null,
     children: []
-  })) as Array<TreeBlock<StepBlock>>
+  }))
 }
 
 describe('TemplateCardPreviewDialog', () => {

@@ -154,7 +154,7 @@ function createStepBlockMock(
     slug: null,
     children: [],
     ...overrides
-  } as TreeBlock<StepBlock>
+  }
 }
 
 // Helper function to create CardEventLabelUpdate mock

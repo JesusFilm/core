@@ -27,6 +27,8 @@ import {
   ChatButtonEventCreateVariables
 } from './__generated__/ChatButtonEventCreate'
 
+const AUTHORITY_LESS_SCHEME = /^(?:mailto|tel|sms):/i
+
 export const CHAT_BUTTON_EVENT_CREATE = gql`
   mutation ChatButtonEventCreate($input: ChatOpenEventCreateInput!) {
     chatOpenEventCreate(input: $input) {
@@ -72,7 +74,15 @@ export function ChatButtons(): ReactElement {
       (renderMode === 'default' || renderMode === 'embed') &&
       chatButton.link != null
     ) {
-      window.open(chatButton.link, '_blank')
+      // mailto:/tel:/sms: are handed off by assigning location, not by opening a
+      // popup: a popup to a non-HTTP scheme is blocked on iOS Safari and leaves a
+      // stranded blank tab on Android Chrome. Matches handleAction's PhoneAction
+      // and EmailAction cases.
+      if (AUTHORITY_LESS_SCHEME.test(chatButton.link)) {
+        window.location.href = chatButton.link
+      } else {
+        window.open(chatButton.link, '_blank')
+      }
       const input: ChatOpenEventCreateInput = {
         id: chatButton?.id,
         blockId: activeBlock?.id,
