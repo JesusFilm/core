@@ -23,6 +23,7 @@ import { ResultOf, graphql } from '@core/shared/gql'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
+import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
 
 import {
   findContainerParentIds,
@@ -48,11 +49,21 @@ vi.mock('../../workers/videoAlgoliaSync', () => ({
   }
 }))
 
+vi.mock(
+  '../videoVariantReconciliation/requestVideoVariantReconciliation',
+  () => ({
+    requestVideoVariantReconciliation: vi.fn()
+  })
+)
+
 const mockedFindContainerParentIds = vi.mocked(findContainerParentIds)
 const mockedUpdateParentCollectionLanguages = vi.mocked(
   updateParentCollectionLanguages
 )
 const mockedEnqueueVideoAlgoliaSync = vi.mocked(enqueueVideoAlgoliaSync)
+const mockedRequestVideoVariantReconciliation = vi.mocked(
+  requestVideoVariantReconciliation
+)
 
 describe('video', () => {
   const client = getClient()
@@ -751,6 +762,9 @@ describe('video', () => {
           variants: {
             select: {
               languageId: true
+            },
+            where: {
+              published: true
             }
           },
           videoEditions: true,
@@ -947,6 +961,9 @@ describe('video', () => {
           variants: {
             select: {
               languageId: true
+            },
+            where: {
+              published: true
             }
           },
           videoEditions: true,
@@ -1283,6 +1300,67 @@ describe('video', () => {
         {
           id: 'videoId',
           variantLanguagesCount: 2
+        }
+      ])
+    })
+
+    it('should query video.variantLanguages filtered to published variants', async () => {
+      prismaMock.video.findMany.mockResolvedValueOnce(videos)
+
+      await client({
+        document: graphql(`
+          query VideoWithVariantLanguages {
+            videos {
+              id
+              variantLanguages {
+                id
+              }
+            }
+          }
+        `)
+      })
+      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include: {
+            variants: {
+              select: {
+                languageId: true
+              },
+              where: {
+                published: true
+              }
+            }
+          }
+        })
+      )
+    })
+
+    it('should only return the published variant language when a video has one published and one unpublished variant', async () => {
+      const videoWithOnlyPublishedVariant: VideoAndIncludes = {
+        ...videos[0],
+        // simulates prisma applying the resolver's published: true filter
+        variants: videos[0].variants.filter(({ published }) => published)
+      }
+      prismaMock.video.findMany.mockResolvedValueOnce([
+        videoWithOnlyPublishedVariant
+      ])
+
+      const data = await client({
+        document: graphql(`
+          query VideoWithVariantLanguages {
+            videos {
+              id
+              variantLanguages {
+                id
+              }
+            }
+          }
+        `)
+      })
+      expect(data).toHaveProperty('data.videos', [
+        {
+          id: 'videoId',
+          variantLanguages: [{ id: 'languageId2' }]
         }
       ])
     })
@@ -2032,6 +2110,9 @@ describe('video', () => {
           variants: {
             select: {
               languageId: true
+            },
+            where: {
+              published: true
             }
           },
           bibleCitation: {
@@ -2250,6 +2331,9 @@ describe('video', () => {
           variants: {
             select: {
               languageId: true
+            },
+            where: {
+              published: true
             }
           },
           imageAlt: {
@@ -3068,6 +3152,68 @@ describe('video', () => {
         expect(result).toHaveProperty('data.videoUpdate', {
           id: 'parent-id'
         })
+      })
+
+      it('should continue even if a reconciliation request for an affected child fails (Bug D)', async () => {
+        mockedRequestVideoVariantReconciliation.mockRejectedValueOnce(
+          new Error('Reconciliation request failed')
+        )
+
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        // existingParent lookup for the childIds diff
+        prismaMock.video.findUnique.mockResolvedValue({
+          childIds: ['child1', 'child2']
+        } as any)
+        prismaMock.video.findMany.mockResolvedValue([
+          { id: 'child1' },
+          { id: 'child2' },
+          { id: 'parent-id' }
+        ] as any)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'parent-id',
+          label: VideoLabel.series,
+          childIds: ['child2'],
+          children: [{ id: 'child2' }]
+        } as unknown as Video)
+        // One affected child still has a published Variant, so the
+        // affectedChildIds reconciliation loop actually reaches
+        // requestVideoVariantReconciliation.
+        prismaMock.videoVariant.findMany.mockResolvedValue([
+          {
+            id: 'variant-1',
+            videoId: 'child1',
+            languageId: 'en',
+            edition: 'base'
+          }
+        ] as any)
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'parent-id',
+              childIds: ['child2']
+            }
+          }
+        })
+
+        // The mutation still succeeds — a reconciliation-request failure for
+        // one affected child must not fail the whole GraphQL mutation.
+        expect(result).toHaveProperty('data.videoUpdate', {
+          id: 'parent-id'
+        })
+        expect(mockedRequestVideoVariantReconciliation).toHaveBeenCalledWith(
+          expect.objectContaining({
+            videoVariantId: 'variant-1',
+            reason: 'video-relationship-change'
+          })
+        )
       })
 
       it('should set publishedAt when updating from unpublished to published', async () => {

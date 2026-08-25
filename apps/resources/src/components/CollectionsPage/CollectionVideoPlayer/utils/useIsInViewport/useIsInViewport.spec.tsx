@@ -131,7 +131,7 @@ describe('useIsInViewport hook', () => {
   it('should not observe if ref.current is null', () => {
     const NullRefComponent = () => {
       const nullRef = { current: null }
-      useIsInViewport(nullRef as React.RefObject<HTMLElement | null>)
+      useIsInViewport(nullRef)
       return <div>{'Test'}</div>
     }
 

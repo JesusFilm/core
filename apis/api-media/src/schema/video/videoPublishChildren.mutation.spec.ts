@@ -114,10 +114,10 @@ describe('videoPublishChildren', () => {
         variants: [{ id: 'c3-variant' }]
       }
     ] as any)
-    prismaMock.videoVariant.findMany.mockResolvedValue([] as any)
+    prismaMock.videoVariant.findMany.mockResolvedValue([])
     prismaMock.video.update.mockResolvedValue({} as any)
-    prismaMock.video.updateMany.mockResolvedValue({ count: 2 } as any)
-    prismaMock.videoVariant.updateMany.mockResolvedValue({ count: 1 } as any)
+    prismaMock.video.updateMany.mockResolvedValue({ count: 2 })
+    prismaMock.videoVariant.updateMany.mockResolvedValue({ count: 1 })
     prismaMock.$transaction.mockImplementation(async (callback: any) =>
       callback(prismaMock)
     )
@@ -271,7 +271,7 @@ describe('videoPublishChildren', () => {
           { id: 'pv1', videoId: 'parent' },
           { id: 'cv1', videoId: 'c1' }
         ] as any)
-        .mockResolvedValueOnce([] as any)
+        .mockResolvedValueOnce([])
 
       const res = await authClient({
         document: VIDEO_PUBLISH_CHILDREN,
@@ -356,7 +356,7 @@ describe('videoPublishChildren', () => {
         .mockResolvedValueOnce([
           { id: 'c1-spanish-draft', videoId: 'c1' }
         ] as any)
-        .mockResolvedValueOnce([] as any)
+        .mockResolvedValueOnce([])
 
       const res = await authClient({
         document: VIDEO_PUBLISH_CHILDREN,
@@ -517,7 +517,7 @@ describe('videoPublishChildren', () => {
           { id: 'pv1', videoId: 'parent' },
           { id: 'c1-unpublished-variant', videoId: 'c1' }
         ] as any)
-        .mockResolvedValueOnce([] as any)
+        .mockResolvedValueOnce([])
 
       const res = await authClient({
         document: VIDEO_PUBLISH_CHILDREN,

@@ -37,7 +37,7 @@ export function ColorDisplayIcon({
 
   const card = selectedStep?.children.find(
     (block) => block.__typename === 'CardBlock'
-  ) as TreeBlock<CardBlock> | undefined
+  )
 
   const backgroundColor =
     typeof color === 'string' && color.startsWith('#')

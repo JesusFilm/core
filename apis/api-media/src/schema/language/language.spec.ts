@@ -119,15 +119,9 @@ describe('Language', () => {
 
     it('should return zero counts when no videos exist for a language', async () => {
       // Mock empty results for all queries
-      vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce(
-        [] as any
-      ) // series counts
-      vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce(
-        [] as any
-      ) // featureFilm counts
-      vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce(
-        [] as any
-      ) // shortFilm counts
+      vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce([]) // series counts
+      vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce([]) // featureFilm counts
+      vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValueOnce([]) // shortFilm counts
 
       const data = await client({
         document: LABELED_VIDEO_COUNTS_QUERY

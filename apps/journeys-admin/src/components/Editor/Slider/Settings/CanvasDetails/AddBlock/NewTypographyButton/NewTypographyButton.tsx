@@ -43,7 +43,7 @@ export function NewTypographyButton(): ReactElement {
   function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
-    ) as TreeBlock<CardBlock> | undefined
+    )
     const checkTypography = card?.children.find(
       (block) =>
         block.__typename === 'TypographyBlock' && block.parentOrder != null

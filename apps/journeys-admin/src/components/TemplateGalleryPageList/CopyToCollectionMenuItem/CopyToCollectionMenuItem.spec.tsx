@@ -153,22 +153,22 @@ const assignHookMock =
 function setupMocks(): void {
   duplicate = vi.fn(async () => ({
     data: { journeyDuplicate: { id: 'new-journey-id' } }
-  })) as DuplicateFn
-  assign = vi.fn(async () => ({})) as AssignFn
+  }))
+  assign = vi.fn(async () => ({}))
 
   duplicateHookMock.mockReturnValue([
     duplicate as unknown as never,
     {} as never
   ])
   assignHookMock.mockReturnValue([assign as unknown as never, {} as never])
-  subscriptionHookMock.mockImplementation(((
-    opts: typeof lastSubscriptionOpts
-  ) => {
-    lastSubscriptionOpts = opts
-    return { data: undefined } as unknown as ReturnType<
-      typeof useJourneyAiTranslateSubscription
-    >
-  }) as unknown as typeof useJourneyAiTranslateSubscription)
+  subscriptionHookMock.mockImplementation(
+    (opts: typeof lastSubscriptionOpts) => {
+      lastSubscriptionOpts = opts
+      return { data: undefined } as unknown as ReturnType<
+        typeof useJourneyAiTranslateSubscription
+      >
+    }
+  )
 }
 
 function renderItem(

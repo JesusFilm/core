@@ -15,12 +15,8 @@ import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
 import { logger } from '../logger'
 import { deleteVideo } from '../mux/video/service'
-import {
-  addLanguageToVideo,
-  removeLanguageFromVideoIfUnused,
-  updateParentCollectionLanguages
-} from '../video/lib/updateAvailableLanguages'
 import { VideoSubtitle } from '../video/videoSubtitle'
+import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
 
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
 import { VideoVariantFilter } from './inputs/videoVariantFilter'
@@ -493,6 +489,7 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoVariantCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
+      const publicationIntent = input.published ?? true
       const hadAnyVariantsForLanguage =
         (await prisma.videoVariant.findFirst({
           where: { languageId: input.languageId },
@@ -506,7 +503,7 @@ builder.mutationFields((t) => ({
           data: {
             ...input,
             muxVideoId: input.muxVideoId ?? undefined,
-            published: input.published ?? true,
+            published: false,
             version: input.version ?? undefined
           }
         })
@@ -524,33 +521,33 @@ builder.mutationFields((t) => ({
         })
         throw error
       }
-      // Update video's availableLanguages and cascade to parent collections only for published variants
-      if (newVariant.published) {
-        try {
-          await addLanguageToVideo(newVariant.videoId, newVariant.languageId)
-          await updateParentCollectionLanguages(newVariant.videoId)
-        } catch (error) {
-          logger.error(
-            {
-              error,
-              variantId: newVariant.id,
-              videoId: newVariant.videoId,
-              languageId: newVariant.languageId
-            },
-            'Language management update error'
-          )
-          notifyMediaSlackOfOperationFailure({
-            operation: 'Video variant language update failed',
-            error,
-            context: {
-              variantId: newVariant.id,
-              videoId: newVariant.videoId,
-              languageId: newVariant.languageId,
-              published: newVariant.published
-            }
-          })
-        }
+      try {
+        await requestVideoVariantReconciliation({
+          videoVariantId: newVariant.id,
+          videoId: newVariant.videoId,
+          languageId: newVariant.languageId,
+          edition: newVariant.edition,
+          published: publicationIntent,
+          reason: 'video-variant-create'
+        })
+      } catch (error) {
+        console.error('Video variant reconciliation request error:', error)
+        notifyMediaSlackOfOperationFailure({
+          operation: 'Video variant reconciliation request failed',
+          error,
+          context: {
+            variantId: newVariant.id,
+            videoId: newVariant.videoId,
+            languageId: newVariant.languageId,
+            reason: 'video-variant-create'
+          }
+        })
       }
+      // availableLanguages / parent-collection cascade for a newly-created
+      // Variant now happens once reconciliation confirms the Variant is
+      // publication-ready (see reconcileVideoVariantReconciliation) — the
+      // Variant is always created unpublished above, so this used to be
+      // unreachable dead code.
 
       try {
         if (!hadAnyVariantsForLanguage) {
@@ -558,25 +555,6 @@ builder.mutationFields((t) => ({
         }
       } catch (error) {
         console.error('Language hasVideos update error:', error)
-      }
-
-      // Handle parent variant creation for child videos
-      try {
-        await handleParentVariantCreation(
-          newVariant.videoId,
-          newVariant.languageId
-        )
-      } catch (error) {
-        console.error('Parent variant creation error:', error)
-        notifyMediaSlackOfOperationFailure({
-          operation: 'Video variant parent creation failed',
-          error,
-          context: {
-            videoId: newVariant.videoId,
-            languageId: newVariant.languageId,
-            variantId: newVariant.id
-          }
-        })
       }
 
       // Save the videoId before the try/catch block
@@ -614,7 +592,12 @@ builder.mutationFields((t) => ({
       // Get the current variant to check if published status is changing
       const currentVariant = await prisma.videoVariant.findUnique({
         where: { id: input.id },
-        select: { published: true, videoId: true, languageId: true }
+        select: {
+          published: true,
+          videoId: true,
+          languageId: true,
+          edition: true
+        }
       })
 
       if (!currentVariant) {
@@ -646,7 +629,10 @@ builder.mutationFields((t) => ({
             videoId: input.videoId ?? undefined,
             edition: input.edition ?? undefined,
             downloadable: input.downloadable ?? undefined,
-            published: input.published ?? undefined,
+            published:
+              input.published === undefined
+                ? undefined
+                : currentVariant.published,
             muxVideoId: input.muxVideoId ?? undefined,
             assetId: input.assetId ?? undefined,
             version: input.version ?? undefined,
@@ -673,61 +659,29 @@ builder.mutationFields((t) => ({
       const wasPublished = currentVariant.published
       const isNowPublished = input.published ?? currentVariant.published
 
-      if (wasPublished !== isNowPublished) {
+      if (wasPublished !== isNowPublished || languageChanged) {
+        const reason = languageChanged
+          ? 'video-variant-language-change'
+          : 'video-variant-publication-change'
         try {
-          if (isNowPublished) {
-            // Variant was unpublished and is now published - create parent variants
-            await handleParentVariantCreation(
-              currentVariant.videoId,
-              currentVariant.languageId
-            )
-          } else {
-            // Variant was published and is now unpublished - cleanup parent variants
-            await handleParentVariantCleanup(
-              currentVariant.videoId,
-              currentVariant.languageId
-            )
-          }
-        } catch (error) {
-          console.error('Parent variant update error:', error)
-          notifyMediaSlackOfOperationFailure({
-            operation: 'Video variant parent update failed',
-            error,
-            context: {
-              variantId: input.id,
-              videoId: currentVariant.videoId,
-              languageId: currentVariant.languageId,
-              published: isNowPublished
-            }
+          await requestVideoVariantReconciliation({
+            videoVariantId: updated.id,
+            videoId: input.videoId ?? currentVariant.videoId,
+            languageId: nextLanguageId,
+            edition: input.edition ?? currentVariant.edition,
+            published: isNowPublished,
+            reason
           })
-        }
-
-        // Update availableLanguages array based on published status change
-        try {
-          if (isNowPublished) {
-            await addLanguageToVideo(
-              currentVariant.videoId,
-              currentVariant.languageId
-            )
-          } else {
-            await removeLanguageFromVideoIfUnused(
-              currentVariant.videoId,
-              currentVariant.languageId
-            )
-          }
-
-          // Cascade update to parent collections
-          await updateParentCollectionLanguages(currentVariant.videoId)
         } catch (error) {
-          console.error('Language management update error:', error)
+          console.error('Video variant reconciliation request error:', error)
           notifyMediaSlackOfOperationFailure({
-            operation: 'Video variant language update failed',
+            operation: 'Video variant reconciliation request failed',
             error,
             context: {
-              variantId: input.id,
-              videoId: currentVariant.videoId,
-              languageId: currentVariant.languageId,
-              published: isNowPublished
+              variantId: updated.id,
+              videoId: input.videoId ?? currentVariant.videoId,
+              languageId: nextLanguageId,
+              reason
             }
           })
         }
@@ -880,6 +834,29 @@ builder.mutationFields((t) => ({
         }
       }
 
+      try {
+        await requestVideoVariantReconciliation({
+          videoVariantId: variant.id,
+          videoId,
+          languageId,
+          edition: variant.edition,
+          published: false,
+          reason: 'video-variant-delete'
+        })
+      } catch (error) {
+        console.error('Video variant reconciliation request error:', error)
+        notifyMediaSlackOfOperationFailure({
+          operation: 'Video variant reconciliation request failed',
+          error,
+          context: {
+            variantId: variant.id,
+            videoId,
+            languageId,
+            reason: 'video-variant-delete'
+          }
+        })
+      }
+
       // Delete the video variant
       let deleted: PrismaVideoVariant
       try {
@@ -900,40 +877,22 @@ builder.mutationFields((t) => ({
         throw error
       }
 
-      // Handle parent variant cleanup for child videos
-      try {
-        await handleParentVariantCleanup(videoId, languageId)
-      } catch (error) {
-        console.error('Parent variant cleanup error:', error)
-        notifyMediaSlackOfOperationFailure({
-          operation: 'Video variant parent cleanup failed',
-          error,
-          context: {
-            variantId: id,
-            videoId,
-            languageId
-          }
-        })
-      }
-
-      // Update availableLanguages array when variant is deleted
-      try {
-        await removeLanguageFromVideoIfUnused(videoId, languageId)
-
-        // Cascade update to parent collections
-        await updateParentCollectionLanguages(videoId)
-      } catch (error) {
-        console.error('Language management cleanup error:', error)
-        notifyMediaSlackOfOperationFailure({
-          operation: 'Video variant language cleanup failed',
-          error,
-          context: {
-            variantId: id,
-            videoId,
-            languageId
-          }
-        })
-      }
+      // availableLanguages / parent-collection cascade for a deleted Variant
+      // now happens once reconciliation processes the 'video-variant-delete'
+      // request above (see reconcileReasonSpecificVariant's
+      // video-variant-delete branch, which calls
+      // removeLanguageFromVideoIfUnused + updateParentCollectionLanguages) —
+      // mirrors the same cascade already removed from videoVariantCreate and
+      // videoVariantUpdate.
+      //
+      // Known gap (not fixed here): the old handleParentVariantCleanup call
+      // that used to run here also deleted the orphaned, still-empty
+      // generated parent VideoVariant row (hls: '', no muxVideoId) once no
+      // published child in that language remained. Reconciliation has no
+      // equivalent step, so that placeholder row can now be left behind
+      // after this kind of delete. handleParentVariantCleanup itself is
+      // unchanged and still runs from video.ts's videoUpdate, so this only
+      // affects the direct-variant-delete trigger. See PR #9386 discussion.
 
       await enqueueVideoAlgoliaSync(
         videoId,
