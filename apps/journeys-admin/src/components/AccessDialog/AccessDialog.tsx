@@ -19,13 +19,9 @@ import {
   GetJourneyWithPermissions_journey_userJourneys as UserJourney,
   GetJourneyWithPermissions_journey_team_userTeams as UserTeam
 } from '../../../__generated__/GetJourneyWithPermissions'
-import {
-  GetUserInvites,
-  GetUserInvitesVariables
-} from '../../../__generated__/GetUserInvites'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
-import { GET_USER_INVITES } from '../../libs/useUserInvitesLazyQuery'
+import { useUserInvitesQuery } from '../../libs/useUserInvitesLazyQuery'
 import { UserTeamList } from '../Team/TeamManageDialog/UserTeamList'
 
 import { AddUserSection } from './AddUserSection'
@@ -99,14 +95,8 @@ export function AccessDialog({
       : skipToken
   )
 
-  const { data: userInviteData } = useQuery<
-    GetUserInvites,
-    GetUserInvitesVariables
-  >(
-    GET_USER_INVITES,
-    open === true
-      ? { variables: { journeyId }, fetchPolicy: 'network-only' }
-      : skipToken
+  const { data: userInviteData } = useUserInvitesQuery(
+    open === true ? journeyId : undefined
   )
 
   const { loadUser, data: user } = useCurrentUserLazyQuery()

@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client'
-import { useLazyQuery } from '@apollo/client/react'
+import { skipToken, useLazyQuery, useQuery } from '@apollo/client/react'
 
 import {
   GetUserInvites,
@@ -27,4 +27,26 @@ export function useUserInvitesLazyQuery(): useLazyQuery.ResultTuple<
   GetUserInvitesVariables
 > {
   return useLazyQuery<GetUserInvites, GetUserInvitesVariables>(GET_USER_INVITES)
+}
+
+/**
+ * Reads a journey's invites, holding off until `journeyId` is supplied — used
+ * where the invites are rendered rather than fetched from a handler. The
+ * network-only policy refetches whenever the caller un-skips, matching how the
+ * access dialog refreshed its list on every open.
+ */
+export function useUserInvitesQuery(
+  journeyId?: string
+): useQuery.Result<
+  GetUserInvites,
+  GetUserInvitesVariables,
+  'empty' | 'complete' | 'streaming',
+  Partial<GetUserInvitesVariables>
+> {
+  return useQuery<GetUserInvites, GetUserInvitesVariables>(
+    GET_USER_INVITES,
+    journeyId == null
+      ? skipToken
+      : { variables: { journeyId }, fetchPolicy: 'network-only' }
+  )
 }

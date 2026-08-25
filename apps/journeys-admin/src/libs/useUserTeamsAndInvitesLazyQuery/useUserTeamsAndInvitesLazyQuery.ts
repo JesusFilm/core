@@ -20,7 +20,7 @@ export function useUserTeamsAndInvitesLazyQuery(): {
     GetUserTeamsAndInvites,
     GetUserTeamsAndInvitesVariables
   >(GET_USER_TEAMS_AND_INVITES)
-  const data = query[1].data
+  const [, { data }] = query
 
   // Apollo Client 4 removed `useLazyQuery`'s `onCompleted` option.
   useEffect(() => {

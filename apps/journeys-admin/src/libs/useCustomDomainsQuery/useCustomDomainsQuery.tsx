@@ -24,6 +24,13 @@ export const GET_CUSTOM_DOMAINS = gql`
   }
 `
 
+/**
+ * The options are listed out rather than typed as `useQuery.Options`: Apollo
+ * Client 4 derives the result's data states from the options it is handed, and
+ * a wide `useQuery.Options` leaves `returnPartialData` unresolved — which puts
+ * `partial` in the union and hands every caller `DeepPartial` data. Naming the
+ * options callers actually pass keeps the result narrowed to complete data.
+ */
 export function useCustomDomainsQuery(options: {
   variables: GetCustomDomainsVariables
   skip?: boolean
