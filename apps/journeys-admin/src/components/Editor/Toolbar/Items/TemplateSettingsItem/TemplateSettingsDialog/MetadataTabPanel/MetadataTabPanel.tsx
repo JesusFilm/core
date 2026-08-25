@@ -92,9 +92,8 @@ export function MetadataTabPanel({
                 <Checkbox
                   sx={{ mr: 1 }}
                   color="secondary"
-                  defaultChecked={values.featured}
+                  checked={values.featured}
                   onChange={handleChange}
-                  value={values.featured}
                   name="featured"
                 />
               }

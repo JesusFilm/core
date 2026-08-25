@@ -12,7 +12,7 @@ import { CustomizeTemplate } from './CustomizeTemplate'
 
 describe('CustomizeTemplate', () => {
   it('renders heading and refresh button', () => {
-    const journey = defaultJourney as Journey
+    const journey = defaultJourney
     render(
       <MockedProvider>
         <FormikProvider
@@ -46,7 +46,7 @@ describe('CustomizeTemplate', () => {
 
   it('shows existing customization text from api', () => {
     const journey = {
-      ...(defaultJourney as Journey),
+      ...defaultJourney,
       journeyCustomizationDescription: 'Hello {{firstName: Bob}}'
     } as Journey
     render(
@@ -80,7 +80,7 @@ describe('CustomizeTemplate', () => {
   it('refreshes customization text using journey blocks', () => {
     const setFieldValue = vi.fn()
     const journey = {
-      ...(defaultJourney as Journey),
+      ...defaultJourney,
       blocks: [
         {
           __typename: 'TypographyBlock',
@@ -133,7 +133,7 @@ describe('CustomizeTemplate', () => {
 
   it('handles text change', () => {
     const setFieldValue = vi.fn()
-    const journey = defaultJourney as Journey
+    const journey = defaultJourney
     render(
       <MockedProvider>
         <FormikProvider
@@ -171,7 +171,7 @@ describe('CustomizeTemplate', () => {
   it('inserts em-space on Tab keydown at caret position', () => {
     const setFieldValue = vi.fn()
     const journey = {
-      ...(defaultJourney as Journey),
+      ...defaultJourney,
       journeyCustomizationDescription: 'ABC'
     } as Journey
     render(

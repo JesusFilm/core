@@ -25,6 +25,15 @@ import {
   removeLanguageFromVideoIfUnused,
   updateParentCollectionLanguages
 } from '../video/lib/updateAvailableLanguages'
+import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
+
+// Mock the reconciliation request boundary
+vi.mock(
+  '../videoVariantReconciliation/requestVideoVariantReconciliation',
+  () => ({
+    requestVideoVariantReconciliation: vi.fn()
+  })
+)
 
 // Mock the cache reset functions
 vi.mock('../../lib/videoCacheReset', () => ({
@@ -86,6 +95,9 @@ const mockedRemoveLanguageFromVideoIfUnused = vi.mocked(
 )
 const mockedUpdateParentCollectionLanguages = vi.mocked(
   updateParentCollectionLanguages
+)
+const mockedRequestVideoVariantReconciliation = vi.mocked(
+  requestVideoVariantReconciliation
 )
 
 type VideoVariantAndIncludes = VideoVariant & {
@@ -903,7 +915,9 @@ describe('videoVariant', () => {
           skip: 10,
           take: 5,
           where: {
-            published: true
+            published: true,
+            languageId: undefined,
+            updatedAt: undefined
           }
         })
       )
@@ -1273,7 +1287,9 @@ describe('videoVariant', () => {
             videoId: 'videoId',
             share: 'share',
             downloadable: true,
-            published: true
+            published: false,
+            muxVideoId: undefined,
+            version: undefined
           }
         })
         expect(result).toHaveProperty('data.videoVariantCreate', {
@@ -1450,6 +1466,74 @@ describe('videoVariant', () => {
         // Skip the videoCacheReset verification since we know it's being called in the implementation
         // The function throws an error but our code handles it properly
         // expect(mockedVideoCacheReset).toHaveBeenCalledWith('videoId')
+      })
+
+      it('should continue even if the reconciliation request fails (Bug D)', async () => {
+        mockedRequestVideoVariantReconciliation.mockRejectedValueOnce(
+          new Error('Reconciliation request failed')
+        )
+
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoVariant.create.mockResolvedValue({
+          id: 'id',
+          hls: 'hls',
+          duration: 1024,
+          lengthInMilliseconds: 123456,
+          dash: 'dash',
+          edition: 'base',
+          slug: 'videoSlug',
+          videoId: 'videoId',
+          languageId: 'languageId',
+          published: true,
+          share: 'share',
+          downloadable: true,
+          muxVideoId: null,
+          masterUrl: 'masterUrl',
+          masterWidth: 320,
+          masterHeight: 180,
+          assetId: null,
+          version: 1,
+          brightcoveId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+
+        const result = await authClient({
+          document: VIDEO_VARIANT_CREATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              hls: 'hls',
+              dash: 'dash',
+              duration: 1024,
+              lengthInMilliseconds: 123456,
+              languageId: 'languageId',
+              edition: 'base',
+              slug: 'videoSlug',
+              videoId: 'videoId',
+              share: 'share',
+              downloadable: true
+            }
+          }
+        })
+
+        // The mutation still succeeds — a reconciliation-request failure
+        // must not fail the whole GraphQL mutation after the Variant has
+        // already been created.
+        expect(result).toHaveProperty('data.videoVariantCreate', {
+          id: 'id'
+        })
+        expect(mockedNotifyMediaSlackOfOperationFailure).toHaveBeenCalledWith(
+          expect.objectContaining({
+            operation: 'Video variant reconciliation request failed'
+          })
+        )
       })
 
       it('should fail if not publisher', async () => {
@@ -1725,6 +1809,74 @@ describe('videoVariant', () => {
         expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('id')
       })
 
+      it('should continue even if the reconciliation request fails (Bug D)', async () => {
+        mockedRequestVideoVariantReconciliation.mockRejectedValueOnce(
+          new Error('Reconciliation request failed')
+        )
+
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        // published status changes true -> false so the reconciliation
+        // request is actually reached
+        prismaMock.videoVariant.findUnique.mockResolvedValue({
+          published: true,
+          videoId: 'videoId',
+          languageId: 'languageId',
+          edition: 'base'
+        } as any)
+        prismaMock.videoVariant.update.mockResolvedValue({
+          id: 'id',
+          hls: 'hls',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          duration: 1024,
+          lengthInMilliseconds: 123456,
+          dash: 'dash',
+          edition: 'base',
+          slug: 'videoSlug',
+          videoId: 'videoId',
+          languageId: 'languageId',
+          published: false,
+          share: 'share',
+          downloadable: false,
+          muxVideoId: null,
+          masterUrl: 'masterUrl',
+          masterWidth: 320,
+          masterHeight: 180,
+          assetId: null,
+          version: 1,
+          brightcoveId: null
+        })
+
+        const result = await authClient({
+          document: VIDEO_VARIANT_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              videoId: 'videoId',
+              published: false
+            }
+          }
+        })
+
+        // The mutation still succeeds — a reconciliation-request failure
+        // must not fail the whole GraphQL mutation after the Variant has
+        // already been updated.
+        expect(result).toHaveProperty('data.videoVariantUpdate', {
+          id: 'id'
+        })
+        expect(mockedNotifyMediaSlackOfOperationFailure).toHaveBeenCalledWith(
+          expect.objectContaining({
+            operation: 'Video variant reconciliation request failed'
+          })
+        )
+      })
+
       it('should fail if not publisher', async () => {
         const result = await client({
           document: VIDEO_VARIANT_UPDATE_MUTATION,
@@ -1927,6 +2079,88 @@ describe('videoVariant', () => {
         // Skip the videoCacheReset verification since we know it's being called in the implementation
         // The function throws an error but our code handles it properly
         // expect(mockedVideoCacheReset).toHaveBeenCalledWith('videoId')
+      })
+
+      it('should continue even if the reconciliation request fails (Bug D)', async () => {
+        mockedRequestVideoVariantReconciliation.mockRejectedValueOnce(
+          new Error('Reconciliation request failed')
+        )
+
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoVariant.findUnique.mockResolvedValue({
+          id: 'id',
+          videoId: 'videoId',
+          hls: 'hls',
+          duration: 1024,
+          lengthInMilliseconds: 123456,
+          dash: 'dash',
+          edition: 'base',
+          slug: 'videoSlug',
+          languageId: 'languageId',
+          published: true,
+          share: 'share',
+          downloadable: true,
+          muxVideoId: null,
+          masterUrl: 'masterUrl',
+          masterWidth: 320,
+          masterHeight: 180,
+          assetId: null,
+          version: 1,
+          downloads: [],
+          asset: null,
+          muxVideo: null
+        } as any)
+        prismaMock.videoVariant.delete.mockResolvedValue({
+          id: 'id',
+          hls: 'hls',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          duration: 1024,
+          lengthInMilliseconds: 123456,
+          dash: 'dash',
+          edition: 'base',
+          slug: 'videoSlug',
+          videoId: 'videoId',
+          languageId: 'languageId',
+          published: true,
+          share: 'share',
+          downloadable: true,
+          muxVideoId: null,
+          masterUrl: 'masterUrl',
+          masterWidth: 320,
+          masterHeight: 180,
+          assetId: null,
+          version: 1,
+          brightcoveId: null
+        })
+
+        const result = await authClient({
+          document: VIDEO_VARIANT_DELETE_MUTATION,
+          variables: {
+            id: 'id'
+          }
+        })
+
+        // The mutation still succeeds — a reconciliation-request failure
+        // must not fail the whole GraphQL mutation, and the Variant is
+        // still deleted.
+        expect(result).toHaveProperty('data.videoVariantDelete', {
+          id: 'id'
+        })
+        expect(prismaMock.videoVariant.delete).toHaveBeenCalledWith({
+          where: { id: 'id' }
+        })
+        expect(mockedNotifyMediaSlackOfOperationFailure).toHaveBeenCalledWith(
+          expect.objectContaining({
+            operation: 'Video variant reconciliation request failed'
+          })
+        )
       })
 
       it('should fail if not publisher', async () => {

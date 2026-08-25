@@ -385,7 +385,7 @@ function UserDeleteContent(): ReactElement {
             value={idType}
             label={t('Lookup By')}
             onChange={(e) => {
-              setIdType(e.target.value as UserDeleteIdType)
+              setIdType(e.target.value)
               setCheckComplete(false)
               setResolvedUserId('')
               setLogs([])

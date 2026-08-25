@@ -23,7 +23,7 @@ function buildRows(
 }
 
 function mockPage(rows: Array<Record<string, number | string | null>>): void {
-  mockAxios.get.mockResolvedValueOnce({ data: { results: rows } } as never)
+  mockAxios.get.mockResolvedValueOnce({ data: { results: rows } })
 }
 
 describe('getJourneyStatsBreakdown', () => {
@@ -193,7 +193,7 @@ describe('getJourneyStatsBreakdown', () => {
       // the page param. Without de-duping this would 50x-inflate the counts.
       mockAxios.get.mockResolvedValue({
         data: { results: buildRows(1000) }
-      } as never)
+      })
 
       const result = await getJourneyStatsBreakdown(
         'journey-id',
@@ -219,7 +219,7 @@ describe('getJourneyStatsBreakdown', () => {
       mockAxios.get.mockImplementation(async () => {
         const rows = buildRows(1000, call * 1000)
         call += 1
-        return { data: { results: rows } } as never
+        return { data: { results: rows } }
       })
 
       const result = await getJourneyStatsBreakdown(
@@ -245,7 +245,7 @@ describe('getJourneyStatsBreakdown', () => {
       mockIsAxiosError.mockReturnValueOnce(true)
       mockAxios.get.mockRejectedValueOnce({
         response: { data: { error: 'Invalid property' } }
-      } as never)
+      })
 
       await expect(
         getJourneyStatsBreakdown('journey-id', {
@@ -273,7 +273,7 @@ describe('getJourneyStatsBreakdown', () => {
     it('rethrows the original axios error when it carries no string error message', async () => {
       mockIsAxiosError.mockReturnValueOnce(true)
       const axiosError = { response: { data: {} } }
-      mockAxios.get.mockRejectedValueOnce(axiosError as never)
+      mockAxios.get.mockRejectedValueOnce(axiosError)
 
       await expect(
         getJourneyStatsBreakdown('journey-id', {

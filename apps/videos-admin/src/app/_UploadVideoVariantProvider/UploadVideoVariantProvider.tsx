@@ -527,7 +527,7 @@ export function UploadVideoVariantProvider({
                 headers: {
                   'Content-Type': file.type
                 },
-                signal: abortController.signal as unknown as AbortSignal,
+                signal: abortController.signal,
                 onUploadProgress: (progressEvent) => {
                   const loaded = progressEvent.loaded ?? 0
                   const totalUploaded = uploadedBytes + loaded
@@ -571,7 +571,8 @@ export function UploadVideoVariantProvider({
                 const message =
                   error instanceof Error ? error.message : 'Unknown error'
                 throw new Error(
-                  `Failed to upload part ${partNumber} after ${maxRetries} attempts: ${message}`
+                  `Failed to upload part ${partNumber} after ${maxRetries} attempts: ${message}`,
+                  { cause: error }
                 )
               }
               console.warn('Retrying R2 part upload', {

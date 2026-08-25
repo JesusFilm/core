@@ -204,6 +204,75 @@ describe('ChatButtons', () => {
     })
   })
 
+  it('assigns location instead of opening a popup for a mailto link', async () => {
+    // jsdom cannot navigate, so assert on a swapped-in location object.
+    const originalLocationDescriptor = Object.getOwnPropertyDescriptor(
+      window,
+      'location'
+    )
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      enumerable: false,
+      value: { ...window.location, href: '' }
+    })
+    window.open = vi.fn()
+    blockHistoryVar([stepBlock])
+    mockUsePlausible.mockReturnValue(vi.fn())
+
+    const mailButton: ChatButton = {
+      __typename: 'ChatButton',
+      id: '1',
+      link: 'mailto:eli.perez@jesusfilm.org',
+      platform: MessagePlatform.mail1,
+      customizable: null
+    }
+
+    const { getAllByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CHAT_BUTTON_EVENT_CREATE,
+              variables: {
+                input: {
+                  blockId: stepBlock?.id,
+                  stepId: stepBlock?.id,
+                  value: mailButton.platform
+                }
+              }
+            },
+            result: {
+              data: {
+                chatOpenEventCreate: {
+                  __typename: 'ChatOpenEvent',
+                  id: mailButton.id
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={{ journey: { ...journey, chatButtons: [mailButton] } }}
+        >
+          <ChatButtons />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getAllByRole('button')[0])
+
+    await waitFor(() =>
+      expect(window.location.href).toBe('mailto:eli.perez@jesusfilm.org')
+    )
+    // A popup would be blocked on iOS Safari and stranded on Android Chrome.
+    expect(window.open).not.toHaveBeenCalled()
+
+    if (originalLocationDescriptor != null) {
+      Object.defineProperty(window, 'location', originalLocationDescriptor)
+    }
+  })
+
   it('does not open a new window or send a mutation for admin user', async () => {
     window.open = vi.fn()
 

@@ -1,11 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within
-} from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { formatISO } from 'date-fns'
 import { type MockedFunction } from 'vitest'
@@ -153,7 +147,7 @@ describe('AnalyticsOverlaySwitch', () => {
     })
   })
 
-  it('shows filter button and date range select only when analytics are enabled', async () => {
+  it('shows date range select only when analytics are enabled', async () => {
     mockBuildPlausibleDateRange.mockReturnValue(
       `${earliestStatsCollected},${mockCurrentDate}`
     )
@@ -184,20 +178,13 @@ describe('AnalyticsOverlaySwitch', () => {
       </MockedProvider>
     )
 
-    expect(
-      screen.queryByRole('button', { name: 'Filter' })
-    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Date range preset')).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('switch'))
 
-    const filterButton = await screen.findByRole('button', { name: 'Filter' })
-
-    expect(filterButton).toBeInTheDocument()
-    expect(screen.queryByLabelText('Date range preset')).not.toBeInTheDocument()
-
-    fireEvent.click(filterButton)
-
-    expect(screen.getByLabelText('Date range preset')).toBeInTheDocument()
+    expect(
+      await screen.findByLabelText('Date range preset')
+    ).toBeInTheDocument()
   })
 
   it('shows custom date range picker when custom range is selected', async () => {
@@ -233,10 +220,7 @@ describe('AnalyticsOverlaySwitch', () => {
 
     fireEvent.click(screen.getByRole('switch'))
 
-    const filterButton = await screen.findByRole('button', { name: 'Filter' })
-
-    fireEvent.click(filterButton)
-    const dateRangeCombobox = screen.getByRole('combobox', {
+    const dateRangeCombobox = await screen.findByRole('combobox', {
       name: 'Date range preset'
     })
 

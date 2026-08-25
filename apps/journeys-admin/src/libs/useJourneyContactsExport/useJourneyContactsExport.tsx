@@ -68,7 +68,9 @@ export function useJourneyContactsExport(): {
       if (error instanceof Error) {
         throw error
       }
-      throw new Error(t('Failed to retrieve contacts for export.'))
+      throw new Error(t('Failed to retrieve contacts for export.'), {
+        cause: error
+      })
     }
   }
 
