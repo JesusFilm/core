@@ -90,11 +90,8 @@ export function AvailableLanguagesTroubleshooting(): ReactElement {
     void fixLanguages()
   }
 
-  const videoTitle =
-    (data?.adminVideo.title as Array<{ value: string }> | undefined)?.[0]
-      ?.value ?? 'N/A'
-  const availableLanguages =
-    (data?.adminVideo.availableLanguages as string[] | undefined) ?? []
+  const videoTitle = data?.adminVideo.title?.[0]?.value ?? 'N/A'
+  const availableLanguages = data?.adminVideo.availableLanguages ?? []
 
   return (
     <Stack spacing={2}>

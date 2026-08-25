@@ -85,7 +85,7 @@ describe('journeysPlausibleStatsTimeseries', () => {
           }
         ]
       }
-    } as any)
+    })
     mockIsAxiosError.mockReturnValue(false)
   })
 
@@ -182,7 +182,7 @@ describe('journeysPlausibleStatsTimeseries', () => {
     mockIsAxiosError.mockReturnValueOnce(true)
     mockAxios.get.mockRejectedValueOnce({
       response: { data: { error: 'Invalid period' } }
-    } as any)
+    })
 
     const result = await authClient({
       document: QUERY,

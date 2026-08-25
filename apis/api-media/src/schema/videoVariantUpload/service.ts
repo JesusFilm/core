@@ -28,6 +28,7 @@ import {
   addLanguageToVideo,
   updateParentCollectionLanguages
 } from '../video/lib/updateAvailableLanguages'
+import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
 
 const FIVE_DAYS = 5 * 24 * 60 * 60
 
@@ -109,7 +110,8 @@ async function getLanguageSlug(
       'Failed to get language slug for variant'
     )
     throw new Error(
-      `Failed to create slug for variant: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to create slug for variant: ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error }
     )
   } finally {
     if (apollo != null) void apollo.stop()
@@ -260,7 +262,7 @@ export async function createOrUpdateVideoVariant({
       duration: metadata.duration,
       lengthInMilliseconds: metadata.durationMs,
       muxVideoId,
-      published,
+      published: false,
       downloadable: true,
       version
     }
@@ -302,6 +304,15 @@ export async function createOrUpdateVideoVariant({
         }
       })
     }
+
+    await requestVideoVariantReconciliation({
+      videoVariantId: variant.id,
+      videoId,
+      languageId,
+      edition,
+      published,
+      reason: 'process-video-upload'
+    })
 
     return variant
   } catch (error) {

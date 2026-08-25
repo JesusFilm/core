@@ -10,6 +10,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useBlocks } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useStepNavigationEvents } from '@core/journeys/ui/useStepNavigationEvents'
+import { hoverOnly } from '@core/shared/ui/hoverOnly'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 
@@ -127,17 +128,18 @@ export function NavigationButton({
           size="small"
           onClick={() => handleNavigation(variant)}
           disableRipple
-          sx={{
+          sx={(theme) => ({
             pointerEvents: 'all',
             mx: { xs: 2, lg: 8 },
             p: 2,
-            color: (theme) => theme.palette.common.white,
-            backgroundColor: (theme) => `${theme.palette.grey[700]}33`,
-            '&:hover': {
-              color: (theme) => theme.palette.common.white,
-              backgroundColor: (theme) => `${theme.palette.grey[700]}4d`
-            }
-          }}
+            color: theme.palette.common.white,
+            backgroundColor: `${theme.palette.grey[700]}33`,
+            // Pointer devices only, so the chevron does not stay lit after a tap
+            ...hoverOnly({
+              color: theme.palette.common.white,
+              backgroundColor: `${theme.palette.grey[700]}4d`
+            })
+          })}
         >
           {alignment === 'left' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>

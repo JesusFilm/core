@@ -45,7 +45,7 @@ export function useBlockDuplicateCommand(): {
 
     const card = selectedStep.children.find(
       (block) => block.__typename === 'CardBlock'
-    ) as TreeBlock<CardBlock> | undefined
+    )
 
     add({
       parameters: { execute: {}, undo: { card, steps } },
@@ -100,7 +100,7 @@ export function useBlockDuplicateCommand(): {
             blockRestore:
               block.__typename === 'StepBlock'
                 ? [block as BlockRestore]
-                : [block as BlockRestore]
+                : [block]
           }
         })
       }

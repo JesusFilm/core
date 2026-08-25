@@ -91,9 +91,12 @@ export function TemplateSettingsDialog({
     values: TemplateSettingsFormValues
   ): Promise<void> {
     if (journey == null) return
-    try {
-      // Submit other form values
-      await journeySettingsUpdate({
+    // Mutations run via Promise.allSettled (mirroring
+    // LocalTemplateDetailsDialog) so one failure cannot silently drop the
+    // others — e.g. a journeyFeature rejection must not lose the user's
+    // customization edit, and vice versa (QA-564).
+    const tasks: Array<Promise<unknown>> = [
+      journeySettingsUpdate({
         variables: {
           id: journey.id,
           input: {
@@ -101,45 +104,63 @@ export function TemplateSettingsDialog({
           }
         }
       })
-      await journeyCustomizationDescriptionUpdate({
+    ]
+    if (Boolean(journey.featuredAt) !== values.featured)
+      tasks.push(
+        journeyFeature({
+          variables: { id: journey.id, feature: values.featured }
+        })
+      )
+    tasks.push(
+      journeyCustomizationDescriptionUpdate({
         variables: {
           journeyId: journey.id,
           string: values.journeyCustomizationDescription
         },
-        refetchQueries: ['GetPublisherTemplate']
+        // The mutation returns customization fields, not a Journey, so patch
+        // the Journey entity directly (as LocalTemplateDetailsDialog does)
+        // instead of refetching GetPublisherTemplate — a refetch issued here
+        // could read pre-feature state and land after journeyFeature's
+        // response, clobbering featuredAt in the cache with a stale value
+        // (QA-564).
+        update(cache) {
+          cache.modify({
+            id: cache.identify({ __typename: 'Journey', id: journey.id }),
+            fields: {
+              journeyCustomizationDescription() {
+                return values.journeyCustomizationDescription
+              }
+            }
+          })
+        }
       })
-      if (Boolean(journey.featuredAt) !== values.featured)
-        await journeyFeature({
-          variables: { id: journey.id, feature: values.featured }
-        })
+    )
+
+    const results = await Promise.allSettled(tasks)
+
+    if (results.every((result) => result.status === 'fulfilled')) {
       enqueueSnackbar(t('Template settings have been saved'), {
         variant: 'success',
         preventDuplicate: true
       })
       onClose()
-    } catch (error) {
-      if (error instanceof ApolloError) {
-        if (error.networkError != null) {
-          enqueueSnackbar(
-            t('Field update failed. Reload the page or try again.'),
-            {
-              variant: 'error',
-              preventDuplicate: true
-            }
-          )
-          return
-        }
-      }
-      if (error instanceof Error) {
-        enqueueSnackbar(
-          'Something went wrong, please reload the page and try again',
-          {
-            variant: 'error',
-            preventDuplicate: true
-          }
-        )
-      }
+      return
     }
+
+    // Prefer the network-error message whichever task it came from — it is
+    // the actionable one, so it must not lose to an earlier GraphQL error.
+    const networkError = results.some(
+      (result) =>
+        result.status === 'rejected' &&
+        result.reason instanceof ApolloError &&
+        result.reason.networkError != null
+    )
+    enqueueSnackbar(
+      networkError
+        ? t('Field update failed. Reload the page or try again.')
+        : t('Something went wrong, please reload the page and try again'),
+      { variant: 'error', preventDuplicate: true }
+    )
   }
 
   return (

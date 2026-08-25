@@ -380,11 +380,7 @@ describe('SignInServiceButton', () => {
       mockLinkWithPopup.mockRejectedValueOnce(credentialAlreadyInUseError)
 
       const mockOAuthCredential = { providerId: 'google.com' }
-      mockCredentialFromError.mockReturnValueOnce(
-        mockOAuthCredential as ReturnType<
-          typeof OAuthProvider.credentialFromError
-        >
-      )
+      mockCredentialFromError.mockReturnValueOnce(mockOAuthCredential)
 
       const signedInCredential = {
         user: { getIdToken: vi.fn().mockResolvedValue('new-token') }
@@ -424,7 +420,7 @@ describe('SignInServiceButton', () => {
 
       mockCredentialFromError.mockReturnValueOnce({
         providerId: 'google.com'
-      } as ReturnType<typeof OAuthProvider.credentialFromError>)
+      })
 
       mockSignInWithCredential.mockResolvedValueOnce({
         user: { getIdToken: vi.fn().mockResolvedValue('new-token') }
@@ -462,7 +458,7 @@ describe('SignInServiceButton', () => {
 
       mockCredentialFromError.mockReturnValueOnce({
         providerId: 'google.com'
-      } as ReturnType<typeof OAuthProvider.credentialFromError>)
+      })
 
       mockSignInWithCredential.mockRejectedValueOnce({
         code: 'auth/invalid-credential'

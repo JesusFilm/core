@@ -29,12 +29,10 @@ describe('journeyViewEventCreate', () => {
 
   it('creates a JourneyViewEvent when no recent event exists', async () => {
     prismaMock.$queryRaw
-      .mockResolvedValueOnce([
-        { id: 'visitorId', userAgent: 'existing-agent' }
-      ] as any)
+      .mockResolvedValueOnce([{ id: 'visitorId', userAgent: 'existing-agent' }])
       .mockResolvedValueOnce([
         { journeyId: 'journeyId', visitorId: 'visitorId' }
-      ] as any)
+      ])
     prismaMock.event.findFirst.mockResolvedValue(null)
 
     const createdEvent = {
@@ -94,12 +92,10 @@ describe('journeyViewEventCreate', () => {
 
   it('returns null when a recent JourneyViewEvent already exists', async () => {
     prismaMock.$queryRaw
-      .mockResolvedValueOnce([
-        { id: 'visitorId', userAgent: 'existing-agent' }
-      ] as any)
+      .mockResolvedValueOnce([{ id: 'visitorId', userAgent: 'existing-agent' }])
       .mockResolvedValueOnce([
         { journeyId: 'journeyId', visitorId: 'visitorId' }
-      ] as any)
+      ])
     prismaMock.event.findFirst.mockResolvedValue({
       id: 'existingEventId',
       typename: 'JourneyViewEvent',
@@ -142,10 +138,10 @@ describe('journeyViewEventCreate', () => {
 
   it('updates visitor userAgent when it is null', async () => {
     prismaMock.$queryRaw
-      .mockResolvedValueOnce([{ id: 'visitorId', userAgent: null }] as any)
+      .mockResolvedValueOnce([{ id: 'visitorId', userAgent: null }])
       .mockResolvedValueOnce([
         { journeyId: 'journeyId', visitorId: 'visitorId' }
-      ] as any)
+      ])
     prismaMock.event.findFirst.mockResolvedValue(null)
 
     const createdEvent = {
@@ -185,12 +181,10 @@ describe('journeyViewEventCreate', () => {
 
   it('handles optional fields (id, label, value)', async () => {
     prismaMock.$queryRaw
-      .mockResolvedValueOnce([
-        { id: 'visitorId', userAgent: 'existing-agent' }
-      ] as any)
+      .mockResolvedValueOnce([{ id: 'visitorId', userAgent: 'existing-agent' }])
       .mockResolvedValueOnce([
         { journeyId: 'journeyId', visitorId: 'visitorId' }
-      ] as any)
+      ])
     prismaMock.event.findFirst.mockResolvedValue(null)
 
     const createdEvent = {

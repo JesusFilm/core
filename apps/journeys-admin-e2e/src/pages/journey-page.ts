@@ -1154,8 +1154,8 @@ export class JourneyPage {
   }
 
   async enterJourneysTypographyForTemplate(): Promise<void> {
-    let typographyPath = ''
-    let textareaPath = ''
+    let typographyPath: string
+    let textareaPath: string
     if (
       await this.page
         .frameLocator(this.journeyCardFrame)
