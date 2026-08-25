@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -110,7 +111,7 @@ describe('GoogleIntegrationDetails', () => {
     })
   }
 
-  function getGoogleSheetsSyncsMock(): MockedResponse {
+  function getGoogleSheetsSyncsMock(): MockLink.MockedResponse {
     return {
       request: {
         query: GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION,
@@ -130,7 +131,7 @@ describe('GoogleIntegrationDetails', () => {
     setupMocks({})
 
     const { getByText, getByRole } = render(
-      <MockedProvider mocks={[getGoogleSheetsSyncsMock()]} addTypename={false}>
+      <MockedProvider mocks={[getGoogleSheetsSyncsMock()]}>
         <SnackbarProvider>
           <GoogleIntegrationDetails />
         </SnackbarProvider>
@@ -146,7 +147,7 @@ describe('GoogleIntegrationDetails', () => {
     setupMocks({ canManageSyncs: false })
 
     const { getByRole } = render(
-      <MockedProvider mocks={[getGoogleSheetsSyncsMock()]} addTypename={false}>
+      <MockedProvider mocks={[getGoogleSheetsSyncsMock()]}>
         <SnackbarProvider>
           <GoogleIntegrationDetails />
         </SnackbarProvider>
@@ -159,7 +160,7 @@ describe('GoogleIntegrationDetails', () => {
   it.skip('opens delete sync dialog when delete action is clicked', async () => {
     setupMocks({})
 
-    const googleSheetsSyncsMock: MockedResponse = {
+    const googleSheetsSyncsMock: MockLink.MockedResponse = {
       request: {
         query: GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION,
         variables: {
@@ -188,7 +189,7 @@ describe('GoogleIntegrationDetails', () => {
     }
 
     const { getByRole, getByText } = render(
-      <MockedProvider mocks={[googleSheetsSyncsMock]} addTypename={false}>
+      <MockedProvider mocks={[googleSheetsSyncsMock]}>
         <SnackbarProvider>
           <GoogleIntegrationDetails />
         </SnackbarProvider>

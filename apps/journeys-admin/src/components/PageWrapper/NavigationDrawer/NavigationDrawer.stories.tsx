@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentProps, ReactElement, useState } from 'react'
 
@@ -46,7 +46,7 @@ const user = {
   token: 'mock-token'
 } as unknown as User
 
-const getMeMock: MockedResponse<GetMe> = {
+const getMeMock: MockLink.MockedResponse<GetMe> = {
   request: {
     query: GET_ME,
     variables: { input: { redirect: undefined } }
@@ -67,7 +67,7 @@ const getMeMock: MockedResponse<GetMe> = {
   }
 }
 
-const getUserRoleMock: MockedResponse<GetUserRole> = {
+const getUserRoleMock: MockLink.MockedResponse<GetUserRole> = {
   request: {
     query: GET_USER_ROLE
   },
@@ -82,7 +82,7 @@ const getUserRoleMock: MockedResponse<GetUserRole> = {
   }
 }
 
-const getAdminJourneysMock: MockedResponse<
+const getAdminJourneysMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {

@@ -32,10 +32,9 @@ const getVideoVariant = async (
   languageId: string
 ): Promise<VideoVariant> => {
   try {
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_VIDEO_VARIANT>
-    >({
+    const { data } = await getApolloClient().query({
       query: GET_VIDEO_VARIANT,
+      errorPolicy: 'none',
       variables: {
         id: mediaComponentId,
         languageId

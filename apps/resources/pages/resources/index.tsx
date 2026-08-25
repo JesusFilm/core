@@ -1,5 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
-import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
+import { NormalizedCacheObject } from '@apollo/client'
+import { ApolloProvider } from '@apollo/client/react'
 import { GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { ReactElement } from 'react'
@@ -90,7 +91,8 @@ export const getStaticProps: GetStaticProps<ResourcesPageProps> = async ({
     props: {
       flags,
       serverState,
-      intitialApolloState: apolloClient.cache.extract(),
+      intitialApolloState:
+        apolloClient.cache.extract() as NormalizedCacheObject,
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-resources'],

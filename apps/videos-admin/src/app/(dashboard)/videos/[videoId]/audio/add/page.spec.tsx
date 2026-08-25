@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { useRouter } from 'next/navigation'
@@ -12,8 +12,8 @@ import { useUploadVideoVariant } from '../../../../../_UploadVideoVariantProvide
 import AddAudioLanguageDialog from './page'
 
 // Mock useSuspenseQuery
-vi.mock('@apollo/client', async () => {
-  const originalModule = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const originalModule = await vi.importActual('@apollo/client/react')
   return {
     ...originalModule,
     useSuspenseQuery: vi.fn((_query) => {

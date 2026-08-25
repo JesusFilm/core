@@ -1,14 +1,18 @@
-import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useLazyQuery, useMutation } from '@apollo/client/react'
 import isNil from 'lodash/isNil'
 import omitBy from 'lodash/omitBy'
 import { useTranslation } from 'next-i18next/pages'
 import { useState } from 'react'
 
+import { CreateEventsExportLog } from '../../../__generated__/CreateEventsExportLog'
 import {
+  GetJourneyEvents,
   GetJourneyEventsVariables,
   GetJourneyEvents_journeyEventsConnection_edges as JourneyEventEdge,
   GetJourneyEvents_journeyEventsConnection_edges_node as JourneyEventNode
 } from '../../../__generated__/GetJourneyEvents'
+import { GetJourneyEventsCount } from '../../../__generated__/GetJourneyEventsCount'
 
 import { FILTERED_EVENTS } from './utils/constants'
 import { processCsv } from './utils/processCsv'
@@ -86,9 +90,15 @@ export function useJourneyEventsExport(): {
   progress: number
 } {
   const { t } = useTranslation('apps-journeys-admin')
-  const [getJourneyEventsCount] = useLazyQuery(GET_JOURNEY_EVENTS_COUNT)
-  const [getJourneyEvents] = useLazyQuery(GET_JOURNEY_EVENTS_EXPORT)
-  const [createEventsExportLog] = useMutation(CREATE_EVENTS_EXPORT_LOG)
+  const [getJourneyEventsCount] = useLazyQuery<GetJourneyEventsCount>(
+    GET_JOURNEY_EVENTS_COUNT
+  )
+  const [getJourneyEvents] = useLazyQuery<GetJourneyEvents>(
+    GET_JOURNEY_EVENTS_EXPORT
+  )
+  const [createEventsExportLog] = useMutation<CreateEventsExportLog>(
+    CREATE_EVENTS_EXPORT_LOG
+  )
 
   const [downloading, setDownloading] = useState(false)
   const [progress, setProgress] = useState(0)
@@ -135,7 +145,7 @@ export function useJourneyEventsExport(): {
         }
       })
 
-      total = data.journeyEventsCount ?? 0
+      total = data?.journeyEventsCount ?? 0
 
       do {
         const { data } = await getJourneyEvents({

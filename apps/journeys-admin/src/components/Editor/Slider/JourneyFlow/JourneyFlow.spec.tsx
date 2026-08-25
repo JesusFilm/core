@@ -1,5 +1,6 @@
-import { MutationResult } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import type { useMutation } from '@apollo/client/react'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import Box from '@mui/material/Box'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/compat/router'
@@ -25,6 +26,8 @@ import {
   GetStepBlocksWithPosition,
   GetStepBlocksWithPositionVariables
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
+import { JourneySettingsUpdate } from '../../../../../__generated__/JourneySettingsUpdate'
+import { StepBlockPositionUpdate } from '../../../../../__generated__/StepBlockPositionUpdate'
 import { StepFields as StepBlock } from '../../../../../__generated__/StepFields'
 import { mockReactFlow } from '../../../../../test/mockReactFlow'
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
@@ -96,7 +99,7 @@ describe('JourneyFlow', () => {
     } as unknown as NextRouter)
   })
 
-  const mockGetStepBlocksWithPosition: MockedResponse<
+  const mockGetStepBlocksWithPosition: MockLink.MockedResponse<
     GetStepBlocksWithPosition,
     GetStepBlocksWithPositionVariables
   > = {
@@ -202,7 +205,8 @@ describe('JourneyFlow', () => {
     }))
     const result = vi.fn().mockReturnValue({ data: { blocks } })
     const mockUpdate = vi.fn()
-    const mockResult = vi.fn() as unknown as MutationResult
+    const mockResult =
+      vi.fn() as unknown as useMutation.Result<StepBlockPositionUpdate>
     mockUseStepBlockPositionUpdateMutation.mockReturnValue([
       mockUpdate,
       mockResult
@@ -267,7 +271,8 @@ describe('JourneyFlow', () => {
   it('should reorganize graph', async () => {
     const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
     const mockUpdate = vi.fn()
-    const mockResult = vi.fn() as unknown as MutationResult
+    const mockResult =
+      vi.fn() as unknown as useMutation.Result<StepBlockPositionUpdate>
     mockUseStepBlockPositionUpdateMutation.mockReturnValue([
       mockUpdate,
       mockResult
@@ -365,7 +370,8 @@ describe('JourneyFlow', () => {
 
     // Mock for journey update
     const mockJourneyUpdate = vi.fn()
-    const mockJourneyResult = vi.fn() as unknown as MutationResult
+    const mockJourneyResult =
+      vi.fn() as unknown as useMutation.Result<JourneySettingsUpdate>
     mockUseJourneyUpdateMutation.mockReturnValue([
       mockJourneyUpdate,
       mockJourneyResult

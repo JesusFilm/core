@@ -1,4 +1,5 @@
-import { LazyQueryResultTuple, gql, useLazyQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client/react'
 
 import {
   GetUserInvites,
@@ -17,15 +18,13 @@ export const GET_USER_INVITES = gql`
   }
 `
 
-export function useUserInvitesLazyQuery(
-  variables?: GetUserInvitesVariables
-): LazyQueryResultTuple<GetUserInvites, GetUserInvitesVariables> {
-  const query = useLazyQuery<GetUserInvites, GetUserInvitesVariables>(
-    GET_USER_INVITES,
-    {
-      variables
-    }
-  )
-
-  return query
+/**
+ * Apollo Client 4 moved `variables` from the hook to the execute function, so
+ * callers pass them when they run the query rather than when they mount.
+ */
+export function useUserInvitesLazyQuery(): useLazyQuery.ResultTuple<
+  GetUserInvites,
+  GetUserInvitesVariables
+> {
+  return useLazyQuery<GetUserInvites, GetUserInvitesVariables>(GET_USER_INVITES)
 }

@@ -1,4 +1,5 @@
-import { QueryResult, gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { skipToken, useQuery } from '@apollo/client/react'
 import { useMemo } from 'react'
 
 import {
@@ -31,15 +32,24 @@ export const GET_USER_TEAMS_AND_INVITES = gql`
 
 export function useUserTeamsAndInvitesQuery(
   variables?: GetUserTeamsAndInvitesVariables
-): QueryResult<GetUserTeamsAndInvites, GetUserTeamsAndInvitesVariables> & {
+): useQuery.Result<
+  GetUserTeamsAndInvites,
+  GetUserTeamsAndInvitesVariables,
+  'empty' | 'complete' | 'streaming',
+  Partial<GetUserTeamsAndInvitesVariables>
+> & {
   emails: string[]
 } {
   const query = useQuery<
     GetUserTeamsAndInvites,
     GetUserTeamsAndInvitesVariables
-  >(GET_USER_TEAMS_AND_INVITES, {
-    variables
-  })
+  >(
+    GET_USER_TEAMS_AND_INVITES,
+    // Apollo Client 4 requires `variables` for operations that declare
+    // required ones. Callers hand us `undefined` while the team is unknown,
+    // which is what `skipToken` expresses.
+    variables == null ? skipToken : { variables }
+  )
 
   const emails = useMemo(() => {
     return [

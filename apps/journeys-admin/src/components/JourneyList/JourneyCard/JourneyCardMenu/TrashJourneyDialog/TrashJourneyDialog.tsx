@@ -1,4 +1,5 @@
-import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
+import { ApolloClient, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
@@ -27,7 +28,7 @@ export interface TrashJourneyDialogProps {
   id: string
   open: boolean
   handleClose: () => void
-  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  refetch?: () => Promise<ApolloClient.QueryResult<GetAdminJourneys>>
   fromTemplateId?: string | null
   /**
    * When true, render the template-flavoured copy ("Trash Template?",

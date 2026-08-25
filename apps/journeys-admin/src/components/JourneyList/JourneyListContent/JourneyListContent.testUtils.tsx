@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { RenderResult, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -11,7 +12,7 @@ import { SortOrder } from '../JourneySort'
 import { JourneyListContent } from './JourneyListContent'
 
 export interface RenderJourneyListContentOptions {
-  mocks: MockedResponse[]
+  mocks: MockLink.MockedResponse[]
   contentType: ContentType
   status: JourneyStatusFilter
   user?: User

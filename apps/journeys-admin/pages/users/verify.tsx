@@ -1,4 +1,5 @@
-import { ApolloError, gql, useApolloClient, useMutation } from '@apollo/client'
+import { ErrorLike, NormalizedCacheObject, gql } from '@apollo/client'
+import { useApolloClient, useMutation } from '@apollo/client/react'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -63,7 +64,7 @@ function ValidateEmail({
   const { user } = useAuth()
   const email = user?.email ?? ''
   const { setActiveTeam } = useTeam()
-  const [error, setError] = useState<GraphQLError | ApolloError | null>(
+  const [error, setError] = useState<GraphQLError | ErrorLike | null>(
     initialError
   )
   const [disableValidationButton, setDisableValidationButton] = useState(false)
@@ -296,7 +297,8 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
           initialError: null,
           userSerialized: JSON.stringify(user),
           ...translations,
-          initialApolloState: apolloClient.cache.extract()
+          initialApolloState:
+            apolloClient.cache.extract() as NormalizedCacheObject
         }
       }
     }
@@ -319,7 +321,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       token,
       userSerialized: JSON.stringify(user),
       ...translations,
-      initialApolloState: apolloClient.cache.extract()
+      initialApolloState: apolloClient.cache.extract() as NormalizedCacheObject
     }
   }
 }

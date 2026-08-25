@@ -1,6 +1,5 @@
 'use client'
-
-import { useMutation, useSuspenseQuery } from '@apollo/client'
+import { useMutation, useSuspenseQuery } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -73,14 +72,14 @@ export default function PublishAllAudioDialog({
   const handleConfirmPublishAll = useCallback(async () => {
     setIsSubmitting(true)
     try {
-      const { data: mutationData, errors } = await publishVariantsOnly({
+      const { data: mutationData, error } = await publishVariantsOnly({
         variables: {
           id: videoId,
           mode: 'variantsOnly',
           dryRun: false
         }
       })
-      if (errors != null && errors.length > 0) {
+      if (error != null) {
         throw new Error('Failed to publish variants')
       }
       const count =

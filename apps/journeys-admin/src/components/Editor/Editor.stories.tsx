@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { screen, userEvent, waitFor } from 'storybook/test'
 
@@ -94,7 +95,7 @@ const journey: Journey = {
   showAssistant: null
 }
 
-const mockGetStepBlocksWithPosition: MockedResponse<GetStepBlocksWithPosition> =
+const mockGetStepBlocksWithPosition: MockLink.MockedResponse<GetStepBlocksWithPosition> =
   {
     request: {
       query: GET_STEP_BLOCKS_WITH_POSITION,

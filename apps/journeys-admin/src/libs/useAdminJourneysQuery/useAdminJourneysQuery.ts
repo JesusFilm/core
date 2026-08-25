@@ -1,9 +1,5 @@
-import {
-  QueryResult,
-  WatchQueryFetchPolicy,
-  gql,
-  useQuery
-} from '@apollo/client'
+import { WatchQueryFetchPolicy, gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 
 import {
   GetAdminJourneys,
@@ -88,7 +84,11 @@ export const GET_ADMIN_JOURNEYS = gql`
 export function useAdminJourneysQuery(
   variables?: GetAdminJourneysVariables,
   options?: { skip?: boolean; fetchPolicy?: WatchQueryFetchPolicy }
-): QueryResult<GetAdminJourneys, GetAdminJourneysVariables> {
+): useQuery.Result<
+  GetAdminJourneys,
+  GetAdminJourneysVariables,
+  'empty' | 'complete' | 'streaming'
+> {
   const query = useQuery<GetAdminJourneys, GetAdminJourneysVariables>(
     GET_ADMIN_JOURNEYS,
     {

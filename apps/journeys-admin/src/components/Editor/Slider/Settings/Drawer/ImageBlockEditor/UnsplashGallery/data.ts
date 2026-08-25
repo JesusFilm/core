@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
@@ -14,7 +14,7 @@ import {
 import { LIST_UNSPLASH_COLLECTION_PHOTOS } from './UnsplashGallery'
 import { TRIGGER_UNSPLASH_DOWNLOAD } from './UnsplashList/UnsplashList'
 
-export const listUnsplashCollectionPhotosMock: MockedResponse<
+export const listUnsplashCollectionPhotosMock: MockLink.MockedResponse<
   ListUnsplashCollectionPhotos,
   ListUnsplashCollectionPhotosVariables
 > = {
@@ -537,7 +537,7 @@ export const listUnsplashCollectionPhotosMock: MockedResponse<
   }
 }
 
-export const triggerUnsplashDownloadMock: MockedResponse<
+export const triggerUnsplashDownloadMock: MockLink.MockedResponse<
   TriggerUnsplashDownload,
   TriggerUnsplashDownloadVariables
 > = {

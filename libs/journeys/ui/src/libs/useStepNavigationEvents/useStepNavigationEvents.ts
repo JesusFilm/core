@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { TOptions } from 'i18next'
 import { usePlausible } from 'next-plausible'

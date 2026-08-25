@@ -1,6 +1,6 @@
 'use client'
-
-import { gql, useApolloClient, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useApolloClient, useMutation } from '@apollo/client/react'
 import BuildRoundedIcon from '@mui/icons-material/BuildRounded'
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded'
 import Alert from '@mui/material/Alert'
@@ -61,6 +61,19 @@ interface BatchResult {
   extraCount: number
   failedCount: number
   issues: VariantIndexIssue[]
+}
+
+interface FixIssuesResult {
+  fixAlgoliaVideoVariantIndexIssues: {
+    fixedCount: number
+    failedCount: number
+    issues: Array<{
+      id: string
+      issueType: string
+      objectId: string
+      error: string | null
+    }>
+  }
 }
 
 interface SummaryCounts {
@@ -189,7 +202,7 @@ function subtractFixedIssues(
 export function AlgoliaDebugging(): ReactElement {
   const apolloClient = useApolloClient()
   const { enqueueSnackbar } = useSnackbar()
-  const [fixIssues] = useMutation(FIX_VARIANT_INDEX_ISSUES)
+  const [fixIssues] = useMutation<FixIssuesResult>(FIX_VARIANT_INDEX_ISSUES)
   const [issues, setIssues] = useState<VariantIndexIssue[]>([])
   const [summary, setSummary] = useState<SummaryCounts>(initialSummary)
   const [scanning, setScanning] = useState(false)
@@ -285,7 +298,8 @@ export function AlgoliaDebugging(): ReactElement {
           },
           fetchPolicy: 'no-cache'
         })
-        const batch = data.checkAlgoliaVideoVariantIndexBatch
+        const batch = data?.checkAlgoliaVideoVariantIndexBatch
+        if (batch == null) break
         applyBatch(batch)
         batchKey = batch.nextBatchKey
         done = batch.done

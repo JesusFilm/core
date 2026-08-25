@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { offsetLimitPagination } from '@apollo/client/utilities'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
@@ -51,7 +52,7 @@ const buildMock = (
     offset: 0,
     limit: PEEK_LIMIT
   }
-): MockedResponse<GetMyMuxVideos> => ({
+): MockLink.MockedResponse<GetMyMuxVideos> => ({
   request: { query: GET_MY_MUX_VIDEOS, variables },
   result: { data: { getMyMuxVideos: videos } }
 })

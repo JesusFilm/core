@@ -1,5 +1,5 @@
-import { MutationResult } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import type { useMutation } from '@apollo/client/react'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { Edge, OnSelectionChangeParams, useKeyPress } from '@xyflow/react'
 import { type MockedFunction } from 'vitest'
@@ -50,7 +50,7 @@ const mockUseBlockDeleteMutation = useBlockDeleteMutation as MockedFunction<
 describe('useDeleteOnKeyPress', () => {
   const deleteBlock = vi.fn()
   const deleteEdge = vi.fn()
-  const deleteResult = {} as unknown as MutationResult<BlockDelete>
+  const deleteResult = {} as unknown as useMutation.Result<BlockDelete>
 
   beforeEach(() => {
     mockUseDeleteEdge.mockReturnValue(deleteEdge)

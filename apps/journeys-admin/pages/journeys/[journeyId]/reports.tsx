@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { GetServerSidePropsContext } from 'next'
@@ -61,13 +62,7 @@ function JourneyReportsPage({ flags, plausibleDashboardViewed }): ReactElement {
   const [updatePlausibleDashboardViewed] = useMutation<
     UpdatePlausibleDashboardViewed,
     UpdatePlausibleDashboardViewedVariables
-  >(UPDATE_PLAUSIBLE_DASHBOARD_VIEWED, {
-    variables: {
-      input: {
-        plausibleDashboardViewed: true
-      }
-    }
-  })
+  >(UPDATE_PLAUSIBLE_DASHBOARD_VIEWED)
 
   const [open, setOpen] = useState(plausibleDashboardViewed !== true)
 
@@ -116,7 +111,9 @@ function JourneyReportsPage({ flags, plausibleDashboardViewed }): ReactElement {
               currentRef={currentRef}
               pointerPosition="92%"
               handleClose={() => {
-                void updatePlausibleDashboardViewed()
+                void updatePlausibleDashboardViewed({
+                  variables: { input: { plausibleDashboardViewed: true } }
+                })
                 setBeaconRoute('/ask/')
                 setOpen(false)
               }}
@@ -180,7 +177,8 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       userSerialized: JSON.stringify(user),
       ...translations,
       flags,
-      plausibleDashboardViewed: data.getJourneyProfile?.plausibleDashboardViewed
+      plausibleDashboardViewed:
+        data?.getJourneyProfile?.plausibleDashboardViewed ?? null
     }
   }
 }

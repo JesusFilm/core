@@ -1,10 +1,6 @@
-import {
-  NetworkStatus,
-  OperationVariables,
-  QueryResult,
-  useQuery
-} from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { NetworkStatus, OperationVariables } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { type MockedFunction } from 'vitest'
@@ -38,8 +34,8 @@ vi.mock('../../../../../libs/getVideoChildrenLabel', () => ({
 }))
 
 // Mock useQuery hook
-vi.mock('@apollo/client', async () => {
-  const original = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const original = await vi.importActual('@apollo/client/react')
   return {
     ...original,
     useQuery: vi.fn(),
@@ -106,18 +102,22 @@ const setupMock = (data: any) => {
     error: undefined,
     refetch: vi.fn(),
     fetchMore: vi.fn(),
+    dataState: 'complete' as const,
     networkStatus: NetworkStatus.ready,
     client: {} as any,
     previousData: null,
-    called: true,
     startPolling: vi.fn(),
     stopPolling: vi.fn(),
     subscribeToMore: vi.fn(),
     updateQuery: vi.fn(),
     observable: {} as any,
-    reobserve: vi.fn(),
     variables: {}
-  } as QueryResult<any, OperationVariables>)
+  } as useQuery.Result<
+    any,
+    OperationVariables,
+    'empty' | 'complete' | 'streaming',
+    Partial<OperationVariables>
+  >)
 }
 
 describe('VideoTabView', () => {

@@ -1,4 +1,4 @@
-import { ApolloError } from '@apollo/client'
+import { CombinedGraphQLErrors } from '@apollo/client'
 import { FormikHelpers } from 'formik'
 import { TFunction } from 'i18next'
 import { useTranslation } from 'next-i18next/pages'
@@ -76,7 +76,7 @@ export interface UseCollectionFormResult {
    *    changed fields to templateGalleryPageUpdate, then onClose
    *  - edit + intent 'publish' → diffed update (if any), then
    *    templateGalleryPagePublish, then onClose
-   * On ApolloError, maps `extensions.field` back to a Formik field error
+   * On a GraphQL error, maps `extensions.field` back to a Formik field error
    * for slug / mediaUrl / creatorImageSrc / title; falls back to a
    * snackbar otherwise.
    */
@@ -417,16 +417,16 @@ export function useCollectionForm({
       }
       onClose()
     } catch (error) {
-      if (error instanceof ApolloError) {
+      if (CombinedGraphQLErrors.is(error)) {
         // Scan every GraphQL error, not just [0] — a batched response can
         // carry the actionable extension at any index.
-        const gqlErrors = error.graphQLErrors ?? []
+        const gqlErrors = error.errors
         // Media validation errors carry a structured `extensions.reason`
         // (BAD_USER_INPUT) rather than a `field` — surface them inline on the
         // media field with a human-readable, translated message. The live
         // preview reads the same reason via `mediaErrorReason` so the two
         // can't drift.
-        const reason = mediaErrorReason(gqlErrors)
+        const reason = mediaErrorReason(error)
         if (reason != null) {
           await helpers.setFieldTouched('media', true, false)
           helpers.setFieldError('media', mediaErrorMessage(reason, t))
@@ -444,7 +444,7 @@ export function useCollectionForm({
         if (fieldError != null) {
           // Mark the field as touched so the error renders even if the
           // user submitted without focusing it first. Fall back to the
-          // ApolloError's combined message when the individual error's
+          // combined message when the individual error's
           // message is empty — an empty field error renders as nothing,
           // which would make the failed save look like a silent no-op.
           await helpers.setFieldTouched(fieldError, true, false)

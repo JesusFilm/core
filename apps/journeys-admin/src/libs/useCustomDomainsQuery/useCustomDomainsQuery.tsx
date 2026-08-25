@@ -1,4 +1,5 @@
-import { QueryHookOptions, QueryResult, gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 
 import {
   GetCustomDomains,
@@ -23,9 +24,15 @@ export const GET_CUSTOM_DOMAINS = gql`
   }
 `
 
-export function useCustomDomainsQuery(
-  options?: QueryHookOptions<GetCustomDomains, GetCustomDomainsVariables>
-): QueryResult<GetCustomDomains, GetCustomDomainsVariables> & {
+export function useCustomDomainsQuery(options: {
+  variables: GetCustomDomainsVariables
+  skip?: boolean
+  notifyOnNetworkStatusChange?: boolean
+}): useQuery.Result<
+  GetCustomDomains,
+  GetCustomDomainsVariables,
+  'empty' | 'complete' | 'streaming'
+> & {
   hostname?: string
 } {
   const query = useQuery<GetCustomDomains, GetCustomDomainsVariables>(

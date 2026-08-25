@@ -100,10 +100,9 @@ taxonomies.openapi(listTaxonomiesRoute, async (c) => {
   const cacheKey = generateCacheKey(['taxonomies', ...metadataLanguageTags])
 
   const response = await getWithStaleCacheForRequest(c, cacheKey, async () => {
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_TAXONOMIES>
-    >({
+    const { data } = await getApolloClient().query({
       query: GET_TAXONOMIES,
+      errorPolicy: 'none',
       variables: { languageCodes: metadataLanguageTags }
     })
 

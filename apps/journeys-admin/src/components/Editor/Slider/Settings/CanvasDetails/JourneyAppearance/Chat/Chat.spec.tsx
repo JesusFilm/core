@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
@@ -15,7 +16,7 @@ import { Chat } from '.'
 
 const renderChat = (
   chatButtons: Journey['chatButtons'],
-  mocks: MockedResponse[] = [],
+  mocks: MockLink.MockedResponse[] = [],
   journeyId = 'journey-1'
 ): ReturnType<typeof render> => {
   const journey = { id: journeyId, chatButtons } as unknown as Journey
@@ -201,7 +202,7 @@ describe('Chat', () => {
   })
 
   it('should show error snackbar when add 2nd custom button fails', async () => {
-    const createErrorMock: MockedResponse<JourneyChatButtonCreate> = {
+    const createErrorMock: MockLink.MockedResponse<JourneyChatButtonCreate> = {
       request: {
         query: JOURNEY_CHAT_BUTTON_CREATE,
         variables: {
@@ -253,7 +254,7 @@ describe('Chat', () => {
       }
     }))
 
-    const createMock: MockedResponse<JourneyChatButtonCreate> = {
+    const createMock: MockLink.MockedResponse<JourneyChatButtonCreate> = {
       request: {
         query: JOURNEY_CHAT_BUTTON_CREATE,
         variables: {

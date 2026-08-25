@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { TemplateGalleryPageStatus } from '../../../__generated__/globalTypes'
 import {
@@ -29,7 +29,7 @@ const defaultAssigned: Assigned = {
 export const getTemplateGalleryPageAssignJourneyMock = (
   variables: TemplateGalleryPageAssignJourneyVariables,
   overrides: Partial<Assigned> = {}
-): MockedResponse<
+): MockLink.MockedResponse<
   TemplateGalleryPageAssignJourney,
   TemplateGalleryPageAssignJourneyVariables
 > => ({

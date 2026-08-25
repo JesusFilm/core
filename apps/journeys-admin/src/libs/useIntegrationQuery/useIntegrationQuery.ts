@@ -1,4 +1,5 @@
-import { QueryResult, gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { skipToken, useQuery } from '@apollo/client/react'
 
 import {
   GetIntegration,
@@ -41,9 +42,16 @@ export const GET_INTEGRATION = gql`
 
 export function useIntegrationQuery(
   variables?: GetIntegrationVariables
-): QueryResult<GetIntegration, GetIntegrationVariables> {
-  return useQuery<GetIntegration, GetIntegrationVariables>(GET_INTEGRATION, {
-    variables,
-    skip: variables?.teamId == null
-  })
+): useQuery.Result<
+  GetIntegration,
+  GetIntegrationVariables,
+  'empty' | 'complete' | 'streaming',
+  Partial<GetIntegrationVariables>
+> {
+  return useQuery<GetIntegration, GetIntegrationVariables>(
+    GET_INTEGRATION,
+    // Apollo Client 4 requires `variables` for operations that declare
+    // required ones, so express "no team yet" with `skipToken`.
+    variables?.teamId == null ? skipToken : { variables }
+  )
 }

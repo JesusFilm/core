@@ -1,6 +1,6 @@
 'use client'
-
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import CloudSyncIcon from '@mui/icons-material/CloudSync'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'

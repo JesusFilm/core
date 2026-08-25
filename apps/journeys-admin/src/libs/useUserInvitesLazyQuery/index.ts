@@ -1,1 +1,4 @@
-export { useUserInvitesLazyQuery } from './useUserInvitesLazyQuery'
+export {
+  GET_USER_INVITES,
+  useUserInvitesLazyQuery
+} from './useUserInvitesLazyQuery'

@@ -1,3 +1,4 @@
+import { CombinedGraphQLErrors } from '@apollo/client'
 import { render, screen } from '@testing-library/react'
 import { GetServerSidePropsContext } from 'next'
 
@@ -146,15 +147,19 @@ describe('template-gallery [slug] getServerSideProps', () => {
 
   it('logs a redacted error summary when the null branch carries errors', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    // Apollo Client 4 delivers GraphQL errors as a single `error` wrapping
+    // them, rather than a top-level `errors` array.
     mockQuery.mockResolvedValueOnce({
       data: { templateGalleryPageBySlug: null },
-      errors: [
-        {
-          message: 'something exploded',
-          path: ['templateGalleryPageBySlug'],
-          extensions: { code: 'INTERNAL_SERVER_ERROR' }
-        }
-      ]
+      error: new CombinedGraphQLErrors({
+        errors: [
+          {
+            message: 'something exploded',
+            path: ['templateGalleryPageBySlug'],
+            extensions: { code: 'INTERNAL_SERVER_ERROR' }
+          }
+        ]
+      })
     })
 
     await getServerSideProps({
@@ -189,7 +194,7 @@ describe('template-gallery [slug] getServerSideProps', () => {
     }))
     mockQuery.mockResolvedValueOnce({
       data: { templateGalleryPageBySlug: null },
-      errors
+      error: new CombinedGraphQLErrors({ errors })
     })
 
     await getServerSideProps({

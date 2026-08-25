@@ -153,7 +153,7 @@ export function MediaPreview({
       if (compact) return <MediaPreviewPlaceholder dark sizeSx={sizeSx} />
       // Read the reason the same way the save path does (mediaErrorReason),
       // falling back to the generic message when none is present.
-      const reason = mediaErrorReason(error.graphQLErrors)
+      const reason = mediaErrorReason(error)
       return (
         <MediaPreviewPlaceholder label={mediaErrorMessage(reason ?? '', t)} />
       )
