@@ -224,6 +224,9 @@ export const Video = builder.prismaObject('Video', {
         variants: {
           select: {
             languageId: true
+          },
+          where: {
+            published: true
           }
         }
       }),
