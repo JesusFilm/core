@@ -68,7 +68,7 @@ export class Publisher {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Archive All')
     await this.clickDialogBoxBtn('Archive')
-    await this.verifyToastMessage('Journeys Archived')
+    await this.verifyToastMessage('Templates Archived')
     await this.verifyActiveTabShowsEmptyMessage()
     await this.clickArchivedTab()
     await this.verifyAllTemplateMovedToArchivedTab()
@@ -79,7 +79,7 @@ export class Publisher {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Unarchive All')
     await this.clickDialogBoxBtn('Unarchive')
-    await this.verifyToastMessage('Journeys Restored')
+    await this.verifyToastMessage('Templates Unarchived')
     await this.verifyEmptyMessageInArchivedTab()
     await this.clickActiveTab()
     await this.verifyAllTemplateMovedToActiveTab()
@@ -89,7 +89,7 @@ export class Publisher {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Trash All')
     await this.clickDialogBoxBtn('Trash')
-    await this.verifyToastMessage('Journeys Trashed')
+    await this.verifyToastMessage('Templates Trashed')
     await this.clickTrashTab()
     await this.verifyAllTemplateMovedToTrashTab()
   }
@@ -98,7 +98,7 @@ export class Publisher {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Restore All')
     await this.clickDialogBoxBtn('Restore')
-    await this.verifyToastMessage('Journeys Restored')
+    await this.verifyToastMessage('Templates Restored')
     await this.clickActiveTab()
     await this.verifyAllTemplateMovedToActiveTab()
   }
@@ -107,7 +107,7 @@ export class Publisher {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Delete All Forever')
     await this.clickDialogBoxBtn('Delete Forever')
-    await this.verifyToastMessage('Journeys Deleted')
+    await this.verifyToastMessage('Templates Deleted')
     await this.verifyAllTemplateAreDeletedFromTrashTab()
   }
 
@@ -346,10 +346,13 @@ export class Publisher {
   }
 
   async verifyActiveTabShowsEmptyMessage() {
+    // exact: true pins the casing. Without it Playwright matches the accessible
+    // name case-insensitively, so 'no templates TO DISPLAY' would also pass and
+    // a casing regression would go undetected (NES-1876).
     await expect(
-      this.page.locator('div[aria-labelledby*="active-status-panel-tab"] h6', {
-        hasText: 'No templates to display.'
-      })
+      this.page
+        .getByRole('tabpanel', { name: 'Active' })
+        .getByRole('heading', { name: 'No Templates to display.', exact: true })
     ).toBeVisible()
   }
 
@@ -391,10 +394,21 @@ export class Publisher {
   }
 
   async verifyEmptyMessageInArchivedTab() {
+    const archivedTabPanel = this.page.getByRole('tabpanel', {
+      name: 'Archived'
+    })
+    // exact: true pins the casing — see verifyActiveTabShowsEmptyMessage.
     await expect(
-      this.page.locator('div[id*="archived-status-panel-tabpanel"] h6', {
-        hasText: 'No archived templates.'
+      archivedTabPanel.getByRole('heading', {
+        name: 'No archived Templates.',
+        exact: true
       })
+    ).toBeVisible()
+    await expect(
+      archivedTabPanel.getByText(
+        'Archived Templates are delisted from the Template Library.',
+        { exact: true }
+      )
     ).toBeVisible()
   }
 
@@ -458,15 +472,26 @@ export class Publisher {
   }
 
   async verifyAllTemplateAreDeletedFromTrashTab() {
+    // The tab is labelled 'Trash', not 'Trashed' — a tab panel takes its
+    // accessible name from the tab that labels it.
+    const trashedTabPanel = this.page.getByRole('tabpanel', { name: 'Trash' })
     await expect(
-      this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+      trashedTabPanel.locator(
+        'div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
       )
     ).toHaveCount(0)
+    // exact: true pins the casing — see verifyActiveTabShowsEmptyMessage.
     await expect(
-      this.page.locator('div[id*="trashed-status-panel-tabpanel"] h6', {
-        hasText: 'Your trashed templates will appear here.'
+      trashedTabPanel.getByRole('heading', {
+        name: 'Your trashed Templates will appear here.',
+        exact: true
       })
+    ).toBeVisible()
+    await expect(
+      trashedTabPanel.getByText(
+        'Trashed Templates are moved here for up to 40 days.',
+        { exact: true }
+      )
     ).toBeVisible()
   }
 
@@ -621,7 +646,7 @@ export class Publisher {
   async clickDropDownOpenIconForFilters(filterOption: string) {
     await this.page
       .locator(
-        'div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]',
+        'div[class*="MuiGrid-root"] > div[class*="MuiAutocomplete-root"]',
         { hasText: filterOption }
       )
       .locator('button[aria-label="Open"]')
@@ -666,7 +691,7 @@ export class Publisher {
   async clickDropDownCloseIconForFilters(filterOption: string) {
     await this.page
       .locator(
-        'div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]',
+        'div[class*="MuiGrid-root"] > div[class*="MuiAutocomplete-root"]',
         { hasText: filterOption }
       )
       .locator('button[aria-label="Close"]')

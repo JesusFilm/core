@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -49,7 +50,7 @@ describe('RemoveUser', () => {
       <JourneyProvider
         value={{
           journey: { id: 'journeyId' } as unknown as Journey,
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <MockedProvider
@@ -105,7 +106,8 @@ describe('RemoveUser', () => {
             journeyId="journeyId"
           />
         </MockedProvider>
-      </JourneyProvider>
+      </JourneyProvider>,
+      { wrapper: MenuList }
     )
 
     fireEvent.click(getByRole('menuitem'))
@@ -142,7 +144,7 @@ describe('RemoveUser', () => {
       <JourneyProvider
         value={{
           journey: { id: 'journeyId' } as unknown as Journey,
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <MockedProvider
@@ -166,7 +168,8 @@ describe('RemoveUser', () => {
             journeyId="journeyId"
           />
         </MockedProvider>
-      </JourneyProvider>
+      </JourneyProvider>,
+      { wrapper: MenuList }
     )
 
     fireEvent.click(getByRole('menuitem'))

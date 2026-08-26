@@ -3,6 +3,8 @@ import { type MockedFunction, vi } from 'vitest'
 
 import type { OpenrouterFallbackSession } from '@core/shared/ai/openrouterModel'
 
+import { promptOf } from '../../../../test/promptOf'
+
 import { translateJourneyMetadata } from './translateJourneyMetadata'
 
 vi.mock('ai', () => ({
@@ -27,13 +29,6 @@ const session = {
   )
 } as unknown as OpenrouterFallbackSession
 
-function promptOf(call: unknown): string {
-  const [options] = call as [
-    { messages: Array<{ content: Array<{ text: string }> }> }
-  ]
-  return options.messages[1].content[0].text
-}
-
 function aiResult(output: unknown): unknown {
   return {
     output,
@@ -51,9 +46,12 @@ function aiResult(output: unknown): unknown {
 // analysis call and each single-field call return predictable values.
 function defaultImplementation(): void {
   mockGenerateText.mockImplementation((async (options: unknown) => {
-    const text = promptOf([options])
+    const text = promptOf(options)
     if (text.includes('produce only the analysis')) {
       return aiResult({ analysis: 'ANALYSIS CONTEXT' })
+    }
+    if (text.includes('Translate the journey display title below')) {
+      return aiResult({ translation: 'Título visible traducido' })
     }
     if (text.includes('Translate the journey title below')) {
       return aiResult({ translation: 'Título traducido' })
@@ -75,6 +73,7 @@ const baseInput = {
   sourceLanguageName: 'English',
   targetLanguageName: 'Spanish',
   journeyTitle: 'My Journey Title',
+  journeyDisplayTitle: 'My Display Title',
   journeyDescription: 'My journey description',
   seoTitle: 'My SEO Title',
   seoDescription: 'My SEO Description',
@@ -94,6 +93,7 @@ describe('translateJourneyMetadata', () => {
     expect(result).toEqual({
       analysis: 'ANALYSIS CONTEXT',
       title: 'Título traducido',
+      displayTitle: 'Título visible traducido',
       description: 'Descripción traducida',
       seoTitle: 'Título SEO traducido',
       seoDescription: 'Descripción SEO traducida'
@@ -104,10 +104,10 @@ describe('translateJourneyMetadata', () => {
     await translateJourneyMetadata(baseInput)
 
     const titleCall = mockGenerateText.mock.calls.find((call) =>
-      promptOf(call).includes('Translate the journey title below')
+      promptOf(call[0]).includes('Translate the journey title below')
     )
     const descriptionCall = mockGenerateText.mock.calls.find((call) =>
-      promptOf(call).includes('Translate the journey description below')
+      promptOf(call[0]).includes('Translate the journey description below')
     )
 
     expect(titleCall).toBeDefined()
@@ -115,11 +115,11 @@ describe('translateJourneyMetadata', () => {
 
     // The title call only ever sees the title value, never the description —
     // so the model has nothing to swap it with (and vice versa).
-    const titlePrompt = promptOf(titleCall as unknown)
+    const titlePrompt = promptOf(titleCall?.[0])
     expect(titlePrompt).toContain('<hardened>My Journey Title</hardened>')
     expect(titlePrompt).not.toContain('My journey description')
 
-    const descriptionPrompt = promptOf(descriptionCall as unknown)
+    const descriptionPrompt = promptOf(descriptionCall?.[0])
     expect(descriptionPrompt).toContain(
       '<hardened>My journey description</hardened>'
     )
@@ -130,24 +130,28 @@ describe('translateJourneyMetadata', () => {
     await translateJourneyMetadata(baseInput)
 
     const fieldCalls = mockGenerateText.mock.calls.filter(
-      (call) => !promptOf(call).includes('produce only the analysis')
+      (call) => !promptOf(call[0]).includes('produce only the analysis')
     )
 
-    expect(fieldCalls).toHaveLength(4)
+    expect(fieldCalls).toHaveLength(5)
     for (const call of fieldCalls) {
-      expect(promptOf(call)).toContain('<hardened>ANALYSIS CONTEXT</hardened>')
+      expect(promptOf(call[0])).toContain(
+        '<hardened>ANALYSIS CONTEXT</hardened>'
+      )
     }
   })
 
   it('returns empty strings for absent fields without making AI calls for them', async () => {
     const result = await translateJourneyMetadata({
       ...baseInput,
+      journeyDisplayTitle: null,
       journeyDescription: null,
       seoTitle: null,
       seoDescription: '   '
     })
 
     expect(result.title).toBe('Título traducido')
+    expect(result.displayTitle).toBe('')
     expect(result.description).toBe('')
     expect(result.seoTitle).toBe('')
     expect(result.seoDescription).toBe('')
@@ -158,7 +162,7 @@ describe('translateJourneyMetadata', () => {
 
   it('strips field-label prefixes and surrounding quotes from translated values', async () => {
     mockGenerateText.mockImplementation((async (options: unknown) => {
-      const text = promptOf([options])
+      const text = promptOf(options)
       if (text.includes('produce only the analysis')) {
         return aiResult({ analysis: 'ANALYSIS CONTEXT' })
       }
@@ -170,6 +174,7 @@ describe('translateJourneyMetadata', () => {
 
     const result = await translateJourneyMetadata({
       ...baseInput,
+      journeyDisplayTitle: null,
       seoTitle: null,
       seoDescription: null
     })

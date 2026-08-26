@@ -1,0 +1,115 @@
+## Before you push
+
+**Asked to push? Run `pnpm lint:changed --fix` first, commit anything it changes, type-check the affected projects, and push that in the same go.** Never push without it.
+
+It applies the same fixes [autofix.ci](https://autofix.ci) would otherwise commit to your PR afterwards — formatting, lint fixes, translation extraction. They are generated output, so they belong in your commit, not in a bot commit on top of it. There is no pre-push hook and nothing will stop you: if you skip this, the bot does it for you and the PR grows a `fix: lint issues` commit. Details in [Lint before push](#lint-before-push-agents).
+
+## Agent skills
+
+### Issue tracker
+
+Issues and PRDs are tracked as GitHub issues in `JesusFilm/core`, managed via the `gh` CLI. External pull requests are **not** a triage surface — `/triage` processes issues only. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five canonical triage roles use their default label strings verbatim: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Multi-context: `CONTEXT-MAP.md` at the repo root points to per-workspace `CONTEXT.md` files (created lazily by `/domain-modeling`). See `docs/agents/domain.md`.
+
+### Bug-diagnosis layer
+
+Selected NextSteps areas add a `CONTEXT-intake.md` beside their `CONTEXT.md` — the diagnosis layer for reported bugs (failure signatures, the question that localizes a report, where to look first, tagged by failure type T1–T11).
+
+- Read `CONTEXT.md` to understand or build in an area.
+- Read `CONTEXT-intake.md` **only** when triaging or debugging a _reported bug_ in that area.
+
+Start from the intake index (`CONTEXT-MAP-intake.md`): match the reporter's words to an area's `trigger_phrases`, then open that area's `CONTEXT-intake.md`.
+
+## Conventions
+
+This is an **Nx monorepo** (TypeScript). Apps live in `apps/`, GraphQL APIs in `apis/`, shared libraries in `libs/`, Cloudflare Workers in `workers/`, infrastructure in `infrastructure/`.
+
+### Code Style
+
+- Use early returns to reduce nesting.
+- Use descriptive variable and function/const names.
+- Define TypeScript types; avoid `any`.
+
+### Lint before push (agents)
+
+**Agents: before every `git push`, run this and push the result as one unit.**
+
+```bash
+# Commit your own work first, so anything dirty afterwards is a generated fix.
+pnpm lint:changed --fix || { echo "unfixable errors above — fix them, then re-run"; exit 1; }
+
+if [ -n "$(git status --porcelain)" ]; then
+  git add -A || { echo "could not stage generated fixes; aborting push"; exit 1; }
+  # --no-verify because husky's .husky/_ bootstrap only exists where pnpm install
+  # has run, so this commit fails in a worktree. The hooks would pass on content:
+  # the branch name is checked by autofix.ci on the PR, and commitlint accepts
+  # this exact message. Do not carry --no-verify over to your own commits — though
+  # in a worktree those hit the same missing bootstrap today; tracked separately.
+  git commit --no-verify -m "chore: lint fixes" || { echo "could not commit generated fixes; aborting push"; exit 1; }
+fi
+
+# Type-check what the branch touched — CI's lint-work job runs this exact
+# target, and lint:changed cannot catch type errors (see below).
+git fetch origin main --quiet || true
+pnpm exec nx affected --target=type-check --base=origin/main || { echo "type-check failed — either real type errors above, or an environment gap (origin/main unfetched, node_modules not installed in this worktree)"; exit 1; }
+
+git push
+```
+
+Commit your own changes _before_ running this. The `git add -A` above stages whatever is dirty, so if you leave unrelated work uncommitted it will be swept into the lint commit.
+
+There is deliberately **no pre-push hook**. A git hook cannot do this job: git resolves which commits to push _before_ running the hook, so fixes a hook commits are left behind and never reach the remote. Doing it in the agent, before the push is issued, is the only way the fixes actually travel with the branch. Humans are not gated at all — this is an agent instruction, not enforcement.
+
+What the fixes are: [autofix.ci](https://autofix.ci)'s Prettier, ESLint and i18next steps — everything it would otherwise commit to your PR **except `codegen`**, which is not covered locally (see below). It is generated output, not opinion, so it belongs in your commit rather than in a bot commit afterwards. `lint:changed` mirrors those three steps in the same order:
+
+1. **Prettier** on every changed file of any type (`.md`, `.json`, `.yaml`, `.css`, … — not just JS/TS). Under a second.
+2. **ESLint** on changed JS/TS only, scoped per workspace; full `nx lint` is far too slow. Roughly 5–20s per touched workspace.
+3. **i18next extraction** for changed projects only. Roughly 2–3s per touched project.
+
+All three are load-bearing. ESLint **cannot** catch a formatting problem — the repo uses `eslint-config-prettier`, which exists to switch every formatting rule off, and there is no `eslint-plugin-prettier`. Formatting belongs to Prettier alone. And a new `t()` string that was never extracted is invisible to both.
+
+Without `--fix` the script only reports, and leaves the working tree untouched. Note extraction is **project-wide**, not per-file: `--fix` can pull in a `t()` string someone else left unextracted in the same project. That is intended — it is exactly what autofix.ci would have committed.
+
+Scope: it compares the branch diff against `origin/main`, refreshed when the network allows. Forks, other remotes, and branches cut from `stage` are all judged against `origin/main`, so a `stage`-cut branch may over-lint. `LINT_CHANGED_JOBS` caps parallel workspaces (default 4).
+
+Not covered locally: **`codegen`** is the one autofix.ci step that can still commit to your PR. Run `nx codegen <project>` after changing a GraphQL schema or query.
+
+It is deliberately not gated, because it only works where `apollo` is already installed globally. The devcontainer installs it in [`post-create-command.sh`](.devcontainer/post-create-command.sh) (`npm i -g nx foreman apollo graphql`) and autofix.ci does the same, which is why it works in both. On a plain host checkout `apollo` is absent, so `npx` tries to fetch it and fails with `EOVERRIDE` from the `next` override in `package.json` — gating it would mean requiring that global install everywhere, which we chose not to do. Work in the devcontainer, or expect autofix.ci to commit the regenerated files.
+
+**`type-check`** cannot produce a commit (it only reports), but it is still gated in the ritual above because CI's `lint-work` job fails on it and nothing in `lint:changed` covers types. It is the slowest step of the four — expect tens of seconds for a typical branch (a few seconds per affected project, plus nx overhead), so a pause is normal. Two traps: each project's `type-check` target runs `tsc7` (the TypeScript 7 preview via `tsconfig.ts7.json`), which is stricter than editor tsc — code your IDE accepts can still fail it. And nx prints the same trailing summary block on success and failure, so never judge the outcome from the tail of piped output — check the exit code. The command also exits non-zero on environment gaps (`origin/main` not fetched, `node_modules` missing in a fresh worktree) — rule those out before hunting for type errors.
+
+The remaining steps cannot produce a commit at all: `subgraph-check` only reports (and needs a Hive token), and `prisma-generate` writes nothing that is tracked.
+
+### Documented Solutions
+
+The context map (`CONTEXT.md`, and `CONTEXT-intake.md` when diagnosing) is the primary knowledge source — rely on it by default. `docs/solutions/` is a **secondary, opt-in** archive of past problem write-ups (bugs, best practices, workflow patterns), organized by category with descriptive filenames and YAML frontmatter (`module`, `tags`, `problem_type`).
+
+Do **not** read solution docs by default. Their filenames are self-describing — if, while working, one looks relevant to the task, **surface it and ask the user before opening it** (e.g. "There may be a relevant solution doc: `<title>` — want me to read it?"). Only read the contents once the user confirms.
+
+### Branch Naming
+
+When creating a branch without a Linear issue, it must match this pattern:
+
+```regex
+/^(\(HEAD detached at pull\/[0-9]+\/merge\)|(00-00-RB-.*)|stage|main|([0-9]{2}-[0-9]{2}-[A-Z]{2}-(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)-[a-z0-9-]+[a-z0-9])|(feature\/[0-9]{2}-[0-9]{2}-[A-Z]{2}-[a-z0-9-]+[a-z0-9])|[a-z0-9]{2,4}-[0-9]+-[a-z0-9-]+|[a-z]+\/[a-z0-9]{2,4}-[0-9]+-[a-z0-9-]+|(cursor\/.*))$/g
+```
+
+Preferred format: `username/ticket-id-short-description` — all lowercase, no uppercase in suffix.
+
+## Path-scoped conventions
+
+Conventions are pulled on demand, not loaded up front — this keeps default context lean. **Before modifying or diagnosing files in a directory, read the nearest `AGENTS.md` first** (the one in that directory, or the closest one above it). Do this at the start of the work, not after.
+
+Nested `AGENTS.md` locations include `apis/AGENTS.md`, `apps/AGENTS.md`, `apps/<app>/AGENTS.md`, `workers/AGENTS.md`, `infrastructure/AGENTS.md`, `infrastructure/kube/AGENTS.md`.
+
+## Testing
+
+- Vitest (unit/component) — how to run, config-per-workspace, common mistakes: `docs/agents/testing.md`.
+- End-to-end (Playwright) authoring standards: `docs/agents/e2e-testing.md`.

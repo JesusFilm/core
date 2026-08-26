@@ -32,7 +32,9 @@ export const videoBlockMuxSchema = z.object({
 })
 
 export interface YoutubeVideosData {
-  items: Array<{
+  // present instead of items when the request fails (quota exceeded, bad key)
+  error?: { code: number; message: string }
+  items?: Array<{
     id: string
     snippet: {
       title: string
@@ -117,7 +119,14 @@ export async function fetchFieldsFromYouTube(videoId: string): Promise<{
   const videosData: YoutubeVideosData = await (
     await fetch(`https://www.googleapis.com/youtube/v3/videos?${query}`)
   ).json()
-  if (videosData.items[0] == null) {
+  if (videosData.error != null) {
+    // quota/auth failures must not read as "video does not exist"
+    throw new GraphQLError(
+      `YouTube API request failed: ${videosData.error.message}`,
+      { extensions: { code: 'INTERNAL_SERVER_ERROR' } }
+    )
+  }
+  if (videosData.items?.[0] == null) {
     throw new GraphQLError('videoId cannot be found on YouTube', {
       extensions: { code: 'NOT_FOUND' }
     })

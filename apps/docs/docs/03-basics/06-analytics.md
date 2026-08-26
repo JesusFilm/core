@@ -99,6 +99,33 @@ Because the imported GA4 Event tag references `{{GA4 Measurement ID}}` by name, 
 
 After the import, do a final check over the imported items — most importantly, open each GA4 Event tag and verify the **Measurement ID** is pointing to the correct one for that environment. Then preview and publish that container the same way as Step 5.
 
+### Step 7 — Register custom dimensions in GA4 (at the same time as the GTM setup)
+
+GA4 stores every event parameter your tags send, but a parameter only becomes usable as a filter or breakdown in reports and Explore after it is registered as a **custom dimension** — and registration is **not retroactive**. It applies to data collected from the registration date forward: events recorded earlier keep their counts, but can never be broken down by a parameter that wasn't registered at the time. A later BigQuery link doesn't recover it either — the export also only starts flowing from the moment the property is linked.
+
+So decide which parameters you may ever want to filter by, and register them **as part of the same change as the GTM setup**, before the feature ships.
+
+In the GA4 property, go to **Admin → Data display → Custom definitions → Create custom dimension**. Enter a dimension name, leave the scope as **Event**, and set the event parameter to the exact camelCase key sent in the `dataLayer`. Repeat per parameter.
+
+**Always fill in the Description field.** GA4 gives a dimension no other context — someone browsing Custom definitions later has no access to the codebase, the GTM container, or this doc. Write the description so it stands alone:
+
+- Name the product/app and the feature the value comes from (e.g. "NextSteps admin template gallery").
+- Say where in the UI the value is set or the action happens.
+- List the possible values when the set is small (e.g. `mux`, `link`, `none`).
+- Don't reference internal event names, dataLayer keys, or repo terms — they mean nothing inside GA4.
+- Keep it within GA4's 150-character description limit.
+
+Example, for a `location` parameter:
+
+> Where in the NextSteps admin template gallery a collection's public link was copied: the edit dialog or the publish success dialog.
+
+Notes:
+
+- Custom definitions are **per GA4 property**. Each environment has its own property, so repeat the registration in every property that needs the breakdowns (at minimum prod).
+- Register low-cardinality parameters (types, locations, slugs). Avoid unbounded IDs — every unique value becomes a dimension row, and high-cardinality dimensions make reports unusable.
+- These are custom **dimensions** (text values you slice by). A numeric parameter you want to sum would be a custom **metric** instead — same screen, different tab.
+- Newly registered dimensions can take ~24–48 hours to appear populated in standard reports. **DebugView** shows raw parameters immediately, registered or not.
+
 ### Naming Conventions
 
 | Item                          | Convention                           | Example                              |

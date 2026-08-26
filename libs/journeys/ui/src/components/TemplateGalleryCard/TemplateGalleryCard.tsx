@@ -17,7 +17,7 @@ import Lightning2 from '@core/shared/ui/icons/Lightning2'
 
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
 import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
-import { useNavigationState } from '../../libs/useNavigationState'
+import { useRouteChangeState } from '../../libs/useRouteChangeState'
 
 interface HoverLayerProps {
   className?: string
@@ -54,7 +54,7 @@ export function TemplateGalleryCard({
   priority
 }: TemplateGalleryCardProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
-  const isNavigating = useNavigationState()
+  const isNavigating = useRouteChangeState()
   const [isCardHovered, setIsCardHovered] = useState(false)
 
   const theme = useTheme()
@@ -133,22 +133,21 @@ export function TemplateGalleryCard({
       >
         {journey != null ? (
           <Stack
-            justifyContent="center"
-            alignItems="center"
             sx={{
+              justifyContent: 'center',
+              alignItems: 'center',
               position: 'relative',
               aspectRatio: 1,
               overflow: 'hidden',
               borderRadius: 2,
-              alignItems: 'center',
               backgroundColor: 'background.default'
             }}
           >
             <Stack
               direction="column"
               spacing={1}
-              alignItems="flex-start"
               sx={{
+                alignItems: 'flex-start',
                 position: 'absolute',
                 top: { xs: 4, md: 6 },
                 left: { xs: 4, md: 6 },

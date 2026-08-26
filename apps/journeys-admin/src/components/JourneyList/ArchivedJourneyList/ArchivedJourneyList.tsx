@@ -48,7 +48,7 @@ export function ArchivedJourneyList({
   const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {
-        enqueueSnackbar(t('Journeys Restored'), {
+        enqueueSnackbar(t('Journeys Unarchived'), {
           variant: 'success'
         })
 
@@ -185,14 +185,18 @@ export function ArchivedJourneyList({
                 }}
               >
                 <Typography variant="subtitle1" align="center">
-                  {t('No archived journeys.')}
+                  {t('No archived Journeys.')}
                 </Typography>
               </Box>
             </>
           )}
         </Box>
       )}
-      <Stack alignItems="center">
+      <Stack
+        sx={{
+          alignItems: 'center'
+        }}
+      >
         <Typography
           variant="caption"
           align="center"
@@ -219,7 +223,7 @@ export function ArchivedJourneyList({
           }}
         >
           <Typography sx={{ fontWeight: 'bold' }}>
-            {t('This will unarchive all archived journeys you own.')}
+            {t('This will unarchive all archived Journeys you own.')}
           </Typography>
           <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>
@@ -239,7 +243,7 @@ export function ArchivedJourneyList({
           }}
         >
           <Typography sx={{ fontWeight: 'bold' }}>
-            {t('This will trash all archived journeys you own.')}
+            {t('This will trash all archived Journeys you own.')}
           </Typography>
           <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>

@@ -94,7 +94,12 @@ function DiagnosticFallback(): ReactElement {
       }}
     >
       <Typography variant="h5">{t('Something went wrong')}</Typography>
-      <Typography variant="body1" color="text.secondary">
+      <Typography
+        variant="body1"
+        sx={{
+          color: 'text.secondary'
+        }}
+      >
         {t(
           'Please try refreshing the page. If the problem persists, contact support.'
         )}
@@ -169,7 +174,7 @@ function CustomizePage() {
         <JourneyProvider
           value={{
             journey: data?.journey,
-            variant: 'customize'
+            renderMode: 'customize'
           }}
         >
           <DiagnosticErrorBoundary key={router.query.journeyId as string}>

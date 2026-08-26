@@ -9,17 +9,18 @@ import {
   prisma
 } from '@core/prisma/media/client'
 
-import {
-  updateVideoInAlgolia,
-  updateVideoPublishedStatus
-} from '../../lib/algolia/algoliaVideoUpdate'
 import { videoCacheReset } from '../../lib/videoCacheReset'
+import {
+  enqueueVideoAlgoliaSync,
+  videoOnlyScope
+} from '../../workers/videoAlgoliaSync'
 import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
 import { deleteR2File } from '../cloudflare/r2/asset'
 import { IdType, IdTypeShape } from '../enums/idType'
 import { NotUniqueError } from '../error/NotUniqueError'
 import { Language, LanguageWithSlug } from '../language'
+import { logger } from '../logger'
 import { deleteVideo } from '../mux/video/service'
 import { VideoSource, VideoSourceShape } from '../videoSource/videoSource'
 import { VideoVariantFilter } from '../videoVariant/inputs/videoVariantFilter'
@@ -28,13 +29,17 @@ import {
   handleParentVariantCleanup,
   handleParentVariantCreation
 } from '../videoVariant/videoVariant'
+import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
 
 import { Platform } from './enums/platform'
 import { VideoLabel } from './enums/videoLabel'
 import { VideoCreateInput } from './inputs/videoCreate'
 import { VideosFilter } from './inputs/videosFilter'
 import { VideoUpdateInput } from './inputs/videoUpdate'
-import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
+import {
+  findContainerParentIds,
+  updateVideoAvailableLanguages
+} from './lib/updateAvailableLanguages'
 import { videosFilter } from './lib/videosFilter'
 
 // Helper function to check if video viewing is restricted for the current platform
@@ -219,6 +224,9 @@ export const Video = builder.prismaObject('Video', {
         variants: {
           select: {
             languageId: true
+          },
+          where: {
+            published: true
           }
         }
       }),
@@ -688,11 +696,7 @@ builder.mutationFields((t) => ({
           ...query,
           data
         })
-        try {
-          await updateVideoInAlgolia(video.id)
-        } catch (error) {
-          console.error('Algolia update error:', error)
-        }
+        await enqueueVideoAlgoliaSync(video.id, videoOnlyScope, logger)
 
         try {
           await videoCacheReset(video.id)
@@ -782,7 +786,12 @@ builder.mutationFields((t) => ({
 
       // Handle child relation synchronization if childIds is being updated
       let childRelationUpdate = {}
+      let affectedChildIds: string[] = []
       if (input.childIds !== undefined) {
+        const existingParent = await prisma.video.findUnique({
+          where: { id: input.id },
+          select: { childIds: true }
+        })
         // Get all existing video IDs to validate child IDs
         const videos = await prisma.video.findMany({
           select: { id: true }
@@ -793,6 +802,9 @@ builder.mutationFields((t) => ({
         const validChildIds = (input.childIds || []).filter((id) =>
           existingVideoIds.has(id)
         )
+        affectedChildIds = Array.from(
+          new Set([...(existingParent?.childIds ?? []), ...validChildIds])
+        )
 
         // Update the children relation
         childRelationUpdate = {
@@ -802,68 +814,147 @@ builder.mutationFields((t) => ({
         }
       }
 
-      const video = await prisma.video.update({
-        ...query,
-        where: { id: input.id },
-        data: {
-          label: input.label ?? undefined,
-          primaryLanguageId: input.primaryLanguageId ?? undefined,
-          published: input.published ?? undefined,
-          publishedAt: publishedAtUpdate,
-          slug: input.slug ?? undefined,
-          noIndex: input.noIndex ?? undefined,
-          restrictTranslations:
-            input.restrictTranslations === true ? true : undefined,
-          childIds: input.childIds ?? undefined,
-          restrictDownloadPlatforms:
-            input.restrictDownloadPlatforms ?? undefined,
-          restrictViewPlatforms: input.restrictViewPlatforms ?? undefined,
-          ...childRelationUpdate,
-          ...(input.keywordIds
-            ? { keywords: { set: input.keywordIds.map((id) => ({ id })) } }
-            : {})
-        },
-        include: {
-          ...query.include,
-          children: true
-        }
-      })
+      const videoWhere: Prisma.VideoWhereUniqueInput =
+        input.restrictTranslations === false
+          ? { id: input.id, restrictTranslations: false }
+          : { id: input.id }
 
-      // Handle parent variant changes if video published status changed
-      if (currentVideo && input.published !== undefined) {
-        const wasPublished = currentVideo.published
-        const isNowPublished = input.published
-
-        if (
-          wasPublished !== isNowPublished &&
-          currentVideo.variants.length > 0
-        ) {
-          try {
-            for (const variant of currentVideo.variants) {
-              if (isNowPublished) {
-                // Video was unpublished and is now published - create parent variants for all published variants
-                await handleParentVariantCreation(input.id, variant.languageId)
-              } else {
-                // Video was published and is now unpublished - cleanup parent variants for all variants
-                await handleParentVariantCleanup(input.id, variant.languageId)
-              }
-            }
-          } catch (error) {
-            console.error('Parent variant video update error:', error)
+      let video
+      try {
+        video = await prisma.video.update({
+          ...query,
+          where: videoWhere,
+          data: {
+            label: input.label ?? undefined,
+            primaryLanguageId: input.primaryLanguageId ?? undefined,
+            published: input.published ?? undefined,
+            publishedAt: publishedAtUpdate,
+            slug: input.slug ?? undefined,
+            noIndex: input.noIndex ?? undefined,
+            restrictTranslations:
+              input.restrictTranslations === true ? true : undefined,
+            childIds: input.childIds ?? undefined,
+            restrictDownloadPlatforms:
+              input.restrictDownloadPlatforms ?? undefined,
+            restrictViewPlatforms: input.restrictViewPlatforms ?? undefined,
+            ...childRelationUpdate,
+            ...(input.keywordIds
+              ? { keywords: { set: input.keywordIds.map((id) => ({ id })) } }
+              : {})
+          },
+          include: {
+            ...query.include,
+            children: true
           }
+        })
+      } catch (e) {
+        if (
+          input.restrictTranslations === false &&
+          currentVideo?.restrictTranslations === false &&
+          e instanceof Prisma.PrismaClientKnownRequestError &&
+          e.code === 'P2025'
+        ) {
+          throw new Error(
+            'Translation restriction cannot be disabled once enabled',
+            { cause: e }
+          )
         }
-        // Update variants' videoPublished status in Algolia when published status changes
-        try {
-          await updateVideoPublishedStatus(input.id, isNowPublished ?? false)
-        } catch (error) {
-          console.error('Video variants Algolia update error:', error)
+        throw e
+      }
+
+      // Known gap (not fixed here, needs a product/design decision): this
+      // fires reconciliation for every child added to OR removed from
+      // childIds, but reconcileParentVariants only ever ADDS a language to
+      // the parent's availableLanguages — it never removes one. So removing
+      // the last child providing a given language leaves that language
+      // stale on the parent indefinitely. See PR #9386 discussion.
+      if (input.childIds !== undefined && affectedChildIds.length > 0) {
+        const affectedVariants =
+          (await prisma.videoVariant.findMany({
+            where: {
+              videoId: { in: affectedChildIds },
+              published: true
+            },
+            select: {
+              id: true,
+              videoId: true,
+              languageId: true,
+              edition: true
+            }
+          })) ?? []
+        for (const variant of affectedVariants) {
+          try {
+            await requestVideoVariantReconciliation({
+              videoVariantId: variant.id,
+              videoId: variant.videoId,
+              languageId: variant.languageId,
+              edition: variant.edition,
+              published: true,
+              reason: 'video-relationship-change'
+            })
+          } catch (error) {
+            console.error('Video variant reconciliation request error:', error)
+          }
         }
       }
 
-      try {
-        await updateVideoInAlgolia(video.id)
-      } catch (error) {
-        console.error('Algolia update error:', error)
+      // Handle parent variant changes if video published status changed
+      const publishedChanged =
+        currentVideo != null &&
+        input.published !== undefined &&
+        currentVideo.published !== input.published
+
+      if (
+        publishedChanged &&
+        currentVideo &&
+        currentVideo.variants.length > 0
+      ) {
+        try {
+          for (const variant of currentVideo.variants) {
+            if (input.published) {
+              // Video was unpublished and is now published - create parent variants for all published variants
+              await handleParentVariantCreation(input.id, variant.languageId)
+            } else {
+              // Video was published and is now unpublished - cleanup parent variants for all variants
+              await handleParentVariantCleanup(input.id, variant.languageId)
+            }
+          }
+        } catch (error) {
+          console.error('Parent variant video update error:', error)
+        }
+      }
+
+      // label/childIds/restrictViewPlatforms are embedded in every variant's
+      // Algolia record (see buildVideoVariantAlgoliaObject), so changing any
+      // of them requires re-indexing all of this video's variants.
+      const variantEmbeddedFieldsChanged =
+        input.label !== undefined ||
+        input.childIds !== undefined ||
+        input.restrictViewPlatforms !== undefined
+
+      await enqueueVideoAlgoliaSync(
+        video.id,
+        {
+          syncVideoRecord: true,
+          syncAllVariants: variantEmbeddedFieldsChanged,
+          syncPublishedFlag: publishedChanged,
+          dirtyVariantIds: [],
+          deletedVariantIds: []
+        },
+        logger
+      )
+
+      // A child's publish state isn't embedded in its own variant records,
+      // but it changes whether the child shows up under its parent
+      // collection/series - re-sync the parent(s) too so the series-level
+      // page and episode navigation reflect the newly published child.
+      if (publishedChanged) {
+        const parentIds = await findContainerParentIds(video.id)
+        await Promise.all(
+          parentIds.map((parentId) =>
+            enqueueVideoAlgoliaSync(parentId, videoOnlyScope, logger)
+          )
+        )
       }
 
       try {
@@ -890,6 +981,7 @@ builder.mutationFields((t) => ({
           // Get data for cleanup that won't cascade automatically
           variants: {
             select: {
+              id: true,
               muxVideoId: true,
               muxVideo: {
                 select: {
@@ -970,11 +1062,18 @@ builder.mutationFields((t) => ({
         where: { id }
       })
 
-      try {
-        await updateVideoInAlgolia(id)
-      } catch (error) {
-        console.error('Algolia update error:', error)
-      }
+      // Deleting the video cascades its variants away in the DB, but their
+      // Algolia records are not cascaded — name them explicitly so the sync
+      // removes them too, rather than leaving orphans in the variants index
+      // that Watch search still returns.
+      await enqueueVideoAlgoliaSync(
+        id,
+        {
+          ...videoOnlyScope,
+          deletedVariantIds: video.variants.map((variant) => variant.id)
+        },
+        logger
+      )
 
       try {
         await videoCacheReset(id)

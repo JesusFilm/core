@@ -291,7 +291,7 @@ const Template: StoryObj<typeof TemplateSettingsDialog> = {
             ] as unknown as Tag[],
             publishedAt: '2021-12-19T12:34:56.647Z'
           },
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <TemplateSettingsDialog open onClose={() => undefined} />

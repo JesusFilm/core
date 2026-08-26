@@ -2,6 +2,7 @@ import { Block } from '@core/prisma/journeys/client'
 
 import { getButtonBlockContent } from './getButtonBlockContent'
 import { getImageBlockContent } from './getImageBlockContent'
+import { getMultiselectBlockContent } from './getMultiselectBlockContent'
 import { getRadioQuestionBlockContent } from './getRadioQuestionBlockContent'
 import { getVideoBlockContent } from './getVideoBlockContent'
 
@@ -30,6 +31,11 @@ export async function getBlockContent({
       })
     case 'RadioQuestionBlock':
       return getRadioQuestionBlockContent({
+        blocks,
+        block
+      })
+    case 'MultiselectBlock':
+      return getMultiselectBlockContent({
         blocks,
         block
       })

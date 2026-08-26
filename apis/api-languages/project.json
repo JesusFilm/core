@@ -76,7 +76,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsc -b apis/api-languages/tsconfig.json"
+        "command": "pnpm tsc7 -p apis/api-languages/tsconfig.ts7.json"
       }
     },
     "codecov": {
@@ -95,6 +95,24 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "pnpm exec tsx apis/api-languages/src/scripts/data-import.ts"
+      }
+    },
+    "wess-languages-import": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx apis/api-languages/src/scripts/wess-languages-import.ts"
+      }
+    },
+    "wess-countries-import": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx apis/api-languages/src/scripts/wess-countries-import.ts"
+      }
+    },
+    "wess-country-languages-import": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsx apis/api-languages/src/scripts/wess-country-languages-import.ts"
       }
     }
   }

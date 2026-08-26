@@ -70,7 +70,7 @@ const JourneyDetailsComponent = ({
             'Some extra long description where it will cause ellipsis to appear I hope this is long enough',
           template
         },
-        variant: 'admin'
+        renderMode: 'admin'
       }}
     >
       <Box
@@ -114,7 +114,13 @@ export const Ellipsis = {
   },
   decorators: [
     (Story: StoryFn<typeof JourneyDetails>, context) => (
-      <Box width={400}>{Story(context.args, context)}</Box>
+      <Box
+        sx={{
+          width: 400
+        }}
+      >
+        {Story(context.args, context)}
+      </Box>
     )
   ]
 }

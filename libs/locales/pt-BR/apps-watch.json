@@ -137,6 +137,14 @@
   "Video Course": "Curso em vídeo",
   "Every Gospel, Told on Video": "Todos os evangelhos, contados em vídeo",
   "Scripture, Spoken Exactly as Written": "Escritura, falada exatamente como escrita",
+  "Search by topic, occasion, or audience ...": "Pesquise por tema, ocasião ou público...",
+  "<0><0></0><1>interaction</1></0>": "<0><0></0><1>interação</1></0>",
+  "Search Suggestions": "Sugestões de pesquisa",
+  "See Less": "Ver menos",
+  "Clear All": "Limpar tudo",
+  "Sorry, there are no languages available for this search. Try removing some of your search criteria!": "Desculpa, não há idiomas disponíveis para essa busca. Tenta tirar alguns dos teus critérios de busca!",
+  "Loading...": "Carregando...",
+  "There are no suggestions for this search": "Não há sugestões para essa busca",
   "{{count}} languages_one": "{{count}} idiomas",
   "{{count}} languages_other": "{{count}} idiomas"
 }

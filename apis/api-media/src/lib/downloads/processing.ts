@@ -7,6 +7,20 @@ import {
   prisma
 } from '@core/prisma/media/client'
 
+const MUX_STREAM_BASE_URL = 'https://stream.mux.com/'
+
+function hasMissingDownloadMetadata(download: {
+  size?: number | null
+  bitrate?: number | null
+}): boolean {
+  return (
+    download.size == null ||
+    download.size === 0 ||
+    download.bitrate == null ||
+    download.bitrate === 0
+  )
+}
+
 export const qualityEnumToOrder: Record<VideoVariantDownloadQuality, number> = {
   [VideoVariantDownloadQuality.distroLow]: 0,
   [VideoVariantDownloadQuality.distroSd]: 1,
@@ -46,6 +60,18 @@ export function mapStaticResolutionTierToDownloadQuality(
 // Helper function to get numeric resolution for comparison
 function getResolutionHeight(resolution: string): number {
   return parseInt(resolution.replace('p', ''))
+}
+
+// Mux can mark a static rendition file as `ready` before its filesize/bitrate
+// have propagated. Persisting those as 0 would silently serve broken download
+// metadata, so treat a `ready` file without usable metadata as not-yet-ready.
+function hasValidRenditionMetadata(file: {
+  filesize?: string | null
+  bitrate?: number | null
+}): boolean {
+  const size = file.filesize ? parseInt(file.filesize) : 0
+  const bitrate = file.bitrate ?? 0
+  return size > 0 && bitrate > 0
 }
 
 // Enhanced function that handles fallbacks for sd and high qualities
@@ -164,20 +190,22 @@ export interface CreateDownloadsFromMuxAssetOptions {
   logger?: Logger
 }
 
-export async function createDownloadsFromMuxAsset({
+function buildMuxDownloadRows({
   variantId,
   muxVideoAsset,
   logger
-}: CreateDownloadsFromMuxAssetOptions): Promise<number> {
+}: CreateDownloadsFromMuxAssetOptions):
+  | Prisma.VideoVariantDownloadCreateManyInput[]
+  | null {
   if (muxVideoAsset.static_renditions?.files == null) {
     logger?.info({ variantId }, 'No static renditions files available')
-    return 0
+    return null
   }
 
   const playbackId = muxVideoAsset.playback_ids?.[0]?.id
   if (!playbackId) {
     logger?.info({ variantId }, 'No playback ID available')
-    return 0
+    return null
   }
 
   // First, process files with direct mappings
@@ -196,17 +224,29 @@ export async function createDownloadsFromMuxAsset({
       )
 
       if (quality != null) {
-        directMappings.push({
-          videoVariantId: variantId,
-          quality,
-          url: `https://stream.mux.com/${playbackId}/${file.resolution}.mp4`,
-          version: 1,
-          size: file.filesize ? parseInt(file.filesize) : 0,
-          height: file.height ?? 0,
-          width: file.width ?? 0,
-          bitrate: file.bitrate ?? 0
-        })
-        processedQualities.add(quality)
+        if (!hasValidRenditionMetadata(file)) {
+          logger?.warn(
+            {
+              variantId,
+              resolution: file.resolution,
+              filesize: file.filesize,
+              bitrate: file.bitrate
+            },
+            'Mux static rendition is ready but missing filesize/bitrate metadata, skipping until refreshed'
+          )
+        } else {
+          directMappings.push({
+            videoVariantId: variantId,
+            quality,
+            url: `https://stream.mux.com/${playbackId}/${file.resolution}.mp4`,
+            version: 1,
+            size: file.filesize ? parseInt(file.filesize) : 0,
+            height: file.height ?? 0,
+            width: file.width ?? 0,
+            bitrate: file.bitrate ?? 0
+          })
+          processedQualities.add(quality)
+        }
       }
     }
   }
@@ -214,10 +254,16 @@ export async function createDownloadsFromMuxAsset({
   // Handle fallbacks for sd and high if they're missing
   const fallbackMappings: Prisma.VideoVariantDownloadCreateManyInput[] = []
 
+  // Fallback candidates must have usable metadata, otherwise we'd fall back
+  // into the same zero size/bitrate problem the direct mapping just avoided.
+  const filesWithValidMetadata = muxVideoAsset.static_renditions.files.filter(
+    (file) => file == null || hasValidRenditionMetadata(file)
+  )
+
   // Check for sd fallback (if 360p is not available)
   if (!processedQualities.has(VideoVariantDownloadQuality.sd)) {
     const sdFallback = mapStaticResolutionTierToDownloadQualityWithFallback(
-      muxVideoAsset.static_renditions.files,
+      filesWithValidMetadata,
       '360p'
     )
 
@@ -249,7 +295,7 @@ export async function createDownloadsFromMuxAsset({
   // Check for high fallback (if 720p is not available)
   if (!processedQualities.has(VideoVariantDownloadQuality.high)) {
     const highFallback = mapStaticResolutionTierToDownloadQualityWithFallback(
-      muxVideoAsset.static_renditions.files,
+      filesWithValidMetadata,
       '720p'
     )
 
@@ -282,41 +328,92 @@ export async function createDownloadsFromMuxAsset({
 
   if (validDownloads.length === 0) {
     logger?.info({ variantId }, 'No valid downloads to create')
-    return 0
+    return null
   }
 
   // Find the highest quality by enum up to uhd since mux doesn't generate highest enum
   const highest = getHighestResolutionDownload(validDownloads)
-  const data = [...validDownloads, highest]
+  return [...validDownloads, highest]
+}
+
+export function previewMuxDownloadsFromAsset(
+  options: CreateDownloadsFromMuxAssetOptions
+): Prisma.VideoVariantDownloadCreateManyInput[] {
+  return buildMuxDownloadRows(options) ?? []
+}
+
+export async function createDownloadsFromMuxAsset({
+  variantId,
+  muxVideoAsset,
+  logger
+}: CreateDownloadsFromMuxAssetOptions): Promise<number> {
+  const data = buildMuxDownloadRows({
+    variantId,
+    muxVideoAsset,
+    logger
+  })
+
+  if (data == null) {
+    return 0
+  }
 
   // Create downloads individually to handle duplicates gracefully
   let createdCount = 0
   for (const download of data) {
     try {
-      await prisma.videoVariantDownload.create({
-        data: download
+      const existingDownload = await prisma.videoVariantDownload.findUnique({
+        where: {
+          quality_videoVariantId: {
+            quality: download.quality,
+            videoVariantId: variantId
+          }
+        }
       })
-      createdCount++
-    } catch (error: any) {
-      // Skip if already exists (P2002 constraint violation)
-      if (error?.code === 'P2002') {
-        logger?.info(
-          {
-            videoVariantId: variantId,
-            quality: download.quality
-          },
-          'Download already exists, skipping'
-        )
-      } else {
-        logger?.error(
-          {
-            error,
-            videoVariantId: variantId,
-            quality: download.quality
-          },
-          'Failed to create individual download'
-        )
+
+      if (existingDownload == null) {
+        await prisma.videoVariantDownload.create({
+          data: download
+        })
+        createdCount++
+        continue
       }
+
+      if (
+        existingDownload.url.startsWith(MUX_STREAM_BASE_URL) &&
+        hasMissingDownloadMetadata(existingDownload)
+      ) {
+        await prisma.videoVariantDownload.update({
+          where: { id: existingDownload.id },
+          data: {
+            quality: download.quality,
+            size: download.size,
+            height: download.height,
+            width: download.width,
+            bitrate: download.bitrate,
+            url: download.url
+          }
+        })
+        createdCount++
+        continue
+      }
+
+      logger?.info(
+        {
+          videoVariantId: variantId,
+          quality: download.quality,
+          isMuxDownload: existingDownload.url.startsWith(MUX_STREAM_BASE_URL)
+        },
+        'Existing download does not need Mux metadata refresh'
+      )
+    } catch (error: any) {
+      logger?.error(
+        {
+          error,
+          videoVariantId: variantId,
+          quality: download.quality
+        },
+        'Failed to create or update individual download'
+      )
     }
   }
 

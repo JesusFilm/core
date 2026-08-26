@@ -1,0 +1,384 @@
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import mockRouter from 'next-router-mock'
+import { type Mock, type MockedFunction } from 'vitest'
+
+import { useAuth } from '../../../libs/auth'
+
+import { GoogleSheetsSyncDialog } from './GoogleSheetsSyncDialog'
+
+vi.mock('../../../libs/auth', () => ({
+  useAuth: vi.fn()
+}))
+
+const mockUseAuth = useAuth as MockedFunction<typeof useAuth>
+
+vi.mock('next-i18next/pages', () => ({
+  useTranslation: () => ({
+    t: (value: string) => value
+  })
+}))
+
+const mockEnqueueSnackbar = vi.fn()
+
+vi.mock('notistack', () => ({
+  useSnackbar: () => ({
+    enqueueSnackbar: mockEnqueueSnackbar
+  })
+}))
+
+const mockUseQuery = vi.fn()
+const mockUseLazyQuery = vi.fn()
+const mockUseMutation = vi.fn()
+
+vi.mock('@apollo/client', () => ({
+  gql: (strings: TemplateStringsArray | string) => strings,
+  useQuery: (...args: unknown[]) => mockUseQuery(...args),
+  useLazyQuery: (...args: unknown[]) => mockUseLazyQuery(...args),
+  useMutation: (...args: unknown[]) => mockUseMutation(...args)
+}))
+
+const mockUseIntegrationQuery = vi.fn()
+
+vi.mock('../../../libs/useIntegrationQuery/useIntegrationQuery', () => ({
+  useIntegrationQuery: (...args: unknown[]) => mockUseIntegrationQuery(...args)
+}))
+
+const defaultJourneyData = {
+  journey: {
+    id: 'journey1',
+    createdAt: '2023-01-01T00:00:00.000Z',
+    title: 'Journey Title',
+    team: {
+      id: 'team1'
+    }
+  }
+}
+
+const defaultIntegrationsData = {
+  integrations: [
+    {
+      __typename: 'IntegrationGoogle',
+      id: 'integration1',
+      accountEmail: 'test@example.com',
+      userId: 'user1',
+      user: { __typename: 'AuthenticatedUser', id: 'user1-uuid' }
+    }
+  ]
+}
+
+let loadSyncsMock: Mock
+function setupApolloMocks({
+  syncs = [],
+  syncsLoading = false
+}: {
+  syncs?: Array<Record<string, unknown>>
+  syncsLoading?: boolean
+} = {}): void {
+  const getPickerTokenMock = vi.fn()
+  loadSyncsMock = vi.fn().mockResolvedValue(undefined)
+
+  mockUseLazyQuery
+    .mockImplementationOnce(() => [
+      getPickerTokenMock,
+      { data: undefined, loading: false }
+    ])
+    .mockImplementationOnce(() => [
+      loadSyncsMock,
+      {
+        data: { googleSheetsSyncs: syncs },
+        loading: syncsLoading,
+        called: true
+      }
+    ])
+
+  mockUseMutation
+    .mockImplementationOnce(() => [
+      vi.fn().mockResolvedValue(undefined),
+      { loading: false }
+    ])
+    .mockImplementationOnce(() => [
+      vi.fn().mockResolvedValue(undefined),
+      { loading: false }
+    ])
+}
+
+describe('GoogleSheetsSyncDialog', () => {
+  const onClose = vi.fn()
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockUseQuery.mockReset()
+    mockUseLazyQuery.mockReset()
+    mockUseMutation.mockReset()
+    mockUseIntegrationQuery.mockReset()
+    mockUseAuth.mockReset()
+    mockEnqueueSnackbar.mockClear()
+    mockRouter.setCurrentUrl('/journeys')
+
+    mockUseAuth.mockReturnValue({
+      user: { id: 'user1' }
+    } as unknown as ReturnType<typeof useAuth>)
+
+    mockUseQuery.mockReturnValue({ data: defaultJourneyData })
+    mockUseIntegrationQuery.mockReturnValue({
+      data: defaultIntegrationsData
+    })
+    mockUseLazyQuery.mockImplementation(() => [
+      vi.fn(),
+      { data: undefined, loading: false, called: false }
+    ])
+    mockUseMutation.mockImplementation(() => [vi.fn(), { loading: false }])
+  })
+
+  it('fetches syncs when dialog is opened', async () => {
+    setupApolloMocks()
+
+    render(
+      <GoogleSheetsSyncDialog open journeyId="journey1" onClose={onClose} />
+    )
+
+    await waitFor(() => {
+      expect(loadSyncsMock).toHaveBeenCalledWith({
+        variables: { filter: { journeyId: 'journey1' } },
+        fetchPolicy: 'network-only'
+      })
+    })
+  })
+
+  it('auto-opens the add sync dialog when returning from integration creation', async () => {
+    setupApolloMocks()
+    mockRouter.setCurrentUrl(
+      '/journeys?integrationCreated=true&openSyncDialog=true'
+    )
+
+    render(
+      <GoogleSheetsSyncDialog open journeyId="journey1" onClose={onClose} />
+    )
+
+    await screen.findByRole('button', { name: 'Create Sync' })
+    expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+      'Google integration created successfully',
+      { variant: 'success' }
+    )
+    await waitFor(() => {
+      expect(mockRouter.query.integrationCreated).toBeUndefined()
+      expect(mockRouter.query.openSyncDialog).toBeUndefined()
+    })
+  })
+
+  it('opens the add sync dialog automatically when there are no syncs', async () => {
+    setupApolloMocks()
+
+    render(
+      <GoogleSheetsSyncDialog open journeyId="journey1" onClose={onClose} />
+    )
+
+    await screen.findByRole('button', { name: 'Create Sync' })
+  })
+
+  it('does not auto-open the add sync dialog when there are existing syncs', async () => {
+    setupApolloMocks({
+      syncs: [
+        {
+          id: 'sync1',
+          spreadsheetId: 'spreadsheet1',
+          sheetName: 'Sheet1',
+          email: 'test@example.com',
+          deletedAt: null,
+          createdAt: '2024-01-01T00:00:00.000Z',
+          integration: { __typename: 'IntegrationGoogle', id: 'integration1' }
+        }
+      ]
+    })
+
+    render(
+      <GoogleSheetsSyncDialog open journeyId="journey1" onClose={onClose} />
+    )
+
+    // Wait for syncs to be fetched, then assert the create-sync modal is not shown
+    await waitFor(() => {
+      expect(loadSyncsMock).toHaveBeenCalled()
+    })
+
+    expect(
+      screen.queryByRole('button', { name: 'Create Sync' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should hide the main syncs list dialog when no syncs exist', async () => {
+    setupApolloMocks()
+
+    render(
+      <GoogleSheetsSyncDialog open journeyId="journey1" onClose={onClose} />
+    )
+
+    await waitFor(() => {
+      expect(loadSyncsMock).toHaveBeenCalled()
+    })
+
+    expect(
+      screen.queryByRole('button', { name: 'New Sync' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should call onClose when closing the inner dialog and hideMainDialog is true', async () => {
+    setupApolloMocks()
+
+    render(
+      <GoogleSheetsSyncDialog open journeyId="journey1" onClose={onClose} />
+    )
+
+    await screen.findByRole('button', { name: 'Create Sync' })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+
+    expect(onClose).toHaveBeenCalled()
+  })
+
+  it('only shows current user Google integrations in the dropdown', async () => {
+    mockUseIntegrationQuery.mockReturnValue({
+      data: {
+        integrations: [
+          {
+            __typename: 'IntegrationGoogle',
+            id: 'integration1',
+            accountEmail: 'myaccount@example.com',
+            userId: 'user1',
+            user: { __typename: 'AuthenticatedUser', id: 'user1-uuid' }
+          },
+          {
+            __typename: 'IntegrationGoogle',
+            id: 'integration2',
+            accountEmail: 'other-manager@example.com',
+            userId: 'otherUser',
+            user: { __typename: 'AuthenticatedUser', id: 'otherUser-uuid' }
+          }
+        ]
+      }
+    })
+    setupApolloMocks()
+
+    render(
+      <GoogleSheetsSyncDialog open journeyId="journey1" onClose={onClose} />
+    )
+
+    await screen.findByRole('button', { name: 'Create Sync' })
+
+    // Open the dropdown
+    fireEvent.mouseDown(
+      screen.getByRole('combobox', { name: 'Integration account' })
+    )
+
+    const options = screen.getAllByRole('option')
+    const optionTexts = options.map((o) => o.textContent)
+
+    expect(optionTexts).toContain('myaccount@example.com')
+    expect(optionTexts).not.toContain('other-manager@example.com')
+  })
+
+  it('shows no integration options when none belong to current user', async () => {
+    mockUseIntegrationQuery.mockReturnValue({
+      data: {
+        integrations: [
+          {
+            __typename: 'IntegrationGoogle',
+            id: 'integration2',
+            accountEmail: 'other-manager@example.com',
+            userId: 'otherUser',
+            user: { __typename: 'AuthenticatedUser', id: 'otherUser-uuid' }
+          }
+        ]
+      }
+    })
+    setupApolloMocks()
+
+    render(
+      <GoogleSheetsSyncDialog open journeyId="journey1" onClose={onClose} />
+    )
+
+    await screen.findByRole('button', { name: 'Create Sync' })
+
+    fireEvent.mouseDown(
+      screen.getByRole('combobox', { name: 'Integration account' })
+    )
+
+    const options = screen.getAllByRole('option')
+    // Only the disabled placeholder option should exist
+    expect(options).toHaveLength(1)
+    expect(options[0]).toHaveTextContent('Select integration account')
+  })
+
+  it('excludes integrations with null userId from dropdown', async () => {
+    mockUseIntegrationQuery.mockReturnValue({
+      data: {
+        integrations: [
+          {
+            __typename: 'IntegrationGoogle',
+            id: 'integration1',
+            accountEmail: 'legacy@example.com',
+            userId: null,
+            user: null
+          },
+          {
+            __typename: 'IntegrationGoogle',
+            id: 'integration2',
+            accountEmail: 'myaccount@example.com',
+            userId: 'user1',
+            user: { __typename: 'AuthenticatedUser', id: 'user1-uuid' }
+          }
+        ]
+      }
+    })
+    setupApolloMocks()
+
+    render(
+      <GoogleSheetsSyncDialog open journeyId="journey1" onClose={onClose} />
+    )
+
+    await screen.findByRole('button', { name: 'Create Sync' })
+
+    fireEvent.mouseDown(
+      screen.getByRole('combobox', { name: 'Integration account' })
+    )
+
+    const options = screen.getAllByRole('option')
+    const optionTexts = options.map((o) => o.textContent)
+
+    expect(optionTexts).toContain('myaccount@example.com')
+    expect(optionTexts).not.toContain('legacy@example.com')
+  })
+
+  it('shows no integration options when user is not authenticated', async () => {
+    mockUseAuth.mockReturnValue({
+      user: null
+    })
+    mockUseIntegrationQuery.mockReturnValue({
+      data: {
+        integrations: [
+          {
+            __typename: 'IntegrationGoogle',
+            id: 'integration1',
+            accountEmail: 'someone@example.com',
+            userId: 'someUser',
+            user: null
+          }
+        ]
+      }
+    })
+    setupApolloMocks()
+
+    render(
+      <GoogleSheetsSyncDialog open journeyId="journey1" onClose={onClose} />
+    )
+
+    await screen.findByRole('button', { name: 'Create Sync' })
+
+    fireEvent.mouseDown(
+      screen.getByRole('combobox', { name: 'Integration account' })
+    )
+
+    const options = screen.getAllByRole('option')
+    expect(options).toHaveLength(1)
+    expect(options[0]).toHaveTextContent('Select integration account')
+  })
+})

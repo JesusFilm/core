@@ -23,6 +23,7 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
+import { sendCollectionMoreDetailsClickEvent } from '../../../libs/sendCollectionEvent'
 import {
   MuxVideoUploadProvider,
   useMuxVideoUpload
@@ -262,7 +263,6 @@ function CollectionDialogContent({
                   isPublished={isPublished}
                   canPublish={canPublish}
                   publishBlockedReason={publishBlockedReason}
-                  journeyCount={values.journeyIds.length}
                   isSubmitting={isSubmitting}
                   isUnpublishing={isUnpublishing}
                   onCancel={guardedClose}
@@ -292,8 +292,11 @@ function CollectionDialogContent({
               >
                 <Stack
                   direction={{ xs: 'column', md: 'row' }}
-                  alignItems="stretch"
-                  sx={{ height: { md: 537 }, minHeight: 0 }}
+                  sx={{
+                    alignItems: 'stretch',
+                    height: { md: 537 },
+                    minHeight: 0
+                  }}
                 >
                   <CollectionPreviewPane
                     values={values}
@@ -348,9 +351,11 @@ function CollectionDialogContent({
                             touched.title === true && Boolean(errors.title)
                           }
                           helperText={touched.title === true && errors.title}
-                          inputProps={{
-                            'aria-label': t('Page title'),
-                            maxLength: 100
+                          slotProps={{
+                            htmlInput: {
+                              'aria-label': t('Page title'),
+                              maxLength: 100
+                            }
                           }}
                         />
                       </Stack>
@@ -375,7 +380,14 @@ function CollectionDialogContent({
 
                       <Stack>
                         <ButtonBase
-                          onClick={() => setMoreDetailsOpen((v) => !v)}
+                          onClick={() => {
+                            if (!moreDetailsOpen && collection != null) {
+                              sendCollectionMoreDetailsClickEvent({
+                                collectionId: collection.id
+                              })
+                            }
+                            setMoreDetailsOpen((v) => !v)
+                          }}
                           aria-expanded={moreDetailsOpen}
                           aria-label={
                             moreDetailsOpen
@@ -415,11 +427,6 @@ function CollectionDialogContent({
                                 rows={4}
                                 variant="filled"
                                 hiddenLabel
-                                inputProps={{
-                                  'aria-label': t(
-                                    'Page description / instructions'
-                                  )
-                                }}
                                 value={values.description}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
@@ -431,6 +438,13 @@ function CollectionDialogContent({
                                   touched.description === true &&
                                   errors.description
                                 }
+                                slotProps={{
+                                  htmlInput: {
+                                    'aria-label': t(
+                                      'Page description / instructions'
+                                    )
+                                  }
+                                }}
                               />
                             </Stack>
 
@@ -447,9 +461,6 @@ function CollectionDialogContent({
                                   variant="filled"
                                   hiddenLabel
                                   value={values.slug}
-                                  inputProps={{
-                                    'aria-label': t('Slug')
-                                  }}
                                   // Slugify on every keystroke so the input
                                   // mirrors what the backend will accept: lowercase,
                                   // swap whitespace + invalid chars for dashes,
@@ -489,6 +500,11 @@ function CollectionDialogContent({
                                       'Used in the public URL. Must be unique across all collections — changing it breaks existing links.'
                                     )
                                   }
+                                  slotProps={{
+                                    htmlInput: {
+                                      'aria-label': t('Slug')
+                                    }
+                                  }}
                                 />
                               </Stack>
                             )}
@@ -500,7 +516,9 @@ function CollectionDialogContent({
                               <Stack
                                 direction="row"
                                 spacing={2}
-                                alignItems="flex-start"
+                                sx={{
+                                  alignItems: 'flex-start'
+                                }}
                               >
                                 {/* Square image box matching the media field's
                                     preview box so the two sections line up. */}
@@ -585,9 +603,11 @@ function CollectionDialogContent({
                                       touched.creatorName === true &&
                                       errors.creatorName
                                     }
-                                    inputProps={{
-                                      'aria-label': t('Creator name'),
-                                      maxLength: 100
+                                    slotProps={{
+                                      htmlInput: {
+                                        'aria-label': t('Creator name'),
+                                        maxLength: 100
+                                      }
                                     }}
                                   />
                                   <Button

@@ -16,7 +16,7 @@ import {
   BlockFields_SignUpBlock as SignUpBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import { SignUpBlockCreate } from '../../../../../../../../__generated__/SignUpBlockCreate'
-import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import { blockCreateUpdate } from '../../../../../../../libs/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
@@ -57,7 +57,7 @@ export function NewSignUpButton(): ReactElement {
   function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
-    ) as TreeBlock<CardBlock> | undefined
+    )
     if (card == null || journey == null) return
 
     const signUpBlock: SignUpBlock = {

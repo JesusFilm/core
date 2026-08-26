@@ -1,14 +1,280 @@
-import { fetchMock } from 'cloudflare:test'
+import { fetchMock } from '../test/fetchMock'
 
 import app from '.'
 
+const graphQlEndpoint = 'http://graphql.example.com'
+
+function decodeRequestBody(body: unknown): string {
+  if (typeof body === 'string') return body
+  if (body instanceof Uint8Array) return new TextDecoder().decode(body)
+  if (body instanceof ArrayBuffer) {
+    return new TextDecoder().decode(new Uint8Array(body))
+  }
+  throw new TypeError('Expected the intercepted request to have a text body')
+}
+
+function workerEnv(
+  overrides: Record<string, string | undefined> = {}
+): Record<string, string | undefined> {
+  return {
+    RESOURCES_PROXY_DEST: 'resources.example.com',
+    WATCH_PROXY_DEST: 'watch.example.com',
+    CORE_GRAPHQL_ENDPOINT: graphQlEndpoint,
+    ...overrides
+  }
+}
+
+function expectGraphQlRequest(
+  responseData: unknown,
+  assertBody?: (body: {
+    query?: string
+    variables?: Record<string, unknown>
+  }) => void
+): void {
+  fetchMock
+    .get(graphQlEndpoint)
+    .intercept({ path: '/', method: 'POST' })
+    .reply(({ body }) => {
+      const bodyText = decodeRequestBody(body)
+      const requestBody = JSON.parse(bodyText)
+      assertBody?.(requestBody)
+      return {
+        statusCode: 200,
+        data: JSON.stringify({
+          data: responseData
+        }),
+        responseOptions: {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      }
+    })
+}
+
 describe('test the worker', () => {
-  beforeAll(() => {
-    fetchMock.activate()
-    fetchMock.disableNetConnect()
-  })
+  // `activate` stubs `globalThis.fetch`; anything the interceptors below don't
+  // match throws, so no request escapes to the real network.
+  beforeAll(() => fetchMock.activate())
+
+  afterAll(() => fetchMock.deactivate())
 
   afterEach(() => fetchMock.assertNoPendingInterceptors())
+
+  describe('JF watch ID redirect', () => {
+    it('should redirect from cold cache after resolving video and language slugs', async () => {
+      expectGraphQlRequest(
+        {
+          videos: [{ slug: 'jesus' }],
+          languages: [{ slug: 'english' }]
+        },
+        ({ query, variables }) => {
+          expect(query).toContain('videos(where: { ids: $videoIds }')
+          expect(query).toContain('languages(where: { ids: $languageIds }')
+          expect(variables).toEqual({
+            videoIds: ['cold-video-1'],
+            languageIds: ['cold-language-1']
+          })
+        }
+      )
+
+      const res = await app.request(
+        'http://localhost/bin/jf/watch.html/cold-video-1/cold-language-1',
+        {},
+        workerEnv()
+      )
+
+      expect(res.status).toBe(302)
+      expect(res.headers.get('location')).toBe('/watch/jesus.html/english.html')
+    })
+
+    it('should normalize optional html suffixes before cache and GraphQL lookup', async () => {
+      expectGraphQlRequest(
+        {
+          videos: [{ slug: 'suffix-video' }],
+          languages: [{ slug: 'suffix-language' }]
+        },
+        ({ variables }) => {
+          expect(variables).toEqual({
+            videoIds: ['suffix-video-id'],
+            languageIds: ['529']
+          })
+        }
+      )
+
+      const res = await app.request(
+        'http://localhost/bin/jf/watch.html/suffix-video-id.html/529.htm',
+        {},
+        workerEnv()
+      )
+
+      expect(res.status).toBe(302)
+      expect(res.headers.get('location')).toBe(
+        '/watch/suffix-video.html/suffix-language.html'
+      )
+    })
+
+    it('should also own the legacy api resolver path', async () => {
+      expectGraphQlRequest({
+        videos: [{ slug: 'api-video' }],
+        languages: [{ slug: 'api-language' }]
+      })
+
+      const res = await app.request(
+        'http://localhost/api/jf/watch.html/api-video-id/api-language-id',
+        {},
+        workerEnv()
+      )
+
+      expect(res.status).toBe(302)
+      expect(res.headers.get('location')).toBe(
+        '/watch/api-video.html/api-language.html'
+      )
+    })
+
+    it('should redirect when the incoming route has a trailing slash', async () => {
+      expectGraphQlRequest({
+        videos: [{ slug: 'trailing-video' }],
+        languages: [{ slug: 'trailing-language' }]
+      })
+
+      const res = await app.request(
+        'http://localhost/bin/jf/watch.html/trailing-video-id/trailing-language-id/',
+        {},
+        workerEnv()
+      )
+
+      expect(res.status).toBe(302)
+      expect(res.headers.get('location')).toBe(
+        '/watch/trailing-video.html/trailing-language.html'
+      )
+    })
+
+    it('should return service unavailable when the slug lookup times out', async () => {
+      fetchMock
+        .get(graphQlEndpoint)
+        .intercept({ path: '/', method: 'POST' })
+        .replyWithError(new Error('The operation was aborted'))
+
+      const res = await app.request(
+        'http://localhost/bin/jf/watch.html/timeout-video-id/timeout-language-id',
+        {},
+        workerEnv()
+      )
+
+      expect(res.status).toBe(503)
+    })
+
+    it('should fetch only the missing language slug when video slug is cached', async () => {
+      expectGraphQlRequest(
+        {
+          languages: [{ slug: 'partial-language' }]
+        },
+        ({ query, variables }) => {
+          expect(query).not.toContain('videos(where: { ids: $videoIds }')
+          expect(query).toContain('languages(where: { ids: $languageIds }')
+          expect(variables).toEqual({
+            languageIds: ['partial-language-id']
+          })
+        }
+      )
+
+      await caches.default.put(
+        'https://jf-proxy.local/cache/jf-watch/video/partial-video-id',
+        new Response('partial-video', {
+          headers: { 'Cache-Control': 'public, max-age=86400' }
+        })
+      )
+
+      const res = await app.request(
+        'http://localhost/bin/jf/watch.html/partial-video-id/partial-language-id',
+        {},
+        workerEnv()
+      )
+
+      expect(res.status).toBe(302)
+      expect(res.headers.get('location')).toBe(
+        '/watch/partial-video.html/partial-language.html'
+      )
+    })
+
+    it('should fetch only the missing video slug when language slug is cached', async () => {
+      await caches.default.put(
+        'https://jf-proxy.local/cache/jf-watch/language/cached-language-id',
+        new Response('cached-language', {
+          headers: { 'Cache-Control': 'public, max-age=86400' }
+        })
+      )
+
+      expectGraphQlRequest(
+        {
+          videos: [{ slug: 'missing-video' }]
+        },
+        ({ query, variables }) => {
+          expect(query).toContain('videos(where: { ids: $videoIds }')
+          expect(query).not.toContain('languages(where: { ids: $languageIds }')
+          expect(variables).toEqual({
+            videoIds: ['missing-video-id']
+          })
+        }
+      )
+
+      const res = await app.request(
+        'http://localhost/bin/jf/watch.html/missing-video-id/cached-language-id',
+        {},
+        workerEnv()
+      )
+
+      expect(res.status).toBe(302)
+      expect(res.headers.get('location')).toBe(
+        '/watch/missing-video.html/cached-language.html'
+      )
+    })
+
+    it('should redirect from cache without GraphQL when both slugs are cached', async () => {
+      await caches.default.put(
+        'https://jf-proxy.local/cache/jf-watch/video/fully-cached-video-id',
+        new Response('fully-cached-video', {
+          headers: { 'Cache-Control': 'public, max-age=86400' }
+        })
+      )
+      await caches.default.put(
+        'https://jf-proxy.local/cache/jf-watch/language/fully-cached-language-id',
+        new Response('fully-cached-language', {
+          headers: { 'Cache-Control': 'public, max-age=86400' }
+        })
+      )
+
+      const res = await app.request(
+        'http://localhost/bin/jf/watch.html/fully-cached-video-id/fully-cached-language-id',
+        {},
+        workerEnv()
+      )
+
+      expect(res.status).toBe(302)
+      expect(res.headers.get('location')).toBe(
+        '/watch/fully-cached-video.html/fully-cached-language.html'
+      )
+    })
+
+    it('should return 404 and not cache when a slug cannot be resolved', async () => {
+      expectGraphQlRequest({
+        videos: [{ slug: 'uncached-video' }],
+        languages: []
+      })
+
+      const res = await app.request(
+        'http://localhost/bin/jf/watch.html/uncached-video-id/missing-language-id',
+        {},
+        workerEnv()
+      )
+
+      expect(res.status).toBe(404)
+      expect(
+        await caches.default.match(
+          'https://jf-proxy.local/cache/jf-watch/language/missing-language-id'
+        )
+      ).toBeUndefined()
+    })
+  })
 
   it('should return 200 response', async () => {
     fetchMock
@@ -140,47 +406,46 @@ describe('test the worker', () => {
     }
   })
 
-  it('should route /watch path with EXPERIMENTAL cookie to WATCH_PROXY_DEST', async () => {
-    fetchMock
-      .get('http://watch.example.com')
-      .intercept({ path: '/watch' })
-      .reply(200, 'watch content')
+  it.each([
+    ['/watch', undefined],
+    ['/watching', undefined],
+    ['/watch/video/123', 'other=value'],
+    ['/watch/video/456', 'EXPERIMENTAL=true']
+  ])(
+    'should route %s to WATCH_PROXY_DEST regardless of cookies',
+    async (path, cookie) => {
+      fetchMock
+        .get('http://watch.example.com')
+        .intercept({ path })
+        .reply(200, 'watch content')
 
-    const res = await app.request(
-      'http://localhost/watch',
-      {
-        headers: {
-          cookie: 'EXPERIMENTAL=true'
-        }
-      },
-      {
-        RESOURCES_PROXY_DEST: 'resources.example.com',
-        WATCH_PROXY_DEST: 'watch.example.com'
-      }
-    )
-    expect(res.status).toBe(200)
-    expect(await res.text()).toBe('watch content')
-  })
+      const res = await app.request(
+        `http://localhost${path}`,
+        cookie ? { headers: { cookie } } : {},
+        workerEnv()
+      )
 
-  it('should route /watch path without EXPERIMENTAL cookie to RESOURCES_PROXY_DEST', async () => {
-    fetchMock
-      .get('http://resources.example.com')
-      .intercept({ path: '/watch' })
-      .reply(200, 'resources content')
+      expect(res.status).toBe(200)
+      expect(await res.text()).toBe('watch content')
+    }
+  )
 
-    const res = await app.request(
-      'http://localhost/watch',
-      {},
-      {
-        RESOURCES_PROXY_DEST: 'resources.example.com',
-        WATCH_PROXY_DEST: 'watch.example.com'
-      }
-    )
-    expect(res.status).toBe(200)
-    expect(await res.text()).toBe('resources content')
-  })
+  it.each(['/journeys', '/journeys/123', '/resources', '/resources/'])(
+    'should route %s to RESOURCES_PROXY_DEST',
+    async (path) => {
+      fetchMock
+        .get('http://resources.example.com')
+        .intercept({ path })
+        .reply(200, 'resources content')
 
-  it('should route /watch/subpath with EXPERIMENTAL cookie to WATCH_PROXY_DEST', async () => {
+      const res = await app.request(`http://localhost${path}`, {}, workerEnv())
+
+      expect(res.status).toBe(200)
+      expect(await res.text()).toBe('resources content')
+    }
+  )
+
+  it('should continue passing cookies through to WATCH_PROXY_DEST', async () => {
     fetchMock
       .get('http://watch.example.com')
       .intercept({ path: '/watch/video/123' })
@@ -202,29 +467,226 @@ describe('test the worker', () => {
     expect(await res.text()).toBe('watch video content')
   })
 
-  it('should route /watch/subpath without EXPERIMENTAL cookie to RESOURCES_PROXY_DEST', async () => {
-    fetchMock
-      .get('http://resources.example.com')
-      .intercept({ path: '/watch/video/123' })
-      .reply(200, 'resources video content')
+  it.each([
+    '/watch',
+    '/watch/lumo-acts-of-the-apostles.html/lumo-acts-14-24-21-7/fgfghhh.html',
+    '/watching'
+  ])(
+    'should pass through the Watch custom 404 response for %s',
+    async (path) => {
+      const notFoundBody =
+        '<meta name="robots" content="noindex">This scene isn\'t here'
 
-    const res = await app.request(
-      'http://localhost/watch/video/123',
-      {
+      fetchMock
+        .get('http://watch.example.com')
+        .intercept({ path })
+        .reply(404, notFoundBody, {
+          headers: {
+            'content-type': 'text/html; charset=utf-8',
+            'x-middleware-rewrite': '/watch/en/en/404',
+            'x-powered-by': 'Next.js'
+          }
+        })
+
+      const response = await app.request(
+        `http://localhost${path}`,
+        {},
+        workerEnv()
+      )
+
+      expect(response.status).toBe(404)
+      expect(response.headers.get('content-type')).toBe(
+        'text/html; charset=utf-8'
+      )
+      expect(response.headers.get('x-middleware-rewrite')).toBe(
+        '/watch/en/en/404'
+      )
+      expect(response.headers.get('x-powered-by')).toBe('Next.js')
+      expect(await response.text()).toBe(notFoundBody)
+    }
+  )
+
+  it('should pass through a Watch HEAD 404 response', async () => {
+    fetchMock
+      .get('http://watch.example.com')
+      .intercept({ path: '/watch/missing.html', method: 'HEAD' })
+      .reply(404, '', {
         headers: {
-          cookie: 'other=value'
+          'content-type': 'text/html; charset=utf-8',
+          'x-middleware-rewrite': '/watch/en/en/404'
         }
-      },
-      {
-        RESOURCES_PROXY_DEST: 'resources.example.com',
-        WATCH_PROXY_DEST: 'watch.example.com'
-      }
+      })
+
+    const response = await app.request(
+      'http://localhost/watch/missing.html',
+      { method: 'HEAD' },
+      workerEnv()
     )
-    expect(res.status).toBe(200)
-    expect(await res.text()).toBe('resources video content')
+
+    expect(response.status).toBe(404)
+    expect(response.headers.get('content-type')).toBe(
+      'text/html; charset=utf-8'
+    )
+    expect(response.headers.get('x-middleware-rewrite')).toBe(
+      '/watch/en/en/404'
+    )
+    expect(await response.text()).toBe('')
   })
 
-  it('should route non-/watch paths to RESOURCES_PROXY_DEST regardless of cookie', async () => {
+  it('should preserve a queried Watch custom 404 response and cache headers', async () => {
+    const notFoundBody =
+      '<meta name="robots" content="noindex">This scene isn\'t here'
+
+    fetchMock
+      .get('http://watch.example.com')
+      .intercept({ path: '/watch/missing.html?probe=review' })
+      .reply(404, notFoundBody, {
+        headers: {
+          'cache-control': 'private, no-store',
+          'content-type': 'text/html; charset=utf-8',
+          'x-middleware-rewrite': '/watch/en/en/404'
+        }
+      })
+
+    const response = await app.request(
+      'http://localhost/watch/missing.html?probe=review',
+      {},
+      workerEnv()
+    )
+
+    expect(response.status).toBe(404)
+    expect(response.headers.get('cache-control')).toBe('private, no-store')
+    expect(response.headers.get('content-type')).toBe(
+      'text/html; charset=utf-8'
+    )
+    expect(response.headers.get('x-middleware-rewrite')).toBe(
+      '/watch/en/en/404'
+    )
+    expect(await response.text()).toBe(notFoundBody)
+  })
+
+  it('should return 503 when the Watch upstream fetch fails', async () => {
+    fetchMock
+      .get('http://watch.example.com')
+      .intercept({ path: '/watch/unavailable.html' })
+      .replyWithError(new Error('Watch network error'))
+
+    const response = await app.request(
+      'http://localhost/watch/unavailable.html',
+      {},
+      workerEnv()
+    )
+
+    expect(response.status).toBe(503)
+    expect(await response.text()).toBe('Service Unavailable')
+  })
+
+  it('should retain the fallback for a Watch GET 500 response', async () => {
+    fetchMock
+      .get('http://watch.example.com')
+      .intercept({ path: '/watch/broken.html' })
+      .reply(500, 'watch server error')
+
+    fetchMock
+      .get('http://localhost')
+      .intercept({ path: '/not-found.html' })
+      .reply(404, 'legacy not found content')
+
+    const response = await app.request(
+      'http://localhost/watch/broken.html',
+      {},
+      workerEnv()
+    )
+
+    expect(response.status).toBe(404)
+    expect(await response.text()).toBe('legacy not found content')
+  })
+
+  it('should forward a Next.js server action POST to WATCH_PROXY_DEST', async () => {
+    const actionBody = '1_{"query":"JESUS"}'
+    let capturedBody: string | undefined
+    let capturedHeaders: Headers | Record<string, string> | undefined
+
+    fetchMock
+      .get('https://watch.example.com')
+      .intercept({ path: '/watch?source=synthetic', method: 'POST' })
+      .reply((request) => {
+        capturedBody = decodeRequestBody(request.body)
+        capturedHeaders = request.headers
+        return {
+          statusCode: 200,
+          data: '1:{"ok":true}',
+          responseOptions: {
+            headers: { 'Content-Type': 'text/x-component' }
+          }
+        }
+      })
+
+    const res = await app.request(
+      'https://www.jesusfilm.org/watch?source=synthetic',
+      {
+        method: 'POST',
+        headers: {
+          accept: 'text/x-component',
+          cookie: 'forge_web_session=session-value',
+          'next-action': 'action-id',
+          'next-router-state-tree': '%5B%22%22%5D',
+          origin: 'https://www.jesusfilm.org',
+          'x-forwarded-host': 'attacker.example.com',
+          'x-forwarded-proto': 'http'
+        },
+        body: actionBody
+      },
+      workerEnv()
+    )
+
+    expect(res.status).toBe(200)
+    expect(res.headers.get('content-type')).toBe('text/x-component')
+    expect(await res.text()).toBe('1:{"ok":true}')
+    expect(capturedBody).toBe(actionBody)
+    expect(capturedHeaders).toBeDefined()
+
+    const getCapturedHeader = (name: string): string | null | undefined =>
+      capturedHeaders instanceof Headers
+        ? capturedHeaders.get(name)
+        : capturedHeaders?.[name]
+
+    expect(getCapturedHeader('accept')).toBe('text/x-component')
+    expect(getCapturedHeader('cookie')).toBe('forge_web_session=session-value')
+    expect(getCapturedHeader('next-action')).toBe('action-id')
+    expect(getCapturedHeader('next-router-state-tree')).toBe('%5B%22%22%5D')
+    expect(getCapturedHeader('origin')).toBe('https://www.jesusfilm.org')
+    expect(getCapturedHeader('x-forwarded-host')).toBe('www.jesusfilm.org')
+    expect(getCapturedHeader('x-forwarded-proto')).toBe('https')
+  })
+
+  it.each([
+    [404, 'action not found'],
+    [500, 'action failed']
+  ])(
+    'should pass through a %s response for a non-GET Watch request',
+    async (status, responseBody) => {
+      fetchMock
+        .get('http://watch.example.com')
+        .intercept({ path: '/watch', method: 'POST' })
+        .reply(status, responseBody)
+
+      const res = await app.request(
+        'http://localhost/watch',
+        {
+          method: 'POST',
+          headers: { 'next-action': 'stale-action-id' },
+          body: 'action-payload'
+        },
+        workerEnv()
+      )
+
+      expect(res.status).toBe(status)
+      expect(await res.text()).toBe(responseBody)
+    }
+  )
+
+  it('should route other worker paths to RESOURCES_PROXY_DEST', async () => {
     fetchMock
       .get('http://resources.example.com')
       .intercept({ path: '/api/test' })
@@ -244,6 +706,19 @@ describe('test the worker', () => {
     )
     expect(res.status).toBe(200)
     expect(await res.text()).toBe('api content')
+  })
+
+  it('should not forward non-GET requests for non-Watch paths', async () => {
+    const res = await app.request(
+      'http://localhost/api/test',
+      {
+        method: 'POST',
+        body: 'mutation-payload'
+      },
+      workerEnv()
+    )
+
+    expect(res.status).toBe(404)
   })
 
   it('should handle 404 response', async () => {

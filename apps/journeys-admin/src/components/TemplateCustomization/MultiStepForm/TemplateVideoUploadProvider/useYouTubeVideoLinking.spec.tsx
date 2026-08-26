@@ -82,7 +82,7 @@ function createWrapper(
   }): ReactElement {
     return (
       <MockedProvider mocks={mocks} addTypename={false}>
-        <JourneyProvider value={{ journey, variant: 'customize' }}>
+        <JourneyProvider value={{ journey, renderMode: 'customize' }}>
           {children}
         </JourneyProvider>
       </MockedProvider>

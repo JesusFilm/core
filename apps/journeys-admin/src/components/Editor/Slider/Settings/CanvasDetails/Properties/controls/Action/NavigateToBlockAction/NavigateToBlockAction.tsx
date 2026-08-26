@@ -42,8 +42,11 @@ export function NavigateToBlockAction(): ReactElement {
     <>
       <Typography
         variant="caption"
-        color="secondary.main"
-        sx={{ mt: 1, mb: 3 }}
+        sx={{
+          color: 'secondary.main',
+          mt: 1,
+          mb: 3
+        }}
       >
         {t('Switch to the map view to connect this button.')}
       </Typography>

@@ -243,7 +243,7 @@ describe('videoSlack', () => {
       ],
       startDate: new Date('2026-01-01T00:00:00.000Z'),
       endDate: new Date('2026-02-28T00:00:00.000Z'),
-      childLogger: logger as any
+      childLogger: logger
     })
 
     expect(mockFetch).toHaveBeenCalledTimes(1)
@@ -270,7 +270,7 @@ describe('videoSlack', () => {
       ),
       startDate: new Date('2026-11-01T00:00:00.000Z'),
       endDate: new Date('2026-11-30T00:00:00.000Z'),
-      childLogger: logger as any
+      childLogger: logger
     })
 
     expect(mockFetch.mock.calls.length).toBeGreaterThan(1)
@@ -547,6 +547,65 @@ describe('videoSlack', () => {
     )
     expect(blocksText).toContain(
       'https://nexus.jesusfilm.org/media/videos/1_jf-0-0?languageId=529'
+    )
+  })
+
+  it('should link the Production Managers watch URL to the root variant even when a child segment was updated more recently', async () => {
+    const packageRootVideo = videoRow({
+      id: 'jf-root',
+      label: 'featureFilm',
+      slug: 'jf-root',
+      title: [{ value: 'JESUS Root' }]
+    })
+    const packageChildVideo = videoRow({
+      id: 'jf-child',
+      label: 'segment',
+      title: [{ value: 'JESUS Segment' }]
+    })
+
+    mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([
+      // Child variant sorts first: it was updated more recently than the root's own variant.
+      videoVariantRow({
+        videoId: 'jf-child',
+        languageId: '529',
+        version: 1,
+        createdAt: new Date('2026-05-20T14:00:00.000Z'),
+        updatedAt: new Date('2026-05-21T10:00:00.000Z'),
+        slug: 'jf-child/english',
+        video: packageChildVideo
+      }),
+      videoVariantRow({
+        videoId: 'jf-root',
+        languageId: '529',
+        version: 1,
+        createdAt: new Date('2026-05-20T14:00:00.000Z'),
+        updatedAt: new Date('2026-05-20T15:00:00.000Z'),
+        slug: 'jf-root/english',
+        video: packageRootVideo
+      })
+    ])
+    mockMediaPrisma.video.findMany.mockResolvedValueOnce([
+      videoRow({
+        id: 'jf-root',
+        label: 'featureFilm',
+        slug: 'jf-root',
+        title: [{ value: 'JESUS Root' }],
+        children: [{ id: 'jf-child', label: 'segment' }]
+      })
+    ])
+
+    await sendProductionManagerFlagshipSummary(
+      new Date('2026-05-22T13:00:00.000Z')
+    )
+
+    expect(mockFetch).toHaveBeenCalledTimes(1)
+    const body = JSON.parse(mockFetch.mock.calls[0][1]?.body as string)
+    const blocksText = JSON.stringify(body.blocks)
+    expect(blocksText).toContain(
+      'https://www.jesusfilm.org/watch/jf-root.html/english.html'
+    )
+    expect(blocksText).not.toContain(
+      'https://www.jesusfilm.org/watch/jf-child.html/english.html'
     )
   })
 

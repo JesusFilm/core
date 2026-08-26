@@ -341,7 +341,7 @@ describe('VideoBlockEditor', () => {
       </ThemeProvider>
     )
     await waitFor(() =>
-      expect(getByRole('checkbox', { name: 'Autoplay' })).toBeEnabled()
+      expect(getByRole('switch', { name: 'Autoplay' })).toBeEnabled()
     )
   })
 
@@ -359,7 +359,7 @@ describe('VideoBlockEditor', () => {
       </ThemeProvider>
     )
     await waitFor(() => {
-      expect(getByRole('checkbox', { name: 'Autoplay' })).toBeInTheDocument()
+      expect(getByRole('switch', { name: 'Autoplay' })).toBeInTheDocument()
     })
   })
 
@@ -418,7 +418,7 @@ describe('VideoBlockEditor', () => {
     )
 
     await waitFor(() => {
-      expect(getByRole('checkbox', { name: 'Autoplay' })).toBeInTheDocument()
+      expect(getByRole('switch', { name: 'Autoplay' })).toBeInTheDocument()
     })
   })
 
@@ -518,7 +518,7 @@ describe('VideoBlockEditor', () => {
                 <JourneyProvider
                   value={{
                     journey: { template: true } as unknown as JourneyFields,
-                    variant: 'admin'
+                    renderMode: 'admin'
                   }}
                 >
                   <CommandProvider>
@@ -548,7 +548,7 @@ describe('VideoBlockEditor', () => {
                 <JourneyProvider
                   value={{
                     journey: { template: true } as unknown as JourneyFields,
-                    variant: 'admin'
+                    renderMode: 'admin'
                   }}
                 >
                   <CommandProvider>
@@ -583,7 +583,7 @@ describe('VideoBlockEditor', () => {
                 <JourneyProvider
                   value={{
                     journey: { template: true } as unknown as JourneyFields,
-                    variant: 'admin'
+                    renderMode: 'admin'
                   }}
                 >
                   <CommandProvider>
@@ -620,7 +620,7 @@ describe('VideoBlockEditor', () => {
                 <JourneyProvider
                   value={{
                     journey: { template: true } as unknown as JourneyFields,
-                    variant: 'admin'
+                    renderMode: 'admin'
                   }}
                 >
                   <CommandProvider>
@@ -659,7 +659,7 @@ describe('VideoBlockEditor', () => {
                 <JourneyProvider
                   value={{
                     journey: { template: true } as unknown as JourneyFields,
-                    variant: 'admin'
+                    renderMode: 'admin'
                   }}
                 >
                   <CommandProvider>
@@ -700,7 +700,7 @@ describe('VideoBlockEditor', () => {
                 <JourneyProvider
                   value={{
                     journey: { template: true } as unknown as JourneyFields,
-                    variant: 'admin'
+                    renderMode: 'admin'
                   }}
                 >
                   <CommandProvider>
@@ -738,7 +738,7 @@ describe('VideoBlockEditor', () => {
                 <JourneyProvider
                   value={{
                     journey: { template: true } as unknown as JourneyFields,
-                    variant: 'admin'
+                    renderMode: 'admin'
                   }}
                 >
                   <CommandProvider>
@@ -774,7 +774,7 @@ describe('VideoBlockEditor', () => {
                 <JourneyProvider
                   value={{
                     journey: { template: true } as unknown as JourneyFields,
-                    variant: 'admin'
+                    renderMode: 'admin'
                   }}
                 >
                   <CommandProvider>

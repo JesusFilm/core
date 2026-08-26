@@ -16,7 +16,7 @@ import type {
   BlockFields_RadioQuestionBlock as RadioQuestionBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import type { RadioQuestionBlockCreate } from '../../../../../../../../__generated__/RadioQuestionBlockCreate'
-import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import { blockCreateUpdate } from '../../../../../../../libs/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
@@ -62,7 +62,7 @@ export function NewRadioQuestionButton(): ReactElement {
   function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
-    ) as TreeBlock<CardBlock> | undefined
+    )
 
     if (card == null || journey == null) return
 

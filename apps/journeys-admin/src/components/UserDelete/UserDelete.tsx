@@ -369,7 +369,14 @@ function UserDeleteContent(): ReactElement {
         </Typography>
       </Alert>
 
-      <Stack direction="row" spacing={2} sx={{ mb: 3 }} alignItems="flex-end">
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{
+          alignItems: 'flex-end',
+          mb: 3
+        }}
+      >
         <FormControl size="small" sx={{ minWidth: 150 }}>
           <InputLabel id="id-type-label">{t('Lookup By')}</InputLabel>
           <Select
@@ -378,7 +385,7 @@ function UserDeleteContent(): ReactElement {
             value={idType}
             label={t('Lookup By')}
             onChange={(e) => {
-              setIdType(e.target.value as UserDeleteIdType)
+              setIdType(e.target.value)
               setCheckComplete(false)
               setResolvedUserId('')
               setLogs([])

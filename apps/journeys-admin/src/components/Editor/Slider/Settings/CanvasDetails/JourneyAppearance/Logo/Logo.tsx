@@ -26,7 +26,7 @@ import {
   LogoBlockCreate,
   LogoBlockCreateVariables
 } from '../../../../../../../../__generated__/LogoBlockCreate'
-import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import { blockCreateUpdate } from '../../../../../../../libs/blockCreateUpdate'
 import { ImageSource } from '../../../Drawer/ImageSource'
 import { Accordion } from '../../Properties/Accordion'
 import { FocalPoint } from '../../Properties/blocks/Card/BackgroundMedia/Image/FocalPoint'
@@ -199,7 +199,14 @@ export function Logo(): ReactElement {
 
   return (
     <Accordion id="logo" icon={<DiamondIcon />} name={t('Logo')}>
-      <Stack gap={4} sx={{ p: 4, pt: 2 }} data-testid="Logo">
+      <Stack
+        data-testid="Logo"
+        sx={{
+          gap: 4,
+          p: 4,
+          pt: 2
+        }}
+      >
         <ImageSource
           selectedBlock={imageBlock}
           onChange={async (input) => handleImageChange(input)}

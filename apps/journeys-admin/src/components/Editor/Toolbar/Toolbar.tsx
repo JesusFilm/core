@@ -27,7 +27,7 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useNavigationState } from '@core/journeys/ui/useNavigationState'
+import { useRouteChangeState } from '@core/journeys/ui/useRouteChangeState'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 
@@ -100,7 +100,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
   } = useEditor()
   const { editorAnalytics } = useFlags()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const isNavigating = useNavigationState()
+  const isNavigating = useRouteChangeState()
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [dialogOpen, setDialogOpen] = useState<boolean | null>(null)
@@ -183,9 +183,9 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
     <Stack
       data-testid="Toolbar"
       direction="row"
-      alignItems="center"
       spacing={{ xs: 2, sm: 4 }}
       sx={{
+        alignItems: 'center',
         height: EDIT_TOOLBAR_HEIGHT,
         backgroundColor: 'background.paper',
         px: { xs: 2, sm: 5 },
@@ -213,32 +213,39 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         </IconButton>
       </Tooltip>
       <Stack
-        gap={2}
         direction="row"
         data-testid="CommandUndoRedo"
-        sx={{ mr: 1 }}
+        sx={{
+          gap: 2,
+          mr: 1
+        }}
       >
         <CommandUndoItem variant="icon-button" />
         <CommandRedoItem variant="icon-button" />
       </Stack>
       <Stack
         direction="row"
-        gap={2}
         data-testid="JourneyDetails"
-        sx={{ minWidth: 0, display: { xs: 'none', md: 'inline-flex' } }}
+        sx={{
+          gap: 2,
+          minWidth: 0,
+          display: { xs: 'none', md: 'inline-flex' }
+        }}
       >
         <Tooltip
           title={t('Social Image')}
           arrow
-          PopperProps={{
-            modifiers: [
-              {
-                name: 'offset',
-                options: {
-                  offset: [0, -11]
+          slotProps={{
+            popper: {
+              modifiers: [
+                {
+                  name: 'offset',
+                  options: {
+                    offset: [0, -11]
+                  }
                 }
-              }
-            ]
+              ]
+            }
           }}
         >
           <Button
@@ -249,18 +256,27 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
             sx={{ px: 0 }}
           >
             <Box
-              bgcolor={(theme) => theme.palette.background.default}
-              borderRadius="4px"
-              width={50}
-              height={50}
-              justifyContent="center"
-              alignItems="center"
-              sx={{ display: { xs: 'none', sm: 'flex' }, overflow: 'hidden' }}
+              sx={{
+                bgcolor: (theme) => theme.palette.background.default,
+                borderRadius: '4px',
+                width: 50,
+                height: 50,
+                justifyContent: 'center',
+                alignItems: 'center',
+                display: { xs: 'none', sm: 'flex' },
+                overflow: 'hidden'
+              }}
             >
               {journey?.primaryImageBlock?.src == null ? (
                 <GridEmptyIcon color="secondary" />
               ) : (
-                <Box width={50} height={50} sx={{ position: 'relative' }}>
+                <Box
+                  sx={{
+                    width: 50,
+                    height: 50,
+                    position: 'relative'
+                  }}
+                >
                   <Image
                     src={journey.primaryImageBlock.src}
                     alt={journey.primaryImageBlock.alt}
@@ -277,10 +293,16 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           </Button>
         </Tooltip>
         {journey != null ? (
-          <Stack flexGrow={1} flexShrink={1} sx={{ minWidth: 0 }}>
+          <Stack
+            sx={{
+              flexGrow: 1,
+              flexShrink: 1,
+              minWidth: 0
+            }}
+          >
             <Box
-              flexShrink={1}
               sx={{
+                flexShrink: 1,
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis'
@@ -290,15 +312,18 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                 title={t('Click to edit')}
                 placement="bottom"
                 arrow
-                PopperProps={{
-                  modifiers: [
-                    {
-                      name: 'offset',
-                      options: {
-                        offset: journey.description === '' ? [0, 2] : [0, -10.3]
+                slotProps={{
+                  popper: {
+                    modifiers: [
+                      {
+                        name: 'offset',
+                        options: {
+                          offset:
+                            journey.description === '' ? [0, 2] : [0, -10.3]
+                        }
                       }
-                    }
-                  ]
+                    ]
+                  }
                 }}
               >
                 <Button
@@ -335,7 +360,11 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
               ))}
           </Stack>
         ) : (
-          <Stack flexGrow={1}>
+          <Stack
+            sx={{
+              flexGrow: 1
+            }}
+          >
             <Typography
               variant="subtitle1"
               sx={{ display: { xs: 'none', md: 'block' } }}
@@ -352,11 +381,13 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         )}
       </Stack>
       <Stack
-        flexDirection="row"
-        gap={2}
-        flexGrow={1}
-        justifyContent="flex-end"
-        alignItems="center"
+        sx={{
+          flexDirection: 'row',
+          gap: 2,
+          flexGrow: 1,
+          justifyContent: 'flex-end',
+          alignItems: 'center'
+        }}
       >
         <Items />
         <PreviewItem variant="icon-button" />

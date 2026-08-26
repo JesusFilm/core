@@ -35,6 +35,7 @@ describe('useVideoFilter', () => {
         locked: true,
         id: true,
         title: true,
+        label: true,
         description: true,
         published: true
       },
@@ -80,6 +81,7 @@ describe('useVideoFilter', () => {
         locked: true,
         id: true,
         title: false,
+        label: true,
         description: true,
         published: true
       },
@@ -89,6 +91,96 @@ describe('useVideoFilter', () => {
         published: false,
         title: 'Jesus'
       }
+    })
+  })
+
+  describe('malformed query params', () => {
+    function renderWithSearch(query: string) {
+      mockUseSearchParams.mockReturnValue(
+        new URLSearchParams(query) as ReadonlyURLSearchParams
+      )
+
+      return renderHook(useVideoFilter)
+    }
+
+    it('should ignore a filter nested too deeply without discarding valid filters', () => {
+      const { result } = renderWithSearch(
+        'filters[title][equals][nested]=oops&filters[published][is]=true'
+      )
+
+      expect(result.current.filters.where).toStrictEqual({ published: true })
+      expect(result.current.tableFilterProps.filterModel).toStrictEqual({
+        items: [{ field: 'published', operator: 'is', value: true }]
+      })
+    })
+
+    it('should ignore a filter given as a scalar without discarding valid filters', () => {
+      const { result } = renderWithSearch(
+        'filters[id]=oops&filters[title][equals]=Jesus'
+      )
+
+      expect(result.current.filters.where).toStrictEqual({ title: 'Jesus' })
+      expect(result.current.tableFilterProps.filterModel).toStrictEqual({
+        items: [{ field: 'title', operator: 'equals', value: 'Jesus' }]
+      })
+    })
+
+    it('should ignore a filter using an unknown operator without discarding valid filters', () => {
+      const { result } = renderWithSearch(
+        'filters[locked][contains]=true&filters[published][is]=false'
+      )
+
+      expect(result.current.filters.where).toStrictEqual({ published: false })
+      expect(result.current.tableFilterProps.filterModel).toStrictEqual({
+        items: [{ field: 'published', operator: 'is', value: false }]
+      })
+    })
+
+    it('should drop every filter when all of them are malformed', () => {
+      const { result } = renderWithSearch(
+        'filters[locked]=1&filters[id]=2&filters[title]=3&filters[published]=4'
+      )
+
+      expect(result.current.filters.where).toStrictEqual({})
+      expect(result.current.tableFilterProps.filterModel).toStrictEqual({
+        items: []
+      })
+    })
+
+    it('should ignore unrecognised filter fields', () => {
+      const { result } = renderWithSearch(
+        'filters[bogus][equals]=oops&filters[title][equals]=Jesus'
+      )
+
+      expect(result.current.tableFilterProps.filterModel).toStrictEqual({
+        items: [{ field: 'title', operator: 'equals', value: 'Jesus' }]
+      })
+    })
+
+    it('should drop every filter when filters is not an object', () => {
+      const { result } = renderWithSearch('filters=oops')
+
+      expect(result.current.filters.where).toStrictEqual({})
+      expect(result.current.tableFilterProps.filterModel).toStrictEqual({
+        items: []
+      })
+    })
+  })
+
+  it('should return initial state with label filter from query params', () => {
+    const search = new URLSearchParams(
+      'filters[label][is]=collection'
+    ) as ReadonlyURLSearchParams
+
+    mockUseSearchParams.mockReturnValue(search)
+
+    const { result } = renderHook(useVideoFilter)
+
+    expect(result.current.filters.where).toStrictEqual({
+      labels: ['collection']
+    })
+    expect(result.current.tableFilterProps.filterModel).toStrictEqual({
+      items: [{ field: 'label', operator: 'is', value: 'collection' }]
     })
   })
 
@@ -118,6 +210,7 @@ describe('useVideoFilter', () => {
         locked: true,
         id: true,
         title: true,
+        label: true,
         description: true,
         published: true
       },
@@ -184,6 +277,25 @@ describe('useVideoFilter', () => {
           ids: ['11_Advent'],
           title: 'Jesus',
           published: false
+        }
+      })
+    })
+
+    it('should handle FilterChange action with label filter', () => {
+      const filterModel = {
+        items: [{ field: 'label', operator: 'is', value: 'collection' }]
+      }
+
+      expect(
+        reducer(initialState, {
+          type: 'FilterChange',
+          model: filterModel
+        })
+      ).toEqual({
+        ...initialState,
+        filterModel: filterModel,
+        whereArgs: {
+          labels: ['collection']
         }
       })
     })

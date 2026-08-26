@@ -72,7 +72,7 @@ export const TextResponse = ({
     state: { selectedBlock }
   } = useEditor()
 
-  const { journey, variant } = useJourney()
+  const { journey, renderMode } = useJourney()
 
   const formikValue = formikContext?.values?.[blockId] ?? ''
   const isSubmitting = formikContext?.isSubmitting ?? false
@@ -90,10 +90,10 @@ export const TextResponse = ({
       getTextResponseValues(
         { label, placeholder, hint },
         journey?.journeyCustomizationFields ?? [],
-        variant ?? 'default',
+        renderMode ?? 'default',
         journey?.template
       ),
-    [label, placeholder, hint, journey?.journeyCustomizationFields, variant]
+    [label, placeholder, hint, journey?.journeyCustomizationFields, renderMode]
   )
 
   const trimmedPlaceholder =
@@ -134,8 +134,10 @@ export const TextResponse = ({
     <Box sx={{ mb: 4 }} data-testid="JourneysTextResponse">
       <Stack
         data-testid={`textResponse-${blockId}`}
-        flexDirection="column"
         spacing={1}
+        sx={{
+          flexDirection: 'column'
+        }}
       >
         {hideLabel !== true && (
           <Typography
@@ -184,6 +186,7 @@ export const TextResponse = ({
             },
             formHelperText: {
               sx: {
+                mx: 0,
                 fontFamily: theme.typography.button.fontFamily
               }
             }

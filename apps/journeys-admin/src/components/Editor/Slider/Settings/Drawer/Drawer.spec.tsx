@@ -38,8 +38,8 @@ describe('Drawer', () => {
 
     it('should render drawer from the right', () => {
       render(<Drawer open />)
-      expect(screen.getByTestId('SettingsDrawer').children[0]).toHaveClass(
-        'MuiDrawer-paperAnchorRight'
+      expect(screen.getByTestId('SettingsDrawer')).toHaveClass(
+        'MuiDrawer-anchorRight'
       )
     })
   })
@@ -49,8 +49,8 @@ describe('Drawer', () => {
 
     it('should render drawer from the bottom', () => {
       render(<Drawer open />)
-      expect(screen.getByTestId('SettingsDrawer').children[0]).toHaveClass(
-        'MuiDrawer-paperAnchorBottom'
+      expect(screen.getByTestId('SettingsDrawer')).toHaveClass(
+        'MuiDrawer-anchorBottom'
       )
     })
   })

@@ -731,7 +731,7 @@ export class JourneyPage {
   async verifyActiveTabShowsEmptyMessage() {
     await expect(
       this.page.locator('div[aria-labelledby*="active-status-panel-tab"] h6', {
-        hasText: 'No journeys to display.'
+        hasText: 'No Journeys to display.'
       })
     ).toBeVisible()
   }
@@ -820,7 +820,7 @@ export class JourneyPage {
     ).toHaveCount(0)
     await expect(
       this.page.locator('div[aria-labelledby*="trashed-status-panel-tab"] h6', {
-        hasText: 'Your trashed journeys will appear here.'
+        hasText: 'Your trashed Journeys will appear here.'
       })
     ).toBeVisible()
   }
@@ -838,7 +838,7 @@ export class JourneyPage {
     await expect(
       this.page.locator(
         'div[aria-labelledby*="archived-status-panel-tab"] h6',
-        { hasText: 'No archived journeys.' }
+        { hasText: 'No archived Journeys.' }
       )
     ).toBeVisible()
   }
@@ -1030,7 +1030,7 @@ export class JourneyPage {
   async verifySeeLinkHrefAttributeBesideUseTemplate() {
     await expect(
       this.page.locator('h6:has-text("Use Template") + a', {
-        hasText: 'See all'
+        hasText: 'See All'
       })
     ).toHaveAttribute('href', '/templates')
   }
@@ -1038,7 +1038,7 @@ export class JourneyPage {
   async verifySeeAllTemplateBelowUseTemplate() {
     await expect(
       this.page.locator('div[data-testid="SidePanelContainer"] a', {
-        hasText: 'See all templates'
+        hasText: 'See All Templates'
       })
     ).toHaveAttribute('href', '/templates')
   }
@@ -1154,8 +1154,8 @@ export class JourneyPage {
   }
 
   async enterJourneysTypographyForTemplate(): Promise<void> {
-    let typographyPath = ''
-    let textareaPath = ''
+    let typographyPath: string
+    let textareaPath: string
     if (
       await this.page
         .frameLocator(this.journeyCardFrame)

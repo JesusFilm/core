@@ -204,15 +204,26 @@ export function RegisterPage({
           isSubmitting
         }) => (
           <Form data-testid="RegisterForm">
-            <Stack gap={4} data-testid="RegisterPage">
-              <Typography variant="h6" textAlign="left" sx={{ mb: 2 }}>
+            <Stack
+              data-testid="RegisterPage"
+              sx={{
+                gap: 4
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{
+                  textAlign: 'left',
+                  mb: 2
+                }}
+              >
                 {t('Create account')}
               </Typography>
               <TextField
                 id="name"
                 autoComplete="name"
                 name="name"
-                label="Name"
+                label={t('Name')}
                 placeholder={t('First & last name')}
                 variant="filled"
                 value={values.name}
@@ -230,7 +241,7 @@ export function RegisterPage({
                 type="email"
                 autoComplete="username"
                 name="email"
-                label="Email"
+                label={t('Email')}
                 placeholder={t('Enter your email address here')}
                 variant="filled"
                 value={values.email}
@@ -247,7 +258,7 @@ export function RegisterPage({
                 id="new-password"
                 autoComplete="new-password"
                 name="password"
-                label="Password"
+                label={t('Password')}
                 placeholder={t('Choose password')}
                 variant="filled"
                 value={values.password}
@@ -260,18 +271,20 @@ export function RegisterPage({
                 }
                 fullWidth
                 type={showPassword ? 'text' : 'password'}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  )
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }
                 }}
               />
               <Stack direction="row" spacing={2}>

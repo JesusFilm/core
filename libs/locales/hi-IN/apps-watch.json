@@ -137,6 +137,14 @@
   "Video Course": "वीडियो पाठ्यक्रम",
   "Every Gospel, Told on Video": "प्रत्येक सुसमाचार, वीडियो पर सुनाया गया",
   "Scripture, Spoken Exactly as Written": "शास्त्र, ठीक वैसे ही जैसा लिखा गया है, कहा गया",
+  "Search by topic, occasion, or audience ...": "विषय, अवसर, या दर्शक के अनुसार खोजें ...",
+  "<0><0></0><1>interaction</1></0>": "<0><0></0><1>परस्पर क्रिया</1></0>",
+  "Search Suggestions": "खोज सुझाव",
+  "See Less": "कम देखें",
+  "Clear All": "सभी साफ़ करें",
+  "Sorry, there are no languages available for this search. Try removing some of your search criteria!": "क्षमा करें, इस खोज के लिए कोई भाषा उपलब्ध नहीं है। कृपया अपनी खोज मानदंडों में से कुछ हटाकर पुनः प्रयास करें।",
+  "Loading...": "Loading...",
+  "There are no suggestions for this search": "इस खोज के लिए कोई सुझाव नहीं हैं।",
   "{{count}} languages_one": "{{count}} languages",
   "{{count}} languages_other": "{{count}} languages"
 }

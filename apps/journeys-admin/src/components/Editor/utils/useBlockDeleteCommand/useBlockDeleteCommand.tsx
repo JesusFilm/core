@@ -89,7 +89,7 @@ export function useBlockDeleteCommand(): {
     const deletedBlockParentOrder = currentBlock.parentOrder
     const card = selectedStep?.children?.find(
       (block) => block.__typename === 'CardBlock'
-    ) as TreeBlock<CardBlock> | undefined
+    )
     const cachedStepWithXandY =
       client.cache.extract()[`StepBlock:${selectedStep.id}`]
     const stepSiblingsBeforeDelete = steps.filter(
@@ -157,10 +157,10 @@ export function useBlockDeleteCommand(): {
           optimisticResponse: { blockDelete: canvasSiblingsAfterDelete },
           update(cache, { data }) {
             blockDeleteUpdate(
-              currentBlock,
-              data?.blockDelete,
               cache,
-              journey.id
+              journey.id,
+              currentBlock,
+              data?.blockDelete
             )
           }
         })

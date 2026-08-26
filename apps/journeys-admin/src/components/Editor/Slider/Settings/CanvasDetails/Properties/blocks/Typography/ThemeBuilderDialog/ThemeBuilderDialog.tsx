@@ -116,6 +116,13 @@ export function ThemeBuilderDialog({
     setLabelFont(font)
   }
 
+  const saving = loading || createLoading
+
+  function handleClose(): void {
+    if (saving) return
+    onClose()
+  }
+
   async function handleSubmit(): Promise<void> {
     if (journey == null) return
 
@@ -195,7 +202,7 @@ export function ThemeBuilderDialog({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       fullscreen={!smUp}
       sx={{
         '& .MuiDialog-paper': {
@@ -208,16 +215,30 @@ export function ThemeBuilderDialog({
         title: t('Select Fonts'),
         closeButton: true
       }}
+      slotProps={{ titleButton: { disabled: saving } }}
       dialogActionChildren={
-        <Stack direction="row" justifyContent="space-between" width="100%">
-          <Button variant="outlined" color="secondary" onClick={onClose}>
+        // gap rather than margin: StyledDialog zeroes marginLeft on non-first
+        // DialogActions children, so margin-based spacing collapses here
+        <Stack
+          direction="row"
+          sx={{
+            gap: 2
+          }}
+        >
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={handleClose}
+            disabled={saving}
+          >
             {t('Cancel')}
           </Button>
           <Button
             variant="contained"
             color="primary"
             onClick={handleSubmit}
-            disabled={loading || createLoading}
+            loading={saving}
+            disabled={saving}
           >
             {t('Confirm')}
           </Button>

@@ -100,7 +100,7 @@ describe('TemplateViewHeader', () => {
         <JourneyProvider
           value={{
             journey: journeyWithCreatorDetails as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateViewHeader isPublisher authUser={{} as unknown as User} />
@@ -148,7 +148,7 @@ describe('TemplateViewHeader', () => {
         <JourneyProvider
           value={{
             journey: journeyWithCreatorDetails as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateViewHeader isPublisher authUser={{} as unknown as User} />
@@ -193,10 +193,7 @@ describe('TemplateViewHeader', () => {
               journey
             }}
           >
-            <TemplateViewHeader
-              isPublisher
-              authUser={{ id: '123' } as unknown as User}
-            />
+            <TemplateViewHeader isPublisher authUser={{ id: '123' }} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -216,10 +213,7 @@ describe('TemplateViewHeader', () => {
               journey
             }}
           >
-            <TemplateViewHeader
-              isPublisher
-              authUser={{ id: '123' } as unknown as User}
-            />
+            <TemplateViewHeader isPublisher authUser={{ id: '123' }} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -237,10 +231,7 @@ describe('TemplateViewHeader', () => {
               journey
             }}
           >
-            <TemplateViewHeader
-              isPublisher
-              authUser={{ id: '123' } as unknown as User}
-            />
+            <TemplateViewHeader isPublisher authUser={{ id: '123' }} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -261,10 +252,7 @@ describe('TemplateViewHeader', () => {
               journey
             }}
           >
-            <TemplateViewHeader
-              isPublisher={false}
-              authUser={{ id: '123' } as unknown as User}
-            />
+            <TemplateViewHeader isPublisher={false} authUser={{ id: '123' }} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -282,10 +270,7 @@ describe('TemplateViewHeader', () => {
               journey
             }}
           >
-            <TemplateViewHeader
-              isPublisher={false}
-              authUser={{ id: '123' } as unknown as User}
-            />
+            <TemplateViewHeader isPublisher={false} authUser={{ id: '123' }} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -300,7 +285,7 @@ describe('TemplateViewHeader', () => {
         <JourneyProvider
           value={{
             journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateViewHeader
@@ -337,9 +322,7 @@ describe('TemplateViewHeader', () => {
         <JourneyProvider value={{ journey: customizableJourney }}>
           <TemplateViewHeader
             isPublisher
-            authUser={
-              { id: '123', email: 'user@example.com' } as unknown as User
-            }
+            authUser={{ id: '123', email: 'user@example.com' }}
           />
         </JourneyProvider>
       </MockedProvider>
@@ -348,11 +331,7 @@ describe('TemplateViewHeader', () => {
     fireEvent.click(getAllByRole('button', { name: 'Use This Template' })[0])
 
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        '/templates/journeyId/customize',
-        undefined,
-        { shallow: true }
-      )
+      expect(push).toHaveBeenCalledWith('/templates/journeyId/customize')
     })
   })
 
@@ -362,9 +341,7 @@ describe('TemplateViewHeader', () => {
         <JourneyProvider value={{ journey: nonCustomizableJourney }}>
           <TemplateViewHeader
             isPublisher
-            authUser={
-              { id: '123', email: 'user@example.com' } as unknown as User
-            }
+            authUser={{ id: '123', email: 'user@example.com' }}
           />
         </JourneyProvider>
       </MockedProvider>
@@ -382,10 +359,7 @@ describe('TemplateViewHeader', () => {
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider value={{ journey: nonCustomizableJourney }}>
-            <TemplateViewHeader
-              isPublisher
-              authUser={{ id: '123' } as unknown as User}
-            />
+            <TemplateViewHeader isPublisher authUser={{ id: '123' }} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -405,10 +379,7 @@ describe('TemplateViewHeader', () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: undefined }}>
-          <TemplateViewHeader
-            isPublisher
-            authUser={{ id: '123' } as unknown as User}
-          />
+          <TemplateViewHeader isPublisher authUser={{ id: '123' }} />
         </JourneyProvider>
       </MockedProvider>
     )

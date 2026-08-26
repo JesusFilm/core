@@ -246,7 +246,7 @@ describe('ButtonEdit', () => {
         <JourneyProvider
           value={{
             journey: mockJourneyWithCustomization,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider>
@@ -271,7 +271,7 @@ describe('ButtonEdit', () => {
         <JourneyProvider
           value={{
             journey: mockJourneyWithCustomization,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider>
@@ -296,7 +296,7 @@ describe('ButtonEdit', () => {
         <JourneyProvider
           value={{
             journey: mockTemplateJourney,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider>

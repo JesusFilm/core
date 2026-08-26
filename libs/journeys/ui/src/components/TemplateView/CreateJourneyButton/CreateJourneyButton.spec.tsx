@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -296,7 +297,8 @@ describe('CreateJourneyButton', () => {
               journeyData={nonCustomizableTemplate}
             />
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       expect(screen.getByTestId('CreateJourneyButton')).toBeInTheDocument()
@@ -328,7 +330,8 @@ describe('CreateJourneyButton', () => {
               journeyData={nonCustomizableTemplate}
             />
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       expect(screen.getByTestId('CreateJourneyMenuItem')).toBeInTheDocument()
@@ -360,7 +363,8 @@ describe('CreateJourneyButton', () => {
               journeyData={nonCustomizableTemplate}
             />
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       await waitFor(() =>
@@ -392,7 +396,8 @@ describe('CreateJourneyButton', () => {
               journeyData={nonCustomizableTemplate}
             />
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       await waitFor(() =>
@@ -425,7 +430,8 @@ describe('CreateJourneyButton', () => {
               />
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
@@ -465,7 +471,8 @@ describe('CreateJourneyButton', () => {
               </JourneyProvider>
             </TeamProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
@@ -475,7 +482,7 @@ describe('CreateJourneyButton', () => {
       )
 
       // Enable translation
-      fireEvent.click(screen.getByRole('checkbox'))
+      fireEvent.click(screen.getByRole('switch'))
 
       // Language selection should appear
       await waitFor(() => {
@@ -499,7 +506,9 @@ describe('CreateJourneyButton', () => {
       })
 
       it('should pre-render sign in page', async () => {
-        render(createJourneyButton(nonCustomizableTemplate))
+        render(createJourneyButton(nonCustomizableTemplate), {
+          wrapper: MenuList
+        })
 
         await waitFor(() => {
           expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
@@ -507,7 +516,9 @@ describe('CreateJourneyButton', () => {
       })
 
       it('should open account check dialog and redirect to sign in page when login is clicked', async () => {
-        render(createJourneyButton(nonCustomizableTemplate))
+        render(createJourneyButton(nonCustomizableTemplate), {
+          wrapper: MenuList
+        })
 
         fireEvent.click(
           screen.getByRole('button', { name: 'Use This Template' })
@@ -533,7 +544,9 @@ describe('CreateJourneyButton', () => {
       })
 
       it('should open account check dialog and redirect to sign in page when create account is clicked', async () => {
-        render(createJourneyButton(nonCustomizableTemplate))
+        render(createJourneyButton(nonCustomizableTemplate), {
+          wrapper: MenuList
+        })
 
         fireEvent.click(
           screen.getByRole('button', { name: 'Use This Template' })
@@ -578,7 +591,9 @@ describe('CreateJourneyButton', () => {
       })
 
       it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
-        render(createJourneyButton(nonCustomizableTemplate))
+        render(createJourneyButton(nonCustomizableTemplate), {
+          wrapper: MenuList
+        })
 
         fireEvent.click(
           screen.getByRole('button', { name: 'Use This Template' })
@@ -604,7 +619,9 @@ describe('CreateJourneyButton', () => {
       })
 
       it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
-        render(createJourneyButton(nonCustomizableTemplate))
+        render(createJourneyButton(nonCustomizableTemplate), {
+          wrapper: MenuList
+        })
 
         fireEvent.click(
           screen.getByRole('button', { name: 'Use This Template' })
@@ -648,7 +665,9 @@ describe('CreateJourneyButton', () => {
       })
 
       it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
-        render(createJourneyButton(nonCustomizableTemplate))
+        render(createJourneyButton(nonCustomizableTemplate), {
+          wrapper: MenuList
+        })
 
         fireEvent.click(
           screen.getByRole('button', { name: 'Use This Template' })
@@ -674,7 +693,9 @@ describe('CreateJourneyButton', () => {
       })
 
       it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
-        render(createJourneyButton(nonCustomizableTemplate))
+        render(createJourneyButton(nonCustomizableTemplate), {
+          wrapper: MenuList
+        })
 
         fireEvent.click(
           screen.getByRole('button', { name: 'Use This Template' })
@@ -723,7 +744,8 @@ describe('CreateJourneyButton', () => {
               </JourneyProvider>
             </TeamProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       await waitFor(() =>
@@ -787,7 +809,8 @@ describe('CreateJourneyButton', () => {
               </JourneyProvider>
             </TeamProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
@@ -866,7 +889,8 @@ describe('CreateJourneyButton', () => {
               </JourneyProvider>
             </TeamProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
@@ -919,7 +943,8 @@ describe('CreateJourneyButton', () => {
               </JourneyProvider>
             </TeamProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
@@ -990,7 +1015,8 @@ describe('CreateJourneyButton', () => {
               </JourneyProvider>
             </TeamProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
@@ -1065,7 +1091,8 @@ describe('CreateJourneyButton', () => {
               </JourneyProvider>
             </TeamProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
     }
 
@@ -1073,7 +1100,7 @@ describe('CreateJourneyButton', () => {
       renderWithJourney({
         ...journey,
         team: { id: 'team-a' }
-      } as unknown as JourneyForTemplate)
+      })
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
       await waitFor(() =>
@@ -1087,7 +1114,7 @@ describe('CreateJourneyButton', () => {
       renderWithJourney({
         ...journey,
         team: { id: 'jfp-team' }
-      } as unknown as JourneyForTemplate)
+      })
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
       await waitFor(() =>
@@ -1104,7 +1131,7 @@ describe('CreateJourneyButton', () => {
       renderWithJourney({
         ...journey,
         team: null
-      } as unknown as JourneyForTemplate)
+      })
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
       await waitFor(() =>

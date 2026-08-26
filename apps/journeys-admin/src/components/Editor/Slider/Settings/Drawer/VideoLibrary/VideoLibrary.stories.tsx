@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentProps, ReactElement, useState } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 
-import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
+import { InstantSearchTestWrapper } from '@core/journeys/ui/test/InstantSearchTestWrapper'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { getAlgoliaVideosHandlers } from './VideoLibrary.handlers'
@@ -59,7 +59,7 @@ export const WithSearch = {
     query: 'Jesus'
   },
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement.parentElement as unknown as HTMLElement)
+    const canvas = within(canvasElement.parentElement as unknown)
     await waitFor(
       async () =>
         await expect(
@@ -92,7 +92,7 @@ const VideoLibraryEmpty = ({ onSelect }): ReactElement => {
 export const Empty: StoryObj<typeof VideoLibrary> = {
   render: ({ onSelect }) => <VideoLibraryEmpty onSelect={onSelect} />,
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement.parentElement as unknown as HTMLElement)
+    const canvas = within(canvasElement.parentElement as unknown)
     await waitFor(
       async () =>
         await expect(

@@ -67,17 +67,20 @@ export function VideoSearch({
               autoComplete="off"
               value={values.title}
               onChange={handleChange}
-              inputProps={{
-                'data-testid': 'VideoSearch',
-                'aria-label': 'Search'
-              }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    {icon === 'search' && <Search1Icon />}
-                    {icon === 'link' && <LinkIcon />}
-                  </InputAdornment>
-                )
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      {icon === 'search' && <Search1Icon />}
+                      {icon === 'link' && <LinkIcon />}
+                    </InputAdornment>
+                  )
+                },
+
+                htmlInput: {
+                  'data-testid': 'VideoSearch',
+                  'aria-label': 'Search'
+                }
               }}
             />
             <SubmitListener />

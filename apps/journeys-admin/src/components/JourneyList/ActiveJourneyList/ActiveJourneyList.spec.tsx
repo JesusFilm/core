@@ -20,8 +20,8 @@ import { defaultJourney, oldJourney } from '../journeyListData'
 
 import { ActiveJourneyList } from '.'
 
-vi.mock('@core/journeys/ui/useNavigationState', async () => ({
-  useNavigationState: vi.fn(() => false)
+vi.mock('@core/journeys/ui/useRouteChangeState', async () => ({
+  useRouteChangeState: vi.fn(() => false)
 }))
 
 vi.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', async () => ({
@@ -109,10 +109,10 @@ describe('ActiveJourneyList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByText('No journeys to display.')).toBeInTheDocument()
+      expect(getByText('No Journeys to display.')).toBeInTheDocument()
     )
     expect(
-      getByText('Create a journey, then find it here.')
+      getByText('Create a Journey, then find it here.')
     ).toBeInTheDocument()
   })
 

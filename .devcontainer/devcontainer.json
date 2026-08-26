@@ -19,7 +19,8 @@
         "prisma.prisma",
         "vitest.explorer",
         "redhat.vscode-yaml",
-        "anthropic.claude-code"
+        "anthropic.claude-code",
+        "TypeScriptTeam.native-preview"
       ]
     }
   },
@@ -28,6 +29,13 @@
   "remoteEnv": {
     "CLAUDE_CODE_OAUTH_TOKEN": "${localEnv:CLAUDE_CODE_OAUTH_TOKEN:}",
     "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY:}"
+  },
+
+  // A cold type-aware lint of journeys-admin (~2.6k files in one ESLint
+  // process) exceeds Node's default ~4GB heap cap. autofix.ci already sets
+  // the same value; this keeps `nx run journeys-admin:lint` working locally.
+  "containerEnv": {
+    "NODE_OPTIONS": "--max-old-space-size=8192"
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.

@@ -48,7 +48,7 @@ export function ArchivedTemplateList({
   const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {
-        enqueueSnackbar(t('Journeys Restored'), {
+        enqueueSnackbar(t('Templates Unarchived'), {
           variant: 'success'
         })
 
@@ -64,7 +64,7 @@ export function ArchivedTemplateList({
   const [trash] = useMutation(TRASH_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysTrash != null) {
-        enqueueSnackbar(t('Journeys Trashed'), {
+        enqueueSnackbar(t('Templates Trashed'), {
           variant: 'success'
         })
 
@@ -172,7 +172,7 @@ export function ArchivedTemplateList({
               }}
             >
               <Typography variant="subtitle1" align="center" gutterBottom>
-                {t('No archived templates.')}
+                {t('No archived Templates.')}
               </Typography>
             </Box>
           )}
@@ -180,14 +180,18 @@ export function ArchivedTemplateList({
       ) : (
         <LoadingJourneyList hideHelperText />
       )}
-      <Stack alignItems="center">
+      <Stack
+        sx={{
+          alignItems: 'center'
+        }}
+      >
         <Typography
           variant="caption"
           align="center"
           component="div"
           sx={{ py: { xs: 3, sm: 5 }, maxWidth: 290 }}
         >
-          {t('Archived templates are delisted from the Template Library.')}
+          {t('Archived Templates are delisted from the Template Library.')}
         </Typography>
       </Stack>
       {openRestoreDialog != null && (
@@ -206,7 +210,7 @@ export function ArchivedTemplateList({
         >
           <Typography>
             {t(
-              'Are you sure you would like to unarchive all archived templates immediately?'
+              'Are you sure you would like to unarchive all archived Templates immediately?'
             )}
           </Typography>
         </Dialog>
@@ -227,7 +231,7 @@ export function ArchivedTemplateList({
         >
           <Typography>
             {t(
-              'Are you sure you would like to trash all archived templates immediately?'
+              'Are you sure you would like to trash all archived Templates immediately?'
             )}
           </Typography>
         </Dialog>

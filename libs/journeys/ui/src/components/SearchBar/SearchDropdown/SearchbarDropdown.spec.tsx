@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ClearRefinementsRenderState } from 'instantsearch.js/es/connectors/clear-refinements/connectClearRefinements'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
@@ -78,7 +79,8 @@ describe('SearchbarDropdown', () => {
             handleTabValueChange={noop}
           />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await waitFor(() => {
       expect(screen.queryByTestId('SearchBarDropdown')).not.toBeInTheDocument()
@@ -95,7 +97,8 @@ describe('SearchbarDropdown', () => {
             handleTabValueChange={noop}
           />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     expect(screen.getByText('Search Suggestions')).toBeVisible()
     expect(screen.getByText('Languages')).toBeVisible()
@@ -111,7 +114,8 @@ describe('SearchbarDropdown', () => {
             handleTabValueChange={noop}
           />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     expect(screen.getByText('- in English')).toBeVisible()
   })
@@ -127,7 +131,8 @@ describe('SearchbarDropdown', () => {
             handleTabValueChange={noop}
           />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await waitFor(() => expect(screen.getByText('Cantonese')).toBeVisible())
   })
@@ -143,7 +148,8 @@ describe('SearchbarDropdown', () => {
             handleTabValueChange={noop}
           />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await waitFor(() => {
       expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
@@ -165,7 +171,8 @@ describe('SearchbarDropdown', () => {
             handleTabValueChange={noop}
           />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await waitFor(() => {
       expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
@@ -189,7 +196,8 @@ describe('SearchbarDropdown', () => {
             handleTabValueChange={noop}
           />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     expect(
@@ -210,7 +218,8 @@ describe('SearchbarDropdown', () => {
             handleTabValueChange={noop}
           />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -235,7 +244,8 @@ describe('SearchbarDropdown', () => {
             handleTabValueChange={noop}
           />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -256,7 +266,8 @@ describe('SearchbarDropdown', () => {
             handleTabValueChange={noop}
           />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await waitFor(() => {
       fireEvent.click(screen.getByText('Cantonese'))
@@ -275,7 +286,8 @@ describe('SearchbarDropdown', () => {
             handleTabValueChange={noop}
           />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await waitFor(() => {
       expect(screen.getByText('Search Suggestions')).toBeInTheDocument()
@@ -296,7 +308,8 @@ describe('SearchbarDropdown', () => {
             handleTabValueChange={noop}
           />
         </SearchBarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await waitFor(() => {
       expect(screen.getByText('Search Suggestions')).toBeInTheDocument()

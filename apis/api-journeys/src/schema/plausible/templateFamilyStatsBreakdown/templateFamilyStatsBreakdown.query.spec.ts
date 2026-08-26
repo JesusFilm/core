@@ -116,7 +116,7 @@ describe('templateFamilyStatsBreakdown', () => {
           }
         ]
       }
-    } as unknown as AxiosResponse)
+    })
     mockIsAxiosError.mockReturnValue(false)
   })
 
@@ -165,7 +165,7 @@ describe('templateFamilyStatsBreakdown', () => {
             }
           ]
         }
-      } as unknown as AxiosResponse)
+      })
       .mockResolvedValueOnce({
         data: {
           results: [
@@ -175,7 +175,7 @@ describe('templateFamilyStatsBreakdown', () => {
             }
           ]
         }
-      } as unknown as AxiosResponse)
+      })
 
     const result = await authClient({
       document: QUERY,
@@ -247,7 +247,7 @@ describe('templateFamilyStatsBreakdown', () => {
     // Both breakdown calls return a short first page, so each makes one request.
     mockAxios.get.mockResolvedValue({
       data: { results: [] }
-    } as unknown as AxiosResponse)
+    })
 
     await authClient({
       document: QUERY,
@@ -373,7 +373,7 @@ describe('templateFamilyStatsBreakdown', () => {
             }
           ]
         }
-      } as unknown as AxiosResponse)
+      })
       .mockResolvedValueOnce({
         data: {
           results: [
@@ -383,7 +383,7 @@ describe('templateFamilyStatsBreakdown', () => {
             }
           ]
         }
-      } as unknown as AxiosResponse)
+      })
 
     const result = await authClient({
       document: QUERY,
@@ -490,7 +490,7 @@ describe('templateFamilyStatsBreakdown', () => {
             }
           ]
         }
-      } as unknown as AxiosResponse)
+      })
       .mockResolvedValueOnce({
         data: {
           results: [
@@ -504,7 +504,7 @@ describe('templateFamilyStatsBreakdown', () => {
             }
           ]
         }
-      } as unknown as AxiosResponse)
+      })
 
     const result = await authClient({
       document: QUERY,
@@ -583,7 +583,7 @@ describe('templateFamilyStatsBreakdown', () => {
           }
         ]
       }
-    } as unknown as AxiosResponse)
+    })
 
     const result = await authClient({
       document: QUERY,
@@ -627,7 +627,7 @@ describe('templateFamilyStatsBreakdown', () => {
     mockIsAxiosError.mockReturnValueOnce(true)
     mockAxios.get.mockRejectedValueOnce({
       response: { data: { error: 'Invalid property' } }
-    } as unknown as AxiosError)
+    })
 
     const result = await authClient({
       document: QUERY,
@@ -711,7 +711,7 @@ describe('templateFamilyStatsBreakdown', () => {
             }
           ]
         }
-      } as unknown as AxiosResponse)
+      })
       .mockResolvedValueOnce({
         data: {
           results: [
@@ -725,7 +725,7 @@ describe('templateFamilyStatsBreakdown', () => {
             }
           ]
         }
-      } as unknown as AxiosResponse)
+      })
 
     const result = await authClient({
       document: QUERY,
@@ -815,7 +815,7 @@ describe('templateFamilyStatsBreakdown', () => {
       data: {
         results: []
       }
-    } as unknown as AxiosResponse)
+    })
 
     const result = await authClient({
       document: QUERY,

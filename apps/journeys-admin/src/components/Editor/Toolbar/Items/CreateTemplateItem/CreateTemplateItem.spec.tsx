@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -105,13 +106,14 @@ describe('CreateTemplateItem', () => {
                 id: 'journeyId',
                 team: { id: 'local-team-id' }
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <CreateTemplateItem variant="menu-item" globalPublish={true} />
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     fireEvent.click(getByRole('menuitem', { name: 'Make Global Template' }))
     await waitFor(() => expect(journeyDuplicateMock).toHaveBeenCalled())
@@ -202,7 +204,8 @@ describe('CreateTemplateItem', () => {
             />
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     fireEvent.click(getByRole('menuitem', { name: 'Make Global Template' }))
     await waitFor(() => expect(journeyDuplicateMock).toHaveBeenCalled())
@@ -297,7 +300,7 @@ describe('CreateTemplateItem', () => {
                 id: 'journeyId',
                 team: { id: 'local-team-id' }
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <CreateTemplateItem
@@ -307,7 +310,8 @@ describe('CreateTemplateItem', () => {
             />
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() =>
@@ -426,7 +430,8 @@ describe('CreateTemplateItem', () => {
             journey={defaultJourney}
           />
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() =>
@@ -542,7 +547,7 @@ describe('CreateTemplateItem', () => {
                 id: 'journeyId',
                 team: { id: 'local-team-id' }
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <CreateTemplateItem
@@ -552,7 +557,8 @@ describe('CreateTemplateItem', () => {
             />
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     fireEvent.click(getByRole('menuitem', { name: 'Make Template' }))
@@ -561,5 +567,259 @@ describe('CreateTemplateItem', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith('/?type=templates&refresh=true')
     })
+  })
+
+  it('should only create one template when clicked repeatedly', async () => {
+    const push = vi.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    const result = vi.fn(() => ({
+      data: {
+        journeyTemplate: {
+          id: 'templateId',
+          template: true
+        }
+      }
+    }))
+    // Hold the duplicate mutation open so every click lands while the first
+    // chain is still in flight - this is the rapid-click scenario from the bug
+    let resolveDuplicate: (value: unknown) => void = () => undefined
+    const journeyDuplicateMock = vi.fn().mockReturnValue(
+      new Promise((resolve) => {
+        resolveDuplicate = resolve
+      })
+    )
+    mockUseJourneyDuplicateMutation.mockReturnValue([
+      journeyDuplicateMock,
+      {
+        loading: false,
+        error: undefined,
+        data: undefined,
+        called: false,
+        reset: vi.fn(),
+        client: {} as any
+      }
+    ])
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_TEMPLATE,
+              variables: {
+                id: 'duplicatedJourneyId',
+                input: {
+                  template: true
+                }
+              }
+            },
+            result
+          },
+          {
+            request: {
+              query: REMOVE_USER_JOURNEY,
+              variables: {
+                id: 'templateId'
+              }
+            },
+            result: {
+              data: {
+                userJourneyRemoveAll: {
+                  id: 'journeyId'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                team: { id: 'local-team-id' }
+              } as unknown as Journey,
+              renderMode: 'admin'
+            }}
+          >
+            <CreateTemplateItem variant="menu-item" globalPublish={true} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
+    )
+
+    const menuItem = getByRole('menuitem', { name: 'Make Global Template' })
+    fireEvent.click(menuItem)
+    fireEvent.click(menuItem)
+    fireEvent.click(menuItem)
+
+    expect(journeyDuplicateMock).toHaveBeenCalledTimes(1)
+
+    resolveDuplicate({
+      data: {
+        journeyDuplicate: {
+          id: 'duplicatedJourneyId'
+        }
+      }
+    })
+
+    await waitFor(() => expect(result).toHaveBeenCalledTimes(1))
+    expect(journeyDuplicateMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('should disable the menu item while the template is being created', async () => {
+    const push = vi.fn()
+    const handleKeepMounted = vi.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    const result = vi.fn(() => ({
+      data: {
+        journeyTemplate: {
+          id: 'templateId',
+          template: true
+        }
+      }
+    }))
+    let resolveDuplicate: (value: unknown) => void = () => undefined
+    const journeyDuplicateMock = vi.fn().mockReturnValue(
+      new Promise((resolve) => {
+        resolveDuplicate = resolve
+      })
+    )
+    mockUseJourneyDuplicateMutation.mockReturnValue([
+      journeyDuplicateMock,
+      {
+        loading: false,
+        error: undefined,
+        data: undefined,
+        called: false,
+        reset: vi.fn(),
+        client: {} as any
+      }
+    ])
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_TEMPLATE,
+              variables: {
+                id: 'duplicatedJourneyId',
+                input: {
+                  template: true
+                }
+              }
+            },
+            result
+          },
+          {
+            request: {
+              query: REMOVE_USER_JOURNEY,
+              variables: {
+                id: 'templateId'
+              }
+            },
+            result: {
+              data: {
+                userJourneyRemoveAll: {
+                  id: 'journeyId'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                team: { id: 'local-team-id' }
+              } as unknown as Journey,
+              renderMode: 'admin'
+            }}
+          >
+            <CreateTemplateItem
+              variant="menu-item"
+              globalPublish={true}
+              handleKeepMounted={handleKeepMounted}
+            />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
+    )
+
+    const menuItem = getByRole('menuitem', { name: 'Make Global Template' })
+    expect(menuItem).not.toHaveAttribute('aria-disabled', 'true')
+
+    fireEvent.click(menuItem)
+
+    // Holds the parent menu mounted, so dismissing it mid-flight can't unmount
+    // this item and reset the in-flight guard
+    expect(handleKeepMounted).toHaveBeenCalled()
+
+    await waitFor(() =>
+      expect(
+        getByRole('menuitem', { name: 'Make Global Template' })
+      ).toHaveAttribute('aria-disabled', 'true')
+    )
+
+    resolveDuplicate({
+      data: {
+        journeyDuplicate: {
+          id: 'duplicatedJourneyId'
+        }
+      }
+    })
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should surface an error and re-enable the menu item when creation fails', async () => {
+    const push = vi.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    const journeyDuplicateMock = vi
+      .fn()
+      .mockRejectedValue(new Error('Failed to duplicate journey'))
+    mockUseJourneyDuplicateMutation.mockReturnValue([
+      journeyDuplicateMock,
+      {
+        loading: false,
+        error: undefined,
+        data: undefined,
+        called: false,
+        reset: vi.fn(),
+        client: {} as any
+      }
+    ])
+    const { getByRole, getByText } = render(
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                team: { id: 'local-team-id' }
+              } as unknown as Journey,
+              renderMode: 'admin'
+            }}
+          >
+            <CreateTemplateItem variant="menu-item" globalPublish={true} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
+    )
+
+    fireEvent.click(getByRole('menuitem', { name: 'Make Global Template' }))
+
+    await waitFor(() =>
+      expect(getByText('Failed to duplicate journey')).toBeInTheDocument()
+    )
+    // Recovers rather than staying stuck disabled for the rest of the session
+    expect(
+      getByRole('menuitem', { name: 'Make Global Template' })
+    ).not.toHaveAttribute('aria-disabled', 'true')
+    expect(push).not.toHaveBeenCalled()
   })
 })

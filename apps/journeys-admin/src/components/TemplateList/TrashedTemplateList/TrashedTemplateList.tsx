@@ -48,7 +48,7 @@ export function TrashedTemplateList({
   const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {
-        enqueueSnackbar(t('Journeys Restored'), {
+        enqueueSnackbar(t('Templates Restored'), {
           variant: 'success'
         })
         const templateIds = extractTemplateIdsFromJourneys(data.journeysRestore)
@@ -63,7 +63,7 @@ export function TrashedTemplateList({
   const [deleteTrashed] = useMutation(DELETE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysDelete != null) {
-        enqueueSnackbar(t('Journeys Deleted'), {
+        enqueueSnackbar(t('Templates Deleted'), {
           variant: 'success'
         })
         void refetch()
@@ -179,7 +179,7 @@ export function TrashedTemplateList({
               }}
             >
               <Typography variant="subtitle1" align="center" gutterBottom>
-                {t('Your trashed templates will appear here.')}
+                {t('Your trashed Templates will appear here.')}
               </Typography>
             </Box>
           )}
@@ -187,14 +187,18 @@ export function TrashedTemplateList({
       ) : (
         <LoadingJourneyList hideHelperText />
       )}
-      <Stack alignItems="center">
+      <Stack
+        sx={{
+          alignItems: 'center'
+        }}
+      >
         <Typography
           variant="caption"
           align="center"
           component="div"
           sx={{ py: { xs: 3, sm: 5 }, maxWidth: 290 }}
         >
-          {t('Trashed templates are moved here for up to 40 days.')}
+          {t('Trashed Templates are moved here for up to 40 days.')}
         </Typography>
       </Stack>
       {restoreDialogOpen != null && (
@@ -213,7 +217,7 @@ export function TrashedTemplateList({
         >
           <Typography>
             {t(
-              'Are you sure you would like to restore all trashed templates immediately?'
+              'Are you sure you would like to restore all trashed Templates immediately?'
             )}
           </Typography>
         </Dialog>
@@ -234,7 +238,7 @@ export function TrashedTemplateList({
         >
           <Typography>
             {t(
-              'Are you sure you would like to permanently delete all trashed templates immediately?'
+              'Are you sure you would like to permanently delete all trashed Templates immediately?'
             )}
           </Typography>
         </Dialog>

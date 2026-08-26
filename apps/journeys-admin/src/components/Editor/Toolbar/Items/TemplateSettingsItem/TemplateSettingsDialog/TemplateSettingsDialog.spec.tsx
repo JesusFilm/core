@@ -1,6 +1,9 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
+import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
+import { ReactElement } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
@@ -219,7 +222,7 @@ describe('TemplateSettingsDialog', () => {
                 creatorDescription: '',
                 strategySlug: ''
               },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <TemplateSettingsDialog open onClose={onClose} />
@@ -386,7 +389,7 @@ describe('TemplateSettingsDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <TemplateSettingsDialog open onClose={onClose} />
@@ -464,7 +467,7 @@ describe('TemplateSettingsDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <TemplateSettingsDialog open onClose={onClose} />
@@ -491,7 +494,7 @@ describe('TemplateSettingsDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <TemplateSettingsDialog open onClose={onClose} />
@@ -558,7 +561,7 @@ describe('TemplateSettingsDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <TemplateSettingsDialog open onClose={onClose} />
@@ -585,5 +588,225 @@ describe('TemplateSettingsDialog', () => {
       </MockedProvider>
     )
     expect(queryByRole('tab', { name: 'Categories' })).not.toBeInTheDocument()
+  })
+
+  // QA-564: the checkbox was uncontrolled (defaultChecked), so its visual
+  // state could diverge from Formik's — a cache-driven reinitialize would
+  // reset values.featured while the box still displayed the user's tick,
+  // making Save skip journeyFeature and report success without saving.
+  it('keeps the featured checkbox in sync with journey.featuredAt', async () => {
+    const tree = (featuredAt: string | null): ReactElement => (
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { ...defaultJourney, featuredAt },
+              renderMode: 'admin'
+            }}
+          >
+            <TemplateSettingsDialog open onClose={onClose} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const { getByRole, rerender } = render(tree(null))
+    expect(getByRole('checkbox')).not.toBeChecked()
+
+    rerender(tree('2026-08-20T00:00:00.000Z'))
+    await waitFor(() => expect(getByRole('checkbox')).toBeChecked())
+  })
+
+  // QA-564: the reported symptom — user ticks the box, a cache-driven
+  // reinitialize resets Formik's values, and the (previously uncontrolled)
+  // box kept displaying the tick, so Save saw "no change" and skipped
+  // journeyFeature while reporting success. The controlled box must snap
+  // back so display and form state never diverge.
+  it('snaps the checkbox back when a reinitialize resets the form mid-edit', async () => {
+    const tree = (journey: typeof defaultJourney): ReactElement => (
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
+            <TemplateSettingsDialog open onClose={onClose} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const { getByRole, rerender } = render(tree(defaultJourney))
+    fireEvent.click(getByRole('checkbox'))
+    expect(getByRole('checkbox')).toBeChecked()
+
+    // A translation-poll/cache update changes another field while
+    // featuredAt is still null — enableReinitialize resets the form.
+    rerender(tree({ ...defaultJourney, title: 'Updated Title' }))
+    await waitFor(() => expect(getByRole('checkbox')).not.toBeChecked())
+  })
+
+  // QA-564: mutations run via Promise.allSettled so one failure cannot
+  // silently drop the others — a journeyFeature rejection must not lose the
+  // user's customization edit.
+  it('still saves the customization description when journeyFeature fails', async () => {
+    const journeyUpdateResult = vi.fn(() => ({
+      data: {
+        journeyUpdate: {
+          __typename: 'Journey',
+          id: defaultJourney.id,
+          title: defaultJourney.title,
+          description: defaultJourney.description
+        }
+      }
+    }))
+    const customizationResult = vi.fn(() => ({
+      data: { journeyCustomizationFieldPublisherUpdate: [] }
+    }))
+
+    const { getByRole, getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_SETTINGS_UPDATE,
+              variables: {
+                id: defaultJourney.id,
+                input: {
+                  title: defaultJourney.title,
+                  description: defaultJourney.description,
+                  strategySlug: null,
+                  tagIds: [],
+                  creatorDescription: null,
+                  languageId: '529'
+                }
+              }
+            },
+            result: journeyUpdateResult
+          },
+          {
+            request: {
+              query: JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE,
+              variables: { journeyId: defaultJourney.id, string: '' }
+            },
+            result: customizationResult
+          },
+          {
+            request: {
+              query: JOURNEY_FEATURE_UPDATE,
+              variables: { id: defaultJourney.id, feature: true }
+            },
+            // GraphQL error, not a network error — models the real ACL
+            // rejection shape and exercises the generic-message branch.
+            result: {
+              errors: [
+                new GraphQLError('user is not allowed to update featured date')
+              ]
+            }
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{ journey: defaultJourney, renderMode: 'admin' }}
+          >
+            <TemplateSettingsDialog open onClose={onClose} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('checkbox'))
+    fireEvent.click(getByRole('button', { name: 'Save' }))
+
+    await waitFor(() =>
+      expect(
+        getByText('Something went wrong, please reload the page and try again')
+      ).toBeInTheDocument()
+    )
+    expect(customizationResult).toHaveBeenCalled()
+    expect(journeyUpdateResult).toHaveBeenCalled()
+    expect(onClose).not.toHaveBeenCalled()
+  })
+
+  // QA-564: the cache.modify patch replaced the GetPublisherTemplate refetch
+  // and is what keeps journey.journeyCustomizationDescription fresh — without
+  // it, saving then reopening the dialog shows the pre-save description.
+  it('patches journeyCustomizationDescription into the Journey cache entity on save', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      [`Journey:${defaultJourney.id}`]: {
+        __typename: 'Journey',
+        id: defaultJourney.id,
+        journeyCustomizationDescription: 'stale cache value'
+      }
+    })
+
+    const journeyWithDescription = {
+      ...defaultJourney,
+      journeyCustomizationDescription: 'Share this with {{ name }}'
+    }
+    const customizationResult = vi.fn(() => ({
+      data: { journeyCustomizationFieldPublisherUpdate: [] }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_SETTINGS_UPDATE,
+              variables: {
+                id: defaultJourney.id,
+                input: {
+                  title: defaultJourney.title,
+                  description: defaultJourney.description,
+                  strategySlug: null,
+                  tagIds: [],
+                  creatorDescription: null,
+                  languageId: '529'
+                }
+              }
+            },
+            result: {
+              data: {
+                journeyUpdate: {
+                  __typename: 'Journey',
+                  id: defaultJourney.id,
+                  title: defaultJourney.title,
+                  description: defaultJourney.description
+                }
+              }
+            }
+          },
+          {
+            request: {
+              query: JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE,
+              variables: {
+                journeyId: defaultJourney.id,
+                string: 'Share this with {{ name }}'
+              }
+            },
+            result: customizationResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{ journey: journeyWithDescription, renderMode: 'admin' }}
+          >
+            <TemplateSettingsDialog open onClose={onClose} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Save' }))
+
+    await waitFor(() => expect(customizationResult).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        cache.extract()[`Journey:${defaultJourney.id}`]
+          ?.journeyCustomizationDescription
+      ).toBe('Share this with {{ name }}')
+    )
   })
 })

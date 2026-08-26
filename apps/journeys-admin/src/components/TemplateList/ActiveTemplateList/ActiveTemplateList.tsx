@@ -165,7 +165,7 @@ export function ActiveTemplateList({
               }}
             >
               <Typography variant="subtitle1" align="center" gutterBottom>
-                {t('No templates to display.')}
+                {t('No Templates to display.')}
               </Typography>
             </Box>
           )}
@@ -173,7 +173,11 @@ export function ActiveTemplateList({
       ) : (
         <LoadingJourneyList hideHelperText />
       )}
-      <Stack alignItems="center">
+      <Stack
+        sx={{
+          alignItems: 'center'
+        }}
+      >
         <Typography
           variant="caption"
           align="center"
@@ -181,7 +185,7 @@ export function ActiveTemplateList({
           sx={{ py: { xs: 3, sm: 5 }, maxWidth: 290 }}
         >
           {t(
-            'You can archive a template to to delist it from the Template Library.'
+            'You can archive a Template to delist it from the Template Library.'
           )}
         </Typography>
       </Stack>
@@ -201,7 +205,7 @@ export function ActiveTemplateList({
         >
           <Typography>
             {t(
-              'Are you sure you would like to archive all active templates immediately?'
+              'Are you sure you would like to archive all active Templates immediately?'
             )}
           </Typography>
         </Dialog>
@@ -222,7 +226,7 @@ export function ActiveTemplateList({
         >
           <Typography>
             {t(
-              'Are you sure you would like to trash all active templates immediately?'
+              'Are you sure you would like to trash all active Templates immediately?'
             )}
           </Typography>
         </Dialog>

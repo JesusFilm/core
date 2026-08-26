@@ -47,6 +47,9 @@ describe('SideMenuMobile', () => {
     expect(
       await screen.findByRole('link', { name: 'Video Library' })
     ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Video Status Pipeline' })
+    ).toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Home' })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Settings' })).toBeInTheDocument()
   })

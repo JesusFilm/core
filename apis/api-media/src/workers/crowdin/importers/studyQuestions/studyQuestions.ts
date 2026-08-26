@@ -80,33 +80,26 @@ async function initializeQuestionMap(logger?: Logger): Promise<void> {
   logger?.info({ count: questions.length }, 'Initialized question map')
 }
 
-function getQuestionId(context: string): string | undefined {
-  if (!context) return undefined
-
-  const firstLine = context.split('\n')[0]
-  return firstLine
-}
-
 async function upsertStudyQuestionTranslation(
   data: ProcessedTranslation,
   logger?: Logger
 ): Promise<void> {
   try {
-    const questionId = getQuestionId(data.context)
-    if (!questionId) {
-      logger?.debug(`Skipping study question - Invalid ID: ${data.context}`)
+    if (data.stringId == null) {
+      logger?.debug(`Skipping study question - missing stringId: ${data.text}`)
       return
     }
 
-    const questionData = getQuestionData(questionId)
+    const crowdInId = data.stringId.toString()
+    const questionData = getQuestionData(crowdInId)
 
     if (!questionData) {
-      missingQuestions.add(questionId)
+      missingQuestions.add(crowdInId)
       return
     }
 
     const result = questionSchema.parse({
-      crowdInId: questionId,
+      crowdInId,
       value: data.text,
       languageId: data.languageId,
       order: questionData.order,
@@ -127,7 +120,7 @@ async function upsertStudyQuestionTranslation(
     })
   } catch (error) {
     logger?.error(
-      `Failed to upsert study question for video ${data.context} in language ${data.languageId}:`,
+      `Failed to upsert study question ${data.stringId} in language ${data.languageId}:`,
       error
     )
   }

@@ -12,13 +12,23 @@ import { prisma } from '@core/prisma/media/client'
 import type { MuxVideo, VideoVariantUpload } from '@core/prisma/media/client'
 
 import { notifyMediaSlackOfOperationFailure } from '../../lib/slack'
+import {
+  videoCacheReset,
+  videoVariantCacheReset
+} from '../../lib/videoCacheReset'
 import { jobName as processVideoUploadsJobName } from '../../workers/processVideoUploads/config'
 import { queue as processVideoUploadsQueue } from '../../workers/processVideoUploads/queue'
+import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
 import {
   createVideoFromUrl,
   getMaxResolutionValue,
   getVideo
 } from '../mux/video/service'
+import {
+  addLanguageToVideo,
+  updateParentCollectionLanguages
+} from '../video/lib/updateAvailableLanguages'
+import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
 
 const FIVE_DAYS = 5 * 24 * 60 * 60
 
@@ -100,7 +110,8 @@ async function getLanguageSlug(
       'Failed to get language slug for variant'
     )
     throw new Error(
-      `Failed to create slug for variant: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to create slug for variant: ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error }
     )
   } finally {
     if (apollo != null) void apollo.stop()
@@ -131,6 +142,71 @@ function getVariantId(videoId: string, languageId: string): string {
   const [source, ...restParts] = videoId.split('_')
   const restOfId = restParts.join('_') || videoId
   return `${source}_${languageId}-${restOfId}`
+}
+
+async function syncPublishedVariantState({
+  variantId,
+  videoId,
+  languageId,
+  published,
+  muxVideoId,
+  uploadId,
+  logger
+}: {
+  variantId: string
+  videoId: string
+  languageId: string
+  published: boolean
+  muxVideoId: string
+  uploadId?: string
+  logger?: Logger
+}): Promise<void> {
+  if (!published) return
+
+  try {
+    await addLanguageToVideo(videoId, languageId)
+    await updateParentCollectionLanguages(videoId)
+  } catch (error) {
+    logger?.error(
+      { error, videoId, languageId, variantId, muxVideoId, uploadId },
+      'Failed to sync video available languages after upload variant creation'
+    )
+    notifyMediaSlackOfOperationFailure({
+      operation: 'Video variant upload language sync failed',
+      error,
+      context: {
+        videoId,
+        languageId,
+        variantId,
+        muxVideoId,
+        uploadId
+      }
+    })
+    throw error
+  }
+
+  // Durable, retriable Algolia sync (QA-543) — matches the videoVariant
+  // create/update mutations rather than calling updateVideoInAlgolia /
+  // updateVideoVariantInAlgolia directly, so a transient Algolia outage
+  // gets BullMQ retries instead of being silently dropped.
+  await enqueueVideoAlgoliaSync(
+    videoId,
+    {
+      syncVideoRecord: true,
+      syncAllVariants: false,
+      syncPublishedFlag: false,
+      dirtyVariantIds: [variantId],
+      deletedVariantIds: []
+    },
+    logger
+  )
+
+  try {
+    void videoVariantCacheReset(variantId)
+    void videoCacheReset(videoId)
+  } catch (error) {
+    console.error('Cache reset error:', error)
+  }
 }
 
 export async function createOrUpdateVideoVariant({
@@ -186,7 +262,7 @@ export async function createOrUpdateVideoVariant({
       duration: metadata.duration,
       lengthInMilliseconds: metadata.durationMs,
       muxVideoId,
-      published,
+      published: false,
       downloadable: true,
       version
     }
@@ -208,6 +284,16 @@ export async function createOrUpdateVideoVariant({
             }
           })
 
+    await syncPublishedVariantState({
+      variantId: variant.id,
+      videoId,
+      languageId,
+      published,
+      muxVideoId,
+      uploadId,
+      logger
+    })
+
     if (uploadId != null) {
       await prisma.videoVariantUpload.update({
         where: { id: uploadId },
@@ -218,6 +304,15 @@ export async function createOrUpdateVideoVariant({
         }
       })
     }
+
+    await requestVideoVariantReconciliation({
+      videoVariantId: variant.id,
+      videoId,
+      languageId,
+      edition,
+      published,
+      reason: 'process-video-upload'
+    })
 
     return variant
   } catch (error) {

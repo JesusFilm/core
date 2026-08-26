@@ -1,4 +1,3 @@
-import { GraphQLError } from 'graphql'
 import { type MockedFunction, vi } from 'vitest'
 
 import {
@@ -23,13 +22,43 @@ import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
+import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
+import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
 
-import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
+import {
+  findContainerParentIds,
+  updateVideoAvailableLanguages
+} from './lib/updateAvailableLanguages'
 import { getLanguageIdFromInfo } from './video'
 
 vi.mock('./lib/updateAvailableLanguages', () => ({
-  updateVideoAvailableLanguages: vi.fn()
+  updateVideoAvailableLanguages: vi.fn(),
+  findContainerParentIds: vi.fn().mockResolvedValue([])
 }))
+
+vi.mock('../../workers/videoAlgoliaSync', () => ({
+  enqueueVideoAlgoliaSync: vi.fn(),
+  videoOnlyScope: {
+    syncVideoRecord: true,
+    syncAllVariants: false,
+    syncPublishedFlag: false,
+    dirtyVariantIds: [],
+    deletedVariantIds: []
+  }
+}))
+
+vi.mock(
+  '../videoVariantReconciliation/requestVideoVariantReconciliation',
+  () => ({
+    requestVideoVariantReconciliation: vi.fn()
+  })
+)
+
+const mockedFindContainerParentIds = vi.mocked(findContainerParentIds)
+const mockedEnqueueVideoAlgoliaSync = vi.mocked(enqueueVideoAlgoliaSync)
+const mockedRequestVideoVariantReconciliation = vi.mocked(
+  requestVideoVariantReconciliation
+)
 
 describe('video', () => {
   const client = getClient()
@@ -728,6 +757,9 @@ describe('video', () => {
           variants: {
             select: {
               languageId: true
+            },
+            where: {
+              published: true
             }
           },
           videoEditions: true,
@@ -924,6 +956,9 @@ describe('video', () => {
           variants: {
             select: {
               languageId: true
+            },
+            where: {
+              published: true
             }
           },
           videoEditions: true,
@@ -1260,6 +1295,67 @@ describe('video', () => {
         {
           id: 'videoId',
           variantLanguagesCount: 2
+        }
+      ])
+    })
+
+    it('should query video.variantLanguages filtered to published variants', async () => {
+      prismaMock.video.findMany.mockResolvedValueOnce(videos)
+
+      await client({
+        document: graphql(`
+          query VideoWithVariantLanguages {
+            videos {
+              id
+              variantLanguages {
+                id
+              }
+            }
+          }
+        `)
+      })
+      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include: {
+            variants: {
+              select: {
+                languageId: true
+              },
+              where: {
+                published: true
+              }
+            }
+          }
+        })
+      )
+    })
+
+    it('should only return the published variant language when a video has one published and one unpublished variant', async () => {
+      const videoWithOnlyPublishedVariant: VideoAndIncludes = {
+        ...videos[0],
+        // simulates prisma applying the resolver's published: true filter
+        variants: videos[0].variants.filter(({ published }) => published)
+      }
+      prismaMock.video.findMany.mockResolvedValueOnce([
+        videoWithOnlyPublishedVariant
+      ])
+
+      const data = await client({
+        document: graphql(`
+          query VideoWithVariantLanguages {
+            videos {
+              id
+              variantLanguages {
+                id
+              }
+            }
+          }
+        `)
+      })
+      expect(data).toHaveProperty('data.videos', [
+        {
+          id: 'videoId',
+          variantLanguages: [{ id: 'languageId2' }]
         }
       ])
     })
@@ -1638,7 +1734,9 @@ describe('video', () => {
       })
 
       expect(data).toHaveProperty('errors', [
-        new GraphQLError('Video not found with id slug:slug')
+        expect.objectContaining({
+          message: 'Video not found with id slug:slug'
+        })
       ])
     })
   })
@@ -2007,6 +2105,9 @@ describe('video', () => {
           variants: {
             select: {
               languageId: true
+            },
+            where: {
+              published: true
             }
           },
           bibleCitation: {
@@ -2225,6 +2326,9 @@ describe('video', () => {
           variants: {
             select: {
               languageId: true
+            },
+            where: {
+              published: true
             }
           },
           imageAlt: {
@@ -2594,6 +2698,11 @@ describe('video', () => {
         expect(result).toHaveProperty('data.videoCreate', {
           id: 'id'
         })
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+          'id',
+          expect.objectContaining({ syncVideoRecord: true }),
+          expect.anything()
+        )
       })
 
       it('should fail if not publisher', async () => {
@@ -2797,6 +2906,21 @@ describe('video', () => {
         expect(result).toHaveProperty('data.videoUpdate', {
           id: 'id'
         })
+
+        // label/childIds changed and published flipped false -> true: full
+        // variant re-index plus the published-flag batch update
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+          'id',
+          {
+            syncVideoRecord: true,
+            syncAllVariants: true,
+            syncPublishedFlag: true,
+            dirtyVariantIds: [],
+            deletedVariantIds: []
+          },
+          expect.anything()
+        )
+        expect(mockedFindContainerParentIds).toHaveBeenCalledWith('id')
       })
 
       it('should enable restrictTranslations', async () => {
@@ -2877,9 +3001,9 @@ describe('video', () => {
         expect(prismaMock.video.update).not.toHaveBeenCalled()
         expect(result).toHaveProperty('data', null)
         expect(result).toHaveProperty('errors')
-        expect((result as any).errors?.[0]?.message).toBe(
-          'Translation restriction cannot be disabled once enabled'
-        )
+        expect(
+          'errors' in result ? result.errors?.[0]?.message : undefined
+        ).toBe('Translation restriction cannot be disabled once enabled')
       })
 
       it('should not write restrictTranslations false after a stale false read', async () => {
@@ -2914,7 +3038,7 @@ describe('video', () => {
 
         expect(prismaMock.video.update).toHaveBeenCalledWith(
           expect.objectContaining({
-            where: { id: 'id' },
+            where: { id: 'id', restrictTranslations: false },
             data: expect.not.objectContaining({
               restrictTranslations: false
             })
@@ -2923,6 +3047,61 @@ describe('video', () => {
         expect(result).toHaveProperty('data.videoUpdate', {
           id: 'id'
         })
+      })
+
+      it('should not update after restrictTranslations is enabled by a concurrent request', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          published: true,
+          publishedAt: null,
+          slug: 'slug',
+          restrictTranslations: false,
+          variants: []
+        } as unknown as Video)
+        prismaMock.video.update.mockRejectedValue(
+          new Prisma.PrismaClientKnownRequestError('No Video found', {
+            code: 'P2025',
+            clientVersion: 'test'
+          })
+        )
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              label: VideoLabel.episode,
+              restrictTranslations: false
+            }
+          }
+        })
+
+        expect(prismaMock.video.update).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: { id: 'id', restrictTranslations: false },
+            data: expect.objectContaining({
+              label: 'episode'
+            })
+          })
+        )
+        expect(prismaMock.video.update).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.not.objectContaining({
+              restrictTranslations: false
+            })
+          })
+        )
+        expect(result).toHaveProperty('data', null)
+        expect(result).toHaveProperty('errors')
+        expect(
+          'errors' in result ? result.errors?.[0]?.message : undefined
+        ).toBe('Translation restriction cannot be disabled once enabled')
       })
 
       it('should update video with child relations when childIds are provided', async () => {
@@ -2968,6 +3147,68 @@ describe('video', () => {
         expect(result).toHaveProperty('data.videoUpdate', {
           id: 'parent-id'
         })
+      })
+
+      it('should continue even if a reconciliation request for an affected child fails (Bug D)', async () => {
+        mockedRequestVideoVariantReconciliation.mockRejectedValueOnce(
+          new Error('Reconciliation request failed')
+        )
+
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        // existingParent lookup for the childIds diff
+        prismaMock.video.findUnique.mockResolvedValue({
+          childIds: ['child1', 'child2']
+        } as any)
+        prismaMock.video.findMany.mockResolvedValue([
+          { id: 'child1' },
+          { id: 'child2' },
+          { id: 'parent-id' }
+        ] as any)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'parent-id',
+          label: VideoLabel.series,
+          childIds: ['child2'],
+          children: [{ id: 'child2' }]
+        } as unknown as Video)
+        // One affected child still has a published Variant, so the
+        // affectedChildIds reconciliation loop actually reaches
+        // requestVideoVariantReconciliation.
+        prismaMock.videoVariant.findMany.mockResolvedValue([
+          {
+            id: 'variant-1',
+            videoId: 'child1',
+            languageId: 'en',
+            edition: 'base'
+          }
+        ] as any)
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'parent-id',
+              childIds: ['child2']
+            }
+          }
+        })
+
+        // The mutation still succeeds — a reconciliation-request failure for
+        // one affected child must not fail the whole GraphQL mutation.
+        expect(result).toHaveProperty('data.videoUpdate', {
+          id: 'parent-id'
+        })
+        expect(mockedRequestVideoVariantReconciliation).toHaveBeenCalledWith(
+          expect.objectContaining({
+            videoVariantId: 'variant-1',
+            reason: 'video-relationship-change'
+          })
+        )
       })
 
       it('should set publishedAt when updating from unpublished to published', async () => {
@@ -3264,6 +3505,97 @@ describe('video', () => {
           id: 'id'
         })
       })
+
+      it('should request a video-only Algolia scope for fields not embedded in variant records', async () => {
+        mockedFindContainerParentIds.mockClear()
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          published: true,
+          publishedAt: new Date(),
+          slug: 'old-slug',
+          variants: []
+        } as any)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'id',
+          slug: 'old-slug',
+          noIndex: true
+        } as unknown as Video)
+
+        await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              noIndex: true
+            }
+          }
+        })
+
+        // noIndex isn't embedded in any variant's Algolia record and
+        // published wasn't touched, so this should stay video-only
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+          'id',
+          {
+            syncVideoRecord: true,
+            syncAllVariants: false,
+            syncPublishedFlag: false,
+            dirtyVariantIds: [],
+            deletedVariantIds: []
+          },
+          expect.anything()
+        )
+        expect(mockedFindContainerParentIds).not.toHaveBeenCalled()
+      })
+
+      it("should re-sync parent collections when a child video's published status changes", async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          published: false,
+          publishedAt: null,
+          slug: 'slug',
+          variants: []
+        } as any)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'child-id',
+          published: true
+        } as unknown as Video)
+        mockedFindContainerParentIds.mockResolvedValueOnce(['parent-id'])
+
+        await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'child-id',
+              published: true
+            }
+          }
+        })
+
+        expect(mockedFindContainerParentIds).toHaveBeenCalledWith('child-id')
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+          'parent-id',
+          {
+            syncVideoRecord: true,
+            syncAllVariants: false,
+            syncPublishedFlag: false,
+            dirtyVariantIds: [],
+            deletedVariantIds: []
+          },
+          expect.anything()
+        )
+      })
     })
 
     describe('videoDelete', () => {
@@ -3289,6 +3621,7 @@ describe('video', () => {
           publishedAt: null,
           variants: [
             {
+              id: 'variantId1',
               muxVideoId: 'muxVideoId1',
               muxVideo: { assetId: 'assetId1' }
             }
@@ -3318,6 +3651,15 @@ describe('video', () => {
         expect(result).toHaveProperty('data.videoDelete', {
           id: 'videoId'
         })
+        // the cascaded-away variants must be removed from the variants index too
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+          'videoId',
+          expect.objectContaining({
+            syncVideoRecord: true,
+            deletedVariantIds: ['variantId1']
+          }),
+          expect.anything()
+        )
       })
 
       it('should fail to delete video that has been published', async () => {

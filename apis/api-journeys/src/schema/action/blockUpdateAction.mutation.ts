@@ -118,9 +118,7 @@ builder.mutationField('blockUpdateAction', (t) =>
         throw new GraphQLError('block not found', {
           extensions: { code: 'NOT_FOUND' }
         })
-      if (
-        !ability(Action.Update, subject('Journey', block.journey as any), user)
-      ) {
+      if (!ability(Action.Update, subject('Journey', block.journey), user)) {
         throw new GraphQLError('user is not allowed to update block', {
           extensions: { code: 'FORBIDDEN' }
         })

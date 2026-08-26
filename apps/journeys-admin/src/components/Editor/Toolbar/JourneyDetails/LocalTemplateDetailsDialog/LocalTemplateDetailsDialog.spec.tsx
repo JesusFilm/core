@@ -1,3 +1,4 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -222,6 +223,72 @@ describe('LocalTemplateDetailsDialog', () => {
     await waitFor(() => expect(onClose).toHaveBeenCalled())
   })
 
+  // QA-564 (review follow-through): the update(cache) patch here is what
+  // keeps journey.journeyCustomizationDescription fresh so reopening the
+  // dialog does not show a stale value — pinned the same way as
+  // TemplateSettingsDialog's equivalent.
+  it('patches journeyCustomizationDescription into the Journey cache entity on save', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      [`Journey:${publishedLocalTemplate.id}`]: {
+        __typename: 'Journey',
+        id: publishedLocalTemplate.id,
+        journeyCustomizationDescription: 'stale cache value'
+      }
+    })
+    const customizationResult = vi.fn(() => ({
+      data: {
+        journeyCustomizationFieldPublisherUpdate: {
+          __typename: 'JourneyCustomizationField',
+          id: 'field-id',
+          key: 'description',
+          value: 'Edited customization'
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          getLanguagesMock,
+          {
+            request: {
+              query: JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE,
+              variables: {
+                journeyId: publishedLocalTemplate.id,
+                string: 'Edited customization'
+              }
+            },
+            result: customizationResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: publishedLocalTemplate }}>
+            <LocalTemplateDetailsDialog open onClose={onClose} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const customizationField = screen
+      .getByTestId('CustomizationDescriptionEdit')
+      .querySelector('textarea') as HTMLTextAreaElement
+    fireEvent.change(customizationField, {
+      target: { value: 'Edited customization' }
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+
+    await waitFor(() => expect(customizationResult).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        cache.extract()[`Journey:${publishedLocalTemplate.id}`]
+          ?.journeyCustomizationDescription
+      ).toBe('Edited customization')
+    )
+  })
+
   it('shows a "Required" error and blocks submit when the title is empty', async () => {
     const titleMock = makeTitleDescLanguageMock({
       title: '',
@@ -289,7 +356,7 @@ describe('LocalTemplateDetailsDialog', () => {
             reopen
           </button>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <LocalTemplateDetailsDialog
                 open={open}
                 onClose={() => setOpen(false)}

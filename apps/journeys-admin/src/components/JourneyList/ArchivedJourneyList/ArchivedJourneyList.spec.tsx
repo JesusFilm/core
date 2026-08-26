@@ -21,8 +21,8 @@ import { SortOrder } from '../JourneySort'
 
 import { ArchivedJourneyList } from '.'
 
-vi.mock('@core/journeys/ui/useNavigationState', async () => ({
-  useNavigationState: vi.fn(() => false)
+vi.mock('@core/journeys/ui/useRouteChangeState', async () => ({
+  useRouteChangeState: vi.fn(() => false)
 }))
 
 vi.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', async () => ({
@@ -244,6 +244,9 @@ describe('ArchivedJourneyList', () => {
       )
       fireEvent.click(getByText('Unarchive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Journeys Unarchived')).toBeInTheDocument()
+      )
     })
 
     it('should show error', async () => {

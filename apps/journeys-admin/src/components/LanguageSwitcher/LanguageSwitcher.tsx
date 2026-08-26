@@ -86,9 +86,7 @@ export function LanguageSwitcher({
         open={open}
         onClose={handleClose}
         dialogTitle={{
-          title: t('Change Language', {
-            lng: previousLanguageCode
-          }),
+          title: t('Change Language'),
           closeButton: true
         }}
       >
@@ -109,7 +107,12 @@ export function LanguageSwitcher({
                   {languageCode !== currentLanguageCode &&
                     localName != null &&
                     nativeName != null && (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary'
+                        }}
+                      >
                         {nativeName}
                       </Typography>
                     )}
@@ -119,21 +122,22 @@ export function LanguageSwitcher({
           </Select>
         </FormControl>
 
-        <Stack gap={2} sx={{ pt: 2 }}>
+        <Stack
+          sx={{
+            gap: 2,
+            pt: 2
+          }}
+        >
           {previousLanguageCode != null && (
             <Alert
               severity="warning"
               action={
                 <Button onClick={handleRevert} color="inherit" size="small">
-                  {t('Revert', {
-                    lng: previousLanguageCode
-                  })}
+                  {t('Revert')}
                 </Button>
               }
             >
-              {t('Would you like to revert to previous language?', {
-                lng: previousLanguageCode
-              })}
+              {t('Would you like to revert to previous language?')}
             </Alert>
           )}
         </Stack>

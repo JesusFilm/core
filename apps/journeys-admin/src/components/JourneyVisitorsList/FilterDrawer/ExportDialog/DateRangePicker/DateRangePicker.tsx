@@ -35,7 +35,9 @@ export function DateRangePicker({
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
           spacing={2}
-          alignItems={{ xs: 'stretch', sm: 'center' }}
+          sx={{
+            alignItems: { xs: 'stretch', sm: 'center' }
+          }}
         >
           <CalendarIcon
             sx={{

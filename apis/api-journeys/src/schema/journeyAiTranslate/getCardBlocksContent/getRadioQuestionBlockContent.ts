@@ -8,16 +8,18 @@ export function getRadioQuestionBlockContent({
   block: Block
 }): string {
   let result = `
-## Radio Question List:
+## Radio Question:
 - Block ID: ${block.id}
-
-### Questions:
+${block.label != null && block.label !== '' ? `- Question: ${block.label}\n` : ''}
+### Options:
 `
-  const questions = blocks.filter(
-    (childBlock) => childBlock.typename === 'RadioQuestionBlock'
+  const options = blocks.filter(
+    (childBlock) =>
+      childBlock.parentBlockId === block.id &&
+      childBlock.typename === 'RadioOptionBlock'
   )
-  for (const question of questions) {
-    result += `- ${question.label}\n`
+  for (const option of options) {
+    result += `- ${option.label}\n`
   }
   return result
 }

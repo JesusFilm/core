@@ -46,20 +46,23 @@ export function GrowthSpacesSettings({
     >
       <Typography variant="h5">{t('App Settings')}</Typography>
       <ConfigField
-        label="Access ID"
+        label={t('Access ID')}
         value={accessId}
         onChange={(value) => setAccessId?.(value)}
       />
       <ConfigField
-        label="Access Secret"
+        label={t('Access Secret')}
         value={accessSecret}
         onChange={(value) => setAccessSecret?.(value)}
       />
       <Stack
-        gap={4}
-        flexDirection="row"
-        justifyContent="flex-end"
-        sx={{ width: '40%', alignSelf: 'flex-end' }}
+        sx={{
+          gap: 4,
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+          width: '40%',
+          alignSelf: 'flex-end'
+        }}
       >
         {handleDelete != null && (
           <Button

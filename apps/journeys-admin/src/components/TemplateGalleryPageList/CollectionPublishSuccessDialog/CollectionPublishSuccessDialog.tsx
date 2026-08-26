@@ -15,6 +15,10 @@ import CopyRightIcon from '@core/shared/ui/icons/CopyRight'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 
 import { copyToClipboard } from '../../../libs/copyToClipboard'
+import {
+  sendCollectionCopyLinkClickEvent,
+  sendCollectionPreviewClickEvent
+} from '../../../libs/sendCollectionEvent'
 
 export interface CollectionPublishSuccessDialogProps {
   open: boolean
@@ -54,6 +58,10 @@ export function CollectionPublishSuccessDialog({
 
   async function handleCopy(): Promise<void> {
     if (publicUrl == null) return
+    sendCollectionCopyLinkClickEvent({
+      location: 'publish_success_dialog',
+      collectionSlug: slug ?? undefined
+    })
     const ok = await copyToClipboard(publicUrl)
     enqueueSnackbar(
       ok ? t('Link copied to clipboard') : t("Couldn't copy link"),
@@ -66,6 +74,10 @@ export function CollectionPublishSuccessDialog({
     // narrow `slug` through a boolean — the explicit `slug == null`
     // here is the type-narrowing pair, not a redundant safety check.
     if (viewDisabled || slug == null) return
+    sendCollectionPreviewClickEvent({
+      location: 'publish_success_dialog',
+      collectionSlug: slug
+    })
     window.open(
       `/api/preview-template-gallery?slug=${encodeURIComponent(slug)}`,
       '_blank',
@@ -117,7 +129,12 @@ export function CollectionPublishSuccessDialog({
       }}
     >
       <Stack spacing={2}>
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary'
+          }}
+        >
           {t(
             'Anyone with this link can browse the templates in your collection.'
           )}
@@ -127,35 +144,43 @@ export function CollectionPublishSuccessDialog({
           fullWidth
           variant="filled"
           hiddenLabel
-          inputProps={{
-            readOnly: true,
-            'aria-label': t('Public URL')
-          }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <Tooltip title={t('Copy link')}>
-                  {/* Box wrapper so the Tooltip can attach to a disabled
-                      child (MUI requires a non-disabled element to forward
-                      events; <Box component="span"> matches the inline
-                      flow MUI's InputAdornment expects). */}
-                  <Box component="span">
-                    <IconButton
-                      aria-label={t('Copy link')}
-                      onClick={handleCopy}
-                      disabled={publicUrl == null}
-                      edge="end"
-                    >
-                      <CopyRightIcon />
-                    </IconButton>
-                  </Box>
-                </Tooltip>
-              </InputAdornment>
-            )
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Tooltip title={t('Copy link')}>
+                    {/* Box wrapper so the Tooltip can attach to a disabled
+                        child (MUI requires a non-disabled element to forward
+                        events; <Box component="span"> matches the inline
+                        flow MUI's InputAdornment expects). */}
+                    <Box component="span">
+                      <IconButton
+                        aria-label={t('Copy link')}
+                        onClick={handleCopy}
+                        disabled={publicUrl == null}
+                        edge="end"
+                      >
+                        <CopyRightIcon />
+                      </IconButton>
+                    </Box>
+                  </Tooltip>
+                </InputAdornment>
+              )
+            },
+
+            htmlInput: {
+              readOnly: true,
+              'aria-label': t('Public URL')
+            }
           }}
         />
         {!canPublish && publishBlockedReason != null && (
-          <Typography variant="caption" color="text.secondary">
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary'
+            }}
+          >
             {publishBlockedReason}
           </Typography>
         )}

@@ -21,7 +21,7 @@ import {
   ButtonSize,
   ButtonVariant
 } from '../../../../../../../../__generated__/globalTypes'
-import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import { blockCreateUpdate } from '../../../../../../../libs/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand/useBlockCreateCommand'
 import { Button } from '../Button'
 
@@ -64,7 +64,7 @@ export function NewButtonButton(): ReactElement {
   function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
-    ) as TreeBlock<CardBlock> | undefined
+    )
 
     if (card == null || journey == null) return
 

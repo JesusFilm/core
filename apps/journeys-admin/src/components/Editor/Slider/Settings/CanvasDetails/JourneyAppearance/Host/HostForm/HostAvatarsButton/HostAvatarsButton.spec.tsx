@@ -59,7 +59,7 @@ describe('HostAvatarsButton', () => {
             <JourneyProvider
               value={{
                 journey: { ...journey, host: null },
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <HostAvatarsButton />
@@ -94,7 +94,7 @@ describe('HostAvatarsButton', () => {
                     src2: 'avatar2Src'
                   }
                 },
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <HostAvatarsButton />
@@ -113,7 +113,7 @@ describe('HostAvatarsButton', () => {
       <MockedProvider>
         <ThemeProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <HostAvatarsButton />
             </JourneyProvider>
           </SnackbarProvider>
@@ -136,7 +136,7 @@ describe('HostAvatarsButton', () => {
                   ...journey,
                   host: { ...defaultHost, src1: 'avatar1Src' }
                 },
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <HostAvatarsButton />
@@ -206,7 +206,7 @@ describe('HostAvatarsButton', () => {
                     src1: 'avatar1Src'
                   }
                 },
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <HostAvatarsButton />
@@ -304,7 +304,7 @@ describe('HostAvatarsButton', () => {
                     src2: 'avatar2Src'
                   }
                 },
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <HostAvatarsButton />

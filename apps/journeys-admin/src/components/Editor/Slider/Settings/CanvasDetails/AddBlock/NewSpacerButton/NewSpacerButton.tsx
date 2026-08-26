@@ -12,7 +12,7 @@ import Crop169Icon from '@core/shared/ui/icons/Crop169'
 import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
 import { BlockFields_SpacerBlock as SpacerBlock } from '../../../../../../../../__generated__/BlockFields'
 import { SpacerBlockCreate } from '../../../../../../../../__generated__/SpacerBlockCreate'
-import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import { blockCreateUpdate } from '../../../../../../../libs/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand/useBlockCreateCommand'
 import { Button } from '../Button'
 
@@ -41,7 +41,7 @@ export function NewSpacerButton(): ReactElement {
   function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
-    ) as TreeBlock<CardBlock> | undefined
+    )
 
     if (card == null || journey == null) return
 

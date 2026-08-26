@@ -1,3 +1,4 @@
+import { useMutation } from '@apollo/client'
 import {
   CollisionDetection,
   DndContext,
@@ -17,6 +18,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import {
@@ -32,20 +34,42 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import {
+  ArchiveActiveJourneys,
+  ArchiveActiveJourneysVariables
+} from '../../../__generated__/ArchiveActiveJourneys'
+import { DeleteTrashedJourneys } from '../../../__generated__/DeleteTrashedJourneys'
+import {
   GetAdminJourneysVariables,
   GetAdminJourneys_journeys as Journey
 } from '../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../__generated__/GetTemplateGalleryPages'
+import { JourneyStatus } from '../../../__generated__/globalTypes'
+import { RestoreArchivedJourneys } from '../../../__generated__/RestoreArchivedJourneys'
+import { RestoreTrashedJourneys } from '../../../__generated__/RestoreTrashedJourneys'
+import { TrashActiveJourneys } from '../../../__generated__/TrashActiveJourneys'
+import { TrashArchivedJourneys } from '../../../__generated__/TrashArchivedJourneys'
 import {
-  JourneyStatus,
-  TemplateGalleryPageStatus
-} from '../../../__generated__/globalTypes'
+  sendCollectionCreateEvent,
+  sendCollectionEditOpenEvent
+} from '../../libs/sendCollectionEvent'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { useCanPublishCollection } from '../../libs/useCanPublishCollection'
 import { useTemplateGalleryPageCreateMutation } from '../../libs/useTemplateGalleryPageCreateMutation'
 import { useTemplateGalleryPagesQuery } from '../../libs/useTemplateGalleryPagesQuery'
 import { JourneyCard } from '../JourneyList/JourneyCard'
+import type { JourneyListEvent } from '../JourneyList/JourneyList'
+import {
+  ARCHIVE_ACTIVE_JOURNEYS,
+  DELETE_TRASHED_JOURNEYS,
+  RESTORE_ARCHIVED_JOURNEYS,
+  RESTORE_TRASHED_JOURNEYS,
+  TRASH_ACTIVE_JOURNEYS,
+  TRASH_ARCHIVED_JOURNEYS
+} from '../JourneyList/JourneyListContent/JourneyListContent'
+import { JourneyListMenu } from '../JourneyList/JourneyListMenu'
 import type { JourneyStatusFilter } from '../JourneyList/JourneyListView'
+import { JourneySort, SortOrder } from '../JourneyList/JourneySort'
+import { sortJourneys } from '../JourneyList/JourneySort/utils/sortJourneys'
 
 import { CollectionCard } from './CollectionCard'
 import { CollectionDialog } from './CollectionDialog'
@@ -69,6 +93,15 @@ import { useCollectionCollapse } from './useCollectionCollapse'
 import { useCollectionMutations } from './useCollectionMutations'
 import { useDragEndHandler } from './useDragEndHandler'
 
+const Dialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "core/shared/ui-dynamic/Dialog" */
+      '@core/shared/ui-dynamic/Dialog'
+    ).then((mod) => mod.Dialog),
+  { ssr: false }
+)
+
 // Map the page-level status filter (active / archived / trashed) to the
 // underlying JourneyStatus enum values that useAdminJourneysQuery expects.
 // Mirrors ActiveJourneyList / ArchivedJourneyList / TrashedJourneyList.
@@ -79,6 +112,90 @@ const STATUS_FILTER_TO_JOURNEY_STATUSES: Record<
   active: [JourneyStatus.draft, JourneyStatus.published],
   archived: [JourneyStatus.archived],
   trashed: [JourneyStatus.trashed]
+}
+
+// All six bulk-action mutations below take the same {ids: string[]}
+// variables shape. Named generically since it backs every one of them, not
+// just ArchiveActiveJourneys.
+type BulkMutationVariables = ArchiveActiveJourneysVariables
+
+// Dialog copy + event routing for the All Templates (unsectioned) section
+// (NES-1872), one lookup replacing what would otherwise be parallel `switch
+// (status)` statements. "safe" is always the less-destructive action for a
+// given status (Archive/Restore/Restore, all reversible), "destructive" is
+// always the one that removes further (Trash/Trash/Delete Forever, the last
+// of which is permanent) — this axis holds consistently even though the
+// concrete action differs per status. The mutation itself, its response
+// field, and its success copy live next to their own `useMutation` call
+// below instead of in here, so each is backed by its real generated type
+// rather than a runtime-keyed lookup. Dialog values are raw English
+// strings, translated at the point of use via t(), per this app's
+// inline-string-as-i18n-key convention.
+interface StatusActionConfig {
+  event: JourneyListEvent
+  dialogTitleKey: string
+  dialogSubmitLabelKey: string
+  dialogMessageKey: string
+}
+const STATUS_ACTION_CONFIG: Record<
+  JourneyStatusFilter,
+  {
+    refetchEvent: JourneyListEvent
+    safe: StatusActionConfig
+    destructive: StatusActionConfig
+  }
+> = {
+  active: {
+    refetchEvent: 'refetchActive',
+    safe: {
+      event: 'archiveAllActive',
+      dialogTitleKey: 'Archive Templates',
+      dialogSubmitLabelKey: 'Archive',
+      dialogMessageKey:
+        'This will archive all active Templates not in a collection.'
+    },
+    destructive: {
+      event: 'trashAllActive',
+      dialogTitleKey: 'Trash Templates',
+      dialogSubmitLabelKey: 'Trash',
+      dialogMessageKey:
+        'This will trash all active Templates not in a collection.'
+    }
+  },
+  archived: {
+    refetchEvent: 'refetchArchived',
+    safe: {
+      event: 'restoreAllArchived',
+      dialogTitleKey: 'Unarchive Templates',
+      dialogSubmitLabelKey: 'Unarchive',
+      dialogMessageKey:
+        'This will unarchive all archived Templates not in a collection.'
+    },
+    destructive: {
+      event: 'trashAllArchived',
+      dialogTitleKey: 'Trash Templates',
+      dialogSubmitLabelKey: 'Trash',
+      dialogMessageKey:
+        'This will trash all archived Templates not in a collection.'
+    }
+  },
+  trashed: {
+    refetchEvent: 'refetchTrashed',
+    safe: {
+      event: 'restoreAllTrashed',
+      dialogTitleKey: 'Restore Templates',
+      dialogSubmitLabelKey: 'Restore',
+      dialogMessageKey:
+        'This will restore all trashed Templates not in a collection.'
+    },
+    destructive: {
+      event: 'deleteAllTrashed',
+      dialogTitleKey: 'Delete Templates Forever',
+      dialogSubmitLabelKey: 'Delete Forever',
+      dialogMessageKey:
+        'This will permanently delete all trashed Templates not in a collection.'
+    }
+  }
 }
 
 // Build the shareable public URL for a published collection. Mirrors the
@@ -116,12 +233,104 @@ export interface TemplateGalleryPageListProps {
    * trigger.
    */
   onOpenInfo?: () => void
+  /**
+   * Sort order for the All Templates (unsectioned) section only (NES-1872).
+   * Collections keep their own drag-and-drop order regardless.
+   */
+  sortOrder?: SortOrder
+  /**
+   * Shared with the Team Projects tab's own Sort By (same sessionStorage-
+   * backed state in JourneyList) — changing sort here changes that tab
+   * too, which is expected (NES-1872).
+   */
+  onSortOrderChange?: (order: SortOrder) => void
+  /**
+   * Bulk-action event from the All Templates header's ⋮ menu (NES-1872),
+   * scoped to unsectioned templates only — collections are excluded from
+   * bulk archive/trash/restore/delete.
+   */
+  event?: JourneyListEvent
+  /**
+   * Dispatches an event up to JourneyList's shared `event` state, which
+   * flows back down as the `event` prop above — the same round-trip
+   * JourneyListContent uses, since the ⋮ menu now lives in this
+   * component's own header rather than the shared toolbar (NES-1872).
+   */
+  onEvent?: (event: JourneyListEvent) => void
+}
+
+// Type-level fallback for `journeysByCollection.get()` — the memoized map
+// sets an entry for every collection, so this is never actually reached;
+// a stable identity (not an inline `[]`) keeps it harmless for the grid's
+// memo if that invariant ever changes.
+const NO_JOURNEYS: readonly Journey[] = []
+
+// Nearest scrollable ancestor. journeys-admin scrolls inside an inner
+// container (PageWrapper's MainPanelBody, `overflowY: auto`), not the
+// window — so viewport-fill measurements must be taken relative to that
+// container or they drift by exactly the container's scroll offset.
+function getScrollParent(node: HTMLElement): HTMLElement | null {
+  let parent = node.parentElement
+  while (parent != null) {
+    const { overflowY } = window.getComputedStyle(parent)
+    if (overflowY === 'auto' || overflowY === 'scroll') return parent
+    parent = parent.parentElement
+  }
+  return null
+}
+
+interface BulkActionDialogLabels {
+  title: string
+  submitLabel: string
+  message: string
+}
+
+interface BulkActionDialogProps {
+  open: boolean | undefined
+  submitting: boolean
+  labels: BulkActionDialogLabels
+  onClose: () => void
+  onSubmit: () => Promise<void>
+}
+
+// Shared shape behind the two bulk-action confirmation dialogs (Archive/
+// Restore vs Trash/Delete Forever) — same title/message/submit-label
+// layout, only the copy and handler differ per call site (NES-1872).
+function BulkActionDialog({
+  open,
+  submitting,
+  labels,
+  onClose,
+  onSubmit
+}: BulkActionDialogProps): ReactElement | null {
+  const { t } = useTranslation('apps-journeys-admin')
+  if (open == null) return null
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      loading={submitting}
+      dialogTitle={{ title: labels.title, closeButton: true }}
+      dialogAction={{
+        onSubmit,
+        submitLabel: labels.submitLabel,
+        closeLabel: t('Cancel')
+      }}
+    >
+      <Typography sx={{ fontWeight: 'bold' }}>{labels.message}</Typography>
+      <Typography>{t('Are you sure you want to proceed?')}</Typography>
+    </Dialog>
+  )
 }
 
 export function TemplateGalleryPageList({
   visible = true,
   status = 'active',
-  onOpenInfo
+  onOpenInfo,
+  sortOrder,
+  onSortOrderChange,
+  event,
+  onEvent
 }: TemplateGalleryPageListProps = {}): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
@@ -208,6 +417,77 @@ export function TemplateGalleryPageList({
   const creatingRef = useRef(false)
   const [editTargetId, setEditTargetId] = useState<string | null>(null)
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
+  // NES-1703: size the gallery column to fill exactly the space between
+  // its own top and the bottom of the viewport, so the unsectioned
+  // droppable ends flush with the visible screen instead of adding a
+  // viewportful of scroll below the navbar/tabs. Callback-ref state (not
+  // useRef) because the root Box mounts after the loading early-returns —
+  // a mount-time effect would fire before the node exists.
+  //
+  // Gated on `visible`: the Team Templates TabPanel keeps this component
+  // mounted but display:none while another tab is active, where
+  // getBoundingClientRect().top reads 0 and would lock in a bogus
+  // viewport-tall min-height. The effect re-runs when the tab becomes
+  // visible, so the measurement always happens on a laid-out node.
+  //
+  // The min-height is written straight to the node (not React state):
+  // a resize tick then costs one rAF-throttled style write instead of a
+  // full gallery re-render + a new emotion class per unique value. Safe
+  // because nothing else manages this node's inline style. innerHeight
+  // (not 100vh) so mobile browsers' URL-bar chrome is accounted for.
+  const [rootNode, setRootNode] = useState<HTMLDivElement | null>(null)
+  useEffect(() => {
+    if (rootNode == null || !visible) return
+    let frame: number | null = null
+    function measureGalleryMinHeight(): void {
+      if (rootNode == null) return
+      // Not laid out yet — `visible` derives from the router and can flip
+      // true a beat before the ancestor TabPanel's `hidden` state syncs
+      // (child effects run first), so the node may still be display:none
+      // here. Skip; the ResizeObserver below fires again the moment the
+      // panel unhides and the node gains a real size.
+      if (rootNode.getClientRects().length === 0) return
+      const rootTop = rootNode.getBoundingClientRect().top
+      const scrollParent = getScrollParent(rootNode)
+      // Offset from the top of the scrolling context's CONTENT (not the
+      // viewport) so the value is stable regardless of current scroll
+      // position, paired with that context's visible height.
+      const topOffset =
+        scrollParent != null
+          ? rootTop -
+            scrollParent.getBoundingClientRect().top +
+            scrollParent.scrollTop
+          : rootTop + window.scrollY
+      const viewportHeight =
+        scrollParent != null ? scrollParent.clientHeight : window.innerHeight
+      rootNode.style.minHeight = `${Math.max(
+        0,
+        Math.round(viewportHeight - topOffset)
+      )}px`
+    }
+    function handleResize(): void {
+      if (frame != null) return
+      frame = window.requestAnimationFrame(() => {
+        frame = null
+        measureGalleryMinHeight()
+      })
+    }
+    measureGalleryMinHeight()
+    window.addEventListener('resize', handleResize)
+    // Re-measure when the node's own size changes: covers the hidden→
+    // visible transition above and width changes from panel/drawer
+    // layout shifts. Guarded — jsdom has no ResizeObserver.
+    const resizeObserver =
+      typeof ResizeObserver !== 'undefined'
+        ? new ResizeObserver(handleResize)
+        : null
+    resizeObserver?.observe(rootNode)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      resizeObserver?.disconnect()
+      if (frame != null) window.cancelAnimationFrame(frame)
+    }
+  }, [rootNode, visible])
   // `dragInFlight` drives rendering (busy chips, droppable lock); the ref
   // is the synchronous source of truth for gating a second drop that
   // arrives within the same tick as a setState batch — state would read
@@ -253,6 +533,17 @@ export function TemplateGalleryPageList({
     [handleCardDialogOpenChange]
   )
 
+  // Bulk-action confirmation dialogs for the All Templates section
+  // (NES-1872). Declared here, ahead of `dialogOpen`, so opening one of
+  // these also locks drag-and-drop below — otherwise a template could be
+  // dragged into/out of a collection while e.g. "Archive All Templates not
+  // in a collection" is open, the same class of bug NES-1653/NES-1666
+  // already fixed for the other dialogs on this page.
+  const [safeDialogOpen, setSafeDialogOpen] = useState<boolean | undefined>()
+  const [destructiveDialogOpen, setDestructiveDialogOpen] = useState<
+    boolean | undefined
+  >()
+
   // True when any modal is open. While modal is open, page-level draggables
   // and droppables are disabled and any in-flight drag state is cleared
   // (NES-1653): cursor moves inside the dialog were continuing to drive
@@ -262,7 +553,9 @@ export function TemplateGalleryPageList({
   const dialogOpen =
     editTargetId != null ||
     publishSuccessCollection != null ||
-    openDialogCardIds.size > 0
+    openDialogCardIds.size > 0 ||
+    safeDialogOpen === true ||
+    destructiveDialogOpen === true
   const interactionsLocked = dragInFlight || dialogOpen
 
   useEffect(() => {
@@ -371,6 +664,18 @@ export function TemplateGalleryPageList({
     [allTemplates, templateIdToCollection]
   )
 
+  // All Templates header (NES-1872): sort and bulk actions are scoped to
+  // this unsectioned pool only — collections keep their own drag order and
+  // are excluded from bulk archive/trash/restore/delete.
+  const sortedUnsectioned = useMemo(
+    () => sortJourneys([...unsectioned], sortOrder),
+    [unsectioned, sortOrder]
+  )
+  const unsectionedIds = useMemo(
+    () => unsectioned.map((journey) => journey.id),
+    [unsectioned]
+  )
+
   const editTarget =
     editTargetId != null ? (collectionsById.get(editTargetId) ?? null) : null
 
@@ -474,7 +779,7 @@ export function TemplateGalleryPageList({
     if (creatingRef.current || createLoading || teamId == null) return
     creatingRef.current = true
     try {
-      await templateGalleryPageCreate({
+      const { data } = await templateGalleryPageCreate({
         variables: {
           input: {
             teamId,
@@ -484,6 +789,10 @@ export function TemplateGalleryPageList({
           }
         }
       })
+      const created = data?.templateGalleryPageCreate
+      if (created != null) {
+        sendCollectionCreateEvent({ teamId, collectionId: created.id })
+      }
       if (mountedRef.current) {
         enqueueSnackbar(t('Collection created'), {
           variant: 'success',
@@ -507,6 +816,15 @@ export function TemplateGalleryPageList({
     setEditTargetId(null)
   }
   function handleEdit(collection: TemplateGalleryPage): void {
+    // teamId is always defined once collections render (the null guard
+    // below returns early), so the check is TS narrowing, not behavior.
+    if (teamId != null) {
+      sendCollectionEditOpenEvent({
+        teamId,
+        collectionId: collection.id,
+        collectionStatus: collection.status
+      })
+    }
     setEditTargetId(collection.id)
   }
 
@@ -526,6 +844,13 @@ export function TemplateGalleryPageList({
     setActiveDragId(String(event.active.id))
   }
 
+  // A cancelled drag (Escape, touchcancel) fires onDragCancel, not
+  // onDragEnd — without this the DragOverlay clone lingers and the
+  // placeholder tiles stay in their drag-active style.
+  function handleDragCancel(): void {
+    setActiveDragId(null)
+  }
+
   const handleDragEnd = useDragEndHandler({
     journeyById,
     templateIdToCollection,
@@ -535,6 +860,191 @@ export function TemplateGalleryPageList({
     setActiveDragId,
     isCollectionCollapsed: isCollapsed
   })
+
+  // Bulk actions for the All Templates (unsectioned) section (NES-1872).
+  // Reuses the same ID-based mutations JourneyListContent uses for Team
+  // Projects/legacy Templates — scoped to unsectionedIds instead of every
+  // journey of this status, and with its own dialog copy (not the strings
+  // affected by NES-1780/1778/1781) so those defects aren't inherited.
+  const actionConfig = STATUS_ACTION_CONFIG[status]
+
+  // Six explicitly-typed hooks rather than two dynamically-selected ones —
+  // each mutation's response field differs by name, so a single generic
+  // useMutation<TData, TVariables> call can't honestly describe every
+  // branch at once. Variables are the same {ids: string[]} shape for all
+  // six, so BulkMutationVariables (aliased below) is reused rather than
+  // importing six near-identical Variables types.
+  const [archiveActiveMutation, { loading: archiveActiveSubmitting }] =
+    useMutation<ArchiveActiveJourneys, BulkMutationVariables>(
+      ARCHIVE_ACTIVE_JOURNEYS,
+      {
+        update(_cache, { data }) {
+          if (data?.journeysArchive != null) {
+            enqueueSnackbar(t('Templates Archived'), { variant: 'success' })
+            void journeysQuery.refetch()
+          }
+        }
+      }
+    )
+  const [trashActiveMutation, { loading: trashActiveSubmitting }] = useMutation<
+    TrashActiveJourneys,
+    BulkMutationVariables
+  >(TRASH_ACTIVE_JOURNEYS, {
+    update(_cache, { data }) {
+      if (data?.journeysTrash != null) {
+        enqueueSnackbar(t('Templates Trashed'), { variant: 'success' })
+        void journeysQuery.refetch()
+      }
+    }
+  })
+  const [restoreArchivedMutation, { loading: restoreArchivedSubmitting }] =
+    useMutation<RestoreArchivedJourneys, BulkMutationVariables>(
+      RESTORE_ARCHIVED_JOURNEYS,
+      {
+        update(_cache, { data }) {
+          if (data?.journeysRestore != null) {
+            enqueueSnackbar(t('Templates Unarchived'), { variant: 'success' })
+            void journeysQuery.refetch()
+          }
+        }
+      }
+    )
+  const [trashArchivedMutation, { loading: trashArchivedSubmitting }] =
+    useMutation<TrashArchivedJourneys, BulkMutationVariables>(
+      TRASH_ARCHIVED_JOURNEYS,
+      {
+        update(_cache, { data }) {
+          if (data?.journeysTrash != null) {
+            enqueueSnackbar(t('Templates Trashed'), { variant: 'success' })
+            void journeysQuery.refetch()
+          }
+        }
+      }
+    )
+  const [restoreTrashedMutation, { loading: restoreTrashedSubmitting }] =
+    useMutation<RestoreTrashedJourneys, BulkMutationVariables>(
+      RESTORE_TRASHED_JOURNEYS,
+      {
+        update(_cache, { data }) {
+          if (data?.journeysRestore != null) {
+            enqueueSnackbar(t('Templates Restored'), { variant: 'success' })
+            void journeysQuery.refetch()
+          }
+        }
+      }
+    )
+  const [deleteTrashedMutation, { loading: deleteTrashedSubmitting }] =
+    useMutation<DeleteTrashedJourneys, BulkMutationVariables>(
+      DELETE_TRASHED_JOURNEYS,
+      {
+        update(_cache, { data }) {
+          if (data?.journeysDelete != null) {
+            enqueueSnackbar(t('Templates Deleted'), { variant: 'success' })
+            void journeysQuery.refetch()
+          }
+        }
+      }
+    )
+
+  // Dispatch tables selecting which typed mutation backs "safe"/
+  // "destructive" for the current status — built from the hook results
+  // above, kept separate from STATUS_ACTION_CONFIG since that map is
+  // module-level data and this depends on hook state.
+  const safeMutationByStatus: Record<
+    JourneyStatusFilter,
+    { mutate: (ids: string[]) => Promise<unknown>; submitting: boolean }
+  > = {
+    active: {
+      mutate: (ids) => archiveActiveMutation({ variables: { ids } }),
+      submitting: archiveActiveSubmitting
+    },
+    archived: {
+      mutate: (ids) => restoreArchivedMutation({ variables: { ids } }),
+      submitting: restoreArchivedSubmitting
+    },
+    trashed: {
+      mutate: (ids) => restoreTrashedMutation({ variables: { ids } }),
+      submitting: restoreTrashedSubmitting
+    }
+  }
+  const destructiveMutationByStatus: Record<
+    JourneyStatusFilter,
+    { mutate: (ids: string[]) => Promise<unknown>; submitting: boolean }
+  > = {
+    active: {
+      mutate: (ids) => trashActiveMutation({ variables: { ids } }),
+      submitting: trashActiveSubmitting
+    },
+    archived: {
+      mutate: (ids) => trashArchivedMutation({ variables: { ids } }),
+      submitting: trashArchivedSubmitting
+    },
+    trashed: {
+      mutate: (ids) => deleteTrashedMutation({ variables: { ids } }),
+      submitting: deleteTrashedSubmitting
+    }
+  }
+  const { mutate: safeMutate, submitting: safeSubmitting } =
+    safeMutationByStatus[status]
+  const { mutate: destructiveMutate, submitting: destructiveSubmitting } =
+    destructiveMutationByStatus[status]
+
+  function handleCloseTemplateDialogs(): void {
+    setSafeDialogOpen(false)
+    setDestructiveDialogOpen(false)
+  }
+
+  async function submitBulkAction(
+    mutate: (ids: string[]) => Promise<unknown>
+  ): Promise<void> {
+    // Nothing to act on — the pool emptied out (e.g. everything got dragged
+    // into a collection) while the dialog was open. Close quietly rather
+    // than firing a mutation with an empty ids list and showing a success
+    // snackbar for a no-op.
+    if (unsectionedIds.length === 0) {
+      handleCloseTemplateDialogs()
+      return
+    }
+    try {
+      await mutate(unsectionedIds)
+    } catch (error) {
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
+    }
+    handleCloseTemplateDialogs()
+  }
+
+  const handleSafeSubmit = (): Promise<void> => submitBulkAction(safeMutate)
+  const handleDestructiveSubmit = (): Promise<void> =>
+    submitBulkAction(destructiveMutate)
+
+  useEffect(() => {
+    if (event === actionConfig.safe.event) {
+      setSafeDialogOpen(true)
+    } else if (event === actionConfig.destructive.event) {
+      setDestructiveDialogOpen(true)
+    } else if (event === actionConfig.refetchEvent) {
+      void journeysQuery.refetch()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [event, actionConfig])
+
+  const dialogLabels = {
+    safe: {
+      title: t(actionConfig.safe.dialogTitleKey),
+      submitLabel: t(actionConfig.safe.dialogSubmitLabelKey),
+      message: t(actionConfig.safe.dialogMessageKey)
+    },
+    destructive: {
+      title: t(actionConfig.destructive.dialogTitleKey),
+      submitLabel: t(actionConfig.destructive.dialogSubmitLabelKey),
+      message: t(actionConfig.destructive.dialogMessageKey)
+    }
+  }
 
   if (teamId == null) {
     return (
@@ -565,22 +1075,41 @@ export function TemplateGalleryPageList({
 
   return (
     <GalleryDialogLockContext.Provider value={galleryDialogLockValue}>
-      <Box sx={{ p: 4 }} data-testid="TemplateGalleryPageList">
+      <Box
+        ref={setRootNode}
+        sx={{
+          p: 4,
+          // NES-1703: flex column filling the measured gap to the bottom
+          // of the viewport (min-height is written directly to the node
+          // by the measurement effect above) so the unsectioned droppable
+          // can grow into it — a big, easy drop target for pulling
+          // templates out of collections, without pushing extra scroll
+          // below the fold.
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+        data-testid="TemplateGalleryPageList"
+      >
         {showCollectionsSection && (
           <Stack
             direction="row"
-            justifyContent="space-between"
-            alignItems="center"
             spacing={2}
-            sx={{ mb: 3 }}
+            sx={{
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              mb: 3
+            }}
           >
             {/* min-width: 0 lets the title row shrink instead of pushing into
               the button on narrow viewports (NES-1652). */}
             <Stack
               direction="row"
-              alignItems="center"
               spacing={0.5}
-              sx={{ minWidth: 0, flex: 1 }}
+              sx={{
+                alignItems: 'center',
+                minWidth: 0,
+                flex: 1
+              }}
             >
               <Typography variant="h4">{t('Collections')}</Typography>
               {onOpenInfo != null && (
@@ -633,13 +1162,20 @@ export function TemplateGalleryPageList({
         <Box
           data-testid="TemplateGalleryDndScope"
           inert={dialogOpen}
-          sx={{ display: 'contents' }}
+          // A real flex box (not `display: contents`) so the wrapper is a
+          // grown flex item of the gallery column AND its own column for
+          // the droppables — UnsectionedDroppable's flexGrow reaches the
+          // page bottom through it, and any future styling on this
+          // wrapper (e.g. locked-state dimming) won't be silently
+          // discarded the way `display: contents` discards all styling.
+          sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}
         >
           <DndContext
             collisionDetection={collisionDetection}
             sensors={sensors}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
+            onDragCancel={handleDragCancel}
           >
             {showCollectionsSection &&
               (collections.length === 0 ? (
@@ -666,12 +1202,7 @@ export function TemplateGalleryPageList({
                     <DroppableCollectionWrapper
                       key={collection.id}
                       id={collection.id}
-                      disabled={
-                        collection.status ===
-                          TemplateGalleryPageStatus.published ||
-                        interactionsLocked ||
-                        busyId === collection.id
-                      }
+                      disabled={interactionsLocked || busyId === collection.id}
                     >
                       <CollectionCard
                         collection={collection}
@@ -689,19 +1220,50 @@ export function TemplateGalleryPageList({
                       >
                         <DraggableJourneysGrid
                           journeys={
-                            journeysByCollection.get(collection.id) ?? []
-                          }
-                          publishedLock={
-                            collection.status ===
-                            TemplateGalleryPageStatus.published
+                            journeysByCollection.get(collection.id) ??
+                            NO_JOURNEYS
                           }
                           dragInFlight={interactionsLocked}
+                          showDropPlaceholder
                         />
                       </CollectionCard>
                     </DroppableCollectionWrapper>
                   ))}
                 </Stack>
               ))}
+
+            {/* Renders unconditionally, even when every template is in a
+              collection (unsectioned.length === 0) — otherwise Sort and
+              the bulk-actions menu would vanish along with the empty
+              section instead of just being unused (NES-1872). */}
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 2
+              }}
+            >
+              <Typography variant="h4">{t('All Templates')}</Typography>
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ alignItems: 'center', flexShrink: 0 }}
+              >
+                {/* onSortOrderChange/onEvent are optional here so this
+                  component stays renderable prop-less in isolation (specs,
+                  Storybook) — JourneyList, the only real caller, always
+                  supplies both. JourneySort/JourneyListMenu themselves
+                  require a handler, hence the no-op fallback rather than
+                  leaving it undefined. */}
+                <JourneySort
+                  sortOrder={sortOrder}
+                  onChange={onSortOrderChange ?? (() => undefined)}
+                />
+                <JourneyListMenu onClick={onEvent ?? (() => undefined)} />
+              </Stack>
+            </Stack>
 
             <UnsectionedDroppable disabled={interactionsLocked}>
               {unsectioned.length === 0 ? (
@@ -714,21 +1276,26 @@ export function TemplateGalleryPageList({
                 </Box>
               ) : (
                 <DraggableJourneysGrid
-                  journeys={unsectioned}
-                  publishedLock={false}
+                  journeys={sortedUnsectioned}
                   dragInFlight={interactionsLocked}
                 />
               )}
             </UnsectionedDroppable>
 
             {/* Default dropAnimation snaps the card back to its origin when a
-            drop is rejected (published, no-op, etc.) and runs the standard
+            drop is a no-op (dead space, same slot) and runs the standard
             "settle" animation when accepted — gives the user visual
             feedback either way. */}
             <DragOverlay>
               {activeDragJourney != null ? (
                 <Box sx={{ width: 280, cursor: 'grabbing', opacity: 0.95 }}>
-                  <JourneyCard journey={activeDragJourney} />
+                  {/* 'always': the clone never receives hover while
+                      dnd-kit holds pointer capture, and the arrow staying
+                      visible mid-drag reinforces "you're moving this". */}
+                  <JourneyCard
+                    journey={activeDragJourney}
+                    showDragAffordance="always"
+                  />
                 </Box>
               ) : null}
             </DragOverlay>
@@ -765,6 +1332,20 @@ export function TemplateGalleryPageList({
             publishBlockedReason != null ? t(publishBlockedReason) : null
           }
           onClose={handleClosePublishSuccess}
+        />
+        <BulkActionDialog
+          open={safeDialogOpen}
+          submitting={safeSubmitting}
+          labels={dialogLabels.safe}
+          onClose={handleCloseTemplateDialogs}
+          onSubmit={handleSafeSubmit}
+        />
+        <BulkActionDialog
+          open={destructiveDialogOpen}
+          submitting={destructiveSubmitting}
+          labels={dialogLabels.destructive}
+          onClose={handleCloseTemplateDialogs}
+          onSubmit={handleDestructiveSubmit}
         />
       </Box>
     </GalleryDialogLockContext.Provider>

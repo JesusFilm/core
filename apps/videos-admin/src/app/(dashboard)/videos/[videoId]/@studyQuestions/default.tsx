@@ -141,7 +141,12 @@ export default function StudyQuestionsList(): ReactElement {
         ) : (
           <Section.Fallback>No study questions</Section.Fallback>
         )}
-        <Stack direction="row" justifyContent="flex-end">
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: 'flex-end'
+          }}
+        >
           <Button
             variant="outlined"
             onClick={() =>

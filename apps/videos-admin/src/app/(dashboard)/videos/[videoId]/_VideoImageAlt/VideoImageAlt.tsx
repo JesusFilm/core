@@ -187,8 +187,17 @@ export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
         resetForm
       }) => (
         <Form>
-          <Stack gap={2}>
-            <Stack direction="row" gap={2}>
+          <Stack
+            sx={{
+              gap: 2
+            }}
+          >
+            <Stack
+              direction="row"
+              sx={{
+                gap: 2
+              }}
+            >
               <TextField
                 id="imageAlt"
                 name="imageAlt"
@@ -204,7 +213,13 @@ export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
               />
             </Stack>
             <Divider sx={{ mx: -4 }} />
-            <Stack direction="row" justifyContent="flex-end" gap={1}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: 'flex-end',
+                gap: 1
+              }}
+            >
               <CancelButton show={dirty} handleCancel={() => resetForm()} />
               <SaveButton disabled={!isValid || isSubmitting || !dirty} />
             </Stack>

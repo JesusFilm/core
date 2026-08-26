@@ -78,7 +78,12 @@ export function GoogleIntegrationDeleteSyncDialog({
       divider={false}
       maxWidth="sm"
       dialogActionChildren={
-        <Stack direction="row" gap={2}>
+        <Stack
+          direction="row"
+          sx={{
+            gap: 2
+          }}
+        >
           <Button
             variant="outlined"
             color="secondary"
@@ -98,7 +103,11 @@ export function GoogleIntegrationDeleteSyncDialog({
         </Stack>
       }
     >
-      <Stack gap={2}>
+      <Stack
+        sx={{
+          gap: 2
+        }}
+      >
         <Typography variant="body1">
           {t(
             "Data will no longer update in the associated Google Sheet if you delete this sync. Existing data will remain, but new updates won't be sent."

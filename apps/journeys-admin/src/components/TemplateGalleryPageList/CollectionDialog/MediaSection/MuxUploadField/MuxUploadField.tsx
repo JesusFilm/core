@@ -174,7 +174,13 @@ export function MuxUploadField({
         sx={{ display: 'none' }}
         aria-hidden="true"
       />
-      <Stack direction="row" spacing={2} alignItems="flex-start">
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{
+          alignItems: 'flex-start'
+        }}
+      >
         {/* Box = Choose / Replace (clickable, with the edit affordance). */}
         <MediaFieldFrame
           onEdit={openPicker}
@@ -217,8 +223,10 @@ export function MuxUploadField({
               <Stack
                 direction="row"
                 spacing={1.5}
-                alignItems="center"
                 data-testid="MuxUploadFieldProcessing"
+                sx={{
+                  alignItems: 'center'
+                }}
               >
                 <CircularProgress size={20} />
                 <Typography variant="body2">
@@ -290,7 +298,12 @@ export function MuxUploadField({
                       {videoName}
                     </Typography>
                     {videoDuration != null && (
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: 'text.secondary'
+                        }}
+                      >
                         {secondsToTimeFormat(videoDuration, {
                           trimZeroes: true
                         })}
@@ -301,7 +314,12 @@ export function MuxUploadField({
                   // Empty upload slot is valid now (renders nothing on the
                   // public page), so there's no stuck/blocked state — just the
                   // prompt to upload.
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: 'text.secondary'
+                    }}
+                  >
                     {t(
                       'Click the box to upload a video. MP4 or MOV, up to 1 GB.'
                     )}

@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import {
@@ -46,7 +47,8 @@ describe('UserTeamInviteRemoveMenuItem', () => {
           id="userTeamInviteId"
           onClick={handleClick}
         />
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     fireEvent.click(getByText('Remove'))
     await waitFor(() => {

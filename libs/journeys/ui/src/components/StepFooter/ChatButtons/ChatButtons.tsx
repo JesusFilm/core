@@ -14,18 +14,20 @@ import {
 import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { JourneyFields_chatButtons as ChatButton } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { MessageChatIcon } from '../../../libs/MessageChatIcon'
 import {
   JourneyPlausibleEvents,
   keyify,
   templateKeyify
 } from '../../../libs/plausibleHelpers'
 import { getJourneyRTL } from '../../../libs/rtl'
+import { MessageChatIcon } from '../../MessageChatIcon'
 
 import {
   ChatButtonEventCreate,
   ChatButtonEventCreateVariables
 } from './__generated__/ChatButtonEventCreate'
+
+const AUTHORITY_LESS_SCHEME = /^(?:mailto|tel|sms):/i
 
 export const CHAT_BUTTON_EVENT_CREATE = gql`
   mutation ChatButtonEventCreate($input: ChatOpenEventCreateInput!) {
@@ -37,7 +39,7 @@ export const CHAT_BUTTON_EVENT_CREATE = gql`
 
 export function ChatButtons(): ReactElement {
   const plausible = usePlausible<JourneyPlausibleEvents>()
-  const { variant, journey } = useJourney()
+  const { renderMode, journey } = useJourney()
   const { blockHistory } = useBlocks()
   const theme = useTheme()
   const { rtl } = getJourneyRTL(journey)
@@ -45,7 +47,7 @@ export function ChatButtons(): ReactElement {
   const activeBlock = blockHistory[blockHistory.length - 1]
   const chatButtons = journey?.chatButtons
   const isWebsite = journey?.website === true
-  const showDefault = variant === 'admin' && chatButtons?.length === 0
+  const showDefault = renderMode === 'admin' && chatButtons?.length === 0
 
   const [chatButtonEventCreate] = useMutation<
     ChatButtonEventCreate,
@@ -69,10 +71,18 @@ export function ChatButtons(): ReactElement {
 
   const handleClick = (chatButton: ChatButton): void => {
     if (
-      (variant === 'default' || variant === 'embed') &&
+      (renderMode === 'default' || renderMode === 'embed') &&
       chatButton.link != null
     ) {
-      window.open(chatButton.link, '_blank')
+      // mailto:/tel:/sms: are handed off by assigning location, not by opening a
+      // popup: a popup to a non-HTTP scheme is blocked on iOS Safari and leaves a
+      // stranded blank tab on Android Chrome. Matches handleAction's PhoneAction
+      // and EmailAction cases.
+      if (AUTHORITY_LESS_SCHEME.test(chatButton.link)) {
+        window.location.href = chatButton.link
+      } else {
+        window.open(chatButton.link, '_blank')
+      }
       const input: ChatOpenEventCreateInput = {
         id: chatButton?.id,
         blockId: activeBlock?.id,
@@ -120,7 +130,9 @@ export function ChatButtons(): ReactElement {
     <Stack
       data-testid="StepFooterChatButtons"
       direction={rtl ? 'row' : 'row-reverse'}
-      gap={2}
+      sx={{
+        gap: 2
+      }}
     >
       {chatButtons?.map((chatButton, index) => (
         <IconButton

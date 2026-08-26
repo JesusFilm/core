@@ -127,23 +127,41 @@ export function BlockCustomizationToggle({
   const showHelperText = helperTextWhenDisabled != null
 
   return (
-    <Stack width="100%">
-      <Stack direction="row" alignItems="center" gap={1}>
+    <Stack
+      sx={{
+        width: '100%'
+      }}
+    >
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: 'center',
+          gap: 1
+        }}
+      >
         <Switch
           disabled={targetBlock == null}
           checked={customizable}
           onChange={handleChange}
-          inputProps={{ 'aria-label': t('Toggle customizable') }}
+          slotProps={{
+            input: { 'aria-label': t('Toggle customizable') }
+          }}
         />
         <Typography
+          sx={{ color: targetBlock == null ? 'text.secondary' : undefined }}
           variant="body1"
-          color={targetBlock == null ? 'text.secondary' : undefined}
         >
           {t('Needs Customization')}
         </Typography>
       </Stack>
       {showHelperText && (
-        <Typography variant="caption" color="text.secondary" sx={{ pl: 2 }}>
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'text.secondary',
+            pl: 2
+          }}
+        >
           {helperTextWhenDisabled}
         </Typography>
       )}

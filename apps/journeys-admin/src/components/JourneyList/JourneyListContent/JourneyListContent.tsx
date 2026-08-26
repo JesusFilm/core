@@ -227,7 +227,9 @@ export function JourneyListContent({
         if (status === 'active') {
           messageKey = isTemplate ? 'Templates Archived' : 'Journeys Archived'
         } else if (status === 'archived') {
-          messageKey = isTemplate ? 'Templates Restored' : 'Journeys Restored'
+          messageKey = isTemplate
+            ? 'Templates Unarchived'
+            : 'Journeys Unarchived'
         } else {
           messageKey = isTemplate ? 'Templates Restored' : 'Journeys Restored'
         }
@@ -433,15 +435,15 @@ export function JourneyListContent({
               : t('Unarchive Journeys'),
             submitLabel: t('Unarchive'),
             message: isTemplate
-              ? t('This will unarchive all archived templates you own.')
-              : t('This will unarchive all archived journeys you own.')
+              ? t('This will unarchive all archived Templates you own.')
+              : t('This will unarchive all archived Journeys you own.')
           },
           secondary: {
             title: isTemplate ? t('Trash Templates') : t('Trash Journeys'),
             submitLabel: t('Trash'),
             message: isTemplate
-              ? t('This will trash all archived templates you own.')
-              : t('This will trash all archived journeys you own.')
+              ? t('This will trash all archived Templates you own.')
+              : t('This will trash all archived Journeys you own.')
           }
         }
       case 'trashed':
@@ -450,8 +452,8 @@ export function JourneyListContent({
             title: isTemplate ? t('Restore Templates') : t('Restore Journeys'),
             submitLabel: t('Restore'),
             message: isTemplate
-              ? t('This will restore all trashed templates you own.')
-              : t('This will restore all trashed journeys you own.')
+              ? t('This will restore all trashed Templates you own.')
+              : t('This will restore all trashed Journeys you own.')
           },
           secondary: {
             title: isTemplate
@@ -459,8 +461,8 @@ export function JourneyListContent({
               : t('Delete Journeys Forever'),
             submitLabel: t('Delete Forever'),
             message: isTemplate
-              ? t('This will permanently delete all trashed templates you own.')
-              : t('This will permanently delete all trashed journeys you own.')
+              ? t('This will permanently delete all trashed Templates you own.')
+              : t('This will permanently delete all trashed Journeys you own.')
           }
         }
       case 'active':
@@ -470,15 +472,15 @@ export function JourneyListContent({
             title: isTemplate ? t('Archive Templates') : t('Archive Journeys'),
             submitLabel: t('Archive'),
             message: isTemplate
-              ? t('This will archive all active templates you own.')
-              : t('This will archive all active journeys you own.')
+              ? t('This will archive all active Templates you own.')
+              : t('This will archive all active Journeys you own.')
           },
           secondary: {
             title: isTemplate ? t('Trash Templates') : t('Trash Journeys'),
             submitLabel: t('Trash'),
             message: isTemplate
-              ? t('This will trash all active templates you own.')
-              : t('This will trash all active journeys you own.')
+              ? t('This will trash all active Templates you own.')
+              : t('This will trash all active Journeys you own.')
           }
         }
     }
@@ -491,24 +493,24 @@ export function JourneyListContent({
     if (contentType === 'templates') {
       switch (status) {
         case 'active':
-          return t('Make your first template.')
+          return t('Make your first Template.')
         case 'archived':
-          return t('No archived templates.')
+          return t('No archived Templates.')
         case 'trashed':
-          return t('Your trashed templates will appear here.')
+          return t('Your trashed Templates will appear here.')
         default:
-          return t('No templates to display.')
+          return t('No Templates to display.')
       }
     } else {
       switch (status) {
         case 'active':
-          return t('No journeys to display.')
+          return t('No Journeys to display.')
         case 'archived':
-          return t('No archived journeys.')
+          return t('No archived Journeys.')
         case 'trashed':
-          return t('Your trashed journeys will appear here.')
+          return t('Your trashed Journeys will appear here.')
         default:
-          return t('No journeys to display.')
+          return t('No Journeys to display.')
       }
     }
   }
@@ -518,17 +520,17 @@ export function JourneyListContent({
     if (contentType === 'templates') {
       switch (status) {
         case 'archived':
-          return t('Archived templates are hidden from the Template Library.')
+          return t('Archived Templates are hidden from the Template Library.')
         case 'trashed':
-          return t('Trashed templates are moved here for up to 40 days.')
+          return t('Trashed Templates are moved here for up to 40 days.')
         case 'active':
         default:
           if (isEmpty === true) {
             return t(
-              'Templates you make from your projects will appear here. Monitor the performance of all your journeys created from these templates.'
+              'Templates you make from your Projects will appear here. Monitor the performance of all your Journeys created from these Templates.'
             )
           }
-          return t('Templates let your team reuse and share projects.')
+          return t('Templates let your team reuse and share Projects.')
       }
     } else {
       switch (status) {
@@ -541,7 +543,7 @@ export function JourneyListContent({
             'You can archive a Journey to hide it from your active Journey list for better organization.'
           )
         case 'trashed':
-          return t('Trashed journeys are moved here for up to 40 days.')
+          return t('Trashed Journeys are moved here for up to 40 days.')
         default:
           return t(
             'You can archive a Journey to hide it from your active Journey list for better organization.'
@@ -595,7 +597,7 @@ export function JourneyListContent({
                     {getEmptyStateMessage()}
                   </Typography>
                   <Typography variant="caption" align="center" gutterBottom>
-                    {t('Create a journey, then find it here.')}
+                    {t('Create a Journey, then find it here.')}
                   </Typography>
                   <AddJourneyButton />
                 </Card>
@@ -644,7 +646,12 @@ export function JourneyListContent({
           </Typography>
         </Box>
       )}
-      <Stack alignItems="center" sx={{ pb: { xs: 3, sm: 5 } }}>
+      <Stack
+        sx={{
+          alignItems: 'center',
+          pb: { xs: 3, sm: 5 }
+        }}
+      >
         <Typography
           variant="caption"
           align="center"
@@ -683,9 +690,7 @@ export function JourneyListContent({
           <Typography sx={{ fontWeight: 'bold' }}>
             {dialogLabels.primary.message}
           </Typography>
-          {status !== 'active' && (
-            <Typography>{t('Are you sure you want to proceed?')}</Typography>
-          )}
+          <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>
       )}
       {secondaryDialogOpen != null && (

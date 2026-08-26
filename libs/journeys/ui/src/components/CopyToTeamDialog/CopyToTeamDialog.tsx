@@ -249,7 +249,12 @@ export function CopyToTeamDialog({
                   ))}
                 </TextField>
               </FormControl>
-              <Stack direction="row" alignItems="center">
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: 'center'
+                }}
+              >
                 <FormControlLabel
                   control={
                     <Switch
@@ -260,7 +265,12 @@ export function CopyToTeamDialog({
                     />
                   }
                   label={
-                    <Typography variant="subtitle2" color="text.primary">
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        color: 'text.primary'
+                      }}
+                    >
                       {t('Translation')}
                     </Typography>
                   }

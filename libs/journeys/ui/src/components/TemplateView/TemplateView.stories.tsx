@@ -205,9 +205,9 @@ const Template: StoryObj<
           args?.getTagsMock
         ]}
       >
-        <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey: args.journey, renderMode: 'admin' }}>
           <Box sx={{ height: '100%', overflow: 'hidden' }}>
-            <TemplateView authUser={args.authUser as unknown as User} />
+            <TemplateView authUser={args.authUser} />
           </Box>
         </JourneyProvider>
       </MockedProvider>

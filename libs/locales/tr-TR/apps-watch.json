@@ -137,6 +137,14 @@
   "Video Course": "Video Kursu",
   "Every Gospel, Told on Video": "Her İncil, Videoda Anlatılıyor",
   "Scripture, Spoken Exactly as Written": "Kutsal Yazılar, Tam Olarak Yazıldığı Gibi Konuşuluyor",
+  "Search by topic, occasion, or audience ...": "Konuya, duruma veya hedef kitleye göre arama yapın...",
+  "<0><0></0><1>interaction</1></0>": "<0><0></0><1>etkileşim</1></0>",
+  "Search Suggestions": "Arama Önerileri",
+  "See Less": "Daha Az Göster",
+  "Clear All": "Tümünü Temizle",
+  "Sorry, there are no languages available for this search. Try removing some of your search criteria!": "Üzgünüz, bu arama için uygun dil seçeneği bulunmamaktadır. Arama kriterlerinizden bazılarını kaldırmayı deneyin!",
+  "Loading...": "Yükleniyor...",
+  "There are no suggestions for this search": "Bu arama için herhangi bir öneri bulunmamaktadır",
   "{{count}} languages_one": "{{count}} diller",
   "{{count}} languages_other": "{{count}} diller"
 }

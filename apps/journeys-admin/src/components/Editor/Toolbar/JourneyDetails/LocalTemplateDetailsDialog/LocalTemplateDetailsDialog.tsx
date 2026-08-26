@@ -75,7 +75,7 @@ export function LocalTemplateDetailsDialog({
       <JourneyProvider
         value={{
           journey: journeyProp as unknown as JourneyContext,
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <LocalTemplateDetailsDialogBody open={open} onClose={onClose} />
@@ -266,7 +266,12 @@ function LocalTemplateDetailsDialogBody({
             fullscreen={!smUp}
             loading={isSubmitting}
           >
-            <Stack sx={{ pt: 2 }} gap={5}>
+            <Stack
+              sx={{
+                gap: 5,
+                pt: 2
+              }}
+            >
               <MetadataTabPanel showFeaturedSettings={false} />
               <Divider />
               <CustomizeTemplate />

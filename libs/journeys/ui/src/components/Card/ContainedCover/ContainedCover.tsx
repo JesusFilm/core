@@ -102,10 +102,8 @@ export function ContainedCover({
         videoBlock?.image
 
   useEffect(() => {
-    if (contentRef?.current != null) {
-      setContentHeight(
-        (contentRef?.current as unknown as HTMLDivElement).clientHeight ?? 0
-      )
+    if (contentRef.current != null) {
+      setContentHeight(contentRef.current.clientHeight)
     }
   }, [contentRef])
 
@@ -280,9 +278,9 @@ export function ContainedCover({
             <Stack
               ref={contentRef}
               data-testid="overlay-gradient"
-              flexDirection="row"
-              justifyContent="center"
               sx={{
+                flexDirection: 'row',
+                justifyContent: 'center',
                 position: 'absolute',
                 width: '100%',
                 height: { xs: '100%', sm: '100%' },
@@ -290,14 +288,17 @@ export function ContainedCover({
                 pt: { xs: videoBlock != null ? 40 : 5, sm: 0 },
                 pb: { xs: 10, sm: 0 },
                 pl: { sm: 50 },
+
                 WebkitMask: {
                   xs: overlayGradient('bottom'),
                   sm: overlayGradient('right')
                 },
+
                 mask: {
                   xs: overlayGradient('bottom'),
                   sm: overlayGradient('right')
                 },
+
                 backgroundColor: `${baseBackgroundColor}FF`
               }}
             />

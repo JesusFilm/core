@@ -1068,9 +1068,7 @@ describe('Button', () => {
     )
     expect(screen.getByRole('button')).toHaveClass('MuiButton-root')
     expect(screen.getByRole('button')).toHaveClass('MuiButton-contained')
-    expect(screen.getByRole('button')).toHaveClass(
-      'MuiButton-containedSizeSmall'
-    )
+    expect(screen.getByRole('button')).toHaveClass('MuiButton-sizeSmall')
     expect(screen.getByText('This is a button')).toBeInTheDocument()
   })
 
@@ -1089,9 +1087,7 @@ describe('Button', () => {
         <Button {...block} size={ButtonSize.small} />
       </MockedProvider>
     )
-    expect(screen.getByRole('button')).toHaveClass(
-      'MuiButton-containedSizeSmall'
-    )
+    expect(screen.getByRole('button')).toHaveClass('MuiButton-sizeSmall')
   })
 
   it('should render the default color value', () => {
@@ -1100,7 +1096,7 @@ describe('Button', () => {
         <Button {...block} buttonColor={null} />
       </MockedProvider>
     )
-    expect(screen.getByRole('button')).toHaveClass('MuiButton-containedPrimary')
+    expect(screen.getByRole('button')).toHaveClass('MuiButton-colorPrimary')
   })
 
   it('should render the start icon', () => {
@@ -1212,7 +1208,9 @@ describe('Button', () => {
 
       render(
         <MockedProvider>
-          <JourneyProvider value={{ journey: rtlJourney, variant: 'default' }}>
+          <JourneyProvider
+            value={{ journey: rtlJourney, renderMode: 'default' }}
+          >
             <Button {...iconBlock} />
           </JourneyProvider>
         </MockedProvider>
@@ -1277,7 +1275,7 @@ describe('Button', () => {
 
       render(
         <MockedProvider>
-          <JourneyProvider value={{ journey: rtlJourney, variant: 'admin' }}>
+          <JourneyProvider value={{ journey: rtlJourney, renderMode: 'admin' }}>
             <Button {...iconBlock} />
           </JourneyProvider>
         </MockedProvider>
@@ -1297,7 +1295,7 @@ describe('Button', () => {
   it('should call actionHandler on click', () => {
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <Button
             {...block}
             action={{
@@ -1516,14 +1514,14 @@ describe('Button', () => {
     expect(submitButton).toHaveAttribute('type', 'submit')
   })
 
-  it('should have type="submit" when submitEnabled is true and variant is not admin', () => {
+  it('should have type="submit" when submitEnabled is true and render mode is not admin', () => {
     const buttonMock = {
       ...block,
       submitEnabled: true
     }
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'default' }}>
+        <JourneyProvider value={{ journey, renderMode: 'default' }}>
           <Button {...buttonMock} />
         </JourneyProvider>
       </MockedProvider>
@@ -1532,14 +1530,14 @@ describe('Button', () => {
     expect(button).toHaveAttribute('type', 'submit')
   })
 
-  it('should have type="button" when submitEnabled is false and variant is not admin', () => {
+  it('should have type="button" when submitEnabled is false and render mode is not admin', () => {
     const buttonMock = {
       ...block,
       submitEnabled: false
     }
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'default' }}>
+        <JourneyProvider value={{ journey, renderMode: 'default' }}>
           <Button {...buttonMock} />
         </JourneyProvider>
       </MockedProvider>
@@ -1548,15 +1546,14 @@ describe('Button', () => {
     expect(button).toHaveAttribute('type', 'button')
   })
 
-  it('should have type="button" when submitEnabled is true and variant is admin', () => {
+  it('should have type="button" when submitEnabled is true and render mode is admin', () => {
     const buttonMock = {
       ...block,
-      submitEnabled: true,
-      variant: 'admin'
+      submitEnabled: true
     }
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <Button {...buttonMock} />
         </JourneyProvider>
       </MockedProvider>
@@ -1586,7 +1583,7 @@ describe('Button', () => {
 
     render(
       <MockedProvider mocks={[]}>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <form onSubmit={handleSubmit} data-testid="test-form">
             <Button {...submitButtonMock} />
           </form>
@@ -1601,7 +1598,7 @@ describe('Button', () => {
   })
 
   describe('customization string resolution', () => {
-    it('resolves label using journey customization fields on default variant', () => {
+    it('resolves label using journey customization fields in default render mode', () => {
       const journeyWithFields = {
         language: {
           __typename: 'Language',
@@ -1627,7 +1624,7 @@ describe('Button', () => {
       render(
         <MockedProvider>
           <JourneyProvider
-            value={{ journey: journeyWithFields, variant: 'default' }}
+            value={{ journey: journeyWithFields, renderMode: 'default' }}
           >
             <Button {...btn} />
           </JourneyProvider>
@@ -1637,7 +1634,7 @@ describe('Button', () => {
       expect(screen.getByRole('button')).toHaveTextContent('Alice')
     })
 
-    it('does not resolve label on admin variant for template journeys', () => {
+    it('does not resolve label in admin render mode for template journeys', () => {
       const journeyWithFields = {
         language: {
           __typename: 'Language',
@@ -1664,7 +1661,7 @@ describe('Button', () => {
       render(
         <MockedProvider>
           <JourneyProvider
-            value={{ journey: journeyWithFields, variant: 'admin' }}
+            value={{ journey: journeyWithFields, renderMode: 'admin' }}
           >
             <Button {...btn} />
           </JourneyProvider>
@@ -1700,7 +1697,7 @@ describe('Button', () => {
       render(
         <MockedProvider>
           <JourneyProvider
-            value={{ journey: journeyWithFields, variant: 'default' }}
+            value={{ journey: journeyWithFields, renderMode: 'default' }}
           >
             <Button {...btn} />
           </JourneyProvider>
@@ -1736,7 +1733,7 @@ describe('Button', () => {
       render(
         <MockedProvider>
           <JourneyProvider
-            value={{ journey: journeyWithFields, variant: 'default' }}
+            value={{ journey: journeyWithFields, renderMode: 'default' }}
           >
             <Button {...btn} />
           </JourneyProvider>

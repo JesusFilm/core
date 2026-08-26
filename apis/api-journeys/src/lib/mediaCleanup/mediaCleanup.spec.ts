@@ -33,16 +33,16 @@ const { prisma: mockPrismaMedia } = await vi.importMock<any>(
 
 const mockMuxAssetsDelete = vi.fn()
 vi.mock('@mux/mux-node', () => ({
-  default: vi.fn().mockImplementation(() => ({
-    video: { assets: { delete: mockMuxAssetsDelete } }
-  }))
+  default: vi.fn(function () {
+    return { video: { assets: { delete: mockMuxAssetsDelete } } }
+  })
 }))
 
 const mockCloudflareImagesDelete = vi.fn()
 vi.mock('cloudflare', () => ({
-  default: vi.fn().mockImplementation(() => ({
-    images: { v1: { delete: mockCloudflareImagesDelete } }
-  }))
+  default: vi.fn(function () {
+    return { images: { v1: { delete: mockCloudflareImagesDelete } } }
+  })
 }))
 
 vi.mock('../../env', () => ({

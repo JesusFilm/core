@@ -137,5 +137,13 @@
   "Video Course": "視訊課程",
   "Every Gospel, Told on Video": "每個福音，透過視訊娓娓道來",
   "Scripture, Spoken Exactly as Written": "經文，如實傳達",
+  "Search by topic, occasion, or audience ...": "依主題、場合或受眾搜尋……",
+  "<0><0></0><1>interaction</1></0>": "<0><0></0><1>互動</1></0>",
+  "Search Suggestions": "搜尋建議",
+  "See Less": "收起",
+  "Clear All": "清除所有項目",
+  "Sorry, there are no languages available for this search. Try removing some of your search criteria!": "很抱歉，此搜尋目前沒有可用的語言選項。請嘗試移除部分搜尋條件！",
+  "Loading...": "載入中...",
+  "There are no suggestions for this search": "此搜尋尚無相關建議",
   "{{count}} languages_other": "{{count}} 語言"
 }

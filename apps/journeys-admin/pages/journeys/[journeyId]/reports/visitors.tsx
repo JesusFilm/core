@@ -32,8 +32,8 @@ import {
   FilterDrawer,
   GET_JOURNEY_BLOCK_TYPENAMES
 } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
-import { GoogleSheetsSyncDialog } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/GoogleSheetsSyncDialog'
 import { GoogleSheetsSyncButton } from '../../../../src/components/JourneyVisitorsList/GoogleSheetsSyncButton'
+import { GoogleSheetsSyncDialog } from '../../../../src/components/JourneyVisitorsList/GoogleSheetsSyncDialog'
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../../../src/components/ReportsNavigation'
@@ -315,9 +315,11 @@ function JourneyVisitorsPage({
         mainHeaderChildren={
           <Stack
             direction="row"
-            flexGrow={1}
-            alignItems="center"
-            justifyContent="space-between"
+            sx={{
+              flexGrow: 1,
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}
           >
             {/* Hide visitors count */}
             {/* {data?.journeyVisitorCount != null && (
@@ -405,7 +407,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
   if (redirect != null) return { redirect }
 
-  let journey: Journey | null = null
+  let journey: Journey | null
 
   try {
     const { data } = await apolloClient.query<GetAdminJourney>({

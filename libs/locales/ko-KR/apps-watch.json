@@ -137,5 +137,13 @@
   "Video Course": "비디오 코스",
   "Every Gospel, Told on Video": "동영상으로 전하는 모든 복음",
   "Scripture, Spoken Exactly as Written": "성경, 기록된 대로 정확하게 말하기",
+  "Search by topic, occasion, or audience ...": "주제, 행사, 대상별로 검색하기...",
+  "<0><0></0><1>interaction</1></0>": "<0><0></0><1>상호작용</1></0>",
+  "Search Suggestions": "검색 제안",
+  "See Less": "더 적게 보기",
+  "Clear All": "모두 지우기",
+  "Sorry, there are no languages available for this search. Try removing some of your search criteria!": "죄송합니다. 이 검색어에 해당하는 언어가 없습니다. 검색 조건을 일부 제거해 보세요!",
+  "Loading...": "로드 중...",
+  "There are no suggestions for this search": "이 검색어에 대한 제안이 없습니다.",
   "{{count}} languages_other": "{{count}} 언어"
 }

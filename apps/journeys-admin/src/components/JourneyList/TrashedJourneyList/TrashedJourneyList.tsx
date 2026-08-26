@@ -190,21 +190,25 @@ export function TrashedJourneyList({
                 }}
               >
                 <Typography variant="subtitle1" align="center">
-                  {t('Your trashed journeys will appear here.')}
+                  {t('Your trashed Journeys will appear here.')}
                 </Typography>
               </Box>
             </>
           )}
         </Box>
       )}
-      <Stack alignItems="center">
+      <Stack
+        sx={{
+          alignItems: 'center'
+        }}
+      >
         <Typography
           variant="caption"
           align="center"
           component="div"
           sx={{ py: { xs: 3, sm: 5 }, maxWidth: 290 }}
         >
-          {t('Trashed journeys are moved here for up to 40 days.')}
+          {t('Trashed Journeys are moved here for up to 40 days.')}
         </Typography>
       </Stack>
       {restoreDialogOpen != null && (
@@ -222,7 +226,7 @@ export function TrashedJourneyList({
           }}
         >
           <Typography sx={{ fontWeight: 'bold' }}>
-            {t('This will restore all trashed journeys you own.')}
+            {t('This will restore all trashed Journeys you own.')}
           </Typography>
           <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>
@@ -242,7 +246,7 @@ export function TrashedJourneyList({
           }}
         >
           <Typography sx={{ fontWeight: 'bold' }}>
-            {t('This will permanently delete all trashed journeys you own.')}
+            {t('This will permanently delete all trashed Journeys you own.')}
           </Typography>
           <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>

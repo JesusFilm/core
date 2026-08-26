@@ -134,7 +134,7 @@ describe('Action', () => {
         <JourneyProvider
           value={{
             journey: { template: true } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider
@@ -158,7 +158,7 @@ describe('Action', () => {
     await waitFor(() => {
       expect(getByText('Needs Customization')).toBeInTheDocument()
       expect(
-        getByRole('checkbox', { name: 'Toggle customizable' })
+        getByRole('switch', { name: 'Toggle customizable' })
       ).toBeInTheDocument()
     })
   })
@@ -186,7 +186,7 @@ describe('Action', () => {
         <JourneyProvider
           value={{
             journey: { template: true } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider
@@ -210,7 +210,7 @@ describe('Action', () => {
     await waitFor(() => {
       expect(getByText('Needs Customization')).toBeInTheDocument()
       expect(
-        getByRole('checkbox', { name: 'Toggle customizable' })
+        getByRole('switch', { name: 'Toggle customizable' })
       ).toBeInTheDocument()
     })
   })
@@ -238,7 +238,7 @@ describe('Action', () => {
         <JourneyProvider
           value={{
             journey: { template: true } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider
@@ -262,7 +262,7 @@ describe('Action', () => {
     await waitFor(() => {
       expect(getByText('Needs Customization')).toBeInTheDocument()
       expect(
-        getByRole('checkbox', { name: 'Toggle customizable' })
+        getByRole('switch', { name: 'Toggle customizable' })
       ).toBeInTheDocument()
     })
   })
@@ -340,7 +340,7 @@ describe('Action', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedBlock }}>

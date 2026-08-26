@@ -67,7 +67,7 @@ describe('templateGalleryPagePublish', () => {
     } as any)
     prismaMock.templateGalleryPage.updateMany.mockResolvedValue({
       count: 1
-    } as any)
+    })
     prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValue({
       id: 'p1',
       status: 'published',
@@ -110,7 +110,7 @@ describe('templateGalleryPagePublish', () => {
     // between our findUnique and updateMany.
     prismaMock.templateGalleryPage.updateMany.mockResolvedValue({
       count: 0
-    } as any)
+    })
     const winnerPublishedAt = new Date('2026-04-28T11:59:59Z')
     prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValue({
       id: 'p1',
@@ -192,7 +192,7 @@ describe('templateGalleryPagePublish', () => {
     } as any)
     prismaMock.templateGalleryPage.updateMany.mockResolvedValue({
       count: 1
-    } as any)
+    })
     prismaMock.templateGalleryPage.findUniqueOrThrow.mockRejectedValue(
       new Prisma.PrismaClientKnownRequestError('record not found', {
         code: 'P2025',

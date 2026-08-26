@@ -6,6 +6,7 @@ import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
 import InputAdornment from '@mui/material/InputAdornment'
+import Link from '@mui/material/Link'
 import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
@@ -18,8 +19,10 @@ import {
   GridRowsProp,
   gridClasses
 } from '@mui/x-data-grid'
+import NextLink from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
+  MouseEvent,
   ReactElement,
   useCallback,
   useEffect,
@@ -28,7 +31,21 @@ import {
   useState
 } from 'react'
 
-const DEFAULT_LANGUAGE_ID = '529'
+import {
+  DEFAULT_LANGUAGE_ID,
+  GET_LANGUAGE_STUDIO_MANAGED_FILMS,
+  LANGUAGE_STUDIO_MANAGED_FILM_IDS,
+  LINKED_LANGUAGE_STUDIO_MANAGED_FILMS_LABEL,
+  getLanguageStudioManagedFilmPath,
+  getLinkedLanguageStudioManagedFilmsByLanguageId
+} from '../_LanguageStudioManagedFilms/languageStudioManagedFilms'
+import type {
+  GetLanguageStudioManagedFilmsData,
+  GetLanguageStudioManagedFilmsVariables,
+  LinkedLanguageStudioManagedFilm
+} from '../_LanguageStudioManagedFilms/languageStudioManagedFilms'
+import { WessImportButton } from '../_WessImportButton'
+
 const DEFAULT_PAGE_SIZE = 25
 
 export const GET_LANGUAGES = gql`
@@ -105,6 +122,7 @@ interface LanguageRow {
   iso3: string
   slug: string
   hasVideos: boolean
+  linkedFilms: LinkedLanguageStudioManagedFilm[]
 }
 
 function getPrimaryName(names: LanguageName[]): LanguageName | undefined {
@@ -118,6 +136,10 @@ function getLocalizedName(names: LanguageName[]): LanguageName | undefined {
   )
 }
 
+function handleLinkedFilmClick(event: MouseEvent<HTMLDivElement>): void {
+  event.stopPropagation()
+}
+
 export function LanguageList(): ReactElement {
   const router = useRouter()
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
@@ -127,7 +149,7 @@ export function LanguageList(): ReactElement {
   const paginationModelRef = useRef(paginationModel)
   const [searchTerm, setSearchTerm] = useState('')
   const [term, setTerm] = useState<string>()
-  const [hasVideosFilter, setHasVideosFilter] = useState('all')
+  const [hasVideosFilter, setHasVideosFilter] = useState('yes')
   const [gridMounted, setGridMounted] = useState(false)
 
   useEffect(() => {
@@ -173,17 +195,31 @@ export function LanguageList(): ReactElement {
     []
   )
 
-  const { data, loading } = useQuery<GetLanguagesData, GetLanguagesVariables>(
-    GET_LANGUAGES,
-    {
-      variables: {
-        limit: paginationModel.pageSize,
-        offset: paginationModel.page * paginationModel.pageSize,
-        nameLanguageId: DEFAULT_LANGUAGE_ID,
-        term,
-        where
-      }
+  const { data, loading, refetch } = useQuery<
+    GetLanguagesData,
+    GetLanguagesVariables
+  >(GET_LANGUAGES, {
+    variables: {
+      limit: paginationModel.pageSize,
+      offset: paginationModel.page * paginationModel.pageSize,
+      nameLanguageId: DEFAULT_LANGUAGE_ID,
+      term,
+      where
     }
+  })
+  const { data: linkedFilmsData, loading: linkedFilmsLoading } = useQuery<
+    GetLanguageStudioManagedFilmsData,
+    GetLanguageStudioManagedFilmsVariables
+  >(GET_LANGUAGE_STUDIO_MANAGED_FILMS, {
+    variables: {
+      ids: LANGUAGE_STUDIO_MANAGED_FILM_IDS,
+      languageId: DEFAULT_LANGUAGE_ID
+    }
+  })
+
+  const linkedFilmsByLanguageId = useMemo(
+    () => getLinkedLanguageStudioManagedFilmsByLanguageId(linkedFilmsData),
+    [linkedFilmsData?.adminVideos]
   )
 
   const rows: GridRowsProp<LanguageRow> = useMemo(
@@ -203,10 +239,11 @@ export function LanguageList(): ReactElement {
           bcp47: language.bcp47 ?? '',
           iso3: language.iso3 ?? '',
           slug: language.slug ?? '',
-          hasVideos: language.hasVideos
+          hasVideos: language.hasVideos,
+          linkedFilms: linkedFilmsByLanguageId.get(language.id) ?? []
         }
       }) ?? [],
-    [data?.adminLanguages]
+    [data?.adminLanguages, linkedFilmsByLanguageId]
   )
 
   const columns: GridColDef<LanguageRow>[] = [
@@ -245,7 +282,73 @@ export function LanguageList(): ReactElement {
     },
     { field: 'bcp47', headerName: 'BCP 47', width: 112 },
     { field: 'iso3', headerName: 'ISO 3', width: 112 },
-    { field: 'slug', headerName: 'Slug', flex: 1, minWidth: 180 }
+    { field: 'slug', headerName: 'Slug', flex: 1, minWidth: 180 },
+    {
+      field: 'linkedFilms',
+      headerName: LINKED_LANGUAGE_STUDIO_MANAGED_FILMS_LABEL,
+      flex: 1,
+      minWidth: 360,
+      sortable: false,
+      filterable: false,
+      renderCell: (params) => {
+        const linkedFilms = params.row.linkedFilms
+
+        if (linkedFilms.length === 0) {
+          return (
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary'
+              }}
+            >
+              -
+            </Typography>
+          )
+        }
+
+        return (
+          <Stack
+            spacing={0.25}
+            onClick={handleLinkedFilmClick}
+            sx={{
+              alignItems: 'flex-start',
+              minWidth: 0,
+              py: 1
+            }}
+          >
+            {linkedFilms.map((linkedFilm) => (
+              <Stack
+                key={`${linkedFilm.videoId}-${linkedFilm.variant.id}`}
+                direction="row"
+                spacing={0.5}
+                sx={{
+                  alignItems: 'center',
+                  minWidth: 0
+                }}
+              >
+                <Typography variant="body2" noWrap>
+                  {linkedFilm.title}:
+                </Typography>
+                <Link
+                  component={NextLink}
+                  href={getLanguageStudioManagedFilmPath({
+                    videoId: linkedFilm.videoId,
+                    variantId: linkedFilm.variant.id
+                  })}
+                  underline="hover"
+                  sx={{ flexShrink: 0, fontWeight: 600 }}
+                >
+                  {linkedFilm.variant.version}
+                </Link>
+                <Typography variant="body2" noWrap>
+                  : {linkedFilm.videoId}
+                </Typography>
+              </Stack>
+            ))}
+          </Stack>
+        )
+      }
+    }
   ]
 
   return (
@@ -290,7 +393,6 @@ export function LanguageList(): ReactElement {
         >
           <TextField
             placeholder="Search by language name or ID"
-            inputProps={{ 'aria-label': 'Search languages' }}
             value={searchTerm}
             onChange={(event) => {
               resetToFirstPage()
@@ -298,12 +400,16 @@ export function LanguageList(): ReactElement {
             }}
             size="small"
             sx={{ width: { xs: '100%', sm: 360 } }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" />
-                </InputAdornment>
-              )
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                )
+              },
+
+              htmlInput: { 'aria-label': 'Search languages' }
             }}
           />
           <TextField
@@ -321,6 +427,7 @@ export function LanguageList(): ReactElement {
             <MenuItem value="yes">Yes</MenuItem>
             <MenuItem value="no">No</MenuItem>
           </TextField>
+          <WessImportButton onImportComplete={() => void refetch()} />
         </Stack>
 
         <Box sx={{ flex: '1 1 auto', minHeight: { xs: 360, sm: 420 } }}>
@@ -330,11 +437,12 @@ export function LanguageList(): ReactElement {
               rows={rows}
               columns={columns}
               rowCount={data?.adminLanguagesCount ?? 0}
-              loading={loading}
+              loading={loading || linkedFilmsLoading}
               paginationMode="server"
               disableColumnFilter
               paginationModel={paginationModel}
               onPaginationModelChange={handlePaginationModelChange}
+              getRowHeight={() => 'auto'}
               pageSizeOptions={[25, 50, 100]}
               onRowClick={(params) => router.push(`/languages/${params.id}`)}
               disableRowSelectionOnClick
@@ -357,3 +465,5 @@ export function LanguageList(): ReactElement {
     </Stack>
   )
 }
+
+export { GET_LANGUAGE_STUDIO_MANAGED_FILMS }

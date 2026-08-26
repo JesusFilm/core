@@ -32,11 +32,16 @@ export function SourceFromMux({
           Icon={VideoOnIcon}
         />
       </Box>
-      <Box flexGrow={1} minWidth={0}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          minWidth: 0
+        }}
+      >
         <Typography
           variant="subtitle2"
-          color="text.secondary"
           sx={{
+            color: 'text.secondary',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             overflow: 'hidden'
@@ -47,8 +52,12 @@ export function SourceFromMux({
 
         <Typography
           variant="caption"
-          color="text.secondary"
+          // variant="caption" renders as an inline <span>, where overflow and
+          // text-overflow have no effect. Block-level so the truncation below
+          // actually applies.
           sx={{
+            color: 'text.secondary',
+            display: 'block',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             overflow: 'hidden'

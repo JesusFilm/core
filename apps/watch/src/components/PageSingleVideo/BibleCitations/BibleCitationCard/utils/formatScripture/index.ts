@@ -1,1 +1,0 @@
-export { formatScripture } from './formatScripture'

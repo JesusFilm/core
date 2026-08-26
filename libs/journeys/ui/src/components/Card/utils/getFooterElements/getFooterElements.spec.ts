@@ -20,7 +20,7 @@ describe('getFooterElements', () => {
   describe('hasReactions', () => {
     it('should return false by default', () => {
       expect(
-        hasReactions({ journey: defaultJourney, variant: undefined })
+        hasReactions({ journey: defaultJourney, renderMode: undefined })
       ).toBe(false)
     })
 
@@ -28,7 +28,7 @@ describe('getFooterElements', () => {
       expect(
         hasReactions({
           journey: { ...defaultJourney, showShareButton: true },
-          variant: undefined
+          renderMode: undefined
         })
       ).toBe(true)
     })
@@ -37,7 +37,7 @@ describe('getFooterElements', () => {
       expect(
         hasReactions({
           journey: { ...defaultJourney, showLikeButton: true },
-          variant: undefined
+          renderMode: undefined
         })
       ).toBe(true)
     })
@@ -46,17 +46,17 @@ describe('getFooterElements', () => {
       expect(
         hasReactions({
           journey: { ...defaultJourney, showDislikeButton: true },
-          variant: undefined
+          renderMode: undefined
         })
       ).toBe(true)
     })
   })
 
   describe('hasHostAvatar', () => {
-    it('should return true is variant is admin', () => {
+    it('should return true if render mode is admin', () => {
       expect(
         hasHostAvatar({
-          variant: 'admin'
+          renderMode: 'admin'
         })
       ).toBe(true)
     })
@@ -127,10 +127,10 @@ describe('getFooterElements', () => {
       expect(hasChatWidget({ journey: defaultJourney })).toBe(false)
     })
 
-    it('should return true if variant is admin', () => {
-      expect(hasChatWidget({ journey: defaultJourney, variant: 'admin' })).toBe(
-        true
-      )
+    it('should return true if render mode is admin', () => {
+      expect(
+        hasChatWidget({ journey: defaultJourney, renderMode: 'admin' })
+      ).toBe(true)
     })
 
     it('should return true if journey has chat widgets', () => {
@@ -148,7 +148,7 @@ describe('getFooterElements', () => {
               }
             ]
           },
-          variant: 'default'
+          renderMode: 'default'
         })
       ).toBe(true)
     })
@@ -226,7 +226,7 @@ describe('getFooterElements', () => {
             ...defaultJourney,
             showShareButton: true
           },
-          variant: 'admin'
+          renderMode: 'admin'
         })
       ).toBe(false)
     })

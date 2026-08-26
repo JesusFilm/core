@@ -1,4 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -144,7 +145,7 @@ describe('DuplicateJourneys', () => {
                 },
                 status: JourneyStatus.draft
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <TeamProvider>
@@ -155,7 +156,8 @@ describe('DuplicateJourneys', () => {
             </TeamProvider>
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await waitFor(() => expect(result2).toHaveBeenCalled())
     await fireEvent.click(getByRole('menuitem', { name: 'Duplicate' }))
@@ -243,7 +245,8 @@ describe('DuplicateJourneys', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await waitFor(() => expect(result2).toHaveBeenCalled())
     await fireEvent.click(getByRole('menuitem', { name: 'Duplicate' }))
@@ -369,7 +372,7 @@ describe('DuplicateJourneys', () => {
                 },
                 status: JourneyStatus.draft
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <TeamProvider>
@@ -380,7 +383,8 @@ describe('DuplicateJourneys', () => {
             </TeamProvider>
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await waitFor(() => expect(result2).toHaveBeenCalled())
     await fireEvent.click(getByRole('menuitem', { name: 'Duplicate' }))
@@ -549,7 +553,8 @@ describe('DuplicateJourneys', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await waitFor(() => expect(result2).toHaveBeenCalled())
     await fireEvent.click(getByRole('menuitem', { name: 'Duplicate' }))
@@ -674,7 +679,7 @@ describe('DuplicateJourneys', () => {
                 },
                 status: JourneyStatus.draft
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <TeamProvider>
@@ -685,7 +690,8 @@ describe('DuplicateJourneys', () => {
             </TeamProvider>
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     fireEvent.click(getByRole('menuitem'))
     expect(getByText('Copy to Another Team')).toBeInTheDocument()
@@ -784,7 +790,7 @@ describe('DuplicateJourneys', () => {
                 },
                 status: JourneyStatus.draft
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <TeamProvider>
@@ -796,7 +802,8 @@ describe('DuplicateJourneys', () => {
             </TeamProvider>
           </JourneyProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => expect(result2).toHaveBeenCalled())

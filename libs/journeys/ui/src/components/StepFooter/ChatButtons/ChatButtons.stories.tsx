@@ -7,7 +7,7 @@ import {
   JourneyFields_chatButtons as ChatButton,
   JourneyFields as Journey
 } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { simpleComponentConfig } from '../../../libs/simpleComponentConfig'
+import { simpleComponentConfig } from '../../../test/simpleComponentConfig'
 
 import { ChatButtons } from '.'
 
@@ -36,7 +36,7 @@ const Template: Story = {
               },
               chatButtons
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <ChatButtons />

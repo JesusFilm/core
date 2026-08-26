@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
@@ -61,7 +62,7 @@ describe('DeleteBlock', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey-id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
@@ -71,7 +72,8 @@ describe('DeleteBlock', () => {
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
     expect(screen.getByRole('button')).toContainElement(
       screen.getByTestId('Trash2Icon')
@@ -111,7 +113,7 @@ describe('DeleteBlock', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey-id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
@@ -121,7 +123,8 @@ describe('DeleteBlock', () => {
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
     await userEvent.click(
       screen.getByRole('menuitem', { name: 'Delete Block' })
@@ -166,7 +169,7 @@ describe('DeleteBlock', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey-id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
@@ -176,7 +179,8 @@ describe('DeleteBlock', () => {
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
 
     expect(screen.getByRole('button')).toContainElement(
@@ -222,7 +226,7 @@ describe('DeleteBlock', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey-id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
@@ -232,15 +236,13 @@ describe('DeleteBlock', () => {
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
 
     await userEvent.click(screen.getByRole('menuitem', { name: 'Delete Card' }))
     await waitFor(() => expect(deleteCardResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([])
-    await waitFor(() =>
-      expect(screen.queryByRole('menu')).not.toBeInTheDocument()
-    )
     await waitFor(() =>
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     )
@@ -254,7 +256,8 @@ describe('DeleteBlock', () => {
             <DeleteBlock variant="button" />
           </MuxVideoUploadProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
     expect(screen.getByRole('button')).toBeDisabled()
   })
@@ -267,7 +270,8 @@ describe('DeleteBlock', () => {
             <DeleteBlock variant="button" disabled />
           </MuxVideoUploadProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
     expect(screen.getByRole('button')).toBeDisabled()
   })
@@ -348,7 +352,7 @@ describe('DeleteBlock', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey-id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -365,7 +369,8 @@ describe('DeleteBlock', () => {
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
     await userEvent.click(screen.getByRole('menuitem', { name: 'Delete Card' }))
 
@@ -419,7 +424,7 @@ describe('DeleteBlock', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey-id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
@@ -430,15 +435,13 @@ describe('DeleteBlock', () => {
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
     // delete the card
     await userEvent.click(screen.getByRole('menuitem', { name: 'Delete Card' }))
     await waitFor(() => expect(deleteCardResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([])
-    await waitFor(() =>
-      expect(screen.queryByRole('menu')).not.toBeInTheDocument()
-    )
     await waitFor(() =>
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     )

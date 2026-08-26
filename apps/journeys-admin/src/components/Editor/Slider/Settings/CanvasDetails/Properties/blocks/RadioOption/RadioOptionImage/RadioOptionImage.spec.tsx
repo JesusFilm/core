@@ -272,7 +272,7 @@ describe('RadioOptionImage', () => {
           radioOptionImageRestoreMock
         ]}
       >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <SnackbarProvider>
             <CommandProvider>
               <RadioOptionImage radioOptionBlock={radioOption} />
@@ -400,7 +400,7 @@ describe('RadioOptionImage', () => {
             radioOptionImageUpdateMock
           ]}
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <SnackbarProvider>
               <CommandProvider>
                 <RadioOptionImage radioOptionBlock={existingImageRadioOption} />
@@ -457,7 +457,7 @@ describe('RadioOptionImage', () => {
       })
       render(
         <MockedProvider cache={cache} mocks={[radioOptionImageDeleteMock]}>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <SnackbarProvider>
               <CommandProvider>
                 <RadioOptionImage radioOptionBlock={existingImageRadioOption} />
@@ -507,7 +507,7 @@ describe('RadioOptionImage', () => {
             radioOptionImageRestoreMock
           ]}
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <SnackbarProvider>
               <CommandProvider>
                 <RadioOptionImage radioOptionBlock={existingImageRadioOption} />
@@ -565,7 +565,7 @@ describe('RadioOptionImage', () => {
             radioOptionImageDeleteMock
           ]}
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <SnackbarProvider>
               <CommandProvider>
                 <RadioOptionImage radioOptionBlock={existingImageRadioOption} />

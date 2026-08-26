@@ -7,14 +7,16 @@ import { validateEmail } from './validateEmail'
 
 vi.mock('bullmq', () => ({
   __esModule: true,
-  Queue: vi.fn().mockImplementation(() => ({
-    add: vi.fn(),
-    getJob: vi
-      .fn()
-      .mockImplementation((jobId: string) =>
-        jobId === 'userId' ? { data: { token: 'token' } } : null
-      )
-  }))
+  Queue: vi.fn(function () {
+    return {
+      add: vi.fn(),
+      getJob: vi
+        .fn()
+        .mockImplementation((jobId: string) =>
+          jobId === 'userId' ? { data: { token: 'token' } } : null
+        )
+    }
+  })
 }))
 
 vi.mock('firebase-admin/auth', () => ({

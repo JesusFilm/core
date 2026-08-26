@@ -15,7 +15,7 @@ import type {
 } from '../../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 import type { VideoBlockCreate } from '../../../../../../../../__generated__/VideoBlockCreate'
-import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import { blockCreateUpdate } from '../../../../../../../libs/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
@@ -47,7 +47,7 @@ export function NewVideoButton({
   function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
-    ) as TreeBlock<CardBlock> | undefined
+    )
 
     if (card == null || journey == null) return
 

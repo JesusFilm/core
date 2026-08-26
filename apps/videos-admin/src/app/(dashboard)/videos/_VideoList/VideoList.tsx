@@ -22,6 +22,7 @@ import {
   GridValidRowModel,
   MuiEvent,
   getGridBooleanOperators,
+  getGridSingleSelectOperators,
   getGridStringOperators,
   gridClasses,
   useGridApiContext
@@ -35,6 +36,7 @@ import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 import Lock1 from '@core/shared/ui/icons/Lock1'
 
 import { PublishedChip } from '../../../../components/PublishedChip'
+import { videoLabels } from '../../../../constants'
 import { useVideoFilter } from '../../../../libs/useVideoFilter'
 
 import { VideoListHeader } from './_VideoListHeader'
@@ -79,6 +81,7 @@ export const GET_ADMIN_VIDEOS_AND_COUNT = graphql(`
   ) {
     adminVideos(limit: $limit, offset: $offset, where: $where) {
       id
+      label
       locked
       title @include(if: $showTitle) {
         primary
@@ -302,6 +305,7 @@ export function VideoList(): ReactElement {
       const description = video?.snippet?.find(({ primary }) => primary)?.value
       return {
         id: video.id,
+        label: video.label,
         title,
         description,
         published: video.published,
@@ -333,6 +337,19 @@ export function VideoList(): ReactElement {
       minWidth: 200,
       filterOperators: getGridStringOperators().filter(
         (operator) => operator.value === 'equals'
+      )
+    },
+    {
+      field: 'label',
+      headerName: 'Label',
+      width: 140,
+      type: 'singleSelect',
+      valueOptions: videoLabels.map(({ label, value }) => ({
+        label,
+        value
+      })),
+      filterOperators: getGridSingleSelectOperators().filter(
+        (operator) => operator.value === 'is'
       )
     },
     {
@@ -682,7 +699,13 @@ export function VideoList(): ReactElement {
   }
 
   return (
-    <Stack sx={{ height: 'calc(100vh - 150px)', width: '100%' }} gap={2}>
+    <Stack
+      sx={{
+        gap: 2,
+        height: 'calc(100vh - 150px)',
+        width: '100%'
+      }}
+    >
       <VideoListHeader />
       <DataGrid
         getRowClassName={(params) =>

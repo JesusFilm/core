@@ -21,7 +21,7 @@ import Play3Icon from '@core/shared/ui/icons/Play3'
 import { NotificationSwitch } from '../../../../AccessDialog/NotificationSwitch'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem'
 import { useIntegrationGoogleCreate } from '../../../../Google/GoogleCreateIntegration/libs/useIntegrationGoogleCreate'
-import { GoogleSheetsSyncDialog } from '../../../../JourneyVisitorsList/FilterDrawer/GoogleSheetsSyncDialog/GoogleSheetsSyncDialog'
+import { GoogleSheetsSyncDialog } from '../../../../JourneyVisitorsList/GoogleSheetsSyncDialog'
 import { ScreenWrapper } from '../ScreenWrapper'
 
 export const GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN = gql`
@@ -207,8 +207,10 @@ export function DoneScreen(): ReactElement {
             {isEmailResponseEnabled && (
               <Stack
                 direction="row"
-                justifyContent="space-between"
-                alignItems="center"
+                sx={{
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}
               >
                 <Typography variant="body2">{t('Send to my email')}</Typography>
                 <NotificationSwitch journeyId={journey?.id} />
@@ -216,8 +218,10 @@ export function DoneScreen(): ReactElement {
             )}
             <Stack
               direction="row"
-              justifyContent="space-between"
-              alignItems="center"
+              sx={{
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
             >
               <Typography variant="body2">
                 {t('Sync to Google Sheets')}

@@ -91,7 +91,12 @@ export function ExistingVideoByIdSelector({
         <Box sx={{ mt: 2, p: 2, bgcolor: 'background.paper', borderRadius: 1 }}>
           <Typography variant="subtitle1">Video found:</Typography>
           <Typography variant="body1">{videoTitle || 'Untitled'}</Typography>
-          <Typography variant="caption" color="text.secondary">
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary'
+            }}
+          >
             ID: {data.adminVideo.id}
           </Typography>
         </Box>

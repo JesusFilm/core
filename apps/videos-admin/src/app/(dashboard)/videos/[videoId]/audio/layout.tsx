@@ -314,7 +314,12 @@ export default function ClientLayout({
           }}
         >
           <CircularProgress size={40} />
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary'
+            }}
+          >
             Loading audio languages...
           </Typography>
         </Box>
@@ -336,7 +341,12 @@ export default function ClientLayout({
             gap: 2
           }}
         >
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary'
+            }}
+          >
             No audio languages found
           </Typography>
         </Box>
@@ -469,9 +479,11 @@ export default function ClientLayout({
         {/* Custom header with both buttons */}
         <Stack
           direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ mb: 2 }}
+          sx={{
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 2
+          }}
         >
           <Typography variant="h6" component="h2">
             Audio Languages

@@ -156,7 +156,7 @@ describe('CollectionCard', () => {
     )
     const dialog = screen.getByTestId('CollectionUngroupDialog')
     expect(
-      within(dialog).getByText('Remove this collection?')
+      within(dialog).getByText('Remove this Collection?')
     ).toBeInTheDocument()
     await userEvent.click(
       within(dialog).getByRole('button', { name: 'Remove' })
@@ -178,7 +178,7 @@ describe('CollectionCard', () => {
       screen.getByRole('menuitem', { name: 'Remove Collection' })
     )
     expect(
-      screen.getByText('Any public URL for this collection will return 404.')
+      screen.getByText('Any public URL for this Collection will return 404.')
     ).toBeInTheDocument()
   })
 
@@ -191,7 +191,7 @@ describe('CollectionCard', () => {
 
   it('renders a Preview menu item that opens the proxy URL in a new tab when published', async () => {
     const originalOpen = window.open
-    window.open = vi.fn() as unknown as typeof window.open
+    window.open = vi.fn()
     try {
       render(
         <CollectionCard
@@ -277,16 +277,15 @@ describe('CollectionCard', () => {
     )
   })
 
-  it('renders empty-state caption when there are no templates and children otherwise', () => {
+  it('renders children even when the collection is empty (NES-1703)', () => {
+    // The grid's always-present DropPlaceholderTile is the empty-state
+    // drop affordance now — no more caption swap.
     const { rerender } = render(
       <CollectionCard collection={makeCollection()}>
         <div data-testid="children-payload" />
       </CollectionCard>
     )
-    expect(
-      screen.getByText('Drag templates here to add them to this collection.')
-    ).toBeInTheDocument()
-    expect(screen.queryByTestId('children-payload')).not.toBeInTheDocument()
+    expect(screen.getByTestId('children-payload')).toBeInTheDocument()
 
     rerender(
       <CollectionCard
@@ -295,9 +294,6 @@ describe('CollectionCard', () => {
         <div data-testid="children-payload" />
       </CollectionCard>
     )
-    expect(
-      screen.queryByText('Drag templates here to add them to this collection.')
-    ).not.toBeInTheDocument()
     expect(screen.getByTestId('children-payload')).toBeInTheDocument()
   })
 

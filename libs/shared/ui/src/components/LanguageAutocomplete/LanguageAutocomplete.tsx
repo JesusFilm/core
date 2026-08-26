@@ -17,13 +17,19 @@ import {
 } from 'react'
 import { List } from 'react-window'
 
-import { extractLanguageNames } from '../../libs/extractLanguageNames'
+import {
+  extractLanguageNames,
+  isTwoLineOption
+} from '../../libs/extractLanguageNames'
 import type { Translation } from '../../libs/extractLanguageNames'
 import { ResizeObserverPolyfill } from '../ResizeObserverPolyfill'
 
 import { defaultRenderOption } from './defaultRenderOption'
 
 export type { Translation }
+
+const SINGLE_LINE_ROW_HEIGHT = 45
+const TWO_LINE_ROW_HEIGHT = 68
 
 export interface Language {
   id: string
@@ -52,6 +58,11 @@ export interface LanguageAutocompleteProps {
   disableSort?: boolean
 }
 
+/**
+ * Searchable, virtualized language picker. Renders one line for a
+ * single-name option and two lines (local + native name) for a bilingual
+ * one, sizing each row to match via `getRowHeight` below.
+ */
 export function LanguageAutocomplete({
   onChange: handleChange,
   value,
@@ -119,15 +130,18 @@ export function LanguageAutocomplete({
       variant="filled"
       helperText={helperText}
       error={error}
-      InputProps={{
-        ...params.InputProps,
-        sx: { paddingBottom: 2 },
-        endAdornment: (
-          <>
-            {loading ? <CircularProgress color="inherit" size={20} /> : null}
-            {params.InputProps.endAdornment}
-          </>
-        )
+      slotProps={{
+        ...params.slotProps,
+        input: {
+          ...params.slotProps.input,
+          sx: { paddingBottom: 2 },
+          endAdornment: (
+            <>
+              {loading ? <CircularProgress color="inherit" size={20} /> : null}
+              {params.slotProps.input.endAdornment}
+            </>
+          )
+        }
       }}
     />
   )
@@ -155,7 +169,19 @@ export function LanguageAutocomplete({
     )
 
     const itemCount = itemData.length
-    const itemSize = 45
+    /** Two-line options need a taller row than single-line ones. */
+    const getRowHeight = (index: number): number => {
+      const option = (
+        itemData[index] as unknown as [unknown, LanguageOption]
+      )?.[1]
+      return option != null && isTwoLineOption(option)
+        ? TWO_LINE_ROW_HEIGHT
+        : SINGLE_LINE_ROW_HEIGHT
+    }
+    const totalHeight = itemData.reduce(
+      (sum: number, _item, index) => sum + getRowHeight(index),
+      0
+    )
     return (
       <Box ref={ref} {...other}>
         <ResizeObserverPolyfill />
@@ -166,11 +192,11 @@ export function LanguageAutocomplete({
               : (defaultRenderOption as any)
           }
           rowCount={itemCount}
-          rowHeight={itemSize}
+          rowHeight={getRowHeight}
           rowProps={{ rows: itemData }}
           overscanCount={5}
           style={{
-            height: Math.min(itemCount * itemSize + 10, smUp ? 400 : 200),
+            height: Math.min(totalHeight + 10, smUp ? 400 : 200),
             width: '100%'
           }}
         />

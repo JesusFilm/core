@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import MenuList from '@mui/material/MenuList'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type Mock, type MockedFunction } from 'vitest'
@@ -152,22 +153,22 @@ const assignHookMock =
 function setupMocks(): void {
   duplicate = vi.fn(async () => ({
     data: { journeyDuplicate: { id: 'new-journey-id' } }
-  })) as DuplicateFn
-  assign = vi.fn(async () => ({})) as AssignFn
+  }))
+  assign = vi.fn(async () => ({}))
 
   duplicateHookMock.mockReturnValue([
     duplicate as unknown as never,
     {} as never
   ])
   assignHookMock.mockReturnValue([assign as unknown as never, {} as never])
-  subscriptionHookMock.mockImplementation(((
-    opts: typeof lastSubscriptionOpts
-  ) => {
-    lastSubscriptionOpts = opts
-    return { data: undefined } as unknown as ReturnType<
-      typeof useJourneyAiTranslateSubscription
-    >
-  }) as unknown as typeof useJourneyAiTranslateSubscription)
+  subscriptionHookMock.mockImplementation(
+    (opts: typeof lastSubscriptionOpts) => {
+      lastSubscriptionOpts = opts
+      return { data: undefined } as unknown as ReturnType<
+        typeof useJourneyAiTranslateSubscription
+      >
+    }
+  )
 }
 
 function renderItem(
@@ -199,7 +200,8 @@ function renderItem(
           />
         </SnackbarProvider>
       </ThemeProvider>
-    </MockedProvider>
+    </MockedProvider>,
+    { wrapper: MenuList }
   )
   return { handleCloseMenu, setHasOpenDialog, handleKeepMounted, unmount }
 }

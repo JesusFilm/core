@@ -63,11 +63,6 @@ const nextConfig = {
         permanent: false
       },
       {
-        source: '/bin/jf/watch.html/:videoId/:languageId',
-        destination: '/api/jf/watch.html/:videoId/:languageId',
-        permanent: false
-      },
-      {
         source: '/watch/easter',
         destination: '/watch/easter.html/english.html',
         permanent: true

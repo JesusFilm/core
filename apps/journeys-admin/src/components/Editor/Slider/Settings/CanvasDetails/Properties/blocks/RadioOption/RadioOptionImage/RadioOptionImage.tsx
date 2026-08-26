@@ -242,7 +242,7 @@ export function RadioOptionImage({
             }
           },
           update(cache, { data }) {
-            blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
+            blockDeleteUpdate(cache, journey.id, block, data?.blockDelete)
           }
         })
       },
@@ -359,7 +359,7 @@ export function RadioOptionImage({
             }
           },
           update(cache, { data }) {
-            blockDeleteUpdate(imageBlock, data?.blockDelete, cache, journey.id)
+            blockDeleteUpdate(cache, journey.id, imageBlock, data?.blockDelete)
           }
         })
       },
@@ -412,7 +412,12 @@ export function RadioOptionImage({
   }
 
   return (
-    <Stack gap={4} sx={{ px: 4 }}>
+    <Stack
+      sx={{
+        gap: 4,
+        px: 4
+      }}
+    >
       <ImageSource
         selectedBlock={
           imageBlock?.__typename === 'ImageBlock' ? imageBlock : null

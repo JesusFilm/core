@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { print } from 'graphql'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -69,6 +70,18 @@ describe('LocalDetails', () => {
       }
     }
   }
+
+  it('should request the variant without a published-only filter', () => {
+    // variantLanguages (below) has no publish filter, so the language picker
+    // already lists unpublished languages. If variant(languageId:) reverts to
+    // its published-only default, it resolves null for exactly those
+    // languages, duration/hls fall back to empty, and commitSelection writes
+    // a zero-length clip (see LocalDetails.tsx variant() usage). Pinning the
+    // literal query argument here fails loudly on that regression, since the
+    // MockedProvider tests below cannot: they import GET_VIDEO directly, so
+    // they'd match a reverted query just as happily.
+    expect(print(GET_VIDEO)).toContain('onlyPublished: false')
+  })
 
   it('should render details of a video', async () => {
     const { getByText, getByRole } = render(
@@ -224,6 +237,27 @@ describe('LocalDetails', () => {
     expect(getByRole('button', { name: 'Select' })).toBeDisabled()
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(getByRole('button', { name: 'Select' })).not.toBeDisabled()
+  })
+
+  it('should pin the select button width so a long language name cannot squeeze it', async () => {
+    const result = vi.fn().mockReturnValue(getVideoMock.result)
+    render(
+      <MockedProvider mocks={[{ ...getVideoMock, result }]}>
+        <LocalDetails id="2_Acts7302-0-0" open onSelect={vi.fn()} />
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    // The chip label is an arbitrarily long language name, so the chip must be
+    // the flex item that gives way. Without flexShrink: 0 the Select button
+    // collapses to MUI's 64px min-width floor and its label wraps onto two
+    // lines — visible in CJK locales, where text can break between characters.
+    //
+    // Only the button is asserted: jsdom reports min-width as 0px by default,
+    // so an equivalent assertion on the chip would pass whether or not the
+    // style is present. The chip side is verified visually in Storybook.
+    expect(screen.getByRole('button', { name: 'Select' })).toHaveStyle({
+      flexShrink: 0
+    })
   })
 
   it('should commit the language change and close the picker when Apply is clicked', async () => {

@@ -151,6 +151,60 @@ describe('Details', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
+  it.each([
+    ['mailto:eli.perez@jesusfilm.org', 'mailto:eli.perez@jesusfilm.org'],
+    ['eli.perez@jesusfilm.org', 'mailto:eli.perez@jesusfilm.org']
+  ])(
+    'should save %s as %s rather than prefixing https',
+    async (typed, saved) => {
+      const props = {
+        ...defaultProps,
+        currentPlatform: MessagePlatform.mail1
+      }
+
+      const result = vi.fn(() => ({
+        data: {
+          chatButtonUpdate: {
+            __typename: 'ChatButton' as const,
+            id: 'chat.id',
+            link: saved,
+            platform: MessagePlatform.mail1,
+            customizable: null
+          }
+        }
+      }))
+
+      const { getByRole } = render(
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: JOURNEY_CHAT_BUTTON_UPDATE,
+                variables: {
+                  chatButtonUpdateId: 'chat.id',
+                  journeyId: 'journeyId',
+                  input: { link: saved }
+                }
+              },
+              result
+            }
+          ]}
+        >
+          <SnackbarProvider>
+            <CommandProvider>
+              <Details {...props} />
+            </CommandProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      fireEvent.change(getByRole('textbox'), { target: { value: typed } })
+      fireEvent.blur(getByRole('textbox'))
+
+      await waitFor(() => expect(result).toHaveBeenCalled())
+    }
+  )
+
   it('should update platform', async () => {
     const props = {
       ...defaultProps,
@@ -393,7 +447,7 @@ describe('Details', () => {
         <MockedProvider>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: templateJourney, variant: 'admin' }}
+              value={{ journey: templateJourney, renderMode: 'admin' }}
             >
               <CommandProvider>
                 <Details {...defaultProps} currentCustomizable={false} />
@@ -404,7 +458,7 @@ describe('Details', () => {
       )
 
       expect(
-        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+        screen.getByRole('switch', { name: 'Toggle customizable' })
       ).toBeInTheDocument()
       expect(screen.getByText('Needs Customization')).toBeInTheDocument()
     })
@@ -414,7 +468,7 @@ describe('Details', () => {
         <MockedProvider>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: nonTemplateJourney, variant: 'admin' }}
+              value={{ journey: nonTemplateJourney, renderMode: 'admin' }}
             >
               <CommandProvider>
                 <Details {...defaultProps} currentCustomizable={false} />
@@ -435,7 +489,7 @@ describe('Details', () => {
         <MockedProvider>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: templateJourney, variant: 'admin' }}
+              value={{ journey: templateJourney, renderMode: 'admin' }}
             >
               <CommandProvider>
                 <Details
@@ -488,7 +542,7 @@ describe('Details', () => {
         <MockedProvider mocks={[mock]}>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: templateJourney, variant: 'admin' }}
+              value={{ journey: templateJourney, renderMode: 'admin' }}
             >
               <CommandProvider>
                 <Details {...defaultProps} currentCustomizable={false} />
@@ -498,7 +552,7 @@ describe('Details', () => {
         </MockedProvider>
       )
 
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       expect(toggle).not.toBeChecked()
@@ -565,7 +619,7 @@ describe('Details', () => {
         <MockedProvider mocks={[executeMock, undoMock]}>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: templateJourney, variant: 'admin' }}
+              value={{ journey: templateJourney, renderMode: 'admin' }}
             >
               <CommandProvider>
                 <Details {...defaultProps} currentCustomizable={false} />
@@ -577,7 +631,7 @@ describe('Details', () => {
       )
 
       fireEvent.click(
-        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+        screen.getByRole('switch', { name: 'Toggle customizable' })
       )
       await waitFor(() => expect(executeResult).toHaveBeenCalled())
 
@@ -667,7 +721,7 @@ describe('Details', () => {
         <MockedProvider mocks={[executeMock, undoMock, redoMock]}>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: templateJourney, variant: 'admin' }}
+              value={{ journey: templateJourney, renderMode: 'admin' }}
             >
               <CommandProvider>
                 <Details {...defaultProps} currentCustomizable={false} />
@@ -680,7 +734,7 @@ describe('Details', () => {
       )
 
       fireEvent.click(
-        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+        screen.getByRole('switch', { name: 'Toggle customizable' })
       )
       await waitFor(() => expect(executeResult).toHaveBeenCalled())
 
@@ -696,7 +750,7 @@ describe('Details', () => {
         <MockedProvider>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: templateJourney, variant: 'admin' }}
+              value={{ journey: templateJourney, renderMode: 'admin' }}
             >
               <CommandProvider>
                 <Details {...defaultProps} currentCustomizable={true} />
@@ -706,7 +760,7 @@ describe('Details', () => {
         </MockedProvider>
       )
 
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       expect(toggle).toBeChecked()

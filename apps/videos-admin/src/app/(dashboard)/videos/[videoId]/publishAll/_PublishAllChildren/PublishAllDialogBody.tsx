@@ -41,21 +41,41 @@ export function PublishAllDialogBody({
       <Typography variant="body1">
         Choose a publish mode for this parent and its unpublished children.
       </Typography>
-      <Typography variant="body2" color="text.secondary">
+      <Typography
+        variant="body2"
+        sx={{
+          color: 'text.secondary'
+        }}
+      >
         • <strong>Publish Videos Only</strong> (<code>childrenVideosOnly</code>
         ): publishes validated videos only (parent + unpublished children). No
         audio language variants are published.
       </Typography>
-      <Typography variant="body2" color="text.secondary">
+      <Typography
+        variant="body2"
+        sx={{
+          color: 'text.secondary'
+        }}
+      >
         • <strong>Publish Videos and Audio Languages</strong> (
         <code>childrenVideosAndVariants</code>): publishes validated videos and
         all unpublished audio language variants attached to those videos.
       </Typography>
-      <Typography variant="body2" color="text.secondary">
+      <Typography
+        variant="body2"
+        sx={{
+          color: 'text.secondary'
+        }}
+      >
         Dry run previews counts and validation failures without writing to the
         database.
       </Typography>
-      <Typography variant="body2" color="text.secondary">
+      <Typography
+        variant="body2"
+        sx={{
+          color: 'text.secondary'
+        }}
+      >
         Current draft scope: {unpublishedChildrenCount} unpublished child
         video(s) and {allUnpublishedVariantsCount} unpublished variant(s).
       </Typography>
@@ -140,7 +160,12 @@ export function PublishAllDialogBody({
           </Tooltip>
         </Stack>
 
-        <Stack direction="row" justifyContent="flex-end">
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: 'flex-end'
+          }}
+        >
           <Button onClick={onClose} color="primary" variant="text">
             Cancel
           </Button>

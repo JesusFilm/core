@@ -97,8 +97,19 @@ export function PasswordPage({
       >
         {({ values, handleChange, handleBlur, errors, touched }) => (
           <Form>
-            <Stack gap={4} data-testid="PasswordPage">
-              <Typography variant="h6" textAlign="left" sx={{ mb: 2 }}>
+            <Stack
+              data-testid="PasswordPage"
+              sx={{
+                gap: 4
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{
+                  textAlign: 'left',
+                  mb: 2
+                }}
+              >
                 {t('Sign in')}
               </Typography>
               <TextField
@@ -106,7 +117,7 @@ export function PasswordPage({
                 type="email"
                 autoComplete="username"
                 name="email"
-                label="Email"
+                label={t('Email')}
                 placeholder={t('Enter your email address here')}
                 variant="filled"
                 value={values.email}
@@ -122,7 +133,7 @@ export function PasswordPage({
               <TextField
                 autoComplete="current-password"
                 name="password"
-                label="Password"
+                label={t('Password')}
                 placeholder={t('Enter Password')}
                 variant="filled"
                 value={values.password}
@@ -136,18 +147,20 @@ export function PasswordPage({
                 fullWidth
                 id="current-password"
                 type={showPassword ? 'text' : 'password'}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  )
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }
                 }}
               />
               <Button

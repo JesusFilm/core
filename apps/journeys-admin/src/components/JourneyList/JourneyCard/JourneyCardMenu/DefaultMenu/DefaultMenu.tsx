@@ -270,6 +270,7 @@ export function DefaultMenu({
             variant="menu-item"
             globalPublish={false}
             handleCloseMenu={handleCloseMenu}
+            handleKeepMounted={handleKeepMounted}
             journey={journey}
           />
           {isPublisher === true && (
@@ -277,6 +278,7 @@ export function DefaultMenu({
               variant="menu-item"
               globalPublish={true}
               handleCloseMenu={handleCloseMenu}
+              handleKeepMounted={handleKeepMounted}
               journey={journey}
             />
           )}

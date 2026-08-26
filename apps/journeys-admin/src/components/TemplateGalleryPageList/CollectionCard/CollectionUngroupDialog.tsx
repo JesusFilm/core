@@ -24,7 +24,7 @@ export function CollectionUngroupDialog({
       open={open}
       onClose={onClose}
       dialogTitle={{
-        title: t('Remove this collection?'),
+        title: t('Remove this Collection?'),
         closeButton: true
       }}
       dialogAction={{
@@ -37,12 +37,16 @@ export function CollectionUngroupDialog({
       <Stack spacing={2}>
         <Typography>
           {t(
-            'Removing this collection returns its templates to the flat list.'
+            'Removing this Collection returns its Templates to the flat list.'
           )}
         </Typography>
         {wasPublished && (
-          <Typography color="text.secondary">
-            {t('Any public URL for this collection will return 404.')}
+          <Typography
+            sx={{
+              color: 'text.secondary'
+            }}
+          >
+            {t('Any public URL for this Collection will return 404.')}
           </Typography>
         )}
       </Stack>
