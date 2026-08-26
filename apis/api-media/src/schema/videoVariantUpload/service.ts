@@ -28,6 +28,7 @@ import {
   addLanguageToVideo,
   updateParentCollectionLanguages
 } from '../video/lib/updateAvailableLanguages'
+import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
 
 const FIVE_DAYS = 5 * 24 * 60 * 60
 
@@ -263,7 +264,7 @@ export async function createOrUpdateVideoVariant({
       duration: metadata.duration,
       lengthInMilliseconds: metadata.durationMs,
       muxVideoId,
-      published,
+      published: false,
       downloadable: true,
       version
     }
@@ -305,6 +306,15 @@ export async function createOrUpdateVideoVariant({
         }
       })
     }
+
+    await requestVideoVariantReconciliation({
+      videoVariantId: variant.id,
+      videoId,
+      languageId,
+      edition,
+      published,
+      reason: 'process-video-upload'
+    })
 
     return variant
   } catch (error) {
