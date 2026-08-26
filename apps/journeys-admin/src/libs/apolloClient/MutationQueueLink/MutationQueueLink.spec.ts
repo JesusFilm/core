@@ -1,23 +1,29 @@
-import { ApolloClient, ApolloLink, InMemoryCache, gql } from '@apollo/client'
+import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client'
+import { parse } from 'graphql'
 import { Observable } from 'rxjs'
 
 import { MutationQueueLink } from './MutationQueueLink'
 
-const MUTATION = gql`
-  mutation Save($id: ID!) {
+// Built with parse() rather than a graphql template tag, on purpose. The link
+// only cares whether an operation is a mutation or a query, so these documents
+// are deliberately synthetic. A tagged template would be picked up by
+// journeys-admin:codegen, which validates every tagged document against the
+// gateway schema and would reject fields that do not exist there.
+const MUTATION = parse(`
+  mutation MutationQueueLinkSave($id: ID!) {
     save(id: $id) {
       id
     }
   }
-`
+`)
 
-const QUERY = gql`
-  query Read {
+const QUERY = parse(`
+  query MutationQueueLinkRead {
     read {
       id
     }
   }
-`
+`)
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),

@@ -1,15 +1,19 @@
-import { ApolloClient, ApolloLink, InMemoryCache, gql } from '@apollo/client'
+import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client'
+import { parse } from 'graphql'
 import { Observable } from 'rxjs'
 
 import { DebounceLink } from './DebounceLink'
 
-const MUTATION = gql`
-  mutation Save($value: String!) {
+// Built with parse() rather than a graphql template tag — see the note in
+// MutationQueueLink.spec.ts: a tagged document would be validated against the
+// gateway schema by codegen, and this one is deliberately synthetic.
+const MUTATION = parse(`
+  mutation DebounceLinkSave($value: String!) {
     save(value: $value) {
       value
     }
   }
-`
+`)
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
