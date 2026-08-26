@@ -3,7 +3,7 @@ title: Make the codebase AI-friendly
 order: 2
 category: ai
 size: large
-status: Next
+status: Done
 effort: Large
 ---
 

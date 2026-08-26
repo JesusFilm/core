@@ -115,7 +115,7 @@ function RoadmapCard({
       }}
     >
       <Stack spacing={0.75} sx={{ minWidth: 0 }}>
-        <Stack direction="row" spacing={0.75} alignItems="center">
+        <Stack direction="row" spacing={0.75} sx={{ alignItems: 'center' }}>
           {inProgress && (
             <Box
               role="img"

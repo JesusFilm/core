@@ -3,7 +3,7 @@ title: Maintenance & tidy-up
 order: 5
 category: bug
 size: medium
-status: Later
+status: Next
 effort: Ongoing
 ---
 

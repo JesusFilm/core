@@ -3,7 +3,7 @@ title: Bug backlog cleanup
 order: 4
 category: bug
 size: medium
-status: Later
+status: Next
 effort: Ongoing
 ---
 

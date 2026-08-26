@@ -3,7 +3,7 @@ title: AI-assisted development pipeline
 order: 3
 category: ai
 size: large
-status: Next
+status: In progress
 effort: Large
 ---
 

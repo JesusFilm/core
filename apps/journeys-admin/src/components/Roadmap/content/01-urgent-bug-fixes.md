@@ -3,7 +3,7 @@ title: Urgent bug fixes
 order: 1
 category: bug
 size: medium
-status: In progress
+status: Done
 effort: Ongoing
 ---
 
