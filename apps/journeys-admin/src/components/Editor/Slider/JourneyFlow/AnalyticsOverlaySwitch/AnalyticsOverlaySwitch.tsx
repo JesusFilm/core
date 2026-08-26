@@ -1,4 +1,3 @@
-import Button from '@mui/material/Button'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
@@ -11,7 +10,6 @@ import { ReactElement, useMemo, useState } from 'react'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useJourneyAnalyticsQuery } from '@core/journeys/ui/useJourneyAnalyticsQuery'
-import FilterIcon from '@core/shared/ui/icons/Filter'
 
 import { DateRangePicker } from '../../../../JourneyVisitorsList/FilterDrawer/ExportDialog/DateRangePicker'
 
@@ -42,10 +40,11 @@ export function AnalyticsOverlaySwitch(): ReactElement {
   }, [journey?.createdAt])
 
   const [startDate, setStartDate] = useState<Date | null>(minSelectableDate)
-  const [showFilter, setShowFilter] = useState<boolean>(false)
   const [endDate, setEndDate] = useState<Date | null>(today)
   const [selectedPreset, setSelectedPreset] =
     useState<DateRangePresetId>('allTime')
+
+  const analyticsEnabled = showAnalytics === true
 
   const isDateRangeValid =
     startDate != null && endDate != null && startDate <= endDate
@@ -63,10 +62,7 @@ export function AnalyticsOverlaySwitch(): ReactElement {
       period: 'custom',
       date: formattedDateRange
     },
-    skip:
-      journey?.id == null ||
-      showAnalytics !== true ||
-      isDateRangeValid !== true,
+    skip: journey?.id == null || !analyticsEnabled || isDateRangeValid !== true,
     onCompleted: (analytics) => {
       dispatch({
         type: 'SetAnalyticsAction',
@@ -117,7 +113,7 @@ export function AnalyticsOverlaySwitch(): ReactElement {
         <FormControlLabel
           control={
             <Switch
-              checked={showAnalytics === true}
+              checked={analyticsEnabled}
               onChange={handleSwitchAnalytics}
             />
           }
@@ -128,40 +124,14 @@ export function AnalyticsOverlaySwitch(): ReactElement {
           }
           labelPlacement="start"
         />
-        {showAnalytics === true && <FilterIcon />}
-        {showAnalytics === true && !showFilter && (
-          <Button
-            variant="text"
-            color="secondary"
-            onClick={() => setShowFilter(true)}
-            sx={{
-              minWidth: 80
-            }}
-          >
-            <Typography
-              variant="subtitle2"
-              component="span"
-              sx={{
-                display: 'inline-block',
-                maxWidth: 200,
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                verticalAlign: 'bottom'
-              }}
-            >
-              {t('Filter')}
-            </Typography>
-          </Button>
-        )}
-        {showAnalytics === true && showFilter && (
+        {analyticsEnabled && (
           <AnalyticsOverlayDateRangeSelect
             value={selectedPreset}
             onChange={handlePresetChange}
           />
         )}
       </Stack>
-      {showAnalytics === true && selectedPreset === 'customRange' && (
+      {analyticsEnabled && selectedPreset === 'customRange' && (
         <DateRangePicker
           startDate={startDate}
           endDate={endDate}
