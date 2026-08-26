@@ -80,7 +80,14 @@ function RoadmapCard({
   row: number
 }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const inProgress = item.status === 'In progress'
+  // Only finished and active work carries a dot; Next and Later read as plain
+  // cards. `t` is called per-branch so the keys stay statically extractable.
+  const statusDot =
+    item.status === 'Done'
+      ? { color: 'success.main', label: t('Done') }
+      : item.status === 'In progress'
+        ? { color: 'warning.main', label: t('In progress') }
+        : null
 
   return (
     <Paper
@@ -116,16 +123,16 @@ function RoadmapCard({
     >
       <Stack spacing={0.75} sx={{ minWidth: 0 }}>
         <Stack direction="row" spacing={0.75} sx={{ alignItems: 'center' }}>
-          {inProgress && (
+          {statusDot != null && (
             <Box
               role="img"
-              aria-label={t('In progress')}
+              aria-label={statusDot.label}
               sx={{
                 flexShrink: 0,
                 width: 8,
                 height: 8,
                 borderRadius: '50%',
-                bgcolor: 'success.main'
+                bgcolor: statusDot.color
               }}
             />
           )}

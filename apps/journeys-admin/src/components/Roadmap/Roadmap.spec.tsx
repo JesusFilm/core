@@ -23,8 +23,19 @@ const items: RoadmapItem[] = [
       'Fixing the highest-impact issues with a [link](https://example.com).'
   },
   {
-    title: 'Future product ideas',
+    title: 'Make the codebase AI-friendly',
     order: 2,
+    category: 'ai',
+    size: 'large',
+    subRow: 0,
+    spanToEnd: false,
+    status: 'Done',
+    effort: 'Large',
+    content: 'Guardrails and navigation aids.'
+  },
+  {
+    title: 'Future product ideas',
+    order: 3,
     category: 'feature',
     size: 'small',
     subRow: 0,
@@ -69,16 +80,27 @@ describe('Roadmap', () => {
     ).toBeInTheDocument()
   })
 
-  it('shows an in-progress dot for active work', () => {
+  it('shows an amber dot for in-progress work', () => {
     render(<Roadmap items={items} />)
 
-    expect(screen.getByLabelText('In progress')).toBeInTheDocument()
+    expect(screen.getByLabelText('In progress')).toHaveStyle({
+      backgroundColor: '#ED6C02'
+    })
   })
 
-  it('omits the in-progress dot when not active', () => {
-    render(<Roadmap items={[items[1]]} />)
+  it('shows a green dot for completed work', () => {
+    render(<Roadmap items={items} />)
+
+    expect(screen.getByLabelText('Done')).toHaveStyle({
+      backgroundColor: '#2E7D32'
+    })
+  })
+
+  it('omits the dot for work that is neither done nor active', () => {
+    render(<Roadmap items={[items[2]]} />)
 
     expect(screen.queryByLabelText('In progress')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Done')).not.toBeInTheDocument()
   })
 
   it('renders markdown content, including links', () => {
