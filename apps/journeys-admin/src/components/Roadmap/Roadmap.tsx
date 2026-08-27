@@ -89,7 +89,9 @@ function markdownSx(fontSize: number) {
     '& h2': { fontSize: fontSize + 2, fontWeight: 700, mt: 2, mb: 0.75 },
     '& h3': { fontSize: fontSize + 1, fontWeight: 700, mt: 1.5, mb: 0.5 },
     '& ul': { listStyle: 'none', m: 0, p: 0 },
-    '& li': {
+    // Unordered items get a drawn dot; ordered items keep their numbers, which
+    // are what tie a feature on the card to its entry in the dialog.
+    '& ul > li': {
       position: 'relative',
       pl: 1.5,
       mb: 0.5,
@@ -104,6 +106,9 @@ function markdownSx(fontSize: number) {
         bgcolor: 'text.disabled'
       }
     },
+    '& ol': { m: 0, pl: 2, mb: 0.75 },
+    '& ol > li': { mb: 0.5, pl: 0.25 },
+    '& ol > li::marker': { color: 'text.disabled', fontWeight: 700 },
     '& strong': { color: 'text.primary' },
     '& blockquote': {
       m: 0,
