@@ -160,9 +160,8 @@ describe('reconcileVideoVariantReconciliation', () => {
       } as never)
       prismaMock.videoVariantDownload.count.mockResolvedValue(0)
 
-      const result = await reconcileVideoVariantReconciliation(
-        'reconciliation-1'
-      )
+      const result =
+        await reconcileVideoVariantReconciliation('reconciliation-1')
 
       // The existing parent Variant is never rewritten -- only the parent's
       // availableLanguages and the search indexes are refreshed.
