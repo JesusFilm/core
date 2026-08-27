@@ -19,6 +19,12 @@ export function getRoadmapItems(): RoadmapItem[] {
         readFileSync(join(CONTENT_DIR, file), 'utf8')
       )
 
+      // A `---` break splits the body: everything above it is the card summary
+      // shown on the roadmap, everything below is the detail shown in the
+      // dialog when the card is opened. Files without a break have no detail.
+      const [summary, ...rest] = content.split(/^---$/m)
+      const detail = rest.join('---').trim()
+
       return {
         title: String(data.title),
         order: Number(data.order),
@@ -28,7 +34,8 @@ export function getRoadmapItems(): RoadmapItem[] {
         spanToEnd: data.spanToEnd === true,
         status: data.status != null ? String(data.status) : null,
         effort: data.effort != null ? String(data.effort) : null,
-        content: content.trim()
+        content: summary.trim(),
+        detail: detail !== '' ? detail : null
       }
     })
 

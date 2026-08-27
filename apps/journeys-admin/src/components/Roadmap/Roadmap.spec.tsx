@@ -1,10 +1,14 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import { Roadmap, RoadmapItem } from './Roadmap'
 
 vi.mock('next-i18next/pages', () => ({
   useTranslation: () => ({
-    t: (key: string) => key,
+    // Interpolate like react-i18next does, so aria-labels built from a
+    // template resolve to the string a user would actually hear.
+    t: (key: string, values?: Record<string, string>) =>
+      key.replace(/{{(\w+)}}/g, (_, name: string) => values?.[name] ?? ''),
     i18n: { language: 'en' }
   })
 }))
@@ -20,7 +24,8 @@ const items: RoadmapItem[] = [
     status: 'In progress',
     effort: 'Ongoing',
     content:
-      'Fixing the highest-impact issues with a [link](https://example.com).'
+      'Fixing the highest-impact issues with a [link](https://example.com).',
+    detail: 'The **full story** on urgent bug fixes.'
   },
   {
     title: 'Make the codebase AI-friendly',
@@ -31,7 +36,8 @@ const items: RoadmapItem[] = [
     spanToEnd: false,
     status: 'Done',
     effort: 'Large',
-    content: 'Guardrails and navigation aids.'
+    content: 'Guardrails and navigation aids.',
+    detail: null
   },
   {
     title: 'Future product ideas',
@@ -42,7 +48,8 @@ const items: RoadmapItem[] = [
     spanToEnd: false,
     status: null,
     effort: null,
-    content: 'Early ideas not yet scoped.'
+    content: 'Early ideas not yet scoped.',
+    detail: null
   }
 ]
 
@@ -101,6 +108,31 @@ describe('Roadmap', () => {
 
     expect(screen.queryByLabelText('In progress')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Done')).not.toBeInTheDocument()
+  })
+
+  it('opens a detail dialog when a ticket with detail is clicked', async () => {
+    render(<Roadmap items={items} />)
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Open details for Urgent bug fixes'
+      })
+    )
+
+    expect(
+      await screen.findByRole('dialog', { name: 'Urgent bug fixes' })
+    ).toBeInTheDocument()
+    expect(screen.getByText('full story')).toBeInTheDocument()
+  })
+
+  it('makes tickets without detail inert', () => {
+    render(<Roadmap items={items} />)
+
+    expect(
+      screen.queryByRole('button', {
+        name: 'Open details for Future product ideas'
+      })
+    ).not.toBeInTheDocument()
   })
 
   it('renders markdown content, including links', () => {

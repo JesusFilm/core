@@ -1,12 +1,17 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
+import Dialog from '@mui/material/Dialog'
+import DialogContent from '@mui/material/DialogContent'
+import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { Fragment, ReactElement } from 'react'
+import { Fragment, KeyboardEvent, ReactElement, useState } from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+
+import X2Icon from '@core/shared/ui/icons/X2'
 
 export interface RoadmapItem {
   title: string
@@ -18,6 +23,7 @@ export interface RoadmapItem {
   status: string | null
   effort: string | null
   content: string
+  detail: string | null
 }
 
 interface RoadmapProps {
@@ -72,14 +78,64 @@ const LANE_LABEL_WIDTH = 110
 // row whose tallest card falls below it.
 const CARD_MIN_HEIGHT = 120
 
+// Markdown body styling, shared by the card summary and the detail dialog so
+// the two read as the same document at different sizes.
+function markdownSx(fontSize: number) {
+  return {
+    color: 'text.secondary',
+    fontSize,
+    lineHeight: 1.5,
+    '& p': { m: 0, mb: 0.75 },
+    '& h2': { fontSize: fontSize + 2, fontWeight: 700, mt: 2, mb: 0.75 },
+    '& h3': { fontSize: fontSize + 1, fontWeight: 700, mt: 1.5, mb: 0.5 },
+    '& ul': { listStyle: 'none', m: 0, p: 0 },
+    '& li': {
+      position: 'relative',
+      pl: 1.5,
+      mb: 0.5,
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        left: 0,
+        top: '0.5em',
+        width: 4,
+        height: 4,
+        borderRadius: '50%',
+        bgcolor: 'text.disabled'
+      }
+    },
+    '& strong': { color: 'text.primary' },
+    '& blockquote': {
+      m: 0,
+      mb: 1,
+      pl: 1.5,
+      borderLeft: 2,
+      borderColor: 'divider',
+      color: 'text.primary'
+    },
+    '& a': { color: 'primary.main' }
+  } as const
+}
+
 function RoadmapCard({
   item,
-  row
+  row,
+  onOpen
 }: {
   item: RoadmapItem
   row: number
+  onOpen: (item: RoadmapItem) => void
 }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  // Only tickets with a detail section are openable; the rest stay inert so a
+  // click doesn't promise more than the card already shows.
+  const openable = item.detail != null
+
+  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>): void {
+    if (event.key !== 'Enter' && event.key !== ' ') return
+    event.preventDefault()
+    onOpen(item)
+  }
   // Only finished and active work carries a dot; Next and Later read as plain
   // cards. `t` is called per-branch so the keys stay statically extractable.
   const statusDot =
@@ -92,8 +148,24 @@ function RoadmapCard({
   return (
     <Paper
       variant="outlined"
+      {...(openable && {
+        role: 'button',
+        tabIndex: 0,
+        'aria-label': t('Open details for {{title}}', { title: item.title }),
+        onClick: () => onOpen(item),
+        onKeyDown: handleKeyDown
+      })}
       sx={{
         gridColumn: item.spanToEnd ? `${item.order + 1} / -1` : item.order + 1,
+        ...(openable && {
+          cursor: 'pointer',
+          textAlign: 'left',
+          transition: 'border-color 120ms, box-shadow 120ms',
+          '&:hover, &:focus-visible': {
+            borderColor: 'primary.main',
+            boxShadow: 1
+          }
+        }),
         gridRow: row,
         position: 'relative',
         zIndex: 1,
@@ -143,31 +215,7 @@ function RoadmapCard({
             {item.title}
           </Typography>
         </Stack>
-        <Box
-          sx={{
-            color: 'text.secondary',
-            fontSize: 11,
-            lineHeight: 1.4,
-            '& p': { m: 0, mb: 0.75 },
-            '& ul': { listStyle: 'none', m: 0, p: 0 },
-            '& li': {
-              position: 'relative',
-              pl: 1.5,
-              mb: 0.5,
-              '&::before': {
-                content: '""',
-                position: 'absolute',
-                left: 0,
-                top: '0.5em',
-                width: 4,
-                height: 4,
-                borderRadius: '50%',
-                bgcolor: 'text.disabled'
-              }
-            },
-            '& a': { color: 'primary.main' }
-          }}
-        >
+        <Box sx={markdownSx(11)}>
           <Markdown remarkPlugins={[remarkGfm]}>{item.content}</Markdown>
         </Box>
       </Stack>
@@ -175,8 +223,61 @@ function RoadmapCard({
   )
 }
 
+function RoadmapDialog({
+  item,
+  onClose
+}: {
+  item: RoadmapItem | null
+  onClose: () => void
+}): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
+  return (
+    <Dialog
+      open={item != null}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      aria-labelledby="roadmap-dialog-title"
+    >
+      {item != null && (
+        <>
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ alignItems: 'flex-start', p: 3, pb: 1 }}
+          >
+            <Typography
+              id="roadmap-dialog-title"
+              component="h2"
+              sx={{ flexGrow: 1, fontSize: 20, fontWeight: 700 }}
+            >
+              {item.title}
+            </Typography>
+            <IconButton
+              onClick={onClose}
+              aria-label={t('Close')}
+              sx={{ mt: -1, mr: -1 }}
+            >
+              <X2Icon />
+            </IconButton>
+          </Stack>
+          <DialogContent sx={{ pt: 0 }}>
+            <Box sx={markdownSx(14)}>
+              <Markdown remarkPlugins={[remarkGfm]}>
+                {item.detail ?? ''}
+              </Markdown>
+            </Box>
+          </DialogContent>
+        </>
+      )}
+    </Dialog>
+  )
+}
+
 export function Roadmap({ items }: RoadmapProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const [openItem, setOpenItem] = useState<RoadmapItem | null>(null)
 
   const ordered = [...items].sort((a, b) => a.order - b.order)
   // Spanning cards (e.g. the ongoing AI-tuning bar) sit across existing columns
@@ -299,6 +400,7 @@ export function Roadmap({ items }: RoadmapProps): ReactElement {
                         key={item.title}
                         item={item}
                         row={section.startRow + item.subRow}
+                        onOpen={setOpenItem}
                       />
                     ))}
                 </Fragment>
@@ -307,6 +409,7 @@ export function Roadmap({ items }: RoadmapProps): ReactElement {
           </Box>
         </Box>
       </Box>
+      <RoadmapDialog item={openItem} onClose={() => setOpenItem(null)} />
     </Box>
   )
 }
