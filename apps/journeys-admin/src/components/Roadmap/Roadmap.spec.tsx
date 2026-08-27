@@ -24,7 +24,7 @@ const items: RoadmapItem[] = [
     status: 'In progress',
     effort: 'Ongoing',
     content:
-      'Fixing the highest-impact issues with a [link](https://example.com).',
+      'Fixing the highest-impact issues with a [link](https://example.com).\n\n1. First thing — S\n2. Second thing — L',
     detail: 'The **full story** on urgent bug fixes.'
   },
   {
@@ -133,6 +133,17 @@ describe('Roadmap', () => {
         name: 'Open details for Future product ideas'
       })
     ).not.toBeInTheDocument()
+  })
+
+  // Tailwind's preflight resets `ol` to `list-style: none` across the app, so
+  // without an explicit override the feature numbering silently disappears.
+  it('keeps numbering on ordered lists despite the global list reset', () => {
+    render(<Roadmap items={items} />)
+
+    const list = screen.getByRole('list')
+
+    expect(list.tagName).toBe('OL')
+    expect(list).toHaveStyle({ listStyle: 'decimal' })
   })
 
   it('renders markdown content, including links', () => {

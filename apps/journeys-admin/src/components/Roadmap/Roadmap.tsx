@@ -106,7 +106,9 @@ function markdownSx(fontSize: number) {
         bgcolor: 'text.disabled'
       }
     },
-    '& ol': { m: 0, pl: 2, mb: 0.75 },
+    // Tailwind's preflight resets `ol` to `list-style: none` app-wide, so the
+    // numbering has to be restored explicitly here.
+    '& ol': { listStyle: 'decimal', m: 0, pl: 2.5, mb: 0.75 },
     '& ol > li': { mb: 0.5, pl: 0.25 },
     '& ol > li::marker': { color: 'text.disabled', fontWeight: 700 },
     '& strong': { color: 'text.primary' },
