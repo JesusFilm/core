@@ -60,6 +60,9 @@ const mockJob = {
 describe('processVideoUploads service', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    prismaMock.$transaction.mockImplementation(async (transaction) => {
+      return await transaction(prismaMock)
+    })
   })
 
   it('creates or updates variant when mux video is ready', async () => {
@@ -83,7 +86,9 @@ describe('processVideoUploads service', () => {
       id: 'variant-id',
       slug: 'variant-slug'
     } as any)
-    prismaMock.videoVariant.update.mockResolvedValue({} as any)
+    prismaMock.videoVariant.update.mockResolvedValue({
+      id: 'variant-id'
+    } as any)
 
     await service(mockJob, mockLogger)
 
@@ -117,8 +122,16 @@ describe('processVideoUploads service', () => {
       data: expect.objectContaining({
         muxVideoId: 'mux-video-id',
         downloadable: true,
-        published: true,
+        published: false,
         version: 1
+      })
+    })
+    expect(prismaMock.videoVariantReconciliation.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        reason: 'process-video-upload',
+        published: true,
+        videoVariantId: 'variant-id',
+        status: 'processing'
       })
     })
     expect(prismaMock.$executeRaw).toHaveBeenCalledTimes(1)
@@ -167,7 +180,7 @@ describe('processVideoUploads service', () => {
       data: expect.objectContaining({
         muxVideoId: 'mux-video-id',
         downloadable: true,
-        published: true,
+        published: false,
         version: 1
       })
     })
