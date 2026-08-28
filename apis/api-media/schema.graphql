@@ -578,6 +578,11 @@ input MutationShortLinkCreateInput {
 
   """bitrate of the video variant download"""
   bitrate: Int
+
+  """
+  a single namespaced `<scheme>:<value>` attribution for the thing this short link was minted for, one value per link. Registered schemes: `youtube-channel:<channelId>`
+  """
+  sourceRef: String
 }
 
 union MutationShortLinkCreateResult = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
@@ -972,6 +977,7 @@ enum Service {
   apiTags
   apiUsers
   apiVideos
+  youtube
 }
 
 """A short link that redirects to a full URL"""
@@ -1000,6 +1006,11 @@ type ShortLink
 
   """bitrate of the video variant download"""
   bitrate: Int
+
+  """
+  a single namespaced `<scheme>:<value>` attribution for the thing this short link was minted for, one value per link. Registered schemes: `youtube-channel:<channelId>`
+  """
+  sourceRef: String
 }
 
 """A domain that can be used for short links"""

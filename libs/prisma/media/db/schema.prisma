@@ -532,6 +532,9 @@ enum Service {
   apiTags
   apiUsers
   apiVideos
+  /// the YouTube Studio product surface (not an api-* service): links stamped
+  /// into YouTube video descriptions. Provenance only — nothing branches on it.
+  youtube
 }
 
 enum VideoRedirectType {
@@ -662,11 +665,15 @@ model ShortLink {
   redirectType VideoRedirectType?
   /// bitrate of the video variant download
   bitrate      Int?
+  /// a single namespaced `<scheme>:<value>` attribution for the thing this link
+  /// was minted for (e.g. `youtube-channel:UC...`), one value per link
+  sourceRef    String?
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
   domain       ShortLinkDomain    @relation(fields: [domainId], references: [id], onDelete: Restrict)
 
   @@unique([pathname, domainId])
+  @@index([service, sourceRef])
 }
 
 model ShortLinkBlocklistDomain {
