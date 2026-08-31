@@ -1,6 +1,7 @@
 import { Prisma, prisma } from '@core/prisma/media/client'
 
 import { getVideo } from '../../schema/mux/video/service'
+import { logger } from '../../logger'
 
 import { MUX_STREAM_BASE_URL, classifyProvider } from './classifyProvider'
 import { createConcurrencyLimiter } from './concurrencyLimiter'
@@ -68,7 +69,17 @@ function createDefaultMuxAssetFetcher(): MuxAssetFetcher {
     async getAsset(muxAssetId) {
       try {
         return (await getVideo(muxAssetId, false)) as unknown as MuxAssetLike
-      } catch {
+      } catch (error) {
+        // A null asset is not a dead end: resolveMuxSize treats it as "no
+        // rendition metadata" and falls back to HTTP sizing, which usually
+        // still resolves the length. So keep returning null rather than
+        // letting this throw -- but log it, because an outage and an asset
+        // that genuinely has no renditions are otherwise indistinguishable
+        // in the audit report.
+        logger.warn(
+          { error, muxAssetId },
+          'Mux asset lookup failed; falling back to HTTP size resolution'
+        )
         return null
       }
     }
@@ -202,7 +213,11 @@ async function processCandidate(
   let resolved: ResolveSizeResult
   try {
     resolved = await resolveForProvider(candidate, provider, ctx)
-  } catch {
+  } catch (error) {
+    logger.error(
+      { error, downloadId: candidate.id, provider },
+      'Download size resolution failed'
+    )
     return {
       ...base,
       verifiedSize: null,
@@ -256,7 +271,11 @@ async function processCandidate(
       outcome: 'applied',
       errorCode: null
     }
-  } catch {
+  } catch (error) {
+    logger.error(
+      { error, downloadId: candidate.id, provider },
+      'Download size write failed'
+    )
     return {
       ...base,
       verifiedSize: resolved.size,

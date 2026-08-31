@@ -74,10 +74,17 @@ export function createFetchHttpSizeClient(): HttpSizeClient {
   }
 }
 
+// A Content-Length is a decimal byte count, so only a strictly digit string
+// is meaningful -- bare `Number()` also accepts `12.5`, `1e10` and `0x1F`.
+// This mirrors parseMuxFilesize in resolveMuxSize.ts. The distinction matters
+// because the repair query only reselects rows that are still null or
+// nonpositive: a bogus positive value written here is never revisited.
+const CONTENT_LENGTH_PATTERN = /^[0-9]+$/
+
 function toPositiveSize(value: string | null): number | null {
-  if (value == null) return null
-  const size = Number(value)
-  return Number.isFinite(size) && size > 0 ? size : null
+  if (value == null || !CONTENT_LENGTH_PATTERN.test(value.trim())) return null
+  const size = Number(value.trim())
+  return Number.isSafeInteger(size) && size > 0 ? size : null
 }
 
 /**

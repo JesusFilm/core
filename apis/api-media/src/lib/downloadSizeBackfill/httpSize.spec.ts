@@ -46,6 +46,33 @@ describe('resolveHttpSize', () => {
     expect(result).toEqual({ size: 243808898, errorCode: null })
   })
 
+  it.each([
+    ['a fractional length', '12.5'],
+    ['exponential notation', '1e10'],
+    ['a hex literal', '0x1F'],
+    ['a length beyond MAX_SAFE_INTEGER', '9007199254740993']
+  ])(
+    'rejects %s from HEAD and falls back to Range',
+    async (_label, contentLength) => {
+      const client: HttpSizeClient = {
+        head: vi.fn().mockResolvedValue(makeHeaders({ contentLength })),
+        rangeGet: vi
+          .fn()
+          .mockResolvedValue(
+            makeHeaders({ status: 206, contentRangeTotal: 555 })
+          )
+      }
+
+      const result = await resolveHttpSize(
+        'https://example.com/file.mp4',
+        client
+      )
+
+      expect(result).toEqual({ size: 555, errorCode: null })
+      expect(client.rangeGet).toHaveBeenCalled()
+    }
+  )
+
   it('falls back to Range when HEAD reports a zero length', async () => {
     const client: HttpSizeClient = {
       head: vi.fn().mockResolvedValue(makeHeaders({ contentLength: '0' })),

@@ -25,7 +25,8 @@ vi.mock('fs', () => {
     existsSync: vi.fn(() => true),
     createWriteStream: vi.fn(() => ({
       write: vi.fn(() => true),
-      end: vi.fn((cb?: (error?: Error | null) => void) => cb?.(null))
+      end: vi.fn((cb?: (error?: Error | null) => void) => cb?.(null)),
+      on: vi.fn()
     }))
   }
   return { ...fsMock, default: fsMock }

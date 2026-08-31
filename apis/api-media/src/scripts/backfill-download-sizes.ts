@@ -209,7 +209,9 @@ async function main(): Promise<void> {
       process.env.DOWNLOAD_SIZE_BACKFILL_DOWNLOAD_ID?.trim() || undefined,
     videoVariantId:
       process.env.DOWNLOAD_SIZE_BACKFILL_VARIANT_ID?.trim() || undefined,
-    provider: parseProviderFilter(process.env.DOWNLOAD_SIZE_BACKFILL_PROVIDER)
+    provider: parseProviderFilter(
+      process.env.DOWNLOAD_SIZE_BACKFILL_PROVIDER?.trim()
+    )
   }
 
   logger.info(
@@ -220,6 +222,20 @@ async function main(): Promise<void> {
   await mkdir(REPORT_DIR, { recursive: true })
   const reportStream = fs.createWriteStream(REPORT_PATH, {
     flags: resume ? 'a' : 'w'
+  })
+
+  // Without a listener, an async stream failure (disk full, path made
+  // unwritable) is emitted as an unhandled 'error' event and aborts the
+  // process before the summary log and the final cursor save -- leaving a
+  // resume that cannot tell how far the audit report actually got. Record it
+  // and let the run finish and report honestly instead.
+  let reportStreamError: Error | null = null
+  reportStream.on('error', (error) => {
+    reportStreamError ??= error
+    logger.error(
+      { error, reportPath: REPORT_PATH },
+      'Audit report write failed'
+    )
   })
 
   const totalSummary = emptyBackfillSummary()
@@ -267,6 +283,24 @@ async function main(): Promise<void> {
 
   logger.info({ summary: totalSummary }, 'Download size backfill summary')
   logger.info({ reportPath: REPORT_PATH }, 'Audit report written')
+
+  // Match the contract in recover-parent-variants.ts so a CI or Job wrapper
+  // can tell a partially failed run from a clean one.
+  if (totalSummary.failed > 0) {
+    logger.error(
+      { failed: totalSummary.failed },
+      'Download size backfill completed with failures'
+    )
+    process.exitCode = 1
+  }
+
+  if (reportStreamError != null) {
+    logger.error(
+      { error: reportStreamError, reportPath: REPORT_PATH },
+      'Audit report is incomplete; treat this run as unverified'
+    )
+    process.exitCode = 1
+  }
 }
 
 if (require.main === module) {
