@@ -87,12 +87,18 @@ async function runProcessDownloads(): Promise<void> {
 describe('processDownloads', () => {
   const originalApply = process.env.MUX_DOWNLOAD_BACKFILL_APPLY
   const originalSampleSize = process.env.MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE
+  const originalMaxQualityCount =
+    process.env.MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT
+  const originalVideoIdPrefixes =
+    process.env.MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES
 
   beforeEach(() => {
     vi.clearAllMocks()
     vi.useFakeTimers({ toFake: ['setTimeout'] })
     delete process.env.MUX_DOWNLOAD_BACKFILL_APPLY
     delete process.env.MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE
+    delete process.env.MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT
+    delete process.env.MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES
     ;(prismaMock.videoVariantDownload.findMany as Mock).mockResolvedValue([])
     ;(prismaMock.$queryRaw as unknown as Mock).mockResolvedValue([])
   })
@@ -107,6 +113,16 @@ describe('processDownloads', () => {
     if (originalSampleSize == null)
       delete process.env.MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE
     else process.env.MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE = originalSampleSize
+    if (originalMaxQualityCount == null)
+      delete process.env.MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT
+    else
+      process.env.MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT =
+        originalMaxQualityCount
+    if (originalVideoIdPrefixes == null)
+      delete process.env.MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES
+    else
+      process.env.MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES =
+        originalVideoIdPrefixes
   })
 
   it('throws for a non-positive sample size', async () => {
@@ -114,6 +130,15 @@ describe('processDownloads', () => {
 
     await expect(processDownloads()).rejects.toThrow(
       'MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE must be a positive integer'
+    )
+    expect(prismaMock.videoVariantDownload.findMany).not.toHaveBeenCalled()
+  })
+
+  it('throws for a non-positive max quality count', async () => {
+    process.env.MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT = '0'
+
+    await expect(processDownloads()).rejects.toThrow(
+      'MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT must be a positive integer'
     )
     expect(prismaMock.videoVariantDownload.findMany).not.toHaveBeenCalled()
   })
@@ -396,6 +421,37 @@ describe('processDownloads', () => {
       const secondCallValues = (prismaMock.$queryRaw as unknown as Mock).mock
         .calls[1]
       expect(secondCallValues).toContain('variant-199')
+    })
+
+    it('uses MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT as the discovery query threshold when set', async () => {
+      process.env.MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT = '5'
+      ;(prismaMock.$queryRaw as unknown as Mock).mockResolvedValueOnce([])
+
+      await runProcessDownloads()
+
+      const call = (prismaMock.$queryRaw as unknown as Mock).mock.calls[0]
+      expect(call).toContain(5)
+      expect(call).not.toContain(7)
+    })
+
+    it('scopes the discovery query by MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES when set', async () => {
+      process.env.MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES = '1_,MAG'
+      ;(prismaMock.$queryRaw as unknown as Mock).mockResolvedValueOnce([])
+
+      await runProcessDownloads()
+
+      const call = (prismaMock.$queryRaw as unknown as Mock).mock.calls[0]
+      expect(JSON.stringify(call)).toContain('1_')
+      expect(JSON.stringify(call)).toContain('MAG')
+    })
+
+    it('omits the prefix filter entirely when MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES is unset', async () => {
+      ;(prismaMock.$queryRaw as unknown as Mock).mockResolvedValueOnce([])
+
+      await runProcessDownloads()
+
+      const call = (prismaMock.$queryRaw as unknown as Mock).mock.calls[0]
+      expect(JSON.stringify(call)).not.toContain('LEFT(v."videoId"')
     })
   })
 })

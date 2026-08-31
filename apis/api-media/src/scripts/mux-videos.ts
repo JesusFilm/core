@@ -24,8 +24,12 @@ const DISTRO_DOWNLOAD_QUALITIES = [
 // missing Mux download rows entirely (see the "missing rows" pass below), not
 // as a per-variant expectation: lower-resolution masters legitimately produce
 // fewer of these, and createDownloadsFromMuxAsset() is a safe no-op for rows
-// that already exist and don't need a metadata refresh.
-const MAX_REAL_DOWNLOAD_QUALITY_COUNT = 7
+// that already exist and don't need a metadata refresh. Overridable via
+// MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT for a targeted run against a
+// cohort whose real ceiling is known to be lower (e.g. a catalog with no
+// 1440p/2160p masters, where qhd/uhd never appear and this default of 7
+// makes nearly every variant a false-positive candidate).
+const DEFAULT_MAX_REAL_DOWNLOAD_QUALITY_COUNT = 7
 
 function getMuxClient(): Mux {
   if (process.env.MUX_ACCESS_TOKEN_ID == null)
@@ -246,6 +250,22 @@ export async function processDownloads(): Promise<void> {
     )
   }
 
+  const maxQualityCountValue =
+    process.env.MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT?.trim()
+  const maxRealDownloadQualityCount =
+    maxQualityCountValue != null && maxQualityCountValue !== ''
+      ? Number.parseInt(maxQualityCountValue, 10)
+      : DEFAULT_MAX_REAL_DOWNLOAD_QUALITY_COUNT
+
+  if (
+    !Number.isFinite(maxRealDownloadQualityCount) ||
+    maxRealDownloadQualityCount <= 0
+  ) {
+    throw new Error(
+      'MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT must be a positive integer'
+    )
+  }
+
   if (applyChanges) {
     console.log('Apply mode enabled: download metadata rows will be refreshed')
   } else {
@@ -335,7 +355,7 @@ export async function processDownloads(): Promise<void> {
           )
           if (variantZeroMetadataDownloads.length === 0) {
             console.log(
-              `  ${previewDownloads.length} download row(s) would be created or refreshed (variant has fewer than ${MAX_REAL_DOWNLOAD_QUALITY_COUNT} Mux-hosted rows)`
+              `  ${previewDownloads.length} download row(s) would be created or refreshed (variant has fewer than ${maxRealDownloadQualityCount} Mux-hosted rows)`
             )
             return
           }
@@ -572,7 +592,7 @@ export async function processDownloads(): Promise<void> {
         AND v.id > ${missingRowsCursor}
         ${prefixFilter}
       GROUP BY v.id
-      HAVING COUNT(d.id) < ${MAX_REAL_DOWNLOAD_QUALITY_COUNT}
+      HAVING COUNT(d.id) < ${maxRealDownloadQualityCount}
       ORDER BY v.id
       LIMIT ${take}
     `
@@ -587,7 +607,7 @@ export async function processDownloads(): Promise<void> {
     })
 
     console.log(
-      `Found ${variants.length} variants with fewer than ${MAX_REAL_DOWNLOAD_QUALITY_COUNT} Mux-hosted download rows to process in this batch`
+      `Found ${variants.length} variants with fewer than ${maxRealDownloadQualityCount} Mux-hosted download rows to process in this batch`
     )
 
     for (const variant of variants) {
