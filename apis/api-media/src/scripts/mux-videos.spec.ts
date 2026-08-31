@@ -94,6 +94,7 @@ describe('processDownloads', () => {
     delete process.env.MUX_DOWNLOAD_BACKFILL_APPLY
     delete process.env.MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE
     ;(prismaMock.videoVariantDownload.findMany as Mock).mockResolvedValue([])
+    ;(prismaMock.$queryRaw as unknown as Mock).mockResolvedValue([])
   })
 
   afterEach(() => {
@@ -316,5 +317,85 @@ describe('processDownloads', () => {
     expect(mockedGetVideo).toHaveBeenCalledTimes(2)
     expect(mockedGetVideo).toHaveBeenCalledWith('asset-variant-1', false)
     expect(mockedGetVideo).toHaveBeenCalledWith('asset-variant-2', false)
+  })
+
+  describe('missing download rows pass', () => {
+    function variant(id: string): any {
+      return { id, muxVideo: { id: `mux-${id}`, assetId: `asset-${id}` } }
+    }
+
+    it('processes variants with a muxVideoId but no matching download rows, which the zero-metadata query cannot see', async () => {
+      ;(prismaMock.$queryRaw as unknown as Mock)
+        .mockResolvedValueOnce([{ id: 'variant-missing' }])
+        .mockResolvedValueOnce([])
+      ;(prismaMock.videoVariant.findMany as Mock).mockResolvedValueOnce([
+        variant('variant-missing')
+      ])
+      mockedGetVideo.mockResolvedValue(readyMuxVideoAsset)
+      mockedPreviewMuxDownloadsFromAsset.mockReturnValue([])
+
+      await runProcessDownloads()
+
+      expect(mockedGetVideo).toHaveBeenCalledWith(
+        'asset-variant-missing',
+        false
+      )
+    })
+
+    it('persists newly created rows in apply mode for a variant discovered only by the missing-rows pass', async () => {
+      process.env.MUX_DOWNLOAD_BACKFILL_APPLY = 'true'
+      ;(prismaMock.$queryRaw as unknown as Mock)
+        .mockResolvedValueOnce([{ id: 'variant-missing' }])
+        .mockResolvedValueOnce([])
+      ;(prismaMock.videoVariant.findMany as Mock).mockResolvedValueOnce([
+        variant('variant-missing')
+      ])
+      mockedGetVideo.mockResolvedValue(readyMuxVideoAsset)
+      mockedCreateDownloadsFromMuxAsset.mockResolvedValue(1)
+
+      await runProcessDownloads()
+
+      expect(mockedCreateDownloadsFromMuxAsset).toHaveBeenCalledWith({
+        variantId: 'variant-missing',
+        muxVideoAsset: readyMuxVideoAsset
+      })
+    })
+
+    it('stops issuing missing-rows queries once the sample size is exhausted by the zero-metadata pass', async () => {
+      process.env.MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE = '1'
+      ;(prismaMock.videoVariantDownload.findMany as Mock).mockResolvedValueOnce(
+        [download({ videoVariantId: 'variant-1' })]
+      )
+      mockedGetVideo.mockResolvedValue(readyMuxVideoAsset)
+      mockedPreviewMuxDownloadsFromAsset.mockReturnValue([])
+
+      await runProcessDownloads()
+
+      expect(prismaMock.$queryRaw).not.toHaveBeenCalled()
+    })
+
+    it('paginates through multiple batches using the last id as the next cursor', async () => {
+      // A full page (length === take, default take = 200) signals there may
+      // be more, so the next query must use the last id from this page as
+      // its cursor.
+      const fullPage = Array.from({ length: 200 }, (_, i) => ({
+        id: `variant-${String(i).padStart(3, '0')}`
+      }))
+      ;(prismaMock.$queryRaw as unknown as Mock)
+        .mockResolvedValueOnce(fullPage)
+        .mockResolvedValueOnce([])
+      ;(prismaMock.videoVariant.findMany as Mock).mockResolvedValue(
+        fullPage.map((candidate) => variant(candidate.id))
+      )
+      mockedGetVideo.mockResolvedValue(readyMuxVideoAsset)
+      mockedPreviewMuxDownloadsFromAsset.mockReturnValue([])
+
+      await runProcessDownloads()
+
+      expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(2)
+      const secondCallValues = (prismaMock.$queryRaw as unknown as Mock).mock
+        .calls[1]
+      expect(secondCallValues).toContain('variant-199')
+    })
   })
 })

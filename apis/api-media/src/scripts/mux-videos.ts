@@ -19,6 +19,13 @@ const DISTRO_DOWNLOAD_QUALITIES = [
   VideoVariantDownloadQuality.distroSd,
   VideoVariantDownloadQuality.distroHigh
 ]
+// low, sd, high, fhd, qhd, uhd, highest -- every non-distro quality a ready
+// Mux asset can produce. Used as an upper bound when looking for variants
+// missing Mux download rows entirely (see the "missing rows" pass below), not
+// as a per-variant expectation: lower-resolution masters legitimately produce
+// fewer of these, and createDownloadsFromMuxAsset() is a safe no-op for rows
+// that already exist and don't need a metadata refresh.
+const MAX_REAL_DOWNLOAD_QUALITY_COUNT = 7
 
 function getMuxClient(): Mux {
   if (process.env.MUX_ACCESS_TOKEN_ID == null)
@@ -326,6 +333,12 @@ export async function processDownloads(): Promise<void> {
           console.log(
             `Preview for variant ${variant.id}, muxVideoId: ${variant.muxVideo.id}`
           )
+          if (variantZeroMetadataDownloads.length === 0) {
+            console.log(
+              `  ${previewDownloads.length} download row(s) would be created or refreshed (variant has fewer than ${MAX_REAL_DOWNLOAD_QUALITY_COUNT} Mux-hosted rows)`
+            )
+            return
+          }
           for (const download of variantZeroMetadataDownloads) {
             const replacement = previewByQuality.get(download.quality)
             if (replacement == null) {
@@ -502,6 +515,92 @@ export async function processDownloads(): Promise<void> {
       )
       await processVariant(variant, variantDownloads)
       totalProcessed++
+    }
+  }
+
+  // Second pass: the loop above only ever discovers variants that already
+  // have an EXISTING Mux-hosted download row with null/zero size or bitrate.
+  // A variant whose muxVideoId is set but that is missing a quality's row
+  // entirely -- never created, not just broken -- has no such row to match
+  // that query, so it's invisible to the pass above. Find those directly off
+  // VideoVariant and route them through the same processVariant() repair
+  // path; createDownloadsFromMuxAsset() only creates what's actually absent.
+  // Optional operational scope: a comma-separated list of videoId prefixes
+  // (e.g. "1_,MAG") to target a specific catalog cohort instead of scanning
+  // the whole table by ascending id -- useful when a prior investigation
+  // already sized a cohort's gap and an unscoped run would spend its sample
+  // budget on unrelated, lexicographically-earlier ids first.
+  const videoIdPrefixes = process.env.MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES?.split(
+    ','
+  )
+    .map((prefix) => prefix.trim())
+    .filter((prefix) => prefix.length > 0)
+
+  let missingRowsCursor = ''
+  let hasMoreMissingRows = true
+
+  while (hasMoreMissingRows) {
+    const remainingSampleSize =
+      sampleSize == null ? null : sampleSize - totalProcessed
+    if (remainingSampleSize != null && remainingSampleSize <= 0) {
+      break
+    }
+
+    const take =
+      remainingSampleSize == null ? 200 : Math.min(200, remainingSampleSize)
+
+    const prefixFilter =
+      videoIdPrefixes == null || videoIdPrefixes.length === 0
+        ? Prisma.empty
+        : Prisma.sql`AND (${Prisma.join(
+            // LEFT(...) = prefix, not LIKE 'prefix%' -- LIKE treats '_' as a
+            // single-character wildcard, so a literal prefix like "1_" would
+            // also match unrelated ids like "10_21028-...".
+            videoIdPrefixes.map(
+              (prefix) =>
+                Prisma.sql`LEFT(v."videoId", ${prefix.length}) = ${prefix}`
+            ),
+            ' OR '
+          )})`
+
+    const candidates = await prisma.$queryRaw<Array<{ id: string }>>`
+      SELECT v.id
+      FROM "VideoVariant" v
+      LEFT JOIN "VideoVariantDownload" d
+        ON d."videoVariantId" = v.id
+        AND d.url LIKE ${MUX_STREAM_BASE_URL + '/%'}
+      WHERE v."muxVideoId" IS NOT NULL
+        AND v.id > ${missingRowsCursor}
+        ${prefixFilter}
+      GROUP BY v.id
+      HAVING COUNT(d.id) < ${MAX_REAL_DOWNLOAD_QUALITY_COUNT}
+      ORDER BY v.id
+      LIMIT ${take}
+    `
+
+    if (candidates.length === 0) {
+      hasMoreMissingRows = false
+      break
+    }
+
+    const variants = await prisma.videoVariant.findMany({
+      where: { id: { in: candidates.map((candidate) => candidate.id) } },
+      include: { muxVideo: true }
+    })
+
+    console.log(
+      `Found ${variants.length} variants with fewer than ${MAX_REAL_DOWNLOAD_QUALITY_COUNT} Mux-hosted download rows to process in this batch`
+    )
+
+    for (const variant of variants) {
+      await processVariant(variant, [])
+      totalProcessed++
+    }
+
+    missingRowsCursor = candidates.at(-1)?.id ?? missingRowsCursor
+
+    if (candidates.length < take) {
+      hasMoreMissingRows = false
     }
   }
 
