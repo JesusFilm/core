@@ -95,9 +95,9 @@ export function ScanCount({ shortLinkId }: ScanCountProps): ReactElement {
           <Typography variant="subtitle3">{t('scans')}</Typography>
         </>
       ) : (
-        <Trans t={t} scanCount={scanCount}>
+        <Trans t={t} values={{ scanCount }}>
           <Typography variant="subtitle3" sx={{ ml: 1 }}>
-            {scanCount}
+            {'{{scanCount}}'}
           </Typography>
         </Trans>
       )}
