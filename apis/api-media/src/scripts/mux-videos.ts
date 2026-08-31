@@ -530,11 +530,10 @@ export async function processDownloads(): Promise<void> {
   // the whole table by ascending id -- useful when a prior investigation
   // already sized a cohort's gap and an unscoped run would spend its sample
   // budget on unrelated, lexicographically-earlier ids first.
-  const videoIdPrefixes = process.env.MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES?.split(
-    ','
-  )
-    .map((prefix) => prefix.trim())
-    .filter((prefix) => prefix.length > 0)
+  const videoIdPrefixes =
+    process.env.MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES?.split(',')
+      .map((prefix) => prefix.trim())
+      .filter((prefix) => prefix.length > 0)
 
   let missingRowsCursor = ''
   let hasMoreMissingRows = true
@@ -579,7 +578,6 @@ export async function processDownloads(): Promise<void> {
     `
 
     if (candidates.length === 0) {
-      hasMoreMissingRows = false
       break
     }
 
