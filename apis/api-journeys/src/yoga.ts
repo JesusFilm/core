@@ -142,6 +142,11 @@ export const yoga = createYoga<
             'Query.journeyTheme': 0,
             'Query.journeyVisitorsConnection': 0,
             'Query.journeys': 0,
+            // Publisher-only read. On a cache hit the response cache returns
+            // before execution, so scope auth never runs — and with
+            // session: () => null the entry is shared globally, which would
+            // serve a publisher's result to any caller repeating the query.
+            'Query.journeysByVideo': 0,
             'Query.journeysEmailPreference': 0,
             'Query.qrCode': 0,
             'Query.qrCodes': 0,
