@@ -89,7 +89,7 @@ describe('runDownloadSizeBackfill', () => {
     ] as any)
     prismaMock.videoVariantDownload.updateMany.mockResolvedValue({
       count: 1
-    } as any)
+    })
 
     const httpClient = unreachableHttpClient()
     httpClient.head = vi
@@ -164,7 +164,7 @@ describe('runDownloadSizeBackfill', () => {
     ] as any)
     prismaMock.videoVariantDownload.updateMany.mockResolvedValue({
       count: 0
-    } as any)
+    })
 
     const httpClient = unreachableHttpClient()
     httpClient.head = vi

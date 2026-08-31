@@ -1,7 +1,7 @@
 import { Prisma, prisma } from '@core/prisma/media/client'
 
-import { getVideo } from '../../schema/mux/video/service'
 import { logger } from '../../logger'
+import { getVideo } from '../../schema/mux/video/service'
 
 import { MUX_STREAM_BASE_URL, classifyProvider } from './classifyProvider'
 import { createConcurrencyLimiter } from './concurrencyLimiter'
@@ -68,7 +68,7 @@ function createDefaultMuxAssetFetcher(): MuxAssetFetcher {
   return {
     async getAsset(muxAssetId) {
       try {
-        return (await getVideo(muxAssetId, false)) as unknown as MuxAssetLike
+        return await getVideo(muxAssetId, false)
       } catch (error) {
         // A null asset is not a dead end: resolveMuxSize treats it as "no
         // rendition metadata" and falls back to HTTP sizing, which usually
