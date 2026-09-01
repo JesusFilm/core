@@ -233,7 +233,8 @@ describe('ClientLayout', () => {
               'r2Uploaded',
               'muxCreated',
               'muxReady',
-              'failed'
+              'failed',
+              'variantCreated'
             ]
           },
           limit: 100,
@@ -264,7 +265,8 @@ describe('ClientLayout', () => {
               'r2Uploaded',
               'muxCreated',
               'muxReady',
-              'failed'
+              'failed',
+              'variantCreated'
             ]
           },
           limit: 100,
@@ -555,7 +557,7 @@ describe('ClientLayout', () => {
     dateNowSpy.mockRestore()
 
     expect(screen.getAllByText('Upload not complete')).toHaveLength(2)
-    expect(screen.getAllByText('Add again')).toHaveLength(2)
+    expect(screen.getAllByText('Start fresh upload')).toHaveLength(2)
     expect(screen.getByText('Ready to process')).toBeTruthy()
     expect(screen.getByText('Start processing')).toBeTruthy()
     expect(screen.getByText('Processing')).toBeTruthy()
@@ -676,7 +678,7 @@ describe('ClientLayout', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getAllByText('Add again')[0])
+    fireEvent.click(screen.getAllByText('Start fresh upload')[0])
 
     expect(mockPush).toHaveBeenCalledWith('/videos/video123/audio/add', {
       scroll: false
@@ -1282,6 +1284,546 @@ describe('ClientLayout', () => {
       )
       expect(mockRefetch).toHaveBeenCalled()
     })
+  })
+
+  function buildQueryResult(
+    data: unknown,
+    overrides: Partial<QueryResult<any, OperationVariables>> = {}
+  ): QueryResult<any, OperationVariables> {
+    return {
+      data,
+      loading: false,
+      error: undefined,
+      fetchMore: vi.fn(),
+      refetch: mockRefetch,
+      networkStatus: NetworkStatus.ready,
+      client: {} as any,
+      called: true,
+      startPolling: vi.fn(),
+      stopPolling: vi.fn(),
+      subscribeToMore: vi.fn(),
+      updateQuery: vi.fn(),
+      observable: {} as any,
+      variables: {},
+      reobserve: vi.fn(),
+      previousData: undefined,
+      ...overrides
+    } as QueryResult<any, OperationVariables>
+  }
+
+  function mockUploadQueries(
+    getUploads: () => any[],
+    uploadOverrides: Partial<QueryResult<any, OperationVariables>> = {},
+    variants: any[] = mockVideoVariants
+  ) {
+    const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
+
+    mockedUseQuery.mockImplementation((_query, options?: any) => {
+      if (options?.variables?.input?.statuses != null) {
+        return buildQueryResult(
+          { videoVariantUploads: getUploads() },
+          { variables: options.variables, ...uploadOverrides }
+        )
+      }
+
+      return buildQueryResult({
+        adminVideo: {
+          id: 'video123',
+          slug: 'test-video',
+          published: true,
+          variants
+        }
+      })
+    })
+  }
+
+  function uploadRow(overrides: Record<string, unknown>) {
+    return {
+      source: 'videos-admin',
+      sourceKey: 'source-key',
+      videoId: 'video123',
+      languageId: '184631',
+      language: { id: '184631', name: [{ value: 'Farsi' }] },
+      edition: 'base',
+      originalFilename: 'farsi.mp4',
+      contentType: 'video/mp4',
+      contentLength: '12345',
+      errorMessage: null,
+      r2AssetId: null,
+      muxVideoId: null,
+      muxNonStandardInputDetectedAt: null,
+      videoVariantId: null,
+      updatedAt: '2026-06-18T00:00:00.000Z',
+      createdAt: '2026-06-18T00:00:00.000Z',
+      ...overrides
+    }
+  }
+
+  function renderLayout() {
+    return render(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+  }
+
+  it('demotes an incomplete attempt that a later successful attempt superseded', () => {
+    mockUploadQueries(() => [
+      uploadRow({
+        id: 'upload-failed',
+        status: 'failed',
+        errorMessage: 'Mux video processing errored',
+        createdAt: '2026-06-18T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'upload-succeeded',
+        status: 'variantCreated',
+        videoVariantId: 'variant-1',
+        createdAt: '2026-06-19T00:00:00.000Z'
+      })
+    ])
+
+    renderLayout()
+
+    expect(screen.queryByText('Failed')).toBeNull()
+    expect(screen.queryByText('Retry')).toBeNull()
+    expect(screen.getByText('Previous attempts (1)')).toBeInTheDocument()
+  })
+
+  it('never renders a successful attempt as an incomplete row', () => {
+    mockUploadQueries(() => [
+      uploadRow({
+        id: 'upload-succeeded',
+        status: 'variantCreated',
+        videoVariantId: 'variant-1',
+        createdAt: '2026-06-19T00:00:00.000Z'
+      })
+    ])
+
+    renderLayout()
+
+    expect(screen.queryByText('Complete')).toBeNull()
+    expect(screen.queryByText(/Previous attempts/)).toBeNull()
+    expect(screen.queryByText('Farsi')).toBeNull()
+  })
+
+  it('keeps an attempt outstanding when no later attempt succeeded', () => {
+    mockUploadQueries(() => [
+      uploadRow({
+        id: 'upload-failed',
+        status: 'failed',
+        errorMessage: 'Mux video processing errored',
+        createdAt: '2026-06-18T00:00:00.000Z'
+      })
+    ])
+
+    renderLayout()
+
+    expect(screen.getByText('Failed')).toBeInTheDocument()
+    expect(screen.getByText('Retry')).toBeInTheDocument()
+    expect(screen.queryByText(/Previous attempts/)).toBeNull()
+  })
+
+  it('keeps an attempt outstanding when the only later success is a different edition', () => {
+    mockUploadQueries(() => [
+      uploadRow({
+        id: 'upload-failed',
+        status: 'failed',
+        edition: 'burnedIn',
+        errorMessage: 'Mux video processing errored',
+        createdAt: '2026-06-18T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'upload-succeeded',
+        status: 'variantCreated',
+        edition: 'base',
+        videoVariantId: 'variant-1',
+        createdAt: '2026-06-19T00:00:00.000Z'
+      })
+    ])
+
+    renderLayout()
+
+    expect(screen.getByText('Failed')).toBeInTheDocument()
+    expect(screen.queryByText(/Previous attempts/)).toBeNull()
+  })
+
+  it('keeps an attempt outstanding when the only later success is a different audio language', () => {
+    mockUploadQueries(() => [
+      uploadRow({
+        id: 'upload-failed',
+        status: 'failed',
+        languageId: '184631',
+        language: { id: '184631', name: [{ value: 'Farsi' }] },
+        errorMessage: 'Mux video processing errored',
+        createdAt: '2026-06-18T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'upload-succeeded',
+        status: 'variantCreated',
+        languageId: '496',
+        language: { id: '496', name: [{ value: 'French' }] },
+        videoVariantId: 'variant-1',
+        createdAt: '2026-06-19T00:00:00.000Z'
+      })
+    ])
+
+    renderLayout()
+
+    expect(screen.getByText('Failed')).toBeInTheDocument()
+    expect(screen.queryByText(/Previous attempts/)).toBeNull()
+  })
+
+  it('keeps an attempt that failed after the most recent success outstanding', () => {
+    mockUploadQueries(() => [
+      uploadRow({
+        id: 'upload-succeeded',
+        status: 'variantCreated',
+        videoVariantId: 'variant-1',
+        createdAt: '2026-06-18T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'upload-failed',
+        status: 'failed',
+        errorMessage: 'Replacement dub failed',
+        createdAt: '2026-06-19T00:00:00.000Z'
+      })
+    ])
+
+    renderLayout()
+
+    expect(screen.getByText('Failed')).toBeInTheDocument()
+    expect(screen.getByText('Replacement dub failed')).toBeInTheDocument()
+    expect(screen.getByText('Retry')).toBeInTheDocument()
+    expect(screen.queryByText(/Previous attempts/)).toBeNull()
+  })
+
+  it('collapses a language with several superseded attempts into one summary reporting the count', () => {
+    mockUploadQueries(() => [
+      uploadRow({
+        id: 'upload-1',
+        status: 'r2Prepared',
+        createdAt: '2026-06-15T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'upload-2',
+        status: 'failed',
+        errorMessage: 'first failure',
+        createdAt: '2026-06-16T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'upload-3',
+        status: 'muxCreated',
+        createdAt: '2026-06-17T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'upload-succeeded',
+        status: 'variantCreated',
+        videoVariantId: 'variant-1',
+        createdAt: '2026-06-19T00:00:00.000Z'
+      })
+    ])
+
+    renderLayout()
+
+    expect(screen.getByText('Previous attempts (3)')).toBeInTheDocument()
+    expect(screen.queryByText('first failure')).toBeNull()
+    expect(screen.queryByText('Upload not complete')).toBeNull()
+  })
+
+  it('summarises previous attempts per audio language', () => {
+    mockUploadQueries(() => [
+      uploadRow({
+        id: 'farsi-1',
+        status: 'failed',
+        errorMessage: 'farsi failure',
+        createdAt: '2026-06-15T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'farsi-2',
+        status: 'r2Prepared',
+        createdAt: '2026-06-16T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'farsi-success',
+        status: 'variantCreated',
+        videoVariantId: 'variant-farsi',
+        createdAt: '2026-06-19T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'french-1',
+        status: 'failed',
+        languageId: '496',
+        language: { id: '496', name: [{ value: 'French' }] },
+        errorMessage: 'french failure',
+        createdAt: '2026-06-15T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'french-success',
+        status: 'variantCreated',
+        languageId: '496',
+        language: { id: '496', name: [{ value: 'French' }] },
+        videoVariantId: 'variant-french',
+        createdAt: '2026-06-19T00:00:00.000Z'
+      })
+    ])
+
+    renderLayout()
+
+    expect(
+      screen.getByLabelText('previous attempts for Farsi')
+    ).toHaveTextContent('Previous attempts (2)')
+    expect(
+      screen.getByLabelText('previous attempts for French')
+    ).toHaveTextContent('Previous attempts (1)')
+
+    fireEvent.click(screen.getByLabelText('previous attempts for French'))
+
+    expect(screen.getByText('french failure')).toBeInTheDocument()
+    expect(screen.queryByText('farsi failure')).toBeNull()
+  })
+
+  it('reveals each superseded attempt in newest-first order when the summary is expanded', () => {
+    mockUploadQueries(() => [
+      uploadRow({
+        id: 'upload-older',
+        status: 'r2Prepared',
+        originalFilename: 'older-farsi.mp4',
+        createdAt: '2026-06-15T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'upload-newer',
+        status: 'failed',
+        originalFilename: 'newer-farsi.mp4',
+        errorMessage: 'second attempt failed',
+        createdAt: '2026-06-16T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'upload-succeeded',
+        status: 'variantCreated',
+        videoVariantId: 'variant-1',
+        createdAt: '2026-06-19T00:00:00.000Z'
+      })
+    ])
+
+    renderLayout()
+
+    fireEvent.click(screen.getByText('Previous attempts (2)'))
+
+    expect(screen.getByText('Failed')).toBeInTheDocument()
+    expect(screen.getByText('Upload not complete')).toBeInTheDocument()
+    expect(screen.getByText(/newer-farsi\.mp4/)).toBeInTheDocument()
+    expect(screen.getByText(/older-farsi\.mp4/)).toBeInTheDocument()
+    expect(screen.getByText('second attempt failed')).toBeInTheDocument()
+    expect(
+      screen.getByText(new Date('2026-06-16T00:00:00.000Z').toLocaleString())
+    ).toBeInTheDocument()
+
+    const attemptFilenames = screen
+      .getAllByTestId('SupersededUploadAttempt')
+      .map((element) => element.textContent)
+    expect(attemptFilenames[0]).toContain('newer-farsi.mp4')
+    expect(attemptFilenames[1]).toContain('older-farsi.mp4')
+  })
+
+  it('renders no action control on superseded attempts but keeps the copy action', () => {
+    mockUploadQueries(() => [
+      uploadRow({
+        id: 'upload-unresumable',
+        status: 'r2Prepared',
+        createdAt: '2026-06-15T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'upload-failed',
+        status: 'failed',
+        errorMessage: 'first failure',
+        createdAt: '2026-06-16T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'upload-succeeded',
+        status: 'variantCreated',
+        videoVariantId: 'variant-1',
+        createdAt: '2026-06-19T00:00:00.000Z'
+      })
+    ])
+
+    renderLayout()
+    fireEvent.click(screen.getByText('Previous attempts (2)'))
+
+    expect(screen.queryByText('Start fresh upload')).toBeNull()
+    expect(screen.queryByText('Retry')).toBeNull()
+    expect(screen.getAllByLabelText('copy upload details')).toHaveLength(2)
+  })
+
+  it('starts polling while an outstanding attempt exists', () => {
+    const uploadStartPolling = vi.fn()
+    mockUploadQueries(
+      () => [
+        uploadRow({
+          id: 'upload-failed',
+          status: 'failed',
+          errorMessage: 'still outstanding',
+          createdAt: '2026-06-19T00:00:00.000Z'
+        })
+      ],
+      { startPolling: uploadStartPolling }
+    )
+
+    renderLayout()
+
+    expect(uploadStartPolling).toHaveBeenCalledWith(3000)
+  })
+
+  it('stops polling when only superseded attempts remain', () => {
+    const uploadStartPolling = vi.fn()
+    const uploadStopPolling = vi.fn()
+    mockUploadQueries(
+      () => [
+        uploadRow({
+          id: 'upload-failed',
+          status: 'failed',
+          errorMessage: 'old failure',
+          createdAt: '2026-06-18T00:00:00.000Z'
+        }),
+        uploadRow({
+          id: 'upload-succeeded',
+          status: 'variantCreated',
+          videoVariantId: 'variant-1',
+          createdAt: '2026-06-19T00:00:00.000Z'
+        })
+      ],
+      { startPolling: uploadStartPolling, stopPolling: uploadStopPolling }
+    )
+
+    renderLayout()
+
+    expect(uploadStartPolling).not.toHaveBeenCalled()
+    expect(uploadStopPolling).toHaveBeenCalled()
+  })
+
+  it('shows only the history affordance when every incomplete attempt is superseded', () => {
+    mockUploadQueries(
+      () => [
+        uploadRow({
+          id: 'upload-failed',
+          status: 'failed',
+          errorMessage: 'old failure',
+          createdAt: '2026-06-18T00:00:00.000Z'
+        }),
+        uploadRow({
+          id: 'upload-succeeded',
+          status: 'variantCreated',
+          videoVariantId: 'variant-1',
+          createdAt: '2026-06-19T00:00:00.000Z'
+        })
+      ],
+      {},
+      []
+    )
+
+    renderLayout()
+
+    expect(screen.queryByText('No audio languages found')).toBeNull()
+    expect(screen.getByText('Previous attempts (1)')).toBeInTheDocument()
+    expect(screen.queryByText('old failure')).toBeNull()
+  })
+
+  it('renders normally for a video with no upload history', () => {
+    mockUploadQueries(() => [])
+
+    renderLayout()
+
+    expect(screen.queryByText(/Previous attempts/)).toBeNull()
+    expect(screen.getAllByRole('listitem')).toHaveLength(3)
+  })
+
+  it('tells a publisher to start a fresh upload when an attempt cannot be resumed', () => {
+    mockUploadQueries(() => [
+      uploadRow({
+        id: 'upload-unresumable',
+        status: 'r2Prepared',
+        createdAt: '2026-06-19T00:00:00.000Z'
+      })
+    ])
+
+    renderLayout()
+
+    expect(
+      screen.getByText(
+        'This upload cannot be resumed because the browser did not finish sending the file to R2. Start a fresh upload for this language.'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('moves a retried attempt into history once a later attempt succeeds', async () => {
+    const mockedUseMutation = useMutation as MockedFunction<typeof useMutation>
+    const resumeMutation = vi.fn().mockResolvedValue({
+      data: {
+        videoVariantUploadResume: {
+          id: 'upload-processing',
+          status: 'muxCreated',
+          errorMessage: null,
+          muxVideoId: 'mux-id',
+          videoVariantId: null,
+          updatedAt: '2026-06-18T00:00:00.000Z'
+        }
+      }
+    })
+    mockedUseMutation.mockReturnValue([
+      resumeMutation,
+      {
+        loading: false,
+        error: undefined,
+        data: undefined,
+        called: false,
+        client: {} as any,
+        reset: vi.fn()
+      }
+    ])
+
+    let uploadRows = [
+      uploadRow({
+        id: 'upload-processing',
+        status: 'r2Uploaded',
+        createdAt: '2026-06-18T00:00:00.000Z'
+      })
+    ]
+    mockUploadQueries(() => uploadRows)
+
+    const { rerender } = renderLayout()
+
+    fireEvent.click(screen.getByText('Start processing'))
+
+    uploadRows = [
+      uploadRow({
+        id: 'upload-processing',
+        status: 'r2Uploaded',
+        createdAt: '2026-06-18T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'upload-succeeded',
+        status: 'variantCreated',
+        videoVariantId: 'variant-1',
+        createdAt: '2026-06-19T00:00:00.000Z'
+      })
+    ]
+    rerender(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        'Audio language restored',
+        { variant: 'success' }
+      )
+    })
+    expect(screen.getByText('Previous attempts (1)')).toBeInTheDocument()
   })
 
   it('should render Audio Languages header', () => {

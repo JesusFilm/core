@@ -2,18 +2,21 @@
 
 import AddIcon from '@mui/icons-material/Add'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import ReplayIcon from '@mui/icons-material/Replay'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
+import Collapse from '@mui/material/Collapse'
 import IconButton from '@mui/material/IconButton'
 import ListItem from '@mui/material/ListItem'
 import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useSnackbar } from 'notistack'
-import { useCallback } from 'react'
+import { type ReactElement, useCallback, useState } from 'react'
 
 type VideoVariantUploadStatus =
   | 'created'
@@ -48,7 +51,7 @@ export interface VideoVariantUploadRow {
   createdAt?: string | null
 }
 
-export const incompleteUploadStatuses: VideoVariantUploadStatus[] = [
+const incompleteUploadStatuses: VideoVariantUploadStatus[] = [
   'created',
   'r2Prepared',
   'r2Uploaded',
@@ -56,6 +59,23 @@ export const incompleteUploadStatuses: VideoVariantUploadStatus[] = [
   'muxReady',
   'failed'
 ]
+
+// Successful attempts are requested alongside the incomplete ones because they
+// are the only evidence that an earlier incomplete attempt has been superseded.
+export const uploadHistoryStatuses: VideoVariantUploadStatus[] = [
+  ...incompleteUploadStatuses,
+  'variantCreated'
+]
+
+const uploadStatusLabels: Record<VideoVariantUploadStatus, string> = {
+  created: 'Upload not complete',
+  r2Prepared: 'Upload not complete',
+  r2Uploaded: 'Ready to process',
+  muxCreated: 'Processing',
+  muxReady: 'Ready to finalize',
+  variantCreated: 'Complete',
+  failed: 'Failed'
+}
 
 const STANDARD_MUX_PROCESSING_STALE_MS = 30 * 60 * 1000
 const NON_STANDARD_MUX_PROCESSING_STALE_MS = 2 * 60 * 60 * 1000
@@ -70,7 +90,8 @@ interface IncompleteUploadDisplayState {
 }
 
 interface IncompleteVideoVariantUploadItemsProps {
-  uploads: VideoVariantUploadRow[]
+  outstandingUploads: VideoVariantUploadRow[]
+  supersededUploads: VideoVariantUploadRow[]
   resumingUploadId: string | null
   isResumeRequestInFlight: boolean
   onAddAudioLanguage: () => void
@@ -234,17 +255,17 @@ function getIncompleteUploadDisplayState(
     case 'created':
     case 'r2Prepared':
       return {
-        label: 'Upload not complete',
+        label: uploadStatusLabels[upload.status],
         color: 'warning',
         message:
-          'This upload cannot be resumed because the browser did not finish sending the file to R2. Add this audio language again.',
+          'This upload cannot be resumed because the browser did not finish sending the file to R2. Start a fresh upload for this language.',
         processingDurationLabel: null,
         action: 'addAgain',
-        actionLabel: 'Add again'
+        actionLabel: 'Start fresh upload'
       }
     case 'r2Uploaded':
       return {
-        label: 'Ready to process',
+        label: uploadStatusLabels[upload.status],
         color: 'warning',
         message:
           'The file uploaded successfully. Start processing to continue.',
@@ -265,7 +286,7 @@ function getIncompleteUploadDisplayState(
       }
 
       return {
-        label: 'Processing',
+        label: uploadStatusLabels[upload.status],
         color: 'info',
         message: 'Mux is processing this upload. No action needed.',
         processingDurationLabel: getMuxProcessingDurationLabel(upload),
@@ -274,7 +295,7 @@ function getIncompleteUploadDisplayState(
       }
     case 'muxReady':
       return {
-        label: 'Ready to finalize',
+        label: uploadStatusLabels[upload.status],
         color: 'info',
         message: 'Mux is ready. Finalize this audio language.',
         processingDurationLabel: null,
@@ -283,7 +304,7 @@ function getIncompleteUploadDisplayState(
       }
     case 'failed':
       return {
-        label: 'Failed',
+        label: uploadStatusLabels[upload.status],
         color: 'error',
         message: null,
         processingDurationLabel: null,
@@ -292,7 +313,7 @@ function getIncompleteUploadDisplayState(
       }
     case 'variantCreated':
       return {
-        label: 'Complete',
+        label: uploadStatusLabels[upload.status],
         color: 'info',
         message: null,
         processingDurationLabel: null,
@@ -302,14 +323,83 @@ function getIncompleteUploadDisplayState(
   }
 }
 
+function getUploadMetaLabel(upload: VideoVariantUploadRow): string {
+  const languagePrefix =
+    upload.language?.name?.[0]?.value != null ? `${upload.languageId} • ` : ''
+  const filenameSuffix =
+    upload.originalFilename != null ? ` • ${upload.originalFilename}` : ''
+
+  return `${languagePrefix}${upload.edition} • ${upload.source}${filenameSuffix}`
+}
+
+interface SupersededUploadGroup {
+  languageId: string
+  languageLabel: string
+  uploads: VideoVariantUploadRow[]
+}
+
+/**
+ * One summary line per audio language, so a language that took five attempts
+ * occupies one row rather than five. Input order is preserved, so groups and
+ * the attempts within them stay newest-first.
+ */
+function groupSupersededUploadsByLanguage(
+  uploads: VideoVariantUploadRow[]
+): SupersededUploadGroup[] {
+  const groups = new Map<string, SupersededUploadGroup>()
+
+  for (const upload of uploads) {
+    const group = groups.get(upload.languageId)
+
+    if (group == null) {
+      groups.set(upload.languageId, {
+        languageId: upload.languageId,
+        languageLabel: getUploadLanguageLabel(upload),
+        uploads: [upload]
+      })
+      continue
+    }
+
+    group.uploads.push(upload)
+  }
+
+  return [...groups.values()]
+}
+
+export function getUploadCreatedAtMs(
+  upload: VideoVariantUploadRow
+): number | null {
+  if (upload.createdAt == null) return null
+
+  const createdAtMs = Date.parse(upload.createdAt)
+  return Number.isFinite(createdAtMs) ? createdAtMs : null
+}
+
+function getUploadTimestampLabel(upload: VideoVariantUploadRow): string | null {
+  const createdAtMs = getUploadCreatedAtMs(upload)
+  if (createdAtMs == null) return null
+
+  return new Date(createdAtMs).toLocaleString()
+}
+
 export function IncompleteVideoVariantUploadItems({
-  uploads,
+  outstandingUploads,
+  supersededUploads,
   resumingUploadId,
   isResumeRequestInFlight,
   onAddAudioLanguage,
   onResumeUpload
-}: IncompleteVideoVariantUploadItemsProps) {
+}: IncompleteVideoVariantUploadItemsProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
+  const [expandedLanguageIds, setExpandedLanguageIds] = useState<string[]>([])
+
+  const handleTogglePreviousAttempts = useCallback((languageId: string) => {
+    setExpandedLanguageIds((expanded) =>
+      expanded.includes(languageId)
+        ? expanded.filter((id) => id !== languageId)
+        : [...expanded, languageId]
+    )
+  }, [])
 
   const handleCopyUploadDetails = useCallback(
     async (upload: VideoVariantUploadRow) => {
@@ -323,145 +413,258 @@ export function IncompleteVideoVariantUploadItems({
     [enqueueSnackbar]
   )
 
-  return uploads.map((upload) => {
-    const isResuming = resumingUploadId === upload.id
-    const displayState = getIncompleteUploadDisplayState(upload)
-
-    return (
-      <ListItem
-        key={upload.id}
-        sx={{
-          border: '1px solid',
-          borderColor: 'warning.light',
-          backgroundColor: 'background.default',
-          borderRadius: 1,
-          p: 1,
-          mb: 1,
-          minHeight: 66,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}
-      >
-        <Box sx={{ minWidth: 0 }}>
-          <Stack
-            direction="row"
-            sx={{
-              gap: 1,
-              alignItems: 'center',
-              flexWrap: 'wrap'
-            }}
-          >
-            <Typography
-              variant="body2"
-              sx={{
-                fontWeight: 600
-              }}
-            >
-              {getUploadLanguageLabel(upload)}
-            </Typography>
-            <Chip
-              size="small"
-              label={displayState.label}
-              color={displayState.color}
-            />
-          </Stack>
-          <Typography
-            variant="caption"
-            sx={{
-              color: 'text.secondary'
-            }}
-          >
-            {upload.language?.name?.[0]?.value != null
-              ? `${upload.languageId} • `
-              : ''}
-            {upload.edition} • {upload.source}
-            {upload.originalFilename != null
-              ? ` • ${upload.originalFilename}`
-              : ''}
-          </Typography>
-          {displayState.message != null && (
-            <Typography
-              variant="caption"
-              sx={{
-                color: 'text.secondary',
-                display: 'block'
-              }}
-            >
-              {displayState.message}
-            </Typography>
-          )}
-          {displayState.processingDurationLabel != null && (
-            <Typography
-              variant="caption"
-              sx={{
-                color: 'text.secondary',
-                display: 'block'
-              }}
-            >
-              {displayState.processingDurationLabel}
-            </Typography>
-          )}
-          {upload.errorMessage != null && (
-            <Typography
-              variant="caption"
-              sx={{
-                color: 'error.main',
-                display: 'block'
-              }}
-            >
-              {upload.errorMessage}
-            </Typography>
-          )}
-        </Box>
-        <Stack
-          direction="row"
-          sx={{
-            gap: 0.5,
-            alignItems: 'center',
-            ml: 1
-          }}
+  const renderUploadDetailActions = (upload: VideoVariantUploadRow) => (
+    <>
+      <Tooltip title={getUploadDebugTooltip(upload)} placement="left" arrow>
+        <IconButton size="small" aria-label="view upload details">
+          <InfoOutlinedIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Copy upload details" arrow>
+        <IconButton
+          size="small"
+          aria-label="copy upload details"
+          onClick={() => void handleCopyUploadDetails(upload)}
         >
-          <Tooltip title={getUploadDebugTooltip(upload)} placement="left" arrow>
-            <IconButton size="small" aria-label="view upload details">
-              <InfoOutlinedIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Copy upload details" arrow>
-            <IconButton
-              size="small"
-              aria-label="copy upload details"
-              onClick={() => void handleCopyUploadDetails(upload)}
-            >
-              <ContentCopyIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          {displayState.action != null && displayState.actionLabel != null && (
-            <Button
-              size="small"
-              variant="outlined"
-              startIcon={
-                isResuming ? undefined : displayState.action === 'addAgain' ? (
-                  <AddIcon />
-                ) : (
-                  <ReplayIcon />
-                )
-              }
-              disabled={resumingUploadId != null || isResumeRequestInFlight}
-              onClick={() => {
-                if (displayState.action === 'addAgain') {
-                  onAddAudioLanguage()
-                  return
-                }
+          <ContentCopyIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
+    </>
+  )
 
-                onResumeUpload(upload.id)
+  return (
+    <>
+      {outstandingUploads.map((upload) => {
+        const isResuming = resumingUploadId === upload.id
+        const displayState = getIncompleteUploadDisplayState(upload)
+
+        return (
+          <ListItem
+            key={upload.id}
+            sx={{
+              border: '1px solid',
+              borderColor: 'warning.light',
+              backgroundColor: 'background.default',
+              borderRadius: 1,
+              p: 1,
+              mb: 1,
+              minHeight: 66,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}
+          >
+            <Box sx={{ minWidth: 0 }}>
+              <Stack
+                direction="row"
+                sx={{
+                  gap: 1,
+                  alignItems: 'center',
+                  flexWrap: 'wrap'
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 600
+                  }}
+                >
+                  {getUploadLanguageLabel(upload)}
+                </Typography>
+                <Chip
+                  size="small"
+                  label={displayState.label}
+                  color={displayState.color}
+                />
+              </Stack>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary'
+                }}
+              >
+                {getUploadMetaLabel(upload)}
+              </Typography>
+              {displayState.message != null && (
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: 'text.secondary',
+                    display: 'block'
+                  }}
+                >
+                  {displayState.message}
+                </Typography>
+              )}
+              {displayState.processingDurationLabel != null && (
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: 'text.secondary',
+                    display: 'block'
+                  }}
+                >
+                  {displayState.processingDurationLabel}
+                </Typography>
+              )}
+              {upload.errorMessage != null && (
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: 'error.main',
+                    display: 'block'
+                  }}
+                >
+                  {upload.errorMessage}
+                </Typography>
+              )}
+            </Box>
+            <Stack
+              direction="row"
+              sx={{
+                gap: 0.5,
+                alignItems: 'center',
+                ml: 1
               }}
             >
-              {isResuming ? 'Working...' : displayState.actionLabel}
-            </Button>
-          )}
-        </Stack>
-      </ListItem>
-    )
-  })
+              {renderUploadDetailActions(upload)}
+              {displayState.action != null &&
+                displayState.actionLabel != null && (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    startIcon={
+                      isResuming ? undefined : displayState.action ===
+                        'addAgain' ? (
+                        <AddIcon />
+                      ) : (
+                        <ReplayIcon />
+                      )
+                    }
+                    disabled={
+                      resumingUploadId != null || isResumeRequestInFlight
+                    }
+                    onClick={() => {
+                      if (displayState.action === 'addAgain') {
+                        onAddAudioLanguage()
+                        return
+                      }
+
+                      onResumeUpload(upload.id)
+                    }}
+                  >
+                    {isResuming ? 'Working...' : displayState.actionLabel}
+                  </Button>
+                )}
+            </Stack>
+          </ListItem>
+        )
+      })}
+      {groupSupersededUploadsByLanguage(supersededUploads).map((group) => {
+        const isExpanded = expandedLanguageIds.includes(group.languageId)
+
+        return (
+          <ListItem
+            key={`superseded-${group.languageId}`}
+            sx={{
+              border: '1px solid',
+              borderColor: 'divider',
+              backgroundColor: 'background.default',
+              borderRadius: 1,
+              p: 1,
+              mb: 1,
+              display: 'block'
+            }}
+          >
+            <Stack
+              direction="row"
+              sx={{ gap: 1, alignItems: 'center', flexWrap: 'wrap' }}
+            >
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: 600, color: 'text.secondary' }}
+              >
+                {group.languageLabel}
+              </Typography>
+              <Button
+                size="small"
+                aria-expanded={isExpanded}
+                aria-label={`previous attempts for ${group.languageLabel}`}
+                startIcon={isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                onClick={() => handleTogglePreviousAttempts(group.languageId)}
+                sx={{ color: 'text.secondary', textTransform: 'none' }}
+              >
+                {`Previous attempts (${group.uploads.length})`}
+              </Button>
+            </Stack>
+            <Typography
+              variant="caption"
+              sx={{ color: 'text.secondary', display: 'block' }}
+            >
+              Superseded by a later successful upload. No action needed.
+            </Typography>
+            <Collapse in={isExpanded} unmountOnExit>
+              <Stack sx={{ gap: 1, mt: 1 }}>
+                {group.uploads.map((upload) => {
+                  const timestampLabel = getUploadTimestampLabel(upload)
+
+                  return (
+                    <Box
+                      key={upload.id}
+                      data-testid="SupersededUploadAttempt"
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 1,
+                        borderTop: '1px solid',
+                        borderColor: 'divider',
+                        pt: 1
+                      }}
+                    >
+                      <Box sx={{ minWidth: 0 }}>
+                        <Chip
+                          size="small"
+                          variant="outlined"
+                          label={uploadStatusLabels[upload.status]}
+                        />
+                        <Typography
+                          variant="caption"
+                          sx={{ color: 'text.secondary', display: 'block' }}
+                        >
+                          {getUploadMetaLabel(upload)}
+                        </Typography>
+                        {timestampLabel != null && (
+                          <Typography
+                            variant="caption"
+                            sx={{ color: 'text.secondary', display: 'block' }}
+                          >
+                            {timestampLabel}
+                          </Typography>
+                        )}
+                        {upload.errorMessage != null && (
+                          <Typography
+                            variant="caption"
+                            sx={{ color: 'text.secondary', display: 'block' }}
+                          >
+                            {upload.errorMessage}
+                          </Typography>
+                        )}
+                      </Box>
+                      <Stack
+                        direction="row"
+                        sx={{ gap: 0.5, alignItems: 'center', ml: 1 }}
+                      >
+                        {renderUploadDetailActions(upload)}
+                      </Stack>
+                    </Box>
+                  )
+                })}
+              </Stack>
+            </Collapse>
+          </ListItem>
+        )
+      })}
+    </>
+  )
 }
