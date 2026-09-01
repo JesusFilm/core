@@ -196,7 +196,10 @@ If any error occurs, the script will log the error and continue processing other
 One-off fix for the "Know God" video (id `7_KnowGod`), which was imported with
 an internal-style slug (`Nua_Know_God`) instead of a public-style slug.
 Renames `Video.slug` to `know-god` and every `VideoVariant.slug` that still
-carries the `Nua_Know_God/` prefix to the matching `know-god/` prefix.
+carries the `Nua_Know_God/` prefix to the matching `know-god/` prefix, then
+calls `videoCacheReset`/`videoVariantCacheReset` for each row it changes so
+the Yoga response cache and the Watch app's ISR cache don't keep serving the
+old slug.
 
 ### Usage
 
@@ -209,3 +212,13 @@ nx run api-media:fix-know-god-slug
 The script is idempotent: it reads the current slug first, and only writes
 when it still matches the old value, so re-running it after the fix has
 already landed is a no-op.
+
+### Note on the slug-permanence invariant
+
+`Video.slug`'s GraphQL description states "slug is a permanent link to the
+video" (`apis/api-media/src/schema/video/video.ts`), and the `videoUpdate`
+mutation enforces that once a video is published. This script deliberately
+overrides that invariant for one already-malformed, non-functional slug
+(`Nua_Know_God` never resolved to a working public route — see FGE-97), not
+as a general-purpose slug-editing tool. Don't reuse this script's approach
+for a video whose old slug is a live, working public route.

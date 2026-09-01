@@ -1,8 +1,17 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { prismaMock } from '../../test/prismaMock'
+import { videoCacheReset, videoVariantCacheReset } from '../lib/videoCacheReset'
 
 import { fixKnowGodSlug } from './fix-know-god-slug'
+
+vi.mock('../lib/videoCacheReset', () => ({
+  videoCacheReset: vi.fn(),
+  videoVariantCacheReset: vi.fn()
+}))
+
+const mockedVideoCacheReset = videoCacheReset as unknown as Mock
+const mockedVideoVariantCacheReset = videoVariantCacheReset as unknown as Mock
 
 describe('fixKnowGodSlug', () => {
   beforeEach(() => {
@@ -36,6 +45,9 @@ describe('fixKnowGodSlug', () => {
       where: { id: '3934_7_KnowGod' },
       data: { slug: 'know-god/russian' }
     })
+    expect(mockedVideoCacheReset).toHaveBeenCalledWith('7_KnowGod')
+    expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('529_7_KnowGod')
+    expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('3934_7_KnowGod')
   })
 
   it('is a no-op when the slug has already been fixed', async () => {
@@ -49,6 +61,8 @@ describe('fixKnowGodSlug', () => {
     expect(result).toEqual({ videoUpdated: false, variantIdsUpdated: [] })
     expect(prismaMock.video.update).not.toHaveBeenCalled()
     expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
+    expect(mockedVideoCacheReset).not.toHaveBeenCalled()
+    expect(mockedVideoVariantCacheReset).not.toHaveBeenCalled()
   })
 
   it('does not touch a variant slug belonging to a different video prefix', async () => {
