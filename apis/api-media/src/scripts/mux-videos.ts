@@ -555,7 +555,13 @@ export async function processDownloads(): Promise<void> {
       .map((prefix) => prefix.trim())
       .filter((prefix) => prefix.length > 0)
 
-  let missingRowsCursor = ''
+  // Optional resume point: this pass has no persisted cursor, so a run
+  // interrupted partway (connection drop, etc.) restarts from the very
+  // beginning of the scope on the next invocation, re-confirming everything
+  // already covered before reaching new ground. Set this to the last id an
+  // interrupted run logged to skip straight past it.
+  let missingRowsCursor =
+    process.env.MUX_DOWNLOAD_BACKFILL_START_AFTER_ID?.trim() ?? ''
   let hasMoreMissingRows = true
 
   while (hasMoreMissingRows) {
