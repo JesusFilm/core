@@ -1389,6 +1389,24 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   adminJourneysReport(reportType: JourneysReportType!) : PowerBiEmbed @join__field(graph: API_JOURNEYS_MODERN) 
   journey(id: ID!, idType: IdType = slug, options: JourneysQueryOptions) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   journeys(where: JourneysFilter, options: JourneysQueryOptions) : [Journey!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Journeys that embed the given media video, for publishers
+  choosing a journey to link from an external surface (e.g. a YouTube
+  description CTA).
+  
+  Matching is on the root video id stored by VideoBlocks whose source is
+  internal or unset — YouTube, Cloudflare and Mux blocks hold a provider id in
+  the same column and are never candidates, while blocks predating the source
+  column hold a media video id and are. When languageId is given it narrows to
+  blocks playing that variant; when omitted any variant of the video matches.
+  
+  Only published, non-template journeys are returned: the caller needs a link
+  that a viewer can actually open. Results are not scoped to the publisher's
+  teams — the whole point is finding a journey they may not own — and are
+  ordered by unique visitor count descending, so the most viewed journey comes
+  first.
+  """
+  journeysByVideo(videoId: ID!, languageId: ID) : [Journey!]! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyTemplateLanguageIds: [String!]! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyCollection(id: ID!) : JourneyCollection! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyCollections(teamId: ID!) : [JourneyCollection]! @join__field(graph: API_JOURNEYS_MODERN) 
