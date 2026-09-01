@@ -620,7 +620,7 @@ describe('download processing utilities', () => {
       expect(prismaMock.videoVariantDownload.update).not.toHaveBeenCalled()
     })
 
-    it('should preserve existing non-Mux downloads for the same quality', async () => {
+    it('replaces an existing non-Mux download for the same quality with the Mux-hosted one', async () => {
       const muxVideoAsset = {
         playback_ids: [{ id: 'test-playback-id' }],
         static_renditions: {
@@ -642,7 +642,9 @@ describe('download processing utilities', () => {
           id: 'existing-high-download',
           quality: VideoVariantDownloadQuality.high,
           videoVariantId: 'variant-1',
-          url: 'https://example.com/download.mp4',
+          // A legacy origin-server URL predating the Mux migration -- not a
+          // distro* row (those are a separate quality enum, untouched here).
+          url: 'https://api-media-core.jesusfilm.org/download.mp4',
           size: 157286400,
           height: 720,
           width: 1280,
@@ -653,6 +655,7 @@ describe('download processing utilities', () => {
           updatedAt: new Date()
         })
         .mockResolvedValueOnce(null)
+      prismaMock.videoVariantDownload.update.mockResolvedValue({} as any)
       prismaMock.videoVariantDownload.create.mockResolvedValue({} as any)
 
       const result = await createDownloadsFromMuxAsset({
@@ -660,8 +663,14 @@ describe('download processing utilities', () => {
         muxVideoAsset
       })
 
-      expect(result).toBe(1)
-      expect(prismaMock.videoVariantDownload.update).not.toHaveBeenCalled()
+      expect(result).toBe(2)
+      expect(prismaMock.videoVariantDownload.update).toHaveBeenCalledWith({
+        where: { id: 'existing-high-download' },
+        data: expect.objectContaining({
+          quality: VideoVariantDownloadQuality.high,
+          url: 'https://stream.mux.com/test-playback-id/720p.mp4'
+        })
+      })
       expect(prismaMock.videoVariantDownload.create).toHaveBeenCalledTimes(1)
       expect(prismaMock.videoVariantDownload.create).toHaveBeenCalledWith({
         data: expect.objectContaining({

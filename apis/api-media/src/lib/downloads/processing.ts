@@ -378,8 +378,17 @@ export async function createDownloadsFromMuxAsset({
         continue
       }
 
+      const isExistingMuxDownload =
+        existingDownload.url.startsWith(MUX_STREAM_BASE_URL)
+
+      // Replace a broken existing Mux row, or ANY non-Mux row occupying this
+      // quality slot (e.g. a legacy origin-server URL predating the Mux
+      // migration) -- a non-Mux row here isn't a deliberate alternative the
+      // way distro* rows are (those are a separate quality enum entirely,
+      // never touched by this function); it's stale data blocking the
+      // correct Mux-hosted download from ever landing.
       if (
-        existingDownload.url.startsWith(MUX_STREAM_BASE_URL) &&
+        !isExistingMuxDownload ||
         hasMissingDownloadMetadata(existingDownload)
       ) {
         await prisma.videoVariantDownload.update({
@@ -400,10 +409,9 @@ export async function createDownloadsFromMuxAsset({
       logger?.info(
         {
           videoVariantId: variantId,
-          quality: download.quality,
-          isMuxDownload: existingDownload.url.startsWith(MUX_STREAM_BASE_URL)
+          quality: download.quality
         },
-        'Existing download does not need Mux metadata refresh'
+        'Existing Mux download is already complete, no refresh needed'
       )
     } catch (error: any) {
       logger?.error(
