@@ -1,3 +1,5 @@
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+
 import Mux from '@mux/mux-node'
 
 import {
@@ -30,6 +32,26 @@ const DISTRO_DOWNLOAD_QUALITIES = [
 // 1440p/2160p masters, where qhd/uhd never appear and this default of 7
 // makes nearly every variant a false-positive candidate).
 const DEFAULT_MAX_REAL_DOWNLOAD_QUALITY_COUNT = 7
+
+// getVideo() is a lightweight read against Mux's Video API, not the asset
+// creation/upload calls importMuxVideos()/updateHls() serialize with their
+// own 2s sleeps -- there's no evidence it needs the same headroom. Bounded
+// concurrency (a handful of variants in flight at once, each with a small
+// stagger before its own call) gets meaningfully more throughput than one
+// request every 1.5s while staying well under the prod pool's
+// connection_limit and any reasonable Mux read-rate ceiling.
+const DEFAULT_PROCESS_CONCURRENCY = 4
+const MUX_API_CALL_STAGGER_MS = 250
+
+async function processConcurrently<T>(
+  items: T[],
+  concurrency: number,
+  handler: (item: T) => Promise<void>
+): Promise<void> {
+  for (let index = 0; index < items.length; index += concurrency) {
+    await Promise.all(items.slice(index, index + concurrency).map(handler))
+  }
+}
 
 function getMuxClient(): Mux {
   if (process.env.MUX_ACCESS_TOKEN_ID == null)
@@ -266,6 +288,18 @@ export async function processDownloads(): Promise<void> {
     )
   }
 
+  const concurrencyValue = process.env.MUX_DOWNLOAD_BACKFILL_CONCURRENCY?.trim()
+  const concurrency =
+    concurrencyValue != null && concurrencyValue !== ''
+      ? Number.parseInt(concurrencyValue, 10)
+      : DEFAULT_PROCESS_CONCURRENCY
+
+  if (!Number.isFinite(concurrency) || concurrency <= 0) {
+    throw new Error(
+      'MUX_DOWNLOAD_BACKFILL_CONCURRENCY must be a positive integer'
+    )
+  }
+
   if (applyChanges) {
     console.log('Apply mode enabled: download metadata rows will be refreshed')
   } else {
@@ -326,7 +360,7 @@ export async function processDownloads(): Promise<void> {
       return
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    await new Promise((resolve) => setTimeout(resolve, MUX_API_CALL_STAGGER_MS))
 
     try {
       const muxVideoAsset = await getVideo(variant.muxVideo.assetId, false)
@@ -489,12 +523,16 @@ export async function processDownloads(): Promise<void> {
       `Found ${variantsToProcess.length} variants with zero-metadata download rows to process in this batch`
     )
 
-    for (const variant of variantsToProcess) {
-      const variantZeroMetadataDownloads =
-        downloadsByVariant.get(variant.id) ?? []
-      await processVariant(variant, variantZeroMetadataDownloads)
-      totalProcessed++
-    }
+    await processConcurrently(
+      variantsToProcess,
+      concurrency,
+      async (variant) => {
+        const variantZeroMetadataDownloads =
+          downloadsByVariant.get(variant.id) ?? []
+        await processVariant(variant, variantZeroMetadataDownloads)
+      }
+    )
+    totalProcessed += variantsToProcess.length
 
     nextCursor = zeroMetadataDownloads.at(-1)?.id ?? null
 
@@ -555,13 +593,30 @@ export async function processDownloads(): Promise<void> {
       .map((prefix) => prefix.trim())
       .filter((prefix) => prefix.length > 0)
 
-  // Optional resume point: this pass has no persisted cursor, so a run
-  // interrupted partway (connection drop, etc.) restarts from the very
-  // beginning of the scope on the next invocation, re-confirming everything
-  // already covered before reaching new ground. Set this to the last id an
-  // interrupted run logged to skip straight past it.
+  // Optional resume point. MUX_DOWNLOAD_BACKFILL_START_AFTER_ID sets a
+  // one-off starting cursor (e.g. the last id an interrupted run logged).
+  // MUX_DOWNLOAD_BACKFILL_CURSOR_FILE goes further: given a file path, the
+  // cursor is read from it at startup (if present) and written back after
+  // every completed page, so a run interrupted by a connection drop or the
+  // process being killed can simply be re-invoked with the same file and
+  // pick up exactly where it left off -- no need to read logs and pass an
+  // explicit START_AFTER_ID by hand. An explicit START_AFTER_ID still wins
+  // over the file, for deliberately overriding a stale or missing cursor.
+  const cursorFilePath = process.env.MUX_DOWNLOAD_BACKFILL_CURSOR_FILE?.trim()
+  const cursorFromFile =
+    cursorFilePath != null && existsSync(cursorFilePath)
+      ? readFileSync(cursorFilePath, 'utf-8').trim()
+      : null
+
   let missingRowsCursor =
-    process.env.MUX_DOWNLOAD_BACKFILL_START_AFTER_ID?.trim() ?? ''
+    process.env.MUX_DOWNLOAD_BACKFILL_START_AFTER_ID?.trim() ??
+    cursorFromFile ??
+    ''
+  if (cursorFilePath != null) {
+    console.log(
+      `Missing-rows pass resuming from cursor: ${missingRowsCursor === '' ? '(start)' : missingRowsCursor} (file: ${cursorFilePath})`
+    )
+  }
   let hasMoreMissingRows = true
 
   while (hasMoreMissingRows) {
@@ -616,12 +671,15 @@ export async function processDownloads(): Promise<void> {
       `Found ${variants.length} variants with fewer than ${maxRealDownloadQualityCount} Mux-hosted download rows to process in this batch`
     )
 
-    for (const variant of variants) {
+    await processConcurrently(variants, concurrency, async (variant) => {
       await processVariant(variant, [])
-      totalProcessed++
-    }
+    })
+    totalProcessed += variants.length
 
     missingRowsCursor = candidates.at(-1)?.id ?? missingRowsCursor
+    if (cursorFilePath != null) {
+      writeFileSync(cursorFilePath, missingRowsCursor)
+    }
 
     if (candidates.length < take) {
       hasMoreMissingRows = false

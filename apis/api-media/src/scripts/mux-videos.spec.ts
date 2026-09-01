@@ -1,3 +1,7 @@
+import { existsSync, readFileSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+
 import { type Mock, vi } from 'vitest'
 
 import { VideoVariantDownloadQuality } from '@core/prisma/media/client'
@@ -76,8 +80,8 @@ const readyMuxVideoAsset = {
   }
 }
 
-// processVariant() waits 1.5s between Mux calls to avoid rate limiting;
-// fake timers keep tests fast without weakening what's under test.
+// processVariant() staggers each Mux call by MUX_API_CALL_STAGGER_MS; fake
+// timers keep tests fast without weakening what's under test.
 async function runProcessDownloads(): Promise<void> {
   const result = processDownloads()
   await vi.runAllTimersAsync()
@@ -91,6 +95,8 @@ describe('processDownloads', () => {
     process.env.MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT
   const originalVideoIdPrefixes =
     process.env.MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES
+  const originalConcurrency = process.env.MUX_DOWNLOAD_BACKFILL_CONCURRENCY
+  const originalCursorFile = process.env.MUX_DOWNLOAD_BACKFILL_CURSOR_FILE
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -99,6 +105,8 @@ describe('processDownloads', () => {
     delete process.env.MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE
     delete process.env.MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT
     delete process.env.MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES
+    delete process.env.MUX_DOWNLOAD_BACKFILL_CONCURRENCY
+    delete process.env.MUX_DOWNLOAD_BACKFILL_CURSOR_FILE
     ;(prismaMock.videoVariantDownload.findMany as Mock).mockResolvedValue([])
     ;(prismaMock.$queryRaw as unknown as Mock).mockResolvedValue([])
   })
@@ -123,6 +131,12 @@ describe('processDownloads', () => {
     else
       process.env.MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES =
         originalVideoIdPrefixes
+    if (originalConcurrency == null)
+      delete process.env.MUX_DOWNLOAD_BACKFILL_CONCURRENCY
+    else process.env.MUX_DOWNLOAD_BACKFILL_CONCURRENCY = originalConcurrency
+    if (originalCursorFile == null)
+      delete process.env.MUX_DOWNLOAD_BACKFILL_CURSOR_FILE
+    else process.env.MUX_DOWNLOAD_BACKFILL_CURSOR_FILE = originalCursorFile
   })
 
   it('throws for a non-positive sample size', async () => {
@@ -139,6 +153,15 @@ describe('processDownloads', () => {
 
     await expect(processDownloads()).rejects.toThrow(
       'MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT must be a positive integer'
+    )
+    expect(prismaMock.videoVariantDownload.findMany).not.toHaveBeenCalled()
+  })
+
+  it('throws for a non-positive concurrency', async () => {
+    process.env.MUX_DOWNLOAD_BACKFILL_CONCURRENCY = '0'
+
+    await expect(processDownloads()).rejects.toThrow(
+      'MUX_DOWNLOAD_BACKFILL_CONCURRENCY must be a positive integer'
     )
     expect(prismaMock.videoVariantDownload.findMany).not.toHaveBeenCalled()
   })
@@ -452,6 +475,95 @@ describe('processDownloads', () => {
 
       const call = (prismaMock.$queryRaw as unknown as Mock).mock.calls[0]
       expect(JSON.stringify(call)).not.toContain('LEFT(v."videoId"')
+    })
+
+    it('never has more than MUX_DOWNLOAD_BACKFILL_CONCURRENCY variants in flight at once', async () => {
+      process.env.MUX_DOWNLOAD_BACKFILL_CONCURRENCY = '2'
+      ;(prismaMock.$queryRaw as unknown as Mock)
+        .mockResolvedValueOnce([
+          { id: 'variant-a' },
+          { id: 'variant-b' },
+          { id: 'variant-c' }
+        ])
+        .mockResolvedValueOnce([])
+      ;(prismaMock.videoVariant.findMany as Mock).mockResolvedValueOnce([
+        variant('variant-a'),
+        variant('variant-b'),
+        variant('variant-c')
+      ])
+      mockedPreviewMuxDownloadsFromAsset.mockReturnValue([])
+
+      let inFlight = 0
+      let maxInFlight = 0
+      const pendingResolves: Array<() => void> = []
+      mockedGetVideo.mockImplementation(() => {
+        inFlight++
+        maxInFlight = Math.max(maxInFlight, inFlight)
+        return new Promise((resolve) => {
+          pendingResolves.push(() => {
+            inFlight--
+            resolve(readyMuxVideoAsset)
+          })
+        })
+      })
+
+      const resultPromise = processDownloads()
+
+      // First chunk (concurrency=2): variant-a and variant-b start together.
+      await vi.advanceTimersByTimeAsync(250)
+      expect(inFlight).toBe(2)
+      pendingResolves.splice(0).forEach((resolve) => resolve())
+
+      // Second chunk: only variant-c, started after the first chunk settles.
+      await vi.advanceTimersByTimeAsync(250)
+      pendingResolves.splice(0).forEach((resolve) => resolve())
+
+      await resultPromise
+
+      expect(maxInFlight).toBe(2)
+    })
+
+    it('resumes from a persisted cursor file and updates it after each page', async () => {
+      const cursorFile = join(
+        tmpdir(),
+        `mux-download-backfill-cursor-${Date.now()}.txt`
+      )
+      process.env.MUX_DOWNLOAD_BACKFILL_CURSOR_FILE = cursorFile
+
+      try {
+        ;(prismaMock.$queryRaw as unknown as Mock)
+          .mockResolvedValueOnce([{ id: 'variant-resumed' }])
+          .mockResolvedValueOnce([])
+        ;(prismaMock.videoVariant.findMany as Mock).mockResolvedValueOnce([
+          variant('variant-resumed')
+        ])
+        mockedGetVideo.mockResolvedValue(readyMuxVideoAsset)
+        mockedPreviewMuxDownloadsFromAsset.mockReturnValue([])
+
+        await runProcessDownloads()
+
+        expect(existsSync(cursorFile)).toBe(true)
+        expect(readFileSync(cursorFile, 'utf-8')).toBe('variant-resumed')
+
+        const firstCallValues = (prismaMock.$queryRaw as unknown as Mock).mock
+          .calls[0]
+        expect(firstCallValues).toContain('')
+
+        vi.clearAllMocks()
+        ;(prismaMock.videoVariantDownload.findMany as Mock).mockResolvedValue(
+          []
+        )
+        ;(prismaMock.$queryRaw as unknown as Mock).mockResolvedValue([])
+        mockedPreviewMuxDownloadsFromAsset.mockReturnValue([])
+
+        await runProcessDownloads()
+
+        const secondCallValues = (prismaMock.$queryRaw as unknown as Mock).mock
+          .calls[0]
+        expect(secondCallValues).toContain('variant-resumed')
+      } finally {
+        rmSync(cursorFile, { force: true })
+      }
     })
   })
 })
