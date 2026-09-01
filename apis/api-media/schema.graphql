@@ -1772,6 +1772,13 @@ type Youtube
   primaryLanguageId: ID @shareable
 }
 
+"""
+Who composed a row's published title and description. One value on purpose: nothing but the youtube-studio (Wheat) app writes WHEAT, so null means "not composed by Wheat" by construction.
+"""
+enum YoutubeMetadataSource {
+  WHEAT
+}
+
 enum YoutubeReasonCode {
   NO_CATALOG_MATCH
   NOT_APPLICABLE
@@ -1816,6 +1823,16 @@ type YoutubeVideo {
   reviewedAt: DateTime
   matchMethod: String
   matchConfidence: Float
+
+  """
+  Who composed the published title and description. Null means the text was not composed by Wheat.
+  """
+  metadataSource: YoutubeMetadataSource
+
+  """
+  The version of the composing tool's metadata rulebook — the house style guide the title and description were written against. Opaque to Core; meaningful only alongside a metadataSource.
+  """
+  metadataRulebookVersion: String
   lastSyncedAt: DateTime
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -1854,6 +1871,8 @@ input YoutubeVideoUpsertInput {
   publishedAt: DateTime
   matchMethod: String
   matchConfidence: Float
+  metadataSource: YoutubeMetadataSource
+  metadataRulebookVersion: String
 }
 
 type ZodError implements BaseError

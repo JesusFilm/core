@@ -3258,6 +3258,14 @@ type YoutubeVideo @join__type(graph: API_MEDIA)  {
   reviewedAt: DateTime
   matchMethod: String
   matchConfidence: Float
+  """
+  Who composed the published title and description. Null means the text was not composed by Wheat.
+  """
+  metadataSource: YoutubeMetadataSource
+  """
+  The version of the composing tool's metadata rulebook — the house style guide the title and description were written against. Opaque to Core; meaningful only alongside a metadataSource.
+  """
+  metadataRulebookVersion: String
   lastSyncedAt: DateTime
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -3953,6 +3961,13 @@ enum VideoVariantUploadStatus @join__type(graph: API_MEDIA)  {
   muxReady @join__enumValue(graph: API_MEDIA) 
   variantCreated @join__enumValue(graph: API_MEDIA) 
   failed @join__enumValue(graph: API_MEDIA) 
+}
+
+"""
+Who composed a row's published title and description. One value on purpose: nothing but the youtube-studio (Wheat) app writes WHEAT, so null means "not composed by Wheat" by construction.
+"""
+enum YoutubeMetadataSource @join__type(graph: API_MEDIA)  {
+  WHEAT @join__enumValue(graph: API_MEDIA) 
 }
 
 enum YoutubeReasonCode @join__type(graph: API_MEDIA)  {
@@ -5696,6 +5711,8 @@ input YoutubeVideoUpsertInput @join__type(graph: API_MEDIA)  {
   publishedAt: DateTime
   matchMethod: String
   matchConfidence: Float
+  metadataSource: YoutubeMetadataSource
+  metadataRulebookVersion: String
 }
 
 input CreateVerificationRequestInput @join__type(graph: API_USERS)  {
