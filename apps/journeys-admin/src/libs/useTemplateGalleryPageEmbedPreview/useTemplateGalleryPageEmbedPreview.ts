@@ -1,4 +1,5 @@
-import { QueryResult, gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 
 import {
   TemplateGalleryPageEmbedPreview,
@@ -25,9 +26,10 @@ export const TEMPLATE_GALLERY_PAGE_EMBED_PREVIEW = gql`
  */
 export function useTemplateGalleryPageEmbedPreview(
   url: string
-): QueryResult<
+): useQuery.Result<
   TemplateGalleryPageEmbedPreview,
-  TemplateGalleryPageEmbedPreviewVariables
+  TemplateGalleryPageEmbedPreviewVariables,
+  'empty' | 'complete' | 'streaming'
 > {
   const trimmed = url.trim()
   return useQuery<

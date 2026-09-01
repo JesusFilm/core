@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
@@ -29,7 +30,7 @@ vi.mock('notistack', async () => {
 })
 
 function wrapperWithMocks(
-  mocks: ReadonlyArray<MockedResponse>
+  mocks: ReadonlyArray<MockLink.MockedResponse>
 ): ({ children }: { children: ReactNode }) => JSX.Element {
   return function Wrapper({ children }) {
     return (
@@ -127,7 +128,7 @@ describe('useCollectionMutations', () => {
 
     it('returns null and shows an error snackbar when the mutation fails', async () => {
       const collection = makeCollection({ id: 'page-7' })
-      const errorMock: MockedResponse = {
+      const errorMock: MockLink.MockedResponse = {
         request: {
           query: TEMPLATE_GALLERY_PAGE_PUBLISH,
           variables: { id: 'page-7' }
@@ -161,7 +162,7 @@ describe('useCollectionMutations', () => {
     // a fallback error message identical to the catch branch.
     it('returns null and shows a fallback error snackbar when the mutation resolves with null data', async () => {
       const collection = makeCollection({ id: 'page-7' })
-      const nullDataMock: MockedResponse = {
+      const nullDataMock: MockLink.MockedResponse = {
         request: {
           query: TEMPLATE_GALLERY_PAGE_PUBLISH,
           variables: { id: 'page-7' }
@@ -237,7 +238,7 @@ describe('useCollectionMutations', () => {
 
     it('shows an error snackbar when the mutation fails', async () => {
       const collection = makeCollection({ id: 'page-7' })
-      const errorMock: MockedResponse = {
+      const errorMock: MockLink.MockedResponse = {
         request: {
           query: TEMPLATE_GALLERY_PAGE_UNPUBLISH,
           variables: { id: 'page-7' }
@@ -270,7 +271,7 @@ describe('useCollectionMutations', () => {
         id: 'page-7',
         status: TemplateGalleryPageStatus.published
       })
-      const nullDataMock: MockedResponse = {
+      const nullDataMock: MockLink.MockedResponse = {
         request: {
           query: TEMPLATE_GALLERY_PAGE_UNPUBLISH,
           variables: { id: 'page-7' }
@@ -339,7 +340,7 @@ describe('useCollectionMutations', () => {
 
     it('shows an error snackbar with the server message on failure', async () => {
       const collection = makeCollection({ id: 'page-7' })
-      const errorMock: MockedResponse = {
+      const errorMock: MockLink.MockedResponse = {
         request: {
           query: TEMPLATE_GALLERY_PAGE_DELETE,
           variables: { id: 'page-7' }
@@ -370,7 +371,7 @@ describe('useCollectionMutations', () => {
         id: 'page-7',
         status: TemplateGalleryPageStatus.published
       })
-      const nullDataMock: MockedResponse = {
+      const nullDataMock: MockLink.MockedResponse = {
         request: {
           query: TEMPLATE_GALLERY_PAGE_DELETE,
           variables: { id: 'page-7' }
@@ -408,7 +409,7 @@ describe('useCollectionMutations', () => {
       // First mock hangs long enough that the second call dispatches
       // before the first resolves. Apollo's MockedResponse `delay`
       // controls when the mutation result becomes observable.
-      const firstMock: MockedResponse = {
+      const firstMock: MockLink.MockedResponse = {
         ...getTemplateGalleryPageUnpublishMock({ id: 'page-A' }),
         delay: 10_000
       }
@@ -445,7 +446,7 @@ describe('useCollectionMutations', () => {
         id: 'page-7',
         status: TemplateGalleryPageStatus.published
       })
-      const slowMock: MockedResponse = {
+      const slowMock: MockLink.MockedResponse = {
         ...getTemplateGalleryPageUnpublishMock({ id: 'page-7' }),
         delay: 80
       }

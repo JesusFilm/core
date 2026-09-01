@@ -1,4 +1,6 @@
-import { ApolloError, gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { LinkError } from '@apollo/client/errors'
+import { useMutation } from '@apollo/client/react'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -88,17 +90,15 @@ export function TeamUpdateDialog({
         }
       )
     } catch (error) {
-      if (error instanceof ApolloError) {
-        if (error.networkError != null) {
-          enqueueSnackbar(
-            t('Failed to update the team. Reload the page or try again.'),
-            {
-              variant: 'error',
-              preventDuplicate: true
-            }
-          )
-          return
-        }
+      if (LinkError.is(error)) {
+        enqueueSnackbar(
+          t('Failed to update the team. Reload the page or try again.'),
+          {
+            variant: 'error',
+            preventDuplicate: true
+          }
+        )
+        return
       }
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {

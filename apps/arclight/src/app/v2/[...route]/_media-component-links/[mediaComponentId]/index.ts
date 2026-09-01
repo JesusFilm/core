@@ -211,12 +211,11 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
   const languageIds =
     c.req.query('languageIds')?.split(',').filter(Boolean) ?? []
 
-  const { data } = await getApolloClient().query<
-    ResultOf<typeof GET_VIDEO_CHILDREN>
-  >({
+  const { data } = await getApolloClient().query({
     query: GET_VIDEO_CHILDREN,
+    errorPolicy: 'none',
     variables: {
-      id: mediaComponentId
+      id: mediaComponentId ?? ''
     }
   })
 

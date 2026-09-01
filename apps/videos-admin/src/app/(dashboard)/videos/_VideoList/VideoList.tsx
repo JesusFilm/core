@@ -1,6 +1,5 @@
 'use client'
-
-import { useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import GetAppIcon from '@mui/icons-material/GetApp'
 import PrintIcon from '@mui/icons-material/Print'
 import Button from '@mui/material/Button'
@@ -460,7 +459,7 @@ export function VideoList(): ReactElement {
               }
             })
 
-            const videos = result.data.adminVideos || []
+            const videos = result.data?.adminVideos ?? []
 
             // Process the data to match the grid's format
             const processedRows = videos.map((video) => {
@@ -549,7 +548,7 @@ export function VideoList(): ReactElement {
               }
             })
 
-            const videos = result.data.adminVideos || []
+            const videos = result.data?.adminVideos ?? []
 
             // Process the data to match the grid's format
             const processedRows = videos.map((video) => {

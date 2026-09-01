@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { graphql } from 'gql.tada'
 
 import { prisma } from '@core/prisma/journeys/client'
@@ -44,7 +44,7 @@ const isValidImageUrl = (url: string): boolean => {
   }
 }
 
-const httpLink = createHttpLink({
+const httpLink = new HttpLink({
   uri: env.GATEWAY_URL,
   headers: {
     'interop-token': env.INTEROP_TOKEN,

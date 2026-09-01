@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useApolloClient, useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'

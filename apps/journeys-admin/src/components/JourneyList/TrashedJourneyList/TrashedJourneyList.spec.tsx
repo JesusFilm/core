@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type MockedFunction } from 'vitest'
@@ -44,7 +45,7 @@ vi.mock('next/router', async () => ({
   useRouter: vi.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-const trashedJourneysMock: MockedResponse<
+const trashedJourneysMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -73,7 +74,7 @@ const trashedJourneysMock: MockedResponse<
   }
 }
 
-const noJourneysMock: MockedResponse<
+const noJourneysMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {

@@ -1,4 +1,5 @@
-import { useMutation } from '@apollo/client'
+import { CombinedGraphQLErrors } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { UpChunk } from '@mux/upchunk'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
@@ -10,6 +11,8 @@ import {
   useContext,
   useMemo
 } from 'react'
+
+import { TemplateVideoUploadCreateMuxVideoUploadByFileMutation } from '../../../../../__generated__/TemplateVideoUploadCreateMuxVideoUploadByFileMutation'
 
 import { CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION } from './graphql'
 import type { TemplateVideoUploadContextType } from './types'
@@ -64,9 +67,10 @@ export function TemplateVideoUploadProvider({
     activeBlocksRef
   })
 
-  const [createMuxVideoUploadByFile] = useMutation(
-    CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION
-  )
+  const [createMuxVideoUploadByFile] =
+    useMutation<TemplateVideoUploadCreateMuxVideoUploadByFileMutation>(
+      CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION
+    )
 
   /**
    * Entry point called by VideosSection. Guards against duplicate uploads for
@@ -101,12 +105,17 @@ export function TemplateVideoUploadProvider({
       })
 
       try {
-        const { data, errors } = await createMuxVideoUploadByFile({
+        // Apollo Client 4 unified `errors` into a single `error`; GraphQL
+        // errors arrive wrapped in `CombinedGraphQLErrors`.
+        const { data, error } = await createMuxVideoUploadByFile({
           variables: { name: file.name }
         })
-        if (errors != null && errors.length > 0) {
-          const message = errors[0]?.message ?? 'Upload failed'
-          throw new Error(message)
+        if (error != null) {
+          throw new Error(
+            CombinedGraphQLErrors.is(error)
+              ? (error.errors[0]?.message ?? error.message)
+              : error.message
+          )
         }
 
         const uploadUrl = data?.createMuxVideoUploadByFile?.uploadUrl

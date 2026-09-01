@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import MenuList from '@mui/material/MenuList'
 import { render, waitFor } from '@testing-library/react'
 import { formatISO } from 'date-fns'
@@ -24,7 +25,7 @@ vi.mock('date-fns', async () => {
 
 const mockFormatIso = formatISO as MockedFunction<typeof formatISO>
 
-const getJourneyPlausibleVisitorsMock: MockedResponse<
+const getJourneyPlausibleVisitorsMock: MockLink.MockedResponse<
   GetJourneyPlausibleVisitors,
   GetJourneyPlausibleVisitorsVariables
 > = {

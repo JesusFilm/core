@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
@@ -35,6 +36,25 @@ import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { BLOCK_DUPLICATE, DuplicateBlock } from './DuplicateBlock'
 
+// Apollo Client 4 serves the hooks from a real ESM namespace, so they can no
+// longer be `vi.spyOn`-ed. Route `useMutation` through a mock that falls back
+// to the real hook unless a test installs an implementation.
+const mockUseMutation = vi.hoisted(() => vi.fn())
+
+vi.mock('@apollo/client/react', async () => {
+  const actual = await vi.importActual<typeof import('@apollo/client/react')>(
+    '@apollo/client/react'
+  )
+  return {
+    ...actual,
+    useMutation: (...args: unknown[]) =>
+      mockUseMutation.getMockImplementation() != null
+        ? mockUseMutation(...args)
+        : // eslint-disable-next-line @typescript-eslint/no-explicit-any -- pass-through
+          (actual.useMutation as any)(...args)
+  }
+})
+
 vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
@@ -63,7 +83,7 @@ describe('DuplicateBlock', () => {
 
   const blockOrder = block?.parentOrder != null ? block.parentOrder : 0
 
-  const duplicateBlockMock: MockedResponse<BlockDuplicate> = {
+  const duplicateBlockMock: MockLink.MockedResponse<BlockDuplicate> = {
     request: {
       query: BLOCK_DUPLICATE,
       variables: {
@@ -353,17 +373,13 @@ describe('DuplicateBlock', () => {
     // capture the optimistic response from the mutation
     let capturedOptimisticResponse: BlockDuplicate | null = null
 
-    vi.spyOn(require('@apollo/client'), 'useMutation').mockImplementation(
-      () => {
-        return [
-          (options: any) => {
-            capturedOptimisticResponse = options?.optimisticResponse
-            return Promise.resolve({ data: { blockDuplicate: [] } })
-          },
-          { loading: false }
-        ]
-      }
-    )
+    mockUseMutation.mockImplementation(() => [
+      (options: any) => {
+        capturedOptimisticResponse = options?.optimisticResponse
+        return Promise.resolve({ data: { blockDuplicate: [] } })
+      },
+      { loading: false }
+    ])
 
     render(
       <SnackbarProvider>
@@ -403,6 +419,7 @@ describe('DuplicateBlock', () => {
     expect(duplicatedButton.id).toBe('newBlockId')
     expect(duplicatedButton.submitEnabled).toBe(false)
 
+    mockUseMutation.mockReset()
     vi.restoreAllMocks()
   })
 })

@@ -58,6 +58,11 @@ async function testDataGenerator(): Promise<void> {
       languageId: '529'
     }
   })
+  // Apollo Client 4 types `data` as optional. The default `none` error
+  // policy rejects rather than resolving without data, so this narrows
+  // the type rather than guarding a reachable branch.
+  if (data == null) throw new Error('GetVideosForTestData returned no data')
+
   const videos: Videos[] = []
 
   data.videos.forEach((video) => {

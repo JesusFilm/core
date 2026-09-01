@@ -1,6 +1,7 @@
 'use client'
 
-import { useMutation, useQuery } from '@apollo/client'
+import { CombinedGraphQLErrors } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -272,18 +273,11 @@ export function VideoCreateForm({
         // Handle specific error messages
         let errorMessage = 'Something went wrong.'
 
-        // Check for GraphQL errors in both direct GraphQL errors and network errors
-        const directErrors = error.graphQLErrors || []
-        const networkErrors =
-          error.networkError &&
-          typeof error.networkError === 'object' &&
-          'graphQLErrors' in error.networkError &&
-          Array.isArray(error.networkError.graphQLErrors)
-            ? error.networkError.graphQLErrors
-            : []
-
-        const graphQLErrors =
-          directErrors.length > 0 ? directErrors : networkErrors
+        // Apollo Client 4 no longer wraps failures: GraphQL errors arrive as a
+        // `CombinedGraphQLErrors` instance, everything else as the raw error.
+        const graphQLErrors = CombinedGraphQLErrors.is(error)
+          ? error.errors
+          : []
 
         if (graphQLErrors.length > 0) {
           const graphQLError = graphQLErrors[0]

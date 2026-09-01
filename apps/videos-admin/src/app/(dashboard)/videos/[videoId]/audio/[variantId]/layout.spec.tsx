@@ -1,8 +1,8 @@
 import {
   useMutation as apolloClientModule_useMutation,
   useSuspenseQuery as apolloClientModule_useSuspenseQuery
-} from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+} from '@apollo/client/react'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { useRouter } from 'next/navigation'
 import { SnackbarProvider } from 'notistack'
@@ -210,8 +210,8 @@ vi.mock('next/navigation', () => ({
 }))
 
 // Mock useSuspenseQuery
-vi.mock('@apollo/client', async () => {
-  const originalModule = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const originalModule = await vi.importActual('@apollo/client/react')
   return {
     ...originalModule,
     useSuspenseQuery: vi.fn(),

@@ -1,4 +1,5 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Typography from '@mui/material/Typography'
@@ -6,7 +7,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { models } from 'powerbi-client'
 import { EmbedProps, PowerBIEmbed } from 'powerbi-client-react'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { GetAdminJourneysReport } from '../../../../__generated__/GetAdminJourneysReport'
 import { JourneysReportType } from '../../../../__generated__/globalTypes'
@@ -39,10 +40,18 @@ export function Report({ reportType, journeyId }: ReportProps): ReactElement {
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState(false)
 
-  const { data } = useQuery<GetAdminJourneysReport>(GET_ADMIN_JOURNEYS_REPORT, {
-    variables: { reportType },
-    onError
-  })
+  const { data, error: queryError } = useQuery<GetAdminJourneysReport>(
+    GET_ADMIN_JOURNEYS_REPORT,
+    { variables: { reportType } }
+  )
+
+  // Apollo Client 4 removed `useQuery`'s `onError` option; surface the failure
+  // from the result instead.
+  useEffect(() => {
+    if (queryError != null) onError()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `onError` is
+    // redeclared every render; depending on it would refire the snackbar
+  }, [queryError])
 
   function onLoad(): void {
     setLoaded(true)
