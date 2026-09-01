@@ -190,3 +190,22 @@ The script includes comprehensive error handling for:
 - Network connectivity issues
 
 If any error occurs, the script will log the error and continue processing other items when possible.
+
+## Fix Know God Slug Script (FGE-97/98)
+
+One-off fix for the "Know God" video (id `7_KnowGod`), which was imported with
+an internal-style slug (`Nua_Know_God`) instead of a public-style slug.
+Renames `Video.slug` to `know-god` and every `VideoVariant.slug` that still
+carries the `Nua_Know_God/` prefix to the matching `know-god/` prefix.
+
+### Usage
+
+```bash
+nx run api-media:fix-know-god-slug
+```
+
+### Process
+
+The script is idempotent: it reads the current slug first, and only writes
+when it still matches the old value, so re-running it after the fix has
+already landed is a no-op.
