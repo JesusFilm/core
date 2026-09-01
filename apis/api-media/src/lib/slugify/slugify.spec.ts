@@ -1,4 +1,4 @@
-import { slugify } from '.'
+import { isPublicSlug, slugify } from '.'
 
 describe('slugify', () => {
   it('transforms My Title to my-title', () => {
@@ -41,5 +41,27 @@ describe('slugify', () => {
 
   it('replaces dash space with dash', () => {
     expect(slugify('id', 'Bob- And- Mary')).toBe('bob-and-mary')
+  })
+})
+
+describe('isPublicSlug', () => {
+  it('accepts an already public-style slug', () => {
+    expect(isPublicSlug('know-god')).toBe(true)
+  })
+
+  it('rejects an internal-style slug with underscores and mixed case', () => {
+    expect(isPublicSlug('Nua_Know_God')).toBe(false)
+  })
+
+  it('rejects uppercase letters', () => {
+    expect(isPublicSlug('Know-God')).toBe(false)
+  })
+
+  it('rejects underscores even when already lowercase', () => {
+    expect(isPublicSlug('know_god')).toBe(false)
+  })
+
+  it('rejects spaces', () => {
+    expect(isPublicSlug('know god')).toBe(false)
   })
 })

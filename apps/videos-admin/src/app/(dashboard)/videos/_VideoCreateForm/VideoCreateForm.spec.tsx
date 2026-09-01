@@ -201,6 +201,20 @@ describe('VideoCreateForm', () => {
       })
     })
 
+    it('warns when slug contains underscores', async () => {
+      const user = userEvent.setup()
+      await user.type(screen.getByLabelText(/Slug/i), 'jesus_walks')
+      fireEvent.click(screen.getByText('Create'))
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            'Slug can only contain lowercase letters, numbers and hyphens'
+          )
+        ).toBeInTheDocument()
+      })
+    })
+
     it('navigates to videos list when Cancel button is clicked', () => {
       fireEvent.click(screen.getByText('Cancel'))
       expect(mockRouterPush).toHaveBeenCalledWith('/videos')

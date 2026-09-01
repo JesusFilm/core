@@ -9,6 +9,7 @@ import {
   prisma
 } from '@core/prisma/media/client'
 
+import { isPublicSlug } from '../../lib/slugify'
 import { videoCacheReset } from '../../lib/videoCacheReset'
 import {
   enqueueVideoAlgoliaSync,
@@ -662,6 +663,12 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
+      if (!isPublicSlug(input.slug)) {
+        throw new Error(
+          'Slug must be lowercase, with words separated by hyphens (e.g. "jesus-walks-on-water")'
+        )
+      }
+
       // Handle child relation synchronization if childIds is provided
       let childRelationData = {}
       if (input.childIds && input.childIds.length > 0) {
@@ -764,6 +771,12 @@ builder.mutationFields((t) => ({
         currentVideo?.publishedAt != null
       ) {
         throw new Error('Cannot change slug after video has been published')
+      }
+
+      if (input.slug != null && !isPublicSlug(input.slug)) {
+        throw new Error(
+          'Slug must be lowercase, with words separated by hyphens (e.g. "jesus-walks-on-water")'
+        )
       }
 
       if (

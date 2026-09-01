@@ -2724,6 +2724,41 @@ describe('video', () => {
         expect(result).toHaveProperty('data', null)
       })
 
+      it('should reject a non-public-style slug', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+
+        const result = await authClient({
+          document: CREATE_VIDEO_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              label: VideoLabel.featureFilm,
+              primaryLanguageId: 'primaryLanguageId',
+              published: true,
+              slug: 'Nua_Know_God',
+              noIndex: true,
+              childIds: [],
+              originId: 'originId'
+            }
+          }
+        })
+
+        expect(prismaMock.video.create).not.toHaveBeenCalled()
+        expect(result).toHaveProperty('data', null)
+        expect(result).toHaveProperty('errors')
+        expect(
+          'errors' in result ? result.errors?.[0]?.message : undefined
+        ).toBe(
+          'Slug must be lowercase, with words separated by hyphens (e.g. "jesus-walks-on-water")'
+        )
+      })
+
       it('should create video with publishedAt when published is true', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
@@ -2921,6 +2956,41 @@ describe('video', () => {
           expect.anything()
         )
         expect(mockedFindContainerParentIds).toHaveBeenCalledWith('id')
+      })
+
+      it('should reject a non-public-style slug', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          published: false,
+          publishedAt: null,
+          slug: 'old-slug',
+          variants: []
+        } as any)
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              slug: 'Nua_Know_God'
+            }
+          }
+        })
+
+        expect(prismaMock.video.update).not.toHaveBeenCalled()
+        expect(result).toHaveProperty('data', null)
+        expect(result).toHaveProperty('errors')
+        expect(
+          'errors' in result ? result.errors?.[0]?.message : undefined
+        ).toBe(
+          'Slug must be lowercase, with words separated by hyphens (e.g. "jesus-walks-on-water")'
+        )
       })
 
       it('should enable restrictTranslations', async () => {
