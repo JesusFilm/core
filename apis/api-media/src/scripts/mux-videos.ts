@@ -415,7 +415,7 @@ export async function processDownloads(): Promise<void> {
         })
 
         console.log(
-          `Successfully created or refreshed ${createdCount} video downloads for variant ${variant.id}, muxVideoId: ${variant.muxVideo.id}`
+          `Successfully created, refreshed, or removed ${createdCount} video downloads for variant ${variant.id}, muxVideoId: ${variant.muxVideo.id}`
         )
 
         if (createdCount > 0) {
