@@ -1315,7 +1315,7 @@ describe('ClientLayout', () => {
     getUploads: () => any[],
     uploadOverrides: Partial<QueryResult<any, OperationVariables>> = {},
     variants: any[] = mockVideoVariants
-  ) {
+  ): void {
     const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
 
     mockedUseQuery.mockImplementation((_query, options?: any) => {
@@ -1337,7 +1337,9 @@ describe('ClientLayout', () => {
     })
   }
 
-  function uploadRow(overrides: Record<string, unknown>) {
+  function uploadRow(
+    overrides: Record<string, unknown>
+  ): Record<string, unknown> {
     return {
       source: 'videos-admin',
       sourceKey: 'source-key',
@@ -1573,16 +1575,66 @@ describe('ClientLayout', () => {
     renderLayout()
 
     expect(
-      screen.getByLabelText('previous attempts for Farsi')
+      screen.getByLabelText('previous attempts for Farsi (base)')
     ).toHaveTextContent('Previous attempts (2)')
     expect(
-      screen.getByLabelText('previous attempts for French')
+      screen.getByLabelText('previous attempts for French (base)')
     ).toHaveTextContent('Previous attempts (1)')
 
-    fireEvent.click(screen.getByLabelText('previous attempts for French'))
+    fireEvent.click(
+      screen.getByLabelText('previous attempts for French (base)')
+    )
 
     expect(screen.getByText('french failure')).toBeInTheDocument()
     expect(screen.queryByText('farsi failure')).toBeNull()
+  })
+
+  it('summarises previous attempts separately per edition', () => {
+    mockUploadQueries(() => [
+      uploadRow({
+        id: 'base-failed',
+        status: 'failed',
+        edition: 'base',
+        errorMessage: 'base failure',
+        createdAt: '2026-06-15T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'base-success',
+        status: 'variantCreated',
+        edition: 'base',
+        videoVariantId: 'variant-base',
+        createdAt: '2026-06-19T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'burned-in-failed-1',
+        status: 'failed',
+        edition: 'burnedIn',
+        errorMessage: 'burned in failure',
+        createdAt: '2026-06-15T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'burned-in-failed-2',
+        status: 'r2Prepared',
+        edition: 'burnedIn',
+        createdAt: '2026-06-16T00:00:00.000Z'
+      }),
+      uploadRow({
+        id: 'burned-in-success',
+        status: 'variantCreated',
+        edition: 'burnedIn',
+        videoVariantId: 'variant-burned-in',
+        createdAt: '2026-06-19T00:00:00.000Z'
+      })
+    ])
+
+    renderLayout()
+
+    expect(
+      screen.getByLabelText('previous attempts for Farsi (base)')
+    ).toHaveTextContent('Previous attempts (1)')
+    expect(
+      screen.getByLabelText('previous attempts for Farsi (burnedIn)')
+    ).toHaveTextContent('Previous attempts (2)')
   })
 
   it('reveals each superseded attempt in newest-first order when the summary is expanded', () => {

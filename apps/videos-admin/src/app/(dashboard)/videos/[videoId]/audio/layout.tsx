@@ -49,6 +49,9 @@ function getSupersessionKey(upload: VideoVariantUploadRow): string {
  * Supersession cannot be proven without a usable `createdAt` on both sides, so
  * an attempt with a missing or unparseable one stays outstanding: a real
  * failure must never be demoted on the strength of unreadable data.
+ *
+ * This decides membership only. How the superseded attempts are grouped and
+ * ordered for display is owned by the component that renders them.
  */
 function partitionVideoVariantUploads(
   uploads: VideoVariantUploadRow[]
@@ -88,10 +91,6 @@ function partitionVideoVariantUploads(
 
     outstanding.push(upload)
   }
-
-  superseded.sort(
-    (a, b) => (getUploadCreatedAtMs(b) ?? 0) - (getUploadCreatedAtMs(a) ?? 0)
-  )
 
   return { outstanding, superseded }
 }

@@ -77,6 +77,14 @@ const uploadStatusLabels: Record<VideoVariantUploadStatus, string> = {
   failed: 'Failed'
 }
 
+const uploadCardSx = {
+  border: '1px solid',
+  backgroundColor: 'background.default',
+  borderRadius: 1,
+  p: 1,
+  mb: 1
+} as const
+
 const STANDARD_MUX_PROCESSING_STALE_MS = 30 * 60 * 1000
 const NON_STANDARD_MUX_PROCESSING_STALE_MS = 2 * 60 * 60 * 1000
 
@@ -251,11 +259,15 @@ function getUploadDebugTooltip(upload: VideoVariantUploadRow) {
 function getIncompleteUploadDisplayState(
   upload: VideoVariantUploadRow
 ): IncompleteUploadDisplayState {
+  // The status alone decides the label; the switch decides only how the row
+  // reads and what it offers. Stale Mux processing is the one override.
+  const label = uploadStatusLabels[upload.status]
+
   switch (upload.status) {
     case 'created':
     case 'r2Prepared':
       return {
-        label: uploadStatusLabels[upload.status],
+        label,
         color: 'warning',
         message:
           'This upload cannot be resumed because the browser did not finish sending the file to R2. Start a fresh upload for this language.',
@@ -265,7 +277,7 @@ function getIncompleteUploadDisplayState(
       }
     case 'r2Uploaded':
       return {
-        label: uploadStatusLabels[upload.status],
+        label,
         color: 'warning',
         message:
           'The file uploaded successfully. Start processing to continue.',
@@ -286,7 +298,7 @@ function getIncompleteUploadDisplayState(
       }
 
       return {
-        label: uploadStatusLabels[upload.status],
+        label,
         color: 'info',
         message: 'Mux is processing this upload. No action needed.',
         processingDurationLabel: getMuxProcessingDurationLabel(upload),
@@ -295,7 +307,7 @@ function getIncompleteUploadDisplayState(
       }
     case 'muxReady':
       return {
-        label: uploadStatusLabels[upload.status],
+        label,
         color: 'info',
         message: 'Mux is ready. Finalize this audio language.',
         processingDurationLabel: null,
@@ -304,16 +316,18 @@ function getIncompleteUploadDisplayState(
       }
     case 'failed':
       return {
-        label: uploadStatusLabels[upload.status],
+        label,
         color: 'error',
         message: null,
         processingDurationLabel: null,
         action: 'resume',
         actionLabel: 'Retry'
       }
+    // Unreachable in practice — the partition never renders a successful
+    // attempt — but the switch must stay exhaustive over the status union.
     case 'variantCreated':
       return {
-        label: uploadStatusLabels[upload.status],
+        label,
         color: 'info',
         message: null,
         processingDurationLabel: null,
@@ -333,15 +347,20 @@ function getUploadMetaLabel(upload: VideoVariantUploadRow): string {
 }
 
 interface SupersededUploadGroup {
-  languageId: string
+  key: string
   languageLabel: string
+  edition: string
   uploads: VideoVariantUploadRow[]
 }
 
 /**
- * One summary line per audio language, so a language that took five attempts
- * occupies one row rather than five. Input order is preserved, so groups and
- * the attempts within them stay newest-first.
+ * One summary line per audio language *and edition*, matching the key the
+ * supersession rule itself uses, so a completed `base` history never reports a
+ * count that silently includes Burned In attempts.
+ *
+ * Display ordering is owned here rather than by the caller: attempts run
+ * newest-first within a group, and groups run newest-first by their most
+ * recent attempt.
  */
 function groupSupersededUploadsByLanguage(
   uploads: VideoVariantUploadRow[]
@@ -349,12 +368,14 @@ function groupSupersededUploadsByLanguage(
   const groups = new Map<string, SupersededUploadGroup>()
 
   for (const upload of uploads) {
-    const group = groups.get(upload.languageId)
+    const key = `${upload.languageId}\u0000${upload.edition}`
+    const group = groups.get(key)
 
     if (group == null) {
-      groups.set(upload.languageId, {
-        languageId: upload.languageId,
+      groups.set(key, {
+        key,
         languageLabel: getUploadLanguageLabel(upload),
+        edition: upload.edition,
         uploads: [upload]
       })
       continue
@@ -363,7 +384,19 @@ function groupSupersededUploadsByLanguage(
     group.uploads.push(upload)
   }
 
-  return [...groups.values()]
+  const byCreatedAtDescending = (
+    a: VideoVariantUploadRow,
+    b: VideoVariantUploadRow
+  ): number => (getUploadCreatedAtMs(b) ?? 0) - (getUploadCreatedAtMs(a) ?? 0)
+
+  const sortedGroups = [...groups.values()].map((group) => ({
+    ...group,
+    uploads: [...group.uploads].sort(byCreatedAtDescending)
+  }))
+
+  return sortedGroups.sort((a, b) =>
+    byCreatedAtDescending(a.uploads[0], b.uploads[0])
+  )
 }
 
 export function getUploadCreatedAtMs(
@@ -391,13 +424,13 @@ export function IncompleteVideoVariantUploadItems({
   onResumeUpload
 }: IncompleteVideoVariantUploadItemsProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const [expandedLanguageIds, setExpandedLanguageIds] = useState<string[]>([])
+  const [expandedGroupKeys, setExpandedGroupKeys] = useState<string[]>([])
 
-  const handleTogglePreviousAttempts = useCallback((languageId: string) => {
-    setExpandedLanguageIds((expanded) =>
-      expanded.includes(languageId)
-        ? expanded.filter((id) => id !== languageId)
-        : [...expanded, languageId]
+  const handleTogglePreviousAttempts = useCallback((groupKey: string) => {
+    setExpandedGroupKeys((expanded) =>
+      expanded.includes(groupKey)
+        ? expanded.filter((key) => key !== groupKey)
+        : [...expanded, groupKey]
     )
   }, [])
 
@@ -413,7 +446,9 @@ export function IncompleteVideoVariantUploadItems({
     [enqueueSnackbar]
   )
 
-  const renderUploadDetailActions = (upload: VideoVariantUploadRow) => (
+  const renderUploadDetailActions = (
+    upload: VideoVariantUploadRow
+  ): ReactElement => (
     <>
       <Tooltip title={getUploadDebugTooltip(upload)} placement="left" arrow>
         <IconButton size="small" aria-label="view upload details">
@@ -442,12 +477,8 @@ export function IncompleteVideoVariantUploadItems({
           <ListItem
             key={upload.id}
             sx={{
-              border: '1px solid',
+              ...uploadCardSx,
               borderColor: 'warning.light',
-              backgroundColor: 'background.default',
-              borderRadius: 1,
-              p: 1,
-              mb: 1,
               minHeight: 66,
               display: 'flex',
               alignItems: 'center',
@@ -561,20 +592,12 @@ export function IncompleteVideoVariantUploadItems({
         )
       })}
       {groupSupersededUploadsByLanguage(supersededUploads).map((group) => {
-        const isExpanded = expandedLanguageIds.includes(group.languageId)
+        const isExpanded = expandedGroupKeys.includes(group.key)
 
         return (
           <ListItem
-            key={`superseded-${group.languageId}`}
-            sx={{
-              border: '1px solid',
-              borderColor: 'divider',
-              backgroundColor: 'background.default',
-              borderRadius: 1,
-              p: 1,
-              mb: 1,
-              display: 'block'
-            }}
+            key={`superseded-${group.key}`}
+            sx={{ ...uploadCardSx, borderColor: 'divider', display: 'block' }}
           >
             <Stack
               direction="row"
@@ -586,12 +609,15 @@ export function IncompleteVideoVariantUploadItems({
               >
                 {group.languageLabel}
               </Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                {group.edition}
+              </Typography>
               <Button
                 size="small"
                 aria-expanded={isExpanded}
-                aria-label={`previous attempts for ${group.languageLabel}`}
+                aria-label={`previous attempts for ${group.languageLabel} (${group.edition})`}
                 startIcon={isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                onClick={() => handleTogglePreviousAttempts(group.languageId)}
+                onClick={() => handleTogglePreviousAttempts(group.key)}
                 sx={{ color: 'text.secondary', textTransform: 'none' }}
               >
                 {`Previous attempts (${group.uploads.length})`}
