@@ -3,6 +3,8 @@ import useScrollTrigger from '@mui/material/useScrollTrigger'
 import { fireEvent, render, screen } from '@testing-library/react'
 import type { Mock } from 'vitest'
 
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import { Header } from './Header'
 
 vi.mock('@mui/material/useScrollTrigger', async () => ({
@@ -54,6 +56,28 @@ describe('Header', () => {
       </MockedProvider>
     )
     expect(screen.queryByTestId('BottomAppBar')).not.toBeInTheDocument()
+  })
+
+  it('should show bottom app bar when flags are on', () => {
+    render(
+      <MockedProvider>
+        <FlagsProvider flags={{ strategies: true, journeys: true }}>
+          <Header />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('HeaderBottomAppBar')).toBeInTheDocument()
+  })
+
+  it('should remove bottom app bar when hideTabButtons is true', () => {
+    render(
+      <MockedProvider>
+        <FlagsProvider flags={{ strategies: true, journeys: true }}>
+          <Header hideTabButtons />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(screen.queryByTestId('HeaderBottomAppBar')).not.toBeInTheDocument()
   })
 
   it('should hide spacer', () => {
