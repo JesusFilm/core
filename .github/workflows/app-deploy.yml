@@ -78,8 +78,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: Preview - ${{ matrix.app }}
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -90,7 +88,6 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - uses: nrwl/nx-set-shas@v4
       - name: vercel deployment
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -342,8 +339,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: Production - ${{ matrix.app }}
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -355,7 +350,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - uses: nrwl/nx-set-shas@v4
       - name: vercel deployment
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}

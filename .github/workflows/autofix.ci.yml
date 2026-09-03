@@ -18,7 +18,7 @@ jobs:
     if: >-
       ${{ !contains(github.head_ref, '-chore-ce-sync-') &&
           !contains(github.event.merge_group.head_commit.message, 'sync compound-engineering skills and agents') }}
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       NODE_OPTIONS: '--max-old-space-size=8192'
