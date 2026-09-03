@@ -756,43 +756,57 @@ enum YoutubeReasonCode {
   NOT_APPLICABLE
 }
 
+// Who composed a row's published title and description. One value on purpose:
+// nothing but the youtube-studio (Wheat) app writes WHEAT, so null means "not
+// composed by Wheat" by construction. A WHEAT row with a null
+// metadataRulebookVersion is therefore a detectable data bug rather than
+// legacy text. See JesusFilm/youtube-studio#577.
+enum YoutubeMetadataSource {
+  WHEAT
+}
+
 model YoutubeVideo {
-  id                 String             @id @default(uuid())
-  youtubeVideoId     String             @unique
-  channelId          String
-  reviewState        YoutubeReviewState
+  id                      String             @id @default(uuid())
+  youtubeVideoId          String             @unique
+  channelId               String
+  reviewState             YoutubeReviewState
   // Variant reference — present iff reviewState = LINKED (enforced on write).
   // No unique constraint: a variant may have many LINKED rows (re-uploads,
   // Shorts, alternate cuts).
-  videoId            String?
-  languageId         String?
+  videoId                 String?
+  languageId              String?
   // Cascade (not SetNull): a CHECK constraint enforces the LINKED-has-variant
   // invariant at rest, so a deleted variant must remove its linked rows rather
   // than null their refs and leave an invalid LINKED row. The CHECK constraint
   // itself lives in the migration SQL (Prisma has no schema syntax for it).
-  variant            VideoVariant?      @relation(fields: [languageId, videoId], references: [languageId, videoId], onDelete: Cascade)
-  reasonCode         YoutubeReasonCode?
-  reasonNote         String?
+  variant                 VideoVariant?      @relation(fields: [languageId, videoId], references: [languageId, videoId], onDelete: Cascade)
+  reasonCode              YoutubeReasonCode?
+  reasonNote              String?
   // Captured YouTube-authored facts — stored alongside, never overwriting,
   // Core canonical title/description.
-  youtubeTitle       String?
-  youtubeDescription String?
-  tags               String[]           @default([])
-  thumbnailUrl       String? // YouTube-hosted URL only; the image is never downloaded
-  playlists          Json? // [{ playlistId, title }] snapshots; non-authoritative
-  madeForKids        Boolean? // null = unknown/unset
-  ageRestricted      Boolean?
-  fileName           String? // original upload file name; frequently absent
-  privacyStatus      String?
-  publishedAt        DateTime?
+  youtubeTitle            String?
+  youtubeDescription      String?
+  tags                    String[]           @default([])
+  thumbnailUrl            String? // YouTube-hosted URL only; the image is never downloaded
+  playlists               Json? // [{ playlistId, title }] snapshots; non-authoritative
+  madeForKids             Boolean? // null = unknown/unset
+  ageRestricted           Boolean?
+  fileName                String? // original upload file name; frequently absent
+  privacyStatus           String?
+  publishedAt             DateTime?
   // Provenance
-  reviewedBy         String?
-  reviewedAt         DateTime?
-  matchMethod        String? // meaningful only on LINKED
-  matchConfidence    Float? // meaningful only on LINKED
-  lastSyncedAt       DateTime? // freshness signal only, never a deletion clock
-  createdAt          DateTime           @default(now())
-  updatedAt          DateTime           @default(now()) @updatedAt
+  reviewedBy              String?
+  reviewedAt              DateTime?
+  matchMethod             String? // meaningful only on LINKED
+  matchConfidence         Float? // meaningful only on LINKED
+  // Authorship of the published title/description, caller-supplied like
+  // matchMethod. Distinct from matchMethod, which records how a row was matched
+  // to a catalog video and does not change when the text is rewritten.
+  metadataSource          YoutubeMetadataSource? // null = not composed by Wheat
+  metadataRulebookVersion String? // the rulebook version the text was written against
+  lastSyncedAt            DateTime? // freshness signal only, never a deletion clock
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime           @default(now()) @updatedAt
 
   @@index(channelId(type: Hash))
   @@index(reviewState)
