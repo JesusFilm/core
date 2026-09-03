@@ -1,6 +1,5 @@
 'use client'
-
-import { useMutation, useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client/react'
 import ReplayIcon from '@mui/icons-material/Replay'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'

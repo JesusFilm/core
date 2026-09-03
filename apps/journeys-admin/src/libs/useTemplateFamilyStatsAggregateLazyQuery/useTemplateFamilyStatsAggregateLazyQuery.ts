@@ -1,9 +1,5 @@
-import {
-  LazyQueryResultTuple,
-  gql,
-  useApolloClient,
-  useLazyQuery
-} from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useApolloClient, useLazyQuery } from '@apollo/client/react'
 import { useCallback } from 'react'
 
 import {
@@ -35,7 +31,7 @@ export const GET_TEMPLATE_FAMILY_STATS_AGGREGATE = gql`
  *   - refetchTemplateStats: Function to refetch stats for multiple templates
  */
 export function useTemplateFamilyStatsAggregateLazyQuery(): {
-  query: LazyQueryResultTuple<
+  query: useLazyQuery.ResultTuple<
     GetTemplateFamilyStatsAggregate,
     GetTemplateFamilyStatsAggregateVariables
   >

@@ -79,7 +79,8 @@ export default async function handler(
     try {
       const apolloClient = createApolloClient()
       const { data } = await apolloClient.query({
-        query: GET_ALL_LANGUAGES
+        query: GET_ALL_LANGUAGES,
+        errorPolicy: 'none'
       })
 
       const languages: LanguageTuple[] = data.languages

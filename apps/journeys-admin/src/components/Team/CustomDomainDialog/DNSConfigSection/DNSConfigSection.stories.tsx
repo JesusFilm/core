@@ -1,5 +1,5 @@
 // import { MockedProvider } from '@apollo/client/testing'
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
@@ -38,7 +38,7 @@ const customSubdomain: CustomDomain = {
 
 const checkCustomDomainMock: (
   customDomainCheck?: Partial<CustomDomainCheck>
-) => MockedResponse<CheckCustomDomain> = (customDomainCheck) => ({
+) => MockLink.MockedResponse<CheckCustomDomain> = (customDomainCheck) => ({
   request: {
     query: CHECK_CUSTOM_DOMAIN,
     variables: {

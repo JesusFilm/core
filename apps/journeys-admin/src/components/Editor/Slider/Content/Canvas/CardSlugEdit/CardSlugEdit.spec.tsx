@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type Mock } from 'vitest'
@@ -25,7 +26,7 @@ vi.mock('next-i18next/pages', () => ({
 function getSlugUpdateMock(
   id: string,
   slug: string
-): MockedResponse<StepBlockSlugUpdate, StepBlockSlugUpdateVariables> {
+): MockLink.MockedResponse<StepBlockSlugUpdate, StepBlockSlugUpdateVariables> {
   return {
     request: {
       query: STEP_BLOCK_SLUG_UPDATE,
@@ -39,7 +40,7 @@ function getSlugUpdateMock(
           slug
         }
       }
-    })) as MockedResponse<
+    })) as MockLink.MockedResponse<
       StepBlockSlugUpdate,
       StepBlockSlugUpdateVariables
     >['result']
@@ -166,7 +167,7 @@ describe('CardSlugEdit', () => {
       children: []
     }
 
-    const nullSlugMock: MockedResponse<
+    const nullSlugMock: MockLink.MockedResponse<
       StepBlockSlugUpdate,
       StepBlockSlugUpdateVariables
     > = {
@@ -182,7 +183,7 @@ describe('CardSlugEdit', () => {
             slug: null
           }
         }
-      })) as MockedResponse<
+      })) as MockLink.MockedResponse<
         StepBlockSlugUpdate,
         StepBlockSlugUpdateVariables
       >['result']
@@ -224,7 +225,7 @@ describe('CardSlugEdit', () => {
       slug: 'valid-slug',
       children: []
     }
-    const errorMock: MockedResponse<
+    const errorMock: MockLink.MockedResponse<
       StepBlockSlugUpdate,
       StepBlockSlugUpdateVariables
     > = {

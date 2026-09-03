@@ -1,6 +1,5 @@
 'use client'
-
-import { useMutation, useSuspenseQuery } from '@apollo/client'
+import { useMutation, useSuspenseQuery } from '@apollo/client/react'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'

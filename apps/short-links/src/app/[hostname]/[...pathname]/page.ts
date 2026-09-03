@@ -23,6 +23,10 @@ export default async function PathnamePage({
     }
   })
 
+  // Apollo Client 4 types `data` as possibly undefined — a request that
+  // failed in transport resolves with no data rather than throwing.
+  if (data == null) return notFound()
+
   switch (data.shortLink.__typename) {
     case 'QueryShortLinkByPathSuccess':
       return redirect(data.shortLink.data.to)

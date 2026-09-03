@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -63,7 +64,7 @@ const getCustomDomainsMock = {
   }
 }
 
-const googleSheetsSyncsNoActiveMock: MockedResponse = {
+const googleSheetsSyncsNoActiveMock: MockLink.MockedResponse = {
   request: {
     query: GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN,
     variables: { filter: { journeyId: 'journeyId' } }
@@ -75,7 +76,7 @@ const googleSheetsSyncsNoActiveMock: MockedResponse = {
   }
 }
 
-const googleSheetsSyncsWithActiveMock: MockedResponse = {
+const googleSheetsSyncsWithActiveMock: MockLink.MockedResponse = {
   request: {
     query: GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN,
     variables: { filter: { journeyId: 'journeyId' } }
@@ -231,7 +232,7 @@ describe('DoneScreen', () => {
       id: 'test-journey-id'
     }
 
-    const syncsForTestJourneyMock: MockedResponse = {
+    const syncsForTestJourneyMock: MockLink.MockedResponse = {
       request: {
         query: GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN,
         variables: { filter: { journeyId: 'test-journey-id' } }
@@ -263,7 +264,7 @@ describe('DoneScreen', () => {
       id: 'test-journey-id'
     }
 
-    const syncsForTestJourneyMock: MockedResponse = {
+    const syncsForTestJourneyMock: MockLink.MockedResponse = {
       request: {
         query: GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN,
         variables: { filter: { journeyId: 'test-journey-id' } }

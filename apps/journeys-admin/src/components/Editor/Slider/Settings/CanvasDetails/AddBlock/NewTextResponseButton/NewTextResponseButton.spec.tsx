@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 import { type MockedFunction } from 'vitest'
@@ -38,7 +39,7 @@ vi.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
-export const textResponseBlockCreateMock: MockedResponse<TextResponseBlockCreate> =
+export const textResponseBlockCreateMock: MockLink.MockedResponse<TextResponseBlockCreate> =
   {
     request: {
       query: TEXT_RESPONSE_BLOCK_CREATE,
@@ -69,7 +70,7 @@ export const textResponseBlockCreateMock: MockedResponse<TextResponseBlockCreate
           hideLabel: false
         }
       }
-    })) as MockedResponse<TextResponseBlockCreate>['result']
+    })) as MockLink.MockedResponse<TextResponseBlockCreate>['result']
   }
 
 describe('NewTextResponseButton', () => {
@@ -404,7 +405,7 @@ describe('NewTextResponseButton', () => {
       // the mutation in flight (so the button stays disabled) and gives the
       // operation a matching mock so it does not raise an unhandled Apollo
       // error after the test completes.
-      const loadingMock: MockedResponse<TextResponseBlockCreate> = {
+      const loadingMock: MockLink.MockedResponse<TextResponseBlockCreate> = {
         request: {
           query: TEXT_RESPONSE_BLOCK_CREATE,
           variables: {
@@ -451,7 +452,7 @@ describe('NewTextResponseButton', () => {
       // keeps the mutation in flight (button stays disabled) and gives the
       // operation a matching mock so it does not raise an unhandled Apollo
       // error after the test completes.
-      const loadingMock: MockedResponse = {
+      const loadingMock: MockLink.MockedResponse = {
         ...textResponseWithButtonCreateMock,
         request: {
           ...textResponseWithButtonCreateMock.request,

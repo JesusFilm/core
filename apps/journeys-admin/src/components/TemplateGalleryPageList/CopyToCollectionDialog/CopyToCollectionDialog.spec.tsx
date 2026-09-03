@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type MockedFunction } from 'vitest'
@@ -43,7 +44,7 @@ function makePage(overrides: Partial<Page> = {}): Page {
   }
 }
 
-function makePagesMock(pages: readonly Page[]): MockedResponse {
+function makePagesMock(pages: readonly Page[]): MockLink.MockedResponse {
   return {
     request: {
       query: GET_TEMPLATE_GALLERY_PAGES,
@@ -53,7 +54,7 @@ function makePagesMock(pages: readonly Page[]): MockedResponse {
   }
 }
 
-const languagesMock: MockedResponse = {
+const languagesMock: MockLink.MockedResponse = {
   request: {
     query: GET_LANGUAGES,
     variables: {
@@ -151,7 +152,7 @@ function setActiveTeam(id: string | null): void {
 }
 
 interface RenderOptions {
-  mocks?: MockedResponse[]
+  mocks?: MockLink.MockedResponse[]
   props?: Partial<React.ComponentProps<typeof CopyToCollectionDialog>>
 }
 

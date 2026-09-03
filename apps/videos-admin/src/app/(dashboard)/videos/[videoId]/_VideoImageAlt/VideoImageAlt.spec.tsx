@@ -1,5 +1,6 @@
-import { NetworkStatus, useSuspenseQuery } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { NetworkStatus } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/client/react'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { type MockedFunction } from 'vitest'
@@ -38,8 +39,8 @@ const mockImageAlt = {
 }
 
 // Mock the useSuspenseQuery hook
-vi.mock('@apollo/client', async () => {
-  const original = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const original = await vi.importActual('@apollo/client/react')
   return {
     ...original,
     useSuspenseQuery: vi.fn()
@@ -110,6 +111,7 @@ describe('VideoImageAlt', () => {
       subscribeToMore: vi.fn(),
       client: {} as any,
       error: undefined,
+      dataState: 'complete' as const,
       networkStatus: NetworkStatus.ready,
       refetch: vi.fn()
     })
@@ -166,6 +168,7 @@ describe('VideoImageAlt', () => {
       subscribeToMore: vi.fn(),
       client: {} as any,
       error: undefined,
+      dataState: 'complete' as const,
       networkStatus: NetworkStatus.ready,
       refetch: vi.fn()
     })

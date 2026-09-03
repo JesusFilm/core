@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
@@ -100,7 +101,7 @@ describe('MoveBlockButton', () => {
     children: [card]
   }
 
-  const mockBlockOrderFirstMock: MockedResponse<
+  const mockBlockOrderFirstMock: MockLink.MockedResponse<
     BlockOrderUpdate,
     BlockOrderUpdateVariables
   > = {
@@ -128,7 +129,7 @@ describe('MoveBlockButton', () => {
       }
     }
   }
-  const mockBlockOrderLastMock: MockedResponse<
+  const mockBlockOrderLastMock: MockLink.MockedResponse<
     BlockOrderUpdate,
     BlockOrderUpdateVariables
   > = {

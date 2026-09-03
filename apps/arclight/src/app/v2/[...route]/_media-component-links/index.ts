@@ -104,10 +104,9 @@ mediaComponentLinks.openapi(route, async (c) => {
 
   const response = await getWithStaleCacheForRequest(c, cacheKey, async () => {
     try {
-      const { data } = await getApolloClient().query<
-        ResultOf<typeof GET_VIDEOS_CHILDREN>
-      >({
+      const { data } = await getApolloClient().query({
         query: GET_VIDEOS_CHILDREN,
+        errorPolicy: 'none',
         variables: {
           ids,
           metadataLanguageId,

@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   GetJourneyAnalytics,
@@ -6,7 +6,7 @@ import {
 } from './__generated__/GetJourneyAnalytics'
 import { GET_JOURNEY_ANALYTICS } from './useJourneyAnalyticsQuery'
 
-export const getJourneyAnalytics: MockedResponse<
+export const getJourneyAnalytics: MockLink.MockedResponse<
   GetJourneyAnalytics,
   GetJourneyAnalyticsVariables
 > = {

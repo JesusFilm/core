@@ -1,4 +1,5 @@
-import { gql, useLazyQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { skipToken, useQuery } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
@@ -88,9 +89,13 @@ export function LocalDetails({
     ? (videoBlock?.videoVariantLanguageId ?? DEFAULT_LANGUAGE_ID)
     : DEFAULT_LANGUAGE_ID
 
-  const [loadVideo, { data, loading }] = useLazyQuery<GetVideo>(GET_VIDEO, {
-    variables: { id, languageId }
-  })
+  // Apollo Client 4 dropped `variables` from `useLazyQuery` and disallows
+  // executing one from an effect, so hold the query with `skipToken` until the
+  // drawer opens instead.
+  const { data, loading } = useQuery<GetVideo>(
+    GET_VIDEO,
+    open === true ? { variables: { id, languageId } } : skipToken
+  )
 
   const handleChange = (selectedLanguage: LanguageOption): void => {
     setSelectedLanguage(selectedLanguage)
@@ -175,11 +180,6 @@ export function LocalDetails({
     }
   }, [open, data])
 
-  useEffect(() => {
-    if (open) {
-      void loadVideo()
-    }
-  }, [open, loadVideo])
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <Stack spacing={4} sx={{ p: 6 }}>

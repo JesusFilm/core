@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import MenuList from '@mui/material/MenuList'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -27,8 +27,8 @@ vi.mock('../../../libs/useTemplateGalleryPageAssignJourneyMutation', () => ({
 
 const mockRefetchQueries = vi.fn(() => Promise.resolve([]))
 
-vi.mock('@apollo/client', async () => ({
-  ...(await vi.importActual('@apollo/client')),
+vi.mock('@apollo/client/react', async () => ({
+  ...(await vi.importActual('@apollo/client/react')),
   useApolloClient: () => ({
     refetchQueries: mockRefetchQueries
   })

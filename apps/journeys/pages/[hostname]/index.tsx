@@ -59,6 +59,10 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
       }
     }
   })
+  // Apollo Client 4 types `data` as optional. The default `none` error
+  // policy rejects rather than resolving without data, so this narrows
+  // the type rather than guarding a reachable branch.
+  if (data == null) throw new Error('GetJourneysSummary returned no data')
 
   if (data.journeys === null) {
     return {
@@ -88,6 +92,11 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
           }
         }
       })
+      // Apollo Client 4 types `data` as optional. The default `none` error
+      // policy rejects rather than resolving without data, so this narrows
+      // the type rather than guarding a reachable branch.
+      if (journeyData == null) throw new Error('GetJourney returned no data')
+
       return {
         props: {
           flags: await getFlags(),

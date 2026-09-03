@@ -170,10 +170,8 @@ describe('youtube', () => {
       expect(mockedCreateApolloClient).toHaveBeenCalledWith('api-media')
       expect(mockApolloQuery).toHaveBeenCalledWith({
         query: expect.any(Object),
+        errorPolicy: 'none',
         variables: {
-          select: {
-            id: true
-          },
           where: {
             bcp47: ['en', 'es']
           }
@@ -273,10 +271,8 @@ describe('youtube', () => {
 
       expect(mockApolloQuery).toHaveBeenCalledWith({
         query: expect.any(Object),
+        errorPolicy: 'none',
         variables: {
-          select: {
-            id: true
-          },
           where: {
             bcp47: ['en', 'es', 'fr']
           }

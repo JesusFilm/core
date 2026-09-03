@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   UpdateJourneyHost,
@@ -7,7 +7,7 @@ import {
 
 import { UPDATE_JOURNEY_HOST } from './useUpdateJourneyHostMutation'
 
-export const updateJourneyHostMock: MockedResponse<
+export const updateJourneyHostMock: MockLink.MockedResponse<
   UpdateJourneyHost,
   UpdateJourneyHostVariables
 > = {

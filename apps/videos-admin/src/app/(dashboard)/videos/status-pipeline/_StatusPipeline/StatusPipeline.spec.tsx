@@ -1,17 +1,12 @@
-import {
-  NetworkStatus,
-  OperationVariables,
-  QueryResult,
-  useMutation,
-  useQuery
-} from '@apollo/client'
+import { NetworkStatus, OperationVariables } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type MockedFunction } from 'vitest'
 
 import { StatusPipeline } from './StatusPipeline'
 
-vi.mock('@apollo/client', async () => {
-  const original = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const original = await vi.importActual('@apollo/client/react')
   return {
     ...original,
     useQuery: vi.fn(),
@@ -81,23 +76,27 @@ const uploadRows = [
 
 function createQueryResult(
   data: unknown
-): QueryResult<any, OperationVariables> {
+): useQuery.Result<
+  any,
+  OperationVariables,
+  'empty' | 'complete' | 'streaming',
+  Partial<OperationVariables>
+> {
   return {
     data,
     loading: false,
     error: undefined,
     fetchMore: vi.fn(),
     refetch: mockRefetch,
+    dataState: 'complete' as const,
     networkStatus: NetworkStatus.ready,
     client: {} as any,
-    called: true,
     startPolling: mockStartPolling,
     stopPolling: mockStopPolling,
     subscribeToMore: vi.fn(),
     updateQuery: vi.fn(),
     observable: {} as any,
     variables: {},
-    reobserve: vi.fn(),
     previousData: undefined
   }
 }

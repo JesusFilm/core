@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import {
   OAuthProvider,
@@ -209,12 +210,15 @@ describe('SignInServiceButton', () => {
 
     afterEach(() => {
       mockGetFirebaseAuth.mockImplementation(
-        () => ({ currentUser: null }) as ReturnType<typeof getFirebaseAuth>
+        () =>
+          ({
+            currentUser: null
+          }) as ReturnType<typeof getFirebaseAuth>
       )
     })
 
     it('should handle Google sign-in correctly', async () => {
-      const journeyPublishMock: MockedResponse<
+      const journeyPublishMock: MockLink.MockedResponse<
         JourneyPublish,
         JourneyPublishVariables
       > = {
@@ -229,7 +233,10 @@ describe('SignInServiceButton', () => {
               id: 'journey-123'
             }
           }
-        })) as MockedResponse<JourneyPublish, JourneyPublishVariables>['result']
+        })) as MockLink.MockedResponse<
+          JourneyPublish,
+          JourneyPublishVariables
+        >['result']
       }
 
       render(
@@ -254,7 +261,7 @@ describe('SignInServiceButton', () => {
     })
 
     it('should handle Facebook sign-in correctly', async () => {
-      const journeyPublishMock: MockedResponse<
+      const journeyPublishMock: MockLink.MockedResponse<
         JourneyPublish,
         JourneyPublishVariables
       > = {
@@ -269,7 +276,10 @@ describe('SignInServiceButton', () => {
               id: 'journey-123'
             }
           }
-        })) as MockedResponse<JourneyPublish, JourneyPublishVariables>['result']
+        })) as MockLink.MockedResponse<
+          JourneyPublish,
+          JourneyPublishVariables
+        >['result']
       }
 
       render(
@@ -292,7 +302,7 @@ describe('SignInServiceButton', () => {
     })
 
     it('should handle Okta sign-in correctly', async () => {
-      const journeyPublishMock: MockedResponse<
+      const journeyPublishMock: MockLink.MockedResponse<
         JourneyPublish,
         JourneyPublishVariables
       > = {
@@ -307,7 +317,10 @@ describe('SignInServiceButton', () => {
               id: 'journey-123'
             }
           }
-        })) as MockedResponse<JourneyPublish, JourneyPublishVariables>['result']
+        })) as MockLink.MockedResponse<
+          JourneyPublish,
+          JourneyPublishVariables
+        >['result']
       }
 
       render(

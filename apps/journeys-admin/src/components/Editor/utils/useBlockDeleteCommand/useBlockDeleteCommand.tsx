@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useMutation } from '@apollo/client'
+import { NormalizedCacheObject, gql } from '@apollo/client'
+import { useApolloClient, useMutation } from '@apollo/client/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -90,8 +91,20 @@ export function useBlockDeleteCommand(): {
     const card = selectedStep?.children?.find(
       (block) => block.__typename === 'CardBlock'
     )
-    const cachedStepWithXandY =
-      client.cache.extract()[`StepBlock:${selectedStep.id}`]
+    // The editor's blocks carry no `x`/`y`, but `blockRestore`'s step blocks
+    // do, so read the flow-diagram coordinates back off the cache when building
+    // the optimistic response. (Apollo Client 4 types `extract()` as
+    // `unknown`.)
+    const cachedBlocks = client.cache.extract() as NormalizedCacheObject
+
+    function withCachedPosition<T extends { __typename: string; id: string }>(
+      block: T
+    ): T & { x: number | null; y: number | null } {
+      const cached = cachedBlocks[`${block.__typename}:${block.id}`] as
+        | { x?: number | null; y?: number | null }
+        | undefined
+      return { ...block, x: cached?.x ?? null, y: cached?.y ?? null }
+    }
     const stepSiblingsBeforeDelete = steps.filter(
       (block) => block.id !== currentBlock.id
     )
@@ -225,16 +238,16 @@ export function useBlockDeleteCommand(): {
             currentBlock.__typename === 'StepBlock'
               ? {
                   blockRestore: [
-                    { ...currentBlock, ...cachedStepWithXandY },
-                    ...flattenedChildren,
-                    ...stepSiblingsBeforeDelete
+                    withCachedPosition(currentBlock),
+                    ...flattenedChildren.map(withCachedPosition),
+                    ...stepSiblingsBeforeDelete.map(withCachedPosition)
                   ]
                 }
               : {
                   blockRestore: [
-                    currentBlock,
-                    ...flattenedChildren,
-                    ...canvasSiblingsBeforeDelete
+                    withCachedPosition(currentBlock),
+                    ...flattenedChildren.map(withCachedPosition),
+                    ...canvasSiblingsBeforeDelete.map(withCachedPosition)
                   ]
                 }
         })

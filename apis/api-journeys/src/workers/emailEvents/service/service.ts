@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { Job } from 'bullmq'
 import { render } from 'react-email'
 
@@ -16,7 +16,7 @@ import { env } from '../../../env'
 import { fetchEmailDetails } from './fetchEmailDetails'
 import { processUserIds } from './processUserIds'
 
-const httpLink = createHttpLink({
+const httpLink = new HttpLink({
   uri: env.GATEWAY_URL,
   headers: {
     'interop-token': env.INTEROP_TOKEN,
@@ -65,7 +65,8 @@ async function visitorEventEmails(
             }
           }
         `),
-        variables: { userId }
+        variables: { userId },
+        errorPolicy: 'none'
       })
 
       if (data.user == null) return

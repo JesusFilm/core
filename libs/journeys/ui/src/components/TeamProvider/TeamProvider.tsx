@@ -1,17 +1,12 @@
-import {
-  OperationVariables,
-  QueryResult,
-  gql,
-  useApolloClient,
-  useMutation,
-  useQuery
-} from '@apollo/client'
+import { OperationVariables, gql } from '@apollo/client'
+import { useApolloClient, useMutation, useQuery } from '@apollo/client/react'
 import { sendGTMEvent } from '@next/third-parties/google'
 import {
   ReactElement,
   ReactNode,
   createContext,
   useContext,
+  useEffect,
   useRef,
   useState
 } from 'react'
@@ -24,7 +19,11 @@ import {
 } from './__generated__/GetLastActiveTeamIdAndTeams'
 
 interface Context {
-  query: QueryResult<GetLastActiveTeamIdAndTeams, OperationVariables>
+  query: useQuery.Result<
+    GetLastActiveTeamIdAndTeams,
+    OperationVariables,
+    'empty' | 'complete' | 'streaming'
+  >
   /** activeTeam is null if loaded and set intentionally */
   activeTeam: Team | null | undefined
   setActiveTeam: (team: Team | null) => void
@@ -201,13 +200,18 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   }
 
   const query = useQuery<GetLastActiveTeamIdAndTeams>(
-    GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
-    {
-      onCompleted: (data) => {
-        updateActiveTeam(data)
-      }
-    }
+    GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   )
+
+  // Apollo Client 4 removed the `onCompleted` option, so resolve the active
+  // team once the query first delivers data. `updateActiveTeam` is guarded by
+  // `hasResolvedTeam`, so later cache updates are a no-op.
+  useEffect(() => {
+    if (query.data != null) updateActiveTeam(query.data)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- updateActiveTeam
+    // closes over refs and setState only; re-running on its identity would
+    // fire on every render.
+  }, [query.data])
 
   function setActiveTeam(team: Team | null): void {
     setSessionTeamId(team?.id ?? null)
@@ -227,7 +231,7 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   // https://github.com/apollographql/apollo-client/issues/11151
   async function refetch(): Promise<void> {
     const { data } = await query.refetch()
-    updateActiveTeam(data)
+    if (data != null) updateActiveTeam(data)
   }
 
   return (

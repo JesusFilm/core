@@ -1,10 +1,10 @@
 import {
   ApolloClient,
-  NormalizedCacheObject,
-  createHttpLink,
-  from
+  ApolloLink,
+  HttpLink,
+  NormalizedCacheObject
 } from '@apollo/client'
-import { setContext } from '@apollo/client/link/context'
+import { SetContextLink } from '@apollo/client/link/context'
 import { RetryLink } from '@apollo/client/link/retry'
 import fetch from 'cross-fetch'
 import { useMemo } from 'react'
@@ -19,14 +19,14 @@ interface CreateApolloClientParams {
 export function createApolloClient({
   token,
   initialState
-}: CreateApolloClientParams = {}): ApolloClient<NormalizedCacheObject> {
+}: CreateApolloClientParams = {}): ApolloClient {
   const isSsrMode = typeof window === 'undefined'
-  const httpLink = createHttpLink({
+  const httpLink = new HttpLink({
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL,
     fetch
   })
 
-  const authLink = setContext(async (_, { headers }) => {
+  const authLink = new SetContextLink(async ({ headers }) => {
     // If this is SSR, DO NOT PASS THE REQUEST HEADERS.
     // Just send along the authorization headers.
     // The **correct** headers will be supplied by the `getServerSideProps` invocation of the query
@@ -54,16 +54,19 @@ export function createApolloClient({
 
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
-    link: from([retryLink, authLink, httpLink]),
+    link: ApolloLink.from([retryLink, authLink, httpLink]),
     cache: cache().restore(initialState ?? {}),
-    connectToDevTools: true
+
+    devtools: {
+      enabled: true
+    }
   })
 }
 
 export function useApolloClient({
   token,
   initialState
-}: CreateApolloClientParams = {}): ApolloClient<NormalizedCacheObject> {
+}: CreateApolloClientParams = {}): ApolloClient {
   return useMemo(
     () => createApolloClient({ token, initialState }),
     [token, initialState]

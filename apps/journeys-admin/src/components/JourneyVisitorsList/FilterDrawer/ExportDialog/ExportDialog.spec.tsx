@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -71,7 +72,7 @@ describe('ExportDialog', () => {
   })
 
   describe('Visitor Actions', () => {
-    const getJourneyEventsMock: MockedResponse<
+    const getJourneyEventsMock: MockLink.MockedResponse<
       GetJourneyEvents,
       GetJourneyEventsVariables
     > = {
@@ -157,7 +158,7 @@ describe('ExportDialog', () => {
       EventType.VideoProgressEvent
     ]
 
-    const mockCreateEventsExportLogMutation: MockedResponse<
+    const mockCreateEventsExportLogMutation: MockLink.MockedResponse<
       CreateEventsExportLog,
       CreateEventsExportLogVariables
     > = {

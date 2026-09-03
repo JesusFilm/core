@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { NormalizedCacheObject, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -181,7 +182,7 @@ export const getServerSideProps: GetServerSideProps<
     }
   })
 
-  if (journeysEmailPreferenceData.journeysEmailPreference == null) {
+  if (journeysEmailPreferenceData?.journeysEmailPreference == null) {
     journeysEmailPreferenceData = {
       journeysEmailPreference: {
         email,
@@ -212,7 +213,7 @@ export const getServerSideProps: GetServerSideProps<
   return {
     props: {
       ...translations,
-      initialApolloState: apolloClient.cache.extract(),
+      initialApolloState: apolloClient.cache.extract() as NormalizedCacheObject,
       journeysEmailPreferenceData,
       updatePrefs: updatePrefs ?? undefined,
       ...(user != null ? { userSerialized: JSON.stringify(user) } : {})

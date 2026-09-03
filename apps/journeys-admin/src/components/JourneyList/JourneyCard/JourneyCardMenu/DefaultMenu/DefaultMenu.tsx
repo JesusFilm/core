@@ -1,4 +1,5 @@
-import { ApolloQueryResult, gql, useQuery } from '@apollo/client'
+import { ApolloClient, gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next/pages'
@@ -74,7 +75,7 @@ interface DefaultMenuProps {
   setOpenTranslateDialog: () => void
   handleKeepMounted?: () => void
   template?: boolean
-  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  refetch?: () => Promise<ApolloClient.QueryResult<GetAdminJourneys>>
   setHasOpenDialog?: (hasOpenDialog: boolean) => void
 }
 
@@ -97,7 +98,7 @@ interface DefaultMenuProps {
  * @param {() => void} props.setOpenTranslateDialog - Function to open the translate dialog
  * @param {() => void} [props.handleKeepMounted] - Optional function to handle keeping the component mounted
  * @param {boolean} [props.template] - Whether the journey is a template, affects available menu options
- * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Optional function to refetch journey data after operations
+ * @param {() => Promise<ApolloClient.QueryResult<GetAdminJourneys>>} [props.refetch] - Optional function to refetch journey data after operations
  * @returns {ReactElement} The rendered menu component with conditional menu items based on user permissions
  */
 export function DefaultMenu({
