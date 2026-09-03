@@ -42,6 +42,31 @@ describe('JourneyLocaleProvider integration', () => {
     )
   })
 
+  it('re-renders in the new locale when the journey locale changes', async () => {
+    const { rerender } = render(
+      <JourneyLocaleProvider locale="en">
+        <CanvasStrings />
+      </JourneyLocaleProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('submit')).toHaveTextContent('Submit')
+    )
+
+    rerender(
+      <JourneyLocaleProvider locale="fr">
+        <CanvasStrings />
+      </JourneyLocaleProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('submit')).toHaveTextContent('Soumettre')
+    )
+    expect(screen.getByTestId('placeholder')).toHaveTextContent(
+      'Ajoute ton texte ici...'
+    )
+  })
+
   it('falls back to English when the journey locale has no translation folder', async () => {
     render(
       <JourneyLocaleProvider locale="en">
