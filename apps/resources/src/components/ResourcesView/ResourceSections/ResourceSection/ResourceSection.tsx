@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useEffect } from 'react'
@@ -60,15 +59,15 @@ export function ResourceSection({
       {items.length > 0 ? (
         <Box data-testid="ResourceSection">
           <Typography variant="h5">{label}</Typography>
-          <Container maxWidth={false}>
+          {/* ml offsets the card padding, so the card image aligns with the heading */}
+          <Box sx={{ ml: -2 }}>
             <ContentCarousel
               items={items}
               renderItem={(itemProps) => <ResourceCard {...itemProps} />}
               breakpoints={swiperBreakpoints}
-              slidesOffsetBefore={-32}
               content="strategies-section"
             />
-          </Container>
+          </Box>
         </Box>
       ) : (
         <></>
