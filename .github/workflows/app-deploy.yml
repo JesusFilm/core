@@ -249,15 +249,39 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Cache Playwright browsers
+      - name: Select Playwright browser
+        id: playwright-browser
+        env:
+          APP: ${{ matrix.app }}
+        run: |
+          case "$APP" in
+            arclight|docs|journeys|journeys-admin|resources)
+              echo "name=chrome" >> "$GITHUB_OUTPUT"
+              ;;
+            player|videos-admin)
+              echo "name=firefox" >> "$GITHUB_OUTPUT"
+              ;;
+            short-links)
+              echo "name=chromium" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "Unsupported Playwright app: $APP" >&2
+              exit 1
+              ;;
+          esac
+      - name: Cache Playwright browser
+        if: steps.playwright-browser.outputs.name != 'chrome'
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-node-22-playwright-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node-22-playwright-${{ steps.playwright-browser.outputs.name }}-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-node-22-playwright-
-      - name: Install Playwright Browsers
-        run: pnpm exec playwright install --with-deps
+            ${{ runner.os }}-node-22-playwright-${{ steps.playwright-browser.outputs.name }}-
+      - name: Install Playwright browser
+        if: steps.playwright-browser.outputs.name != 'chrome'
+        env:
+          PLAYWRIGHT_BROWSER: ${{ steps.playwright-browser.outputs.name }}
+        run: pnpm exec playwright install --with-deps "$PLAYWRIGHT_BROWSER"
       - name: Run Playwright tests
         run: pnpm exec nx run ${{ matrix.app }}-e2e:e2e
         env:
