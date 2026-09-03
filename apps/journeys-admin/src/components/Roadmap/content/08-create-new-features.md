@@ -15,6 +15,7 @@ Adding new capabilities to the editor.
 3. Offline mode for journeys and the editor — XL
 4. New viewer role — M
 5. Moving journeys between teams — M
+6. Editing account details — S
 
 ---
 
@@ -67,3 +68,18 @@ need splitting rather than reassigning.
 >
 > This needs a data-privacy answer rather than a product one — particularly
 > EU/GDPR.
+
+### 6. Editing account details — Small
+
+Letting someone change their first and last name, and their email address,
+from within the admin. Nothing edits a profile today — name and email are
+copied from the login provider on first sign-in and never touched again — so
+this is a new form and the mutation behind it. Ownership is tied to the
+account rather than the email, so an email change doesn't disturb journeys or
+teams; the few things keyed on email (pending invites, email preferences,
+Google integrations) would need to follow the change.
+
+Linking several accounts or emails into one has come up alongside this, but
+it isn't possible with our current auth provider.
+
+No open questions — the scope is understood.
