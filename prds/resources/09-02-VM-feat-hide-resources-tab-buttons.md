@@ -36,3 +36,30 @@
 ## Follow-up Ideas
 
 - Remove the section from more pages with the same prop, if the design asks for it.
+
+## Addendum: align the section cards with the headings
+
+### Goals
+
+- Align the left edge of the card images with the section headings on `/resources`.
+
+### Obstacles
+
+- `ResourceSection` wrapped the carousel in a `Container` with 24 px padding.
+- The `slidesOffsetBefore={-32}` compensation in `ContentCarousel` sets a margin through the `sx` prop.
+- The Swiper stylesheet sets `margin-left: auto` on `.swiper`, and it can win the cascade. The margin then computes to 0 and the cards sit 32 px right of the headings.
+
+### Resolutions
+
+- The `Container` wrapper and the `slidesOffsetBefore` value are removed.
+- A `Box` with `ml: -2` now offsets the 8 px card padding. The card image aligns with the heading at all breakpoints.
+- `ContentCarousel` is a shared library component, so the fix stays local to `ResourceSection`.
+
+### Test Coverage
+
+- `nx run resources:test`: all tests pass.
+- Manual check in Chrome on `http://localhost:4310/resources`: the headings, the search bar, and the card images share one left edge.
+
+### User Flows
+
+- Open `/resources` → each section heading and its card images start at the same left edge.
