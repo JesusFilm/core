@@ -166,32 +166,22 @@ jobs:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     needs: [affected, deploy-preview]
     if: ${{ always() && github.event_name == 'pull_request' }}
-    steps:
-      - name: Successful deploy
-        if: ${{ !(contains(needs.*.result, 'failure')) }}
-        run: exit 0
-      - name: Failing deploy
-        if: ${{ contains(needs.*.result, 'failure') }}
-        run: exit 1
-  build-e2e-matrix:
-    name: Build E2E Matrix
-    needs: [affected, deploy-preview]
-    if: ${{ github.event_name != 'merge_group' && needs.deploy-preview.result == 'success' && !(github.event_name == 'push' && github.ref == 'refs/heads/stage') && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}
     permissions:
       actions: read
       contents: read
-    runs-on: blacksmith-2vcpu-ubuntu-2204
     outputs:
       include: ${{ steps.build.outputs.include }}
       apps: ${{ steps.build.outputs.apps }}
     steps:
       - name: Download all E2E input artifacts
+        if: ${{ needs.deploy-preview.result == 'success' && !github.event.pull_request.draft }}
         uses: actions/download-artifact@v4
         with:
           path: e2e-input
           pattern: e2e-input-*
           merge-multiple: true
-      - name: Build matrix from deployments
+      - name: Build E2E matrix from deployments
+        if: ${{ needs.deploy-preview.result == 'success' && !github.event.pull_request.draft }}
         id: build
         run: |
           set -euo pipefail
@@ -221,11 +211,18 @@ jobs:
           echo "Final E2E include: ${include}"
           echo "include=${include}" >> $GITHUB_OUTPUT
           echo "apps=${apps}" >> $GITHUB_OUTPUT
+      - name: Successful deploy
+        if: ${{ !(contains(needs.*.result, 'failure')) }}
+        run: exit 0
+      - name: Failing deploy
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: exit 1
   e2e:
     name: Playwright E2E (${{ matrix.app }})
-    needs: [build-e2e-matrix]
-    # Only run if ALL deploy-preview matrix entries succeeded and we have URLs
-    if: ${{ github.event_name != 'merge_group' && needs.build-e2e-matrix.result == 'success' && needs.build-e2e-matrix.outputs.apps != '[]' && needs.build-e2e-matrix.outputs.apps != '' && !(github.event_name == 'push' && github.ref == 'refs/heads/stage') && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}
+    needs: [deploy-status]
+    # Event filtering is inherited from the PR-only deploy-status job.
+    # Only run if ALL deploy-preview matrix entries succeeded and we have URLs.
+    if: ${{ needs.deploy-status.result == 'success' && needs.deploy-status.outputs.apps != '[]' && needs.deploy-status.outputs.apps != '' }}
     permissions:
       contents: read
     runs-on: blacksmith-4vcpu-ubuntu-2204
@@ -234,8 +231,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: ${{ fromJson(needs.build-e2e-matrix.outputs.apps) }}
-        include: ${{ fromJson(needs.build-e2e-matrix.outputs.include) }}
+        app: ${{ fromJson(needs.deploy-status.outputs.apps) }}
+        include: ${{ fromJson(needs.deploy-status.outputs.include) }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup pnpm
