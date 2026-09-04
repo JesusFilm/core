@@ -21,6 +21,19 @@ function hasMissingDownloadMetadata(download: {
   )
 }
 
+// Every non-distro, non-highest quality tier -- the set buildMuxDownloadRows()
+// can ever produce a row for. Used to find qualities a ready asset will never
+// produce, so a legacy row left in one of those slots can be cleaned up
+// instead of lingering forever.
+const REAL_DOWNLOAD_QUALITIES = [
+  VideoVariantDownloadQuality.low,
+  VideoVariantDownloadQuality.sd,
+  VideoVariantDownloadQuality.high,
+  VideoVariantDownloadQuality.fhd,
+  VideoVariantDownloadQuality.qhd,
+  VideoVariantDownloadQuality.uhd
+]
+
 export const qualityEnumToOrder: Record<VideoVariantDownloadQuality, number> = {
   [VideoVariantDownloadQuality.distroLow]: 0,
   [VideoVariantDownloadQuality.distroSd]: 1,
@@ -72,6 +85,24 @@ function hasValidRenditionMetadata(file: {
   const size = file.filesize ? parseInt(file.filesize) : 0
   const bitrate = file.bitrate ?? 0
   return size > 0 && bitrate > 0
+}
+
+// A `ready` file without usable metadata (see above) is still settling, not
+// finished -- treat the whole asset as not-yet-final so a quality it would
+// eventually produce doesn't get its legacy row deleted prematurely.
+function hasAnyPendingRendition(
+  files: Array<{
+    status?: string
+    filesize?: string | null
+    bitrate?: number | null
+  } | null>
+): boolean {
+  return files.some(
+    (file) =>
+      file != null &&
+      file.status === 'ready' &&
+      !hasValidRenditionMetadata(file)
+  )
 }
 
 // Enhanced function that handles fallbacks for sd and high qualities
@@ -378,8 +409,17 @@ export async function createDownloadsFromMuxAsset({
         continue
       }
 
+      const isExistingMuxDownload =
+        existingDownload.url.startsWith(MUX_STREAM_BASE_URL)
+
+      // Replace a broken existing Mux row, or ANY non-Mux row occupying this
+      // quality slot (e.g. a legacy origin-server URL predating the Mux
+      // migration) -- a non-Mux row here isn't a deliberate alternative the
+      // way distro* rows are (those are a separate quality enum entirely,
+      // never touched by this function); it's stale data blocking the
+      // correct Mux-hosted download from ever landing.
       if (
-        existingDownload.url.startsWith(MUX_STREAM_BASE_URL) &&
+        !isExistingMuxDownload ||
         hasMissingDownloadMetadata(existingDownload)
       ) {
         await prisma.videoVariantDownload.update({
@@ -400,10 +440,9 @@ export async function createDownloadsFromMuxAsset({
       logger?.info(
         {
           videoVariantId: variantId,
-          quality: download.quality,
-          isMuxDownload: existingDownload.url.startsWith(MUX_STREAM_BASE_URL)
+          quality: download.quality
         },
-        'Existing download does not need Mux metadata refresh'
+        'Existing Mux download is already complete, no refresh needed'
       )
     } catch (error: any) {
       logger?.error(
@@ -414,6 +453,43 @@ export async function createDownloadsFromMuxAsset({
         },
         'Failed to create or update individual download'
       )
+    }
+  }
+
+  // Clean up a legacy row left in a quality slot this asset will never fill.
+  // Only once every rendition is in a final state (see
+  // hasAnyPendingRendition) -- otherwise a quality missing from `data` might
+  // just not have finished processing yet, and a later run should still get
+  // the chance to fill it in rather than find its legacy row already gone.
+  if (!hasAnyPendingRendition(muxVideoAsset.static_renditions?.files ?? [])) {
+    const producedQualities = new Set(data.map((download) => download.quality))
+    const permanentlyAbsentQualities = REAL_DOWNLOAD_QUALITIES.filter(
+      (quality) => !producedQualities.has(quality)
+    )
+
+    for (const quality of permanentlyAbsentQualities) {
+      try {
+        const existingDownload = await prisma.videoVariantDownload.findUnique({
+          where: {
+            quality_videoVariantId: { quality, videoVariantId: variantId }
+          }
+        })
+
+        if (
+          existingDownload != null &&
+          !existingDownload.url.startsWith(MUX_STREAM_BASE_URL)
+        ) {
+          await prisma.videoVariantDownload.delete({
+            where: { id: existingDownload.id }
+          })
+          createdCount++
+        }
+      } catch (error: any) {
+        logger?.error(
+          { error, videoVariantId: variantId, quality },
+          'Failed to remove a legacy download for a permanently unproducible quality'
+        )
+      }
     }
   }
 
