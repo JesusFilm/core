@@ -1,4 +1,3 @@
-import { type SearchClient, algoliasearch } from 'algoliasearch'
 import type { Logger } from 'pino'
 
 import {
@@ -6,29 +5,7 @@ import {
   prisma as languagesPrisma
 } from '@core/prisma/languages/client'
 
-function getRequiredEnv(name: string): string {
-  const value = process.env[name]
-  if (value == null || value.trim() === '') {
-    throw new Error(`Missing required env var: ${name}`)
-  }
-  return value
-}
-
-interface AlgoliaLanguagesClient {
-  client: SearchClient
-  languagesIndex: string
-}
-
-// Deliberately local rather than reusing lib/algolia/algoliaClient, whose
-// getAlgoliaConfig also requires the video index env vars. Coupling the
-// languages sync to those would break video indexing wherever they are unset.
-function getAlgoliaLanguagesClient(): AlgoliaLanguagesClient {
-  const appId = getRequiredEnv('ALGOLIA_APPLICATION_ID')
-  const apiKey = getRequiredEnv('ALGOLIA_API_KEY')
-  const languagesIndex = getRequiredEnv('ALGOLIA_INDEX_LANGUAGES')
-
-  return { client: algoliasearch(appId, apiKey), languagesIndex }
-}
+import { getAlgoliaClient, getAlgoliaConfig } from '../algolia/algoliaClient'
 
 const languageAlgoliaSelect = {
   id: true,
@@ -122,7 +99,8 @@ export async function updateLanguageInAlgoliaFromMedia(
   logger?: Logger
 ): Promise<void> {
   try {
-    const { client, languagesIndex } = getAlgoliaLanguagesClient()
+    const client = getAlgoliaClient()
+    const { languagesIndex } = getAlgoliaConfig()
     const language = await languagesPrisma.language.findUnique({
       where: { id: languageId },
       select: languageAlgoliaSelect
@@ -160,7 +138,8 @@ interface ReindexLanguagesResult {
 export async function reindexLanguagesWithVideosInAlgolia(
   logger?: Logger
 ): Promise<ReindexLanguagesResult> {
-  const { client, languagesIndex } = getAlgoliaLanguagesClient()
+  const client = getAlgoliaClient()
+  const { languagesIndex } = getAlgoliaConfig()
 
   let count = 0
   let cursor: string | undefined
