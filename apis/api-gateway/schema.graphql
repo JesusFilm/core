@@ -3370,19 +3370,19 @@ union MutationPlaylistItemRemoveResult @join__type(graph: API_MEDIA)  @join__uni
 
 union MutationPlaylistItemsReorderResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistItemsReorderSuccess")  = NotFoundError | MutationPlaylistItemsReorderSuccess
 
-union MutationPlaylistUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistUpdateSuccess")  = NotFoundError | ZodError | MutationPlaylistUpdateSuccess
+union MutationPlaylistUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistUpdateSuccess")  = ZodError | NotFoundError | MutationPlaylistUpdateSuccess
 
-union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
+union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = ZodError | NotUniqueError | MutationShortLinkCreateSuccess
 
 union MutationShortLinkDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDeleteSuccess")  = NotFoundError | MutationShortLinkDeleteSuccess
 
-union MutationShortLinkDomainCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainCreateSuccess")  = NotUniqueError | ZodError | MutationShortLinkDomainCreateSuccess
+union MutationShortLinkDomainCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainCreateSuccess")  = ZodError | NotUniqueError | MutationShortLinkDomainCreateSuccess
 
 union MutationShortLinkDomainDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ForeignKeyConstraintError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainDeleteSuccess")  = NotFoundError | ForeignKeyConstraintError | MutationShortLinkDomainDeleteSuccess
 
 union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = NotFoundError | MutationShortLinkDomainUpdateSuccess
 
-union MutationShortLinkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkUpdateSuccess")  = NotFoundError | ZodError | MutationShortLinkUpdateSuccess
+union MutationShortLinkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkUpdateSuccess")  = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
 
 union QueryGetMyGeneratedMuxSubtitleTrackResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "Error")  @join__unionMember(graph: API_MEDIA, member: "QueryGetMyGeneratedMuxSubtitleTrackSuccess")  = Error | QueryGetMyGeneratedMuxSubtitleTrackSuccess
 
