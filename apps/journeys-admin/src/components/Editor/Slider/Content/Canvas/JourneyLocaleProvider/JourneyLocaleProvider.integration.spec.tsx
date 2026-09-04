@@ -42,6 +42,35 @@ describe('JourneyLocaleProvider integration', () => {
     )
   })
 
+  // Both ends of this switch are non-English on purpose. Keys in this repo are
+  // the English source strings, so an English assertion also passes when no
+  // bundle loaded at all and `t` returned the key — it could not tell a working
+  // locale switch from a broken one.
+  it('re-renders in the new locale when the journey locale changes', async () => {
+    const { rerender } = render(
+      <JourneyLocaleProvider locale="fr">
+        <CanvasStrings />
+      </JourneyLocaleProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('submit')).toHaveTextContent('Soumettre')
+    )
+
+    rerender(
+      <JourneyLocaleProvider locale="de">
+        <CanvasStrings />
+      </JourneyLocaleProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('submit')).toHaveTextContent('einreichen')
+    )
+    expect(screen.getByTestId('placeholder')).toHaveTextContent(
+      'Füge deinen Text hier ein...'
+    )
+  })
+
   it('falls back to English when the journey locale has no translation folder', async () => {
     render(
       <JourneyLocaleProvider locale="en">
