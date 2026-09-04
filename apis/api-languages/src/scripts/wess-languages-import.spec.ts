@@ -84,6 +84,7 @@ describe('normalizeWessLanguageRow', () => {
     expect(normalized).toEqual({
       id: '185035',
       name: 'Wekais',
+      nativeName: null,
       bcp47: null,
       iso3: null,
       slug: null,
@@ -111,5 +112,42 @@ describe('normalizeWessLanguageRow', () => {
 
   it('returns null when id is missing', () => {
     expect(normalizeWessLanguageRow({ name: 'x' })).toBeNull()
+  })
+
+  it('maps NATIVE_LAN_NAME to nativeName', () => {
+    const normalized = normalizeWessLanguageRow({
+      id: '1',
+      NATIVE_LAN_NAME: 'English'
+    })
+    expect(normalized?.nativeName).toBe('English')
+  })
+
+  it('falls back through the nativeName alias keys', () => {
+    expect(
+      normalizeWessLanguageRow({ id: '1', nativeName: 'Français' })?.nativeName
+    ).toBe('Français')
+    expect(
+      normalizeWessLanguageRow({ id: '1', NativeName: 'Deutsch' })?.nativeName
+    ).toBe('Deutsch')
+  })
+
+  it('trims a trailing-space nativeName', () => {
+    expect(
+      normalizeWessLanguageRow({ id: '1', NATIVE_LAN_NAME: 'Golin ' })
+        ?.nativeName
+    ).toBe('Golin')
+  })
+
+  it('normalizes a blank or whitespace-only nativeName to null', () => {
+    expect(
+      normalizeWessLanguageRow({ id: '1', NATIVE_LAN_NAME: '' })?.nativeName
+    ).toBeNull()
+    expect(
+      normalizeWessLanguageRow({ id: '1', NATIVE_LAN_NAME: '   ' })?.nativeName
+    ).toBeNull()
+  })
+
+  it('returns null nativeName when no alias key is present', () => {
+    expect(normalizeWessLanguageRow({ id: '1' })?.nativeName).toBeNull()
   })
 })
