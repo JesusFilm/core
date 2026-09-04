@@ -239,7 +239,6 @@
     "@eslint/js": "^10.0.1",
     "@graphql-hive/cli": "^0.48.0",
     "@graphql-tools/executor-http": "^1.0.9",
-    "@mermaid-js/mermaid-cli": "^11.0.0",
     "@nx/esbuild": "23.1.0",
     "@nx/eslint": "23.1.0",
     "@nx/eslint-plugin": "23.1.0",
