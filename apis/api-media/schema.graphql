@@ -542,7 +542,7 @@ type MutationPlaylistItemsReorderSuccess {
   data: [PlaylistItem!]!
 }
 
-union MutationPlaylistUpdateResult = NotFoundError | ZodError | MutationPlaylistUpdateSuccess
+union MutationPlaylistUpdateResult = ZodError | NotFoundError | MutationPlaylistUpdateSuccess
 
 type MutationPlaylistUpdateSuccess {
   data: Playlist!
@@ -585,7 +585,7 @@ input MutationShortLinkCreateInput {
   sourceRef: String
 }
 
-union MutationShortLinkCreateResult = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
+union MutationShortLinkCreateResult = ZodError | NotUniqueError | MutationShortLinkCreateSuccess
 
 type MutationShortLinkCreateSuccess {
   data: ShortLink!
@@ -607,7 +607,7 @@ input MutationShortLinkDomainCreateInput {
   services: [Service!]
 }
 
-union MutationShortLinkDomainCreateResult = NotUniqueError | ZodError | MutationShortLinkDomainCreateSuccess
+union MutationShortLinkDomainCreateResult = ZodError | NotUniqueError | MutationShortLinkDomainCreateSuccess
 
 type MutationShortLinkDomainCreateSuccess {
   data: ShortLinkDomain!
@@ -652,7 +652,7 @@ input MutationShortLinkUpdateInput {
   bitrate: Int
 }
 
-union MutationShortLinkUpdateResult = NotFoundError | ZodError | MutationShortLinkUpdateSuccess
+union MutationShortLinkUpdateResult = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
 
 type MutationShortLinkUpdateSuccess {
   data: ShortLink!
