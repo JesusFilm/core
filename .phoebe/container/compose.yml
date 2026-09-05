@@ -1,0 +1,84 @@
+# Phoebe compose file — scaffolded by `phoebe init`, consumer-owned.
+#
+# One long-lived container. Its main process is `phoebe boot` (pinned into the
+# image's ENTRYPOINT), which materializes the engine named by `engine` in
+# phoebe.config.ts, runs it, and keeps supervising it for the life of the
+# container — so this file describes a daemon, not a one-shot:
+#
+#   docker compose up -d          # run it
+#   docker compose logs -f        # watch it
+#   docker compose stop           # SIGTERM → the engine drains, finishing its
+#                                 # current work unit and starting no new one
+#
+# For a scoped, non-daemon invocation, pass engine flags — the image's `CMD []`
+# means anything here is forwarded straight through `boot` to the engine:
+#
+#   docker compose run --rm phoebe --dry-run --run-once   # selection preview
+#   docker compose run --rm phoebe --run-once             # work exactly one unit
+#
+# To upgrade the engine, edit `engine.ref` in phoebe.config.ts — `boot` notices
+# within a poll interval and relaunches at the next work-unit boundary. No
+# rebuild and no restart; rebuild only when this image's toolchain changes.
+
+# Project name — namespaces this instance's containers and named volumes. It
+# defaults to `phoebe`, but if you run Phoebe for more than one repo on the same
+# host you MUST make it unique per repo (set COMPOSE_PROJECT_NAME in `.env`).
+# Compose otherwise derives the project from this file's parent directory —
+# `container` — which is identical for every consumer, so the "private"
+# /data/repo, /data/state, … volumes would be shared across repos. Set it and
+# each repo gets its own `phoebe-<repo>_phoebe-repo` volume set.
+name: ${COMPOSE_PROJECT_NAME:-phoebe}
+
+services:
+  phoebe:
+    build:
+      context: .
+      args:
+        PHOEBE_INSTALL_COMMAND: 'pnpm install --frozen-lockfile'
+    image: phoebe-runtime:latest
+    restart: unless-stopped
+    environment:
+      # Secrets — populate via `.env` (see `.env.example`). GH_TOKEN also
+      # authenticates the engine checkout when `engine.source` is "github".
+      GH_TOKEN: '${GH_TOKEN:?GH_TOKEN is required}'
+      ANTHROPIC_API_KEY: '${ANTHROPIC_API_KEY:-}'
+      CURSOR_API_KEY: '${CURSOR_API_KEY:-}'
+      OPENAI_KEY: '${OPENAI_KEY:-}'
+      # Where `boot` keeps engine checkouts. Pointed at a named volume below so
+      # a restart fetches into an existing clone instead of cloning again.
+      PHOEBE_ENGINE_DIR: /data/engine
+      # Optional runtime toggles.
+      PHOEBE_AGENT: '${PHOEBE_AGENT:-}'
+      PHOEBE_MODEL: '${PHOEBE_MODEL:-}'
+      PHOEBE_POLL_INTERVAL_MS: '${PHOEBE_POLL_INTERVAL_MS:-}'
+      PHOEBE_RECONCILE_INTERVAL_MS: '${PHOEBE_RECONCILE_INTERVAL_MS:-}'
+    volumes:
+      - phoebe-repo:/data/repo
+      - phoebe-worktrees:/data/worktrees
+      - phoebe-state:/data/state
+      - phoebe-engine:/data/engine
+      # $HOME, persisted. It is not scratch space for a pnpm repo: the corepack
+      # cache (the pinned pnpm binary) and the pnpm content-addressable store
+      # both live under it. Without this volume every `docker compose up`
+      # re-downloads pnpm and re-fetches core's entire dependency tree from the
+      # registry on the first work unit, which is minutes of wall clock per
+      # container recreate. Seeded from the image, so it lands phoebe-owned.
+      - phoebe-home:/home/phoebe
+      # Consumer config + prompt overrides live in-repo; mount them read-only
+      # so `boot` can re-read the config without a rebuild.
+      #
+      # Caveat worth knowing: a single-file bind mount pins the host *inode*, so
+      # a save that writes a new file and renames it over the old one — most
+      # editors' atomic save, and what `git pull` does — is invisible in here,
+      # and `boot`'s config watch will never fire for it. Either edit in place,
+      # or follow the write with `docker compose up -d --force-recreate`.
+      - ../phoebe.config.ts:/etc/phoebe/phoebe.config.ts:ro
+      - ../prompts:/etc/phoebe/prompts:ro
+    working_dir: /etc/phoebe
+
+volumes:
+  phoebe-repo:
+  phoebe-worktrees:
+  phoebe-state:
+  phoebe-engine:
+  phoebe-home:
