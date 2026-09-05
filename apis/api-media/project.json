@@ -182,6 +182,34 @@
         "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/run-parent-variant-audit.ts"
       }
     },
+    "audit-slug-title-hygiene": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["prisma-media:prisma-generate"],
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/run-slug-title-hygiene-audit.ts"
+      }
+    },
+    "fix-underscore-video-slugs": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["prisma-media:prisma-generate"],
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/run-fix-underscore-video-slugs.ts"
+      }
+    },
+    "fix-underscore-video-titles": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["prisma-media:prisma-generate"],
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/run-fix-underscore-video-titles.ts"
+      }
+    },
+    "fix-whitespace-video-titles": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["prisma-media:prisma-generate"],
+      "options": {
+        "command": "pnpm exec tsx --tsconfig apis/api-media/tsconfig.app.json apis/api-media/src/scripts/run-fix-whitespace-video-titles.ts"
+      }
+    },
     "populate-crowdin-ids": {
       "executor": "nx:run-commands",
       "options": {
