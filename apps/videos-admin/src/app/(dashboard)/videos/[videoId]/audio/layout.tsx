@@ -25,8 +25,74 @@ import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 import {
   IncompleteVideoVariantUploadItems,
   type VideoVariantUploadRow,
-  incompleteUploadStatuses
+  getUploadCreatedAtMs,
+  uploadHistoryStatuses
 } from './_IncompleteVideoVariantUploadItems'
+
+interface VideoVariantUploadPartition {
+  /** Attempts still needing the publisher's attention. */
+  outstanding: VideoVariantUploadRow[]
+  /** Attempts a later successful attempt has made irrelevant. */
+  superseded: VideoVariantUploadRow[]
+}
+
+function getSupersessionKey(upload: VideoVariantUploadRow): string {
+  return [upload.videoId, upload.languageId, upload.edition].join('\u0000')
+}
+
+/**
+ * An attempt is superseded when a later attempt for the same video, audio
+ * language and edition reached `variantCreated`. Variants are deliberately not
+ * consulted, so a failed re-upload over an existing variant stays outstanding.
+ *
+ * Supersession cannot be proven without a usable `createdAt` on both sides, so
+ * an attempt with a missing or unparseable one stays outstanding: a real
+ * failure must never be demoted on the strength of unreadable data.
+ *
+ * This decides membership only. How the superseded attempts are grouped and
+ * ordered for display is owned by the component that renders them.
+ */
+function partitionVideoVariantUploads(
+  uploads: VideoVariantUploadRow[]
+): VideoVariantUploadPartition {
+  const latestSuccessMsByKey = new Map<string, number>()
+
+  for (const upload of uploads) {
+    if (upload.status !== 'variantCreated') continue
+
+    const createdAtMs = getUploadCreatedAtMs(upload)
+    if (createdAtMs == null) continue
+
+    const key = getSupersessionKey(upload)
+    const latestMs = latestSuccessMsByKey.get(key)
+    if (latestMs == null || createdAtMs > latestMs) {
+      latestSuccessMsByKey.set(key, createdAtMs)
+    }
+  }
+
+  const outstanding: VideoVariantUploadRow[] = []
+  const superseded: VideoVariantUploadRow[] = []
+
+  for (const upload of uploads) {
+    if (upload.status === 'variantCreated') continue
+
+    const createdAtMs = getUploadCreatedAtMs(upload)
+    const latestSuccessMs = latestSuccessMsByKey.get(getSupersessionKey(upload))
+
+    if (
+      createdAtMs != null &&
+      latestSuccessMs != null &&
+      latestSuccessMs > createdAtMs
+    ) {
+      superseded.push(upload)
+      continue
+    }
+
+    outstanding.push(upload)
+  }
+
+  return { outstanding, superseded }
+}
 
 const GET_ADMIN_VIDEO_VARIANTS = graphql(`
   query GetAdminVideoVariants($id: ID!, $languageId: ID) {
@@ -129,7 +195,7 @@ export default function ClientLayout({
     stopPolling: stopUploadPolling
   } = useQuery(GET_VIDEO_VARIANT_UPLOADS, {
     variables: {
-      input: { videoId, statuses: incompleteUploadStatuses },
+      input: { videoId, statuses: uploadHistoryStatuses },
       limit: 100,
       languageId: DEFAULT_VIDEO_LANGUAGE_ID
     },
@@ -138,10 +204,14 @@ export default function ClientLayout({
 
   const [resumeVideoVariantUpload] = useMutation(RESUME_VIDEO_VARIANT_UPLOAD)
 
-  const incompleteUploads = useMemo(
-    () => (uploadsData?.videoVariantUploads ?? []) as VideoVariantUploadRow[],
-    [uploadsData?.videoVariantUploads]
-  )
+  const { outstanding: outstandingUploads, superseded: supersededUploads } =
+    useMemo(
+      () =>
+        partitionVideoVariantUploads(
+          (uploadsData?.videoVariantUploads ?? []) as VideoVariantUploadRow[]
+        ),
+      [uploadsData?.videoVariantUploads]
+    )
 
   useEffect(() => {
     if (reloadOnPathChange) {
@@ -157,14 +227,14 @@ export default function ClientLayout({
   }, [pathname])
 
   useEffect(() => {
-    if (incompleteUploads.length > 0 || resumingUploadId != null) {
+    if (outstandingUploads.length > 0 || resumingUploadId != null) {
       startUploadPolling(3000)
       return () => stopUploadPolling()
     }
 
     stopUploadPolling()
   }, [
-    incompleteUploads.length,
+    outstandingUploads.length,
     resumingUploadId,
     startUploadPolling,
     stopUploadPolling
@@ -180,7 +250,7 @@ export default function ClientLayout({
   useEffect(() => {
     if (resumingUploadId == null || isResumeRequestInFlight) return
 
-    const upload = incompleteUploads.find((row) => row.id === resumingUploadId)
+    const upload = outstandingUploads.find((row) => row.id === resumingUploadId)
     if (upload == null) {
       completeResumedUpload()
       return
@@ -197,7 +267,7 @@ export default function ClientLayout({
     enqueueSnackbar,
     resumingUploadId,
     isResumeRequestInFlight,
-    incompleteUploads
+    outstandingUploads
   ])
 
   const handleAddAudioLanguage = useCallback((): void => {
@@ -327,7 +397,8 @@ export default function ClientLayout({
 
     if (
       (!data?.adminVideo.variants || data.adminVideo.variants.length === 0) &&
-      incompleteUploads.length === 0
+      outstandingUploads.length === 0 &&
+      supersededUploads.length === 0
     ) {
       return (
         <Box
@@ -363,7 +434,8 @@ export default function ClientLayout({
       >
         <List disablePadding>
           <IncompleteVideoVariantUploadItems
-            uploads={incompleteUploads}
+            outstandingUploads={outstandingUploads}
+            supersededUploads={supersededUploads}
             resumingUploadId={resumingUploadId}
             isResumeRequestInFlight={isResumeRequestInFlight}
             onAddAudioLanguage={handleAddAudioLanguage}
