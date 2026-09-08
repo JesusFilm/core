@@ -12,10 +12,7 @@ describe('useClickOutside', () => {
     const inputRef = useOnClickOutside<HTMLParagraphElement>(onClickOutside)
     // forcing type cast until next 15
     return (
-      <h2
-        className="Mui-focused"
-        ref={inputRef as RefObject<HTMLParagraphElement>}
-      >
+      <h2 className="Mui-focused" ref={inputRef}>
         Content
       </h2>
     )

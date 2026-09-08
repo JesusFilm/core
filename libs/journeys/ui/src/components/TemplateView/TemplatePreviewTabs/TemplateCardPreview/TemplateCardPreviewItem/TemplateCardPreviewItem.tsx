@@ -275,7 +275,7 @@ export function TemplateCardPreviewItem({
           {config.showStepHeaderFooter && (
             <StepHeader
               steps={steps}
-              selectedStep={step as unknown as TreeBlock<StepFields>}
+              selectedStep={step}
               sx={isGuestPreview ? { mt: 2, px: 3 } : undefined}
             />
           )}
@@ -294,11 +294,7 @@ export function TemplateCardPreviewItem({
               }}
             />
           </ThemeProvider>
-          {config.showStepHeaderFooter && (
-            <StepFooter
-              selectedStep={step as unknown as TreeBlock<StepFields>}
-            />
-          )}
+          {config.showStepHeaderFooter && <StepFooter selectedStep={step} />}
         </Box>
       </ThemeProvider>
     </FramePortal>

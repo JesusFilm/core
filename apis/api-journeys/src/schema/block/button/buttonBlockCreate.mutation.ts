@@ -42,7 +42,7 @@ builder.mutationField('buttonBlockCreate', (t) =>
                 tx
               )
             ).length,
-            settings: (input.settings ?? {}) as Prisma.JsonObject
+            settings: input.settings ?? {}
           }
         })
         await setJourneyUpdatedAt(tx, block)

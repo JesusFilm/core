@@ -616,7 +616,7 @@ describe('templateGalleryPageUpdate', () => {
       prismaMock.templateGalleryPageMedia.upsert.mockResolvedValue({} as any)
       prismaMock.templateGalleryPageMedia.deleteMany.mockResolvedValue({
         count: 1
-      } as any)
+      })
       prismaMock.templateGalleryPage.update.mockResolvedValue({
         id: 'p1',
         media

@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   BlockActionPhoneUpdate,
@@ -8,7 +8,7 @@ import { ContactActionType } from '../../../__generated__/globalTypes'
 
 import { BLOCK_ACTION_PHONE_UPDATE } from './useBlockActionPhoneUpdateMutation'
 
-export const blockActionPhoneUpdateMock: MockedResponse<
+export const blockActionPhoneUpdateMock: MockLink.MockedResponse<
   BlockActionPhoneUpdate,
   BlockActionPhoneUpdateVariables
 > = {
@@ -41,7 +41,7 @@ export const blockActionPhoneUpdateMock: MockedResponse<
   }
 }
 
-export const blockActionPhoneUpdateMockCA: MockedResponse<
+export const blockActionPhoneUpdateMockCA: MockLink.MockedResponse<
   BlockActionPhoneUpdate,
   BlockActionPhoneUpdateVariables
 > = {

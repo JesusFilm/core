@@ -132,7 +132,7 @@ describe('videoTitle', () => {
           crowdInId: null,
           createdAt: new Date(),
           updatedAt: new Date()
-        } as any)
+        })
         prismaMock.videoTitle.update.mockResolvedValue({
           id: 'id',
           videoId: 'videoId',

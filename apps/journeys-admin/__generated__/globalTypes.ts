@@ -280,6 +280,7 @@ export enum Service {
   apiTags = "apiTags",
   apiUsers = "apiUsers",
   apiVideos = "apiVideos",
+  youtube = "youtube",
 }
 
 /**

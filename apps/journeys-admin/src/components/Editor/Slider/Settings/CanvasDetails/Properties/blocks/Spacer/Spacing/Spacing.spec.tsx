@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -26,7 +27,7 @@ describe('Spacing', () => {
     children: []
   }
 
-  const spacingUpdateMock: MockedResponse<
+  const spacingUpdateMock: MockLink.MockedResponse<
     SpacerSpacingUpdate,
     SpacerSpacingUpdateVariables
   > = {
@@ -45,13 +46,13 @@ describe('Spacing', () => {
           __typename: 'SpacerBlock'
         }
       }
-    })) as MockedResponse<
+    })) as MockLink.MockedResponse<
       SpacerSpacingUpdate,
       SpacerSpacingUpdateVariables
     >['result']
   }
 
-  const spacingUpdateMock2: MockedResponse<
+  const spacingUpdateMock2: MockLink.MockedResponse<
     SpacerSpacingUpdate,
     SpacerSpacingUpdateVariables
   > = {
@@ -70,7 +71,7 @@ describe('Spacing', () => {
           __typename: 'SpacerBlock'
         }
       }
-    })) as MockedResponse<
+    })) as MockLink.MockedResponse<
       SpacerSpacingUpdate,
       SpacerSpacingUpdateVariables
     >['result']

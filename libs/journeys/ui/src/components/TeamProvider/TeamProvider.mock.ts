@@ -1,11 +1,11 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { UserTeamRole } from '../../../__generated__/globalTypes'
 
 import { GetLastActiveTeamIdAndTeams } from './__generated__/GetLastActiveTeamIdAndTeams'
 import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from './TeamProvider'
 
-export const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
+export const getLastActiveTeamIdAndTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
   {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -45,7 +45,7 @@ export const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamId
     }
   }
 
-export const getLastActiveTeamIdAndTeamsMockTeamMember: MockedResponse<GetLastActiveTeamIdAndTeams> =
+export const getLastActiveTeamIdAndTeamsMockTeamMember: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
   {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS

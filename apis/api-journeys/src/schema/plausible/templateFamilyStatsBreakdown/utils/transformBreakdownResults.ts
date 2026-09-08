@@ -113,7 +113,7 @@ export function transformBreakdownResults(
 
   const result = Object.entries(grouped).map(([journeyId, data]) => {
     let stats = Object.entries(data.events).map(([eventType, visitors]) => ({
-      event: eventType as TemplateFamilyStatsEventResponse['event'],
+      event: eventType,
       visitors
     }))
 
@@ -127,7 +127,7 @@ export function transformBreakdownResults(
       for (const eventType of allowedEvents) {
         if (!existingEventTypes.has(String(eventType))) {
           stats.push({
-            event: eventType as TemplateFamilyStatsEventResponse['event'],
+            event: eventType,
             visitors: 0
           })
         }

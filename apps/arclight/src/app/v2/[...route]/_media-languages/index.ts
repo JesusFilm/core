@@ -243,10 +243,9 @@ mediaLanguages.openapi(route, async (c) => {
   const response = await getWithStaleCacheForRequest(c, cacheKey, async () => {
     try {
       // Get total count
-      const countResult = await getApolloClient().query<
-        ResultOf<typeof GET_LANGUAGES_COUNT>
-      >({
+      const countResult = await getApolloClient().query({
         query: GET_LANGUAGES_COUNT,
+        errorPolicy: 'none',
         variables: {
           ids,
           bcp47,
@@ -256,10 +255,9 @@ mediaLanguages.openapi(route, async (c) => {
       })
       const totalCount = countResult.data.languagesCount
 
-      const { data } = await getApolloClient().query<
-        ResultOf<typeof GET_LANGUAGES_DATA>
-      >({
+      const { data } = await getApolloClient().query({
         query: GET_LANGUAGES_DATA,
+        errorPolicy: 'none',
         variables: {
           limit,
           offset,

@@ -1,9 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import {
   TemplateGalleryPageUnpublish,
@@ -22,11 +18,11 @@ export const TEMPLATE_GALLERY_PAGE_UNPUBLISH = gql`
 `
 
 export function useTemplateGalleryPageUnpublishMutation(
-  options?: MutationHookOptions<
+  options?: useMutation.Options<
     TemplateGalleryPageUnpublish,
     TemplateGalleryPageUnpublishVariables
   >
-): MutationTuple<
+): useMutation.ResultTuple<
   TemplateGalleryPageUnpublish,
   TemplateGalleryPageUnpublishVariables
 > {

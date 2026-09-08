@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { usePlausible } from 'next-plausible'
 import { ReactElement, useEffect } from 'react'

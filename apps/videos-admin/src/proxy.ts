@@ -115,7 +115,7 @@ export default async function proxy(
       })
 
       const access =
-        data.me?.__typename === 'AuthenticatedUser'
+        data?.me?.__typename === 'AuthenticatedUser'
           ? getPublisherAccess(
               data.me.mediaUserRoles,
               data.me.languageUserRoles

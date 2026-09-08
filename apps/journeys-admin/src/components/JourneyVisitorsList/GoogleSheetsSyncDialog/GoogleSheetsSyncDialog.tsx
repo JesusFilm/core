@@ -1,4 +1,5 @@
-import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client/react'
 import FolderIcon from '@mui/icons-material/Folder'
 import LaunchIcon from '@mui/icons-material/Launch'
 import NorthEastIcon from '@mui/icons-material/NorthEast'
@@ -40,6 +41,11 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
 import { GetIntegration_integrations_IntegrationGoogle } from '../../../../__generated__/GetIntegration'
+import { GoogleSheetsSyncDialogBackfill } from '../../../../__generated__/GoogleSheetsSyncDialogBackfill'
+import { GoogleSheetsSyncDialogDelete } from '../../../../__generated__/GoogleSheetsSyncDialogDelete'
+import { GoogleSheetsSyncDialogJourney } from '../../../../__generated__/GoogleSheetsSyncDialogJourney'
+import { IntegrationGooglePickerToken } from '../../../../__generated__/IntegrationGooglePickerToken'
+import { JourneyVisitorExportToGoogleSheet } from '../../../../__generated__/JourneyVisitorExportToGoogleSheet'
 import { useAuth } from '../../../libs/auth'
 import { getGoogleOAuthUrl } from '../../../libs/googleOAuthUrl'
 import { useIntegrationQuery } from '../../../libs/useIntegrationQuery/useIntegrationQuery'
@@ -162,9 +168,12 @@ export function GoogleSheetsSyncDialog({
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const { user } = useAuth()
 
-  const { data: journeyData } = useQuery(GET_JOURNEY_CREATED_AT, {
-    variables: { id: journeyId }
-  })
+  const { data: journeyData } = useQuery<GoogleSheetsSyncDialogJourney>(
+    GET_JOURNEY_CREATED_AT,
+    {
+      variables: { id: journeyId }
+    }
+  )
   const { data: integrationsData } = useIntegrationQuery({
     teamId: journeyData?.journey?.team?.id as string
   })
@@ -185,16 +194,25 @@ export function GoogleSheetsSyncDialog({
   const [pickerActive, setPickerActive] = useState(false)
 
   const [exportToSheets, { loading: sheetsLoading }] =
-    useMutation(EXPORT_TO_SHEETS)
-  const [getPickerToken] = useLazyQuery(GET_GOOGLE_PICKER_TOKEN)
+    useMutation<JourneyVisitorExportToGoogleSheet>(EXPORT_TO_SHEETS)
+  const [getPickerToken] = useLazyQuery<IntegrationGooglePickerToken>(
+    GET_GOOGLE_PICKER_TOKEN
+  )
   const [
     loadSyncs,
     { data: syncsData, loading: syncsLoading, called: syncsCalled }
   ] = useLazyQuery<GoogleSheetsSyncsQueryData, GoogleSheetsSyncsQueryVariables>(
-    GET_GOOGLE_SHEETS_SYNCS
+    GET_GOOGLE_SHEETS_SYNCS,
+    // Apollo Client 4 accepts only `variables` and `context` on the execute
+    // function, so the fetch policy lives on the hook.
+    { fetchPolicy: 'network-only' }
   )
-  const [deleteSync] = useMutation(DELETE_GOOGLE_SHEETS_SYNC)
-  const [backfillSync] = useMutation(BACKFILL_GOOGLE_SHEETS_SYNC)
+  const [deleteSync] = useMutation<GoogleSheetsSyncDialogDelete>(
+    DELETE_GOOGLE_SHEETS_SYNC
+  )
+  const [backfillSync] = useMutation<GoogleSheetsSyncDialogBackfill>(
+    BACKFILL_GOOGLE_SHEETS_SYNC
+  )
 
   const [deletingSyncId, setDeletingSyncId] = useState<string | null>(null)
   const [syncIdPendingDelete, setSyncIdPendingDelete] = useState<string | null>(
@@ -206,10 +224,7 @@ export function GoogleSheetsSyncDialog({
 
   useEffect(() => {
     if (!open) return
-    void loadSyncs({
-      variables: { filter: { journeyId } },
-      fetchPolicy: 'network-only'
-    })
+    void loadSyncs({ variables: { filter: { journeyId } } })
   }, [open, journeyId, loadSyncs])
 
   const integrationCreatedParam = router.query.integrationCreated
@@ -490,10 +505,7 @@ export function GoogleSheetsSyncDialog({
         window.open(spreadsheetUrl, '_blank', 'noopener,noreferrer')
       }
       enqueueSnackbar(t('Sync created'), { variant: 'success' })
-      await loadSyncs({
-        variables: { filter: { journeyId } },
-        fetchPolicy: 'network-only'
-      })
+      await loadSyncs({ variables: { filter: { journeyId } } })
       onClose()
     } catch (error) {
       enqueueSnackbar((error as Error).message, { variant: 'error' })

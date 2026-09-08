@@ -1,5 +1,6 @@
-import { type FetchResult } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { type ApolloLink } from '@apollo/client'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -80,7 +81,7 @@ describe('CopyToTeamDialog', () => {
     })
 
     it('should call submit action and update team state on dialog submit', async () => {
-      const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> =
+      const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
         {
           request: {
             query: UPDATE_LAST_ACTIVE_TEAM_ID,
@@ -91,7 +92,7 @@ describe('CopyToTeamDialog', () => {
             }
           },
           result: vi.fn(
-            (): FetchResult<UpdateLastActiveTeamId> => ({
+            (): ApolloLink.Result<UpdateLastActiveTeamId> => ({
               data: {
                 journeyProfileUpdate: {
                   __typename: 'JourneyProfile',
@@ -170,7 +171,7 @@ describe('CopyToTeamDialog', () => {
     })
 
     it('should update team state when a single team is available', async () => {
-      const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> =
+      const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
         {
           request: {
             query: UPDATE_LAST_ACTIVE_TEAM_ID,
@@ -181,7 +182,7 @@ describe('CopyToTeamDialog', () => {
             }
           },
           result: vi.fn(
-            (): FetchResult<UpdateLastActiveTeamId> => ({
+            (): ApolloLink.Result<UpdateLastActiveTeamId> => ({
               data: {
                 journeyProfileUpdate: {
                   __typename: 'JourneyProfile',
@@ -592,7 +593,7 @@ describe('CopyToTeamDialog', () => {
         }
       }))
 
-      const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> =
+      const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
         {
           request: {
             query: UPDATE_LAST_ACTIVE_TEAM_ID,
@@ -603,7 +604,7 @@ describe('CopyToTeamDialog', () => {
             }
           },
           result: vi.fn(
-            (): FetchResult<UpdateLastActiveTeamId> => ({
+            (): ApolloLink.Result<UpdateLastActiveTeamId> => ({
               data: {
                 journeyProfileUpdate: {
                   __typename: 'JourneyProfile',
@@ -690,14 +691,14 @@ describe('CopyToTeamDialog', () => {
         }
       }))
 
-      const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> =
+      const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
         {
           request: {
             query: UPDATE_LAST_ACTIVE_TEAM_ID,
             variables: { input: { lastActiveTeamId: 'teamId' } }
           },
           result: vi.fn(
-            (): FetchResult<UpdateLastActiveTeamId> => ({
+            (): ApolloLink.Result<UpdateLastActiveTeamId> => ({
               data: {
                 journeyProfileUpdate: {
                   __typename: 'JourneyProfile',

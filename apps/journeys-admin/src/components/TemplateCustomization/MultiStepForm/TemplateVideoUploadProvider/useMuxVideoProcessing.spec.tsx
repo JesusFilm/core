@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, renderHook } from '@testing-library/react'
 import { ReactElement, ReactNode } from 'react'
 
@@ -25,7 +26,7 @@ vi.mock('notistack', () => {
 
 const mockJourney = { ...mockJourneyBase, id: 'journey-1' }
 
-const getMyMuxVideoReadyMock: MockedResponse = {
+const getMyMuxVideoReadyMock: MockLink.MockedResponse = {
   request: {
     query: GET_MY_MUX_VIDEO_QUERY,
     variables: { id: 'mux-video-id' }
@@ -43,7 +44,7 @@ const getMyMuxVideoReadyMock: MockedResponse = {
   }
 }
 
-const getMyMuxVideoProcessingMock: MockedResponse = {
+const getMyMuxVideoProcessingMock: MockLink.MockedResponse = {
   request: {
     query: GET_MY_MUX_VIDEO_QUERY,
     variables: { id: 'mux-video-id' }
@@ -61,7 +62,7 @@ const getMyMuxVideoProcessingMock: MockedResponse = {
   }
 }
 
-const videoBlockUpdateMock: MockedResponse = {
+const videoBlockUpdateMock: MockLink.MockedResponse = {
   request: {
     query: VIDEO_BLOCK_UPDATE,
     variables: {
@@ -82,7 +83,7 @@ const videoBlockUpdateMock: MockedResponse = {
   }
 }
 
-const videoBlockUpdateErrorMock: MockedResponse = {
+const videoBlockUpdateErrorMock: MockLink.MockedResponse = {
   request: {
     query: VIDEO_BLOCK_UPDATE,
     variables: {
@@ -106,7 +107,7 @@ function useMuxVideoProcessingWithTaskMap() {
   return { ...taskMap, ...processing }
 }
 
-function createWrapper(mocks: MockedResponse[] = []): React.FC<{
+function createWrapper(mocks: MockLink.MockedResponse[] = []): React.FC<{
   children: ReactNode
 }> {
   const Wrapper = function Wrapper({
@@ -115,7 +116,7 @@ function createWrapper(mocks: MockedResponse[] = []): React.FC<{
     children: ReactNode
   }): ReactElement {
     return (
-      <MockedProvider mocks={mocks} addTypename={false}>
+      <MockedProvider mocks={mocks}>
         <JourneyProvider
           value={{ journey: mockJourney, renderMode: 'customize' }}
         >
@@ -196,7 +197,7 @@ describe('useMuxVideoProcessing', () => {
   })
 
   it('retries on transient query errors up to MAX_RETRIES then marks error', async () => {
-    const errorMock: MockedResponse = {
+    const errorMock: MockLink.MockedResponse = {
       request: {
         query: GET_MY_MUX_VIDEO_QUERY,
         variables: { id: 'mux-video-id' }

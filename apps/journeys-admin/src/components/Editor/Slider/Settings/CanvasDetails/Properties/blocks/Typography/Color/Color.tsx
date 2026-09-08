@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
@@ -63,7 +64,7 @@ export function Color(): ReactElement {
 
   const card = selectedStep?.children.find(
     (block) => block.__typename === 'CardBlock'
-  ) as TreeBlock<CardBlock> | undefined
+  )
 
   function enumToHex(enumColor: TypographyColor | null): string {
     const theme = getTheme({

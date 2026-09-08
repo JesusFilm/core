@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { graphql } from 'gql.tada'
 
 import { prisma } from '@core/prisma/journeys/client'
@@ -44,7 +44,7 @@ const isValidImageUrl = (url: string): boolean => {
   }
 }
 
-const httpLink = createHttpLink({
+const httpLink = new HttpLink({
   uri: env.GATEWAY_URL,
   headers: {
     'interop-token': env.INTEROP_TOKEN,
@@ -212,6 +212,9 @@ export async function updateSimpleJourney(
             journeyId,
             typename: 'VideoBlock',
             parentBlockId: cardBlockId,
+            // Last block in this branch, so the increment is never read back;
+            // kept so the counter stays uniform across every sibling create.
+            // eslint-disable-next-line no-useless-assignment
             parentOrder: parentOrder++,
             videoId,
             source: 'youTube',
@@ -321,6 +324,9 @@ export async function updateSimpleJourney(
               journeyId,
               typename: 'ButtonBlock',
               parentBlockId: cardBlockId,
+              // Last block in this branch, so the increment is never read back;
+              // kept so the counter stays uniform across every sibling create.
+              // eslint-disable-next-line no-useless-assignment
               parentOrder: parentOrder++,
               label: card.button.text,
               action:

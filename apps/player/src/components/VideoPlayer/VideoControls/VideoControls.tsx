@@ -239,7 +239,7 @@ export function VideoControls({ player }: VideoControlsProps): ReactElement {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!player || !duration) return
 
-    let newTime = currentTime
+    let newTime: number
     const seekStep = 5
 
     switch (e.key) {

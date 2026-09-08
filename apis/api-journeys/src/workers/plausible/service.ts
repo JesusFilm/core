@@ -1,8 +1,8 @@
 import {
   ApolloClient,
+  HttpLink,
   InMemoryCache,
   NormalizedCacheObject,
-  createHttpLink,
   gql
 } from '@apollo/client'
 import { Job } from 'bullmq'
@@ -125,7 +125,7 @@ export const goals: Array<keyof JourneyPlausibleEvents> = [
   'custom3Capture'
 ]
 
-const httpLink = createHttpLink({
+const httpLink = new HttpLink({
   uri: env.GATEWAY_URL,
   fetch,
   headers: {
@@ -135,7 +135,7 @@ const httpLink = createHttpLink({
   }
 })
 
-const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
+const client: ApolloClient = new ApolloClient({
   link: httpLink,
   cache: new InMemoryCache()
 })
@@ -158,7 +158,9 @@ async function createSite(
   domain: string,
   disableSharedLinks = false
 ): Promise<MutationSiteCreateResult | undefined> {
-  const { data } = await client.mutate({
+  const { data } = await client.mutate<{
+    siteCreate: MutationSiteCreateResult
+  }>({
     mutation: SITE_CREATE,
     variables: {
       input: {

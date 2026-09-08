@@ -185,9 +185,7 @@ export function LinksForm({
                         aria-label={t('Select chat icon')}
                         disableUnderline
                         renderValue={(selected) => (
-                          <MessageChatIcon
-                            platform={selected as MessagePlatform}
-                          />
+                          <MessageChatIcon platform={selected} />
                         )}
                         sx={{
                           height: '100%',

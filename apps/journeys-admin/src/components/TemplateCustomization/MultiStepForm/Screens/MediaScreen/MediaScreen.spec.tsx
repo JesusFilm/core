@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -128,7 +129,7 @@ describe('MediaScreen', () => {
 
   const renderMediaScreen = (
     journeyData: Journey = baseJourney,
-    mocks: MockedResponse[] = []
+    mocks: MockLink.MockedResponse[] = []
   ): ReturnType<typeof render> => {
     return render(
       <MockedProvider mocks={mocks}>

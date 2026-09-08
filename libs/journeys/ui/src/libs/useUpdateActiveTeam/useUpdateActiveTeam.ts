@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import { useTeam } from '../../components/TeamProvider'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../useUpdateLastActiveTeamIdMutation'

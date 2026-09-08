@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -57,7 +58,7 @@ export function NewSignUpButton(): ReactElement {
   function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
-    ) as TreeBlock<CardBlock> | undefined
+    )
     if (card == null || journey == null) return
 
     const signUpBlock: SignUpBlock = {

@@ -1,10 +1,10 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { GetLanguagesContinents } from './__generated__/GetLanguagesContinents'
 import { languagesContinents } from './data'
 import { GET_LANGUAGES_CONTINENTS } from './useLanguagesContinentsQuery'
 
-export const getLanguagesContinentsMock: MockedResponse<GetLanguagesContinents> =
+export const getLanguagesContinentsMock: MockLink.MockedResponse<GetLanguagesContinents> =
   {
     request: {
       query: GET_LANGUAGES_CONTINENTS

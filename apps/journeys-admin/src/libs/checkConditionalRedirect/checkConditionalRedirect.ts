@@ -24,7 +24,7 @@ export const GET_JOURNEY_PROFILE_AND_TEAMS = gql`
 `
 
 interface CheckConditionalRedirectProps {
-  apolloClient: ApolloClient<NormalizedCacheObject>
+  apolloClient: ApolloClient
   resolvedUrl: string
   teamName?: string
   allowGuest?: boolean
@@ -104,7 +104,7 @@ export async function checkConditionalRedirect({
     query: GET_JOURNEY_PROFILE_AND_TEAMS
   })
 
-  if (data.getJourneyProfile?.acceptedTermsAt == null) {
+  if (data?.getJourneyProfile?.acceptedTermsAt == null) {
     if (resolvedUrl.startsWith('/users/terms-and-conditions')) return
     return {
       destination: `/users/terms-and-conditions${encodedRedirect}`,

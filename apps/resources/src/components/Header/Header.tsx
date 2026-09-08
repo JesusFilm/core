@@ -23,6 +23,8 @@ interface HeaderProps {
   hideTopAppBar?: boolean
   /** Flag to hide the bottom app bar. */
   hideBottomAppBar?: boolean
+  /** Flag to remove the bottom app bar with the tab buttons. */
+  hideTabButtons?: boolean
   /** Flag to hide the spacer element (only needed on /watch). */
   hideSpacer?: boolean
   /** Theme mode to apply to the header. */
@@ -43,6 +45,7 @@ interface HeaderProps {
 export function Header({
   hideTopAppBar,
   hideBottomAppBar,
+  hideTabButtons,
   hideSpacer,
   themeMode = ThemeMode.light,
   showLanguageSwitcher = false
@@ -68,7 +71,8 @@ export function Header({
   })
 
   /** Determines if the bottom app bar should be displayed based on feature flags. */
-  const shouldShowBottomAppBar = strategies || journeys
+  const shouldShowBottomAppBar =
+    (strategies || journeys) && hideTabButtons !== true
   /** Determines if the bottom app bar should fade based on props and scroll position. */
   const shouldFade = hideBottomAppBar !== true || bottomBarTrigger
 

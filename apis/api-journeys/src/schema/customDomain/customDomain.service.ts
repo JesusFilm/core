@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { GraphQLError } from 'graphql'
 
 import { CustomDomain, prisma } from '@core/prisma/journeys/client'
@@ -27,8 +27,8 @@ const UPDATE_SHORT_LINK = graphql(`
   }
 `)
 
-function createApolloClient(): ApolloClient<unknown> {
-  const httpLink = createHttpLink({
+function createApolloClient(): ApolloClient {
+  const httpLink = new HttpLink({
     uri: env.GATEWAY_URL,
     headers: {
       'interop-token': env.INTEROP_TOKEN,

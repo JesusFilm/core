@@ -86,7 +86,7 @@ export function addPermissionsAndNames(
       // Aggregated row can contain mixed statuses; don't report a single status.
       status: null,
       stats: unknownEventOrder.map((event) => ({
-        event: event as TemplateFamilyStatsEventResponse['event'],
+        event: event,
         visitors: unknownStatsByEvent.get(event) ?? 0
       }))
     })

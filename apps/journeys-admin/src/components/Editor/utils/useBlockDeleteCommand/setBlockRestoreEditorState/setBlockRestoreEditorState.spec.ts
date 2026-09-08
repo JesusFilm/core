@@ -21,7 +21,7 @@ describe('setBlockRestoreEditorState', () => {
 
   it('should update editor state when current block is not a step block', () => {
     setBlockRestoreEditorState(
-      cardBlock as TreeBlock,
+      cardBlock,
       stepBlockMock as unknown as TreeBlock<StepBlock>,
       dispatch
     )

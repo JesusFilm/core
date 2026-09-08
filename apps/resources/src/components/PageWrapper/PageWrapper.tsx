@@ -16,6 +16,7 @@ interface PageWrapperProps {
   children?: ReactNode
   hideHeader?: boolean
   hideHeaderSpacer?: boolean
+  hideHeaderTabButtons?: boolean
   testId?: string
   headerThemeMode?: ThemeMode
   hideFooter?: boolean
@@ -28,6 +29,7 @@ export function PageWrapper({
   children,
   hideHeader,
   hideHeaderSpacer,
+  hideHeaderTabButtons,
   testId,
   headerThemeMode,
   hideFooter = false,
@@ -40,6 +42,7 @@ export function PageWrapper({
         <Header
           themeMode={headerThemeMode}
           hideSpacer={hideHeaderSpacer}
+          hideTabButtons={hideHeaderTabButtons}
           showLanguageSwitcher={showLanguageSwitcher}
         />
       )}

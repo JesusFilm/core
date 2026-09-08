@@ -10,7 +10,7 @@ describe('login', () => {
 
   it('should resolve when the session cookie is minted', async () => {
     const mockFetch = vi.fn().mockResolvedValue({ ok: true, status: 200 })
-    global.fetch = mockFetch as unknown as typeof fetch
+    global.fetch = mockFetch
 
     await expect(login('id-token')).resolves.toBeUndefined()
     expect(mockFetch).toHaveBeenCalledWith('/api/login', {
@@ -21,9 +21,7 @@ describe('login', () => {
   })
 
   it('should throw when /api/login fails so the caller does not reload signed out', async () => {
-    global.fetch = vi
-      .fn()
-      .mockResolvedValue({ ok: false, status: 503 }) as unknown as typeof fetch
+    global.fetch = vi.fn().mockResolvedValue({ ok: false, status: 503 })
 
     await expect(login('id-token')).rejects.toThrow(
       '/api/login responded with status 503'

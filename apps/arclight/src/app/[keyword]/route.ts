@@ -80,17 +80,19 @@ app.openapi(keywordRoute, async (c) => {
     const hostname =
       process.env.SERVICE_ENV === 'stage' ? 'stg.arc.gt' : 'arc.gt'
 
-    const { data, error, errors } = await getApolloClient().query<
-      ResultOf<typeof GET_SHORT_LINK_QUERY>
-    >({
+    // `all` keeps a GraphQL error out of the catch below so it still surfaces
+    // as a 500 with this message. Apollo Client 4 unified `errors` into a
+    // single `error`.
+    const { data, error } = await getApolloClient().query({
       query: GET_SHORT_LINK_QUERY,
+      errorPolicy: 'all',
       variables: {
         hostname,
         pathname: keyword
       }
     })
 
-    if (error != null || errors != null) {
+    if (error != null) {
       throw new HTTPException(500, {
         message: 'Failed to query short link data'
       })

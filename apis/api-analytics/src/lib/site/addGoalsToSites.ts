@@ -110,7 +110,6 @@ export async function addGoalsToAllSites(
     console.log(`Sites needing goals: ${sitesNeedingGoals.length}`)
 
     if (sitesNeedingGoals.length === 0) {
-      hasMore = false
       break
     }
 

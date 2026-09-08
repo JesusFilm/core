@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { renderHook, waitFor } from '@testing-library/react'
 
 import {
@@ -111,7 +111,6 @@ describe('useJourneyAiTranslateSubscription', () => {
       {
         wrapper: ({ children }) => (
           <MockedProvider
-            addTypename={false}
             mocks={[
               {
                 request: {
@@ -142,7 +141,6 @@ describe('useJourneyAiTranslateSubscription', () => {
       {
         wrapper: ({ children }) => (
           <MockedProvider
-            addTypename={false}
             mocks={[
               {
                 request: {

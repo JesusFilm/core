@@ -92,7 +92,7 @@ export function PromptInput({
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault()
         if (input.trim().length > 0 && !isLoading && !disabled) {
-          onSubmit(e as unknown as FormEvent)
+          onSubmit(e)
         }
         return
       }

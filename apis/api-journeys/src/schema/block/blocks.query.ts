@@ -26,7 +26,7 @@ builder.queryField('blocks', (t) =>
       if (args.where?.typenames != null)
         filter.typename = { in: args.where.typenames }
       if (args.where?.journeyIds != null)
-        filter.journeyId = { in: args.where.journeyIds as string[] }
+        filter.journeyId = { in: args.where.journeyIds }
 
       const accessibleJourneys = journeyReadAccessWhere(userId, currentUser)
 

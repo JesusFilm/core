@@ -23,7 +23,7 @@ interface InitAndAuthAppProps {
 }
 
 interface InitAndAuth {
-  apolloClient: ApolloClient<NormalizedCacheObject>
+  apolloClient: ApolloClient
   flags: {
     [key: string]: boolean | undefined
   }

@@ -86,7 +86,7 @@ builder.queryField('journeysPlausibleStatsAggregate', (t) =>
           accumulator
         )
 
-        return normalized as PlausibleStatsAggregateResponse
+        return normalized
       } catch (error) {
         if (isAxiosError(error)) {
           const message = get(error, 'response.data.error')

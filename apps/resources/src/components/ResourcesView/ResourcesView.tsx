@@ -12,7 +12,7 @@ import { ResourceSections } from './ResourceSections'
 
 export function ResourcesView(): ReactElement {
   return (
-    <PageWrapper>
+    <PageWrapper hideHeaderTabButtons>
       <Container maxWidth="xxl" sx={{ px: { xs: 0 }, py: { xs: 6, sm: 9 } }}>
         <Stack sx={{ p: 0, gap: 10 }}>
           <ResourceHeading heading="Resources" />

@@ -45,7 +45,9 @@ export async function importVideoTitles(
     logger?.info(`Loaded ${videos.length} videos from database`)
   } catch (error) {
     logger?.error('Failed to fetch videos from database:', error)
-    throw new Error('Video import failed: Unable to load video data')
+    throw new Error('Video import failed: Unable to load video data', {
+      cause: error
+    })
   }
 
   // Process media metadata titles

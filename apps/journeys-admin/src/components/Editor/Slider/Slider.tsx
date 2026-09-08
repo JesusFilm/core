@@ -1,4 +1,5 @@
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Collapse from '@mui/material/Collapse'
 import IconButton from '@mui/material/IconButton'
@@ -70,15 +71,19 @@ export function Slider(): ReactElement {
         }
       }
     )
-  useQuery<getJourneyFlowBackButtonClicked>(
-    GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED,
-    {
-      onCompleted: (data) =>
-        setShowBackButtonHelp(
-          data?.getJourneyProfile?.journeyFlowBackButtonClicked !== true
-        )
-    }
-  )
+  const { data: backButtonClickedData } =
+    useQuery<getJourneyFlowBackButtonClicked>(
+      GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED
+    )
+
+  // Apollo Client 4 removed `useQuery`'s `onCompleted` option.
+  useEffect(() => {
+    if (backButtonClickedData == null) return
+    setShowBackButtonHelp(
+      backButtonClickedData.getJourneyProfile?.journeyFlowBackButtonClicked !==
+        true
+    )
+  }, [backButtonClickedData])
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {

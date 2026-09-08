@@ -59,14 +59,14 @@ describe('chatOpenEventCreate', () => {
       }
     )
     prismaMock.$queryRaw
-      .mockResolvedValueOnce([{ id: 'visitorId' }] as any)
+      .mockResolvedValueOnce([{ id: 'visitorId' }])
       .mockResolvedValueOnce([
         {
           journeyId: 'journeyId',
           visitorId: 'visitorId',
           activityCount: 0
         }
-      ] as any)
+      ])
   })
 
   it('creates ChatOpenEvent', async () => {

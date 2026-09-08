@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type MockedFunction } from 'vitest'
@@ -60,7 +61,7 @@ const mockSendCollectionEditOpenEvent =
 
 const TEAM_ID = 'teamId'
 
-const collectionsMock: MockedResponse<GetTemplateGalleryPages> = {
+const collectionsMock: MockLink.MockedResponse<GetTemplateGalleryPages> = {
   request: {
     query: GET_TEMPLATE_GALLERY_PAGES,
     variables: { teamId: TEAM_ID }
@@ -89,7 +90,7 @@ const collectionsMock: MockedResponse<GetTemplateGalleryPages> = {
   }
 }
 
-const journeysMock: MockedResponse<GetAdminJourneys> = {
+const journeysMock: MockLink.MockedResponse<GetAdminJourneys> = {
   request: {
     query: GET_ADMIN_JOURNEYS,
     variables: {
@@ -157,27 +158,28 @@ const journeysMock: MockedResponse<GetAdminJourneys> = {
 // (status filter at the API), but Apollo's normalized cache merges
 // post-mutation status flips into the same entity ref — so we simulate
 // that here by serving the archived row from the published-status query.
-const journeysMockWithArchivedJourney: MockedResponse<GetAdminJourneys> = {
-  request: {
-    query: GET_ADMIN_JOURNEYS,
-    variables: {
-      template: true,
-      teamId: TEAM_ID,
-      status: [JourneyStatus.draft, JourneyStatus.published]
-    }
-  },
-  result: {
-    data: {
-      journeys: [
-        {
-          ...(journeysMock.result as { data: GetAdminJourneys }).data
-            .journeys[0],
-          status: JourneyStatus.archived
-        }
-      ]
+const journeysMockWithArchivedJourney: MockLink.MockedResponse<GetAdminJourneys> =
+  {
+    request: {
+      query: GET_ADMIN_JOURNEYS,
+      variables: {
+        template: true,
+        teamId: TEAM_ID,
+        status: [JourneyStatus.draft, JourneyStatus.published]
+      }
+    },
+    result: {
+      data: {
+        journeys: [
+          {
+            ...(journeysMock.result as { data: GetAdminJourneys }).data
+              .journeys[0],
+            status: JourneyStatus.archived
+          }
+        ]
+      }
     }
   }
-}
 
 // A second journey, deliberately earlier-alphabetical but earlier-dated than
 // journey-1 ("Welcome Tour") — TITLE sort and the default (updatedAt desc)
@@ -192,7 +194,7 @@ const journeyAlpha = {
   updatedAt: '2026-04-02T00:00:00.000Z'
 }
 
-const journeysMockTwoActive: MockedResponse<GetAdminJourneys> = {
+const journeysMockTwoActive: MockLink.MockedResponse<GetAdminJourneys> = {
   request: {
     query: GET_ADMIN_JOURNEYS,
     variables: {
@@ -211,7 +213,7 @@ const journeysMockTwoActive: MockedResponse<GetAdminJourneys> = {
   }
 }
 
-const journeysMockArchived: MockedResponse<GetAdminJourneys> = {
+const journeysMockArchived: MockLink.MockedResponse<GetAdminJourneys> = {
   request: {
     query: GET_ADMIN_JOURNEYS,
     variables: {
@@ -233,7 +235,7 @@ const journeysMockArchived: MockedResponse<GetAdminJourneys> = {
   }
 }
 
-const journeysMockTrashed: MockedResponse<GetAdminJourneys> = {
+const journeysMockTrashed: MockLink.MockedResponse<GetAdminJourneys> = {
   request: {
     query: GET_ADMIN_JOURNEYS,
     variables: {
@@ -318,7 +320,7 @@ describe('TemplateGalleryPageList', () => {
   describe('Collections section visibility gate (NES-1696)', () => {
     // No team templates at all — the gate hides the entire Collections
     // section (heading + Create button + collection cards).
-    const journeysMockEmpty: MockedResponse<GetAdminJourneys> = {
+    const journeysMockEmpty: MockLink.MockedResponse<GetAdminJourneys> = {
       request: {
         query: GET_ADMIN_JOURNEYS,
         variables: {
@@ -333,7 +335,7 @@ describe('TemplateGalleryPageList', () => {
     // The team's only active template lives inside the collection (the
     // unsectioned pool is empty). In-collection templates still count toward
     // the gate, so the section must render.
-    const collectionsMockWithTemplate: MockedResponse<GetTemplateGalleryPages> =
+    const collectionsMockWithTemplate: MockLink.MockedResponse<GetTemplateGalleryPages> =
       {
         request: {
           query: GET_TEMPLATE_GALLERY_PAGES,
@@ -662,7 +664,7 @@ describe('TemplateGalleryPageList', () => {
 
     // page-1 holds journey-1 so the grid renders a card we can watch
     // appear/disappear, and the count badge has something to count.
-    const collectionsMockWithTemplate: MockedResponse<GetTemplateGalleryPages> =
+    const collectionsMockWithTemplate: MockLink.MockedResponse<GetTemplateGalleryPages> =
       {
         request: {
           query: GET_TEMPLATE_GALLERY_PAGES,
@@ -767,7 +769,7 @@ describe('TemplateGalleryPageList', () => {
     // page-1 holds journey-1, so the unsectioned pool is empty — the header
     // (title, Sort, bulk-actions menu) must still render, or those controls
     // would vanish along with the empty section.
-    const collectionsMockWithTemplate: MockedResponse<GetTemplateGalleryPages> =
+    const collectionsMockWithTemplate: MockLink.MockedResponse<GetTemplateGalleryPages> =
       {
         request: {
           query: GET_TEMPLATE_GALLERY_PAGES,
@@ -829,7 +831,7 @@ describe('TemplateGalleryPageList', () => {
       // an empty ids list — if the guard didn't work, this mock would match
       // and "Templates Archived" would show. Its absence is what proves the
       // mutation was never fired, not just that some request failed.
-      const wouldSucceedIfCalledMock: MockedResponse = {
+      const wouldSucceedIfCalledMock: MockLink.MockedResponse = {
         request: {
           query: ARCHIVE_ACTIVE_JOURNEYS,
           variables: { ids: [] }
@@ -899,7 +901,7 @@ describe('TemplateGalleryPageList', () => {
     })
 
     it('archives only the unsectioned template IDs on submit', async () => {
-      const archiveMock: MockedResponse = {
+      const archiveMock: MockLink.MockedResponse = {
         request: {
           query: ARCHIVE_ACTIVE_JOURNEYS,
           variables: { ids: ['journey-1'] }
@@ -1018,7 +1020,7 @@ describe('TemplateGalleryPageList', () => {
     // bulk action ever included journey-2, this exact-match mutation mock
     // would fail to match and the test would time out waiting for the
     // success snackbar — the collection template must never appear in ids.
-    const collectionsMockWithJourneyTwo: MockedResponse<GetTemplateGalleryPages> =
+    const collectionsMockWithJourneyTwo: MockLink.MockedResponse<GetTemplateGalleryPages> =
       {
         request: {
           query: GET_TEMPLATE_GALLERY_PAGES,
@@ -1045,7 +1047,7 @@ describe('TemplateGalleryPageList', () => {
       }
 
     it('archives only the unsectioned template, not the one grouped in a collection', async () => {
-      const archiveMock: MockedResponse = {
+      const archiveMock: MockLink.MockedResponse = {
         request: {
           query: ARCHIVE_ACTIVE_JOURNEYS,
           variables: { ids: ['journey-1'] }
@@ -1097,7 +1099,7 @@ describe('TemplateGalleryPageList', () => {
 
   describe('Remaining bulk-action events (NES-1872)', () => {
     it('opens the Trash confirmation for trashAllActive and trashes only the unsectioned template', async () => {
-      const trashMock: MockedResponse = {
+      const trashMock: MockLink.MockedResponse = {
         request: {
           query: TRASH_ACTIVE_JOURNEYS,
           variables: { ids: ['journey-1'] }
@@ -1150,7 +1152,7 @@ describe('TemplateGalleryPageList', () => {
     })
 
     it('opens the Unarchive confirmation for restoreAllArchived and restores only the unsectioned template', async () => {
-      const restoreMock: MockedResponse = {
+      const restoreMock: MockLink.MockedResponse = {
         request: {
           query: RESTORE_ARCHIVED_JOURNEYS,
           variables: { ids: ['journey-1'] }
@@ -1207,7 +1209,7 @@ describe('TemplateGalleryPageList', () => {
     })
 
     it('opens the Trash confirmation for trashAllArchived and trashes only the unsectioned template', async () => {
-      const trashMock: MockedResponse = {
+      const trashMock: MockLink.MockedResponse = {
         request: {
           query: TRASH_ARCHIVED_JOURNEYS,
           variables: { ids: ['journey-1'] }
@@ -1262,7 +1264,7 @@ describe('TemplateGalleryPageList', () => {
     })
 
     it('opens the Restore confirmation for restoreAllTrashed and restores only the unsectioned template', async () => {
-      const restoreMock: MockedResponse = {
+      const restoreMock: MockLink.MockedResponse = {
         request: {
           query: RESTORE_TRASHED_JOURNEYS,
           variables: { ids: ['journey-1'] }
@@ -1319,7 +1321,7 @@ describe('TemplateGalleryPageList', () => {
     })
 
     it('opens the Delete Forever confirmation for deleteAllTrashed and deletes only the unsectioned template', async () => {
-      const deleteMock: MockedResponse = {
+      const deleteMock: MockLink.MockedResponse = {
         request: {
           query: DELETE_TRASHED_JOURNEYS,
           variables: { ids: ['journey-1'] }

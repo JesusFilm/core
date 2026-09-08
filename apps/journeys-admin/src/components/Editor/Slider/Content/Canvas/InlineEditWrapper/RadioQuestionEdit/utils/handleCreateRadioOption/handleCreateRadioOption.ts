@@ -1,4 +1,5 @@
-import { MutationFunction, gql } from '@apollo/client'
+import { gql } from '@apollo/client'
+import type { useMutation } from '@apollo/client/react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { BlockFields_RadioOptionBlock } from '../../../../../../../../../../__generated__/BlockFields'
@@ -14,7 +15,7 @@ interface HandleCreateRadioOptionProps {
     block: BlockFields_RadioOptionBlock
     execute: () => void
   }) => void
-  radioOptionBlockCreate: MutationFunction<
+  radioOptionBlockCreate: useMutation.MutationFunction<
     RadioOptionBlockCreate,
     RadioOptionBlockCreateVariables
   >

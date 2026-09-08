@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -19,7 +20,7 @@ vi.mock('next/router', () => ({
 }))
 
 describe('GoogleIntegrationRemoveDialog', () => {
-  const integrationDeleteMock: MockedResponse = {
+  const integrationDeleteMock: MockLink.MockedResponse = {
     request: {
       query: INTEGRATION_DELETE,
       variables: { id: 'integrationId' }
@@ -43,7 +44,7 @@ describe('GoogleIntegrationRemoveDialog', () => {
     const handleClose = props.handleClose ?? vi.fn()
 
     return render(
-      <MockedProvider mocks={[integrationDeleteMock]} addTypename={false}>
+      <MockedProvider mocks={[integrationDeleteMock]}>
         <SnackbarProvider>
           <GoogleIntegrationRemoveDialog
             open

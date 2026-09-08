@@ -24,7 +24,7 @@ function removeOrphanedBlocks<
   T extends { id: string; parentBlockId: string | null }
 >(blocks: T[]): T[] {
   let filteredBlocks = blocks
-  let length = filteredBlocks.length
+  let length: number
   do {
     length = filteredBlocks.length
     const idsSet = new Set(filteredBlocks.map((b) => b.id))

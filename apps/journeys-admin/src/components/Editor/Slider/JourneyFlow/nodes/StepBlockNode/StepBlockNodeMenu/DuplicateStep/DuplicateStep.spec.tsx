@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import MenuList from '@mui/material/MenuList'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
@@ -44,7 +45,7 @@ describe('DuplicateStep', () => {
       .mockReturnValueOnce('typog3')
   )
 
-  const mockStepDuplicate: MockedResponse<StepDuplicate> = {
+  const mockStepDuplicate: MockLink.MockedResponse<StepDuplicate> = {
     request: {
       query: STEP_DUPLICATE,
       variables: {

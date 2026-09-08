@@ -1,3 +1,4 @@
+import { NormalizedCacheObject } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { GetServerSidePropsContext } from 'next'
@@ -152,7 +153,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         idType: IdType.databaseId
       }
     })
-    const tagIds = data.journey.tags.map((tag) => tag.id)
+    const tagIds = data?.journey.tags.map((tag) => tag.id) ?? []
     // src/components/TemplateView/TemplateView.tsx useJourneysQuery
     await apolloClient.query<GetJourneys, GetJourneysVariables>({
       query: GET_JOURNEYS,
@@ -186,7 +187,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       userSerialized: user != null ? JSON.stringify(user) : null,
       ...translations,
       flags,
-      initialApolloState: apolloClient.cache.extract()
+      initialApolloState: apolloClient.cache.extract() as NormalizedCacheObject
     }
   }
 }

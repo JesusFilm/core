@@ -1,4 +1,5 @@
-import { Reference, gql, useMutation } from '@apollo/client'
+import { Reference, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
@@ -62,16 +63,23 @@ export function ApproveUser({
     })
   }
 
-  const [loadUserInvites] = useUserInvitesLazyQuery({ journeyId })
+  const [loadUserInvites] = useUserInvitesLazyQuery()
 
   const handleClick = async (): Promise<void> => {
-    const result = await loadUserInvites()
-    const userInvite = result.data?.userInvites?.find(
-      (invite) => invite.email === email
-    )
+    // Clearing a stale invite is best-effort: Apollo Client 4 rejects the
+    // execute promise on failure where v3 resolved with the error, and a failed
+    // lookup must not block the approval itself.
+    try {
+      const result = await loadUserInvites({ variables: { journeyId } })
+      const userInvite = result.data?.userInvites?.find(
+        (invite) => invite.email === email
+      )
 
-    if (userInvite != null) {
-      void handleRemoveUserInvite(userInvite.id)
+      if (userInvite != null) {
+        void handleRemoveUserInvite(userInvite.id)
+      }
+    } catch {
+      // no invite to clear
     }
 
     await userJourneyApprove({

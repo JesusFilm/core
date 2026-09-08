@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -129,6 +130,9 @@ export function ThemeBuilderDialog({
     const journeyTheme = journey.journeyTheme
 
     if (journeyTheme == null) {
+      // Apollo Client 4 rejects the mutate promise on failure even when
+      // `onError` is supplied. `onError` already reports the failure, so
+      // swallow the rejection rather than let it escape unhandled.
       await createJourneyFonts({
         variables: {
           input: {
@@ -171,8 +175,11 @@ export function ThemeBuilderDialog({
             preventDuplicate: true
           })
         }
-      })
+      }).catch(() => undefined)
     } else {
+      // Apollo Client 4 rejects the mutate promise on failure even when
+      // `onError` is supplied. `onError` already reports the failure, so
+      // swallow the rejection rather than let it escape unhandled.
       await updateJourneyFonts({
         variables: {
           id: journeyTheme.id,
@@ -195,7 +202,7 @@ export function ThemeBuilderDialog({
             preventDuplicate: true
           })
         }
-      })
+      }).catch(() => undefined)
     }
   }
 

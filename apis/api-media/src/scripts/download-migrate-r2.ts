@@ -459,7 +459,6 @@ async function migrateDownloadsToR2(): Promise<void> {
           { error, downloadId: download.id },
           `Error processing download: ${download.id}`
         )
-        download = await prisma.videoVariantDownload.findFirst(getWhere())
       }
       download = await prisma.videoVariantDownload.findFirst(getWhere())
     }

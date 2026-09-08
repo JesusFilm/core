@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { GraphQLError } from 'graphql'
@@ -20,7 +21,7 @@ import { CollectionPreviewPane } from './CollectionPreviewPane'
 function embedPreviewMock(
   url: string,
   result: { embedUrl: string } | { reason: string }
-): MockedResponse {
+): MockLink.MockedResponse {
   return {
     request: { query: TEMPLATE_GALLERY_PAGE_EMBED_PREVIEW, variables: { url } },
     result:
@@ -73,7 +74,7 @@ describe('CollectionPreviewPane', () => {
 
   function renderPane(
     overrides: Partial<React.ComponentProps<typeof CollectionPreviewPane>> = {},
-    mocks: MockedResponse[] = []
+    mocks: MockLink.MockedResponse[] = []
   ): void {
     render(
       <MockedProvider mocks={mocks}>

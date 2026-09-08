@@ -1,4 +1,5 @@
-import { QueryHookOptions, QueryResult, gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 
 import {
   GetCustomDomains,
@@ -23,9 +24,22 @@ export const GET_CUSTOM_DOMAINS = gql`
   }
 `
 
-export function useCustomDomainsQuery(
-  options?: QueryHookOptions<GetCustomDomains, GetCustomDomainsVariables>
-): QueryResult<GetCustomDomains, GetCustomDomainsVariables> & {
+/**
+ * The options are listed out rather than typed as `useQuery.Options`: Apollo
+ * Client 4 derives the result's data states from the options it is handed, and
+ * a wide `useQuery.Options` leaves `returnPartialData` unresolved — which puts
+ * `partial` in the union and hands every caller `DeepPartial` data. Naming the
+ * options callers actually pass keeps the result narrowed to complete data.
+ */
+export function useCustomDomainsQuery(options: {
+  variables: GetCustomDomainsVariables
+  skip?: boolean
+  notifyOnNetworkStatusChange?: boolean
+}): useQuery.Result<
+  GetCustomDomains,
+  GetCustomDomainsVariables,
+  'empty' | 'complete' | 'streaming'
+> & {
   hostname?: string
 } {
   const query = useQuery<GetCustomDomains, GetCustomDomainsVariables>(

@@ -1,4 +1,4 @@
-import { MutationFunction } from '@apollo/client'
+import type { useMutation } from '@apollo/client/react'
 
 import {
   CreateCloudflareR2Asset,
@@ -25,7 +25,7 @@ export async function handleSrtFile({
   videoId: string
   editionId: string
   languageId: string
-  createR2Asset: MutationFunction<
+  createR2Asset: useMutation.MutationFunction<
     CreateCloudflareR2Asset,
     CreateCloudflareR2AssetVariables
   >

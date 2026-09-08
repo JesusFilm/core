@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   JourneyNotificationUpdate,
@@ -7,7 +7,7 @@ import {
 
 import { JOURNEY_NOTIFICATION_UPDATE } from './useJourneyNotificationUpdate'
 
-export const useJourneyNotifcationUpdateMock: MockedResponse<
+export const useJourneyNotifcationUpdateMock: MockLink.MockedResponse<
   JourneyNotificationUpdate,
   JourneyNotificationUpdateVariables
 > = {
@@ -32,7 +32,7 @@ export const useJourneyNotifcationUpdateMock: MockedResponse<
         visitorInteractionEmail: true
       }
     }
-  })) as MockedResponse<
+  })) as MockLink.MockedResponse<
     JourneyNotificationUpdate,
     JourneyNotificationUpdateVariables
   >['result']

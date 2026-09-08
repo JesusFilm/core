@@ -132,8 +132,8 @@ function CardsPreviewItem({
               }}
             >
               <StepHeader
-                steps={steps as unknown as Array<TreeBlock<StepFields>>}
-                selectedStep={step as unknown as TreeBlock<StepFields>}
+                steps={steps}
+                selectedStep={step}
                 sx={{ mt: 2, px: 3 }}
               />
               <ThemeProvider
@@ -151,9 +151,7 @@ function CardsPreviewItem({
                   }}
                 />
               </ThemeProvider>
-              <StepFooter
-                selectedStep={step as unknown as TreeBlock<StepFields>}
-              />
+              <StepFooter selectedStep={step} />
             </Box>
           </ThemeProvider>
         </FramePortal>

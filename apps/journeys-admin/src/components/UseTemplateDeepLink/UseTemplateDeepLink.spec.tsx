@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -29,7 +30,7 @@ vi.mock('next/router', () => ({
 
 const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
-const teamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+const teamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
   result: {
     data: {
@@ -52,22 +53,23 @@ const teamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   }
 }
 
-const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
-  request: {
-    query: UPDATE_LAST_ACTIVE_TEAM_ID,
-    variables: { input: { lastActiveTeamId: 'team-1' } }
-  },
-  result: {
-    data: {
-      journeyProfileUpdate: {
-        __typename: 'JourneyProfile',
-        id: 'profile-1'
+const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
+  {
+    request: {
+      query: UPDATE_LAST_ACTIVE_TEAM_ID,
+      variables: { input: { lastActiveTeamId: 'team-1' } }
+    },
+    result: {
+      data: {
+        journeyProfileUpdate: {
+          __typename: 'JourneyProfile',
+          id: 'profile-1'
+        }
       }
     }
   }
-}
 
-const languagesMock: MockedResponse = {
+const languagesMock: MockLink.MockedResponse = {
   request: {
     query: GET_LANGUAGES,
     variables: {
@@ -106,7 +108,7 @@ const sourceJourneyId = 'template-id'
 
 function buildJourneyMock(
   options: { customizable?: boolean | null } = {}
-): MockedResponse {
+): MockLink.MockedResponse {
   return {
     request: {
       query: GET_JOURNEY,
@@ -145,7 +147,7 @@ function buildJourneyDuplicateMock(
     forceNonTemplate: boolean
   },
   options: { shouldError?: boolean } = {}
-): MockedResponse<JourneyDuplicate> {
+): MockLink.MockedResponse<JourneyDuplicate> {
   if (options.shouldError === true) {
     return {
       request: { query: JOURNEY_DUPLICATE, variables },
@@ -168,7 +170,7 @@ function buildJourneyDuplicateMock(
 
 function buildTranslateSubscriptionMock(options: {
   shouldError?: boolean
-}): MockedResponse {
+}): MockLink.MockedResponse {
   if (options.shouldError === true) {
     return {
       request: {
@@ -256,7 +258,7 @@ function setup(options: SetupOptions = {}): {
     replace
   } as unknown as NextRouter)
 
-  const mocks: MockedResponse[] = [
+  const mocks: MockLink.MockedResponse[] = [
     teamsMock,
     updateLastActiveTeamIdMock,
     languagesMock,

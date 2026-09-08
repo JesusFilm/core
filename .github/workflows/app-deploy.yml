@@ -78,8 +78,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: Preview - ${{ matrix.app }}
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -90,7 +88,6 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - uses: nrwl/nx-set-shas@v4
       - name: vercel deployment
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -166,32 +163,22 @@ jobs:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     needs: [affected, deploy-preview]
     if: ${{ always() && github.event_name == 'pull_request' }}
-    steps:
-      - name: Successful deploy
-        if: ${{ !(contains(needs.*.result, 'failure')) }}
-        run: exit 0
-      - name: Failing deploy
-        if: ${{ contains(needs.*.result, 'failure') }}
-        run: exit 1
-  build-e2e-matrix:
-    name: Build E2E Matrix
-    needs: [affected, deploy-preview]
-    if: ${{ github.event_name != 'merge_group' && needs.deploy-preview.result == 'success' && !(github.event_name == 'push' && github.ref == 'refs/heads/stage') && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}
     permissions:
       actions: read
       contents: read
-    runs-on: blacksmith-2vcpu-ubuntu-2204
     outputs:
       include: ${{ steps.build.outputs.include }}
       apps: ${{ steps.build.outputs.apps }}
     steps:
       - name: Download all E2E input artifacts
+        if: ${{ needs.deploy-preview.result == 'success' && !github.event.pull_request.draft }}
         uses: actions/download-artifact@v4
         with:
           path: e2e-input
           pattern: e2e-input-*
           merge-multiple: true
-      - name: Build matrix from deployments
+      - name: Build E2E matrix from deployments
+        if: ${{ needs.deploy-preview.result == 'success' && !github.event.pull_request.draft }}
         id: build
         run: |
           set -euo pipefail
@@ -221,11 +208,18 @@ jobs:
           echo "Final E2E include: ${include}"
           echo "include=${include}" >> $GITHUB_OUTPUT
           echo "apps=${apps}" >> $GITHUB_OUTPUT
+      - name: Successful deploy
+        if: ${{ !(contains(needs.*.result, 'failure')) }}
+        run: exit 0
+      - name: Failing deploy
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: exit 1
   e2e:
     name: Playwright E2E (${{ matrix.app }})
-    needs: [build-e2e-matrix]
-    # Only run if ALL deploy-preview matrix entries succeeded and we have URLs
-    if: ${{ github.event_name != 'merge_group' && needs.build-e2e-matrix.result == 'success' && needs.build-e2e-matrix.outputs.apps != '[]' && needs.build-e2e-matrix.outputs.apps != '' && !(github.event_name == 'push' && github.ref == 'refs/heads/stage') && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}
+    needs: [deploy-status]
+    # Event filtering is inherited from the PR-only deploy-status job.
+    # Only run if ALL deploy-preview matrix entries succeeded and we have URLs.
+    if: ${{ needs.deploy-status.result == 'success' && needs.deploy-status.outputs.apps != '[]' && needs.deploy-status.outputs.apps != '' }}
     permissions:
       contents: read
     runs-on: blacksmith-4vcpu-ubuntu-2204
@@ -234,8 +228,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: ${{ fromJson(needs.build-e2e-matrix.outputs.apps) }}
-        include: ${{ fromJson(needs.build-e2e-matrix.outputs.include) }}
+        app: ${{ fromJson(needs.deploy-status.outputs.apps) }}
+        include: ${{ fromJson(needs.deploy-status.outputs.include) }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup pnpm
@@ -249,15 +243,39 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Cache Playwright browsers
+      - name: Select Playwright browser
+        id: playwright-browser
+        env:
+          APP: ${{ matrix.app }}
+        run: |
+          case "$APP" in
+            arclight|docs|journeys|journeys-admin|resources)
+              echo "name=chrome" >> "$GITHUB_OUTPUT"
+              ;;
+            player|videos-admin)
+              echo "name=firefox" >> "$GITHUB_OUTPUT"
+              ;;
+            short-links)
+              echo "name=chromium" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "Unsupported Playwright app: $APP" >&2
+              exit 1
+              ;;
+          esac
+      - name: Cache Playwright browser
+        if: steps.playwright-browser.outputs.name != 'chrome'
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-node-22-playwright-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node-22-playwright-${{ steps.playwright-browser.outputs.name }}-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-node-22-playwright-
-      - name: Install Playwright Browsers
-        run: pnpm exec playwright install --with-deps
+            ${{ runner.os }}-node-22-playwright-${{ steps.playwright-browser.outputs.name }}-
+      - name: Install Playwright browser
+        if: steps.playwright-browser.outputs.name != 'chrome'
+        env:
+          PLAYWRIGHT_BROWSER: ${{ steps.playwright-browser.outputs.name }}
+        run: pnpm exec playwright install --with-deps "$PLAYWRIGHT_BROWSER"
       - name: Run Playwright tests
         run: pnpm exec nx run ${{ matrix.app }}-e2e:e2e
         env:
@@ -318,8 +336,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: Production - ${{ matrix.app }}
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -331,7 +347,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - uses: nrwl/nx-set-shas@v4
       - name: vercel deployment
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}

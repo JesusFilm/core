@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   GetTemplateGalleryPages,
@@ -11,7 +11,7 @@ import { GET_TEMPLATE_GALLERY_PAGES } from './useTemplateGalleryPagesQuery'
 export const getTemplateGalleryPagesMock = (
   variables: GetTemplateGalleryPagesVariables,
   pages: readonly Page[] = []
-): MockedResponse<
+): MockLink.MockedResponse<
   GetTemplateGalleryPages,
   GetTemplateGalleryPagesVariables
 > => ({

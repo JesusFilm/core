@@ -14,7 +14,6 @@ export default [
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.lint.json'],
         tsconfigRootDir
       }
     }

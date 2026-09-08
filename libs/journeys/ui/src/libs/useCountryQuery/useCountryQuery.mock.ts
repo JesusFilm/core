@@ -1,10 +1,10 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { GetCountry } from './__generated__/GetCountry'
 import { country } from './data'
 import { GET_COUNTRY } from './useCountryQuery'
 
-export const getCountryMock: MockedResponse<GetCountry> = {
+export const getCountryMock: MockLink.MockedResponse<GetCountry> = {
   request: {
     query: GET_COUNTRY,
     variables: {

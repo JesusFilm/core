@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   TemplateGalleryPageDelete,
@@ -9,7 +9,7 @@ import { TEMPLATE_GALLERY_PAGE_DELETE } from './useTemplateGalleryPageDeleteMuta
 
 export const getTemplateGalleryPageDeleteMock = (
   variables: TemplateGalleryPageDeleteVariables
-): MockedResponse<
+): MockLink.MockedResponse<
   TemplateGalleryPageDelete,
   TemplateGalleryPageDeleteVariables
 > => ({

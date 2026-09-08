@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
@@ -1100,7 +1100,7 @@ describe('CreateJourneyButton', () => {
       renderWithJourney({
         ...journey,
         team: { id: 'team-a' }
-      } as unknown as JourneyForTemplate)
+      })
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
       await waitFor(() =>
@@ -1114,7 +1114,7 @@ describe('CreateJourneyButton', () => {
       renderWithJourney({
         ...journey,
         team: { id: 'jfp-team' }
-      } as unknown as JourneyForTemplate)
+      })
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
       await waitFor(() =>
@@ -1131,7 +1131,7 @@ describe('CreateJourneyButton', () => {
       renderWithJourney({
         ...journey,
         team: null
-      } as unknown as JourneyForTemplate)
+      })
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
       await waitFor(() =>

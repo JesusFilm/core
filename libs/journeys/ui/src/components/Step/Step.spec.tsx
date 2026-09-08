@@ -1,5 +1,6 @@
-import { type FetchResult } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { type ApolloLink } from '@apollo/client'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { render, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
@@ -179,28 +180,29 @@ describe('Step', () => {
     window.history.pushState({}, '', '/')
   })
 
-  const mockStepViewEventCreate: MockedResponse<StepViewEventCreate> = {
-    request: {
-      query: STEP_VIEW_EVENT_CREATE,
-      variables: {
-        input: {
-          id: 'uuid',
-          blockId: 'Step1',
-          value: 'Step 1'
-        }
-      }
-    },
-    result: vi.fn(
-      (): FetchResult<StepViewEventCreate> => ({
-        data: {
-          stepViewEventCreate: {
+  const mockStepViewEventCreate: MockLink.MockedResponse<StepViewEventCreate> =
+    {
+      request: {
+        query: STEP_VIEW_EVENT_CREATE,
+        variables: {
+          input: {
             id: 'uuid',
-            __typename: 'StepViewEvent'
+            blockId: 'Step1',
+            value: 'Step 1'
           }
         }
-      })
-    )
-  }
+      },
+      result: vi.fn(
+        (): ApolloLink.Result<StepViewEventCreate> => ({
+          data: {
+            stepViewEventCreate: {
+              id: 'uuid',
+              __typename: 'StepViewEvent'
+            }
+          }
+        })
+      )
+    }
 
   it('should create a stepViewEvent', async () => {
     treeBlocksVar([block])

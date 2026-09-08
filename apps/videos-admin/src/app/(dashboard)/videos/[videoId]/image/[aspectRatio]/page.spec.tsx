@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useRouter } from 'next/navigation'
@@ -37,7 +37,7 @@ vi.mock('../../../../../../components/FileUpload', () => ({
 }))
 
 // Mock the Apollo Client hooks
-vi.mock('@apollo/client', () => ({
+vi.mock('@apollo/client/react', () => ({
   useMutation: vi.fn(() => [vi.fn(), { loading: false }]),
   useSuspenseQuery: vi.fn(() => ({
     data: {

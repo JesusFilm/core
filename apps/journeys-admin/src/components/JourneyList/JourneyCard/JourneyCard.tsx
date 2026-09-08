@@ -1,4 +1,4 @@
-import { ApolloQueryResult } from '@apollo/client'
+import { ApolloClient } from '@apollo/client'
 import OpenWithRoundedIcon from '@mui/icons-material/OpenWithRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
@@ -79,7 +79,7 @@ interface JourneyCardProps {
   journey: Journey
   duplicatedJourneyId?: string
   variant?: JourneyCardVariant
-  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  refetch?: () => Promise<ApolloClient.QueryResult<GetAdminJourneys>>
   /**
    * NES-1703: renders a multi-directional move arrow over the centre of
    * the image, signalling the card can be dragged. `'hover'` fades it in
@@ -99,7 +99,7 @@ interface JourneyCardProps {
  * @param {Journey} props.journey - The journey data object
  * @param {string} [props.duplicatedJourneyId] - The ID of the duplicated journey
  * @param {JourneyCardVariant} [props.variant] - The variant of the journey card
- * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Function to refetch journey data
+ * @param {() => Promise<ApolloClient.QueryResult<GetAdminJourneys>>} [props.refetch] - Function to refetch journey data
  * @param {'hover' | 'always'} [props.showDragAffordance] - Renders the move-arrow drag affordance over the image (NES-1703)
  * @returns {ReactElement} A journey card component
  */

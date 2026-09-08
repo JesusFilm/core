@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   BlockActionDelete,
@@ -7,7 +7,7 @@ import {
 
 import { BLOCK_ACTION_DELETE } from './useBlockActionDeleteMutation'
 
-export const blockActionDeleteMock: MockedResponse<
+export const blockActionDeleteMock: MockLink.MockedResponse<
   BlockActionDelete,
   BlockActionDeleteVariables
 > = {

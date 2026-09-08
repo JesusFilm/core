@@ -7,6 +7,7 @@ import {
   createDownloadsFromMuxAsset,
   previewMuxDownloadsFromAsset
 } from '../lib/downloads'
+import { videoVariantCacheReset } from '../lib/videoCacheReset'
 import { getVideo } from '../schema/mux/video/service'
 
 import { processDownloads } from './mux-videos'
@@ -25,11 +26,16 @@ vi.mock('../lib/downloads', async () => {
   }
 })
 
+vi.mock('../lib/videoCacheReset', () => ({
+  videoVariantCacheReset: vi.fn()
+}))
+
 const mockedGetVideo = getVideo as unknown as Mock
 const mockedCreateDownloadsFromMuxAsset =
   createDownloadsFromMuxAsset as unknown as Mock
 const mockedPreviewMuxDownloadsFromAsset =
   previewMuxDownloadsFromAsset as unknown as Mock
+const mockedVideoVariantCacheReset = videoVariantCacheReset as unknown as Mock
 
 function download(
   overrides: Partial<{
@@ -200,6 +206,32 @@ describe('processDownloads', () => {
       muxVideoAsset: readyMuxVideoAsset
     })
     expect(mockedPreviewMuxDownloadsFromAsset).not.toHaveBeenCalled()
+    expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('variant-1')
+  })
+
+  it('does not reset the cache when apply mode writes no download rows', async () => {
+    process.env.MUX_DOWNLOAD_BACKFILL_APPLY = 'true'
+    ;(prismaMock.videoVariantDownload.findMany as Mock).mockResolvedValueOnce([
+      download()
+    ])
+    mockedGetVideo.mockResolvedValue(readyMuxVideoAsset)
+    mockedCreateDownloadsFromMuxAsset.mockResolvedValue(0)
+
+    await runProcessDownloads()
+
+    expect(mockedVideoVariantCacheReset).not.toHaveBeenCalled()
+  })
+
+  it('does not reset the cache in preview mode', async () => {
+    ;(prismaMock.videoVariantDownload.findMany as Mock).mockResolvedValueOnce([
+      download()
+    ])
+    mockedGetVideo.mockResolvedValue(readyMuxVideoAsset)
+    mockedPreviewMuxDownloadsFromAsset.mockReturnValue([])
+
+    await runProcessDownloads()
+
+    expect(mockedVideoVariantCacheReset).not.toHaveBeenCalled()
   })
 
   it('skips a variant whose Mux asset is not ready to store downloads', async () => {

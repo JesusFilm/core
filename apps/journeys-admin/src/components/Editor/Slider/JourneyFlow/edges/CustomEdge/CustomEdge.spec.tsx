@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { Position, ReactFlowProvider } from '@xyflow/react'
 import { ReactElement } from 'react'

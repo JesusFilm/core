@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { formatISO } from 'date-fns'
@@ -47,7 +48,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
 
   const createMock = (
     status: JourneyStatus[]
-  ): MockedResponse<
+  ): MockLink.MockedResponse<
     GetTemplateFamilyStatsBreakdown,
     GetTemplateFamilyStatsBreakdownVariables
   > => ({
@@ -147,7 +148,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
   })
 
   it('should show loading spinner during loading state', () => {
-    const loadingMock: MockedResponse<
+    const loadingMock: MockLink.MockedResponse<
       GetTemplateFamilyStatsBreakdown,
       GetTemplateFamilyStatsBreakdownVariables
     > = {
@@ -198,7 +199,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
   })
 
   it('should show error message when there is an error', async () => {
-    const errorMock: MockedResponse<
+    const errorMock: MockLink.MockedResponse<
       GetTemplateFamilyStatsBreakdown,
       GetTemplateFamilyStatsBreakdownVariables
     > = {

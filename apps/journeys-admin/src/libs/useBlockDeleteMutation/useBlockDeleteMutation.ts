@@ -1,11 +1,5 @@
-import {
-  FetchResult,
-  MutationFunctionOptions,
-  MutationHookOptions,
-  MutationResult,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { ApolloLink, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -30,13 +24,16 @@ export const BLOCK_DELETE = gql`
 `
 
 export function useBlockDeleteMutation(
-  options?: MutationHookOptions<BlockDelete, BlockDeleteVariables>
+  options?: useMutation.Options<BlockDelete, BlockDeleteVariables>
 ): [
   (
     block: BlockFields,
-    options?: MutationFunctionOptions<BlockDelete, BlockDeleteVariables>
-  ) => Promise<FetchResult<BlockDelete> | undefined>,
-  MutationResult<BlockDelete>
+    options?: useMutation.MutationFunctionOptions<
+      BlockDelete,
+      BlockDeleteVariables
+    >
+  ) => Promise<ApolloLink.Result<BlockDelete> | undefined>,
+  useMutation.Result<BlockDelete>
 ] {
   const { journey } = useJourney()
   const [blockDeleteMutation, result] = useMutation<
@@ -46,18 +43,22 @@ export function useBlockDeleteMutation(
 
   async function wrappedBlockDeleteMutation(
     block: TreeBlock,
-    options: MutationFunctionOptions<BlockDelete, BlockDeleteVariables>
-  ): Promise<FetchResult<BlockDelete> | undefined> {
+    options: useMutation.MutationFunctionOptions<
+      BlockDelete,
+      BlockDeleteVariables
+    >
+  ): Promise<ApolloLink.Result<BlockDelete> | undefined> {
     if (journey == null) return
 
     return await blockDeleteMutation({
-      variables: {
-        id: block.id
-      },
       update(cache, { data }) {
         blockDeleteUpdate(cache, journey.id, block, data?.blockDelete)
       },
-      ...options
+      ...options,
+      // Apollo Client 4 types a mutate call's `variables` as complete, while
+      // `MutationFunctionOptions` only carries a partial override, so merge the
+      // caller's over the block id rather than letting it replace them.
+      variables: { id: block.id, ...options?.variables }
     })
   }
 

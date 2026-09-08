@@ -41,7 +41,7 @@ describe('googleAuth', () => {
           access_token: 'new-access-token',
           expires_in: 3600
         }
-      } as any)
+      })
 
       const result = await getTeamGoogleAccessToken('team-id')
 
@@ -134,7 +134,7 @@ describe('googleAuth', () => {
           access_token: 'integration-access-token',
           expires_in: 3600
         }
-      } as any)
+      })
 
       const result = await getIntegrationGoogleAccessToken('integration-id')
 

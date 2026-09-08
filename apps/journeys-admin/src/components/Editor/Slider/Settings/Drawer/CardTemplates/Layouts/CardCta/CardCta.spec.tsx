@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 import { type MockedFunction } from 'vitest'
@@ -80,7 +81,7 @@ describe('CardCta', () => {
     backgroundColor: '#0E1412'
   }
 
-  const cardCtaCreateMock: MockedResponse<
+  const cardCtaCreateMock: MockLink.MockedResponse<
     CardCtaCreate,
     CardCtaCreateVariables
   > = {
@@ -423,7 +424,7 @@ describe('CardCta', () => {
     }
   }
 
-  const cardCtaDeleteMock: MockedResponse<
+  const cardCtaDeleteMock: MockLink.MockedResponse<
     CardCtaDelete,
     CardCtaDeleteVariables
   > = {
@@ -465,7 +466,7 @@ describe('CardCta', () => {
     }
   }
 
-  const cardCtaRestoreMock: MockedResponse<
+  const cardCtaRestoreMock: MockLink.MockedResponse<
     CardCtaRestore,
     CardCtaRestoreVariables
   > = {

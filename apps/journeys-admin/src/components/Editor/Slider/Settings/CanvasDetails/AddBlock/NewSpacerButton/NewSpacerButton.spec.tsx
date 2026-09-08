@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 import { type MockedFunction } from 'vitest'
@@ -36,14 +37,14 @@ vi.mock('uuid', () => ({
 const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
 
 describe('NewSpacerButton', () => {
-  const spacerBlockCreateMock: MockedResponse<
+  const spacerBlockCreateMock: MockLink.MockedResponse<
     SpacerBlockCreate,
     SpacerBlockCreateVariables
   > = {
     request: {
-      query: SPACER_BLOCK_CREATE
+      query: SPACER_BLOCK_CREATE,
+      variables: (variables) => true
     },
-    variableMatcher: (variables) => true,
     result: vi.fn(() => ({
       data: {
         spacerBlockCreate: {
@@ -54,7 +55,7 @@ describe('NewSpacerButton', () => {
           spacing: 100
         }
       }
-    })) as MockedResponse<
+    })) as MockLink.MockedResponse<
       SpacerBlockCreate,
       SpacerBlockCreateVariables
     >['result']
@@ -257,12 +258,11 @@ describe('NewSpacerButton', () => {
     // The click fires SpacerBlockCreate. A never-resolving mock keeps the
     // mutation in flight (button stays disabled) and matches the operation so
     // it does not raise an unhandled Apollo error after the test completes.
-    const loadingMock: MockedResponse<
+    const loadingMock: MockLink.MockedResponse<
       SpacerBlockCreate,
       SpacerBlockCreateVariables
     > = {
-      request: { query: SPACER_BLOCK_CREATE },
-      variableMatcher: () => true,
+      request: { query: SPACER_BLOCK_CREATE, variables: () => true },
       delay: Infinity,
       result: {}
     }

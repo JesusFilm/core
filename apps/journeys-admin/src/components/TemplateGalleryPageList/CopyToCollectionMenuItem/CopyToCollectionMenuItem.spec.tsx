@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import MenuList from '@mui/material/MenuList'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -27,8 +27,8 @@ vi.mock('../../../libs/useTemplateGalleryPageAssignJourneyMutation', () => ({
 
 const mockRefetchQueries = vi.fn(() => Promise.resolve([]))
 
-vi.mock('@apollo/client', async () => ({
-  ...(await vi.importActual('@apollo/client')),
+vi.mock('@apollo/client/react', async () => ({
+  ...(await vi.importActual('@apollo/client/react')),
   useApolloClient: () => ({
     refetchQueries: mockRefetchQueries
   })
@@ -153,22 +153,22 @@ const assignHookMock =
 function setupMocks(): void {
   duplicate = vi.fn(async () => ({
     data: { journeyDuplicate: { id: 'new-journey-id' } }
-  })) as DuplicateFn
-  assign = vi.fn(async () => ({})) as AssignFn
+  }))
+  assign = vi.fn(async () => ({}))
 
   duplicateHookMock.mockReturnValue([
     duplicate as unknown as never,
     {} as never
   ])
   assignHookMock.mockReturnValue([assign as unknown as never, {} as never])
-  subscriptionHookMock.mockImplementation(((
-    opts: typeof lastSubscriptionOpts
-  ) => {
-    lastSubscriptionOpts = opts
-    return { data: undefined } as unknown as ReturnType<
-      typeof useJourneyAiTranslateSubscription
-    >
-  }) as unknown as typeof useJourneyAiTranslateSubscription)
+  subscriptionHookMock.mockImplementation(
+    (opts: typeof lastSubscriptionOpts) => {
+      lastSubscriptionOpts = opts
+      return { data: undefined } as unknown as ReturnType<
+        typeof useJourneyAiTranslateSubscription
+      >
+    }
+  )
 }
 
 function renderItem(

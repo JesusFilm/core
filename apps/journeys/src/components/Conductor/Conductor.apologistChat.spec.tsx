@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type Mock } from 'vitest'

@@ -1,6 +1,5 @@
 'use client'
-
-import { useMutation, useSuspenseQuery } from '@apollo/client'
+import { useMutation, useSuspenseQuery } from '@apollo/client/react'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
@@ -83,14 +82,14 @@ export default function PublishAllChildrenDialog({
 
   const runPublishMutation = useCallback(
     async (mode: VideoPublishMode, dryRun: boolean) => {
-      const { data: mutationData, errors } = await publishChildren({
+      const { data: mutationData, error } = await publishChildren({
         variables: {
           id: videoId,
           mode,
           dryRun
         }
       })
-      if (errors != null && errors.length > 0) {
+      if (error != null) {
         throw new Error('Failed to publish')
       }
       const result = mutationData?.videoPublishChildren
@@ -190,14 +189,14 @@ export default function PublishAllChildrenDialog({
     async (mode: VideoPublishMode) => {
       setIsSubmitting(true)
       try {
-        const { data: mutationData, errors } = await publishChildren({
+        const { data: mutationData, error } = await publishChildren({
           variables: {
             id: videoId,
             mode,
             dryRun: true
           }
         })
-        if (errors != null && errors.length > 0) {
+        if (error != null) {
           throw new Error('Failed to run dry run')
         }
         const result = mutationData?.videoPublishChildren

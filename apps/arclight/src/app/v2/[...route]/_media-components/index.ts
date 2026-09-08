@@ -160,7 +160,7 @@ mediaComponents.openapi(route, async (c) => {
     const metadataLanguageIds = metadataLanguages.map((lang) => lang.id)
 
     let videos
-    let totalCount = 0
+    let totalCount: number
     try {
       const result = await mediaPrisma.$transaction(async (tx) => {
         const videosResult = await tx.video.findMany({

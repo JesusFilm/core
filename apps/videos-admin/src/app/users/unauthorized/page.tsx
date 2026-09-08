@@ -91,7 +91,7 @@ export default async function UnauthorizedPage(): Promise<ReactNode> {
         <TextField
           id="id"
           name="id"
-          value={data.me?.id}
+          value={data?.me?.id}
           fullWidth
           slotProps={{
             input: {

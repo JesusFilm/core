@@ -42,7 +42,7 @@ function createParams(
   return {
     journeyId: 'journey-1',
     screens: ['language', 'text', 'done'] as CustomizationScreen[],
-    activeScreen: 'language' as CustomizationScreen,
+    activeScreen: 'language',
     isGuest: false,
     guestFlowEnabled: false,
     ...overrides
@@ -199,11 +199,7 @@ describe('useTemplateCustomizationRedirect', () => {
         { variant: 'error', preventDuplicate: true }
       )
       expect(mockReplace).toHaveBeenCalledWith(
-        buildCustomizeUrl(
-          'journey-1',
-          'guestPreview' as CustomizationScreen,
-          true
-        )
+        buildCustomizeUrl('journey-1', 'guestPreview', true)
       )
     })
 

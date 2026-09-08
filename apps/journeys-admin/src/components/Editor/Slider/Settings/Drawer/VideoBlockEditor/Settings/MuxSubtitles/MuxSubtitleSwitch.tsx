@@ -1,4 +1,5 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
@@ -72,24 +73,24 @@ export function MuxSubtitleSwitch({
         !isValidLanguage ||
         muxVideoId == null ||
         journeyLanguageCode == null ||
-        videoBlock?.showGeneratedSubtitles != null,
-      onCompleted: async (data) => {
-        if (
-          data?.getMyGeneratedMuxSubtitleTrack.__typename ===
-            'QueryGetMyGeneratedMuxSubtitleTrackSuccess' &&
-          data.getMyGeneratedMuxSubtitleTrack.data.status === 'ready'
-        )
-          await onChange(false)
-      }
+        videoBlock?.showGeneratedSubtitles != null
     }
   )
 
   // Extract subtitle track from union result
   const subtitleTrack =
-    subtitleTrackData?.getMyGeneratedMuxSubtitleTrack.__typename ===
+    subtitleTrackData?.getMyGeneratedMuxSubtitleTrack?.__typename ===
     'QueryGetMyGeneratedMuxSubtitleTrackSuccess'
       ? subtitleTrackData.getMyGeneratedMuxSubtitleTrack.data
       : null
+
+  // Apollo Client 4 removed `useQuery`'s `onCompleted` option, so turn the
+  // switch off from the result once generation has finished.
+  useEffect(() => {
+    if (subtitleTrack?.status === 'ready') void onChange(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `onChange` is
+    // redeclared every render; depending on it would refire the mutation
+  }, [subtitleTrack?.status])
 
   // Mux subtitle generation typically takes longer to complete than the video upload does
   // Poll to check when completed.

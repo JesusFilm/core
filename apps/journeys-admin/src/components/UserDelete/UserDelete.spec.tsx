@@ -1,5 +1,5 @@
-import { ApolloError } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { CombinedGraphQLErrors } from '@apollo/client'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -30,8 +30,8 @@ const mockUseSuspenseQuery = vi.fn()
 const mockUseMutation = vi.fn()
 const mockUseSubscription = vi.fn()
 
-vi.mock('@apollo/client', async () => {
-  const actual = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const actual = await vi.importActual('@apollo/client/react')
   return {
     ...actual,
     useSuspenseQuery: (...args: unknown[]) => mockUseSuspenseQuery(...args),
@@ -225,7 +225,9 @@ describe('UserDeleteWithErrorBoundary', () => {
         }
       })
       mockJourneysCheckMutate.mockRejectedValue(
-        new ApolloError({ errorMessage: 'journeys service unavailable' })
+        new CombinedGraphQLErrors({
+          errors: [{ message: 'journeys service unavailable' }]
+        })
       )
 
       const { getByRole } = renderComponent()

@@ -1,4 +1,5 @@
-import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
+import { type MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -9,9 +10,8 @@ import { JOURNEY_VIEW_EVENT_CREATE } from '../Conductor/Conductor'
 
 import { JourneyRenderer } from '.'
 
-const noopJourneyViewMock: MockedResponse = {
-  request: { query: JOURNEY_VIEW_EVENT_CREATE },
-  variableMatcher: () => true,
+const noopJourneyViewMock: MockLink.MockedResponse = {
+  request: { query: JOURNEY_VIEW_EVENT_CREATE, variables: () => true },
   maxUsageCount: Infinity,
   delay: 99999999,
   result: {

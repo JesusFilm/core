@@ -29,6 +29,8 @@ function buildRow(overrides: Record<string, unknown> = {}): any {
     reviewedAt: new Date(),
     matchMethod: null,
     matchConfidence: null,
+    metadataSource: null,
+    metadataRulebookVersion: null,
     lastSyncedAt: new Date(),
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -65,6 +67,8 @@ describe('youtubeVideo', () => {
         madeForKids
         ageRestricted
         reviewedBy
+        metadataSource
+        metadataRulebookVersion
       }
     }
   `)
@@ -357,6 +361,91 @@ describe('youtubeVideo', () => {
       expect(data).not.toHaveProperty('title')
       expect(data).not.toHaveProperty('description')
     })
+
+    it('stores caller-supplied metadata provenance', async () => {
+      prismaMock.youtubeVideo.upsert.mockResolvedValue(
+        buildRow({
+          metadataSource: 'WHEAT',
+          metadataRulebookVersion: '2026-08-01'
+        })
+      )
+
+      const result = await youtubeAdminClient({
+        document: UPSERT,
+        variables: {
+          input: {
+            youtubeVideoId: 'yt-1',
+            channelId: 'channel-1',
+            reviewState: 'SKIPPED',
+            metadataSource: 'WHEAT',
+            metadataRulebookVersion: '2026-08-01'
+          }
+        } as any
+      })
+
+      expect(result).toHaveProperty(
+        'data.youtubeVideoUpsert.metadataSource',
+        'WHEAT'
+      )
+      expect(result).toHaveProperty(
+        'data.youtubeVideoUpsert.metadataRulebookVersion',
+        '2026-08-01'
+      )
+      expect(
+        (prismaMock.youtubeVideo.upsert as Mock).mock.calls[0][0].update
+      ).toEqual(
+        expect.objectContaining({
+          metadataSource: 'WHEAT',
+          metadataRulebookVersion: '2026-08-01'
+        })
+      )
+    })
+
+    it('clears metadata provenance when the caller omits it (full-replace)', async () => {
+      prismaMock.youtubeVideo.upsert.mockResolvedValue(buildRow())
+
+      await youtubeAdminClient({
+        document: UPSERT,
+        variables: {
+          input: {
+            youtubeVideoId: 'yt-1',
+            channelId: 'channel-1',
+            reviewState: 'SKIPPED'
+          }
+        } as any
+      })
+
+      const call = (prismaMock.youtubeVideo.upsert as Mock).mock.calls[0][0]
+      expect(call.update).toEqual(
+        expect.objectContaining({
+          metadataSource: null,
+          metadataRulebookVersion: null
+        })
+      )
+      expect(call.create).toEqual(
+        expect.objectContaining({
+          metadataSource: null,
+          metadataRulebookVersion: null
+        })
+      )
+    })
+
+    it('rejects a metadataSource outside the enum', async () => {
+      const result = await youtubeAdminClient({
+        document: UPSERT,
+        variables: {
+          input: {
+            youtubeVideoId: 'yt-1',
+            channelId: 'channel-1',
+            reviewState: 'SKIPPED',
+            metadataSource: 'MANUAL'
+          }
+        } as any
+      })
+
+      expect((result as any).errors).toBeDefined()
+      expect(prismaMock.youtubeVideo.upsert).not.toHaveBeenCalled()
+    })
   })
 
   describe('youtubeVideoDelete', () => {
@@ -387,6 +476,8 @@ describe('youtubeVideo', () => {
         youtubeVideos(channelId: $channelId, offset: $offset, limit: $limit) {
           youtubeVideoId
           reviewState
+          metadataSource
+          metadataRulebookVersion
         }
       }
     `)
@@ -394,7 +485,12 @@ describe('youtubeVideo', () => {
     it('returns a paginated list of rows for the channel', async () => {
       prismaMock.youtubeVideo.findMany.mockResolvedValue([
         buildRow({ youtubeVideoId: 'yt-1', reviewState: 'SKIPPED' }),
-        buildRow({ youtubeVideoId: 'yt-2', reviewState: 'LINKED' })
+        buildRow({
+          youtubeVideoId: 'yt-2',
+          reviewState: 'LINKED',
+          metadataSource: 'WHEAT',
+          metadataRulebookVersion: '2026-08-01'
+        })
       ])
 
       const result = await publicClient({
@@ -403,8 +499,18 @@ describe('youtubeVideo', () => {
       })
 
       expect(result).toHaveProperty('data.youtubeVideos', [
-        { youtubeVideoId: 'yt-1', reviewState: 'SKIPPED' },
-        { youtubeVideoId: 'yt-2', reviewState: 'LINKED' }
+        {
+          youtubeVideoId: 'yt-1',
+          reviewState: 'SKIPPED',
+          metadataSource: null,
+          metadataRulebookVersion: null
+        },
+        {
+          youtubeVideoId: 'yt-2',
+          reviewState: 'LINKED',
+          metadataSource: 'WHEAT',
+          metadataRulebookVersion: '2026-08-01'
+        }
       ])
       expect(prismaMock.youtubeVideo.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -462,13 +568,20 @@ describe('youtubeVideo', () => {
         youtubeVideoByVideoId(youtubeVideoId: $youtubeVideoId) {
           youtubeVideoId
           reviewState
+          metadataSource
+          metadataRulebookVersion
         }
       }
     `)
 
     it('returns the row for a single youtubeVideoId', async () => {
       prismaMock.youtubeVideo.findUnique.mockResolvedValue(
-        buildRow({ youtubeVideoId: 'yt-1', reviewState: 'LINKED' })
+        buildRow({
+          youtubeVideoId: 'yt-1',
+          reviewState: 'LINKED',
+          metadataSource: 'WHEAT',
+          metadataRulebookVersion: '2026-08-01'
+        })
       )
 
       const result = await publicClient({
@@ -476,9 +589,13 @@ describe('youtubeVideo', () => {
         variables: { youtubeVideoId: 'yt-1' } as any
       })
 
+      // The consumer's worklist reads provenance through this query, not
+      // through the mutation's response.
       expect(result).toHaveProperty('data.youtubeVideoByVideoId', {
         youtubeVideoId: 'yt-1',
-        reviewState: 'LINKED'
+        reviewState: 'LINKED',
+        metadataSource: 'WHEAT',
+        metadataRulebookVersion: '2026-08-01'
       })
     })
   })

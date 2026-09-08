@@ -119,7 +119,7 @@ describe('reorderBlock', () => {
     const result = await reorderBlock(
       { ...block, parentOrder: null },
       1,
-      prismaMock as any
+      prismaMock
     )
 
     expect(result).toEqual([])
@@ -136,7 +136,7 @@ describe('reorderBlock', () => {
       .mockResolvedValueOnce({ ...block, parentOrder: 1 })
       .mockResolvedValueOnce({ ...sibling2, parentOrder: 2 })
 
-    const result = await reorderBlock(block, 1, prismaMock as any)
+    const result = await reorderBlock(block, 1, prismaMock)
 
     expect(prismaMock.block.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -182,7 +182,7 @@ describe('reorderBlock', () => {
       parentOrder: 0
     })
 
-    await reorderBlock(stepBlock, 0, prismaMock as any)
+    await reorderBlock(stepBlock, 0, prismaMock)
 
     expect(prismaMock.block.findMany).toHaveBeenCalledWith(
       expect.objectContaining({

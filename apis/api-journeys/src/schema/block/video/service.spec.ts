@@ -10,13 +10,15 @@ import {
 
 // Mock @apollo/client used by fetchFieldsFromMux
 const mockQuery = vi.fn()
+// Apollo Client 4 replaced the `createHttpLink` factory with the `HttpLink`
+// class.
 vi.mock('@apollo/client', () => {
   return {
     ApolloClient: vi.fn(function () {
       return { query: mockQuery }
     }),
     InMemoryCache: vi.fn(),
-    createHttpLink: vi.fn()
+    HttpLink: vi.fn()
   }
 })
 

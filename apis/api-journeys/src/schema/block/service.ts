@@ -189,7 +189,7 @@ export async function update<T>(
         'action',
         // deletedAt should only be updated using removeBlockAndChildren
         'deletedAt'
-      ]) as Prisma.BlockUpdateInput,
+      ]),
       include: { action: true }
     })
     await setJourneyUpdatedAt(tx, updatedBlock)
@@ -275,7 +275,7 @@ async function getDuplicateBlockAndChildren(
     idMap
   )
 
-  return [duplicateBlock as BlockWithAction, ...duplicateChildren]
+  return [duplicateBlock, ...duplicateChildren]
 }
 
 async function getDuplicateChildren(

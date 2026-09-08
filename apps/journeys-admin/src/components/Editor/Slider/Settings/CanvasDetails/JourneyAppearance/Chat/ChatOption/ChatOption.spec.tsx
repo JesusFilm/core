@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -101,7 +102,7 @@ describe('ChatOption', () => {
       }
     }))
 
-    const updateMock: MockedResponse<
+    const updateMock: MockLink.MockedResponse<
       JourneyChatButtonUpdate,
       JourneyChatButtonUpdateVariables
     > = {

@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -9,6 +10,7 @@ import { ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
+import { IntegrationDelete } from '../../../../../__generated__/IntegrationDelete'
 import { GET_INTEGRATION } from '../../../../libs/useIntegrationQuery'
 
 export const INTEGRATION_DELETE = gql`
@@ -36,7 +38,8 @@ export function GoogleIntegrationRemoveDialog({
   const { enqueueSnackbar } = useSnackbar()
   const router = useRouter()
 
-  const [integrationDelete, { loading }] = useMutation(INTEGRATION_DELETE)
+  const [integrationDelete, { loading }] =
+    useMutation<IntegrationDelete>(INTEGRATION_DELETE)
 
   async function handleConfirm(): Promise<void> {
     if (integrationId == null || teamId == null) return

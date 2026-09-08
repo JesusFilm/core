@@ -231,7 +231,7 @@ export async function appendEventToGoogleSheets({
         )
 
         const getCardHeadingForSync = (blockId: string | null | undefined) =>
-          getCardHeading(idToBlock as any, journeyBlocks as any, blockId)
+          getCardHeading(idToBlock, journeyBlocks, blockId)
 
         const mergedHeader = mergeGoogleSheetsHeader({
           baseKeys: ['visitorId', 'date'],

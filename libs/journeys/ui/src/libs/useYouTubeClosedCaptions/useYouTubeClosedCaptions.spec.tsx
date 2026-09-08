@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { renderHook, waitFor } from '@testing-library/react'
 import { ReactNode } from 'react'
 
@@ -27,7 +28,7 @@ const mockLanguages = [
   }
 ]
 
-const getYouTubeClosedCaptionsMock: MockedResponse<YouTubeClosedCaptionLanguages> =
+const getYouTubeClosedCaptionsMock: MockLink.MockedResponse<YouTubeClosedCaptionLanguages> =
   {
     request: {
       query: YOUTUBE_CLOSED_CAPTION_LANGUAGES,
@@ -43,7 +44,7 @@ const getYouTubeClosedCaptionsMock: MockedResponse<YouTubeClosedCaptionLanguages
     }
   }
 
-const getYouTubeClosedCaptionsNullMock: MockedResponse<YouTubeClosedCaptionLanguages> =
+const getYouTubeClosedCaptionsNullMock: MockLink.MockedResponse<YouTubeClosedCaptionLanguages> =
   {
     request: {
       query: YOUTUBE_CLOSED_CAPTION_LANGUAGES,
@@ -134,7 +135,7 @@ describe('useYouTubeClosedCaptions', () => {
   })
 
   it('returns empty array when no data', async () => {
-    const emptyMock: MockedResponse<YouTubeClosedCaptionLanguages> = {
+    const emptyMock: MockLink.MockedResponse<YouTubeClosedCaptionLanguages> = {
       request: {
         query: YOUTUBE_CLOSED_CAPTION_LANGUAGES,
         variables: { videoId: 'test-video-id' }

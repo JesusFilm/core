@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type Mock } from 'vitest'
@@ -46,7 +47,7 @@ const selectedBlock: TreeBlock<MultiselectBlock> = {
   ]
 }
 
-const mockUpdateMin: MockedResponse = {
+const mockUpdateMin: MockLink.MockedResponse = {
   request: {
     query: MULTISELECT_BLOCK_UPDATE,
     variables: {
@@ -68,7 +69,7 @@ const mockUpdateMin: MockedResponse = {
   })
 }
 
-const mockUpdateMax: MockedResponse = {
+const mockUpdateMax: MockLink.MockedResponse = {
   request: {
     query: MULTISELECT_BLOCK_UPDATE,
     variables: {
@@ -90,7 +91,7 @@ const mockUpdateMax: MockedResponse = {
   })
 }
 
-const mockUpdateBoth: MockedResponse = {
+const mockUpdateBoth: MockLink.MockedResponse = {
   request: {
     query: MULTISELECT_BLOCK_UPDATE,
     variables: {
@@ -189,7 +190,7 @@ describe('Multiselect Properties', () => {
       ]
     }
 
-    const mockEnableSetsDefaults: MockedResponse = {
+    const mockEnableSetsDefaults: MockLink.MockedResponse = {
       request: {
         query: MULTISELECT_BLOCK_UPDATE,
         variables: {
@@ -235,7 +236,7 @@ describe('Multiselect Properties', () => {
   })
 
   it('clamps max to 1 when user enters 0 and options exist', async () => {
-    const mockClampMaxToOne: MockedResponse = {
+    const mockClampMaxToOne: MockLink.MockedResponse = {
       request: {
         query: MULTISELECT_BLOCK_UPDATE,
         variables: {

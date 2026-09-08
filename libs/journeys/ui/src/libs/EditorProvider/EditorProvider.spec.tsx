@@ -388,7 +388,7 @@ describe('EditorContext', () => {
             ActiveCanvasDetailsDrawer.JourneyAppearance,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
-        } as unknown as EditorState
+        }
         expect(
           reducer(state, {
             type: 'SetSelectedStepByIdAction',
@@ -411,7 +411,7 @@ describe('EditorContext', () => {
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
-        } as unknown as EditorState
+        }
         expect(
           reducer(state, {
             type: 'SetSelectedStepByIdAction',
@@ -433,7 +433,7 @@ describe('EditorContext', () => {
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeContent: ActiveContent.Canvas,
           activeSlide: ActiveSlide.JourneyFlow
-        } as unknown as EditorState
+        }
         expect(
           reducer(state, {
             type: 'SetSelectedStepByIdAction'

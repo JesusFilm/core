@@ -46,7 +46,7 @@ export async function deleteFirebaseOnlyAccount(
 
   // Create audit log before deletion so there is always a durable record,
   // matching the behaviour of the full-user path.
-  let auditLog: { id: string } | null = null
+  let auditLog: { id: string } | null
   try {
     auditLog = await prisma.userDeleteAuditLog.create({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
