@@ -620,7 +620,7 @@ describe('download processing utilities', () => {
       expect(prismaMock.videoVariantDownload.update).not.toHaveBeenCalled()
     })
 
-    it('should preserve existing non-Mux downloads for the same quality', async () => {
+    it('replaces an existing non-Mux download for the same quality with the Mux-hosted one', async () => {
       const muxVideoAsset = {
         playback_ids: [{ id: 'test-playback-id' }],
         static_renditions: {
@@ -642,7 +642,9 @@ describe('download processing utilities', () => {
           id: 'existing-high-download',
           quality: VideoVariantDownloadQuality.high,
           videoVariantId: 'variant-1',
-          url: 'https://example.com/download.mp4',
+          // A legacy origin-server URL predating the Mux migration -- not a
+          // distro* row (those are a separate quality enum, untouched here).
+          url: 'https://api-media-core.jesusfilm.org/download.mp4',
           size: 157286400,
           height: 720,
           width: 1280,
@@ -653,6 +655,7 @@ describe('download processing utilities', () => {
           updatedAt: new Date()
         })
         .mockResolvedValueOnce(null)
+      prismaMock.videoVariantDownload.update.mockResolvedValue({} as any)
       prismaMock.videoVariantDownload.create.mockResolvedValue({} as any)
 
       const result = await createDownloadsFromMuxAsset({
@@ -660,8 +663,14 @@ describe('download processing utilities', () => {
         muxVideoAsset
       })
 
-      expect(result).toBe(1)
-      expect(prismaMock.videoVariantDownload.update).not.toHaveBeenCalled()
+      expect(result).toBe(2)
+      expect(prismaMock.videoVariantDownload.update).toHaveBeenCalledWith({
+        where: { id: 'existing-high-download' },
+        data: expect.objectContaining({
+          quality: VideoVariantDownloadQuality.high,
+          url: 'https://stream.mux.com/test-playback-id/720p.mp4'
+        })
+      })
       expect(prismaMock.videoVariantDownload.create).toHaveBeenCalledTimes(1)
       expect(prismaMock.videoVariantDownload.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
@@ -990,6 +999,147 @@ describe('download processing utilities', () => {
           width: 854,
           bitrate: 1200000
         }
+      })
+    })
+
+    describe('cleaning up legacy downloads for permanently unproducible qualities', () => {
+      function legacyDownload(quality: VideoVariantDownloadQuality): any {
+        return {
+          id: `legacy-${quality}`,
+          quality,
+          videoVariantId: 'variant-1',
+          url: 'https://api-media-core.jesusfilm.org/legacy.mp4',
+          size: 1,
+          bitrate: 1,
+          height: null,
+          width: null,
+          version: 1,
+          assetId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      }
+
+      it('removes a legacy download for a quality the ready asset will never produce', async () => {
+        const muxVideoAsset = {
+          playback_ids: [{ id: 'test-playback-id' }],
+          static_renditions: {
+            files: [
+              {
+                resolution: '720p',
+                status: 'ready',
+                filesize: '157286400',
+                height: 720,
+                width: 1280,
+                bitrate: 2500000
+              },
+              { resolution: '1080p', status: 'skipped' }
+            ]
+          }
+        }
+
+        prismaMock.videoVariantDownload.findUnique.mockImplementation((async ({
+          where
+        }: any) =>
+          where.quality_videoVariantId.quality ===
+          VideoVariantDownloadQuality.fhd
+            ? legacyDownload(VideoVariantDownloadQuality.fhd)
+            : null) as any)
+        prismaMock.videoVariantDownload.create.mockResolvedValue({} as any)
+        prismaMock.videoVariantDownload.delete.mockResolvedValue({} as any)
+
+        const result = await createDownloadsFromMuxAsset({
+          variantId: 'variant-1',
+          muxVideoAsset
+        })
+
+        expect(prismaMock.videoVariantDownload.delete).toHaveBeenCalledTimes(1)
+        expect(prismaMock.videoVariantDownload.delete).toHaveBeenCalledWith({
+          where: { id: 'legacy-fhd' }
+        })
+        expect(result).toBe(3) // high + highest created, fhd removed
+      })
+
+      it('does not remove a legacy download while another rendition is still pending metadata', async () => {
+        const muxVideoAsset = {
+          playback_ids: [{ id: 'test-playback-id' }],
+          static_renditions: {
+            files: [
+              {
+                resolution: '720p',
+                status: 'ready',
+                filesize: '157286400',
+                height: 720,
+                width: 1280,
+                bitrate: 2500000
+              },
+              // ready but not yet propagated -- the whole asset is treated
+              // as still settling, not final.
+              {
+                resolution: '1080p',
+                status: 'ready',
+                filesize: '0',
+                bitrate: 0
+              }
+            ]
+          }
+        }
+
+        prismaMock.videoVariantDownload.findUnique.mockImplementation((async ({
+          where
+        }: any) =>
+          where.quality_videoVariantId.quality ===
+          VideoVariantDownloadQuality.fhd
+            ? legacyDownload(VideoVariantDownloadQuality.fhd)
+            : null) as any)
+        prismaMock.videoVariantDownload.create.mockResolvedValue({} as any)
+
+        await createDownloadsFromMuxAsset({
+          variantId: 'variant-1',
+          muxVideoAsset
+        })
+
+        expect(prismaMock.videoVariantDownload.delete).not.toHaveBeenCalled()
+      })
+
+      it('never removes an existing Mux-hosted download, even for a quality outside this build', async () => {
+        const muxVideoAsset = {
+          playback_ids: [{ id: 'test-playback-id' }],
+          static_renditions: {
+            files: [
+              {
+                resolution: '720p',
+                status: 'ready',
+                filesize: '157286400',
+                height: 720,
+                width: 1280,
+                bitrate: 2500000
+              },
+              { resolution: '1080p', status: 'skipped' }
+            ]
+          }
+        }
+
+        prismaMock.videoVariantDownload.findUnique.mockImplementation((async ({
+          where
+        }: any) =>
+          where.quality_videoVariantId.quality ===
+          VideoVariantDownloadQuality.fhd
+            ? {
+                ...legacyDownload(VideoVariantDownloadQuality.fhd),
+                url: 'https://stream.mux.com/test-playback-id/1080p.mp4',
+                size: 1,
+                bitrate: 1
+              }
+            : null) as any)
+        prismaMock.videoVariantDownload.create.mockResolvedValue({} as any)
+
+        await createDownloadsFromMuxAsset({
+          variantId: 'variant-1',
+          muxVideoAsset
+        })
+
+        expect(prismaMock.videoVariantDownload.delete).not.toHaveBeenCalled()
       })
     })
   })
