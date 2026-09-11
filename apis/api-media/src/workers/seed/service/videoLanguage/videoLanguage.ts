@@ -1,5 +1,7 @@
 import { prisma } from '@core/prisma/media/client'
 
+import { calculateAvailableLanguages } from '../../../../schema/video/lib/updateAvailableLanguages'
+
 const BATCH_SIZE = 100
 const MAX_RETRIES = 3
 
@@ -26,25 +28,22 @@ async function updateBatch(
   }
 }
 
+// Reseeds every video's availableLanguages using the same canonical
+// calculation every other write path uses (own published variants unioned
+// with each live child's currently stored availableLanguages), rather than
+// hand-deriving it from this video's own variants only - which would
+// silently zero out every child-derived language on any
+// collection/series/featureFilm this job touches.
 export async function seedVideoLanguages(): Promise<void> {
-  const videos = await prisma.video.findMany({
-    select: {
-      id: true,
-      availableLanguages: true,
-      variants: {
-        select: {
-          languageId: true
-        }
-      }
-    }
-  })
+  const videos = await prisma.video.findMany({ select: { id: true } })
 
-  const updates = videos.map((video) => ({
-    id: video.id,
-    availableLanguages: Array.from(
-      new Set(video.variants.map((variant) => variant.languageId))
-    )
-  }))
+  const updates: Array<{ id: string; availableLanguages: string[] }> = []
+  for (const { id } of videos) {
+    updates.push({
+      id,
+      availableLanguages: await calculateAvailableLanguages(id)
+    })
+  }
 
   for (let i = 0; i < updates.length; i += BATCH_SIZE) {
     const batch = updates.slice(i, i + BATCH_SIZE)
