@@ -63,9 +63,7 @@ describe('customDomains', () => {
   })
 
   it('should return custom domains for authenticated user', async () => {
-    prismaMock.customDomain.findMany.mockResolvedValue([
-      mockCustomDomain as any
-    ])
+    prismaMock.customDomain.findMany.mockResolvedValue([mockCustomDomain])
 
     const result = (await authClient({
       document: CUSTOM_DOMAINS_QUERY,

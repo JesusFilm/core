@@ -5,11 +5,15 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
+import { hoverOnly } from '@core/shared/ui/hoverOnly'
 import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { StyledListRadioOption } from '../../RadioOption/ListVariant'
-import { getPollOptionBorderStyles } from '../utils/getPollOptionBorderStyles'
+import {
+  getPollOptionBorderColors,
+  getPollOptionBorderStyles
+} from '../utils/getPollOptionBorderStyles'
 
 const StyledListRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
   marginBottom: theme.spacing(4),
@@ -24,15 +28,6 @@ const StyledListRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
       margin: '0 !important',
       '&:not(:last-of-type)': {
         borderBottom: 'none'
-      },
-      '& .MuiButtonGroup-firstButton': {
-        ...getPollOptionBorderStyles(theme)
-      },
-      '& .MuiButtonGroup-middleButton': {
-        ...getPollOptionBorderStyles(theme)
-      },
-      '& .MuiButtonGroup-lastButton': {
-        ...getPollOptionBorderStyles(theme)
       }
     }
   }
@@ -70,11 +65,19 @@ export function ListVariant({
                 <AddSquare4Icon sx={{ color: `${adminPrimaryColor.main}` }} />
               }
               onClick={addOption}
-              sx={(theme) => ({
-                borderBottomLeftRadius: 8,
-                borderBottomRightRadius: 8,
-                ...getPollOptionBorderStyles(theme, { important: true })
-              })}
+              sx={(theme) => {
+                const borderColors = getPollOptionBorderColors(theme, {
+                  important: true
+                })
+
+                return {
+                  borderBottomLeftRadius: 8,
+                  borderBottomRightRadius: 8,
+                  ...getPollOptionBorderStyles(theme, { important: true }),
+                  ...hoverOnly({ borderColor: borderColors.hover }),
+                  '&:active': { borderColor: borderColors.active }
+                }
+              }}
             >
               <Typography variant="body1">{t('Add Option')}</Typography>
             </StyledListRadioOption>

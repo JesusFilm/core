@@ -97,8 +97,8 @@ describe('eventService', () => {
       prismaMock.block.findUnique.mockResolvedValue(mockBlock as any)
       prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
       prismaMock.$queryRaw
-        .mockResolvedValueOnce([mockVisitor] as any)
-        .mockResolvedValueOnce([mockJourneyVisitor] as any)
+        .mockResolvedValueOnce([mockVisitor])
+        .mockResolvedValueOnce([mockJourneyVisitor])
       prismaMock.block.findFirst.mockResolvedValue({
         id: 'step-id',
         journeyId: 'journey-id',
@@ -137,8 +137,8 @@ describe('eventService', () => {
       prismaMock.block.findUnique.mockResolvedValue(mockBlock as any)
       prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
       prismaMock.$queryRaw
-        .mockResolvedValueOnce([mockVisitor] as any)
-        .mockResolvedValueOnce([mockJourneyVisitor] as any)
+        .mockResolvedValueOnce([mockVisitor])
+        .mockResolvedValueOnce([mockJourneyVisitor])
       prismaMock.block.findFirst.mockResolvedValue({
         id: 'step-id',
         journeyId: 'journey-id',
@@ -181,14 +181,14 @@ describe('eventService', () => {
         teamId: 'team-id'
       } as any)
       prismaMock.$queryRaw
-        .mockResolvedValueOnce([{ id: 'visitor-id' }] as any)
+        .mockResolvedValueOnce([{ id: 'visitor-id' }])
         .mockResolvedValueOnce([
           {
             id: 'jv-id',
             journeyId: 'journey-id',
             visitorId: 'visitor-id'
           }
-        ] as any)
+        ])
       prismaMock.block.findFirst.mockResolvedValue(null)
 
       await expect(
@@ -264,8 +264,8 @@ describe('eventService', () => {
       }
 
       prismaMock.$queryRaw
-        .mockResolvedValueOnce([mockVisitor] as any)
-        .mockResolvedValueOnce([mockJourneyVisitor] as any)
+        .mockResolvedValueOnce([mockVisitor])
+        .mockResolvedValueOnce([mockJourneyVisitor])
 
       const result = await getByUserIdAndJourneyId(
         'user-id',

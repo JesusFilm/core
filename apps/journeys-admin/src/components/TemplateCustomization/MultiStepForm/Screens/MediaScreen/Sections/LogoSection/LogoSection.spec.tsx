@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -80,10 +81,10 @@ describe('LogoSection', () => {
 
   function renderLogoSection(
     journeyData: Journey = journeyWithLogo,
-    mocks: MockedResponse[] = []
+    mocks: MockLink.MockedResponse[] = []
   ): ReturnType<typeof render> {
     return render(
-      <MockedProvider mocks={mocks} addTypename={false}>
+      <MockedProvider mocks={mocks}>
         <SnackbarProvider>
           <JourneyProvider
             value={{ journey: journeyData, renderMode: 'admin' }}
@@ -203,7 +204,7 @@ describe('LogoSection', () => {
       }
     })
 
-    const mutationMock: MockedResponse = {
+    const mutationMock: MockLink.MockedResponse = {
       request: {
         query: LOGO_IMAGE_BLOCK_UPDATE,
         variables: {
@@ -240,7 +241,7 @@ describe('LogoSection', () => {
       } as any
     })
 
-    const mutationMock: MockedResponse = {
+    const mutationMock: MockLink.MockedResponse = {
       request: {
         query: LOGO_IMAGE_BLOCK_UPDATE,
         variables: {
@@ -287,7 +288,7 @@ describe('LogoSection', () => {
       logoImageBlock: null
     } as unknown as Journey
 
-    const mutationMock: MockedResponse = {
+    const mutationMock: MockLink.MockedResponse = {
       request: {
         query: LOGO_IMAGE_BLOCK_UPDATE,
         variables: {

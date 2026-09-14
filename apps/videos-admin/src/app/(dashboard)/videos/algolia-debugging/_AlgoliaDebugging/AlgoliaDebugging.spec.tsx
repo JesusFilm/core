@@ -1,11 +1,11 @@
-import { useApolloClient, useMutation } from '@apollo/client'
+import { useApolloClient, useMutation } from '@apollo/client/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type MockedFunction } from 'vitest'
 
 import { AlgoliaDebugging } from './AlgoliaDebugging'
 
-vi.mock('@apollo/client', async () => {
-  const original = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const original = await vi.importActual('@apollo/client/react')
   return {
     ...original,
     useApolloClient: vi.fn(),

@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
@@ -28,7 +29,7 @@ const countryLanguages = [
   }
 ]
 
-const searchCountriesMock: MockedResponse = {
+const searchCountriesMock: MockLink.MockedResponse = {
   request: {
     query: SEARCH_COUNTRIES,
     variables: { term: 'United', nameLanguageId: '529' }
@@ -52,7 +53,7 @@ const searchCountriesMock: MockedResponse = {
   }
 }
 
-const searchChinaMock: MockedResponse = {
+const searchChinaMock: MockLink.MockedResponse = {
   request: {
     query: SEARCH_COUNTRIES,
     variables: { term: 'China', nameLanguageId: '529' }
@@ -64,7 +65,10 @@ const searchChinaMock: MockedResponse = {
   }
 }
 
-function renderLinks(mocks: MockedResponse[] = [], onChanged = vi.fn()) {
+function renderLinks(
+  mocks: MockLink.MockedResponse[] = [],
+  onChanged = vi.fn()
+) {
   render(
     <MockedProvider mocks={mocks}>
       <SnackbarProvider>

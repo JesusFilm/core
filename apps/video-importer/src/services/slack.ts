@@ -407,13 +407,13 @@ async function postSlackMessage(params: {
     typeof body !== 'object' ||
     body === null ||
     !('ok' in body) ||
-    (body as { ok: unknown }).ok !== true
+    body.ok !== true
   ) {
     const error =
       typeof body === 'object' &&
       body !== null &&
       'error' in body &&
-      typeof (body as { error: unknown }).error === 'string'
+      typeof body.error === 'string'
         ? (body as { error: string }).error
         : 'unknown_error'
     console.error(`[video-importer] Slack chat.postMessage failed: ${error}`)
