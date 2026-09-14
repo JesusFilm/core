@@ -37,7 +37,12 @@ export function JourneyLocaleProvider({
     }
   }, [locale])
 
-  // Create a new i18next instance for this component tree
+  // One instance per locale, created before its resources have loaded. It must
+  // not be recreated when they arrive: `useTranslation` caches the `t` it hands
+  // out and only reruns on i18next events, not on a new instance arriving
+  // through context, so a swapped instance would leave every consumer holding a
+  // `t` bound to the empty one (react-i18next 17). Feed the same instance
+  // instead, and let `bindI18nStore: added` push the update out.
   const i18nInstance = useMemo(() => {
     const namespaces = ['libs-journeys-ui', 'apps-journeys-admin']
     const instance = createInstance()
@@ -50,11 +55,33 @@ export function JourneyLocaleProvider({
       },
       defaultNS: 'libs-journeys-ui',
       ns: namespaces,
-      resources
+      resources: {},
+      react: {
+        bindI18nStore: 'added'
+      }
     })
 
     return instance
-  }, [locale, resources])
+  }, [locale])
+
+  // `resources` still holds the previous locale's bundles for the commit in
+  // which `locale` changes, so skip anything that isn't the active locale
+  // rather than pushing it into the fresh instance.
+  useEffect(() => {
+    Object.entries(resources).forEach(([language, namespaces]) => {
+      if (language !== locale) return
+
+      Object.entries(namespaces).forEach(([namespace, bundle]) => {
+        i18nInstance.addResourceBundle(
+          language,
+          namespace,
+          bundle,
+          true, // deep
+          true // overwrite
+        )
+      })
+    })
+  }, [i18nInstance, locale, resources])
 
   return <I18nextProvider i18n={i18nInstance}>{children}</I18nextProvider>
 }
