@@ -67,11 +67,19 @@ export async function service(
       uploadId != null
         ? await prisma.videoVariantUpload.findUnique({
             where: { id: uploadId },
-            select: { id: true, muxNonStandardInputDetectedAt: true }
+            select: {
+              id: true,
+              muxNonStandardInputDetectedAt: true,
+              published: true
+            }
           })
         : await prisma.videoVariantUpload.findFirst({
             where: { muxVideoId },
-            select: { id: true, muxNonStandardInputDetectedAt: true }
+            select: {
+              id: true,
+              muxNonStandardInputDetectedAt: true,
+              published: true
+            }
           })
 
     const durableUploadId = uploadId ?? durableUpload?.id
@@ -102,6 +110,10 @@ export async function service(
         version,
         muxVideoId,
         playbackId,
+        // The uploader's Draft/Published choice lives on the durable upload row;
+        // omitting it falls back to createOrUpdateVideoVariant's published=true
+        // default and the reconciliation sweep would publish a Draft upload.
+        published: durableUpload?.published,
         metadata: {
           ...metadata,
           duration:
