@@ -1861,6 +1861,86 @@ describe('videoVariant', () => {
         )
       })
 
+      describe('published toggle', () => {
+        beforeEach(() => {
+          prismaMock.userMediaRole.findUnique.mockResolvedValue({
+            id: 'userId',
+            userId: 'userId',
+            roles: ['publisher'],
+            createdAt: new Date(),
+            updatedAt: new Date()
+          })
+        })
+
+        function mockVariant(published: boolean): void {
+          prismaMock.videoVariant.findUnique.mockResolvedValue({
+            published,
+            videoId: 'videoId',
+            languageId: 'languageId',
+            edition: 'base'
+          } as any)
+          prismaMock.videoVariant.update.mockResolvedValue({
+            id: 'id',
+            hls: 'hls',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            duration: 1024,
+            lengthInMilliseconds: 123456,
+            dash: 'dash',
+            edition: 'base',
+            slug: 'videoSlug',
+            videoId: 'videoId',
+            languageId: 'languageId',
+            published,
+            share: 'share',
+            downloadable: false,
+            muxVideoId: null,
+            masterUrl: 'masterUrl',
+            masterWidth: 320,
+            masterHeight: 180,
+            assetId: null,
+            version: 1,
+            brightcoveId: null
+          })
+        }
+
+        it.each([
+          { from: true, to: false },
+          { from: false, to: true }
+        ])(
+          'should write published $to when switching from $from',
+          async ({ from, to }) => {
+            mockVariant(from)
+
+            await authClient({
+              document: VIDEO_VARIANT_UPDATE_MUTATION,
+              variables: { input: { id: 'id', published: to } }
+            })
+
+            expect(
+              prismaMock.videoVariant.update.mock.calls[0][0].data
+            ).toHaveProperty('published', to)
+            expect(
+              mockedRequestVideoVariantReconciliation
+            ).toHaveBeenCalledWith(expect.objectContaining({ published: to }))
+          }
+        )
+
+        it('should leave published untouched when omitted', async () => {
+          mockVariant(true)
+
+          await authClient({
+            document: VIDEO_VARIANT_UPDATE_MUTATION,
+            variables: { input: { id: 'id', hls: 'hls' } }
+          })
+
+          expect(
+            prismaMock.videoVariant.update.mock.calls[0][0].data.published
+          ).toBeUndefined()
+          expect(mockedRequestVideoVariantReconciliation).not.toHaveBeenCalled()
+        })
+      })
+
       it('should fail if not publisher', async () => {
         const result = await client({
           document: VIDEO_VARIANT_UPDATE_MUTATION,
