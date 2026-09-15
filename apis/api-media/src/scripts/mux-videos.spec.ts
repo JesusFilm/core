@@ -170,14 +170,17 @@ describe('processDownloads', () => {
     'MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE',
     'MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT',
     'MUX_DOWNLOAD_BACKFILL_CONCURRENCY'
-  ])('throws for a malformed %s instead of reading its leading digits', async (name) => {
-    process.env[name] = '5junk'
+  ])(
+    'throws for a malformed %s instead of reading its leading digits',
+    async (name) => {
+      process.env[name] = '5junk'
 
-    await expect(processDownloads()).rejects.toThrow(
-      `${name} must be a positive integer`
-    )
-    expect(prismaMock.videoVariantDownload.findMany).not.toHaveBeenCalled()
-  })
+      await expect(processDownloads()).rejects.toThrow(
+        `${name} must be a positive integer`
+      )
+      expect(prismaMock.videoVariantDownload.findMany).not.toHaveBeenCalled()
+    }
+  )
 
   it('queries only non-distro Mux downloads with null/zero size or bitrate', async () => {
     await runProcessDownloads()
