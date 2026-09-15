@@ -43,6 +43,19 @@ const DEFAULT_MAX_REAL_DOWNLOAD_QUALITY_COUNT = 7
 const DEFAULT_PROCESS_CONCURRENCY = 4
 const MUX_API_CALL_STAGGER_MS = 250
 
+// Reads an optional positive-integer env var. Validates the whole string, not
+// just its leading digits -- Number.parseInt('5junk', 10) is 5.
+function parsePositiveIntegerEnv(name: string): number | null {
+  const value = process.env[name]?.trim()
+  if (value == null || value === '') return null
+
+  if (!/^\d+$/.test(value) || Number.parseInt(value, 10) <= 0) {
+    throw new Error(`${name} must be a positive integer`)
+  }
+
+  return Number.parseInt(value, 10)
+}
+
 async function processConcurrently<T>(
   items: T[],
   concurrency: number,
@@ -260,45 +273,15 @@ export async function processDownloads(): Promise<void> {
   console.log('mux downloads processing started')
 
   const applyChanges = process.env.MUX_DOWNLOAD_BACKFILL_APPLY === 'true'
-  const sampleSizeValue = process.env.MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE?.trim()
-  const sampleSize =
-    sampleSizeValue != null && sampleSizeValue !== ''
-      ? Number.parseInt(sampleSizeValue, 10)
-      : null
-
-  if (sampleSize != null && (!Number.isFinite(sampleSize) || sampleSize <= 0)) {
-    throw new Error(
-      'MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE must be a positive integer'
-    )
-  }
-
-  const maxQualityCountValue =
-    process.env.MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT?.trim()
+  const sampleSize = parsePositiveIntegerEnv(
+    'MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE'
+  )
   const maxRealDownloadQualityCount =
-    maxQualityCountValue != null && maxQualityCountValue !== ''
-      ? Number.parseInt(maxQualityCountValue, 10)
-      : DEFAULT_MAX_REAL_DOWNLOAD_QUALITY_COUNT
-
-  if (
-    !Number.isFinite(maxRealDownloadQualityCount) ||
-    maxRealDownloadQualityCount <= 0
-  ) {
-    throw new Error(
-      'MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT must be a positive integer'
-    )
-  }
-
-  const concurrencyValue = process.env.MUX_DOWNLOAD_BACKFILL_CONCURRENCY?.trim()
+    parsePositiveIntegerEnv('MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT') ??
+    DEFAULT_MAX_REAL_DOWNLOAD_QUALITY_COUNT
   const concurrency =
-    concurrencyValue != null && concurrencyValue !== ''
-      ? Number.parseInt(concurrencyValue, 10)
-      : DEFAULT_PROCESS_CONCURRENCY
-
-  if (!Number.isFinite(concurrency) || concurrency <= 0) {
-    throw new Error(
-      'MUX_DOWNLOAD_BACKFILL_CONCURRENCY must be a positive integer'
-    )
-  }
+    parsePositiveIntegerEnv('MUX_DOWNLOAD_BACKFILL_CONCURRENCY') ??
+    DEFAULT_PROCESS_CONCURRENCY
 
   if (applyChanges) {
     console.log('Apply mode enabled: download metadata rows will be refreshed')
@@ -340,6 +323,10 @@ export async function processDownloads(): Promise<void> {
   let totalProcessed = 0
   let nextCursor: string | null = null
   let carryoverDownloads: ZeroMetadataDownloadRow[] = []
+  // Variants the zero-metadata pass already handed to processVariant(), so the
+  // missing-rows pass doesn't re-fetch them from Mux or spend sample budget on
+  // them again.
+  const processedVariantIds = new Set<string>()
 
   const processVariant = async (
     variant: Prisma.VideoVariantGetPayload<{
@@ -349,6 +336,7 @@ export async function processDownloads(): Promise<void> {
     }>,
     variantZeroMetadataDownloads: ZeroMetadataDownloadRow[]
   ): Promise<void> => {
+    processedVariantIds.add(variant.id)
     console.log(
       `Processing downloads for variant ${variant.id}, zero-metadata download count: ${variantZeroMetadataDownloads.length}`
     )
@@ -389,7 +377,7 @@ export async function processDownloads(): Promise<void> {
           )
           if (variantZeroMetadataDownloads.length === 0) {
             console.log(
-              `  ${previewDownloads.length} download row(s) would be created or refreshed (variant has fewer than ${maxRealDownloadQualityCount} Mux-hosted rows)`
+              `  candidate: ${previewDownloads.length} Mux download rendition(s) available (variant has fewer than ${maxRealDownloadQualityCount} Mux-hosted rows); apply mode only creates, refreshes, or removes rows that differ from these`
             )
             return
           }
@@ -662,10 +650,17 @@ export async function processDownloads(): Promise<void> {
       break
     }
 
-    const variants = await prisma.videoVariant.findMany({
-      where: { id: { in: candidates.map((candidate) => candidate.id) } },
-      include: { muxVideo: true }
-    })
+    const unprocessedCandidateIds = candidates
+      .map((candidate) => candidate.id)
+      .filter((id) => !processedVariantIds.has(id))
+
+    const variants =
+      unprocessedCandidateIds.length === 0
+        ? []
+        : await prisma.videoVariant.findMany({
+            where: { id: { in: unprocessedCandidateIds } },
+            include: { muxVideo: true }
+          })
 
     console.log(
       `Found ${variants.length} variants with fewer than ${maxRealDownloadQualityCount} Mux-hosted download rows to process in this batch`

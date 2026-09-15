@@ -166,6 +166,19 @@ describe('processDownloads', () => {
     expect(prismaMock.videoVariantDownload.findMany).not.toHaveBeenCalled()
   })
 
+  it.each([
+    'MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE',
+    'MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT',
+    'MUX_DOWNLOAD_BACKFILL_CONCURRENCY'
+  ])('throws for a malformed %s instead of reading its leading digits', async (name) => {
+    process.env[name] = '5junk'
+
+    await expect(processDownloads()).rejects.toThrow(
+      `${name} must be a positive integer`
+    )
+    expect(prismaMock.videoVariantDownload.findMany).not.toHaveBeenCalled()
+  })
+
   it('queries only non-distro Mux downloads with null/zero size or bitrate', async () => {
     await runProcessDownloads()
 
@@ -368,7 +381,12 @@ describe('processDownloads', () => {
   })
 
   describe('missing download rows pass', () => {
-    function variant(id: string): any {
+    interface MuxBackedVariantFixture {
+      id: string
+      muxVideo: { id: string; assetId: string }
+    }
+
+    function variant(id: string): MuxBackedVariantFixture {
       return { id, muxVideo: { id: `mux-${id}`, assetId: `asset-${id}` } }
     }
 
@@ -384,6 +402,33 @@ describe('processDownloads', () => {
 
       await runProcessDownloads()
 
+      expect(mockedGetVideo).toHaveBeenCalledWith(
+        'asset-variant-missing',
+        false
+      )
+    })
+
+    it('skips variants the zero-metadata pass already processed', async () => {
+      ;(prismaMock.videoVariantDownload.findMany as Mock).mockResolvedValueOnce(
+        [download({ videoVariantId: 'variant-1' })]
+      )
+      ;(prismaMock.$queryRaw as unknown as Mock)
+        .mockResolvedValueOnce([{ id: 'variant-1' }, { id: 'variant-missing' }])
+        .mockResolvedValueOnce([])
+      ;(prismaMock.videoVariant.findMany as Mock).mockResolvedValueOnce([
+        variant('variant-missing')
+      ])
+      mockedGetVideo.mockResolvedValue(readyMuxVideoAsset)
+      mockedPreviewMuxDownloadsFromAsset.mockReturnValue([])
+
+      await runProcessDownloads()
+
+      expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
+        where: { id: { in: ['variant-missing'] } },
+        include: { muxVideo: true }
+      })
+      expect(mockedGetVideo).toHaveBeenCalledTimes(2)
+      expect(mockedGetVideo).toHaveBeenCalledWith('asset-variant-1', false)
       expect(mockedGetVideo).toHaveBeenCalledWith(
         'asset-variant-missing',
         false
