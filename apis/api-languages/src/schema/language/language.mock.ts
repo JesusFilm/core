@@ -20,6 +20,7 @@ export const language: Language = {
   iso3: 'zh',
   slug: 'mandarin-china',
   hasVideos: true,
+  searchable: true,
   createdAt: new Date('2021-01-01T00:00:00.000Z'),
   updatedAt: new Date('2021-01-01T00:00:00.000Z')
 }

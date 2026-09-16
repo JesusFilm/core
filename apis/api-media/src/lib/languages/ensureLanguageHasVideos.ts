@@ -17,6 +17,9 @@ export async function ensureLanguageHasVideosTrue(
   if (existing == null) return
 
   if (existing.hasVideos !== true) {
+    // Only hasVideos, which is derived. `searchable` is the operator's
+    // visibility decision and must never be written from here, or hiding a
+    // language would be undone by the next variant edit.
     await languagesPrisma.language.update({
       where: { id: languageId },
       data: { hasVideos: true }

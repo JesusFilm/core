@@ -171,6 +171,9 @@ async function upsertLanguage(row: WessLanguageRow): Promise<void> {
 
   const hasVideosForCreate = row.hasVideos ?? false
 
+  // Note: this deliberately never writes `searchable`. That flag is the
+  // operator's visibility decision, and letting the feed set it would undo
+  // hidden languages on the next import.
   await prisma.language.upsert({
     where: { id: row.id },
     create: {

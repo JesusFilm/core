@@ -22,7 +22,13 @@ model Language {
   updatedAt        DateTime          @updatedAt
   bcp47            String?
   iso3             String?
+  // Derived: whether the language has video content. Written automatically by
+  // the api-media variant hook and the WESS import.
   hasVideos        Boolean           @default(true)
+  // Operator-owned visibility switch. Nothing automated may write this, so a
+  // deliberate decision to hide a language survives imports and variant edits.
+  // A language is publicly visible only when hasVideos && searchable.
+  searchable       Boolean           @default(true)
   slug             String?
   name             LanguageName[]    @relation(name: "name")
   nameLanguage     LanguageName[]    @relation(name: "nameLanguage")
@@ -34,6 +40,7 @@ model Language {
 
   @@index(bcp47(type: Hash))
   @@index(hasVideos)
+  @@index([hasVideos, searchable])
   @@index(iso3(type: Hash))
   @@index([updatedAt])
 }
