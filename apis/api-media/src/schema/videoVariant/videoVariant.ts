@@ -629,10 +629,7 @@ builder.mutationFields((t) => ({
             videoId: input.videoId ?? undefined,
             edition: input.edition ?? undefined,
             downloadable: input.downloadable ?? undefined,
-            published:
-              input.published === undefined
-                ? undefined
-                : currentVariant.published,
+            published: input.published ?? undefined,
             muxVideoId: input.muxVideoId ?? undefined,
             assetId: input.assetId ?? undefined,
             version: input.version ?? undefined,
