@@ -598,6 +598,45 @@ describe('processDownloads', () => {
       }
     })
 
+    it('does not advance the cursor past a variant whose Mux asset is not ready', async () => {
+      const cursorFile = join(
+        tmpdir(),
+        `mux-download-backfill-cursor-not-ready-${Date.now()}.txt`
+      )
+      process.env.MUX_DOWNLOAD_BACKFILL_CURSOR_FILE = cursorFile
+
+      try {
+        ;(prismaMock.$queryRaw as unknown as Mock)
+          .mockResolvedValueOnce([{ id: 'variant-a' }, { id: 'variant-b' }])
+          .mockResolvedValueOnce([])
+        ;(prismaMock.videoVariant.findMany as Mock).mockResolvedValueOnce([
+          variant('variant-a'),
+          variant('variant-b')
+        ])
+        mockedPreviewMuxDownloadsFromAsset.mockReturnValue([])
+        mockedGetVideo.mockImplementation(async (assetId: string) => {
+          if (assetId === 'asset-variant-b') {
+            return {
+              status: 'preparing',
+              playback_ids: [{ id: 'playbackId' }],
+              static_renditions: {
+                files: [{ resolution: '720p', status: 'preparing' }]
+              }
+            }
+          }
+          return readyMuxVideoAsset
+        })
+
+        await runProcessDownloads()
+
+        // variant-b still has no downloads to repair from, so a later run has
+        // to revisit it rather than start after it.
+        expect(readFileSync(cursorFile, 'utf-8')).toBe('variant-a')
+      } finally {
+        rmSync(cursorFile, { force: true })
+      }
+    })
+
     it('leaves the cursor where it was when the first variant of a page fails', async () => {
       const cursorFile = join(
         tmpdir(),

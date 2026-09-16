@@ -407,6 +407,10 @@ export async function processDownloads(): Promise<void> {
         console.log(
           `Video not ready for download processing - variant: ${variant.id}, assetId: ${variant.muxVideo.assetId}, status: ${muxVideoAsset.status}, hasPlaybackId: ${!!muxVideoAsset.playback_ids?.[0]?.id}, downloadsReady: ${downloadsReadyToStore(muxVideoAsset)}`
         )
+        // The asset still needs repair on a later run, so report it as
+        // incomplete. Returning true here advanced the missing-row cursor past
+        // the variant and it was never revisited.
+        return false
       }
       return true
     } catch (error) {
