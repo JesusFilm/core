@@ -1,1 +1,0 @@
-export { VideosSubHero } from './VideosSubHero'

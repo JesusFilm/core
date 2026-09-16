@@ -191,7 +191,7 @@ describe('CollectionCard', () => {
 
   it('renders a Preview menu item that opens the proxy URL in a new tab when published', async () => {
     const originalOpen = window.open
-    window.open = vi.fn() as unknown as typeof window.open
+    window.open = vi.fn()
     try {
       render(
         <CollectionCard

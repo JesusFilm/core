@@ -70,9 +70,7 @@ describe('customDomain', () => {
         journeys: []
       }
     }
-    prismaMock.customDomain.findUnique.mockResolvedValue(
-      customDomainForAcl as any
-    )
+    prismaMock.customDomain.findUnique.mockResolvedValue(customDomainForAcl)
     ;(prismaMock.customDomain as any).findUniqueOrThrow?.mockResolvedValue?.(
       mockCustomDomain as any
     )
@@ -99,9 +97,7 @@ describe('customDomain', () => {
         journeys: []
       }
     }
-    prismaMock.customDomain.findUnique.mockResolvedValue(
-      customDomainForAcl as any
-    )
+    prismaMock.customDomain.findUnique.mockResolvedValue(customDomainForAcl)
     ;(prismaMock.customDomain as any).findUniqueOrThrow?.mockResolvedValue?.(
       mockCustomDomain as any
     )
@@ -126,9 +122,7 @@ describe('customDomain', () => {
         journeys: [{ userJourneys: [{ userId: 'userId', role: 'owner' }] }]
       }
     }
-    prismaMock.customDomain.findUnique.mockResolvedValue(
-      customDomainForAcl as any
-    )
+    prismaMock.customDomain.findUnique.mockResolvedValue(customDomainForAcl)
     ;(prismaMock.customDomain as any).findUniqueOrThrow?.mockResolvedValue?.(
       mockCustomDomain as any
     )
@@ -153,9 +147,7 @@ describe('customDomain', () => {
         journeys: [{ userJourneys: [{ userId: 'userId', role: 'editor' }] }]
       }
     }
-    prismaMock.customDomain.findUnique.mockResolvedValue(
-      customDomainForAcl as any
-    )
+    prismaMock.customDomain.findUnique.mockResolvedValue(customDomainForAcl)
     ;(prismaMock.customDomain as any).findUniqueOrThrow?.mockResolvedValue?.(
       mockCustomDomain as any
     )
@@ -192,9 +184,7 @@ describe('customDomain', () => {
         journeys: []
       }
     }
-    prismaMock.customDomain.findUnique.mockResolvedValue(
-      customDomainForAcl as any
-    )
+    prismaMock.customDomain.findUnique.mockResolvedValue(customDomainForAcl)
 
     const result = (await authClient({
       document: CUSTOM_DOMAIN_QUERY,
@@ -232,9 +222,7 @@ describe('customDomain', () => {
         journeys: []
       }
     }
-    prismaMock.customDomain.findUnique.mockResolvedValue(
-      customDomainForAcl as any
-    )
+    prismaMock.customDomain.findUnique.mockResolvedValue(customDomainForAcl)
     ;(prismaMock.customDomain as any).findUniqueOrThrow?.mockResolvedValue?.(
       mockCustomDomain as any
     )
@@ -262,9 +250,7 @@ describe('customDomain', () => {
         journeys: []
       }
     }
-    prismaMock.customDomain.findUnique.mockResolvedValue(
-      customDomainForAcl as any
-    )
+    prismaMock.customDomain.findUnique.mockResolvedValue(customDomainForAcl)
 
     await authClient({
       document: CUSTOM_DOMAIN_QUERY,

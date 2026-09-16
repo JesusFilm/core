@@ -70,6 +70,7 @@ describe('shortLink', () => {
           brightcoveId: null,
           redirectType: null,
           bitrate: null,
+          sourceRef: null,
           service: 'apiJourneys',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -167,6 +168,7 @@ describe('shortLink', () => {
           brightcoveId: null,
           redirectType: null,
           bitrate: null,
+          sourceRef: null,
           service: 'apiJourneys',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -261,6 +263,7 @@ describe('shortLink', () => {
           brightcoveId: null,
           redirectType: null,
           bitrate: null,
+          sourceRef: null,
           service: 'apiJourneys',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -315,6 +318,7 @@ describe('shortLink', () => {
           brightcoveId: null,
           redirectType: null,
           bitrate: null,
+          sourceRef: null,
           service: 'apiJourneys',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -396,6 +400,7 @@ describe('shortLink', () => {
                   hostname
                 }
                 service
+                sourceRef
               }
             }
             ... on NotUniqueError {
@@ -433,6 +438,7 @@ describe('shortLink', () => {
           brightcoveId: null,
           redirectType: null,
           bitrate: null,
+          sourceRef: null,
           service: 'apiJourneys',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -467,7 +473,8 @@ describe('shortLink', () => {
                 pathname: 'testPath',
                 to: 'https://example.com',
                 domain: { hostname: 'example.com' },
-                service: 'apiJourneys'
+                service: 'apiJourneys',
+                sourceRef: null
               }
             }
           }
@@ -482,6 +489,121 @@ describe('shortLink', () => {
           },
           include: { domain: true }
         })
+      })
+
+      it('should create a short link for the youtube service with a sourceRef', async () => {
+        prismaMock.shortLinkDomain.findFirst.mockResolvedValue({
+          id: 'domainId',
+          hostname: 'nxstp.is',
+          apexName: 'nxstp.is',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          services: ['apiJourneys', 'youtube']
+        })
+        prismaMock.shortLinkBlocklistDomain.findFirst.mockResolvedValue(null)
+        const shortLink: ShortLink & { domain: ShortLinkDomain } = {
+          id: 'testId',
+          pathname: 'testPath',
+          to: 'https://example.com',
+          brightcoveId: null,
+          redirectType: null,
+          bitrate: null,
+          sourceRef: 'youtube-channel:UC123',
+          service: 'youtube',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          userId: 'testUserId',
+          domainId: 'domainId',
+          domain: {
+            id: 'domainId',
+            hostname: 'nxstp.is',
+            apexName: 'nxstp.is',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            services: ['apiJourneys', 'youtube']
+          }
+        }
+        prismaMock.shortLink.create.mockResolvedValue(shortLink)
+        const result = await authClient({
+          document: SHORT_LINK_CREATE_MUTATION,
+          variables: {
+            input: {
+              pathname: 'testPath',
+              to: 'https://example.com',
+              hostname: 'nxstp.is',
+              service: 'youtube',
+              sourceRef: 'youtube-channel:UC123'
+            }
+          }
+        })
+        expect(result).toEqual({
+          data: {
+            shortLinkCreate: {
+              data: {
+                id: 'testId',
+                pathname: 'testPath',
+                to: 'https://example.com',
+                domain: { hostname: 'nxstp.is' },
+                service: 'youtube',
+                sourceRef: 'youtube-channel:UC123'
+              }
+            }
+          }
+        })
+        expect(prismaMock.shortLink.create).toHaveBeenCalledWith({
+          data: {
+            pathname: 'testPath',
+            to: 'https://example.com',
+            domain: { connect: { hostname: 'nxstp.is' } },
+            service: 'youtube',
+            sourceRef: 'youtube-channel:UC123',
+            userId: 'testUserId'
+          },
+          include: { domain: true }
+        })
+      })
+
+      it('should return a ZodError if the domain is not enabled for the youtube service', async () => {
+        // the validate block matches on services hasEvery / isEmpty, so a domain
+        // registered for apiJourneys alone must reject a youtube mint
+        prismaMock.shortLinkDomain.findFirst.mockResolvedValue(null)
+        prismaMock.shortLinkBlocklistDomain.findFirst.mockResolvedValue(null)
+        const result = await authClient({
+          document: SHORT_LINK_CREATE_MUTATION,
+          variables: {
+            input: {
+              pathname: 'testPath',
+              to: 'https://example.com',
+              hostname: 'example.com',
+              service: 'youtube',
+              sourceRef: 'youtube-channel:UC123'
+            }
+          }
+        })
+        expect(result).toEqual({
+          data: {
+            shortLinkCreate: {
+              message: expect.any(String),
+              fieldErrors: [
+                {
+                  message:
+                    'hostname not valid (short link domain may not exist or may not be setup for this service)',
+                  path: ['input', 'hostname']
+                }
+              ]
+            }
+          }
+        })
+        expect(prismaMock.shortLinkDomain.findFirst).toHaveBeenCalledWith({
+          where: {
+            hostname: 'example.com',
+            OR: [
+              { services: { hasEvery: ['youtube'] } },
+              { services: { isEmpty: true } }
+            ]
+          }
+        })
+        expect(prismaMock.shortLink.create).not.toHaveBeenCalled()
       })
 
       it('should create a shortlink with a custom id', async () => {
@@ -501,6 +623,7 @@ describe('shortLink', () => {
           brightcoveId: null,
           redirectType: null,
           bitrate: null,
+          sourceRef: null,
           service: 'apiJourneys',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -560,6 +683,7 @@ describe('shortLink', () => {
           brightcoveId: null,
           redirectType: null,
           bitrate: null,
+          sourceRef: null,
           service: 'apiJourneys',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -593,7 +717,8 @@ describe('shortLink', () => {
                 pathname: generatedId,
                 to: 'https://example.com',
                 domain: { hostname: 'example.com' },
-                service: 'apiJourneys'
+                service: 'apiJourneys',
+                sourceRef: null
               }
             }
           }
@@ -833,6 +958,7 @@ describe('shortLink', () => {
           brightcoveId: null,
           redirectType: null,
           bitrate: null,
+          sourceRef: null,
           service: 'apiJourneys',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -1010,6 +1136,7 @@ describe('shortLink', () => {
           brightcoveId: null,
           redirectType: null,
           bitrate: null,
+          sourceRef: null,
           service: 'apiJourneys',
           createdAt: new Date(),
           updatedAt: new Date(),

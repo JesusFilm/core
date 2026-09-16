@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
@@ -286,24 +287,25 @@ describe('DuplicateJourneys', () => {
       }
     }))
 
-    const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
-      request: {
-        query: UPDATE_LAST_ACTIVE_TEAM_ID,
-        variables: {
-          input: {
-            lastActiveTeamId: 'teamId'
+    const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
+      {
+        request: {
+          query: UPDATE_LAST_ACTIVE_TEAM_ID,
+          variables: {
+            input: {
+              lastActiveTeamId: 'teamId'
+            }
           }
-        }
-      },
-      result: vi.fn(() => ({
-        data: {
-          journeyProfileUpdate: {
-            __typename: 'JourneyProfile',
-            id: 'teamId'
+        },
+        result: vi.fn(() => ({
+          data: {
+            journeyProfileUpdate: {
+              __typename: 'JourneyProfile',
+              id: 'teamId'
+            }
           }
-        }
-      })) as MockedResponse<UpdateLastActiveTeamId>['result']
-    }
+        })) as MockLink.MockedResponse<UpdateLastActiveTeamId>['result']
+      }
 
     const mockLanguage = {
       request: {
@@ -476,24 +478,25 @@ describe('DuplicateJourneys', () => {
       }
     }))
 
-    const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
-      request: {
-        query: UPDATE_LAST_ACTIVE_TEAM_ID,
-        variables: {
-          input: {
-            lastActiveTeamId: 'team1.id'
+    const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
+      {
+        request: {
+          query: UPDATE_LAST_ACTIVE_TEAM_ID,
+          variables: {
+            input: {
+              lastActiveTeamId: 'team1.id'
+            }
           }
-        }
-      },
-      result: vi.fn(() => ({
-        data: {
-          journeyProfileUpdate: {
-            __typename: 'JourneyProfile',
-            id: 'team1.id'
+        },
+        result: vi.fn(() => ({
+          data: {
+            journeyProfileUpdate: {
+              __typename: 'JourneyProfile',
+              id: 'team1.id'
+            }
           }
-        }
-      })) as MockedResponse<UpdateLastActiveTeamId>['result']
-    }
+        })) as MockLink.MockedResponse<UpdateLastActiveTeamId>['result']
+      }
 
     const mockLanguage = {
       request: {

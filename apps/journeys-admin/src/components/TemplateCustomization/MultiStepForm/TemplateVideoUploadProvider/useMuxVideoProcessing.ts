@@ -1,4 +1,4 @@
-import { useLazyQuery, useMutation } from '@apollo/client'
+import { useLazyQuery, useMutation } from '@apollo/client/react'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { RefObject, useCallback, useRef } from 'react'
@@ -10,6 +10,8 @@ import {
   IdType,
   VideoBlockSource
 } from '../../../../../__generated__/globalTypes'
+import { TemplateVideoUploadGetMyMuxVideoQuery } from '../../../../../__generated__/TemplateVideoUploadGetMyMuxVideoQuery'
+import { VideoBlockUpdate } from '../../../../../__generated__/VideoBlockUpdate'
 import { VIDEO_BLOCK_UPDATE } from '../../../Editor/Slider/Settings/CanvasDetails/Properties/blocks/Video/Options/VideoOptions'
 
 import { GET_MY_MUX_VIDEO_QUERY } from './graphql'
@@ -48,10 +50,13 @@ export function useMuxVideoProcessing({
   const pollingTimeoutsRef = useRef<Map<string, NodeJS.Timeout>>(new Map())
   const retryCountRef = useRef<Map<string, number>>(new Map())
 
-  const [getMyMuxVideo] = useLazyQuery(GET_MY_MUX_VIDEO_QUERY, {
-    fetchPolicy: 'network-only'
-  })
-  const [videoBlockUpdate] = useMutation(VIDEO_BLOCK_UPDATE)
+  const [getMyMuxVideo] = useLazyQuery<TemplateVideoUploadGetMyMuxVideoQuery>(
+    GET_MY_MUX_VIDEO_QUERY,
+    {
+      fetchPolicy: 'network-only'
+    }
+  )
+  const [videoBlockUpdate] = useMutation<VideoBlockUpdate>(VIDEO_BLOCK_UPDATE)
 
   /**
    * Cancels the pending polling timeout and resets the retry counter for a given block.

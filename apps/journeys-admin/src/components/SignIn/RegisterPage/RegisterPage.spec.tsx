@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { FirebaseError } from 'firebase/app'
 import {
@@ -160,7 +161,7 @@ describe('PasswordPage', () => {
     } as unknown as UserCredential)
     mockUseRouter.mockReturnValue(routerWithRedirect)
 
-    const journeyPublishMock: MockedResponse<
+    const journeyPublishMock: MockLink.MockedResponse<
       JourneyPublish,
       JourneyPublishVariables
     > = {
@@ -175,7 +176,10 @@ describe('PasswordPage', () => {
             id: 'journey-123'
           }
         }
-      })) as MockedResponse<JourneyPublish, JourneyPublishVariables>['result']
+      })) as MockLink.MockedResponse<
+        JourneyPublish,
+        JourneyPublishVariables
+      >['result']
     }
 
     render(
@@ -205,7 +209,10 @@ describe('PasswordPage', () => {
     })
 
     mockGetFirebaseAuth.mockImplementation(
-      () => ({ currentUser: null }) as ReturnType<typeof getFirebaseAuth>
+      () =>
+        ({
+          currentUser: null
+        }) as ReturnType<typeof getFirebaseAuth>
     )
   })
 
@@ -296,7 +303,10 @@ describe('PasswordPage', () => {
     })
 
     mockGetFirebaseAuth.mockImplementation(
-      () => ({ currentUser: null }) as ReturnType<typeof getFirebaseAuth>
+      () =>
+        ({
+          currentUser: null
+        }) as ReturnType<typeof getFirebaseAuth>
     )
   })
 

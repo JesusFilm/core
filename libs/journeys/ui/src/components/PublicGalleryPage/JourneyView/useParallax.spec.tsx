@@ -74,7 +74,7 @@ describe('useParallax', () => {
       x: 0,
       y: 100,
       toJSON: () => ({})
-    } as DOMRect)
+    })
     window.dispatchEvent(new Event('scroll'))
     expect(probe.style.transform).toMatch(/^translateY\(-?\d+(\.\d+)?px\)$/)
   })
@@ -98,7 +98,7 @@ describe('useParallax', () => {
       x: 0,
       y: 100,
       toJSON: () => ({})
-    } as DOMRect)
+    })
     window.dispatchEvent(new Event('scroll'))
     expect(probe.style.transform).toBe('')
   })
@@ -126,7 +126,7 @@ describe('useParallax', () => {
       x: 0,
       y: 2000,
       toJSON: () => ({})
-    } as DOMRect)
+    })
     window.dispatchEvent(new Event('scroll'))
     expect(probe.style.transform).toBe('translateY(999px)')
   })

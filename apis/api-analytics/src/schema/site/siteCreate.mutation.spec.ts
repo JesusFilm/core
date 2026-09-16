@@ -9,7 +9,9 @@ import { fixedDate } from '../../../test/timers'
 
 vi.mock('short-unique-id', () => ({
   __esModule: true,
-  default: vi.fn().mockImplementation(() => ({ rnd: () => 'test-slug' }))
+  default: vi.fn(function () {
+    return { rnd: () => 'test-slug' }
+  })
 }))
 
 const SITE_CREATE_MUTATION = graphql(`

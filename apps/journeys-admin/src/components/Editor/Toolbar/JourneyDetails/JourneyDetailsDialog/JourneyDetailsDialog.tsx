@@ -1,4 +1,4 @@
-import { ApolloError } from '@apollo/client'
+import { LinkError } from '@apollo/client/errors'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
@@ -100,17 +100,15 @@ export function JourneyDetailsDialog({
         }
       },
       onError(error) {
-        if (error instanceof ApolloError) {
-          if (error.networkError != null) {
-            enqueueSnackbar(
-              t('Journey details update failed. Reload the page or try again.'),
-              {
-                variant: 'error',
-                preventDuplicate: true
-              }
-            )
-            return
-          }
+        if (LinkError.is(error)) {
+          enqueueSnackbar(
+            t('Journey details update failed. Reload the page or try again.'),
+            {
+              variant: 'error',
+              preventDuplicate: true
+            }
+          )
+          return
         }
         if (error instanceof Error) {
           enqueueSnackbar(error.message, {

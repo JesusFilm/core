@@ -1,1 +1,0 @@
-export { BibleCitations } from './BibleCitations'

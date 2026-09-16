@@ -20,12 +20,14 @@ vi.mock('./dataExport/service', () => ({
 
 // Mock Queue
 vi.mock('bullmq', () => ({
-  Queue: vi.fn().mockImplementation(() => ({
-    add: vi
-      .fn()
-      .mockResolvedValue({ id: 'test-id', getState: () => 'waiting' }),
-    getJobs: vi.fn().mockResolvedValue([])
-  })),
+  Queue: vi.fn(function () {
+    return {
+      add: vi
+        .fn()
+        .mockResolvedValue({ id: 'test-id', getState: () => 'waiting' }),
+      getJobs: vi.fn().mockResolvedValue([])
+    }
+  }),
   Worker: vi.fn()
 }))
 

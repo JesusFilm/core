@@ -346,10 +346,13 @@ export class Publisher {
   }
 
   async verifyActiveTabShowsEmptyMessage() {
+    // exact: true pins the casing. Without it Playwright matches the accessible
+    // name case-insensitively, so 'no templates TO DISPLAY' would also pass and
+    // a casing regression would go undetected (NES-1876).
     await expect(
-      this.page.locator('div[aria-labelledby*="active-status-panel-tab"] h6', {
-        hasText: 'No Templates to display.'
-      })
+      this.page
+        .getByRole('tabpanel', { name: 'Active' })
+        .getByRole('heading', { name: 'No Templates to display.', exact: true })
     ).toBeVisible()
   }
 
@@ -391,10 +394,21 @@ export class Publisher {
   }
 
   async verifyEmptyMessageInArchivedTab() {
+    const archivedTabPanel = this.page.getByRole('tabpanel', {
+      name: 'Archived'
+    })
+    // exact: true pins the casing — see verifyActiveTabShowsEmptyMessage.
     await expect(
-      this.page.locator('div[id*="archived-status-panel-tabpanel"] h6', {
-        hasText: 'No archived Templates.'
+      archivedTabPanel.getByRole('heading', {
+        name: 'No archived Templates.',
+        exact: true
       })
+    ).toBeVisible()
+    await expect(
+      archivedTabPanel.getByText(
+        'Archived Templates are delisted from the Template Library.',
+        { exact: true }
+      )
     ).toBeVisible()
   }
 
@@ -458,15 +472,26 @@ export class Publisher {
   }
 
   async verifyAllTemplateAreDeletedFromTrashTab() {
+    // The tab is labelled 'Trash', not 'Trashed' — a tab panel takes its
+    // accessible name from the tab that labels it.
+    const trashedTabPanel = this.page.getByRole('tabpanel', { name: 'Trash' })
     await expect(
-      this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+      trashedTabPanel.locator(
+        'div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
       )
     ).toHaveCount(0)
+    // exact: true pins the casing — see verifyActiveTabShowsEmptyMessage.
     await expect(
-      this.page.locator('div[id*="trashed-status-panel-tabpanel"] h6', {
-        hasText: 'Your trashed Templates will appear here.'
+      trashedTabPanel.getByRole('heading', {
+        name: 'Your trashed Templates will appear here.',
+        exact: true
       })
+    ).toBeVisible()
+    await expect(
+      trashedTabPanel.getByText(
+        'Trashed Templates are moved here for up to 40 days.',
+        { exact: true }
+      )
     ).toBeVisible()
   }
 

@@ -98,7 +98,7 @@ function setChatState(
     setMessages: mockSetMessages,
     clearError: mockClearError,
     ...overrides
-  } as unknown as ReturnType<typeof useChat>)
+  })
 }
 
 function codedError(code: string): Error {
