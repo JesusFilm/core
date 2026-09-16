@@ -376,7 +376,12 @@ function buildWatchUrl(
   variantSlug: string
 ): string | undefined {
   const watchUrl = process.env.WATCH_URL
-  if (watchUrl == null || watchUrl === '' || rowSlug == null || rowSlug === '') {
+  if (
+    watchUrl == null ||
+    watchUrl === '' ||
+    rowSlug == null ||
+    rowSlug === ''
+  ) {
     return undefined
   }
 
