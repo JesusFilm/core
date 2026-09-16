@@ -20,6 +20,7 @@ interface PlaylistItem {
       id: string
       name: {
         value: string
+        primary: boolean
       }[]
     }
     video: {
