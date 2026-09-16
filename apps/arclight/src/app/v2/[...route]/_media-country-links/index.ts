@@ -89,10 +89,9 @@ mediaCountryLinks.openapi(route, async (c) => {
   const cacheKey = generateCacheKey(['media-country-links', ...ids])
 
   const response = await getWithStaleCacheForRequest(c, cacheKey, async () => {
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_COUNTRIES_LANGUAGES>
-    >({
-      query: GET_COUNTRIES_LANGUAGES
+    const { data } = await getApolloClient().query({
+      query: GET_COUNTRIES_LANGUAGES,
+      errorPolicy: 'none'
     })
 
     const mediaCountriesLinks = [...data.countries]

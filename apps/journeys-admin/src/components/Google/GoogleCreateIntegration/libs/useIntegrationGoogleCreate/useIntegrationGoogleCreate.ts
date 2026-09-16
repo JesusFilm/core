@@ -1,7 +1,9 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import { IntegrationGoogleCreate } from '../../../../../../__generated__/IntegrationGoogleCreate'
 import { useAuth } from '../../../../../libs/auth'
 
 export const INTEGRATION_GOOGLE_CREATE = gql`
@@ -36,7 +38,9 @@ export function useIntegrationGoogleCreate({
   const router = useRouter()
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
-  const [integrationGoogleCreate] = useMutation(INTEGRATION_GOOGLE_CREATE)
+  const [integrationGoogleCreate] = useMutation<IntegrationGoogleCreate>(
+    INTEGRATION_GOOGLE_CREATE
+  )
   const hasAttemptedExchangeRef = useRef(false)
   const onSuccessRef = useRef(onSuccess)
   const onErrorRef = useRef(onError)

@@ -1,4 +1,5 @@
-import { NetworkStatus, gql, useQuery } from '@apollo/client'
+import { NetworkStatus, gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import CircularProgress from '@mui/material/CircularProgress'

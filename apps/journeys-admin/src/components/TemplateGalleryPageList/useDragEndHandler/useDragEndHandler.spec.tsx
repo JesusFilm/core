@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { DragEndEvent } from '@dnd-kit/core'
 import { act, renderHook, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -86,7 +87,7 @@ function buildIndexes({ collections, journeys }: Harness): {
 }
 
 function wrapperWithMocks(
-  mocks: ReadonlyArray<MockedResponse>,
+  mocks: ReadonlyArray<MockLink.MockedResponse>,
   cache: InMemoryCache = new InMemoryCache()
 ): ({ children }: { children: ReactNode }) => JSX.Element {
   return function Wrapper({ children }) {

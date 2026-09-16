@@ -1,4 +1,4 @@
-import { useSuspenseQuery as apolloClient_useSuspenseQuery } from '@apollo/client'
+import { useSuspenseQuery as apolloClient_useSuspenseQuery } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import { render, screen } from '@testing-library/react'
 import { type Mock } from 'vitest'
@@ -17,8 +17,8 @@ vi.mock('next/navigation', () => ({
   useSelectedLayoutSegment: () => mockSegment()
 }))
 
-vi.mock('@apollo/client', async () => {
-  const original = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const original = await vi.importActual('@apollo/client/react')
   return {
     ...original,
     useSuspenseQuery: vi.fn()

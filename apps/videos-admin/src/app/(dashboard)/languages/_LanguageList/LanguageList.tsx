@@ -1,6 +1,6 @@
 'use client'
-
-import { gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import SearchIcon from '@mui/icons-material/Search'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'

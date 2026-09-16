@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import ListItemButton from '@mui/material/ListItemButton'
