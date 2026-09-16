@@ -6,8 +6,17 @@ import { prismaMock } from '../../../test/prismaMock'
 import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
 import { handleParentVariantCreation } from '../videoVariant/videoVariant'
 
+import { executeVideoPublishChildren } from './videoPublishChildren.mutation'
+
 vi.mock('../../workers/videoAlgoliaSync', () => ({
-  enqueueVideoAlgoliaSync: vi.fn()
+  enqueueVideoAlgoliaSync: vi.fn(),
+  videoOnlyScope: {
+    syncVideoRecord: true,
+    syncAllVariants: false,
+    syncPublishedFlag: false,
+    dirtyVariantIds: [],
+    deletedVariantIds: []
+  }
 }))
 
 vi.mock('../videoVariant/videoVariant', async (importOriginal) => ({
@@ -1094,6 +1103,299 @@ describe('videoPublishChildren', () => {
         }
       ])
       expect(prismaMock.$transaction).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('grandparent cascade race safety', () => {
+    // A small in-memory video graph wired up behind the prisma mock, so
+    // these tests drive the actual, unmocked availableLanguages cascade
+    // across several real videos instead of asserting against canned
+    // responses. `availableLanguages` is a *stored* value here: every write
+    // the cascade makes lands back in the store, so a later read in the
+    // same request observes the just-written value, exactly as it would
+    // against real rows.
+    interface HierarchyVideo {
+      label: string
+      published: boolean
+      availableLanguages: string[]
+      childIds: string[]
+      variants: Array<{ id: string; languageId: string; published: boolean }>
+    }
+
+    interface Hierarchy {
+      store: Record<string, HierarchyVideo>
+      /** ids written by `video.update`, in the order the writes committed */
+      writes: string[]
+      /** ids passed to `calculateAvailableLanguages`, in read order */
+      recomputes: string[]
+    }
+
+    // `deferWriteFor` pushes that video's `video.update` onto the next
+    // macrotask (a real `setTimeout`, not a manually released gate). Any
+    // read of its availableLanguages issued before that write lands - what
+    // an unordered `Promise.all` over children and parent together would
+    // do - observes the stale, pre-publish value and produces a wrong
+    // parent/grandparent result.
+    function installHierarchy(
+      initial: Record<string, HierarchyVideo>,
+      { deferWriteFor }: { deferWriteFor?: string } = {}
+    ): Hierarchy {
+      const store: Record<string, HierarchyVideo> = structuredClone(initial)
+      const writes: string[] = []
+      const recomputes: string[] = []
+
+      ;(prismaMock.video.findUnique as any).mockImplementation(
+        async ({ where, select }: any) => {
+          const id = where?.id
+          const video = id == null ? null : store[id]
+          if (video == null) return null
+
+          // getVideoPublishParent's shape: a plain id+published children
+          // select, with no `where` narrowing the children.
+          if (
+            select?.children?.select?.id != null &&
+            select?.children?.where == null
+          ) {
+            return {
+              id,
+              label: video.label,
+              published: video.published,
+              publishedAt: new Date(),
+              children: video.childIds.map((childId) => ({
+                id: childId,
+                published: store[childId]?.published ?? false
+              }))
+            }
+          }
+
+          // calculateAvailableLanguages' shape: published-only variants and
+          // published-only children, alongside the row's *stored*
+          // availableLanguages - the "before" half of the cascade's
+          // change-detection comparison. Omitting availableLanguages here
+          // would hand the cascade `before === undefined`, which never
+          // compares equal to anything, silently disabling the comparison
+          // this suite exists to exercise.
+          if (select?.children?.where != null) {
+            recomputes.push(id)
+            return {
+              label: video.label,
+              availableLanguages: video.availableLanguages,
+              variants: video.variants
+                .filter((variant) => variant.published)
+                .map((variant) => ({ languageId: variant.languageId })),
+              children: video.childIds
+                .filter((childId) => store[childId]?.published === true)
+                .map((childId) => ({
+                  availableLanguages: store[childId].availableLanguages
+                }))
+            }
+          }
+
+          // videoCacheReset's `{ slug: true }` shape - it handles a null row
+          // safely, and cache behaviour is not what these tests assert on.
+          return null
+        }
+      )
+      ;(prismaMock.video.update as any).mockImplementation(
+        async ({ where, data }: any) => {
+          const id = where?.id
+          const next = data?.availableLanguages?.set
+          if (id === deferWriteFor) {
+            await new Promise((resolve) => setTimeout(resolve, 0))
+          }
+          if (id != null && next != null && store[id] != null) {
+            store[id].availableLanguages = next
+            writes.push(id)
+          }
+          return {}
+        }
+      )
+      ;(prismaMock.video.findMany as any).mockImplementation(
+        async ({ where }: any) => {
+          // findContainerParentIds - who lists this video as a child?
+          const childId = where?.children?.some?.id
+          if (childId != null) {
+            const labels: string[] = where?.label?.in ?? []
+            return Object.keys(store)
+              .filter(
+                (id) =>
+                  store[id].childIds.includes(childId) &&
+                  labels.includes(store[id].label)
+              )
+              .map((id) => ({ id }))
+          }
+
+          // buildVideoPublishPlan's validation query. Every candidate is
+          // complete - these tests exercise the language cascade, not
+          // publish validation.
+          const candidateIds: string[] = where?.id?.in ?? []
+          return candidateIds
+            .filter((id) => store[id] != null)
+            .map((id) => ({
+              id,
+              label: store[id].label,
+              title: [{ value: `${id} title` }],
+              snippet: [{ value: `${id} snippet` }],
+              description: [{ value: `${id} description` }],
+              imageAlt: [{ value: `${id} image alt` }],
+              images: [{ id: `${id}-banner` }],
+              variants: [{ id: `${id}-variant` }]
+            }))
+        }
+      )
+      ;(prismaMock.videoVariant.findMany as any).mockImplementation(
+        async ({ where }: any) => {
+          const videoIds: string[] = where?.videoId?.in ?? []
+          return videoIds.flatMap((videoId) =>
+            (store[videoId]?.variants ?? [])
+              .filter((variant) => !variant.published)
+              .map((variant) => ({ id: variant.id, videoId }))
+          )
+        }
+      )
+      ;(prismaMock.videoVariant.updateMany as any).mockImplementation(
+        async ({ where }: any) => {
+          const ids: string[] = where?.id?.in ?? []
+          let count = 0
+          for (const video of Object.values(store)) {
+            for (const variant of video.variants) {
+              if (ids.includes(variant.id)) {
+                variant.published = true
+                count++
+              }
+            }
+          }
+          return { count }
+        }
+      )
+
+      return { store, writes, recomputes }
+    }
+
+    // Exercises a real three-level hierarchy (grandparent -> parent ->
+    // child) through the actual, unmocked availableLanguages cascade, to
+    // catch two regressions at once:
+    //  - the cascade stopping at the immediate parent instead of reaching
+    //    the grandparent (the single-hop bug this mutation must not
+    //    reintroduce), and
+    //  - a parent recompute racing a same-request child recompute and
+    //    reading the child's stale, pre-write value instead of its
+    //    just-committed one.
+    it('propagates a child variant published in the same request through the parent to the grandparent, without racing the child write', async () => {
+      const { store, writes, recomputes } = installHierarchy(
+        {
+          grandparent: {
+            label: 'collection',
+            published: true,
+            availableLanguages: ['529'],
+            childIds: ['parent'],
+            variants: []
+          },
+          parent: {
+            label: 'featureFilm',
+            published: true,
+            availableLanguages: ['529'],
+            childIds: ['child'],
+            variants: []
+          },
+          child: {
+            label: 'featureFilm',
+            published: true,
+            availableLanguages: ['529'],
+            childIds: [],
+            variants: [
+              { id: 'child-v1', languageId: '529', published: true },
+              { id: 'child-v2', languageId: '21028', published: false }
+            ]
+          }
+        },
+        { deferWriteFor: 'child' }
+      )
+
+      await executeVideoPublishChildren(
+        'parent',
+        'childrenVideosAndVariants',
+        false
+      )
+
+      // Every level ends up holding the newly published language, not just
+      // the child and its immediate parent.
+      expect(store.child.availableLanguages).toEqual(['529', '21028'])
+      expect(store.parent.availableLanguages).toEqual(['529', '21028'])
+      expect(store.grandparent.availableLanguages).toEqual(['529', '21028'])
+
+      // The child's write committed before the parent was even recomputed -
+      // the ordering guarantee, asserted directly rather than inferred from
+      // the values above.
+      expect(writes.indexOf('child')).toBeGreaterThanOrEqual(0)
+      expect(writes.indexOf('child')).toBeLessThan(
+        recomputes.lastIndexOf('parent')
+      )
+      expect(writes).toEqual(['child', 'parent', 'grandparent'])
+    })
+
+    it('stops cascading above an ancestor whose recomputed value is unchanged', async () => {
+      // root -> grandparent -> {parent -> child, uncle}. `uncle` is an
+      // already-published sibling that already carries both languages, so
+      // grandparent's stored value is *already* correct and recomputing it
+      // changes nothing - there is nothing above it that this publish could
+      // affect, and `root` must never be recomputed or written.
+      const { store, writes, recomputes } = installHierarchy({
+        root: {
+          label: 'collection',
+          published: true,
+          availableLanguages: ['529', '21028'],
+          childIds: ['grandparent'],
+          variants: []
+        },
+        grandparent: {
+          label: 'collection',
+          published: true,
+          availableLanguages: ['529', '21028'],
+          childIds: ['parent', 'uncle'],
+          variants: []
+        },
+        uncle: {
+          label: 'featureFilm',
+          published: true,
+          availableLanguages: ['529', '21028'],
+          childIds: [],
+          variants: []
+        },
+        parent: {
+          label: 'featureFilm',
+          published: true,
+          availableLanguages: ['529'],
+          childIds: ['child'],
+          variants: []
+        },
+        child: {
+          label: 'featureFilm',
+          published: true,
+          availableLanguages: ['529'],
+          childIds: [],
+          variants: [
+            { id: 'child-v1', languageId: '529', published: true },
+            { id: 'child-v2', languageId: '21028', published: false }
+          ]
+        }
+      })
+
+      await executeVideoPublishChildren(
+        'parent',
+        'childrenVideosAndVariants',
+        false
+      )
+
+      // The levels that genuinely changed still got there.
+      expect(store.child.availableLanguages).toEqual(['529', '21028'])
+      expect(store.parent.availableLanguages).toEqual(['529', '21028'])
+
+      // grandparent is recomputed and written once - we can't know it is
+      // unaffected until after computing it - but the walk stops there.
+      expect(writes).toEqual(['child', 'parent', 'grandparent'])
+      expect(recomputes).not.toContain('root')
+      expect(store.root.availableLanguages).toEqual(['529', '21028'])
     })
   })
 })
