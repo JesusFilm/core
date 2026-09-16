@@ -9,7 +9,6 @@ import {
 
 import { reconcileParentVariants } from './reconcileParentVariants'
 import { reconcileReasonSpecificVariant } from './reconcileReasonSpecificVariant'
-import { videoVariantHasUsableMedia } from './videoVariantHasUsableMedia'
 import {
   ProcessingStage,
   ProcessingStages,
@@ -21,6 +20,7 @@ import {
   previousAttempts
 } from './reconciliationStages'
 import type { VideoVariantReconciliationReason } from './requestVideoVariantReconciliation'
+import { videoVariantHasUsableMedia } from './videoVariantHasUsableMedia'
 
 export type ReconciliationRecord = {
   reason: VideoVariantReconciliationReason
@@ -87,8 +87,7 @@ export async function reconcileVideoVariantReconciliation(
   })
   if (reasonSpecificResult != null) return reasonSpecificResult
 
-  const hasUsableMedia =
-    variant != null && videoVariantHasUsableMedia(variant)
+  const hasUsableMedia = variant != null && videoVariantHasUsableMedia(variant)
   if (!hasUsableMedia) {
     const muxTimedOut =
       Date.now() - reconciliation.createdAt.getTime() >= 2 * 60 * 60 * 1000
