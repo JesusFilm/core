@@ -38,6 +38,8 @@ import { VideosFilter } from './inputs/videosFilter'
 import { VideoUpdateInput } from './inputs/videoUpdate'
 import {
   findContainerParentIds,
+  sameLanguageSet,
+  updateParentCollectionLanguages,
   updateVideoAvailableLanguages
 } from './lib/updateAvailableLanguages'
 import { videosFilter } from './lib/videosFilter'
@@ -862,12 +864,12 @@ builder.mutationFields((t) => ({
         throw e
       }
 
-      // Known gap (not fixed here, needs a product/design decision): this
-      // fires reconciliation for every child added to OR removed from
-      // childIds, but reconcileParentVariants only ever ADDS a language to
-      // the parent's availableLanguages — it never removes one. So removing
-      // the last child providing a given language leaves that language
-      // stale on the parent indefinitely. See PR #9386 discussion.
+      // This fires reconciliation for every child added to OR removed from
+      // childIds. reconcileParentVariants only ever ADDS a language to the
+      // parent's availableLanguages (never removes one) — but availableLanguages
+      // correctness after removal doesn't depend on that: the explicit
+      // recompute + cascade below fully recalculates this container from its
+      // current source data regardless of what reconciliation does.
       if (input.childIds !== undefined && affectedChildIds.length > 0) {
         const affectedVariants =
           (await prisma.videoVariant.findMany({
@@ -895,6 +897,30 @@ builder.mutationFields((t) => ({
           } catch (error) {
             console.error('Video variant reconciliation request error:', error)
           }
+        }
+      }
+
+      // The children relation was just severed/extended above. Recompute
+      // this container's own availableLanguages from its current source
+      // data (own published variants ∪ live children's current values)
+      // rather than incrementally patching the old value — this is what
+      // makes removal symmetric with addition: a language uniquely provided
+      // by a just-removed child is dropped here, not left stale because the
+      // old parent is no longer reachable through the severed relation. If
+      // that recompute actually changed this container's value, cascade the
+      // change upward through its own parents to the root of the container
+      // hierarchy.
+      if (input.childIds !== undefined) {
+        try {
+          const { before, after } = await updateVideoAvailableLanguages(
+            video.id,
+            { skipCache: true, skipAlgolia: true }
+          )
+          if (!sameLanguageSet(before, after)) {
+            await updateParentCollectionLanguages(video.id)
+          }
+        } catch (error) {
+          console.error('availableLanguages recompute error:', error)
         }
       }
 
