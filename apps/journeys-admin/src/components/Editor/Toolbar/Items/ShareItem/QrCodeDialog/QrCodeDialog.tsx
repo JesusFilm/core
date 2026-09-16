@@ -1,4 +1,5 @@
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client/react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
@@ -97,6 +98,9 @@ export function QrCodeDialog({
 
   async function handleGenerateQrCode(): Promise<void> {
     if (journey?.id == null || journey?.team?.id == null) return
+    // Apollo Client 4 rejects the mutate promise on failure even when
+    // `onError` is supplied. `onError` already reports the failure, so
+    // swallow the rejection rather than let it escape unhandled.
     await qrCodeCreate({
       variables: {
         input: {
@@ -129,7 +133,7 @@ export function QrCodeDialog({
           preventDuplicate: true
         })
       }
-    })
+    }).catch(() => undefined)
   }
 
   function getShortLink(qrCode?: QrCode): string | undefined {

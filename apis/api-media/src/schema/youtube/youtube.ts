@@ -140,13 +140,11 @@ builder.queryFields((t) => ({
         const result = await apollo.query({
           query: GET_LANGUAGES_BY_BCP47,
           variables: {
-            select: {
-              id: true
-            },
             where: {
               bcp47
             }
-          }
+          },
+          errorPolicy: 'none'
         })
         data = result.data
       } catch {

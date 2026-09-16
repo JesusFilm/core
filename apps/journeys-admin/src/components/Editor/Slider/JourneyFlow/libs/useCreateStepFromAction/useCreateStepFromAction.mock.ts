@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
@@ -91,7 +91,7 @@ export const mockNewCardBlock: TreeBlock<CardBlock> = {
   expandChatByDefault: null
 }
 
-export const mockStepBlockCreateFromAction: MockedResponse<
+export const mockStepBlockCreateFromAction: MockLink.MockedResponse<
   StepBlockCreateFromAction,
   StepBlockCreateFromActionVariables
 > = {
@@ -155,7 +155,7 @@ export const mockStepBlockCreateFromAction: MockedResponse<
   }
 }
 
-export const mockStepBlockDeleteFromAction: MockedResponse<
+export const mockStepBlockDeleteFromAction: MockLink.MockedResponse<
   StepBlockDeleteFromAction,
   StepBlockDeleteFromActionVariables
 > = {
@@ -189,7 +189,7 @@ export const mockStepBlockDeleteFromAction: MockedResponse<
   }
 }
 
-export const stepBlockDeleteFromActionWithoutAction: MockedResponse<
+export const stepBlockDeleteFromActionWithoutAction: MockLink.MockedResponse<
   StepBlockDeleteFromActionWithoutAction,
   StepBlockDeleteFromActionWithoutActionVariables
 > = {
@@ -213,7 +213,7 @@ export const stepBlockDeleteFromActionWithoutAction: MockedResponse<
   }
 }
 
-export const mockBlockRestoreFromAction: MockedResponse<
+export const mockBlockRestoreFromAction: MockLink.MockedResponse<
   StepBlockRestoreFromAction,
   StepBlockRestoreFromActionVariables
 > = {

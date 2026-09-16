@@ -1,5 +1,6 @@
 import { ReadableStream, TransformStream, WritableStream } from 'stream/web'
 
+import { MockLink } from '@apollo/client/testing'
 import {
   toBeChecked,
   toBeDisabled,
@@ -35,6 +36,11 @@ import {
 } from '@testing-library/jest-dom/matchers'
 import { configure } from '@testing-library/react'
 import { expect } from 'vitest'
+
+// Apollo Client 4 gives unspecified mocks a "realistic" random delay of
+// 20-50ms. The suite was written against v3's immediate responses, so restore
+// that default; individual mocks can still opt into a `delay`.
+MockLink.defaultOptions = { delay: 0 }
 
 expect.extend({
   toBeChecked,

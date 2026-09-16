@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
@@ -10,7 +10,7 @@ import { mockMenuStep } from '../../components/Editor/Slider/Settings/CanvasDeta
 
 import { MENU_BLOCK_DELETE } from './useMenuBlockDeleteMutation'
 
-export const mockUseMenuBlockDeleteMutation: MockedResponse<
+export const mockUseMenuBlockDeleteMutation: MockLink.MockedResponse<
   MenuBlockDelete,
   MenuBlockDeleteVariables
 > = {
