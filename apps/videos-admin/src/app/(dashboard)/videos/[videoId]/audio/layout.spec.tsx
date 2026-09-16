@@ -10,7 +10,6 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type MockedFunction } from 'vitest'
 
-import { type VideoVariantUploadRow } from './_IncompleteVideoVariantUploadItems'
 import ClientLayout from './layout'
 
 // Mock useQuery and useMutation hooks
@@ -1287,37 +1286,10 @@ describe('ClientLayout', () => {
     })
   })
 
-  // layout.tsx keeps its query documents module-private, so these helpers are
-  // typed against the row shapes the component consumes rather than against
-  // ResultOf<typeof DOCUMENT>. That keeps the fixtures type-checked without
-  // widening layout.tsx's exports just to serve the tests.
-  interface AdminVideoVariantRow {
-    id: string
-    published: boolean
-    language: {
-      id: string
-      slug: string
-      name: Array<{ value: string }>
-    }
-  }
-
-  interface UploadsQueryData {
-    videoVariantUploads: VideoVariantUploadRow[]
-  }
-
-  interface AdminVideoQueryData {
-    adminVideo: {
-      id: string
-      slug: string
-      published: boolean
-      variants: AdminVideoVariantRow[]
-    }
-  }
-
-  function buildQueryResult<TData>(
-    data: TData,
-    overrides: Partial<QueryResult<TData, OperationVariables>> = {}
-  ): QueryResult<TData, OperationVariables> {
+  function buildQueryResult(
+    data: unknown,
+    overrides: Partial<QueryResult<any, OperationVariables>> = {}
+  ): QueryResult<any, OperationVariables> {
     return {
       data,
       loading: false,
@@ -1336,30 +1308,25 @@ describe('ClientLayout', () => {
       reobserve: vi.fn(),
       previousData: undefined,
       ...overrides
-    } as QueryResult<TData, OperationVariables>
+    } as QueryResult<any, OperationVariables>
   }
 
   function mockUploadQueries(
-    getUploads: () => VideoVariantUploadRow[],
-    uploadOverrides: Partial<
-      QueryResult<UploadsQueryData, OperationVariables>
-    > = {},
-    variants: AdminVideoVariantRow[] = mockVideoVariants
+    getUploads: () => any[],
+    uploadOverrides: Partial<QueryResult<any, OperationVariables>> = {},
+    variants: any[] = mockVideoVariants
   ): void {
     const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
 
-    mockedUseQuery.mockImplementation(((
-      _query: unknown,
-      options?: { variables?: OperationVariables }
-    ) => {
+    mockedUseQuery.mockImplementation((_query, options?: any) => {
       if (options?.variables?.input?.statuses != null) {
-        return buildQueryResult<UploadsQueryData>(
+        return buildQueryResult(
           { videoVariantUploads: getUploads() },
           { variables: options.variables, ...uploadOverrides }
         )
       }
 
-      return buildQueryResult<AdminVideoQueryData>({
+      return buildQueryResult({
         adminVideo: {
           id: 'video123',
           slug: 'test-video',
@@ -1367,16 +1334,12 @@ describe('ClientLayout', () => {
           variants
         }
       })
-      // useQuery is generic per document and this single mock has to answer
-      // for two of them, so the widening is confined to this one boundary
-      // instead of being spread across the fixtures above.
-    }) as unknown as typeof useQuery)
+    })
   }
 
   function uploadRow(
-    overrides: Partial<VideoVariantUploadRow> &
-      Pick<VideoVariantUploadRow, 'id' | 'status'>
-  ): VideoVariantUploadRow {
+    overrides: Record<string, unknown>
+  ): Record<string, unknown> {
     return {
       source: 'videos-admin',
       sourceKey: 'source-key',
