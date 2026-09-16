@@ -90,6 +90,24 @@ enum VideoVariantReconciliationStatus {
   failed
 }
 
+// Aggregate health of a Variant's canonical VideoVariantUpload record, derived
+// from its independent stage states (mux, parentSync, downloads, algoliaVideo,
+// algoliaVariant). Distinct from VideoVariantUploadStatus, which tracks a
+// single upload attempt's pipeline position.
+enum VideoVariantProcessingStatus {
+  degraded
+  complete
+  failed
+}
+
+// Distinguishes a canonical VideoVariantUpload record that was promoted from a
+// real upload attempt from one synthesized by the backfill because no
+// unambiguous successful attempt could be linked.
+enum VideoVariantUploadCanonicalSource {
+  upload
+  backfill
+}
+
 enum MuxSubtitleTrackStatus {
   processing
   ready
@@ -314,10 +332,18 @@ model VideoVariantUpload {
   videoVariantId                String?
   videoVariant                  VideoVariant?            @relation(fields: [videoVariantId], references: [id])
   errorMessage                  String?
+  // The following four fields are set only on the one canonical record for a
+  // Variant (see canonicalVideoVariantId). All other VideoVariantUpload rows
+  // for the same Variant are retained, untouched, as attempt history.
+  canonicalVideoVariantId       String?                             @unique
+  canonicalSource               VideoVariantUploadCanonicalSource?
+  processingStatus              VideoVariantProcessingStatus?
+  processingStages              Json?
   createdAt                     DateTime                 @default(now())
   updatedAt                     DateTime                 @default(now()) @updatedAt
 
   @@index(status)
+  @@index(processingStatus)
   @@index([videoId, languageId, edition])
   @@index(r2AssetId)
   @@index(muxVideoId)

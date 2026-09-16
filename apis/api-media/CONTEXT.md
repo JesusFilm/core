@@ -37,7 +37,7 @@ A single downloadable file of a Variant at one Quality (e.g. `sd`, `high`, `dist
 _Avoid_: File, render, asset
 
 **Upload**:
-An in-progress ingestion of new footage that will become a Variant — a source file moving through a status lifecycle (created → processing → ready/error) as it is transcoded. Distinct from the finished Variant it produces.
+An in-progress ingestion of new footage that will become a Variant — a source file moving through a status lifecycle (created → processing → ready/error) as it is transcoded. Distinct from the finished Variant it produces. Every Variant has at most one Upload marked canonical — its durable current processing status (independent Mux/parent-sync/Downloads/Algolia stage tracking, backfilled for Variants with no linkable Upload) — while every other Upload for that Variant remains untouched attempt history.
 _Avoid_: Import, ingest job, upload (as a noun for the finished file)
 
 **Subtitle**:

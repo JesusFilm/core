@@ -270,6 +270,55 @@ DOWNLOAD_SIZE_BACKFILL_RESUME=true nx run api-media:backfill-download-sizes -- -
 - A final summary grouped by provider and outcome (total candidates,
   repairable, applied, already-corrected, skipped, failed) printed to stdout.
 
+## Video Variant Status Backfill Script
+
+Gives every existing `VideoVariant` -- including generated parent Variants --
+exactly one canonical `VideoVariantUpload` status record, so the whole
+catalog can be evaluated for processing health consistently. Independently
+tracks five stages (`mux`, `parentSync`, `downloads`, `algoliaVideo`,
+`algoliaVariant`), each recording state (`pending`, `processing`, `complete`,
+`failed`, `unknown`, or `notApplicable`), attempt count, latest error, and
+last-attempt/last-success timestamps.
+
+Where a Variant already has exactly one unambiguous successful
+(`variantCreated`) `VideoVariantUpload` attempt, that row is promoted to
+canonical in place (`canonicalSource: upload`). Otherwise a synthetic
+canonical row is created (`canonicalSource: backfill`). Existing Upload rows
+are never overwritten beyond adding the canonical/processing fields to the
+one promoted row -- all attempt history is retained.
+
+Generated parent Variants (no media, on a Video with children) get `mux` and
+`downloads` set `notApplicable`; `parentSync` and both Algolia stages remain
+tracked. Algolia indexing has no observable signal anywhere in the media
+database, so `algoliaVideo`/`algoliaVariant` are always recorded `unknown` --
+this script reads Postgres only and never calls Algolia, so it never
+manufactures a success it cannot verify. `mux` and `downloads` are verified
+directly from `MuxVideo.readyToStream` and `VideoVariantDownload` rows.
+
+Defaults to dry-run and processes the full catalog in batches within a
+single run. Idempotent -- a Variant that already has a canonical row (from
+a prior run) is skipped, so rerunning after a full apply performs no further
+writes.
+
+### Usage
+
+```bash
+# Dry run (default) across the full catalog
+nx run api-media:backfill-video-variant-status
+
+# Apply writes
+nx run api-media:backfill-video-variant-status -- --apply
+```
+
+### Output
+
+- A JSONL report at
+  `.cache/api-media/video-variant-status-backfill-report.jsonl` -- one record
+  per Variant with its canonical action, applied processing status, and
+  canonical source.
+- A summary grouped by action (already canonical, promoted existing upload,
+  created synthetic canonical, failed) logged per batch and at the end.
+
 ## Mux Videos Script
 
 The mux videos script processes video variants to create and manage Mux video assets, update HLS URLs, and process downloads. This script performs the same functions as the mux-videos worker but can be run on-demand.
