@@ -1,5 +1,7 @@
-import { NetworkStatus, useSuspenseQuery } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { NetworkStatus } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/client/react'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type MockedFunction } from 'vitest'
 
@@ -7,8 +9,8 @@ import { VideoInformation } from './VideoInformation'
 import { GET_KEYWORDS } from './VideoKeywords'
 
 // Mock useSuspenseQuery hook
-vi.mock('@apollo/client', async () => {
-  const original = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const original = await vi.importActual('@apollo/client/react')
   return {
     ...original,
     useSuspenseQuery: vi.fn()
@@ -38,7 +40,7 @@ const mockKeywordsData = {
   ]
 }
 
-const keywordsMock: MockedResponse = {
+const keywordsMock: MockLink.MockedResponse = {
   request: {
     query: GET_KEYWORDS
   },
@@ -85,6 +87,7 @@ describe('VideoInformation', () => {
       subscribeToMore: vi.fn(),
       client: {} as any,
       error: undefined,
+      dataState: 'complete' as const,
       networkStatus: NetworkStatus.ready,
       refetch: vi.fn().mockResolvedValue({ data: mockVideoData })
     })
@@ -138,6 +141,7 @@ describe('VideoInformation', () => {
       subscribeToMore: vi.fn(),
       client: {} as any,
       error: undefined,
+      dataState: 'complete' as const,
       networkStatus: NetworkStatus.ready,
       refetch: vi.fn().mockResolvedValue({ data: incompleteVideoData })
     })
@@ -204,6 +208,7 @@ describe('VideoInformation', () => {
       subscribeToMore: vi.fn(),
       client: {} as any,
       error: undefined,
+      dataState: 'complete' as const,
       networkStatus: NetworkStatus.ready,
       refetch: vi.fn().mockResolvedValue({ data: collectionVideoData })
     })
@@ -277,6 +282,7 @@ describe('VideoInformation', () => {
       subscribeToMore: vi.fn(),
       client: {} as any,
       error: undefined,
+      dataState: 'complete' as const,
       networkStatus: NetworkStatus.ready,
       refetch: mockRefetch
     })

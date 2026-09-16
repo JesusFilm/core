@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen } from '@testing-library/react'
 
 import '../../../../../../test/i18n'
@@ -35,8 +35,8 @@ vi.mock('../../../../MuxVideoUploadProvider', () => ({
   })
 }))
 
-vi.mock('@apollo/client', async () => {
-  const actual = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const actual = await vi.importActual('@apollo/client/react')
   return { ...actual, useApolloClient: () => ({ readQuery: mockReadQuery }) }
 })
 

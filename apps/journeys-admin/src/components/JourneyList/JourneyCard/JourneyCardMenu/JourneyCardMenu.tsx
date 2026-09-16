@@ -1,4 +1,4 @@
-import { ApolloQueryResult } from '@apollo/client'
+import { ApolloClient } from '@apollo/client'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
@@ -83,7 +83,7 @@ export interface JourneyCardMenuProps {
   slug: string
   published: boolean
   template?: boolean
-  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  refetch?: () => Promise<ApolloClient.QueryResult<GetAdminJourneys>>
   journey?: Journey
   hovered?: boolean
   onMenuClose?: () => void
@@ -101,7 +101,7 @@ export interface JourneyCardMenuProps {
  * @param {string} props.slug - The URL slug used for journey navigation and preview
  * @param {boolean} props.published - Whether the journey is currently published
  * @param {boolean} [props.template] - Optional flag indicating if the journey is a template
- * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Optional callback to refetch journey data after operations
+ * @param {() => Promise<ApolloClient.QueryResult<GetAdminJourneys>>} [props.refetch] - Optional callback to refetch journey data after operations
  * @param {Journey} [props.journey] - Optional journey object containing additional journey data
  * @param {boolean} [props.hovered] - Optional flag indicating if the menu button is being hovered over
  * @param {() => void} [props.onMenuClose] - Optional callback function triggered when the menu closes

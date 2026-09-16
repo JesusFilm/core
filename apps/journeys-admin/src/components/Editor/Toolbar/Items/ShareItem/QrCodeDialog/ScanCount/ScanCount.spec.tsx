@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen, waitFor } from '@testing-library/react'
 import { formatISO } from 'date-fns'
 import { type MockedFunction } from 'vitest'
@@ -32,7 +33,7 @@ describe('ScanCount', () => {
   })
 
   it('should render the scan count', async () => {
-    const getPlausibleJourneyQrCodeScansMock: MockedResponse<
+    const getPlausibleJourneyQrCodeScansMock: MockLink.MockedResponse<
       GetPlausibleJourneyQrCodeScans,
       GetPlausibleJourneyQrCodeScansVariables
     > = {
@@ -73,7 +74,7 @@ describe('ScanCount', () => {
   })
 
   it('should render the scans count, plural', async () => {
-    const getPlausibleJourneyQrCodeScansMock: MockedResponse<
+    const getPlausibleJourneyQrCodeScansMock: MockLink.MockedResponse<
       GetPlausibleJourneyQrCodeScans,
       GetPlausibleJourneyQrCodeScansVariables
     > = {
@@ -114,7 +115,7 @@ describe('ScanCount', () => {
   })
 
   it('should show loading', () => {
-    const getPlausibleJourneyQrCodeScansMock: MockedResponse<
+    const getPlausibleJourneyQrCodeScansMock: MockLink.MockedResponse<
       GetPlausibleJourneyQrCodeScans,
       GetPlausibleJourneyQrCodeScansVariables
     > = {

@@ -1,10 +1,5 @@
-import {
-  FetchResult,
-  MutationFunctionOptions,
-  MutationResult,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { ApolloLink, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import {
   BlockActionChatUpdate,
@@ -25,7 +20,7 @@ export const BLOCK_ACTION_CHAT_UPDATE = gql`
 `
 
 export function useBlockActionChatUpdateMutation(
-  options?: MutationFunctionOptions<
+  options?: useMutation.MutationFunctionOptions<
     BlockActionChatUpdate,
     BlockActionChatUpdateVariables
   >
@@ -35,12 +30,12 @@ export function useBlockActionChatUpdateMutation(
     chatUrl: string,
     customizable: boolean | null,
     parentStepId: string | null,
-    options?: MutationFunctionOptions<
+    options?: useMutation.MutationFunctionOptions<
       BlockActionChatUpdate,
       BlockActionChatUpdateVariables
     >
-  ) => Promise<FetchResult<BlockActionChatUpdate> | undefined>,
-  MutationResult<BlockActionChatUpdate>
+  ) => Promise<ApolloLink.Result<BlockActionChatUpdate> | undefined>,
+  useMutation.Result<BlockActionChatUpdate>
 ] {
   const [blockActionChatUpdate, result] = useMutation<
     BlockActionChatUpdate,
@@ -52,11 +47,11 @@ export function useBlockActionChatUpdateMutation(
     chatUrl: string,
     customizable: boolean | null,
     parentStepId: string | null,
-    options?: MutationFunctionOptions<
+    options?: useMutation.MutationFunctionOptions<
       BlockActionChatUpdate,
       BlockActionChatUpdateVariables
     >
-  ): Promise<FetchResult<BlockActionChatUpdate> | undefined> {
+  ): Promise<ApolloLink.Result<BlockActionChatUpdate> | undefined> {
     return await blockActionChatUpdate({
       ...options,
       variables: {

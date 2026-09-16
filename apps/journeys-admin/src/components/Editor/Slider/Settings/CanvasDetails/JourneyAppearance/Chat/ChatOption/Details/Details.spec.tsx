@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
@@ -279,7 +280,7 @@ describe('Details', () => {
       }
     }))
 
-    const executeMock: MockedResponse<
+    const executeMock: MockLink.MockedResponse<
       JourneyChatButtonUpdate,
       JourneyChatButtonUpdateVariables
     > = {
@@ -295,7 +296,7 @@ describe('Details', () => {
       },
       result: executeResult
     }
-    const undoMock: MockedResponse<
+    const undoMock: MockLink.MockedResponse<
       JourneyChatButtonUpdate,
       JourneyChatButtonUpdateVariables
     > = {
@@ -357,7 +358,7 @@ describe('Details', () => {
       }
     }))
 
-    const executeMock: MockedResponse<
+    const executeMock: MockLink.MockedResponse<
       JourneyChatButtonUpdate,
       JourneyChatButtonUpdateVariables
     > = {
@@ -373,7 +374,7 @@ describe('Details', () => {
       },
       result: executeResult
     }
-    const undoMock: MockedResponse<
+    const undoMock: MockLink.MockedResponse<
       JourneyChatButtonUpdate,
       JourneyChatButtonUpdateVariables
     > = {
@@ -521,7 +522,7 @@ describe('Details', () => {
         }
       }))
 
-      const mock: MockedResponse<
+      const mock: MockLink.MockedResponse<
         JourneyChatButtonUpdate,
         JourneyChatButtonUpdateVariables
       > = {
@@ -586,7 +587,7 @@ describe('Details', () => {
         }
       }))
 
-      const executeMock: MockedResponse<
+      const executeMock: MockLink.MockedResponse<
         JourneyChatButtonUpdate,
         JourneyChatButtonUpdateVariables
       > = {
@@ -600,7 +601,7 @@ describe('Details', () => {
         },
         result: executeResult
       }
-      const undoMock: MockedResponse<
+      const undoMock: MockLink.MockedResponse<
         JourneyChatButtonUpdate,
         JourneyChatButtonUpdateVariables
       > = {
@@ -674,7 +675,7 @@ describe('Details', () => {
         }
       }))
 
-      const executeMock: MockedResponse<
+      const executeMock: MockLink.MockedResponse<
         JourneyChatButtonUpdate,
         JourneyChatButtonUpdateVariables
       > = {
@@ -688,7 +689,7 @@ describe('Details', () => {
         },
         result: executeResult
       }
-      const undoMock: MockedResponse<
+      const undoMock: MockLink.MockedResponse<
         JourneyChatButtonUpdate,
         JourneyChatButtonUpdateVariables
       > = {
@@ -702,7 +703,7 @@ describe('Details', () => {
         },
         result: undoResult
       }
-      const redoMock: MockedResponse<
+      const redoMock: MockLink.MockedResponse<
         JourneyChatButtonUpdate,
         JourneyChatButtonUpdateVariables
       > = {
