@@ -358,7 +358,7 @@ export async function createDownloadsFromMuxAsset({
   }
 
   // Create downloads individually to handle duplicates gracefully
-  let createdCount = 0
+  let changedCount = 0
   for (const download of data) {
     try {
       const existingDownload = await prisma.videoVariantDownload.findUnique({
@@ -374,19 +374,17 @@ export async function createDownloadsFromMuxAsset({
         await prisma.videoVariantDownload.create({
           data: download
         })
-        createdCount++
+        changedCount++
         continue
       }
 
       const isExistingMuxDownload =
         existingDownload.url.startsWith(MUX_STREAM_BASE_URL)
 
-      // Replace a broken existing Mux row, or ANY non-Mux row occupying this
-      // quality slot (e.g. a legacy origin-server URL predating the Mux
-      // migration) -- a non-Mux row here isn't a deliberate alternative the
-      // way distro* rows are (those are a separate quality enum entirely,
-      // never touched by this function); it's stale data blocking the
-      // correct Mux-hosted download from ever landing.
+      // Replace a broken Mux row, or any non-Mux row in this quality slot: a
+      // legacy origin URL here is stale data blocking the Mux-hosted download
+      // from landing, not a deliberate alternative the way distro* rows are
+      // (a separate quality enum this function never touches).
       if (
         !isExistingMuxDownload ||
         hasMissingDownloadMetadata(existingDownload)
@@ -402,7 +400,7 @@ export async function createDownloadsFromMuxAsset({
             url: download.url
           }
         })
-        createdCount++
+        changedCount++
         continue
       }
 
@@ -413,7 +411,7 @@ export async function createDownloadsFromMuxAsset({
         },
         'Existing Mux download is already complete, no refresh needed'
       )
-    } catch (error: any) {
+    } catch (error) {
       logger?.error(
         {
           error,
@@ -425,5 +423,5 @@ export async function createDownloadsFromMuxAsset({
     }
   }
 
-  return createdCount
+  return changedCount
 }

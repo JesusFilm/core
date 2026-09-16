@@ -91,10 +91,6 @@ async function runProcessDownloads(): Promise<void> {
 describe('processDownloads', () => {
   const originalApply = process.env.MUX_DOWNLOAD_BACKFILL_APPLY
   const originalSampleSize = process.env.MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE
-  const originalMaxQualityCount =
-    process.env.MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT
-  const originalVideoIdPrefixes =
-    process.env.MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES
   const originalConcurrency = process.env.MUX_DOWNLOAD_BACKFILL_CONCURRENCY
   const originalCursorFile = process.env.MUX_DOWNLOAD_BACKFILL_CURSOR_FILE
 
@@ -103,8 +99,6 @@ describe('processDownloads', () => {
     vi.useFakeTimers({ toFake: ['setTimeout'] })
     delete process.env.MUX_DOWNLOAD_BACKFILL_APPLY
     delete process.env.MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE
-    delete process.env.MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT
-    delete process.env.MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES
     delete process.env.MUX_DOWNLOAD_BACKFILL_CONCURRENCY
     delete process.env.MUX_DOWNLOAD_BACKFILL_CURSOR_FILE
     ;(prismaMock.videoVariantDownload.findMany as Mock).mockResolvedValue([])
@@ -121,16 +115,6 @@ describe('processDownloads', () => {
     if (originalSampleSize == null)
       delete process.env.MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE
     else process.env.MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE = originalSampleSize
-    if (originalMaxQualityCount == null)
-      delete process.env.MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT
-    else
-      process.env.MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT =
-        originalMaxQualityCount
-    if (originalVideoIdPrefixes == null)
-      delete process.env.MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES
-    else
-      process.env.MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES =
-        originalVideoIdPrefixes
     if (originalConcurrency == null)
       delete process.env.MUX_DOWNLOAD_BACKFILL_CONCURRENCY
     else process.env.MUX_DOWNLOAD_BACKFILL_CONCURRENCY = originalConcurrency
@@ -148,15 +132,6 @@ describe('processDownloads', () => {
     expect(prismaMock.videoVariantDownload.findMany).not.toHaveBeenCalled()
   })
 
-  it('throws for a non-positive max quality count', async () => {
-    process.env.MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT = '0'
-
-    await expect(processDownloads()).rejects.toThrow(
-      'MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT must be a positive integer'
-    )
-    expect(prismaMock.videoVariantDownload.findMany).not.toHaveBeenCalled()
-  })
-
   it('throws for a non-positive concurrency', async () => {
     process.env.MUX_DOWNLOAD_BACKFILL_CONCURRENCY = '0'
 
@@ -168,7 +143,6 @@ describe('processDownloads', () => {
 
   it.each([
     'MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE',
-    'MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT',
     'MUX_DOWNLOAD_BACKFILL_CONCURRENCY'
   ])(
     'throws for a malformed %s instead of reading its leading digits',
@@ -494,35 +468,13 @@ describe('processDownloads', () => {
       expect(secondCallValues).toContain('variant-199')
     })
 
-    it('uses MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT as the discovery query threshold when set', async () => {
-      process.env.MUX_DOWNLOAD_BACKFILL_MAX_QUALITY_COUNT = '5'
+    it('caps the discovery query at the seven non-distro qualities', async () => {
       ;(prismaMock.$queryRaw as unknown as Mock).mockResolvedValueOnce([])
 
       await runProcessDownloads()
 
       const call = (prismaMock.$queryRaw as unknown as Mock).mock.calls[0]
-      expect(call).toContain(5)
-      expect(call).not.toContain(7)
-    })
-
-    it('scopes the discovery query by MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES when set', async () => {
-      process.env.MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES = '1_,MAG'
-      ;(prismaMock.$queryRaw as unknown as Mock).mockResolvedValueOnce([])
-
-      await runProcessDownloads()
-
-      const call = (prismaMock.$queryRaw as unknown as Mock).mock.calls[0]
-      expect(JSON.stringify(call)).toContain('1_')
-      expect(JSON.stringify(call)).toContain('MAG')
-    })
-
-    it('omits the prefix filter entirely when MUX_DOWNLOAD_BACKFILL_VIDEO_ID_PREFIXES is unset', async () => {
-      ;(prismaMock.$queryRaw as unknown as Mock).mockResolvedValueOnce([])
-
-      await runProcessDownloads()
-
-      const call = (prismaMock.$queryRaw as unknown as Mock).mock.calls[0]
-      expect(JSON.stringify(call)).not.toContain('LEFT(v."videoId"')
+      expect(call).toContain(7)
     })
 
     it('never has more than MUX_DOWNLOAD_BACKFILL_CONCURRENCY variants in flight at once', async () => {
@@ -609,6 +561,64 @@ describe('processDownloads', () => {
         const secondCallValues = (prismaMock.$queryRaw as unknown as Mock).mock
           .calls[0]
         expect(secondCallValues).toContain('variant-resumed')
+      } finally {
+        rmSync(cursorFile, { force: true })
+      }
+    })
+
+    it('persists the cursor only up to the last variant that completed', async () => {
+      const cursorFile = join(
+        tmpdir(),
+        `mux-download-backfill-cursor-failure-${Date.now()}.txt`
+      )
+      process.env.MUX_DOWNLOAD_BACKFILL_CURSOR_FILE = cursorFile
+
+      try {
+        ;(prismaMock.$queryRaw as unknown as Mock)
+          .mockResolvedValueOnce([{ id: 'variant-a' }, { id: 'variant-b' }])
+          .mockResolvedValueOnce([])
+        ;(prismaMock.videoVariant.findMany as Mock).mockResolvedValueOnce([
+          variant('variant-a'),
+          variant('variant-b')
+        ])
+        mockedPreviewMuxDownloadsFromAsset.mockReturnValue([])
+        mockedGetVideo.mockImplementation(async (assetId: string) => {
+          if (assetId === 'asset-variant-b') {
+            throw new Error('connection terminated unexpectedly')
+          }
+          return readyMuxVideoAsset
+        })
+
+        await runProcessDownloads()
+
+        // variant-b failed, so the next run must start before it, not after.
+        expect(readFileSync(cursorFile, 'utf-8')).toBe('variant-a')
+      } finally {
+        rmSync(cursorFile, { force: true })
+      }
+    })
+
+    it('leaves the cursor where it was when the first variant of a page fails', async () => {
+      const cursorFile = join(
+        tmpdir(),
+        `mux-download-backfill-cursor-first-failure-${Date.now()}.txt`
+      )
+      process.env.MUX_DOWNLOAD_BACKFILL_CURSOR_FILE = cursorFile
+
+      try {
+        ;(prismaMock.$queryRaw as unknown as Mock)
+          .mockResolvedValueOnce([{ id: 'variant-a' }, { id: 'variant-b' }])
+          .mockResolvedValueOnce([])
+        ;(prismaMock.videoVariant.findMany as Mock).mockResolvedValueOnce([
+          variant('variant-a'),
+          variant('variant-b')
+        ])
+        mockedPreviewMuxDownloadsFromAsset.mockReturnValue([])
+        mockedGetVideo.mockRejectedValue(new Error('mux unavailable'))
+
+        await runProcessDownloads()
+
+        expect(readFileSync(cursorFile, 'utf-8')).toBe('')
       } finally {
         rmSync(cursorFile, { force: true })
       }
