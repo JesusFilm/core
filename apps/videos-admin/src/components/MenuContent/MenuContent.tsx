@@ -1,4 +1,5 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import BugReportRoundedIcon from '@mui/icons-material/BugReportRounded'
 import FactCheckRoundedIcon from '@mui/icons-material/FactCheckRounded'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'

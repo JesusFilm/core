@@ -46,7 +46,7 @@ describe('buttonBlockCreate', () => {
     vi.clearAllMocks()
     ;(fetchJourneyWithAclIncludes as any).mockResolvedValue({ id: 'journeyId' })
     mockAbility.mockReturnValue(true)
-    prismaMock.block.findMany.mockResolvedValue([] as any)
+    prismaMock.block.findMany.mockResolvedValue([])
     prismaMock.block.findFirst.mockResolvedValue({
       id: 'parentId',
       journeyId: 'journeyId'

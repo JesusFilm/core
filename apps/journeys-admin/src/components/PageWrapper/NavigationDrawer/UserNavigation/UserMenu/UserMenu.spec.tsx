@@ -1,5 +1,7 @@
-import { ApolloClient, useApolloClient } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { ApolloClient } from '@apollo/client'
+import { useApolloClient } from '@apollo/client/react'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -20,9 +22,9 @@ vi.mock('next/router', async () => ({
   useRouter: vi.fn()
 }))
 
-vi.mock('@apollo/client', async () => ({
+vi.mock('@apollo/client/react', async () => ({
   __esModule: true,
-  ...(await vi.importActual('@apollo/client')),
+  ...(await vi.importActual('@apollo/client/react')),
   useApolloClient: vi.fn()
 }))
 
@@ -134,8 +136,8 @@ describe('UserMenu', () => {
     const clearStore = vi.fn()
     mockUseApolloClient.mockReturnValue({
       clearStore
-    } as unknown as ApolloClient<object>)
-    const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+    } as unknown as ApolloClient)
+    const getTeams: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
       request: {
         query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
       },
@@ -157,7 +159,7 @@ describe('UserMenu', () => {
             lastActiveTeamId: 'teamId'
           }
         }
-      })) as MockedResponse<GetLastActiveTeamIdAndTeams>['result']
+      })) as MockLink.MockedResponse<GetLastActiveTeamIdAndTeams>['result']
     }
     const { getByRole, getByText } = render(
       <MockedProvider mocks={[getTeams]}>

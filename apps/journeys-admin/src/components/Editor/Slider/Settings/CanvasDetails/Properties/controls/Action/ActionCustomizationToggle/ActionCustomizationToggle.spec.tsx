@@ -24,7 +24,7 @@ describe('ActionCustomizationToggle', () => {
     vi.restoreAllMocks()
     vi.mocked(useActionCommand).mockReturnValue({
       addAction: mockAddAction
-    } as unknown as ReturnType<typeof useActionCommand>)
+    })
   })
 
   it('renders toggle for LinkAction and reflects checked state', () => {
@@ -121,7 +121,7 @@ describe('ActionCustomizationToggle', () => {
     const addAction = vi.fn()
     vi.mocked(useActionCommand).mockReturnValue({
       addAction
-    } as unknown as ReturnType<typeof useActionCommand>)
+    })
 
     const selectedBlock = {
       id: 'button-3',
@@ -169,7 +169,7 @@ describe('ActionCustomizationToggle', () => {
     const addAction = vi.fn()
     vi.mocked(useActionCommand).mockReturnValue({
       addAction
-    } as unknown as ReturnType<typeof useActionCommand>)
+    })
 
     const selectedBlock = {
       id: 'button-4',
@@ -370,7 +370,7 @@ describe('ActionCustomizationToggle', () => {
     const addAction = vi.fn()
     vi.mocked(useActionCommand).mockReturnValue({
       addAction
-    } as unknown as ReturnType<typeof useActionCommand>)
+    })
 
     const selectedBlock = {
       id: 'button-7',

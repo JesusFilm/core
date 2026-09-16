@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -23,7 +24,7 @@ import { TEXT_RESPONSE_INTEGRATION_UPDATE } from './App'
 
 import { App } from '.'
 
-const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+const getTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
@@ -66,7 +67,7 @@ describe('App', () => {
     hideLabel: false
   }
 
-  const integrationUpdateMock: MockedResponse<
+  const integrationUpdateMock: MockLink.MockedResponse<
     TextResponseIntegrationUpdate,
     TextResponseIntegrationUpdateVariables
   > = {
@@ -87,13 +88,13 @@ describe('App', () => {
           routeId: null
         }
       }
-    })) as MockedResponse<
+    })) as MockLink.MockedResponse<
       TextResponseIntegrationUpdate,
       TextResponseIntegrationUpdateVariables
     >['result']
   }
 
-  const integrationUpdateMock2: MockedResponse<
+  const integrationUpdateMock2: MockLink.MockedResponse<
     TextResponseIntegrationUpdate,
     TextResponseIntegrationUpdateVariables
   > = {
@@ -114,7 +115,7 @@ describe('App', () => {
           routeId: null
         }
       }
-    })) as MockedResponse<
+    })) as MockLink.MockedResponse<
       TextResponseIntegrationUpdate,
       TextResponseIntegrationUpdateVariables
     >['result']

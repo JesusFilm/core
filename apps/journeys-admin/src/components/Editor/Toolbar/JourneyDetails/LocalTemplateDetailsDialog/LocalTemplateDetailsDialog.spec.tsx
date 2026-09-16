@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, useState } from 'react'

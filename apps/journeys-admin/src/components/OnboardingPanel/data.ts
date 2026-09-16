@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from '@core/journeys/ui/TeamProvider'
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
@@ -72,32 +72,33 @@ export const onboardingJourneys: OnboardingJourneys[] = [
   }
 ]
 
-export const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
-  request: {
-    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-  },
-  result: {
-    data: {
-      teams: [
-        {
-          id: 'teamId',
-          title: 'Team Title',
-          __typename: 'Team',
-          publicTitle: 'Public Team Title',
-          userTeams: [],
-          customDomains: []
+export const getTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
+  {
+    request: {
+      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+    },
+    result: {
+      data: {
+        teams: [
+          {
+            id: 'teamId',
+            title: 'Team Title',
+            __typename: 'Team',
+            publicTitle: 'Public Team Title',
+            userTeams: [],
+            customDomains: []
+          }
+        ],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
+          lastActiveTeamId: 'teamId'
         }
-      ],
-      getJourneyProfile: {
-        __typename: 'JourneyProfile',
-        id: 'journeyProfileId',
-        lastActiveTeamId: 'teamId'
       }
     }
   }
-}
 
-export const getOnboardingJourneysMock: MockedResponse<
+export const getOnboardingJourneysMock: MockLink.MockedResponse<
   GetOnboardingJourneys,
   GetOnboardingJourneysVariables
 > = {

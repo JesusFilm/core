@@ -88,7 +88,7 @@ describe('journeyCustomizationFieldPublisherUpdate', () => {
     mockGetUserFromPayload.mockReturnValue(mockUser)
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
     prismaMock.journeyCustomizationField.findMany.mockResolvedValue(
-      updatedFields as any
+      updatedFields
     )
   })
 
