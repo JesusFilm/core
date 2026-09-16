@@ -18,7 +18,7 @@ import { deleteVideo } from '../mux/video/service'
 import {
   findContainerParentIds,
   updateParentCollectionLanguages,
-  updateVideoAvailableLanguages
+  withAvailableLanguagesRecompute
 } from '../video/lib/updateAvailableLanguages'
 import { VideoSubtitle } from '../video/videoSubtitle'
 import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
@@ -109,28 +109,32 @@ export async function createEmptyParentVariant(
     )
   }
 
-  // Create the empty placeholder variant for the parent video, then let the
+  // Create the empty placeholder variant for the parent video and let the
   // shared recompute engine derive availableLanguages from current source
   // data (the parent's own published variants union its children's current
-  // values) rather than hand-rolling the union here.
-  const newVariant = await prisma.videoVariant.create({
-    data: {
-      id: `${languageId}_${parentVideoId}`,
-      videoId: parentVideoId,
-      edition: 'base',
-      languageId: languageId,
-      slug: `${parentVideo.slug}/${resolvedLanguageSlug}`,
-      hls: '',
-      dash: '',
-      share: '',
-      downloadable: false,
-      published: true,
-      duration: 0,
-      lengthInMilliseconds: 0
-    }
-  })
-
-  await updateVideoAvailableLanguages(parentVideoId)
+  // values) rather than hand-rolling the union here. Both happen in one
+  // transaction: a recompute that throws must not leave the variant row
+  // committed with the parent's availableLanguages stale and no retry.
+  const newVariant = await withAvailableLanguagesRecompute(
+    parentVideoId,
+    async (tx) =>
+      await tx.videoVariant.create({
+        data: {
+          id: `${languageId}_${parentVideoId}`,
+          videoId: parentVideoId,
+          edition: 'base',
+          languageId: languageId,
+          slug: `${parentVideo.slug}/${resolvedLanguageSlug}`,
+          hls: '',
+          dash: '',
+          share: '',
+          downloadable: false,
+          published: true,
+          duration: 0,
+          lengthInMilliseconds: 0
+        }
+      })
+  )
 
   // Not every caller of handleParentVariantCreation cascades further up the
   // container hierarchy itself (e.g. a video's own publish-status toggle in
@@ -291,13 +295,18 @@ async function checkAndRemoveEmptyParentVariant(
 
   // If no published child variants exist in this language and we have an empty parent variant, remove it
   if (publishedChildVariantsCount === 0 && parentVariant) {
-    await prisma.videoVariant.delete({
-      where: { id: parentVariant.id }
-    })
-
-    // Let the shared recompute engine derive the parent's availableLanguages
-    // from current source data, rather than hand-rolling the array filter.
-    await updateVideoAvailableLanguages(parentVideoId)
+    // Delete the empty parent variant and recompute the parent's
+    // availableLanguages in one transaction, so the two commit or roll back
+    // together rather than leaving the parent permanently stale if the
+    // recompute throws. The recompute derives the value from current source
+    // data rather than hand-rolling the array filter.
+    await withAvailableLanguagesRecompute(
+      parentVideoId,
+      async (tx) =>
+        await tx.videoVariant.delete({
+          where: { id: parentVariant.id }
+        })
+    )
 
     // Not every caller of handleParentVariantCleanup cascades further up the
     // container hierarchy itself (e.g. a video's own publish-status toggle in

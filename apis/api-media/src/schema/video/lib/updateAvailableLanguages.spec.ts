@@ -12,7 +12,8 @@ import {
   findContainerParentIds,
   sameLanguageSet,
   updateParentCollectionLanguages,
-  updateVideoAvailableLanguages
+  updateVideoAvailableLanguages,
+  withAvailableLanguagesRecompute
 } from './updateAvailableLanguages'
 
 vi.mock('../../../workers/videoAlgoliaSync', () => ({
@@ -37,6 +38,15 @@ vi.mock('../../logger', () => ({
 const mockedEnqueueVideoAlgoliaSync = vi.mocked(enqueueVideoAlgoliaSync)
 const mockedVideoCacheReset = vi.mocked(videoCacheReset)
 const mockedLoggerError = vi.mocked(logger.error)
+
+// The recompute reads and writes availableLanguages inside an interactive
+// transaction so it can hold the video's row lock across both; run the
+// callback against the same mock client.
+function mockInteractiveTransaction(): void {
+  prismaMock.$transaction.mockImplementation(
+    (async (callback: any) => await callback(prismaMock)) as any
+  )
+}
 
 type AvailableLanguagesVideoPayload = Prisma.VideoGetPayload<{
   select: {
@@ -134,6 +144,7 @@ function buildFixtureGraph(
 describe('updateVideoAvailableLanguages', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockInteractiveTransaction()
     mockCalculateAvailableLanguagesQuery({
       label: 'series',
       variants: [],
@@ -170,6 +181,7 @@ describe('updateVideoAvailableLanguages', () => {
 describe('addLanguageToVideo', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockInteractiveTransaction()
     prismaMock.$executeRaw.mockResolvedValue(1)
   })
 
@@ -229,6 +241,10 @@ describe('findContainerParentIds', () => {
 })
 
 describe('updateParentCollectionLanguages', () => {
+  beforeEach(() => {
+    mockInteractiveTransaction()
+  })
+
   it('enqueues an Algolia sync for every parent found', async () => {
     mockContainerParentQuery(containerParents)
 
@@ -276,6 +292,7 @@ describe('sameLanguageSet', () => {
 describe('cascading availableLanguages upward to the root', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockInteractiveTransaction()
   })
 
   it('updates the outermost container, not just the immediate parent, when a leaf changes', async () => {
@@ -362,6 +379,7 @@ describe('cascading availableLanguages upward to the root', () => {
 describe('calculateAvailableLanguages via a container with overlapping-language children', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockInteractiveTransaction()
   })
 
   it('drops a language when the child that uniquely provided it is removed', async () => {
@@ -400,5 +418,112 @@ describe('calculateAvailableLanguages via a container with overlapping-language 
     const result = await updateVideoAvailableLanguages('container')
 
     expect(result.slice().sort()).toEqual(['496', '529'])
+  })
+})
+
+describe('serializing concurrent recomputes of the same video', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockInteractiveTransaction()
+    mockedVideoCacheReset.mockResolvedValue(undefined)
+  })
+
+  it('locks the video row before reading it, and writes while the lock is held', async () => {
+    buildFixtureGraph({
+      'video-id': {
+        variants: ['529'],
+        childIds: [],
+        availableLanguages: []
+      }
+    })
+
+    await updateVideoAvailableLanguages('video-id')
+
+    // The recompute is a read-then-set over *other* rows (the video's own
+    // published variants and its children's stored values), so it can't be
+    // collapsed into one self-referential atomic UPDATE the way
+    // addLanguageToVideo can. Serialization comes from the row lock instead,
+    // which only holds for the length of a transaction.
+    expect(prismaMock.$transaction).toHaveBeenCalledTimes(1)
+
+    const [sqlParts, ...values] = prismaMock.$executeRaw.mock.calls[0] as [
+      readonly string[],
+      ...unknown[]
+    ]
+    expect(sqlParts.join(' ')).toContain('FOR UPDATE')
+    expect(values).toEqual(['video-id'])
+
+    // Lock before read: otherwise two concurrent variant writes against the
+    // same parent both read the pre-write snapshot and the second write
+    // clobbers the first.
+    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
+      prismaMock.video.findUnique.mock.invocationCallOrder[0]
+    )
+    // ...and write while it is still held.
+    expect(prismaMock.video.update.mock.invocationCallOrder[0]).toBeGreaterThan(
+      prismaMock.$executeRaw.mock.invocationCallOrder[0]
+    )
+  })
+})
+
+describe('withAvailableLanguagesRecompute', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockInteractiveTransaction()
+    mockedVideoCacheReset.mockResolvedValue(undefined)
+    buildFixtureGraph({
+      'video-id': {
+        variants: ['529'],
+        childIds: [],
+        availableLanguages: []
+      }
+    })
+  })
+
+  it('runs the caller write and the recompute in one transaction, then syncs', async () => {
+    const write = vi.fn().mockResolvedValue('written')
+
+    const result = await withAvailableLanguagesRecompute('video-id', write)
+
+    expect(result).toBe('written')
+    expect(prismaMock.$transaction).toHaveBeenCalledTimes(1)
+    // The write is handed the transaction client, so it rolls back with the
+    // recompute rather than autocommitting ahead of it.
+    expect(write).toHaveBeenCalledWith(prismaMock)
+    expect(write.mock.invocationCallOrder[0]).toBeGreaterThan(
+      prismaMock.$transaction.mock.invocationCallOrder[0]
+    )
+    // The row lock is taken before the caller's write, not after it: a
+    // variant insert/delete makes Postgres take a shared lock on the video
+    // row, and upgrading that to exclusive afterwards lets two concurrent
+    // callers deadlock on each other.
+    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
+      write.mock.invocationCallOrder[0]
+    )
+    expect(write.mock.invocationCallOrder[0]).toBeLessThan(
+      prismaMock.video.update.mock.invocationCallOrder[0]
+    )
+    expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+      'video-id',
+      expect.anything(),
+      expect.anything()
+    )
+  })
+
+  it('propagates a failed recompute and skips the post-commit sync', async () => {
+    const write = vi.fn().mockResolvedValue('written')
+    ;(prismaMock.video.update as any).mockImplementation(() =>
+      Promise.reject(new Error('recompute failed'))
+    )
+
+    await expect(
+      withAvailableLanguagesRecompute('video-id', write)
+    ).rejects.toThrow('recompute failed')
+
+    expect(write).toHaveBeenCalled()
+    // Nothing committed, so nothing is published to the cache or the search
+    // index for a change that never landed.
+    expect(mockedEnqueueVideoAlgoliaSync).not.toHaveBeenCalled()
+    expect(mockedVideoCacheReset).not.toHaveBeenCalled()
   })
 })
