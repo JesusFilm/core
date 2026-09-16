@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { Suspense } from 'react'
@@ -46,8 +46,8 @@ vi.mock('./ImpersonateDialog', async () => ({
 
 // Synchronous Apollo + local suspense hooks for tests
 const mockUseSuspenseQuery = vi.fn()
-vi.mock('@apollo/client', async () => {
-  const actual = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const actual = await vi.importActual('@apollo/client/react')
   return {
     ...actual,
     useSuspenseQuery: (...args: unknown[]) => mockUseSuspenseQuery(...args)

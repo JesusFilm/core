@@ -1,5 +1,6 @@
-import { FetchResult } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { ApolloLink } from '@apollo/client'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -34,9 +35,8 @@ import {
 
 import { WebsiteView } from '.'
 
-const noopJourneyViewMock: MockedResponse = {
-  request: { query: JOURNEY_VIEW_EVENT_CREATE },
-  variableMatcher: () => true,
+const noopJourneyViewMock: MockLink.MockedResponse = {
+  request: { query: JOURNEY_VIEW_EVENT_CREATE, variables: () => true },
   maxUsageCount: Infinity,
   delay: 99999999,
   result: {
@@ -46,9 +46,8 @@ const noopJourneyViewMock: MockedResponse = {
   }
 }
 
-const noopStepViewMock: MockedResponse = {
-  request: { query: STEP_VIEW_EVENT_CREATE },
-  variableMatcher: () => true,
+const noopStepViewMock: MockLink.MockedResponse = {
+  request: { query: STEP_VIEW_EVENT_CREATE, variables: () => true },
   maxUsageCount: Infinity,
   result: {
     data: {
@@ -108,7 +107,7 @@ describe('WebsiteView', () => {
     })
   })
 
-  const visitorUpdateMock: MockedResponse<
+  const visitorUpdateMock: MockLink.MockedResponse<
     VisitorUpdateForCurrentUser,
     VisitorUpdateForCurrentUserVariables
   > = {
@@ -122,7 +121,7 @@ describe('WebsiteView', () => {
       }
     },
     result: vi.fn(
-      (_variables): FetchResult<VisitorUpdateForCurrentUser> => ({
+      (_variables): ApolloLink.Result<VisitorUpdateForCurrentUser> => ({
         data: {
           visitorUpdateForCurrentUser: { id: 'uuid', __typename: 'Visitor' }
         }
@@ -130,7 +129,7 @@ describe('WebsiteView', () => {
     )
   }
 
-  const journeyViewEventMock: MockedResponse<
+  const journeyViewEventMock: MockLink.MockedResponse<
     JourneyViewEventCreate,
     JourneyViewEventCreateVariables
   > = {
@@ -146,7 +145,7 @@ describe('WebsiteView', () => {
       }
     },
     result: vi.fn(
-      (_variables): FetchResult<JourneyViewEventCreate> => ({
+      (_variables): ApolloLink.Result<JourneyViewEventCreate> => ({
         data: {
           journeyViewEventCreate: {
             id: 'uuid',
@@ -171,7 +170,7 @@ describe('WebsiteView', () => {
     mockUuidv4.mockReturnValueOnce('uuid')
     mockUuidv4.mockReturnValueOnce('stepId')
 
-    const mockStepViewEventCreate: MockedResponse<
+    const mockStepViewEventCreate: MockLink.MockedResponse<
       StepViewEventCreate,
       StepViewEventCreateVariables
     > = {

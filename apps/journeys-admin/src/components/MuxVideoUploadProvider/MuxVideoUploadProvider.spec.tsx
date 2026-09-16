@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { UpChunk } from '@mux/upchunk'
 import { act, render, renderHook, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -195,12 +196,12 @@ describe('MuxVideoUploadProvider', () => {
       }
     }
 
-    const mocks: MockedResponse[] = [
+    const mocks: MockLink.MockedResponse[] = [
       {
         request: {
-          query: CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION
+          query: CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION,
+          variables: () => true
         },
-        variableMatcher: () => true,
         result: {
           data: {
             createMuxVideoUploadByFile: {
@@ -240,7 +241,7 @@ describe('MuxVideoUploadProvider', () => {
       }: {
         children: ReactNode
       }): ReactElement => (
-        <MockedProvider mocks={mocks} addTypename={false}>
+        <MockedProvider mocks={mocks}>
           <SnackbarProvider>
             <MuxVideoUploadProvider>{children}</MuxVideoUploadProvider>
           </SnackbarProvider>

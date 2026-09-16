@@ -1,8 +1,8 @@
 import { ApolloLink } from '@apollo/client'
-import { MockLink, MockedProvider } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import DebounceLink from 'apollo-link-debounce'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -10,6 +10,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
+import { DebounceLink } from '../../../../../../../../../../libs/apolloClient/DebounceLink'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -98,7 +99,7 @@ describe('Edit Placeholder field', () => {
 
   it('should display placeholder value', () => {
     render(
-      <MockedProvider mocks={[mockPlaceholderUpdate1]} addTypename={false}>
+      <MockedProvider mocks={[mockPlaceholderUpdate1]}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <Placeholder />
         </EditorProvider>
@@ -192,7 +193,7 @@ describe('Edit Placeholder field', () => {
 
   it('should not be able to type beyond max character limit', () => {
     render(
-      <MockedProvider mocks={[mockPlaceholderUpdate1]} addTypename={false}>
+      <MockedProvider mocks={[mockPlaceholderUpdate1]}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <Placeholder />
         </EditorProvider>
@@ -210,7 +211,7 @@ describe('Edit Placeholder field', () => {
     ])
 
     render(
-      <MockedProvider link={link} addTypename={false}>
+      <MockedProvider link={link}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <Placeholder />
         </EditorProvider>
@@ -231,7 +232,7 @@ describe('Edit Placeholder field', () => {
     ])
 
     render(
-      <MockedProvider link={link} addTypename={false}>
+      <MockedProvider link={link}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <CommandUndoItem variant="button" />
           <Placeholder />
@@ -262,7 +263,7 @@ describe('Edit Placeholder field', () => {
     ])
 
     render(
-      <MockedProvider link={link} addTypename={false}>
+      <MockedProvider link={link}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <CommandUndoItem variant="button" />
           <CommandRedoItem variant="button" />
@@ -295,7 +296,7 @@ describe('Edit Placeholder field', () => {
     ])
 
     render(
-      <MockedProvider link={link} addTypename={false}>
+      <MockedProvider link={link}>
         <EditorProvider initialState={{}}>
           <Placeholder />
         </EditorProvider>

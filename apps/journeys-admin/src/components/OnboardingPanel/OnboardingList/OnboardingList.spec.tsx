@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/client/react'
 import { render, screen } from '@testing-library/react'
 import { type Mock } from 'vitest'
 
@@ -6,8 +6,8 @@ import { onboardingJourneys } from '../data'
 
 import { OnboardingList } from './OnboardingList'
 
-vi.mock('@apollo/client', async () => {
-  const actual = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const actual = await vi.importActual('@apollo/client/react')
   return {
     ...actual,
     useSuspenseQuery: vi.fn()
