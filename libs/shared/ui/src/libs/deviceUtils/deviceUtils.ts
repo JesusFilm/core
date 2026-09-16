@@ -1,5 +1,5 @@
 export function hasTouchScreen(): boolean {
-  let hasTouchScreen = false
+  let hasTouchScreen: boolean
   if ('maxTouchPoints' in navigator) {
     hasTouchScreen = navigator.maxTouchPoints > 0
   } else {

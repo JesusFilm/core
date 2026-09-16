@@ -52,16 +52,12 @@ describe('templateGallerySlug', () => {
       }
     })
 
-    it.each([
-      [null],
-      [undefined],
-      [42],
-      [[] as unknown],
-      [{} as unknown],
-      [true]
-    ])('rejects non-string %j', (value) => {
-      expect(isValidTemplateGallerySlug(value)).toBe(false)
-    })
+    it.each([[null], [undefined], [42], [[] as unknown], [{}], [true]])(
+      'rejects non-string %j',
+      (value) => {
+        expect(isValidTemplateGallerySlug(value)).toBe(false)
+      }
+    )
 
     it('rejects an array of two valid slugs (Next-style multi-value query)', () => {
       // `req.query.slug` can be `string | string[] | undefined`. The

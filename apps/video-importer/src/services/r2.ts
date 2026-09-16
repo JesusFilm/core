@@ -167,7 +167,8 @@ async function verifyFileUpload(
   } catch (error) {
     console.error('[R2 Service] File verification failed:', error)
     throw new Error(
-      `File verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `File verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      { cause: error }
     )
   }
 }

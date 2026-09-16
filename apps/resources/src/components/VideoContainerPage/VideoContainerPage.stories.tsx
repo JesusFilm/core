@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import { InstantSearchTestWrapper } from '@core/journeys/ui/test/InstantSearchTestWrapper'

@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   GetAdminJourneys,
@@ -30,7 +30,7 @@ export const user: User = {
 
 export const mockTeamId = 'team-id1'
 
-export const activeJourneysMock: MockedResponse<
+export const activeJourneysMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -49,7 +49,7 @@ export const activeJourneysMock: MockedResponse<
   }
 }
 
-export const noJourneysMock: MockedResponse<
+export const noJourneysMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -68,7 +68,7 @@ export const noJourneysMock: MockedResponse<
   }
 }
 
-export const templatesMock: MockedResponse<
+export const templatesMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -92,7 +92,7 @@ export const templatesMock: MockedResponse<
   }
 }
 
-export const archivedJourneysMock: MockedResponse<
+export const archivedJourneysMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -116,7 +116,7 @@ export const archivedJourneysMock: MockedResponse<
   }
 }
 
-export const trashedJourneysMock: MockedResponse<
+export const trashedJourneysMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -141,7 +141,7 @@ export const trashedJourneysMock: MockedResponse<
   }
 }
 
-export const noTemplatesMock: MockedResponse<
+export const noTemplatesMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -160,7 +160,7 @@ export const noTemplatesMock: MockedResponse<
   }
 }
 
-export const noArchivedMock: MockedResponse<
+export const noArchivedMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -179,7 +179,7 @@ export const noArchivedMock: MockedResponse<
   }
 }
 
-export const noTrashedMock: MockedResponse<
+export const noTrashedMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -198,7 +198,7 @@ export const noTrashedMock: MockedResponse<
   }
 }
 
-export const archivedTemplatesMock: MockedResponse<
+export const archivedTemplatesMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -223,7 +223,7 @@ export const archivedTemplatesMock: MockedResponse<
   }
 }
 
-export const noArchivedTemplatesMock: MockedResponse<
+export const noArchivedTemplatesMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -242,7 +242,7 @@ export const noArchivedTemplatesMock: MockedResponse<
   }
 }
 
-export const trashedTemplatesMock: MockedResponse<
+export const trashedTemplatesMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -268,7 +268,7 @@ export const trashedTemplatesMock: MockedResponse<
   }
 }
 
-export const noTrashedTemplatesMock: MockedResponse<
+export const noTrashedTemplatesMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -287,7 +287,7 @@ export const noTrashedTemplatesMock: MockedResponse<
   }
 }
 
-export const archiveActiveJourneysMutationMock: MockedResponse = {
+export const archiveActiveJourneysMutationMock: MockLink.MockedResponse = {
   request: {
     query: ARCHIVE_ACTIVE_JOURNEYS,
     variables: { ids: [defaultJourney.id, oldJourney.id] }
@@ -302,7 +302,7 @@ export const archiveActiveJourneysMutationMock: MockedResponse = {
   }
 }
 
-export const trashActiveJourneysMutationMock: MockedResponse = {
+export const trashActiveJourneysMutationMock: MockLink.MockedResponse = {
   request: {
     query: TRASH_ACTIVE_JOURNEYS,
     variables: { ids: [defaultJourney.id, oldJourney.id] }
@@ -317,7 +317,7 @@ export const trashActiveJourneysMutationMock: MockedResponse = {
   }
 }
 
-export const archiveActiveTemplatesMutationMock: MockedResponse = {
+export const archiveActiveTemplatesMutationMock: MockLink.MockedResponse = {
   request: {
     query: ARCHIVE_ACTIVE_JOURNEYS,
     variables: { ids: [defaultJourney.id] }
@@ -331,7 +331,7 @@ export const archiveActiveTemplatesMutationMock: MockedResponse = {
   }
 }
 
-export const trashActiveTemplatesMutationMock: MockedResponse = {
+export const trashActiveTemplatesMutationMock: MockLink.MockedResponse = {
   request: {
     query: TRASH_ACTIVE_JOURNEYS,
     variables: { ids: [defaultJourney.id] }
@@ -343,7 +343,7 @@ export const trashActiveTemplatesMutationMock: MockedResponse = {
   }
 }
 
-export const restoreArchivedJourneysMutationMock: MockedResponse = {
+export const restoreArchivedJourneysMutationMock: MockLink.MockedResponse = {
   request: {
     query: RESTORE_ARCHIVED_JOURNEYS,
     variables: { ids: [defaultJourney.id] }
@@ -357,7 +357,7 @@ export const restoreArchivedJourneysMutationMock: MockedResponse = {
   }
 }
 
-export const trashArchivedJourneysMutationMock: MockedResponse = {
+export const trashArchivedJourneysMutationMock: MockLink.MockedResponse = {
   request: {
     query: TRASH_ARCHIVED_JOURNEYS,
     variables: { ids: [defaultJourney.id] }
@@ -369,7 +369,7 @@ export const trashArchivedJourneysMutationMock: MockedResponse = {
   }
 }
 
-export const restoreArchivedTemplatesMutationMock: MockedResponse = {
+export const restoreArchivedTemplatesMutationMock: MockLink.MockedResponse = {
   request: {
     query: RESTORE_ARCHIVED_JOURNEYS,
     variables: { ids: [defaultJourney.id] }
@@ -383,7 +383,7 @@ export const restoreArchivedTemplatesMutationMock: MockedResponse = {
   }
 }
 
-export const trashArchivedTemplatesMutationMock: MockedResponse = {
+export const trashArchivedTemplatesMutationMock: MockLink.MockedResponse = {
   request: {
     query: TRASH_ARCHIVED_JOURNEYS,
     variables: { ids: [defaultJourney.id] }
@@ -395,7 +395,7 @@ export const trashArchivedTemplatesMutationMock: MockedResponse = {
   }
 }
 
-export const restoreTrashedJourneysMutationMock: MockedResponse = {
+export const restoreTrashedJourneysMutationMock: MockLink.MockedResponse = {
   request: {
     query: RESTORE_TRASHED_JOURNEYS,
     variables: { ids: [defaultJourney.id] }
@@ -409,7 +409,7 @@ export const restoreTrashedJourneysMutationMock: MockedResponse = {
   }
 }
 
-export const deleteTrashedJourneysMutationMock: MockedResponse = {
+export const deleteTrashedJourneysMutationMock: MockLink.MockedResponse = {
   request: {
     query: DELETE_TRASHED_JOURNEYS,
     variables: { ids: [defaultJourney.id] }
@@ -421,7 +421,7 @@ export const deleteTrashedJourneysMutationMock: MockedResponse = {
   }
 }
 
-export const restoreTrashedTemplatesMutationMock: MockedResponse = {
+export const restoreTrashedTemplatesMutationMock: MockLink.MockedResponse = {
   request: {
     query: RESTORE_TRASHED_JOURNEYS,
     variables: { ids: [defaultJourney.id] }
@@ -435,7 +435,7 @@ export const restoreTrashedTemplatesMutationMock: MockedResponse = {
   }
 }
 
-export const deleteTrashedTemplatesMutationMock: MockedResponse = {
+export const deleteTrashedTemplatesMutationMock: MockLink.MockedResponse = {
   request: {
     query: DELETE_TRASHED_JOURNEYS,
     variables: { ids: [defaultJourney.id] }

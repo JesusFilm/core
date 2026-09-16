@@ -176,10 +176,9 @@ mediaCountries.openapi(route, async (c) => {
   ])
 
   const response = await getWithStaleCacheForRequest(c, cacheKey, async () => {
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_COUNTRIES>
-    >({
+    const { data } = await getApolloClient().query({
       query: GET_COUNTRIES,
+      errorPolicy: 'none',
       variables: {
         ids,
         metadataLanguageId,

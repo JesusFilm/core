@@ -43,7 +43,7 @@ describe('buttonBlockUpdate', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    prismaMock.block.findMany.mockResolvedValue([] as any)
+    prismaMock.block.findMany.mockResolvedValue([])
     prismaMock.block.findFirst.mockResolvedValue({
       id,
       typename: 'ButtonBlock',

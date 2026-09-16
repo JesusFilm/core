@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -21,7 +22,7 @@ describe('GoogleIntegrationDeleteSyncDialog', () => {
     }
   `
 
-  const baseMock: MockedResponse = {
+  const baseMock: MockLink.MockedResponse = {
     request: {
       query: DELETE_GOOGLE_SHEETS_SYNC,
       variables: {
@@ -37,7 +38,7 @@ describe('GoogleIntegrationDeleteSyncDialog', () => {
     }
   }
 
-  const syncsQueryMock: MockedResponse = {
+  const syncsQueryMock: MockLink.MockedResponse = {
     request: {
       query: syncsQueryDocument,
       variables: {
@@ -55,7 +56,7 @@ describe('GoogleIntegrationDeleteSyncDialog', () => {
     const handleClose = vi.fn()
 
     const { getByRole } = render(
-      <MockedProvider mocks={[baseMock, syncsQueryMock]} addTypename={false}>
+      <MockedProvider mocks={[baseMock, syncsQueryMock]}>
         <SnackbarProvider>
           <GoogleIntegrationDeleteSyncDialog
             open
@@ -77,7 +78,7 @@ describe('GoogleIntegrationDeleteSyncDialog', () => {
     const handleClose = vi.fn()
 
     const { getByRole } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <SnackbarProvider>
           <GoogleIntegrationDeleteSyncDialog
             open

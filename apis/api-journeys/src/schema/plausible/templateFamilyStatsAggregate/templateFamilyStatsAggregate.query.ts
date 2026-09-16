@@ -63,7 +63,6 @@ builder.queryField('templateFamilyStatsAggregate', (t) =>
         })
       }
 
-      let totalJourneysViews = 0
       let breakdownResults: PlausibleStatsResponse[] = []
       if (templateJourney.templateSite === true) {
         const templateSiteId = `api-journeys-template-${templateJourney.id}`
@@ -84,7 +83,7 @@ builder.queryField('templateFamilyStatsAggregate', (t) =>
 
       const { childJourneys, totalJourneysResponses, childJourneysCount } =
         await getTotalJourneysResponses(templateJourney.id)
-      totalJourneysViews = transformBreakdownResults(
+      const totalJourneysViews = transformBreakdownResults(
         breakdownResults,
         childJourneys
       )

@@ -134,7 +134,7 @@ describe('templateFamilyStatsAggregate', () => {
           }
         ]
       }
-    } as any)
+    })
 
     const result = await authClient({
       document: QUERY,
@@ -241,7 +241,7 @@ describe('templateFamilyStatsAggregate', () => {
           }
         ]
       }
-    } as any)
+    })
 
     const result = await authClient({
       document: QUERY,
@@ -285,7 +285,7 @@ describe('templateFamilyStatsAggregate', () => {
       data: {
         results: []
       }
-    } as any)
+    })
 
     const result = await authClient({
       document: QUERY,
@@ -374,7 +374,7 @@ describe('templateFamilyStatsAggregate', () => {
     mockIsAxiosError.mockReturnValueOnce(true)
     mockAxios.get.mockRejectedValueOnce({
       response: { data: { error: 'Invalid period' } }
-    } as any)
+    })
 
     const result = await authClient({
       document: QUERY,
@@ -428,7 +428,7 @@ describe('templateFamilyStatsAggregate', () => {
           }
         ]
       }
-    } as any)
+    })
 
     const result = await authClient({
       document: QUERY,
@@ -495,7 +495,7 @@ describe('templateFamilyStatsAggregate', () => {
           }
         ]
       }
-    } as any)
+    })
 
     const result = await authClient({
       document: QUERY,
@@ -541,7 +541,7 @@ describe('templateFamilyStatsAggregate', () => {
           }
         ]
       }
-    } as any)
+    })
 
     const result = await authClient({
       document: QUERY,
@@ -729,7 +729,7 @@ describe('templateFamilyStatsAggregate', () => {
           }
         ]
       }
-    } as any)
+    })
 
     const result = await authClient({
       document: QUERY,
