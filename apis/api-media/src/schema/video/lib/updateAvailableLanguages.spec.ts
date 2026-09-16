@@ -234,9 +234,7 @@ describe('calculateAvailableLanguagesForVideos', () => {
     // Guards the one-code-path goal: if the two entry points ever diverge,
     // the batched seed and the per-video write paths would disagree.
     ;(prismaMock.video.findMany as any).mockResolvedValueOnce([rows[0]])
-    ;(prismaMock.video.findUnique as any).mockResolvedValueOnce(
-      rows[0]
-    )
+    ;(prismaMock.video.findUnique as any).mockResolvedValueOnce(rows[0])
 
     const batched = await calculateAvailableLanguagesForVideos(['container'])
 
