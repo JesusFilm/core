@@ -88,7 +88,7 @@ describe('videoBlockUpdate', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    prismaMock.block.findMany.mockResolvedValue([] as any)
+    prismaMock.block.findMany.mockResolvedValue([])
   })
 
   it('updates video block when authorized', async () => {

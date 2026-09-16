@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { TOptions } from 'i18next'
@@ -74,7 +75,7 @@ const step2: TreeBlock<StepFields> = {
 const journey = { id: 'journey.id' } as unknown as Journey
 
 function createWrapper(
-  mocks: MockedResponse[],
+  mocks: MockLink.MockedResponse[],
   providedJourney?: Journey
 ): ({ children }: { children: ReactNode }) => ReactElement {
   return function Wrapper({ children }) {
@@ -117,7 +118,7 @@ describe('useStepNavigationEvents', () => {
       }
     }))
 
-    const mocks: Array<MockedResponse<StepNextEventCreate>> = [
+    const mocks: Array<MockLink.MockedResponse<StepNextEventCreate>> = [
       {
         request: {
           query: STEP_NEXT_EVENT_CREATE,
@@ -188,8 +189,10 @@ describe('useStepNavigationEvents', () => {
           wrapper: createWrapper(
             [
               {
-                request: { query: STEP_NEXT_EVENT_CREATE },
-                variableMatcher: () => true,
+                request: {
+                  query: STEP_NEXT_EVENT_CREATE,
+                  variables: () => true
+                },
                 result: anyMutationResult
               }
             ],
@@ -241,7 +244,7 @@ describe('useStepNavigationEvents', () => {
       }
     }))
 
-    const mocks: Array<MockedResponse<StepPreviousEventCreate>> = [
+    const mocks: Array<MockLink.MockedResponse<StepPreviousEventCreate>> = [
       {
         request: {
           query: STEP_PREVIOUS_EVENT_CREATE,
@@ -308,8 +311,10 @@ describe('useStepNavigationEvents', () => {
           wrapper: createWrapper(
             [
               {
-                request: { query: STEP_PREVIOUS_EVENT_CREATE },
-                variableMatcher: () => true,
+                request: {
+                  query: STEP_PREVIOUS_EVENT_CREATE,
+                  variables: () => true
+                },
                 result: anyMutationResult
               }
             ],

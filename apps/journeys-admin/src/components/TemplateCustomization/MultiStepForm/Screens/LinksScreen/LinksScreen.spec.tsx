@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import {
   fireEvent,
   render,
@@ -208,7 +209,7 @@ describe('LinksScreen', () => {
       ]
     } as unknown as Journey
 
-    const linkUpdateMock: MockedResponse<
+    const linkUpdateMock: MockLink.MockedResponse<
       BlockActionLinkUpdate,
       BlockActionLinkUpdateVariables
     > = {
@@ -234,13 +235,13 @@ describe('LinksScreen', () => {
             parentStepId: 'step-1'
           }
         }
-      })) as MockedResponse<
+      })) as MockLink.MockedResponse<
         BlockActionLinkUpdate,
         BlockActionLinkUpdateVariables
       >['result']
     }
 
-    const emailUpdateMock: MockedResponse<
+    const emailUpdateMock: MockLink.MockedResponse<
       BlockActionEmailUpdate,
       BlockActionEmailUpdateVariables
     > = {
@@ -266,13 +267,13 @@ describe('LinksScreen', () => {
             parentStepId: 'step-1'
           }
         }
-      })) as MockedResponse<
+      })) as MockLink.MockedResponse<
         BlockActionEmailUpdate,
         BlockActionEmailUpdateVariables
       >['result']
     }
 
-    const chatUpdateMock: MockedResponse<
+    const chatUpdateMock: MockLink.MockedResponse<
       JourneyChatButtonUpdate,
       JourneyChatButtonUpdateVariables
     > = {
@@ -297,7 +298,7 @@ describe('LinksScreen', () => {
             customizable: true
           }
         }
-      })) as MockedResponse<
+      })) as MockLink.MockedResponse<
         JourneyChatButtonUpdate,
         JourneyChatButtonUpdateVariables
       >['result']
@@ -369,7 +370,7 @@ describe('LinksScreen', () => {
       ]
     } as unknown as Journey
 
-    const phoneUpdateMock: MockedResponse<
+    const phoneUpdateMock: MockLink.MockedResponse<
       BlockActionPhoneUpdate,
       BlockActionPhoneUpdateVariables
     > = {
@@ -399,7 +400,7 @@ describe('LinksScreen', () => {
             parentStepId: 'step-1'
           }
         }
-      })) as MockedResponse<
+      })) as MockLink.MockedResponse<
         BlockActionPhoneUpdate,
         BlockActionPhoneUpdateVariables
       >['result']
@@ -502,7 +503,7 @@ describe('LinksScreen', () => {
   it('calls chatButtonUpdate mutation when platform icon is changed', async () => {
     const handleNext = vi.fn().mockResolvedValue(undefined)
 
-    const platformUpdateMock: MockedResponse<
+    const platformUpdateMock: MockLink.MockedResponse<
       JourneyChatButtonUpdate,
       JourneyChatButtonUpdateVariables
     > = {

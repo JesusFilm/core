@@ -67,7 +67,7 @@ describe('templateGalleryPageUnpublish', () => {
     } as any)
     prismaMock.templateGalleryPage.updateMany.mockResolvedValue({
       count: 1
-    } as any)
+    })
     prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValue({
       id: 'p1',
       status: 'draft',
@@ -182,7 +182,7 @@ describe('templateGalleryPageUnpublish', () => {
     } as any)
     prismaMock.templateGalleryPage.updateMany.mockResolvedValue({
       count: 1
-    } as any)
+    })
     prismaMock.templateGalleryPage.findUniqueOrThrow.mockRejectedValue(
       new Prisma.PrismaClientKnownRequestError('record not found', {
         code: 'P2025',

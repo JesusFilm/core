@@ -1,8 +1,8 @@
 import { ApolloLink } from '@apollo/client'
-import { MockLink, MockedProvider } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import DebounceLink from 'apollo-link-debounce'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -10,6 +10,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
+import { DebounceLink } from '../../../../../../../../../../libs/apolloClient/DebounceLink'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -102,7 +103,7 @@ describe('Edit Hint field', () => {
 
   it('should display hint value', () => {
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <EditorProvider initialState={initialState}>
           <Hint />
         </EditorProvider>
@@ -115,7 +116,7 @@ describe('Edit Hint field', () => {
 
   it('should not be able to type beyond max character limit', () => {
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <EditorProvider initialState={initialState}>
           <Hint />
         </EditorProvider>
@@ -133,7 +134,7 @@ describe('Edit Hint field', () => {
     ])
 
     render(
-      <MockedProvider link={link} addTypename={false}>
+      <MockedProvider link={link}>
         <EditorProvider initialState={initialState}>
           <Hint />
         </EditorProvider>
@@ -152,7 +153,7 @@ describe('Edit Hint field', () => {
     ])
 
     render(
-      <MockedProvider link={link} addTypename={false}>
+      <MockedProvider link={link}>
         <EditorProvider initialState={initialState}>
           <CommandUndoItem variant="button" />
           <Hint />
@@ -175,7 +176,7 @@ describe('Edit Hint field', () => {
     ])
 
     render(
-      <MockedProvider link={link} addTypename={false}>
+      <MockedProvider link={link}>
         <EditorProvider initialState={initialState}>
           <CommandUndoItem variant="button" />
           <CommandRedoItem variant="button" />
@@ -202,7 +203,7 @@ describe('Edit Hint field', () => {
     ])
 
     render(
-      <MockedProvider link={link} addTypename={false}>
+      <MockedProvider link={link}>
         <EditorProvider initialState={{}}>
           <Hint />
         </EditorProvider>
@@ -234,7 +235,7 @@ describe('Edit Hint field', () => {
     } as unknown as Journey
 
     render(
-      <MockedProvider mocks={[mockHintUpdate1]} addTypename={false}>
+      <MockedProvider mocks={[mockHintUpdate1]}>
         <JourneyProvider
           value={{
             journey: journeyWithCustomizableFields,
@@ -275,7 +276,7 @@ describe('Edit Hint field', () => {
     } as unknown as Journey
 
     render(
-      <MockedProvider mocks={[mockHintUpdate1]} addTypename={false}>
+      <MockedProvider mocks={[mockHintUpdate1]}>
         <JourneyProvider
           value={{
             journey: journeyWithCustomizableFields,

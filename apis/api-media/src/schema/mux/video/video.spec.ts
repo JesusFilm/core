@@ -134,7 +134,7 @@ describe('mux/video', () => {
             downloadable: false,
             updatedAt: new Date(),
             videoVariants: []
-          } as unknown as MuxVideo
+          }
         ])
         const data = await authClient({
           document: GET_MY_MUX_VIDEOS,

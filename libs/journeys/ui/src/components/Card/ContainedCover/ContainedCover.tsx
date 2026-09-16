@@ -102,10 +102,8 @@ export function ContainedCover({
         videoBlock?.image
 
   useEffect(() => {
-    if (contentRef?.current != null) {
-      setContentHeight(
-        (contentRef?.current as unknown as HTMLDivElement).clientHeight ?? 0
-      )
+    if (contentRef.current != null) {
+      setContentHeight(contentRef.current.clientHeight)
     }
   }, [contentRef])
 
