@@ -2,6 +2,7 @@ import { vi } from 'vitest'
 
 import {
   MuxVideo,
+  Prisma,
   Video,
   VideoEdition,
   VideoSubtitle,
@@ -1872,13 +1873,30 @@ describe('videoVariant', () => {
           })
         })
 
+        // videoVariantUpdate reads the current variant through a `select` of
+        // just these four columns. Typing the fixture against that select
+        // makes drift from the resolver a compile error, and confines the
+        // widening the deep mock's full-model signature forces to the
+        // mockResolvedValue boundary.
+        type CurrentVariantPayload = Prisma.VideoVariantGetPayload<{
+          select: {
+            published: true
+            videoId: true
+            languageId: true
+            edition: true
+          }
+        }>
+
         function mockVariant(published: boolean): void {
-          prismaMock.videoVariant.findUnique.mockResolvedValue({
+          const currentVariant: CurrentVariantPayload = {
             published,
             videoId: 'videoId',
             languageId: 'languageId',
             edition: 'base'
-          } as any)
+          }
+          prismaMock.videoVariant.findUnique.mockResolvedValue(
+            currentVariant as unknown as VideoVariant
+          )
           prismaMock.videoVariant.update.mockResolvedValue({
             id: 'id',
             hls: 'hls',
