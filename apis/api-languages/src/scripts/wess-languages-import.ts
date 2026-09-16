@@ -134,9 +134,9 @@ async function upsertLanguageNameEntry(params: {
   languageId: string
   value: string
   /**
-   * `undefined` leaves an existing row's `primary` flag untouched (defaults to `true`
-   * only when the row is newly created) — used so a run that doesn't know a language's
-   * autonym status doesn't clobber a primary flag a previous run already set correctly.
+   * Omitted leaves an existing row's `primary` flag untouched (defaults to `true` only
+   * when the row is newly created) — used for the English gloss, whose primary status is
+   * decided by the caller's unconditional demotion rather than by this write.
    */
   primary?: boolean
 }): Promise<void> {
@@ -207,22 +207,40 @@ async function upsertLanguage(row: WessLanguageRow): Promise<boolean> {
   // (GraphQL default uses `languageId` 529). English's own row (id 529) never gets one of
   // these via this branch — it would just redundantly overwrite the identical autonym row
   // written below with the same value.
+  //
+  // `primary` is deliberately not passed: a brand-new row defaults to primary, and the
+  // autonym branch below demotes it when this run has an autonym to promote in its place.
+  // Deciding the flag here instead would tie the demotion to WESS having supplied a
+  // `name` this run, which it need not have.
   if (row.name != null && row.id !== englishLanguageId) {
     await upsertLanguageNameEntry({
       parentLanguageId: row.id,
       languageId: englishLanguageId,
-      value: row.name,
-      // Once this run knows a real native name, it becomes the Primary Name and the
-      // English gloss steps down — it stays stored and reachable by its own `languageId`,
-      // just no longer flagged primary. When this run doesn't have a native name, leave
-      // the existing primary flag alone rather than promoting English back to primary:
-      // a previously-imported autonym row (still primary: true, untouched by the
-      // "absence is a no-op" rule below) must stay the language's sole Primary Name.
-      primary: hasNativeName ? false : undefined
+      value: row.name
     })
   }
 
   if (row.nativeName != null) {
+    // The autonym becomes the language's sole Primary Name, so demote every other name
+    // row for this language first — unconditionally, before the insert below.
+    //
+    // Demoting only the English row written above would be wrong: that branch is skipped
+    // whenever WESS supplies no `name` for the row, yet a previously stored English row
+    // can still be flagged primary. The insert would then add a second primary: true row
+    // and the language would have two Primary Names. The same applies to a primary row
+    // left behind in some third language by older data.
+    //
+    // Absence of an autonym stays a no-op: no demotion and no write, so a previously
+    // imported autonym keeps its primary flag when a later run omits NATIVE_LAN_NAME.
+    await prisma.languageName.updateMany({
+      where: {
+        parentLanguageId: row.id,
+        languageId: { not: row.id },
+        primary: true
+      },
+      data: { primary: false }
+    })
+
     // Autonym: the language's own name for itself, written in itself. Flows through the
     // same branch for every language, including English (id 529 → 529, value "English") —
     // no special case.
