@@ -1,5 +1,6 @@
 import { InMemoryCache, gql } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 import { type MockedFunction } from 'vitest'
@@ -48,7 +49,7 @@ const TEST_JOURNEY_QUERY = gql`
   }
 `
 
-const multiselectBlockCreateMock: MockedResponse = {
+const multiselectBlockCreateMock: MockLink.MockedResponse = {
   request: {
     query: MULTISELECT_BLOCK_CREATE,
     variables: {
@@ -100,7 +101,7 @@ const multiselectBlockCreateMock: MockedResponse = {
   }))
 }
 
-const multiselectWithButtonCreateMock: MockedResponse = {
+const multiselectWithButtonCreateMock: MockLink.MockedResponse = {
   request: {
     query: MULTISELECT_WITH_BUTTON_CREATE,
     variables: {
@@ -219,7 +220,7 @@ const multiselectWithButtonCreateMock: MockedResponse = {
   }))
 }
 
-const multiselectWithButtonDeleteMock: MockedResponse = {
+const multiselectWithButtonDeleteMock: MockLink.MockedResponse = {
   request: {
     query: MULTISELECT_WITH_BUTTON_DELETE,
     variables: {
@@ -263,7 +264,7 @@ const multiselectWithButtonDeleteMock: MockedResponse = {
   }))
 }
 
-const multiselectWithButtonRestoreMock: MockedResponse = {
+const multiselectWithButtonRestoreMock: MockLink.MockedResponse = {
   request: {
     query: MULTISELECT_WITH_BUTTON_RESTORE,
     variables: {
@@ -571,7 +572,7 @@ describe('NewMultiselectButton', () => {
       // the mutation in flight (button stays disabled) and matches the
       // operation so it does not raise an unhandled Apollo error after the
       // test completes.
-      const loadingMock: MockedResponse = {
+      const loadingMock: MockLink.MockedResponse = {
         ...multiselectBlockCreateMock,
         delay: Infinity
       }
@@ -609,7 +610,7 @@ describe('NewMultiselectButton', () => {
       // keeps the mutation in flight (button stays disabled) and matches the
       // operation so it does not raise an unhandled Apollo error after the
       // test completes.
-      const loadingMock: MockedResponse = {
+      const loadingMock: MockLink.MockedResponse = {
         ...multiselectWithButtonCreateMock,
         delay: Infinity
       }

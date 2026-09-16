@@ -15,8 +15,6 @@ on:
           - 'docs-e2e'
           - 'journeys-e2e'
           - 'journeys-admin-e2e'
-          - 'watch-e2e'
-          - 'watch-modern-e2e'
           - 'videos-admin-e2e'
           - 'short-links-e2e'
           - 'all-e2e'
@@ -44,8 +42,6 @@ jobs:
             'docs',
             'journeys',
             'journeys-admin',
-            'watch',
-            'watch-modern',
             'videos-admin',
             'short-links'
           ]
@@ -95,8 +91,6 @@ jobs:
           JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
           SHORT_LINKS_VERCEL_PROJECT_ID: ${{ secrets.SHORT_LINKS_STAGE_VERCEL_PROJECT_ID }}
           VIDEOS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.VIDEOS_ADMIN_VERCEL_PROJECT_ID }}
-          WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
-          WATCH_MODERN_VERCEL_PROJECT_ID: ${{ secrets.WATCH_MODERN_VERCEL_PROJECT_ID }}
           NEXT_PUBLIC_VERCEL_ENV: preview
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         run: pnpm exec nx run-many --target=deploy --projects=${{ matrix.app }}

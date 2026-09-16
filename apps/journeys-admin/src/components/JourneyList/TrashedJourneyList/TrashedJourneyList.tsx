@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
@@ -8,7 +9,9 @@ import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
+import { DeleteTrashedJourneys } from '../../../../__generated__/DeleteTrashedJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { RestoreTrashedJourneys } from '../../../../__generated__/RestoreTrashedJourneys'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import {
   extractTemplateIdsFromJourneys,
@@ -45,32 +48,40 @@ export function TrashedJourneyList({
   })
   const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
 
-  const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
-    update(_cache, { data }) {
-      if (data?.journeysRestore != null) {
-        enqueueSnackbar(t('Journeys Restored'), {
-          variant: 'success'
-        })
-        const templateIds = extractTemplateIdsFromJourneys(data.journeysRestore)
-        if (templateIds.length > 0) {
-          void refetchTemplateStats(templateIds)
+  const [restoreTrashed] = useMutation<RestoreTrashedJourneys>(
+    RESTORE_TRASHED_JOURNEYS,
+    {
+      update(_cache, { data }) {
+        if (data?.journeysRestore != null) {
+          enqueueSnackbar(t('Journeys Restored'), {
+            variant: 'success'
+          })
+          const templateIds = extractTemplateIdsFromJourneys(
+            data.journeysRestore
+          )
+          if (templateIds.length > 0) {
+            void refetchTemplateStats(templateIds)
+          }
+
+          void refetch()
         }
-
-        void refetch()
       }
     }
-  })
-  const [deleteTrashed] = useMutation(DELETE_TRASHED_JOURNEYS, {
-    update(_cache, { data }) {
-      if (data?.journeysDelete != null) {
-        enqueueSnackbar(t('Journeys Deleted'), {
-          variant: 'success'
-        })
+  )
+  const [deleteTrashed] = useMutation<DeleteTrashedJourneys>(
+    DELETE_TRASHED_JOURNEYS,
+    {
+      update(_cache, { data }) {
+        if (data?.journeysDelete != null) {
+          enqueueSnackbar(t('Journeys Deleted'), {
+            variant: 'success'
+          })
 
-        void refetch()
+          void refetch()
+        }
       }
     }
-  })
+  )
   const [restoreDialogOpen, setRestoreDialogOpen] = useState<
     boolean | undefined
   >()
@@ -190,7 +201,7 @@ export function TrashedJourneyList({
                 }}
               >
                 <Typography variant="subtitle1" align="center">
-                  {t('Your trashed journeys will appear here.')}
+                  {t('Your trashed Journeys will appear here.')}
                 </Typography>
               </Box>
             </>
@@ -208,7 +219,7 @@ export function TrashedJourneyList({
           component="div"
           sx={{ py: { xs: 3, sm: 5 }, maxWidth: 290 }}
         >
-          {t('Trashed journeys are moved here for up to 40 days.')}
+          {t('Trashed Journeys are moved here for up to 40 days.')}
         </Typography>
       </Stack>
       {restoreDialogOpen != null && (
@@ -226,7 +237,7 @@ export function TrashedJourneyList({
           }}
         >
           <Typography sx={{ fontWeight: 'bold' }}>
-            {t('This will restore all trashed journeys you own.')}
+            {t('This will restore all trashed Journeys you own.')}
           </Typography>
           <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>
@@ -246,7 +257,7 @@ export function TrashedJourneyList({
           }}
         >
           <Typography sx={{ fontWeight: 'bold' }}>
-            {t('This will permanently delete all trashed journeys you own.')}
+            {t('This will permanently delete all trashed Journeys you own.')}
           </Typography>
           <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>

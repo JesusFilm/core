@@ -10,7 +10,6 @@ import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { getTheme } from '@core/shared/ui/themes'
 
 import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
-import { JourneyFields } from '../__generated__/JourneyFields'
 
 export default class MyDocument extends Document<{
   emotionStyleTags: ReactElement[]
@@ -88,13 +87,13 @@ export default class MyDocument extends Document<{
 // `getInitialProps` belongs to `_document` (instead of `_app`),
 // it's compatible with static-site generation (SSG).
 MyDocument.getInitialProps = async (ctx) => {
-  let pageProps: Pick<JourneyFields, 'language'> | undefined
-
   const initialProps = await documentGetInitialProps(ctx, {
     emotionCache: createEmotionCache({})
   })
 
-  const { rtl, locale } = getJourneyRTL(pageProps)
+  // No journey is resolvable at _document level, so RTL falls back to the
+  // default locale. Previously spelled as an always-undefined local.
+  const { rtl, locale } = getJourneyRTL(undefined)
 
   return {
     ...initialProps,

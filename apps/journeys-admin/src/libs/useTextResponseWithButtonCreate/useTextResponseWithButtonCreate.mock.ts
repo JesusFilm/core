@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   ButtonAlignment,
@@ -13,7 +13,7 @@ import {
 
 import { TEXT_RESPONSE_WITH_BUTTON_CREATE } from './useTextResponseWithButtonCreate'
 
-export const textResponseWithButtonCreateMock: MockedResponse<
+export const textResponseWithButtonCreateMock: MockLink.MockedResponse<
   TextResponseWithButtonCreate,
   TextResponseWithButtonCreateVariables
 > = {
@@ -133,7 +133,7 @@ export const textResponseWithButtonCreateMock: MockedResponse<
         __typename: 'ButtonBlock'
       }
     }
-  })) as MockedResponse<
+  })) as MockLink.MockedResponse<
     TextResponseWithButtonCreate,
     TextResponseWithButtonCreateVariables
   >['result']

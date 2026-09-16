@@ -140,6 +140,74 @@ The script includes error handling for:
 
 If any error occurs, the script will exit with a non-zero code and display an appropriate error message.
 
+## Recover Parent Variants Script
+
+Operator command wrapping the `videoPublishChildren` mutation's `parentVariantsOnly`
+mode. Compares a parent Video against its direct published children and recovers
+any missing empty parent language Variants through the existing, tested
+parent-Variant creation behavior — it never republishes Videos or child Variants,
+and never touches an existing parent Variant.
+
+### Usage
+
+```bash
+# Dry run (default) against the initial production target, 6_Acts
+nx run api-media:recover-parent-variants
+
+# Apply the recovery
+nx run api-media:recover-parent-variants -- --apply
+
+# Target a different parent Video
+PARENT_VARIANT_RECOVERY_ID=some_other_series nx run api-media:recover-parent-variants -- --apply
+```
+
+### Flags and Environment Variables
+
+- `--apply`: CLI flag — pass it to write; otherwise dry-run only
+- `PARENT_VARIANT_RECOVERY_ID`: parent Video ID to audit/recover (default: `6_Acts`)
+
+## Download Size Backfill Script
+
+Finds every Download whose `size` is null, zero, or negative, classifies its
+authoritative provider (Mux, R2, or a legacy URL), resolves a verified positive
+byte length, and conditionally repairs only the `size` column. Defaults to
+dry-run, processes all eligible rows globally in resumable batches, and never
+overwrites a row that was corrected concurrently.
+
+### Usage
+
+```bash
+# Dry run (default) across the full backlog
+nx run api-media:backfill-download-sizes
+
+# Apply writes
+nx run api-media:backfill-download-sizes -- --apply
+
+# Resume a previous run from its saved cursor
+DOWNLOAD_SIZE_BACKFILL_RESUME=true nx run api-media:backfill-download-sizes -- --apply
+```
+
+### Flags and Environment Variables
+
+- `--apply`: CLI flag — pass it to write; otherwise dry-run only
+- `DOWNLOAD_SIZE_BACKFILL_RESUME`: set to `true` to continue from the saved cursor
+  instead of starting from the beginning
+- `DOWNLOAD_SIZE_BACKFILL_BATCH_SIZE`: rows fetched per database batch (default: 500)
+- `DOWNLOAD_SIZE_BACKFILL_DOWNLOAD_ID` / `DOWNLOAD_SIZE_BACKFILL_VARIANT_ID` /
+  `DOWNLOAD_SIZE_BACKFILL_PROVIDER`: optional filters (`mux`, `r2`, or `legacy`)
+  for focused validation runs — global processing is the default when unset
+
+### Output
+
+- A redacted, append-friendly JSONL audit report at
+  `.cache/api-media/download-size-backfill-report.jsonl` — one record per
+  candidate Download with its ID, Variant ID, provider, prior size, verified
+  size, outcome, and normalized error code. No credentials, signed query
+  strings, or full URLs are included.
+- A resumable cursor at `.cache/api-media/download-size-backfill-cursor.json`.
+- A final summary grouped by provider and outcome (total candidates,
+  repairable, applied, already-corrected, skipped, failed) printed to stdout.
+
 ## Mux Videos Script
 
 The mux videos script processes video variants to create and manage Mux video assets, update HLS URLs, and process downloads. This script performs the same functions as the mux-videos worker but can be run on-demand.

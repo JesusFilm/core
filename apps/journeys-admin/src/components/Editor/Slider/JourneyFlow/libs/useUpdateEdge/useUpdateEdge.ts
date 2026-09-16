@@ -56,7 +56,7 @@ export function useUpdateEdge(): (
         add({
           parameters: {
             execute: {
-              selectedStepId: step.id as string | undefined,
+              selectedStepId: step.id,
               parentOrder: 0
             },
             undo: {

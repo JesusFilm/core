@@ -1,6 +1,5 @@
 'use client'
-
-import { useMutation, useSuspenseQuery } from '@apollo/client'
+import { useMutation, useSuspenseQuery } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
@@ -127,7 +126,7 @@ export default function AddChildren(): ReactElement {
             id="add-method-select"
             value={addMethod}
             label="Select method"
-            onChange={(e) => setAddMethod(e.target.value as AddMethod)}
+            onChange={(e) => setAddMethod(e.target.value)}
           >
             <MenuItem value="new">Create new video</MenuItem>
             <MenuItem value="existing">Find existing video by title</MenuItem>

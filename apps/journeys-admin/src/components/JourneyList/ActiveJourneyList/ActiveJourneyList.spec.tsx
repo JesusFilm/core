@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type MockedFunction } from 'vitest'
@@ -43,7 +44,7 @@ vi.mock('next/router', async () => ({
   useRouter: vi.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-const activeJourneysMock: MockedResponse<
+const activeJourneysMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -61,7 +62,7 @@ const activeJourneysMock: MockedResponse<
   }
 }
 
-const noJourneysMock: MockedResponse<
+const noJourneysMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -109,10 +110,10 @@ describe('ActiveJourneyList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByText('No journeys to display.')).toBeInTheDocument()
+      expect(getByText('No Journeys to display.')).toBeInTheDocument()
     )
     expect(
-      getByText('Create a journey, then find it here.')
+      getByText('Create a Journey, then find it here.')
     ).toBeInTheDocument()
   })
 

@@ -1,4 +1,4 @@
-import { ApolloQueryResult, OperationVariables } from '@apollo/client'
+import { ApolloClient, OperationVariables } from '@apollo/client'
 import Grid from '@mui/material/Grid'
 import { ReactElement, useMemo } from 'react'
 
@@ -18,7 +18,7 @@ interface ActivePriorityListProps {
   sortOrder?: SortOrder
   refetch?: (
     variables?: Partial<OperationVariables> | undefined
-  ) => Promise<ApolloQueryResult<GetAdminJourneys>>
+  ) => Promise<ApolloClient.QueryResult<GetAdminJourneys>>
   user?: User | null
 }
 
