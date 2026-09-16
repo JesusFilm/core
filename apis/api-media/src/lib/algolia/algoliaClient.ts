@@ -5,11 +5,14 @@ export type AlgoliaConfig = {
   apiKey: string
   videosIndex: string
   videoVariantsIndex: string
+  languagesIndex: string
 }
 
 function getRequiredEnv(name: string): string {
   const value = process.env[name]
-  if (value == null || value === '') {
+  // Blank-but-present values (e.g. a key set to spaces in a deploy config) are
+  // as unusable as an unset one, so trim before deciding it is missing.
+  if (value == null || value.trim() === '') {
     throw new Error(`Missing required environment variable: ${name}`)
   }
   return value
@@ -21,13 +24,28 @@ function getRequiredEnv(name: string): string {
  * NOTE: This is intentionally a function (not a module-level constant) so
  * unit tests that import GraphQL schema modules don't immediately throw
  * when Algolia env vars are not present.
+ *
+ * The index names are exposed as getters rather than eagerly-evaluated
+ * properties: appId/apiKey are shared by every caller so those still resolve
+ * up front, but each index's env var is only required at the point a caller
+ * actually reads that index. This lets video call sites destructure
+ * `videosIndex`/`videoVariantsIndex` without ever requiring
+ * ALGOLIA_INDEX_LANGUAGES to be set, and vice versa for language call sites -
+ * requiring one index cannot break callers of another.
  */
 export function getAlgoliaConfig(): AlgoliaConfig {
   return {
     appId: getRequiredEnv('ALGOLIA_APPLICATION_ID'),
     apiKey: getRequiredEnv('ALGOLIA_API_KEY'),
-    videosIndex: getRequiredEnv('ALGOLIA_INDEX_VIDEOS'),
-    videoVariantsIndex: getRequiredEnv('ALGOLIA_INDEX_VIDEO_VARIANTS')
+    get videosIndex(): string {
+      return getRequiredEnv('ALGOLIA_INDEX_VIDEOS')
+    },
+    get videoVariantsIndex(): string {
+      return getRequiredEnv('ALGOLIA_INDEX_VIDEO_VARIANTS')
+    },
+    get languagesIndex(): string {
+      return getRequiredEnv('ALGOLIA_INDEX_LANGUAGES')
+    }
   }
 }
 
