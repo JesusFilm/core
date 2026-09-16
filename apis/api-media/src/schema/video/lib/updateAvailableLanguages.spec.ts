@@ -391,7 +391,9 @@ describe('cascading availableLanguages upward to the root', () => {
     expect(prismaMock.video.update).toHaveBeenCalledTimes(2)
     expect(mockedLoggerError).toHaveBeenCalledWith(
       expect.objectContaining({ videoId: 'A' }),
-      expect.stringContaining('already recomputed in this availableLanguages cascade')
+      expect.stringContaining(
+        'already recomputed in this availableLanguages cascade'
+      )
     )
   })
 
@@ -476,7 +478,9 @@ describe('cascading availableLanguages upward to the root', () => {
 
     failUpdatesFor(['A'])
 
-    const error = await captureRejection(updateParentCollectionLanguages('leaf'))
+    const error = await captureRejection(
+      updateParentCollectionLanguages('leaf')
+    )
 
     expect(error).toBeInstanceOf(AggregateError)
     expect((error as AggregateError).errors).toHaveLength(1)
@@ -529,7 +533,9 @@ describe('cascading availableLanguages upward to the root', () => {
 
     failUpdatesFor(['A', 'B'])
 
-    const error = await captureRejection(updateParentCollectionLanguages('leaf'))
+    const error = await captureRejection(
+      updateParentCollectionLanguages('leaf')
+    )
 
     expect((error as AggregateError).errors).toHaveLength(2)
     // The one healthy sibling still completed.
