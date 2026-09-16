@@ -1,9 +1,6 @@
-import {
-  SubscriptionHookOptions,
-  gql,
-  useApolloClient,
-  useSubscription
-} from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useApolloClient, useSubscription } from '@apollo/client/react'
+import { useRef } from 'react'
 
 import {
   JourneyAiTranslateCreateSubscription,
@@ -157,19 +154,35 @@ export function updateCacheWithTranslatedJourney(
 }
 
 export function useJourneyAiTranslateSubscription(
-  options?: SubscriptionHookOptions<
-    JourneyAiTranslateCreateSubscription,
-    JourneyAiTranslateCreateSubscriptionVariables
-  >
+  options: Omit<
+    useSubscription.Options<
+      JourneyAiTranslateCreateSubscription,
+      JourneyAiTranslateCreateSubscriptionVariables
+    >,
+    'variables'
+  > & { variables?: JourneyAiTranslateCreateSubscriptionVariables }
 ) {
   const client = useApolloClient()
+  const { variables, onData, onError, onComplete, ...rest } = options
+
+  // Apollo Client 4 delivers subscription errors through `next` and then
+  // completes the observable, so `onComplete` fires after a failure too. In v3
+  // an error terminated the subscription, and callers still read `onComplete`
+  // as "translation succeeded" — so swallow the completion that follows one.
+  const erroredRef = useRef(false)
 
   const subscription = useSubscription<
     JourneyAiTranslateCreateSubscription,
     JourneyAiTranslateCreateSubscriptionVariables
   >(JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION, {
-    ...options,
+    ...rest,
+    // Apollo Client 4 types `variables` as required whenever the operation
+    // declares required ones, but callers mount this hook before the
+    // translation request exists and pair the absent variables with `skip`.
+    skip: rest.skip === true || variables == null,
+    variables: variables as JourneyAiTranslateCreateSubscriptionVariables,
     onData: (result) => {
+      erroredRef.current = false
       // Update the Apollo cache with the translated journey (only when complete)
       if (result.data.data?.journeyAiTranslateCreateSubscription?.journey) {
         updateCacheWithTranslatedJourney(
@@ -179,7 +192,18 @@ export function useJourneyAiTranslateSubscription(
       }
 
       // Always trigger the existing onData callback for progress updates
-      options?.onData?.(result)
+      onData?.(result)
+    },
+    onError: (error) => {
+      erroredRef.current = true
+      onError?.(error)
+    },
+    onComplete: () => {
+      if (erroredRef.current) {
+        erroredRef.current = false
+        return
+      }
+      onComplete?.()
     }
   })
 

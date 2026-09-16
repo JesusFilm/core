@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type Mock } from 'vitest'
@@ -59,7 +60,7 @@ const mockVideoBlock: TreeBlock<VideoBlock> = {
   mediaVideo: null
 }
 
-const mockSubtitleTrackReady: MockedResponse = {
+const mockSubtitleTrackReady: MockLink.MockedResponse = {
   request: {
     query: GET_MY_GENERATED_MUX_SUBTITLE_TRACK,
     variables: {
@@ -80,7 +81,7 @@ const mockSubtitleTrackReady: MockedResponse = {
   }
 }
 
-const mockSubtitleTrackProcessing: MockedResponse = {
+const mockSubtitleTrackProcessing: MockLink.MockedResponse = {
   request: {
     query: GET_MY_GENERATED_MUX_SUBTITLE_TRACK,
     variables: {
@@ -101,7 +102,7 @@ const mockSubtitleTrackProcessing: MockedResponse = {
   }
 }
 
-const mockSubtitleTrackErrored: MockedResponse = {
+const mockSubtitleTrackErrored: MockLink.MockedResponse = {
   request: {
     query: GET_MY_GENERATED_MUX_SUBTITLE_TRACK,
     variables: {
@@ -122,7 +123,7 @@ const mockSubtitleTrackErrored: MockedResponse = {
   }
 }
 
-const mockSubtitleTrackError: MockedResponse = {
+const mockSubtitleTrackError: MockLink.MockedResponse = {
   request: {
     query: GET_MY_GENERATED_MUX_SUBTITLE_TRACK,
     variables: {

@@ -1,4 +1,5 @@
-import { gql, useLazyQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { skipToken, useQuery } from '@apollo/client/react'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
@@ -20,7 +21,7 @@ import {
 } from '../../../__generated__/GetJourneyWithPermissions'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
-import { useUserInvitesLazyQuery } from '../../libs/useUserInvitesLazyQuery'
+import { useUserInvitesQuery } from '../../libs/useUserInvitesLazyQuery'
 import { UserTeamList } from '../Team/TeamManageDialog/UserTeamList'
 
 import { AddUserSection } from './AddUserSection'
@@ -83,13 +84,20 @@ export function AccessDialog({
   onClose
 }: AccessDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [, { loading, data, refetch }] =
-    useLazyQuery<GetJourneyWithPermissions>(GET_JOURNEY_WITH_PERMISSIONS, {
-      variables: { id: journeyId }
-    })
+  // Apollo Client 4 dropped `variables` from `useLazyQuery` and no longer
+  // allows executing one outside an event handler, so both queries are now
+  // plain `useQuery`s held with `skipToken` until the dialog opens. The
+  // network-only policy preserves the previous refetch-on-open behaviour.
+  const { loading, data } = useQuery<GetJourneyWithPermissions>(
+    GET_JOURNEY_WITH_PERMISSIONS,
+    open === true
+      ? { variables: { id: journeyId }, fetchPolicy: 'network-only' }
+      : skipToken
+  )
 
-  const [, { data: userInviteData, refetch: refetchInvites }] =
-    useUserInvitesLazyQuery({ journeyId })
+  const { data: userInviteData } = useUserInvitesQuery(
+    open === true ? journeyId : undefined
+  )
 
   const { loadUser, data: user } = useCurrentUserLazyQuery()
 
@@ -162,11 +170,9 @@ export function AccessDialog({
 
   useEffect(() => {
     if (open === true) {
-      void refetch()
-      void refetchInvites()
       void loadUser()
     }
-  }, [open, refetch, refetchInvites, loadUser])
+  }, [open, loadUser])
 
   return (
     <Dialog
