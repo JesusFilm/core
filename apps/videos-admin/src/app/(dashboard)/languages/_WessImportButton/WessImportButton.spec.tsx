@@ -1,11 +1,12 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { RenderResult, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
 import { WESS_IMPORT, WessImportButton } from './WessImportButton'
 
-const successMock: MockedResponse = {
+const successMock: MockLink.MockedResponse = {
   request: { query: WESS_IMPORT },
   result: {
     data: {
@@ -22,13 +23,13 @@ const successMock: MockedResponse = {
   }
 }
 
-const errorMock: MockedResponse = {
+const errorMock: MockLink.MockedResponse = {
   request: { query: WESS_IMPORT },
   error: new Error('WESS_API_TOKEN environment variable is not set')
 }
 
 function renderButton(
-  mocks: MockedResponse[] = [],
+  mocks: MockLink.MockedResponse[] = [],
   onImportComplete?: () => void
 ): RenderResult {
   return render(

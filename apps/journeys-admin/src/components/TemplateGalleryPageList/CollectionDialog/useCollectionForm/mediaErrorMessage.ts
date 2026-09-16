@@ -1,20 +1,18 @@
-import { GraphQLFormattedError } from 'graphql'
+import { CombinedGraphQLErrors } from '@apollo/client'
 import { TFunction } from 'i18next'
 
 /**
- * Pulls the structured media-validation `reason` off a list of GraphQLErrors
- * (an ApolloError's `graphQLErrors`). Scans every error, not just `[0]`, since a
- * batched response can carry the actionable extension at any index. Returns
- * `undefined` when none carries a string `reason` (e.g. a transport/network
- * error). Shared by the save path and the live preview so both read the
- * backend's reason identically and can't drift.
+ * Pulls the structured media-validation `reason` off a failed operation's
+ * GraphQL errors. Scans every error, not just `[0]`, since a batched response
+ * can carry the actionable extension at any index. Returns `undefined` when the
+ * failure carried no GraphQL errors (e.g. a transport/network error) or none
+ * carries a string `reason`. Takes the raw error so the save path and the live
+ * preview unwrap it identically and can't drift.
  */
-export function mediaErrorReason(
-  graphQLErrors: ReadonlyArray<GraphQLFormattedError>
-): string | undefined {
-  const raw = graphQLErrors.find(
-    (e) => typeof e.extensions?.reason === 'string'
-  )?.extensions?.reason
+export function mediaErrorReason(error: unknown): string | undefined {
+  if (!CombinedGraphQLErrors.is(error)) return undefined
+  const raw = error.errors.find((e) => typeof e.extensions?.reason === 'string')
+    ?.extensions?.reason
   return typeof raw === 'string' ? raw : undefined
 }
 

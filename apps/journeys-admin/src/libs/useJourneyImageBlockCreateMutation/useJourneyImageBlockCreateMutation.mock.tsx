@@ -1,10 +1,10 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { JourneyImageBlockCreate } from '../../../__generated__/JourneyImageBlockCreate'
 
 import { JOURNEY_IMAGE_BLOCK_CREATE } from './useJourneyImageBlockCreateMutation'
 
-export const journeyImageBlockCreateMock: MockedResponse<JourneyImageBlockCreate> =
+export const journeyImageBlockCreateMock: MockLink.MockedResponse<JourneyImageBlockCreate> =
   {
     request: {
       query: JOURNEY_IMAGE_BLOCK_CREATE,
@@ -34,5 +34,5 @@ export const journeyImageBlockCreateMock: MockedResponse<JourneyImageBlockCreate
           customizable: null
         }
       }
-    })) as MockedResponse<JourneyImageBlockCreate>['result']
+    })) as MockLink.MockedResponse<JourneyImageBlockCreate>['result']
   }

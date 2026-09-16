@@ -1,9 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import {
   JourneyCustomizationDescriptionTranslate,
@@ -21,11 +17,11 @@ export const JOURNEY_CUSTOMIZATION_DESCRIPTION_TRANSLATE = gql`
 `
 
 export function useJourneyCustomizationDescriptionTranslateMutation(
-  options?: MutationHookOptions<
+  options?: useMutation.Options<
     JourneyCustomizationDescriptionTranslate,
     JourneyCustomizationDescriptionTranslateVariables
   >
-): MutationTuple<
+): useMutation.ResultTuple<
   JourneyCustomizationDescriptionTranslate,
   JourneyCustomizationDescriptionTranslateVariables
 > {

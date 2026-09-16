@@ -1,9 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import {
   TemplateGalleryPageAssignJourney,
@@ -64,11 +60,11 @@ export const TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY = gql`
 `
 
 export function useTemplateGalleryPageAssignJourneyMutation(
-  options?: MutationHookOptions<
+  options?: useMutation.Options<
     TemplateGalleryPageAssignJourney,
     TemplateGalleryPageAssignJourneyVariables
   >
-): MutationTuple<
+): useMutation.ResultTuple<
   TemplateGalleryPageAssignJourney,
   TemplateGalleryPageAssignJourneyVariables
 > {
