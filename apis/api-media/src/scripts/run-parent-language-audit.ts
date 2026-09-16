@@ -38,20 +38,23 @@ function isPendingIndexRetryList(value: unknown): value is PendingIndexRetry[] {
   )
 }
 
+// Only a missing retry file (ENOENT) is treated as an empty queue. Any other
+// read failure, or a file that exists but fails to parse as JSON, is
+// propagated so the run fails loudly instead of silently discarding
+// outstanding retries — savePendingIndexRetries would otherwise overwrite the
+// file and lose them for good.
 async function loadPendingIndexRetries(): Promise<PendingIndexRetry[]> {
   let raw: string
   try {
     raw = await readFile(RETRY_PATH, 'utf-8')
-  } catch {
-    return []
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      return []
+    }
+    throw error
   }
 
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(raw)
-  } catch {
-    return []
-  }
+  const parsed: unknown = JSON.parse(raw)
 
   if (!isPendingIndexRetryList(parsed)) {
     logger.warn(

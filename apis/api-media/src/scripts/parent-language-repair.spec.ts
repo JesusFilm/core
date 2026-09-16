@@ -33,7 +33,11 @@ const addLanguageGap: ParentVariantAuditEntry = {
 }
 
 // Backs the real (unmocked) createEmptyParentVariant helper so these tests
-// exercise the actual scoped-write path rather than mocking it away.
+// exercise the actual scoped-write path rather than mocking it away. The
+// video/videoVariant findUnique mocks reflect the post-creation state (the
+// language already available, the Variant already published, no media) since
+// writeParentLanguageRepair re-reads and revalidates after createEmptyParentVariant
+// returns, whether it created a Variant or found an existing one.
 function mockCreateEmptyParentVariantPrisma(): void {
   ;(prismaMock.videoVariant.findFirst as any).mockImplementation(
     async (args: any) => {
@@ -43,11 +47,20 @@ function mockCreateEmptyParentVariantPrisma(): void {
   )
   prismaMock.video.findUnique.mockResolvedValue({
     slug: 'do-you-ever-wonder',
-    availableLanguages: []
+    availableLanguages: ['20770']
   } as any)
-  prismaMock.$transaction.mockImplementation(
-    async (callback: any) => await callback(prismaMock)
-  )
+  prismaMock.videoVariant.findUnique.mockResolvedValue({
+    id: '20770_series-1',
+    hls: '',
+    dash: '',
+    share: '',
+    masterUrl: null,
+    duration: 0,
+    muxVideoId: null,
+    assetId: null,
+    published: true,
+    downloads: []
+  } as any)
   prismaMock.videoVariant.create.mockResolvedValue({
     id: '20770_series-1'
   } as any)
@@ -57,6 +70,13 @@ function mockCreateEmptyParentVariantPrisma(): void {
 describe('applyParentLanguageRepairs', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    prismaMock.$transaction.mockImplementation(
+      async (callback: any) => await callback(prismaMock)
+    )
+    // Default to a successful Algolia Variant write; individual tests override
+    // with mockResolvedValueOnce(false) or mockRejectedValueOnce to exercise
+    // the indexIncomplete path.
+    vi.mocked(updateVideoVariantInAlgolia).mockResolvedValue(true)
   })
 
   it('dry run never writes or indexes, and passes pendingIndexRetries through unchanged', async () => {
@@ -151,10 +171,53 @@ describe('applyParentLanguageRepairs', () => {
     ])
   })
 
+  it('treats a Variant indexing result of false as incomplete, not repaired', async () => {
+    mockCreateEmptyParentVariantPrisma()
+    vi.mocked(updateVideoVariantInAlgolia).mockResolvedValueOnce(false)
+
+    const result = await applyParentLanguageRepairs([createGap], {
+      apply: true
+    })
+
+    expect(result.repaired).toEqual([])
+    expect(result.indexIncomplete).toEqual([
+      expect.objectContaining({
+        parentVideoId: 'series-1',
+        variantId: '20770_series-1',
+        result: 'indexIncomplete',
+        error: expect.stringContaining('skipped')
+      })
+    ])
+    expect(result.pendingIndexRetries).toEqual([
+      {
+        parentVideoId: 'series-1',
+        childVideoId: 'episode-1',
+        languageId: '20770',
+        variantId: '20770_series-1',
+        action: 'createGeneratedParentVariant'
+      }
+    ])
+  })
+
   it('performs no further writes when the generated parent Variant already exists (idempotent rerun)', async () => {
     ;(prismaMock.videoVariant.findFirst as any).mockResolvedValue({
       id: '20770_series-1'
     })
+    prismaMock.video.findUnique.mockResolvedValue({
+      availableLanguages: ['20770']
+    } as any)
+    prismaMock.videoVariant.findUnique.mockResolvedValue({
+      id: '20770_series-1',
+      hls: '',
+      dash: '',
+      share: '',
+      masterUrl: null,
+      duration: 0,
+      muxVideoId: null,
+      assetId: null,
+      published: true,
+      downloads: []
+    } as any)
 
     const result = await applyParentLanguageRepairs([createGap], {
       apply: true
@@ -164,6 +227,42 @@ describe('applyParentLanguageRepairs', () => {
     expect(prismaMock.$transaction).not.toHaveBeenCalled()
     expect(updateVideoInAlgolia).toHaveBeenCalledWith('series-1')
     expect(result.repaired).toHaveLength(1)
+  })
+
+  it('revalidates a Variant returned by createEmptyParentVariant when it already existed with media', async () => {
+    ;(prismaMock.videoVariant.findFirst as any).mockResolvedValue({
+      id: '20770_series-1'
+    })
+    prismaMock.video.findUnique.mockResolvedValue({
+      availableLanguages: []
+    } as any)
+    prismaMock.videoVariant.findUnique.mockResolvedValue({
+      id: '20770_series-1',
+      hls: 'https://stream.example/parent.m3u8',
+      dash: '',
+      share: '',
+      masterUrl: null,
+      duration: 120,
+      muxVideoId: 'mux-parent',
+      assetId: null,
+      published: true,
+      downloads: []
+    } as any)
+
+    const result = await applyParentLanguageRepairs([createGap], {
+      apply: true
+    })
+
+    expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
+    expect(prismaMock.video.update).not.toHaveBeenCalled()
+    expect(updateVideoInAlgolia).not.toHaveBeenCalled()
+    expect(result.failed).toEqual([
+      expect.objectContaining({
+        parentVideoId: 'series-1',
+        result: 'failed',
+        error: expect.stringContaining('now contains media')
+      })
+    ])
   })
 
   it('adds the missing parent language and indexes when the parent Variant already exists without media', async () => {

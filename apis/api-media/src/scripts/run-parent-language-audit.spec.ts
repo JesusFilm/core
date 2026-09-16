@@ -1,3 +1,4 @@
+import { readFile } from 'fs/promises'
 import path from 'path'
 
 import {
@@ -128,6 +129,28 @@ describe('run-parent-language-audit', () => {
       pendingIndexRetries: [savedRetry]
     })
     expect(files.get(RETRY_PATH)).toBe('[]')
+  })
+
+  it('propagates a non-ENOENT retry-file read error instead of treating it as an empty queue', async () => {
+    const permissionError: NodeJS.ErrnoException = new Error('EACCES')
+    permissionError.code = 'EACCES'
+    vi.mocked(readFile).mockRejectedValueOnce(permissionError)
+    mockedAudit.mockResolvedValue(auditResult())
+    mockedRepair.mockResolvedValue(repairSummary({ applied: true }))
+
+    await expect(runParentLanguageAudit(true)).rejects.toThrow('EACCES')
+
+    expect(mockedRepair).not.toHaveBeenCalled()
+  })
+
+  it('propagates invalid JSON in the retry file instead of silently discarding it', async () => {
+    files.set(RETRY_PATH, 'not valid json')
+    mockedAudit.mockResolvedValue(auditResult())
+    mockedRepair.mockResolvedValue(repairSummary({ applied: true }))
+
+    await expect(runParentLanguageAudit(true)).rejects.toThrow()
+
+    expect(mockedRepair).not.toHaveBeenCalled()
   })
 
   it('exits non-zero when apply mode leaves index-incomplete or failed entries', async () => {

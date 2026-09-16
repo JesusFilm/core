@@ -226,7 +226,7 @@ nx run api-media:parent-language-audit -- --apply
 - In apply mode, a saved retry list at
   `.cache/api-media/parent-language-audit-index-retry.json` of Variants whose
   database repair succeeded but whose indexing did not; the next apply run
-  loads and retries these first.
+  loads and also retries these.
 
 ## Download Size Backfill Script
 
