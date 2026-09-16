@@ -166,6 +166,68 @@ PARENT_VARIANT_RECOVERY_ID=some_other_series nx run api-media:recover-parent-var
 - `--apply`: CLI flag — pass it to write; otherwise dry-run only
 - `PARENT_VARIANT_RECOVERY_ID`: parent Video ID to audit/recover (default: `6_Acts`)
 
+## Parent-Language Audit and Repair Script
+
+Catalog-wide audit and repair for the parent-language invariant: every
+published Child Video with at least one published Variant in a language must
+have a corresponding generated parent Variant on every parent that owns it,
+and that language must be reflected in the parent's `availableLanguages`.
+Discovery is relationship-based (`childIds`), not Label-based, so series,
+collections, feature-film containers, and any future container Label are
+covered whenever they own Children — Draft parents and partial-language
+containers included.
+
+Builds on the `videoPublishChildren` mutation's `parentVariantsOnly` mode:
+`createEmptyParentVariant` remains the only place a generated parent Variant
+is created. This tool adds catalog-wide discovery, an explicit apply mode,
+media-safety checks at write time (not just at scan time), and Algolia
+indexing with completion tracking.
+
+Dry run is the default and never writes. Apply mode requires `--apply` and
+only ever repairs a gap that is deterministic:
+
+- **Missing parent Variant**: creates the generated Variant for that
+  parent/language via `createEmptyParentVariant` (idempotent — a rerun that
+  finds the Variant already there does nothing further).
+- **Existing generated parent Variant, parent language not recorded**: adds
+  the language to the parent's `availableLanguages` and republishes the
+  Variant if it was left unpublished.
+- **Existing parent Variant with real media** (Mux, stream URLs, duration, or
+  Downloads): always reported as ambiguous, never mutated — checked again at
+  write time in case the Variant gained media after the dry-run scan.
+
+A repair is not complete until both the parent Video and parent Variant are
+reindexed in Algolia. If indexing fails, the database write is kept (it is
+safe and idempotent) but the entry is reported as `indexIncomplete` and
+carried forward in a saved retry list so the next apply run retries indexing
+for it without repeating the database write. Apply mode exits non-zero
+whenever any entry is `indexIncomplete` or `failed`; dry run always exits 0.
+
+### Usage
+
+```bash
+# Dry run (default) across the whole catalog
+nx run api-media:parent-language-audit
+
+# Apply the repair
+nx run api-media:parent-language-audit -- --apply
+```
+
+### Flags
+
+- `--apply`: CLI flag — pass it to write and index; otherwise dry-run only
+
+### Output
+
+- A JSONL report at `.cache/api-media/parent-language-audit-report.jsonl`
+  listing every proposed gap, ambiguous Variant, and (in apply mode) repair
+  outcome — identifying the Video, parent, language, Variant, action, and
+  result.
+- In apply mode, a saved retry list at
+  `.cache/api-media/parent-language-audit-index-retry.json` of Variants whose
+  database repair succeeded but whose indexing did not; the next apply run
+  loads and retries these first.
+
 ## Download Size Backfill Script
 
 Finds every Download whose `size` is null, zero, or negative, classifies its
