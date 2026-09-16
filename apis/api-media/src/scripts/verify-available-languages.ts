@@ -54,7 +54,7 @@ export async function runVerifyAvailableLanguages(
   let checked = 0
   let mismatchCount = 0
   let fixedCount = 0
-  let unresolvedVideoIds: string[] = []
+  let unresolvedVideoIds: string[]
   let calls = 0
 
   do {
