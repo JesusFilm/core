@@ -141,6 +141,189 @@ describe('ClientLayout', () => {
     }))
   })
 
+  // useQuery is mocked, so the two queries in the layout are distinguished by
+  // call order: Variants first, then uploads.
+  function queryResult(data: unknown, overrides: Record<string, unknown> = {}) {
+    return {
+      data,
+      loading: false,
+      error: undefined,
+      fetchMore: vi.fn(),
+      refetch: mockRefetch,
+      dataState: 'complete' as const,
+      networkStatus: NetworkStatus.ready,
+      client: {} as any,
+      startPolling: vi.fn(),
+      stopPolling: vi.fn(),
+      subscribeToMore: vi.fn(),
+      updateQuery: vi.fn(),
+      observable: {} as any,
+      variables: {},
+      previousData: undefined,
+      ...overrides
+    } as any
+  }
+
+  function mockQueriesInOrder(
+    getVariantsResult: () => unknown,
+    getUploadsResult: () => unknown
+  ) {
+    const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
+    let call = 0
+    mockedUseQuery.mockImplementation(
+      () => (call++ % 2 === 0 ? getVariantsResult() : getUploadsResult()) as any
+    )
+  }
+
+  it('shows a pending publish as Publishing and polls until it completes', () => {
+    const variantStartPolling = vi.fn()
+    mockQueriesInOrder(
+      () =>
+        queryResult(
+          {
+            adminVideo: {
+              id: 'video123',
+              slug: 'test-video',
+              published: true,
+              variants: [
+                {
+                  id: 'variant1',
+                  published: false,
+                  reconciliation: {
+                    id: 'reconciliation1',
+                    status: 'processing',
+                    published: true
+                  },
+                  language: {
+                    id: 'lang1',
+                    slug: 'english',
+                    name: [{ value: 'English' }]
+                  }
+                }
+              ]
+            }
+          },
+          { startPolling: variantStartPolling }
+        ),
+      () => queryResult({ videoVariantUploads: [] })
+    )
+
+    render(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Publishing...')).toBeInTheDocument()
+    expect(screen.queryByText('Draft')).not.toBeInTheDocument()
+    expect(variantStartPolling).toHaveBeenCalledWith(5000)
+  })
+
+  it('leaves a draft variant with no pending publish as Draft', () => {
+    const variantStartPolling = vi.fn()
+    mockQueriesInOrder(
+      () =>
+        queryResult(
+          {
+            adminVideo: {
+              id: 'video123',
+              slug: 'test-video',
+              published: true,
+              variants: [
+                {
+                  id: 'variant1',
+                  published: false,
+                  reconciliation: {
+                    id: 'reconciliation1',
+                    status: 'complete',
+                    published: false
+                  },
+                  language: {
+                    id: 'lang1',
+                    slug: 'english',
+                    name: [{ value: 'English' }]
+                  }
+                }
+              ]
+            }
+          },
+          { startPolling: variantStartPolling }
+        ),
+      () => queryResult({ videoVariantUploads: [] })
+    )
+
+    render(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Draft')).toBeInTheDocument()
+    expect(variantStartPolling).not.toHaveBeenCalled()
+  })
+
+  it('refetches variants once an in-progress upload finishes', async () => {
+    let uploads: unknown[] = [
+      {
+        id: 'upload1',
+        source: 'videos-admin',
+        sourceKey: 'source-key-1',
+        status: 'muxCreated',
+        videoId: 'video123',
+        languageId: '184631',
+        language: { id: '184631', name: [{ value: 'Upload English' }] },
+        edition: 'base',
+        originalFilename: 'test-video.mp4',
+        contentType: 'video/mp4',
+        contentLength: '12345',
+        errorMessage: null,
+        r2AssetId: 'r2-id',
+        muxVideoId: 'mux-id',
+        videoVariantId: null,
+        updatedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString()
+      }
+    ]
+    mockQueriesInOrder(
+      () =>
+        queryResult({
+          adminVideo: {
+            id: 'video123',
+            slug: 'test-video',
+            published: true,
+            variants: mockVideoVariants
+          }
+        }),
+      () => queryResult({ videoVariantUploads: uploads })
+    )
+
+    const { rerender } = render(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    expect(mockRefetch).not.toHaveBeenCalled()
+
+    // the worker finished: the upload leaves the in-progress list
+    uploads = []
+    rerender(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(mockRefetch).toHaveBeenCalled())
+  })
+
   it('should render variants', () => {
     render(
       <MockedProvider>
