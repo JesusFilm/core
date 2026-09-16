@@ -185,7 +185,12 @@ describe('countries', () => {
         },
         countryLanguages: [
           {
-            language: omit(language, ['createdAt', 'updatedAt', 'hasVideos', 'searchable']),
+            language: omit(language, [
+              'createdAt',
+              'updatedAt',
+              'hasVideos',
+              'searchable'
+            ]),
             speakers: 100,
             displaySpeakers: 100,
             primary: true,
@@ -330,7 +335,12 @@ describe('countries', () => {
         },
         countryLanguages: [
           {
-            language: omit(language, ['createdAt', 'updatedAt', 'hasVideos', 'searchable']),
+            language: omit(language, [
+              'createdAt',
+              'updatedAt',
+              'hasVideos',
+              'searchable'
+            ]),
             speakers: 100,
             displaySpeakers: 100,
             primary: true,
