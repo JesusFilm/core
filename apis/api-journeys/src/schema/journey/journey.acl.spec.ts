@@ -6,7 +6,7 @@ import {
 
 import { Action } from '../../lib/auth/ability'
 
-import { Journey, journeyAcl } from './journey.acl'
+import { Journey, canManageTemplateField, journeyAcl } from './journey.acl'
 
 describe('journeyAcl', () => {
   const user = { id: 'userId' }
@@ -344,6 +344,119 @@ describe('journeyAcl', () => {
 
     it('denies when user has no userTeam or userJourneys', () => {
       expect(can(Action.Export, journeyEmpty, user)).toBe(false)
+    })
+  })
+})
+
+describe('canManageTemplateField', () => {
+  const user = { id: 'userId', firstName: 'Test', emailVerified: true }
+  const publisher = { ...user, roles: ['publisher'] }
+
+  const jfpTemplateNoRoles = {
+    id: 'journeyId',
+    template: true,
+    teamId: 'jfp-team',
+    userJourneys: [],
+    team: { userTeams: [] }
+  } as unknown as Journey
+
+  const jfpTemplateTeamManager = {
+    id: 'journeyId',
+    template: true,
+    teamId: 'jfp-team',
+    userJourneys: [],
+    team: { userTeams: [{ userId: user.id, role: UserTeamRole.manager }] }
+  } as unknown as Journey
+
+  const localTemplateNoRoles = {
+    id: 'journeyId',
+    template: true,
+    teamId: 'teamId',
+    userJourneys: [],
+    team: { userTeams: [] }
+  } as unknown as Journey
+
+  const localTemplateTeamMember = {
+    id: 'journeyId',
+    template: true,
+    teamId: 'teamId',
+    userJourneys: [],
+    team: { userTeams: [{ userId: user.id, role: UserTeamRole.member }] }
+  } as unknown as Journey
+
+  const localTemplateJourneyEditor = {
+    id: 'journeyId',
+    template: true,
+    teamId: 'teamId',
+    userJourneys: [{ userId: user.id, role: UserJourneyRole.editor }],
+    team: { userTeams: [] }
+  } as unknown as Journey
+
+  const journeyOwnerNonTemplate = {
+    id: 'journeyId',
+    template: false,
+    teamId: 'teamId',
+    userJourneys: [{ userId: user.id, role: UserJourneyRole.owner }],
+    team: { userTeams: [] }
+  } as unknown as Journey
+
+  const journeyNoRolesNonTemplate = {
+    id: 'journeyId',
+    template: false,
+    teamId: 'teamId',
+    userJourneys: [],
+    team: { userTeams: [] }
+  } as unknown as Journey
+
+  describe('publisher', () => {
+    it('allows jfp-team templates without team or journey roles (QA-563)', () => {
+      expect(canManageTemplateField(jfpTemplateNoRoles, publisher)).toBe(true)
+    })
+
+    it('denies other teams local templates without team or journey roles', () => {
+      expect(canManageTemplateField(localTemplateNoRoles, publisher)).toBe(
+        false
+      )
+    })
+
+    it('allows local templates through team or journey roles', () => {
+      expect(canManageTemplateField(localTemplateTeamMember, publisher)).toBe(
+        true
+      )
+    })
+
+    it('allows converting an owned journey to a template', () => {
+      expect(canManageTemplateField(journeyOwnerNonTemplate, publisher)).toBe(
+        true
+      )
+    })
+
+    it('denies a non-template journey without team or journey roles', () => {
+      expect(canManageTemplateField(journeyNoRolesNonTemplate, publisher)).toBe(
+        false
+      )
+    })
+  })
+
+  describe('non-publisher', () => {
+    it('allows local templates for team members and journey editors', () => {
+      expect(canManageTemplateField(localTemplateTeamMember, user)).toBe(true)
+      expect(canManageTemplateField(localTemplateJourneyEditor, user)).toBe(
+        true
+      )
+    })
+
+    it('denies jfp-team templates even for team managers', () => {
+      expect(canManageTemplateField(jfpTemplateTeamManager, user)).toBe(false)
+    })
+
+    it('denies templates without team or journey roles', () => {
+      expect(canManageTemplateField(jfpTemplateNoRoles, user)).toBe(false)
+      expect(canManageTemplateField(localTemplateNoRoles, user)).toBe(false)
+    })
+
+    it('denies non-template journeys even for owners', () => {
+      expect(canManageTemplateField(journeyOwnerNonTemplate, user)).toBe(false)
     })
   })
 })

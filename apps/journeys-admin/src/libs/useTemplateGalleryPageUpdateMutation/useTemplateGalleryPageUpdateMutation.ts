@@ -1,9 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import {
   TemplateGalleryPageUpdate,
@@ -50,11 +46,11 @@ export const TEMPLATE_GALLERY_PAGE_UPDATE = gql`
 `
 
 export function useTemplateGalleryPageUpdateMutation(
-  options?: MutationHookOptions<
+  options?: useMutation.Options<
     TemplateGalleryPageUpdate,
     TemplateGalleryPageUpdateVariables
   >
-): MutationTuple<
+): useMutation.ResultTuple<
   TemplateGalleryPageUpdate,
   TemplateGalleryPageUpdateVariables
 > {

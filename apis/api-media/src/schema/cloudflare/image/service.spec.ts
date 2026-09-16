@@ -16,7 +16,9 @@ const mockCloudflare = mockDeep<Cloudflare>()
 
 vi.mock('cloudflare', () => ({
   __esModule: true,
-  default: vi.fn(() => mockCloudflare)
+  default: vi.fn(function () {
+    return mockCloudflare
+  })
 }))
 
 describe('ImageService', () => {

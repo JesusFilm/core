@@ -52,6 +52,17 @@ export function reducer(state: FilterState, action: FilterAction): FilterState {
   }
 }
 
+const VideoLabelSchema = z.enum([
+  'collection',
+  'episode',
+  'featureFilm',
+  'segment',
+  'series',
+  'shortFilm',
+  'trailer',
+  'behindTheScenes'
+])
+
 /**
  * Every field catches its own parse failure, so one malformed query param
  * drops only that filter instead of discarding the whole model.
@@ -72,6 +83,12 @@ const FilterModelSchema = z.object({
   title: z
     .object({
       equals: z.string()
+    })
+    .optional()
+    .catch(undefined),
+  label: z
+    .object({
+      is: VideoLabelSchema
     })
     .optional()
     .catch(undefined),
@@ -117,6 +134,7 @@ function getColumnVisibilityModel(
     'locked',
     'id',
     'title',
+    'label',
     'description',
     'published'
   ]
@@ -162,6 +180,14 @@ function getWhereArgs(model: GridFilterModel): VideosWhereFilter {
         item.value != null
       )
         where.locked = item.value
+
+      if (
+        item.field === 'label' &&
+        item.operator === 'is' &&
+        item.value != null &&
+        item.value !== ''
+      )
+        where.labels = [item.value]
     })
   }
 

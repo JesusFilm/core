@@ -204,7 +204,7 @@ describe('countryLanguageUpdate', () => {
       primary: false,
       suggested: true,
       order: 3
-    } as unknown as CountryLanguage)
+    })
 
     const data = await authClient({
       document: COUNTRY_LANGUAGE_UPDATE_MUTATION,

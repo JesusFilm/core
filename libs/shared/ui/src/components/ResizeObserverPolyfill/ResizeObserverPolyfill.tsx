@@ -4,10 +4,12 @@ import { useEffect } from 'react'
 
 // Ensure ResizeObserver exists as early as possible in tests
 declare const window: any
-declare const globalThis: any
+// Aliased rather than redeclared: `declare const globalThis` shadows the real
+// global binding, which ESLint 10 reports as no-shadow-restricted-names.
+const globalScope = globalThis as any
 if (
   typeof window !== 'undefined' &&
-  (window.ResizeObserver == null || globalThis.ResizeObserver == null)
+  (window.ResizeObserver == null || globalScope.ResizeObserver == null)
 ) {
   try {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -15,7 +17,7 @@ if (
     const Polyfill = Mod?.default ?? Mod
     if (typeof Polyfill === 'function') {
       window.ResizeObserver = Polyfill
-      globalThis.ResizeObserver = Polyfill
+      globalScope.ResizeObserver = Polyfill
     }
   } catch {
     // noop - will attempt dynamic import in useEffect below

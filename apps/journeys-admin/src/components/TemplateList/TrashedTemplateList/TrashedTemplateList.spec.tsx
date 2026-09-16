@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type MockedFunction } from 'vitest'
@@ -229,7 +229,7 @@ describe('TrashedTemplateList', () => {
     )
     await waitFor(() =>
       expect(
-        getByText('Your trashed templates will appear here.')
+        getByText('Your trashed Templates will appear here.')
       ).toBeInTheDocument()
     )
   })

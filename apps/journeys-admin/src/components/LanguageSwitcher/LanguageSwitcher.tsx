@@ -86,9 +86,7 @@ export function LanguageSwitcher({
         open={open}
         onClose={handleClose}
         dialogTitle={{
-          title: t('Change Language', {
-            lng: previousLanguageCode
-          }),
+          title: t('Change Language'),
           closeButton: true
         }}
       >
@@ -135,15 +133,11 @@ export function LanguageSwitcher({
               severity="warning"
               action={
                 <Button onClick={handleRevert} color="inherit" size="small">
-                  {t('Revert', {
-                    lng: previousLanguageCode
-                  })}
+                  {t('Revert')}
                 </Button>
               }
             >
-              {t('Would you like to revert to previous language?', {
-                lng: previousLanguageCode
-              })}
+              {t('Would you like to revert to previous language?')}
             </Alert>
           )}
         </Stack>

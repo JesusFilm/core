@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type MockedFunction } from 'vitest'
@@ -182,7 +182,7 @@ describe('ActiveTemplateList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByText('No templates to display.')).toBeInTheDocument()
+      expect(getByText('No Templates to display.')).toBeInTheDocument()
     )
   })
 

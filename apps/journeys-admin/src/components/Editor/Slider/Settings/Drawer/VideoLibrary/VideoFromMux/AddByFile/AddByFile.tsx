@@ -59,7 +59,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   }
 
   const onDropAccepted = async (files: File[]): Promise<void> => {
-    let duration: number | null = null
+    let duration: number | null
     try {
       duration = await getVideoDuration(files[0])
     } catch (error) {

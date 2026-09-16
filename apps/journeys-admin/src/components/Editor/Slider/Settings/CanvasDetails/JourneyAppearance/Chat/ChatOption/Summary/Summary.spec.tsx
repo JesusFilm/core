@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
@@ -245,7 +246,7 @@ describe('Summary', () => {
       }
     }))
 
-    const createMock: MockedResponse<JourneyChatButtonCreate> = {
+    const createMock: MockLink.MockedResponse<JourneyChatButtonCreate> = {
       request: {
         query: JOURNEY_CHAT_BUTTON_CREATE,
         variables: {
@@ -256,7 +257,7 @@ describe('Summary', () => {
       result: createResult
     }
 
-    const removeMock: MockedResponse<JourneyChatButtonRemove> = {
+    const removeMock: MockLink.MockedResponse<JourneyChatButtonRemove> = {
       request: {
         query: JOURNEY_CHAT_BUTTON_REMOVE,
         variables: { chatButtonRemoveId: 'new-chat.id' }
@@ -311,7 +312,7 @@ describe('Summary', () => {
       }
     }))
 
-    const removeMock: MockedResponse<JourneyChatButtonRemove> = {
+    const removeMock: MockLink.MockedResponse<JourneyChatButtonRemove> = {
       request: {
         query: JOURNEY_CHAT_BUTTON_REMOVE,
         variables: { chatButtonRemoveId: 'chat.id' }
@@ -319,7 +320,7 @@ describe('Summary', () => {
       result: removeResult
     }
 
-    const createMock: MockedResponse<JourneyChatButtonCreate> = {
+    const createMock: MockLink.MockedResponse<JourneyChatButtonCreate> = {
       request: {
         query: JOURNEY_CHAT_BUTTON_CREATE,
         variables: {

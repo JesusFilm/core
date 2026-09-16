@@ -27,12 +27,14 @@ describe('ScrollReveal', () => {
     const observe = vi.fn()
     vi.stubGlobal(
       'IntersectionObserver',
-      vi.fn().mockImplementation(() => ({
-        observe,
-        disconnect: vi.fn(),
-        unobserve: vi.fn(),
-        takeRecords: vi.fn(() => [])
-      }))
+      vi.fn(function () {
+        return {
+          observe,
+          disconnect: vi.fn(),
+          unobserve: vi.fn(),
+          takeRecords: vi.fn(() => [])
+        }
+      })
     )
     render(
       <ScrollReveal>
@@ -53,12 +55,14 @@ describe('ScrollReveal', () => {
     const observe = vi.fn()
     vi.stubGlobal(
       'IntersectionObserver',
-      vi.fn().mockImplementation(() => ({
-        observe,
-        disconnect: vi.fn(),
-        unobserve: vi.fn(),
-        takeRecords: vi.fn(() => [])
-      }))
+      vi.fn(function () {
+        return {
+          observe,
+          disconnect: vi.fn(),
+          unobserve: vi.fn(),
+          takeRecords: vi.fn(() => [])
+        }
+      })
     )
     render(
       <ScrollReveal>
