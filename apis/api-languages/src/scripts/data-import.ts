@@ -72,7 +72,8 @@ async function decompressFile(
       await fsPromises.access(inputFile)
     } catch (error) {
       throw new Error(
-        `Input file does not exist or is not accessible: ${inputFile}`
+        `Input file does not exist or is not accessible: ${inputFile}`,
+        { cause: error }
       )
     }
 

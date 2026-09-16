@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { UpChunk } from '@mux/upchunk'
 import { act, render, renderHook, waitFor } from '@testing-library/react'
 import { ReactElement, ReactNode } from 'react'
@@ -33,7 +34,7 @@ vi.mock('notistack', () => ({
 
 const mockJourney = { ...mockJourneyBase, id: 'journey-1' }
 
-const createMuxVideoUploadByFileMock: MockedResponse = {
+const createMuxVideoUploadByFileMock: MockLink.MockedResponse = {
   request: {
     query: CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION,
     variables: { name: 'video.mp4' }
@@ -49,7 +50,7 @@ const createMuxVideoUploadByFileMock: MockedResponse = {
   }
 }
 
-const createMuxVideoUploadByFileErrorMock: MockedResponse = {
+const createMuxVideoUploadByFileErrorMock: MockLink.MockedResponse = {
   request: {
     query: CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION,
     variables: { name: 'video.mp4' }
@@ -57,7 +58,7 @@ const createMuxVideoUploadByFileErrorMock: MockedResponse = {
   error: new Error('Upload failed')
 }
 
-const getMyMuxVideoReadyMock: MockedResponse = {
+const getMyMuxVideoReadyMock: MockLink.MockedResponse = {
   request: {
     query: GET_MY_MUX_VIDEO_QUERY,
     variables: { id: 'mux-video-id' }
@@ -75,7 +76,7 @@ const getMyMuxVideoReadyMock: MockedResponse = {
   }
 }
 
-const getMyMuxVideoProcessingMock: MockedResponse = {
+const getMyMuxVideoProcessingMock: MockLink.MockedResponse = {
   request: {
     query: GET_MY_MUX_VIDEO_QUERY,
     variables: { id: 'mux-video-id' }
@@ -93,7 +94,7 @@ const getMyMuxVideoProcessingMock: MockedResponse = {
   }
 }
 
-const videoBlockUpdateMock: MockedResponse = {
+const videoBlockUpdateMock: MockLink.MockedResponse = {
   request: {
     query: VIDEO_BLOCK_UPDATE,
     variables: {
@@ -114,7 +115,7 @@ const videoBlockUpdateMock: MockedResponse = {
   }
 }
 
-function createWrapper(mocks: MockedResponse[] = []): React.FC<{
+function createWrapper(mocks: MockLink.MockedResponse[] = []): React.FC<{
   children: ReactNode
 }> {
   const Wrapper = function Wrapper({
@@ -123,7 +124,7 @@ function createWrapper(mocks: MockedResponse[] = []): React.FC<{
     children: ReactNode
   }): ReactElement {
     return (
-      <MockedProvider mocks={mocks} addTypename={false}>
+      <MockedProvider mocks={mocks}>
         <JourneyProvider
           value={{ journey: mockJourney, renderMode: 'customize' }}
         >
@@ -270,7 +271,7 @@ describe('TemplateVideoUploadProvider', () => {
         .mockReturnValueOnce(mockUpload1)
         .mockReturnValueOnce(mockUpload2)
 
-      const createMuxMock2: MockedResponse = {
+      const createMuxMock2: MockLink.MockedResponse = {
         ...createMuxVideoUploadByFileMock,
         request: {
           ...createMuxVideoUploadByFileMock.request,

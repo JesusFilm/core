@@ -37,7 +37,7 @@ builder.mutationField('typographyBlockCreate', (t) =>
             variant: input.variant ?? undefined,
             color: input.color ?? undefined,
             align: input.align ?? undefined,
-            settings: (input.settings ?? {}) as Prisma.JsonObject,
+            settings: input.settings ?? {},
             journey: { connect: { id: input.journeyId } },
             parentBlock: { connect: { id: input.parentBlockId } },
             parentOrder: siblings.length

@@ -1,4 +1,6 @@
-import { ApolloError, gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { LinkError } from '@apollo/client/errors'
+import { useMutation } from '@apollo/client/react'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
@@ -150,10 +152,7 @@ export function TemplateSettingsDialog({
     // Prefer the network-error message whichever task it came from — it is
     // the actionable one, so it must not lose to an earlier GraphQL error.
     const networkError = results.some(
-      (result) =>
-        result.status === 'rejected' &&
-        result.reason instanceof ApolloError &&
-        result.reason.networkError != null
+      (result) => result.status === 'rejected' && LinkError.is(result.reason)
     )
     enqueueSnackbar(
       networkError

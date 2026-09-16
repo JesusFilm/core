@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { renderHook, waitFor } from '@testing-library/react'
 import { ReactNode } from 'react'
 
@@ -68,11 +68,7 @@ const wrapper = ({
 }: {
   children: ReactNode
   mocks: any[]
-}) => (
-  <MockedProvider mocks={mocks} addTypename={false}>
-    {children}
-  </MockedProvider>
-)
+}) => <MockedProvider mocks={mocks}>{children}</MockedProvider>
 
 describe('useVideoChildren', () => {
   beforeEach(() => {

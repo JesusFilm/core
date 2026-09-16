@@ -46,7 +46,7 @@ describe('multiselectOptionBlockCreate', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    prismaMock.block.findMany.mockResolvedValue([] as any)
+    prismaMock.block.findMany.mockResolvedValue([])
     prismaMock.block.findUnique.mockResolvedValue({
       id: 'blockId',
       typename: 'MultiselectOptionBlock',

@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
@@ -39,7 +40,7 @@ export function MinRows(): ReactElement {
     if (selectedBlock == null) return
     add({
       parameters: {
-        execute: { minRows: minRows as number | null },
+        execute: { minRows: minRows },
         undo: {
           minRows: selectedBlock.minRows
         }

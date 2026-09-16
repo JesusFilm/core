@@ -1,6 +1,6 @@
 'use client'
-
-import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useLazyQuery, useMutation } from '@apollo/client/react'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import SaveIcon from '@mui/icons-material/Save'
