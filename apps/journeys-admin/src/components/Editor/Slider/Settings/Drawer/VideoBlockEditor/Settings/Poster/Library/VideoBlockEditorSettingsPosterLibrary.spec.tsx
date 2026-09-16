@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -199,7 +200,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
     ;(useMediaQuery as Mock).mockImplementation(() => true)
   })
 
-  const posterImageBlockDeleteMock: MockedResponse<
+  const posterImageBlockDeleteMock: MockLink.MockedResponse<
     PosterImageBlockDelete,
     PosterImageBlockDeleteVariables
   > = {
@@ -228,7 +229,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
     }
   }
 
-  const posterImageBlockRestoreMock: MockedResponse<
+  const posterImageBlockRestoreMock: MockLink.MockedResponse<
     PosterImageBlockRestore,
     PosterImageBlockRestoreVariables
   > = {
@@ -276,7 +277,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
     const createResult = vi.fn(() => ({
       data: response
     }))
-    const posterImageBlockCreateMock: MockedResponse<
+    const posterImageBlockCreateMock: MockLink.MockedResponse<
       PosterImageBlockCreate,
       PosterImageBlockCreateVariables
     > = {
@@ -378,7 +379,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           }
         }
       }))
-      const posterImageBlockUpdateMock: MockedResponse<
+      const posterImageBlockUpdateMock: MockLink.MockedResponse<
         PosterImageBlockUpdate,
         PosterImageBlockUpdateVariables
       > = {
@@ -391,7 +392,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
         },
         result: updateResult
       }
-      const posterImageBlockUpdateUndoMock: MockedResponse<
+      const posterImageBlockUpdateUndoMock: MockLink.MockedResponse<
         PosterImageBlockUpdate,
         PosterImageBlockUpdateVariables
       > = {

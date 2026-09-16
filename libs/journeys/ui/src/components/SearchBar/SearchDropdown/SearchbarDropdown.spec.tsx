@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ClearRefinementsRenderState } from 'instantsearch.js/es/connectors/clear-refinements/connectClearRefinements'
