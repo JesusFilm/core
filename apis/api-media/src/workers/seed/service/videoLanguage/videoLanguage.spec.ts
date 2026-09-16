@@ -68,10 +68,12 @@ describe('seedVideoLanguages', () => {
     })
   })
 
-  it('empties a video the batched lookup returns no row for', async () => {
+  it('skips a video the batched lookup returns no row for', async () => {
     // The id scan and the recompute are separate reads, so a video deleted
-    // between them has no row to reduce. It must still be updated, not
-    // skipped and not crash on a missing map entry.
+    // between them has no row to reduce and no entry in the returned map.
+    // Updating a since-deleted id would fail (and roll back) the whole
+    // batch's transaction, so it must be skipped rather than updated with
+    // an empty array.
     ;(prismaMock.video.findMany as any).mockImplementation(
       async ({ select }: { select?: Record<string, unknown> }) =>
         select?.variants == null
@@ -84,10 +86,7 @@ describe('seedVideoLanguages', () => {
 
     await seedVideoLanguages()
 
-    expect(prismaMock.video.update).toHaveBeenCalledWith({
-      where: { id: 'vanished' },
-      data: { availableLanguages: [] }
-    })
+    expect(prismaMock.video.update).not.toHaveBeenCalled()
   })
 
   it('issues a bounded number of read queries no matter how many videos exist', async () => {
@@ -120,5 +119,51 @@ describe('seedVideoLanguages', () => {
 
     expect([...readsByRowCount.values()]).toEqual([2, 2, 2])
     expect(prismaMock.video.findUnique).not.toHaveBeenCalled()
+  })
+
+  it('chunks the batched recompute once the catalog exceeds a single read chunk', async () => {
+    // A single `id: { in: videoIds } }` filter over the whole table can
+    // exceed the database's bind-parameter limit once the catalog is large
+    // enough, so the recompute must page through the id list in chunks
+    // rather than pass all of it to one query.
+    const rowCount = 5001
+    const rows = Array.from({ length: rowCount }, (_, index) => ({
+      id: `video-${index}`,
+      variants: [{ languageId: '529' }],
+      children: []
+    }))
+    const recomputeCallSizes: number[] = []
+
+    ;(prismaMock.video.findMany as any).mockImplementation(
+      async ({
+        select,
+        where
+      }: {
+        select?: Record<string, unknown>
+        where?: { id: { in: string[] } }
+      }) => {
+        if (select?.variants == null) {
+          return rows.map(({ id }) => ({ id })) as unknown as Video[]
+        }
+        const ids = where?.id.in ?? []
+        recomputeCallSizes.push(ids.length)
+        return rows.filter((row) => ids.includes(row.id))
+      }
+    )
+    ;(prismaMock.$transaction as any).mockImplementation(
+      async (updates: Array<Promise<unknown>>) => Promise.all(updates)
+    )
+
+    await seedVideoLanguages()
+
+    expect(recomputeCallSizes).toEqual([5000, 1])
+    expect(prismaMock.video.update).toHaveBeenCalledWith({
+      where: { id: 'video-0' },
+      data: { availableLanguages: ['529'] }
+    })
+    expect(prismaMock.video.update).toHaveBeenCalledWith({
+      where: { id: `video-${rowCount - 1}` },
+      data: { availableLanguages: ['529'] }
+    })
   })
 })

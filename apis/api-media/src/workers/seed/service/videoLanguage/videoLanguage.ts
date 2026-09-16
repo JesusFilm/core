@@ -4,6 +4,10 @@ import { calculateAvailableLanguagesForVideos } from '../../../../schema/video/l
 
 const BATCH_SIZE = 100
 const MAX_RETRIES = 3
+// Well under Postgres's bind-parameter limit (and the lower threshold where
+// Prisma's own IN-clause chunking is known to misfire), so a single read
+// chunk can never itself exceed what one query can bind.
+const READ_CHUNK_SIZE = 5000
 
 async function updateBatch(
   videos: { id: string; availableLanguages: string[] }[],
@@ -41,14 +45,26 @@ export async function seedVideoLanguages(): Promise<void> {
 
   // Batched on purpose: this job runs over the entire Video table, so a
   // per-video recompute would issue one query per row and get slower every
-  // time the catalog grows.
-  const availableLanguagesByVideoId =
-    await calculateAvailableLanguagesForVideos(videoIds)
+  // time the catalog grows. Chunked on purpose too: a single `id: { in }`
+  // filter over the whole table can exceed the database's bind-parameter
+  // limit once the catalog is large enough.
+  const availableLanguagesByVideoId = new Map<string, string[]>()
+  for (let i = 0; i < videoIds.length; i += READ_CHUNK_SIZE) {
+    const chunk = videoIds.slice(i, i + READ_CHUNK_SIZE)
+    const chunkResult = await calculateAvailableLanguagesForVideos(chunk)
+    for (const [id, availableLanguages] of chunkResult) {
+      availableLanguagesByVideoId.set(id, availableLanguages)
+    }
+  }
 
-  const updates = videoIds.map((id) => ({
-    id,
-    availableLanguages: availableLanguagesByVideoId.get(id) ?? []
-  }))
+  // Built from the map, not from videoIds: a video deleted between the id
+  // scan and this recompute has no map entry, and updating a since-deleted
+  // row would fail the whole batch's transaction (and every retry of it).
+  // Skipping it here means the rest of the batch still gets updated.
+  const updates = Array.from(
+    availableLanguagesByVideoId,
+    ([id, availableLanguages]) => ({ id, availableLanguages })
+  )
 
   for (let i = 0; i < updates.length; i += BATCH_SIZE) {
     const batch = updates.slice(i, i + BATCH_SIZE)
