@@ -10,7 +10,9 @@ export type AlgoliaConfig = {
 
 function getRequiredEnv(name: string): string {
   const value = process.env[name]
-  if (value == null || value === '') {
+  // Blank-but-present values (e.g. a key set to spaces in a deploy config) are
+  // as unusable as an unset one, so trim before deciding it is missing.
+  if (value == null || value.trim() === '') {
     throw new Error(`Missing required environment variable: ${name}`)
   }
   return value
