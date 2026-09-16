@@ -41,6 +41,7 @@ function languageRow(overrides: Partial<LanguageRow>): LanguageRow {
     bcp47: null,
     iso3: null,
     hasVideos: true,
+    searchable: true,
     slug: null,
     name: [],
     ...overrides
