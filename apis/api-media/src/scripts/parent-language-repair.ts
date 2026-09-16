@@ -2,8 +2,8 @@ import { prisma } from '@core/prisma/media/client'
 
 import { updateVideoInAlgolia } from '../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../lib/algolia/algoliaVideoVariantUpdate'
-import { videoVariantContainsMedia } from '../schema/videoVariantReconciliation/videoVariantContainsMedia'
 import { createEmptyParentVariant } from '../schema/videoVariant/videoVariant'
+import { videoVariantContainsMedia } from '../schema/videoVariantReconciliation/videoVariantContainsMedia'
 
 import type { ParentVariantAuditEntry } from './audit-parent-variants'
 
@@ -174,7 +174,12 @@ export async function applyParentLanguageRepairs(
     try {
       variantId = await writeParentLanguageRepair(gap)
     } catch (error) {
-      failed.push({ ...base, variantId: gap.variantId, result: 'failed', error: errorMessage(error) })
+      failed.push({
+        ...base,
+        variantId: gap.variantId,
+        result: 'failed',
+        error: errorMessage(error)
+      })
       continue
     }
 

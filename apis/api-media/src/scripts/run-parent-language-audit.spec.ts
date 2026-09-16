@@ -1,6 +1,14 @@
 import path from 'path'
 
-import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  type Mock,
+  afterAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
 
 import '../../test/prismaMock'
 
@@ -8,7 +16,6 @@ import type { ParentVariantAuditResult } from './audit-parent-variants'
 import { auditParentVariants } from './audit-parent-variants'
 import type { ParentLanguageRepairSummary } from './parent-language-repair'
 import { applyParentLanguageRepairs } from './parent-language-repair'
-
 // eslint-disable-next-line import/order -- must follow the mocks above
 import { main, runParentLanguageAudit } from './run-parent-language-audit'
 
