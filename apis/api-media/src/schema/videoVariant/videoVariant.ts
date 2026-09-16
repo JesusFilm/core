@@ -17,6 +17,7 @@ import { logger } from '../logger'
 import { deleteVideo } from '../mux/video/service'
 import { VideoSubtitle } from '../video/videoSubtitle'
 import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
+import { videoVariantHasUsableMedia } from '../videoVariantReconciliation/videoVariantHasUsableMedia'
 
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
 import { VideoVariantFilter } from './inputs/videoVariantFilter'
@@ -424,7 +425,10 @@ export const VideoVariant = builder.prismaObject('VideoVariant', {
       nullable: false,
       description: 'version control for master video file'
     }),
-    video: t.relation('video')
+    video: t.relation('video'),
+    reconciliation: t
+      .withAuth({ isPublisher: true })
+      .relation('reconciliation', { nullable: true })
   })
 })
 
@@ -596,7 +600,10 @@ builder.mutationFields((t) => ({
           published: true,
           videoId: true,
           languageId: true,
-          edition: true
+          edition: true,
+          hls: true,
+          share: true,
+          muxVideo: { select: { readyToStream: true } }
         }
       })
 
@@ -612,6 +619,19 @@ builder.mutationFields((t) => ({
             select: { id: true }
           })) != null
         : true
+
+      // Unpublishing takes effect immediately. Publishing does too, but only
+      // once viewers would get playable media (see videoVariantHasUsableMedia)
+      // -- otherwise it is left to reconciliation, which publishes the Variant
+      // as soon as Mux is ready.
+      const nextPublished =
+        input.published === true
+          ? videoVariantHasUsableMedia(currentVariant)
+            ? true
+            : undefined
+          : input.published === false
+            ? false
+            : undefined
 
       let updated: PrismaVideoVariant
       try {
@@ -629,9 +649,7 @@ builder.mutationFields((t) => ({
             videoId: input.videoId ?? undefined,
             edition: input.edition ?? undefined,
             downloadable: input.downloadable ?? undefined,
-            // Unpublishing takes effect immediately. Publishing is left to
-            // reconciliation, which flips the row once media is ready.
-            published: input.published === false ? false : undefined,
+            published: nextPublished,
             muxVideoId: input.muxVideoId ?? undefined,
             assetId: input.assetId ?? undefined,
             version: input.version ?? undefined,

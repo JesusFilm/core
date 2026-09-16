@@ -15,7 +15,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
 
@@ -37,6 +37,11 @@ const GET_ADMIN_VIDEO_VARIANTS = graphql(`
       variants(input: { onlyPublished: false }) {
         id
         published
+        reconciliation {
+          id
+          status
+          published
+        }
         language {
           id
           slug
@@ -105,6 +110,20 @@ const RESUME_VIDEO_VARIANT_UPLOAD = graphql(`
   }
 `)
 
+type VariantPublishState = {
+  published: boolean
+  reconciliation?: { status: string; published: boolean } | null
+}
+
+function isPublishPending(variant: VariantPublishState): boolean {
+  if (variant.published) return false
+
+  return (
+    variant.reconciliation?.published === true &&
+    ['processing', 'degraded'].includes(variant.reconciliation.status)
+  )
+}
+
 export default function ClientLayout({
   children
 }: {
@@ -118,7 +137,13 @@ export default function ClientLayout({
   const [isResumeRequestInFlight, setIsResumeRequestInFlight] = useState(false)
   const { videoId } = useParams<{ videoId: string }>()
 
-  const { data, loading, refetch } = useQuery(GET_ADMIN_VIDEO_VARIANTS, {
+  const {
+    data,
+    loading,
+    refetch,
+    startPolling: startVariantPolling,
+    stopPolling: stopVariantPolling
+  } = useQuery(GET_ADMIN_VIDEO_VARIANTS, {
     variables: { id: videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
   })
 
@@ -155,6 +180,40 @@ export default function ClientLayout({
         false
     )
   }, [pathname])
+
+  // A Variant whose reconciliation is still working towards published: the
+  // row stays Draft until the sweep finishes, so show it as in progress and
+  // keep polling instead of leaving a stale Draft chip on screen.
+  const hasPendingPublish = useMemo(
+    () =>
+      (data?.adminVideo.variants ?? []).some((variant) =>
+        isPublishPending(variant)
+      ),
+    [data?.adminVideo.variants]
+  )
+
+  useEffect(() => {
+    if (hasPendingPublish) {
+      startVariantPolling(5000)
+      return () => stopVariantPolling()
+    }
+
+    stopVariantPolling()
+  }, [hasPendingPublish, startVariantPolling, stopVariantPolling])
+
+  // An upload leaves the in-progress list once the worker has created its
+  // Variant. Nothing else refetches the Variants, so without this the new
+  // audio language only appears after a full page reload.
+  const previousIncompleteUploadCount = useRef(0)
+  useEffect(() => {
+    if (
+      previousIncompleteUploadCount.current > 0 &&
+      incompleteUploads.length === 0
+    ) {
+      void refetch()
+    }
+    previousIncompleteUploadCount.current = incompleteUploads.length
+  }, [incompleteUploads.length, refetch])
 
   useEffect(() => {
     if (incompleteUploads.length > 0 || resumingUploadId != null) {
@@ -403,7 +462,10 @@ export default function ClientLayout({
                     primary={variant.language.name[0].value}
                     secondary={variant.language.id}
                   />
-                  <PublishedChip published={variant.published} />
+                  <PublishedChip
+                    published={variant.published}
+                    publishPending={isPublishPending(variant)}
+                  />
                 </Box>
                 <Box sx={{ display: 'flex', gap: 1 }}>
                   <IconButton

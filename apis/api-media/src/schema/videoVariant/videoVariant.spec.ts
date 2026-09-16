@@ -1895,12 +1895,50 @@ describe('videoVariant', () => {
           })
         })
 
+        it('should publish immediately once the Variant has playable media', async () => {
+          prismaMock.videoVariant.findUnique.mockResolvedValue({
+            published: false,
+            videoId: 'videoId',
+            languageId: 'languageId',
+            edition: 'base',
+            hls: null,
+            share: null,
+            muxVideo: { readyToStream: true }
+          } as any)
+          prismaMock.videoVariant.update.mockResolvedValue({
+            ...variantRow,
+            published: true
+          })
+
+          await authClient({
+            document: VIDEO_VARIANT_UPDATE_MUTATION,
+            variables: { input: { id: 'id', published: true } }
+          })
+
+          expect(prismaMock.videoVariant.update).toHaveBeenCalledWith(
+            expect.objectContaining({
+              where: { id: 'id' },
+              data: expect.objectContaining({ published: true })
+            })
+          )
+          expect(mockedRequestVideoVariantReconciliation).toHaveBeenCalledWith(
+            expect.objectContaining({
+              videoVariantId: 'id',
+              published: true,
+              reason: 'video-variant-publication-change'
+            })
+          )
+        })
+
         it('should persist an explicit switch to draft immediately', async () => {
           prismaMock.videoVariant.findUnique.mockResolvedValue({
             published: true,
             videoId: 'videoId',
             languageId: 'languageId',
-            edition: 'base'
+            edition: 'base',
+            hls: 'hls',
+            share: 'share',
+            muxVideo: { readyToStream: true }
           } as any)
           prismaMock.videoVariant.update.mockResolvedValue({
             ...variantRow,
@@ -1927,12 +1965,15 @@ describe('videoVariant', () => {
           )
         })
 
-        it('should leave publishing a draft to reconciliation', async () => {
+        it('should leave publishing a draft to reconciliation while Mux is still processing', async () => {
           prismaMock.videoVariant.findUnique.mockResolvedValue({
             published: false,
             videoId: 'videoId',
             languageId: 'languageId',
-            edition: 'base'
+            edition: 'base',
+            hls: null,
+            share: null,
+            muxVideo: { readyToStream: false }
           } as any)
           prismaMock.videoVariant.update.mockResolvedValue({
             ...variantRow,
