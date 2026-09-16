@@ -365,26 +365,30 @@ function buildNexusUrl(mediaComponentId: string, languageId: string): string {
   )
 }
 
-function buildWatchUrl(variantSlug: string): string | undefined {
+// The report's Watch column always links to the row's own video identity
+// (the package root when the row represents a series/featureFilm), never to
+// whichever child variant happened to fall inside the report window. The
+// video-slug segment therefore comes from rowSlug, not from splitting the
+// variant's own slug — a child's slug is scoped under its parent and is not
+// independently routable, so treating it as a standalone content slug 404s.
+function buildWatchUrl(
+  rowSlug: string | null,
+  variantSlug: string
+): string | undefined {
   const watchUrl = process.env.WATCH_URL
-  if (watchUrl == null || watchUrl === '') {
+  if (watchUrl == null || watchUrl === '' || rowSlug == null || rowSlug === '') {
     return undefined
   }
 
-  const [videoSlug, languageSlug] = variantSlug.split('/')
-  if (
-    videoSlug == null ||
-    videoSlug === '' ||
-    languageSlug == null ||
-    languageSlug === ''
-  ) {
+  const languageSlug = variantSlug.split('/').pop()
+  if (languageSlug == null || languageSlug === '') {
     return undefined
   }
 
   return (
     watchUrl.replace(/\/$/, '') +
     '/' +
-    encodeURIComponent(videoSlug) +
+    encodeURIComponent(rowSlug) +
     '.html/' +
     encodeURIComponent(languageSlug) +
     '.html'
@@ -453,7 +457,7 @@ async function buildReportRows(args: {
           ? (group.variants.find((variant) => variant.videoId === root.id) ??
             group.variants[0])
           : group.variants[0]
-      const watchUrl = buildWatchUrl(versionVariant.slug)
+      const watchUrl = buildWatchUrl(rowVideo.slug, versionVariant.slug)
       return {
         version: versionVariant.version,
         production: productionLabel(rowVideo),
