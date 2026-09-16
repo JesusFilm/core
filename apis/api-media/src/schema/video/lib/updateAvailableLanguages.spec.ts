@@ -128,6 +128,64 @@ function buildFixtureGraph(
   return store
 }
 
+type VideoUpdateImplementation = (
+  args: Prisma.VideoUpdateArgs
+) => Promise<Video>
+
+// The video ids written by prisma.video.update, in call order. Used to
+// assert both how many times a given ancestor was recomputed and that a
+// level finished before the level above it started.
+function updatedVideoIds(): string[] {
+  return prismaMock.video.update.mock.calls.map(
+    (call) => (call[0] as Prisma.VideoUpdateArgs).where.id as string
+  )
+}
+
+// Makes prisma.video.update reject for the given video ids, leaving the
+// fixture-graph-backed implementation in place for every other id - the
+// shape of a transient database write failure part-way up a cascade.
+function failUpdatesFor(videoIds: readonly string[]): void {
+  const failing = new Set(videoIds)
+  const storeBackedUpdate = prismaMock.video.update.getMockImplementation() as
+    | VideoUpdateImplementation
+    | undefined
+
+  if (storeBackedUpdate == null) {
+    throw new Error('failUpdatesFor must be called after buildFixtureGraph')
+  }
+
+  const failingUpdate: VideoUpdateImplementation = (args) => {
+    if (failing.has(String(args.where.id))) {
+      return Promise.reject(
+        new Error(`simulated update failure for ${String(args.where.id)}`)
+      )
+    }
+    return storeBackedUpdate(args)
+  }
+
+  prismaMock.video.update.mockImplementation(
+    failingUpdate as unknown as Parameters<
+      typeof prismaMock.video.update.mockImplementation
+    >[0]
+  )
+}
+
+// `await expect(...).rejects` can't hand back the error object itself, and
+// these assertions need the AggregateError's `errors` array.
+async function captureRejection(promise: Promise<unknown>): Promise<unknown> {
+  const resolved = Symbol('resolved')
+  const outcome = await promise.then(
+    () => resolved,
+    (error: unknown) => error
+  )
+
+  if (outcome === resolved) {
+    throw new Error('expected the cascade to reject, but it resolved')
+  }
+
+  return outcome
+}
+
 describe('updateVideoAvailableLanguages', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -333,7 +391,7 @@ describe('cascading availableLanguages upward to the root', () => {
     expect(prismaMock.video.update).toHaveBeenCalledTimes(2)
     expect(mockedLoggerError).toHaveBeenCalledWith(
       expect.objectContaining({ videoId: 'A' }),
-      expect.stringContaining('Cycle detected')
+      expect.stringContaining('already recomputed in this availableLanguages cascade')
     )
   })
 
@@ -401,9 +459,11 @@ describe('cascading availableLanguages upward to the root', () => {
     expect(prismaMock.video.update).toHaveBeenCalledTimes(4)
   })
 
-  it('isolates a failure in one sibling branch so the other sibling still completes', async () => {
-    // Two sibling parents of leaf, A and B. A's update fails; B's branch
-    // must still run to completion rather than being aborted by A's error.
+  it('finishes the sibling branches but still rejects when one ancestor write fails', async () => {
+    // Two sibling parents of leaf, A and B. A's update fails. B's branch
+    // must still run to completion rather than being aborted by A's error -
+    // but the failure must not be swallowed: leaving A (and everything above
+    // it) silently stale with nothing surfacing to the caller is the bug.
     const store = buildFixtureGraph({
       leaf: {
         variants: ['529', '496'],
@@ -414,38 +474,74 @@ describe('cascading availableLanguages upward to the root', () => {
       B: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] }
     })
 
-    const storeBackedUpdate = (
-      prismaMock.video.update as unknown as { getMockImplementation: any }
-    ).getMockImplementation()
+    failUpdatesFor(['A'])
 
-    ;(prismaMock.video.update as any).mockImplementation((args: any) => {
-      if (args.where.id === 'A') {
-        return Promise.reject(new Error('simulated update failure for A'))
-      }
-      return storeBackedUpdate(args)
-    })
+    const error = await captureRejection(updateParentCollectionLanguages('leaf'))
 
-    await expect(
-      updateParentCollectionLanguages('leaf')
-    ).resolves.toBeUndefined()
+    expect(error).toBeInstanceOf(AggregateError)
+    expect((error as AggregateError).errors).toHaveLength(1)
+    expect((error as AggregateError).message).toContain('A')
 
-    // A's failure was caught and logged rather than thrown out of the cascade.
-    expect(mockedLoggerError).toHaveBeenCalledWith(
-      expect.objectContaining({ videoId: 'A' }),
-      expect.any(String)
-    )
     // A was never actually written, since its update rejected.
     expect(store.A.availableLanguages).toEqual(['529'])
     // B's sibling branch still ran to completion, unaffected by A's failure.
     expect(store.B.availableLanguages.slice().sort()).toEqual(['496', '529'])
   })
 
-  it('produces a correct final value at a shared grandparent visited via two diamond branches', async () => {
+  it('rejects rather than leaving the ancestors above a failed write silently stale', async () => {
+    // leaf -> A -> outer, a single chain. A's write fails, so outer can
+    // never be brought up to date on this pass. Before, that was logged and
+    // swallowed and the caller was told the cascade succeeded; now the
+    // caller gets an error it can retry or roll back on.
+    const store = buildFixtureGraph({
+      leaf: {
+        variants: ['529', '496'],
+        childIds: [],
+        availableLanguages: ['529', '496']
+      },
+      A: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      outer: { variants: [], childIds: ['A'], availableLanguages: ['529'] }
+    })
+
+    failUpdatesFor(['A'])
+
+    await expect(updateParentCollectionLanguages('leaf')).rejects.toThrow(
+      AggregateError
+    )
+
+    expect(store.A.availableLanguages).toEqual(['529'])
+    // outer is not written from A's known-stale value - the walk does not
+    // continue past a level that failed to recompute.
+    expect(store.outer.availableLanguages).toEqual(['529'])
+  })
+
+  it('reports every failed ancestor, not just the first', async () => {
+    const store = buildFixtureGraph({
+      leaf: {
+        variants: ['529', '496'],
+        childIds: [],
+        availableLanguages: ['529', '496']
+      },
+      A: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      B: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      C: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] }
+    })
+
+    failUpdatesFor(['A', 'B'])
+
+    const error = await captureRejection(updateParentCollectionLanguages('leaf'))
+
+    expect((error as AggregateError).errors).toHaveLength(2)
+    // The one healthy sibling still completed.
+    expect(store.C.availableLanguages.slice().sort()).toEqual(['496', '529'])
+  })
+
+  it('recomputes a shared grandparent once in total, not once per diamond branch', async () => {
     // leaf's two direct parents, A and B, both list a shared grandparent C
-    // as their own parent. C is not a cycle - it's visited once per branch
-    // (via A, then via B) - but the cascade must terminate and C's final
-    // availableLanguages must reflect the correct union after both branches
-    // have run.
+    // as their own parent. A and B are one level, so C is collected once for
+    // the level above them and recomputed a single time - after both A and B
+    // have settled. A depth-first walk recomputes C once per incoming path,
+    // which is wasted work and a hazard if the two recomputes interleave.
     const store = buildFixtureGraph({
       leaf: {
         variants: ['529', '496'],
@@ -467,11 +563,36 @@ describe('cascading availableLanguages upward to the root', () => {
 
     expect(store.C.availableLanguages.slice().sort()).toEqual(['496', '529'])
 
-    // C is recomputed once per incoming branch (via A, then via B).
-    const cUpdateCalls = prismaMock.video.update.mock.calls.filter(
-      (call) => (call[0] as any).where.id === 'C'
-    )
-    expect(cUpdateCalls).toHaveLength(2)
+    // C is recomputed exactly once, however many branches reach it.
+    expect(updatedVideoIds().filter((id) => id === 'C')).toEqual(['C'])
+
+    // ...and only after both A and B, its two children, had settled.
+    const writeOrder = updatedVideoIds()
+    expect(writeOrder.indexOf('C')).toBeGreaterThan(writeOrder.indexOf('A'))
+    expect(writeOrder.indexOf('C')).toBeGreaterThan(writeOrder.indexOf('B'))
+  })
+
+  it('finishes every ancestor at one depth before recomputing the depth above it', async () => {
+    // Two branches of unequal shape off leaf: A -> A_parent and B -> C.
+    // Level-batching means both depth-1 ancestors (A, B) are written before
+    // either depth-2 ancestor (A_parent, C).
+    buildFixtureGraph({
+      leaf: {
+        variants: ['529', '496'],
+        childIds: [],
+        availableLanguages: ['529', '496']
+      },
+      A: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      B: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      A_parent: { variants: [], childIds: ['A'], availableLanguages: ['529'] },
+      C: { variants: [], childIds: ['B'], availableLanguages: ['529'] }
+    })
+
+    await updateParentCollectionLanguages('leaf')
+
+    const writeOrder = updatedVideoIds()
+    expect(writeOrder.slice(0, 2).slice().sort()).toEqual(['A', 'B'])
+    expect(writeOrder.slice(2).slice().sort()).toEqual(['A_parent', 'C'])
   })
 })
 
