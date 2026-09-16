@@ -8,6 +8,8 @@ import { enqueueVideoAlgoliaSync } from '../../../workers/videoAlgoliaSync'
 
 import {
   addLanguageToVideo,
+  calculateAvailableLanguages,
+  calculateAvailableLanguagesForVideos,
   findContainerParentIds,
   updateParentCollectionLanguages,
   updateVideoAvailableLanguages
@@ -188,5 +190,65 @@ describe('updateParentCollectionLanguages', () => {
       },
       expect.anything()
     )
+  })
+})
+
+describe('calculateAvailableLanguagesForVideos', () => {
+  // Rows the single-video and batched entry points must both reduce the
+  // same way: a container deriving from a child, and a leaf deriving from
+  // its own published variants.
+  const rows = [
+    {
+      id: 'container',
+      label: 'series',
+      variants: [],
+      children: [{ availableLanguages: ['529', '496'] }]
+    },
+    {
+      id: 'leaf',
+      label: 'episode',
+      variants: [{ languageId: '496' }, { languageId: '21754' }],
+      children: []
+    }
+  ]
+
+  it('resolves the whole set with a single query', async () => {
+    ;(prismaMock.video.findMany as any).mockResolvedValueOnce(rows)
+
+    const result = await calculateAvailableLanguagesForVideos([
+      'container',
+      'leaf'
+    ])
+
+    expect(prismaMock.video.findMany).toHaveBeenCalledTimes(1)
+    expect(prismaMock.video.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: { in: ['container', 'leaf'] } }
+      })
+    )
+    expect(result.get('container')).toEqual(['496', '529'])
+    expect(result.get('leaf')).toEqual(['496', '21754'])
+  })
+
+  it('agrees with calculateAvailableLanguages for the same row', async () => {
+    // Guards the one-code-path goal: if the two entry points ever diverge,
+    // the batched seed and the per-video write paths would disagree.
+    ;(prismaMock.video.findMany as any).mockResolvedValueOnce([rows[0]])
+    ;(prismaMock.video.findUnique as any).mockResolvedValueOnce(
+      rows[0]
+    )
+
+    const batched = await calculateAvailableLanguagesForVideos(['container'])
+
+    expect(batched.get('container')).toEqual(
+      await calculateAvailableLanguages('container')
+    )
+  })
+
+  it('queries nothing for an empty id set', async () => {
+    const result = await calculateAvailableLanguagesForVideos([])
+
+    expect(result.size).toBe(0)
+    expect(prismaMock.video.findMany).not.toHaveBeenCalled()
   })
 })

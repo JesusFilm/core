@@ -12,30 +12,28 @@ import {
 } from '../../../workers/videoAlgoliaSync'
 import { logger } from '../../logger'
 
-// Calculates what availableLanguages should be for a given video
-// Does NOT update the database - only calculates the correct value
-export async function calculateAvailableLanguages(
-  videoId: string
-): Promise<string[]> {
-  const video = await prisma.video.findUnique({
-    where: { id: videoId },
-    select: {
-      label: true,
-      variants: {
-        where: { published: true },
-        select: { languageId: true }
-      },
-      children: {
-        where: { published: true },
-        select: { availableLanguages: true }
-      }
-    }
-  })
-
-  if (video == null) {
-    return []
+// The rows every availableLanguages calculation reads, single or batched.
+const availableLanguagesSelect = {
+  label: true,
+  variants: {
+    where: { published: true },
+    select: { languageId: true }
+  },
+  children: {
+    where: { published: true },
+    select: { availableLanguages: true }
   }
+} as const
 
+interface AvailableLanguagesSource {
+  variants: Array<{ languageId: string }>
+  children: Array<{ availableLanguages: string[] }>
+}
+
+// The calculation itself, over rows already loaded. Both the single-video and
+// batched entry points below reduce through here, so there is exactly one
+// definition of what a video's availableLanguages means.
+function reduceAvailableLanguages(video: AvailableLanguagesSource): string[] {
   const languageSet = new Set<string>()
   // Always include published variants on the video itself
   for (const variant of video.variants) {
@@ -52,6 +50,45 @@ export async function calculateAvailableLanguages(
   }
 
   return Array.from(languageSet).sort((a, b) => Number(a) - Number(b))
+}
+
+// Calculates what availableLanguages should be for a given video
+// Does NOT update the database - only calculates the correct value
+export async function calculateAvailableLanguages(
+  videoId: string
+): Promise<string[]> {
+  const video = await prisma.video.findUnique({
+    where: { id: videoId },
+    select: availableLanguagesSelect
+  })
+
+  if (video == null) {
+    return []
+  }
+
+  return reduceAvailableLanguages(video)
+}
+
+// Batched form of calculateAvailableLanguages: one findMany for the whole set
+// rather than a lookup per id. Callers that recompute many videos at once (the
+// seed job walks the entire Video table) must use this - a per-id loop makes
+// their read cost grow with the catalog. Ids with no matching video are absent
+// from the returned map, mirroring calculateAvailableLanguages' empty result.
+export async function calculateAvailableLanguagesForVideos(
+  videoIds: string[]
+): Promise<Map<string, string[]>> {
+  if (videoIds.length === 0) {
+    return new Map()
+  }
+
+  const videos = await prisma.video.findMany({
+    where: { id: { in: videoIds } },
+    select: { id: true, ...availableLanguagesSelect }
+  })
+
+  return new Map(
+    videos.map((video) => [video.id, reduceAvailableLanguages(video)])
+  )
 }
 
 // Updates a video's availableLanguages field based on current state
