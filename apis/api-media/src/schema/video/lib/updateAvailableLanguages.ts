@@ -91,17 +91,20 @@ export async function calculateAvailableLanguagesForVideos(
   )
 }
 
-// Updates a video's availableLanguages field based on current state
-// Handles both regular videos and collections
-export async function updateVideoAvailableLanguages(
-  videoId: string,
-  options: {
-    skipCache?: boolean
-    skipAlgolia?: boolean
-  } = {}
-): Promise<string[]> {
-  const availableLanguages = await calculateAvailableLanguages(videoId)
+interface AvailableLanguagesWriteOptions {
+  skipCache?: boolean
+  skipAlgolia?: boolean
+}
 
+// Writes one video's already-computed availableLanguages and runs the cache
+// and search side effects. Split out of updateVideoAvailableLanguages so
+// batched callers can reuse the write half against languages they resolved in
+// a single lookup, rather than re-reading each video to get them.
+async function applyAvailableLanguages(
+  videoId: string,
+  availableLanguages: string[],
+  options: AvailableLanguagesWriteOptions
+): Promise<string[]> {
   // Update the video
   await prisma.video.update({
     where: { id: videoId },
@@ -126,6 +129,17 @@ export async function updateVideoAvailableLanguages(
   }
 
   return availableLanguages
+}
+
+// Updates a video's availableLanguages field based on current state
+// Handles both regular videos and collections
+export async function updateVideoAvailableLanguages(
+  videoId: string,
+  options: AvailableLanguagesWriteOptions = {}
+): Promise<string[]> {
+  const availableLanguages = await calculateAvailableLanguages(videoId)
+
+  return applyAvailableLanguages(videoId, availableLanguages, options)
 }
 
 // Adds a language to a video's availableLanguages if not already present.
@@ -207,16 +221,40 @@ export async function findContainerParentIds(
 
 // Updates all parent videos (collections) when a child video's languages change
 // Ensures collections always reflect the union of their children's languages
+//
+// The parents are recomputed from one batched lookup rather than a lookup
+// each. Resolving them together is safe even when the containers nest: every
+// parent here is a *direct* parent of childVideoId, and childVideoId is the
+// only video whose languages just changed, so each parent picks the new
+// language up from the child itself. No parent depends on another parent's
+// updated value, and the previous per-parent loop had no defined order to
+// rely on anyway (findContainerParentIds does not sort).
+//
+// The writes stay per-parent: the Algolia enqueue and cache reset are
+// per-video side effects, and keeping the updates separate preserves the
+// existing behaviour where a failure on one parent leaves earlier parents
+// committed.
 export async function updateParentCollectionLanguages(
   childVideoId: string
 ): Promise<void> {
   const parentIds = await findContainerParentIds(childVideoId)
 
+  if (parentIds.length === 0) {
+    return
+  }
+
+  const availableLanguagesByVideoId =
+    await calculateAvailableLanguagesForVideos(parentIds)
+
   // Update each parent collection
   for (const parentId of parentIds) {
-    await updateVideoAvailableLanguages(parentId, {
-      skipCache: false,
-      skipAlgolia: false
-    })
+    await applyAvailableLanguages(
+      parentId,
+      availableLanguagesByVideoId.get(parentId) ?? [],
+      {
+        skipCache: false,
+        skipAlgolia: false
+      }
+    )
   }
 }

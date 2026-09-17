@@ -163,33 +163,104 @@ describe('findContainerParentIds', () => {
 })
 
 describe('updateParentCollectionLanguages', () => {
+  const videoOnlySyncScope = {
+    syncVideoRecord: true,
+    syncAllVariants: false,
+    syncPublishedFlag: false,
+    dirtyVariantIds: [],
+    deletedVariantIds: []
+  }
+
+  // This path reads twice: findContainerParentIds for the id list, then the
+  // batched recompute. Both arrive on video.findMany, told apart by whether
+  // the select asked for variants.
+  function mockParentCascadeQueries(parents: ContainerParentPayload[]): void {
+    ;(prismaMock.video.findMany as any).mockImplementation(
+      async ({ select }: { select?: Record<string, unknown> }) =>
+        select?.variants == null
+          ? (parents as unknown as Video[])
+          : parents.map(({ id }) => ({
+              id,
+              label: 'collection',
+              variants: [],
+              children: [{ availableLanguages: ['529'] }]
+            }))
+    )
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    prismaMock.video.update.mockResolvedValue({} as unknown as Video)
+    mockedVideoCacheReset.mockResolvedValue(undefined)
+  })
+
   it('enqueues an Algolia sync for every parent found', async () => {
-    mockContainerParentQuery(containerParents)
+    mockParentCascadeQueries(containerParents)
 
     await updateParentCollectionLanguages('child-id')
 
     expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
       'parent-1',
-      {
-        syncVideoRecord: true,
-        syncAllVariants: false,
-        syncPublishedFlag: false,
-        dirtyVariantIds: [],
-        deletedVariantIds: []
-      },
+      videoOnlySyncScope,
       expect.anything()
     )
     expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
       'parent-2',
-      {
-        syncVideoRecord: true,
-        syncAllVariants: false,
-        syncPublishedFlag: false,
-        dirtyVariantIds: [],
-        deletedVariantIds: []
-      },
+      videoOnlySyncScope,
       expect.anything()
     )
+  })
+
+  it('writes each parent the languages the batched lookup resolved', async () => {
+    mockParentCascadeQueries(containerParents)
+
+    await updateParentCollectionLanguages('child-id')
+
+    expect(prismaMock.video.update).toHaveBeenCalledWith({
+      where: { id: 'parent-1' },
+      data: { availableLanguages: { set: ['529'] } }
+    })
+    expect(prismaMock.video.update).toHaveBeenCalledWith({
+      where: { id: 'parent-2' },
+      data: { availableLanguages: { set: ['529'] } }
+    })
+  })
+
+  it('issues a bounded number of read queries no matter how many parents', async () => {
+    // A per-parent recompute made reads grow with the container count. The
+    // batched lookup keeps them at two: the id scan and the recompute.
+    const readsByParentCount = new Map<number, number>()
+
+    for (const parentCount of [1, 5, 25]) {
+      vi.clearAllMocks()
+      mockParentCascadeQueries(
+        Array.from({ length: parentCount }, (_, index) => ({
+          id: `parent-${index}`
+        }))
+      )
+
+      await updateParentCollectionLanguages('child-id')
+
+      readsByParentCount.set(
+        parentCount,
+        prismaMock.video.findMany.mock.calls.length +
+          prismaMock.video.findUnique.mock.calls.length
+      )
+      // the write side stays per-parent on purpose
+      expect(prismaMock.video.update).toHaveBeenCalledTimes(parentCount)
+    }
+
+    expect([...readsByParentCount.values()]).toEqual([2, 2, 2])
+    expect(prismaMock.video.findUnique).not.toHaveBeenCalled()
+  })
+
+  it('does not query for languages when the video has no container parents', async () => {
+    mockParentCascadeQueries([])
+
+    await updateParentCollectionLanguages('orphan-id')
+
+    expect(prismaMock.video.findMany).toHaveBeenCalledTimes(1)
+    expect(prismaMock.video.update).not.toHaveBeenCalled()
   })
 })
 
