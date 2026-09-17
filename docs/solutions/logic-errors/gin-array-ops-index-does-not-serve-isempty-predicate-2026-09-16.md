@@ -71,14 +71,14 @@ No `P3006` error, and no extra empty migration was generated (schema was already
 
 `isEmpty: false` on `availableLanguages` appears at exactly **6** call sites, all in `apis/api-media/src/schema/video/video.ts` (confirmed by grep — matches the task's claimed count):
 
-| Line | Resolver | Context |
-| ---- | -------- | ------- |
-| 426 | `Video.children` field resolver | public children listing (`published: true, availableLanguages: { isEmpty: false }`) |
-| 464 | `Video.parents` field resolver | public parents listing |
-| 566 | `Query.video` (slug lookup branch) | public single-video lookup |
-| 574 | `Query.video` (id lookup branch) | public single-video lookup |
-| 610 | `Query.videos` | **the public catalog listing** — this is the "catalog hot path" the PR's migration comment references (Arclight's `/v2/media_components`) |
-| 638 | `Query.videosCount` | count variant of the same catalog listing |
+| Line | Resolver                           | Context                                                                                                                                   |
+| ---- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| 426  | `Video.children` field resolver    | public children listing (`published: true, availableLanguages: { isEmpty: false }`)                                                       |
+| 464  | `Video.parents` field resolver     | public parents listing                                                                                                                    |
+| 566  | `Query.video` (slug lookup branch) | public single-video lookup                                                                                                                |
+| 574  | `Query.video` (id lookup branch)   | public single-video lookup                                                                                                                |
+| 610  | `Query.videos`                     | **the public catalog listing** — this is the "catalog hot path" the PR's migration comment references (Arclight's `/v2/media_components`) |
+| 638  | `Query.videosCount`                | count variant of the same catalog listing                                                                                                 |
 
 (Two other `isEmpty: false` occurrences exist in the codebase — `childIds: { isEmpty: false }` in `apis/api-media/src/scripts/audit-parent-variants.ts:29` and `apis/api-media/src/workers/videoChildren/service/service.ts:29` — but those filter a different column, not `availableLanguages`, and are out of scope for this index.)
 
@@ -163,7 +163,7 @@ Identical plan shape (`Seq Scan` + `Filter:`, not `Index Cond:`) whether the ind
 
 Ordering/pagination is served by the primary key index; the array predicate is still just a post-filter — the GIN index is untouched.
 
-**Forced-off control** (`SET enable_seqscan = off; SET enable_indexscan = off;`, to see whether the planner is even *capable* of routing through the GIN index for `<>` when all cheaper paths are penalized):
+**Forced-off control** (`SET enable_seqscan = off; SET enable_indexscan = off;`, to see whether the planner is even _capable_ of routing through the GIN index for `<>` when all cheaper paths are penalized):
 
 ```
  Aggregate  (cost=10000003106.18..10000003106.19 rows=1 width=8) (actual time=54.176..54.177 rows=1 loops=1)
@@ -174,7 +174,7 @@ Ordering/pagination is served by the primary key index; the array predicate is s
 
 Even with both `Seq Scan` and plain `Index Scan` disabled, Postgres falls back to a (heavily cost-penalized) `Seq Scan` rather than a `Bitmap Index Scan` on the GIN index — because `array_ops` genuinely has no strategy for `<>`. This isn't the planner declining a viable option; the option doesn't exist.
 
-**Sanity check** — a predicate the GIN `array_ops` opclass *does* support (`&&`, overlap), same index, same table:
+**Sanity check** — a predicate the GIN `array_ops` opclass _does_ support (`&&`, overlap), same index, same table:
 
 ```sql
 EXPLAIN (ANALYZE, BUFFERS)
@@ -189,7 +189,7 @@ SELECT count(*) FROM gin_test_video WHERE "availableLanguages" && ARRAY['lang_1'
                Index Cond: ("availableLanguages" && '{lang_1}'::text[])
 ```
 
-Here the index *is* used (`Index Cond:`, `Bitmap Index Scan`) — confirming the index and adapter setup are working correctly, and isolating the failure specifically to the `<>`/`isEmpty` predicate, not to some setup problem.
+Here the index _is_ used (`Index Cond:`, `Bitmap Index Scan`) — confirming the index and adapter setup are working correctly, and isolating the failure specifically to the `<>`/`isEmpty` predicate, not to some setup problem.
 
 ## Verdict
 
