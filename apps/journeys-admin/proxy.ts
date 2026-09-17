@@ -23,6 +23,7 @@ export const LOCALE_LANGUAGES: Record<string, string> = {
   tr: '1942', // Turkish
   zh: '20615', // Chinese\
   'zh-Hans-CN': '21754', // Chinese, Simplified
+  'zh-Hant': '21753', // Chinese, Traditional
   de: '1106', // German
   ne: '1370', // Nepali
   ms: '1927', // Malay
