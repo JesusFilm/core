@@ -63,6 +63,7 @@ const i18nConfig = {
       'tr', // Turkish
       'zh', // Chinese
       'zh-Hans-CN', // Chinese, Simplified
+      'zh-Hant', // Chinese, Traditional
       'de', // German
       'ne', // Nepali
       'ms', // Malay
