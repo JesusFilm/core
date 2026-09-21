@@ -35,6 +35,9 @@
     "prepare": "husky install"
   },
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
     "@ai-sdk/google": "^4.0.31",
     "@ai-sdk/openai": "^4.0.27",
