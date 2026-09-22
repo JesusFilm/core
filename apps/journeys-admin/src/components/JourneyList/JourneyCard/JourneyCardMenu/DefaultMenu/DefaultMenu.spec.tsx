@@ -352,9 +352,7 @@ describe('DefaultMenu', () => {
 
     expect(getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
-    expect(
-      getByRole('menuitem', { name: 'Use This Template' })
-    ).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
     await waitFor(() => {
       expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     })
@@ -367,7 +365,9 @@ describe('DefaultMenu', () => {
     expect(
       queryByRole('menuitem', { name: 'Translate' })
     ).not.toBeInTheDocument()
-    expect(queryByRole('menuitem', { name: 'Copy to' })).not.toBeInTheDocument()
+    expect(
+      queryByRole('menuitem', { name: 'Use This Template' })
+    ).not.toBeInTheDocument()
     expect(
       queryByRole('menuitem', { name: 'Make Template' })
     ).not.toBeInTheDocument()
@@ -1179,9 +1179,6 @@ describe('DefaultMenu', () => {
           getByTestId('JourneysAdminMenuItemCopyToCollection')
         ).toBeInTheDocument()
       )
-      // CopyToTeamMenuItem also renders in this test because the mock omits
-      // `journey.team`, so `isLocalTemplate` evaluates false (the gate from PR
-      // #8510 only suppresses the item for the active team's own templates).
       expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
     })
 
