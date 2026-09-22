@@ -5,40 +5,19 @@ set -e
 echo "Starting post-create setup..."
 
 
-cd /workspaces/core
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-# Wait for database to be ready
-echo "Waiting for database to be ready..."
-for i in {1..30}; do
-  pg_isready -h localhost -p 5432 -U postgres && break
-  echo "Database not ready (try $i/30)…"
-  sleep 2
-done
-[ "$i" -eq 30 ] && { echo "Postgres failed to start"; exit 1; }
-echo "Database is ready!"
+# Shared with host checkouts: creates the postgres test user, pnpm install,
+# seeds plausible_db. --no-services: compose is driven by the devcontainer
+# CLI here; running `up` from inside would recreate db and drop this
+# container's shared network namespace.
+tools/scripts/setup-local.sh --analytics --no-services
 
-# add default user to postgres (with error handling)
-echo "Creating test user in database..."
-psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;" || echo "User test-user might already exist"
-
-# install pnpm
-echo "Installing pnpm..."
-corepack enable
-
-# install global CLIs
+# nx so the bare `nx ...` commands in the docs work; apollo/graphql for
+# `nx codegen` (deprecated CLI, cannot be a devDependency — see AGENTS.md).
 echo "Installing global CLIs..."
-npm i -g nx foreman apollo graphql
+npm i -g nx apollo graphql
 
-# install all dependencies
-echo "Installing project dependencies..."
-pnpm install
-
-# update plausible db (with error handling)
-echo "Setting up Plausible database..."
-if ! psql -h localhost -U postgres -d plausible_db < .devcontainer/plausible.sql; then
-  echo "❌ Plausible DB bootstrap failed" >&2
-  exit 1
-fi
 echo "Post-create setup completed!"
 
 echo "Installing Argo CD..."

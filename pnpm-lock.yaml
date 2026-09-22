@@ -833,6 +833,9 @@ importers:
       file-loader:
         specifier: ^6.2.0
         version: 6.2.0(webpack@5.104.1)
+      foreman:
+        specifier: ^3.0.1
+        version: 3.0.1
       glob:
         specifier: ^13.0.6
         version: 13.0.6
@@ -14478,6 +14481,11 @@ packages:
     resolution: {integrity: sha512-gIXjKqtFuWEgzFRJA9WCQeSJLZDjgJUOMCMzxtvFq/37KojM1BFGufqsCy0r4qSQmYLsZYMeyRqzIWOMup03sw==}
     engines: {node: '>=14'}
 
+  foreman@3.0.1:
+    resolution: {integrity: sha512-ek/qoM0vVKpxzkBUQN9k4Fs7l0XsHv4bqxuEW6oqIS4s0ouYKsQ19YjBzUJKTFRumFiSpUv7jySkrI6lfbhjlw==}
+    engines: {node: '>=6'}
+    hasBin: true
+
   fork-ts-checker-webpack-plugin@9.1.0:
     resolution: {integrity: sha512-mpafl89VFPJmhnJ1ssH+8wmM2b50n+Rew5x42NeI2U78aRWgtkEtGmctp7iT16UjquJTjorEmIfESj3DxdW84Q==}
     engines: {node: '>=14.21.3'}
@@ -17069,6 +17077,11 @@ packages:
 
   multipipe@1.0.2:
     resolution: {integrity: sha512-6uiC9OvY71vzSGX8lZvSqscE7ft9nPupJ8fMjrCNRAUy2LREUW42UL+V/NTrogr6rFgRydUrCX4ZitfpSNkSCQ==}
+
+  mustache@2.3.2:
+    resolution: {integrity: sha512-KpMNwdQsYz3O/SBS1qJ/o3sqUJ5wSb8gb0pul8CO0S56b9Y2ALm8zCfsjPXsqGFfoNBkDwZuZIAjhsZI03gYVQ==}
+    engines: {npm: '>=1.4.0'}
+    hasBin: true
 
   mustache@4.2.0:
     resolution: {integrity: sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==}
@@ -39682,6 +39695,15 @@ snapshots:
       cross-spawn: 7.0.6
       signal-exit: 4.1.0
 
+  foreman@3.0.1:
+    dependencies:
+      commander: 2.20.3
+      http-proxy: 1.18.1(debug@4.4.3)
+      mustache: 2.3.2
+      shell-quote: 1.8.1
+    transitivePeerDependencies:
+      - debug
+
   fork-ts-checker-webpack-plugin@9.1.0(typescript@5.9.3)(webpack@5.104.1):
     dependencies:
       '@babel/code-frame': 7.29.0
@@ -43141,6 +43163,8 @@ snapshots:
     dependencies:
       duplexer2: 0.1.4
       object-assign: 4.1.1
+
+  mustache@2.3.2: {}
 
   mustache@4.2.0: {}
 
