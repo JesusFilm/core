@@ -13,10 +13,11 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 # container's shared network namespace.
 tools/scripts/setup-local.sh --analytics --no-services
 
-# nx so the bare `nx ...` commands in the docs work; apollo/graphql for
+# nx and foreman so the bare `nx ...` / `nf start` commands in the docs work (on a
+# host checkout use `pnpm exec nx` / `pnpm dev:api` instead); apollo/graphql for
 # `nx codegen` (deprecated CLI, cannot be a devDependency — see AGENTS.md).
 echo "Installing global CLIs..."
-npm i -g nx apollo graphql
+npm i -g nx foreman apollo graphql
 
 echo "Post-create setup completed!"
 
