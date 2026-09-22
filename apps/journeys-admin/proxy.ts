@@ -27,7 +27,8 @@ export const LOCALE_LANGUAGES: Record<string, string> = {
   de: '1106', // German
   ne: '1370', // Nepali
   ms: '1927', // Malay
-  pt: '584' // Portuguese
+  pt: '584', // Portuguese
+  mn: '18259' // Mongolian
 }
 
 const SUPPORTED_LOCALES = Object.keys(LOCALE_LANGUAGES)

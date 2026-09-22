@@ -67,7 +67,8 @@ const i18nConfig = {
       'de', // German
       'ne', // Nepali
       'ms', // Malay
-      'pt' // Portuguese
+      'pt', // Portuguese
+      'mn' // Mongolian
     ],
     localeDetection: false
   },
