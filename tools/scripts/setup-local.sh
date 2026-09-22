@@ -118,9 +118,14 @@ if [ "$ANALYTICS" = true ]; then
     echo "plausible_db not ready (try $i/30)…"
     sleep 2
   done
-  pg -d plausible_db -v ON_ERROR_STOP=0 -q < .devcontainer/plausible.sql \
-    || fail "Plausible DB bootstrap failed"
-  ok "plausible_db seeded"
+  # plausible.sql is not idempotent (plain INSERTs), so only load it once.
+  if pg -d plausible_db -tAc "SELECT 1 FROM users LIMIT 1" | grep -q 1; then
+    ok "plausible_db already seeded"
+  else
+    pg -d plausible_db -v ON_ERROR_STOP=1 -q < .devcontainer/plausible.sql \
+      || fail "Plausible DB bootstrap failed"
+    ok "plausible_db seeded"
+  fi
 fi
 
 echo
