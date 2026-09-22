@@ -57,30 +57,32 @@ export function CreatorImagePickerDrawer({
       data-testid="CollectionCreatorImagePicker"
       // Render above the parent CollectionDialog (modal z-index 1300).
       sx={{ zIndex: (theme) => theme.zIndex.modal + 1 }}
-      PaperProps={{
-        sx: {
-          // Match the editor's settings drawer dimensions and chrome.
-          border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: 3,
-          borderBottomLeftRadius: 0,
-          borderBottomRightRadius: 0,
-          width: { xs: 'auto', md: 328 },
-          left: { xs: 0, md: 'auto' },
-          top: { xs: 0, md: 32 },
-          right: { xs: 0, md: 32 },
-          bottom: 0,
-          height: 'calc(100% - 20px)',
-          display: 'flex',
-          flexDirection: 'column'
+      slotProps={{
+        paper: {
+          sx: {
+            // Match the editor's settings drawer dimensions and chrome.
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: 3,
+            borderBottomLeftRadius: 0,
+            borderBottomRightRadius: 0,
+            width: { xs: 'auto', md: 328 },
+            left: { xs: 0, md: 'auto' },
+            top: { xs: 0, md: 32 },
+            right: { xs: 0, md: 32 },
+            bottom: 0,
+            height: 'calc(100% - 20px)',
+            display: 'flex',
+            flexDirection: 'column'
+          }
         }
       }}
     >
       <Stack
         direction="row"
-        alignItems="center"
-        justifyContent="space-between"
         sx={{
+          alignItems: 'center',
+          justifyContent: 'space-between',
           px: 2,
           py: 1.5,
           borderBottom: 1,

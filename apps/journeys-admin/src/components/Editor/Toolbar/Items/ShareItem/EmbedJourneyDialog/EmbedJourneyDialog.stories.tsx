@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ReactElement, useState } from 'react'
 
@@ -26,7 +26,7 @@ const EmbedJourneyDialogComponent = ({ ...args }): ReactElement => {
       <JourneyProvider
         value={{
           journey: args.journey,
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <EmbedJourneyDialog

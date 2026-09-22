@@ -62,7 +62,7 @@ Top-level wrapping order (from `_app.tsx`):
 
 Editor-level additional providers:
 
-8. `JourneyProvider` — journey data (variant: `'admin'`)
+8. `JourneyProvider` — journey data (renderMode: `'admin'`)
 9. `EditorProvider` — editor UI state (selected step, active content, analytics view)
 10. `MuxVideoUploadProvider` — video upload handling
 11. `HotkeysProvider` — keyboard shortcuts
@@ -128,10 +128,14 @@ Pattern: `use{Action}{Resource}{Suffix}` — e.g., `useJourneyCreateMutation`, `
 
 ## GraphQL & data fetching
 
-- Apollo Client with Firebase JWT auth
+- Apollo Client 4 with Firebase JWT auth
 - SSE link for subscriptions (Server-Sent Events)
-- Debounce link (500ms) to prevent rapid requests
-- Mutation queue link for reliable ordering
+- Debounce link (500ms) to prevent rapid requests, and a mutation queue link
+  for reliable ordering. Both live in `src/libs/apolloClient/` — they were
+  `apollo-link-debounce` and `@adobe/apollo-link-mutation-queue`, neither of
+  which works under Apollo Client 4 (one ships an ES5 build that cannot extend
+  v4's `ApolloLink` class, the other returns zen-observables where v4 expects
+  rxjs), so both are ported in-repo.
 - Schema source: `apis/api-gateway/schema.graphql`
 - Codegen: `pnpm dlx nx run journeys-admin:codegen` after GraphQL changes
 - Fragments: `BLOCK_FIELDS`, `JOURNEY_FIELDS` — include in mutations that return these types
@@ -153,7 +157,7 @@ Pages use `getServerSideProps` for auth checks and data preloading. Redirects to
 
 ## Testing
 
-- Framework: Jest + `@testing-library/react`
+- Framework: Vitest + `@testing-library/react` (mocks via `vi.mock`/`vi.fn`)
 - MSW (Mock Service Worker) for HTTP/GraphQL mocking via `test/mswServer.ts`
 - Custom test providers: `ApolloLoadingProvider` in `test/ApolloLoadingProvider.tsx`
 - Setup: `setupTests.tsx` auto-includes testing libraries, mocks Next.js
@@ -176,5 +180,8 @@ pnpm dlx nx run journeys-admin-e2e:e2e                # end-to-end tests
 - Shared UI: `@core/shared/ui/*`
 - Journeys UI: `@core/journeys/ui/*`
 - MUI: `@mui/material/*`
-- Apollo: `@apollo/client`
+- Apollo core (`ApolloClient`, `gql`, `InMemoryCache`, error classes):
+  `@apollo/client`; React hooks and `ApolloProvider`: `@apollo/client/react`;
+  links: `@apollo/client/link/*`; test helpers: `@apollo/client/testing` and
+  `@apollo/client/testing/react` (`MockedProvider`)
 - i18n: `next-i18next`

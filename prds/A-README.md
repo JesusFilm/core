@@ -30,7 +30,7 @@ Each PRD in this directory typically follows a consistent format and includes:
 
 ## Naming Convention
 
-PRDs are named according to their corresponding ticket or issue number (e.g., `ENG-1939.md` for the Watch site footer redesign). This makes it easy to cross-reference PRDs with tickets in our project management system.
+PRDs are named according to their corresponding ticket or issue number (e.g., `ENG-1234.md`). This makes it easy to cross-reference PRDs with tickets in our project management system. PRDs spanning a body of work rather than a single ticket are grouped in a subdirectory named after the surface (e.g., `resources/`).
 
 ## For AI Assistants
 

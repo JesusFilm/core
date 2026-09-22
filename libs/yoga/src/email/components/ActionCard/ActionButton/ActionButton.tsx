@@ -1,5 +1,5 @@
-import { Button } from '@react-email/components'
 import { ReactElement } from 'react'
+import { Button } from 'react-email'
 
 interface ActionButtonProps {
   buttonText: string

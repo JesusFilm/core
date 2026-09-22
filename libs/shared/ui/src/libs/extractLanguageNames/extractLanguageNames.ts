@@ -9,6 +9,20 @@ export interface LanguageNames {
 }
 
 /**
+ * True when both a local and a native name are present, meaning a language
+ * option should render (and be sized for) two lines instead of one.
+ */
+export function isTwoLineOption({
+  localName,
+  nativeName
+}: {
+  localName?: string
+  nativeName?: string
+}): boolean {
+  return localName != null && nativeName != null
+}
+
+/**
  * Extracts local (non-primary) and native (primary) display names from a
  * language's translation array.
  *

@@ -26,7 +26,12 @@ export function TermsListItem({
       <ListItemIcon sx={{ minWidth: 44 }}>{icon}</ListItemIcon>
       <ListItemText
         primary={
-          <Typography variant="body1" color="primary.main">
+          <Typography
+            variant="body1"
+            sx={{
+              color: 'primary.main'
+            }}
+          >
             {text}
           </Typography>
         }

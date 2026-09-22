@@ -66,10 +66,10 @@ export function Goals(): ReactElement {
     if (journey == null) return <></>
     return hasGoals ? (
       <Stack
-        width="670px"
         direction="column"
         data-testid="Goals"
         sx={{
+          width: '670px',
           height: '100%',
           mr: 5,
           backgroundColor: 'background.paper',
@@ -84,9 +84,9 @@ export function Goals(): ReactElement {
       </Stack>
     ) : (
       <Box
-        width="670px"
         data-testid="Goals"
         sx={{
+          width: '670px',
           mr: 5,
           backgroundColor: 'background.paper',
           borderRadius: 3,
@@ -102,11 +102,13 @@ export function Goals(): ReactElement {
 
   return (
     <Stack
-      gap={2}
-      justifyContent={hasGoals ? 'flex-start' : 'center'}
-      py={6}
-      flexGrow={1}
       data-testid="Goals"
+      sx={{
+        gap: 2,
+        justifyContent: hasGoals ? 'flex-start' : 'center',
+        py: 6,
+        flexGrow: 1
+      }}
     >
       {journey != null &&
         (hasGoals ? <GoalsList goals={goals} /> : <GoalsBanner />)}

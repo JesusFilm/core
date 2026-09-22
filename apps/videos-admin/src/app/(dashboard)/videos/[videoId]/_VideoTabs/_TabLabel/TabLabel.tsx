@@ -10,7 +10,13 @@ interface TabLabelProps {
 
 export function TabLabel({ label, count }: TabLabelProps): ReactElement {
   return (
-    <Stack direction="row" gap={1} alignItems="center">
+    <Stack
+      direction="row"
+      sx={{
+        gap: 1,
+        alignItems: 'center'
+      }}
+    >
       <Typography>{label}</Typography>
       {count != null && (
         <Box
@@ -25,7 +31,12 @@ export function TabLabel({ label, count }: TabLabelProps): ReactElement {
             borderColor: 'divider'
           }}
         >
-          <Typography color="primary.main" fontWeight={600}>
+          <Typography
+            sx={{
+              color: 'primary.main',
+              fontWeight: 600
+            }}
+          >
             {count}
           </Typography>
         </Box>

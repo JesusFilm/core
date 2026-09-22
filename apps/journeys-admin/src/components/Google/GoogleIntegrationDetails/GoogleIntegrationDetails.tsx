@@ -1,4 +1,5 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
@@ -148,12 +149,22 @@ export function GoogleIntegrationDetails(): ReactElement | null {
   const canManageSyncs = isIntegrationOwner || isTeamManager
 
   return (
-    <Stack gap={4}>
+    <Stack
+      sx={{
+        gap: 4
+      }}
+    >
       <Stack>
         {data?.integrations
           .filter((i) => i.id === integrationId)
           .map((i) => (
-            <Stack key={i.id} direction="row" justifyContent="space-between">
+            <Stack
+              key={i.id}
+              direction="row"
+              sx={{
+                justifyContent: 'space-between'
+              }}
+            >
               <Typography variant="body1" component="span">
                 {t('Connected Google Account')}
               </Typography>
@@ -164,7 +175,12 @@ export function GoogleIntegrationDetails(): ReactElement | null {
             </Stack>
           ))}
       </Stack>
-      <Stack direction="row" justifyContent="flex-end">
+      <Stack
+        direction="row"
+        sx={{
+          justifyContent: 'flex-end'
+        }}
+      >
         <Button
           onClick={() => setConfirmOpen(true)}
           disabled={integrationLoading || !canManageSyncs}

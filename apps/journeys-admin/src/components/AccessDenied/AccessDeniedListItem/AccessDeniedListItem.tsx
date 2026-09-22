@@ -53,14 +53,24 @@ export function AccessDeniedListItem({
         <Typography variant="body2" sx={{ mt: 1.5 }}>
           {description}
         </Typography>
-        <Box display={{ xs: 'flex', sm: 'none' }} sx={{ mt: 1.5 }}>
+        <Box
+          sx={{
+            display: { xs: 'flex', sm: 'none' },
+            mt: 1.5
+          }}
+        >
           <RequestAccess
             handleRequestAccess={handleRequestAccess}
             requestedAccess={requestedAccess}
           />
         </Box>
       </Stack>
-      <Box display={{ xs: 'none', sm: 'flex' }} sx={{ ml: 'auto' }}>
+      <Box
+        sx={{
+          display: { xs: 'none', sm: 'flex' },
+          ml: 'auto'
+        }}
+      >
         <RequestAccess
           handleRequestAccess={handleRequestAccess}
           requestedAccess={requestedAccess}
@@ -87,14 +97,14 @@ export function RequestAccess({
         (requestedAccess ? (
           <Stack
             direction="row"
-            alignItems="center"
             sx={{
+              alignItems: 'center',
+              flexShrink: 0,
               color: 'success.main',
               mr: 3,
               px: { xs: 0, sm: '12px' },
               py: '6px'
             }}
-            flexShrink={0}
           >
             <CheckContainedIcon fontSize="small" sx={{ mr: 2 }} />
             <Typography variant="subtitle2">{t('Request Sent')}</Typography>

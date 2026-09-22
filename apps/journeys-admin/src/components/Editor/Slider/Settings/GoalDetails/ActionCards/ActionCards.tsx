@@ -44,9 +44,20 @@ export function ActionCards({ url }: ActionCardsProps): ReactElement {
   }
 
   return (
-    <Stack gap={6} sx={{ mb: 14 }} data-testid="ActionCards">
+    <Stack
+      data-testid="ActionCards"
+      sx={{
+        gap: 6,
+        mb: 14
+      }}
+    >
       <Box>
-        <Typography variant="subtitle2" color="secondary.dark">
+        <Typography
+          variant="subtitle2"
+          sx={{
+            color: 'secondary.dark'
+          }}
+        >
           {t('Appears on the cards')}
         </Typography>
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
@@ -56,7 +67,13 @@ export function ActionCards({ url }: ActionCardsProps): ReactElement {
         </Typography>
       </Box>
       {blocks?.map((block) => (
-        <Stack key={block.id} gap={4} direction="row">
+        <Stack
+          key={block.id}
+          direction="row"
+          sx={{
+            gap: 4
+          }}
+        >
           <Box
             sx={{
               width: 85,
@@ -154,8 +171,19 @@ function ActionCardsDetail({
   }
 
   return (
-    <Stack justifyContent="center" gap={2} width={160}>
-      <Typography variant="subtitle2" color="text.secondary">
+    <Stack
+      sx={{
+        justifyContent: 'center',
+        gap: 2,
+        width: 160
+      }}
+    >
+      <Typography
+        variant="subtitle2"
+        sx={{
+          color: 'text.secondary'
+        }}
+      >
         {blockType}
       </Typography>
       <Typography variant="subtitle2">{label}</Typography>

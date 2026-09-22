@@ -1,3 +1,4 @@
+import MenuList from '@mui/material/MenuList'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentPropsWithRef } from 'react'
 
@@ -30,6 +31,11 @@ export const IconSecondary = {
 
 export const MenuItem = {
   ...Template,
+  render: (args: ComponentPropsWithRef<typeof HelpScoutBeacon>) => (
+    <MenuList>
+      <HelpScoutBeacon {...args} />
+    </MenuList>
+  ),
   args: {
     variant: 'menuItem'
   }

@@ -3,6 +3,7 @@ import { type MockedFunction, vi } from 'vitest'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
+import { promptOf } from '../../../test/promptOf'
 import { Action, ability } from '../../lib/auth/ability'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
@@ -945,8 +946,7 @@ describe('journeyAiTranslateCreate mutation', () => {
     expect(mockStreamText).toHaveBeenCalledTimes(2)
 
     // The retry prompt asks only for the missing hint field.
-    const retryPrompt = (mockStreamText.mock.calls[1][0] as any).messages[1]
-      .content[0].text as string
+    const retryPrompt = promptOf(mockStreamText.mock.calls[1][0])
     expect(retryPrompt).toContain('hint:')
     expect(retryPrompt).not.toContain('label:')
 
@@ -1047,8 +1047,7 @@ describe('journeyAiTranslateCreate mutation', () => {
     })
 
     // The default is injected into the prompt sent to the model...
-    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[1]
-      .content[0].text as string
+    const prompt = promptOf(mockStreamText.mock.calls[0][0])
     expect(prompt).toContain('label: "Submit"')
 
     // ...but only the translated value is written — the English default is never
@@ -1090,8 +1089,7 @@ describe('journeyAiTranslateCreate mutation', () => {
       variables: { input: mockInput }
     })
 
-    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[1]
-      .content[0].text as string
+    const prompt = promptOf(mockStreamText.mock.calls[0][0])
     expect(prompt).toContain('label: "Button"')
 
     expect(prismaMock.block.update).toHaveBeenCalledWith(
@@ -1127,8 +1125,7 @@ describe('journeyAiTranslateCreate mutation', () => {
       variables: { input: mockInput }
     })
 
-    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[1]
-      .content[0].text as string
+    const prompt = promptOf(mockStreamText.mock.calls[0][0])
     expect(prompt).toContain('submitLabel: "Submit"')
 
     expect(prismaMock.block.update).toHaveBeenCalledWith(
@@ -1165,8 +1162,7 @@ describe('journeyAiTranslateCreate mutation', () => {
       variables: { input: mockInput }
     })
 
-    const prompt = (mockStreamText.mock.calls[0][0] as any).messages[1]
-      .content[0].text as string
+    const prompt = promptOf(mockStreamText.mock.calls[0][0])
     expect(prompt).toContain('label: "Watch now"')
     expect(prompt).not.toContain('label: "Button"')
   })

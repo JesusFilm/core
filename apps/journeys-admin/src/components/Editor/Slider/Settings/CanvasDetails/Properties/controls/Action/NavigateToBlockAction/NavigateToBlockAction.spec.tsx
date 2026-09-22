@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -46,7 +46,7 @@ describe('NavigateToBlockAction', () => {
         <JourneyProvider
           value={{
             journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps }}>
@@ -65,7 +65,7 @@ describe('NavigateToBlockAction', () => {
         <JourneyProvider
           value={{
             journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider
@@ -97,7 +97,7 @@ describe('NavigateToBlockAction', () => {
         <JourneyProvider
           value={{
             journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider

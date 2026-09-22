@@ -1,5 +1,5 @@
 import Container from '@mui/material/Container'
-import Grid from '@mui/material/GridLegacy'
+import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
 import castArray from 'lodash/castArray'
 import difference from 'lodash/difference'
@@ -78,7 +78,12 @@ export function TemplateGallery(): ReactElement {
           }}
           id="TemplateGalleryTagsFilter"
         >
-          <Grid item xs={12} md={7}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 7
+            }}
+          >
             <TagsFilter
               label={t('Topics, holidays, felt needs, collections')}
               tagNames={['Topics', 'Holidays', 'Felt Needs', 'Collections']}
@@ -87,9 +92,14 @@ export function TemplateGallery(): ReactElement {
               popperElementId="TemplateGalleryTagsFilter"
             />
           </Grid>
-          <Grid item xs={12} md={5}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 5
+            }}
+          >
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid size={6}>
                 <TagsFilter
                   label={t('Audience')}
                   tagNames={['Audience']}
@@ -98,7 +108,7 @@ export function TemplateGallery(): ReactElement {
                   popperElementId="TemplateGalleryAudienceTagsFilter"
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid size={6}>
                 <TagsFilter
                   label={t('Genre')}
                   tagNames={['Genre']}
@@ -108,18 +118,20 @@ export function TemplateGallery(): ReactElement {
                 />
               </Grid>
               <Grid
-                item
-                xs={12}
-                md={6}
                 id="TemplateGalleryAudienceTagsFilter"
                 sx={{ p: '0 !important' }}
+                size={{
+                  xs: 12,
+                  md: 6
+                }}
               />
               <Grid
-                item
-                xs={12}
-                md={6}
                 id="TemplateGalleryGenreTagsFilter"
                 sx={{ p: '0 !important' }}
+                size={{
+                  xs: 12,
+                  md: 6
+                }}
               />
             </Grid>
           </Grid>

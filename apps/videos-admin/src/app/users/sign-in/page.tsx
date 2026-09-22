@@ -59,10 +59,12 @@ export default function SignIn(): ReactElement {
       />
       {hasLogged && (
         <Box
-          height={300}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
+          sx={{
+            height: 300,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
         >
           <CircularProgress />
         </Box>

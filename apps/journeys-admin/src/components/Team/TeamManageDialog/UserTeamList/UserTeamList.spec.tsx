@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -153,6 +153,6 @@ describe('UserTeamList', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(getAllByRole('checkbox')[1]).toBeDisabled()
+    expect(getAllByRole('switch')[1]).toBeDisabled()
   })
 })

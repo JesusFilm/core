@@ -89,7 +89,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
       `}</style>
       <JourneyPageWrapper
         journey={journey}
-        variant="embed"
+        renderMode="embed"
         theme={theme}
         rtl={rtl}
         locale={locale}
@@ -116,6 +116,11 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
         }
       }
     })
+    // Apollo Client 4 types `data` as optional. The default `none` error
+    // policy rejects rather than resolving without data, so this narrows
+    // the type rather than guarding a reachable branch.
+    if (data == null) throw new Error('GetJourney returned no data')
+
     const { rtl, locale } = getJourneyRTL(data.journey)
 
     return {

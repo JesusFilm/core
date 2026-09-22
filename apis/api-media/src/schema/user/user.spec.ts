@@ -11,6 +11,8 @@ describe('user', () => {
     }
   })
 
+  const publicClient = getClient()
+
   const VIDEO_ROLES = graphql(`
     query VideoRoles {
       _entities(
@@ -24,10 +26,10 @@ describe('user', () => {
     }
   `)
 
-  it('should return media roles', async () => {
+  it('should return media roles from the request context', async () => {
     prismaMock.userMediaRole.findUnique.mockResolvedValue({
-      id: 'id',
-      userId: 'userId',
+      id: 'mediaRoleId',
+      userId: 'testUserId',
       roles: [MediaRole.publisher],
       createdAt: new Date(),
       updatedAt: new Date()
@@ -35,11 +37,35 @@ describe('user', () => {
     const data = await authClient({
       document: VIDEO_ROLES
     })
+    // Roles are resolved from the auth context (keyed by Firebase uid via
+    // UserMediaRole.userId), the same source that gates publisher fields —
+    // never from a separate lookup on the federation id. See issue #9416.
     expect(prismaMock.userMediaRole.findUnique).toHaveBeenCalledWith({
+      where: { userId: 'testUserId' }
+    })
+    expect(prismaMock.userMediaRole.findUnique).not.toHaveBeenCalledWith({
       where: { id: 'id' }
     })
     expect(data).toHaveProperty('data._entities[0].mediaUserRoles', [
       MediaRole.publisher
     ])
+  })
+
+  it('should return no media roles when the user has none granted', async () => {
+    prismaMock.userMediaRole.findUnique.mockResolvedValue(null)
+    const data = await authClient({
+      document: VIDEO_ROLES
+    })
+    expect(data).toHaveProperty('data._entities[0].mediaUserRoles', [])
+  })
+
+  it('should return no media roles for an unauthenticated request', async () => {
+    // Exercises the context.type !== 'authenticated' fallback: no auth context
+    // means no currentRoles, so the resolver returns [] without a DB lookup.
+    const data = await publicClient({
+      document: VIDEO_ROLES
+    })
+    expect(prismaMock.userMediaRole.findUnique).not.toHaveBeenCalled()
+    expect(data).toHaveProperty('data._entities[0].mediaUserRoles', [])
   })
 })

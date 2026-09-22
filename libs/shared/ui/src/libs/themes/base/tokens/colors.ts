@@ -1,3 +1,4 @@
+import { buttonGroupClasses } from '@mui/material/ButtonGroup'
 import { SimplePaletteColorOptions, ThemeOptions } from '@mui/material/styles'
 
 /** Jesus Film Project brand red. */
@@ -56,21 +57,29 @@ export const baseColorsLight = (): Required<
     components: {
       MuiButton: {
         styleOverrides: {
-          containedPrimary: {
-            '@media (hover: hover)': {
-              '&:hover': {
-                backgroundColor: palette[700]
+          root: {
+            variants: [
+              {
+                props: { variant: 'contained', color: 'primary' },
+                style: {
+                  '@media (hover: hover)': {
+                    '&:hover': {
+                      backgroundColor: palette[700]
+                    }
+                  }
+                }
               }
-            }
+            ]
           }
         }
       },
       MuiButtonGroup: {
         styleOverrides: {
-          groupedContainedVertical: {
-            '&:not(:last-of-type)': {
-              borderBottom: `1px solid ${palette[700]}`
-            }
+          root: {
+            [`&.${buttonGroupClasses.contained}.${buttonGroupClasses.vertical} .${buttonGroupClasses.grouped}:not(:last-of-type)`]:
+              {
+                borderBottom: `1px solid ${palette[700]}`
+              }
           }
         }
       },
@@ -140,21 +149,29 @@ export const baseColorsDark = (): Required<
     components: {
       MuiButton: {
         styleOverrides: {
-          containedPrimary: {
-            '@media (hover: hover)': {
-              '&:hover': {
-                backgroundColor: palette[300]
+          root: {
+            variants: [
+              {
+                props: { variant: 'contained', color: 'primary' },
+                style: {
+                  '@media (hover: hover)': {
+                    '&:hover': {
+                      backgroundColor: palette[300]
+                    }
+                  }
+                }
               }
-            }
+            ]
           }
         }
       },
       MuiButtonGroup: {
         styleOverrides: {
-          groupedContainedVertical: {
-            '&:not(:last-of-type)': {
-              borderBottom: `1px solid ${palette[300]}`
-            }
+          root: {
+            [`&.${buttonGroupClasses.contained}.${buttonGroupClasses.vertical} .${buttonGroupClasses.grouped}:not(:last-of-type)`]:
+              {
+                borderBottom: `1px solid ${palette[300]}`
+              }
           }
         }
       },

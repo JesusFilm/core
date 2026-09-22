@@ -1,3 +1,4 @@
+import { NormalizedCacheObject } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
@@ -58,9 +59,10 @@ function PublisherIndexPage(): ReactElement {
         mainHeaderChildren={
           <Stack
             direction="row"
-            justifyContent="flex-end"
-            flexGrow={1}
             sx={{
+              justifyContent: 'flex-end',
+              flexGrow: 1,
+
               display: {
                 xs: 'none',
                 md: 'flex'
@@ -121,7 +123,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   return {
     props: {
       userSerialized: JSON.stringify(user),
-      initialApolloState: apolloClient.cache.extract(),
+      initialApolloState: apolloClient.cache.extract() as NormalizedCacheObject,
       ...translations
     }
   }

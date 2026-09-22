@@ -21,8 +21,27 @@ describe('action', () => {
       push: vi.fn()
     } as unknown as NextRouter
 
+    // jsdom cannot navigate, so assert on a swapped-in location object. The
+    // window property itself is configurable, which is what makes this work.
+    const originalLocationDescriptor = Object.getOwnPropertyDescriptor(
+      window,
+      'location'
+    )
+
     beforeEach(() => {
       vi.resetAllMocks()
+
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        enumerable: false,
+        value: { ...window.location, href: '', reload: vi.fn() }
+      })
+    })
+
+    afterEach(() => {
+      if (originalLocationDescriptor != null) {
+        Object.defineProperty(window, 'location', originalLocationDescriptor)
+      }
     })
 
     it('should handle empty action', () => {
@@ -50,13 +69,12 @@ describe('action', () => {
         customizable: false,
         parentStepId: null
       })
-      expect(window.open).toHaveBeenCalledWith(
-        'mailto:edmondshen@gmail.com',
-        '_blank'
-      )
+      expect(window.location.href).toBe('mailto:edmondshen@gmail.com')
+      // A popup would be blocked on iOS Safari and stranded on Android Chrome.
+      expect(window.open).not.toHaveBeenCalled()
     })
 
-    it.skip('should handle PhoneAction call', () => {
+    it('should handle PhoneAction call', () => {
       handleAction(router, {
         __typename: 'PhoneAction',
         parentBlockId: 'parent-id',
@@ -70,8 +88,7 @@ describe('action', () => {
       expect(window.location.href).toBe('tel:+1234567890')
     })
 
-    // TODO: Fix this test
-    it.skip('should handle PhoneAction text', () => {
+    it('should handle PhoneAction text', () => {
       handleAction(router, {
         __typename: 'PhoneAction',
         parentBlockId: 'parent-id',

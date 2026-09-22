@@ -48,9 +48,11 @@ export function Typography({
           color={textColor}
           component="p"
           gutterBottom
-          whiteSpace="pre-line"
           data-testid="JourneysTypography"
-          sx={{ wordBreak: 'break-word' }}
+          sx={{
+            whiteSpace: 'pre-line',
+            wordBreak: 'break-word'
+          }}
         >
           {displayContent}
         </MuiTypography>
@@ -60,9 +62,11 @@ export function Typography({
           align={align ?? undefined}
           color={textColor}
           gutterBottom
-          whiteSpace="pre-line"
           data-testid="JourneysTypography"
-          sx={{ wordBreak: 'break-word' }}
+          sx={{
+            whiteSpace: 'pre-line',
+            wordBreak: 'break-word'
+          }}
         >
           {displayContent}
         </MuiTypography>

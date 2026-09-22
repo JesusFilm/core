@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
@@ -21,7 +21,7 @@ const Template: StoryObj<typeof PreviewItem> = {
     <ApolloLoadingProvider>
       <MockedProvider>
         <JourneyProvider
-          value={{ journey: publishedJourney, variant: 'admin' }}
+          value={{ journey: publishedJourney, renderMode: 'admin' }}
         >
           <Box
             sx={{

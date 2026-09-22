@@ -35,16 +35,21 @@ export function ImageBlockHeader({
   return (
     <Stack
       data-testid="ImageBlockHeader"
-      flexDirection="row"
-      justifyContent="space-between"
-      alignItems="center"
       sx={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         height: 78,
         width: '100%',
         mx: showAdd ? 0 : 4
       }}
     >
-      <Stack direction="row" alignItems="center">
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: 'center'
+        }}
+      >
         <Box
           sx={{
             ml: 2,
@@ -60,7 +65,12 @@ export function ImageBlockHeader({
         </Box>
         {showTitle && (
           <Stack>
-            <Typography variant="subtitle2" color="text.secondary">
+            <Typography
+              variant="subtitle2"
+              sx={{
+                color: 'text.secondary'
+              }}
+            >
               {loading
                 ? t('Image is uploading...')
                 : selectedBlock?.src != null
@@ -71,8 +81,11 @@ export function ImageBlockHeader({
             </Typography>
             <Typography
               variant="caption"
-              display={selectedBlock?.src != null && !loading ? 'flex' : 'none'}
-              color="text.secondary"
+              sx={{
+                display:
+                  selectedBlock?.src != null && !loading ? 'flex' : 'none',
+                color: 'text.secondary'
+              }}
             >
               {t('{{ width }} x {{ height }} pixels', {
                 width: selectedBlock?.width,

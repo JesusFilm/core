@@ -1,4 +1,5 @@
-import { gql, useLazyQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { skipToken, useQuery } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
@@ -41,7 +42,7 @@ export const GET_VIDEO = gql`
         primary
         value
       }
-      variant(languageId: $languageId) {
+      variant(languageId: $languageId, input: { onlyPublished: false }) {
         id
         duration
         hls
@@ -88,9 +89,13 @@ export function LocalDetails({
     ? (videoBlock?.videoVariantLanguageId ?? DEFAULT_LANGUAGE_ID)
     : DEFAULT_LANGUAGE_ID
 
-  const [loadVideo, { data, loading }] = useLazyQuery<GetVideo>(GET_VIDEO, {
-    variables: { id, languageId }
-  })
+  // Apollo Client 4 dropped `variables` from `useLazyQuery` and disallows
+  // executing one from an effect, so hold the query with `skipToken` until the
+  // drawer opens instead.
+  const { data, loading } = useQuery<GetVideo>(
+    GET_VIDEO,
+    open === true ? { variables: { id, languageId } } : skipToken
+  )
 
   const handleChange = (selectedLanguage: LanguageOption): void => {
     setSelectedLanguage(selectedLanguage)
@@ -175,11 +180,6 @@ export function LocalDetails({
     }
   }, [open, data])
 
-  useEffect(() => {
-    if (open) {
-      void loadVideo()
-    }
-  }, [open, loadVideo])
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <Stack spacing={4} sx={{ p: 6 }}>
@@ -249,7 +249,7 @@ export function LocalDetails({
       <Stack
         direction="row"
         spacing={2}
-        sx={{ justifyContent: 'space-between' }}
+        sx={{ justifyContent: 'space-between', minWidth: 0 }}
       >
         <Chip
           label={selectedLanguage?.localName ?? selectedLanguage?.nativeName}
@@ -257,6 +257,8 @@ export function LocalDetails({
           avatar={<ChevronDownIcon />}
           disabled={loading}
           sx={{
+            minWidth: 0,
+            flexShrink: 1,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis'
@@ -267,7 +269,12 @@ export function LocalDetails({
           startIcon={<CheckIcon />}
           onClick={handleSelect}
           size="small"
-          sx={{ backgroundColor: 'secondary.dark' }}
+          // Language names can be arbitrarily long, so the chip above absorbs
+          // the squeeze and this button never shrinks. Without flexShrink it
+          // collapses to MUI's 64px min-width and the label wraps onto two
+          // lines — visible in CJK locales, where text can break between
+          // characters.
+          sx={{ backgroundColor: 'secondary.dark', flexShrink: 0 }}
           disabled={loading && !isPreselected}
         >
           {t('Select')}

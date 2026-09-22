@@ -1,17 +1,9 @@
-import {
-  ApolloClient,
-  HttpOptions,
-  InMemoryCache,
-  NormalizedCacheObject,
-  createHttpLink
-} from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 
 import { cache } from './cache'
 
-export function makeClient(
-  options?: HttpOptions
-): ApolloClient<NormalizedCacheObject> {
-  const httpLink = createHttpLink({
+export function makeClient(options?: HttpLink.Options): ApolloClient {
+  const httpLink = new HttpLink({
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL,
     ...options,
     headers: {
@@ -25,6 +17,9 @@ export function makeClient(
   return new ApolloClient({
     link: httpLink,
     cache: new InMemoryCache(cache),
-    connectToDevTools: true
+
+    devtools: {
+      enabled: true
+    }
   })
 }

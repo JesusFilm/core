@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -83,8 +84,11 @@ export function ImagesSection({
   return (
     <Stack
       data-testid="ImagesSection"
-      gap={2}
-      sx={{ width: '100%', alignSelf: 'flex-start' }}
+      sx={{
+        gap: 2,
+        width: '100%',
+        alignSelf: 'flex-start'
+      }}
     >
       {showLabel && (
         <Typography
@@ -96,7 +100,13 @@ export function ImagesSection({
         </Typography>
       )}
       {imageBlocks.length === 0 ? (
-        <Typography variant="body2" color="text.secondary" align="center">
+        <Typography
+          variant="body2"
+          align="center"
+          sx={{
+            color: 'text.secondary'
+          }}
+        >
           {t('No customizable images found for this card.')}
         </Typography>
       ) : (

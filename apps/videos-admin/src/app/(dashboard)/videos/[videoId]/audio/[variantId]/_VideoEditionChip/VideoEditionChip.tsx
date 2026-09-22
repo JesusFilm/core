@@ -19,7 +19,12 @@ export function VideoEditionChip({
         gap: 1
       }}
     >
-      <Typography variant="caption" color="text.secondary">
+      <Typography
+        variant="caption"
+        sx={{
+          color: 'text.secondary'
+        }}
+      >
         Edition:
       </Typography>
       <Chip

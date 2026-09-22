@@ -54,8 +54,10 @@ export function PublishAllResultPanel({
             >
               <Typography
                 variant="body2"
-                color="text.secondary"
-                sx={{ mb: 0.5 }}
+                sx={{
+                  color: 'text.secondary',
+                  mb: 0.5
+                }}
               >
                 Audio Languages:
               </Typography>
@@ -65,9 +67,11 @@ export function PublishAllResultPanel({
                     key={variantId}
                     direction="row"
                     spacing={0.75}
-                    alignItems="center"
                     component="span"
                     aria-label={`Published: ${variantId}`}
+                    sx={{
+                      alignItems: 'center'
+                    }}
                   >
                     <CheckCircleIcon
                       sx={{
@@ -79,8 +83,10 @@ export function PublishAllResultPanel({
                     />
                     <Typography
                       variant="body2"
-                      color="text.secondary"
                       component="span"
+                      sx={{
+                        color: 'text.secondary'
+                      }}
                     >
                       {variantId}
                     </Typography>
@@ -101,7 +107,13 @@ export function PublishAllResultPanel({
                 : 0
           }}
         >
-          <Typography variant="body2" color="warning.main" sx={{ mb: 0.75 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'warning.main',
+              mb: 0.75
+            }}
+          >
             Could not publish:
           </Typography>
           <Stack spacing={2}>
@@ -121,8 +133,10 @@ export function PublishAllResultPanel({
                       <Box sx={{ mt: 0.75, pl: 0 }}>
                         <Typography
                           variant="body2"
-                          color="text.secondary"
-                          sx={{ mb: 0.5 }}
+                          sx={{
+                            color: 'text.secondary',
+                            mb: 0.5
+                          }}
                         >
                           This video is missing the following:
                         </Typography>
@@ -131,7 +145,9 @@ export function PublishAllResultPanel({
                             <Typography
                               key={`${id}-${field}`}
                               variant="body2"
-                              color="text.secondary"
+                              sx={{
+                                color: 'text.secondary'
+                              }}
                             >
                               {field}
                             </Typography>
@@ -142,8 +158,10 @@ export function PublishAllResultPanel({
                     {showMessageOnly ? (
                       <Typography
                         variant="body2"
-                        color="text.secondary"
-                        sx={{ mt: 0.75 }}
+                        sx={{
+                          color: 'text.secondary',
+                          mt: 0.75
+                        }}
                       >
                         {row.message}
                       </Typography>

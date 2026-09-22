@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { NextRouter, useRouter } from 'next/router'
@@ -445,7 +445,7 @@ describe('JourneyList', () => {
       ).toBeInTheDocument()
     })
 
-    it('unmounts the mobile drawer modal when the X button is clicked', () => {
+    it('unmounts the mobile drawer modal when the X button is clicked', async () => {
       mockedUseRouter.mockReturnValue({
         query: { status: 'active', type: 'templates' },
         events: { on: vi.fn(), off: vi.fn() }
@@ -460,7 +460,9 @@ describe('JourneyList', () => {
         screen.getByRole('button', { name: 'Close template info' })
       )
 
-      expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
+      await waitFor(() =>
+        expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
+      )
     })
   })
 })

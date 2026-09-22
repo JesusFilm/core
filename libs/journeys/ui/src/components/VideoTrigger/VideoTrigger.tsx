@@ -6,9 +6,8 @@ import Player from 'video.js/dist/types/player'
 
 import { isIPhone } from '@core/shared/ui/deviceUtils'
 
-import { handleAction } from '../../libs/action'
+import { getNextStepSlug, handleAction } from '../../libs/action'
 import { type TreeBlock, useBlocks } from '../../libs/block'
-import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { useJourney } from '../../libs/JourneyProvider'
 import {
   JourneyPlausibleEvents,
@@ -34,7 +33,7 @@ export function VideoTrigger({
   triggerStart
 }: VideoTriggerProps): ReactElement {
   const router = useRouter()
-  const { journey, variant } = useJourney()
+  const { journey, renderMode } = useJourney()
   const [triggered, setTriggered] = useState(false)
   const triggeredRef = useRef(false)
   const { blockHistory } = useBlocks()
@@ -97,7 +96,7 @@ export function VideoTrigger({
           }
 
           const nextStepSlug = getNextStepSlug(journey, triggerAction)
-          if (variant === 'embed' && !isIPhone()) {
+          if (renderMode === 'embed' && !isIPhone()) {
             handleAction(router, triggerAction, nextStepSlug)
             plausible('videoTrigger', input)
             return
@@ -125,7 +124,7 @@ export function VideoTrigger({
     router,
     triggerAction,
     triggered,
-    variant,
+    renderMode,
     blockId,
     plausible,
     journey,

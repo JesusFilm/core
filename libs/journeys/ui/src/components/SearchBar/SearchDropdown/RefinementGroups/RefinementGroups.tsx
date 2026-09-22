@@ -66,8 +66,8 @@ export function RefinementGroups({
             container
             spacing={1}
             columns={{ xs: 1, lg: 6 }}
-            direction={{ xs: 'column', lg: 'row' }}
             sx={{
+              flexDirection: { xs: 'column', lg: 'row' },
               minHeight: 344,
               height: isCollapsed ? 'auto' : 344,
               overflow: 'hidden',
@@ -133,7 +133,11 @@ export function RefinementGroups({
       ) : (
         <>
           {!hasRefinements && (
-            <Typography mb={5}>
+            <Typography
+              sx={{
+                mb: 5
+              }}
+            >
               {t(
                 `Sorry, there are no languages available for this search. Try removing some of your search criteria!`
               )}
@@ -141,10 +145,12 @@ export function RefinementGroups({
           )}
           {isLoading && (
             <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              mb={5}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                mb: 5
+              }}
             >
               <Typography>{t(`Loading...`)}</Typography>
             </Box>

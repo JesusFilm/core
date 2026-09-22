@@ -46,13 +46,27 @@ export function SettingsMenu({
       <MenuItem onClick={onQualityClick} sx={{ minWidth: 220 }}>
         <Stack
           direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          width="100%"
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%'
+          }}
         >
           <Typography>{t('Quality')}</Typography>
-          <Stack direction="row" alignItems="center" gap={1}>
-            <Typography color="secondary.main">{currentQuality}</Typography>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: 'center',
+              gap: 1
+            }}
+          >
+            <Typography
+              sx={{
+                color: 'secondary.main'
+              }}
+            >
+              {currentQuality}
+            </Typography>
             <ArrowForwardIosRounded fontSize="small" />
           </Stack>
         </Stack>

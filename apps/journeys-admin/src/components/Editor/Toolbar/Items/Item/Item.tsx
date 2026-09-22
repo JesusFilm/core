@@ -43,18 +43,20 @@ export function Item({
         <Tooltip
           title={label}
           arrow
-          PopperProps={{
-            modifiers: [
-              {
-                name: 'offset',
-                options: {
-                  offset: [0, 0.5]
-                }
-              }
-            ]
-          }}
           enterTouchDelay={0}
           leaveTouchDelay={2000}
+          slotProps={{
+            popper: {
+              modifiers: [
+                {
+                  name: 'offset',
+                  options: {
+                    offset: [0, 0.5]
+                  }
+                }
+              ]
+            }
+          }}
         >
           <span>
             {count != null ? (
@@ -104,7 +106,9 @@ export function Item({
         </Tooltip>
       )
     }
-    case 'button':
+    case 'button': {
+      const { sx: buttonPropsSx, ...restButtonProps } = ButtonProps ?? {}
+
       return (
         <Button
           variant="outlined"
@@ -114,12 +118,20 @@ export function Item({
           target={href != null ? '_blank' : undefined}
           href={href}
           onClick={onClick}
-          sx={{ typography: 'subtitle2' }}
-          {...ButtonProps}
+          // Labels must not break mid-string. CJK wraps between any two
+          // characters, so a squeezed toolbar split 战略 over two lines while
+          // the single Latin word "Strategy" held its line. The journey title
+          // absorbs the squeeze instead, via its own ellipsis. NES-1861.
+          sx={{
+            ...(buttonPropsSx ?? { typography: 'subtitle2' }),
+            whiteSpace: 'nowrap'
+          }}
+          {...restButtonProps}
         >
           {label}
         </Button>
       )
+    }
     case 'menu-item':
       return (
         <MenuItem

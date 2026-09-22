@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -116,12 +117,22 @@ export function ThemeBuilderDialog({
     setLabelFont(font)
   }
 
+  const saving = loading || createLoading
+
+  function handleClose(): void {
+    if (saving) return
+    onClose()
+  }
+
   async function handleSubmit(): Promise<void> {
     if (journey == null) return
 
     const journeyTheme = journey.journeyTheme
 
     if (journeyTheme == null) {
+      // Apollo Client 4 rejects the mutate promise on failure even when
+      // `onError` is supplied. `onError` already reports the failure, so
+      // swallow the rejection rather than let it escape unhandled.
       await createJourneyFonts({
         variables: {
           input: {
@@ -164,8 +175,11 @@ export function ThemeBuilderDialog({
             preventDuplicate: true
           })
         }
-      })
+      }).catch(() => undefined)
     } else {
+      // Apollo Client 4 rejects the mutate promise on failure even when
+      // `onError` is supplied. `onError` already reports the failure, so
+      // swallow the rejection rather than let it escape unhandled.
       await updateJourneyFonts({
         variables: {
           id: journeyTheme.id,
@@ -188,14 +202,14 @@ export function ThemeBuilderDialog({
             preventDuplicate: true
           })
         }
-      })
+      }).catch(() => undefined)
     }
   }
 
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       fullscreen={!smUp}
       sx={{
         '& .MuiDialog-paper': {
@@ -208,16 +222,30 @@ export function ThemeBuilderDialog({
         title: t('Select Fonts'),
         closeButton: true
       }}
+      slotProps={{ titleButton: { disabled: saving } }}
       dialogActionChildren={
-        <Stack direction="row" justifyContent="space-between" width="100%">
-          <Button variant="outlined" color="secondary" onClick={onClose}>
+        // gap rather than margin: StyledDialog zeroes marginLeft on non-first
+        // DialogActions children, so margin-based spacing collapses here
+        <Stack
+          direction="row"
+          sx={{
+            gap: 2
+          }}
+        >
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={handleClose}
+            disabled={saving}
+          >
             {t('Cancel')}
           </Button>
           <Button
             variant="contained"
             color="primary"
             onClick={handleSubmit}
-            disabled={loading || createLoading}
+            loading={saving}
+            disabled={saving}
           >
             {t('Confirm')}
           </Button>

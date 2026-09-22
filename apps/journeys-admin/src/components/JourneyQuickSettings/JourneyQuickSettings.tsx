@@ -46,9 +46,9 @@ export function JourneyQuickSettings({
       }}
     >
       <Stack
-        justifyContent="safe center"
-        gap={{ xs: 4, sm: 12 }}
         sx={{
+          justifyContent: 'safe center',
+          gap: { xs: 4, sm: 12 },
           m: { xs: 0, sm: 4 },
           pt: { xs: 4, sm: 0 },
           py: { sm: 8 },
@@ -71,8 +71,8 @@ export function JourneyQuickSettings({
           <OnboardingTemplateCard templateId={journey?.id} />
         </Stack>
         <Stack
-          alignItems="center"
           sx={{
+            alignItems: 'center',
             flexGrow: { xs: 1, sm: 0 },
             maxWidth: { xs: '100%', sm: 397 }
           }}

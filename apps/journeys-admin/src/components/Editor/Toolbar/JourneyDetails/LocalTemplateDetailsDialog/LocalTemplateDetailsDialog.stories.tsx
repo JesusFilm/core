@@ -68,7 +68,7 @@ const LocalTemplateDetailsDialogComponent = (): ReactElement => {
     <JourneyProvider
       value={{
         journey: publishedLocalTemplate,
-        variant: 'admin'
+        renderMode: 'admin'
       }}
     >
       <LocalTemplateDetailsDialog open={open} onClose={() => setOpen(false)} />

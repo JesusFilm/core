@@ -37,7 +37,14 @@ const sectionSx = {
 
 function SectionLabel({ children }: { children: string }): ReactElement {
   return (
-    <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
+    <Stack
+      direction="row"
+      spacing={1}
+      sx={{
+        alignItems: 'center',
+        mb: 2
+      }}
+    >
       <Box
         sx={{ width: 24, height: 3, borderRadius: 1, bgcolor: GALLERY_ACCENT }}
       />

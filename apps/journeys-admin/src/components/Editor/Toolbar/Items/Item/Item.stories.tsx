@@ -1,3 +1,4 @@
+import MenuList from '@mui/material/MenuList'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentProps } from 'react'
 
@@ -20,6 +21,11 @@ const Template: StoryObj<ComponentProps<typeof Item>> = {
 
 export const MenuItem = {
   ...Template,
+  render: (itemProps: ComponentProps<typeof Item>) => (
+    <MenuList>
+      <Item {...itemProps} />
+    </MenuList>
+  ),
   args: {
     variant: 'menu-item',
     icon: <BarChartSquare3Icon />,

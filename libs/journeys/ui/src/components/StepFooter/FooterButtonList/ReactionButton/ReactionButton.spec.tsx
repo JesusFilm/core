@@ -48,7 +48,7 @@ describe('ReactionButton', () => {
     mockUsePlausible.mockReturnValue(mockPlausible)
 
     render(
-      <JourneyProvider value={{ journey, variant: 'default' }}>
+      <JourneyProvider value={{ journey, renderMode: 'default' }}>
         <ReactionButton variant="thumbsdown" />
       </JourneyProvider>
     )

@@ -75,12 +75,14 @@ export function VideoIdNewTabLink({
     <Stack
       direction="row"
       spacing={0.75}
-      alignItems="center"
       component="span"
-      sx={{ maxWidth: '100%' }}
       aria-label={
         status === 'success' ? `Published: ${id}` : `Could not publish: ${id}`
       }
+      sx={{
+        alignItems: 'center',
+        maxWidth: '100%'
+      }}
     >
       {statusIcon}
       {link}

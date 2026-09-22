@@ -67,10 +67,21 @@ export function RefinementGroup({
 
   return (
     <Box>
-      <Typography variant="h6" color="primary.main" marginBottom={6}>
+      <Typography
+        variant="h6"
+        sx={{
+          color: 'primary.main',
+          marginBottom: 6
+        }}
+      >
         {title}
       </Typography>
-      <Box color="text.primary" marginBottom={10}>
+      <Box
+        sx={{
+          color: 'text.primary',
+          marginBottom: 10
+        }}
+      >
         {items.length > 0 ? (
           <FormGroup>
             {items.map((item) => (

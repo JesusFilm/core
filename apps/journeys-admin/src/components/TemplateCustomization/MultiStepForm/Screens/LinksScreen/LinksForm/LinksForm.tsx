@@ -114,10 +114,17 @@ export function LinksForm({
             <Stack key={fieldName} sx={{ width: '100%' }}>
               <Stack
                 direction="row"
-                alignItems="center"
-                justifyContent="space-between"
+                sx={{
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}
               >
-                <Typography variant="subtitle2" color="text.primary">
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    color: 'text.primary'
+                  }}
+                >
                   {link.label}
                 </Typography>
                 <IconButton
@@ -153,12 +160,13 @@ export function LinksForm({
                 <Stack>
                   <Stack
                     direction="row"
-                    alignItems="center"
                     sx={{
+                      alignItems: 'center',
                       height: 56,
                       bgcolor: 'rgba(0, 0, 0, 0.06)',
                       borderRadius: 1,
                       borderBottom: hasError ? 2 : 1,
+
                       borderColor: hasError
                         ? 'error.main'
                         : 'action.disabledBackground'
@@ -177,9 +185,7 @@ export function LinksForm({
                         aria-label={t('Select chat icon')}
                         disableUnderline
                         renderValue={(selected) => (
-                          <MessageChatIcon
-                            platform={selected as MessagePlatform}
-                          />
+                          <MessageChatIcon platform={selected} />
                         )}
                         sx={{
                           height: '100%',
@@ -197,7 +203,9 @@ export function LinksForm({
                             <Stack
                               direction="row"
                               spacing={3}
-                              alignItems="center"
+                              sx={{
+                                alignItems: 'center'
+                              }}
                             >
                               <MessageChatIcon platform={value} />
                               <Typography>{label}</Typography>
@@ -228,18 +236,23 @@ export function LinksForm({
                       onBlur={(e) => handleLinkBlur(e, false)}
                       error={hasError}
                       aria-label={`${t('Edit')} ${link.label}`}
-                      InputProps={{ disableUnderline: true }}
                       sx={{
                         px: 2,
                         alignSelf: 'stretch',
                         justifyContent: 'center'
                       }}
+                      slotProps={{
+                        input: { disableUnderline: true }
+                      }}
                     />
                   </Stack>
                   <Typography
                     variant="caption"
-                    color={hasError ? 'error' : 'transparent'}
-                    sx={{ mt: 0.5, mx: 3.5 }}
+                    sx={{
+                      color: hasError ? 'error' : 'transparent',
+                      mt: 0.5,
+                      mx: 3.5
+                    }}
                   >
                     {hasError ? (errors?.[fieldName] as string) : '\u00A0'}
                   </Typography>

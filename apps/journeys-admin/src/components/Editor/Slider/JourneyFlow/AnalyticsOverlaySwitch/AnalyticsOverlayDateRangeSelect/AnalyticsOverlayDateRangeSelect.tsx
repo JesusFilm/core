@@ -32,7 +32,7 @@ export function AnalyticsOverlayDateRangeSelect({
   return (
     <Select<DateRangePresetId>
       value={value}
-      onChange={(event) => onChange(event.target.value as DateRangePresetId)}
+      onChange={(event) => onChange(event.target.value)}
       variant="outlined"
       size="small"
       sx={{
@@ -56,7 +56,7 @@ export function AnalyticsOverlayDateRangeSelect({
           vertical: 'top',
           horizontal: 'left'
         },
-        MenuListProps: { dense: true }
+        slotProps: { list: { dense: true } }
       }}
     >
       {dateRangePresetGroups.flatMap((group, groupIndex) => [

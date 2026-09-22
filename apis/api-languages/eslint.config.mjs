@@ -10,7 +10,6 @@ export default [
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.*'],
         projectService: true,
         tsconfigRootDir
       }

@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -128,28 +129,30 @@ export function UserTeamInviteForm({
                     : null
               }
               autoComplete="off"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      type="submit"
-                      aria-label="add user"
-                      color="primary"
-                      disabled={values.email === ''}
-                    >
-                      <AddSquare4Icon
-                        sx={{
-                          color:
-                            values.email !== '' && errors.email == null
-                              ? 'primary.main'
-                              : null
-                        }}
-                      />
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }}
               data-testid="UserTeamInviteForm"
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        type="submit"
+                        aria-label="add user"
+                        color="primary"
+                        disabled={values.email === ''}
+                      >
+                        <AddSquare4Icon
+                          sx={{
+                            color:
+                              values.email !== '' && errors.email == null
+                                ? 'primary.main'
+                                : null
+                          }}
+                        />
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }
+              }}
             />
           </Form>
           <Stack

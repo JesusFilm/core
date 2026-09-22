@@ -128,8 +128,8 @@ export function OnboardingStepper({
     <>
       {variant === 'desktop' && (
         <Stack
-          gap={5}
           sx={{
+            gap: 5,
             display: { xs: 'none', md: 'flex' },
             width: 244
           }}
@@ -145,10 +145,15 @@ export function OnboardingStepper({
             {steps.map((step) => (
               <Step key={step.label}>
                 <StepLabel
-                  StepIconComponent={(props) => (
-                    <OnboardingStepperIcon {...props} stepLabel={step.label} />
-                  )}
                   sx={{ p: 0, py: 1 }}
+                  slots={{
+                    stepIcon: (props) => (
+                      <OnboardingStepperIcon
+                        {...props}
+                        stepLabel={step.label}
+                      />
+                    )
+                  }}
                 >
                   <Typography variant="subtitle2">{step.label}</Typography>
                 </StepLabel>

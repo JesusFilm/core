@@ -1,6 +1,7 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-import { type MockedFunction } from 'vitest'
+import { useTranslation } from 'next-i18next/pages'
+import { type Mock, type MockedFunction } from 'vitest'
 
 import { LanguageSwitcher } from './LanguageSwitcher'
 
@@ -11,9 +12,21 @@ vi.mock('next/router', () => ({
 
 vi.mock('next-i18next/pages', () => ({
   __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str) => str,
+  useTranslation: vi.fn()
+}))
+
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
+const mockUseTranslation = useTranslation as unknown as Mock
+
+const t = vi.fn((str: string) => str)
+
+describe('LanguageSwitcher', () => {
+  const handleClose = vi.fn()
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockUseTranslation.mockReturnValue({
+      t,
       i18n: {
         language: 'en',
         options: {
@@ -31,16 +44,8 @@ vi.mock('next-i18next/pages', () => ({
           ]
         }
       }
-    }
-  }
-}))
-
-const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
-
-describe('LanguageSwitcher', () => {
-  const handleClose = vi.fn()
-
-  beforeEach(() => vi.clearAllMocks())
+    })
+  })
 
   it('should translate page when new language selected', async () => {
     const push = vi.fn()
@@ -80,5 +85,41 @@ describe('LanguageSwitcher', () => {
     ).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Revert' }))
     expect(push).toHaveBeenCalledWith('/', '/', { locale: 'en' })
+  })
+
+  // The dialog title, revert warning, and revert button must track the
+  // active language immediately, not lag behind on the previous one.
+  it('should not pin dialog text to the previous language after switching', async () => {
+    const push = vi.fn()
+    mockUseRouter.mockReturnValue({
+      push,
+      asPath: '/'
+    } as unknown as NextRouter)
+
+    const { getByText, getByRole } = render(
+      <LanguageSwitcher open handleClose={handleClose} />
+    )
+    fireEvent.mouseDown(getByRole('combobox'))
+    const callsBeforeSwitch = t.mock.calls.length
+    await waitFor(() => fireEvent.click(getByText('Japanese')))
+
+    const callsAfterSwitch = t.mock.calls.slice(callsBeforeSwitch)
+    expect(callsAfterSwitch).toEqual(
+      expect.arrayContaining([
+        expect.arrayContaining(['Change Language']),
+        expect.arrayContaining(['Revert']),
+        expect.arrayContaining([
+          'Would you like to revert to previous language?'
+        ])
+      ])
+    )
+    expect(callsAfterSwitch).not.toEqual(
+      expect.arrayContaining([
+        expect.arrayContaining([
+          expect.anything(),
+          expect.objectContaining({ lng: expect.anything() })
+        ])
+      ])
+    )
   })
 })

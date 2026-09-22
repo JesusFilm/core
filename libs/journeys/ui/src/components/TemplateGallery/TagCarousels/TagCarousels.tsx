@@ -56,8 +56,11 @@ export function TagCarousels({
 
   return (
     <Stack
-      gap={7}
-      sx={{ mb: { xs: 10, md: 16 }, height: { xs: 219, md: 234 } }}
+      sx={{
+        gap: 7,
+        mb: { xs: 10, md: 16 },
+        height: { xs: 219, md: 234 }
+      }}
     >
       <ContentCarousel
         items={feltNeedsTags}
@@ -72,7 +75,13 @@ export function TagCarousels({
         }}
         content="felt-needs"
       />
-      <Stack direction="row" gap={10} sx={{ ml: -2 }}>
+      <Stack
+        direction="row"
+        sx={{
+          gap: 10,
+          ml: -2
+        }}
+      >
         {loading
           ? [0, 1].map((item, index) => {
               return (

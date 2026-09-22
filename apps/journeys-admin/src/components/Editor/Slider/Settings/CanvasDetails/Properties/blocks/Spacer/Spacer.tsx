@@ -17,6 +17,10 @@ export function Spacer({ id, spacing }: TreeBlock<SpacerBlock>): ReactElement {
   const [value, setValue] = useState(spacing ?? 100)
 
   useEffect(() => {
+    setValue(spacing ?? 100)
+  }, [spacing])
+
+  useEffect(() => {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: `${id}-spacer-options`

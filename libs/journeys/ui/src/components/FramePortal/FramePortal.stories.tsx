@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
@@ -148,7 +148,7 @@ const Template: StoryObj<typeof FramePortal> = {
               iso3: 'eng'
             }
           } as unknown as Journey,
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <FramePortal width={356} height={536} dir="ltr">

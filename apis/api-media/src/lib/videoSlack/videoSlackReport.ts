@@ -453,9 +453,7 @@ async function buildReportRows(args: {
           ? (group.variants.find((variant) => variant.videoId === root.id) ??
             group.variants[0])
           : group.variants[0]
-      const watchUrl = group.variants
-        .map((variant) => buildWatchUrl(variant.slug))
-        .find((url): url is string => url != null)
+      const watchUrl = buildWatchUrl(versionVariant.slug)
       return {
         version: versionVariant.version,
         production: productionLabel(rowVideo),

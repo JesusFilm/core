@@ -21,13 +21,25 @@ export function ActionInformation(): ReactElement {
     description,
     icon
   }: GoalDescriptionProps): ReactElement => (
-    <Stack direction="row" gap={3} sx={{ pb: 2 }}>
+    <Stack
+      direction="row"
+      sx={{
+        gap: 3,
+        pb: 2
+      }}
+    >
       {icon}
       <Stack direction="column">
         <Typography variant="subtitle2" gutterBottom sx={{ pt: 0.5 }}>
           {label}
         </Typography>
-        <Typography variant="caption" color="secondary.light" gutterBottom>
+        <Typography
+          variant="caption"
+          gutterBottom
+          sx={{
+            color: 'secondary.light'
+          }}
+        >
           {description}
         </Typography>
       </Stack>
@@ -35,11 +47,28 @@ export function ActionInformation(): ReactElement {
   )
 
   return (
-    <Stack gap={2} sx={{ p: 6 }} data-testid="ActionInformation">
-      <Typography variant="subtitle2" color="secondary.dark">
+    <Stack
+      data-testid="ActionInformation"
+      sx={{
+        gap: 2,
+        p: 6
+      }}
+    >
+      <Typography
+        variant="subtitle2"
+        sx={{
+          color: 'secondary.dark'
+        }}
+      >
         {t('What are Goals?')}
       </Typography>
-      <Typography variant="body1" color="secondary.light" sx={{ mb: 6 }}>
+      <Typography
+        variant="body1"
+        sx={{
+          color: 'secondary.light',
+          mb: 6
+        }}
+      >
         {t(
           'Depending on the link you provide for the actions, the target of your Journey will be determined automatically from the following list:'
         )}

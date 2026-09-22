@@ -41,8 +41,17 @@ export function AccountCheckDialog({
         }
       }}
     >
-      <Stack gap={9}>
-        <Stack gap={3} px={3}>
+      <Stack
+        sx={{
+          gap: 9
+        }}
+      >
+        <Stack
+          sx={{
+            gap: 3,
+            px: 3
+          }}
+        >
           <Typography variant="h3" align="center">
             {t('We Like Your Choice!')}
           </Typography>
@@ -50,7 +59,12 @@ export function AccountCheckDialog({
             {t('Create a new account or log in to use this template as yours.')}
           </Typography>
         </Stack>
-        <Stack gap={5} width="100%">
+        <Stack
+          sx={{
+            gap: 5,
+            width: '100%'
+          }}
+        >
           <Button
             startIcon={<Key2 />}
             variant="outlined"

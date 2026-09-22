@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
@@ -22,7 +22,7 @@ const Demo: Meta<typeof ResponsesItem> = {
   title: 'Journeys-Admin/Editor/Toolbar/Items/ResponsesItem'
 }
 
-const getVisitorCountMock: MockedResponse<
+const getVisitorCountMock: MockLink.MockedResponse<
   GetJourneyVisitorsCountWithTextResponses,
   GetJourneyVisitorsCountWithTextResponsesVariables
 > = {
@@ -39,7 +39,7 @@ const getVisitorCountMock: MockedResponse<
 
 const Template: StoryObj<typeof ResponsesItem> = {
   render: () => (
-    <JourneyProvider value={{ journey: publishedJourney, variant: 'admin' }}>
+    <JourneyProvider value={{ journey: publishedJourney, renderMode: 'admin' }}>
       <Box
         sx={{
           p: 6,

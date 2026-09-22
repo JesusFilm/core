@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type MockedFunction } from 'vitest'
@@ -21,8 +22,8 @@ import { SortOrder } from '../JourneySort'
 
 import { ArchivedJourneyList } from '.'
 
-vi.mock('@core/journeys/ui/useNavigationState', async () => ({
-  useNavigationState: vi.fn(() => false)
+vi.mock('@core/journeys/ui/useRouteChangeState', async () => ({
+  useRouteChangeState: vi.fn(() => false)
 }))
 
 vi.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', async () => ({
@@ -44,7 +45,7 @@ vi.mock('next/router', async () => ({
   useRouter: vi.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-const archivedJourneysMock: MockedResponse<
+const archivedJourneysMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -62,7 +63,7 @@ const archivedJourneysMock: MockedResponse<
   }
 }
 
-const noJourneysMock: MockedResponse<
+const noJourneysMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -244,6 +245,9 @@ describe('ArchivedJourneyList', () => {
       )
       fireEvent.click(getByText('Unarchive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Journeys Unarchived')).toBeInTheDocument()
+      )
     })
 
     it('should show error', async () => {

@@ -36,48 +36,51 @@ export function CopyTextField({
       sx={{ ...sx }}
       hiddenLabel={label == null}
       label={label}
-      InputLabelProps={{ shrink: true }}
       inputRef={inputRef}
       disabled={value == null}
-      inputProps={{ onFocus: handleFocus, value }}
-      InputProps={{
-        endAdornment: (
-          <InputAdornment position="end">
-            {buttonVariant === 'icon' && (
-              <IconButton onClick={onCopyClick} aria-label="Copy">
-                <ContentCopyRoundedIcon />
-              </IconButton>
-            )}
-            {buttonVariant === 'button' && (
-              <Button
-                onClick={onCopyClick}
-                aria-label="Copy"
-                disabled={value == null}
-                sx={{
-                  backgroundColor: 'black',
-                  color: 'white',
-                  '&:hover': {
-                    backgroundColor: 'secondary.dark'
-                  },
-                  '&:disabled': {
-                    backgroundColor: 'secondary.dark',
-                    color: 'divider'
-                  },
-                  width: '90px',
-                  height: '48px',
-                  display: { xs: 'none', sm: 'flex' }
-                }}
-              >
-                <ContentCopyRoundedIcon sx={{ mr: 1 }} />
-                {t('Copy')}
-              </Button>
-            )}
-          </InputAdornment>
-        ),
-        readOnly: true
-      }}
       variant="filled"
       helperText={helperText}
+      slotProps={{
+        input: {
+          endAdornment: (
+            <InputAdornment position="end">
+              {buttonVariant === 'icon' && (
+                <IconButton onClick={onCopyClick} aria-label="Copy">
+                  <ContentCopyRoundedIcon />
+                </IconButton>
+              )}
+              {buttonVariant === 'button' && (
+                <Button
+                  onClick={onCopyClick}
+                  aria-label="Copy"
+                  disabled={value == null}
+                  sx={{
+                    backgroundColor: 'black',
+                    color: 'white',
+                    '&:hover': {
+                      backgroundColor: 'secondary.dark'
+                    },
+                    '&:disabled': {
+                      backgroundColor: 'secondary.dark',
+                      color: 'divider'
+                    },
+                    width: '90px',
+                    height: '48px',
+                    display: { xs: 'none', sm: 'flex' }
+                  }}
+                >
+                  <ContentCopyRoundedIcon sx={{ mr: 1 }} />
+                  {t('Copy')}
+                </Button>
+              )}
+            </InputAdornment>
+          ),
+          readOnly: true
+        },
+
+        htmlInput: { onFocus: handleFocus, value },
+        inputLabel: { shrink: true }
+      }}
     />
   )
 }

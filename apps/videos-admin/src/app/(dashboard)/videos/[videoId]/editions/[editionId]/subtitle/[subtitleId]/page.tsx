@@ -1,6 +1,5 @@
 'use client'
-
-import { useMutation, useSuspenseQuery } from '@apollo/client'
+import { useMutation, useSuspenseQuery } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
@@ -252,7 +251,11 @@ export default function SubtitlePage({ params }: SubtitlePageProps) {
         onSubmit={handleSubmit}
       >
         <Form data-testid="SubtitleForm">
-          <Stack gap={2}>
+          <Stack
+            sx={{
+              gap: 2
+            }}
+          >
             <FormLanguageSelect
               name="language"
               label="Language"

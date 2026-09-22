@@ -1,5 +1,5 @@
-import { Column, Container, Row, Section } from '@react-email/components'
 import { ReactElement } from 'react'
+import { Column, Container, Row, Section } from 'react-email'
 
 import { EmailLogo } from '../EmailLogo'
 

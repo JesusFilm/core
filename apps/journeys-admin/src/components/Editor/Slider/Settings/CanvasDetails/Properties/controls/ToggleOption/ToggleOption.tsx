@@ -31,15 +31,22 @@ export function ToggleOption({
       >
         <Box>
           <Typography variant="body1">{heading}</Typography>
-          <Typography variant="caption" color="text.secondary">
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary'
+            }}
+          >
             {description}
           </Typography>
         </Box>
         <Switch
-          inputProps={{ 'aria-checked': checked }}
           checked={checked}
           onChange={handleChange}
           sx={{ ml: 'auto' }}
+          slotProps={{
+            input: { 'aria-checked': checked }
+          }}
         />
       </Box>
       {children}

@@ -1,0 +1,20 @@
+import {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_StepBlock as StepBlock
+} from './__generated__/BlockFields'
+import { ActionBlock, isActionBlock } from './isActionBlock'
+import type { TreeBlock } from './TreeBlock'
+
+export function filterActionBlocks(step?: TreeBlock<StepBlock>): ActionBlock[] {
+  const card = step?.children[0] as TreeBlock<CardBlock> | undefined
+  if (card == null) return []
+
+  return card.children
+    .flatMap((block) =>
+      block.__typename === 'RadioQuestionBlock' ? block.children : block
+    )
+    .filter(
+      (child): child is ActionBlock =>
+        card.coverBlockId !== child.id && isActionBlock(child)
+    )
+}

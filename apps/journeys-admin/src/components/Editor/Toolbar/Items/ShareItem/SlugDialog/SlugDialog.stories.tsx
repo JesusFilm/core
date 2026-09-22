@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ReactElement, useState } from 'react'
 import { screen, userEvent } from 'storybook/test'
@@ -27,7 +27,7 @@ const SlugDialogComponent = (args): ReactElement => {
       <JourneyProvider
         value={{
           journey: defaultJourney,
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <SlugDialog open={open} onClose={() => setOpen(false)} />

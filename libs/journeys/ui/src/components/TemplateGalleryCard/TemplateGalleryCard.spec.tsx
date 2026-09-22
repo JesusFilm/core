@@ -13,8 +13,8 @@ import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__g
 
 import { TemplateGalleryCard } from '.'
 
-vi.mock('@core/journeys/ui/useNavigationState', () => ({
-  useNavigationState: vi.fn(() => false)
+vi.mock('@core/journeys/ui/useRouteChangeState', () => ({
+  useRouteChangeState: vi.fn(() => false)
 }))
 
 vi.mock('next/router', () => ({

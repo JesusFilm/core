@@ -112,8 +112,8 @@ function DetailsRow({
     <Stack direction="row">
       <Typography
         variant="h5"
-        color={textColor}
         sx={{
+          color: textColor,
           display: { xs: 'flex', sm: 'none' },
           pt: 6,
           pl: { xs: 1, sm: 1 },
@@ -135,9 +135,9 @@ function DetailsRow({
         ) : (
           <Typography
             noWrap
-            color={textColor}
             variant={variant}
             sx={{
+              color: textColor,
               minWidth: '262px',
               maxWidth: '262px',
               paddingRight: { xs: 0, sm: 5 }
@@ -149,8 +149,8 @@ function DetailsRow({
 
         <Typography
           variant="h5"
-          color={textColor}
           sx={{
+            color: textColor,
             display: { xs: 'none', sm: 'flex' },
             paddingRight: { xs: 0, sm: 3 }
           }}
@@ -160,7 +160,7 @@ function DetailsRow({
         {loading ? (
           <Skeleton width={100} height={25} />
         ) : (
-          <Typography color={textColor} variant={variant}>
+          <Typography variant={variant} sx={{ color: textColor }}>
             {value}
           </Typography>
         )}

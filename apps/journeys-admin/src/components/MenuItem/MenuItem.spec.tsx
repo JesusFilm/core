@@ -1,3 +1,4 @@
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render } from '@testing-library/react'
 
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
@@ -7,7 +8,8 @@ import { MenuItem } from './MenuItem'
 describe('MenuItem', () => {
   it('should render menu item', () => {
     const { getByText, getByTestId } = render(
-      <MenuItem label="Preview" icon={<EyeOpenIcon />} />
+      <MenuItem label="Preview" icon={<EyeOpenIcon />} />,
+      { wrapper: MenuList }
     )
 
     expect(getByText('Preview')).toBeInTheDocument()
@@ -16,14 +18,16 @@ describe('MenuItem', () => {
 
   it('should render menu item as disabled', async () => {
     const { getByRole } = render(
-      <MenuItem label="Preview" icon={<EyeOpenIcon />} disabled />
+      <MenuItem label="Preview" icon={<EyeOpenIcon />} disabled />,
+      { wrapper: MenuList }
     )
     expect(getByRole('menuitem')).toHaveAttribute('aria-disabled', 'true')
   })
 
   it('should contain redirect props', async () => {
     const { getByRole } = render(
-      <MenuItem label="Preview" icon={<EyeOpenIcon />} openInNew />
+      <MenuItem label="Preview" icon={<EyeOpenIcon />} openInNew />,
+      { wrapper: MenuList }
     )
     expect(getByRole('menuitem')).toHaveAttribute('target', '_blank')
   })
@@ -31,7 +35,8 @@ describe('MenuItem', () => {
   it('should call onClick on MenuItem click', () => {
     const onClick = vi.fn()
     const { getByRole } = render(
-      <MenuItem label="Preview" icon={<EyeOpenIcon />} onClick={onClick} />
+      <MenuItem label="Preview" icon={<EyeOpenIcon />} onClick={onClick} />,
+      { wrapper: MenuList }
     )
     fireEvent.click(getByRole('menuitem', { name: 'Preview' }))
     expect(onClick).toHaveBeenCalled()

@@ -63,7 +63,12 @@ export function GoogleCreateIntegration(): ReactElement {
   })
 
   return (
-    <Stack direction="row" justifyContent="flex-end">
+    <Stack
+      direction="row"
+      sx={{
+        justifyContent: 'flex-end'
+      }}
+    >
       <Button
         variant="outlined"
         href={oauthUrl}

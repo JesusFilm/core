@@ -55,7 +55,13 @@ export function JourneyViewHeader({
     ) : null
 
   const creatorNode = showCreator ? (
-    <Stack direction="row" spacing={1.5} alignItems="center">
+    <Stack
+      direction="row"
+      spacing={1.5}
+      sx={{
+        alignItems: 'center'
+      }}
+    >
       {hasCreatorImage && (
         <Avatar
           src={data.creatorImageSrc ?? undefined}
@@ -77,8 +83,10 @@ export function JourneyViewHeader({
     <Stack
       spacing={2.5}
       data-testid="TemplateGalleryHeader"
-      alignItems="center"
-      sx={{ textAlign: 'center' }}
+      sx={{
+        alignItems: 'center',
+        textAlign: 'center'
+      }}
     >
       <Typography
         variant="overline"

@@ -230,9 +230,9 @@ export function TemplateCardPreview({
             {isSelected && cardLabel != null && (
               <Typography
                 variant="body2"
-                color="text.secondary"
                 align="center"
                 sx={{
+                  color: 'text.secondary',
                   position: 'absolute',
                   bottom: 0,
                   left: '50%',
@@ -240,6 +240,7 @@ export function TemplateCardPreview({
                   whiteSpace: 'nowrap',
                   animation: 'fadeSlideDown 0.3s ease 0.15s forwards',
                   opacity: 0,
+
                   '@keyframes fadeSlideDown': {
                     from: {
                       opacity: 0,
@@ -279,10 +280,10 @@ export function TemplateCardPreview({
           }}
         >
           <Stack
-            alignItems="center"
-            justifyContent="center"
-            gap={2}
             sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 2,
               width: cardWidth,
               mr: { xs: 3, sm: 7 },
               height: cardHeight,
@@ -293,8 +294,10 @@ export function TemplateCardPreview({
           >
             <Typography
               variant="overline2"
-              color="background.paper"
-              textAlign="center"
+              sx={{
+                color: 'background.paper',
+                textAlign: 'center'
+              }}
             >
               {t('{{count}} more cards', {
                 count: steps.length - slidesToRender.length
@@ -302,8 +305,10 @@ export function TemplateCardPreview({
             </Typography>
             <Typography
               variant="overline2"
-              color="background.paper"
-              textAlign="center"
+              sx={{
+                color: 'background.paper',
+                textAlign: 'center'
+              }}
             >
               {t('Use this template to see more!')}
             </Typography>

@@ -7,7 +7,7 @@ import {
   appendEventToGoogleSheets,
   sendEventsEmail,
   validateBlockEvent
-} from '../utils'
+} from '../eventService'
 
 import { ChatOpenEventRef } from './chatOpenEvent'
 import { ChatOpenEventCreateInput } from './inputs'

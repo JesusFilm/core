@@ -58,7 +58,12 @@ export default async function UnauthorizedPage(): Promise<ReactNode> {
         </Typography>
         {process.env.NODE_ENV === 'development' && (
           <Alert severity="warning" sx={{ mt: 2 }}>
-            <Typography component="p" fontWeight="bold">
+            <Typography
+              component="p"
+              sx={{
+                fontWeight: 'bold'
+              }}
+            >
               You need to create a UserMediaRole or UserLanguageRole record
             </Typography>
             <List component="ol" dense sx={{ listStyle: 'decimal', pl: 3 }}>
@@ -86,7 +91,7 @@ export default async function UnauthorizedPage(): Promise<ReactNode> {
         <TextField
           id="id"
           name="id"
-          value={data.me?.id}
+          value={data?.me?.id}
           fullWidth
           slotProps={{
             input: {

@@ -53,7 +53,11 @@ export function LanguageSwitchDialog({
         </Box>
 
         <DialogContent sx={{ pt: 0, pb: 6, px: 0 }}>
-          <Stack gap={8}>
+          <Stack
+            sx={{
+              gap: 8
+            }}
+          >
             <AudioTrackSelect
               videoAudioLanguageIds={videoAudioLanguageIds}
               audioLanguageId={audioLanguageId}

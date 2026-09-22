@@ -1,4 +1,5 @@
-import { gql, useSuspenseQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/client/react'
 import Avatar from '@mui/material/Avatar'
 import Divider from '@mui/material/Divider'
 import ListItemButton from '@mui/material/ListItemButton'
@@ -129,7 +130,9 @@ export function UserNavigation({
           </ListItemIcon>
           <ListItemText
             primary={t('Publisher')}
-            primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+            slotProps={{
+              primary: { style: { whiteSpace: 'nowrap' } }
+            }}
           />
         </ListItemButton>
       )}
@@ -144,7 +147,9 @@ export function UserNavigation({
             </ListItemIcon>
             <ListItemText
               primary={t('Impersonate')}
-              primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+              slotProps={{
+                primary: { style: { whiteSpace: 'nowrap' } }
+              }}
             />
           </ListItemButton>
         )}
@@ -161,7 +166,9 @@ export function UserNavigation({
             </ListItemIcon>
             <ListItemText
               primary={t('Delete User')}
-              primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+              slotProps={{
+                primary: { style: { whiteSpace: 'nowrap' } }
+              }}
             />
           </ListItemButton>
         )}
@@ -179,7 +186,9 @@ export function UserNavigation({
           </ListItemIcon>
           <ListItemText
             primary={t('Profile')}
-            primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+            slotProps={{
+              primary: { style: { whiteSpace: 'nowrap' } }
+            }}
           />
         </ListItemButton>
       )}

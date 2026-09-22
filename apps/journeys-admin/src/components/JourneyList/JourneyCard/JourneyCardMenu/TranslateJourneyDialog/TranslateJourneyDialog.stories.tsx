@@ -24,7 +24,7 @@ const TranslateJourneyDialogComponent = (): ReactElement => {
     <JourneyProvider
       value={{
         journey: defaultJourney,
-        variant: 'admin'
+        renderMode: 'admin'
       }}
     >
       <TranslateJourneyDialog open={open} onClose={() => setOpen(false)} />

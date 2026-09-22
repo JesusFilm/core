@@ -70,8 +70,8 @@ function DrawerContent({
       </AppBar>
       <Stack
         data-testid="side-body"
-        border="hidden"
         sx={{
+          border: 'hidden',
           overflow: 'none',
           overflowY: { sm: 'auto' }
         }}

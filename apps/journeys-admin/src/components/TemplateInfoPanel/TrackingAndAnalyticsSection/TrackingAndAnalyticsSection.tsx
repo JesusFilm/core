@@ -19,7 +19,12 @@ export function TrackingAndAnalyticsSection(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <Stack gap={2} data-testid="TrackingAndAnalyticsSection">
+    <Stack
+      data-testid="TrackingAndAnalyticsSection"
+      sx={{
+        gap: 2
+      }}
+    >
       <Typography variant="body2">
         {t(
           'Track more than just views and responses. To track specific button clicks, video views, or card visits, you must tag those elements as "trackable."'
@@ -46,10 +51,14 @@ export function TrackingAndAnalyticsSection(): ReactElement {
         component="img"
         src="/assets/template-info/tracking-button-properties.gif"
         alt={t('Button Properties panel with tracking event configuration')}
-        width={333}
-        height={227}
         loading="lazy"
-        sx={mediaSlotSx}
+        sx={[
+          {
+            width: 333,
+            height: 227
+          },
+          ...(Array.isArray(mediaSlotSx) ? mediaSlotSx : [mediaSlotSx])
+        ]}
       />
       <Typography variant="body2">
         {t(
@@ -60,10 +69,14 @@ export function TrackingAndAnalyticsSection(): ReactElement {
         component="img"
         src="/assets/template-info/tracking-analytics-table.gif"
         alt={t('Analytics statistics detailed table view showing event data')}
-        width={333}
-        height={203}
         loading="lazy"
-        sx={mediaSlotSx}
+        sx={[
+          {
+            width: 333,
+            height: 203
+          },
+          ...(Array.isArray(mediaSlotSx) ? mediaSlotSx : [mediaSlotSx])
+        ]}
       />
     </Stack>
   )

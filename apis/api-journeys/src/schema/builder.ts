@@ -2,6 +2,7 @@
 import { tracer } from '@core/yoga/tracer'
 
 import SchemaBuilder from '@pothos/core'
+import DataloaderPlugin from '@pothos/plugin-dataloader'
 import DirectivesPlugin from '@pothos/plugin-directives'
 import FederationPlugin from '@pothos/plugin-federation'
 import pluginName from '@pothos/plugin-prisma'
@@ -59,7 +60,8 @@ export const builder = new SchemaBuilder<{
     RelayPlugin,
     WithInputPlugin,
     DirectivesPlugin,
-    FederationPlugin
+    FederationPlugin,
+    DataloaderPlugin
   ],
   tracing: {
     default: (config) => isRootField(config),

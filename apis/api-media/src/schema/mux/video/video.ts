@@ -27,6 +27,51 @@ import {
 } from './service'
 
 const FIVE_DAYS = 5 * 24 * 60 * 60
+const DOWNLOAD_RESOLUTIONS = ['1080p', '720p', '360p', '270p'] as const
+
+async function queueVideoDownloadProcessing(
+  video: { id: string; assetId: string | null },
+  isUserGenerated: boolean
+): Promise<void> {
+  if (video.assetId == null) return
+
+  try {
+    await processVideoDownloadsQueue.add(
+      'process-video-downloads',
+      {
+        videoId: video.id,
+        assetId: video.assetId,
+        isUserGenerated
+      },
+      {
+        jobId: `download:${video.id}`,
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 1000 },
+        removeOnComplete: true,
+        removeOnFail: { age: FIVE_DAYS, count: 50 }
+      }
+    )
+  } catch (error) {
+    // Log error but don't fail the request - downloads can be processed later
+    console.error('Failed to queue video downloads processing:', error)
+  }
+}
+
+function validateDownloadResolutions(resolutions: string[]): void {
+  if (
+    resolutions.length === 0 ||
+    resolutions.some(
+      (resolution) =>
+        !DOWNLOAD_RESOLUTIONS.includes(
+          resolution as (typeof DOWNLOAD_RESOLUTIONS)[number]
+        )
+    )
+  ) {
+    throw new GraphQLError('Invalid resolution', {
+      extensions: { code: 'BAD_REQUEST' }
+    })
+  }
+}
 
 const MuxVideo = builder.prismaObject('MuxVideo', {
   fields: (t) => ({
@@ -157,29 +202,7 @@ builder.queryFields((t) => ({
 
           // Queue download processing if the video is downloadable
           if (video.downloadable) {
-            try {
-              await processVideoDownloadsQueue.add(
-                'process-video-downloads',
-                {
-                  videoId: video.id,
-                  assetId: video.assetId,
-                  isUserGenerated
-                },
-                {
-                  jobId: `download:${video.id}`,
-                  attempts: 3,
-                  backoff: { type: 'exponential', delay: 1000 },
-                  removeOnComplete: true,
-                  removeOnFail: { age: FIVE_DAYS, count: 50 }
-                }
-              )
-            } catch (error) {
-              // Log error but don't fail the request - downloads can be processed later
-              console.error(
-                'Failed to queue video downloads processing:',
-                error
-              )
-            }
+            await queueVideoDownloadProcessing(video, isUserGenerated)
           }
         }
       }
@@ -562,11 +585,7 @@ builder.mutationFields((t) => ({
           extensions: { code: 'NOT_FOUND' }
         })
       const res = resolution ?? '1080p'
-      if (!['1080p', '720p', '360p', '270p'].includes(res)) {
-        throw new GraphQLError('Invalid resolution', {
-          extensions: { code: 'BAD_REQUEST' }
-        })
-      }
+      validateDownloadResolutions([res])
       const video = await prisma.muxVideo.findUniqueOrThrow({
         where: { id }
       })

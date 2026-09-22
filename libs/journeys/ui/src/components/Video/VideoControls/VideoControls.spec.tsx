@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import {
   act,
   cleanup,
@@ -463,7 +463,7 @@ describe('VideoControls', () => {
     it('hides fullscreen on embed', async () => {
       const { getByRole, queryByRole } = render(
         <MockedProvider>
-          <JourneyProvider value={{ variant: 'embed' }}>
+          <JourneyProvider value={{ renderMode: 'embed' }}>
             <VideoControls
               player={player}
               startAt={0}

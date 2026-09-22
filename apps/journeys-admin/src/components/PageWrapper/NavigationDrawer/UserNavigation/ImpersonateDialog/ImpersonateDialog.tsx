@@ -1,9 +1,11 @@
-import { ApolloError, gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { LinkError } from '@apollo/client/errors'
+import { useMutation } from '@apollo/client/react'
 import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { getAuth, signInWithCustomToken } from 'firebase/auth'
+import { signInWithCustomToken } from 'firebase/auth'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
@@ -15,7 +17,7 @@ import {
   UserImpersonate,
   UserImpersonateVariables
 } from '../../../../../../__generated__/UserImpersonate'
-import { loginWithCredential } from '../../../../../libs/auth'
+import { getFirebaseAuth, loginWithCredential } from '../../../../../libs/auth'
 
 export const USER_IMPERSONATE = gql`
   mutation UserImpersonate($email: String!) {
@@ -50,7 +52,7 @@ export function ImpersonateDialog({
         }
       })
       if (data?.userImpersonate != null) {
-        const auth = getAuth()
+        const auth = getFirebaseAuth()
         const credential = await signInWithCustomToken(
           auth,
           data.userImpersonate
@@ -62,17 +64,15 @@ export function ImpersonateDialog({
       }
       handleClose(formikHelpers.resetForm)()
     } catch (error) {
-      if (error instanceof ApolloError) {
-        if (error.networkError != null) {
-          enqueueSnackbar(
-            t('Impersonation failed. Reload the page or try again.'),
-            {
-              variant: 'error',
-              preventDuplicate: true
-            }
-          )
-          return
-        }
+      if (LinkError.is(error)) {
+        enqueueSnackbar(
+          t('Impersonation failed. Reload the page or try again.'),
+          {
+            variant: 'error',
+            preventDuplicate: true
+          }
+        )
+        return
       }
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {

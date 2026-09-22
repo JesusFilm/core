@@ -5,8 +5,12 @@
 
 import { prisma } from '@core/prisma/media/client'
 
-import { updateVideoInAlgolia } from '../../../lib/algolia/algoliaVideoUpdate'
 import { videoCacheReset } from '../../../lib/videoCacheReset'
+import {
+  enqueueVideoAlgoliaSync,
+  videoOnlyScope
+} from '../../../workers/videoAlgoliaSync'
+import { logger } from '../../logger'
 
 // Calculates what availableLanguages should be for a given video
 // Does NOT update the database - only calculates the correct value
@@ -73,11 +77,7 @@ export async function updateVideoAvailableLanguages(
 
   // Update cache and search index unless skipped
   if (!options.skipAlgolia) {
-    try {
-      await updateVideoInAlgolia(videoId)
-    } catch (error) {
-      console.error('Algolia update error:', error)
-    }
+    await enqueueVideoAlgoliaSync(videoId, videoOnlyScope, logger)
   }
 
   if (!options.skipCache) {
@@ -91,29 +91,25 @@ export async function updateVideoAvailableLanguages(
   return availableLanguages
 }
 
-// Adds a language to a video's availableLanguages if not already present
-// Uses atomic operation to prevent duplicates
+// Adds a language to a video's availableLanguages if not already present.
+//
+// Concurrent published uploads for the same video (different languages
+// finishing around the same time) must not lose each other's language. A
+// read-then-set (`findUnique` -> `set: [...current, next]`) is a classic
+// lost-update race: both transactions read the same array and the second
+// write clobbers the first. Instead, do the read-modify-write as a single
+// atomic UPDATE so Postgres serializes concurrent callers on the row.
+// COALESCE handles the nullable column so array_append always has a base array.
 export async function addLanguageToVideo(
   videoId: string,
   languageId: string
 ): Promise<void> {
-  // availableLanguages is nullable in the DB. If it's NULL, Prisma filters like
-  // "NOT { availableLanguages: { has: ... } }" can silently no-op due to SQL NULL
-  // semantics. Coalesce NULL -> [] in code, then set the updated array.
-  const video = await prisma.video.findUnique({
-    where: { id: videoId },
-    select: { availableLanguages: true }
-  })
-
-  if (video == null) return
-
-  const currentLanguages = video.availableLanguages ?? []
-  if (currentLanguages.includes(languageId)) return
-
-  await prisma.video.update({
-    where: { id: videoId },
-    data: { availableLanguages: { set: [...currentLanguages, languageId] } }
-  })
+  await prisma.$executeRaw`
+    UPDATE "Video"
+    SET "availableLanguages" = array_append(COALESCE("availableLanguages", ARRAY[]::TEXT[]), ${languageId})
+    WHERE id = ${videoId}
+      AND NOT (${languageId} = ANY(COALESCE("availableLanguages", ARRAY[]::TEXT[])))
+  `
 }
 
 // Removes a language from a video's availableLanguages if no published variants use it
@@ -151,11 +147,12 @@ export async function removeLanguageFromVideoIfUnused(
   })
 }
 
-// Updates all parent videos (collections) when a child video's languages change
-// Ensures collections always reflect the union of their children's languages
-export async function updateParentCollectionLanguages(
+// Finds the container videos (collections/series/featureFilms) that list
+// the given video as a child. Shared by language-cascade and Algolia
+// parent-cascade callers.
+export async function findContainerParentIds(
   childVideoId: string
-): Promise<void> {
+): Promise<string[]> {
   const parents = await prisma.video.findMany({
     where: {
       children: {
@@ -168,9 +165,19 @@ export async function updateParentCollectionLanguages(
     select: { id: true }
   })
 
+  return parents.map((parent) => parent.id)
+}
+
+// Updates all parent videos (collections) when a child video's languages change
+// Ensures collections always reflect the union of their children's languages
+export async function updateParentCollectionLanguages(
+  childVideoId: string
+): Promise<void> {
+  const parentIds = await findContainerParentIds(childVideoId)
+
   // Update each parent collection
-  for (const parent of parents) {
-    await updateVideoAvailableLanguages(parent.id, {
+  for (const parentId of parentIds) {
+    await updateVideoAvailableLanguages(parentId, {
       skipCache: false,
       skipAlgolia: false
     })

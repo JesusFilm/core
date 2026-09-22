@@ -43,39 +43,58 @@ export function VideoBlockEditorSettingsPoster({
   return (
     <Stack
       direction="row"
-      justifyContent="space-between"
       spacing={3}
       data-testid="VideoBlockEditorSettingsPoster"
+      sx={{
+        justifyContent: 'space-between'
+      }}
     >
-      <Stack direction="column" justifyContent="center">
+      <Stack
+        direction="column"
+        sx={{
+          justifyContent: 'center'
+        }}
+      >
         <Typography
           variant="subtitle2"
-          color={disabled ? theme.palette.action.disabled : ''}
-          sx={{ letterSpacing: 0 }}
+          sx={{
+            color: disabled ? theme.palette.action.disabled : '',
+            letterSpacing: 0
+          }}
         >
           {t('Cover Image')}
         </Typography>
         <Typography
+          sx={{ color: disabled ? theme.palette.action.disabled : '' }}
           variant="caption"
-          color={disabled ? theme.palette.action.disabled : ''}
         >
           {t('Appears while video is loading')}
         </Typography>
       </Stack>
       <Box
-        height={62}
-        sx={{ backgroundColor: 'rgba(0, 0, 0, 0.06)', p: 1 }}
-        borderRadius={2}
+        sx={{
+          height: 62,
+          borderRadius: 2,
+          backgroundColor: 'rgba(0, 0, 0, 0.06)',
+          p: 1
+        }}
       >
-        <Stack direction="row" justifyContent="space-around">
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: 'space-around'
+          }}
+        >
           <ImageBlockThumbnail
             selectedBlock={selectedBlock}
             loading={loading}
           />
           <Stack
             direction="column"
-            justifyContent="center"
-            sx={{ paddingRight: 1 }}
+            sx={{
+              justifyContent: 'center',
+              paddingRight: 1
+            }}
           >
             <IconButton
               onClick={handleOpen}

@@ -38,7 +38,7 @@ export async function getImageDescription({
               role: 'user',
               content: [
                 { type: 'text', text: prompt },
-                { type: 'image', image: imageUrl }
+                { type: 'file', mediaType: 'image', data: imageUrl }
               ]
             }
           ]

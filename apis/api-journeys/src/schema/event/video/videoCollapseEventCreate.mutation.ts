@@ -1,7 +1,7 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { validateBlockEvent } from '../utils'
+import { validateBlockEvent } from '../eventService'
 
 import { VideoCollapseEventCreateInput } from './inputs'
 import { VideoCollapseEventRef } from './videoCollapseEvent'

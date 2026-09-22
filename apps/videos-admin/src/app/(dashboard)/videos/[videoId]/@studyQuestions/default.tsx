@@ -1,6 +1,5 @@
 'use client'
-
-import { useMutation, useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client/react'
 import { DragEndEvent } from '@dnd-kit/core'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -141,7 +140,12 @@ export default function StudyQuestionsList(): ReactElement {
         ) : (
           <Section.Fallback>No study questions</Section.Fallback>
         )}
-        <Stack direction="row" justifyContent="flex-end">
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: 'flex-end'
+          }}
+        >
           <Button
             variant="outlined"
             onClick={() =>

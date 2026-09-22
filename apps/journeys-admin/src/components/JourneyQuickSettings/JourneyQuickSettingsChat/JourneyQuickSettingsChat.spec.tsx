@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -22,7 +23,7 @@ describe('JourneyQuickSettingsChat', () => {
   it('should render elements', () => {
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <JourneyQuickSettingsChat />
         </JourneyProvider>
       </MockedProvider>
@@ -38,7 +39,7 @@ describe('JourneyQuickSettingsChat', () => {
     render(
       <MockedProvider>
         <JourneyProvider
-          value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+          value={{ journey: { ...journey, host: null }, renderMode: 'admin' }}
         >
           <JourneyQuickSettingsChat displayName="New Host Name" />
         </JourneyProvider>
@@ -54,7 +55,7 @@ describe('JourneyQuickSettingsChat', () => {
     render(
       <MockedProvider>
         <JourneyProvider
-          value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+          value={{ journey: { ...journey, host: null }, renderMode: 'admin' }}
         >
           <JourneyQuickSettingsChat />
         </JourneyProvider>
@@ -65,7 +66,10 @@ describe('JourneyQuickSettingsChat', () => {
   })
 
   it('should call update host mutation on name change', async () => {
-    const updateHostMock: MockedResponse<UpdateHost, UpdateHostVariables> = {
+    const updateHostMock: MockLink.MockedResponse<
+      UpdateHost,
+      UpdateHostVariables
+    > = {
       request: {
         query: UPDATE_HOST,
         variables: {
@@ -96,7 +100,7 @@ describe('JourneyQuickSettingsChat', () => {
       <MockedProvider
         mocks={[{ ...updateHostMock, result: mockHostUpdateResult }]}
       >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <JourneyQuickSettingsChat />
         </JourneyProvider>
       </MockedProvider>
@@ -113,7 +117,7 @@ describe('JourneyQuickSettingsChat', () => {
   it('should call createhost mutation on name change if host does not exist', async () => {
     const mockCreateResult = vi.fn().mockReturnValue(hostCreateMock.result)
 
-    const updateJourneyHostMock: MockedResponse<
+    const updateJourneyHostMock: MockLink.MockedResponse<
       UpdateJourneyHost,
       UpdateJourneyHostVariables
     > = {
@@ -147,7 +151,7 @@ describe('JourneyQuickSettingsChat', () => {
         ]}
       >
         <JourneyProvider
-          value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+          value={{ journey: { ...journey, host: null }, renderMode: 'admin' }}
         >
           <JourneyQuickSettingsChat displayName="Person1" />
         </JourneyProvider>

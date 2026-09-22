@@ -12,4 +12,15 @@ export const videoLabels = [
   { label: 'Short Film', value: 'shortFilm' },
   { label: 'Trailer/Preview', value: 'trailer' },
   { label: 'Behind The Scenes', value: 'behindTheScenes' }
-]
+] as const
+
+export type VideoLabelValue = (typeof videoLabels)[number]['value']
+
+/**
+ * The `videoLabels` values on their own, so validation that needs the bare
+ * values (yup `oneOf`) derives them from the same source as the display labels
+ * rather than restating the list.
+ */
+export const videoLabelValues: VideoLabelValue[] = videoLabels.map(
+  ({ value }) => value
+)

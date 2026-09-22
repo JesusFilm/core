@@ -27,9 +27,10 @@ export function GuestCustomizeHeader(): ReactElement {
   return (
     <Stack
       direction="row"
-      alignItems="center"
-      justifyContent="space-between"
+      data-testid="GuestCustomizeHeader"
       sx={{
+        alignItems: 'center',
+        justifyContent: 'space-between',
         position: 'fixed',
         top: 0,
         left: { xs: 0, sm: 0 },
@@ -41,7 +42,6 @@ export function GuestCustomizeHeader(): ReactElement {
         pointerEvents: 'none',
         '& > *': { pointerEvents: 'auto' }
       }}
-      data-testid="GuestCustomizeHeader"
     >
       <IconButton
         onClick={handleHomeClick}

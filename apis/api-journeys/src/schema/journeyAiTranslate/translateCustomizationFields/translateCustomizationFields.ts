@@ -77,8 +77,8 @@ ${numberedValues}`
       generateText({
         model,
         abortSignal,
+        instructions: CUSTOMIZATION_SYSTEM_PROMPT,
         messages: [
-          { role: 'system', content: CUSTOMIZATION_SYSTEM_PROMPT },
           {
             role: 'user',
             content: [{ type: 'text', text: prompt }]
@@ -280,8 +280,8 @@ ${hardenPrompt(description)}`
       generateText({
         model,
         abortSignal,
+        instructions: CUSTOMIZATION_SYSTEM_PROMPT,
         messages: [
-          { role: 'system', content: CUSTOMIZATION_SYSTEM_PROMPT },
           {
             role: 'user',
             content: [{ type: 'text', text: prompt }]

@@ -72,9 +72,11 @@ export function CustomizeTemplate(): ReactElement {
     <Box data-testid="CustomizeTemplateSection">
       <Stack
         direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        sx={{ mb: 4 }}
+        sx={{
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          mb: 4
+        }}
       >
         <Typography variant="subtitle1">
           {t('Text for Customization')}

@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client/react'
 import CloseIcon from '@mui/icons-material/Close'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
@@ -173,8 +173,10 @@ export function VideoKeywords({
             '& .MuiInputBase-root': { p: 0 },
             '& textarea': { p: 0, background: 'transparent' }
           }}
-          InputProps={{
-            disableUnderline: true
+          slotProps={{
+            input: {
+              disableUnderline: true
+            }
           }}
         />
       </Box>

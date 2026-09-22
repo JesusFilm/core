@@ -22,7 +22,7 @@ export function InformationButton({
   sx
 }: InformationButtonProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const { journey, variant } = useJourney()
+  const { journey, renderMode } = useJourney()
 
   const theme = useTheme()
   const { t } = useTranslation('libs-journeys-ui')
@@ -30,7 +30,7 @@ export function InformationButton({
   const router = useRouter()
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>): void => {
-    if (variant === 'default' || variant === 'embed')
+    if (renderMode === 'default' || renderMode === 'embed')
       setAnchorEl(event.currentTarget)
   }
   const handleClose = (): void => {
@@ -64,13 +64,20 @@ export function InformationButton({
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        MenuListProps={{
-          dense: true,
-          'aria-labelledby': 'more-info'
+        slotProps={{
+          list: {
+            dense: true,
+            'aria-labelledby': 'more-info'
+          }
         }}
       >
         <MuiMenuItem disabled>
-          <Typography color="text.primary" variant="body2">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.primary'
+            }}
+          >
             {journey?.team?.publicTitle !== '' &&
             journey?.team?.publicTitle !== null
               ? journey?.team?.publicTitle
@@ -87,7 +94,12 @@ export function InformationButton({
           }) because ...`}
           onClick={handleClose}
         >
-          <Typography color="text.primary" variant="body2">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.primary'
+            }}
+          >
             {t('Report this content')}
           </Typography>
         </MuiMenuItem>
@@ -107,9 +119,12 @@ export function InformationButton({
         </MuiMenuItem>
         <Box sx={{ px: 4, py: 1, maxWidth: '204px' }}>
           <Typography
-            color={theme.palette.action.disabled}
             variant="caption"
-            sx={{ display: 'block', lineHeight: 1.2 }}
+            sx={{
+              color: theme.palette.action.disabled,
+              display: 'block',
+              lineHeight: 1.2
+            }}
           >
             {t(
               'All personal identifiable data registered on this website will be processed by journey creator: "{{ teamTitle }}".',
@@ -124,7 +139,12 @@ export function InformationButton({
           </Typography>
         </Box>
         <MuiMenuItem disabled>
-          <Typography variant="caption" color="primary.light">
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'primary.light'
+            }}
+          >
             {t('NextSteps © {{year}}', { year: new Date().getFullYear() })}
           </Typography>
         </MuiMenuItem>

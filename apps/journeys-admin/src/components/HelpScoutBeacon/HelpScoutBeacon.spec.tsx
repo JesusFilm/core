@@ -1,3 +1,4 @@
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { type MockedFunction } from 'vitest'
@@ -29,7 +30,7 @@ describe('HelpScoutBeacon', () => {
       }
     } as unknown as NextRouter)
 
-    render(<HelpScoutBeacon handleClick={handleClick} />)
+    render(<HelpScoutBeacon handleClick={handleClick} />, { wrapper: MenuList })
 
     fireEvent.click(screen.getByRole('button', { name: 'Help' }))
     expect(handleClick).toHaveBeenCalled()
@@ -44,7 +45,9 @@ describe('HelpScoutBeacon', () => {
       }
     } as unknown as NextRouter)
 
-    render(<HelpScoutBeacon variant="menuItem" handleClick={handleClick} />)
+    render(<HelpScoutBeacon variant="menuItem" handleClick={handleClick} />, {
+      wrapper: MenuList
+    })
 
     fireEvent.click(screen.getByRole('menuitem', { name: 'Help' }))
     expect(handleClick).toHaveBeenCalled()
@@ -58,7 +61,7 @@ describe('HelpScoutBeacon', () => {
       }
     } as unknown as NextRouter)
 
-    render(<HelpScoutBeacon />)
+    render(<HelpScoutBeacon />, { wrapper: MenuList })
 
     expect(window.Beacon).toHaveBeenCalledWith(
       'on',
@@ -78,7 +81,7 @@ describe('HelpScoutBeacon', () => {
       }
     } as unknown as NextRouter)
 
-    render(<HelpScoutBeacon />)
+    render(<HelpScoutBeacon />, { wrapper: MenuList })
 
     expect(screen.getByTestId('HelpCircleContainedIcon')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Help' }))
@@ -96,7 +99,7 @@ describe('HelpScoutBeacon', () => {
     } as unknown as NextRouter)
     window.Beacon = undefined
 
-    render(<HelpScoutBeacon />)
+    render(<HelpScoutBeacon />, { wrapper: MenuList })
 
     fireEvent.click(screen.getByRole('button', { name: 'Help' }))
     expect(push).toHaveBeenCalledWith('https://support.nextstep.is/')

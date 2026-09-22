@@ -144,7 +144,7 @@ describe('templateGalleryPageCreate', () => {
 
   it('persists creatorImageSrc and creatorImageAlt as plain scalars', async () => {
     prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
-    prismaMock.journey.findMany.mockResolvedValue([] as any)
+    prismaMock.journey.findMany.mockResolvedValue([])
     const page = {
       id: 'p1',
       title: 'My Welcome',
@@ -274,7 +274,7 @@ describe('templateGalleryPageCreate', () => {
 
   it('retries once on P2002 (slug uniqueness race) and succeeds on second attempt', async () => {
     prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
-    prismaMock.journey.findMany.mockResolvedValue([] as any)
+    prismaMock.journey.findMany.mockResolvedValue([])
     const p2002 = new Prisma.PrismaClientKnownRequestError(
       'unique constraint failed',
       { code: 'P2002', clientVersion: '7.0.0', meta: { target: ['slug'] } }
@@ -328,7 +328,7 @@ describe('templateGalleryPageCreate', () => {
 
   it('does NOT retry on a second P2002 (caps retries at one)', async () => {
     prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
-    prismaMock.journey.findMany.mockResolvedValue([] as any)
+    prismaMock.journey.findMany.mockResolvedValue([])
     const p2002 = new Prisma.PrismaClientKnownRequestError(
       'unique constraint failed',
       { code: 'P2002', clientVersion: '7.0.0', meta: { target: ['slug'] } }
@@ -357,7 +357,7 @@ describe('templateGalleryPageCreate', () => {
 
   it('does NOT retry on non-P2002 errors (lets them propagate immediately)', async () => {
     prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
-    prismaMock.journey.findMany.mockResolvedValue([] as any)
+    prismaMock.journey.findMany.mockResolvedValue([])
     prismaMock.templateGalleryPage.create.mockRejectedValueOnce(
       new Error('disk full')
     )
@@ -382,7 +382,7 @@ describe('templateGalleryPageCreate', () => {
 
   it('does NOT retry on a non-slug P2002 (propagates immediately)', async () => {
     prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
-    prismaMock.journey.findMany.mockResolvedValue([] as any)
+    prismaMock.journey.findMany.mockResolvedValue([])
     const nonSlugP2002 = new Prisma.PrismaClientKnownRequestError(
       'unique constraint failed',
       {
@@ -423,7 +423,7 @@ describe('templateGalleryPageCreate', () => {
 
     function mockPageRead(media: unknown): void {
       prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
-      prismaMock.journey.findMany.mockResolvedValue([] as any)
+      prismaMock.journey.findMany.mockResolvedValue([])
       prismaMock.templateGalleryPage.create.mockResolvedValue({
         id: 'p1'
       } as any)
@@ -485,7 +485,7 @@ describe('templateGalleryPageCreate', () => {
         embedUrl: 'https://www.youtube-nocookie.com/embed/abc'
       })
       prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
-      prismaMock.journey.findMany.mockResolvedValue([] as any)
+      prismaMock.journey.findMany.mockResolvedValue([])
       prismaMock.templateGalleryPage.create.mockResolvedValue({
         id: 'p1'
       } as any)
@@ -640,7 +640,7 @@ describe('templateGalleryPageCreate', () => {
       // type is a required GraphQL enum so a bad/missing type is caught at
       // validation; an empty-string url is the case that reaches the zod guard.
       prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
-      prismaMock.journey.findMany.mockResolvedValue([] as any)
+      prismaMock.journey.findMany.mockResolvedValue([])
 
       const result = (await authClient({
         document: TEMPLATE_GALLERY_PAGE_CREATE_WITH_MEDIA,
@@ -663,7 +663,7 @@ describe('templateGalleryPageCreate', () => {
 
     it('propagates a helper error (EMBED_HOST_NOT_ALLOWED) before any write', async () => {
       prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
-      prismaMock.journey.findMany.mockResolvedValue([] as any)
+      prismaMock.journey.findMany.mockResolvedValue([])
       mockLinkValidate.mockRejectedValue(
         new GraphQLError('not allowed', {
           extensions: {

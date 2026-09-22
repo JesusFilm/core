@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack'
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import noop from 'lodash/noop'
 
-import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
+import { InstantSearchTestWrapper } from '@core/journeys/ui/test/InstantSearchTestWrapper'
 
 import { watchConfig } from '../../libs/storybook/config'
 import { videos } from '../Videos/__generated__/testData'

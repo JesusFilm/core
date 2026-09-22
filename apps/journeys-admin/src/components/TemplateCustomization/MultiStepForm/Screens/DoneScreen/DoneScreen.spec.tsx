@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -63,7 +64,7 @@ const getCustomDomainsMock = {
   }
 }
 
-const googleSheetsSyncsNoActiveMock: MockedResponse = {
+const googleSheetsSyncsNoActiveMock: MockLink.MockedResponse = {
   request: {
     query: GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN,
     variables: { filter: { journeyId: 'journeyId' } }
@@ -75,7 +76,7 @@ const googleSheetsSyncsNoActiveMock: MockedResponse = {
   }
 }
 
-const googleSheetsSyncsWithActiveMock: MockedResponse = {
+const googleSheetsSyncsWithActiveMock: MockLink.MockedResponse = {
   request: {
     query: GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN,
     variables: { filter: { journeyId: 'journeyId' } }
@@ -160,7 +161,7 @@ describe('DoneScreen', () => {
       <MockedProvider
         mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
       >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
       </MockedProvider>
@@ -174,7 +175,7 @@ describe('DoneScreen', () => {
       <MockedProvider
         mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
       >
-        <JourneyProvider value={{ journey: journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey: journey, renderMode: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
       </MockedProvider>
@@ -188,7 +189,7 @@ describe('DoneScreen', () => {
       <MockedProvider
         mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
       >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
       </MockedProvider>
@@ -209,7 +210,9 @@ describe('DoneScreen', () => {
       <MockedProvider
         mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
       >
-        <JourneyProvider value={{ journey: journeyWithSlug, variant: 'admin' }}>
+        <JourneyProvider
+          value={{ journey: journeyWithSlug, renderMode: 'admin' }}
+        >
           <DoneScreen />
         </JourneyProvider>
       </MockedProvider>
@@ -229,7 +232,7 @@ describe('DoneScreen', () => {
       id: 'test-journey-id'
     }
 
-    const syncsForTestJourneyMock: MockedResponse = {
+    const syncsForTestJourneyMock: MockLink.MockedResponse = {
       request: {
         query: GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN,
         variables: { filter: { journeyId: 'test-journey-id' } }
@@ -239,7 +242,9 @@ describe('DoneScreen', () => {
 
     render(
       <MockedProvider mocks={[getCustomDomainsMock, syncsForTestJourneyMock]}>
-        <JourneyProvider value={{ journey: journeyWithId, variant: 'admin' }}>
+        <JourneyProvider
+          value={{ journey: journeyWithId, renderMode: 'admin' }}
+        >
           <DoneScreen />
         </JourneyProvider>
       </MockedProvider>
@@ -259,7 +264,7 @@ describe('DoneScreen', () => {
       id: 'test-journey-id'
     }
 
-    const syncsForTestJourneyMock: MockedResponse = {
+    const syncsForTestJourneyMock: MockLink.MockedResponse = {
       request: {
         query: GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN,
         variables: { filter: { journeyId: 'test-journey-id' } }
@@ -269,7 +274,9 @@ describe('DoneScreen', () => {
 
     render(
       <MockedProvider mocks={[getCustomDomainsMock, syncsForTestJourneyMock]}>
-        <JourneyProvider value={{ journey: journeyWithId, variant: 'admin' }}>
+        <JourneyProvider
+          value={{ journey: journeyWithId, renderMode: 'admin' }}
+        >
           <DoneScreen />
         </JourneyProvider>
       </MockedProvider>
@@ -291,7 +298,7 @@ describe('DoneScreen', () => {
           mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
         >
           <FlagsProvider flags={{ emailResponseToggle: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <DoneScreen />
             </JourneyProvider>
           </FlagsProvider>
@@ -310,7 +317,7 @@ describe('DoneScreen', () => {
           mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
         >
           <FlagsProvider flags={{ emailResponseToggle: false }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <DoneScreen />
             </JourneyProvider>
           </FlagsProvider>
@@ -328,7 +335,7 @@ describe('DoneScreen', () => {
         <MockedProvider
           mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <DoneScreen />
           </JourneyProvider>
         </MockedProvider>
@@ -346,7 +353,7 @@ describe('DoneScreen', () => {
           mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
         >
           <FlagsProvider flags={{ emailResponseToggle: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <DoneScreen />
             </JourneyProvider>
           </FlagsProvider>
@@ -354,7 +361,7 @@ describe('DoneScreen', () => {
       </SnackbarProvider>
     )
 
-    const checkbox = screen.getByRole('checkbox')
+    const checkbox = screen.getByRole('switch')
     expect(checkbox).not.toBeChecked()
   })
 
@@ -372,7 +379,7 @@ describe('DoneScreen', () => {
           ]}
         >
           <FlagsProvider flags={{ emailResponseToggle: true }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <DoneScreen />
             </JourneyProvider>
           </FlagsProvider>
@@ -380,7 +387,7 @@ describe('DoneScreen', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.click(screen.getByRole('checkbox'))
+    fireEvent.click(screen.getByRole('switch'))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
@@ -405,7 +412,7 @@ describe('DoneScreen', () => {
           ]}
         >
           <JourneyProvider
-            value={{ journey: journeyWithTeam, variant: 'admin' }}
+            value={{ journey: journeyWithTeam, renderMode: 'admin' }}
           >
             <DoneScreen />
           </JourneyProvider>
@@ -453,7 +460,7 @@ describe('DoneScreen', () => {
         <MockedProvider
           mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <DoneScreen />
           </JourneyProvider>
         </MockedProvider>
@@ -474,7 +481,7 @@ describe('DoneScreen', () => {
         <MockedProvider
           mocks={[getCustomDomainsMock, googleSheetsSyncsWithActiveMock]}
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <DoneScreen />
           </JourneyProvider>
         </MockedProvider>
@@ -494,7 +501,7 @@ describe('DoneScreen', () => {
         <MockedProvider
           mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <DoneScreen />
           </JourneyProvider>
         </MockedProvider>

@@ -58,9 +58,12 @@ export function JourneyViewCard({
       />
     ) : (
       <Stack
-        alignItems="center"
-        justifyContent="center"
-        sx={{ position: 'absolute', inset: 0 }}
+        sx={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'absolute',
+          inset: 0
+        }}
       >
         <InsertPhotoRoundedIcon
           sx={{ fontSize: 56, color: 'rgba(0, 0, 0, 0.25)' }}

@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import ListItemButton from '@mui/material/ListItemButton'
@@ -258,9 +258,11 @@ export const Complete = {
     mainHeaderChildren: (
       <Stack
         direction="row"
-        alignItems="center"
-        justifyContent="flex-end"
-        flexGrow={1}
+        sx={{
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          flexGrow: 1
+        }}
       >
         <Typography variant="caption" sx={{ pl: 4 }}>
           custom content

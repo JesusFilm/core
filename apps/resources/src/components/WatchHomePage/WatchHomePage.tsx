@@ -68,7 +68,13 @@ export function WatchHomePage({
               }}
             >
               <Stack spacing={10}>
-                <Typography variant="h3" component="h2" color="text.primary">
+                <Typography
+                  variant="h3"
+                  component="h2"
+                  sx={{
+                    color: 'text.primary'
+                  }}
+                >
                   {t('About Our Project')}
                 </Typography>
                 <Stack direction="row" spacing={4}>
@@ -82,8 +88,10 @@ export function WatchHomePage({
                   <Typography
                     variant="subtitle2"
                     component="h3"
-                    sx={{ opacity: 0.85 }}
-                    color="text.primary"
+                    sx={{
+                      color: 'text.primary',
+                      opacity: 0.85
+                    }}
                   >
                     {t(
                       'With 70% of the world not being able to speak English, there ' +
@@ -97,8 +105,10 @@ export function WatchHomePage({
                 <Typography
                   variant="subtitle1"
                   component="h3"
-                  sx={{ opacity: 0.8 }}
-                  color="text.primary"
+                  sx={{
+                    color: 'text.primary',
+                    opacity: 0.8
+                  }}
                 >
                   {t(
                     'Jesus Film Project is a Christian ministry with a vision to ' +

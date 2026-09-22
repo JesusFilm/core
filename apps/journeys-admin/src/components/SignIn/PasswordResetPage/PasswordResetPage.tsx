@@ -2,12 +2,13 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { getAuth, sendPasswordResetEmail } from 'firebase/auth'
+import { sendPasswordResetEmail } from 'firebase/auth'
 import { Form, Formik, FormikHelpers } from 'formik'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 import { InferType, object, string } from 'yup'
 
+import { getFirebaseAuth } from '../../../libs/auth'
 import { PageProps } from '../types'
 
 export function PasswordResetPage({
@@ -15,7 +16,7 @@ export function PasswordResetPage({
   setUserEmail,
   setActivePage
 }: PageProps): ReactElement {
-  const auth = getAuth()
+  const auth = getFirebaseAuth()
   const { t } = useTranslation('apps-journeys-admin')
   const validationSchema = object().shape({
     email: string()
@@ -60,11 +61,24 @@ export function PasswordResetPage({
           isSubmitting
         }) => (
           <Form>
-            <Stack gap={4}>
-              <Typography variant="h6" textAlign="left">
+            <Stack
+              sx={{
+                gap: 4
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{
+                  textAlign: 'left'
+                }}
+              >
                 {t('Reset Password')}
               </Typography>
-              <Typography textAlign="left">
+              <Typography
+                sx={{
+                  textAlign: 'left'
+                }}
+              >
                 {t(
                   'Get instructions sent to this email that explain how to reset your password.'
                 )}

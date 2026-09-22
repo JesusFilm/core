@@ -35,11 +35,12 @@ export default function IntegrationPage(): ReactElement {
         mainHeaderChildren={
           <Stack
             direction="row"
-            justifyContent="flex-end"
-            flexGrow={1}
-            alignItems="center"
-            gap={3}
             sx={{
+              justifyContent: 'flex-end',
+              flexGrow: 1,
+              alignItems: 'center',
+              gap: 3,
+
               display: {
                 xs: 'none',
                 md: 'flex'

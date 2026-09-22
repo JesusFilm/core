@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -49,7 +49,7 @@ describe('RadioOption Attribute', () => {
           <JourneyProvider
             value={{
               journey: { template: true } as unknown as JourneyFields,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider initialState={{ selectedBlock: block }}>

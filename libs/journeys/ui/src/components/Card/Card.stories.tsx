@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
@@ -15,7 +15,7 @@ import {
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import { journeyUiConfig } from '../../test/journeyUiConfig'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 

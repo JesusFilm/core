@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
@@ -32,7 +32,9 @@ export const videoBlockMuxSchema = z.object({
 })
 
 export interface YoutubeVideosData {
-  items: Array<{
+  // present instead of items when the request fails (quota exceeded, bad key)
+  error?: { code: number; message: string }
+  items?: Array<{
     id: string
     snippet: {
       title: string
@@ -67,7 +69,7 @@ export async function fetchFieldsFromMux(videoId: string): Promise<
       endAt: number
     }
 > {
-  const httpLink = createHttpLink({
+  const httpLink = new HttpLink({
     uri: env.GATEWAY_URL,
     headers: {
       'x-graphql-client-name': 'api-journeys-modern',
@@ -81,7 +83,8 @@ export async function fetchFieldsFromMux(videoId: string): Promise<
 
   const { data } = await apollo.query({
     query: GET_MUX_VIDEO_QUERY,
-    variables: { id: videoId }
+    variables: { id: videoId },
+    errorPolicy: 'none'
   })
 
   if (data.getMuxVideo == null) {
@@ -117,7 +120,14 @@ export async function fetchFieldsFromYouTube(videoId: string): Promise<{
   const videosData: YoutubeVideosData = await (
     await fetch(`https://www.googleapis.com/youtube/v3/videos?${query}`)
   ).json()
-  if (videosData.items[0] == null) {
+  if (videosData.error != null) {
+    // quota/auth failures must not read as "video does not exist"
+    throw new GraphQLError(
+      `YouTube API request failed: ${videosData.error.message}`,
+      { extensions: { code: 'INTERNAL_SERVER_ERROR' } }
+    )
+  }
+  if (videosData.items?.[0] == null) {
     throw new GraphQLError('videoId cannot be found on YouTube', {
       extensions: { code: 'NOT_FOUND' }
     })

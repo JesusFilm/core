@@ -28,7 +28,11 @@ type Story = StoryObj<
 const Template: Story = {
   render: (args) => {
     return (
-      <Box bgcolor="white">
+      <Box
+        sx={{
+          bgcolor: 'white'
+        }}
+      >
         <ImageBlockHeader {...args} />
       </Box>
     )

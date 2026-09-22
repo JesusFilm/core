@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import cloneDeep from 'lodash/cloneDeep'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -230,7 +231,7 @@ export function useCreateStepFromSocialPreview(): (
               blockOrderUpdate: steps ?? []
             },
             update(cache, { data }) {
-              blockDeleteUpdate(step, data?.blockDelete, cache, journey.id)
+              blockDeleteUpdate(cache, journey.id, step, data?.blockDelete)
             }
           })
         } else {

@@ -97,13 +97,18 @@ export function HeaderMenuPanel({
       </Box>
       <Stack
         direction="column"
-        justifyContent="space-between"
-        sx={{ flexGrow: 1, py: { xs: 17, md: 2, xl: 0 } }}
+        sx={{
+          justifyContent: 'space-between',
+          flexGrow: 1,
+          py: { xs: 17, md: 2, xl: 0 }
+        }}
       >
         <Stack
-          justifyContent="flex-start"
           direction="column"
-          sx={{ gap: { xs: '8px' } }}
+          sx={{
+            justifyContent: 'flex-start',
+            gap: { xs: '8px' }
+          }}
         >
           {headerLinks.map((link) => (
             <HeaderLinkAccordion

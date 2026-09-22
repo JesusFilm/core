@@ -1,4 +1,6 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
+import MenuList from '@mui/material/MenuList'
 import {
   fireEvent,
   render,
@@ -71,27 +73,7 @@ describe('CopyToTeamMenuItem', () => {
     })
   })
 
-  const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
-    request: {
-      query: UPDATE_LAST_ACTIVE_TEAM_ID,
-      variables: {
-        input: {
-          lastActiveTeamId: 'teamId'
-        }
-      }
-    },
-    result: vi.fn(() => ({
-      data: {
-        journeyProfileUpdate: {
-          __typename: 'JourneyProfile',
-          id: 'teamId'
-        }
-      }
-    })) as MockedResponse<UpdateLastActiveTeamId>['result']
-  }
-
-  // Additional mock for translation scenario where updateLastActiveTeamId is called twice
-  const updateLastActiveTeamIdMockForTranslation: MockedResponse<UpdateLastActiveTeamId> =
+  const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
     {
       request: {
         query: UPDATE_LAST_ACTIVE_TEAM_ID,
@@ -108,7 +90,28 @@ describe('CopyToTeamMenuItem', () => {
             id: 'teamId'
           }
         }
-      })) as MockedResponse<UpdateLastActiveTeamId>['result']
+      })) as MockLink.MockedResponse<UpdateLastActiveTeamId>['result']
+    }
+
+  // Additional mock for translation scenario where updateLastActiveTeamId is called twice
+  const updateLastActiveTeamIdMockForTranslation: MockLink.MockedResponse<UpdateLastActiveTeamId> =
+    {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: {
+            lastActiveTeamId: 'teamId'
+          }
+        }
+      },
+      result: vi.fn(() => ({
+        data: {
+          journeyProfileUpdate: {
+            __typename: 'JourneyProfile',
+            id: 'teamId'
+          }
+        }
+      })) as MockLink.MockedResponse<UpdateLastActiveTeamId>['result']
     }
 
   const translateSubscriptionMock = {
@@ -158,7 +161,7 @@ describe('CopyToTeamMenuItem', () => {
     }))
   }
 
-  const duplicateJourneyMock: MockedResponse<JourneyDuplicate> = {
+  const duplicateJourneyMock: MockLink.MockedResponse<JourneyDuplicate> = {
     request: {
       query: JOURNEY_DUPLICATE,
       variables: {
@@ -174,10 +177,10 @@ describe('CopyToTeamMenuItem', () => {
           template: false
         }
       }
-    })) as MockedResponse<JourneyDuplicate>['result']
+    })) as MockLink.MockedResponse<JourneyDuplicate>['result']
   }
 
-  const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
+  const getLastActiveTeamIdAndTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
     {
       request: {
         query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -200,7 +203,7 @@ describe('CopyToTeamMenuItem', () => {
             lastActiveTeamId: 'teamId'
           }
         }
-      })) as MockedResponse<GetLastActiveTeamIdAndTeams>['result']
+      })) as MockLink.MockedResponse<GetLastActiveTeamIdAndTeams>['result']
     }
 
   const mockLanguage = {
@@ -296,7 +299,8 @@ describe('CopyToTeamMenuItem', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     await waitFor(() =>
       expect(getLastActiveTeamIdAndTeamsMock.result).toHaveBeenCalled()
@@ -374,7 +378,8 @@ describe('CopyToTeamMenuItem', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -388,7 +393,7 @@ describe('CopyToTeamMenuItem', () => {
       name: 'Team Name'
     })
     fireEvent.click(muiSelectOptions)
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Translation' }))
+    fireEvent.click(screen.getByRole('switch', { name: 'Translation' }))
 
     await waitFor(() => {
       expect(screen.getByTestId('LanguageAutocomplete')).not.toHaveAttribute(
@@ -421,16 +426,17 @@ describe('CopyToTeamMenuItem', () => {
   })
 
   it('should handle journey duplication errors', async () => {
-    const duplicateJourneyErrorMock: MockedResponse<JourneyDuplicate> = {
-      request: {
-        query: JOURNEY_DUPLICATE,
-        variables: {
-          id: 'journeyId',
-          teamId: 'teamId'
-        }
-      },
-      error: new Error('Network error occurred')
-    }
+    const duplicateJourneyErrorMock: MockLink.MockedResponse<JourneyDuplicate> =
+      {
+        request: {
+          query: JOURNEY_DUPLICATE,
+          variables: {
+            id: 'journeyId',
+            teamId: 'teamId'
+          }
+        },
+        error: new Error('Network error occurred')
+      }
 
     render(
       <MockedProvider
@@ -476,7 +482,8 @@ describe('CopyToTeamMenuItem', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -573,7 +580,8 @@ describe('CopyToTeamMenuItem', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -587,7 +595,7 @@ describe('CopyToTeamMenuItem', () => {
       name: 'Team Name'
     })
     fireEvent.click(muiSelectOptions)
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Translation' }))
+    fireEvent.click(screen.getByRole('switch', { name: 'Translation' }))
 
     await waitFor(() => {
       expect(screen.getByTestId('LanguageAutocomplete')).not.toHaveAttribute(
@@ -659,7 +667,8 @@ describe('CopyToTeamMenuItem', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -673,24 +682,25 @@ describe('CopyToTeamMenuItem', () => {
   })
 
   it('should handle journey duplication failure when no duplicate ID returned', async () => {
-    const duplicateJourneyFailMock: MockedResponse<JourneyDuplicate> = {
-      request: {
-        query: JOURNEY_DUPLICATE,
-        variables: {
-          id: 'journeyId',
-          teamId: 'teamId'
-        }
-      },
-      result: {
-        data: {
-          journeyDuplicate: {
-            id: '',
-            __typename: 'Journey',
-            template: false
+    const duplicateJourneyFailMock: MockLink.MockedResponse<JourneyDuplicate> =
+      {
+        request: {
+          query: JOURNEY_DUPLICATE,
+          variables: {
+            id: 'journeyId',
+            teamId: 'teamId'
+          }
+        },
+        result: {
+          data: {
+            journeyDuplicate: {
+              id: '',
+              __typename: 'Journey',
+              template: false
+            }
           }
         }
       }
-    }
 
     render(
       <MockedProvider
@@ -736,7 +746,8 @@ describe('CopyToTeamMenuItem', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -813,7 +824,8 @@ describe('CopyToTeamMenuItem', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() => {
@@ -880,7 +892,8 @@ describe('CopyToTeamMenuItem', () => {
             />
           </TeamProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     await waitFor(() =>
@@ -941,7 +954,8 @@ describe('CopyToTeamMenuItem', () => {
             />
           </TeamProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
 
     fireEvent.click(screen.getByRole('menuitem', { name: 'Copy to ...' }))

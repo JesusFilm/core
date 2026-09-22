@@ -1,4 +1,4 @@
-import { ApolloError } from '@apollo/client'
+import { LinkError } from '@apollo/client/errors'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
@@ -75,7 +75,7 @@ export function LocalTemplateDetailsDialog({
       <JourneyProvider
         value={{
           journey: journeyProp as unknown as JourneyContext,
-          variant: 'admin'
+          renderMode: 'admin'
         }}
       >
         <LocalTemplateDetailsDialogBody open={open} onClose={onClose} />
@@ -233,8 +233,7 @@ function LocalTemplateDetailsDialogBody({
       return
     }
 
-    const networkError =
-      failed.reason instanceof ApolloError && failed.reason.networkError != null
+    const networkError = LinkError.is(failed.reason)
     enqueueSnackbar(
       networkError
         ? t('Field update failed. Reload the page or try again.')
@@ -266,7 +265,12 @@ function LocalTemplateDetailsDialogBody({
             fullscreen={!smUp}
             loading={isSubmitting}
           >
-            <Stack sx={{ pt: 2 }} gap={5}>
+            <Stack
+              sx={{
+                gap: 5,
+                pt: 2
+              }}
+            >
               <MetadataTabPanel showFeaturedSettings={false} />
               <Divider />
               <CustomizeTemplate />

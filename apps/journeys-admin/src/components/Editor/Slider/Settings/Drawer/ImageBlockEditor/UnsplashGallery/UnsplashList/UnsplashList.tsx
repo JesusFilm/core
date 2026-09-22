@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import ButtonBase from '@mui/material/ButtonBase'
 import ImageList from '@mui/material/ImageList'
 import ImageListItem from '@mui/material/ImageListItem'
@@ -115,8 +116,10 @@ export function UnsplashList({
                 target="_blank"
                 rel="noreferrer"
                 variant="caption"
-                fontWeight="bold"
-                color="primary.contrastText"
+                sx={{
+                  fontWeight: 'bold',
+                  color: 'primary.contrastText'
+                }}
               >
                 {item.user.first_name} {item.user.last_name}
               </Link>

@@ -45,11 +45,19 @@ export function HostList({
     <Box data-testid="HostList">
       <Stack
         direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ p: 4, pt: 2 }}
+        sx={{
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          p: 4,
+          pt: 2
+        }}
       >
-        <Stack direction="row" alignItems="center">
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: 'center'
+          }}
+        >
           <Typography variant="subtitle2">{t('Hosts')}</Typography>
           <IconButton onClick={() => handleSelection('info')}>
             <InformationCircleContainedIcon />

@@ -1,5 +1,6 @@
 import { InMemoryCache, gql } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 import { type MockedFunction } from 'vitest'
@@ -10,8 +11,11 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
+import {
+  stepWithSubmitButton,
+  stepWithoutSubmitButton
+} from '../submitButtonFixtures'
 
-import { stepWithSubmitButton, stepWithoutSubmitButton } from './data'
 import {
   MULTISELECT_BLOCK_CREATE,
   MULTISELECT_WITH_BUTTON_CREATE,
@@ -45,7 +49,7 @@ const TEST_JOURNEY_QUERY = gql`
   }
 `
 
-const multiselectBlockCreateMock: MockedResponse = {
+const multiselectBlockCreateMock: MockLink.MockedResponse = {
   request: {
     query: MULTISELECT_BLOCK_CREATE,
     variables: {
@@ -97,7 +101,7 @@ const multiselectBlockCreateMock: MockedResponse = {
   }))
 }
 
-const multiselectWithButtonCreateMock: MockedResponse = {
+const multiselectWithButtonCreateMock: MockLink.MockedResponse = {
   request: {
     query: MULTISELECT_WITH_BUTTON_CREATE,
     variables: {
@@ -216,7 +220,7 @@ const multiselectWithButtonCreateMock: MockedResponse = {
   }))
 }
 
-const multiselectWithButtonDeleteMock: MockedResponse = {
+const multiselectWithButtonDeleteMock: MockLink.MockedResponse = {
   request: {
     query: MULTISELECT_WITH_BUTTON_DELETE,
     variables: {
@@ -260,7 +264,7 @@ const multiselectWithButtonDeleteMock: MockedResponse = {
   }))
 }
 
-const multiselectWithButtonRestoreMock: MockedResponse = {
+const multiselectWithButtonRestoreMock: MockLink.MockedResponse = {
   request: {
     query: MULTISELECT_WITH_BUTTON_RESTORE,
     variables: {
@@ -341,7 +345,7 @@ describe('NewMultiselectButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -384,7 +388,7 @@ describe('NewMultiselectButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -445,7 +449,7 @@ describe('NewMultiselectButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -515,7 +519,7 @@ describe('NewMultiselectButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -568,7 +572,7 @@ describe('NewMultiselectButton', () => {
       // the mutation in flight (button stays disabled) and matches the
       // operation so it does not raise an unhandled Apollo error after the
       // test completes.
-      const loadingMock: MockedResponse = {
+      const loadingMock: MockLink.MockedResponse = {
         ...multiselectBlockCreateMock,
         delay: Infinity
       }
@@ -578,7 +582,7 @@ describe('NewMultiselectButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider
@@ -606,7 +610,7 @@ describe('NewMultiselectButton', () => {
       // keeps the mutation in flight (button stays disabled) and matches the
       // operation so it does not raise an unhandled Apollo error after the
       // test completes.
-      const loadingMock: MockedResponse = {
+      const loadingMock: MockLink.MockedResponse = {
         ...multiselectWithButtonCreateMock,
         delay: Infinity
       }
@@ -616,7 +620,7 @@ describe('NewMultiselectButton', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider

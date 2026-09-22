@@ -1,10 +1,11 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { formatISO } from 'date-fns'
 import { SnackbarProvider } from 'notistack'
 import { type MockedFunction } from 'vitest'
 
-import { useNavigationState } from '@core/journeys/ui/useNavigationState'
+import { useRouteChangeState } from '@core/journeys/ui/useRouteChangeState'
 
 import {
   GetTemplateFamilyStatsAggregate,
@@ -26,12 +27,12 @@ import {
 import { JourneyCard } from './JourneyCard'
 import { JourneyCardVariant } from './journeyCardVariant'
 
-vi.mock('@core/journeys/ui/useNavigationState', () => ({
-  useNavigationState: vi.fn(() => false)
+vi.mock('@core/journeys/ui/useRouteChangeState', () => ({
+  useRouteChangeState: vi.fn(() => false)
 }))
 
-const mockUseNavigationState = useNavigationState as MockedFunction<
-  typeof useNavigationState
+const mockUseRouteChangeState = useRouteChangeState as MockedFunction<
+  typeof useRouteChangeState
 >
 
 describe('JourneyCard', () => {
@@ -63,7 +64,7 @@ describe('JourneyCard', () => {
   })
 
   it('should disabled card when navigating', () => {
-    mockUseNavigationState.mockReturnValue(true)
+    mockUseRouteChangeState.mockReturnValue(true)
 
     render(
       <SnackbarProvider>
@@ -280,7 +281,7 @@ describe('JourneyCard', () => {
   })
 
   it('should show template only section', async () => {
-    const templateFamilyStatsAggregateMock: MockedResponse<
+    const templateFamilyStatsAggregateMock: MockLink.MockedResponse<
       GetTemplateFamilyStatsAggregate,
       GetTemplateFamilyStatsAggregateVariables
     > = {

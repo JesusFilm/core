@@ -1,6 +1,5 @@
 'use client'
-
-import { useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { Form, Formik } from 'formik'
@@ -75,7 +74,11 @@ export default function AddEditionPage() {
         validationSchema={validationSchema}
       >
         <Form data-testid="EditionForm">
-          <Stack gap={2}>
+          <Stack
+            sx={{
+              gap: 2
+            }}
+          >
             <FormTextField name="name" label="Name" fullWidth sx={{ mt: 1 }} />
             <Button variant="contained" type="submit" fullWidth>
               Create

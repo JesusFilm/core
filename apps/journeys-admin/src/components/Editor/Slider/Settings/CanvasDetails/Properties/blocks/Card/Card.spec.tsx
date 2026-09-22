@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -76,7 +76,7 @@ const renderWithProviders = (
       <SnackbarProvider>
         <FlagsProvider flags={flags}>
           <JourneyProvider
-            value={{ journey: defaultJourney, variant: 'admin' }}
+            value={{ journey: defaultJourney, renderMode: 'admin' }}
           >
             <EditorProvider
               initialState={{ selectedBlock: selectedBlock ?? undefined }}

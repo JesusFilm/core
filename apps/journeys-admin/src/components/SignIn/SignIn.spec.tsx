@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen } from '@testing-library/react'
 import { useRouter } from 'next/router'
 import { type MockedFunction } from 'vitest'
@@ -78,5 +78,25 @@ describe('SignIn', () => {
     expect(mockReplace).toHaveBeenCalledWith(
       '/users/verify?redirect=/journeys/123'
     )
+  })
+
+  it('should not redirect back to verify page when arriving from it', () => {
+    mockUseRouter.mockReturnValue({
+      asPath: '/signin?redirect=%2Fusers%2Fverify',
+      replace: mockReplace,
+      query: { redirect: '/users/verify' }
+    } as unknown as ReturnType<typeof useRouter>)
+
+    mockUseAuth.mockReturnValue({
+      user: { id: 'user-1', isAnonymous: false }
+    })
+
+    render(
+      <MockedProvider>
+        <SignIn />
+      </MockedProvider>
+    )
+
+    expect(mockReplace).not.toHaveBeenCalled()
   })
 })

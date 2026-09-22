@@ -16,7 +16,12 @@ export function EmailUsedPage({
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
-      <Typography variant="h6" textAlign="left">
+      <Typography
+        variant="h6"
+        sx={{
+          textAlign: 'left'
+        }}
+      >
         {t('You already have an account')}
       </Typography>
       <Typography>

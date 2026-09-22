@@ -59,6 +59,10 @@ services:
     volumes:
       - core-workspace:/workspaces
       - core-node-user:/home/node
+    # Run an init process as PID 1 so exited children are reaped. Without it
+    # `sleep infinity` is PID 1 and never reaps, so tooling that spawns and
+    # abandons children accumulates zombies over a long-lived session.
+    init: true
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
     # Uncomment the next line to use a non-root user for all processes.

@@ -1,9 +1,11 @@
+import { NormalizedCacheObject } from '@apollo/client'
 import { GetServerSidePropsContext } from 'next'
 import { useTranslation } from 'next-i18next/pages'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
 import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from '@core/journeys/ui/TeamProvider'
+import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
@@ -55,13 +57,12 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   await apolloClient.query({ query: GET_CURRENT_USER })
 
   // check if user has been invited to a team but has no active team:
-  const { data } = await apolloClient.query({
-    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
-    errorPolicy: 'none'
+  const { data } = await apolloClient.query<GetLastActiveTeamIdAndTeams>({
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   })
 
   // set active team to invited team and redirect:
-  if (data.teams.length > 0 && data.teams[0].id != null) {
+  if (data != null && data.teams.length > 0 && data.teams[0].id != null) {
     await apolloClient.mutate({
       mutation: UPDATE_LAST_ACTIVE_TEAM_ID,
       variables: {
@@ -77,7 +78,8 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       },
       props: {
         userSerialized: JSON.stringify(user),
-        initialApolloState: apolloClient.cache.extract(),
+        initialApolloState:
+          apolloClient.cache.extract() as NormalizedCacheObject,
         ...translations
       }
     }
@@ -86,7 +88,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   return {
     props: {
       userSerialized: JSON.stringify(user),
-      initialApolloState: apolloClient.cache.extract(),
+      initialApolloState: apolloClient.cache.extract() as NormalizedCacheObject,
       ...translations
     }
   }

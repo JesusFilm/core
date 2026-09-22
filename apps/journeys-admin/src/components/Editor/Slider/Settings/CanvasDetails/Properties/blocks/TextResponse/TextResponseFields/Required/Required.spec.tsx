@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -66,7 +66,7 @@ describe('Required', () => {
       </MockedProvider>
     )
 
-    const toggle = getByRole('checkbox')
+    const toggle = getByRole('switch')
     expect(toggle).toHaveAttribute('aria-checked', 'false')
   })
 })

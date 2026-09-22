@@ -1,10 +1,11 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { screen, userEvent, waitFor } from 'storybook/test'
 
-import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { InstantSearchTestWrapper } from '@core/journeys/ui/test/InstantSearchTestWrapper'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import {
@@ -191,19 +192,62 @@ const videoLanguages: GetVideoVariantLanguages_video = {
   ]
 }
 
-const mockGetVideoVariantLanguages: MockedResponse<GetVideoVariantLanguages> = {
-  request: {
-    query: GET_VIDEO_VARIANT_LANGUAGES,
-    variables: {
-      id: videoLanguages.id
-    }
-  },
-  result: {
-    data: {
-      video: videoLanguages
+const mockGetVideoVariantLanguages: MockLink.MockedResponse<GetVideoVariantLanguages> =
+  {
+    request: {
+      query: GET_VIDEO_VARIANT_LANGUAGES,
+      variables: {
+        id: videoLanguages.id
+      }
+    },
+    result: {
+      data: {
+        video: videoLanguages
+      }
     }
   }
+
+// The reported failure case. SourceFromLocal composes
+// "<localName> (<nativeName>)", so supplying both names produces a string
+// long enough that the video source card has to truncate it.
+const videoLanguagesLongName: GetVideoVariantLanguages_video = {
+  __typename: 'Video',
+  id: '2_0-FallingPlates',
+  variant: null,
+  variantLanguages: [
+    {
+      __typename: 'Language',
+      id: '529',
+      name: [
+        {
+          __typename: 'LanguageName',
+          value: 'العربية العامية',
+          primary: true
+        },
+        {
+          __typename: 'LanguageName',
+          value: 'Arabic, Egyptian Colloquial',
+          primary: false
+        }
+      ]
+    }
+  ]
 }
+
+const mockGetVideoVariantLanguagesLongName: MockLink.MockedResponse<GetVideoVariantLanguages> =
+  {
+    request: {
+      query: GET_VIDEO_VARIANT_LANGUAGES,
+      variables: {
+        id: videoLanguagesLongName.id
+      }
+    },
+    result: {
+      data: {
+        video: videoLanguagesLongName
+      }
+    }
+  }
 
 const Template: StoryObj<typeof VideoBlockEditor> = {
   render: (args) => (
@@ -237,6 +281,30 @@ export const Internal = {
       children: [posterInternal]
     }
   }
+}
+
+export const InternalLongLanguageName: StoryObj<typeof VideoBlockEditor> = {
+  render: (args) => (
+    <MockedProvider mocks={[mockGetVideoVariantLanguagesLongName]}>
+      <InstantSearchTestWrapper>
+        <Drawer title="Video Properties">
+          <Box sx={{ pt: 4 }}>
+            <VideoBlockEditor
+              selectedBlock={args.selectedBlock}
+              onChange={onChange}
+            />
+          </Box>
+        </Drawer>
+      </InstantSearchTestWrapper>
+    </MockedProvider>
+  ),
+  args: {
+    selectedBlock: {
+      ...videoInternal,
+      children: [posterInternal]
+    }
+  },
+  name: 'Internal - Long Language Name'
 }
 
 export const YouTube = {

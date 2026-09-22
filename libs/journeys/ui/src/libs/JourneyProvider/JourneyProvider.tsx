@@ -4,11 +4,11 @@ import { JourneyFields as Journey } from './__generated__/JourneyFields'
 
 export interface JourneyProviderContext {
   journey?: Journey
-  variant?: 'default' | 'admin' | 'embed' | 'customize'
+  renderMode?: 'default' | 'admin' | 'embed' | 'customize'
 }
 
 const JourneyContext = createContext<JourneyProviderContext>({
-  variant: 'default'
+  renderMode: 'default'
 })
 
 export function useJourney(): JourneyProviderContext {
@@ -27,7 +27,7 @@ export function JourneyProvider({
   children
 }: JourneyProviderProps): ReactElement {
   return (
-    <JourneyContext.Provider value={{ variant: 'default', ...value }}>
+    <JourneyContext.Provider value={{ renderMode: 'default', ...value }}>
       {children}
     </JourneyContext.Provider>
   )

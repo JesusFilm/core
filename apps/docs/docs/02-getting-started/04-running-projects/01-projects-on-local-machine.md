@@ -46,7 +46,7 @@ Here is a list of the webservers:
 | ------------------------- | ------------------------------------------------- | ---------------------------------------------- |
 | Gateway and Microservices | `nf start`                                        |                                                |
 | Journeys                  | `nx run journeys:serve:development --inspect-brk` | [http://localhost:4100](http://localhost:4100) |
-| Journeys Admin            | `nx run journeys:serve:development`               | [http://localhost:4200](http://localhost:4200) |
+| Journeys Admin            | `nx run journeys-admin:serve:development`         | [http://localhost:4200](http://localhost:4200) |
 | Watch                     | `nx run watch:serve:development --inspect-brk`    | [http://localhost:4300](http://localhost:4300) |
 | Docs                      | `nx run docs:serve`                               | [http://localhost:3000](http://localhost:3000) |
 

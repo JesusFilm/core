@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
@@ -37,7 +38,7 @@ describe('TextScreen', () => {
   it('renders editable tokens with initial values', () => {
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
+        <JourneyProvider value={{ journey: baseJourney, renderMode: 'admin' }}>
           <TextScreen handleNext={vi.fn()} />
         </JourneyProvider>
       </MockedProvider>
@@ -51,7 +52,7 @@ describe('TextScreen', () => {
   it('updates value on blur and on Tab/Enter', () => {
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
+        <JourneyProvider value={{ journey: baseJourney, renderMode: 'admin' }}>
           <TextScreen handleNext={vi.fn()} />
         </JourneyProvider>
       </MockedProvider>
@@ -72,7 +73,7 @@ describe('TextScreen', () => {
 
   it('submits only when values changed and calls handleNext', async () => {
     const handleNext = vi.fn().mockResolvedValue(undefined)
-    const journeyCustomizationFieldUpdate: MockedResponse<
+    const journeyCustomizationFieldUpdate: MockLink.MockedResponse<
       JourneyCustomizationFieldUpdate,
       JourneyCustomizationFieldUpdateVariables
     > = {
@@ -103,7 +104,7 @@ describe('TextScreen', () => {
             }
           ]
         }
-      })) as MockedResponse<
+      })) as MockLink.MockedResponse<
         JourneyCustomizationFieldUpdate,
         JourneyCustomizationFieldUpdateVariables
       >['result']
@@ -111,7 +112,7 @@ describe('TextScreen', () => {
 
     render(
       <MockedProvider mocks={[journeyCustomizationFieldUpdate]}>
-        <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
+        <JourneyProvider value={{ journey: baseJourney, renderMode: 'admin' }}>
           <TextScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>
@@ -140,7 +141,7 @@ describe('TextScreen', () => {
     const handleNext = vi.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
+        <JourneyProvider value={{ journey: baseJourney, renderMode: 'admin' }}>
           <TextScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>
@@ -159,7 +160,7 @@ describe('TextScreen', () => {
     const handleNext = vi.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
+        <JourneyProvider value={{ journey: baseJourney, renderMode: 'admin' }}>
           <TextScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>

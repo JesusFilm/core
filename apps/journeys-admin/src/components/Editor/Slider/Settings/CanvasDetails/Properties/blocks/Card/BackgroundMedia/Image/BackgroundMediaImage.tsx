@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Stack from '@mui/material/Stack'
 import pick from 'lodash/pick'
 import { ReactElement } from 'react'
@@ -192,7 +193,7 @@ export function BackgroundMediaImage({
             }
           },
           update(cache, { data }) {
-            blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
+            blockDeleteUpdate(cache, journey.id, block, data?.blockDelete)
           }
         })
       },
@@ -315,7 +316,7 @@ export function BackgroundMediaImage({
             }
           },
           update(cache, { data }) {
-            blockDeleteUpdate(coverBlock, data?.blockDelete, cache, journey.id)
+            blockDeleteUpdate(cache, journey.id, coverBlock, data?.blockDelete)
           }
         })
       },
@@ -369,7 +370,11 @@ export function BackgroundMediaImage({
     coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
 
   return (
-    <Stack gap={4}>
+    <Stack
+      sx={{
+        gap: 4
+      }}
+    >
       <ImageSource
         selectedBlock={imageCoverBlock}
         onChange={handleChange}

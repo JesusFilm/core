@@ -283,8 +283,8 @@ Return exactly one entry for every block ID listed above, and translate every fi
         model,
         abortSignal,
         maxRetries: 0,
+        instructions: TRANSLATION_SYSTEM_PROMPT,
         messages: [
-          { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
           {
             role: 'user',
             content: [{ type: 'text', text: prompt }]
@@ -1024,7 +1024,9 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
         logger.error({ error }, 'Error analyzing journey with Gemini')
         const errorMessage =
           error instanceof Error ? error.message : 'Unknown error occurred'
-        throw new Error(`Failed to analyze journey: ${errorMessage}`)
+        throw new Error(`Failed to analyze journey: ${errorMessage}`, {
+          cause: error
+        })
       }
 
       // Fetch and return the updated journey with all necessary relations

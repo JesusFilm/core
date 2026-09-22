@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 import { type MockedFunction } from 'vitest'
@@ -11,7 +11,7 @@ import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes
 import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
-import { CARD_VIDEO_CREATE } from './Templates/CardVideo/CardVideo'
+import { CARD_VIDEO_CREATE } from './Layouts/CardVideo/CardVideo'
 
 import { CardTemplates } from '.'
 

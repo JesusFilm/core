@@ -128,10 +128,10 @@ export function ActionCustomizationToggle(): ReactElement {
   return (
     <Stack
       direction="row"
-      alignItems="center"
-      width="100%"
-      gap={1}
       sx={{
+        alignItems: 'center',
+        width: '100%',
+        gap: 1,
         mt: 2
       }}
     >
@@ -139,7 +139,9 @@ export function ActionCustomizationToggle(): ReactElement {
         disabled={actionBlock == null}
         checked={customizable}
         onChange={handleChange}
-        inputProps={{ 'aria-label': t('Toggle customizable') }}
+        slotProps={{
+          input: { 'aria-label': t('Toggle customizable') }
+        }}
       />
       <Typography variant="body1">{t('Needs Customization')}</Typography>
     </Stack>

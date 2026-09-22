@@ -35,10 +35,10 @@ const testVideo: Video = {
 }
 
 const testTranslation: ProcessedTranslation = {
+  stringId: 1,
   identifier: 'VIDEO123',
   text: 'Test video title',
-  languageId: '529',
-  context: ''
+  languageId: '529'
 }
 
 describe('importVideoTitles', () => {

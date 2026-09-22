@@ -1,14 +1,16 @@
 import { prisma } from '@core/prisma/media/client'
 
-import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
-import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
 import {
   videoCacheReset,
   videoVariantCacheReset
 } from '../../lib/videoCacheReset'
+import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
 import { builder } from '../builder'
 import { logger } from '../logger'
-import { handleParentVariantCreation } from '../videoVariant/videoVariant'
+import {
+  createEmptyParentVariant,
+  handleParentVariantCreation
+} from '../videoVariant/videoVariant'
 
 import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
 
@@ -51,9 +53,16 @@ type VideoPublishChildrenResultType = {
   publishedVariantsCount: number
   dryRun: boolean
   videosFailedValidation: VideoPublishValidationFailure[]
+  missingParentLanguageIds: string[]
+  recoveredParentLanguageIds: string[]
 }
 
 type VideoPublishPlanMode = 'childrenVideosOnly' | 'childrenVideosAndVariants'
+
+type MissingParentLanguage = {
+  languageId: string
+  childVideoId: string
+}
 
 function getMissingRequiredFields(
   video: PublishValidationVideo,
@@ -245,11 +254,112 @@ async function ensureParentEmptyVariantsForPublishedChildren(
   )
 }
 
+// Compares a parent Video against its direct published children and returns
+// the language IDs present on a published child Variant but absent from any
+// existing Variant on the parent (empty or otherwise). Only direct published
+// children participate — unpublished children and deeper descendants never
+// contribute a language.
+async function computeMissingParentLanguages(
+  parentId: string
+): Promise<MissingParentLanguage[]> {
+  const parent = await prisma.video.findUnique({
+    where: { id: parentId },
+    select: {
+      id: true,
+      variants: { select: { languageId: true } },
+      children: {
+        where: { published: true },
+        select: {
+          id: true,
+          variants: {
+            where: { published: true },
+            select: { languageId: true }
+          }
+        }
+      }
+    }
+  })
+
+  if (parent == null) {
+    throw new Error(`Video with id ${parentId} not found`)
+  }
+
+  const existingLanguageIds = new Set(
+    parent.variants.map(({ languageId }: { languageId: string }) => languageId)
+  )
+  const missingByLanguage = new Map<string, string>()
+
+  for (const child of parent.children) {
+    for (const variant of child.variants) {
+      if (existingLanguageIds.has(variant.languageId)) continue
+      if (!missingByLanguage.has(variant.languageId)) {
+        missingByLanguage.set(variant.languageId, child.id)
+      }
+    }
+  }
+
+  return Array.from(missingByLanguage, ([languageId, childVideoId]) => ({
+    languageId,
+    childVideoId
+  }))
+}
+
+async function executeParentVariantsOnly(
+  id: string,
+  dryRun: boolean
+): Promise<VideoPublishChildrenResultType> {
+  const missing = await computeMissingParentLanguages(id)
+  const missingParentLanguageIds = missing.map((entry) => entry.languageId)
+
+  const result: VideoPublishChildrenResultType = {
+    parentId: id,
+    publishedVideoIds: [],
+    publishedVideoCount: 0,
+    publishedVariantIds: [],
+    publishedVariantsCount: 0,
+    dryRun,
+    videosFailedValidation: [],
+    missingParentLanguageIds,
+    recoveredParentLanguageIds: []
+  }
+
+  if (dryRun || missing.length === 0) {
+    return result
+  }
+
+  // Create the missing Variant directly on the requested parent `id`,
+  // reusing createEmptyParentVariant's slug/language semantics instead of
+  // duplicating them. handleParentVariantCreation is unsuitable here: it
+  // discovers and writes to *every* parent of a child Video, so a child
+  // shared by multiple parents could create a Variant on a parent other
+  // than the one requested. createEmptyParentVariant is itself a no-op
+  // once a Variant exists for that language, so this stays idempotent.
+  const outcomes = await Promise.allSettled(
+    missing.map(({ languageId }) => createEmptyParentVariant(id, languageId))
+  )
+
+  const recoveredParentLanguageIds: string[] = []
+  outcomes.forEach((outcome, index) => {
+    const { languageId, childVideoId } = missing[index]
+    if (outcome.status === 'fulfilled') {
+      recoveredParentLanguageIds.push(languageId)
+      return
+    }
+    logger.error(
+      { error: outcome.reason, parentId: id, childVideoId, languageId },
+      'Parent variant recovery failed'
+    )
+  })
+
+  return { ...result, recoveredParentLanguageIds }
+}
+
 const VideoPublishModeEnum = builder.enumType('VideoPublishMode', {
   values: [
     'childrenVideosOnly',
     'childrenVideosAndVariants',
-    'variantsOnly'
+    'variantsOnly',
+    'parentVariantsOnly'
   ] as const
 })
 
@@ -290,6 +400,16 @@ VideoPublishChildrenResult.implement({
       type: [VideoPublishChildrenUnpublishedVideo],
       nullable: false,
       resolve: (obj) => obj.videosFailedValidation
+    }),
+    missingParentLanguageIds: t.idList({
+      description:
+        'Language IDs present on a direct published child Variant but missing an empty parent Variant. Populated by parentVariantsOnly mode.',
+      resolve: (obj) => obj.missingParentLanguageIds
+    }),
+    recoveredParentLanguageIds: t.idList({
+      description:
+        'Subset of missingParentLanguageIds whose parent Variant was successfully created. Populated by parentVariantsOnly mode when dryRun is false; a language missing from this list relative to missingParentLanguageIds failed and was logged.',
+      resolve: (obj) => obj.recoveredParentLanguageIds
     })
   })
 })
@@ -298,12 +418,17 @@ export type VideoPublishMode =
   | 'childrenVideosOnly'
   | 'childrenVideosAndVariants'
   | 'variantsOnly'
+  | 'parentVariantsOnly'
 
 export async function executeVideoPublishChildren(
   id: string,
   mode: VideoPublishMode,
   dryRun: boolean
 ): Promise<VideoPublishChildrenResultType> {
+  if (mode === 'parentVariantsOnly') {
+    return executeParentVariantsOnly(id, dryRun)
+  }
+
   const parent = await getVideoPublishParent(id)
   const plan =
     mode !== 'variantsOnly'
@@ -320,15 +445,21 @@ export async function executeVideoPublishChildren(
   }
 
   let variantIdsToPublish: string[] = []
+  const variantIdsToPublishByVideoId = new Map<string, string[]>()
   if (variantVideoIds.length > 0) {
     const unpublishedVariants = await prisma.videoVariant.findMany({
       where: {
         videoId: { in: variantVideoIds },
         published: false
       },
-      select: { id: true }
+      select: { id: true, videoId: true }
     })
     variantIdsToPublish = unpublishedVariants.map((variant) => variant.id)
+    for (const variant of unpublishedVariants) {
+      const ids = variantIdsToPublishByVideoId.get(variant.videoId) ?? []
+      ids.push(variant.id)
+      variantIdsToPublishByVideoId.set(variant.videoId, ids)
+    }
   }
 
   if (
@@ -342,7 +473,9 @@ export async function executeVideoPublishChildren(
       publishedVariantIds: variantIdsToPublish,
       publishedVariantsCount: variantIdsToPublish.length,
       dryRun,
-      videosFailedValidation
+      videosFailedValidation,
+      missingParentLanguageIds: [],
+      recoveredParentLanguageIds: []
     }
   }
 
@@ -397,25 +530,25 @@ export async function executeVideoPublishChildren(
   }
 
   await Promise.allSettled(
-    variantIdsToPublish.map(async (variantId) => {
-      try {
-        await updateVideoVariantInAlgolia(variantId)
-      } catch (error) {
-        logger.error({ error, variantId }, 'Variant Algolia update failed')
-      }
-
-      await videoVariantCacheReset(variantId).catch((error) => {
+    variantIdsToPublish.map((variantId) =>
+      videoVariantCacheReset(variantId).catch((error) => {
         logger.error({ error, variantId }, 'Variant cache reset failed')
       })
-    })
+    )
   )
   await Promise.allSettled(
     affectedVideoIds.map(async (videoId) => {
-      try {
-        await updateVideoInAlgolia(videoId)
-      } catch (error) {
-        logger.error({ error, videoId }, 'Video Algolia update failed')
-      }
+      await enqueueVideoAlgoliaSync(
+        videoId,
+        {
+          syncVideoRecord: true,
+          syncAllVariants: false,
+          syncPublishedFlag: videoIdsToPublish.includes(videoId),
+          dirtyVariantIds: variantIdsToPublishByVideoId.get(videoId) ?? [],
+          deletedVariantIds: []
+        },
+        logger
+      )
 
       await videoCacheReset(videoId).catch((error) => {
         logger.error({ error, videoId }, 'Video cache reset failed')
@@ -430,7 +563,9 @@ export async function executeVideoPublishChildren(
     publishedVariantIds: variantIdsToPublish,
     publishedVariantsCount: variantIdsToPublish.length,
     dryRun: false,
-    videosFailedValidation
+    videosFailedValidation,
+    missingParentLanguageIds: [],
+    recoveredParentLanguageIds: []
   }
 }
 

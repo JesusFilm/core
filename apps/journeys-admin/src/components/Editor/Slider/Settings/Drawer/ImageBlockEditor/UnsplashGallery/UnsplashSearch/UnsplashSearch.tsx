@@ -38,18 +38,21 @@ export function UnsplashSearch({
             value={values.src}
             onChange={handleChange}
             fullWidth
-            inputProps={{
-              'aria-label': 'UnsplashSearch',
-              enterKeyHint: 'search'
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search1Icon />
-                </InputAdornment>
-              )
-            }}
             data-testid="UnsplashSearch"
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search1Icon />
+                  </InputAdornment>
+                )
+              },
+
+              htmlInput: {
+                'aria-label': 'UnsplashSearch',
+                enterKeyHint: 'search'
+              }
+            }}
           />
           <SubmitListener />
         </Form>

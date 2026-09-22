@@ -1,4 +1,5 @@
-import { useQuery } from '@apollo/client'
+import { NormalizedCacheObject } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
@@ -52,7 +53,9 @@ function JourneyQuickSettingsPage({ status }): ReactElement {
       {status === 'noAccess' ? (
         <AccessDenied />
       ) : (
-        <JourneyProvider value={{ journey: data?.journey, variant: 'admin' }}>
+        <JourneyProvider
+          value={{ journey: data?.journey, renderMode: 'admin' }}
+        >
           <EditorProvider>
             <JourneyQuickSettings
               displayName={user?.displayName ?? undefined}
@@ -91,7 +94,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       }
     })
 
-    if (data.journey?.team?.id != null) {
+    if (data?.journey?.team?.id != null) {
       // from: src/components/Editor/Properties/JourneyLink/JourneyLink.tsx
       await apolloClient.query<GetCustomDomains>({
         query: GET_CUSTOM_DOMAINS,
@@ -101,17 +104,17 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       })
     }
 
-    if (data.journey?.template === true) {
+    if (data?.journey?.template === true) {
       return {
         redirect: {
           permanent: false,
-          destination: `/publisher/${data.journey?.id}`
+          destination: `/publisher/${data?.journey?.id}`
         }
       }
     }
     await apolloClient.mutate<UserJourneyOpen>({
       mutation: USER_JOURNEY_OPEN,
-      variables: { id: data.journey?.id }
+      variables: { id: data?.journey?.id }
     })
   } catch (error) {
     if ((error as Error).message === 'journey not found') {
@@ -129,7 +132,8 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
           userSerialized: JSON.stringify(user),
           ...translations,
           flags,
-          initialApolloState: apolloClient.cache.extract()
+          initialApolloState:
+            apolloClient.cache.extract() as NormalizedCacheObject
         }
       }
     }
@@ -142,7 +146,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       userSerialized: JSON.stringify(user),
       ...translations,
       flags,
-      initialApolloState: apolloClient.cache.extract()
+      initialApolloState: apolloClient.cache.extract() as NormalizedCacheObject
     }
   }
 }

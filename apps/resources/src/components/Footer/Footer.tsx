@@ -66,12 +66,12 @@ export function Footer(): ReactElement {
         {/* Upper section */}
         <Stack
           direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          gap={5}
-          flexWrap="wrap"
-          rowGap={{ xs: 8, sm: 5 }}
           sx={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 5,
+            flexWrap: 'wrap',
+            rowGap: { xs: 8, sm: 5 },
             '& > *:nth-child(1)': { order: 1 },
             '& > *:nth-child(2)': { order: 2 },
             '& > *:nth-child(3)': { order: 3 },
@@ -91,8 +91,8 @@ export function Footer(): ReactElement {
           {/* Social Media Icons */}
           <Stack
             direction="row"
-            gap={{ xs: 10, sm: 5 }}
             sx={{
+              gap: { xs: 10, sm: 5 },
               ml: { sm: 'auto' },
               mr: { sm: 5 },
               flexGrow: { xs: 1, sm: 0 },
@@ -125,10 +125,12 @@ export function Footer(): ReactElement {
           {/* Navigation Links */}
           <Stack
             direction="row"
-            flexWrap="wrap"
-            justifyContent="center"
-            columnGap={{ xs: 10, sm: 5 }}
-            rowGap={5}
+            sx={{
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              columnGap: { xs: 10, sm: 5 },
+              rowGap: 5
+            }}
           >
             {navigationLinks.map((link) => (
               <FooterLink
@@ -165,35 +167,63 @@ export function Footer(): ReactElement {
         {/* Lower section */}
         <Stack
           direction="row"
-          justifyContent="space-between"
-          flexWrap="wrap"
-          gap={5}
-          rowGap={8}
+          sx={{
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: 5,
+            rowGap: 8
+          }}
         >
           <Stack direction="column">
             <Stack
               direction="row"
-              justifyContent={{ xs: 'center', sm: 'flex-start' }}
-              flexGrow={1}
-              alignItems="center"
               divider={<Divider orientation="vertical" flexItem />}
-              gap={5}
+              sx={{
+                justifyContent: { xs: 'center', sm: 'flex-start' },
+                flexGrow: 1,
+                alignItems: 'center',
+                gap: 5
+              }}
             >
               {/* Address and Contact */}
               <Stack>
-                <Typography variant="h6" fontSize={12} lineHeight={1.2}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontSize: 12,
+                    lineHeight: 1.2
+                  }}
+                >
                   {t('100 Lake Hart Drive', { lng: 'en' })}
                 </Typography>
-                <Typography variant="h6" fontSize={12} lineHeight={1.2}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontSize: 12,
+                    lineHeight: 1.2
+                  }}
+                >
                   {t('Orlando, FL, 32832', { lng: 'en' })}
                 </Typography>
               </Stack>
 
               <Stack>
-                <Typography variant="h6" fontSize={12} lineHeight={1.2}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontSize: 12,
+                    lineHeight: 1.2
+                  }}
+                >
                   {t('Office: (407) 826-2300', { lng: 'en' })}
                 </Typography>
-                <Typography variant="h6" fontSize={12} lineHeight={1.2}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontSize: 12,
+                    lineHeight: 1.2
+                  }}
+                >
                   {t('Fax: (407) 826-2375', { lng: 'en' })}
                 </Typography>
               </Stack>
@@ -213,16 +243,23 @@ export function Footer(): ReactElement {
             </Stack>
             <Typography
               variant="h6"
-              fontSize={12}
-              lineHeight={1.2}
               color="textSecondary"
-              sx={{ opacity: 0.6 }}
+              sx={{
+                fontSize: 12,
+                lineHeight: 1.2,
+                opacity: 0.6
+              }}
             >
               {projectInfo}
             </Typography>
           </Stack>
           {/* Newsletter Section */}
-          <Stack flexGrow={1} alignItems={{ xs: 'center', sm: 'flex-end' }}>
+          <Stack
+            sx={{
+              flexGrow: 1,
+              alignItems: { xs: 'center', sm: 'flex-end' }
+            }}
+          >
             <Button
               component="a"
               href="/email/"

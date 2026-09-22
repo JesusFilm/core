@@ -1,13 +1,14 @@
 import lint from '@commitlint/lint'
 import load from '@commitlint/load'
-import {
-  LintOptions,
-  LintOutcome,
-  ParserOptions,
-  ParserPreset
-} from '@commitlint/types'
+import { LintOptions, LintOutcome, ParserPreset } from '@commitlint/types'
 import { danger, fail, markdown, warn } from 'danger'
 import config from './commitlint.config'
+
+// `@commitlint/types` v21 no longer re-exports `ParserOptions` (it now sources
+// the type internally from `conventional-commits-parser`). Derive it from the
+// public `LintOptions.parserOpts` field instead so we don't reach into a
+// transitive package's typings.
+type ParserOptions = NonNullable<LintOptions['parserOpts']>
 
 export default async () => {
   // merge queues not supported by danger-js

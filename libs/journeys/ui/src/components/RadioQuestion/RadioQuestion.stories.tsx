@@ -1,12 +1,13 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentProps } from 'react'
 
 import { TypographyVariant } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
-import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+import { simpleComponentConfig } from '../../test/simpleComponentConfig'
+import { StoryCard } from '../../test/StoryCard'
 import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
-import { StoryCard } from '../StoryCard'
 import { Typography } from '../Typography'
 
 import { RADIO_QUESTION_SUBMISSION_EVENT_CREATE, RadioQuestion } from '.'
@@ -85,7 +86,7 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
   }
 ]
 
-const submitEventMock: MockedResponse = {
+const submitEventMock: MockLink.MockedResponse = {
   request: {
     query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
     variables: {

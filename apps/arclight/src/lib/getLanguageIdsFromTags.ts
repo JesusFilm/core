@@ -22,7 +22,10 @@ const LANGUAGE_MAPPINGS = new Map<string, string>([
   ['id-ID', 'id'],
   ['ja-JP', 'ja'],
   ['vi-VN', 'vi'],
-  ['th-TH', 'th']
+  ['th-TH', 'th'],
+  // Tagalog is stored against the `fil` row, but `tl` is the tag we advertise
+  // in metadata-language-tags, so requests for `tl` must resolve to `fil`.
+  ['tl', 'fil']
 ])
 
 function matchLocales(metadataLanguageTag: string): string | undefined {

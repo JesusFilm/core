@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { ONE_DAY, getByUserIdAndJourneyId } from '../utils'
+import { ONE_DAY, getByUserIdAndJourneyId } from '../eventService'
 
 import { JourneyViewEventCreateInput } from './inputs'
 import { JourneyViewEventRef } from './journeyViewEvent'

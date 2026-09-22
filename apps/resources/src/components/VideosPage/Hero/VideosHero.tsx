@@ -40,8 +40,10 @@ export function VideosHero(): ReactElement {
         <Container maxWidth="xxl" sx={{ pb: { xs: 10, md: 15 }, zIndex: 1 }}>
           <Typography
             variant="h2"
-            color="text.primary"
-            sx={{ textShadow: '0px 3px 4px rgba(0, 0, 0, 0.25)' }}
+            sx={{
+              color: 'text.primary',
+              textShadow: '0px 3px 4px rgba(0, 0, 0, 0.25)'
+            }}
           >
             {t('Jesus Film Collection')}
           </Typography>

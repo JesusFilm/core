@@ -35,8 +35,11 @@ export function JourneyVisitorsList({
     <Container disableGutters data-testid="JourneysAdminJourneyVisitorsList">
       <Stack
         spacing={6}
-        alignItems="center"
-        sx={{ height: '100%', mx: { xs: -6, sm: 0 } }}
+        sx={{
+          alignItems: 'center',
+          height: '100%',
+          mx: { xs: -6, sm: 0 }
+        }}
       >
         {loading ? (
           <Box sx={{ mx: { xs: -6, sm: 0 }, width: '100%' }}>

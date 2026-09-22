@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
+import MenuList from '@mui/material/MenuList'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useTranslation } from 'next-i18next/pages'
@@ -63,15 +63,24 @@ export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
     .map((item) => item.value)
 
   return (
-    <Box width="100%">
-      <Box color="text.primary">
-        <Stack spacing={1}>
-          {unrefinedLanguages.length === 0 && (
-            <Typography>
-              {t('There are no suggestions for this search')}
-            </Typography>
-          )}
-          {unrefinedLanguages.length > 0 && (
+    <Box
+      sx={{
+        width: '100%'
+      }}
+    >
+      <Box
+        sx={{
+          color: 'text.primary'
+        }}
+      >
+        {unrefinedLanguages.length === 0 ? (
+          <Typography>
+            {t('There are no suggestions for this search')}
+          </Typography>
+        ) : (
+          <MenuList
+            sx={{ display: 'flex', flexDirection: 'column', gap: 1, py: 0 }}
+          >
             <Suggestion
               query={query !== '' ? query : 'Jesus'}
               filters={[unrefinedLanguages[0]]}
@@ -79,19 +88,19 @@ export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
                 selectSuggestion(`Jesus in ${unrefinedLanguages[0]}`)
               }
             />
-          )}
-          {unrefinedLanguages.length > 1 && (
-            <Suggestion
-              query={query !== '' ? query : 'Jesus'}
-              filters={[unrefinedLanguages[0], unrefinedLanguages[1]]}
-              handleClick={() =>
-                selectSuggestion(
-                  `Jesus in ${unrefinedLanguages[0]} and ${unrefinedLanguages[1]}`
-                )
-              }
-            />
-          )}
-        </Stack>
+            {unrefinedLanguages.length > 1 && (
+              <Suggestion
+                query={query !== '' ? query : 'Jesus'}
+                filters={[unrefinedLanguages[0], unrefinedLanguages[1]]}
+                handleClick={() =>
+                  selectSuggestion(
+                    `Jesus in ${unrefinedLanguages[0]} and ${unrefinedLanguages[1]}`
+                  )
+                }
+              />
+            )}
+          </MenuList>
+        )}
       </Box>
     </Box>
   )

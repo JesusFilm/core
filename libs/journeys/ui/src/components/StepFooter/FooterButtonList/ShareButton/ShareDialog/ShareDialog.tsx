@@ -64,12 +64,19 @@ export function ShareDialog({
       container={element}
       testId="ShareDialog"
     >
-      <Stack direction="row" justifyContent="space-around">
+      <Stack
+        direction="row"
+        sx={{
+          justifyContent: 'space-around'
+        }}
+      >
         <Stack
           direction="column"
-          alignItems="center"
           spacing={2}
-          sx={{ minWidth: '55px' }}
+          sx={{
+            alignItems: 'center',
+            minWidth: '55px'
+          }}
         >
           <StyledIconButton onClick={handleCopyLink} size="large">
             <LinkAngled sx={{ color: 'white' }} />
@@ -79,9 +86,11 @@ export function ShareDialog({
 
         <Stack
           direction="column"
-          alignItems="center"
           spacing={2}
-          sx={{ minWidth: '55px' }}
+          sx={{
+            alignItems: 'center',
+            minWidth: '55px'
+          }}
         >
           <StyledIconButton
             href={`https://www.facebook.com/sharer/sharer.php?u=${url ?? ''}`}
@@ -96,9 +105,11 @@ export function ShareDialog({
 
         <Stack
           direction="column"
-          alignItems="center"
           spacing={2}
-          sx={{ minWidth: '55px' }}
+          sx={{
+            alignItems: 'center',
+            minWidth: '55px'
+          }}
         >
           <StyledIconButton
             href={`https://twitter.com/intent/tweet?url=${url ?? ''}`}

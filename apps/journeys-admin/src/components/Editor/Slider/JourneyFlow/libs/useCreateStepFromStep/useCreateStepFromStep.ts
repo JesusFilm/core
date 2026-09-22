@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -247,7 +248,7 @@ export function useCreateStepFromStep(): (
             }
           },
           update(cache, { data }) {
-            blockDeleteUpdate(step, data?.blockDelete, cache, journey.id)
+            blockDeleteUpdate(cache, journey.id, step, data?.blockDelete)
           }
         })
       },

@@ -1,6 +1,5 @@
 'use client'
-
-import { useLazyQuery, useMutation } from '@apollo/client'
+import { useLazyQuery, useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -56,19 +55,15 @@ function Alert({
         borderRadius: 1
       }}
     >
-      <Typography color={textColor}>{message}</Typography>
+      <Typography sx={{ color: textColor }}>{message}</Typography>
     </Box>
   )
 }
 
 export function AvailableLanguagesTroubleshooting(): ReactElement {
   const { videoId } = useParams<{ videoId: string }>()
-  const [getLanguages, { data, loading, error }] = useLazyQuery(
-    GET_VIDEO_LANGUAGES,
-    {
-      variables: { videoId }
-    }
-  )
+  const [getLanguages, { data, loading, error }] =
+    useLazyQuery(GET_VIDEO_LANGUAGES)
   const [
     fixLanguages,
     { loading: fixLoading, error: fixError, data: fixData }
@@ -83,18 +78,15 @@ export function AvailableLanguagesTroubleshooting(): ReactElement {
   })
 
   const handleFetchLanguages = (): void => {
-    void getLanguages()
+    void getLanguages({ variables: { videoId } })
   }
 
   const handleFixLanguages = (): void => {
     void fixLanguages()
   }
 
-  const videoTitle =
-    (data?.adminVideo.title as Array<{ value: string }> | undefined)?.[0]
-      ?.value ?? 'N/A'
-  const availableLanguages =
-    (data?.adminVideo.availableLanguages as string[] | undefined) ?? []
+  const videoTitle = data?.adminVideo.title?.[0]?.value ?? 'N/A'
+  const availableLanguages = data?.adminVideo.availableLanguages ?? []
 
   return (
     <Stack spacing={2}>
@@ -143,13 +135,23 @@ export function AvailableLanguagesTroubleshooting(): ReactElement {
           <Stack spacing={2}>
             <Typography variant="h6">Video Information</Typography>
             <Box>
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary'
+                }}
+              >
                 Title:
               </Typography>
               <Typography variant="body1">{videoTitle}</Typography>
             </Box>
             <Box>
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary'
+                }}
+              >
                 Available Languages:
               </Typography>
               {availableLanguages.length > 0 ? (
@@ -171,7 +173,12 @@ export function AvailableLanguagesTroubleshooting(): ReactElement {
                   ))}
                 </Stack>
               ) : (
-                <Typography variant="body1" color="text.secondary">
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: 'text.secondary'
+                  }}
+                >
                   No languages available
                 </Typography>
               )}

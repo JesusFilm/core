@@ -161,7 +161,13 @@ export function TemplateViewHeader({
           </Box>
         </Stack>
       </Stack>
-      <Box sx={{ display: { xs: 'flex', sm: 'none' }, pt: 6 }} gap={2}>
+      <Box
+        sx={{
+          gap: 2,
+          display: { xs: 'flex', sm: 'none' },
+          pt: 6
+        }}
+      >
         <TemplateActionButton signedIn={authUser?.email != null} />
         <PreviewTemplateButton slug={journey?.slug} />
         {journey != null && isPublisher === true && (

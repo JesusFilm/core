@@ -1,6 +1,5 @@
 'use client'
-
-import { useMutation, useSuspenseQuery } from '@apollo/client'
+import { useMutation, useSuspenseQuery } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
@@ -287,7 +286,11 @@ export function CitationForm({
     >
       {({ values, errors, handleChange, isValid, isSubmitting, dirty }) => (
         <Form>
-          <Stack gap={3}>
+          <Stack
+            sx={{
+              gap: 3
+            }}
+          >
             <FormControl fullWidth>
               <InputLabel id="bibleBookId-label">Bible Book</InputLabel>
               <Select
@@ -357,7 +360,13 @@ export function CitationForm({
               />
             </Stack>
 
-            <Stack direction="row" gap={2} justifyContent="flex-end">
+            <Stack
+              direction="row"
+              sx={{
+                gap: 2,
+                justifyContent: 'flex-end'
+              }}
+            >
               <Button
                 type="submit"
                 variant="outlined"

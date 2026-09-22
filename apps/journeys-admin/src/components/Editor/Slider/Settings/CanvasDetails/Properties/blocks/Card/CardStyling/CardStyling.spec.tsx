@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -103,7 +103,7 @@ describe('CardStyling', () => {
   it('shows default', () => {
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: initialBlock }}>
             <CardStyling />
           </EditorProvider>
@@ -132,7 +132,7 @@ describe('CardStyling', () => {
     }
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: card }}>
             <CardStyling />
           </EditorProvider>
@@ -174,7 +174,7 @@ describe('CardStyling', () => {
     }
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: step }}>
             <CardStyling />
           </EditorProvider>
@@ -206,7 +206,7 @@ describe('CardStyling', () => {
     }
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: card }}>
             <CardStyling />
           </EditorProvider>
@@ -260,7 +260,7 @@ describe('CardStyling', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: initialBlock }}>
             <CardStyling />
           </EditorProvider>
@@ -322,7 +322,7 @@ describe('CardStyling', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <EditorProvider
             initialState={{
               selectedBlock: { ...initialBlock, themeMode: ThemeMode.light }

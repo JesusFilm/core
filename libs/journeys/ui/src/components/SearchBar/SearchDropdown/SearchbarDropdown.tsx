@@ -19,7 +19,7 @@ const StyledTab = styled(Tab)(({ theme }) => ({
   minHeight: '50px',
   fontSize: '14px !important',
 
-  '& .MuiTab-iconWrapper': {
+  '& .MuiTab-icon': {
     [theme.breakpoints.up('md')]: {
       marginRight: theme.spacing(5)
     }
@@ -74,10 +74,15 @@ export function SearchbarDropdown({
       ]}
     >
       <Box
-        borderRadius={3}
-        boxShadow="0px 4px 4px 0px #00000040"
-        sx={{ px: 8, pb: 8, bgcolor: 'background.paper', mt: 3 }}
-        color="text.primary"
+        sx={{
+          borderRadius: 3,
+          boxShadow: '0px 4px 4px 0px #00000040',
+          color: 'text.primary',
+          px: 8,
+          pb: 8,
+          bgcolor: 'background.paper',
+          mt: 3
+        }}
       >
         <CountryLanguageSelector
           countryCode={countryCode}
@@ -110,7 +115,12 @@ export function SearchbarDropdown({
         <TabPanel name="suggestions-tab" value={tabValue} index={0}>
           <Suggestions refinements={refinements} />
         </TabPanel>
-        <TabPanel name="languages-tab" value={tabValue} index={1} pt={3}>
+        <TabPanel
+          name="languages-tab"
+          value={tabValue}
+          index={1}
+          sx={{ pt: 3 }}
+        >
           <RefinementGroups refinements={refinements} />
         </TabPanel>
       </Box>
@@ -151,10 +161,12 @@ function LocalTabsHeader({
   return (
     <div className="tab-label">
       <Box
-        display="flex"
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="center"
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
       >
         <Box sx={{ lineHeight: 1 }}>{label}</Box>
         {displayedCount != null && <StyledBox>{displayedCount}</StyledBox>}

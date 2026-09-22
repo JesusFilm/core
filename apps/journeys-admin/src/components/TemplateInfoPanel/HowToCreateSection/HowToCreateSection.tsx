@@ -37,7 +37,12 @@ export function HowToCreateSection(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <Stack gap={2} data-testid="HowToCreateSection">
+    <Stack
+      data-testid="HowToCreateSection"
+      sx={{
+        gap: 2
+      }}
+    >
       <Box component="ol" sx={numberedListSx}>
         <li>{t('Click on the three dots on your project card.')}</li>
         <li>{t('Select the Make Template option.')}</li>
@@ -46,18 +51,34 @@ export function HowToCreateSection(): ReactElement {
         component="img"
         src="/assets/template-info/make-template-flow.gif"
         alt={t('Making a template: click three dots → select Make Template')}
-        width={333}
-        height={160}
         loading="lazy"
-        sx={mediaSlotSx}
+        sx={[
+          {
+            width: 333,
+            height: 160
+          },
+          ...(Array.isArray(mediaSlotSx) ? mediaSlotSx : [mediaSlotSx])
+        ]}
       />
-      <Typography variant="body2" color="text.primary" sx={calloutBoxSx}>
+      <Typography
+        variant="body2"
+        sx={[
+          {
+            color: 'text.primary'
+          },
+          ...(Array.isArray(calloutBoxSx) ? calloutBoxSx : [calloutBoxSx])
+        ]}
+      >
         {t(
           'If you want to have a Quick-Start template, you need to prepare it.'
         )}
       </Typography>
 
-      <Stack gap={1}>
+      <Stack
+        sx={{
+          gap: 1
+        }}
+      >
         <Typography sx={subHeadingSx}>{t('Links, Images, Video')}</Typography>
         <Box component="ol" sx={numberedListSx}>
           <li>{t('Select a block.')}</li>
@@ -81,7 +102,11 @@ export function HowToCreateSection(): ReactElement {
         </Typography>
       </Stack>
 
-      <Stack gap={1}>
+      <Stack
+        sx={{
+          gap: 1
+        }}
+      >
         <Typography sx={subHeadingSx}>{t('Text')}</Typography>
         <Box component="ul" sx={bulletListSx}>
           <li>
@@ -125,10 +150,14 @@ export function HowToCreateSection(): ReactElement {
           alt={t(
             'Text variable customization: highlight text → replace with {{var}} → open Template Settings → paste original after colon'
           )}
-          width={333}
-          height={160}
           loading="lazy"
-          sx={mediaSlotSx}
+          sx={[
+            {
+              width: 333,
+              height: 160
+            },
+            ...(Array.isArray(mediaSlotSx) ? mediaSlotSx : [mediaSlotSx])
+          ]}
         />
       </Stack>
     </Stack>

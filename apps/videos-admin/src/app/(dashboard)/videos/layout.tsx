@@ -16,6 +16,7 @@ export default function VideosLayout({
   const shouldRenderTabs =
     pathname === '/videos' ||
     pathname === '/videos/algolia' ||
+    pathname === '/videos/algolia-debugging' ||
     pathname === '/videos/library'
 
   return (

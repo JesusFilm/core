@@ -190,16 +190,17 @@ export function Canvas(): ReactElement {
       }}
       data-testid="EditorCanvas"
       direction="row"
-      alignItems="flex-end"
       sx={{
         height: '100%',
         alignItems: 'center',
         alignSelf: 'center',
         justifyContent: 'center',
+
         flexGrow: {
           xs: 1,
           md: isLayered || activeSlide === ActiveSlide.Content ? 1 : 0
         },
+
         transition: (theme) =>
           theme.transitions.create('flex-grow', { duration: 300 })
       }}
@@ -208,14 +209,15 @@ export function Canvas(): ReactElement {
         <Stack
           direction="column"
           className="CanvasStack"
-          alignItems={{ xs: 'center', md: 'flex-end' }}
-          gap={{ xs: 0, sm: 1.5 }}
           sx={{
+            alignItems: { xs: 'center', md: 'flex-end' },
+            gap: { xs: 0, sm: 1.5 },
             flexGrow: { xs: 1, md: 0 },
             height: { xs: '100%', md: 'auto' },
             pb: { xs: 5, md: 0 },
             px: { xs: 3, md: 5 },
             justifyContent: 'center',
+
             // in the layered view the drawer paper is pointer-events: none so
             // empty areas around the card close the drawer; the card column
             // itself stays interactive
@@ -314,17 +316,18 @@ export function Canvas(): ReactElement {
                     >
                       <Stack
                         ref={nodeRef}
-                        justifyContent="center"
+                        data-testid={`step-${selectedStep.id}`}
                         sx={{
+                          justifyContent: 'center',
                           position: 'absolute',
                           top: 0,
                           right: 0,
                           bottom: 0,
                           left: 0,
+
                           transition: (theme) =>
                             theme.transitions.create('opacity')
                         }}
-                        data-testid={`step-${selectedStep.id}`}
                       >
                         <ThemeProvider
                           themeName={ThemeName.journeyUi}
@@ -364,7 +367,7 @@ export function Canvas(): ReactElement {
                                 ButtonWrapper: InlineEditWrapper,
                                 RadioQuestionWrapper: InlineEditWrapper,
                                 RadioOptionWrapper: InlineEditWrapper,
-                                MultiselectQuestionWrapper: InlineEditWrapper,
+                                MultiselectWrapper: InlineEditWrapper,
                                 MultiselectOptionWrapper: InlineEditWrapper,
                                 TextResponseWrapper: InlineEditWrapper,
                                 SignUpWrapper: InlineEditWrapper,

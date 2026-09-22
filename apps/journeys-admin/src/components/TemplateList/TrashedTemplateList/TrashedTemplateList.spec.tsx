@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type MockedFunction } from 'vitest'
@@ -229,7 +229,7 @@ describe('TrashedTemplateList', () => {
     )
     await waitFor(() =>
       expect(
-        getByText('Your trashed templates will appear here.')
+        getByText('Your trashed Templates will appear here.')
       ).toBeInTheDocument()
     )
   })
@@ -293,6 +293,9 @@ describe('TrashedTemplateList', () => {
       )
       fireEvent.click(getByText('Restore'))
       await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Templates Restored')).toBeInTheDocument()
+      )
     })
 
     it('should show error', async () => {
@@ -389,6 +392,9 @@ describe('TrashedTemplateList', () => {
       )
       fireEvent.click(getByText('Delete Forever'))
       await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Templates Deleted')).toBeInTheDocument()
+      )
     })
 
     it('should show error', async () => {

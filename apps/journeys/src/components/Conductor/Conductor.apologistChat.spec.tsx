@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type Mock } from 'vitest'
@@ -148,7 +148,7 @@ describe('Conductor apologistChat flag gating', () => {
         <MockedProvider mocks={[]}>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: baseJourney, variant: 'customize' }}
+              value={{ journey: baseJourney, renderMode: 'customize' }}
             >
               <Conductor blocks={blocksWithAssistantCard} />
             </JourneyProvider>
@@ -164,7 +164,7 @@ describe('Conductor apologistChat flag gating', () => {
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
           <JourneyProvider
-            value={{ journey: baseJourney, variant: 'customize' }}
+            value={{ journey: baseJourney, renderMode: 'customize' }}
           >
             <Conductor blocks={blocksWithAssistantCard} />
           </JourneyProvider>
@@ -180,7 +180,7 @@ describe('Conductor apologistChat flag gating', () => {
         <MockedProvider mocks={[]}>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: baseJourney, variant: 'customize' }}
+              value={{ journey: baseJourney, renderMode: 'customize' }}
             >
               <Conductor blocks={buildBlocks(false)} />
             </JourneyProvider>
@@ -197,7 +197,7 @@ describe('Conductor apologistChat flag gating', () => {
         <MockedProvider mocks={[]}>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: baseJourney, variant: 'customize' }}
+              value={{ journey: baseJourney, renderMode: 'customize' }}
             >
               <Conductor blocks={blocksWithAssistantCard} />
             </JourneyProvider>

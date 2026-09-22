@@ -38,7 +38,13 @@ export function ZoomImage({ imageBlock, updateImageBlock }: ZoomImageProps) {
   return (
     <>
       {imageBlock?.src != null && (
-        <Stack direction="row" alignItems="center" spacing={3}>
+        <Stack
+          direction="row"
+          spacing={3}
+          sx={{
+            alignItems: 'center'
+          }}
+        >
           <ZoomInIcon
             sx={{ color: 'text.secondary', fontSize: 24 }}
             aria-label="Zoom in"

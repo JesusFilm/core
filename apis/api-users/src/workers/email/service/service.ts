@@ -1,6 +1,6 @@
-import { render } from '@react-email/render'
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
+import { render } from 'react-email'
 
 import { prisma } from '@core/prisma/users/client'
 import { sendEmail } from '@core/yoga/email'

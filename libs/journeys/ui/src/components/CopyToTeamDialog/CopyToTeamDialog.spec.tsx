@@ -1,5 +1,7 @@
-import { type FetchResult } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { type ApolloLink } from '@apollo/client'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type ReactElement } from 'react'
@@ -55,7 +57,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -68,7 +70,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       await waitFor(() => expect(result).toHaveBeenCalled())
@@ -78,7 +81,7 @@ describe('CopyToTeamDialog', () => {
     })
 
     it('should call submit action and update team state on dialog submit', async () => {
-      const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> =
+      const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
         {
           request: {
             query: UPDATE_LAST_ACTIVE_TEAM_ID,
@@ -89,7 +92,7 @@ describe('CopyToTeamDialog', () => {
             }
           },
           result: vi.fn(
-            (): FetchResult<UpdateLastActiveTeamId> => ({
+            (): ApolloLink.Result<UpdateLastActiveTeamId> => ({
               data: {
                 journeyProfileUpdate: {
                   __typename: 'JourneyProfile',
@@ -136,7 +139,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -150,7 +153,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
       await waitFor(() => expect(result).toHaveBeenCalled())
 
@@ -167,7 +171,7 @@ describe('CopyToTeamDialog', () => {
     })
 
     it('should update team state when a single team is available', async () => {
-      const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> =
+      const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
         {
           request: {
             query: UPDATE_LAST_ACTIVE_TEAM_ID,
@@ -178,7 +182,7 @@ describe('CopyToTeamDialog', () => {
             }
           },
           result: vi.fn(
-            (): FetchResult<UpdateLastActiveTeamId> => ({
+            (): ApolloLink.Result<UpdateLastActiveTeamId> => ({
               data: {
                 journeyProfileUpdate: {
                   __typename: 'JourneyProfile',
@@ -220,7 +224,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -234,7 +238,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
       await waitFor(() => expect(result).toHaveBeenCalled())
 
@@ -277,7 +282,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -296,7 +301,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       await waitFor(() => expect(result).toHaveBeenCalled())
@@ -315,7 +321,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -329,7 +335,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
       await waitFor(() => fireEvent.click(getByText('Copy')))
       await waitFor(() =>
@@ -363,7 +370,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -376,7 +383,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
       await waitFor(() => expect(result).toHaveBeenCalled())
       await waitFor(() => fireEvent.click(getByText('Cancel')))
@@ -391,7 +399,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -405,7 +413,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       const dialog = getByTestId('CopyToTeamDialog')
@@ -420,7 +429,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -434,7 +443,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       const dialog = getByTestId('CopyToTeamDialog')
@@ -449,7 +459,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -463,7 +473,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       const dialog = getByTestId('CopyToTeamDialog')
@@ -478,7 +489,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -492,7 +503,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       const dialog = getByTestId('CopyToTeamDialog')
@@ -507,7 +519,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -520,11 +532,12 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(
-        screen.getByRole('checkbox', {
+        screen.getByRole('switch', {
           name: 'Translation'
         })
       )
@@ -538,7 +551,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -552,11 +565,12 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       fireEvent.click(
-        screen.getByRole('checkbox', {
+        screen.getByRole('switch', {
           name: 'Translation'
         })
       )
@@ -579,7 +593,7 @@ describe('CopyToTeamDialog', () => {
         }
       }))
 
-      const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> =
+      const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
         {
           request: {
             query: UPDATE_LAST_ACTIVE_TEAM_ID,
@@ -590,7 +604,7 @@ describe('CopyToTeamDialog', () => {
             }
           },
           result: vi.fn(
-            (): FetchResult<UpdateLastActiveTeamId> => ({
+            (): ApolloLink.Result<UpdateLastActiveTeamId> => ({
               data: {
                 journeyProfileUpdate: {
                   __typename: 'JourneyProfile',
@@ -617,7 +631,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -631,7 +645,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
 
       await waitFor(() => expect(result).toHaveBeenCalled())
@@ -676,14 +691,14 @@ describe('CopyToTeamDialog', () => {
         }
       }))
 
-      const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> =
+      const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
         {
           request: {
             query: UPDATE_LAST_ACTIVE_TEAM_ID,
             variables: { input: { lastActiveTeamId: 'teamId' } }
           },
           result: vi.fn(
-            (): FetchResult<UpdateLastActiveTeamId> => ({
+            (): ApolloLink.Result<UpdateLastActiveTeamId> => ({
               data: {
                 journeyProfileUpdate: {
                   __typename: 'JourneyProfile',
@@ -754,7 +769,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -771,7 +786,7 @@ describe('CopyToTeamDialog', () => {
         </MockedProvider>
       )
 
-      const { rerender } = render(ui(true))
+      const { rerender } = render(ui(true), { wrapper: MenuList })
 
       await waitFor(() => expect(teamsResult).toHaveBeenCalled())
 
@@ -780,7 +795,7 @@ describe('CopyToTeamDialog', () => {
       fireEvent.click(screen.getByRole('option', { name: 'Team Name' }))
 
       // Enable translation and pick a target language
-      fireEvent.click(screen.getByRole('checkbox', { name: 'Translation' }))
+      fireEvent.click(screen.getByRole('switch', { name: 'Translation' }))
       await waitFor(() =>
         expect(screen.getByTestId('LanguageAutocomplete')).not.toHaveAttribute(
           'aria-disabled',
@@ -855,7 +870,7 @@ describe('CopyToTeamDialog', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <TeamProvider>
@@ -869,7 +884,8 @@ describe('CopyToTeamDialog', () => {
               </TeamProvider>
             </JourneyProvider>
           </SnackbarProvider>
-        </MockedProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
       )
       return { ...utils, queryResult }
     }

@@ -1,4 +1,4 @@
-import { useApolloClient } from '@apollo/client'
+import { useApolloClient } from '@apollo/client/react'
 import LanguageIcon from '@mui/icons-material/Language'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
@@ -63,8 +63,11 @@ export function UserMenu({
         <Stack
           direction="row"
           spacing={2}
-          sx={{ py: 2, px: 4 }}
-          alignItems="center"
+          sx={{
+            alignItems: 'center',
+            py: 2,
+            px: 4
+          }}
         >
           <Box>
             <Avatar

@@ -1,5 +1,5 @@
-import { Img, Text } from '@react-email/components'
 import { ReactElement } from 'react'
+import { Img, Text } from 'react-email'
 
 import { User } from '../../../firebaseClient'
 

@@ -112,10 +112,13 @@ export function AudioLanguageFileUpload({
 
   return (
     <Stack
-      alignItems="center"
-      gap={1}
-      sx={{ px: 6, py: 3 }}
       data-testid="AudioLanguageFileUpload"
+      sx={{
+        alignItems: 'center',
+        gap: 1,
+        px: 6,
+        py: 3
+      }}
     >
       <Box
         data-testid="AudioLanguageDropZone"
@@ -144,10 +147,12 @@ export function AudioLanguageFileUpload({
         )}
         <Typography
           variant="body1"
-          color={
-            error != null || fileRejected ? 'error.main' : 'secondary.light'
-          }
-          sx={{ pb: uploading || processing ? 2 : 4, textAlign: 'center' }}
+          sx={{
+            color:
+              error != null || fileRejected ? 'error.main' : 'secondary.light',
+            pb: uploading || processing ? 2 : 4,
+            textAlign: 'center'
+          }}
         >
           {uploading && 'Uploading...'}
           {processing && 'Processing...'}
@@ -176,22 +181,38 @@ export function AudioLanguageFileUpload({
             />
             <Stack
               direction="row"
-              justifyContent="space-between"
-              sx={{ mt: 1 }}
+              sx={{
+                justifyContent: 'space-between',
+                mt: 1
+              }}
             >
-              <Typography variant="caption" color="secondary.light">
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'secondary.light'
+                }}
+              >
                 {uploadProgress}% • {formatBytes(uploadedBytes)} /{' '}
                 {formatBytes(totalBytes)}
               </Typography>
-              <Typography variant="caption" color="secondary.light">
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'secondary.light'
+                }}
+              >
                 {formatSpeed(uploadSpeedBps)} • ETA {formatEta(etaSeconds)}
               </Typography>
             </Stack>
             {selectedFile != null && (
               <Typography
                 variant="caption"
-                color="secondary.light"
-                sx={{ display: 'block', mt: 0.5, textAlign: 'left' }}
+                sx={{
+                  color: 'secondary.light',
+                  display: 'block',
+                  mt: 0.5,
+                  textAlign: 'left'
+                }}
               >
                 File: {selectedFile.name}
               </Typography>
@@ -208,8 +229,12 @@ export function AudioLanguageFileUpload({
       <Stack
         direction="row"
         spacing={1}
-        color={error != null || fileRejected ? 'error.main' : 'secondary.light'}
-        sx={{ justifyContent: 'center', alignItems: 'center' }}
+        sx={{
+          color:
+            error != null || fileRejected ? 'error.main' : 'secondary.light',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
       >
         <AlertTriangleIcon
           fontSize="small"
@@ -244,8 +269,10 @@ export function AudioLanguageFileUpload({
       >
         <Typography
           variant="subtitle2"
-          fontSize={14}
-          sx={{ color: 'secondary.light' }}
+          sx={{
+            fontSize: 14,
+            color: 'secondary.light'
+          }}
         >
           {selectedFile != null ? 'Change file' : 'Upload file'}
         </Typography>

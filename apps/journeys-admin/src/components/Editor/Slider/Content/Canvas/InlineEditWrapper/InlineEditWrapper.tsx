@@ -6,8 +6,8 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { Typography } from '@core/journeys/ui/Typography'
 
 import { ButtonFields } from '../../../../../../../__generated__/ButtonFields'
+import { MultiselectFields } from '../../../../../../../__generated__/MultiselectFields'
 import { MultiselectOptionFields } from '../../../../../../../__generated__/MultiselectOptionFields'
-import { MultiselectQuestionFields } from '../../../../../../../__generated__/MultiselectQuestionFields'
 import { RadioOptionFields } from '../../../../../../../__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../../../../../../../__generated__/RadioQuestionFields'
 import { SignUpFields } from '../../../../../../../__generated__/SignUpFields'
@@ -15,8 +15,8 @@ import { TextResponseFields } from '../../../../../../../__generated__/TextRespo
 import { TypographyFields } from '../../../../../../../__generated__/TypographyFields'
 
 import { ButtonEdit } from './ButtonEdit'
+import { MultiselectEdit } from './MultiselectEdit'
 import { MultiselectOptionEdit } from './MultiselectOptionEdit'
-import { MultiselectQuestionEdit } from './MultiselectQuestionEdit'
 import { RadioOptionEdit } from './RadioOptionEdit'
 import { RadioQuestionEdit } from './RadioQuestionEdit'
 import { SignUpEdit } from './SignUpEdit'
@@ -30,7 +30,7 @@ interface InlineEditWrapperProps
     | RadioOptionFields
     | TextResponseFields
     | SignUpFields
-    | MultiselectQuestionFields
+    | MultiselectFields
     | MultiselectOptionFields
   > {}
 
@@ -80,7 +80,7 @@ export function InlineEditWrapper({
     case 'MultiselectBlock':
       if (showEditable)
         component = (
-          <MultiselectQuestionEdit
+          <MultiselectEdit
             {...block}
             wrappers={(children.props as any).wrappers}
           />

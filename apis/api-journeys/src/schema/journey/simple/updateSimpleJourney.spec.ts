@@ -1,10 +1,11 @@
 import { ApolloClient } from '@apollo/client'
-import fetch from 'node-fetch'
-import { type MockedFunction, vi } from 'vitest'
+import { GraphQLError } from 'graphql'
+import { vi } from 'vitest'
 
 import type { JourneySimpleUpdate } from '@core/shared/ai/journeySimpleTypes'
 
 import { prismaMock } from '../../../../test/prismaMock'
+import { fetchFieldsFromYouTube } from '../../block/video/service'
 
 import { updateSimpleJourney } from './updateSimpleJourney'
 
@@ -31,9 +32,12 @@ vi.mock('@apollo/client', async () => {
   return { ...actual, ApolloClient: MockApolloClient }
 })
 
-// Mock node-fetch
-vi.mock('node-fetch', () => ({ default: vi.fn() }))
-const mockFetch = fetch as MockedFunction<typeof fetch>
+// Mock the YouTube fields service (its own behaviour, including ISO8601
+// duration parsing, is covered by ../../block/video/service.spec.ts)
+vi.mock('../../block/video/service', () => ({
+  fetchFieldsFromYouTube: vi.fn()
+}))
+const mockFetchFieldsFromYouTube = vi.mocked(fetchFieldsFromYouTube)
 
 const txMock = {
   block: {
@@ -103,18 +107,12 @@ describe('updateSimpleJourney', () => {
       async (callback: any) => await callback(txMock as any)
     )
 
-    mockFetch.mockResolvedValue({
-      json: () =>
-        Promise.resolve({
-          items: [
-            {
-              contentDetails: {
-                duration: 'PT3M45S' // 3 minutes 45 seconds = 225 seconds
-              }
-            }
-          ]
-        })
-    } as any)
+    mockFetchFieldsFromYouTube.mockResolvedValue({
+      title: 'Video title',
+      description: 'Video description',
+      image: 'https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg',
+      duration: 225 // 3 minutes 45 seconds
+    })
   })
 
   it('wraps all operations in a transaction', async () => {
@@ -229,10 +227,8 @@ describe('updateSimpleJourney', () => {
 
     await updateSimpleJourney(journeyId, videoJourney)
 
-    // Should call YouTube API to get duration
-    expect(mockFetch).toHaveBeenCalledWith(
-      expect.stringContaining('https://www.googleapis.com/youtube/v3/videos')
-    )
+    // Should fetch the video fields from YouTube to get the duration
+    expect(mockFetchFieldsFromYouTube).toHaveBeenCalledWith('dQw4w9WgXcQ')
 
     const videoCalls = txMock.block.create.mock.calls.filter(
       ([data]: any[]) => data.data.typename === 'VideoBlock'
@@ -314,12 +310,12 @@ describe('updateSimpleJourney', () => {
   })
 
   it('throws error when YouTube API fails', async () => {
-    mockFetch.mockResolvedValueOnce({
-      json: () =>
-        Promise.resolve({
-          items: [] // No video found
-        })
-    } as any)
+    // same rejection shape as the real fetchFieldsFromYouTube
+    mockFetchFieldsFromYouTube.mockRejectedValueOnce(
+      new GraphQLError('videoId cannot be found on YouTube', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    )
 
     const videoJourney: JourneySimpleUpdate = {
       title: 'Video Journey',
@@ -344,7 +340,7 @@ describe('updateSimpleJourney', () => {
     }
 
     await expect(updateSimpleJourney(journeyId, videoJourney)).rejects.toThrow(
-      'Could not fetch video duration'
+      'videoId cannot be found on YouTube'
     )
   })
 
@@ -423,60 +419,40 @@ describe('updateSimpleJourney', () => {
     expect(contentTypes.filter((type) => type === 'ImageBlock')).toHaveLength(0)
   })
 
-  it('parses ISO8601 duration correctly', async () => {
-    // Test different duration formats
-    const durations = [
-      { iso: 'PT3M45S', expected: 225 }, // 3m45s
-      { iso: 'PT1H30M', expected: 5400 }, // 1h30m
-      { iso: 'PT45S', expected: 45 }, // 45s
-      { iso: 'PT2H', expected: 7200 }, // 2h
-      { iso: 'PT10M', expected: 600 } // 10m
-    ]
+  it('uses the fetched YouTube duration as the default endAt', async () => {
+    mockFetchFieldsFromYouTube.mockResolvedValueOnce({
+      title: 'Video title',
+      description: 'Video description',
+      image: 'https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg',
+      duration: 5400 // 1h30m
+    })
 
-    for (const { iso, expected } of durations) {
-      mockFetch.mockResolvedValueOnce({
-        json: () =>
-          Promise.resolve({
-            items: [
-              {
-                contentDetails: {
-                  duration: iso
-                }
-              }
-            ]
-          })
-      } as any)
-
-      const videoJourney: JourneySimpleUpdate = {
-        title: 'Duration Test',
-        description: 'Testing duration parsing',
-        cards: [
-          {
-            id: 'video-card',
-            x: 0,
-            y: 0,
-            video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' }, // Use valid video ID
-            defaultNextCard: 'end-card'
-          },
-          {
-            id: 'end-card',
-            x: 0,
-            y: 400,
-            button: { text: 'End', url: 'https://example.com' }
-          }
-        ]
-      }
-
-      vi.clearAllMocks()
-      txMock.block.create.mockResolvedValue({ id: 'mock-id' } as any)
-
-      await updateSimpleJourney(journeyId, videoJourney)
-
-      const videoCalls = txMock.block.create.mock.calls.filter(
-        ([data]: any[]) => data.data.typename === 'VideoBlock'
-      )
-      expect(videoCalls[0][0].data.endAt).toBe(expected)
+    const videoJourney: JourneySimpleUpdate = {
+      title: 'Duration Test',
+      description: 'Testing duration handling',
+      cards: [
+        {
+          id: 'video-card',
+          x: 0,
+          y: 0,
+          video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' }, // Use valid video ID
+          defaultNextCard: 'end-card'
+        },
+        {
+          id: 'end-card',
+          x: 0,
+          y: 400,
+          button: { text: 'End', url: 'https://example.com' }
+        }
+      ]
     }
+
+    await updateSimpleJourney(journeyId, videoJourney)
+
+    const videoCalls = txMock.block.create.mock.calls.filter(
+      ([data]: any[]) => data.data.typename === 'VideoBlock'
+    )
+    expect(videoCalls[0][0].data.endAt).toBe(5400)
   })
 
   it('handles missing optional fields gracefully', async () => {

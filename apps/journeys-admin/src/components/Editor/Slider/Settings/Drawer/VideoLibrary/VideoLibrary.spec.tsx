@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import {
   cleanup,
@@ -160,8 +160,8 @@ describe('VideoLibrary', () => {
       )
       expect(screen.getByText('Video Library')).toBeInTheDocument()
       expect(
-        screen.getByTestId('VideoLibrary').closest('.MuiDrawer-paper')
-      ).toHaveClass('MuiDrawer-paperAnchorRight')
+        screen.getByTestId('VideoLibrary').closest('.MuiDrawer-root')
+      ).toHaveClass('MuiDrawer-anchorRight')
     })
 
     it('should close VideoLibrary on close Icon click', () => {
@@ -316,8 +316,8 @@ describe('VideoLibrary', () => {
       )
       expect(screen.getByText('Video Library')).toBeInTheDocument()
       expect(
-        screen.getByTestId('VideoLibrary').closest('.MuiDrawer-paper')
-      ).toHaveClass('MuiDrawer-paperAnchorBottom')
+        screen.getByTestId('VideoLibrary').closest('.MuiDrawer-root')
+      ).toHaveClass('MuiDrawer-anchorBottom')
     })
   })
 

@@ -35,8 +35,8 @@ The palette in the Drawer for inserting a new block into the selected Card, one 
 _Avoid_: block picker, toolbox
 
 **Card Templates**:
-Pre-built Card layouts offered when a Step's Card is empty, as a faster start than composing blocks one by one. Unrelated to journey **Templates**.
-_Avoid_: layouts, presets; never shorten to "templates"
+Pre-built Card layouts offered when a Step's Card is empty, as a faster start than composing blocks one by one. Unrelated to journey **Templates** — the inner directory of layout components is named `Layouts/` to avoid that collision.
+_Avoid_: presets; never shorten to "templates"
 
 **Journey Appearance**:
 The journey-wide look-and-feel panel in the Drawer: chat buttons, display title, Host, logo, menu, and reactions. Journey-scoped, unlike Properties (block-scoped).

@@ -1,10 +1,5 @@
-import {
-  ApolloCache,
-  LazyQueryHookExecOptions,
-  QueryResult,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { ApolloCache, gql } from '@apollo/client'
+import { useLazyQuery, useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -42,13 +37,10 @@ export const DELETE_HOST = gql`
 
 interface HostFormTabProps {
   handleSelection: (value: 'selection' | 'list') => void
-  getAllTeamHostsQuery: (
-    options?:
-      | Partial<
-          LazyQueryHookExecOptions<GetAllTeamHosts, GetAllTeamHostsVariables>
-        >
-      | undefined
-  ) => Promise<QueryResult<GetAllTeamHosts, GetAllTeamHostsVariables>>
+  getAllTeamHostsQuery: useLazyQuery.ExecFunction<
+    GetAllTeamHosts,
+    GetAllTeamHostsVariables
+  >
 }
 
 export function HostForm({
@@ -79,7 +71,7 @@ export function HostForm({
           variables: { id: host.id, teamId: journey.team.id },
           update(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            cache: ApolloCache<any>
+            cache: ApolloCache
           ) {
             cache.evict({
               id: cache.identify({ __typename: 'Host', id: host.id })
@@ -127,9 +119,12 @@ export function HostForm({
     <Box data-testid="HostForm">
       <Stack
         direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ px: 4, py: 2 }}
+        sx={{
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          px: 4,
+          py: 2
+        }}
       >
         {journey?.host != null ? (
           <Button variant="outlined" size="small" onClick={handleClear}>
@@ -145,7 +140,12 @@ export function HostForm({
           </Button>
         )}
       </Stack>
-      <Stack sx={{ p: 4 }} gap={6}>
+      <Stack
+        sx={{
+          gap: 6,
+          p: 4
+        }}
+      >
         <HostTitleFieldForm value={name} onChange={handleTitleChange} />
         <HostLocationFieldForm
           value={location}
@@ -154,7 +154,14 @@ export function HostForm({
         <HostAvatarsButton />
       </Stack>
       <Divider />
-      <Stack sx={{ p: 4 }} direction="row" alignItems="center" gap={3}>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: 'center',
+          gap: 3,
+          p: 4
+        }}
+      >
         <AlertCircleIcon />
         <Typography variant="subtitle2">
           {t(

@@ -1,7 +1,7 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { resetEventsEmailDelay, validateBlockEvent } from '../utils'
+import { resetEventsEmailDelay, validateBlockEvent } from '../eventService'
 
 import { VideoCompleteEventCreateInput } from './inputs'
 import { VideoCompleteEventRef } from './videoCompleteEvent'

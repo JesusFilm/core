@@ -1,4 +1,5 @@
-import { Reference, gql, useMutation } from '@apollo/client'
+import { Reference, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useTranslation } from 'next-i18next/pages'
 import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -9,8 +10,8 @@ import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { MULTISELECT_FIELDS } from '@core/journeys/ui/Multiselect/multiselectFields'
 import { MULTISELECT_OPTION_FIELDS } from '@core/journeys/ui/MultiselectOption/multiselectOptionFields'
-import { MULTISELECT_QUESTION_FIELDS } from '@core/journeys/ui/MultiselectQuestion/multiselectQuestionFields'
 import CheckSquareContainedIcon from '@core/shared/ui/icons/CheckSquareContained'
 
 import type {
@@ -26,17 +27,18 @@ import {
   ButtonVariant
 } from '../../../../../../../../__generated__/globalTypes'
 import type { MultiselectBlockCreate } from '../../../../../../../../__generated__/MultiselectBlockCreate'
+import type { MultiselectWithButtonCreate } from '../../../../../../../../__generated__/MultiselectWithButtonCreate'
 // Note: multiselect option creation is part of the same mutation operation type
 import {
   MultiselectWithButtonRestore,
   MultiselectWithButtonRestoreVariables
 } from '../../../../../../../../__generated__/MultiselectWithButtonRestore'
-import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import { blockCreateUpdate } from '../../../../../../../libs/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
 export const MULTISELECT_BLOCK_CREATE = gql`
-  ${MULTISELECT_QUESTION_FIELDS}
+  ${MULTISELECT_FIELDS}
   ${MULTISELECT_OPTION_FIELDS}
   mutation MultiselectBlockCreate(
     $input: MultiselectBlockCreateInput!
@@ -47,7 +49,7 @@ export const MULTISELECT_BLOCK_CREATE = gql`
       id
       parentBlockId
       parentOrder
-      ...MultiselectQuestionFields
+      ...MultiselectFields
     }
     multiselectOption1: multiselectOptionBlockCreate(
       input: $multiselectOptionBlockCreateInput1
@@ -70,7 +72,7 @@ export const MULTISELECT_BLOCK_CREATE = gql`
 
 // Create Multiselect (with two options) and a Submit Button (with icons) in one go
 export const MULTISELECT_WITH_BUTTON_CREATE = gql`
-  ${MULTISELECT_QUESTION_FIELDS}
+  ${MULTISELECT_FIELDS}
   ${MULTISELECT_OPTION_FIELDS}
   ${BUTTON_FIELDS}
   ${ICON_FIELDS}
@@ -89,7 +91,7 @@ export const MULTISELECT_WITH_BUTTON_CREATE = gql`
       id
       parentBlockId
       parentOrder
-      ...MultiselectQuestionFields
+      ...MultiselectFields
     }
     multiselectOption1: multiselectOptionBlockCreate(input: $optionInput1) {
       id
@@ -213,7 +215,7 @@ export function NewMultiselectButton(): ReactElement {
   const [multiselectBlockCreate, { loading }] =
     useMutation<MultiselectBlockCreate>(MULTISELECT_BLOCK_CREATE)
   const [multiselectWithButtonCreate, { loading: withButtonLoading }] =
-    useMutation(MULTISELECT_WITH_BUTTON_CREATE)
+    useMutation<MultiselectWithButtonCreate>(MULTISELECT_WITH_BUTTON_CREATE)
   const [multiselectWithButtonDelete] = useMutation(
     MULTISELECT_WITH_BUTTON_DELETE
   )

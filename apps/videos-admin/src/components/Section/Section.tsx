@@ -8,7 +8,12 @@ import { MouseEvent, ReactElement, ReactNode } from 'react'
 function SectionFallback({ children }: { children: string }): ReactElement {
   return (
     <Box sx={{ display: 'grid', placeItems: 'center', padding: 2 }}>
-      <Typography variant="subtitle2" fontWeight={500}>
+      <Typography
+        variant="subtitle2"
+        sx={{
+          fontWeight: 500
+        }}
+      >
         {children}
       </Typography>
     </Box>
@@ -53,18 +58,23 @@ export function Section({
     >
       <Stack
         data-testid={`${title}-title-section`}
+        direction="row"
         sx={{
+          alignItems: 'center',
+          justifyContent: 'space-between',
           borderBottom: contained ? '1px solid' : '0px',
           borderColor: contained ? 'divider' : 'transparent',
           backgroundColor: contained ? 'background.paper' : 'none',
           px: 2,
           py: 1
         }}
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
       >
-        <Typography variant="h6" lineHeight={2}>
+        <Typography
+          variant="h6"
+          sx={{
+            lineHeight: 2
+          }}
+        >
           {title}
         </Typography>
         {action != null && (

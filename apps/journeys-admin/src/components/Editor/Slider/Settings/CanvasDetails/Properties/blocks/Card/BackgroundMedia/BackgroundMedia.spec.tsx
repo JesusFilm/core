@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -160,7 +161,7 @@ const image: TreeBlock<ImageBlock> = {
   customizable: null
 }
 
-const coverVideoBlockDeleteMock: MockedResponse<
+const coverVideoBlockDeleteMock: MockLink.MockedResponse<
   CoverBlockDelete,
   CoverBlockDeleteVariables
 > = {
@@ -189,7 +190,7 @@ const coverVideoBlockDeleteMock: MockedResponse<
   }
 }
 
-const coverVideoBlockRestoreMock: MockedResponse<
+const coverVideoBlockRestoreMock: MockLink.MockedResponse<
   CoverBlockRestore,
   CoverBlockRestoreVariables
 > = {
@@ -212,7 +213,7 @@ const coverVideoBlockRestoreMock: MockedResponse<
   }
 }
 
-const coverImageBlockDeleteMock: MockedResponse<
+const coverImageBlockDeleteMock: MockLink.MockedResponse<
   CoverBlockDelete,
   CoverBlockDeleteVariables
 > = {
@@ -241,7 +242,7 @@ const coverImageBlockDeleteMock: MockedResponse<
   }
 }
 
-const coverImageBlockRestoreMock: MockedResponse<
+const coverImageBlockRestoreMock: MockLink.MockedResponse<
   CoverBlockRestore,
   CoverBlockRestoreVariables
 > = {
@@ -278,7 +279,7 @@ describe('BackgroundMedia', () => {
     render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
               <SnackbarProvider>
                 <BackgroundMedia />
@@ -318,7 +319,7 @@ describe('BackgroundMedia', () => {
         ]}
       >
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <EditorProvider
               initialState={{
                 selectedBlock: {
@@ -398,7 +399,7 @@ describe('BackgroundMedia', () => {
         ]}
       >
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: step }}>
               <SnackbarProvider>
                 <CommandProvider>
@@ -453,7 +454,7 @@ describe('BackgroundMedia', () => {
     render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
               <SnackbarProvider>
                 <BackgroundMedia />
@@ -526,7 +527,7 @@ describe('BackgroundMedia', () => {
         mocks={[coverVideoBlockDeleteMock, coverVideoBlockRestoreMock]}
       >
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: selectedCard }}>
               <SnackbarProvider>
                 <MuxVideoUploadProvider>

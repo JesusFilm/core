@@ -23,7 +23,7 @@ describe('ChatHeader', () => {
   it('carries the journey language as ?lang on the about-this-chat link (NES-1724)', () => {
     const journey = { language: { bcp47: 'es' } } as unknown as Journey
     const { getByRole } = render(
-      <JourneyProvider value={{ journey, variant: 'default' }}>
+      <JourneyProvider value={{ journey, renderMode: 'default' }}>
         <ChatHeader />
       </JourneyProvider>
     )
@@ -49,7 +49,7 @@ describe('ChatHeader', () => {
 
   it('lightens the title + caption for the dark overlay (onDark)', () => {
     const { getByText } = render(<ChatHeader onDark />)
-    // OVERLAY_HERO_FG / OVERLAY_FG_MUTED are raw rgba strings, so MUI emits
+    // OVERLAY_TITLE_FG / OVERLAY_FG_MUTED are raw rgba strings, so MUI emits
     // them as inline colour — assert the dark tokens are applied.
     expect(getByText('Ask your questions about faith')).toHaveStyle({
       color: 'rgba(255, 255, 255, 0.85)'

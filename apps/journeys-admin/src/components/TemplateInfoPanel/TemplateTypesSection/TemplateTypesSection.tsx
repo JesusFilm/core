@@ -19,9 +19,24 @@ export function TemplateTypesSection(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <Stack gap={3} data-testid="TemplateTypesSection">
-      <Stack gap={1}>
-        <Stack direction="row" gap={1} alignItems="center">
+    <Stack
+      data-testid="TemplateTypesSection"
+      sx={{
+        gap: 3
+      }}
+    >
+      <Stack
+        sx={{
+          gap: 1
+        }}
+      >
+        <Stack
+          direction="row"
+          sx={{
+            gap: 1,
+            alignItems: 'center'
+          }}
+        >
           <Typography sx={subHeadingSx}>{t('Quick-Start')}</Typography>
           <LabelChip label={t('RECOMMENDED')} />
         </Stack>
@@ -34,13 +49,21 @@ export function TemplateTypesSection(): ReactElement {
           component="img"
           src="/assets/template-info/template-types-quick-start.gif"
           alt={t('Quick-Start template guided editing UI — mobile-friendly')}
-          width={333}
-          height={185}
           loading="lazy"
-          sx={mediaSlotSx}
+          sx={[
+            {
+              width: 333,
+              height: 185
+            },
+            ...(Array.isArray(mediaSlotSx) ? mediaSlotSx : [mediaSlotSx])
+          ]}
         />
       </Stack>
-      <Stack gap={1}>
+      <Stack
+        sx={{
+          gap: 1
+        }}
+      >
         <Typography sx={subHeadingSx}>{t('Regular')}</Typography>
         <Box component="ul" sx={bulletListSx}>
           <li>{t('Best for experienced and desktop users.')}</li>
@@ -57,10 +80,14 @@ export function TemplateTypesSection(): ReactElement {
           alt={t(
             'Regular template editor interface — desktop multi-screen view'
           )}
-          width={333}
-          height={185}
           loading="lazy"
-          sx={mediaSlotSx}
+          sx={[
+            {
+              width: 333,
+              height: 185
+            },
+            ...(Array.isArray(mediaSlotSx) ? mediaSlotSx : [mediaSlotSx])
+          ]}
         />
       </Stack>
     </Stack>

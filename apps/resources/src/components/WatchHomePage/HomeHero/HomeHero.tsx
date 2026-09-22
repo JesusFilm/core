@@ -45,12 +45,19 @@ export function HomeHero(): ReactElement {
       >
         <Stack
           direction={{ xs: 'column', xl: 'row' }}
-          alignItems={{ xl: 'flex-end' }}
-          justifyContent={{ xs: 'flex-end', xl: 'center' }}
           spacing={4}
-          sx={{ zIndex: 2 }}
+          sx={{
+            alignItems: { xl: 'flex-end' },
+            justifyContent: { xs: 'flex-end', xl: 'center' },
+            zIndex: 2
+          }}
         >
-          <Typography variant="h1" color="secondary.contrastText">
+          <Typography
+            variant="h1"
+            sx={{
+              color: 'secondary.contrastText'
+            }}
+          >
             {t('Free Gospel Video')}{' '}
             <Box
               component="span"
@@ -68,8 +75,10 @@ export function HomeHero(): ReactElement {
           <Typography
             variant="h5"
             component="h2"
-            color="secondary.contrastText"
-            sx={{ opacity: 0.7 }}
+            sx={{
+              color: 'secondary.contrastText',
+              opacity: 0.7
+            }}
           >
             {t('Watch, learn and share the gospel in over 2000 languages')}
           </Typography>

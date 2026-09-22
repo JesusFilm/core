@@ -98,14 +98,22 @@ export function TeamCreateDialog({
                 placeholder={values.title}
               />
 
-              <Stack direction="row" spacing={3} color="text.secondary">
+              <Stack
+                direction="row"
+                spacing={3}
+                sx={{
+                  color: 'text.secondary'
+                }}
+              >
                 <InformationCircleContainedIcon
                   sx={{ color: 'secondary.light' }}
                 />
                 <Typography
                   variant="caption"
-                  color="secondary.light"
                   gutterBottom
+                  sx={{
+                    color: 'secondary.light'
+                  }}
                 >
                   {t(
                     'When visitors click the info icon, they will see text from the Legal Name box. This text can be a mission name, website title, or other public information.'

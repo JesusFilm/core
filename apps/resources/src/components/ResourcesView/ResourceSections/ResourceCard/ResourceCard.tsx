@@ -92,9 +92,9 @@ export function ResourceCard({
         locale={false}
       >
         <Stack
-          justifyContent="center"
-          alignItems="center"
           sx={{
+            justifyContent: 'center',
+            alignItems: 'center',
             position: 'relative',
             maxHeight: 160,
             aspectRatio: 2,

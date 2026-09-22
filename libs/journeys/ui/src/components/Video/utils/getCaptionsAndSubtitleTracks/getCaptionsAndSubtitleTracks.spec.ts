@@ -384,7 +384,9 @@ describe('getCaptionsAndSubtitleTracks', () => {
 
     // Mock TextTrackList constructor for this test
     const originalTextTrackList = global.TextTrackList
-    global.TextTrackList = vi.fn(() => []) as any
+    global.TextTrackList = vi.fn(function () {
+      return []
+    }) as any
 
     const result = getCaptionsAndSubtitleTracks(playerWithoutTextTracks)
 

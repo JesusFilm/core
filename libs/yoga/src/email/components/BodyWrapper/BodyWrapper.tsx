@@ -1,5 +1,5 @@
-import { Section } from '@react-email/components'
 import { ReactElement, ReactNode } from 'react'
+import { Section } from 'react-email'
 
 interface BodyWrapperProps {
   children: ReactNode

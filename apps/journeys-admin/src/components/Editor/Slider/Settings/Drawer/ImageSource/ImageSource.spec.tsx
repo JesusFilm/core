@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
@@ -170,7 +170,7 @@ describe('ImageSource', () => {
               <JourneyProvider
                 value={{
                   journey: { template: false } as unknown as JourneyFields,
-                  variant: 'admin'
+                  renderMode: 'admin'
                 }}
               >
                 <CommandProvider>
@@ -199,7 +199,7 @@ describe('ImageSource', () => {
               <JourneyProvider
                 value={{
                   journey: { template: true } as unknown as JourneyFields,
-                  variant: 'admin'
+                  renderMode: 'admin'
                 }}
               >
                 <CommandProvider>
@@ -228,7 +228,7 @@ describe('ImageSource', () => {
               <JourneyProvider
                 value={{
                   journey: { template: true } as unknown as JourneyFields,
-                  variant: 'admin'
+                  renderMode: 'admin'
                 }}
               >
                 <CommandProvider>
@@ -248,7 +248,7 @@ describe('ImageSource', () => {
 
       expect(screen.getByText('Needs Customization')).toBeInTheDocument()
       expect(
-        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+        screen.getByRole('switch', { name: 'Toggle customizable' })
       ).not.toBeDisabled()
     })
 
@@ -260,7 +260,7 @@ describe('ImageSource', () => {
               <JourneyProvider
                 value={{
                   journey: { template: true } as unknown as JourneyFields,
-                  variant: 'admin'
+                  renderMode: 'admin'
                 }}
               >
                 <CommandProvider>
@@ -280,7 +280,7 @@ describe('ImageSource', () => {
 
       expect(screen.getByText('Needs Customization')).toBeInTheDocument()
       expect(
-        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+        screen.getByRole('switch', { name: 'Toggle customizable' })
       ).toBeDisabled()
     })
   })

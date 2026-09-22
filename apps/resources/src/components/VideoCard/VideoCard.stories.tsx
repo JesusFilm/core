@@ -1,7 +1,7 @@
-import Grid from '@mui/material/GridLegacy'
+import Grid from '@mui/material/Grid'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
+import { InstantSearchTestWrapper } from '@core/journeys/ui/test/InstantSearchTestWrapper'
 
 import { watchConfig } from '../../libs/storybook'
 import { videos } from '../Videos/__generated__/testData'
@@ -20,31 +20,85 @@ const Template: StoryObj<typeof VideoCard> = {
     return (
       <InstantSearchTestWrapper>
         <Grid container spacing={2} rowSpacing={8}>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4,
+              xl: 3
+            }}
+          >
             <VideoCard video={videos[0]} {...args} />
           </Grid>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4,
+              xl: 3
+            }}
+          >
             <VideoCard video={videos[2]} {...args} active />
           </Grid>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4,
+              xl: 3
+            }}
+          >
             <VideoCard video={videos[5]} {...args} />
           </Grid>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4,
+              xl: 3
+            }}
+          >
             <VideoCard video={videos[6]} index={0} {...args} />
           </Grid>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4,
+              xl: 3
+            }}
+          >
             <VideoCard video={videos[9]} index={1} {...args} />
           </Grid>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4,
+              xl: 3
+            }}
+          >
             <VideoCard video={videos[12]} index={2} {...args} />
           </Grid>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4,
+              xl: 3
+            }}
+          >
             <VideoCard video={videos[2]} index={3} {...args} />
           </Grid>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4,
+              xl: 3
+            }}
+          >
             <VideoCard {...args} />
           </Grid>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4,
+              xl: 3
+            }}
+          >
             <VideoCard {...args} />
           </Grid>
         </Grid>

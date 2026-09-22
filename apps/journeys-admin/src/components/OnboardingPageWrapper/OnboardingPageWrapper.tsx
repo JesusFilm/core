@@ -57,10 +57,11 @@ export function OnboardingPageWrapper({
       </Box>
       <OnboardingDrawer />
       <Stack
-        justifyContent="safe center"
-        alignItems="center"
-        gap={12}
+        data-testid="JourneysAdminOnboardingPageWrapper"
         sx={{
+          justifyContent: 'safe center',
+          alignItems: 'center',
+          gap: 12,
           m: { xs: 0, sm: 4 },
           ml: { xs: 0, md: 0 },
           pt: 8,
@@ -72,12 +73,11 @@ export function OnboardingPageWrapper({
           borderStyle: { xs: 'none', sm: 'solid' },
           backgroundColor: { xs: 'background.paper', md: 'background.default' }
         }}
-        data-testid="JourneysAdminOnboardingPageWrapper"
       >
         <Typography
           variant="h2"
-          textAlign="center"
           sx={{
+            textAlign: 'center',
             display: { xs: 'none', sm: 'flex' },
             overflowWrap: 'break-word'
           }}
@@ -85,8 +85,8 @@ export function OnboardingPageWrapper({
           {title}
         </Typography>
         <Stack
-          alignItems="center"
           sx={{
+            alignItems: 'center',
             flexGrow: { xs: 1, sm: 0 },
             maxWidth: { xs: '100%', sm: 397 }
           }}
@@ -167,10 +167,12 @@ function OnboardingUtilities({
     <>
       <Stack
         direction="row"
-        alignItems="center"
-        justifyContent="center"
-        gap={4}
-        sx={{ ...sx }}
+        sx={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 4,
+          ...sx
+        }}
       >
         <Button size="small">
           <Typography

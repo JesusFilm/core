@@ -34,8 +34,20 @@ export function TeamManageDialog({
             closeButton: true
           }}
           dialogActionChildren={
-            <Stack flexGrow={1} sx={{ m: 4, mt: 2 }}>
-              <Stack direction="row" alignItems="center" sx={{ mb: 4 }}>
+            <Stack
+              sx={{
+                flexGrow: 1,
+                m: 4,
+                mt: 2
+              }}
+            >
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: 'center',
+                  mb: 4
+                }}
+              >
                 <UsersProfiles2Icon />
                 <Typography variant="subtitle1" sx={{ ml: 3 }}>
                   {t('Invite team member')}

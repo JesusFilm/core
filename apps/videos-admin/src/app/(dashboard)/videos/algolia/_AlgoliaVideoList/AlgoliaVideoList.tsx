@@ -181,15 +181,21 @@ function AlgoliaInstantSearchResults(): ReactElement {
   return (
     <Stack
       sx={{
+        gap: 2,
         width: '100%',
         height: 'calc(100vh - 210px)',
         minHeight: 400,
         overflow: 'hidden'
       }}
-      gap={2}
     >
       <Typography variant="h4">Algolia Video Library</Typography>
-      <Stack direction="row" spacing={1} alignItems="center">
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          alignItems: 'center'
+        }}
+      >
         <TextField
           label="Search Algolia"
           value={query}
@@ -206,7 +212,12 @@ function AlgoliaInstantSearchResults(): ReactElement {
         />
       </Stack>
       {error != null && <Alert severity="error">{error.message}</Alert>}
-      <Typography variant="caption" color="text.secondary">
+      <Typography
+        variant="caption"
+        sx={{
+          color: 'text.secondary'
+        }}
+      >
         Showing up to {ALGOLIA_HITS_PER_PAGE} Algolia records. Some records may
         not map to an editable admin video detail page.
       </Typography>
@@ -247,9 +258,18 @@ export function AlgoliaVideoList(): ReactElement {
 
   if (searchClient == null) {
     return (
-      <Stack sx={{ width: '100%' }} gap={2}>
+      <Stack
+        sx={{
+          gap: 2,
+          width: '100%'
+        }}
+      >
         <Typography variant="h4">Algolia Video Library</Typography>
-        <Typography color="warning.main">
+        <Typography
+          sx={{
+            color: 'warning.main'
+          }}
+        >
           Set NEXT_PUBLIC_ALGOLIA_APP_ID and NEXT_PUBLIC_ALGOLIA_API_KEY to use
           this tab.
         </Typography>
@@ -259,9 +279,18 @@ export function AlgoliaVideoList(): ReactElement {
 
   if (indexName === '') {
     return (
-      <Stack sx={{ width: '100%' }} gap={2}>
+      <Stack
+        sx={{
+          gap: 2,
+          width: '100%'
+        }}
+      >
         <Typography variant="h4">Algolia Video Library</Typography>
-        <Typography color="warning.main">
+        <Typography
+          sx={{
+            color: 'warning.main'
+          }}
+        >
           Set NEXT_PUBLIC_ALGOLIA_INDEX_VIDEOS to use this tab.
         </Typography>
       </Stack>

@@ -174,7 +174,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
         where: { id: mediaComponentId },
         select: {
           variants: {
-            where: { languageId: languageId },
+            where: { published: true, languageId: languageId },
             select: {
               id: true,
               languageId: true,
@@ -207,7 +207,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
             children: {
               where: {
                 variants: {
-                  some: { languageId: languageId }
+                  some: { published: true, languageId: languageId }
                 }
               },
               select: {
@@ -215,7 +215,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
                 label: true,
                 primaryLanguageId: true,
                 variants: {
-                  where: { languageId: languageId },
+                  where: { published: true, languageId: languageId },
                   select: {
                     id: true,
                     lengthInMilliseconds: true,

@@ -25,29 +25,33 @@ export function MainPanelBody({
 
   return (
     <Stack
-      flexGrow={1}
-      border="hidden"
+      data-testid="MainPanelBody"
       sx={{
+        flexGrow: 1,
+        border: 'hidden',
         overflow: 'hidden',
         overflowY: 'auto',
         width: 'inherit',
+
         // Hide scrollbar for webkit browsers (Chrome, Safari, Edge)
         '&::-webkit-scrollbar': {
           display: 'none'
         },
+
         // Hide scrollbar for Firefox
         scrollbarWidth: 'none',
+
         // Hide scrollbar for IE and Edge
         '-ms-overflow-style': 'none'
       }}
-      data-testid="MainPanelBody"
     >
       {/* MainBody */}
       <Stack
         data-testid="main-body"
-        flexGrow={1}
         sx={{
+          flexGrow: 1,
           ...padding,
+
           mb: {
             xs: 0,
             md: bottomPanelChildren != null ? bottomPanel.height : 0
@@ -61,8 +65,8 @@ export function MainPanelBody({
       {bottomPanelChildren != null && (
         <Stack
           data-testid="bottom-panel"
-          flexShrink={0}
           sx={{
+            flexShrink: 0,
             width: 'inherit',
             height: bottomPanel.height,
             position: 'fixed',

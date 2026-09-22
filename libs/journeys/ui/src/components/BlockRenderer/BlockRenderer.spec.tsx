@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
@@ -152,7 +152,7 @@ describe('BlockRenderer', () => {
       expandChatByDefault: null
     }
     const { getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer block={block} />
       </MockedProvider>
     )
@@ -195,7 +195,7 @@ describe('BlockRenderer', () => {
       expandChatByDefault: null
     }
     const { getByTestId, getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer
           block={block}
           wrappers={{
@@ -298,7 +298,7 @@ describe('BlockRenderer', () => {
       eventLabel: null
     }
     const { getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer block={block} />
       </MockedProvider>
     )
@@ -318,7 +318,7 @@ describe('BlockRenderer', () => {
       eventLabel: null
     }
     const { getByTestId, getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer
           block={block}
           wrappers={{
@@ -354,7 +354,7 @@ describe('BlockRenderer', () => {
       eventLabel: null
     }
     const { getByTestId, getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer
           block={{ ...block, gridView: true }}
           wrappers={{
@@ -399,7 +399,7 @@ describe('BlockRenderer', () => {
       children: [option, { ...option, label: 'radio option 2' }]
     }
     const { getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer block={block} />
       </MockedProvider>
     )
@@ -417,7 +417,7 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByTestId, getByRole } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer
           block={{ ...block }}
           wrappers={{
@@ -452,7 +452,7 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer block={block} />
       </MockedProvider>
     )
@@ -469,7 +469,7 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByTestId, getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer
           block={block}
           wrappers={{
@@ -492,7 +492,7 @@ describe('BlockRenderer', () => {
     )
   })
 
-  it('should render MultiselectQuestion', async () => {
+  it('should render Multiselect', async () => {
     const option: TreeBlock<MultiselectOptionBlock> = {
       __typename: 'MultiselectOptionBlock',
       id: 'option1',
@@ -511,7 +511,7 @@ describe('BlockRenderer', () => {
       children: [option, { ...option, id: 'option2', label: 'multi option 2' }]
     }
     const { getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <SnackbarProvider>
           <BlockRenderer block={block} />
         </SnackbarProvider>
@@ -521,7 +521,7 @@ describe('BlockRenderer', () => {
     expect(getByText('multi option 2')).toBeInTheDocument()
   })
 
-  it('should render MultiselectQuestion with general wrapper and specific wrapper', () => {
+  it('should render Multiselect with general wrapper and specific wrapper', () => {
     const block: TreeBlock = {
       __typename: 'MultiselectBlock',
       id: 'multi',
@@ -532,14 +532,14 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByTestId, getByRole } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer
           block={{ ...block }}
           wrappers={{
             Wrapper: ({ children }) => (
               <div data-testid="general-wrapper">{children}</div>
             ),
-            MultiselectQuestionWrapper: ({ children }) => (
+            MultiselectWrapper: ({ children }) => (
               <div data-testid="multiselect-question-wrapper">{children}</div>
             )
           }}
@@ -571,7 +571,7 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByLabelText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <SnackbarProvider>
           <BlockRenderer block={block} />
         </SnackbarProvider>
@@ -593,7 +593,7 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByTestId, getByLabelText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <SnackbarProvider>
           <BlockRenderer
             block={block}
@@ -831,7 +831,7 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByTestId } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer block={block} />
       </MockedProvider>
     )
@@ -893,7 +893,7 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByTestId } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer
           block={block}
           wrappers={{

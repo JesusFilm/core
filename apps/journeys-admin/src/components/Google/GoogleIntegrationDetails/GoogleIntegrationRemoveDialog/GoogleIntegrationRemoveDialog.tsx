@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -9,6 +10,7 @@ import { ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
+import { IntegrationDelete } from '../../../../../__generated__/IntegrationDelete'
 import { GET_INTEGRATION } from '../../../../libs/useIntegrationQuery'
 
 export const INTEGRATION_DELETE = gql`
@@ -36,7 +38,8 @@ export function GoogleIntegrationRemoveDialog({
   const { enqueueSnackbar } = useSnackbar()
   const router = useRouter()
 
-  const [integrationDelete, { loading }] = useMutation(INTEGRATION_DELETE)
+  const [integrationDelete, { loading }] =
+    useMutation<IntegrationDelete>(INTEGRATION_DELETE)
 
   async function handleConfirm(): Promise<void> {
     if (integrationId == null || teamId == null) return
@@ -89,7 +92,12 @@ export function GoogleIntegrationRemoveDialog({
         closeButton: true
       }}
       dialogActionChildren={
-        <Stack direction="row" gap={2}>
+        <Stack
+          direction="row"
+          sx={{
+            gap: 2
+          }}
+        >
           <Button onClick={handleClose} disabled={loading}>
             {t('Cancel')}
           </Button>
@@ -104,7 +112,11 @@ export function GoogleIntegrationRemoveDialog({
         </Stack>
       }
     >
-      <Stack gap={2}>
+      <Stack
+        sx={{
+          gap: 2
+        }}
+      >
         <Typography variant="body1">
           {t(
             'Removing this Google integration will mark all active Google Sheets syncs as removed and unlink them from this account. This cannot be undone.'

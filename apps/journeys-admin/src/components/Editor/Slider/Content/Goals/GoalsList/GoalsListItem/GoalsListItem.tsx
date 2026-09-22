@@ -112,11 +112,11 @@ export function GoalsListItem({
             {url}
           </Typography>
           <Stack
-            gap={2}
             direction="row"
-            alignItems="center"
-            pb={2.5}
             sx={{
+              gap: 2,
+              alignItems: 'center',
+              pb: 2.5,
               transition: (theme) => theme.transitions.create('color'),
               color: selected ? 'primary.main' : 'secondary.light'
             }}
@@ -131,11 +131,21 @@ export function GoalsListItem({
             >
               {icon}
             </Box>
-            <Typography variant="subtitle2" color="secondary.light">
+            <Typography
+              variant="subtitle2"
+              sx={{
+                color: 'secondary.light'
+              }}
+            >
               {label}
             </Typography>
           </Stack>
-          <Typography variant="body2" color="secondary.light">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'secondary.light'
+            }}
+          >
             <Trans
               t={t}
               count={count}

@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import fetch, { Response } from 'node-fetch'
 import { SnackbarProvider } from 'notistack'
@@ -84,7 +84,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: mockJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -114,7 +114,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: { ...publishedJourney, primaryImageBlock: null },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -158,7 +158,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: mockJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -248,7 +248,7 @@ describe('SocialScreenSocialImage', () => {
                 id: 'journeyId',
                 primaryImageBlock: null
               },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -296,10 +296,13 @@ describe('SocialScreenSocialImage', () => {
     }))
     const strictUploadMock = {
       ...cloudflareUploadMutationMock,
-      // Tightened from the shared catch-all matcher to prove journeyId threads
-      // through to the mutation variables.
-      variableMatcher: (variables: { journeyId?: string }) =>
-        variables.journeyId === 'journeyId',
+      request: {
+        ...cloudflareUploadMutationMock.request,
+        // Tightened from the shared catch-all matcher to prove journeyId
+        // threads through to the mutation variables.
+        variables: (variables: { journeyId?: string }) =>
+          variables.journeyId === 'journeyId'
+      },
       result: uploadResult as typeof cloudflareUploadMutationMock.result
     }
 
@@ -309,7 +312,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: mockJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -335,7 +338,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: mockJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -365,7 +368,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: mockJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -406,7 +409,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: mockJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />

@@ -13,10 +13,19 @@ export function ResetPasswordSentPage({
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
-      <Typography variant="h6" textAlign="left">
+      <Typography
+        variant="h6"
+        sx={{
+          textAlign: 'left'
+        }}
+      >
         {t('Check your email')}
       </Typography>
-      <Stack gap={4}>
+      <Stack
+        sx={{
+          gap: 4
+        }}
+      >
         <Stack>
           <Typography>
             {t(

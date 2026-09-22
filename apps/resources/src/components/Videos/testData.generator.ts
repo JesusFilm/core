@@ -36,7 +36,7 @@ const ids = [
 
 async function testDataGenerator(): Promise<void> {
   const template = readFileSync(
-    './apps/watch/src/components/Videos/__generated__/testData.ts',
+    './apps/resources/src/components/Videos/__generated__/testData.ts',
     {
       encoding: 'utf8'
     }
@@ -58,6 +58,11 @@ async function testDataGenerator(): Promise<void> {
       languageId: '529'
     }
   })
+  // Apollo Client 4 types `data` as optional. The default `none` error
+  // policy rejects rather than resolving without data, so this narrows
+  // the type rather than guarding a reachable branch.
+  if (data == null) throw new Error('GetVideosForTestData returned no data')
+
   const videos: Videos[] = []
 
   data.videos.forEach((video) => {
@@ -70,12 +75,12 @@ async function testDataGenerator(): Promise<void> {
     .replace(/"quality":"(\w*)",/g, 'quality: VideoVariantDownloadQuality.$1,')
   console.log('printing to file...')
   writeFileSync(
-    './apps/watch/src/components/Videos/__generated__/testData.ts',
+    './apps/resources/src/components/Videos/__generated__/testData.ts',
     template.replace(/\[\] = \[[\s\S]*\n\]/, `[] = ${stringifiedData}`)
   )
   console.log('running prettier...')
   await promisify(exec)(
-    './node_modules/.bin/prettier -w ./apps/watch/src/components/Videos/__generated__/testData.ts'
+    './node_modules/.bin/prettier -w ./apps/resources/src/components/Videos/__generated__/testData.ts'
   )
   console.log('done')
 }

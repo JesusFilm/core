@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import Button from '@mui/material/Button'
@@ -204,8 +205,19 @@ export function RegisterPage({
           isSubmitting
         }) => (
           <Form data-testid="RegisterForm">
-            <Stack gap={4} data-testid="RegisterPage">
-              <Typography variant="h6" textAlign="left" sx={{ mb: 2 }}>
+            <Stack
+              data-testid="RegisterPage"
+              sx={{
+                gap: 4
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{
+                  textAlign: 'left',
+                  mb: 2
+                }}
+              >
                 {t('Create account')}
               </Typography>
               <TextField
@@ -260,18 +272,20 @@ export function RegisterPage({
                 }
                 fullWidth
                 type={showPassword ? 'text' : 'password'}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  )
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }
                 }}
               />
               <Stack direction="row" spacing={2}>

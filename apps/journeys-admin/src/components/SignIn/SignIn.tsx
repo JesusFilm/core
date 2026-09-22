@@ -27,6 +27,15 @@ export function SignIn(): ReactElement {
     if (user == null) return
     if (user.isAnonymous === true) return
 
+    // This page only renders when the server found no valid session cookie, so
+    // a client-side Firebase user here may be stale. /users/verify redirects
+    // straight back when the cookie is missing, and arriving with
+    // ?redirect=/users/verify means we have already made that round trip —
+    // going again would bounce forever.
+    const redirect = router.query.redirect
+    if (typeof redirect === 'string' && redirect.startsWith('/users/verify'))
+      return
+
     const search = getSearchFromAsPath(router.asPath)
     void router.replace(`/users/verify${search}`)
   }, [router, user?.id, user?.isAnonymous])

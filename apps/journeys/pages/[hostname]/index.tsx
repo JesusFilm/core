@@ -17,27 +17,7 @@ import { getFlags } from '../../src/libs/getFlags'
 import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
 import JourneysPage, { GET_JOURNEYS } from '../home'
 
-import ImportedHostJourneyPage from './[journeySlug]'
-
-interface HostJourneyPageProps {
-  journey: GetJourney['journey']
-  host: string | undefined
-}
-
-function HostJourneyPage({
-  journey,
-  host
-}: HostJourneyPageProps): ReactElement {
-  const { rtl, locale } = getJourneyRTL(journey)
-  return (
-    <ImportedHostJourneyPage
-      journey={journey}
-      host={host ?? ''}
-      locale={locale}
-      rtl={rtl}
-    />
-  )
-}
+import HostJourneyPage from './[journeySlug]'
 
 interface HostJourneysPageProps {
   host?: string
@@ -50,10 +30,16 @@ function HostJourneysPage({
   journey,
   host
 }: HostJourneysPageProps): ReactElement {
-  return journey != null ? (
-    <HostJourneyPage journey={journey} host={host} />
-  ) : (
-    <JourneysPage journeys={journeys} />
+  if (journey == null) return <JourneysPage journeys={journeys} />
+
+  const { rtl, locale } = getJourneyRTL(journey)
+  return (
+    <HostJourneyPage
+      journey={journey}
+      host={host ?? ''}
+      locale={locale}
+      rtl={rtl}
+    />
   )
 }
 
@@ -73,6 +59,10 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
       }
     }
   })
+  // Apollo Client 4 types `data` as optional. The default `none` error
+  // policy rejects rather than resolving without data, so this narrows
+  // the type rather than guarding a reachable branch.
+  if (data == null) throw new Error('GetJourneysSummary returned no data')
 
   if (data.journeys === null) {
     return {
@@ -102,6 +92,11 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
           }
         }
       })
+      // Apollo Client 4 types `data` as optional. The default `none` error
+      // policy rejects rather than resolving without data, so this narrows
+      // the type rather than guarding a reachable branch.
+      if (journeyData == null) throw new Error('GetJourney returned no data')
+
       return {
         props: {
           flags: await getFlags(),

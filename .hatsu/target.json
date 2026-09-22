@@ -1,0 +1,10 @@
+{
+  "$comment": "Hatsu target descriptor — see .hatsu/README.md. Gate commands run inside a ticket worktree.",
+  "repoSlug": "JesusFilm/core",
+  "defaultBranch": "main",
+  "gates": {
+    "install": "pnpm install",
+    "check": "pnpm affected:lint",
+    "test": "pnpm affected:test"
+  }
+}

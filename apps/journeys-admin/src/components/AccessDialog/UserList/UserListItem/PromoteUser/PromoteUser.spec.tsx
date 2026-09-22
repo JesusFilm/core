@@ -1,4 +1,5 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
@@ -24,7 +25,6 @@ describe('PromoteUser', () => {
     }))
     const { getByRole } = render(
       <MockedProvider
-        addTypename={false}
         mocks={[
           {
             request: {
@@ -38,7 +38,8 @@ describe('PromoteUser', () => {
         ]}
       >
         <PromoteUser id="userId" onClick={handleClick} />
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
     fireEvent.click(getByRole('menuitem'))
     await waitFor(() => expect(result).toHaveBeenCalled())

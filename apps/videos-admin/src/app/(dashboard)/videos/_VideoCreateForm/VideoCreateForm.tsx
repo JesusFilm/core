@@ -1,6 +1,7 @@
 'use client'
 
-import { useMutation, useQuery } from '@apollo/client'
+import { CombinedGraphQLErrors } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -14,18 +15,11 @@ import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 
 import { FormSelectField } from '../../../../components/FormSelectField'
 import { FormTextField } from '../../../../components/FormTextField'
-import { videoLabels } from '../../../../constants'
-
-enum VideoLabel {
-  behindTheScenes = 'behindTheScenes',
-  collection = 'collection',
-  episode = 'episode',
-  featureFilm = 'featureFilm',
-  segment = 'segment',
-  series = 'series',
-  shortFilm = 'shortFilm',
-  trailer = 'trailer'
-}
+import {
+  VideoLabelValue,
+  videoLabelValues,
+  videoLabels
+} from '../../../../constants'
 
 export const CREATE_VIDEO = graphql(`
   mutation CreateVideo($input: VideoCreateInput!) {
@@ -118,8 +112,8 @@ export function VideoCreateForm({
         }
         return true
       }),
-    label: mixed<VideoLabel>()
-      .oneOf(Object.values(VideoLabel))
+    label: mixed<VideoLabelValue>()
+      .oneOf(videoLabelValues)
       .required('Label is required'),
     originId: string().trim().required('Origin is required')
   })
@@ -152,28 +146,28 @@ export function VideoCreateForm({
           validChildLabels: videoLabels.filter((vl) =>
             ['episode', 'featureFilm', 'shortFilm', 'series'].includes(vl.value)
           ),
-          suggestedLabel: VideoLabel.episode
+          suggestedLabel: 'episode' as const
         }
       case 'featureFilm':
         return {
           validChildLabels: videoLabels.filter((vl) =>
             ['segment', 'trailer', 'behindTheScenes'].includes(vl.value)
           ),
-          suggestedLabel: VideoLabel.segment
+          suggestedLabel: 'segment' as const
         }
       case 'series':
         return {
           validChildLabels: videoLabels.filter((vl) =>
             ['episode', 'trailer', 'behindTheScenes'].includes(vl.value)
           ),
-          suggestedLabel: VideoLabel.episode
+          suggestedLabel: 'episode' as const
         }
       case 'episode':
         return {
           validChildLabels: videoLabels.filter((vl) =>
             ['segment', 'trailer', 'behindTheScenes'].includes(vl.value)
           ),
-          suggestedLabel: VideoLabel.segment
+          suggestedLabel: 'segment' as const
         }
       default:
         return { validChildLabels: videoLabels, suggestedLabel: undefined }
@@ -279,18 +273,11 @@ export function VideoCreateForm({
         // Handle specific error messages
         let errorMessage = 'Something went wrong.'
 
-        // Check for GraphQL errors in both direct GraphQL errors and network errors
-        const directErrors = error.graphQLErrors || []
-        const networkErrors =
-          error.networkError &&
-          typeof error.networkError === 'object' &&
-          'graphQLErrors' in error.networkError &&
-          Array.isArray(error.networkError.graphQLErrors)
-            ? error.networkError.graphQLErrors
-            : []
-
-        const graphQLErrors =
-          directErrors.length > 0 ? directErrors : networkErrors
+        // Apollo Client 4 no longer wraps failures: GraphQL errors arrive as a
+        // `CombinedGraphQLErrors` instance, everything else as the raw error.
+        const graphQLErrors = CombinedGraphQLErrors.is(error)
+          ? error.errors
+          : []
 
         if (graphQLErrors.length > 0) {
           const graphQLError = graphQLErrors[0]
@@ -329,7 +316,7 @@ export function VideoCreateForm({
   const initialValues: InferType<typeof validationSchema> = {
     id: '',
     slug: '',
-    label: suggestedLabel || ('' as VideoLabel),
+    label: suggestedLabel || ('' as VideoLabelValue),
     originId: parentData?.adminVideo?.origin?.id || ''
   }
 
@@ -341,7 +328,11 @@ export function VideoCreateForm({
       enableReinitialize={true}
     >
       <Form data-testid="VideoCreateForm">
-        <Stack gap={2}>
+        <Stack
+          sx={{
+            gap: 2
+          }}
+        >
           <FormSelectField
             name="originId"
             label="Origin"
@@ -368,10 +359,20 @@ export function VideoCreateForm({
             fullWidth
           />
           {parentId && (
-            <Typography variant="caption" color="text.secondary"></Typography>
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary'
+              }}
+            ></Typography>
           )}
           {parentId && (
-            <Typography variant="caption" color="text.secondary">
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary'
+              }}
+            >
               This video will be added as a child to video with ID: {parentId}
             </Typography>
           )}

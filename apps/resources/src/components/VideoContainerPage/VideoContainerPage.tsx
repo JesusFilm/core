@@ -40,8 +40,10 @@ export function VideoContainerPage(): ReactElement {
       <Container maxWidth="xxl" data-testid="VideoContainerPage">
         <Stack
           spacing={{ xs: 4, md: 11 }}
-          py={{ xs: 7, md: 17 }}
           direction="column"
+          sx={{
+            py: { xs: 7, md: 17 }
+          }}
         >
           <ContainerDescription
             value={last(snippet)?.value ?? ''}

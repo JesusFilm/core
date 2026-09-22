@@ -1,13 +1,5 @@
-import {
-  Button,
-  Column,
-  Hr,
-  Img,
-  Row,
-  Section,
-  Text
-} from '@react-email/components'
 import { ReactElement } from 'react'
+import { Button, Column, Hr, Img, Row, Section, Text } from 'react-email'
 
 import { JourneyForEmails } from '../../../types/types'
 import { ActionButton } from '../ActionButton'
@@ -61,7 +53,7 @@ export function ActionJourneyView({
             )}
             <Row className="px-[28px]">
               <Column align="center">
-                <Text className="font-sans text-[20px] leading-[28px] font-semibold text-black visited:text-black">
+                <Text className="font-sans text-[20px] leading-[28px] font-semibold text-black">
                   {journey.title}
                 </Text>
               </Column>

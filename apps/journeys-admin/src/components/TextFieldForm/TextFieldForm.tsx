@@ -18,7 +18,6 @@ type FieldProps = Pick<
   | 'disabled'
   | 'helperText'
   | 'hiddenLabel'
-  | 'inputProps'
   | 'sx'
   | 'type'
   | 'size'
@@ -57,8 +56,15 @@ export function TextFieldForm({
   endIcon,
   helperText,
   ref,
+  slotProps,
   ...muiFieldProps
 }: TextFieldFormProps): ReactElement {
+  // Only take over the `input` slot when there is an adornment to inject —
+  // otherwise the caller's `slotProps.input` (which may be a callback, and so
+  // cannot be spread) is passed through untouched.
+  const hasAdornment = startIcon != null || endIcon != null
+  const inputSlotProps =
+    typeof slotProps?.input === 'object' ? slotProps.input : undefined
   const textFieldRef = useRef<HTMLInputElement>(null)
   const formikRef = useRef<any>(null)
 
@@ -117,18 +123,6 @@ export function TextFieldForm({
               value={values[id]}
               error={Boolean(errors[id])}
               helperText={errors[id] != null ? errors[id] : helperText}
-              InputProps={{
-                startAdornment: startIcon ? (
-                  <InputAdornment data-testid="startAdornment" position="start">
-                    {startIcon}
-                  </InputAdornment>
-                ) : undefined,
-                endAdornment: endIcon ? (
-                  <InputAdornment data-testid="endAdornment" position="end">
-                    {endIcon}
-                  </InputAdornment>
-                ) : undefined
-              }}
               onPaste={onPaste}
               onBlur={async (e) => {
                 handleBlur(e)
@@ -143,6 +137,31 @@ export function TextFieldForm({
                 handleChange(e)
               }}
               data-testid="JourneysAdminTextFieldForm"
+              slotProps={{
+                ...slotProps,
+                ...(hasAdornment && {
+                  input: {
+                    ...inputSlotProps,
+                    startAdornment: startIcon ? (
+                      <InputAdornment
+                        data-testid="startAdornment"
+                        position="start"
+                      >
+                        {startIcon}
+                      </InputAdornment>
+                    ) : (
+                      inputSlotProps?.startAdornment
+                    ),
+                    endAdornment: endIcon ? (
+                      <InputAdornment data-testid="endAdornment" position="end">
+                        {endIcon}
+                      </InputAdornment>
+                    ) : (
+                      inputSlotProps?.endAdornment
+                    )
+                  }
+                })
+              }}
             />
           </Form>
         )

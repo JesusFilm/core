@@ -1,4 +1,5 @@
-import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
+import { type MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -90,9 +91,8 @@ vi.mock('@core/journeys/ui/ChatOverlay', () => ({
     open ? <div data-testid="ChatOverlay-open" /> : null
 }))
 
-const noopJourneyViewMock: MockedResponse = {
-  request: { query: JOURNEY_VIEW_EVENT_CREATE },
-  variableMatcher: () => true,
+const noopJourneyViewMock: MockLink.MockedResponse = {
+  request: { query: JOURNEY_VIEW_EVENT_CREATE, variables: () => true },
   maxUsageCount: Infinity,
   delay: 99999999,
   result: {
@@ -102,9 +102,8 @@ const noopJourneyViewMock: MockedResponse = {
   }
 }
 
-const noopStepViewMock: MockedResponse = {
-  request: { query: STEP_VIEW_EVENT_CREATE },
-  variableMatcher: () => true,
+const noopStepViewMock: MockLink.MockedResponse = {
+  request: { query: STEP_VIEW_EVENT_CREATE, variables: () => true },
   maxUsageCount: Infinity,
   result: {
     data: {
@@ -113,9 +112,8 @@ const noopStepViewMock: MockedResponse = {
   }
 }
 
-const noopStepNextMock: MockedResponse = {
-  request: { query: STEP_NEXT_EVENT_CREATE },
-  variableMatcher: () => true,
+const noopStepNextMock: MockLink.MockedResponse = {
+  request: { query: STEP_NEXT_EVENT_CREATE, variables: () => true },
   maxUsageCount: Infinity,
   result: {
     data: {
@@ -124,9 +122,8 @@ const noopStepNextMock: MockedResponse = {
   }
 }
 
-const noopStepPreviousMock: MockedResponse = {
-  request: { query: STEP_PREVIOUS_EVENT_CREATE },
-  variableMatcher: () => true,
+const noopStepPreviousMock: MockLink.MockedResponse = {
+  request: { query: STEP_PREVIOUS_EVENT_CREATE, variables: () => true },
   maxUsageCount: Infinity,
   result: {
     data: {
@@ -414,7 +411,7 @@ describe('Conductor', () => {
   })
 
   describe('per-card chat', () => {
-    // These tests use `variant: 'customize'`, so Conductor's journeyView
+    // These tests use `renderMode: 'customize'`, so Conductor's journeyView
     // effect early-returns and never calls `global.fetch` — the module-level
     // geo-data fetch above is irrelevant here.
     const perCardJourney: Journey = { ...defaultJourney }
@@ -472,7 +469,7 @@ describe('Conductor', () => {
         <FlagsProvider flags={{ apologistChat }}>
           <MockedProvider mocks={[]}>
             <SnackbarProvider>
-              <JourneyProvider value={{ journey, variant: 'customize' }}>
+              <JourneyProvider value={{ journey, renderMode: 'customize' }}>
                 <ChatOverlayProvider journeyId={journey.id}>
                   <Conductor blocks={blocks} />
                 </ChatOverlayProvider>
@@ -635,7 +632,7 @@ describe('Conductor', () => {
           <FlagsProvider flags={{ apologistChat: false }}>
             <MockedProvider mocks={[]}>
               <SnackbarProvider>
-                <JourneyProvider value={{ journey, variant: 'customize' }}>
+                <JourneyProvider value={{ journey, renderMode: 'customize' }}>
                   <ChatOverlayProvider journeyId={journey.id}>
                     <Conductor blocks={blocks} />
                   </ChatOverlayProvider>
@@ -656,7 +653,7 @@ describe('Conductor', () => {
           <FlagsProvider flags={{ apologistChat: true }}>
             <MockedProvider mocks={[]}>
               <SnackbarProvider>
-                <JourneyProvider value={{ journey, variant: 'customize' }}>
+                <JourneyProvider value={{ journey, renderMode: 'customize' }}>
                   <ChatOverlayProvider journeyId={journey.id}>
                     <Conductor blocks={blocks} />
                   </ChatOverlayProvider>

@@ -87,9 +87,11 @@ function LoadingJourneyCard(): ReactElement {
       >
         <Stack
           direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{ mb: 1 }}
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            mb: 1
+          }}
         >
           <Skeleton variant="text" width={80} height={25} />
           <Skeleton variant="circular" width={27} height={27} />
@@ -126,7 +128,11 @@ export function LoadingJourneyList({
         </Grid>
       </Box>
       {!hideHelperText && (
-        <Stack alignItems="center">
+        <Stack
+          sx={{
+            alignItems: 'center'
+          }}
+        >
           <Typography
             variant="caption"
             align="center"
