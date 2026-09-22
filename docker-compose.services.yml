@@ -95,6 +95,7 @@ services:
     image: clickhouse/clickhouse-server:23.3.7.5-alpine
     profiles: ['analytics']
     restart: always
+    network_mode: service:db
     volumes:
       - event-data:/var/lib/clickhouse
       - event-logs:/var/log/clickhouse-server
