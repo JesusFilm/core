@@ -10,7 +10,7 @@ cd /workspaces/core
 # Wait for database to be ready
 echo "Waiting for database to be ready..."
 for i in {1..30}; do
-  pg_isready -h db -p 5432 -U postgres && break
+  pg_isready -h localhost -p 5432 -U postgres && break
   echo "Database not ready (try $i/30)…"
   sleep 2
 done
@@ -35,7 +35,7 @@ pnpm install
 
 # update plausible db (with error handling)
 echo "Setting up Plausible database..."
-if ! psql -h db -U postgres -d plausible_db < .devcontainer/plausible.sql; then
+if ! psql -h localhost -U postgres -d plausible_db < .devcontainer/plausible.sql; then
   echo "❌ Plausible DB bootstrap failed" >&2
   exit 1
 fi

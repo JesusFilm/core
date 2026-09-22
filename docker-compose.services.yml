@@ -25,8 +25,21 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
+    # db anchors a single network namespace that every other service joins
+    # (`network_mode: service:db`), so all of them are reachable as
+    # `localhost` from each other, from the host, and from the dev container.
+    # That is why every published port lives here.
     ports:
-      - 5432:5432
+      - 5432:5432 # db
+      - 6379:6379 # redis
+      - 8079:80 # serverless-redis-http
+      - 1080:1080 # maildev web
+      - 1025:1025 # maildev smtp
+      - 8000:8000 # plausible
+    # Shared with every service that joins this namespace (they inherit
+    # db's /etc/hosts); tools/scripts/db-backup-restore.sh relies on it.
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
@@ -35,10 +48,7 @@ services:
   redis:
     image: redis:latest
     restart: unless-stopped
-    expose:
-      - 6379
-    ports:
-      - 6379:6379
+    network_mode: service:db
     command:
       [
         'redis-server',
@@ -59,20 +69,17 @@ services:
   serverless-redis-http:
     image: hiett/serverless-redis-http:latest
     restart: unless-stopped
+    network_mode: service:db
     depends_on:
       - redis
-    ports:
-      - 8079:80
     environment:
       SRH_MODE: env
       SRH_TOKEN: example_token
-      SRH_CONNECTION_STRING: redis://redis:6379
+      SRH_CONNECTION_STRING: redis://localhost:6379
   maildev:
     image: 'maildev/maildev:latest'
     restart: unless-stopped
-    ports:
-      - 1080:1080
-      - 1025:1025
+    network_mode: service:db
   clickhouse:
     image: clickhouse/clickhouse-server:23.3.7.5-alpine
     profiles: ['analytics']
@@ -89,17 +96,16 @@ services:
     profiles: ['analytics']
     restart: always
     command: sh -c "sleep 10 && /entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh run"
+    network_mode: service:db
     depends_on:
       - db
       - clickhouse
-    ports:
-      - 8000:8000
     environment:
       BASE_URL: http://localhost:8000
       SECRET_KEY_BASE: LG7O7gVu6xg82I3mx/txm0VeTapsBOBl2Fb40+jgfL+OlKBsOOtwYQUus8Hm51mJ
       TOTP_VAULT_KEY: GDaE8fBhEKJUveTDKv1DFPXIqf6EjVtcNwdUiy2i/MA=
-      DATABASE_URL: postgres://postgres:postgres@db:5432/plausible_db
-      CLICKHOUSE_DATABASE_URL: http://clickhouse:8123/plausible_events_db
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/plausible_db
+      CLICKHOUSE_DATABASE_URL: http://localhost:8123/plausible_events_db
 volumes:
   postgres-data:
   redis-data:
