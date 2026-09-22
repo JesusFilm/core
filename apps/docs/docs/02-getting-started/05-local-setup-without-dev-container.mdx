@@ -61,11 +61,11 @@ is on. Then continue with [environment variables](./02-environment-variables.mdx
 
 ## Day to day
 
-| Task                         | Command                                                  |
-| ---------------------------- | -------------------------------------------------------- |
-| Start / stop services        | `pnpm services:up` (`services:up:analytics`), `pnpm services:stop` |
-| Backend (gateway + APIs)     | `pnpm dev:api` (foreman, via the `Procfile`)             |
-| Any nx target                | `pnpm exec nx <target> <project>`                        |
+| Task                     | Command                                                            |
+| ------------------------ | ------------------------------------------------------------------ |
+| Start / stop services    | `pnpm services:up` (`services:up:analytics`), `pnpm services:stop` |
+| Backend (gateway + APIs) | `pnpm dev:api` (foreman, via the `Procfile`)                       |
+| Any nx target            | `pnpm exec nx <target> <project>`                                  |
 
 The docs elsewhere write bare `nx …` and `nf start`, which rely on global installs inside the dev container.
 On a host checkout use `pnpm exec nx …` and `pnpm dev:api`, or add `alias nx='pnpm exec nx'` to your shell.
