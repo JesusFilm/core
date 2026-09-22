@@ -111,4 +111,27 @@ describe('Home', () => {
       expect(mockFetchSignInMethodsForEmail).toHaveBeenCalled()
     )
   })
+
+  it('should route Facebook users to Facebook sign in', async () => {
+    const mockFetchSignInMethodsForEmail =
+      fetchSignInMethodsForEmail as MockedFunction<
+        typeof fetchSignInMethodsForEmail
+      >
+    mockFetchSignInMethodsForEmail.mockResolvedValueOnce(['facebook.com'])
+    const setActivePage = vi.fn()
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <HomePage setActivePage={setActivePage} />
+      </MockedProvider>
+    )
+
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'example@example.com' }
+    })
+    fireEvent.click(getByRole('button', { name: 'Continue with email' }))
+    await waitFor(() =>
+      expect(setActivePage).toHaveBeenCalledWith('facebook.com')
+    )
+  })
 })
