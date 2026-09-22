@@ -32,6 +32,7 @@ const fallbackLng = {
   id: ['id-ID'],
   ja: ['ja-JP'],
   ko: ['ko-KR'],
+  mn: ['mn-MN'],
   ms: ['ms-MY'],
   my: ['my-MM'],
   ne: ['ne-NP'],
