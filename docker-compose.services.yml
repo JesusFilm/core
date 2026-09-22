@@ -37,9 +37,20 @@ services:
       - 1025:1025 # maildev smtp
       - 8000:8000 # plausible
     # Shared with every service that joins this namespace (they inherit
-    # db's /etc/hosts); tools/scripts/db-backup-restore.sh relies on it.
+    # db's /etc/hosts). host.docker.internal is used by
+    # tools/scripts/db-backup-restore.sh. The service-name aliases are a
+    # compatibility shim: since the services share one namespace they are no
+    # longer separate DNS entries, so config that still says `redis`,
+    # `maildev`, `plausible`... (e.g. Doppler dev configs) keeps resolving
+    # inside the dev container. Prefer `localhost`; the aliases do not exist
+    # on a host checkout.
     extra_hosts:
       - 'host.docker.internal:host-gateway'
+      - 'redis:127.0.0.1'
+      - 'serverless-redis-http:127.0.0.1'
+      - 'maildev:127.0.0.1'
+      - 'clickhouse:127.0.0.1'
+      - 'plausible:127.0.0.1'
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
