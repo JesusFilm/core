@@ -1,33 +1,33 @@
 {
   "RootIndexPage": {
-    "pageTitle": "Player",
-    "description": "Navigate to /pl/[playlistId] to view a playlist"
+    "pageTitle": "ကစားသမား",
+    "description": "playlist ကို ကြည့်ရန် /pl/[playlistId] သို့ သွားပါ။"
   },
   "Metadata": {
-    "pageTitle": "{title} | Jesus Film Project"
+    "pageTitle": "{title} ယေရှုရုပ်ရှင်စီမံကိန်း"
   },
   "PlaylistRoutePage": {
-    "defaultPageTitle": "Playlist",
-    "pageTitle": "{title} by {name}",
-    "thisPlaylistIsEmpty": "This playlist is empty",
-    "defaultDescription": "Your friend shared these videos as an encouragement to you. Press play for uplifting stories about finding peace in Jesus.",
-    "description": "Your friend {name} shared these videos as an encouragement to you. Press play for uplifting stories about finding peace in Jesus."
+    "defaultPageTitle": "ကစားစာရင်း",
+    "pageTitle": "{title} ကွယ်၍ {name}",
+    "thisPlaylistIsEmpty": "ဤသီချင်းစာရင်းတွင် သီချင်းမရှိပါ။",
+    "defaultDescription": "သင့်သူငယ်ချင်းက သင့်အား အားပေးရန်အတွက် ဒီဗီဒီယိုတွေကို မျှဝေခဲ့ပါတယ်။ ယေရှု၌ ငြိမ်းချမ်းမှု ရှာတွေ့ခြင်းအကြောင်း စိတ်ဓာတ်မြှင့်တင်ပေးမယ့် ဇာတ်လမ်းတွေကို ကြည့်ရန် Play ကို နှိပ်ပါ။",
+    "description": "သင့်သူငယ်ချင်း {name} က သင့်အား အားပေးရန် ဒီဗီဒီယိုများကို မျှဝေခဲ့သည်။  ယေရှု၌ ငြိမ်းချမ်းမှု ရှာဖွေတွေ့ရှိခြင်းအကြောင်း စိတ်ဓာတ်မြှင့်တင်ပေးမယ့် ဇာတ်လမ်းများအတွက် Play ကို နှိပ်ပါ။"
   },
   "PlaylistPage": {
-    "noVideoAvailable": "No video available"
+    "noVideoAvailable": "ဗီဒီယို မရရှိနိုင်ပါ"
   },
   "PlaylistList": {
-    "noThumbnail": "No thumbnail"
+    "noThumbnail": "သေးငယ်ပုံမရှိပါ"
   },
   "StudyQuestions": {
-    "title": "Study Questions"
+    "title": "လေ့လာရန် မေးခွန်းများ"
   },
   "VideoPlayer": {
-    "lackOfBrowserSupport": "To view this video please enable JavaScript, and consider upgrading to a web browser that <link>supports HTML5 video</link>"
+    "lackOfBrowserSupport": "ဤဗီဒီယိုကို ကြည့်ရန် JavaScript ကို ဖွင့်ထားပါ၊ <link>HTML5 ဗီဒီယိုကို ထောက်ပံ့သည့်</link> ဝဘ်ဘရောက်ဇာသို့ အဆင့်မြှင့်ရန် စဉ်းစားပါ။"
   },
   "SharedPlaylistBanner": {
-    "sharedWithYou": "Your friend <strong>{name}</strong> shared these videos with you as an encouragement to you. The best way to view these videos is by downloading our app.",
-    "downloadOnAppStore": "Download on App Store",
-    "getItOnGooglePlay": "Get it on Google Play"
+    "sharedWithYou": "သင့်သူငယ်ချင်း <strong>{name}</strong> သူငယ်ချင်းက သင့်အား အားပေးရန်အတွက် ဒီဗီဒီယိုတွေကို မျှဝေခဲ့တာပါ။ ဒီဗီဒီယိုတွေကို ကြည့်ရှုရန် အကောင်းဆုံးနည်းလမ်းက ကျွန်ုပ်တို့ရဲ့ အက်ပ်ကို ဒေါင်းလုဒ်ဆွဲခြင်းဖြစ်ပါတယ်။",
+    "downloadOnAppStore": "App Store မှ ဒေါင်းလုပ်လုပ်ပါ",
+    "getItOnGooglePlay": "Google Play မှာ ရယူပါ"
   }
 }
