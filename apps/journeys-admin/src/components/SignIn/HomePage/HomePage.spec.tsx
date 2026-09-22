@@ -27,8 +27,8 @@ describe('Home', () => {
     )
   })
 
-  it('should render google and facebook login buttons', () => {
-    const { getByRole } = render(
+  it('should render google and okta login buttons but not facebook', () => {
+    const { getByRole, queryByRole } = render(
       <MockedProvider>
         <HomePage />
       </MockedProvider>
@@ -37,8 +37,11 @@ describe('Home', () => {
       getByRole('button', { name: 'Continue with Google' })
     ).toBeInTheDocument()
     expect(
-      getByRole('button', { name: 'Continue with Facebook' })
+      getByRole('button', { name: 'Continue with Okta' })
     ).toBeInTheDocument()
+    expect(
+      queryByRole('button', { name: 'Continue with Facebook' })
+    ).not.toBeInTheDocument()
   })
 
   it('should require user to enter an email', async () => {
