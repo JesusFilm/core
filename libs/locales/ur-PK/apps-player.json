@@ -1,33 +1,33 @@
 {
   "RootIndexPage": {
-    "pageTitle": "Player",
-    "description": "Navigate to /pl/[playlistId] to view a playlist"
+    "pageTitle": "کھلاڑی",
+    "description": "پلے لسٹ دیکھنے کے لیے /pl/[playlistId] پر جائیں۔"
   },
   "Metadata": {
-    "pageTitle": "{title} | Jesus Film Project"
+    "pageTitle": "{title} | یسوع فلم پروجیکٹ"
   },
   "PlaylistRoutePage": {
     "defaultPageTitle": "پلے-لسٹ",
-    "pageTitle": "{title} by {name}",
-    "thisPlaylistIsEmpty": "This playlist is empty",
-    "defaultDescription": "Your friend shared these videos as an encouragement to you. Press play for uplifting stories about finding peace in Jesus.",
-    "description": "Your friend {name} shared these videos as an encouragement to you. Press play for uplifting stories about finding peace in Jesus."
+    "pageTitle": "{title} کی طرف سے {name}",
+    "thisPlaylistIsEmpty": "یہ پلے لسٹ خالی ہے",
+    "defaultDescription": "آپ کے دوست نے آپ کی حوصلہ افزائی کے لیے یہ ویڈیوز شیئر کی ہیں۔ یسوع میں امن پانے کے بارے میں حوصلہ افزا کہانیاں دیکھنے کے لیے پلے دبائیں۔",
+    "description": "آپ کے دوست {name} نے آپ کی حوصلہ افزائی کے لیے یہ ویڈیوز شیئر کی ہیں۔ یسوع میں امن پانے کے بارے میں حوصلہ افزا کہانیاں دیکھنے کے لیے پلے دبائیں۔"
   },
   "PlaylistPage": {
-    "noVideoAvailable": "No video available"
+    "noVideoAvailable": "کوئی ویڈیو دستیاب نہیں"
   },
   "PlaylistList": {
-    "noThumbnail": "No thumbnail"
+    "noThumbnail": "کوئی تھمب نیل نہیں"
   },
   "StudyQuestions": {
-    "title": "Study Questions"
+    "title": "مطالعہ کے سوالات"
   },
   "VideoPlayer": {
-    "lackOfBrowserSupport": "To view this video please enable JavaScript, and consider upgrading to a web browser that <link>supports HTML5 video</link>"
+    "lackOfBrowserSupport": "اس ویڈیو کو دیکھنے کے لیے براہِ کرم جاوا اسکرپٹ فعال کریں اور <link>HTML5 ویڈیو کی حمایت کرنے</link> والے ویب براؤزر میں اپ گریڈ کرنے پر غور کریں۔"
   },
   "SharedPlaylistBanner": {
-    "sharedWithYou": "Your friend <strong>{name}</strong> shared these videos with you as an encouragement to you. The best way to view these videos is by downloading our app.",
-    "downloadOnAppStore": "Download on App Store",
-    "getItOnGooglePlay": "Get it on Google Play"
+    "sharedWithYou": "آپ کا دوست <strong>{name}</strong> آپ کے حوصلہ افزائی کے لیے آپ کے دوست نے یہ ویڈیوز آپ کے ساتھ شیئر کیں۔ ان ویڈیوز کو دیکھنے کا بہترین طریقہ ہماری ایپ ڈاؤن لوڈ کرنا ہے۔",
+    "downloadOnAppStore": "ایپ اسٹور سے ڈاؤن لوڈ کریں",
+    "getItOnGooglePlay": "اسے گوگل پلے پر حاصل کریں"
   }
 }

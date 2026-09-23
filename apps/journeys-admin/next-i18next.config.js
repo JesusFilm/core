@@ -32,6 +32,7 @@ const fallbackLng = {
   id: ['id-ID'],
   ja: ['ja-JP'],
   ko: ['ko-KR'],
+  mn: ['mn-MN'],
   ms: ['ms-MY'],
   my: ['my-MM'],
   ne: ['ne-NP'],
@@ -62,10 +63,12 @@ const i18nConfig = {
       'tr', // Turkish
       'zh', // Chinese
       'zh-Hans-CN', // Chinese, Simplified
+      'zh-Hant', // Chinese, Traditional
       'de', // German
       'ne', // Nepali
       'ms', // Malay
-      'pt' // Portuguese
+      'pt', // Portuguese
+      'mn' // Mongolian
     ],
     localeDetection: false
   },

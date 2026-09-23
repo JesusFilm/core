@@ -1,33 +1,33 @@
 {
   "RootIndexPage": {
-    "pageTitle": "Player",
-    "description": "Navigate to /pl/[playlistId] to view a playlist"
+    "pageTitle": "Pemain",
+    "description": "Navigasi ke /pl/[playlistId] untuk melihat senarai main"
   },
   "Metadata": {
-    "pageTitle": "{title} | Jesus Film Project"
+    "pageTitle": "{title} | Projek Filem Yesus"
   },
   "PlaylistRoutePage": {
-    "defaultPageTitle": "Playlist",
-    "pageTitle": "{title} by {name}",
-    "thisPlaylistIsEmpty": "This playlist is empty",
-    "defaultDescription": "Your friend shared these videos as an encouragement to you. Press play for uplifting stories about finding peace in Jesus.",
-    "description": "Your friend {name} shared these videos as an encouragement to you. Press play for uplifting stories about finding peace in Jesus."
+    "defaultPageTitle": "Senarai main",
+    "pageTitle": "{title} oleh {name}",
+    "thisPlaylistIsEmpty": "Senarai main ini kosong",
+    "defaultDescription": "Rakan anda berkongsi video-video ini sebagai galakan untuk anda. Tekan main untuk kisah-kisah yang menyemangati tentang mencari keamanan dalam Yesus.",
+    "description": "Rakan anda, {name} , berkongsi video-video ini sebagai galakan untuk anda. Tekan main untuk kisah-kisah yang menyemangatkan tentang mencari ketenangan dalam Yesus."
   },
   "PlaylistPage": {
-    "noVideoAvailable": "No video available"
+    "noVideoAvailable": "Tiada video tersedia"
   },
   "PlaylistList": {
-    "noThumbnail": "No thumbnail"
+    "noThumbnail": "Tiada pratonton"
   },
   "StudyQuestions": {
-    "title": "Study Questions"
+    "title": "Soalan Kajian"
   },
   "VideoPlayer": {
-    "lackOfBrowserSupport": "To view this video please enable JavaScript, and consider upgrading to a web browser that <link>supports HTML5 video</link>"
+    "lackOfBrowserSupport": "Untuk menonton video ini, sila aktifkan JavaScript dan pertimbangkan untuk menaik taraf pelayar web anda kepada pelayar yang <link>menyokong video HTML5</link>."
   },
   "SharedPlaylistBanner": {
-    "sharedWithYou": "Your friend <strong>{name}</strong> shared these videos with you as an encouragement to you. The best way to view these videos is by downloading our app.",
-    "downloadOnAppStore": "Download on App Store",
-    "getItOnGooglePlay": "Get it on Google Play"
+    "sharedWithYou": "Rakan anda <strong>{name}</strong> Rakan anda berkongsi video-video ini dengan anda sebagai galakan. Cara terbaik untuk menonton video-video ini ialah dengan memuat turun aplikasi kami.",
+    "downloadOnAppStore": "Muat turun di App Store",
+    "getItOnGooglePlay": "Dapatkan di Google Play"
   }
 }
