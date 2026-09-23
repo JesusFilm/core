@@ -126,7 +126,7 @@ _Avoid_: copy, fork, clone (use "duplicate" — it is the mutation and the menta
 > - **`customizable`** — _derived, not user-set_: whether a template exposes editable content (text, links, or media) for a duplicator to personalise. Recalculated from customization fields/flags; only meaningful when `template` is true.
 
 **Template Gallery Page**:
-A team-curated, slug-addressable **public landing page** (`/collections/<slug>`) bundling a hand-picked, hand-ordered list of template journeys for others to discover and duplicate. Has a `draft`/`published` status and its own hero **media**. Exposed publicly as the narrowed `TemplateGalleryPagePublic` / `TemplateGalleryItem` types so anonymous callers cannot traverse to team or block internals.
+A team-curated, slug-addressable **public landing page** (`/collections/<slug>`) bundling a hand-picked, hand-ordered list of template journeys for others to discover and duplicate. Has a `draft`/`published` status and its own hero **media**. A journey may belong to many pages; each **membership** is either the journey's single **home** (`isHome`) or a **link** — presentational only, with the rules (first placement is home, removal promotes the oldest link) applied by the link / move / remove mutations under a per-journey row lock. Exposed publicly as the narrowed `TemplateGalleryPagePublic` / `TemplateGalleryItem` types so anonymous callers cannot traverse to team or block internals.
 _Avoid_: gallery, marketplace, catalog page
 
 **Journey Collection**:

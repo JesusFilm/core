@@ -5,9 +5,10 @@ import { Prisma, prisma } from '@core/prisma/journeys/client'
 import { isInTeam } from '../authScopes'
 import { builder } from '../builder'
 
-import { lockPage } from './applyContiguousOrder'
+import { applyContiguousOrder, lockPage } from './applyContiguousOrder'
 import { assertHttpsUrl } from './assertHttpsUrl'
 import { filterToTeamTemplates } from './filterToTeamTemplates'
+import { addMembership, lockJourney, removeMembership } from './membership'
 import { SlugTakenError, validateUserSuppliedSlug } from './generateUniqueSlug'
 import { TemplateGalleryPageUpdateInput } from './inputs'
 import {
@@ -20,7 +21,7 @@ import { TemplateGalleryPageRef } from './templateGalleryPage'
 builder.mutationField('templateGalleryPageUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
-      "Update editable fields of a TemplateGalleryPage. All input fields are optional: a field omitted leaves the existing value alone, a field set to `null` clears it (where the field is nullable). When `input.journeyIds` is provided, the page's template list is replaced — existing assignments are deleted and recreated in the given order. Single-membership is enforced: if any supplied journey id is currently a member of another TemplateGalleryPage, the call fails before any write. Allowed on both `draft` and `published` pages (publishers can correct typos and curate the template list while live).\n\nAuth: caller must be a member of the page's team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the page's team.\n- BAD_USER_INPUT (field: `slug`): user-supplied slug fails shape, length, reserved-word, or uniqueness checks — including the concurrent-Update race where two callers pass the same slug and the second one trips the DB unique constraint at commit time.\n- BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.\n- CONFLICT (field: `journeyIds`; extension `journeyId` carries the offending id): one of the supplied journeys is already a member of another TemplateGalleryPage.",
+      "Update editable fields of a TemplateGalleryPage. All input fields are optional: a field omitted leaves the existing value alone, a field set to `null` clears it (where the field is nullable). When `input.journeyIds` is provided, the page's template list is replaced: journeys no longer listed are removed (promoting the oldest link elsewhere when the removed row was the journey's home), newly listed journeys are added (as the journey's home when it has none, otherwise as a link), and the page is reordered to the given order. A journey may belong to many pages. Allowed on both `draft` and `published` pages (publishers can correct typos and curate the template list while live).\n\nAuth: caller must be a member of the page's team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the page's team.\n- BAD_USER_INPUT (field: `slug`): user-supplied slug fails shape, length, reserved-word, or uniqueness checks — including the concurrent-Update race where two callers pass the same slug and the second one trips the DB unique constraint at commit time.\n- BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.",
     type: TemplateGalleryPageRef,
     nullable: false,
     args: {
@@ -66,62 +67,63 @@ builder.mutationField('templateGalleryPageUpdate', (t) =>
           : undefined
 
       return await prisma.$transaction(async (tx) => {
-        // Page-level lock must run before any write to the templates join
-        // table so concurrent reorder/assign mutations on the same page
-        // serialize against this Update. Without it, an interleaved
-        // assign can trip the (templateGalleryPageId, order) UNIQUE
-        // constraint mid-`createMany`.
-        await lockPage(tx, id)
-
         if (input.journeyIds !== undefined && input.journeyIds !== null) {
-          // Single-membership cross-page guard. Without this, a concurrent
-          // assign of journey J to page Q can interleave with this Update's
-          // delete+create on page P=id and leave J on BOTH pages — a direct
-          // violation of the invariant that templateGalleryPageAssignJourney
-          // and the rest of the surface uphold. We exclude rows already on
-          // this page (`NOT: { templateGalleryPageId: id }`) so re-assigning
-          // a journey already on this page is allowed (the row will be
-          // re-created as part of the deleteMany+createMany pass).
-          if (input.journeyIds.length > 0) {
-            const conflicting = await tx.templateGalleryPageTemplate.findFirst({
-              where: {
-                journeyId: { in: input.journeyIds },
-                NOT: { templateGalleryPageId: id }
-              },
-              select: { journeyId: true, templateGalleryPageId: true }
-            })
-            if (conflicting != null) {
-              throw new GraphQLError(
-                'journey already belongs to another collection',
-                {
-                  extensions: {
-                    code: 'CONFLICT',
-                    field: 'journeyIds',
-                    journeyId: conflicting.journeyId
-                  }
-                }
-              )
-            }
-          }
-          await tx.templateGalleryPageTemplate.deleteMany({
-            where: { templateGalleryPageId: id }
+          const { validIds } = await filterToTeamTemplates(
+            tx,
+            page.teamId,
+            input.journeyIds
+          )
+          const existing = await tx.templateGalleryPageTemplate.findMany({
+            where: { templateGalleryPageId: id },
+            select: { journeyId: true }
           })
-          if (input.journeyIds.length > 0) {
-            const { validIds } = await filterToTeamTemplates(
-              tx,
-              page.teamId,
-              input.journeyIds
-            )
-            if (validIds.length > 0) {
-              await tx.templateGalleryPageTemplate.createMany({
-                data: validIds.map((journeyId, order) => ({
-                  templateGalleryPageId: id,
-                  journeyId,
-                  order
-                }))
-              })
+          const existingIds = existing.map((row) => row.journeyId)
+          // Lock every journey whose membership changes (sorted, so two
+          // concurrent updates touching overlapping journeys cannot
+          // deadlock), then the page — the same journey-then-page order
+          // every membership mutation uses.
+          const desired = new Set(validIds)
+          const current = new Set(existingIds)
+          const touched = [
+            ...existingIds.filter((journeyId) => !desired.has(journeyId)),
+            ...validIds.filter((journeyId) => !current.has(journeyId))
+          ].sort()
+          for (const journeyId of touched) {
+            await lockJourney(tx, journeyId)
+          }
+          await lockPage(tx, id)
+          for (const journeyId of existingIds) {
+            if (!desired.has(journeyId)) {
+              await removeMembership(tx, id, journeyId)
             }
           }
+          for (const journeyId of validIds) {
+            if (!current.has(journeyId)) {
+              await addMembership(tx, id, journeyId)
+            }
+          }
+          // Reorder to the supplied order. validIds is deduplicated and
+          // every id now has a row on the page.
+          const rows = await tx.templateGalleryPageTemplate.findMany({
+            where: { templateGalleryPageId: id },
+            select: { id: true, journeyId: true }
+          })
+          const rowByJourneyId = new Map(
+            rows.map((row) => [row.journeyId, row])
+          )
+          await applyContiguousOrder(
+            tx,
+            id,
+            validIds
+              .map((journeyId) => rowByJourneyId.get(journeyId))
+              .filter(
+                (row): row is { id: string; journeyId: string } => row != null
+              )
+          )
+        } else {
+          // Page-level lock so concurrent membership mutations on this page
+          // serialize against the media / scalar writes below.
+          await lockPage(tx, id)
         }
 
         // media: undefined/null leaves the row alone (no delete — the row, once
