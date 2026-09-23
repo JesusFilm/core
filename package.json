@@ -35,8 +35,8 @@
     "prepare": "husky install",
     "setup:local": "tools/scripts/setup-local.sh",
     "dev:api": "nf start",
-    "services:up": "docker compose -f docker-compose.services.yml up -d --wait",
-    "services:up:analytics": "docker compose -f docker-compose.services.yml --profile analytics up -d --wait",
+    "services:up": "docker compose -f docker-compose.services.yml --profile analytics up -d --wait",
+    "services:up:base": "docker compose -f docker-compose.services.yml up -d --wait",
     "services:stop": "docker compose -f docker-compose.services.yml --profile analytics stop"
   },
   "private": true,

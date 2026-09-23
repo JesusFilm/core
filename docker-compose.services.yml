@@ -2,11 +2,12 @@
 #
 #   - Included by .devcontainer/docker-compose.yml for the dev container.
 #   - Run directly on a host checkout:
-#       pnpm services:up   (docker compose -f docker-compose.services.yml up -d --wait)
+#       pnpm services:up        (all services, --profile analytics)
+#       pnpm services:up:base   (without clickhouse + plausible)
 #
-# clickhouse and plausible are behind the `analytics` profile; add
-# `--profile analytics` to start them. The dev container always starts them
-# (see `runServices` in .devcontainer/devcontainer.json).
+# clickhouse and plausible are behind the `analytics` profile so they can be
+# left out; `pnpm services:up` includes them by default, and the dev container
+# always starts them (see `runServices` in .devcontainer/devcontainer.json).
 # Pinned to the dev container's compose project so a host checkout and the dev
 # container share the same containers and volumes (one set of databases, no
 # port clashes). Ignored when this file is pulled in via `include:`.

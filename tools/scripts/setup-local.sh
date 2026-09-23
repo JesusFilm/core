@@ -2,8 +2,8 @@
 # Idempotent local setup for a host checkout (no dev container) — also the
 # shared part of .devcontainer/post-create-command.sh. Safe to re-run.
 #
-#   pnpm setup:local              # db, redis, serverless-redis-http, maildev
-#   pnpm setup:local --analytics  # also clickhouse + plausible (loads plausible.sql)
+#   pnpm setup:local              # all services incl. clickhouse + plausible (seeds plausible.sql)
+#   pnpm setup:local --base       # only db, redis, serverless-redis-http, maildev
 #   ... --no-services             # services are already running and managed
 #                                 # elsewhere (the dev container): never touch
 #                                 # docker compose, talk to postgres on localhost
@@ -16,11 +16,12 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$REPO_ROOT"
 
-ANALYTICS=false
+ANALYTICS=true
 MANAGE_SERVICES=true
 for arg in "$@"; do
   case "$arg" in
-    --analytics) ANALYTICS=true ;;
+    --base) ANALYTICS=false ;;
+    --analytics) ANALYTICS=true ;; # default; kept for explicitness
     --no-services) MANAGE_SERVICES=false ;;
     *) echo "Unknown option: $arg" >&2; exit 2 ;;
   esac

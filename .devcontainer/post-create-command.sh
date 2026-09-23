@@ -11,7 +11,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 # seeds plausible_db. --no-services: compose is driven by the devcontainer
 # CLI here; running `up` from inside would recreate db and drop this
 # container's shared network namespace.
-tools/scripts/setup-local.sh --analytics --no-services
+tools/scripts/setup-local.sh --no-services
 
 # nx and foreman so the bare `nx ...` / `nf start` commands in the docs work (on a
 # host checkout use `pnpm exec nx` / `pnpm dev:api` instead); apollo/graphql for

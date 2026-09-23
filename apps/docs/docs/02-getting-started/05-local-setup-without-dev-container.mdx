@@ -51,19 +51,18 @@ brew install node@22 doppler ffmpeg cairo pango pixman
 
 ```shell
 git clone git@github.com:JesusFilm/core.git && cd core
-pnpm setup:local              # or: pnpm setup:local --analytics  (adds clickhouse + plausible)
+pnpm setup:local              # or: pnpm setup:local --base  (skips clickhouse + plausible)
 ```
 
 `setup:local` is idempotent. It checks the prerequisites, starts the services (`docker compose ... up --wait`),
-creates the `test-user` Postgres role, runs `pnpm install`, and seeds `plausible_db` when the analytics profile
-is on. Then continue with [environment variables](./02-environment-variables.mdx) and
+creates the `test-user` Postgres role, runs `pnpm install`, and seeds `plausible_db` (unless `--base`). Then continue with [environment variables](./02-environment-variables.mdx) and
 [microservice databases](./03-microservice-databases.mdx).
 
 ## Day to day
 
 | Task                     | Command                                                            |
 | ------------------------ | ------------------------------------------------------------------ |
-| Start / stop services    | `pnpm services:up` (`services:up:analytics`), `pnpm services:stop` |
+| Start / stop services    | `pnpm services:up` (`services:up:base` skips analytics), `pnpm services:stop` |
 | Backend (gateway + APIs) | `pnpm dev:api` (foreman, via the `Procfile`)                       |
 | Any nx target            | `pnpm exec nx <target> <project>`                                  |
 
