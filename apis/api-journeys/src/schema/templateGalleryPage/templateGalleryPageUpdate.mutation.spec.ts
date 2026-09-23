@@ -214,10 +214,10 @@ describe('templateGalleryPageUpdate', () => {
       id: 'p1',
       teamId: 'team-1'
     } as any)
-    prismaMock.journey.findMany.mockResolvedValue([] as any)
+    prismaMock.journey.findMany.mockResolvedValue([])
     prismaMock.templateGalleryPageTemplate.findMany
       .mockResolvedValueOnce([{ journeyId: 'j1' }] as any)
-      .mockResolvedValue([] as any)
+      .mockResolvedValue([])
     prismaMock.templateGalleryPageTemplate.findUnique.mockResolvedValue({
       id: 'tpt-1',
       isHome: true
@@ -257,7 +257,7 @@ describe('templateGalleryPageUpdate', () => {
     } as any)
     prismaMock.journey.findMany.mockResolvedValue([{ id: 'j-shared' }] as any)
     prismaMock.templateGalleryPageTemplate.findMany
-      .mockResolvedValueOnce([] as any)
+      .mockResolvedValueOnce([])
       .mockResolvedValueOnce([{ id: 'tpt-new' }] as any)
       .mockResolvedValueOnce([{ id: 'tpt-new', journeyId: 'j-shared' }] as any)
     prismaMock.templateGalleryPageTemplate.findUnique.mockResolvedValue(null)
@@ -320,7 +320,7 @@ describe('templateGalleryPageUpdate', () => {
     } as any)
     prismaMock.journey.findMany.mockResolvedValue([{ id: 'j1' }] as any)
     prismaMock.templateGalleryPageTemplate.findMany
-      .mockResolvedValueOnce([] as any)
+      .mockResolvedValueOnce([])
       .mockResolvedValueOnce([{ id: 'tpt-1' }] as any)
       .mockResolvedValueOnce([{ id: 'tpt-1', journeyId: 'j1' }] as any)
     prismaMock.templateGalleryPageTemplate.findUnique.mockResolvedValue(null)

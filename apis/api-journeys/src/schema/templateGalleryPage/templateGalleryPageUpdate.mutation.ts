@@ -8,7 +8,6 @@ import { builder } from '../builder'
 import { applyContiguousOrder, lockPage } from './applyContiguousOrder'
 import { assertHttpsUrl } from './assertHttpsUrl'
 import { filterToTeamTemplates } from './filterToTeamTemplates'
-import { addMembership, lockJourney, removeMembership } from './membership'
 import { SlugTakenError, validateUserSuppliedSlug } from './generateUniqueSlug'
 import { TemplateGalleryPageUpdateInput } from './inputs'
 import {
@@ -16,6 +15,7 @@ import {
   mediaUpdateData,
   resolveMediaInput
 } from './media/resolveMediaInput'
+import { addMembership, lockJourney, removeMembership } from './membership'
 import { TemplateGalleryPageRef } from './templateGalleryPage'
 
 builder.mutationField('templateGalleryPageUpdate', (t) =>

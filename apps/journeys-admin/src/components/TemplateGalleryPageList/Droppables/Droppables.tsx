@@ -4,14 +4,15 @@ import {
   rectSortingStrategy,
   useSortable
 } from '@dnd-kit/sortable'
-import LinkIcon from '@core/shared/ui/icons/Link'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Grid from '@mui/material/Grid'
-import Typography from '@mui/material/Typography'
 import { alpha } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, memo } from 'react'
+
+import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { JourneyCard } from '../../JourneyList/JourneyCard'

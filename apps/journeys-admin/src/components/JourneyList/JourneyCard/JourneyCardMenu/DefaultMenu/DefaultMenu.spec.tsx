@@ -21,9 +21,8 @@ import {
 } from '../../../../../../__generated__/globalTypes'
 import { GET_CURRENT_USER } from '../../../../../libs/useCurrentUserLazyQuery'
 import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
-import { ThemeProvider } from '../../../../ThemeProvider'
-
 import { InCollectionContext } from '../../../../TemplateGalleryPageList/InCollectionContext'
+import { ThemeProvider } from '../../../../ThemeProvider'
 
 import { GET_JOURNEY_WITH_USER_ROLES } from './DefaultMenu'
 
