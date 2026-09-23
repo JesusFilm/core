@@ -24,6 +24,7 @@ function buildPage(id: string): {
   createdAt: string
   updatedAt: string
   templates: never[]
+  memberships: never[]
 } {
   return {
     __typename: 'TemplateGalleryPage' as const,
