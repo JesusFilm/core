@@ -60,11 +60,11 @@ creates the `test-user` Postgres role, runs `pnpm install`, and seeds `plausible
 
 ## Day to day
 
-| Task                     | Command                                                            |
-| ------------------------ | ------------------------------------------------------------------ |
+| Task                     | Command                                                                       |
+| ------------------------ | ----------------------------------------------------------------------------- |
 | Start / stop services    | `pnpm services:up` (`services:up:base` skips analytics), `pnpm services:stop` |
-| Backend (gateway + APIs) | `pnpm dev:api` (foreman, via the `Procfile`)                       |
-| Any nx target            | `pnpm exec nx <target> <project>`                                  |
+| Backend (gateway + APIs) | `pnpm dev:api` (foreman, via the `Procfile`)                                  |
+| Any nx target            | `pnpm exec nx <target> <project>`                                             |
 
 The docs elsewhere write bare `nx …` and `nf start`, which rely on global installs inside the dev container.
 On a host checkout use `pnpm exec nx …` and `pnpm dev:api`, or add `alias nx='pnpm exec nx'` to your shell.
