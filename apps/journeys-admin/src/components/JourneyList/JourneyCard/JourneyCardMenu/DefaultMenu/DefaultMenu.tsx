@@ -292,6 +292,7 @@ export function DefaultMenu({
         <RemoveFromCollectionMenuItem
           id={id}
           handleCloseMenu={handleCloseMenu}
+          handleKeepMounted={handleKeepMounted}
         />
       )}
       {activeTeam != null && (
