@@ -495,8 +495,11 @@ export function CollectionDropReveal({
     <Box
       data-testid={`CollectionDropReveal-${collectionId}`}
       sx={{
+        // Above everything a JourneyCard stacks internally (its menu button,
+        // badges and footer sit at zIndex 1–3), so the boxes cover the cards
+        // completely while a drag is in progress.
         ...(variant === 'overlay'
-          ? { position: 'absolute', inset: 0, zIndex: 2 }
+          ? { position: 'absolute', inset: 0, zIndex: 10 }
           : { position: 'relative', minHeight: 72, mt: 1 }),
         display: 'grid',
         gridTemplateColumns: single ? '1fr' : '1fr 1fr',

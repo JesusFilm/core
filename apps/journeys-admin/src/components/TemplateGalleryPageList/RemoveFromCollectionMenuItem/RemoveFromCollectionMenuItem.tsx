@@ -13,6 +13,12 @@ interface RemoveFromCollectionMenuItemProps {
   /** The journey (template) this card shows. */
   id: string
   handleCloseMenu: () => void
+  /**
+   * Keeps the parent menu mounted after it closes, so this item survives
+   * the mutation round-trip and can still raise the result toast. Without
+   * it the menu unmounts on close and the toast is lost.
+   */
+  handleKeepMounted?: () => void
 }
 
 /**
@@ -24,7 +30,8 @@ interface RemoveFromCollectionMenuItemProps {
  */
 export function RemoveFromCollectionMenuItem({
   id,
-  handleCloseMenu
+  handleCloseMenu,
+  handleKeepMounted
 }: RemoveFromCollectionMenuItemProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -41,6 +48,7 @@ export function RemoveFromCollectionMenuItem({
   async function handleClick(): Promise<void> {
     if (submittingRef.current) return
     submittingRef.current = true
+    handleKeepMounted?.()
     handleCloseMenu()
     try {
       const { data } = await templateGalleryPageRemoveJourney({
