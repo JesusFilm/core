@@ -16,7 +16,6 @@ import {
   recordProcessingFailure
 } from './types'
 import { toErrorMessage } from './utils/errorMessage'
-import { shouldPostSlackSummary } from './utils/slackOptions'
 
 const program = new Command()
 
@@ -26,7 +25,6 @@ program
     "Folder containing video files. Defaults to process.cwd() in source runs and the executable's directory in packaged SEA runs."
   )
   .option('--dry-run', 'Print actions without uploading', false)
-  .option('--no-slack', 'Do not post a Slack summary after the run')
   .parse(process.argv)
 
 const options = program.opts()
@@ -220,7 +218,10 @@ async function main() {
     typeof process.env.SLACK_CHANNEL_ID === 'string' &&
     process.env.SLACK_CHANNEL_ID.trim().length > 0
 
-  const postSlackSummary = shouldPostSlackSummary(options)
+  // --dry-run never uploads anything, so there is nothing worth notifying
+  // about. Every real run requires Slack config (see startupPreflight.ts),
+  // so there is no separate "suppress Slack" case to support.
+  const postSlackSummary = !options.dryRun
 
   if (postSlackSummary && slackTokenConfigured !== slackChannelConfigured) {
     console.warn(
