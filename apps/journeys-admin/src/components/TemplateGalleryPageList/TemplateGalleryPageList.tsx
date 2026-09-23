@@ -666,6 +666,12 @@ export function TemplateGalleryPageList({
     return map
   }, [collections])
 
+  const collectionsById = useMemo(() => {
+    const map = new Map<string, TemplateGalleryPage>()
+    for (const collection of collections) map.set(collection.id, collection)
+    return map
+  }, [collections])
+
   // Per collection, how each of its cards should draw: the crisp home or a
   // greyed link, with the chip copy's inputs resolved up front.
   const cardMembershipByCollectionId = useMemo(() => {
@@ -692,10 +698,7 @@ export function TemplateGalleryPageList({
       map.set(collection.id, cards)
     }
     return map
-    // collectionsById is declared below but derives from the same
-    // `collections` reference, so depending on `collections` covers it.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [collections, membershipsByJourneyId])
+  }, [collections, collectionsById, membershipsByJourneyId])
 
   // One stable context value per collection so the card menus can tell
   // which collection they sit in without re-rendering on every drag tick.
@@ -727,12 +730,6 @@ export function TemplateGalleryPageList({
     }
     return map
   }, [collections, journeyById])
-
-  const collectionsById = useMemo(() => {
-    const map = new Map<string, TemplateGalleryPage>()
-    for (const collection of collections) map.set(collection.id, collection)
-    return map
-  }, [collections])
 
   const unsectioned = useMemo<readonly Journey[]>(
     () =>
