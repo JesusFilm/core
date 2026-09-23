@@ -1,3 +1,5 @@
+import { prisma } from '@core/prisma/journeys/client'
+
 import { builder } from '../builder'
 
 import { TemplateGalleryPageStatus } from './enums'
@@ -29,6 +31,26 @@ import {
 //
 // Keep the shared fields in sync with `TemplateGalleryPagePublicRef` below; only
 // the `media` field is meant to differ (full row here vs. gated there).
+interface TemplateGalleryPageMembership {
+  journeyId: string
+  isHome: boolean
+}
+
+export const TemplateGalleryPageMembershipRef = builder
+  .objectRef<TemplateGalleryPageMembership>('TemplateGalleryPageMembership')
+  .implement({
+    description:
+      "One journey's membership of a TemplateGalleryPage. `isHome` is true on exactly one of a journey's memberships across all pages.",
+    fields: (t) => ({
+      journeyId: t.exposeID('journeyId', { nullable: false }),
+      isHome: t.exposeBoolean('isHome', {
+        nullable: false,
+        description:
+          "True when this page is the journey's home; false when it is a link."
+      })
+    })
+  })
+
 export const TemplateGalleryPageRef = builder.prismaObject(
   'TemplateGalleryPage',
   {
@@ -147,6 +169,19 @@ export const TemplateGalleryPageRef = builder.prismaObject(
           page.templates
             .filter((tpt) => tpt.journey.teamId === page.teamId)
             .map((tpt) => tpt.journey)
+      }),
+      memberships: t.field({
+        type: [TemplateGalleryPageMembershipRef],
+        nullable: false,
+        description:
+          "Every journey on this page with whether this page is its home. A journey has exactly one home across all pages; its other memberships are links. Home is presentational (the admin draws links greyed) and carries no behaviour. Unlike `templates`, this list is not filtered by the journey's status.",
+        select: { id: true },
+        resolve: async (page) =>
+          await prisma.templateGalleryPageTemplate.findMany({
+            where: { templateGalleryPageId: page.id },
+            orderBy: { order: 'asc' },
+            select: { journeyId: true, isHome: true }
+          })
       }),
       // FULL media: the entire row with both retained payloads + raw
       // `muxVideoId`, no public collapse. `t.relation` threads the Pothos

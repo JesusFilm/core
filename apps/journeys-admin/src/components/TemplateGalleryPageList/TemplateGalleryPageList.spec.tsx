@@ -83,7 +83,8 @@ const collectionsMock: MockLink.MockedResponse<GetTemplateGalleryPages> = {
           publishedAt: null,
           createdAt: '2026-05-01T00:00:00.000Z',
           updatedAt: '2026-05-01T00:00:00.000Z',
-          templates: []
+          templates: [],
+          memberships: []
         }
       ]
     }

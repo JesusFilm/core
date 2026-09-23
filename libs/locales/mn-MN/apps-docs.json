@@ -1,0 +1,10 @@
+{
+  "Deploy Quickly": "Хурдан байршуулах",
+  "Our Continuous Integration & Continuous Delivery pipeline lets you deliver code changes more frequently and reliably.": "Манай тасралтгүй нэгтгэл ба тасралтгүй хүргэлтийн дамжуулах шугам нь кодын өөрчлөлтийг илүү ойр ойрхон, илүү найдвартайгаар хүргэх боломж олгодог.",
+  "Common Environment": "Нийтлэг орчин",
+  "We run on Docker. This means every developer shares the same environment that closely mimics production making collaboration simple.": "Бид Docker ашигладаг. Ингэснээр бүх хөгжүүлэгчид продакшны орчныг маш ойроос дуурайсан нэг ижил орчинд ажиллаж, хамтран ажиллахад илүү хялбар болдог.",
+  "Powered by Typescript": "Typescript-ээр ажилладаг",
+  "TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.": "TypeScript нь JavaScript дээр суурилсан, хүчтэй төрөлжүүлэлттэй програмчлалын хэл бөгөөд ямар ч хэмжээнд илүү сайн хэрэгсэлтэй ажиллах боломж олгодог.",
+  "Core Development Kit Documentation": "Үндсэн хөгжүүлэлтийн иж бүрдлийн баримт бичиг",
+  "Welcome - 5min ": "Тавтай морилно уу - 5 минут "
+}
