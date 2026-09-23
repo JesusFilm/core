@@ -4,7 +4,7 @@ Engineer-run CLI that pulls Apologist chat traces from the **Langfuse Public API
 
 Built for **NES-1690**, implementing the **NES-1656** export-path spike; the explorer bundle supersedes the back half of **NES-1577** (parked PR #9276). The manual CSV observations export drops the trace-level fields needed to group turns into conversations (`sessionId`), attribute country (`metadata.ipCountry`), and tag — this tool reads those from the API instead.
 
-> **Read the caveats below before sharing any artifact.** NES-1688 has landed, so `--environment production` (the default) now isolates real production traffic — but production volume is still low-to-zero today, and `--environment all` is dominated by load-test traffic and largely null-session. Treat current-data artifacts as pipeline validation, not share-worthy, until production traffic accumulates and NES-1616 lands. To exercise the whole pipeline offline against synthetic data, use `--fixture` (below).
+> **Read the caveats below before sharing any artifact.** NES-1688 has landed, so `--environment production` (the default) isolates real production traffic. Volume has since accumulated: a 30-day window to 2026-07-10 yields **131 traces across 56 sessions, every one with a real `sessionId`, and zero load-test turns** — so the null-session and load-test warnings that shaped this tool no longer bite on production data. The traffic is heavily multilingual (Bengali, Spanish, Arabic, French, Afrikaans, Korean, Hindi); see [Translation](#translation-nes-1762). To exercise the whole pipeline offline against synthetic data, use `--fixture` (below).
 
 ## The explorer bundle (NES-1719)
 
@@ -15,6 +15,21 @@ Built for **NES-1690**, implementing the **NES-1656** export-path spike; the exp
 - `README.txt` — double-click instructions for the recipient.
 
 It runs from `file://` with zero dependencies: the dataset is inlined into the HTML as a JSON block and the viewer is dependency-free vanilla JS. Keyword facets are computed deterministically (frequency-threshold suppression); per-session themes come from the LLM enrichment pass and degrade gracefully to keyword-only filtering if absent.
+
+## Translation (NES-1762)
+
+The corpus is genuinely multilingual (Bengali, Arabic, Hebrew, Spanish, French, and more — roughly half the text is non-English). Pass `--translate` to add a machine-translation pass: every non-English user message, assistant reply, and keyword facet label gets an English rendering, while **the original text is always kept byte-for-byte** — translation is purely additive (`textEnglish` alongside `text`, `labelEnglish` alongside `label`). Detection and translation come from one OpenRouter pass; a message detected as English is left as-is.
+
+- **Paid once.** Translations are cached in a content-addressed file (default `output/.translation-cache.json`, override with `--translation-cache PATH`) keyed by the SHA-256 of the exact source string. Re-running to re-render the report reuses the cache and costs nothing; only new/changed strings are sent to the model.
+- **`--translate` needs credentials even under `--fixture`.** The fixture only replaces the Langfuse _source_; translation still calls OpenRouter, so `--fixture --translate` loads `.env` and validates all four keys (the Langfuse keys included). A plain `--fixture` run without `--translate` stays fully offline.
+- **Degrades safely.** A batch that fails after retries leaves those strings untranslated (the original still shows) rather than aborting the run or fabricating a translation. The run logs `strings / cache hits / newly translated / failed` counts.
+- **Script beats the model on detection.** The model does misdetect: real Bengali assistant replies came back tagged `lang:"en"`. `cannotBeEnglish()` (majority non-Latin script) vetoes that verdict — such an item is re-asked on its own with a stricter prompt, and if the model still insists, nothing is recorded rather than caching a lie. A cached `en` verdict on non-Latin text is treated as a miss, so an old poisoned cache self-heals on the next run.
+- **A translation identical to its source is not a translation.** `'sup'` came back tagged Spanish, echoed verbatim; a `TRANSLATED` chip above identical text is worse than no chip. Those are dropped.
+- **Glossing exposes the stopword gap.** The keyword vocabulary is filtered by an _English_ stopword list, so English function words never became facets — but `que`, `puede`, `איר` sailed through. Once a keyword carries an English gloss, the same list is applied to the gloss, so a translated facet must clear exactly the bar an English one already did (`que` → `that` is dropped; `dios` → `god` is kept). The count is reported as `suppressedTranslatedKeywordCount` and logged.
+- **The cache is chat-derived.** `output/.translation-cache.json` holds English renderings of real user messages. It lives under the gitignored `output/` for that reason — never commit it, never share it, and delete it alongside `.env` when you are done.
+- **Read English first, the original one click away.** In the conversation view the English gloss is the default reading path (the sanctioned navy accent, so it reads as a secondary machine source), and each translated message keeps its original in a bordered inset panel that is **collapsed by default** behind a `Show original` toggle. The machine-translation disclosure (_accuracy not guaranteed_) stays on the toggle row while the panel is closed, and the original is never truncated. The translated-vs-original distinction is carried by surface + border + size, not by two near-isoluminant inks.
+- **Chat content is markdown, rendered.** The viewer renders a deliberately tiny subset — small headings (never the display scale), `**bold**`, `-`/`*` unordered lists, `>` blockquotes, and paragraphs — in **both** the translation and the original. The parser is hand-rolled from `createElement`/`textContent` (no library, no `innerHTML`), so a hostile `</script>` inside a message still renders as literal text, and RTL originals still lay out right-to-left while the English stays LTR.
+- **Accuracy is not guaranteed.** See Caveats.
 
 ## Layout
 
@@ -34,13 +49,15 @@ tools/langfuse-export/
     cli.ts              # pure arg/window/discriminator parsing
     clients/            # external I/O — verified by the manual run, not unit tests
       langfuse.ts       #   fetchTraces + per-traceId fetchObservations
-      openrouter.ts     #   OpenRouter client + theme synthesis + llmScrub
+      openrouter.ts     #   OpenRouter client + theme synthesis + llmScrub + translation
+      translation-cache.ts #  content-addressed translation cache (node:crypto) — pure, unit tested
       zip.ts            #   dependency-free ZIP writer (node:zlib) — pure, unit tested
     pipeline/           # pure transforms — unit tested
       normalize.ts      #   join obs->trace, group by sessionId -> Conversation[]
       sanitize.ts       #   regex PII scrub -> SanitisedConversation[]; injected llmScrub
       facets.ts         #   keyword + country + journey-language facets, over-common suppression
-      dataset.ts        #   SanitisedConversation[] -> lossless InsightsDataset (+ theme inversion)
+      translate.ts      #   collect the deduplicated strings needing translation
+      dataset.ts        #   SanitisedConversation[] -> lossless InsightsDataset (+ theme inversion + translations)
       explorer.ts       #   self-contained offline HTML viewer (dataset inlined)
   output/               # gitignored — per-run artifacts (chat-derived; never commit)
 ```
@@ -95,17 +112,19 @@ Running with no arguments prints usage.
 
 ### Flags
 
-| Flag                  | Meaning                                                                                                                                                     |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--days N`            | Window = last N days (default 14). Mutually exclusive with `--from`/`--to`.                                                                                 |
-| `--from ISO --to ISO` | Explicit window (both required together).                                                                                                                   |
-| `--fixture PATH`      | Build from a local `{traces, observations, themes?}` JSON instead of Langfuse — fully offline, no credentials, no LLM (themes read from the file).          |
-| `--discriminator V`   | Load-test exclusion: `default` (exclude known probes), `none`, `message:<regex>`, `journey:<csv>`, `tag:<csv>`. Orthogonal to `--environment` — both apply. |
-| `--environment E`     | Deployment-env filter (NES-1688): `production` (default), `stage`, `preview`, `development`, or `all` (every env, including pre-NES-1688 untagged traces).  |
-| `--llm-scrub`         | Extra LLM PII scrub pass (pending NES-1562 sign-off). Ignored under `--fixture`.                                                                            |
-| `--model ID`          | OpenRouter model id (default `google/gemini-2.5-flash-lite`).                                                                                               |
-| `--throttle MS`       | Delay between Langfuse calls (default 700ms; keep under the ~100 req/min Hobby ceiling).                                                                    |
-| `--debug`             | Also write `records.ndjson` (one sanitised turn per line). **Debug artifact — never share.**                                                                |
+| Flag                       | Meaning                                                                                                                                                                          |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--days N`                 | Window = last N days (default 14). Mutually exclusive with `--from`/`--to`.                                                                                                      |
+| `--from ISO --to ISO`      | Explicit window (both required together).                                                                                                                                        |
+| `--fixture PATH`           | Build from a local `{traces, observations, themes?}` JSON instead of Langfuse — fully offline, no credentials, no LLM (themes read from the file).                               |
+| `--discriminator V`        | Load-test exclusion: `default` (exclude known probes), `none`, `message:<regex>`, `journey:<csv>`, `tag:<csv>`. Orthogonal to `--environment` — both apply.                      |
+| `--environment E`          | Deployment-env filter (NES-1688): `production` (default), `stage`, `preview`, `development`, or `all` (every env, including pre-NES-1688 untagged traces).                       |
+| `--llm-scrub`              | Extra LLM PII scrub pass (pending NES-1562 sign-off). Ignored under `--fixture`.                                                                                                 |
+| `--translate`              | Machine-translate non-English messages + keyword facets to English (NES-1762). Adds an OpenRouter pass. **Requires credentials even under `--fixture`** (see Translation).       |
+| `--translation-cache PATH` | Where translations are read/written (default `output/.translation-cache.json`). Content-addressed, so translation is paid once — a re-render reuses the cache and costs nothing. |
+| `--model ID`               | OpenRouter model id (default `google/gemini-2.5-flash-lite`).                                                                                                                    |
+| `--throttle MS`            | Delay between Langfuse calls (default 700ms; keep under the ~100 req/min Hobby ceiling).                                                                                         |
+| `--debug`                  | Also write `records.ndjson` (one sanitised turn per line). **Debug artifact — never share.**                                                                                     |
 
 ## Output
 
@@ -127,11 +146,11 @@ Each run writes `tools/langfuse-export/output/<timestamp>/`:
 
 **Fetch.** The Langfuse legacy list endpoints (`/api/public/traces`, `/api/public/observations` — what the SDK v3 wraps) **time out on Langfuse Cloud**, so reads go via raw `fetch` instead: the cursor-paginated **v2 observations index** (`/api/public/v2/observations`) enumerates the distinct `traceId`s in the window, then **`GET /api/public/traces/{id}`** per trace returns the trace context (`sessionId`, `metadata`, `tags`) plus its full nested observations (input/output/usage/cost) in one by-id call. Neither call scans a list, so neither times out.
 
-**Explorer.** `facets.ts` derives the keyword vocabulary deterministically: each session is one document, terms above a document-frequency share (default 50%) are suppressed as over-common, terms below a floor are dropped as noise, the rest are ranked by coverage and capped; it also builds the `country` (ipCountry) and `journey-language` metadata facets. `dataset.ts` serialises the sanitised corpus losslessly (every session, every message, in order) and folds in the LLM's per-session themes (inverted from `synthesizeThemes`). The LLM contributes **only** theme labels — never message text — so it cannot fabricate or leak a quote. `explorer.ts` inlines that dataset into a dependency-free HTML viewer; every piece of corpus text reaches the page via `textContent` (never `innerHTML`), and the inlined JSON has its `<` escaped so content cannot break out of the script block. `zip.ts` assembles the archive with `node:zlib` (no external dependency). If theme synthesis fails or `--fixture` supplies none, the explorer still works with keyword/metadata facets.
+**Explorer.** `facets.ts` derives the keyword vocabulary deterministically: each session is one document, terms above a document-frequency share (default 50%) are suppressed as over-common, terms below a floor are dropped as noise, the rest are ranked by coverage and capped; it also builds the `country` (ipCountry) and `journey-language` metadata facets. `dataset.ts` serialises the sanitised corpus losslessly (every session, every message, in order) and folds in the LLM's per-session themes (inverted from `synthesizeThemes`). The LLM contributes **only** theme labels — never message text — so it cannot fabricate or leak a quote. `explorer.ts` inlines that dataset into a dependency-free HTML viewer; every piece of corpus text reaches the page via `textContent` (never `innerHTML`), including a hand-rolled minimal-Markdown pass (small headings, bold, `-`/`*` lists, blockquotes, paragraphs) that builds nodes with `createElement`/`textContent` so a hostile `</script>` renders as literal text, and the inlined JSON has its `<` escaped so content cannot break out of the script block. `zip.ts` assembles the archive with `node:zlib` (no external dependency). If theme synthesis fails or `--fixture` supplies none, the explorer still works with keyword/metadata facets.
 
 ## Tests & typecheck
 
-Pure modules (`env`, `normalize`, `sanitize`, `facets`, `dataset`, `explorer`, `zip`, `cli`) are unit-tested. The I/O modules (`langfuse`, `openrouter`) are verified by a manual end-to-end run; the offline end-to-end path is exercised with `--fixture`.
+Pure modules (`env`, `normalize`, `sanitize`, `facets`, `translate`, `dataset`, `explorer`, `zip`, `cli`, `translation-cache`) are unit-tested — including the LLM-output boundaries `parseThemes` / `parseTranslations`, the `batchByCharBudget` splitter, and the `isPoisonedEnglish` cache self-heal. The I/O-driving code in `langfuse` / `openrouter` is verified by a manual end-to-end run; the offline end-to-end path is exercised with `--fixture`.
 
 ```sh
 npx vitest run --config tools/langfuse-export/vitest.config.mts --coverage=false
@@ -147,7 +166,12 @@ npx tsc -p tools/langfuse-export/tsconfig.json --noEmit
 - **Load-test pollution.** The spike sample was ~92% load-test probes. `--discriminator default` excludes the known probe pattern; the report surfaces how many turns were excluded.
 - **Conversation grouping is only as good as `sessionId`.** It's optional on traces, so null-session conversations become synthetic singletons. The report shows the null-session and single-turn shares so you can judge fidelity. NES-1616 (first message not flushed) further under-counts single-turn conversations.
 - **Global, not per-region.** `journeyRegion` is not captured on traces yet, so reports are global. Per-region rollups wait on that metadata change.
-- **Keyword facets are best for Latin-script content.** Tokenisation is Unicode-letter-aware and the over-common/rare suppression is language-agnostic, but the stopword list is English; facets from other scripts are noisier. Per-session themes (LLM) are language-agnostic and unaffected.
+- **Keyword facets are best for Latin-script content.** Tokenisation is Unicode-letter-aware and the over-common/rare suppression is language-agnostic, but the stopword list is English; facets from other scripts are noisier. Under `--translate` the English gloss is re-checked against that same stopword list, which recovers most of the gap (13 of 28 glossed keywords were dropped as function words on the 30-day production corpus). Without `--translate` the noise remains. Per-session themes (LLM) are language-agnostic and unaffected — `synthesizeThemes` already forces English labels.
+- **The model's language guess is never allowed to become a claim.** Three guards, all deterministic: `cannotBeEnglish()` vetoes an `en` verdict on non-Latin script; `scriptContradictsLanguage()` refuses a label the writing system disproves (a message tagged `es` over Arabic text keeps its translation but loses the attribution, and the badge falls back to an unnamed `MACHINE-TRANSLATED` — 4 messages on the production corpus); and a keyword that never once appears in an English user message is marked with the language it was written in, because Afrikaans `die` ('the') is also an English word and would otherwise enter the facet rail as the English noun.
+- **`Language Typed` counts user turns only.** The assistant answers in its own languages. Counting those produced a `Language Typed -> Hindi` facet whose only session had a Bengali-speaking user and a Hindi-speaking bot — a facet labelled "what people wrote" attributing to a human a language only the machine produced. Assistant-only languages are excluded and reported separately.
+- **Two language facets, and they disagree.** `Journey Language` is the journey's configured language; `Language Typed` (only under `--translate`) is what people actually wrote. On the 30-day production corpus: Bengali is the journey for 20 sessions but was typed in 14; Farsi has a journey and was never typed; **Yiddish, Korean and Hindi were typed but have no journey at all**, so before this they could not be filtered on. Filtering `Journey Language -> Bengali` returns 6 sessions containing no Bengali. The two facets are shown side by side so the difference is structural rather than a footnote.
+- **A translated keyword facet can collide with an English one.** `dios` glossed to `god` renders beside a native `god` facet: two rows, same English word, different filter keys and different sessions. They are genuinely distinct facets and are not merged — merging would misstate the counts — but the original term is always shown beside the gloss so the two can be told apart.
+- **Machine translation accuracy is not guaranteed.** `--translate` output is model-generated and may mistranslate, especially idiom, nuance, and religious terminology. The **original message is always retained and never altered** — treat it as the source of truth and the English as an aid only. Translation also sends (regex-scrubbed) content to OpenRouter, same as theme synthesis (see "OpenRouter sees content" above).
 - **`language` is the journey's, not the speaker's.** It's the journey's configured BCP-47 language (sent by the chat client), not detected from what the user typed — a user typing another language into an English journey still shows `en`. The viewer surfaces it as the **Journey Language** facet to make this explicit.
 - **`country` is IP-geolocation.** The `country` facet is the trace's `ipCountry` (a rough proxy: VPNs, travel, and server egress can skew it), not a declared region.
 - **Anonymity grain is the session.** Sessions are labelled `Session 001…` in the viewer; the pseudonymous Langfuse `sessionId` is retained in `dataset.json` for traceability. Cross-session "user" identity is not reconstructed (no persistent id is captured today).

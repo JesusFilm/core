@@ -197,6 +197,53 @@ function tokenize(text: string): string[] {
   return matches ?? []
 }
 
+// The chat client sends the journey's language inconsistently: some traces
+// carry a BCP-47 code ('en', 'es', 'fr', 'af'), others a display name with a
+// regional qualifier ('Spanish, Latin American', 'Bengali (Indian)'). Left raw,
+// the facet rail splits one language across two rows — a reader filtering
+// "English" silently misses every session tagged 'en'. Fold both spellings onto
+// one label so the counts are true. The raw value survives on the session.
+const LANGUAGE_NAMES: Record<string, string> = {
+  af: 'Afrikaans',
+  ar: 'Arabic',
+  bn: 'Bengali',
+  de: 'German',
+  en: 'English',
+  es: 'Spanish',
+  fa: 'Farsi',
+  fr: 'French',
+  he: 'Hebrew',
+  hi: 'Hindi',
+  id: 'Indonesian',
+  it: 'Italian',
+  ko: 'Korean',
+  pt: 'Portuguese',
+  ru: 'Russian',
+  sw: 'Swahili',
+  th: 'Thai',
+  tr: 'Turkish',
+  ur: 'Urdu',
+  vi: 'Vietnamese',
+  yi: 'Yiddish',
+  zh: 'Chinese'
+}
+
+export function normalizeLanguageLabel(value: string): string {
+  const trimmed = value.trim()
+  if (trimmed.length === 0) return trimmed
+
+  // 'es', 'es-419', 'pt_BR' -> the base subtag.
+  const code = trimmed.toLowerCase().split(/[-_]/)[0]
+  if (/^[a-z]{2,3}$/.test(code) && LANGUAGE_NAMES[code] != null) {
+    return LANGUAGE_NAMES[code]
+  }
+  // 'Spanish, Latin American' / 'Bengali (Indian)' -> the base language. The
+  // regional variant is dropped: the facet answers "which language", and the
+  // exact variant is still on the session (and in dataset.json).
+  const base = trimmed.split(/[,(]/)[0].trim()
+  return base.length > 0 ? base : trimmed
+}
+
 // Metadata facets (country, journey-language): group sessions by a single
 // metadata value, one vote each. Sessions missing the value contribute no
 // facet (they stay visible until that group is filtered). Pure grouping — no
@@ -225,6 +272,32 @@ function buildMetadataFacets(
 
 // The distinct, filtered terms a single session contributes (one vote per
 // term per session, so a chatty session can't inflate document frequency).
+// The keyword vocabulary is filtered by an ENGLISH stopword list, so English
+// function words never become facets. Non-English function words sail straight
+// through — a Spanish corpus yields `que`, a Yiddish one `איז`. Once a keyword
+// carries an English gloss (NES-1762) the same list applies to the gloss, so a
+// translated facet is held to exactly the standard an English one already is.
+export function isEnglishStopword(term: string): boolean {
+  return STOPWORDS.has(term.trim().toLowerCase())
+}
+
+// An English keyword becomes a facet only if it clears BOTH bars in
+// sessionTerms: at least `minTermLength` characters, and not a stopword. A
+// single foreign token can gloss to a multi-word phrase ('to do', 'i can'), so
+// hold every word of the gloss to those same two bars. A phrase with no content
+// word left is function words only, and a facet rail of those is unreadable.
+// 'the book' (from الكتاب) survives on the strength of 'book'.
+export function isNonContentPhrase(
+  phrase: string,
+  minTermLength: number = DEFAULT_MIN_TERM_LENGTH
+): boolean {
+  const words = phrase.toLowerCase().match(/\p{L}+/gu)
+  if (words == null || words.length === 0) return false
+  return words.every(
+    (word) => word.length < minTermLength || STOPWORDS.has(word)
+  )
+}
+
 function sessionTerms(
   conversation: SanitisedConversation,
   minTermLength: number
@@ -271,7 +344,10 @@ export function buildFacets(
   const language = buildMetadataFacets(
     conversations,
     'language',
-    (conversation) => conversation.language
+    (conversation) =>
+      conversation.language == null
+        ? undefined
+        : normalizeLanguageLabel(conversation.language)
   )
 
   // Per-session term sets (computed once) + global document frequency.
