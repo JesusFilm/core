@@ -343,6 +343,22 @@ export function DraggableJourney({
       <JourneyCard
         journey={journey}
         showDragAffordance={disabled === true ? undefined : 'hover'}
+        imageFooterBadge={
+          chipLabel != null ? (
+            <Chip
+              size="small"
+              icon={<LinkIcon />}
+              label={chipLabel}
+              data-testid={`MembershipChip-${journey.id}`}
+              sx={{
+                backgroundColor: 'background.paper',
+                color: isLink ? 'text.secondary' : 'text.primary',
+                boxShadow: 1,
+                maxWidth: '100%'
+              }}
+            />
+          ) : undefined
+        }
       />
       {/* A link is the same template as its home, drawn quieter: a light
           veil over the whole card. pointer-events: none keeps the card's
@@ -358,23 +374,6 @@ export function DraggableJourney({
             pointerEvents: 'none',
             backgroundColor: (theme) =>
               alpha(theme.palette.background.default, 0.72)
-          }}
-        />
-      )}
-      {chipLabel != null && (
-        <Chip
-          size="small"
-          icon={<LinkIcon />}
-          label={chipLabel}
-          sx={{
-            position: 'absolute',
-            top: 8,
-            left: 8,
-            pointerEvents: 'none',
-            backgroundColor: 'background.paper',
-            color: isLink ? 'text.secondary' : 'text.primary',
-            boxShadow: 1,
-            maxWidth: 'calc(100% - 16px)'
           }}
         />
       )}
@@ -499,7 +498,7 @@ export function CollectionDropReveal({
         // badges and footer sit at zIndex 1–3), so the boxes cover the cards
         // completely while a drag is in progress.
         ...(variant === 'overlay'
-          ? { position: 'absolute', inset: 0, zIndex: 10 }
+          ? { position: 'absolute', inset: 0, zIndex: 20 }
           : { position: 'relative', minHeight: 72, mt: 1 }),
         display: 'grid',
         gridTemplateColumns: single ? '1fr' : '1fr 1fr',
