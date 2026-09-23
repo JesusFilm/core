@@ -284,6 +284,90 @@ describe('TemplateGalleryPageList', () => {
     expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
   })
 
+  it('draws a template as its home in one collection and as a greyed link in another', async () => {
+    // Regression: the memo that resolves a link's home collection once read
+    // `collectionsById` before it was declared, which threw a ReferenceError
+    // the moment any collection held a template. Empty-membership fixtures
+    // never exercised that path.
+    const basePage = (
+      collectionsMock.result as { data: GetTemplateGalleryPages }
+    ).data.templateGalleryPages[0]
+    const templateRef = {
+      __typename: 'TemplateGalleryItem' as const,
+      id: 'journey-1',
+      title: 'Welcome Tour',
+      primaryImageBlock: null
+    }
+    const collectionsWithLinkMock: MockLink.MockedResponse<GetTemplateGalleryPages> =
+      {
+        request: {
+          query: GET_TEMPLATE_GALLERY_PAGES,
+          variables: { teamId: TEAM_ID }
+        },
+        result: {
+          data: {
+            templateGalleryPages: [
+              {
+                ...basePage,
+                templates: [templateRef],
+                memberships: [
+                  {
+                    __typename: 'TemplateGalleryPageMembership',
+                    journeyId: 'journey-1',
+                    isHome: true
+                  }
+                ]
+              },
+              {
+                ...basePage,
+                id: 'page-2',
+                title: 'Youth Ministry',
+                slug: 'youth-ministry',
+                templates: [templateRef],
+                memberships: [
+                  {
+                    __typename: 'TemplateGalleryPageMembership',
+                    journeyId: 'journey-1',
+                    isHome: false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    const { getAllByTestId, getByTestId, getByText } = render(
+      <MockedProvider
+        mocks={[
+          getLastActiveTeamIdAndTeamsMock,
+          collectionsWithLinkMock,
+          journeysMock
+        ]}
+      >
+        <ThemeProvider>
+          <SnackbarProvider>
+            <TeamProvider>
+              <TemplateGalleryPageList />
+            </TeamProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(getByTestId('CollectionCard-page-2')).toBeInTheDocument()
+    )
+    // The same template renders once per collection.
+    expect(getAllByTestId('DraggableJourney-journey-1')).toHaveLength(2)
+    // Home card in Featured Templates: crisp, with the "also in" chip.
+    expect(getByText('Also in 1 more')).toBeInTheDocument()
+    // Link card in Youth Ministry: veiled, naming its home.
+    expect(getByTestId('LinkedCardVeil-journey-1')).toBeInTheDocument()
+    expect(getByText('Linked from Featured Templates')).toBeInTheDocument()
+    // It lives in collections, so it is not in the All Templates pool.
+    expect(getByText('All templates are in collections.')).toBeInTheDocument()
+  })
+
   it('excludes archived journeys from the active view (defends against post-mutation cache leak)', async () => {
     // Regression: archive flips a journey's status to `archived` in the
     // normalized Apollo cache, but the cached query result for
