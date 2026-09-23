@@ -117,7 +117,16 @@ export interface TemplateGalleryPageMoveJourney_templateGalleryPageMoveJourney {
 
 export interface TemplateGalleryPageMoveJourney {
   /**
-   * Move a journey's membership from one TemplateGalleryPage to another. The row keeps its role: moving the home makes the destination the home, moving a link keeps it a link. Returns every page that changed: the source, the destination, and any page whose link was promoted to home.
+   * Move a journey's membership from one TemplateGalleryPage to another. The row keeps its role: moving the home makes the destination the home, moving a link keeps it a link. The row appends at the end of the destination's display order and both pages are renumbered to contiguous orders 0..N-1. If the journey is already on the destination, the source membership is simply removed (promoting the oldest link when the source was the home). Returns every page that changed: the source, the destination, and any page whose link was promoted to home. Allowed on both `draft` and `published` pages.
+   * 
+   * Auth: caller must be a member of both pages' team.
+   * 
+   * Errors:
+   * - NOT_FOUND: `fromPageId` or `toPageId` does not resolve.
+   * - BAD_USER_INPUT (field: `journeyId`): journey is not a member of `fromPageId`, or is not flagged as a template.
+   * - NOT_FOUND (field: `journeyId`): journey does not exist or is soft-deleted.
+   * - FORBIDDEN: caller is not in a page's team, or the pages belong to different teams.
+   * - FORBIDDEN (field: `journeyId`): journey belongs to a different team than the pages.
    */
   templateGalleryPageMoveJourney: TemplateGalleryPageMoveJourney_templateGalleryPageMoveJourney[];
 }
