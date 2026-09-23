@@ -16,6 +16,7 @@ import {
   recordProcessingFailure
 } from './types'
 import { toErrorMessage } from './utils/errorMessage'
+import { shouldPostSlackSummary } from './utils/slackOptions'
 
 const program = new Command()
 
@@ -219,22 +220,15 @@ async function main() {
     typeof process.env.SLACK_CHANNEL_ID === 'string' &&
     process.env.SLACK_CHANNEL_ID.trim().length > 0
 
-  if (
-    !options.dryRun &&
-    !options.noSlack &&
-    slackTokenConfigured !== slackChannelConfigured
-  ) {
+  const postSlackSummary = shouldPostSlackSummary(options)
+
+  if (postSlackSummary && slackTokenConfigured !== slackChannelConfigured) {
     console.warn(
       '[video-importer] Slack is partially configured: set both SLACK_BOT_TOKEN and SLACK_CHANNEL_ID to enable notifications.'
     )
   }
 
-  if (
-    !options.dryRun &&
-    !options.noSlack &&
-    slackTokenConfigured &&
-    slackChannelConfigured
-  ) {
+  if (postSlackSummary && slackTokenConfigured && slackChannelConfigured) {
     try {
       const { postVideoImporterSlackSummary } = await import(
         /* webpackChunkName: "video-importer-slack" */ './services/slack'
