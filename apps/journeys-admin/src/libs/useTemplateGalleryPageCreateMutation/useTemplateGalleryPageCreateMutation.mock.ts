@@ -24,7 +24,8 @@ const defaultCreated: Created = {
   createdAt: '2026-05-06T00:00:00Z',
   updatedAt: '2026-05-06T00:00:00Z',
   team: { __typename: 'Team', id: 'team-1' },
-  templates: []
+  templates: [],
+  memberships: []
 }
 
 export const getTemplateGalleryPageCreateMock = (

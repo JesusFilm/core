@@ -8,22 +8,22 @@ import { SnackbarProvider } from 'notistack'
 import { type Mock } from 'vitest'
 
 import { JourneyStatus } from '../../../../../../../__generated__/globalTypes'
-import { TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY } from '../../../../../../libs/useTemplateGalleryPageAssignJourneyMutation'
+import { TEMPLATE_GALLERY_PAGE_REMOVE_JOURNEY } from '../../../../../../libs/useTemplateGalleryPageRemoveJourneyMutation'
 
 import { JOURNEY_ARCHIVE, JOURNEY_UNARCHIVE } from './ArchiveJourney'
 
 import { ArchiveJourney } from '.'
 
 // After journeysArchive resolves, the dialog issues a best-effort
-// templateGalleryPageAssignJourney({ pageId: null }) to sever
+// templateGalleryPageRemoveJourney (no pageId) to sever
 // collection membership. Success-path archive tests need this mock.
 function unassignMock(journeyId = 'journey-id') {
   return {
     request: {
-      query: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY,
-      variables: { journeyId, pageId: null }
+      query: TEMPLATE_GALLERY_PAGE_REMOVE_JOURNEY,
+      variables: { journeyId }
     },
-    result: { data: { templateGalleryPageAssignJourney: null } }
+    result: { data: { templateGalleryPageRemoveJourney: [] } }
   }
 }
 
@@ -190,7 +190,7 @@ describe('ArchiveJourney', () => {
       expect(finalSnapshot['TemplateGalleryPage:page-B']?.templates).toEqual([])
     })
 
-    it('unassigns the journey from its collection after archiving', async () => {
+    it('removes the journey from its collections after archiving', async () => {
       const archiveResult = vi.fn(() => ({
         data: {
           journeysArchive: [
@@ -203,7 +203,7 @@ describe('ArchiveJourney', () => {
         }
       }))
       const unassignResult = vi.fn(() => ({
-        data: { templateGalleryPageAssignJourney: null }
+        data: { templateGalleryPageRemoveJourney: [] }
       }))
 
       const { getByRole } = render(
@@ -218,8 +218,8 @@ describe('ArchiveJourney', () => {
             },
             {
               request: {
-                query: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY,
-                variables: { journeyId: 'journey-id', pageId: null }
+                query: TEMPLATE_GALLERY_PAGE_REMOVE_JOURNEY,
+                variables: { journeyId: 'journey-id' }
               },
               result: unassignResult
             }
@@ -258,7 +258,7 @@ describe('ArchiveJourney', () => {
       }))
       let unassignCalled = false
       const unassignNeverResolves = new Promise<{
-        data: { templateGalleryPageAssignJourney: null }
+        data: { templateGalleryPageRemoveJourney: [] }
       }>(() => {
         // Intentionally never resolves.
       })
@@ -275,13 +275,13 @@ describe('ArchiveJourney', () => {
             },
             {
               request: {
-                query: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY,
-                variables: { journeyId: 'journey-id', pageId: null }
+                query: TEMPLATE_GALLERY_PAGE_REMOVE_JOURNEY,
+                variables: { journeyId: 'journey-id' }
               },
               result: () => {
                 unassignCalled = true
                 return unassignNeverResolves as unknown as {
-                  data: { templateGalleryPageAssignJourney: null }
+                  data: { templateGalleryPageRemoveJourney: [] }
                 }
               }
             }
@@ -333,8 +333,8 @@ describe('ArchiveJourney', () => {
             },
             {
               request: {
-                query: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY,
-                variables: { journeyId: 'journey-id', pageId: null }
+                query: TEMPLATE_GALLERY_PAGE_REMOVE_JOURNEY,
+                variables: { journeyId: 'journey-id' }
               },
               error: new Error('unassign exploded')
             }
@@ -358,7 +358,7 @@ describe('ArchiveJourney', () => {
         expect(getByText('Journey Archived')).toBeInTheDocument()
       )
       expect(warn).toHaveBeenCalledWith(
-        '[ArchiveJourney] failed to unassign archived journey from its collection',
+        '[ArchiveJourney] failed to remove archived journey from its collections',
         expect.objectContaining({ journeyId: 'journey-id' })
       )
       warn.mockRestore()

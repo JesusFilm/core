@@ -7,7 +7,7 @@ import { type MockedFunction } from 'vitest'
 
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
-import { TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY } from '../../../../../libs/useTemplateGalleryPageAssignJourneyMutation'
+import { TEMPLATE_GALLERY_PAGE_REMOVE_JOURNEY } from '../../../../../libs/useTemplateGalleryPageRemoveJourneyMutation'
 
 import { JOURNEY_TRASH } from './TrashJourneyDialog'
 
@@ -23,7 +23,7 @@ const mockedUseTemplateFamilyStatsAggregateLazyQuery =
   >
 
 // After trashJourney resolves, the dialog issues a best-effort
-// templateGalleryPageAssignJourney({ pageId: null }) to sever any
+// templateGalleryPageRemoveJourney (no pageId) to sever any
 // collection membership. Every success-path test needs this mock or
 // MockedProvider logs a no-match error.
 function unassignMock(
@@ -32,12 +32,12 @@ function unassignMock(
 ) {
   return {
     request: {
-      query: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY,
-      variables: { journeyId, pageId: null }
+      query: TEMPLATE_GALLERY_PAGE_REMOVE_JOURNEY,
+      variables: { journeyId }
     },
     result: {
       data: {
-        templateGalleryPageAssignJourney: result
+        templateGalleryPageRemoveJourney: result
       }
     }
   }
@@ -312,7 +312,7 @@ describe('TrashJourneyDialog', () => {
     expect(getByText('Journey trashed')).toBeInTheDocument()
   })
 
-  it('unassigns the journey from its collection after trashing', async () => {
+  it('removes the journey from its collections after trashing', async () => {
     const trashMock = vi.fn(() => ({
       data: {
         journeysTrash: [
@@ -326,7 +326,7 @@ describe('TrashJourneyDialog', () => {
       }
     }))
     const unassignResult = vi.fn(() => ({
-      data: { templateGalleryPageAssignJourney: null }
+      data: { templateGalleryPageRemoveJourney: [] }
     }))
 
     const { getByRole, getByText } = render(
@@ -341,8 +341,8 @@ describe('TrashJourneyDialog', () => {
           },
           {
             request: {
-              query: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY,
-              variables: { journeyId: 'journey-id', pageId: null }
+              query: TEMPLATE_GALLERY_PAGE_REMOVE_JOURNEY,
+              variables: { journeyId: 'journey-id' }
             },
             result: unassignResult
           }
@@ -379,7 +379,7 @@ describe('TrashJourneyDialog', () => {
     }))
     let unassignCalled = false
     const unassignNeverResolves = new Promise<{
-      data: { templateGalleryPageAssignJourney: null }
+      data: { templateGalleryPageRemoveJourney: [] }
     }>(() => {
       // Intentionally never resolves — proves the snackbar is not
       // gated on this promise.
@@ -397,13 +397,13 @@ describe('TrashJourneyDialog', () => {
           },
           {
             request: {
-              query: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY,
-              variables: { journeyId: 'journey-id', pageId: null }
+              query: TEMPLATE_GALLERY_PAGE_REMOVE_JOURNEY,
+              variables: { journeyId: 'journey-id' }
             },
             result: () => {
               unassignCalled = true
               return unassignNeverResolves as unknown as {
-                data: { templateGalleryPageAssignJourney: null }
+                data: { templateGalleryPageRemoveJourney: [] }
               }
             }
           }
@@ -453,8 +453,8 @@ describe('TrashJourneyDialog', () => {
           },
           {
             request: {
-              query: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY,
-              variables: { journeyId: 'journey-id', pageId: null }
+              query: TEMPLATE_GALLERY_PAGE_REMOVE_JOURNEY,
+              variables: { journeyId: 'journey-id' }
             },
             error: new Error('unassign exploded')
           }
@@ -472,7 +472,7 @@ describe('TrashJourneyDialog', () => {
       expect(getByText('Journey trashed')).toBeInTheDocument()
     )
     expect(warn).toHaveBeenCalledWith(
-      '[TrashJourneyDialog] failed to unassign trashed journey from its collection',
+      '[TrashJourneyDialog] failed to remove trashed journey from its collections',
       expect.objectContaining({ journeyId: 'journey-id' })
     )
     warn.mockRestore()

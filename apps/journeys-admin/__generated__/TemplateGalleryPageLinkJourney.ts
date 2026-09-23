@@ -6,10 +6,10 @@
 import { TemplateGalleryPageStatus, TemplateGalleryPageMediaType } from "./globalTypes";
 
 // ====================================================
-// GraphQL query operation: GetTemplateGalleryPages
+// GraphQL mutation operation: TemplateGalleryPageLinkJourney
 // ====================================================
 
-export interface GetTemplateGalleryPages_templateGalleryPages_media {
+export interface TemplateGalleryPageLinkJourney_templateGalleryPageLinkJourney_media {
   __typename: "TemplateGalleryPageMedia";
   id: string;
   /**
@@ -38,21 +38,21 @@ export interface GetTemplateGalleryPages_templateGalleryPages_media {
   muxDuration: number | null;
 }
 
-export interface GetTemplateGalleryPages_templateGalleryPages_templates_primaryImageBlock {
+export interface TemplateGalleryPageLinkJourney_templateGalleryPageLinkJourney_templates_primaryImageBlock {
   __typename: "ImageBlock";
   id: string;
   src: string | null;
   alt: string;
 }
 
-export interface GetTemplateGalleryPages_templateGalleryPages_templates {
+export interface TemplateGalleryPageLinkJourney_templateGalleryPageLinkJourney_templates {
   __typename: "TemplateGalleryItem";
   id: string;
   title: string;
-  primaryImageBlock: GetTemplateGalleryPages_templateGalleryPages_templates_primaryImageBlock | null;
+  primaryImageBlock: TemplateGalleryPageLinkJourney_templateGalleryPageLinkJourney_templates_primaryImageBlock | null;
 }
 
-export interface GetTemplateGalleryPages_templateGalleryPages_memberships {
+export interface TemplateGalleryPageLinkJourney_templateGalleryPageLinkJourney_memberships {
   __typename: "TemplateGalleryPageMembership";
   journeyId: string;
   /**
@@ -61,7 +61,7 @@ export interface GetTemplateGalleryPages_templateGalleryPages_memberships {
   isHome: boolean;
 }
 
-export interface GetTemplateGalleryPages_templateGalleryPages {
+export interface TemplateGalleryPageLinkJourney_templateGalleryPageLinkJourney {
   __typename: "TemplateGalleryPage";
   /**
    * Stable UUID identifier.
@@ -98,7 +98,7 @@ export interface GetTemplateGalleryPages_templateGalleryPages {
   /**
    * Embedded media with both retained payload slots and the raw `muxVideoId`, so the editor can restore a parked link/upload. `null` only when the page has no media row.
    */
-  media: GetTemplateGalleryPages_templateGalleryPages_media | null;
+  media: TemplateGalleryPageLinkJourney_templateGalleryPageLinkJourney_media | null;
   /**
    * Timestamp of the first publish event. Monotonic — never re-set on subsequent unpublish/republish, and never cleared. Null while the page has not yet been published.
    */
@@ -108,22 +108,21 @@ export interface GetTemplateGalleryPages_templateGalleryPages {
   /**
    * Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.
    */
-  templates: GetTemplateGalleryPages_templateGalleryPages_templates[];
+  templates: TemplateGalleryPageLinkJourney_templateGalleryPageLinkJourney_templates[];
   /**
    * Every journey on this page with whether this page is its home. A journey has exactly one home across all pages; its other memberships are links. Home is presentational (the admin draws links greyed) and carries no behaviour. Unlike `templates`, this list is not filtered by the journey's status.
    */
-  memberships: GetTemplateGalleryPages_templateGalleryPages_memberships[];
+  memberships: TemplateGalleryPageLinkJourney_templateGalleryPageLinkJourney_memberships[];
 }
 
-export interface GetTemplateGalleryPages {
+export interface TemplateGalleryPageLinkJourney {
   /**
-   * List all TemplateGalleryPages owned by a team — both `draft` and `published` rows — ordered by `createdAt` descending.
-   * 
-   * Auth: caller must be a member of the requested team.
+   * Add a journey to a TemplateGalleryPage without removing it from any other page. The new row appends at the end of the page's display order and becomes the journey's home when it has none yet, otherwise a link (see `TemplateGalleryPage.memberships`). Idempotent: if the journey is already on the page nothing changes. Allowed on both `draft` and `published` pages.
    */
-  templateGalleryPages: GetTemplateGalleryPages_templateGalleryPages[];
+  templateGalleryPageLinkJourney: TemplateGalleryPageLinkJourney_templateGalleryPageLinkJourney;
 }
 
-export interface GetTemplateGalleryPagesVariables {
-  teamId: string;
+export interface TemplateGalleryPageLinkJourneyVariables {
+  journeyId: string;
+  pageId: string;
 }

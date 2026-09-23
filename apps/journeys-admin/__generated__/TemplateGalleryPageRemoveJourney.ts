@@ -6,10 +6,10 @@
 import { TemplateGalleryPageStatus, TemplateGalleryPageMediaType } from "./globalTypes";
 
 // ====================================================
-// GraphQL query operation: GetTemplateGalleryPages
+// GraphQL mutation operation: TemplateGalleryPageRemoveJourney
 // ====================================================
 
-export interface GetTemplateGalleryPages_templateGalleryPages_media {
+export interface TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney_media {
   __typename: "TemplateGalleryPageMedia";
   id: string;
   /**
@@ -38,21 +38,21 @@ export interface GetTemplateGalleryPages_templateGalleryPages_media {
   muxDuration: number | null;
 }
 
-export interface GetTemplateGalleryPages_templateGalleryPages_templates_primaryImageBlock {
+export interface TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney_templates_primaryImageBlock {
   __typename: "ImageBlock";
   id: string;
   src: string | null;
   alt: string;
 }
 
-export interface GetTemplateGalleryPages_templateGalleryPages_templates {
+export interface TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney_templates {
   __typename: "TemplateGalleryItem";
   id: string;
   title: string;
-  primaryImageBlock: GetTemplateGalleryPages_templateGalleryPages_templates_primaryImageBlock | null;
+  primaryImageBlock: TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney_templates_primaryImageBlock | null;
 }
 
-export interface GetTemplateGalleryPages_templateGalleryPages_memberships {
+export interface TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney_memberships {
   __typename: "TemplateGalleryPageMembership";
   journeyId: string;
   /**
@@ -61,7 +61,7 @@ export interface GetTemplateGalleryPages_templateGalleryPages_memberships {
   isHome: boolean;
 }
 
-export interface GetTemplateGalleryPages_templateGalleryPages {
+export interface TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney {
   __typename: "TemplateGalleryPage";
   /**
    * Stable UUID identifier.
@@ -98,7 +98,7 @@ export interface GetTemplateGalleryPages_templateGalleryPages {
   /**
    * Embedded media with both retained payload slots and the raw `muxVideoId`, so the editor can restore a parked link/upload. `null` only when the page has no media row.
    */
-  media: GetTemplateGalleryPages_templateGalleryPages_media | null;
+  media: TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney_media | null;
   /**
    * Timestamp of the first publish event. Monotonic — never re-set on subsequent unpublish/republish, and never cleared. Null while the page has not yet been published.
    */
@@ -108,22 +108,21 @@ export interface GetTemplateGalleryPages_templateGalleryPages {
   /**
    * Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.
    */
-  templates: GetTemplateGalleryPages_templateGalleryPages_templates[];
+  templates: TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney_templates[];
   /**
    * Every journey on this page with whether this page is its home. A journey has exactly one home across all pages; its other memberships are links. Home is presentational (the admin draws links greyed) and carries no behaviour. Unlike `templates`, this list is not filtered by the journey's status.
    */
-  memberships: GetTemplateGalleryPages_templateGalleryPages_memberships[];
+  memberships: TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney_memberships[];
 }
 
-export interface GetTemplateGalleryPages {
+export interface TemplateGalleryPageRemoveJourney {
   /**
-   * List all TemplateGalleryPages owned by a team — both `draft` and `published` rows — ordered by `createdAt` descending.
-   * 
-   * Auth: caller must be a member of the requested team.
+   * Remove a journey from a TemplateGalleryPage. When the removed membership was the journey's home and links remain on other pages, the oldest link becomes the new home. Returns every page that changed. When `pageId` is omitted the journey is removed from every page it belongs to.
    */
-  templateGalleryPages: GetTemplateGalleryPages_templateGalleryPages[];
+  templateGalleryPageRemoveJourney: TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney[];
 }
 
-export interface GetTemplateGalleryPagesVariables {
-  teamId: string;
+export interface TemplateGalleryPageRemoveJourneyVariables {
+  journeyId: string;
+  pageId?: string | null;
 }

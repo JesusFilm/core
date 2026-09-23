@@ -39,7 +39,8 @@ function buildPage(id: string): {
     publishedAt: null,
     createdAt: '2026-05-06T00:00:00Z',
     updatedAt: '2026-05-06T00:00:00Z',
-    templates: []
+    templates: [],
+    memberships: []
   }
 }
 
