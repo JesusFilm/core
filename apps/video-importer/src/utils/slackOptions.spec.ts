@@ -17,10 +17,7 @@ describe('shouldPostSlackSummary', () => {
   })
 
   it('does not post when both --dry-run and --no-slack are passed', () => {
-    assert.equal(
-      shouldPostSlackSummary({ dryRun: true, slack: false }),
-      false
-    )
+    assert.equal(shouldPostSlackSummary({ dryRun: true, slack: false }), false)
   })
 
   it('posts when slack is explicitly true and not a dry run', () => {
