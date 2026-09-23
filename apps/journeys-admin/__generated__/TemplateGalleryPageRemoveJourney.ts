@@ -117,7 +117,15 @@ export interface TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourn
 
 export interface TemplateGalleryPageRemoveJourney {
   /**
-   * Remove a journey from a TemplateGalleryPage. When the removed membership was the journey's home and links remain on other pages, the oldest link becomes the new home. Returns every page that changed. When `pageId` is omitted the journey is removed from every page it belongs to.
+   * Remove a journey from a TemplateGalleryPage. When the removed membership was the journey's home and links remain on other pages, the oldest link becomes the new home. Returns every page that changed: the page removed from and, when a promotion happened, the page that now holds the home. Idempotent: an empty list when the journey was not on the page.
+   * 
+   * When `pageId` is omitted the journey is removed from every page it belongs to (used when a template is archived or trashed). Returns the pages it was removed from.
+   * 
+   * Auth: caller must be a member of each affected page's team.
+   * 
+   * Errors:
+   * - NOT_FOUND: `pageId` does not resolve.
+   * - FORBIDDEN: caller is not in an affected page's team.
    */
   templateGalleryPageRemoveJourney: TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney[];
 }

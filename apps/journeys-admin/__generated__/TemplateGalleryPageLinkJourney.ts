@@ -118,6 +118,15 @@ export interface TemplateGalleryPageLinkJourney_templateGalleryPageLinkJourney {
 export interface TemplateGalleryPageLinkJourney {
   /**
    * Add a journey to a TemplateGalleryPage without removing it from any other page. The new row appends at the end of the page's display order and becomes the journey's home when it has none yet, otherwise a link (see `TemplateGalleryPage.memberships`). Idempotent: if the journey is already on the page nothing changes. Allowed on both `draft` and `published` pages.
+   * 
+   * Auth: caller must be a member of the page's team.
+   * 
+   * Errors:
+   * - NOT_FOUND: `pageId` does not resolve.
+   * - NOT_FOUND (field: `journeyId`): journey does not exist or is soft-deleted.
+   * - BAD_USER_INPUT (field: `journeyId`): journey is not flagged as a template.
+   * - FORBIDDEN: caller is not in the page's team.
+   * - FORBIDDEN (field: `journeyId`): journey belongs to a different team than the page.
    */
   templateGalleryPageLinkJourney: TemplateGalleryPageLinkJourney_templateGalleryPageLinkJourney;
 }
