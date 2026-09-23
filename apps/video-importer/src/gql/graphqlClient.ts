@@ -1,8 +1,31 @@
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
-import { GraphQLClient } from 'graphql-request'
+import { type TadaDocumentNode } from 'gql.tada'
+import { print } from 'graphql'
 
 import { env } from '../env'
 import { getFirebaseClient } from '../services/firebase'
+
+interface GraphQLResponseError {
+  message: string
+}
+
+// Mirrors the `error.response.errors` shape callers already inspect
+export class GraphQLClientError extends Error {
+  constructor(
+    message: string,
+    readonly response: { status: number; errors?: GraphQLResponseError[] }
+  ) {
+    super(message)
+    this.name = 'GraphQLClientError'
+  }
+}
+
+export interface GraphQLClient {
+  request: <Result, Variables = Record<string, unknown>>(
+    document: string | TadaDocumentNode<Result, Variables>,
+    variables?: Variables
+  ) => Promise<Result>
+}
 
 // Caching for Firebase auth token and GraphQL client
 let cachedFirebaseAuthToken: string | undefined
@@ -31,17 +54,50 @@ async function getFirebaseAuthToken(): Promise<string> {
   return cachedFirebaseAuthToken
 }
 
+function createGraphQLClient(
+  endpoint: string,
+  headers: Record<string, string>
+): GraphQLClient {
+  return {
+    async request(document, variables) {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...headers },
+        body: JSON.stringify({
+          query: typeof document === 'string' ? document : print(document),
+          variables
+        })
+      })
+      if (!response.ok) {
+        throw new GraphQLClientError(
+          `GraphQL request failed: ${response.status} ${response.statusText}`,
+          { status: response.status }
+        )
+      }
+      const { data, errors } = (await response.json()) as {
+        data?: unknown
+        errors?: GraphQLResponseError[]
+      }
+      if (errors != null && errors.length > 0) {
+        throw new GraphQLClientError(errors[0].message, {
+          status: response.status,
+          errors
+        })
+      }
+      return data as never
+    }
+  }
+}
+
 export async function getGraphQLClient(): Promise<GraphQLClient> {
   try {
     const authToken = await getFirebaseAuthToken()
     if (cachedGraphQLClient && cachedGraphQLClientAuthToken === authToken) {
       return cachedGraphQLClient
     }
-    cachedGraphQLClient = new GraphQLClient(env.GRAPHQL_ENDPOINT, {
-      headers: {
-        Authorization: `JWT ${authToken}`,
-        'x-graphql-client-name': 'video-importer'
-      }
+    cachedGraphQLClient = createGraphQLClient(env.GRAPHQL_ENDPOINT, {
+      Authorization: `JWT ${authToken}`,
+      'x-graphql-client-name': 'video-importer'
     })
     cachedGraphQLClientAuthToken = authToken
     return cachedGraphQLClient
