@@ -75,7 +75,9 @@ resource "aws_iam_role_policy_attachment" "dlm" {
 }
 
 resource "aws_dlm_lifecycle_policy" "this" {
-  description        = "${local.policy_name}: EBS snapshots of ${join(", ", var.pvc_names)} on ${var.cluster_name}"
+  # DLM only accepts [0-9A-Za-z _-] in a description, so anything else
+  # (dots in a PVC name, for instance) is replaced with a hyphen.
+  description        = replace("${local.policy_name} EBS snapshots of ${join(" ", var.pvc_names)} on ${var.cluster_name}", "/[^0-9A-Za-z _-]/", "-")
   execution_role_arn = aws_iam_role.dlm.arn
   state              = "ENABLED"
 
