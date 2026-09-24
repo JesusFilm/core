@@ -12,30 +12,28 @@ import {
 } from '../../../workers/videoAlgoliaSync'
 import { logger } from '../../logger'
 
-// Calculates what availableLanguages should be for a given video
-// Does NOT update the database - only calculates the correct value
-export async function calculateAvailableLanguages(
-  videoId: string
-): Promise<string[]> {
-  const video = await prisma.video.findUnique({
-    where: { id: videoId },
-    select: {
-      label: true,
-      variants: {
-        where: { published: true },
-        select: { languageId: true }
-      },
-      children: {
-        where: { published: true },
-        select: { availableLanguages: true }
-      }
-    }
-  })
-
-  if (video == null) {
-    return []
+// The rows every availableLanguages calculation reads, single or batched.
+const availableLanguagesSelect = {
+  label: true,
+  variants: {
+    where: { published: true },
+    select: { languageId: true }
+  },
+  children: {
+    where: { published: true },
+    select: { availableLanguages: true }
   }
+} as const
 
+interface AvailableLanguagesSource {
+  variants: Array<{ languageId: string }>
+  children: Array<{ availableLanguages: string[] }>
+}
+
+// The calculation itself, over rows already loaded. Both the single-video and
+// batched entry points below reduce through here, so there is exactly one
+// definition of what a video's availableLanguages means.
+function reduceAvailableLanguages(video: AvailableLanguagesSource): string[] {
   const languageSet = new Set<string>()
   // Always include published variants on the video itself
   for (const variant of video.variants) {
@@ -54,17 +52,59 @@ export async function calculateAvailableLanguages(
   return Array.from(languageSet).sort((a, b) => Number(a) - Number(b))
 }
 
-// Updates a video's availableLanguages field based on current state
-// Handles both regular videos and collections
-export async function updateVideoAvailableLanguages(
-  videoId: string,
-  options: {
-    skipCache?: boolean
-    skipAlgolia?: boolean
-  } = {}
+// Calculates what availableLanguages should be for a given video
+// Does NOT update the database - only calculates the correct value
+export async function calculateAvailableLanguages(
+  videoId: string
 ): Promise<string[]> {
-  const availableLanguages = await calculateAvailableLanguages(videoId)
+  const video = await prisma.video.findUnique({
+    where: { id: videoId },
+    select: availableLanguagesSelect
+  })
 
+  if (video == null) {
+    return []
+  }
+
+  return reduceAvailableLanguages(video)
+}
+
+// Batched form of calculateAvailableLanguages: one findMany for the whole set
+// rather than a lookup per id. Callers that recompute many videos at once (the
+// seed job walks the entire Video table) must use this - a per-id loop makes
+// their read cost grow with the catalog. Ids with no matching video are absent
+// from the returned map, mirroring calculateAvailableLanguages' empty result.
+export async function calculateAvailableLanguagesForVideos(
+  videoIds: string[]
+): Promise<Map<string, string[]>> {
+  if (videoIds.length === 0) {
+    return new Map()
+  }
+
+  const videos = await prisma.video.findMany({
+    where: { id: { in: videoIds } },
+    select: { id: true, ...availableLanguagesSelect }
+  })
+
+  return new Map(
+    videos.map((video) => [video.id, reduceAvailableLanguages(video)])
+  )
+}
+
+interface AvailableLanguagesWriteOptions {
+  skipCache?: boolean
+  skipAlgolia?: boolean
+}
+
+// Writes one video's already-computed availableLanguages and runs the cache
+// and search side effects. Split out of updateVideoAvailableLanguages so
+// batched callers can reuse the write half against languages they resolved in
+// a single lookup, rather than re-reading each video to get them.
+async function applyAvailableLanguages(
+  videoId: string,
+  availableLanguages: string[],
+  options: AvailableLanguagesWriteOptions
+): Promise<string[]> {
   // Update the video
   await prisma.video.update({
     where: { id: videoId },
@@ -89,6 +129,17 @@ export async function updateVideoAvailableLanguages(
   }
 
   return availableLanguages
+}
+
+// Updates a video's availableLanguages field based on current state
+// Handles both regular videos and collections
+export async function updateVideoAvailableLanguages(
+  videoId: string,
+  options: AvailableLanguagesWriteOptions = {}
+): Promise<string[]> {
+  const availableLanguages = await calculateAvailableLanguages(videoId)
+
+  return applyAvailableLanguages(videoId, availableLanguages, options)
 }
 
 // Adds a language to a video's availableLanguages if not already present.
@@ -170,16 +221,40 @@ export async function findContainerParentIds(
 
 // Updates all parent videos (collections) when a child video's languages change
 // Ensures collections always reflect the union of their children's languages
+//
+// The parents are recomputed from one batched lookup rather than a lookup
+// each. Resolving them together is safe even when the containers nest: every
+// parent here is a *direct* parent of childVideoId, and childVideoId is the
+// only video whose languages just changed, so each parent picks the new
+// language up from the child itself. No parent depends on another parent's
+// updated value, and the previous per-parent loop had no defined order to
+// rely on anyway (findContainerParentIds does not sort).
+//
+// The writes stay per-parent: the Algolia enqueue and cache reset are
+// per-video side effects, and keeping the updates separate preserves the
+// existing behaviour where a failure on one parent leaves earlier parents
+// committed.
 export async function updateParentCollectionLanguages(
   childVideoId: string
 ): Promise<void> {
   const parentIds = await findContainerParentIds(childVideoId)
 
+  if (parentIds.length === 0) {
+    return
+  }
+
+  const availableLanguagesByVideoId =
+    await calculateAvailableLanguagesForVideos(parentIds)
+
   // Update each parent collection
   for (const parentId of parentIds) {
-    await updateVideoAvailableLanguages(parentId, {
-      skipCache: false,
-      skipAlgolia: false
-    })
+    await applyAvailableLanguages(
+      parentId,
+      availableLanguagesByVideoId.get(parentId) ?? [],
+      {
+        skipCache: false,
+        skipAlgolia: false
+      }
+    )
   }
 }
