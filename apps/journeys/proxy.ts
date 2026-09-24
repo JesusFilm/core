@@ -71,6 +71,12 @@ export default async function proxy(
     return NextResponse.rewrite(new URL(`/home${path}`, req.url))
   }
 
+  // Campaign landing pages are root-domain-only too — same rewrite so dev
+  // hosts and custom domains never fall through to the journey catch-all.
+  if (url.pathname.startsWith('/campaign/')) {
+    return NextResponse.rewrite(new URL(`/home${path}`, req.url))
+  }
+
   // rewrite root application to `/home` folder
   if (
     process.env.NEXT_PUBLIC_ROOT_DOMAIN != null &&
