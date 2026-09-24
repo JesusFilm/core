@@ -38,6 +38,13 @@ export function buildJourneySiteId(journeyId: string): string {
   return `api-journeys-journey-${journeyId}`
 }
 
+// Every journey pageview is also recorded against the owning team's site (see
+// JourneyPageWrapper in apps/journeys), which lets cross-journey reports run
+// as a single request instead of a per-journey fan-out.
+export function buildTeamSiteId(teamId: string): string {
+  return `api-journeys-team-${teamId}`
+}
+
 export function getPlausibleConfig(): {
   baseUrl: string
   headers: Record<string, string>
@@ -59,13 +66,21 @@ interface GetJourneyStatsBreakdownOptions {
    * single bounded request (e.g. per-journey analytics) keep their behavior.
    */
   paginate?: boolean
+  /**
+   * Per-request timeout override in milliseconds. Defaults to the service-wide
+   * 30s; public/anonymous paths pass a shorter bound.
+   */
+  timeoutMs?: number
 }
 
 export async function getJourneyStatsBreakdown(
   journeyId: string,
   params: PlausibleBreakdownParams,
   siteId?: string,
-  { paginate = false }: GetJourneyStatsBreakdownOptions = {}
+  {
+    paginate = false,
+    timeoutMs = PLAUSIBLE_REQUEST_TIMEOUT_MS
+  }: GetJourneyStatsBreakdownOptions = {}
 ): Promise<PlausibleStatsResponse[]> {
   const { baseUrl, headers } = getPlausibleConfig()
   const endpoint = `${baseUrl}/api/v1/stats/breakdown`
@@ -79,7 +94,7 @@ export async function getJourneyStatsBreakdown(
       endpoint,
       {
         headers,
-        timeout: PLAUSIBLE_REQUEST_TIMEOUT_MS,
+        timeout: timeoutMs,
         params: {
           site_id: resolvedSiteId,
           ...params,

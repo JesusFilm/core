@@ -72,6 +72,31 @@ describe('NavigationDrawer', () => {
     )
   })
 
+  it('should show the campaigns link only for signed-in users', async () => {
+    const { rerender } = render(
+      <NavigationDrawer open onClose={vi.fn()} selectedPage="campaigns" />
+    )
+    expect(
+      screen.queryByTestId('NavigationListItemCampaigns')
+    ).not.toBeInTheDocument()
+
+    rerender(
+      <NavigationDrawer
+        open
+        onClose={vi.fn()}
+        selectedPage="campaigns"
+        user={{ id: 'userId', isAnonymous: false } as unknown as User}
+      />
+    )
+    expect(screen.getByTestId('NavigationListItemCampaigns')).toHaveClass(
+      'Mui-selected'
+    )
+    expect(screen.getByTestId('NavigationListItemCampaigns')).toHaveAttribute(
+      'href',
+      '/campaigns'
+    )
+  })
+
   describe('UserNavigation', () => {
     const user = {
       id: 'userId',

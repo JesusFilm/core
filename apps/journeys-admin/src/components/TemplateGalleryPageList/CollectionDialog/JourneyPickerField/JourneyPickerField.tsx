@@ -30,6 +30,10 @@ export interface JourneyPickerFieldProps {
   disabled?: boolean
   /** Helper text shown when disabled. Falls back to a default. */
   disabledHelperText?: string
+  /** Section header above the picker. Defaults to the collection wording. */
+  label?: string
+  /** Placeholder shown while nothing is selected. Defaults to the collection wording. */
+  placeholder?: string
 }
 
 /**
@@ -43,7 +47,9 @@ function JourneyPickerFieldImpl({
   onChange,
   onTouch,
   disabled = false,
-  disabledHelperText
+  disabledHelperText,
+  label,
+  placeholder
 }: JourneyPickerFieldProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -65,7 +71,9 @@ function JourneyPickerFieldImpl({
 
   return (
     <Stack spacing={1}>
-      <Typography sx={SECTION_HEADER}>{t('Templates on the page:')}</Typography>
+      <Typography sx={SECTION_HEADER}>
+        {label ?? t('Templates on the page:')}
+      </Typography>
       <Autocomplete
         multiple
         disableCloseOnSelect
@@ -91,7 +99,7 @@ function JourneyPickerFieldImpl({
             {...params}
             placeholder={
               journeyIds.length === 0
-                ? t('Select templates to include')
+                ? (placeholder ?? t('Select templates to include'))
                 : undefined
             }
             variant="outlined"
