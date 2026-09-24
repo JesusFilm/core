@@ -235,9 +235,14 @@ export function CampaignBuilder({
       )
     }
     return (
-      <Alert severity="error" sx={{ m: 4 }}>
+      <Alert severity="error" sx={{ m: 4 }} data-testid="CampaignBuilderError">
         {error != null
-          ? t("Couldn't load this campaign. Refresh to try again.")
+          ? t(
+              "Couldn't load this campaign ({{message}}). Refresh to try again.",
+              {
+                message: error.message
+              }
+            )
           : t('Campaign not found.')}
       </Alert>
     )

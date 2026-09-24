@@ -1429,5 +1429,6 @@
   "Refresh": "Refresh",
   "What the public page shows: views of the published share journeys, by country.": "What the public page shows: views of the published share journeys, by country.",
   "Couldn't load country views right now.": "Couldn't load country views right now.",
-  "No country views yet.": "No country views yet."
+  "No country views yet.": "No country views yet.",
+  "Couldn't load this campaign ({{message}}). Refresh to try again.": "Couldn't load this campaign ({{message}}). Refresh to try again."
 }
