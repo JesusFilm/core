@@ -193,6 +193,31 @@ describe('DownloadDialog', () => {
     expect(downloadButton).not.toHaveAttribute('href')
   })
 
+  it('displays the non-primary (local) name when the native autonym is primary', () => {
+    const autonymVideo = {
+      ...video,
+      variant: {
+        ...video.variant,
+        language: {
+          ...video.variant?.language,
+          name: [
+            { __typename: 'LanguageName', value: 'English', primary: false },
+            { __typename: 'LanguageName', value: 'Deutsch', primary: true }
+          ]
+        }
+      }
+    } as VideoContentFields
+
+    render(
+      <VideoProvider value={{ content: autonymVideo }}>
+        <DownloadDialog open onClose={onClose} />
+      </VideoProvider>
+    )
+
+    expect(screen.getByText('English')).toBeInTheDocument()
+    expect(screen.queryByText('Deutsch')).not.toBeInTheDocument()
+  })
+
   it('should display download quality options in correct order (highest, high, low)', () => {
     render(
       <VideoProvider value={{ content: video }}>
