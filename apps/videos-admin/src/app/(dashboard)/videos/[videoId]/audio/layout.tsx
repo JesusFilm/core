@@ -83,6 +83,40 @@ const GET_VIDEO_VARIANT_UPLOADS = graphql(`
   }
 `)
 
+const videoVariantUploadStatusesToFetch: Array<
+  VideoVariantUploadRow['status']
+> = [...incompleteUploadStatuses, 'variantCreated']
+
+function partitionVideoVariantUploads(uploads: VideoVariantUploadRow[]): {
+  outstandingUploads: VideoVariantUploadRow[]
+  supersededUploads: VideoVariantUploadRow[]
+} {
+  const successfulAttempts = uploads.filter(
+    (upload) => upload.status === 'variantCreated'
+  )
+  const incompleteAttempts = uploads.filter(
+    (upload) => upload.status !== 'variantCreated'
+  )
+
+  const isSuperseded = (upload: VideoVariantUploadRow): boolean =>
+    upload.createdAt != null &&
+    successfulAttempts.some(
+      (success) =>
+        success.videoId === upload.videoId &&
+        success.languageId === upload.languageId &&
+        success.edition === upload.edition &&
+        success.createdAt != null &&
+        Date.parse(success.createdAt) > Date.parse(upload.createdAt as string)
+    )
+
+  return {
+    outstandingUploads: incompleteAttempts.filter(
+      (upload) => !isSuperseded(upload)
+    ),
+    supersededUploads: incompleteAttempts.filter(isSuperseded)
+  }
+}
+
 const RESUME_VIDEO_VARIANT_UPLOAD = graphql(`
   mutation ResumeVideoVariantUpload(
     $id: ID!
@@ -129,7 +163,7 @@ export default function ClientLayout({
     stopPolling: stopUploadPolling
   } = useQuery(GET_VIDEO_VARIANT_UPLOADS, {
     variables: {
-      input: { videoId, statuses: incompleteUploadStatuses },
+      input: { videoId, statuses: videoVariantUploadStatusesToFetch },
       limit: 100,
       languageId: DEFAULT_VIDEO_LANGUAGE_ID
     },
@@ -138,8 +172,11 @@ export default function ClientLayout({
 
   const [resumeVideoVariantUpload] = useMutation(RESUME_VIDEO_VARIANT_UPLOAD)
 
-  const incompleteUploads = useMemo(
-    () => (uploadsData?.videoVariantUploads ?? []) as VideoVariantUploadRow[],
+  const { outstandingUploads, supersededUploads } = useMemo(
+    () =>
+      partitionVideoVariantUploads(
+        (uploadsData?.videoVariantUploads ?? []) as VideoVariantUploadRow[]
+      ),
     [uploadsData?.videoVariantUploads]
   )
 
@@ -157,14 +194,14 @@ export default function ClientLayout({
   }, [pathname])
 
   useEffect(() => {
-    if (incompleteUploads.length > 0 || resumingUploadId != null) {
+    if (outstandingUploads.length > 0 || resumingUploadId != null) {
       startUploadPolling(3000)
       return () => stopUploadPolling()
     }
 
     stopUploadPolling()
   }, [
-    incompleteUploads.length,
+    outstandingUploads.length,
     resumingUploadId,
     startUploadPolling,
     stopUploadPolling
@@ -180,7 +217,7 @@ export default function ClientLayout({
   useEffect(() => {
     if (resumingUploadId == null || isResumeRequestInFlight) return
 
-    const upload = incompleteUploads.find((row) => row.id === resumingUploadId)
+    const upload = outstandingUploads.find((row) => row.id === resumingUploadId)
     if (upload == null) {
       completeResumedUpload()
       return
@@ -197,7 +234,7 @@ export default function ClientLayout({
     enqueueSnackbar,
     resumingUploadId,
     isResumeRequestInFlight,
-    incompleteUploads
+    outstandingUploads
   ])
 
   const handleAddAudioLanguage = useCallback((): void => {
@@ -327,7 +364,8 @@ export default function ClientLayout({
 
     if (
       (!data?.adminVideo.variants || data.adminVideo.variants.length === 0) &&
-      incompleteUploads.length === 0
+      outstandingUploads.length === 0 &&
+      supersededUploads.length === 0
     ) {
       return (
         <Box
@@ -363,7 +401,8 @@ export default function ClientLayout({
       >
         <List disablePadding>
           <IncompleteVideoVariantUploadItems
-            uploads={incompleteUploads}
+            outstandingUploads={outstandingUploads}
+            supersededUploads={supersededUploads}
             resumingUploadId={resumingUploadId}
             isResumeRequestInFlight={isResumeRequestInFlight}
             onAddAudioLanguage={handleAddAudioLanguage}
