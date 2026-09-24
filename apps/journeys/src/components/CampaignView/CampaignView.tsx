@@ -9,8 +9,8 @@ import type { PublicGalleryPageMedia } from '@core/journeys/ui/PublicGalleryPage
 
 import {
   GetCampaign_campaignBySlug as Campaign,
-  GetCampaign_campaignBySlug_media as CampaignMedia,
-  GetCampaign_campaignCountryStats as CampaignCountryStats
+  GetCampaign_campaignCountryStats as CampaignCountryStats,
+  GetCampaign_campaignBySlug_media as CampaignMedia
 } from '../../../__generated__/GetCampaign'
 import { TemplateGalleryPageMediaType } from '../../../__generated__/globalTypes'
 

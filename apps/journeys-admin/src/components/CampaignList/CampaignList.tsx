@@ -123,8 +123,12 @@ export function CampaignList(): ReactElement {
               busy={busyId === campaign.id}
               canPublish={canPublish}
               publishBlockedReason={publishBlockedReason}
-              onPublish={(target) => void publish(target.id)}
-              onUnpublish={(target) => void unpublish(target.id)}
+              onPublish={(target) => {
+                void publish(target.id)
+              }}
+              onUnpublish={(target) => {
+                void unpublish(target.id)
+              }}
               onDelete={setDeleteTarget}
             />
           ))}
@@ -144,7 +148,9 @@ export function CampaignList(): ReactElement {
         wasPublished={deleteTarget?.publishedAt != null}
         loading={deleteTarget != null && busyId === deleteTarget.id}
         onClose={() => setDeleteTarget(null)}
-        onConfirm={() => void handleConfirmDelete()}
+        onConfirm={() => {
+          void handleConfirmDelete()
+        }}
       />
     </Stack>
   )

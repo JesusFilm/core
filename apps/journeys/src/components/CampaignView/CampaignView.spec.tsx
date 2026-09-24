@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react'
 
-import { CampaignView, toCampaignData } from './CampaignView'
 import {
   makeCampaign,
   makeCampaignLinkMedia,
   mockCountryStats
 } from './campaignFixture'
+import { CampaignView, toCampaignData } from './CampaignView'
 
 describe('CampaignView', () => {
   it('maps the campaign and renders the public page', () => {

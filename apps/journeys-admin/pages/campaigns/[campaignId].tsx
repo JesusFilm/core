@@ -70,16 +70,13 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   if (redirect != null) return { redirect }
 
   const campaignId = ctx.params?.campaignId?.toString() ?? ''
-  let campaignTitle: string | null = null
-  try {
-    const { data } = await apolloClient.query<
-      GetSSRCampaign,
-      GetSSRCampaignVariables
-    >({ query: GET_SSR_CAMPAIGN, variables: { id: campaignId } })
-    campaignTitle = data?.campaign?.title ?? null
-  } catch {
-    campaignTitle = null
-  }
+  const campaignTitle = await apolloClient
+    .query<GetSSRCampaign, GetSSRCampaignVariables>({
+      query: GET_SSR_CAMPAIGN,
+      variables: { id: campaignId }
+    })
+    .then(({ data }) => data?.campaign?.title ?? null)
+    .catch(() => null)
   if (campaignTitle == null)
     return { props: { ...translations }, notFound: true }
 

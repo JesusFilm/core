@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { FormikHelpers } from 'formik'
@@ -19,7 +20,7 @@ function helpers(): FormikHelpers<CampaignFormValues> {
   } as unknown as FormikHelpers<CampaignFormValues>
 }
 
-function wrapperWith(mocks: Parameters<typeof MockedProvider>[0]['mocks']) {
+function wrapperWith(mocks: MockLink.MockedResponse[]) {
   return function Wrapper({ children }: { children: ReactNode }): ReactElement {
     return (
       <MockedProvider mocks={mocks}>
@@ -53,11 +54,7 @@ describe('useCampaignForm', () => {
     const campaign = makeCampaign()
     const update = vi.fn(() => ({
       data: {
-        campaignUpdate: makeCampaign({
-          title: 'Renamed',
-          eyebrow: null,
-          shareJourneyIds: undefined
-        })
+        campaignUpdate: makeCampaign({ title: 'Renamed', eyebrow: null })
       }
     }))
     const { result } = renderHook(() => useCampaignForm({ campaign }), {

@@ -32,8 +32,8 @@ export interface CampaignCardProps {
   onDelete?: (campaign: Campaign) => void
 }
 
-function formatUpdated(value: unknown): string | null {
-  const parsed = value != null ? parseISO(String(value)) : null
+function formatUpdated(value: string | null | undefined): string | null {
+  const parsed = value != null ? parseISO(value) : null
   return parsed != null && isValid(parsed)
     ? intlFormat(parsed, { day: 'numeric', month: 'short', year: 'numeric' })
     : null

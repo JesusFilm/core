@@ -1,9 +1,9 @@
 import { MockLink } from '@apollo/client/testing'
 
 import {
+  GetCampaign_campaign as Campaign,
   GetCampaign,
-  GetCampaignVariables,
-  GetCampaign_campaign as Campaign
+  GetCampaignVariables
 } from '../../../__generated__/GetCampaign'
 
 import { GET_CAMPAIGN } from './useCampaignQuery'

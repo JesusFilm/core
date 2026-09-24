@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, ReactNode, useEffect, useState } from 'react'
 
+import { CampaignSectionLabel } from '../CampaignSectionLabel'
 import {
   CAMPAIGN_ACCENT,
   CAMPAIGN_BORDER,
@@ -22,7 +23,6 @@ import {
   buildShareUrl,
   shareJourneyLanguageLabel
 } from '../campaignTokens'
-import { CampaignSectionLabel } from '../CampaignSectionLabel'
 
 import { CampaignQrCodeButton } from './CampaignQrCodeButton'
 

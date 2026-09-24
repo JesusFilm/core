@@ -1,8 +1,8 @@
 import { builder } from '../builder'
 
+import { CampaignCountryStatsRef } from './campaignCountryStats'
 import { CampaignJourneyItemRef } from './campaignJourneyItem'
 import { CampaignMediaPublicRef, CampaignMediaRef } from './campaignMedia'
-import { CampaignCountryStatsRef } from './campaignCountryStats'
 import { CampaignStatus } from './enums'
 import { getCampaignCountryStats } from './stats/getCampaignCountryStats'
 

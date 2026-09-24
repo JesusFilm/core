@@ -7,7 +7,6 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 import { linkValidate } from '../templateGalleryPage/media/linkValidate'
-import { muxValidate } from '../templateGalleryPage/media/muxValidate'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -124,7 +123,7 @@ describe('campaignCreate', () => {
   it('creates the media row after the campaign when media is supplied', async () => {
     mockLinkValidate.mockResolvedValue({
       embedUrl: 'https://www.youtube.com/embed/abc'
-    } as any)
+    })
 
     await authClient({
       document: CAMPAIGN_CREATE,

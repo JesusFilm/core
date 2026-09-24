@@ -5,10 +5,10 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
 import {
-  GetCampaign,
-  GetCampaignVariables,
   GetCampaign_campaignBySlug as Campaign,
-  GetCampaign_campaignCountryStats as CampaignCountryStats
+  GetCampaign_campaignCountryStats as CampaignCountryStats,
+  GetCampaign,
+  GetCampaignVariables
 } from '../../../__generated__/GetCampaign'
 import i18nConfig from '../../../next-i18next.config'
 import { CampaignView } from '../../../src/components/CampaignView'

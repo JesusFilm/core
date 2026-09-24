@@ -7,8 +7,8 @@ import { getCampaignsMock } from '../../libs/useCampaignsQuery/useCampaignsQuery
 
 import { CampaignList } from './CampaignList'
 
-const mockActiveTeam = vi.hoisted(() => ({
-  current: { id: 'team-1' } as { id: string } | null
+const mockActiveTeam = vi.hoisted((): { current: { id: string } | null } => ({
+  current: { id: 'team-1' }
 }))
 vi.mock('@core/journeys/ui/TeamProvider', () => ({
   useTeam: () => ({ activeTeam: mockActiveTeam.current })

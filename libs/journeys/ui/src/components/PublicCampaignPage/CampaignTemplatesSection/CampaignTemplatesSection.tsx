@@ -8,12 +8,12 @@ import { ReactElement } from 'react'
 import { sanitiseAdminBase } from '../../../libs/adminTemplateLinks'
 import type { PublicGalleryPageItem } from '../../PublicGalleryPage/galleryTokens'
 import { JourneyViewCard } from '../../PublicGalleryPage/JourneyView/JourneyViewCard'
+import { CampaignSectionLabel } from '../CampaignSectionLabel'
 import {
   CAMPAIGN_SECTION_IDS,
   CAMPAIGN_TEXT,
   CAMPAIGN_TEXT_MUTED
 } from '../campaignTokens'
-import { CampaignSectionLabel } from '../CampaignSectionLabel'
 
 interface CampaignTemplatesSectionProps {
   templates: ReadonlyArray<PublicGalleryPageItem>

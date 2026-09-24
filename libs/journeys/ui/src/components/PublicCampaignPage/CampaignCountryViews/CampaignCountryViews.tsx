@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
+import { CampaignSectionLabel } from '../CampaignSectionLabel'
 import {
   CAMPAIGN_ACCENT,
   CAMPAIGN_BORDER,
@@ -15,7 +16,6 @@ import {
   PublicCampaignCountryStats,
   formatViews
 } from '../campaignTokens'
-import { CampaignSectionLabel } from '../CampaignSectionLabel'
 
 interface CampaignCountryViewsProps {
   /** Null renders the "unavailable" state. */

@@ -174,7 +174,7 @@ describe('campaignUpdate', () => {
       muxPlaybackId: 'pb-1',
       muxName: 'Clip',
       muxDuration: 30
-    } as any)
+    })
 
     await authClient({
       document: CAMPAIGN_UPDATE,

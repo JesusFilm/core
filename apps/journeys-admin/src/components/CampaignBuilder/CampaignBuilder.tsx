@@ -135,12 +135,16 @@ function CampaignBuilderForm({
               submitBlocked={uploadInFlight}
               canPublish={canPublish}
               publishBlockedReason={publishBlockedReason}
-              onSave={() => void submitForm()}
+              onSave={() => {
+                void submitForm()
+              }}
               onPublish={() => {
                 setSubmitIntent('publish')
                 void submitForm()
               }}
-              onUnpublish={() => void handleUnpublish()}
+              onUnpublish={() => {
+                void handleUnpublish()
+              }}
             />
             <Stack
               direction={{ xs: 'column', md: 'row' }}

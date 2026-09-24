@@ -1,10 +1,20 @@
-import { mockItem } from '../PublicGalleryPage/publicGalleryPageData.mock'
+import type { PublicGalleryPageItem } from '../PublicGalleryPage/galleryTokens'
 
 import {
   PublicCampaignCountryStats,
   PublicCampaignPageData,
   PublicCampaignShareJourney
 } from './campaignTokens'
+
+export const mockItem: PublicGalleryPageItem = {
+  id: 'template-1',
+  title: 'Sample Template',
+  description: 'A sample template for testing',
+  slug: 'sample-template',
+  createdAt: '2026-01-01T00:00:00.000Z',
+  languageName: [{ value: 'English', primary: true }],
+  image: { src: 'https://example.com/image.jpg', alt: 'Sample image' }
+}
 
 export const mockShareJourney: PublicCampaignShareJourney = {
   id: 'share-en',

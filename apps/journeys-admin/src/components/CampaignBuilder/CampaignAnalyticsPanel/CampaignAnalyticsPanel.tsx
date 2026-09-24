@@ -122,7 +122,9 @@ export function CampaignAnalyticsPanel({
           <Typography sx={SECTION_HEADER}>{t('Country views')}</Typography>
           <Button
             size="small"
-            onClick={() => void refetch()}
+            onClick={() => {
+              void refetch()
+            }}
             disabled={countryLoading}
           >
             {t('Refresh')}

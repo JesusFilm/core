@@ -4,8 +4,8 @@ import { ReactElement, ReactNode } from 'react'
 
 import type { PublicGalleryPageMedia } from '../../PublicGalleryPage/galleryTokens'
 import { JourneyViewMedia } from '../../PublicGalleryPage/JourneyView/JourneyViewMedia'
-import { CAMPAIGN_SECTION_IDS } from '../campaignTokens'
 import { CampaignSectionLabel } from '../CampaignSectionLabel'
+import { CAMPAIGN_SECTION_IDS } from '../campaignTokens'
 
 interface CampaignMediaSectionProps {
   media?: PublicGalleryPageMedia | null
