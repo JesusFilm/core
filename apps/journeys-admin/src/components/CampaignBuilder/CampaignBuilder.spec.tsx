@@ -163,10 +163,8 @@ describe('CampaignBuilder', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(
-      await screen.findByText(
-        "Couldn't load this campaign. Refresh to try again."
-      )
-    ).toBeInTheDocument()
+    expect(await screen.findByTestId('CampaignBuilderError')).toHaveTextContent(
+      "Couldn't load this campaign (campaign not found). Refresh to try again."
+    )
   })
 })
