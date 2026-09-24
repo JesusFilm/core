@@ -61,6 +61,14 @@ export enum ButtonVariant {
   text = "text",
 }
 
+/**
+ * Lifecycle state of a Campaign. Anonymous traffic via `campaignBySlug` only sees `published` rows; drafts are hidden.
+ */
+export enum CampaignStatus {
+  draft = "draft",
+  published = "published",
+}
+
 export enum ContactActionType {
   call = "call",
   text = "text",
@@ -447,6 +455,40 @@ export interface ButtonClickEventCreateInput {
   value?: string | null;
   action?: ButtonAction | null;
   actionValue?: string | null;
+}
+
+/**
+ * Input for creating a new Campaign in `draft` status. The slug is server-generated from `title`.
+ */
+export interface CampaignCreateInput {
+  teamId: string;
+  title: string;
+  eyebrow?: string | null;
+  tagline?: string | null;
+  description?: string | null;
+  backgroundImageSrc?: string | null;
+  backgroundImageAlt?: string | null;
+  statsFrom?: any | null;
+  shareJourneyIds?: string[] | null;
+  templateJourneyIds?: string[] | null;
+  media?: TemplateGalleryPageMediaInput | null;
+}
+
+/**
+ * Input for editing a Campaign. Field omitted = leave the existing value alone. Field set to `null` = clear (only meaningful for nullable fields).
+ */
+export interface CampaignUpdateInput {
+  title?: string | null;
+  eyebrow?: string | null;
+  tagline?: string | null;
+  description?: string | null;
+  slug?: string | null;
+  backgroundImageSrc?: string | null;
+  backgroundImageAlt?: string | null;
+  statsFrom?: any | null;
+  shareJourneyIds?: string[] | null;
+  templateJourneyIds?: string[] | null;
+  media?: TemplateGalleryPageMediaInput | null;
 }
 
 export interface CardBlockCreateInput {
