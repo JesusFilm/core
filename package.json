@@ -81,9 +81,9 @@
     "@mui/x-tree-view": "^9.10.1",
     "@mux/mux-node": "^11.0.0",
     "@mux/upchunk": "^3.4.0",
-    "@next/bundle-analyzer": "^16.2.3",
-    "@next/eslint-plugin-next": "^16.2.3",
-    "@next/third-parties": "^16.2.3",
+    "@next/bundle-analyzer": "^16.3.6",
+    "@next/eslint-plugin-next": "^16.3.6",
+    "@next/third-parties": "^16.3.6",
     "@openrouter/ai-sdk-provider": "^3.0.0",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/exporter-trace-otlp-grpc": "^0.200.0",
@@ -160,7 +160,7 @@
     "lodash": "^4.17.21",
     "lucide-react": "^0.513.0",
     "nanoid": "^3.3.7",
-    "next": "^16.2.3",
+    "next": "^16.3.6",
     "next-firebase-auth-edge": "^1.7.0-canary.2",
     "next-i18n-router": "^5.5.5",
     "next-i18next": "^16.0.5",
@@ -299,7 +299,7 @@
     "dayjs": "1.11.18",
     "esbuild": "^0.19.12",
     "eslint": "^10.8.1",
-    "eslint-config-next": "16.2.3",
+    "eslint-config-next": "16.3.6",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-i18next": "^6.1.5",
     "eslint-plugin-import-x": "^4.17.1",
@@ -363,7 +363,7 @@
     "workerDirectory": "./.storybook/static"
   },
   "overrides": {
-    "next": "16.2.3",
+    "next": "16.3.6",
     "react-is": "^19.0.0",
     "html-tokenize": {
       "readable-stream": "^3.6.0"
