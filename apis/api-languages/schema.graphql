@@ -214,6 +214,11 @@ interface User {
 type WessImportResult {
   success: Boolean!
   languagesImported: Int!
+
+  """
+  Number of autonym (native-name) LanguageName rows created or updated during this run.
+  """
+  nativeNamesImported: Int!
   countriesImported: Int!
   countryLanguagesImported: Int!
   message: String!
