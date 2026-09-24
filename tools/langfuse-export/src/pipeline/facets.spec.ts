@@ -193,6 +193,9 @@ describe('normalizeLanguageLabel', () => {
     expect(normalizeLanguageLabel('af')).toBe('Afrikaans')
     expect(normalizeLanguageLabel('pt-BR')).toBe('Portuguese')
     expect(normalizeLanguageLabel('es_419')).toBe('Spanish')
+    expect(normalizeLanguageLabel('ja')).toBe('Japanese')
+    expect(normalizeLanguageLabel('ps')).toBe('Pashto')
+    expect(normalizeLanguageLabel('fa')).toBe('Farsi')
   })
 
   it('strips the regional qualifier from display names', () => {

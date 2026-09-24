@@ -18,6 +18,7 @@
 // distinctive facets. Frequency-threshold suppression (not LLM-judged) is the
 // chosen rule from the ticket's open question — deterministic and offline.
 
+import { LANGUAGE_CODE_BY_NAME } from './translate'
 import type { Facet, FacetKind, SanitisedConversation } from '../types'
 
 export interface FacetExtractionOptions {
@@ -203,30 +204,13 @@ function tokenize(text: string): string[] {
 // the facet rail splits one language across two rows — a reader filtering
 // "English" silently misses every session tagged 'en'. Fold both spellings onto
 // one label so the counts are true. The raw value survives on the session.
-const LANGUAGE_NAMES: Record<string, string> = {
-  af: 'Afrikaans',
-  ar: 'Arabic',
-  bn: 'Bengali',
-  de: 'German',
-  en: 'English',
-  es: 'Spanish',
-  fa: 'Farsi',
-  fr: 'French',
-  he: 'Hebrew',
-  hi: 'Hindi',
-  id: 'Indonesian',
-  it: 'Italian',
-  ko: 'Korean',
-  pt: 'Portuguese',
-  ru: 'Russian',
-  sw: 'Swahili',
-  th: 'Thai',
-  tr: 'Turkish',
-  ur: 'Urdu',
-  vi: 'Vietnamese',
-  yi: 'Yiddish',
-  zh: 'Chinese'
-}
+const LANGUAGE_NAMES: Record<string, string> = Object.fromEntries(
+  Object.entries(LANGUAGE_CODE_BY_NAME).map(([name, code]) => [
+    code,
+    name.charAt(0).toUpperCase() + name.slice(1)
+  ])
+)
+LANGUAGE_NAMES.fa = 'Farsi'
 
 export function normalizeLanguageLabel(value: string): string {
   const trimmed = value.trim()

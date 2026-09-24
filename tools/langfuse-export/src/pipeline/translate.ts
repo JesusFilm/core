@@ -28,7 +28,7 @@ export function cannotBeEnglish(text: string): boolean {
 // back onto its code so every consumer sees one value. An unrecognised code is
 // returned lowercased-and-trimmed unchanged: a real language we don't list yet
 // (e.g. Tamil 'ta') must not be dropped, only ones we can name are unified.
-const LANGUAGE_CODE_BY_NAME: Record<string, string> = {
+export const LANGUAGE_CODE_BY_NAME: Record<string, string> = {
   afrikaans: 'af',
   arabic: 'ar',
   bengali: 'bn',
@@ -65,7 +65,10 @@ const LANGUAGE_CODE_BY_NAME: Record<string, string> = {
 
 export function canonicalLanguageCode(value: string): string {
   const normalized = value.trim().toLowerCase()
-  return LANGUAGE_CODE_BY_NAME[normalized] ?? normalized
+  const byName = LANGUAGE_CODE_BY_NAME[normalized]
+  if (byName != null) return byName
+  const base = normalized.split(/[-_]/)[0]
+  return /^[a-z]{2,3}$/.test(base) ? base : normalized
 }
 
 export function collectTranslatable(

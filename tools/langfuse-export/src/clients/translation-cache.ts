@@ -8,7 +8,7 @@ import { createHash } from 'node:crypto'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 
-import { cannotBeEnglish } from '../pipeline/translate'
+import { canonicalLanguageCode, cannotBeEnglish } from '../pipeline/translate'
 import type { Translation } from '../types'
 
 // sha256 of the exact source string. Same string in -> same key out.
@@ -30,16 +30,18 @@ export function isPoisonedEnglish(cached: Translation, text: string): boolean {
 function toTranslation(value: unknown): Translation | null {
   if (value == null || typeof value !== 'object') return null
   const record = value as Record<string, unknown>
-  const sourceLanguage =
+  const rawLanguage =
     typeof record.sourceLanguage === 'string'
       ? record.sourceLanguage.trim()
       : ''
-  if (sourceLanguage.length === 0) return null
+  if (rawLanguage.length === 0) return null
+  const sourceLanguage = canonicalLanguageCode(rawLanguage)
   const english =
-    typeof record.english === 'string' && record.english.length > 0
+    typeof record.english === 'string' && record.english.trim().length > 0
       ? record.english
       : undefined
-  return english != null ? { sourceLanguage, english } : { sourceLanguage }
+  if (sourceLanguage === 'en') return { sourceLanguage }
+  return english != null ? { sourceLanguage, english } : null
 }
 
 // Load the cache. Returns an empty Map when the file is absent or unparseable —

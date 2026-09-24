@@ -61,6 +61,28 @@ describe('loadCache', () => {
     expect(cache.has('h3')).toBe(false)
     expect(cache.has('h4')).toBe(false)
   })
+
+  it('canonicalizes cached language tags and rejects incomplete translations', () => {
+    const path = tmpFile('cache.json')
+    writeFileSync(
+      path,
+      JSON.stringify({
+        named: { sourceLanguage: 'Bengali', english: '  Grace  ' },
+        tagged: { sourceLanguage: 'pt_BR', english: 'Grace' },
+        missing: { sourceLanguage: 'bn' },
+        blank: { sourceLanguage: 'bn', english: '   ' },
+        english: { sourceLanguage: 'en-US', english: 'Discard this' }
+      }),
+      'utf8'
+    )
+    expect(loadCache(path)).toEqual(
+      new Map([
+        ['named', { sourceLanguage: 'bn', english: '  Grace  ' }],
+        ['tagged', { sourceLanguage: 'pt', english: 'Grace' }],
+        ['english', { sourceLanguage: 'en' }]
+      ])
+    )
+  })
 })
 
 describe('saveCache', () => {

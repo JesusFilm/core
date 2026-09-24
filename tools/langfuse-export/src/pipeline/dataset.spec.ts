@@ -367,6 +367,42 @@ describe('buildDataset — translation guards (NES-1762)', () => {
     expect(dataset.sessions[0].firstUserMessageEnglish).toBeUndefined()
   })
 
+  it('ignores a case-only echo for messages and keyword facets', () => {
+    const extraction: FacetExtraction = {
+      ...emptyFacets(),
+      keywordFacets: [
+        { key: 'keyword:jesus', label: 'jesus', kind: 'keyword', count: 1 }
+      ]
+    }
+    const dataset = buildDataset(
+      [conv({ turns: [turn({ userMessage: 'jesus', assistantReply: '' })] })],
+      window,
+      extraction,
+      null,
+      0,
+      '2026-05-31T00:00:00.000Z',
+      new Map([['jesus', { sourceLanguage: 'es', english: 'Jesus' }]])
+    )
+    expect(dataset.sessions[0].messages[0].textEnglish).toBeUndefined()
+    expect(
+      dataset.facets.find((f) => f.key === 'keyword:jesus')?.labelEnglish
+    ).toBeUndefined()
+  })
+
+  it('ignores an English cache record with a stale gloss', () => {
+    const dataset = buildDataset(
+      [conv({ turns: [turn({ userMessage: 'Hello', assistantReply: '' })] })],
+      window,
+      emptyFacets(),
+      null,
+      0,
+      '2026-05-31T00:00:00.000Z',
+      new Map([['Hello', { sourceLanguage: 'en', english: 'Hola' }]])
+    )
+    expect(dataset.sessions[0].messages[0].textEnglish).toBeUndefined()
+    expect(dataset.summary.translatedMessageCount).toBe(0)
+  })
+
   it('ignores an identical translation that differs only by surrounding whitespace', () => {
     const conversations = [
       conv({
@@ -656,6 +692,27 @@ describe('buildDataset — typed-language facets (NES-1762)', () => {
     expect(message.sourceLanguage).toBeUndefined()
     expect(dataset.facets.filter((f) => f.kind === 'typedLanguage')).toEqual([])
     expect(dataset.summary.sourceLanguages).not.toContain('es')
+  })
+
+  it('keeps a keyword gloss but drops a contradicted language attribution', () => {
+    const arabic = 'سلام'
+    const dataset = buildDataset(
+      [conv({ turns: [turn({ userMessage: arabic, assistantReply: '' })] })],
+      window,
+      {
+        ...emptyFacets(),
+        keywordFacets: [
+          { key: `keyword:${arabic}`, label: arabic, kind: 'keyword', count: 1 }
+        ]
+      },
+      null,
+      0,
+      '2026-05-31T00:00:00.000Z',
+      new Map([[arabic, { sourceLanguage: 'es', english: 'Peace' }]])
+    )
+    const keyword = dataset.facets.find((f) => f.key === `keyword:${arabic}`)
+    expect(keyword?.labelEnglish).toBe('peace')
+    expect(keyword?.sourceLanguage).toBeUndefined()
   })
 
   it('keeps an attribution the script corroborates', () => {

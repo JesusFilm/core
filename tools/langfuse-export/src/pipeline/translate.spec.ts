@@ -138,6 +138,9 @@ describe('canonicalLanguageCode', () => {
   it('passes a known code through lowercased and trimmed', () => {
     expect(canonicalLanguageCode('bn')).toBe('bn')
     expect(canonicalLanguageCode(' EN ')).toBe('en')
+    expect(canonicalLanguageCode('en-US')).toBe('en')
+    expect(canonicalLanguageCode('es-419')).toBe('es')
+    expect(canonicalLanguageCode('pt_BR')).toBe('pt')
   })
 
   it('keeps an unrecognised code rather than dropping a real language', () => {

@@ -240,6 +240,7 @@ async function translateBatch(
         model,
         system,
         prompt: `Items (one JSON object per line):\n${prompt}`,
+        maxRetries: 0,
         abortSignal: signal ?? AbortSignal.timeout(DEFAULT_TIMEOUT_MS)
       })
       const parsed = parseTranslations(text, validIds)
@@ -271,6 +272,7 @@ export async function translateTexts(
   options: { signal?: AbortSignal; onProgress?: (message: string) => void } = {}
 ): Promise<Map<string, Translation>> {
   const translations = new Map<string, Translation>()
+  const failedIds = new Set<string>()
   const batches = batchByCharBudget(items)
   for (let index = 0; index < batches.length; index += 1) {
     const batch = batches[index]
@@ -281,6 +283,7 @@ export async function translateTexts(
       const parsed = await translateBatch(model, batch, options.signal)
       for (const [id, translation] of parsed) translations.set(id, translation)
     } catch (error) {
+      for (const item of batch) failedIds.add(item.id)
       // Degrade: leave this batch untranslated rather than aborting the run.
       // The original text is always retained downstream.
       console.warn(
@@ -295,12 +298,16 @@ export async function translateTexts(
   // a non-English entry with no translation, which parseTranslations discards).
   // The batch-level retry cannot catch that, so sweep the stragglers one at a
   // time — alone in a prompt, a skipped item almost always comes back.
-  const missing = items.filter((item) => !translations.has(item.id))
+  const missing = items.filter(
+    (item) => !translations.has(item.id) && !failedIds.has(item.id)
+  )
   if (missing.length > 0) {
     options.onProgress?.(
       `translate: retrying ${missing.length} skipped item(s)`
     )
+    let consecutiveFailures = 0
     for (const item of missing) {
+      if (consecutiveFailures >= 3) break
       try {
         const parsed = await translateBatch(
           model,
@@ -310,8 +317,9 @@ export async function translateTexts(
         )
         for (const [id, translation] of parsed)
           translations.set(id, translation)
+        consecutiveFailures = parsed.has(item.id) ? 0 : consecutiveFailures + 1
       } catch {
-        // Leave it untranslated; the original always survives.
+        consecutiveFailures += 1
       }
     }
   }

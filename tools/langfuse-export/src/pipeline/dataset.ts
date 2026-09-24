@@ -45,8 +45,10 @@ function usefulEnglish(
   translation: Translation | undefined
 ): string | null {
   const english = translation?.english
-  if (english == null) return null
-  return english.trim() === source.trim() ? null : english
+  if (english == null || translation?.sourceLanguage === 'en') return null
+  return english.trim().toLowerCase() === source.trim().toLowerCase()
+    ? null
+    : english
 }
 
 // Attach the English translation + detected source language to a message when
@@ -340,7 +342,9 @@ export function buildDataset(
       // Keyword facets are terms, not sentences — normalise the model's casing
       // ('Hello' -> 'hello') so the gloss sits beside untranslated terms.
       labelEnglish: english.toLowerCase(),
-      sourceLanguage: translation.sourceLanguage
+      ...(scriptContradictsLanguage(facet.label, translation.sourceLanguage)
+        ? {}
+        : { sourceLanguage: translation.sourceLanguage })
     })
   }
   const survivingKeywordKeys = new Set(keywordFacets.map((f) => f.key))

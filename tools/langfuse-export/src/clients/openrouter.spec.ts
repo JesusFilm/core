@@ -1,4 +1,13 @@
-import { batchByCharBudget, parseThemes, parseTranslations } from './openrouter'
+import { generateText, type LanguageModel } from 'ai'
+
+import {
+  batchByCharBudget,
+  parseThemes,
+  parseTranslations,
+  translateTexts
+} from './openrouter'
+
+vi.mock('ai', () => ({ generateText: vi.fn() }))
 
 const validIds = new Set(['a', 'b', 'c'])
 
@@ -179,5 +188,61 @@ describe('batchByCharBudget', () => {
     ])
     const bigBatch = batches.find((b) => b[0]?.id === 'big')
     expect(bigBatch?.[0].text).toHaveLength(9000)
+  })
+})
+
+describe('translateTexts', () => {
+  const model = {} as LanguageModel
+  const mockedGenerateText = vi.mocked(generateText)
+
+  afterEach(() => {
+    mockedGenerateText.mockReset()
+    vi.useRealTimers()
+    vi.restoreAllMocks()
+  })
+
+  it('does not sweep a failed batch and disables SDK retries', async () => {
+    vi.useFakeTimers()
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const items = Array.from({ length: 31 }, (_, index) => ({
+      id: `i${index}`,
+      text: `text ${index}`
+    }))
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      mockedGenerateText.mockRejectedValueOnce(
+        new Error('provider unavailable')
+      )
+    }
+    mockedGenerateText
+      .mockResolvedValueOnce({ text: '{"items":[]}' } as never)
+      .mockResolvedValueOnce({
+        text: '{"items":[{"id":"i30","lang":"en"}]}'
+      } as never)
+
+    const resultPromise = translateTexts(model, items)
+    await vi.runAllTimersAsync()
+    const result = await resultPromise
+
+    expect(mockedGenerateText).toHaveBeenCalledTimes(7)
+    expect(
+      mockedGenerateText.mock.calls.every(
+        ([options]) => options.maxRetries === 0
+      )
+    ).toBe(true)
+    expect(result).toEqual(new Map([['i30', { sourceLanguage: 'en' }]]))
+    expect(warning).toHaveBeenCalledOnce()
+  })
+
+  it('stops the omitted-item sweep after three responses without progress', async () => {
+    mockedGenerateText.mockResolvedValue({ text: '{"items":[]}' } as never)
+    const items = Array.from({ length: 5 }, (_, index) => ({
+      id: `i${index}`,
+      text: `text ${index}`
+    }))
+
+    const result = await translateTexts(model, items)
+
+    expect(result.size).toBe(0)
+    expect(mockedGenerateText).toHaveBeenCalledTimes(4)
   })
 })
