@@ -2,6 +2,65 @@
 
 This directory contains standalone scripts that can be executed to perform various tasks.
 
+## Slug/Title Hygiene Audit Script
+
+Read-only scan of `Video`, `VideoTitle`, and `VideoVariant` for internal-style
+values that leaked into public-facing fields — underscore-joined names,
+stray whitespace, file-extension/version-tag remnants, and dash-separated or
+all-caps values flagged for human review (see FGE-2). Never writes to the
+database. For each finding, checks whether the video's public watch URL is
+currently live, broken, or unreachable, so renames can be prioritized by risk
+(a currently-LIVE slug risks a fresh 404 if renamed carelessly; an
+already-BROKEN one has nothing to lose).
+
+### Usage
+
+```bash
+nx run api-media:audit-slug-title-hygiene
+```
+
+### Environment Variables
+
+- `PG_DATABASE_URL_MEDIA`: connection string to read from (required). Point
+  this at a read replica if one exists — the script only issues `SELECT`s,
+  but there's no reason to run it against a primary.
+- `SLUG_TITLE_AUDIT_OUT_DIR`: output directory (optional, defaults to
+  `docs/research`).
+
+### Output
+
+Writes `<date>-fge2-slug-title-audit-prod.json` and `.csv`, ordered with the
+riskiest (currently-live) findings first. Review before committing — it's a
+snapshot of real production content.
+
+## FGE-2 Fix Scripts
+
+Three one-off, idempotent data-fix scripts for findings from the audit above
+(follows the same direct-Prisma pattern as `fix-know-god-slug.ts`, FGE-97/98 —
+`videoUpdate`/`videoTitle` mutations refuse changes the admin UI doesn't
+expose, e.g. slug edits on a published video, so these write via Prisma
+directly and call `videoCacheReset`/`videoVariantCacheReset` afterward,
+same as every GraphQL mutation that touches a slug or title). Safe to re-run:
+each only writes a row whose current value still matches the known bad one.
+
+- `nx run api-media:fix-underscore-video-slugs` — renames `Video.slug` (and
+  cascades to every `VideoVariant.slug` still on the old prefix) for the 11
+  videos found with underscore-joined internal slugs, to a
+  `convertToSlug()`-clean value derived from each video's own title.
+- `nx run api-media:fix-underscore-video-titles` — corrects the two
+  `VideoTitle.value` rows with raw internal text (`Brand_Video`, and the
+  French `La_Busqueda_La Recherche` — restored to the
+  `"La Búsqueda - {translated}"` convention this video's other ten language
+  rows already use).
+- `nx run api-media:fix-whitespace-video-titles` — catalog-wide, mechanical:
+  trims every `VideoTitle.value` with leading/trailing whitespace (523 rows
+  across 271 videos as of the 2026-09-01 audit). Title text only, never a
+  slug, so never URL-breaking.
+
+None of these touch `2_0-Tumlukden` ("Tümlükden Nura") — an unseparated
+two-language concatenation has no mechanical signature, so it needs a human
+content decision, not a script.
+
 ## Data Import Script
 
 The data import script allows you to import a database backup into the api-media database using psql.
