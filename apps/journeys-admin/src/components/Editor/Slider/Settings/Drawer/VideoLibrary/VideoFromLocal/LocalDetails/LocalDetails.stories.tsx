@@ -107,7 +107,8 @@ const Template: StoryObj<typeof LocalDetails> = {
                   variant: {
                     id: 'variantA',
                     duration: 144,
-                    hls: 'https://arc.gt/opsgn'
+                    hls: 'https://arc.gt/opsgn',
+                    published: true
                   },
                   variantLanguages: languages
                 }
@@ -206,7 +207,8 @@ export const LongLanguageName: StoryObj<typeof LocalDetails> = {
                   variant: {
                     id: 'variantA',
                     duration: 144,
-                    hls: 'https://arc.gt/opsgn'
+                    hls: 'https://arc.gt/opsgn',
+                    published: true
                   },
                   variantLanguages: languagesWithLongName
                 }
@@ -220,6 +222,61 @@ export const LongLanguageName: StoryObj<typeof LocalDetails> = {
         >
           <LocalDetails id={id} open onSelect={onSelect} />
         </EditorProvider>
+      </MockedProvider>
+    )
+  },
+  args: {
+    id: '2_Acts7302-0-0'
+  }
+}
+
+export const Unpublished: StoryObj<typeof LocalDetails> = {
+  render: ({ id, onSelect }) => {
+    return (
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_VIDEO,
+              variables: {
+                id: '2_Acts7302-0-0',
+                languageId: '529'
+              }
+            },
+            result: {
+              data: {
+                video: {
+                  id: '2_Acts7302-0-0',
+                  image:
+                    'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+                  primaryLanguageId: '529',
+                  title: [
+                    {
+                      primary: true,
+                      value: 'Jesus Taken Up Into Heaven'
+                    }
+                  ],
+                  description: [
+                    {
+                      primary: true,
+                      value:
+                        'Jesus promises the Holy Spirit; then ascends into the clouds.'
+                    }
+                  ],
+                  variant: {
+                    id: 'variantA',
+                    duration: 144,
+                    hls: 'https://arc.gt/opsgn',
+                    published: false
+                  },
+                  variantLanguages: languages
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <LocalDetails id={id} open onSelect={onSelect} />
       </MockedProvider>
     )
   },
