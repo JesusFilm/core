@@ -21,7 +21,13 @@ export interface GetCampaignJourneyStats_journeysPlausibleStatsAggregate_pagevie
 
 export interface GetCampaignJourneyStats_journeysPlausibleStatsAggregate {
   __typename: "PlausibleStatsAggregateResponse";
+  /**
+   * The number of unique visitors.
+   */
   visitors: GetCampaignJourneyStats_journeysPlausibleStatsAggregate_visitors | null;
+  /**
+   * The number of pageview events.
+   */
   pageviews: GetCampaignJourneyStats_journeysPlausibleStatsAggregate_pageviews | null;
 }
 

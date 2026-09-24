@@ -17,11 +17,29 @@ export interface CampaignFields_team {
 export interface CampaignFields_media {
   __typename: "CampaignMedia";
   id: string;
+  /**
+   * Active selector for which payload renders.
+   */
   type: TemplateGalleryPageMediaType;
+  /**
+   * Raw Mux video id of the stored upload payload. Authenticated-only — never exposed on the public type.
+   */
   muxVideoId: string | null;
+  /**
+   * The stored link payload. May be retained while `type` is `mux`/`none` so the editor can offer switching back.
+   */
   embedUrl: string | null;
+  /**
+   * Mux playback ID denormalized at save time. Tracks `muxVideoId`.
+   */
   muxPlaybackId: string | null;
+  /**
+   * Video name denormalized at save time. Tracks `muxVideoId`.
+   */
   muxName: string | null;
+  /**
+   * Video duration in seconds denormalized at save time. Tracks `muxVideoId`.
+   */
   muxDuration: number | null;
 }
 
