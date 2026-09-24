@@ -266,6 +266,62 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID) : NavigateToBlockAction! @join__field(graph: API_JOURNEYS_MODERN) 
   blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID) : PhoneAction! @join__field(graph: API_JOURNEYS_MODERN) 
   blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID) : ChatAction! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Create a new Campaign in `draft` status. The server generates a unique slug from `input.title`. Initial `shareJourneyIds` / `templateJourneyIds` are attached in the order given (invalid ids are silently filtered out).
+  
+  Auth: caller must be authenticated and a member of `input.teamId`.
+  
+  Errors:
+  - BAD_USER_INPUT (field: `backgroundImageSrc`): URL is not https.
+  - BAD_USER_INPUT (field: `slug`): the title normalizes to empty or to a reserved word.
+  - BAD_USER_INPUT (field: `shareJourneyIds` / `templateJourneyIds`): more than 100 ids.
+  - CONFLICT (field: `media`): media row was modified concurrently.
+  """
+  campaignCreate(input: CampaignCreateInput!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Update editable fields of a Campaign. All input fields are optional: a field omitted leaves the existing value alone, a field set to `null` clears it (where nullable). When `shareJourneyIds` / `templateJourneyIds` is provided, that role's list is replaced in the given order (other role untouched). Allowed on both `draft` and `published` campaigns.
+  
+  Auth: caller must be a member of the campaign's team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the campaign's team.
+  - BAD_USER_INPUT (field: `slug`): user-supplied slug fails shape, length, reserved-word, or uniqueness checks.
+  - BAD_USER_INPUT (field: `backgroundImageSrc`): URL is not https.
+  - BAD_USER_INPUT (field: `shareJourneyIds` / `templateJourneyIds`): more than 100 ids.
+  - CONFLICT (field: `media` / `journeys`): a concurrent write touched the same rows; retry.
+  """
+  campaignUpdate(id: ID!, input: CampaignUpdateInput!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Transition a `draft` campaign to `published`, stamping `publishedAt` on the first publish only. Idempotent on an already-published campaign.
+  
+  Auth: caller must be a member of the campaign's team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the campaign's team.
+  """
+  campaignPublish(id: ID!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Transition a `published` campaign back to `draft`. `publishedAt` is intentionally NOT cleared. Idempotent on an already-draft campaign.
+  
+  Auth: caller must be a member of the campaign's team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the campaign's team.
+  """
+  campaignUnpublish(id: ID!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Hard-delete a Campaign. Cascades through `CampaignJourney` and `CampaignMedia` rows; the underlying `Journey` rows are NOT deleted. Returns the deleted campaign (last canonical view).
+  
+  Auth: caller must be a member of the campaign's team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the campaign's team.
+  """
+  campaignDelete(id: ID!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput) : ChatButton! @join__field(graph: API_JOURNEYS_MODERN) 
   chatButtonRemove(id: ID!) : ChatButton! @join__field(graph: API_JOURNEYS_MODERN) 
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!) : ChatButton! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -715,6 +771,208 @@ type ButtonClickEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  
   value: String
   action: ButtonAction
   actionValue: String
+}
+
+"""
+A team-curated, slug-addressable public campaign landing page bundling ordered `share` journeys (language share panel), ordered `template` journeys (customizable collection), hero copy/media and public country stats. The slug is mutable post-publish. `publishedAt` is monotonic.
+"""
+type Campaign @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID!
+  title: String!
+  """
+  URL-safe identifier. The public page is reached at `/campaign/<slug>`. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`, max 200 characters, and must not be in the reserved list. Mutable after publish — changing it breaks any external links to the old URL.
+  """
+  slug: String!
+  eyebrow: String
+  tagline: String
+  description: String!
+  backgroundImageSrc: String
+  backgroundImageAlt: String
+  """
+  `draft` hides the campaign from the public renderer; `published` exposes it via `campaignBySlug`.
+  """
+  status: CampaignStatus!
+  """
+  Timestamp of the first publish event. Monotonic — never re-set on subsequent unpublish/republish, and never cleared. Null while the campaign has not yet been published.
+  """
+  publishedAt: DateTimeISO
+  """
+  Lower bound of the country-stats date range.
+  """
+  statsFrom: DateTimeISO!
+  createdAt: DateTimeISO!
+  updatedAt: DateTimeISO!
+  """
+  Owning team. The campaign is hard-deleted when the team is deleted.
+  """
+  team: Team!
+  """
+  Share-panel journeys in display order: same-team, non-template, non-soft-deleted journeys attached with role `share`. Drafts are included on this authenticated projection.
+  """
+  shareJourneys: [CampaignJourneyItem!]!
+  """
+  Customizable-collection journeys in display order: same-team, template-flagged, non-soft-deleted journeys attached with role `template`. Drafts are included on this authenticated projection.
+  """
+  templateJourneys: [CampaignJourneyItem!]!
+  """
+  Embedded hero media with both retained payload slots and the raw `muxVideoId`. `null` only when the campaign has no media row.
+  """
+  media: CampaignMedia
+  """
+  Country breakdown of this campaign's published share-journey traffic. Live Plausible read — request it only where needed.
+  """
+  countryStats: CampaignCountryStats!
+}
+
+"""
+Journey view counts for one country across a campaign, from Plausible.
+"""
+type CampaignCountryStat @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  ISO 3166-1 alpha-2 code as reported by Plausible.
+  """
+  countryCode: String!
+  """
+  English display name resolved server-side; null when the code is not recognised.
+  """
+  countryName: String
+  """
+  Unique visitors (the product-facing "views" number).
+  """
+  visitors: Int!
+  """
+  Total step pageviews.
+  """
+  pageviews: Int!
+}
+
+"""
+Country breakdown of a campaign's share-journey traffic, aggregated server-side from the owning team's Plausible site over `[from, to]`. Sorted by visitors descending.
+"""
+type CampaignCountryStats @join__type(graph: API_JOURNEYS_MODERN)  {
+  from: DateTimeISO!
+  to: DateTimeISO!
+  """
+  Sum of visitors over every row, including rows with an unknown country.
+  """
+  totalVisitors: Int!
+  """
+  Sum of pageviews over every row, including rows with an unknown country.
+  """
+  totalPageviews: Int!
+  countries: [CampaignCountryStat!]!
+}
+
+"""
+A journey attached to a Campaign, narrowed to the fields the public renderer and the admin builder consume. Backed by the underlying Journey row but exposed as a separate type so the anonymous query surface cannot traverse to Journey-wide relations.
+"""
+type CampaignJourneyItem @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID!
+  title: String!
+  description: String
+  slug: String!
+  status: JourneyStatus!
+  createdAt: DateTime!
+  template: Boolean
+  customizable: Boolean
+  website: Boolean
+  language: Language!
+  primaryImageBlock: ImageBlock
+}
+
+"""
+Authenticated media projection for the campaign editor. Exposes the full row, including both retained payload slots and the raw `muxVideoId`, so a parked link/upload can be restored. Returned only by authenticated, team-scoped read paths.
+"""
+type CampaignMedia @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID!
+  """
+  Active selector for which payload renders.
+  """
+  type: TemplateGalleryPageMediaType!
+  """
+  The stored link payload. May be retained while `type` is `mux`/`none` so the editor can offer switching back.
+  """
+  embedUrl: String
+  """
+  Raw Mux video id of the stored upload payload. Authenticated-only — never exposed on the public type.
+  """
+  muxVideoId: ID
+  """
+  Mux playback ID denormalized at save time. Tracks `muxVideoId`.
+  """
+  muxPlaybackId: String
+  """
+  Video name denormalized at save time. Tracks `muxVideoId`.
+  """
+  muxName: String
+  """
+  Video duration in seconds denormalized at save time. Tracks `muxVideoId`.
+  """
+  muxDuration: Int
+}
+
+"""
+Public media attached to a Campaign. Exposes only the payload selected by `type` (`link` → `embedUrl`; `mux` → `muxPlaybackId`/`muxName`/`muxDuration`; `none` → nothing). Parked payloads are never exposed. All fields source from the stored row so public reads never cross to the media database.
+"""
+type CampaignMediaPublic @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID!
+  """
+  Active selector for which payload renders.
+  """
+  type: TemplateGalleryPageMediaType!
+  """
+  Server-normalized iframe URL. Non-null only when `type` is `link`.
+  """
+  embedUrl: String
+  """
+  Mux playback ID. Non-null only when `type` is `mux`.
+  """
+  muxPlaybackId: String
+  """
+  Video name. Non-null only when `type` is `mux` and Mux has a name.
+  """
+  muxName: String
+  """
+  Video duration in seconds. Non-null only when `type` is `mux` and Mux reports a duration.
+  """
+  muxDuration: Int
+}
+
+"""
+Public projection of a Campaign, returned by the unauthenticated slug read. Journey lists contain only published journeys and `media` exposes only the active payload.
+"""
+type CampaignPublic @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID!
+  title: String!
+  """
+  URL-safe identifier. The public page is reached at `/campaign/<slug>`. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`, max 200 characters, and must not be in the reserved list. Mutable after publish — changing it breaks any external links to the old URL.
+  """
+  slug: String!
+  eyebrow: String
+  tagline: String
+  description: String!
+  backgroundImageSrc: String
+  backgroundImageAlt: String
+  """
+  `draft` hides the campaign from the public renderer; `published` exposes it via `campaignBySlug`.
+  """
+  status: CampaignStatus!
+  """
+  Timestamp of the first publish event. Monotonic — never re-set on subsequent unpublish/republish, and never cleared. Null while the campaign has not yet been published.
+  """
+  publishedAt: DateTimeISO
+  """
+  Share-panel journeys in display order: same-team, non-template, non-soft-deleted journeys attached with role `share`. Published journeys only.
+  """
+  shareJourneys: [CampaignJourneyItem!]!
+  """
+  Customizable-collection journeys in display order: same-team, template-flagged, non-soft-deleted journeys attached with role `template`. Published journeys only.
+  """
+  templateJourneys: [CampaignJourneyItem!]!
+  """
+  Embedded hero media, or `null` when nothing renders (no media, `type: none`, or the active slot is empty). Only the active payload is ever exposed.
+  """
+  media: CampaignMediaPublic
 }
 
 type CardBlock implements Block @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -1368,6 +1626,38 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   visitorsConnection(teamId: String, first: Int, after: String) : VisitorsConnection! @join__field(graph: API_JOURNEYS_MODERN) 
   block(id: ID!) : Block! @join__field(graph: API_JOURNEYS_MODERN) 
   blocks(where: BlocksFilter) : [Block!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Read a single Campaign by id. Returns both `draft` and `published` rows — use this for in-team authenticated reads. Anonymous viewers must use `campaignBySlug`, which only returns published campaigns.
+  
+  Auth: caller must be a member of the campaign's team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the campaign's team.
+  """
+  campaign(id: ID!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  List all Campaigns owned by a team — both `draft` and `published` rows — ordered by `createdAt` descending.
+  
+  Auth: caller must be a member of the requested team.
+  """
+  campaigns("""
+  Owning team. Caller must be a member.
+  """
+  teamId: ID!) : [Campaign!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Public, unauthenticated read by slug. Returns the Campaign with the given slug, but ONLY if it is currently `published`. Returns null for: unknown slug, draft slug, malformed slug (does not match `^[a-z0-9]+(-[a-z0-9]+)*$`), or slug exceeding 200 characters.
+  """
+  campaignBySlug(
+    """
+    Case-sensitive public slug. Slugs that fail the shape check return null without hitting the database.
+    """
+    slug: String!
+  ): CampaignPublic @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Public country breakdown of a published campaign's share-journey traffic, aggregated server-side from Plausible. Returns null for unknown, draft or malformed slugs. Cached for a few minutes.
+  """
+  campaignCountryStats(slug: String!) : CampaignCountryStats @join__field(graph: API_JOURNEYS_MODERN) 
   customDomains(teamId: ID!) : [CustomDomain!]! @join__field(graph: API_JOURNEYS_MODERN) 
   customDomain(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN) 
   node(id: ID!) : Node @join__field(graph: API_JOURNEYS_MODERN) 
@@ -3453,6 +3743,60 @@ enum ButtonSize @join__type(graph: API_JOURNEYS_MODERN)  {
   large @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
+"""
+Lifecycle state of a Campaign. Anonymous traffic via `campaignBySlug` only sees `published` rows; drafts are hidden.
+"""
+enum CampaignStatus @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Hidden from the public renderer. All edit operations are allowed.
+  """
+  draft @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  """
+  Reachable at `/campaign/<slug>`. `campaignUpdate` remains allowed so a live campaign can be corrected in place.
+  """
+  published @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+enum JourneyStatus @join__type(graph: API_JOURNEYS_MODERN)  {
+  archived @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  deleted @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  draft @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  published @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  trashed @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+"""
+Which list of a Campaign a journey belongs to. A journey has exactly one role per campaign.
+"""
+enum CampaignJourneyRole @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Powers the language share panel: non-template journeys the public page offers as ready-to-share links (one per language).
+  """
+  share @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  """
+  Powers the customizable collection: template journeys a viewer can open in the template gallery and copy.
+  """
+  template @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+"""
+Active selector for the media attached to a TemplateGalleryPage: which payload renders. Both payload slots may stay populated regardless of this value, so switching never discards a payload.
+"""
+enum TemplateGalleryPageMediaType @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Render the embed URL (`embedUrl`).
+  """
+  link @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  """
+  Render the Mux upload (`muxPlaybackId`).
+  """
+  mux @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  """
+  Render nothing. Any stored `embedUrl`/upload payload is retained but not shown; the public page treats this as no media.
+  """
+  none @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
 enum ThemeMode @join__type(graph: API_JOURNEYS_MODERN)  {
   dark @join__enumValue(graph: API_JOURNEYS_MODERN) 
   light @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -3620,14 +3964,6 @@ enum IntegrationType @join__type(graph: API_JOURNEYS_MODERN)  {
   growthSpaces @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
-enum JourneyStatus @join__type(graph: API_JOURNEYS_MODERN)  {
-  archived @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  deleted @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  draft @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  published @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  trashed @join__enumValue(graph: API_JOURNEYS_MODERN) 
-}
-
 enum JourneyMenuButtonIcon @join__type(graph: API_JOURNEYS_MODERN)  {
   menu1 @join__enumValue(graph: API_JOURNEYS_MODERN) 
   equals @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -3715,24 +4051,6 @@ enum TemplateGalleryPageStatus @join__type(graph: API_JOURNEYS_MODERN)  {
   Reachable at `/collections/<slug>`. `templateGalleryPageUpdate` and `templateGalleryPageAssignJourney` remain allowed (publishers can fix typos and curate the template list while live); `templateGalleryPageReorderTemplate` is rejected with CONFLICT — unpublish first to reorder.
   """
   published @join__enumValue(graph: API_JOURNEYS_MODERN) 
-}
-
-"""
-Active selector for the media attached to a TemplateGalleryPage: which payload renders. Both payload slots may stay populated regardless of this value, so switching never discards a payload.
-"""
-enum TemplateGalleryPageMediaType @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  Render the embed URL (`embedUrl`).
-  """
-  link @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  """
-  Render the Mux upload (`muxPlaybackId`).
-  """
-  mux @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  """
-  Render nothing. Any stored `embedUrl`/upload payload is retained but not shown; the public page treats this as no media.
-  """
-  none @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum TextResponseType @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4087,6 +4405,106 @@ input ButtonClickEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   LinkAction - url of the link
   """
   actionValue: String
+}
+
+"""
+Input for creating a new Campaign in `draft` status. The slug is server-generated from `title`.
+"""
+input CampaignCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Owning team. Caller must be a member.
+  """
+  teamId: ID!
+  """
+  Display title. Drives slug auto-generation: lowercased + hyphenated form of the title, max 200 characters, with the shared reserved-word list blocked. On collision the resolver tries `<base>-2`..`<base>-50`, then falls back to a 6-character random suffix.
+  """
+  title: String!
+  """
+  Optional short kicker shown above the title (e.g. "World Cup 2026 · Outreach").
+  """
+  eyebrow: String
+  """
+  Optional one-line strapline shown between the eyebrow and the title.
+  """
+  tagline: String
+  """
+  Optional long-form description shown under the title. Defaults to empty string when omitted.
+  """
+  description: String
+  """
+  Optional https URL of the hero background image. Rejected if not https.
+  """
+  backgroundImageSrc: String
+  """
+  Optional alt text for the hero background image.
+  """
+  backgroundImageAlt: String
+  """
+  Lower bound of the public country-stats date range. Defaults to the creation time; set it earlier to count views that happened before the campaign row existed.
+  """
+  statsFrom: DateTimeISO
+  """
+  Optional initial share journeys (non-template journeys) in display order. Cross-team, template-flagged and soft-deleted ids are silently filtered out. Max 100.
+  """
+  shareJourneyIds: [ID!]
+  """
+  Optional initial template journeys in display order. Cross-team, non-template and soft-deleted ids are silently filtered out. Max 100.
+  """
+  templateJourneyIds: [ID!]
+  """
+  Optional embedded hero media. Same semantics as the TemplateGalleryPage media input: `type` (`link`/`mux`/`none`) selects what renders; supply `url` and/or `muxVideoId` to populate either slot.
+  """
+  media: TemplateGalleryPageMediaInput
+}
+
+"""
+Input for editing a Campaign. Field omitted = leave the existing value alone. Field set to `null` = clear (only meaningful for nullable fields).
+"""
+input CampaignUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Updated display title. Does NOT regenerate the slug — use `slug` to change the slug.
+  """
+  title: String
+  """
+  Updated kicker. Pass `null` to clear.
+  """
+  eyebrow: String
+  """
+  Updated strapline. Pass `null` to clear.
+  """
+  tagline: String
+  """
+  Updated long-form description.
+  """
+  description: String
+  """
+  Updated public slug. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`, max 200 characters, not be in the reserved list, and not be in use by another campaign. Changing the slug breaks any external links to the old URL.
+  """
+  slug: String
+  """
+  Optional https hero background image URL. Pass `null` to clear. Rejected if not https.
+  """
+  backgroundImageSrc: String
+  """
+  Optional hero background alt text. Pass `null` to clear.
+  """
+  backgroundImageAlt: String
+  """
+  Updated lower bound of the public country-stats date range.
+  """
+  statsFrom: DateTimeISO
+  """
+  When provided, replaces the campaign's share-journey list with these journeys in this exact order (existing `share` rows are deleted then recreated). Cross-team, template-flagged and soft-deleted ids are silently filtered out. Omit to leave the list unchanged. Max 100.
+  """
+  shareJourneyIds: [ID!]
+  """
+  When provided, replaces the campaign's template-journey list with these journeys in this exact order (existing `template` rows are deleted then recreated). Cross-team, non-template and soft-deleted ids are silently filtered out. Omit to leave the list unchanged. Max 100.
+  """
+  templateJourneyIds: [ID!]
+  """
+  Embedded hero media. Omit (or pass `null`) to leave the existing media untouched — there is no media delete. When an object is supplied, `type` (`link`/`mux`/`none`) selects what renders and each payload slot merges independently: for `url` and `muxVideoId`, omit to leave the stored value, pass `null` to clear that slot, or pass a value to set/replace it. Hide everything with `type: none`.
+  """
+  media: TemplateGalleryPageMediaInput
 }
 
 input CardBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
