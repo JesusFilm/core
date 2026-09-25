@@ -1,0 +1,88 @@
+---
+title: 5. Local Setup Without the Dev Container
+---
+
+# Local Setup Without the Dev Container
+
+The [dev container](./01-development-environment.mdx) is the supported default. If you would rather run the
+toolchain on your own machine, this page covers what you need. Only the toolchain (Node, pnpm, nx, doppler)
+and the git checkout move to the host — Postgres, Redis, MailDev, ClickHouse and Plausible still run in
+Docker, from `docker-compose.services.yml` at the repo root.
+
+The services use the same compose project (`core_devcontainer`) and volumes as the dev container, so you can
+switch between the two and keep one set of databases. Every service is reachable on `localhost` in both modes.
+
+## Prerequisites
+
+- **Docker** with the compose plugin (Docker Desktop on Mac/Windows).
+- **Node 22** (see `.nvmrc`) with **corepack** — pnpm is picked from `packageManager` in `package.json`.
+- **Doppler CLI** for [environment variables](./02-environment-variables.mdx).
+- Native libraries for a few packages: **cairo, pango, pixman** (node-canvas), **ffmpeg**, and **chromium**
+  (prisma-erd-generator via puppeteer; optional).
+- Optional: `npm i -g apollo graphql` for `nx codegen` (see `AGENTS.md` for why it is global-only).
+
+### Windows
+
+Use **WSL2**, not PowerShell or cmd: several nx targets run bash. Enable Docker Desktop's WSL integration for
+your distro and **clone inside the WSL filesystem** (e.g. `~/code/core`), never under `/mnt/c` or `/mnt/d` —
+`/mnt` I/O is very slow for `node_modules` and breaks file watching.
+
+### Arch Linux
+
+```shell
+sudo pacman -S --needed nodejs-lts-jod npm docker docker-compose git cairo pango pixman ffmpeg chromium
+paru -S doppler-cli-bin   # or any AUR helper
+```
+
+### Debian / Ubuntu
+
+```shell
+sudo apt-get install -y libpixman-1-dev libcairo2-dev libpango1.0-dev ffmpeg chromium
+# node: https://github.com/nodesource/distributions  doppler: https://docs.doppler.com/docs/install-cli
+```
+
+### macOS
+
+```shell
+brew install node@22 doppler ffmpeg cairo pango pixman
+```
+
+## Setup
+
+```shell
+git clone git@github.com:JesusFilm/core.git && cd core
+pnpm setup:local              # or: pnpm setup:local --base  (skips clickhouse + plausible)
+```
+
+`setup:local` is idempotent. It checks the prerequisites, starts the services (`docker compose ... up --wait`),
+creates the `test-user` Postgres role, runs `pnpm install`, and seeds `plausible_db` (unless `--base`). Then continue with [environment variables](./02-environment-variables.mdx) and
+[microservice databases](./03-microservice-databases.mdx).
+
+## Day to day
+
+| Task                     | Command                                                                       |
+| ------------------------ | ----------------------------------------------------------------------------- |
+| Start / stop services    | `pnpm services:up` (`services:up:base` skips analytics), `pnpm services:stop` |
+| Backend (gateway + APIs) | `pnpm dev:api` (foreman, via the `Procfile`)                                  |
+| Any nx target            | `pnpm exec nx <target> <project>`                                             |
+
+The docs elsewhere write bare `nx …` and `nf start`, which rely on global installs inside the dev container.
+On a host checkout use `pnpm exec nx …` and `pnpm dev:api`, or add `alias nx='pnpm exec nx'` to your shell.
+
+All services share the `db` container's network namespace (`network_mode: service:db`). If `db` is ever
+recreated — an image bump, a config change, `docker compose up` deciding it is stale — every joined container,
+including the dev container itself, is left holding a dead namespace and must be recreated too. From the host,
+`pnpm services:up` handles the services; a running dev container needs "Rebuild Container".
+
+Never run `docker compose down --remove-orphans` against the services file: it shares its project with the dev
+container, and that would delete the dev container itself. `pnpm services:stop` is the safe way to stop things.
+
+## Environment the dev container used to set
+
+Set these yourself where they matter:
+
+- `TZ=UTC` — the container runs in UTC; date-formatting tests (e.g. in journeys-admin) fail in other timezones.
+- `NODE_OPTIONS=--max-old-space-size=8192` — needed for `nx run journeys-admin:lint`.
+- `KUBECONFIG=<repo>/.kube/config` — infrastructure work only.
+- `PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium` and `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true` — optional; only
+  if you would rather use a system chromium than let puppeteer download its own.
