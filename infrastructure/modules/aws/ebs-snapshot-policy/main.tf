@@ -103,10 +103,12 @@ resource "aws_dlm_lifecycle_policy" "this" {
           count = schedule.value.retain_count
         }
 
+        # copy_tags already carries the volume's Name and SnapshotPolicy tags
+        # onto each snapshot. Adding either key here again makes CreateSnapshot
+        # fail with "Duplicate tag key", so only add keys the volume lacks.
+        # DLM tags the schedule name itself (aws:dlm:lifecycle-schedule-name).
         tags_to_add = {
-          Name           = "${local.policy_name}-${schedule.value.name}"
-          Env            = var.env
-          SnapshotPolicy = local.policy_name
+          Env = var.env
         }
       }
     }
