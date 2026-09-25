@@ -17,6 +17,7 @@ import { ReactElement, Suspense, useState } from 'react'
 import Bag5Icon from '@core/shared/ui/icons/Bag5'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import JourneysIcon from '@core/shared/ui/icons/Journeys'
+import TargetIcon from '@core/shared/ui/icons/Target'
 
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
@@ -177,6 +178,26 @@ export function NavigationDrawer({
             }}
           />
         </ListItemButton>
+        {/* Campaign builder entry point. This condition is the ONLY place the
+            feature is gated: hide this item to hide the feature. */}
+        {user?.id != null && !isAnon && (
+          <ListItemButton
+            LinkComponent={NextLink}
+            href="/campaigns"
+            selected={selectedPage === 'campaigns'}
+            data-testid="NavigationListItemCampaigns"
+          >
+            <ListItemIcon>
+              <TargetIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('Campaigns')}
+              slotProps={{
+                primary: { style: { whiteSpace: 'nowrap' } }
+              }}
+            />
+          </ListItemButton>
+        )}
         {user?.id != null && !isAnon && (
           <NoSsr>
             <Suspense>

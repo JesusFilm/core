@@ -106,10 +106,10 @@ enum TextResponseType {
 }
 
 model ChatButton {
-  id        String           @id @default(uuid())
-  journeyId String
-  link      String?
-  updatedAt DateTime         @default(now()) @updatedAt
+  id           String           @id @default(uuid())
+  journeyId    String
+  link         String?
+  updatedAt    DateTime         @default(now()) @updatedAt
   platform     MessagePlatform?
   customizable Boolean?
   journey      Journey          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
@@ -254,6 +254,7 @@ model Team {
   qrCodes              QrCode[]
   googleSheetsSync     GoogleSheetsSync[]
   templateGalleryPages TemplateGalleryPage[]
+  campaigns            Campaign[]
 
   @@index(title)
 }
@@ -404,13 +405,13 @@ enum JourneyMenuButtonIcon {
 }
 
 model Journey {
-  id                              String                      @id @default(uuid())
+  id                              String                        @id @default(uuid())
   title                           String
   languageId                      String
   description                     String?
-  slug                            String                      @unique
+  slug                            String                        @unique
   archivedAt                      DateTime?
-  createdAt                       DateTime                    @default(now())
+  createdAt                       DateTime                      @default(now())
   deletedAt                       DateTime?
   publishedAt                     DateTime?
   trashedAt                       DateTime?
@@ -418,51 +419,51 @@ model Journey {
   status                          JourneyStatus
   seoTitle                        String?
   seoDescription                  String?
-  primaryImageBlockId             String?                     @unique
-  creatorImageBlockId             String?                     @unique
+  primaryImageBlockId             String?                       @unique
+  creatorImageBlockId             String?                       @unique
   creatorDescription              String?
-  template                        Boolean?                    @default(false)
-  templateSite                    Boolean?                    @default(false)
-  customizable                    Boolean?                    @default(false)
+  template                        Boolean?                      @default(false)
+  templateSite                    Boolean?                      @default(false)
+  customizable                    Boolean?                      @default(false)
   teamId                          String
   hostId                          String?
-  themeMode                       ThemeMode?                  @default(light)
-  themeName                       ThemeName?                  @default(base)
-  updatedAt                       DateTime                    @default(now()) @updatedAt
+  themeMode                       ThemeMode?                    @default(light)
+  themeName                       ThemeName?                    @default(base)
+  updatedAt                       DateTime                      @default(now()) @updatedAt
   strategySlug                    String?
   plausibleToken                  String?
   userJourneys                    UserJourney[]
-  team                            Team                        @relation(fields: [teamId], references: [id])
+  team                            Team                          @relation(fields: [teamId], references: [id])
   userInvites                     UserInvite[]
   blocks                          Block[]
   chatButtons                     ChatButton[]
-  host                            Host?                       @relation(fields: [hostId], references: [id])
+  host                            Host?                         @relation(fields: [hostId], references: [id])
   journeyTags                     JourneyTag[]
   actions                         Action[]
-  primaryImageBlock               Block?                      @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id], onDelete: SetNull)
-  creatorImageBlock               Block?                      @relation("CreatorImageBlock", fields: [creatorImageBlockId], references: [id], onDelete: SetNull)
+  primaryImageBlock               Block?                        @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id], onDelete: SetNull)
+  creatorImageBlock               Block?                        @relation("CreatorImageBlock", fields: [creatorImageBlockId], references: [id], onDelete: SetNull)
   journeyVisitors                 JourneyVisitor[]
   journeyCollectionJourneys       JourneyCollectionJourneys[]
   journeyNotifications            JourneyNotification[]
-  website                         Boolean?                    @default(false)
-  showShareButton                 Boolean?                    @default(false)
-  showLikeButton                  Boolean?                    @default(false)
-  showDislikeButton               Boolean?                    @default(false)
+  website                         Boolean?                      @default(false)
+  showShareButton                 Boolean?                      @default(false)
+  showLikeButton                  Boolean?                      @default(false)
+  showDislikeButton               Boolean?                      @default(false)
   displayTitle                    String?
-  showHosts                       Boolean?                    @default(false)
-  showChatButtons                 Boolean?                    @default(false)
-  showReactionButtons             Boolean?                    @default(false)
-  showLogo                        Boolean?                    @default(false)
-  showMenu                        Boolean?                    @default(false)
-  showDisplayTitle                Boolean?                    @default(true)
+  showHosts                       Boolean?                      @default(false)
+  showChatButtons                 Boolean?                      @default(false)
+  showReactionButtons             Boolean?                      @default(false)
+  showLogo                        Boolean?                      @default(false)
+  showMenu                        Boolean?                      @default(false)
+  showDisplayTitle                Boolean?                      @default(true)
   showAssistant                   Boolean?
-  logoImageBlockId                String?                     @unique
-  logoImageBlock                  Block?                      @relation("LogoImageBlock", fields: [logoImageBlockId], references: [id], onDelete: SetNull)
-  menuStepBlockId                 String?                     @unique
-  menuStepBlock                   Block?                      @relation("MenuStepBlock", fields: [menuStepBlockId], references: [id], onDelete: SetNull)
+  logoImageBlockId                String?                       @unique
+  logoImageBlock                  Block?                        @relation("LogoImageBlock", fields: [logoImageBlockId], references: [id], onDelete: SetNull)
+  menuStepBlockId                 String?                       @unique
+  menuStepBlock                   Block?                        @relation("MenuStepBlock", fields: [menuStepBlockId], references: [id], onDelete: SetNull)
   menuButtonIcon                  JourneyMenuButtonIcon?
-  socialNodeX                     Int?                        @default(-240)
-  socialNodeY                     Int?                        @default(-46)
+  socialNodeX                     Int?                          @default(-240)
+  socialNodeY                     Int?                          @default(-46)
   qrCode                          QrCode[]
   Event                           Event[]
   journeyEventsExportLogs         JourneyEventsExportLog[]
@@ -472,6 +473,7 @@ model Journey {
   journeyCustomizationFields      JourneyCustomizationField[]
   googleSheetsSync                GoogleSheetsSync[]
   templateGalleryPageTemplates    TemplateGalleryPageTemplate[] @relation("JourneyTemplateGalleryPageTemplate")
+  campaignJourneys                CampaignJourney[]             @relation("JourneyCampaignJourney")
 
   @@index(title)
 }
@@ -732,24 +734,24 @@ enum TemplateGalleryPageStatus {
 }
 
 model TemplateGalleryPage {
-  id               String                        @id @default(uuid())
-  teamId           String
-  title            String
-  description      String                        @default("")
-  slug             String                        @unique
-  status           TemplateGalleryPageStatus     @default(draft)
-  creatorName      String
-  creatorImageSrc  String?
-  creatorImageAlt  String?
+  id              String                        @id @default(uuid())
+  teamId          String
+  title           String
+  description     String                        @default("")
+  slug            String                        @unique
+  status          TemplateGalleryPageStatus     @default(draft)
+  creatorName     String
+  creatorImageSrc String?
+  creatorImageAlt String?
   /// @deprecated NES-1704 — superseded by the `media` relation.
   /// Kept on legacy rows behind the LD flag; not read or written by new UI.
-  mediaUrl         String?
-  publishedAt      DateTime?
-  createdAt        DateTime                      @default(now())
-  updatedAt        DateTime                      @updatedAt
-  team             Team                          @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  templates        TemplateGalleryPageTemplate[]
-  media            TemplateGalleryPageMedia?
+  mediaUrl        String?
+  publishedAt     DateTime?
+  createdAt       DateTime                      @default(now())
+  updatedAt       DateTime                      @updatedAt
+  team            Team                          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  templates       TemplateGalleryPageTemplate[]
+  media           TemplateGalleryPageMedia?
 
   @@index([teamId, createdAt(sort: Desc)])
 }
@@ -792,6 +794,77 @@ model TemplateGalleryPageTemplate {
 
   @@unique([templateGalleryPageId, journeyId])
   @@unique([templateGalleryPageId, order])
+}
+
+enum CampaignStatus {
+  draft
+  published
+}
+
+enum CampaignJourneyRole {
+  share
+  template
+}
+
+/// A team-curated, slug-addressable public landing page for an outreach
+/// campaign (e.g. football2026.nextstep.is). Bundles two ordered journey lists
+/// (`share` journeys for the language share panel, `template` journeys for the
+/// customizable collection) plus hero copy, media and public country stats.
+model Campaign {
+  id                 String            @id @default(uuid())
+  teamId             String
+  title              String
+  slug               String            @unique
+  /// Short uppercase-style kicker above the title (e.g. "World Cup 2026 · Outreach").
+  eyebrow            String?
+  /// One-line strapline shown between the eyebrow and the title.
+  tagline            String?
+  description        String            @default("")
+  backgroundImageSrc String?
+  backgroundImageAlt String?
+  status             CampaignStatus    @default(draft)
+  /// Monotonic: stamped on the first publish only, never cleared.
+  publishedAt        DateTime?
+  /// Lower bound of the public country-stats date range (Plausible `period=custom`).
+  statsFrom          DateTime          @default(now())
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  team               Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  journeys           CampaignJourney[]
+  media              CampaignMedia?
+
+  @@index([teamId, createdAt(sort: Desc)])
+}
+
+/// Column-for-column mirror of TemplateGalleryPageMedia (same enum, same
+/// retained-slot semantics) so the shared media validation/merge helpers and
+/// the admin media editor apply unchanged.
+model CampaignMedia {
+  id            String                       @id @default(uuid())
+  campaignId    String                       @unique
+  type          TemplateGalleryPageMediaType
+  embedUrl      String?
+  /// Cross-DB scalar (no @relation). May be retained while `type` is `link`/`none`.
+  muxVideoId    String?
+  muxPlaybackId String?
+  muxName       String?
+  muxDuration   Int?
+  createdAt     DateTime                     @default(now())
+  updatedAt     DateTime                     @updatedAt
+  campaign      Campaign                     @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+}
+
+model CampaignJourney {
+  id         String              @id @default(uuid())
+  campaignId String
+  journeyId  String
+  role       CampaignJourneyRole
+  order      Int
+  campaign   Campaign            @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  journey    Journey             @relation("JourneyCampaignJourney", fields: [journeyId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, journeyId])
+  @@unique([campaignId, role, order])
 }
 
 model QrCode {

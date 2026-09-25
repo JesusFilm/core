@@ -172,6 +172,30 @@ describe('journeys proxy', () => {
     expect(result).toBeUndefined()
   })
 
+  describe('campaign short-circuit', () => {
+    it('rewrites /campaign/<slug> to /home/campaign/<slug> regardless of host', async () => {
+      process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
+      const result = await proxy(
+        buildRequest('custom.example.com', '/campaign/world-cup-2026')
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://custom.example.com/home/campaign/world-cup-2026'
+      )
+    })
+
+    it('does NOT short-circuit paths that only share the prefix (e.g. /campaigns)', async () => {
+      process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
+      const result = await proxy(
+        buildRequest('custom.example.com', '/campaigns')
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://custom.example.com/custom.example.com/campaigns'
+      )
+    })
+  })
+
   describe('template-gallery short-circuit', () => {
     it('rewrites /template-gallery/<slug> to /home/template-gallery/<slug> regardless of host', async () => {
       process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'

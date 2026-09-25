@@ -1,0 +1,1 @@
+export { gateEmbedMedia } from './gateEmbedMedia'

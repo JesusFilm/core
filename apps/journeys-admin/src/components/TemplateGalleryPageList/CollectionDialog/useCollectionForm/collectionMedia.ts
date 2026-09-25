@@ -42,7 +42,20 @@ export const EMPTY_MEDIA: CollectionMediaValues = {
  * empty slots.
  */
 export function collectionMediaToFormValues(
-  media: TemplateGalleryPageMedia | null | undefined
+  // Structural (not the generated type) so the campaign builder can seed the
+  // same form value from its own `CampaignMedia` row.
+  media:
+    | Pick<
+        TemplateGalleryPageMedia,
+        | 'type'
+        | 'embedUrl'
+        | 'muxVideoId'
+        | 'muxPlaybackId'
+        | 'muxName'
+        | 'muxDuration'
+      >
+    | null
+    | undefined
 ): CollectionMediaValues {
   if (media == null) return { ...EMPTY_MEDIA }
   return {

@@ -116,6 +116,18 @@ export const yoga = createYoga<
             // unpublish→republish cycles serve a stale 404. One indexed
             // slug lookup per request is trivial.
             'Query.templateGalleryPageBySlug': 0,
+            // Campaigns follow the TemplateGalleryPage reasoning above: the
+            // team-scoped admin reads and the public slug read embed
+            // journey-side data and can cache null/empty entries that
+            // entity-ID invalidation never reaches (NES-1644 / NES-1648).
+            'Query.campaign': 0,
+            'Query.campaigns': 0,
+            'Query.campaignBySlug': 0,
+            // Public Plausible aggregation. TTL-only (the response carries no
+            // entity id); 5 minutes bounds upstream load to a handful of
+            // requests per campaign per pod per hour. A just-published slug
+            // may read as null for up to one TTL.
+            'Query.campaignCountryStats': 300_000,
             // Per-user / ACL-scoped reads overridden from api-journeys. These
             // share two hazards under the default Infinity TTL on a global
             // (session: () => null) cache:
