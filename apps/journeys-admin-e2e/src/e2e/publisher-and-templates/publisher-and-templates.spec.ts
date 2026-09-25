@@ -10,7 +10,7 @@ import { LoginPage } from '../../pages/login-page'
 import { Publisher } from '../../pages/publisher-and-templates-page'
 import { TemplatePage } from '../../pages/template-page'
 
-test.describe.fixme('Publisher page - Single Template', () => {
+test.describe('Publisher page - Single Template', () => {
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
@@ -46,7 +46,7 @@ test.describe.fixme('Publisher page - Single Template', () => {
   })
 })
 
-test.describe.fixme('Publisher page - All Templates', () => {
+test.describe('Publisher page - All Templates', () => {
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
@@ -76,20 +76,20 @@ test.describe.fixme('Publisher page - All Templates', () => {
     await publisherPage.verifyAllTemplateMovedUnarchieToActiveTab()
     await publisherPage.getTemplateListOfActiveTab()
     // Verify the user able to move the all journeys from Active to Trash page
-    await publisherPage.verifyAllJourneysMovedToTrash()
+    await publisherPage.verifyAllJourneysMovedToTrash('active')
     await publisherPage.getTemplateListOfTrashTab()
     // Verify the user able to restore the all journeys from Trash to active page
     await publisherPage.verifyAllTemplateRestoredToActiveTab()
     await publisherPage.verifyAllTemplateMovedActiveToArchivedTab()
     await publisherPage.getTemplateListOfArchivedTab()
     // Verify the user able to move the all journeys from Archived to Trash page
-    await publisherPage.verifyAllJourneysMovedToTrash()
+    await publisherPage.verifyAllJourneysMovedToTrash('archived')
     // Verify the user able to delete the all file permanently in templates admin page
     await publisherPage.verifyAlltemplateDeletedForeverFromTrashTab()
   })
 })
 
-test.describe.fixme('Publisher page', () => {
+test.describe('Publisher page', () => {
   test.beforeEach(
     'Create a journey and create a template from the existing journey',
     async ({ page }) => {
@@ -248,7 +248,7 @@ test.describe.fixme('Publisher page', () => {
   })
 })
 
-test.describe.fixme('Template page - Journey from Template', () => {
+test.describe('Template page - Journey from Template', () => {
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
@@ -282,7 +282,7 @@ test.describe.fixme('Template page - Journey from Template', () => {
   })
 })
 
-test.describe.fixme('Template page', () => {
+test.describe('Template page', () => {
   test.beforeEach('Login > Create a journey and template', async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
