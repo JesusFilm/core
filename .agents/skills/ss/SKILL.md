@@ -1,7 +1,7 @@
 ---
 name: ss
-description: Simply and summarise the last reply to what matters, in plain words, with a confidence letter on every claim.
-argument-hint: "[which reply, or pasted text] (default: your last reply)"
+description: Simplify and summarise the last reply to what matters, in plain words, with a confidence letter on every claim.
+argument-hint: "[pasted text, or an instruction on the last reply] (default: whole last reply)"
 disable-model-invocation: true
 ---
 
@@ -9,7 +9,20 @@ Rewrite the reply as the answer to the question I asked before it. Keep only
 what changes what I do next: the point, decisions, to-dos, suggestions. Drop
 the rest; when I want detail, I will ask.
 
-The target is `$ARGUMENTS` when given, else your last reply.
+## Argument
+
+`$ARGUMENTS` is one of three things. Empty: the target is your whole last
+reply. Pasted text: that text is the target. An instruction: it narrows the
+target within your last reply, or changes how to treat it, as in
+`/ss only the paragraph about data`.
+
+Both at once: an instruction on the first line, a blank line, then the pasted
+text it applies to.
+
+Tie-break: a single short line is an instruction; anything longer is pasted
+text. When still unsure, ask before writing, with AskUserQuestion: quote the
+part you read as the instruction, offer "Treat as instruction" and "Treat as
+pasted text", and let me type more instead.
 
 ## Shape
 
