@@ -25,7 +25,6 @@ program
     "Folder containing video files. Defaults to process.cwd() in source runs and the executable's directory in packaged SEA runs."
   )
   .option('--dry-run', 'Print actions without uploading', false)
-  .option('--no-slack', 'Do not post a Slack summary after the run')
   .parse(process.argv)
 
 const options = program.opts()
@@ -219,22 +218,18 @@ async function main() {
     typeof process.env.SLACK_CHANNEL_ID === 'string' &&
     process.env.SLACK_CHANNEL_ID.trim().length > 0
 
-  if (
-    !options.dryRun &&
-    !options.noSlack &&
-    slackTokenConfigured !== slackChannelConfigured
-  ) {
+  // --dry-run never uploads anything, so there is nothing worth notifying
+  // about. Every real run requires Slack config (see startupPreflight.ts),
+  // so there is no separate "suppress Slack" case to support.
+  const postSlackSummary = !options.dryRun
+
+  if (postSlackSummary && slackTokenConfigured !== slackChannelConfigured) {
     console.warn(
       '[video-importer] Slack is partially configured: set both SLACK_BOT_TOKEN and SLACK_CHANNEL_ID to enable notifications.'
     )
   }
 
-  if (
-    !options.dryRun &&
-    !options.noSlack &&
-    slackTokenConfigured &&
-    slackChannelConfigured
-  ) {
+  if (postSlackSummary && slackTokenConfigured && slackChannelConfigured) {
     try {
       const { postVideoImporterSlackSummary } = await import(
         /* webpackChunkName: "video-importer-slack" */ './services/slack'
