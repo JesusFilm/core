@@ -5,9 +5,9 @@ argument-hint: "[pasted text, or an instruction on the last reply] (default: who
 disable-model-invocation: true
 ---
 
-Rewrite the reply as the answer to the question I asked before it. Keep only
-what changes what I do next: the point, decisions, to-dos, suggestions. Drop
-the rest; when I want detail, I will ask.
+Rewrite the reply as the answer to the question I asked before it. Keep the
+answer, then only what changes what I do next: decisions, to-dos, suggestions.
+Drop the rest; when I want detail, I will ask.
 
 ## Argument
 
