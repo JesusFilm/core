@@ -6,6 +6,7 @@ import { type MockedFunction } from 'vitest'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { getLastActiveTeamIdAndTeamsMock } from '@core/journeys/ui/TeamProvider/TeamProvider.mock'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { GetAdminJourneys } from '../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages } from '../../../__generated__/GetTemplateGalleryPages'
@@ -22,6 +23,7 @@ import {
 } from '../../libs/sendCollectionEvent'
 import { GET_ADMIN_JOURNEYS } from '../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { getTemplateGalleryPageCreateMock } from '../../libs/useTemplateGalleryPageCreateMutation/useTemplateGalleryPageCreateMutation.mock'
+import { getTemplateGalleryPageRemoveJourneyMock } from '../../libs/useTemplateGalleryPageRemoveJourneyMutation/useTemplateGalleryPageRemoveJourneyMutation.mock'
 import { GET_TEMPLATE_GALLERY_PAGES } from '../../libs/useTemplateGalleryPagesQuery'
 import {
   ARCHIVE_ACTIVE_JOURNEYS,
@@ -43,6 +45,7 @@ vi.mock('../../libs/sendCollectionEvent', () => ({
   sendCollectionEditOpenEvent: vi.fn(),
   sendCollectionPublishEvent: vi.fn(),
   sendCollectionTemplateDragEvent: vi.fn(),
+  sendCollectionTemplateRemoveEvent: vi.fn(),
   sendCollectionTemplateAddEvent: vi.fn(),
   sendCollectionMoreDetailsClickEvent: vi.fn(),
   sendCollectionPreviewClickEvent: vi.fn(),
@@ -83,7 +86,8 @@ const collectionsMock: MockLink.MockedResponse<GetTemplateGalleryPages> = {
           publishedAt: null,
           createdAt: '2026-05-01T00:00:00.000Z',
           updatedAt: '2026-05-01T00:00:00.000Z',
-          templates: []
+          templates: [],
+          memberships: []
         }
       ]
     }
@@ -281,6 +285,197 @@ describe('TemplateGalleryPageList', () => {
     )
     expect(getByTestId('CollectionCard-page-1')).toBeInTheDocument()
     expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
+  })
+
+  it('draws a template as its home in one collection and as a greyed link in another', async () => {
+    // Regression: the memo that resolves a link's home collection once read
+    // `collectionsById` before it was declared, which threw a ReferenceError
+    // the moment any collection held a template. Empty-membership fixtures
+    // never exercised that path.
+    const basePage = (
+      collectionsMock.result as { data: GetTemplateGalleryPages }
+    ).data.templateGalleryPages[0]
+    const templateRef = {
+      __typename: 'TemplateGalleryItem' as const,
+      id: 'journey-1',
+      title: 'Welcome Tour',
+      primaryImageBlock: null
+    }
+    const collectionsWithLinkMock: MockLink.MockedResponse<GetTemplateGalleryPages> =
+      {
+        request: {
+          query: GET_TEMPLATE_GALLERY_PAGES,
+          variables: { teamId: TEAM_ID }
+        },
+        result: {
+          data: {
+            templateGalleryPages: [
+              {
+                ...basePage,
+                templates: [templateRef],
+                memberships: [
+                  {
+                    __typename: 'TemplateGalleryPageMembership',
+                    journeyId: 'journey-1',
+                    isHome: true
+                  }
+                ]
+              },
+              {
+                ...basePage,
+                id: 'page-2',
+                title: 'Youth Ministry',
+                slug: 'youth-ministry',
+                templates: [templateRef],
+                memberships: [
+                  {
+                    __typename: 'TemplateGalleryPageMembership',
+                    journeyId: 'journey-1',
+                    isHome: false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    const { getAllByTestId, getByTestId, getByText } = render(
+      <MockedProvider
+        mocks={[
+          getLastActiveTeamIdAndTeamsMock,
+          collectionsWithLinkMock,
+          journeysMock
+        ]}
+      >
+        <ThemeProvider>
+          <SnackbarProvider>
+            <TeamProvider>
+              <TemplateGalleryPageList />
+            </TeamProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(getByTestId('CollectionCard-page-2')).toBeInTheDocument()
+    )
+    // The same template renders once per collection.
+    expect(getAllByTestId('DraggableJourney-journey-1')).toHaveLength(2)
+    // Home card in Featured Templates: crisp, with the "also in" chip.
+    expect(getByText('Also in 1 more')).toBeInTheDocument()
+    // Link card in Youth Ministry: veiled, naming its home.
+    expect(getByTestId('LinkedCardVeil-journey-1')).toBeInTheDocument()
+    expect(getByText('Linked from Featured Templates')).toBeInTheDocument()
+    // It lives in collections, so it is not in the All Templates pool.
+    expect(getByText('All templates are in collections.')).toBeInTheDocument()
+  })
+
+  it('promotes the link to home when the home is removed from the card menu', async () => {
+    const basePage = (
+      collectionsMock.result as { data: GetTemplateGalleryPages }
+    ).data.templateGalleryPages[0]
+    const templateRef = {
+      __typename: 'TemplateGalleryItem' as const,
+      id: 'journey-1',
+      title: 'Welcome Tour',
+      primaryImageBlock: null
+    }
+    const membership = (isHome: boolean) => ({
+      __typename: 'TemplateGalleryPageMembership' as const,
+      journeyId: 'journey-1',
+      isHome
+    })
+    const pageA = {
+      ...basePage,
+      templates: [templateRef],
+      memberships: [membership(true)]
+    }
+    const pageB = {
+      ...basePage,
+      id: 'page-2',
+      title: 'Youth Ministry',
+      slug: 'youth-ministry',
+      templates: [templateRef],
+      memberships: [membership(false)]
+    }
+    const initialCollections: MockLink.MockedResponse<GetTemplateGalleryPages> =
+      {
+        request: {
+          query: GET_TEMPLATE_GALLERY_PAGES,
+          variables: { teamId: TEAM_ID }
+        },
+        result: { data: { templateGalleryPages: [pageA, pageB] } }
+      }
+    const promotedA = { ...pageA, templates: [], memberships: [] }
+    const promotedB = { ...pageB, memberships: [membership(true)] }
+    const removeMock = getTemplateGalleryPageRemoveJourneyMock(
+      { journeyId: 'journey-1', pageId: 'page-1' },
+      [promotedA, promotedB]
+    )
+    // The refetch the mutation triggers.
+    const refetchedCollections: MockLink.MockedResponse<GetTemplateGalleryPages> =
+      {
+        request: {
+          query: GET_TEMPLATE_GALLERY_PAGES,
+          variables: { teamId: TEAM_ID }
+        },
+        result: { data: { templateGalleryPages: [promotedA, promotedB] } }
+      }
+    const { getByTestId, getAllByTestId, queryByTestId, getByRole, getByText } =
+      render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            initialCollections,
+            journeysMock,
+            removeMock,
+            refetchedCollections
+          ]}
+        >
+          <FlagsProvider flags={{ teamTemplateCollection: true }}>
+            <ThemeProvider>
+              <SnackbarProvider>
+                <TeamProvider>
+                  <TemplateGalleryPageList />
+                </TeamProvider>
+              </SnackbarProvider>
+            </ThemeProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      )
+
+    await waitFor(() =>
+      expect(getAllByTestId('DraggableJourney-journey-1')).toHaveLength(2)
+    )
+    // Open the ⋮ menu on the home card (collection A) and remove it.
+    const homeCard = within(getByTestId('CollectionCard-page-1'))
+    fireEvent.click(homeCard.getByTestId('JourneyCardMenuButton'))
+    const removeItem = await waitFor(() =>
+      getByRole('menuitem', { name: 'Remove from collection' })
+    )
+    fireEvent.click(removeItem)
+
+    await waitFor(() => expect(removeMock.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        getByText(
+          'Removed from Featured Templates. Its home is now Youth Ministry.'
+        )
+      ).toBeInTheDocument()
+    )
+    // The template now lives only in Youth Ministry, drawn as the home.
+    await waitFor(() =>
+      expect(getAllByTestId('DraggableJourney-journey-1')).toHaveLength(1)
+    )
+    expect(
+      within(getByTestId('CollectionCard-page-2')).getByTestId(
+        'DraggableJourney-journey-1'
+      )
+    ).toBeInTheDocument()
+    expect(queryByTestId('LinkedCardVeil-journey-1')).not.toBeInTheDocument()
+    // And it did not fall back into the All Templates pool.
+    expect(getByText('All templates are in collections.')).toBeInTheDocument()
   })
 
   it('excludes archived journeys from the active view (defends against post-mutation cache leak)', async () => {

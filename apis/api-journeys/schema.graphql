@@ -1685,7 +1685,7 @@ type Mutation {
   templateGalleryPageCreate(input: TemplateGalleryPageCreateInput!): TemplateGalleryPage!
 
   """
-  Update editable fields of a TemplateGalleryPage. All input fields are optional: a field omitted leaves the existing value alone, a field set to `null` clears it (where the field is nullable). When `input.journeyIds` is provided, the page's template list is replaced — existing assignments are deleted and recreated in the given order. Single-membership is enforced: if any supplied journey id is currently a member of another TemplateGalleryPage, the call fails before any write. Allowed on both `draft` and `published` pages (publishers can correct typos and curate the template list while live).
+  Update editable fields of a TemplateGalleryPage. All input fields are optional: a field omitted leaves the existing value alone, a field set to `null` clears it (where the field is nullable). When `input.journeyIds` is provided, the page's template list is replaced: journeys no longer listed are removed (promoting the oldest link elsewhere when the removed row was the journey's home), newly listed journeys are added (as the journey's home when it has none, otherwise as a link), and the page is reordered to the given order. A journey may belong to many pages. Allowed on both `draft` and `published` pages (publishers can correct typos and curate the template list while live).
   
   Auth: caller must be a member of the page's team.
   
@@ -1694,7 +1694,6 @@ type Mutation {
   - FORBIDDEN: caller is not in the page's team.
   - BAD_USER_INPUT (field: `slug`): user-supplied slug fails shape, length, reserved-word, or uniqueness checks — including the concurrent-Update race where two callers pass the same slug and the second one trips the DB unique constraint at commit time.
   - BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.
-  - CONFLICT (field: `journeyIds`; extension `journeyId` carries the offending id): one of the supplied journeys is already a member of another TemplateGalleryPage.
   """
   templateGalleryPageUpdate(
     """Stable page identifier."""
@@ -1731,35 +1730,73 @@ type Mutation {
   ): TemplateGalleryPage!
 
   """
-  Assign a journey to a TemplateGalleryPage, or unassign it. A journey may belong to at most one page at a time (single-membership invariant).
+  Add a journey to a TemplateGalleryPage without removing it from any other page. The new row appends at the end of the page's display order and becomes the journey's home when it has none yet, otherwise a link (see `TemplateGalleryPage.memberships`). Idempotent: if the journey is already on the page nothing changes. Allowed on both `draft` and `published` pages.
   
-  - `pageId` set: move the journey into that page. The new row appends at the end of the target's display order; if the journey was already in another page (cross-page move) it is removed from the source page first. Both pages are renumbered to contiguous orders 0..N-1 after the change. Allowed on both `draft` and `published` pages.
-  - `pageId` null/omitted: unassign — remove the journey from whatever page it is currently in. Returns null (idempotent no-op) if the journey is not in any page.
-  - Same-page-already: idempotent return; no row changes.
-  
-  Auth: caller must be a member of the target page's team (and, on a cross-page move, also of the source page's team).
+  Auth: caller must be a member of the page's team.
   
   Errors:
-  - NOT_FOUND: target `pageId` does not resolve.
+  - NOT_FOUND: `pageId` does not resolve.
   - NOT_FOUND (field: `journeyId`): journey does not exist or is soft-deleted.
   - BAD_USER_INPUT (field: `journeyId`): journey is not flagged as a template.
-  - FORBIDDEN: caller is not in the target page's team.
-  - FORBIDDEN (field: `journeyId`): journey belongs to a different team than the target page.
+  - FORBIDDEN: caller is not in the page's team.
+  - FORBIDDEN (field: `journeyId`): journey belongs to a different team than the page.
   """
-  templateGalleryPageAssignJourney(
+  templateGalleryPageLinkJourney(
     """
-    The journey to assign or unassign. Must be a non-deleted, template-flagged journey owned by the target page's team (when assigning).
+    The journey to add. Must be a non-deleted, template-flagged journey owned by the page's team.
     """
     journeyId: ID!
 
-    """
-    Target page id. Omit or pass `null` to unassign the journey from whatever page currently owns it (returning it to the flat template list). When set, the journey is moved into this page (and removed from any current source page in the same transaction).
-    """
-    pageId: ID
-  ): TemplateGalleryPage
+    """The page to add the journey to."""
+    pageId: ID!
+  ): TemplateGalleryPage!
 
   """
-  Reorder a single template within a TemplateGalleryPage by addressing the destination as a 0-based display index. The page is renumbered to contiguous orders 0..N-1 after the move so the next reorder sees a clean range. Allowed on both `draft` and `published` pages (the frontend gates the UX; the backend accepts unconditionally for symmetry with `templateGalleryPageUpdate` and `templateGalleryPageAssignJourney`).
+  Move a journey's membership from one TemplateGalleryPage to another. The row keeps its role: moving the home makes the destination the home, moving a link keeps it a link. The row appends at the end of the destination's display order and both pages are renumbered to contiguous orders 0..N-1. If the journey is already on the destination, the source membership is simply removed (promoting the oldest link when the source was the home). Returns every page that changed: the source, the destination, and any page whose link was promoted to home. Allowed on both `draft` and `published` pages.
+  
+  Auth: caller must be a member of both pages' team.
+  
+  Errors:
+  - NOT_FOUND: `fromPageId` or `toPageId` does not resolve.
+  - BAD_USER_INPUT (field: `journeyId`): journey is not a member of `fromPageId`, or is not flagged as a template.
+  - NOT_FOUND (field: `journeyId`): journey does not exist or is soft-deleted.
+  - FORBIDDEN: caller is not in a page's team, or the pages belong to different teams.
+  - FORBIDDEN (field: `journeyId`): journey belongs to a different team than the pages.
+  """
+  templateGalleryPageMoveJourney(
+    """The journey whose membership moves."""
+    journeyId: ID!
+
+    """The page the journey currently belongs to."""
+    fromPageId: ID!
+
+    """The page to move the journey to."""
+    toPageId: ID!
+  ): [TemplateGalleryPage!]!
+
+  """
+  Remove a journey from a TemplateGalleryPage. When the removed membership was the journey's home and links remain on other pages, the oldest link becomes the new home. Returns every page that changed: the page removed from and, when a promotion happened, the page that now holds the home. Idempotent: an empty list when the journey was not on the page.
+  
+  When `pageId` is omitted the journey is removed from every page it belongs to (used when a template is archived or trashed). Returns the pages it was removed from.
+  
+  Auth: caller must be a member of each affected page's team.
+  
+  Errors:
+  - NOT_FOUND: `pageId` does not resolve.
+  - FORBIDDEN: caller is not in an affected page's team.
+  """
+  templateGalleryPageRemoveJourney(
+    """The journey to remove."""
+    journeyId: ID!
+
+    """
+    The page to remove the journey from. Omit to remove it from every page it belongs to.
+    """
+    pageId: ID
+  ): [TemplateGalleryPage!]!
+
+  """
+  Reorder a single template within a TemplateGalleryPage by addressing the destination as a 0-based display index. The page is renumbered to contiguous orders 0..N-1 after the move so the next reorder sees a clean range. Allowed on both `draft` and `published` pages (the frontend gates the UX; the backend accepts unconditionally for symmetry with `templateGalleryPageUpdate` and `templateGalleryPageLinkJourney`).
   
   Idempotent: when the journey is already at the requested display index, the call is a no-op.
   
@@ -1776,7 +1813,7 @@ type Mutation {
     pageId: ID!
 
     """
-    The journey whose position is being changed. Must already be a member of the page; use `templateGalleryPageAssignJourney` to add a journey first.
+    The journey whose position is being changed. Must already be a member of the page; use `templateGalleryPageLinkJourney` to add a journey first.
     """
     journeyId: ID!
 
@@ -1787,7 +1824,7 @@ type Mutation {
   ): TemplateGalleryPage!
 
   """
-  Hard-delete a TemplateGalleryPage. Cascades through `TemplateGalleryPageTemplate` join rows automatically; the underlying `Journey` rows are NOT deleted. Returns the deleted page (last canonical view).
+  Hard-delete a TemplateGalleryPage. Cascades through `TemplateGalleryPageTemplate` join rows automatically; the underlying `Journey` rows are NOT deleted. Any journey whose home was on this page and that is linked elsewhere has its oldest link promoted to home first. Returns the deleted page (last canonical view).
   
   Auth: caller must be a member of the page's team.
   
@@ -2726,6 +2763,11 @@ type TemplateGalleryPage {
   templates: [TemplateGalleryItem!]!
 
   """
+  Every journey on this page with whether this page is its home. A journey has exactly one home across all pages; its other memberships are links. Home is presentational (the admin draws links greyed) and carries no behaviour. Unlike `templates`, this list is not filtered by the journey's status.
+  """
+  memberships: [TemplateGalleryPageMembership!]!
+
+  """
   Embedded media with both retained payload slots and the raw `muxVideoId`, so the editor can restore a parked link/upload. `null` only when the page has no media row.
   """
   media: TemplateGalleryPageMedia
@@ -2869,6 +2911,16 @@ enum TemplateGalleryPageMediaType {
 }
 
 """
+One journey's membership of a TemplateGalleryPage. `isHome` is true on exactly one of a journey's memberships across all pages.
+"""
+type TemplateGalleryPageMembership {
+  journeyId: ID!
+
+  """True when this page is the journey's home; false when it is a link."""
+  isHome: Boolean!
+}
+
+"""
 Public projection of a TemplateGalleryPage, returned by the unauthenticated slug read. Identical to the full type except `media` exposes only the active payload (parked payloads and the raw `muxVideoId` are never emitted).
 """
 type TemplateGalleryPagePublic {
@@ -2938,7 +2990,7 @@ enum TemplateGalleryPageStatus {
   draft
 
   """
-  Reachable at `/collections/<slug>`. `templateGalleryPageUpdate` and `templateGalleryPageAssignJourney` remain allowed (publishers can fix typos and curate the template list while live); `templateGalleryPageReorderTemplate` is rejected with CONFLICT — unpublish first to reorder.
+  Reachable at `/collections/<slug>`. `templateGalleryPageUpdate`, `templateGalleryPageLinkJourney`, `templateGalleryPageMoveJourney` and `templateGalleryPageRemoveJourney` remain allowed (publishers can fix typos and curate the template list while live); `templateGalleryPageReorderTemplate` is rejected with CONFLICT — unpublish first to reorder.
   """
   published
 }

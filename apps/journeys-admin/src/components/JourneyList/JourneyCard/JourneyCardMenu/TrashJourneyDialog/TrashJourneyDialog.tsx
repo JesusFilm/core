@@ -12,7 +12,7 @@ import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { JourneyTrash } from '../../../../../../__generated__/JourneyTrash'
 import { evictFromTemplateGalleryPages } from '../../../../../libs/evictFromTemplateGalleryPages'
 import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
-import { useTemplateGalleryPageAssignJourneyMutation } from '../../../../../libs/useTemplateGalleryPageAssignJourneyMutation'
+import { useTemplateGalleryPageRemoveJourneyMutation } from '../../../../../libs/useTemplateGalleryPageRemoveJourneyMutation'
 
 export const JOURNEY_TRASH = gql`
   mutation JourneyTrash($ids: [ID!]!) {
@@ -53,15 +53,15 @@ export function TrashJourneyDialog({
   const [loading, setLoading] = useState(false)
   const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
 
-  // Unassigns the journey from whatever TemplateGalleryPage it belongs
-  // to. Idempotent no-op when the journey isn't in any collection (the
-  // server resolver returns null). Called after the trash mutation so
+  // Removes the journey from every TemplateGalleryPage it belongs to.
+  // Idempotent no-op when the journey isn't in any collection (the server
+  // resolver returns an empty list). Called after the trash mutation so
   // that trashing implicitly severs collection membership — without
   // this, restoring a trashed journey would put it back in its prior
   // collection slot. Until journeysTrash is migrated to api-journeys-
   // modern and can delete the join row in the same transaction, this
   // pairing is the frontend-only way to honor the desired behavior.
-  const [unassignFromCollection] = useTemplateGalleryPageAssignJourneyMutation()
+  const [removeFromCollections] = useTemplateGalleryPageRemoveJourneyMutation()
 
   const [trashJourney] = useMutation<JourneyTrash>(JOURNEY_TRASH, {
     variables: {
@@ -106,12 +106,12 @@ export function TrashJourneyDialog({
       // succeeded (user's primary intent); do NOT await — the success
       // snackbar should fire on this tick. Failure leaves a stale join
       // row server-side (same as pre-fix behavior); log only.
-      void unassignFromCollection({
-        variables: { journeyId: id, pageId: null }
-      }).catch((unassignError) => {
+      void removeFromCollections({
+        variables: { journeyId: id }
+      }).catch((removeError) => {
         console.warn(
-          '[TrashJourneyDialog] failed to unassign trashed journey from its collection',
-          { journeyId: id, error: unassignError }
+          '[TrashJourneyDialog] failed to remove trashed journey from its collections',
+          { journeyId: id, error: removeError }
         )
       })
 

@@ -79,19 +79,25 @@ import {
 } from './collectionLayout'
 import { CollectionPublishSuccessDialog } from './CollectionPublishSuccessDialog'
 import {
+  CardMembership,
+  CollectionDropReveal,
   DraggableJourneysGrid,
   DroppableCollectionWrapper,
   UnsectionedDroppable,
-  parseDropZoneId,
+  parseCardId,
   resolveSectionDrop
 } from './Droppables'
 import {
   GalleryDialogLockContext,
   GalleryDialogLockContextValue
 } from './GalleryDialogLockContext'
+import {
+  InCollectionContext,
+  InCollectionContextValue
+} from './InCollectionContext'
 import { useCollectionCollapse } from './useCollectionCollapse'
 import { useCollectionMutations } from './useCollectionMutations'
-import { useDragEndHandler } from './useDragEndHandler'
+import { JourneyMembership, useDragEndHandler } from './useDragEndHandler'
 
 const Dialog = dynamic(
   async () =>
@@ -624,12 +630,85 @@ export function TemplateGalleryPageList({
     return map
   }, [allTemplates])
 
-  const templateIdToCollection = useMemo(() => {
-    const map = new Map<string, TemplateGalleryPage>()
+  // Every collection a template renders in (a template can be in many).
+  // Built from `templates` — the status-filtered list the cards come from —
+  // so the unsectioned pool below stays consistent with what is drawn.
+  const collectionsByJourneyId = useMemo(() => {
+    const map = new Map<string, TemplateGalleryPage[]>()
     for (const collection of collections) {
       for (const template of collection.templates) {
-        map.set(template.id, collection)
+        const list = map.get(template.id)
+        if (list != null) list.push(collection)
+        else map.set(template.id, [collection])
       }
+    }
+    return map
+  }, [collections])
+
+  // Where each template's home is and which collections hold it, from the
+  // unfiltered `memberships` — the source of truth for home vs link.
+  const membershipsByJourneyId = useMemo(() => {
+    const map = new Map<string, JourneyMembership>()
+    for (const collection of collections) {
+      for (const membership of collection.memberships) {
+        const entry = map.get(membership.journeyId) ?? {
+          homeCollectionId: null,
+          collectionIds: []
+        }
+        map.set(membership.journeyId, {
+          homeCollectionId: membership.isHome
+            ? collection.id
+            : entry.homeCollectionId,
+          collectionIds: [...entry.collectionIds, collection.id]
+        })
+      }
+    }
+    return map
+  }, [collections])
+
+  const collectionsById = useMemo(() => {
+    const map = new Map<string, TemplateGalleryPage>()
+    for (const collection of collections) map.set(collection.id, collection)
+    return map
+  }, [collections])
+
+  // Per collection, how each of its cards should draw: the crisp home or a
+  // greyed link, with the chip copy's inputs resolved up front.
+  const cardMembershipByCollectionId = useMemo(() => {
+    const map = new Map<string, Map<string, CardMembership>>()
+    for (const collection of collections) {
+      const cards = new Map<string, CardMembership>()
+      for (const membership of collection.memberships) {
+        const journeyMembership = membershipsByJourneyId.get(
+          membership.journeyId
+        )
+        const homeCollection =
+          journeyMembership?.homeCollectionId != null
+            ? collectionsById.get(journeyMembership.homeCollectionId)
+            : undefined
+        cards.set(membership.journeyId, {
+          role: membership.isHome ? 'home' : 'link',
+          homeCollectionTitle: homeCollection?.title ?? null,
+          otherCount: Math.max(
+            0,
+            (journeyMembership?.collectionIds.length ?? 1) - 1
+          )
+        })
+      }
+      map.set(collection.id, cards)
+    }
+    return map
+  }, [collections, collectionsById, membershipsByJourneyId])
+
+  // One stable context value per collection so the card menus can tell
+  // which collection they sit in without re-rendering on every drag tick.
+  const inCollectionValueById = useMemo(() => {
+    const map = new Map<string, InCollectionContextValue>()
+    for (const collection of collections) {
+      map.set(collection.id, {
+        collectionId: collection.id,
+        collectionTitle: collection.title
+      })
     }
     return map
   }, [collections])
@@ -652,16 +731,10 @@ export function TemplateGalleryPageList({
     return map
   }, [collections, journeyById])
 
-  const collectionsById = useMemo(() => {
-    const map = new Map<string, TemplateGalleryPage>()
-    for (const collection of collections) map.set(collection.id, collection)
-    return map
-  }, [collections])
-
   const unsectioned = useMemo<readonly Journey[]>(
     () =>
-      allTemplates.filter((journey) => !templateIdToCollection.has(journey.id)),
-    [allTemplates, templateIdToCollection]
+      allTemplates.filter((journey) => !collectionsByJourneyId.has(journey.id)),
+    [allTemplates, collectionsByJourneyId]
   )
 
   // All Templates header (NES-1872): sort and bulk actions are scoped to
@@ -679,29 +752,10 @@ export function TemplateGalleryPageList({
   const editTarget =
     editTargetId != null ? (collectionsById.get(editTargetId) ?? null) : null
 
-  // Pool the dialog's template picker draws from. Only ungrouped templates
-  // are addable, plus the templates already in the collection being
-  // edited so the user can deselect them. Hides templates owned by other
-  // collections to prevent accidental dual-membership.
-  function buildAvailableJourneys(
-    target: TemplateGalleryPage | null
-  ): readonly Journey[] {
-    if (target == null) return unsectioned
-    const seen = new Set(unsectioned.map((j) => j.id))
-    // Resolve each template through journeyById so the picker always sees
-    // the full Journey shape (the gallery fragment only carries id/title
-    // and would not satisfy Journey on its own).
-    const own = target.templates
-      .filter((tpl) => !seen.has(tpl.id))
-      .map((tpl) => journeyById.get(tpl.id))
-      .filter((j): j is Journey => j != null)
-    return [...unsectioned, ...own]
-  }
-  const editAvailableJourneys = useMemo<readonly Journey[]>(
-    () => buildAvailableJourneys(editTarget),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [unsectioned, editTarget, journeyById]
-  )
+  // Pool the dialog's template picker draws from: every team template. A
+  // template can belong to many collections, so ticking one that already
+  // lives elsewhere links it here (the server decides home vs link).
+  const editAvailableJourneys = allTemplates
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
@@ -726,34 +780,32 @@ export function TemplateGalleryPageList({
   // When the cursor is outside every droppable we fall back to the raw
   // `closestCenter` WITHOUT promoting to a section — a drop in dead space must
   // not silently reassign a template's collection.
-  const collisionDetection = useCallback<CollisionDetection>(
-    (args) => {
-      const pointerCollisions = pointerWithin(args)
-      if (pointerCollisions.length === 0) return closestCenter(args)
+  const collisionDetection = useCallback<CollisionDetection>((args) => {
+    const pointerCollisions = pointerWithin(args)
+    if (pointerCollisions.length === 0) return closestCenter(args)
 
-      const resolution = resolveSectionDrop(
-        pointerCollisions,
-        String(args.active.id),
-        templateIdToCollection
-      )
-      if (resolution.kind === 'passthrough') return pointerCollisions
-      if (resolution.kind === 'section') return [resolution.collision]
+    const resolution = resolveSectionDrop(
+      pointerCollisions,
+      parseCardId(String(args.active.id))
+    )
+    if (resolution.kind === 'passthrough') return pointerCollisions
+    if (resolution.kind === 'action' || resolution.kind === 'section') {
+      return [resolution.collision]
+    }
 
-      // reorder: nearest card within the dragged card's own collection.
-      const cardCollisions = closestCenter({
-        ...args,
-        droppableContainers: args.droppableContainers.filter((container) => {
-          const id = String(container.id)
-          return (
-            parseDropZoneId(id) == null &&
-            templateIdToCollection.get(id)?.id === resolution.collectionId
-          )
-        })
+    // reorder: nearest card within the dragged card's own collection.
+    const cardCollisions = closestCenter({
+      ...args,
+      droppableContainers: args.droppableContainers.filter((container) => {
+        const card = parseCardId(String(container.id))
+        return (
+          card?.zone.kind === 'collection' &&
+          card.zone.id === resolution.collectionId
+        )
       })
-      return cardCollisions.length > 0 ? cardCollisions : pointerCollisions
-    },
-    [templateIdToCollection]
-  )
+    })
+    return cardCollisions.length > 0 ? cardCollisions : pointerCollisions
+  }, [])
 
   // Scan existing collection titles for the "Collection N" pattern and
   // return the smallest unused N (>= 1). The match is case-sensitive
@@ -853,8 +905,8 @@ export function TemplateGalleryPageList({
 
   const handleDragEnd = useDragEndHandler({
     journeyById,
-    templateIdToCollection,
     collectionsById,
+    membershipsByJourneyId,
     dragInFlightRef,
     setDragInFlight,
     setActiveDragId,
@@ -1070,8 +1122,17 @@ export function TemplateGalleryPageList({
     )
   }
 
+  const activeCard = activeDragId != null ? parseCardId(activeDragId) : null
   const activeDragJourney =
-    activeDragId != null ? (journeyById.get(activeDragId) ?? null) : null
+    activeCard != null ? (journeyById.get(activeCard.journeyId) ?? null) : null
+  const activeSourceCollectionTitle =
+    activeCard?.zone.kind === 'collection'
+      ? (collectionsById.get(activeCard.zone.id)?.title ?? null)
+      : null
+  const activeCardCollectionIds =
+    activeCard != null
+      ? (membershipsByJourneyId.get(activeCard.journeyId)?.collectionIds ?? [])
+      : []
 
   return (
     <GalleryDialogLockContext.Provider value={galleryDialogLockValue}>
@@ -1198,37 +1259,65 @@ export function TemplateGalleryPageList({
                       `calc(${theme.spacing(-COLLECTION_CARD_PADDING)} - ${COLLECTION_CARD_BORDER_WIDTH}px)`
                   }}
                 >
-                  {collections.map((collection) => (
-                    <DroppableCollectionWrapper
-                      key={collection.id}
-                      id={collection.id}
-                      disabled={interactionsLocked || busyId === collection.id}
-                    >
-                      <CollectionCard
-                        collection={collection}
-                        onEdit={handleEdit}
-                        onUngroup={handleUngroup}
-                        busy={busyId === collection.id || dragInFlight}
-                        canPublish={canPublish}
-                        publishBlockedReason={
-                          publishBlockedReason != null
-                            ? t(publishBlockedReason)
-                            : null
+                  {collections.map((collection) => {
+                    const revealProps = {
+                      collectionId: collection.id,
+                      activeCard,
+                      isMember: activeCardCollectionIds.includes(collection.id),
+                      sourceCollectionTitle: activeSourceCollectionTitle,
+                      disabled: interactionsLocked || busyId === collection.id
+                    }
+                    return (
+                      <DroppableCollectionWrapper
+                        key={collection.id}
+                        id={collection.id}
+                        disabled={
+                          interactionsLocked || busyId === collection.id
                         }
-                        collapsed={isCollapsed(collection.id)}
-                        onToggleCollapse={handleToggleCollapse}
                       >
-                        <DraggableJourneysGrid
-                          journeys={
-                            journeysByCollection.get(collection.id) ??
-                            NO_JOURNEYS
+                        <CollectionCard
+                          collection={collection}
+                          onEdit={handleEdit}
+                          onUngroup={handleUngroup}
+                          busy={busyId === collection.id || dragInFlight}
+                          canPublish={canPublish}
+                          publishBlockedReason={
+                            publishBlockedReason != null
+                              ? t(publishBlockedReason)
+                              : null
                           }
-                          dragInFlight={interactionsLocked}
-                          showDropPlaceholder
-                        />
-                      </CollectionCard>
-                    </DroppableCollectionWrapper>
-                  ))}
+                          collapsed={isCollapsed(collection.id)}
+                          onToggleCollapse={handleToggleCollapse}
+                          collapsedDropSlot={
+                            <CollectionDropReveal
+                              {...revealProps}
+                              variant="row"
+                            />
+                          }
+                        >
+                          <InCollectionContext.Provider
+                            value={inCollectionValueById.get(collection.id)}
+                          >
+                            <DraggableJourneysGrid
+                              journeys={
+                                journeysByCollection.get(collection.id) ??
+                                NO_JOURNEYS
+                              }
+                              dragInFlight={interactionsLocked}
+                              zone={{ kind: 'collection', id: collection.id }}
+                              membershipByJourneyId={cardMembershipByCollectionId.get(
+                                collection.id
+                              )}
+                            />
+                          </InCollectionContext.Provider>
+                          <CollectionDropReveal
+                            {...revealProps}
+                            variant="overlay"
+                          />
+                        </CollectionCard>
+                      </DroppableCollectionWrapper>
+                    )
+                  })}
                 </Stack>
               ))}
 
@@ -1278,6 +1367,7 @@ export function TemplateGalleryPageList({
                 <DraggableJourneysGrid
                   journeys={sortedUnsectioned}
                   dragInFlight={interactionsLocked}
+                  zone={{ kind: 'unsectioned' }}
                 />
               )}
             </UnsectionedDroppable>
