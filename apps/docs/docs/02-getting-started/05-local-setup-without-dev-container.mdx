@@ -69,6 +69,11 @@ creates the `test-user` Postgres role, runs `pnpm install`, and seeds `plausible
 The docs elsewhere write bare `nx …` and `nf start`, which rely on global installs inside the dev container.
 On a host checkout use `pnpm exec nx …` and `pnpm dev:api`, or add `alias nx='pnpm exec nx'` to your shell.
 
+All services share the `db` container's network namespace (`network_mode: service:db`). If `db` is ever
+recreated — an image bump, a config change, `docker compose up` deciding it is stale — every joined container,
+including the dev container itself, is left holding a dead namespace and must be recreated too. From the host,
+`pnpm services:up` handles the services; a running dev container needs "Rebuild Container".
+
 Never run `docker compose down --remove-orphans` against the services file: it shares its project with the dev
 container, and that would delete the dev container itself. `pnpm services:stop` is the safe way to stop things.
 

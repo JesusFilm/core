@@ -89,7 +89,8 @@ else
     echo "Database not ready (try $i/30)…"
     sleep 2
   done
-  [ "$i" -eq 30 ] && fail "Postgres failed to start"
+  pg_isready -h localhost -p 5432 -U postgres >/dev/null \
+    || fail "Postgres failed to start"
   ok "postgres reachable"
 fi
 
@@ -123,7 +124,8 @@ if [ "$ANALYTICS" = true ]; then
   if pg -d plausible_db -tAc "SELECT 1 FROM users LIMIT 1" | grep -q 1; then
     ok "plausible_db already seeded"
   else
-    pg -d plausible_db -v ON_ERROR_STOP=1 -q < .devcontainer/plausible.sql \
+    # Single transaction so a partial seed cannot trip the guard above.
+    pg -d plausible_db -v ON_ERROR_STOP=1 --single-transaction -q < .devcontainer/plausible.sql \
       || fail "Plausible DB bootstrap failed"
     ok "plausible_db seeded"
   fi

@@ -30,13 +30,15 @@ services:
     # (`network_mode: service:db`), so all of them are reachable as
     # `localhost` from each other, from the host, and from the dev container.
     # That is why every published port lives here.
+    # Bound to loopback: redis is unauthenticated and the postgres
+    # credentials are committed, so never expose them on a shared network.
     ports:
-      - 5432:5432 # db
-      - 6379:6379 # redis
-      - 8079:80 # serverless-redis-http
-      - 1080:1080 # maildev web
-      - 1025:1025 # maildev smtp
-      - 8000:8000 # plausible
+      - 127.0.0.1:5432:5432 # db
+      - 127.0.0.1:6379:6379 # redis
+      - 127.0.0.1:8079:80 # serverless-redis-http
+      - 127.0.0.1:1080:1080 # maildev web
+      - 127.0.0.1:1025:1025 # maildev smtp
+      - 127.0.0.1:8000:8000 # plausible
     # Shared with every service that joins this namespace (they inherit
     # db's /etc/hosts). host.docker.internal is used by
     # tools/scripts/db-backup-restore.sh. The service-name aliases are a
