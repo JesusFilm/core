@@ -191,8 +191,9 @@ module "eks" {
 }
 
 # Bounded EBS snapshot retention for the Plausible ClickHouse volumes: 7 daily
-# plus 4 weekly snapshots, replacing the unbounded in-chart SnapScheduler
-# schedule (infrastructure/kube/plausible-analytics/templates/snapscheduler.yaml).
+# plus 4 weekly snapshots, replacing the former SnapScheduler schedule,
+# whose EBS snapshots were never deleted (the VolumeSnapshotClass uses
+# deletionPolicy: Retain).
 module "plausible_clickhouse_snapshots" {
   source       = "../../modules/aws/ebs-snapshot-policy"
   env          = "prod"
