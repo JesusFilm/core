@@ -32,9 +32,17 @@
     "workspace-generator": "nx workspace-generator",
     "dep-graph": "nx dep-graph",
     "help": "nx help",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "setup:local": "tools/scripts/setup-local.sh",
+    "dev:api": "nf start",
+    "services:up": "docker compose -f docker-compose.services.yml --profile analytics up -d --wait",
+    "services:up:base": "docker compose -f docker-compose.services.yml up -d --wait",
+    "services:stop": "docker compose -f docker-compose.services.yml --profile analytics stop"
   },
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
     "@ai-sdk/google": "^4.0.31",
     "@ai-sdk/openai": "^4.0.27",
@@ -312,6 +320,7 @@
     "eslint-plugin-react-hooks": "7.1.1",
     "eslint-plugin-storybook": "^10.5.9",
     "file-loader": "^6.2.0",
+    "foreman": "^3.0.1",
     "glob": "^13.0.6",
     "http-server": "^14.1.1",
     "husky": "^8.0.3",
