@@ -190,6 +190,7 @@ model Video {
   createdAt                 DateTime                     @default(now())
   updatedAt                 DateTime                     @default(now()) @updatedAt
   userMediaProfiles         UserMediaProfile[]
+  shortLinks                ShortLink[]
 
   @@index(label)
   @@index(childIds)
@@ -615,6 +616,11 @@ model TaxonomyName {
 enum MediaRole {
   publisher
   youtubeAdmin
+  /// may create and edit short links, campaigns, and QR codes
+  shortLinkEditor
+  /// may additionally change domain settings, protected (permanent /
+  /// videoEmbedded) links, and republish the edge store
+  shortLinkAdmin
 }
 
 model UserMediaRole {
@@ -635,45 +641,182 @@ model UserMediaProfile {
   updatedAt           DateTime @default(now()) @updatedAt
 }
 
+/// What the edge Worker answers when a path on a domain does not resolve to a
+/// live short link.
+enum ShortLinkNotFound {
+  /// render the branded "We've Lost This Page" response (404)
+  lostPage
+  /// redirect to the domain's `fallbackTo`
+  fallback
+  /// redirect to `passthroughOrigin` + the original path and query. This is the
+  /// arc.gt handoff: everything that is not a keyword short link is still
+  /// answered by the Arclight API exactly as before.
+  passthrough
+}
+
+/// Drives the protection rules on a short link. `permanent` and
+/// `videoEmbedded` links can never have their pathname changed, can never be
+/// hard-deleted, and need the shortLinkAdmin role to change their destination.
+/// `videoEmbedded` (a QR burned into a published video) also needs a change
+/// note on every destination change.
+enum ShortLinkAssetClass {
+  standard
+  permanent
+  videoEmbedded
+}
+
+enum ShortLinkStatus {
+  active
+  /// resolves to the link's (or domain's) fallbackTo instead of `to`
+  paused
+  /// no longer resolves; the pathname stays reserved forever
+  retired
+}
+
+/// Where a link is placed on YouTube (or elsewhere). Reporting only.
+enum ShortLinkPlacement {
+  description
+  endScreen
+  card
+  communityPost
+  inVideoQr
+  other
+}
+
+/// Result of the last destination health check.
+enum ShortLinkHealth {
+  ok
+  notFound
+  serverError
+  timeout
+  dns
+  tls
+  redirectLoop
+  unknown
+}
+
 model ShortLinkDomain {
-  id         String      @id @default(uuid())
+  id                String            @id @default(uuid())
   /// the hostname including subdomain, domain, and TLD, but excluding port
-  hostname   String      @unique
+  hostname          String            @unique
   /// the name of the apex domain (e.g. "example.com" for "www.example.com")
-  apexName   String
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  apexName          String
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
   /// which services are able to use this domain in their short links
-  services   Service[]
-  shortLinks ShortLink[]
+  services          Service[]
+  shortLinks        ShortLink[]
+  /// HTTP status the edge Worker redirects with (301, 302, 307, 308) unless a
+  /// link overrides it
+  redirectStatus    Int               @default(307)
+  /// regex character-class body describing the characters a pathname may use
+  slugAllowedChars  String            @default("A-Za-z0-9_-")
+  slugMinLength     Int               @default(1)
+  slugMaxLength     Int               @default(64)
+  /// when false, pathnames are lower-cased on create and matched case-insensitively at the edge
+  slugCaseSensitive Boolean           @default(true)
+  /// first path segments that are never minted as short links (admin, api, .well-known, ...)
+  reservedPaths     String[]          @default([])
+  /// where the edge sends traffic it cannot resolve when `notFound` is `fallback`,
+  /// and where paused links go unless they override it
+  fallbackTo        String?
+  notFound          ShortLinkNotFound @default(lostPage)
+  /// origin (scheme + host) that receives unresolved requests with their path and
+  /// query intact when `notFound` is `passthrough`
+  passthroughOrigin String?
+  /// when true, a failing destination health check pauses the link (never for videoEmbedded)
+  autoFailover      Boolean           @default(false)
+  /// when the domain record was last written to the edge store
+  edgePublishedAt   DateTime?
 }
 
 model ShortLink {
-  id           String             @id @default(uuid())
+  id                 String                        @id @default(uuid())
   /// should not include the leading slash
-  pathname     String
+  pathname           String
   /// the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
-  to           String
-  domainId     String
+  to                 String
+  domainId           String
   /// the user created this short link (if empty, it was created by a subgraph)
-  userId       String?
+  userId             String?
   /// the service that created this short link
-  service      Service
+  service            Service
   /// brightcove video ID for video redirects
-  brightcoveId String?
+  brightcoveId       String?
   /// type of video redirect (hls, dl, dh, s)
-  redirectType VideoRedirectType?
+  redirectType       VideoRedirectType?
   /// bitrate of the video variant download
-  bitrate      Int?
+  bitrate            Int?
   /// a single namespaced `<scheme>:<value>` attribution for the thing this link
   /// was minted for (e.g. `youtube-channel:UC...`), one value per link
-  sourceRef    String?
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
-  domain       ShortLinkDomain    @relation(fields: [domainId], references: [id], onDelete: Restrict)
+  sourceRef          String?
+  createdAt          DateTime                      @default(now())
+  updatedAt          DateTime                      @updatedAt
+  domain             ShortLinkDomain               @relation(fields: [domainId], references: [id], onDelete: Restrict)
+  /// human label shown in the admin app
+  name               String?
+  description        String?
+  assetClass         ShortLinkAssetClass           @default(standard)
+  status             ShortLinkStatus               @default(active)
+  /// per-link override of the domain's redirect status
+  redirectStatus     Int?
+  /// per-link override of the domain's fallbackTo (used while paused)
+  fallbackTo         String?
+  placement          ShortLinkPlacement?
+  /// BCP-47 language tag, for filtering and reporting
+  language           String?
+  tags               String[]                      @default([])
+  /// core Video this link belongs to, if any
+  videoId            String?
+  video              Video?                        @relation(fields: [videoId], references: [id], onDelete: SetNull)
+  /// YouTube video id the link is placed in (distinct from the core videoId)
+  youtubeVideoId     String?
+  campaigns          ShortLinkCampaign[]
+  destinationHistory ShortLinkDestinationHistory[]
+  /// soft delete; the pathname is never reissued
+  deletedAt          DateTime?
+  /// when the routing record was last written to the edge store
+  edgePublishedAt    DateTime?
+  healthStatus       ShortLinkHealth?
+  healthCheckedAt    DateTime?
 
   @@unique([pathname, domainId])
   @@index([service, sourceRef])
+  @@index([domainId, status, deletedAt])
+  @@index([videoId])
+  @@index([youtubeVideoId])
+}
+
+model ShortLinkCampaign {
+  id          String      @id @default(uuid())
+  name        String
+  description String?
+  startsAt    DateTime?
+  endsAt      DateTime?
+  tags        String[]    @default([])
+  /// user id of the campaign owner
+  ownerId     String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  shortLinks  ShortLink[]
+
+  @@index([name])
+}
+
+/// Written on every change to ShortLink.to — the accountability record for
+/// links embedded in published assets.
+model ShortLinkDestinationHistory {
+  id          String    @id @default(uuid())
+  shortLinkId String
+  shortLink   ShortLink @relation(fields: [shortLinkId], references: [id], onDelete: Cascade)
+  from        String
+  to          String
+  /// user id (or service name) that made the change
+  changedBy   String?
+  changedAt   DateTime  @default(now())
+  note        String?
+
+  @@index([shortLinkId, changedAt])
 }
 
 model ShortLinkBlocklistDomain {
@@ -766,8 +909,8 @@ enum YoutubeMetadataSource {
 }
 
 model YoutubeVideo {
-  id                      String             @id @default(uuid())
-  youtubeVideoId          String             @unique
+  id                      String                 @id @default(uuid())
+  youtubeVideoId          String                 @unique
   channelId               String
   reviewState             YoutubeReviewState
   // Variant reference — present iff reviewState = LINKED (enforced on write).
@@ -779,14 +922,14 @@ model YoutubeVideo {
   // invariant at rest, so a deleted variant must remove its linked rows rather
   // than null their refs and leave an invalid LINKED row. The CHECK constraint
   // itself lives in the migration SQL (Prisma has no schema syntax for it).
-  variant                 VideoVariant?      @relation(fields: [languageId, videoId], references: [languageId, videoId], onDelete: Cascade)
+  variant                 VideoVariant?          @relation(fields: [languageId, videoId], references: [languageId, videoId], onDelete: Cascade)
   reasonCode              YoutubeReasonCode?
   reasonNote              String?
   // Captured YouTube-authored facts — stored alongside, never overwriting,
   // Core canonical title/description.
   youtubeTitle            String?
   youtubeDescription      String?
-  tags                    String[]           @default([])
+  tags                    String[]               @default([])
   thumbnailUrl            String? // YouTube-hosted URL only; the image is never downloaded
   playlists               Json? // [{ playlistId, title }] snapshots; non-authoritative
   madeForKids             Boolean? // null = unknown/unset
@@ -805,8 +948,8 @@ model YoutubeVideo {
   metadataSource          YoutubeMetadataSource? // null = not composed by Wheat
   metadataRulebookVersion String? // the rulebook version the text was written against
   lastSyncedAt            DateTime? // freshness signal only, never a deletion clock
-  createdAt               DateTime           @default(now())
-  updatedAt               DateTime           @default(now()) @updatedAt
+  createdAt               DateTime               @default(now())
+  updatedAt               DateTime               @default(now()) @updatedAt
 
   @@index(channelId(type: Hash))
   @@index(reviewState)
