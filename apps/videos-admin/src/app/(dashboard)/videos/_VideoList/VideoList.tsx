@@ -27,7 +27,7 @@ import {
   useGridApiContext
 } from '@mui/x-data-grid'
 import omitBy from 'lodash/omitBy'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { ReactElement, useState } from 'react'
 import { renderToString } from 'react-dom/server'
 
@@ -282,7 +282,6 @@ function PrintComponent({
 
 export function VideoList(): ReactElement {
   const router = useRouter()
-  const pathname = usePathname()
   const [exportLoading, setExportLoading] = useState(false)
   const [printLoading, setPrintLoading] = useState(false)
 
@@ -377,7 +376,9 @@ export function VideoList(): ReactElement {
   ): void {
     if (params.row.locked) return
 
-    router.push(`${pathname}/${params.id}`)
+    // Always the Video's own route: this list also renders under
+    // /videos/library, where appending to the current path 404s.
+    router.push(`/videos/${params.id}`)
   }
 
   async function handleChangePage(
