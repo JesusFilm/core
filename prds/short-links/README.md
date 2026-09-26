@@ -121,14 +121,14 @@ QR branding, scheduled destination changes.
 
 ## Success metrics
 
-| Metric                 | Target                                                    | Where measured                                |
-| ---------------------- | --------------------------------------------------------- | --------------------------------------------- |
-| Redirect latency       | P50 < 50 ms, P95 < 100 ms, P99 < 250 ms                   | Cloudflare Worker analytics                   |
-| Redirect availability  | 99.99% monthly                                            | Synthetic probe every 30 s; incident.io SLO   |
-| Redirect independence  | 100% of redirects succeed during a control-plane outage   | Quarterly chaos drill in stage                |
-| Event completeness     | Events in ClickHouse within 60 s, 99.9% of redirects      | Worker request count vs ClickHouse row count  |
-| Adoption               | No new links in Switchy / QR Code Kit / QR Code Generator | Subscription review                           |
-| Permanence             | Zero reissued pathnames, ever                             | `@@unique([pathname, domainId])` + soft delete |
+| Metric                | Target                                                    | Where measured                                 |
+| --------------------- | --------------------------------------------------------- | ---------------------------------------------- |
+| Redirect latency      | P50 < 50 ms, P95 < 100 ms, P99 < 250 ms                   | Cloudflare Worker analytics                    |
+| Redirect availability | 99.99% monthly                                            | Synthetic probe every 30 s; incident.io SLO    |
+| Redirect independence | 100% of redirects succeed during a control-plane outage   | Quarterly chaos drill in stage                 |
+| Event completeness    | Events in ClickHouse within 60 s, 99.9% of redirects      | Worker request count vs ClickHouse row count   |
+| Adoption              | No new links in Switchy / QR Code Kit / QR Code Generator | Subscription review                            |
+| Permanence            | Zero reissued pathnames, ever                             | `@@unique([pathname, domainId])` + soft delete |
 
 ## Open questions
 

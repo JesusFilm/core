@@ -37,7 +37,7 @@ flowchart LR
 | Redirect plane                 | `workers/short-links-redirect`         | Hono Worker: KV → D1 → api-media lookup, redirect, reserved paths, UTM pass-through, queue producer |
 | Analytics consumer             | `workers/short-links-redirect` (queue) | Batches queue messages into ClickHouse; parses user agent; never stores IP or raw UA                |
 | Admin UI                       | `apps/short-links-admin`               | Links, campaigns, domains, QR download, destination history, Test Redirect, dashboards              |
-| Legacy redirect surface (kept) | `apps/short-links`                     | Untouched. Cut a domain over by pointing its DNS / Cloudflare route at the Worker                    |
+| Legacy redirect surface (kept) | `apps/short-links`                     | Untouched. Cut a domain over by pointing its DNS / Cloudflare route at the Worker                   |
 
 ## Data model (Prisma, `libs/prisma/media`)
 
@@ -45,40 +45,40 @@ Migration: `20260926045620_short_links_service`. All additive.
 
 ### `ShortLinkDomain` (new fields)
 
-| Field               | Type                | Default        | Meaning                                                                                        |
-| ------------------- | ------------------- | -------------- | ---------------------------------------------------------------------------------------------- |
-| `redirectStatus`    | Int                 | 307            | 301, 302, 307 or 308. arc.gt uses 302 to match the Arclight keyword route.                     |
-| `slugAllowedChars`  | String              | `A-Za-z0-9_-`  | Regex character-class body. Validated on create.                                               |
-| `slugMinLength`     | Int                 | 1              |                                                                                                |
-| `slugMaxLength`     | Int                 | 64             |                                                                                                |
-| `slugCaseSensitive` | Boolean             | true           | When false, pathnames are lower-cased on create and looked up lower-cased at the edge.         |
-| `reservedPaths`     | String[]            | []             | First path segments never minted (`admin`, `api`, `.well-known`, arc.gt's `s`, `hls`, `dl`…). |
-| `fallbackTo`        | String?             | null           | Where unresolved traffic goes when `notFound = fallback`; where paused links go.                |
-| `notFound`          | `ShortLinkNotFound` | `lostPage`     | `lostPage`, `fallback`, `passthrough`.                                                          |
-| `passthroughOrigin` | String?             | null           | For `passthrough`: origin that receives the untouched path + query (arc.gt → api.arclight.org). |
-| `autoFailover`      | Boolean             | false          | Health check may pause a failing link (never `videoEmbedded`).                                  |
-| `edgePublishedAt`   | DateTime?           | null           | Last successful edge write.                                                                     |
+| Field               | Type                | Default       | Meaning                                                                                         |
+| ------------------- | ------------------- | ------------- | ----------------------------------------------------------------------------------------------- |
+| `redirectStatus`    | Int                 | 307           | 301, 302, 307 or 308. arc.gt uses 302 to match the Arclight keyword route.                      |
+| `slugAllowedChars`  | String              | `A-Za-z0-9_-` | Regex character-class body. Validated on create.                                                |
+| `slugMinLength`     | Int                 | 1             |                                                                                                 |
+| `slugMaxLength`     | Int                 | 64            |                                                                                                 |
+| `slugCaseSensitive` | Boolean             | true          | When false, pathnames are lower-cased on create and looked up lower-cased at the edge.          |
+| `reservedPaths`     | String[]            | []            | First path segments never minted (`admin`, `api`, `.well-known`, arc.gt's `s`, `hls`, `dl`…).   |
+| `fallbackTo`        | String?             | null          | Where unresolved traffic goes when `notFound = fallback`; where paused links go.                |
+| `notFound`          | `ShortLinkNotFound` | `lostPage`    | `lostPage`, `fallback`, `passthrough`.                                                          |
+| `passthroughOrigin` | String?             | null          | For `passthrough`: origin that receives the untouched path + query (arc.gt → api.arclight.org). |
+| `autoFailover`      | Boolean             | false         | Health check may pause a failing link (never `videoEmbedded`).                                  |
+| `edgePublishedAt`   | DateTime?           | null          | Last successful edge write.                                                                     |
 
 ### `ShortLink` (new fields)
 
-| Field                | Type                   | Notes                                                                       |
-| -------------------- | ---------------------- | --------------------------------------------------------------------------- |
-| `name`, `description`| String?                | Labels.                                                                     |
-| `assetClass`         | `ShortLinkAssetClass`  | `standard` (default), `permanent`, `videoEmbedded`.                         |
-| `status`             | `ShortLinkStatus`      | `active` (default), `paused`, `retired`.                                    |
-| `redirectStatus`     | Int?                   | Per-link override.                                                          |
-| `fallbackTo`         | String?                | Per-link override, used while paused.                                       |
-| `placement`          | `ShortLinkPlacement?`  | `description`, `endScreen`, `card`, `communityPost`, `inVideoQr`, `other`.  |
-| `language`           | String?                | BCP-47.                                                                     |
-| `tags`               | String[]               |                                                                             |
-| `videoId`            | String? → `Video`      | Core video. `SetNull` on video delete.                                      |
-| `youtubeVideoId`     | String?                | YouTube's own id. Not a foreign key.                                        |
-| `campaigns`          | `ShortLinkCampaign[]`  | Many-to-many.                                                               |
-| `destinationHistory` | history rows           |                                                                             |
-| `deletedAt`          | DateTime?              | Soft delete only. `@@unique([pathname, domainId])` keeps the slug reserved. |
-| `edgePublishedAt`    | DateTime?              |                                                                             |
-| `healthStatus`       | `ShortLinkHealth?`     | `ok`, `notFound`, `serverError`, `timeout`, `dns`, `tls`, `redirectLoop`, `unknown`. |
-| `healthCheckedAt`    | DateTime?              |                                                                             |
+| Field                 | Type                  | Notes                                                                                |
+| --------------------- | --------------------- | ------------------------------------------------------------------------------------ |
+| `name`, `description` | String?               | Labels.                                                                              |
+| `assetClass`          | `ShortLinkAssetClass` | `standard` (default), `permanent`, `videoEmbedded`.                                  |
+| `status`              | `ShortLinkStatus`     | `active` (default), `paused`, `retired`.                                             |
+| `redirectStatus`      | Int?                  | Per-link override.                                                                   |
+| `fallbackTo`          | String?               | Per-link override, used while paused.                                                |
+| `placement`           | `ShortLinkPlacement?` | `description`, `endScreen`, `card`, `communityPost`, `inVideoQr`, `other`.           |
+| `language`            | String?               | BCP-47.                                                                              |
+| `tags`                | String[]              |                                                                                      |
+| `videoId`             | String? → `Video`     | Core video. `SetNull` on video delete.                                               |
+| `youtubeVideoId`      | String?               | YouTube's own id. Not a foreign key.                                                 |
+| `campaigns`           | `ShortLinkCampaign[]` | Many-to-many.                                                                        |
+| `destinationHistory`  | history rows          |                                                                                      |
+| `deletedAt`           | DateTime?             | Soft delete only. `@@unique([pathname, domainId])` keeps the slug reserved.          |
+| `edgePublishedAt`     | DateTime?             |                                                                                      |
+| `healthStatus`        | `ShortLinkHealth?`    | `ok`, `notFound`, `serverError`, `timeout`, `dns`, `tls`, `redirectLoop`, `unknown`. |
+| `healthCheckedAt`     | DateTime?             |                                                                                      |
 
 `ShortLinkCampaign { id, name, description?, startsAt?, endsAt?, tags[], ownerId?, createdAt, updatedAt, shortLinks[] }`
 
@@ -88,13 +88,13 @@ Migration: `20260926045620_short_links_service`. All additive.
 
 ### Protection rules (enforced in resolvers, not only the UI)
 
-| Rule                                            | `standard` | `permanent`  | `videoEmbedded`      |
-| ----------------------------------------------- | ---------- | ------------ | -------------------- |
-| Change `pathname`                               | never (pathnames are immutable for every class) | never | never |
-| Change `to`                                     | editor     | admin        | admin + `note` required |
-| Delete (soft)                                   | editor     | admin        | admin                |
-| Automatic failover on failed health check       | if domain opts in | if domain opts in | never          |
-| QR error-correction default                     | M          | M            | H                    |
+| Rule                                      | `standard`                                      | `permanent`       | `videoEmbedded`         |
+| ----------------------------------------- | ----------------------------------------------- | ----------------- | ----------------------- |
+| Change `pathname`                         | never (pathnames are immutable for every class) | never             | never                   |
+| Change `to`                               | editor                                          | admin             | admin + `note` required |
+| Delete (soft)                             | editor                                          | admin             | admin                   |
+| Automatic failover on failed health check | if domain opts in                               | if domain opts in | never                   |
+| QR error-correction default               | M                                               | M                 | H                       |
 
 "editor" = `shortLinkEditor`, `shortLinkAdmin`, `publisher`, or a valid interop token. "admin" = `shortLinkAdmin` or `publisher`. Interop callers (api-journeys, Arclight, YouTube Studio) create `standard` links only.
 
@@ -102,10 +102,10 @@ Migration: `20260926045620_short_links_service`. All additive.
 
 ### Keys
 
-| Key                              | Written when                                    |
-| -------------------------------- | ----------------------------------------------- |
-| `domain:<hostname>`              | domain created/updated/published                |
-| `link:<hostname>/<pathname>`     | link created/updated/published/paused/retired   |
+| Key                          | Written when                                  |
+| ---------------------------- | --------------------------------------------- |
+| `domain:<hostname>`          | domain created/updated/published              |
+| `link:<hostname>/<pathname>` | link created/updated/published/paused/retired |
 
 `hostname` is always lower-case. `pathname` is stored exactly as minted; when the domain is case-insensitive it is lower-cased both at publish and at lookup.
 
@@ -369,10 +369,10 @@ extend type Mutation {
 
 ## Auth scopes (api-media builder)
 
-| Scope               | True when                                                           |
-| ------------------- | ------------------------------------------------------------------- |
-| `isShortLinkEditor` | roles include `shortLinkEditor`, `shortLinkAdmin`, or `publisher`   |
-| `isShortLinkAdmin`  | roles include `shortLinkAdmin` or `publisher`                       |
+| Scope               | True when                                                         |
+| ------------------- | ----------------------------------------------------------------- |
+| `isShortLinkEditor` | roles include `shortLinkEditor`, `shortLinkAdmin`, or `publisher` |
+| `isShortLinkAdmin`  | roles include `shortLinkAdmin` or `publisher`                     |
 
 Existing `isPublisher` + `isValidInterop` gates on the short link mutations stay, widened with `$any` to include the editor scope.
 
@@ -380,17 +380,17 @@ Existing `isPublisher` + `isValidInterop` gates on the short link mutations stay
 
 ### api-media
 
-| Variable                                  | Purpose                                                            |
-| ----------------------------------------- | ------------------------------------------------------------------ |
-| `CLOUDFLARE_ACCOUNT_ID`                   | already present                                                    |
-| `CLOUDFLARE_SHORT_LINKS_API_TOKEN`        | API token with Workers KV Storage:Edit and D1:Edit                 |
-| `CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID`  | KV namespace id; unset → publishing is a no-op                      |
-| `CLOUDFLARE_SHORT_LINKS_D1_DATABASE_ID`   | D1 database id; unset → D1 replica skipped                         |
-| `SHORT_LINKS_CLICKHOUSE_URL`              | e.g. `https://xxx.us-east-2.aws.clickhouse.cloud:8443`; unset → stats return zeros |
-| `SHORT_LINKS_CLICKHOUSE_USER`             |                                                                    |
-| `SHORT_LINKS_CLICKHOUSE_PASSWORD`         |                                                                    |
-| `SHORT_LINKS_CLICKHOUSE_DATABASE`         | default `redirects`                                                |
-| `SLACK_SHORT_LINKS_BOT_TOKEN`, `SLACK_SHORT_LINKS_CHANNEL_ID` | optional; health-check alerts                   |
+| Variable                                                      | Purpose                                                                            |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `CLOUDFLARE_ACCOUNT_ID`                                       | already present                                                                    |
+| `CLOUDFLARE_SHORT_LINKS_API_TOKEN`                            | API token with Workers KV Storage:Edit and D1:Edit                                 |
+| `CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID`                      | KV namespace id; unset → publishing is a no-op                                     |
+| `CLOUDFLARE_SHORT_LINKS_D1_DATABASE_ID`                       | D1 database id; unset → D1 replica skipped                                         |
+| `SHORT_LINKS_CLICKHOUSE_URL`                                  | e.g. `https://xxx.us-east-2.aws.clickhouse.cloud:8443`; unset → stats return zeros |
+| `SHORT_LINKS_CLICKHOUSE_USER`                                 |                                                                                    |
+| `SHORT_LINKS_CLICKHOUSE_PASSWORD`                             |                                                                                    |
+| `SHORT_LINKS_CLICKHOUSE_DATABASE`                             | default `redirects`                                                                |
+| `SLACK_SHORT_LINKS_BOT_TOKEN`, `SLACK_SHORT_LINKS_CHANNEL_ID` | optional; health-check alerts                                                      |
 
 ### Worker (`wrangler.toml` vars / `wrangler secret`)
 
@@ -402,12 +402,12 @@ Same Firebase + gateway variables as `videos-admin` (`NEXT_PUBLIC_GATEWAY_URL`, 
 
 ## Failure order
 
-| Down                         | Effect                                                                                   |
-| ---------------------------- | ---------------------------------------------------------------------------------------- |
-| ClickHouse or Queues         | Redirects continue; events delay or drop.                                                |
-| api-media or Postgres        | Known links redirect from the last published records; unknown paths get the domain's not-found behaviour; no new links. |
-| KV                           | D1 serves.                                                                               |
-| Worker                       | Nothing on the cut-over domains resolves. It is the one component with the 99.99% target. |
+| Down                  | Effect                                                                                                                  |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| ClickHouse or Queues  | Redirects continue; events delay or drop.                                                                               |
+| api-media or Postgres | Known links redirect from the last published records; unknown paths get the domain's not-found behaviour; no new links. |
+| KV                    | D1 serves.                                                                                                              |
+| Worker                | Nothing on the cut-over domains resolves. It is the one component with the 99.99% target.                               |
 
 ## Cutover per domain
 
