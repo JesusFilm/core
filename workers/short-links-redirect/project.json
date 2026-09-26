@@ -1,0 +1,52 @@
+{
+  "name": "short-links-redirect",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "workers/short-links-redirect/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "wrangler dev --port=8788",
+        "cwd": "workers/short-links-redirect"
+      }
+    },
+    "test": {
+      "executor": "@nx/vitest:test",
+      "outputs": ["{workspaceRoot}/coverage/workers/short-links-redirect"],
+      "options": {
+        "reportsDirectory": "../../coverage/workers/short-links-redirect",
+        "config": "workers/short-links-redirect/vite.config.ts",
+        "configFile": "workers/short-links-redirect/vitest.config.mts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/short-links-redirect/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsc -p workers/short-links-redirect/tsconfig.app.json --noEmit"
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "wrangler deploy --env=stage",
+        "cwd": "workers/short-links-redirect"
+      },
+      "configurations": {
+        "production": {
+          "command": "wrangler deploy --env=prod"
+        }
+      }
+    }
+  }
+}

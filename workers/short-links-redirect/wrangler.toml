@@ -1,0 +1,137 @@
+# short-links-redirect: the edge redirect Worker for every short-link domain
+# (nxstp.is, arc.gt, stg.arc.gt, the YouTube domain). Contract:
+# prds/short-links/TECH-DESIGN.md.
+#
+# BEFORE THE FIRST DEPLOY to an environment, replace every
+# `REPLACE_ME_BEFORE_DEPLOY` below with the real resource ids:
+#
+#   wrangler kv namespace create short-links-stage   -> kv_namespaces[].id
+#   wrangler d1 database create short-links-stage     -> d1_databases[].database_id
+#   wrangler d1 migrations apply short-links-stage --env=stage --remote
+#   wrangler queues create short-links-events-stage
+#   wrangler queues create short-links-events-dlq-stage
+#   wrangler secret put CLICKHOUSE_USER --env=stage
+#   wrangler secret put CLICKHOUSE_PASSWORD --env=stage
+#
+# (and the same with `-prod` / `--env=prod`). Queues are referenced by name, so
+# they need no id here. The placeholders are deliberately invalid so a deploy
+# with unfilled ids fails at the Cloudflare API instead of silently binding to
+# nothing. The top-level (dev) environment is what `wrangler dev` and the vitest
+# Workers pool use; miniflare provisions local KV / D1 / Queues regardless of
+# the ids, so the placeholders are fine there.
+#
+# Custom domains are added one at a time at cutover (TECH-DESIGN.md, "Cutover
+# per domain"); see the commented `routes` examples under each environment.
+
+name = "short-links-redirect-dev"
+compatibility_date = "2025-09-01"
+compatibility_flags = ["nodejs_compat"]
+main = "src/index.ts"
+
+[vars]
+CORE_GRAPHQL_ENDPOINT = "http://localhost:4000"
+CLICKHOUSE_URL = ""
+CLICKHOUSE_DATABASE = "redirects"
+
+[[kv_namespaces]]
+binding = "SHORT_LINKS_KV"
+id = "REPLACE_ME_BEFORE_DEPLOY"
+
+[[d1_databases]]
+binding = "SHORT_LINKS_DB"
+database_name = "short-links-dev"
+database_id = "REPLACE_ME_BEFORE_DEPLOY"
+migrations_dir = "d1"
+
+[[queues.producers]]
+binding = "SHORT_LINKS_EVENTS"
+queue = "short-links-events-dev"
+
+[[queues.consumers]]
+queue = "short-links-events-dev"
+max_batch_size = 100
+max_batch_timeout = 5
+max_retries = 3
+dead_letter_queue = "short-links-events-dlq-dev"
+
+# ---------------------------------------------------------------------------
+# stage
+# ---------------------------------------------------------------------------
+
+[env.stage]
+name = "short-links-redirect-stage"
+logpush = true
+# Add one custom domain per cutover, e.g.:
+# routes = [{ pattern = "stg.arc.gt", custom_domain = true }]
+
+[env.stage.vars]
+CORE_GRAPHQL_ENDPOINT = "https://api-gateway.stage.central.jesusfilm.org/"
+CLICKHOUSE_URL = ""
+CLICKHOUSE_DATABASE = "redirects"
+
+[[env.stage.kv_namespaces]]
+binding = "SHORT_LINKS_KV"
+id = "REPLACE_ME_BEFORE_DEPLOY"
+
+[[env.stage.d1_databases]]
+binding = "SHORT_LINKS_DB"
+database_name = "short-links-stage"
+database_id = "REPLACE_ME_BEFORE_DEPLOY"
+migrations_dir = "d1"
+
+[[env.stage.queues.producers]]
+binding = "SHORT_LINKS_EVENTS"
+queue = "short-links-events-stage"
+
+[[env.stage.queues.consumers]]
+queue = "short-links-events-stage"
+max_batch_size = 100
+max_batch_timeout = 5
+max_retries = 3
+dead_letter_queue = "short-links-events-dlq-stage"
+
+[env.stage.observability.logs]
+enabled = true
+
+# ---------------------------------------------------------------------------
+# prod
+# ---------------------------------------------------------------------------
+
+[env.prod]
+name = "short-links-redirect-prod"
+logpush = true
+# Add one custom domain per cutover, e.g.:
+# routes = [{ pattern = "nxstp.is/*", custom_domain = true }]
+# routes = [
+#   { pattern = "nxstp.is", custom_domain = true },
+#   { pattern = "arc.gt", custom_domain = true }
+# ]
+
+[env.prod.vars]
+CORE_GRAPHQL_ENDPOINT = "https://api-gateway.central.jesusfilm.org/"
+CLICKHOUSE_URL = ""
+CLICKHOUSE_DATABASE = "redirects"
+
+[[env.prod.kv_namespaces]]
+binding = "SHORT_LINKS_KV"
+id = "REPLACE_ME_BEFORE_DEPLOY"
+
+[[env.prod.d1_databases]]
+binding = "SHORT_LINKS_DB"
+database_name = "short-links-prod"
+database_id = "REPLACE_ME_BEFORE_DEPLOY"
+migrations_dir = "d1"
+
+[[env.prod.queues.producers]]
+binding = "SHORT_LINKS_EVENTS"
+queue = "short-links-events-prod"
+
+[[env.prod.queues.consumers]]
+queue = "short-links-events-prod"
+max_batch_size = 100
+max_batch_timeout = 5
+max_retries = 3
+dead_letter_queue = "short-links-events-dlq-prod"
+
+[env.prod.observability.logs]
+enabled = true
