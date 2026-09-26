@@ -1861,6 +1861,101 @@ describe('videoVariant', () => {
         )
       })
 
+      describe('publication changes', () => {
+        const variantRow = {
+          id: 'id',
+          hls: 'hls',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          duration: 1024,
+          lengthInMilliseconds: 123456,
+          dash: 'dash',
+          edition: 'base',
+          slug: 'videoSlug',
+          videoId: 'videoId',
+          languageId: 'languageId',
+          share: 'share',
+          downloadable: false,
+          muxVideoId: null,
+          masterUrl: 'masterUrl',
+          masterWidth: 320,
+          masterHeight: 180,
+          assetId: null,
+          version: 1,
+          brightcoveId: null
+        }
+
+        beforeEach(() => {
+          prismaMock.userMediaRole.findUnique.mockResolvedValue({
+            id: 'userId',
+            userId: 'userId',
+            roles: ['publisher'],
+            createdAt: new Date(),
+            updatedAt: new Date()
+          })
+        })
+
+        it('should persist an explicit switch to draft immediately', async () => {
+          prismaMock.videoVariant.findUnique.mockResolvedValue({
+            published: true,
+            videoId: 'videoId',
+            languageId: 'languageId',
+            edition: 'base'
+          } as any)
+          prismaMock.videoVariant.update.mockResolvedValue({
+            ...variantRow,
+            published: false
+          })
+
+          await authClient({
+            document: VIDEO_VARIANT_UPDATE_MUTATION,
+            variables: { input: { id: 'id', published: false } }
+          })
+
+          expect(prismaMock.videoVariant.update).toHaveBeenCalledWith(
+            expect.objectContaining({
+              where: { id: 'id' },
+              data: expect.objectContaining({ published: false })
+            })
+          )
+          expect(mockedRequestVideoVariantReconciliation).toHaveBeenCalledWith(
+            expect.objectContaining({
+              videoVariantId: 'id',
+              published: false,
+              reason: 'video-variant-publication-change'
+            })
+          )
+        })
+
+        it('should leave publishing a draft to reconciliation', async () => {
+          prismaMock.videoVariant.findUnique.mockResolvedValue({
+            published: false,
+            videoId: 'videoId',
+            languageId: 'languageId',
+            edition: 'base'
+          } as any)
+          prismaMock.videoVariant.update.mockResolvedValue({
+            ...variantRow,
+            published: false
+          })
+
+          await authClient({
+            document: VIDEO_VARIANT_UPDATE_MUTATION,
+            variables: { input: { id: 'id', published: true } }
+          })
+
+          const [updateArgs] = prismaMock.videoVariant.update.mock.calls[0]
+          expect(updateArgs.data.published).not.toBe(true)
+          expect(mockedRequestVideoVariantReconciliation).toHaveBeenCalledWith(
+            expect.objectContaining({
+              videoVariantId: 'id',
+              published: true,
+              reason: 'video-variant-publication-change'
+            })
+          )
+        })
+      })
+
       it('should fail if not publisher', async () => {
         const result = await client({
           document: VIDEO_VARIANT_UPDATE_MUTATION,

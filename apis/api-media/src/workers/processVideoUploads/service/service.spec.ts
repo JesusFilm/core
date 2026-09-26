@@ -199,6 +199,85 @@ describe('processVideoUploads service', () => {
     })
   })
 
+  describe('uploader publish intent', () => {
+    const uploadJob = {
+      data: {
+        ...mockJob.data,
+        uploadId: 'upload-id'
+      }
+    } as Job<ProcessVideoUploadJobData>
+
+    beforeEach(() => {
+      prismaMock.muxVideo.findUnique.mockResolvedValue({
+        id: 'mux-video-id',
+        assetId: 'asset-id'
+      } as any)
+      ;(getVideo as Mock).mockResolvedValue({
+        status: 'ready',
+        duration: 120,
+        playback_ids: [{ id: 'playback-id', policy: 'public' }]
+      })
+      prismaMock.muxVideo.update.mockResolvedValue({} as any)
+      prismaMock.videoVariantUpload.update.mockResolvedValue({} as any)
+      prismaMock.video.findUnique.mockResolvedValue({
+        slug: 'video-slug'
+      } as any)
+      prismaMock.video.findMany.mockResolvedValue([])
+      prismaMock.videoVariant.findFirst.mockResolvedValue({
+        id: 'variant-id',
+        slug: 'variant-slug'
+      } as any)
+      prismaMock.videoVariant.update.mockResolvedValue({
+        id: 'variant-id'
+      } as any)
+    })
+
+    it('keeps a draft upload unpublished once Mux processing completes', async () => {
+      prismaMock.videoVariantUpload.findUnique.mockResolvedValue({
+        id: 'upload-id',
+        muxNonStandardInputDetectedAt: null,
+        published: false
+      } as any)
+
+      await service(uploadJob, mockLogger)
+
+      expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
+        where: { id: 'variant-id' },
+        data: expect.objectContaining({ published: false })
+      })
+      expect(prismaMock.videoVariantReconciliation.create).toHaveBeenCalledWith(
+        {
+          data: expect.objectContaining({
+            reason: 'process-video-upload',
+            videoVariantId: 'variant-id',
+            published: false
+          })
+        }
+      )
+      expect(prismaMock.$executeRaw).not.toHaveBeenCalled()
+    })
+
+    it('requests publication for an upload the uploader chose to publish', async () => {
+      prismaMock.videoVariantUpload.findUnique.mockResolvedValue({
+        id: 'upload-id',
+        muxNonStandardInputDetectedAt: null,
+        published: true
+      } as any)
+
+      await service(uploadJob, mockLogger)
+
+      expect(prismaMock.videoVariantReconciliation.create).toHaveBeenCalledWith(
+        {
+          data: expect.objectContaining({
+            reason: 'process-video-upload',
+            videoVariantId: 'variant-id',
+            published: true
+          })
+        }
+      )
+    })
+  })
+
   it('marks the durable upload failed when final variant creation fails', async () => {
     const uploadJob = {
       data: {
