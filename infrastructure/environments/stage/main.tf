@@ -227,3 +227,21 @@ module "eks" {
   subnet_ids_2c      = ["subnet-062de12e3e3639eff", "subnet-0c394639d255c3261"]
 }
 
+# Bounded EBS snapshot retention for the Plausible ClickHouse volumes: 3 daily
+# snapshots, replacing the former SnapScheduler schedule, whose EBS
+# snapshots were never deleted (the VolumeSnapshotClass uses deletionPolicy:
+# Retain).
+module "plausible_clickhouse_snapshots" {
+  source       = "../../modules/aws/ebs-snapshot-policy"
+  env          = "stage"
+  name         = "plausible-clickhouse"
+  cluster_name = module.eks.cluster_name
+  pvc_names = [
+    "plausible-analytics-clickhouse-data-plausible-analytics-clickhouse-0",
+    "plausible-analytics-clickhouse-replica-data-plausible-analytics-clickhouse-replica-0"
+  ]
+  schedules = [
+    { name = "daily", cron_expression = "cron(0 1 * * ? *)", retain_count = 3 }
+  ]
+}
+
