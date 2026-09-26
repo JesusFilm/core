@@ -1,0 +1,1 @@
+export { SideMenuMobile } from './SideMenuMobile'
