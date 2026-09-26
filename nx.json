@@ -69,7 +69,18 @@
     },
     "codegen": {
       "cache": true,
-      "inputs": ["{workspaceRoot}/apis/api-gateway/schema.graphql"]
+      "inputs": [
+        "default",
+        "!{projectRoot}/__generated__/**/*",
+        "!{projectRoot}/src/**/__generated__/**/*",
+        "{workspaceRoot}/apis/api-gateway/schema.graphql",
+        "{workspaceRoot}/libs/journeys/ui/**/*",
+        "!{workspaceRoot}/libs/journeys/ui/**/__generated__/**/*",
+        "{workspaceRoot}/.github/workflows/autofix.ci.yml",
+        "{workspaceRoot}/package.json",
+        "{workspaceRoot}/pnpm-lock.yaml",
+        { "externalDependencies": ["gql.tada"] }
+      ]
     },
     "extract-translations": {
       "cache": false,

@@ -42,6 +42,10 @@
     },
     "codegen": {
       "executor": "nx:run-commands",
+      "outputs": [
+        "{projectRoot}/__generated__",
+        "{projectRoot}/src/**/__generated__/**/*"
+      ],
       "options": {
         "commands": [
           {
