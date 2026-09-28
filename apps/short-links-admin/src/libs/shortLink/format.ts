@@ -60,6 +60,15 @@ export function toIsoString(value: DateLike): string | undefined {
   return toDate(value)?.toISOString()
 }
 
+/** `hostname/prefix`, or the bare hostname for a domain at the root. */
+export function formatDomainLabel(domain: {
+  hostname: string
+  pathPrefix?: string | null
+}): string {
+  const prefix = (domain.pathPrefix ?? '').replace(/^\/+|\/+$/g, '')
+  return prefix === '' ? domain.hostname : `${domain.hostname}/${prefix}`
+}
+
 export function emptyToNull(value: string | null | undefined): string | null {
   if (value == null) return null
   const trimmed = value.trim()

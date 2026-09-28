@@ -102,6 +102,22 @@ describe('shortLinkHealth/service', () => {
     )
   })
 
+  it('prints the short URL with the domain path prefix', async () => {
+    prismaMock.shortLink.findMany.mockResolvedValueOnce([
+      buildShortLinkWithDomain(
+        { id: 'l1', pathname: 'easter', healthStatus: 'ok' },
+        { hostname: 'jesus.film', pathPrefix: 's' }
+      )
+    ])
+    checkDestinationMock.mockResolvedValue('notFound')
+
+    await service(logger)
+
+    expect(slackMock.mock.calls[0][0].body.text).toContain(
+      'https://jesus.film/s/easter'
+    )
+  })
+
   it('does not re-alert a link that was already failing', async () => {
     prismaMock.shortLink.findMany.mockResolvedValueOnce([
       buildShortLinkWithDomain({ id: 'l1', healthStatus: 'serverError' })

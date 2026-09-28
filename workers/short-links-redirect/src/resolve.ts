@@ -56,9 +56,9 @@ export async function resolve({
   search,
   lookup
 }: ResolveInput): Promise<Resolution> {
-  const path = pathname.startsWith('/') ? pathname.slice(1) : pathname
+  const path = pathUnderPrefix(domain, pathname)
 
-  if (!isCandidateSlug(domain, path)) {
+  if (path == null || !isCandidateSlug(domain, path)) {
     return notFoundBehaviour(domain, pathname, search)
   }
 
@@ -115,6 +115,23 @@ export async function resolve({
     pathname: slug,
     resolvedFrom
   }
+}
+
+/**
+ * Strips the leading slash and the domain's `pathPrefix`. Returns null when
+ * the domain has a prefix and the path is outside it, or is exactly the prefix
+ * (`/<prefix>` or `/<prefix>/`). The lookup key never includes the prefix.
+ */
+export function pathUnderPrefix(
+  domain: Pick<DomainRecord, 'pathPrefix'>,
+  pathname: string
+): string | null {
+  const path = pathname.startsWith('/') ? pathname.slice(1) : pathname
+  const prefix = domain.pathPrefix ?? ''
+  if (prefix === '') return path
+  if (!path.startsWith(`${prefix}/`)) return null
+  const rest = path.slice(prefix.length + 1)
+  return rest === '' ? null : rest
 }
 
 /**

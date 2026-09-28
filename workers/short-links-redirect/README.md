@@ -9,11 +9,16 @@ Domain vocabulary lives in [`CONTEXT.md`](./CONTEXT.md).
 
 ## How it works
 
-For `GET` / `HEAD` `https://<host>/<path>?<query>`:
+Every request first passes the **admin proxy** check (see
+[Admin proxy](#admin-proxy)); a match is proxied and none of the steps below
+run. Otherwise, for `GET` / `HEAD` `https://<host>/<path>?<query>`:
 
 1. **Domain.** `domain:<host>` (host lower-cased, port stripped) is read from KV,
    then D1, and cached in a module-level map for 60 s per isolate. An unknown
    host gets the lost page (404).
+   When the domain has a **path prefix** (see [Path prefix](#path-prefix)) the
+   path must be `/<prefix>/<rest>`; anything else gets the not-found behaviour
+   and `<rest>` is what the following steps call the path.
 2. **Path gate.** The leading slash is stripped. An empty path, a path with a
    `/`, a first segment in the domain's `reservedPaths`, or a path outside
    `^[A-Za-z0-9_.~-]{1,64}$` never touches the link stores and goes straight to
@@ -47,8 +52,61 @@ arc.gt is configured as `passthrough` to `https://api.arclight.org` with
 `reservedPaths = [s, hls, dl, dh, v2, api]`, so `arc.gt/s/1_jf-0-0/529?x=1`
 reaches the Arclight API untouched while keyword slugs redirect from the edge.
 
-Other routes: `/.well-known/*`, `/favicon.ico` and `/robots.txt` are plain-text
-404s and never treated as slugs. Anything other than `GET` / `HEAD` is a 405.
+Other routes: `/.well-known/*`, `/favicon.ico` and `/robots.txt` at the root of
+the host (never under a path prefix) are plain-text 404s and never treated as
+slugs. Anything other than `GET` / `HEAD` is a 405.
+
+### Path prefix
+
+A domain record carries `pathPrefix`: the path its short links live under,
+without leading or trailing slashes. Empty (nxstp.is, arc.gt) keeps the domain
+at the root. `jesus.film` uses `s`, so its short URLs are
+`https://jesus.film/s/<slug>`.
+
+| Request on a domain with `pathPrefix = "s"` | Result                                                       |
+| ------------------------------------------- | ------------------------------------------------------------ |
+| `/s/abc`                                    | Slug `abc`: grammar, reserved-path check and lookup run      |
+| `/s/ABC` (case-insensitive domain)          | Slug `abc`                                                   |
+| `/s/dashboard` (reserved, no admin proxy)   | Not-found behaviour                                          |
+| `/s/a/b`                                    | Not-found behaviour (the rest contains `/`)                  |
+| `/abc`, `/s`, `/s/`, `/S/abc`               | Not-found behaviour (outside the prefix, or only the prefix) |
+
+- The prefix is matched exactly and case-sensitively, whatever
+  `slugCaseSensitive` says; only the slug is lower-cased.
+- Multi-segment prefixes (`a/b`) work the same way.
+- Edge store keys never contain the prefix: the key is
+  `link:<hostname>/<slug>`, and the api-media fallback sends the bare slug as
+  `pathname`.
+- Passthrough forwards the original, unstripped path and query.
+- A domain record without `pathPrefix` (published before the field existed) is
+  read as the empty prefix; `v` stays 1. A present non-string `pathPrefix`
+  makes the record invalid, which is a miss for that store.
+
+### Admin proxy
+
+The admin app (`apps/short-links-admin`, Next.js with
+`basePath: '/s/dashboard'`) is served from the same hostname as the short links.
+The proxy is the first handler in the Worker. It runs when all of these hold:
+
+- `ADMIN_HOSTNAME`, `ADMIN_PATH` and `ADMIN_PROXY_DEST` are all non-empty;
+- the request host (lower-cased, port stripped) equals `ADMIN_HOSTNAME`,
+  compared case-insensitively;
+- the path equals `ADMIN_PATH` or starts with `ADMIN_PATH + "/"`
+  (`/s/dashboard` and `/s/dashboard/links` match, `/s/dashboardx` does not).
+
+The request is then sent to `https://<ADMIN_PROXY_DEST>` with the same path,
+query, method and headers, the body for anything other than `GET` / `HEAD`,
+`x-forwarded-host` set to the original host, `x-forwarded-proto` set to the
+original scheme (both overwritten if the client sent them), and
+`redirect: 'manual'`. The upstream response is returned with its status, headers
+and body untouched, so `Set-Cookie` and `Location` survive and redirects are
+never followed by the Worker. Every method is allowed on this branch; the 405
+rule applies only to the redirect surface. If the upstream fetch throws the
+answer is `503 Service Unavailable`. No redirect event is enqueued and no edge
+store is read.
+
+With the proxy off (dev, or any var empty) `/s/dashboard` is an ordinary path:
+on `jesus.film` it is a reserved path and gets the not-found behaviour.
 
 ### Queue consumer
 
@@ -69,6 +127,7 @@ is ever stored.
 | -------------------- | --------------------------------------------------------------------------------------------------- |
 | `src/index.ts`       | Hono app, `export default { fetch, queue }`                                                         |
 | `src/env.ts`         | `Env` binding types                                                                                 |
+| `src/adminProxy.ts`  | `isAdminRequest(host, pathname, env)` (pure) and `proxyAdminRequest(request, env)`                  |
 | `src/records.ts`     | `DomainRecord` / `RoutingRecord` types and runtime validators (`isDomainRecord`, `isRoutingRecord`) |
 | `src/resolve.ts`     | Pure resolution: path gate, lookup, paused handling, not-found behaviour → discriminated union      |
 | `src/destination.ts` | `buildDestination(to, incomingSearchParams)`                                                        |
@@ -87,16 +146,19 @@ is ever stored.
 Declared per environment in [`wrangler.toml`](./wrangler.toml) (top-level =
 dev, `[env.stage]`, `[env.prod]`):
 
-| Binding / var           | Kind                       | Notes                                                                    |
-| ----------------------- | -------------------------- | ------------------------------------------------------------------------ |
-| `SHORT_LINKS_KV`        | KV namespace               | Routing and domain records                                               |
-| `SHORT_LINKS_DB`        | D1 database                | `short-links-stage` / `short-links-prod`; replica read on a KV miss      |
-| `SHORT_LINKS_EVENTS`    | Queue producer + consumer  | `short-links-events-<env>`; DLQ `short-links-events-dlq-<env>`           |
-| `CORE_GRAPHQL_ENDPOINT` | var                        | Gateway URL for the api-media fallback (`http://localhost:4000` locally) |
-| `CLICKHOUSE_URL`        | var                        | Empty = consumer acks and drops                                          |
-| `CLICKHOUSE_DATABASE`   | var                        | `redirects`                                                              |
-| `CLICKHOUSE_USER`       | secret (`wrangler secret`) |                                                                          |
-| `CLICKHOUSE_PASSWORD`   | secret (`wrangler secret`) |                                                                          |
+| Binding / var           | Kind                       | Notes                                                                                                                                                              |
+| ----------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `SHORT_LINKS_KV`        | KV namespace               | Routing and domain records                                                                                                                                         |
+| `SHORT_LINKS_DB`        | D1 database                | `short-links-stage` / `short-links-prod`; replica read on a KV miss                                                                                                |
+| `SHORT_LINKS_EVENTS`    | Queue producer + consumer  | `short-links-events-<env>`; DLQ `short-links-events-dlq-<env>`                                                                                                     |
+| `CORE_GRAPHQL_ENDPOINT` | var                        | Gateway URL for the api-media fallback (`http://localhost:4000` locally)                                                                                           |
+| `CLICKHOUSE_URL`        | var                        | Empty = consumer acks and drops                                                                                                                                    |
+| `CLICKHOUSE_DATABASE`   | var                        | `redirects`                                                                                                                                                        |
+| `ADMIN_HOSTNAME`        | var                        | Host the admin dashboard is served on. `jesus.film` in prod; `stage.jesus.film` in stage is a placeholder, the stage hostname is still to be decided; empty in dev |
+| `ADMIN_PATH`            | var                        | `/s/dashboard`; empty in dev                                                                                                                                       |
+| `ADMIN_PROXY_DEST`      | var                        | Vercel deployment hostname of `short-links-admin` (hostname only, no scheme). `REPLACE_ME_BEFORE_DEPLOY` in stage and prod; empty in dev                           |
+| `CLICKHOUSE_USER`       | secret (`wrangler secret`) |                                                                                                                                                                    |
+| `CLICKHOUSE_PASSWORD`   | secret (`wrangler secret`) |                                                                                                                                                                    |
 
 **Placeholder ids.** Every KV namespace id and D1 database id in
 `wrangler.toml` is `REPLACE_ME_BEFORE_DEPLOY`. They are deliberately invalid so
@@ -105,6 +167,23 @@ nothing. Fill them per environment before the first deploy (commands are in the
 comment block at the top of `wrangler.toml`). Queues are referenced by name and
 need no id. The local dev environment and the test pool work regardless of the
 ids because miniflare provisions local KV / D1 / Queues.
+
+`ADMIN_PROXY_DEST` is also `REPLACE_ME_BEFORE_DEPLOY` in stage and prod. It is
+a non-empty string, so until it is replaced the admin proxy is switched **on**
+and every `/s/dashboard` request answers 503; short-link redirects are not
+affected. Set all three `ADMIN_*` vars to empty strings to deploy without the
+dashboard.
+
+**Routes.** The first route is a zone route, not a custom domain, so the Worker
+only claims `/s/*` and the rest of `jesus.film` stays free:
+
+```toml
+routes = [{ pattern = "jesus.film/s/*", zone_name = "jesus.film" }]
+```
+
+nxstp.is and arc.gt follow later as custom domains
+(`{ pattern = "nxstp.is", custom_domain = true }`). All of them are commented
+examples in `wrangler.toml` until the cutover.
 
 ## Local development
 
@@ -173,7 +252,10 @@ Summarised from TECH-DESIGN.md; one domain at a time.
    with `wrangler secret put`, deploy to stage.
 3. Set api-media's `CLOUDFLARE_SHORT_LINKS_*` env vars and run
    `shortLinkDomainPublish` for the domain (backfills every live link).
-4. Add the hostname as a custom domain of the Worker (uncomment / extend the
+4. Add the route. For jesus.film that is the zone route
+   `{ pattern = "jesus.film/s/*", zone_name = "jesus.film" }`, with the domain
+   published with `pathPrefix = s`, and `ADMIN_PROXY_DEST` set to the Vercel
+   deployment hostname of `short-links-admin`. For the others, add the hostname as a custom domain of the Worker (uncomment / extend the
    `routes` example under the environment in `wrangler.toml`). For nxstp.is this
    replaces the Vercel `apps/short-links` deployment; for arc.gt the domain is
    configured with `notFound = passthrough`, `passthroughOrigin = https://api.arclight.org`,

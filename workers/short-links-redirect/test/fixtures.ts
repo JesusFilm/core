@@ -12,6 +12,7 @@ export function domainRecord(
     passthroughOrigin: null,
     reservedPaths: [],
     slugCaseSensitive: true,
+    pathPrefix: '',
     ...overrides
   }
 }

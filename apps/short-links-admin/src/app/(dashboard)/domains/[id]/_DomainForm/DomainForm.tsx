@@ -33,6 +33,7 @@ import {
   ShortLinkNotFound,
   emptyToNull,
   formatDateTime,
+  formatDomainLabel,
   isMutationError,
   parseMutationError
 } from '../../../../../libs/shortLink'
@@ -96,7 +97,10 @@ export const SHORT_LINK_DOMAIN_PUBLISH = graphql(
   [SHORT_LINK_DOMAIN_FIELDS]
 )
 
+export const PATH_PREFIX_PATTERN = /^[A-Za-z0-9_-]+(\/[A-Za-z0-9_-]+)*$/
+
 export interface DomainFormValues {
+  pathPrefix: string
   services: Service[]
   redirectStatus: number
   slugAllowedChars: string
@@ -113,6 +117,14 @@ export interface DomainFormValues {
 const URL_PATTERN = /^https?:\/\/[^\s]+$/i
 
 const schema = object({
+  pathPrefix: string()
+    .trim()
+    .test(
+      'path-prefix',
+      'Letters, numbers, _ and - only, with no leading or trailing slash',
+      (value) =>
+        value == null || value === '' || PATH_PREFIX_PATTERN.test(value)
+    ),
   slugAllowedChars: string()
     .required('Allowed characters are required')
     .test('valid-class', 'Not a valid character class', (value) => {
@@ -187,6 +199,7 @@ export function DomainForm(): ReactElement {
   const initialValues: DomainFormValues = {
     services: [...domain.services],
     redirectStatus: domain.redirectStatus,
+    pathPrefix: domain.pathPrefix ?? '',
     slugAllowedChars: domain.slugAllowedChars,
     slugMinLength: domain.slugMinLength,
     slugMaxLength: domain.slugMaxLength,
@@ -207,6 +220,7 @@ export function DomainForm(): ReactElement {
             id: domain.id,
             services: values.services,
             redirectStatus: values.redirectStatus,
+            pathPrefix: values.pathPrefix.trim(),
             slugAllowedChars: values.slugAllowedChars,
             slugMinLength: values.slugMinLength,
             slugMaxLength: values.slugMaxLength,
@@ -264,7 +278,7 @@ export function DomainForm(): ReactElement {
         >
           <Stack spacing={0.5}>
             <Typography component="h2" variant="h5">
-              {domain.hostname}
+              {formatDomainLabel(domain)}
             </Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
               {domain.linkCount} links ·{' '}
@@ -410,6 +424,22 @@ export function DomainForm(): ReactElement {
                     Slug grammar
                   </Typography>
                   <Grid container spacing={2}>
+                    <Grid size={12}>
+                      <TextField
+                        fullWidth
+                        id="pathPrefix"
+                        name="pathPrefix"
+                        label="Path prefix"
+                        value={values.pathPrefix}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={fieldError('pathPrefix') != null}
+                        helperText={
+                          fieldError('pathPrefix') ??
+                          'Path the short links live under, without slashes, e.g. s. Leave empty for the root.'
+                        }
+                      />
+                    </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <TextField
                         fullWidth

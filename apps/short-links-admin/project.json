@@ -66,7 +66,7 @@
       "options": {
         "commands": [
           "pnpm exec vercel alias set $(cat apps/short-links-admin/.vercel-url) short-links-admin-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
-          "echo \"https://short-links-admin-$PR_NUMBER-jesusfilm.vercel.app\" > apps/short-links-admin/.vercel-url"
+          "echo \"https://short-links-admin-$PR_NUMBER-jesusfilm.vercel.app/s/dashboard\" > apps/short-links-admin/.vercel-url"
         ],
         "parallel": false
       }

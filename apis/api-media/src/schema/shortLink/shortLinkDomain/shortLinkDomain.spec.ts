@@ -266,6 +266,7 @@ describe('shortLinkDomain', () => {
                 createdAt
                 updatedAt
                 services
+                pathPrefix
                 redirectStatus
                 slugAllowedChars
                 slugMinLength
@@ -307,6 +308,7 @@ describe('shortLinkDomain', () => {
             buildShortLinkDomain({
               id: 'testId',
               hostname: 'arc.gt',
+              pathPrefix: 'go',
               redirectStatus: 302,
               reservedPaths: ['s', 'hls'],
               notFound: 'passthrough',
@@ -335,6 +337,7 @@ describe('shortLinkDomain', () => {
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
                 services: [],
+                pathPrefix: 'go',
                 redirectStatus: 302,
                 slugAllowedChars: 'A-Za-z0-9_-',
                 slugMinLength: 1,
@@ -518,6 +521,52 @@ describe('shortLinkDomain', () => {
           }
         })
       })
+
+      it('should normalise the path prefix', async () => {
+        prismaMock.shortLinkDomain.create.mockResolvedValue(
+          buildShortLinkDomain({
+            id: 'testId',
+            hostname: 'jesus.film',
+            pathPrefix: 's'
+          })
+        )
+        await authClient({
+          document: SHORT_LINK_DOMAIN_CREATE_MUTATION,
+          variables: { input: { hostname: 'jesus.film', pathPrefix: '/s/' } }
+        })
+        expect(prismaMock.shortLinkDomain.create).toHaveBeenCalledWith({
+          data: {
+            hostname: 'jesus.film',
+            apexName: 'example.com',
+            services: [],
+            pathPrefix: 's'
+          }
+        })
+        expect(publishDomainMock).toHaveBeenCalledWith('testId', prismaMock)
+      })
+
+      it.each(['a b', 's//x', 's.x', 's?x=1'])(
+        'should return a ZodError for the invalid path prefix %j',
+        async (pathPrefix) => {
+          const result = await authClient({
+            document: SHORT_LINK_DOMAIN_CREATE_MUTATION,
+            variables: { input: { hostname: 'jesus.film', pathPrefix } }
+          })
+          expect(result).toMatchObject({
+            data: {
+              shortLinkDomainCreate: {
+                fieldErrors: [
+                  {
+                    message: expect.stringContaining('pathPrefix must be'),
+                    path: ['input', 'pathPrefix']
+                  }
+                ]
+              }
+            }
+          })
+          expect(prismaMock.shortLinkDomain.create).not.toHaveBeenCalled()
+        }
+      )
 
       it('should allow a shortLinkAdmin', async () => {
         setRoles(['shortLinkAdmin'])
@@ -816,6 +865,75 @@ describe('shortLinkDomain', () => {
         })
         expect(publishDomainMock).toHaveBeenCalledWith('testId', prismaMock)
         expect(publishDomainWithLinksMock).not.toHaveBeenCalled()
+      })
+
+      it('should normalise a changed path prefix and republish the domain record only', async () => {
+        prismaMock.shortLinkDomain.findUnique.mockResolvedValue(
+          buildShortLinkDomain({ id: 'testId', hostname: 'jesus.film' })
+        )
+        prismaMock.shortLinkDomain.update.mockResolvedValue(
+          buildShortLinkDomain({
+            id: 'testId',
+            hostname: 'jesus.film',
+            pathPrefix: 's'
+          })
+        )
+        await authClient({
+          document: SHORT_LINK_DOMAIN_UPDATE_MUTATION,
+          variables: {
+            input: { id: 'testId', services: [], pathPrefix: '/s/' }
+          }
+        })
+        expect(prismaMock.shortLinkDomain.update).toHaveBeenCalledWith({
+          where: { id: 'testId' },
+          data: { services: [], pathPrefix: 's' }
+        })
+        expect(publishDomainMock).toHaveBeenCalledWith('testId', prismaMock)
+        expect(publishDomainWithLinksMock).not.toHaveBeenCalled()
+      })
+
+      it('should clear the path prefix with an empty string', async () => {
+        prismaMock.shortLinkDomain.findUnique.mockResolvedValue(
+          buildShortLinkDomain({ id: 'testId', pathPrefix: 's' })
+        )
+        prismaMock.shortLinkDomain.update.mockResolvedValue(
+          buildShortLinkDomain({ id: 'testId', pathPrefix: '' })
+        )
+        await authClient({
+          document: SHORT_LINK_DOMAIN_UPDATE_MUTATION,
+          variables: { input: { id: 'testId', services: [], pathPrefix: '/' } }
+        })
+        expect(prismaMock.shortLinkDomain.update).toHaveBeenCalledWith({
+          where: { id: 'testId' },
+          data: { services: [], pathPrefix: '' }
+        })
+        expect(publishDomainMock).toHaveBeenCalledWith('testId', prismaMock)
+      })
+
+      it('should return a ZodError for an invalid path prefix', async () => {
+        prismaMock.shortLinkDomain.findUnique.mockResolvedValue(
+          buildShortLinkDomain({ id: 'testId' })
+        )
+        const result = await authClient({
+          document: SHORT_LINK_DOMAIN_UPDATE_MUTATION,
+          variables: {
+            input: { id: 'testId', services: [], pathPrefix: 'bad prefix' }
+          }
+        })
+        expect(result).toMatchObject({
+          data: {
+            shortLinkDomainUpdate: {
+              fieldErrors: [
+                {
+                  message: expect.stringContaining('pathPrefix must be'),
+                  path: ['input', 'pathPrefix']
+                }
+              ]
+            }
+          }
+        })
+        expect(prismaMock.shortLinkDomain.update).not.toHaveBeenCalled()
+        expect(publishDomainMock).not.toHaveBeenCalled()
       })
 
       it('should republish every link when a routing setting changes', async () => {

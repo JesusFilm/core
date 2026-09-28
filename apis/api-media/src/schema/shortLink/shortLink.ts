@@ -27,6 +27,7 @@ import {
   isHttpsUrl,
   isRedirectStatus
 } from './lib/errors'
+import { buildQrUrl, buildShortUrl } from './lib/shortUrl'
 import { normalizePathname, validatePathname } from './lib/slug'
 
 // The convention lives in the field description so every future writer sees it.
@@ -159,18 +160,23 @@ export const ShortLink = builder.prismaObject('ShortLink', {
     shortUrl: t.field({
       type: 'String',
       nullable: false,
-      description: 'https://<hostname>/<pathname>',
-      select: { pathname: true, domain: { select: { hostname: true } } },
-      resolve: ({ pathname, domain }) =>
-        `https://${domain.hostname}/${pathname}`
+      description:
+        'https://<hostname>/<pathname>, or https://<hostname>/<pathPrefix>/<pathname> when the domain has a path prefix',
+      select: {
+        pathname: true,
+        domain: { select: { hostname: true, pathPrefix: true } }
+      },
+      resolve: ({ pathname, domain }) => buildShortUrl(domain, pathname)
     }),
     qrUrl: t.field({
       type: 'String',
       nullable: false,
       description: 'shortUrl + ?qr=1 — what QR images encode',
-      select: { pathname: true, domain: { select: { hostname: true } } },
-      resolve: ({ pathname, domain }) =>
-        `https://${domain.hostname}/${pathname}?qr=1`
+      select: {
+        pathname: true,
+        domain: { select: { hostname: true, pathPrefix: true } }
+      },
+      resolve: ({ pathname, domain }) => buildQrUrl(domain, pathname)
     })
   })
 })

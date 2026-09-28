@@ -129,6 +129,7 @@ const domainsMock = {
               __typename: 'ShortLinkDomain',
               id: 'domain-1',
               hostname: 'nxstp.is',
+              pathPrefix: '',
               apexName: 'nxstp.is',
               services: [],
               redirectStatus: 307,

@@ -10,6 +10,7 @@ import {
 import { slackChatPostMessage } from '../../../lib/slack'
 import type { SlackBotChannelConfig } from '../../../lib/slack'
 import { publishLink } from '../../../schema/shortLink/edge'
+import { buildShortUrl } from '../../../schema/shortLink/lib/shortUrl'
 import { logger as defaultLogger } from '../../lib/logger'
 
 import { checkDestination } from './checkDestination'
@@ -89,7 +90,7 @@ async function alertNewlyFailing(
   if (newlyFailing.length === 0 || slackConfig == null) return
 
   for (const { link, health, pausedByFailover } of newlyFailing) {
-    const shortUrl = `https://${link.domain.hostname}/${link.pathname}`
+    const shortUrl = buildShortUrl(link.domain, link.pathname)
     const lines = [
       `:warning: Short link destination failing (${health})`,
       `*Short link*: ${shortUrl}${link.name != null ? ` (${link.name})` : ''}`,

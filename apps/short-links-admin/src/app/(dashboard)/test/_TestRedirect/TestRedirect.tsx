@@ -22,7 +22,8 @@ import { graphql } from '@core/shared/gql'
 import { StatusChip } from '../../../../components/StatusChip'
 import {
   GET_SHORT_LINK_DOMAINS,
-  SHORT_LINK_FIELDS
+  SHORT_LINK_FIELDS,
+  formatDomainLabel
 } from '../../../../libs/shortLink'
 
 export const SHORT_LINK_RESOLVE = graphql(
@@ -105,7 +106,7 @@ export function TestRedirect(): ReactElement {
           >
             {domains.map((domain) => (
               <MenuItem key={domain.id} value={domain.hostname}>
-                {domain.hostname}
+                {formatDomainLabel(domain)}
               </MenuItem>
             ))}
           </TextField>

@@ -15,6 +15,7 @@ export function buildShortLinkDomain(
     createdAt: new Date('2026-01-01T00:00:00.000Z'),
     updatedAt: new Date('2026-01-01T00:00:00.000Z'),
     services: [],
+    pathPrefix: '',
     redirectStatus: 307,
     slugAllowedChars: 'A-Za-z0-9_-',
     slugMinLength: 1,

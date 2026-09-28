@@ -55,6 +55,7 @@ export function DomainList(): ReactElement {
             <TableHead>
               <TableRow>
                 <TableCell>Hostname</TableCell>
+                <TableCell>Path prefix</TableCell>
                 <TableCell>Services</TableCell>
                 <TableCell>Redirect</TableCell>
                 <TableCell>Not found</TableCell>
@@ -77,6 +78,9 @@ export function DomainList(): ReactElement {
                   sx={{ cursor: 'pointer' }}
                 >
                   <TableCell>{domain.hostname}</TableCell>
+                  <TableCell>
+                    {domain.pathPrefix === '' ? '(root)' : domain.pathPrefix}
+                  </TableCell>
                   <TableCell>
                     <Stack
                       direction="row"

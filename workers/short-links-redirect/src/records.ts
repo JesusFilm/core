@@ -30,6 +30,11 @@ export interface DomainRecord {
   passthroughOrigin: string | null
   reservedPaths: string[]
   slugCaseSensitive: boolean
+  /**
+   * The path the short links live under, without leading or trailing slashes
+   * (`s`, `a/b`). Empty keeps the domain at the root.
+   */
+  pathPrefix: string
 }
 
 /** `link:<hostname>/<pathname>` */
@@ -81,6 +86,11 @@ function isRedirectStatus(value: unknown): value is number {
   )
 }
 
+/**
+ * Validates a domain record. A record published before `pathPrefix` existed
+ * has none; it is normalised in place to the empty string (root), so `v` stays
+ * 1. A present non-string `pathPrefix` is invalid.
+ */
 export function isDomainRecord(value: unknown): value is DomainRecord {
   if (!isObject(value)) return false
   if (value.v !== RECORD_VERSION) return false
@@ -96,6 +106,12 @@ export function isDomainRecord(value: unknown): value is DomainRecord {
   if (!isNullableString(value.passthroughOrigin)) return false
   if (!isStringArray(value.reservedPaths)) return false
   if (typeof value.slugCaseSensitive !== 'boolean') return false
+  if (value.pathPrefix === undefined) {
+    value.pathPrefix = ''
+    return true
+  }
+  if (typeof value.pathPrefix !== 'string') return false
+  value.pathPrefix = value.pathPrefix.replace(/^\/+|\/+$/g, '')
   return true
 }
 

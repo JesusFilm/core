@@ -25,6 +25,7 @@ import {
   ShortLinkPlacement,
   ShortLinkStatus,
   canChangeDestination,
+  formatDomainLabel,
   getDestinationChangeRule,
   isDestinationChanged
 } from '../../../../libs/shortLink'
@@ -34,6 +35,7 @@ import { DestinationChangeDialog } from './_DestinationChangeDialog'
 export interface LinkFormDomain {
   id: string
   hostname: string
+  pathPrefix?: string | null
   services: readonly string[]
   slugAllowedChars: string
   slugMinLength: number
@@ -264,7 +266,7 @@ export function LinkForm({
                     >
                       {domains.map((option) => (
                         <MenuItem key={option.id} value={option.hostname}>
-                          {option.hostname}
+                          {formatDomainLabel(option)}
                         </MenuItem>
                       ))}
                     </TextField>

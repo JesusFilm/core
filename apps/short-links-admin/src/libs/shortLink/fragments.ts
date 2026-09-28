@@ -41,6 +41,7 @@ export const SHORT_LINK_DOMAIN_FIELDS = graphql(`
   fragment ShortLinkDomainFields on ShortLinkDomain @_unmask {
     id
     hostname
+    pathPrefix
     apexName
     services
     redirectStatus

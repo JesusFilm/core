@@ -54,6 +54,7 @@ describe('edge records', () => {
         v: 1,
         id: 'd1',
         hostname: 'arc.gt',
+        pathPrefix: '',
         redirectStatus: 302,
         fallbackTo: null,
         notFound: 'passthrough',
@@ -61,6 +62,35 @@ describe('edge records', () => {
         reservedPaths: ['s', 'hls'],
         slugCaseSensitive: true
       })
+    })
+  })
+
+  describe('buildDomainRecord pathPrefix', () => {
+    it('carries the path prefix and leaves link keys bare', () => {
+      const domain = buildShortLinkDomain({
+        hostname: 'jesus.film',
+        pathPrefix: 's',
+        slugCaseSensitive: false
+      })
+      expect(buildDomainRecord(domain).pathPrefix).toBe('s')
+      expect(recordKeyForLink({ pathname: 'Easter' }, domain)).toBe(
+        'link:jesus.film/easter'
+      )
+    })
+
+    it('keeps the Brightcove destination free of the prefix', () => {
+      const domain = buildShortLinkDomain({
+        pathPrefix: 's',
+        passthroughOrigin: 'https://api.arclight.org'
+      })
+      const link = buildShortLink({
+        pathname: 'abc123',
+        brightcoveId: '1',
+        redirectType: 'hls'
+      })
+      expect(effectiveDestination(link, domain)).toBe(
+        'https://api.arclight.org/abc123'
+      )
     })
   })
 

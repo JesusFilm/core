@@ -38,6 +38,7 @@ import {
   ShortLinkPlacement,
   ShortLinkStatus,
   formatDateTime,
+  formatDomainLabel,
   labelFor
 } from '../../../../libs/shortLink'
 
@@ -334,7 +335,7 @@ export function LinkList(): ReactElement {
             <MenuItem value={ANY}>Any</MenuItem>
             {domains.map((domain) => (
               <MenuItem key={domain.id} value={domain.hostname}>
-                {domain.hostname}
+                {formatDomainLabel(domain)}
               </MenuItem>
             ))}
           </TextField>

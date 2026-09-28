@@ -102,7 +102,7 @@ A short, redirecting URL owned by a Short Link Domain — mapping a path on a ma
 _Avoid_: Redirect, slug, permalink
 
 **Short Link Domain**:
-A hostname short links are minted on, with the edge settings the redirect Worker follows: redirect status, slug grammar (allowed characters, length, case), reserved paths, and the not-found behaviour (`lostPage`, `fallback`, `passthrough`).
+A hostname short links are minted on, optionally under a **path prefix** (`https://jesus.film/s/<pathname>`; empty serves links at the root), with the edge settings the redirect Worker follows: redirect status, slug grammar (allowed characters, length, case), reserved paths, and the not-found behaviour (`lostPage`, `fallback`, `passthrough`).
 _Avoid_: Host, site
 
 **Short Link Campaign**:
@@ -114,7 +114,7 @@ The row written every time a short link's destination changes: from, to, who, wh
 _Avoid_: Audit log (informally), revision
 
 **Routing Record**:
-The compact JSON a short link publishes to the Edge Store (`link:<hostname>/<pathname>`): effective destination and status, paused flag, campaign ids, placement, video ids. Built by `schema/shortLink/edge`; the Worker redirects from it without touching this API.
+The compact JSON a short link publishes to the Edge Store (`link:<hostname>/<pathname>` — the bare pathname, never the domain's path prefix): effective destination and status, paused flag, campaign ids, placement, video ids. Built by `schema/shortLink/edge`; the Worker redirects from it without touching this API.
 _Avoid_: Cache entry, snapshot
 
 **Edge Store**:

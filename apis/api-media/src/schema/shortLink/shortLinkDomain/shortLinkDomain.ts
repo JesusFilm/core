@@ -18,6 +18,11 @@ import {
   isHttpsUrl,
   isRedirectStatus
 } from '../lib/errors'
+import {
+  PATH_PREFIX_MESSAGE,
+  isValidPathPrefix,
+  normalizePathPrefix
+} from '../lib/shortUrl'
 import { isValidSlugAllowedChars } from '../lib/slug'
 
 import { ShortLinkDomainCheckRef } from './objects/shortLinkDomainCheck'
@@ -57,6 +62,11 @@ builder.prismaObject('ShortLinkDomain', {
       nullable: false,
       description: 'check status of the domain',
       resolve: async ({ hostname }) => await checkVercelDomain(hostname)
+    }),
+    pathPrefix: t.exposeString('pathPrefix', {
+      nullable: false,
+      description:
+        'path the short links live under, without leading or trailing slashes (e.g. s); empty means the root of the hostname'
     }),
     redirectStatus: t.exposeInt('redirectStatus', {
       nullable: false,
@@ -209,6 +219,17 @@ function assertDomainSettings(settings: DomainSettings): void {
     )
 }
 
+/** '/s/' -> 's'; undefined when the input leaves the prefix untouched. */
+function resolvePathPrefix(
+  pathPrefix: string | null | undefined
+): string | undefined {
+  if (pathPrefix == null) return undefined
+  const normalized = normalizePathPrefix(pathPrefix)
+  if (!isValidPathPrefix(normalized))
+    throw inputValidationError(['input', 'pathPrefix'], PATH_PREFIX_MESSAGE)
+  return normalized
+}
+
 /** Fields whose change alters the routing records of every link on the domain. */
 const ROUTING_FIELDS = [
   'redirectStatus',
@@ -254,6 +275,11 @@ builder.mutationFields((t) => ({
         required: false,
         description:
           'the services that are enabled for this domain, if empty then this domain can be used by all services'
+      }),
+      pathPrefix: t.input.string({
+        required: false,
+        description:
+          'path the short links live under, without leading or trailing slashes (e.g. s); defaults to empty (root of the hostname)'
       }),
       redirectStatus: t.input.int({
         required: false,
@@ -308,6 +334,7 @@ builder.mutationFields((t) => ({
     },
     resolve: async (query, _, { input }) => {
       const { hostname, services } = input
+      const pathPrefix = resolvePathPrefix(input.pathPrefix)
       assertDomainSettings({
         notFound: input.notFound ?? 'lostPage',
         passthroughOrigin: input.passthroughOrigin ?? null,
@@ -324,6 +351,7 @@ builder.mutationFields((t) => ({
               hostname,
               apexName,
               services: services ?? [],
+              pathPrefix,
               redirectStatus: input.redirectStatus ?? undefined,
               slugAllowedChars: input.slugAllowedChars ?? undefined,
               slugMinLength: input.slugMinLength ?? undefined,
@@ -371,6 +399,11 @@ builder.mutationFields((t) => ({
         description:
           'the services that are enabled for this domain, if empty then this domain can be used by all services'
       }),
+      pathPrefix: t.input.string({
+        required: false,
+        description:
+          'path the short links live under, without leading or trailing slashes (e.g. s); empty serves links at the root of the hostname'
+      }),
       redirectStatus: t.input.int({
         required: false,
         validate: {
@@ -417,6 +450,7 @@ builder.mutationFields((t) => ({
           { path: ['input', 'id'], value: input.id }
         ])
 
+      const pathPrefix = resolvePathPrefix(input.pathPrefix)
       assertDomainSettings({
         notFound: input.notFound ?? existing.notFound,
         passthroughOrigin:
@@ -433,6 +467,7 @@ builder.mutationFields((t) => ({
           where: { id: input.id },
           data: {
             services: input.services,
+            pathPrefix,
             redirectStatus: input.redirectStatus ?? undefined,
             slugAllowedChars: input.slugAllowedChars ?? undefined,
             slugMinLength: input.slugMinLength ?? undefined,

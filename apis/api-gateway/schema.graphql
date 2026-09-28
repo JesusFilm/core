@@ -1838,7 +1838,7 @@ type ShortLink @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: tru
   healthStatus: ShortLinkHealth @join__field(graph: API_MEDIA) 
   healthCheckedAt: DateTime @join__field(graph: API_MEDIA) 
   """
-  https://<hostname>/<pathname>
+  https://<hostname>/<pathname>, or https://<hostname>/<pathPrefix>/<pathname> when the domain has a path prefix
   """
   shortUrl: String! @join__field(graph: API_MEDIA) 
   """
@@ -3050,6 +3050,10 @@ type ShortLinkDomain @join__type(graph: API_MEDIA)  {
   check status of the domain
   """
   check: ShortLinkDomainCheck!
+  """
+  path the short links live under, without leading or trailing slashes (e.g. s); empty means the root of the hostname
+  """
+  pathPrefix: String!
   """
   HTTP status the edge redirects with (301, 302, 307, 308) unless a link overrides it
   """
@@ -5781,6 +5785,10 @@ input MutationShortLinkDomainCreateInput @join__type(graph: API_MEDIA)  {
   """
   services: [Service!]
   """
+  path the short links live under, without leading or trailing slashes (e.g. s); defaults to empty (root of the hostname)
+  """
+  pathPrefix: String
+  """
   defaults to 307
   """
   redirectStatus: Int
@@ -5822,6 +5830,10 @@ input MutationShortLinkDomainUpdateInput @join__type(graph: API_MEDIA)  {
   the services that are enabled for this domain, if empty then this domain can be used by all services
   """
   services: [Service!]!
+  """
+  path the short links live under, without leading or trailing slashes (e.g. s); empty serves links at the root of the hostname
+  """
+  pathPrefix: String
   redirectStatus: Int
   slugAllowedChars: String
   slugMinLength: Int

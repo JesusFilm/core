@@ -21,6 +21,7 @@ export interface DomainRecord {
   v: typeof EDGE_RECORD_VERSION
   id: string
   hostname: string
+  pathPrefix: string
   redirectStatus: number
   fallbackTo: string | null
   notFound: ShortLinkNotFound
@@ -48,6 +49,7 @@ export type DomainForRecord = Pick<
   ShortLinkDomain,
   | 'id'
   | 'hostname'
+  | 'pathPrefix'
   | 'redirectStatus'
   | 'fallbackTo'
   | 'notFound'
@@ -97,6 +99,7 @@ export function buildDomainRecord(domain: DomainForRecord): DomainRecord {
     v: EDGE_RECORD_VERSION,
     id: domain.id,
     hostname: domain.hostname.toLowerCase(),
+    pathPrefix: domain.pathPrefix ?? '',
     redirectStatus: domain.redirectStatus,
     fallbackTo: domain.fallbackTo,
     notFound: domain.notFound,

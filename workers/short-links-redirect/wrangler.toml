@@ -20,8 +20,16 @@
 # Workers pool use; miniflare provisions local KV / D1 / Queues regardless of
 # the ids, so the placeholders are fine there.
 #
-# Custom domains are added one at a time at cutover (TECH-DESIGN.md, "Cutover
+# Routes are added one domain at a time at cutover (TECH-DESIGN.md, "Cutover
 # per domain"); see the commented `routes` examples under each environment.
+# jesus.film is first and is a ZONE ROUTE on `/s/*` (not a custom domain), so
+# the rest of the hostname stays free for other uses.
+#
+# Admin proxy: when ADMIN_HOSTNAME, ADMIN_PATH and ADMIN_PROXY_DEST are all
+# non-empty, requests for <ADMIN_HOSTNAME><ADMIN_PATH>[/...] are proxied to
+# https://<ADMIN_PROXY_DEST>. ADMIN_PROXY_DEST is the Vercel deployment hostname
+# of apps/short-links-admin (hostname only, no scheme) and must also be filled
+# in before the first deploy. All three empty (dev) disables the proxy.
 
 name = "short-links-redirect-dev"
 compatibility_date = "2025-09-01"
@@ -32,6 +40,9 @@ main = "src/index.ts"
 CORE_GRAPHQL_ENDPOINT = "http://localhost:4000"
 CLICKHOUSE_URL = ""
 CLICKHOUSE_DATABASE = "redirects"
+ADMIN_HOSTNAME = ""
+ADMIN_PATH = ""
+ADMIN_PROXY_DEST = ""
 
 [[kv_namespaces]]
 binding = "SHORT_LINKS_KV"
@@ -61,13 +72,24 @@ dead_letter_queue = "short-links-events-dlq-dev"
 [env.stage]
 name = "short-links-redirect-stage"
 logpush = true
-# Add one custom domain per cutover, e.g.:
-# routes = [{ pattern = "stg.arc.gt", custom_domain = true }]
+# Add one route per cutover. First (zone route; the stage hostname is still to
+# be decided, see ADMIN_HOSTNAME below):
+# routes = [{ pattern = "stage.jesus.film/s/*", zone_name = "jesus.film" }]
+# Later cutovers (custom domains):
+# routes = [
+#   { pattern = "stage.jesus.film/s/*", zone_name = "jesus.film" },
+#   { pattern = "stg.arc.gt", custom_domain = true }
+# ]
 
 [env.stage.vars]
 CORE_GRAPHQL_ENDPOINT = "https://api-gateway.stage.central.jesusfilm.org/"
 CLICKHOUSE_URL = ""
 CLICKHOUSE_DATABASE = "redirects"
+# PLACEHOLDER: the stage hostname is still to be decided.
+ADMIN_HOSTNAME = "stage.jesus.film"
+ADMIN_PATH = "/s/dashboard"
+# Vercel deployment hostname of short-links-admin (stage), hostname only.
+ADMIN_PROXY_DEST = "REPLACE_ME_BEFORE_DEPLOY"
 
 [[env.stage.kv_namespaces]]
 binding = "SHORT_LINKS_KV"
@@ -100,9 +122,12 @@ enabled = true
 [env.prod]
 name = "short-links-redirect-prod"
 logpush = true
-# Add one custom domain per cutover, e.g.:
-# routes = [{ pattern = "nxstp.is/*", custom_domain = true }]
+# Add one route per cutover. First (zone route, keeps the rest of jesus.film
+# free):
+# routes = [{ pattern = "jesus.film/s/*", zone_name = "jesus.film" }]
+# Later cutovers (custom domains):
 # routes = [
+#   { pattern = "jesus.film/s/*", zone_name = "jesus.film" },
 #   { pattern = "nxstp.is", custom_domain = true },
 #   { pattern = "arc.gt", custom_domain = true }
 # ]
@@ -111,6 +136,10 @@ logpush = true
 CORE_GRAPHQL_ENDPOINT = "https://api-gateway.central.jesusfilm.org/"
 CLICKHOUSE_URL = ""
 CLICKHOUSE_DATABASE = "redirects"
+ADMIN_HOSTNAME = "jesus.film"
+ADMIN_PATH = "/s/dashboard"
+# Vercel deployment hostname of short-links-admin (prod), hostname only.
+ADMIN_PROXY_DEST = "REPLACE_ME_BEFORE_DEPLOY"
 
 [[env.prod.kv_namespaces]]
 binding = "SHORT_LINKS_KV"

@@ -254,6 +254,33 @@ describe('shortLink', () => {
         )
       })
 
+      it('should include the domain path prefix in shortUrl and qrUrl', async () => {
+        prismaMock.shortLink.findFirstOrThrow.mockResolvedValue(
+          withRelations(
+            buildShortLinkWithDomain(
+              { pathname: 'easter' },
+              { hostname: 'jesus.film', pathPrefix: 's' }
+            ),
+            { campaigns: [], destinationHistory: [] }
+          )
+        )
+        const result = await authClient({
+          document: SHORT_LINK_QUERY,
+          variables: { id: 'testId' }
+        })
+        expect(result).toMatchObject({
+          data: {
+            shortLink: {
+              data: {
+                pathname: 'easter',
+                shortUrl: 'https://jesus.film/s/easter',
+                qrUrl: 'https://jesus.film/s/easter?qr=1'
+              }
+            }
+          }
+        })
+      })
+
       it('should allow a shortLinkEditor', async () => {
         setRoles(['shortLinkEditor'])
         prismaMock.shortLink.findFirstOrThrow.mockResolvedValue(
