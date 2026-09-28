@@ -706,6 +706,10 @@ model ShortLinkDomain {
   /// which services are able to use this domain in their short links
   services          Service[]
   shortLinks        ShortLink[]
+  /// path the short links live under on this hostname, without leading or
+  /// trailing slashes (e.g. "s" for https://jesus.film/s/<pathname>). Empty means
+  /// the links live at the root of the hostname.
+  pathPrefix        String            @default("")
   /// HTTP status the edge Worker redirects with (301, 302, 307, 308) unless a
   /// link overrides it
   redirectStatus    Int               @default(307)

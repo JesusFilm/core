@@ -416,3 +416,33 @@ Same Firebase + gateway variables as `videos-admin` (`NEXT_PUBLIC_GATEWAY_URL`, 
 3. Set the api-media env vars; run `shortLinkDomainPublish` for the domain (backfills every live link).
 4. Add the hostname as a custom domain / route of the Worker. For nxstp.is this replaces the Vercel `apps/short-links` deployment; for arc.gt the domain is configured with `notFound = passthrough`, `passthroughOrigin = https://api.arclight.org`, `redirectStatus = 302`, `reservedPaths = [s, hls, dl, dh, v2, api]` so non-keyword paths keep reaching the Arclight API.
 5. Watch `publish_gap` logs; zero is the goal.
+
+## Path prefix and the admin dashboard (2026-09-28)
+
+Decisions: the first domain is `jesus.film`; short links live under `/s/`; the admin app is served at `https://jesus.film/s/dashboard`. This section amends everything above where they differ.
+
+### `ShortLinkDomain.pathPrefix`
+
+`pathPrefix String @default("")` — the path the short links live under, without leading or trailing slashes (`s`). Empty keeps a domain at the root, which is what nxstp.is and arc.gt use. Validated as empty or `^[A-Za-z0-9_-]+(/[A-Za-z0-9_-]+)*$`. `hostname` stays unique, so a hostname has exactly one prefix.
+
+Migration `20260928120000_short_link_domain_path_prefix` adds the column and inserts the `jesus.film` row: `pathPrefix = s`, status 307, slug grammar `[a-z0-9-]{3,32}` case-insensitive, `notFound = fallback` to `https://www.jesusfilm.org`, and `dashboard`, `api`, `admin`, `_next`, `.well-known`, `favicon.ico`, `robots.txt` reserved.
+
+### Short URL
+
+`shortUrl = https://<hostname>/<pathPrefix>/<pathname>` when the prefix is non-empty, `https://<hostname>/<pathname>` otherwise. `qrUrl = shortUrl + ?qr=1`.
+
+### Edge store
+
+Keys are unchanged: `link:<hostname>/<pathname>` holds the bare pathname, never the prefix. The domain record gains `"pathPrefix": "s"` (empty string when unset). `v` stays 1 because nothing is deployed yet; the Worker treats a missing `pathPrefix` as empty.
+
+### Worker request flow (amends steps 1 and 2)
+
+1. Admin proxy first. When `ADMIN_HOSTNAME`, `ADMIN_PATH` and `ADMIN_PROXY_DEST` are all set, the request host equals `ADMIN_HOSTNAME`, and the path equals `ADMIN_PATH` or starts with `ADMIN_PATH + "/"`, the request is proxied to `ADMIN_PROXY_DEST` with method, headers, body and path intact, `x-forwarded-host` and `x-forwarded-proto` set, and `redirect: "manual"`. Every method is allowed on this branch. A failed upstream fetch answers 503. No redirect event is sent.
+2. Load the domain record as before.
+3. When `pathPrefix` is non-empty the request path must be `/<prefix>/<rest>`. A path outside the prefix, or exactly `/<prefix>` or `/<prefix>/`, gets the domain's not-found behaviour. Otherwise `<rest>` is what the existing slug checks, reserved-path check and lookup run against. Passthrough still forwards the original, unstripped path.
+
+Worker vars per environment: `ADMIN_HOSTNAME` (`jesus.film`), `ADMIN_PATH` (`/s/dashboard`), `ADMIN_PROXY_DEST` (the Vercel deployment hostname of `short-links-admin`). Route: `{ pattern = "jesus.film/s/*", zone_name = "jesus.film" }`, so the rest of the hostname stays free for other uses.
+
+### Admin app
+
+`basePath: '/s/dashboard'` in `next.config.js`, exported as a constant so client-side `fetch` calls to the app's own `/api/*` routes and the `/api/qr` image URLs are prefixed with it. Pages, the proxy matcher and the auth paths stay relative to the base path, which Next.js strips before matching.
