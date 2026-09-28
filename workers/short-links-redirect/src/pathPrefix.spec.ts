@@ -311,7 +311,7 @@ describe('worker with a path prefix', () => {
     })
   })
 
-  describe('reserved dashboard path without the admin proxy configured', () => {
+  describe('reserved path under the prefix', () => {
     it('gets the fallback behaviour', async () => {
       const { response } = await workerRequest('https://jesus.film/s/dashboard')
 

@@ -4,9 +4,9 @@
 ALTER TABLE "ShortLinkDomain" ADD COLUMN     "pathPrefix" TEXT NOT NULL DEFAULT '';
 
 -- Data change (additive, idempotent): the first domain of the edge short-link
--- service. Short links live at https://jesus.film/s/<pathname>; the admin app
--- is served at https://jesus.film/s/dashboard by the same Worker, so
--- `dashboard` is reserved and can never be minted.
+-- service. Short links live at https://jesus.film/s/<pathname>. The admin app
+-- is a separate Vercel deployment on its own vercel.app URL; `dashboard` and
+-- `admin` stay reserved so those paths remain free if that ever changes.
 --
 -- Inserted here rather than through `shortLinkDomainCreate` because that
 -- mutation registers the hostname on the Vercel short-links project, and this

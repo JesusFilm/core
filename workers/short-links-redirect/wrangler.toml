@@ -23,13 +23,8 @@
 # Routes are added one domain at a time at cutover (TECH-DESIGN.md, "Cutover
 # per domain"); see the commented `routes` examples under each environment.
 # jesus.film is first and is a ZONE ROUTE on `/s/*` (not a custom domain), so
-# the rest of the hostname stays free for other uses.
-#
-# Admin proxy: when ADMIN_HOSTNAME, ADMIN_PATH and ADMIN_PROXY_DEST are all
-# non-empty, requests for <ADMIN_HOSTNAME><ADMIN_PATH>[/...] are proxied to
-# https://<ADMIN_PROXY_DEST>. ADMIN_PROXY_DEST is the Vercel deployment hostname
-# of apps/short-links-admin (hostname only, no scheme) and must also be filled
-# in before the first deploy. All three empty (dev) disables the proxy.
+# the rest of the hostname stays free for other uses. Its domain record carries
+# `pathPrefix = "s"`, so short links are https://jesus.film/s/<slug>.
 
 name = "short-links-redirect-dev"
 compatibility_date = "2025-09-01"
@@ -40,9 +35,6 @@ main = "src/index.ts"
 CORE_GRAPHQL_ENDPOINT = "http://localhost:4000"
 CLICKHOUSE_URL = ""
 CLICKHOUSE_DATABASE = "redirects"
-ADMIN_HOSTNAME = ""
-ADMIN_PATH = ""
-ADMIN_PROXY_DEST = ""
 
 [[kv_namespaces]]
 binding = "SHORT_LINKS_KV"
@@ -72,8 +64,8 @@ dead_letter_queue = "short-links-events-dlq-dev"
 [env.stage]
 name = "short-links-redirect-stage"
 logpush = true
-# Add one route per cutover. First (zone route; the stage hostname is still to
-# be decided, see ADMIN_HOSTNAME below):
+# Add one route per cutover. First (zone route; "stage.jesus.film" is a
+# PLACEHOLDER, the stage hostname is still to be decided):
 # routes = [{ pattern = "stage.jesus.film/s/*", zone_name = "jesus.film" }]
 # Later cutovers (custom domains):
 # routes = [
@@ -85,11 +77,6 @@ logpush = true
 CORE_GRAPHQL_ENDPOINT = "https://api-gateway.stage.central.jesusfilm.org/"
 CLICKHOUSE_URL = ""
 CLICKHOUSE_DATABASE = "redirects"
-# PLACEHOLDER: the stage hostname is still to be decided.
-ADMIN_HOSTNAME = "stage.jesus.film"
-ADMIN_PATH = "/s/dashboard"
-# Vercel deployment hostname of short-links-admin (stage), hostname only.
-ADMIN_PROXY_DEST = "REPLACE_ME_BEFORE_DEPLOY"
 
 [[env.stage.kv_namespaces]]
 binding = "SHORT_LINKS_KV"
@@ -136,10 +123,6 @@ logpush = true
 CORE_GRAPHQL_ENDPOINT = "https://api-gateway.central.jesusfilm.org/"
 CLICKHOUSE_URL = ""
 CLICKHOUSE_DATABASE = "redirects"
-ADMIN_HOSTNAME = "jesus.film"
-ADMIN_PATH = "/s/dashboard"
-# Vercel deployment hostname of short-links-admin (prod), hostname only.
-ADMIN_PROXY_DEST = "REPLACE_ME_BEFORE_DEPLOY"
 
 [[env.prod.kv_namespaces]]
 binding = "SHORT_LINKS_KV"

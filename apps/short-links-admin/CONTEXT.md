@@ -40,22 +40,15 @@ _Avoid_: QR link (the link is the Short Link; the QR is one rendering of it)
 The two role levels. Editor (`shortLinkEditor`, or `shortLinkAdmin`, or `publisher`) manages links and campaigns. Admin (`shortLinkAdmin` or `publisher`) additionally edits Domain settings, changes protected Destinations, and republishes to the edge. `publisher` keeps its existing powers; it is not a third level.
 _Avoid_: Owner, superuser, "publisher role" when you mean admin
 
-**Base Path**:
-Where this app is mounted: `/s/dashboard`, so production is `https://jesus.film/s/dashboard` and local dev is `http://localhost:4800/s/dashboard`. The edge Worker proxies that path to this app's Vercel deployment. Next.js adds it to links, navigation and its own assets; the app adds it by hand (`withBasePath`) to `fetch` calls to its own `/api/*` routes and to the `/api/qr` image URLs.
-_Avoid_: Prefix (that is the domain's Path Prefix), mount point, sub-path
-
 **Path Prefix**:
 The path a Short Link Domain's links live under, without slashes (`s` for `jesus.film`, so links are `https://jesus.film/s/<pathname>`). Empty means the domain serves links from its root, as nxstp.is and arc.gt do. It is part of the short URL but never part of the Pathname. Shown as `hostname/prefix` wherever a domain is chosen.
-_Avoid_: Base path, folder, namespace
+_Avoid_: Folder, namespace, sub-path
 
 **Republish**:
 Rewriting a link's (or a whole domain's) routing record to the edge store. A repair action for publish gaps or cutovers, not part of the normal save flow — every ordinary mutation already publishes.
 _Avoid_: Deploy, sync, refresh
 
 ### Terminology traps
-
-**Path prefix vs base path**:
-Path Prefix is a property of a Short Link Domain, stored in the media context and editable on the Domains page: it decides where that domain's links live. Base Path is where this app is mounted and is fixed in `next.config.js`. They share the `/s` segment on `jesus.film` only because the dashboard sits under the link prefix (`dashboard` is a reserved path there); changing one never changes the other.
 
 **Status vs redirect status**:
 `status` is the link's lifecycle (`active`, `paused`, `retired`); `redirectStatus` is the HTTP code (301/302/307/308) the edge answers with, set per domain with an optional per-link override. "Change the status" is ambiguous — say lifecycle or HTTP code.

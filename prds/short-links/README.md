@@ -132,7 +132,7 @@ QR branding, scheduled destination changes.
 
 ## Open questions
 
-- [x] Domain name: `jesus.film`. Short links live at `https://jesus.film/s/<pathname>` and the admin app at `https://jesus.film/s/dashboard`. See "Path prefix and the admin dashboard" in `TECH-DESIGN.md`.
+- [x] Domain name: `jesus.film`. Short links live at `https://jesus.film/s/<pathname>`. The admin app is reached on its own `vercel.app` URL. See "Path prefix" in `TECH-DESIGN.md`.
 - [ ] Which YouTube channels and staff are the first users.
 - [ ] Slug grammar for the YouTube domain. Proposal: `[a-z0-9-]{3,32}`, case-insensitive, 8-character generated default. The domain settings support this without code changes.
 - [ ] Confirm Cloudflare KV and Queues write limits against the expected publish rate.

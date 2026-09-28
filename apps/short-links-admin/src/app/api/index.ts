@@ -1,14 +1,13 @@
 import { UserCredential } from 'firebase/auth'
 
 import { getFirebaseAuth } from '../../libs/auth/firebase'
-import { withBasePath } from '../../libs/basePath'
 
 export async function login(token: string): Promise<void> {
   const headers: Record<string, string> = {
     Authorization: `Bearer ${token}`
   }
 
-  await fetch(withBasePath('/api/login'), {
+  await fetch('/api/login', {
     method: 'GET',
     headers
   })
@@ -25,7 +24,7 @@ export async function loginWithCredential(
 export async function logout(): Promise<void> {
   const headers: Record<string, string> = {}
 
-  await fetch(withBasePath('/api/logout'), {
+  await fetch('/api/logout', {
     method: 'GET',
     headers
   })
@@ -34,7 +33,7 @@ export async function logout(): Promise<void> {
 export async function checkEmailVerification(): Promise<void> {
   const headers: Record<string, string> = {}
 
-  await fetch(withBasePath('/api/check-email-verification'), {
+  await fetch('/api/check-email-verification', {
     method: 'GET',
     headers
   })
@@ -50,7 +49,7 @@ export async function refreshToken(): Promise<string | null> {
   }
 
   // Fallback for cases where the browser Firebase user is unavailable.
-  const refreshResponse = await fetch(withBasePath('/api/refresh-token'), {
+  const refreshResponse = await fetch('/api/refresh-token', {
     method: 'GET',
     headers: {},
     cache: 'no-store',

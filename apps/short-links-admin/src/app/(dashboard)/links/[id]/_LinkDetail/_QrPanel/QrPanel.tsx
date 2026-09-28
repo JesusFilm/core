@@ -14,7 +14,6 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
 
-import { withBasePath } from '../../../../../../libs/basePath'
 import {
   MIN_QR_CONTRAST_RATIO,
   contrastRatio,
@@ -48,7 +47,7 @@ export function buildQrImageUrl(params: QrImageParams): string {
     dark: params.dark,
     light: params.light
   })
-  return withBasePath(`/api/qr?${search.toString()}`)
+  return `/api/qr?${search.toString()}`
 }
 
 const SIZE_OPTIONS = [256, 512, 1024, 2048]

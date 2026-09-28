@@ -6,4 +6,3 @@ export {
   getShortLinkAccess
 } from './access'
 export type { ShortLinkAccess } from './access'
-export { getRedirectUrl } from './redirectUrl'

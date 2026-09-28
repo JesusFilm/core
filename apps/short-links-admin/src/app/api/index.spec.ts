@@ -20,32 +20,30 @@ describe('api helpers', () => {
     vi.unstubAllGlobals()
   })
 
-  it('logs in against the base-path api route', async () => {
+  it('logs in against the api route', async () => {
     await login('token')
 
-    expect(fetchMock).toHaveBeenCalledWith('/s/dashboard/api/login', {
+    expect(fetchMock).toHaveBeenCalledWith('/api/login', {
       method: 'GET',
       headers: { Authorization: 'Bearer token' }
     })
   })
 
-  it('logs out against the base-path api route', async () => {
+  it('logs out against the api route', async () => {
     await logout()
 
-    expect(fetchMock.mock.calls[0][0]).toBe('/s/dashboard/api/logout')
+    expect(fetchMock.mock.calls[0][0]).toBe('/api/logout')
   })
 
-  it('checks email verification against the base-path api route', async () => {
+  it('checks email verification against the api route', async () => {
     await checkEmailVerification()
 
-    expect(fetchMock.mock.calls[0][0]).toBe(
-      '/s/dashboard/api/check-email-verification'
-    )
+    expect(fetchMock.mock.calls[0][0]).toBe('/api/check-email-verification')
   })
 
-  it('refreshes the token against the base-path api route', async () => {
+  it('refreshes the token against the api route', async () => {
     await expect(refreshToken()).resolves.toBe('refreshed')
 
-    expect(fetchMock.mock.calls[0][0]).toBe('/s/dashboard/api/refresh-token')
+    expect(fetchMock.mock.calls[0][0]).toBe('/api/refresh-token')
   })
 })

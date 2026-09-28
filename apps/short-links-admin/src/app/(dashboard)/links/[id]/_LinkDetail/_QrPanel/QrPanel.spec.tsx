@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import { QrPanel, buildQrImageUrl } from './QrPanel'
 
 describe('buildQrImageUrl', () => {
-  it('builds a base-path /api/qr url that encodes the qr url', () => {
+  it('builds an /api/qr url that encodes the qr url', () => {
     const url = buildQrImageUrl({
       url: 'https://jesus.film/s/abc123?qr=1',
       format: 'svg',
@@ -15,7 +15,7 @@ describe('buildQrImageUrl', () => {
     })
 
     const [path, query] = url.split('?')
-    expect(path).toBe('/s/dashboard/api/qr')
+    expect(path).toBe('/api/qr')
     expect(Object.fromEntries(new URLSearchParams(query))).toEqual({
       url: 'https://jesus.film/s/abc123?qr=1',
       format: 'svg',
@@ -29,7 +29,7 @@ describe('buildQrImageUrl', () => {
 })
 
 describe('QrPanel', () => {
-  it('points the preview and the download at the base-path route', () => {
+  it('points the preview and the download at the qr route', () => {
     render(
       <QrPanel
         qrUrl="https://jesus.film/s/abc123?qr=1"
@@ -42,13 +42,10 @@ describe('QrPanel', () => {
       screen.getByRole('img', {
         name: 'QR code for https://jesus.film/s/abc123?qr=1'
       })
-    ).toHaveAttribute(
-      'src',
-      expect.stringMatching(/^\/s\/dashboard\/api\/qr\?/)
-    )
+    ).toHaveAttribute('src', expect.stringMatching(/^\/api\/qr\?/))
     expect(screen.getByRole('link', { name: 'Download PNG' })).toHaveAttribute(
       'href',
-      expect.stringMatching(/^\/s\/dashboard\/api\/qr\?/)
+      expect.stringMatching(/^\/api\/qr\?/)
     )
   })
 })

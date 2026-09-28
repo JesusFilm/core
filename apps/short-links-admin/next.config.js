@@ -7,9 +7,6 @@ const { composePlugins, withNx } = require('@nx/next')
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  // Served at https://jesus.film/s/dashboard. Keep in step with BASE_PATH in
-  // src/libs/basePath/basePath.ts (basePath.spec.ts asserts they agree).
-  basePath: '/s/dashboard',
   compiler: {
     emotion: true
   },

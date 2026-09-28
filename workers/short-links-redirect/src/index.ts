@@ -1,6 +1,5 @@
 import { Hono } from 'hono'
 
-import { isAdminRequest, proxyAdminRequest } from './adminProxy'
 import type { Env } from './env'
 import { buildRedirectEvent } from './event'
 import { lostPageResponse } from './lostPage'
@@ -28,16 +27,6 @@ function redirectResponse(location: string, status: number): Response {
     headers: { Location: location, 'Cache-Control': 'no-store' }
   })
 }
-
-// Admin proxy first: every method, no redirect event, never a slug.
-app.all('*', async (c, next) => {
-  const url = new URL(c.req.url)
-  if (!isAdminRequest(normaliseHost(url.host), url.pathname, c.env)) {
-    await next()
-    return
-  }
-  return await proxyAdminRequest(c.req.raw, c.env)
-})
 
 // Never slugs: well-known probes and the files every browser asks for.
 // Hono dispatches HEAD through the GET handlers and strips the body.

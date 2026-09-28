@@ -7,7 +7,6 @@ import {
   AUTH_PAGE,
   UNAUTHORIZED_PAGE,
   getAuthorizedRedirectPath,
-  getRedirectUrl,
   getShortLinkAccess
 } from './libs/access'
 import { makeClient } from './libs/apollo/makeClient'
@@ -72,20 +71,23 @@ export default async function proxy(
       )
 
       if (redirectPath != null) {
-        return NextResponse.redirect(getRedirectUrl(req, redirectPath))
+        req.nextUrl.pathname = redirectPath
+        return NextResponse.redirect(req.nextUrl)
       }
 
       return NextResponse.next({ request: { headers } })
     },
     handleInvalidToken: async (_reason) => {
       if (!testPathnameRegex(publicPaths, req.nextUrl.pathname)) {
-        return NextResponse.redirect(getRedirectUrl(req, AUTH_PAGE))
+        req.nextUrl.pathname = AUTH_PAGE
+        return NextResponse.redirect(req.nextUrl)
       }
       return NextResponse.next()
     },
     handleError: async () => {
       if (!testPathnameRegex(publicPaths, req.nextUrl.pathname)) {
-        return NextResponse.redirect(getRedirectUrl(req, AUTH_PAGE))
+        req.nextUrl.pathname = AUTH_PAGE
+        return NextResponse.redirect(req.nextUrl)
       }
       return NextResponse.next()
     }
