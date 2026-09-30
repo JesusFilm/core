@@ -474,7 +474,7 @@ describe('shortLink', () => {
         expect(prismaMock.shortLink.findMany).toHaveBeenCalledWith({
           include: { domain: true },
           where: { deletedAt: null, domain: { hostname: 'example.com' } },
-          orderBy: { domain: { hostname: 'asc' }, pathname: 'asc' },
+          orderBy: [{ domain: { hostname: 'asc' } }, { pathname: 'asc' }],
           skip: 0,
           take: 21
         })

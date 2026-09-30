@@ -436,10 +436,8 @@ builder.queryFields((t) => ({
       await prisma.shortLink.findMany({
         ...query,
         where: buildShortLinksWhere(hostname, filter),
-        orderBy: {
-          domain: { hostname: 'asc' },
-          pathname: 'asc'
-        }
+        // one field per object: Prisma rejects a multi-key orderBy object
+        orderBy: [{ domain: { hostname: 'asc' } }, { pathname: 'asc' }]
       }),
     totalCount: async (_, { hostname, filter }) =>
       await prisma.shortLink.count({
