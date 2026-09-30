@@ -444,3 +444,57 @@ Route: `{ pattern = "jesus.film/s/*", zone_name = "jesus.film" }`, so the rest o
 ### Admin app
 
 A standalone Vercel deployment served from the root of its `vercel.app` URL. No base path, no proxy, and no dependency on the short-link domain, so the admin stays reachable when the Worker or the domain is down.
+
+## Per-domain KV namespaces and global slugs (2026-09-29)
+
+Decision: each domain has its own Cloudflare KV namespace, and a slug that is not found on a domain falls back to a global slug. This section amends the "Edge store contracts", "Worker" and "Publish semantics" sections above where they differ.
+
+### Namespaces
+
+| Namespace                    | Binding                                                                                | Holds                           | Keys                                   |
+| ---------------------------- | -------------------------------------------------------------------------------------- | ------------------------------- | -------------------------------------- |
+| Global (one per environment) | `SHORT_LINKS_KV`                                                                       | domain records and global links | `domain:<hostname>`, `link:<pathname>` |
+| One per domain               | named on the domain row (`KV_JESUS_FILM`, `KV_NXSTP_IS`, `KV_ARC_GT`, `KV_STG_ARC_GT`) | the domain's routing records    | `<pathname>` (bare slug, no prefix)    |
+
+`ShortLinkDomain.kvNamespaceId` is the namespace id api-media publishes to; `ShortLinkDomain.kvBinding` is the Worker binding name, carried in the domain record so the Worker picks the namespace with `env[domain.kvBinding]`. A domain with no `kvNamespaceId` is not published (its links are not either); `edgePublishedAt` stays null. The global namespace id stays in `CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID`.
+
+Bindings are static in `wrangler.toml`, so adding a domain means creating its namespace, adding a `[[kv_namespaces]]` entry per environment, deploying, and then setting `kvNamespaceId` and `kvBinding` on the row. That is the "config change per domain" the PRD anticipated.
+
+### Global links
+
+`ShortLink.global Boolean @default(false)`. A global link still belongs to its own domain (that is its canonical `shortUrl`), and additionally resolves on every other domain that has no link of its own for the same pathname. Global pathnames are unique across all domains and never reissued: `ShortLinkGlobalSlug { pathname @id, shortLinkId @unique }` is written when a link becomes global and never deleted (a soft-deleted global link keeps its claim; the row is released only if the link is un-flagged while still live). Global pathnames must be lower-case so case-insensitive domains can find them (validate on create/update; `ZodError` on `input.pathname` / `input.global`). Toggling `global` needs `isShortLinkAdmin`.
+
+### Domain record (amended)
+
+Adds `"kvBinding": "KV_JESUS_FILM"` (nullable: a domain without a namespace is served only through global links and the api-media fallback).
+
+### Routing record (amended)
+
+`status` becomes nullable and holds only the link's own override (`redirectStatus`), never the owning domain's default, so a global link served on another domain takes that domain's status. Likewise `fallbackTo` is the link's own override only. The Worker already computes `record.status ?? domain.redirectStatus ?? 307`. Adds `"global": true|false` and `"hostname"` (the owning domain) for reporting.
+
+### D1 (replica, unchanged table)
+
+Keys: `link:<hostname>/<pathname>` for domain records-of-links as before, `global:<pathname>` for global links, `domain:<hostname>` for domains.
+
+### Worker lookup order (amends step 3)
+
+1. Domain namespace `env[domain.kvBinding]` → `get(<slug>)` (skipped when `kvBinding` is null or the binding is absent, logged once per isolate as `missing_binding`).
+2. Global namespace `SHORT_LINKS_KV` → `get("link:<slug>")`.
+3. D1 `link:<hostname>/<slug>`, then `global:<slug>`.
+4. api-media `shortLinkByPath(hostname, pathname)`, which itself falls back to the global registry (below). A hit is written back to the namespace that should have had it (domain namespace when the returned link belongs to this domain and the binding exists, else the global namespace when the link is global) and logged as `publish_gap`.
+
+`resolvedFrom` gains the values `kv-global`, `d1-global`, and `api`.
+
+### api-media (amended)
+
+- `shortLinkByPath(hostname, pathname)`: after the existing domain lookup misses, look up `ShortLinkGlobalSlug` by pathname (lower-cased when the requesting domain is case-insensitive) and return that link if it is live. `shortLinkResolve` does the same and reports `source: link` with the matched link.
+- Publish: a link record goes to its domain's namespace as `<pathname>` (when the domain has `kvNamespaceId`), and additionally to the global namespace as `link:<pathname>` when `global` is true. Un-flagging or retiring/deleting removes the global key. `shortLinkDomainPublish` republishes into the domain namespace and refreshes the global keys of its global links.
+- Inputs: `global` on `shortLinkCreate`/`shortLinkUpdate` (admin); `kvNamespaceId`, `kvBinding` on `shortLinkDomainCreate`/`shortLinkDomainUpdate` (admin; `kvBinding` validated as `^[A-Z][A-Z0-9_]*$`). `ShortLinksFilter.global: Boolean`.
+
+### Admin app
+
+Domain form gains "KV namespace id" and "Worker binding" fields (admin). Link form and detail gain a "Global" switch (admin only, with a hint that the slug will resolve on every domain) and a "Global" chip in the list. The links list filter gains a "Global" option.
+
+### Migration
+
+`20260929120000_short_link_per_domain_kv_and_global_slugs` adds the columns and the registry table and sets `kvBinding` for jesus.film, nxstp.is, arc.gt/core.arc.gt and stg.arc.gt. Namespace ids are filled per environment after the namespaces exist.

@@ -732,6 +732,12 @@ model ShortLinkDomain {
   autoFailover      Boolean           @default(false)
   /// when the domain record was last written to the edge store
   edgePublishedAt   DateTime?
+  /// id of the Cloudflare KV namespace that holds this domain's routing
+  /// records. Unset means the domain is not published to the edge yet.
+  kvNamespaceId     String?
+  /// name of the Worker binding for that namespace (e.g. KV_JESUS_FILM); the
+  /// Worker resolves the binding from the domain record
+  kvBinding         String?
 }
 
 model ShortLink {
@@ -783,6 +789,11 @@ model ShortLink {
   edgePublishedAt    DateTime?
   healthStatus       ShortLinkHealth?
   healthCheckedAt    DateTime?
+  /// when true the pathname also resolves on every domain that has no link
+  /// of its own for it (published to the global namespace); global pathnames
+  /// are unique across all domains, see ShortLinkGlobalSlug
+  global             Boolean                       @default(false)
+  globalSlug         ShortLinkGlobalSlug?
 
   @@unique([pathname, domainId])
   @@index([service, sourceRef])
@@ -805,6 +816,16 @@ model ShortLinkCampaign {
   shortLinks  ShortLink[]
 
   @@index([name])
+}
+
+/// Registry of pathnames claimed by global links: one row per global link,
+/// unique by pathname across every domain. Rows are never deleted (a global
+/// pathname is never reissued), so a soft-deleted global link keeps its claim.
+model ShortLinkGlobalSlug {
+  pathname    String    @id
+  shortLinkId String    @unique
+  shortLink   ShortLink @relation(fields: [shortLinkId], references: [id], onDelete: Restrict)
+  createdAt   DateTime  @default(now())
 }
 
 /// Written on every change to ShortLink.to — the accountability record for
