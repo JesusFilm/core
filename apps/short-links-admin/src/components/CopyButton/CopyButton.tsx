@@ -1,21 +1,20 @@
 'use client'
 
-import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
-import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded'
-import IconButton, { IconButtonProps } from '@mui/material/IconButton'
-import Tooltip from '@mui/material/Tooltip'
+import { CheckIcon, CopyIcon } from 'lucide-react'
 import { MouseEvent, ReactElement, useEffect, useState } from 'react'
 
-interface CopyButtonProps extends Omit<IconButtonProps, 'onClick'> {
+import { Button } from '@/components/ui/button'
+
+interface CopyButtonProps {
   value: string
   label?: string
+  className?: string
 }
 
 export function CopyButton({
   value,
   label = 'Copy',
-  size = 'small',
-  ...props
+  className
 }: CopyButtonProps): ReactElement {
   const [copied, setCopied] = useState(false)
 
@@ -36,19 +35,19 @@ export function CopyButton({
   }
 
   return (
-    <Tooltip title={copied ? 'Copied' : label}>
-      <IconButton
-        aria-label={`${label} ${value}`}
-        size={size}
-        onClick={handleClick}
-        {...props}
-      >
-        {copied ? (
-          <CheckRoundedIcon fontSize="inherit" color="success" />
-        ) : (
-          <ContentCopyRoundedIcon fontSize="inherit" />
-        )}
-      </IconButton>
-    </Tooltip>
+    <Button
+      variant="ghost"
+      size="icon-xs"
+      aria-label={`${label} ${value}`}
+      title={copied ? 'Copied' : label}
+      onClick={handleClick}
+      className={className}
+    >
+      {copied ? (
+        <CheckIcon aria-hidden="true" className="text-success-foreground" />
+      ) : (
+        <CopyIcon aria-hidden="true" />
+      )}
+    </Button>
   )
 }

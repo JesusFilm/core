@@ -1,23 +1,15 @@
 'use client'
 
 import { useMutation, useQuery } from '@apollo/client/react'
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
-import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded'
-import PauseCircleOutlineRoundedIcon from '@mui/icons-material/PauseCircleOutlineRounded'
-import PlayCircleOutlineRoundedIcon from '@mui/icons-material/PlayCircleOutlineRounded'
-import PublishRoundedIcon from '@mui/icons-material/PublishRounded'
-import StopCircleOutlinedIcon from '@mui/icons-material/StopCircleOutlined'
-import Alert from '@mui/material/Alert'
-import Button from '@mui/material/Button'
-import Chip from '@mui/material/Chip'
-import CircularProgress from '@mui/material/CircularProgress'
-import IconButton from '@mui/material/IconButton'
-import Paper from '@mui/material/Paper'
-import Stack from '@mui/material/Stack'
-import Tooltip from '@mui/material/Tooltip'
-import Typography from '@mui/material/Typography'
+import {
+  CircleStopIcon,
+  ExternalLinkIcon,
+  PauseCircleIcon,
+  PlayCircleIcon,
+  Trash2Icon,
+  UploadCloudIcon
+} from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
-import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { ResultOf, graphql } from '@core/shared/gql'
@@ -38,10 +30,17 @@ import {
   isMutationError,
   parseMutationError
 } from '../../../../../libs/shortLink'
+import { notify, notifyError } from '../../../../../libs/toast'
 import { useShortLinkAccess } from '../../../../../libs/useShortLinkAccess'
 import { LinkForm, LinkFormValues, getVideoLabel } from '../../_LinkForm'
 
 import { QrPanel } from './_QrPanel'
+
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardPanel } from '@/components/ui/card'
+import { Spinner } from '@/components/ui/spinner'
 
 export const GET_SHORT_LINK = graphql(
   `
@@ -197,7 +196,6 @@ export function toUpdateInput(
 export function LinkDetail(): ReactElement {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
-  const { enqueueSnackbar } = useSnackbar()
   const { isAdmin } = useShortLinkAccess()
   const [errorMessage, setErrorMessage] = useState<string>()
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>()
@@ -212,16 +210,23 @@ export function LinkDetail(): ReactElement {
   const [remove, { loading: deleting }] = useMutation(SHORT_LINK_DELETE)
   const [publish, { loading: publishing }] = useMutation(SHORT_LINK_PUBLISH)
 
-  if (loading) return <CircularProgress />
-  if (error != null) return <Alert severity="error">{error.message}</Alert>
+  if (loading) return <Spinner aria-label="Loading link" />
+  if (error != null)
+    return (
+      <Alert variant="error">
+        <AlertDescription>{error.message}</AlertDescription>
+      </Alert>
+    )
 
   const result = data?.shortLink
   if (result == null || result.__typename !== 'QueryShortLinkSuccess') {
     return (
-      <Alert severity="error">
-        {result != null && 'message' in result && result.message != null
-          ? result.message
-          : 'Link not found'}
+      <Alert variant="error">
+        <AlertDescription>
+          {result != null && 'message' in result && result.message != null
+            ? result.message
+            : 'Link not found'}
+        </AlertDescription>
       </Alert>
     )
   }
@@ -257,7 +262,7 @@ export function LinkDetail(): ReactElement {
         setFieldErrors(parsed.fieldErrors)
         return false
       }
-      enqueueSnackbar(successMessage, { variant: 'success' })
+      notify(successMessage, 'success')
       return true
     } catch (caught) {
       setErrorMessage(
@@ -289,17 +294,12 @@ export function LinkDetail(): ReactElement {
       })
       const outcome = published?.shortLinkPublish
       if (outcome != null && isMutationError(outcome)) {
-        enqueueSnackbar(parseMutationError(outcome).message, {
-          variant: 'error'
-        })
+        notify(parseMutationError(outcome).message, 'error')
         return
       }
-      enqueueSnackbar('Republished to the edge', { variant: 'success' })
+      notify('Republished to the edge', 'success')
     } catch (caught) {
-      enqueueSnackbar(
-        caught instanceof Error ? caught.message : 'Republish failed',
-        { variant: 'error' }
-      )
+      notifyError(caught, 'Republish failed')
     }
   }
 
@@ -308,18 +308,13 @@ export function LinkDetail(): ReactElement {
       const { data: deleted } = await remove({ variables: { id: link.id } })
       const outcome = deleted?.shortLinkDelete
       if (outcome != null && isMutationError(outcome)) {
-        enqueueSnackbar(parseMutationError(outcome).message, {
-          variant: 'error'
-        })
+        notify(parseMutationError(outcome).message, 'error')
         return
       }
-      enqueueSnackbar('Link deleted', { variant: 'success' })
+      notify('Link deleted', 'success')
       router.push('/links')
     } catch (caught) {
-      enqueueSnackbar(
-        caught instanceof Error ? caught.message : 'Delete failed',
-        { variant: 'error' }
-      )
+      notifyError(caught, 'Delete failed')
     } finally {
       setDeleteOpen(false)
     }
@@ -328,99 +323,98 @@ export function LinkDetail(): ReactElement {
   const busy = updating || publishing || deleting
 
   return (
-    <Stack spacing={2} sx={{ width: '100%', maxWidth: 1100 }}>
-      <Paper sx={{ p: 2 }}>
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          spacing={2}
-          sx={{ justifyContent: 'space-between', alignItems: { md: 'center' } }}
-        >
-          <Stack spacing={0.5} sx={{ minWidth: 0 }}>
-            <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5 }}>
-              <Typography component="h2" variant="h5" noWrap>
+    <div className="flex w-full max-w-5xl flex-col gap-4">
+      <Card>
+        <CardPanel className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex min-w-0 flex-col gap-1">
+            <div className="flex items-center gap-1">
+              <h2 className="truncate text-xl font-semibold">
                 {link.shortUrl}
-              </Typography>
+              </h2>
               <CopyButton value={link.shortUrl} label="Copy short URL" />
-              <Tooltip title="Open short URL">
-                <IconButton
-                  size="small"
-                  component="a"
-                  href={link.shortUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="Open short URL"
-                >
-                  <OpenInNewRoundedIcon fontSize="inherit" />
-                </IconButton>
-              </Tooltip>
-            </Stack>
-            <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                aria-label="Open short URL"
+                title="Open short URL"
+                render={
+                  <a href={link.shortUrl} target="_blank" rel="noreferrer" />
+                }
+              >
+                <ExternalLinkIcon aria-hidden="true" />
+              </Button>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
               <StatusChip status={link.status} />
               <HealthChip health={link.healthStatus} />
-              {link.global && <Chip size="small" color="info" label="Global" />}
-              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+              {link.global && <Badge variant="info">Global</Badge>}
+              <span className="text-muted-foreground text-xs">
                 {link.edgePublishedAt != null
                   ? `Published ${formatDateTime(link.edgePublishedAt)}`
                   : 'Not yet published to the edge'}
-              </Typography>
-            </Stack>
-          </Stack>
-          <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
             {link.status !== 'active' && (
               <Button
-                size="small"
-                startIcon={<PlayCircleOutlineRoundedIcon />}
+                variant="outline"
+                size="sm"
                 onClick={() => void handleStatus('active')}
                 disabled={busy}
               >
+                <PlayCircleIcon aria-hidden="true" />
                 Activate
               </Button>
             )}
             {link.status === 'active' && (
               <Button
-                size="small"
-                startIcon={<PauseCircleOutlineRoundedIcon />}
+                variant="outline"
+                size="sm"
                 onClick={() => void handleStatus('paused')}
                 disabled={busy}
               >
+                <PauseCircleIcon aria-hidden="true" />
                 Pause
               </Button>
             )}
             {link.status !== 'retired' && (
               <Button
-                size="small"
-                startIcon={<StopCircleOutlinedIcon />}
+                variant="outline"
+                size="sm"
                 onClick={() => void handleStatus('retired')}
                 disabled={busy}
               >
+                <CircleStopIcon aria-hidden="true" />
                 Retire
               </Button>
             )}
             {isAdmin && (
               <Button
-                size="small"
-                startIcon={<PublishRoundedIcon />}
+                variant="outline"
+                size="sm"
                 onClick={handlePublish}
                 loading={publishing}
                 disabled={busy}
               >
+                <UploadCloudIcon aria-hidden="true" />
                 Republish to edge
               </Button>
             )}
             {canDeleteLink(link.assetClass, isAdmin) && (
               <Button
-                size="small"
-                color="error"
-                startIcon={<DeleteOutlineRoundedIcon />}
+                variant="destructive-outline"
+                size="sm"
                 onClick={() => setDeleteOpen(true)}
                 disabled={busy}
               >
+                <Trash2Icon aria-hidden="true" />
                 Delete
               </Button>
             )}
-          </Stack>
-        </Stack>
-      </Paper>
+          </div>
+        </CardPanel>
+      </Card>
 
       <LinkForm
         mode="edit"
@@ -455,6 +449,6 @@ export function LinkDetail(): ReactElement {
         onConfirm={handleDelete}
         onClose={() => setDeleteOpen(false)}
       />
-    </Stack>
+    </div>
   )
 }

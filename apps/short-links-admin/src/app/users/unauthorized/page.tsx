@@ -1,12 +1,3 @@
-import Alert from '@mui/material/Alert'
-import Box from '@mui/material/Box'
-import FormControl from '@mui/material/FormControl'
-import FormLabel from '@mui/material/FormLabel'
-import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
-import ListItemText from '@mui/material/ListItemText'
-import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { ReactNode } from 'react'
 
@@ -19,6 +10,10 @@ import { getUser } from '../../../libs/auth/getUser'
 
 import { Logout } from './_logout'
 
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Field, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+
 const GET_AUTH = graphql(`
   query me {
     me {
@@ -26,6 +21,13 @@ const GET_AUTH = graphql(`
     }
   }
 `)
+
+const INSTRUCTIONS = [
+  'Open Prisma Studio for api-media',
+  'Select the UserMediaRole model',
+  'Add a record with the id and userId below and the shortLinkEditor or shortLinkAdmin role',
+  'Sign out and back in again'
+]
 
 export default async function UnauthorizedPage(): Promise<ReactNode> {
   const user = await getUser()
@@ -43,78 +45,49 @@ export default async function UnauthorizedPage(): Promise<ReactNode> {
         width={100}
         height={100}
       />
-      <Box>
-        <Typography
-          component="h1"
-          variant="h4"
-          sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
-        >
-          401 Unauthorized
-        </Typography>
-        <Typography>
-          We couldn't validate your credentials. Please ask an administrator to
-          add the necessary role to your account by forwarding them your ID &
-          User ID.
-        </Typography>
+      <div className="flex flex-col gap-2">
+        <h1 className="text-2xl font-semibold">401 Unauthorized</h1>
+        <p className="text-muted-foreground text-sm">
+          We couldn&apos;t validate your credentials. Please ask an
+          administrator to add the necessary role to your account by forwarding
+          them your ID &amp; User ID.
+        </p>
         {process.env.NODE_ENV === 'development' && (
-          <Alert severity="warning" sx={{ mt: 2 }}>
-            <Typography
-              component="p"
-              sx={{
-                fontWeight: 'bold'
-              }}
-            >
+          <Alert variant="warning">
+            <AlertTitle>
               You need a UserMediaRole record with shortLinkEditor or
               shortLinkAdmin
-            </Typography>
-            <List component="ol" dense sx={{ listStyle: 'decimal', pl: 3 }}>
-              {[
-                'Open Prisma Studio for api-media',
-                'Select the UserMediaRole model',
-                'Add a record with the id and userId below and the shortLinkEditor or shortLinkAdmin role',
-                'Sign out and back in again'
-              ].map((instruction) => (
-                <ListItem
-                  component="li"
-                  disablePadding
-                  key={instruction}
-                  sx={{ display: 'list-item' }}
-                >
-                  <ListItemText primary={instruction} />
-                </ListItem>
-              ))}
-            </List>
+            </AlertTitle>
+            <AlertDescription>
+              <ol className="list-decimal ps-4">
+                {INSTRUCTIONS.map((instruction) => (
+                  <li key={instruction}>{instruction}</li>
+                ))}
+              </ol>
+            </AlertDescription>
           </Alert>
         )}
-      </Box>
-      <FormControl>
-        <FormLabel htmlFor="id">ID</FormLabel>
-        <TextField
+      </div>
+      <Field name="id">
+        <FieldLabel htmlFor="id">ID</FieldLabel>
+        <Input
           id="id"
           name="id"
-          value={data?.me?.id}
-          fullWidth
-          slotProps={{
-            input: {
-              readOnly: true
-            }
-          }}
+          value={data?.me?.id ?? ''}
+          readOnly
+          className="w-full"
         />
-      </FormControl>
-      <FormControl>
-        <FormLabel htmlFor="uid">User ID</FormLabel>
-        <TextField
+      </Field>
+      <Field name="uid">
+        <FieldLabel htmlFor="uid">User ID</FieldLabel>
+        <Input
           id="uid"
           name="uid"
-          value={user?.uid}
-          fullWidth
-          slotProps={{
-            input: {
-              readOnly: true
-            }
-          }}
+          value={user?.uid ?? ''}
+          readOnly
+          className="w-full"
         />
-      </FormControl>
+      </Field>
       <Logout />
     </CenterPage>
   )

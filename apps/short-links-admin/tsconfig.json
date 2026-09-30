@@ -19,7 +19,12 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "paths": {
+      "@/*": ["*"],
+      "@core/shared/gql": ["../../../libs/shared/gql/src"]
+    },
+    "baseUrl": "./src"
   },
   "include": [
     "**/*.ts",

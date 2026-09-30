@@ -1,18 +1,6 @@
 'use client'
 
 import { useQuery } from '@apollo/client/react'
-import Alert from '@mui/material/Alert'
-import Chip from '@mui/material/Chip'
-import CircularProgress from '@mui/material/CircularProgress'
-import Paper from '@mui/material/Paper'
-import Stack from '@mui/material/Stack'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableContainer from '@mui/material/TableContainer'
-import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
-import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/navigation'
 import { KeyboardEvent, ReactElement } from 'react'
 
@@ -22,6 +10,19 @@ import {
   formatDateTime,
   labelFor
 } from '../../../../libs/shortLink'
+
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardPanel } from '@/components/ui/card'
+import { Spinner } from '@/components/ui/spinner'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 
 export function DomainList(): ReactElement {
   const router = useRouter()
@@ -43,105 +44,98 @@ export function DomainList(): ReactElement {
   }
 
   return (
-    <Stack spacing={2} sx={{ width: '100%', maxWidth: 1300 }}>
-      <Typography component="h2" variant="h6">
-        Domains
-      </Typography>
-      <Paper sx={{ p: 2 }}>
-        {error != null && <Alert severity="error">{error.message}</Alert>}
-        {loading && <CircularProgress size={24} />}
-        <TableContainer>
-          <Table size="small" aria-label="Domains">
-            <TableHead>
-              <TableRow>
-                <TableCell>Hostname</TableCell>
-                <TableCell>Path prefix</TableCell>
-                <TableCell>Services</TableCell>
-                <TableCell>Redirect</TableCell>
-                <TableCell>Not found</TableCell>
-                <TableCell>Fallback</TableCell>
-                <TableCell>Passthrough origin</TableCell>
-                <TableCell align="right">Links</TableCell>
-                <TableCell>Published</TableCell>
-                <TableCell>Edge published</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {domains.map((domain) => (
-                <TableRow
-                  key={domain.id}
-                  hover
-                  tabIndex={0}
-                  role="link"
-                  aria-label={domain.hostname}
-                  onClick={() => router.push(`/domains/${domain.id}`)}
-                  onKeyDown={(event) => handleRowKeyDown(event, domain.id)}
-                  sx={{ cursor: 'pointer' }}
-                >
-                  <TableCell>{domain.hostname}</TableCell>
-                  <TableCell>
-                    {domain.pathPrefix === '' ? '(root)' : domain.pathPrefix}
-                  </TableCell>
-                  <TableCell>
-                    <Stack
-                      direction="row"
-                      spacing={0.5}
-                      sx={{ flexWrap: 'wrap' }}
-                    >
-                      {domain.services.length === 0 ? (
-                        <Typography
-                          variant="caption"
-                          sx={{ color: 'text.secondary' }}
-                        >
-                          All services
-                        </Typography>
-                      ) : (
-                        domain.services.map((service) => (
-                          <Chip key={service} size="small" label={service} />
-                        ))
-                      )}
-                    </Stack>
-                  </TableCell>
-                  <TableCell>{domain.redirectStatus}</TableCell>
-                  <TableCell>
-                    {labelFor(NOT_FOUND_OPTIONS, domain.notFound)}
-                  </TableCell>
-                  <TableCell sx={{ wordBreak: 'break-all' }}>
-                    {domain.fallbackTo ?? ''}
-                  </TableCell>
-                  <TableCell sx={{ wordBreak: 'break-all' }}>
-                    {domain.passthroughOrigin ?? ''}
-                  </TableCell>
-                  <TableCell align="right">{domain.linkCount}</TableCell>
-                  <TableCell>
-                    <Chip
-                      size="small"
-                      label={
-                        domain.kvNamespaceId != null &&
-                        domain.kvNamespaceId !== ''
-                          ? 'edge'
-                          : 'not published'
-                      }
-                      color={
-                        domain.kvNamespaceId != null &&
-                        domain.kvNamespaceId !== ''
-                          ? 'success'
-                          : 'default'
-                      }
-                      variant="outlined"
-                    />
-                  </TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                    {domain.edgePublishedAt != null
-                      ? formatDateTime(domain.edgePublishedAt)
-                      : 'Never'}
-                  </TableCell>
+    <div className="flex w-full max-w-7xl flex-col gap-4">
+      <h2 className="text-lg font-semibold">Domains</h2>
+      <Card>
+        <CardPanel className="flex flex-col gap-3">
+          {error != null && (
+            <Alert variant="error">
+              <AlertDescription>{error.message}</AlertDescription>
+            </Alert>
+          )}
+          {loading && <Spinner aria-label="Loading domains" />}
+          <div className="overflow-x-auto">
+            <Table aria-label="Domains">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Hostname</TableHead>
+                  <TableHead>Path prefix</TableHead>
+                  <TableHead>Services</TableHead>
+                  <TableHead>Redirect</TableHead>
+                  <TableHead>Not found</TableHead>
+                  <TableHead>Fallback</TableHead>
+                  <TableHead>Passthrough origin</TableHead>
+                  <TableHead className="text-right">Links</TableHead>
+                  <TableHead>Published</TableHead>
+                  <TableHead>Edge published</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
-    </Stack>
+              </TableHeader>
+              <TableBody>
+                {domains.map((domain) => {
+                  const published =
+                    domain.kvNamespaceId != null && domain.kvNamespaceId !== ''
+                  return (
+                    <TableRow
+                      key={domain.id}
+                      tabIndex={0}
+                      role="link"
+                      aria-label={domain.hostname}
+                      onClick={() => router.push(`/domains/${domain.id}`)}
+                      onKeyDown={(event) => handleRowKeyDown(event, domain.id)}
+                      className="cursor-pointer"
+                    >
+                      <TableCell>{domain.hostname}</TableCell>
+                      <TableCell>
+                        {domain.pathPrefix === ''
+                          ? '(root)'
+                          : domain.pathPrefix}
+                      </TableCell>
+                      <TableCell>
+                        <span className="flex flex-wrap gap-1">
+                          {domain.services.length === 0 ? (
+                            <span className="text-muted-foreground text-xs">
+                              All services
+                            </span>
+                          ) : (
+                            domain.services.map((service) => (
+                              <Badge key={service} variant="secondary">
+                                {service}
+                              </Badge>
+                            ))
+                          )}
+                        </span>
+                      </TableCell>
+                      <TableCell>{domain.redirectStatus}</TableCell>
+                      <TableCell>
+                        {labelFor(NOT_FOUND_OPTIONS, domain.notFound)}
+                      </TableCell>
+                      <TableCell className="break-all">
+                        {domain.fallbackTo ?? ''}
+                      </TableCell>
+                      <TableCell className="break-all">
+                        {domain.passthroughOrigin ?? ''}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {domain.linkCount}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={published ? 'success' : 'outline'}>
+                          {published ? 'edge' : 'not published'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        {domain.edgePublishedAt != null
+                          ? formatDateTime(domain.edgePublishedAt)
+                          : 'Never'}
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </CardPanel>
+      </Card>
+    </div>
   )
 }

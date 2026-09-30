@@ -1,26 +1,28 @@
 'use client'
 
 import { useMutation, useQuery } from '@apollo/client/react'
-import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogContent from '@mui/material/DialogContent'
-import DialogTitle from '@mui/material/DialogTitle'
-import MenuItem from '@mui/material/MenuItem'
-import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
-import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
 
+import { SelectField, TextField } from '../../../../../components/form'
 import {
   GET_SHORT_LINK_CAMPAIGN_OPTIONS,
   SHORT_LINK_FIELDS,
   isMutationError,
   parseMutationError
 } from '../../../../../libs/shortLink'
+import { notify, notifyError } from '../../../../../libs/toast'
+
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogFooter,
+  DialogHeader,
+  DialogPanel,
+  DialogPopup,
+  DialogTitle
+} from '@/components/ui/dialog'
 
 export const SHORT_LINK_BULK_UPDATE = graphql(
   `
@@ -58,7 +60,6 @@ export function BulkToolbar({
   selectedIds,
   onDone
 }: BulkToolbarProps): ReactElement | null {
-  const { enqueueSnackbar } = useSnackbar()
   const [action, setAction] = useState<BulkAction | null>(null)
   const [value, setValue] = useState('')
   const [bulkUpdate, { loading }] = useMutation(SHORT_LINK_BULK_UPDATE)
@@ -86,20 +87,15 @@ export function BulkToolbar({
       })
       const outcome = data?.shortLinkBulkUpdate
       if (outcome != null && isMutationError(outcome)) {
-        enqueueSnackbar(parseMutationError(outcome).message, {
-          variant: 'error'
-        })
+        notify(parseMutationError(outcome).message, 'error')
         return
       }
-      enqueueSnackbar(successMessage, { variant: 'success' })
+      notify(successMessage, 'success')
       setAction(null)
       setValue('')
       onDone()
     } catch (error) {
-      enqueueSnackbar(
-        error instanceof Error ? error.message : 'Bulk update failed',
-        { variant: 'error' }
-      )
+      notifyError(error, 'Bulk update failed')
     }
   }
 
@@ -116,8 +112,8 @@ export function BulkToolbar({
     setAction(next)
   }
 
-  function handleClose(): void {
-    setAction(null)
+  function handleOpenChange(open: boolean): void {
+    if (!open) setAction(null)
   }
 
   function handleSubmit(): void {
@@ -135,71 +131,88 @@ export function BulkToolbar({
   }
 
   return (
-    <Stack
-      direction="row"
-      spacing={1}
-      sx={{ alignItems: 'center', px: 2, pb: 1, flexWrap: 'wrap' }}
+    <div
       data-testid="BulkToolbar"
+      className="flex flex-wrap items-center gap-2 px-4 pb-2"
     >
-      <Typography variant="body2" sx={{ mr: 1 }}>
-        {selectedIds.length} selected
-      </Typography>
-      <Button size="small" onClick={handlePause} disabled={loading}>
+      <span className="me-2 text-sm">{selectedIds.length} selected</span>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handlePause}
+        disabled={loading}
+      >
         Pause
       </Button>
-      <Button size="small" onClick={handleActivate} disabled={loading}>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleActivate}
+        disabled={loading}
+      >
         Activate
       </Button>
-      <Button size="small" onClick={() => handleOpen('addTag')}>
+      <Button variant="outline" size="sm" onClick={() => handleOpen('addTag')}>
         Add tag
       </Button>
-      <Button size="small" onClick={() => handleOpen('removeTag')}>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => handleOpen('removeTag')}
+      >
         Remove tag
       </Button>
-      <Button size="small" onClick={() => handleOpen('addCampaign')}>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => handleOpen('addCampaign')}
+      >
         Add to campaign
       </Button>
-      <Dialog open={action != null} onClose={handleClose} fullWidth>
-        <DialogTitle>{action != null ? ACTION_TITLES[action] : ''}</DialogTitle>
-        <DialogContent>
-          {action === 'addCampaign' ? (
-            <TextField
-              select
-              fullWidth
-              label="Campaign"
-              value={value}
-              onChange={(event) => setValue(event.target.value)}
-              sx={{ mt: 1 }}
+      <Dialog open={action != null} onOpenChange={handleOpenChange}>
+        <DialogPopup className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {action != null ? ACTION_TITLES[action] : ''}
+            </DialogTitle>
+          </DialogHeader>
+          <DialogPanel>
+            {action === 'addCampaign' ? (
+              <SelectField
+                id="bulk-campaign"
+                label="Campaign"
+                value={value}
+                onValueChange={setValue}
+                placeholder="Choose a campaign"
+                options={campaigns.map((campaign) => ({
+                  value: campaign.id,
+                  label: campaign.name
+                }))}
+              />
+            ) : (
+              <TextField
+                id="bulk-tag"
+                label="Tag"
+                value={value}
+                onChange={(event) => setValue(event.target.value)}
+                autoFocus
+              />
+            )}
+          </DialogPanel>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setAction(null)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              loading={loading}
+              disabled={value.trim() === ''}
             >
-              {campaigns.map((campaign) => (
-                <MenuItem key={campaign.id} value={campaign.id}>
-                  {campaign.name}
-                </MenuItem>
-              ))}
-            </TextField>
-          ) : (
-            <TextField
-              autoFocus
-              fullWidth
-              label="Tag"
-              value={value}
-              onChange={(event) => setValue(event.target.value)}
-              sx={{ mt: 1 }}
-            />
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button
-            variant="contained"
-            onClick={handleSubmit}
-            loading={loading}
-            disabled={value.trim() === ''}
-          >
-            Apply
-          </Button>
-        </DialogActions>
+              Apply
+            </Button>
+          </DialogFooter>
+        </DialogPopup>
       </Dialog>
-    </Stack>
+    </div>
   )
 }

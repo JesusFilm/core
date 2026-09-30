@@ -3,6 +3,17 @@ import nextConfig from '../../libs/shared/eslint/next.mjs'
 export default [
   ...nextConfig,
   {
+    // `**/` so the patterns match whether ESLint's base path is this folder
+    // (direct run) or the workspace root (nx lint). next-env.d.ts is a build
+    // artefact.
+    ignores: ['**/postcss.config.mjs', '**/next-env.d.ts']
+  },
+  {
+    // Coss UI primitives are copied in from the registry and kept as written.
+    files: ['**/src/components/ui/**/*.tsx'],
+    rules: { 'import/no-namespace': 'off' }
+  },
+  {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     rules: {
       '@next/next/no-html-link-for-pages': [

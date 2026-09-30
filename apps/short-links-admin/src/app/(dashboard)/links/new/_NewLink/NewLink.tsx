@@ -1,10 +1,7 @@
 'use client'
 
 import { useMutation, useQuery } from '@apollo/client/react'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/navigation'
-import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
@@ -17,6 +14,7 @@ import {
   isMutationError,
   parseMutationError
 } from '../../../../../libs/shortLink'
+import { notify } from '../../../../../libs/toast'
 import { useShortLinkAccess } from '../../../../../libs/useShortLinkAccess'
 import {
   EMPTY_LINK_FORM_VALUES,
@@ -79,7 +77,6 @@ export function toCreateInput(values: LinkFormValues) {
 
 export function NewLink(): ReactElement {
   const router = useRouter()
-  const { enqueueSnackbar } = useSnackbar()
   const { isAdmin } = useShortLinkAccess()
   const [errorMessage, setErrorMessage] = useState<string>()
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>()
@@ -115,7 +112,7 @@ export function NewLink(): ReactElement {
         return
       }
       if (result.__typename === 'MutationShortLinkCreateSuccess') {
-        enqueueSnackbar('Link created', { variant: 'success' })
+        notify('Link created', 'success')
         router.push(`/links/${result.data.id}`)
       }
     } catch (error) {
@@ -131,10 +128,8 @@ export function NewLink(): ReactElement {
   }
 
   return (
-    <Stack spacing={2} sx={{ width: '100%', maxWidth: 1100 }}>
-      <Typography component="h2" variant="h6">
-        New link
-      </Typography>
+    <div className="flex w-full max-w-5xl flex-col gap-4">
+      <h2 className="text-lg font-semibold">New link</h2>
       <LinkForm
         mode="create"
         initialValues={initialValues}
@@ -147,6 +142,6 @@ export function NewLink(): ReactElement {
         onSubmit={handleSubmit}
         onCancel={() => router.push('/links')}
       />
-    </Stack>
+    </div>
   )
 }

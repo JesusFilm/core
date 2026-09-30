@@ -25,6 +25,9 @@ export default defineConfig({
     },
     reporters: ['default'],
     setupFiles: ['./setupTests.tsx'],
+    alias: {
+      '@/': `${resolve(__dirname, 'src')}/`
+    },
     coverage: {
       enabled: true,
       provider: 'v8',
@@ -48,12 +51,6 @@ export default defineConfig({
     },
     retry: process.env.CI === 'true' ? 3 : 0,
     passWithNoTests: true,
-    server: {
-      deps: {
-        // Inline so Vite transforms the package and resolves its CSS import
-        // (otherwise Node's loader chokes on `@mui/x-data-grid/esm/index.css`).
-        inline: [/@mui\/x-data-grid/]
-      }
-    }
+    css: false
   }
 })

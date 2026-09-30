@@ -1,18 +1,18 @@
-import CampaignRoundedIcon from '@mui/icons-material/CampaignRounded'
-import LanguageRoundedIcon from '@mui/icons-material/LanguageRounded'
-import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
-import ScienceRoundedIcon from '@mui/icons-material/ScienceRounded'
-import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
-import ListItemButton from '@mui/material/ListItemButton'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
-import Stack from '@mui/material/Stack'
+'use client'
+
+import {
+  FlaskConicalIcon,
+  GlobeIcon,
+  LinkIcon,
+  MegaphoneIcon
+} from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ReactElement, ReactNode } from 'react'
 
 import { useShortLinkAccess } from '../../libs/useShortLinkAccess'
+
+import { cn } from '@/lib/utils'
 
 interface Item {
   text: string
@@ -25,59 +25,75 @@ function isItemSelected(item: Item, pathname: string | null): boolean {
   return pathname === item.href || pathname.startsWith(`${item.href}/`)
 }
 
-export function MenuContent(): ReactElement {
+function NavList({
+  items,
+  pathname,
+  onNavigate
+}: {
+  items: Item[]
+  pathname: string | null
+  onNavigate?: () => void
+}): ReactElement {
+  return (
+    <ul className="flex flex-col gap-0.5">
+      {items.map((item) => {
+        const selected = isItemSelected(item, pathname)
+        return (
+          <li key={item.href}>
+            <Link
+              href={item.href}
+              onClick={onNavigate}
+              aria-current={selected ? 'page' : undefined}
+              className={cn(
+                'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-sidebar-ring flex items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none focus-visible:ring-2',
+                selected &&
+                  'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
+              )}
+            >
+              <span className="[&_svg]:size-4" aria-hidden="true">
+                {item.icon}
+              </span>
+              {item.text}
+            </Link>
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
+interface MenuContentProps {
+  onNavigate?: () => void
+}
+
+export function MenuContent({ onNavigate }: MenuContentProps): ReactElement {
   const pathname = usePathname()
   const { isAdmin } = useShortLinkAccess()
 
   const mainListItems: Item[] = [
-    { text: 'Links', icon: <LinkRoundedIcon />, href: '/links' },
-    { text: 'Campaigns', icon: <CampaignRoundedIcon />, href: '/campaigns' },
+    { text: 'Links', icon: <LinkIcon />, href: '/links' },
+    { text: 'Campaigns', icon: <MegaphoneIcon />, href: '/campaigns' },
     ...(isAdmin
-      ? [{ text: 'Domains', icon: <LanguageRoundedIcon />, href: '/domains' }]
+      ? [{ text: 'Domains', icon: <GlobeIcon />, href: '/domains' }]
       : [])
   ]
 
   const secondaryListItems: Item[] = [
-    { text: 'Test Redirect', icon: <ScienceRoundedIcon />, href: '/test' }
+    { text: 'Test Redirect', icon: <FlaskConicalIcon />, href: '/test' }
   ]
 
   return (
-    <Stack
-      sx={{
-        flexGrow: 1,
-        p: 1,
-        justifyContent: 'space-between'
-      }}
-    >
-      <List dense>
-        {mainListItems.map((item) => (
-          <ListItem key={item.href} disablePadding sx={{ display: 'block' }}>
-            <ListItemButton
-              LinkComponent={Link}
-              href={item.href}
-              selected={isItemSelected(item, pathname)}
-            >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-
-      <List dense>
-        {secondaryListItems.map((item) => (
-          <ListItem key={item.href} disablePadding sx={{ display: 'block' }}>
-            <ListItemButton
-              LinkComponent={Link}
-              href={item.href}
-              selected={isItemSelected(item, pathname)}
-            >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </Stack>
+    <nav aria-label="Main" className="flex flex-1 flex-col justify-between p-2">
+      <NavList
+        items={mainListItems}
+        pathname={pathname}
+        onNavigate={onNavigate}
+      />
+      <NavList
+        items={secondaryListItems}
+        pathname={pathname}
+        onNavigate={onNavigate}
+      />
+    </nav>
   )
 }

@@ -12,7 +12,11 @@
       "@nx/react/typings/cssmodule.d.ts",
       "@nx/react/typings/image.d.ts"
     ],
-    "strict": false
+    "strict": false,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@core/shared/gql": ["../../libs/shared/gql/src"]
+    }
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", ".next", "vitest.config.mts"]

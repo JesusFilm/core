@@ -1,15 +1,8 @@
-import Alert from '@mui/material/Alert'
-import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
-import DialogTitle from '@mui/material/DialogTitle'
-import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
+'use client'
+
 import { ReactElement, useState } from 'react'
 
+import { TextareaField } from '../../../../../components/form'
 import {
   ASSET_CLASS_OPTIONS,
   ShortLinkAssetClass,
@@ -17,6 +10,18 @@ import {
   labelFor,
   validateDestinationChange
 } from '../../../../../libs/shortLink'
+
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogPanel,
+  DialogPopup,
+  DialogTitle
+} from '@/components/ui/dialog'
 
 export interface DestinationChangeDialogProps {
   open: boolean
@@ -73,64 +78,58 @@ export function DestinationChangeDialog({
     onClose()
   }
 
+  function handleOpenChange(nextOpen: boolean): void {
+    if (!nextOpen) handleClose()
+  }
+
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="destination-change-title"
-      fullWidth
-    >
-      <DialogTitle id="destination-change-title">
-        Change a {labelFor(ASSET_CLASS_OPTIONS, assetClass).toLowerCase()}{' '}
-        destination?
-      </DialogTitle>
-      <DialogContent>
-        <Stack spacing={2}>
-          <Alert severity="warning">
-            This link is embedded in {videoLabel}. Everyone who scans or clicks
-            it will land on the new destination immediately.
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogPopup className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>
+            Change a {labelFor(ASSET_CLASS_OPTIONS, assetClass).toLowerCase()}{' '}
+            destination?
+          </DialogTitle>
+          <DialogDescription>
+            Everyone who scans or clicks this link will land on the new
+            destination immediately.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogPanel className="flex flex-col gap-4">
+          <Alert variant="warning">
+            <AlertDescription>
+              This link is embedded in {videoLabel}.
+            </AlertDescription>
           </Alert>
-          <DialogContentText component="div">
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              From
-            </Typography>
-            <Typography sx={{ wordBreak: 'break-all' }}>{from}</Typography>
-            <Typography
-              variant="caption"
-              sx={{ color: 'text.secondary', mt: 1, display: 'block' }}
-            >
-              To
-            </Typography>
-            <Typography sx={{ wordBreak: 'break-all' }}>{to}</Typography>
-          </DialogContentText>
-          <TextField
-            label={rule.requiresNote ? 'Change note (required)' : 'Change note'}
+          <div className="text-sm">
+            <div className="text-muted-foreground text-xs">From</div>
+            <div className="break-all">{from}</div>
+            <div className="text-muted-foreground mt-2 text-xs">To</div>
+            <div className="break-all">{to}</div>
+          </div>
+          <TextareaField
+            id="destination-change-note"
+            label="Change note"
             value={note}
             onChange={(event) => setNote(event.target.value)}
-            error={noteError != null}
+            error={noteError}
             helperText={
-              noteError ?? 'Recorded in the destination history for this link'
+              rule.requiresNote
+                ? 'Required for video-embedded links; recorded in the destination history'
+                : 'Recorded in the destination history for this link'
             }
-            multiline
-            minRows={2}
             required={rule.requiresNote}
-            slotProps={{ htmlInput: { 'aria-label': 'Change note' } }}
           />
-        </Stack>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} disabled={loading}>
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          color="warning"
-          onClick={handleConfirm}
-          loading={loading}
-        >
-          Change destination
-        </Button>
-      </DialogActions>
+        </DialogPanel>
+        <DialogFooter>
+          <Button variant="ghost" onClick={handleClose} disabled={loading}>
+            Cancel
+          </Button>
+          <Button onClick={handleConfirm} loading={loading}>
+            Change destination
+          </Button>
+        </DialogFooter>
+      </DialogPopup>
     </Dialog>
   )
 }

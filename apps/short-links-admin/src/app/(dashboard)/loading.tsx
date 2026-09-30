@@ -1,21 +1,11 @@
-'use client'
-
-import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
 import { ReactElement } from 'react'
+
+import { Spinner } from '@/components/ui/spinner'
 
 export default function Loading(): ReactElement {
   return (
-    <Box
-      sx={{
-        height: '100%',
-        width: '100%',
-        display: 'grid',
-        placeItems: 'center',
-        p: 4
-      }}
-    >
-      <CircularProgress />
-    </Box>
+    <div className="grid h-full w-full place-items-center p-8">
+      <Spinner aria-label="Loading" />
+    </div>
   )
 }

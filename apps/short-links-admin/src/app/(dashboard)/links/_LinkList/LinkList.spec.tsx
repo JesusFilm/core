@@ -2,7 +2,6 @@ import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useRouter } from 'next/navigation'
-import { SnackbarProvider } from 'notistack'
 
 import {
   GET_SHORT_LINK_CAMPAIGN_OPTIONS,
@@ -217,9 +216,7 @@ describe('LinkList', () => {
       <MockedProvider
         mocks={[shortLinksMock, globalLinksMock, domainsMock, campaignsMock]}
       >
-        <SnackbarProvider>
-          <LinkList />
-        </SnackbarProvider>
+        <LinkList />
       </MockedProvider>
     )
 
@@ -237,9 +234,7 @@ describe('LinkList', () => {
   it('renders links from the connection', async () => {
     render(
       <MockedProvider mocks={[shortLinksMock, domainsMock, campaignsMock]}>
-        <SnackbarProvider>
-          <LinkList />
-        </SnackbarProvider>
+        <LinkList />
       </MockedProvider>
     )
 
@@ -266,9 +261,7 @@ describe('LinkList', () => {
       <MockedProvider
         mocks={[shortLinksMock, pausedLinksMock, domainsMock, campaignsMock]}
       >
-        <SnackbarProvider>
-          <LinkList />
-        </SnackbarProvider>
+        <LinkList />
       </MockedProvider>
     )
 

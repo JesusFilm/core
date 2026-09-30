@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen } from '@testing-library/react'
 import { useParams, useRouter } from 'next/navigation'
-import { SnackbarProvider } from 'notistack'
 
 import { GET_SHORT_LINK_STATS } from '../../../../../components/StatsPanel'
 import {
@@ -209,9 +208,7 @@ describe('LinkDetail', () => {
           statsMock()
         ]}
       >
-        <SnackbarProvider>
-          <LinkDetail />
-        </SnackbarProvider>
+        <LinkDetail />
       </MockedProvider>
     )
 
@@ -256,9 +253,7 @@ describe('LinkDetail', () => {
           statsMock()
         ]}
       >
-        <SnackbarProvider>
-          <LinkDetail />
-        </SnackbarProvider>
+        <LinkDetail />
       </MockedProvider>
     )
 

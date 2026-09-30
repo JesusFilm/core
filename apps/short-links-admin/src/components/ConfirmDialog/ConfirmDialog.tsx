@@ -1,10 +1,16 @@
-import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
-import DialogTitle from '@mui/material/DialogTitle'
+'use client'
+
 import { ReactElement, ReactNode } from 'react'
+
+import {
+  AlertDialog,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogPopup,
+  AlertDialogTitle
+} from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
 
 interface ConfirmDialogProps {
   open: boolean
@@ -29,32 +35,33 @@ export function ConfirmDialog({
   onClose,
   children
 }: ConfirmDialogProps): ReactElement {
+  function handleOpenChange(nextOpen: boolean): void {
+    if (!nextOpen) onClose()
+  }
+
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      aria-labelledby="confirm-dialog-title"
-    >
-      <DialogTitle id="confirm-dialog-title">{title}</DialogTitle>
-      <DialogContent>
-        {description != null && (
-          <DialogContentText>{description}</DialogContentText>
-        )}
+    <AlertDialog open={open} onOpenChange={handleOpenChange}>
+      <AlertDialogPopup>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          {description != null && (
+            <AlertDialogDescription>{description}</AlertDialogDescription>
+          )}
+        </AlertDialogHeader>
         {children}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} disabled={loading}>
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          color={confirmColor}
-          onClick={onConfirm}
-          loading={loading}
-        >
-          {confirmLabel}
-        </Button>
-      </DialogActions>
-    </Dialog>
+        <AlertDialogFooter>
+          <Button variant="ghost" onClick={onClose} disabled={loading}>
+            Cancel
+          </Button>
+          <Button
+            variant={confirmColor === 'error' ? 'destructive' : 'default'}
+            onClick={onConfirm}
+            loading={loading}
+          >
+            {confirmLabel}
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogPopup>
+    </AlertDialog>
   )
 }

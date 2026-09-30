@@ -1,14 +1,15 @@
 'use client'
 
-import Button from '@mui/material/Button'
 import { ReactElement } from 'react'
 
 import { useLogout } from '../../../../libs/useLogout'
 
+import { Button } from '@/components/ui/button'
+
 export function Logout(): ReactElement {
   const handleLogout = useLogout()
   return (
-    <Button variant="contained" fullWidth onClick={handleLogout}>
+    <Button onClick={handleLogout} className="w-full">
       Sign out
     </Button>
   )

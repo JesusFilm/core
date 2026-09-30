@@ -1,32 +1,21 @@
 'use client'
 
 import { useQuery } from '@apollo/client/react'
-import AddRoundedIcon from '@mui/icons-material/AddRounded'
-import SearchIcon from '@mui/icons-material/Search'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Chip from '@mui/material/Chip'
-import CircularProgress from '@mui/material/CircularProgress'
-import InputAdornment from '@mui/material/InputAdornment'
-import MenuItem from '@mui/material/MenuItem'
-import Paper from '@mui/material/Paper'
-import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
-import {
-  DataGrid,
-  GridColDef,
-  GridPaginationModel,
-  GridRowSelectionModel,
-  gridClasses
-} from '@mui/x-data-grid'
+import { PlusIcon, SearchIcon } from 'lucide-react'
 import NextLink from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import {
+  KeyboardEvent,
+  ReactElement,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 
 import { graphql } from '@core/shared/gql'
 
 import { CopyButton } from '../../../../components/CopyButton'
+import { SelectField, TextField } from '../../../../components/form'
 import { HealthChip, StatusChip } from '../../../../components/StatusChip'
 import {
   ASSET_CLASS_OPTIONS,
@@ -36,6 +25,7 @@ import {
   SHORT_LINK_FIELDS,
   STATUS_OPTIONS,
   ShortLinkAssetClass,
+  ShortLinkHealth,
   ShortLinkPlacement,
   ShortLinkStatus,
   formatDateTime,
@@ -44,6 +34,25 @@ import {
 } from '../../../../libs/shortLink'
 
 import { BulkToolbar } from './_BulkToolbar'
+
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput
+} from '@/components/ui/input-group'
+import { Spinner } from '@/components/ui/spinner'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 
 export const GET_SHORT_LINKS = graphql(
   `
@@ -71,7 +80,27 @@ export const GET_SHORT_LINKS = graphql(
 )
 
 const DEFAULT_PAGE_SIZE = 25
-const ANY = ''
+const PAGE_SIZE_OPTIONS = ['25', '50', '100'].map((value) => ({
+  value,
+  label: `${value} per page`
+}))
+/** Select values must be non-empty strings; this stands in for "no filter". */
+const ANY = 'any'
+
+const STATUS_FILTER_OPTIONS = [{ value: ANY, label: 'Any' }, ...STATUS_OPTIONS]
+const ASSET_CLASS_FILTER_OPTIONS = [
+  { value: ANY, label: 'Any' },
+  ...ASSET_CLASS_OPTIONS
+]
+const PLACEMENT_FILTER_OPTIONS = [
+  { value: ANY, label: 'Any' },
+  ...PLACEMENT_OPTIONS
+]
+const GLOBAL_FILTER_OPTIONS = [
+  { value: ANY, label: 'Any' },
+  { value: 'global', label: 'Global' },
+  { value: 'local', label: 'Not global' }
+]
 
 interface LinkRow {
   id: string
@@ -83,7 +112,7 @@ interface LinkRow {
   placement: ShortLinkPlacement | null
   campaigns: string
   global: boolean
-  health: string | null
+  health: ShortLinkHealth | null
   updatedAt: string
 }
 
@@ -98,7 +127,6 @@ function useDebounced(value: string, delay = 300): string {
 
 export function LinkList(): ReactElement {
   const router = useRouter()
-  const [gridMounted, setGridMounted] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const search = useDebounced(searchTerm)
   const [hostname, setHostname] = useState(ANY)
@@ -107,21 +135,12 @@ export function LinkList(): ReactElement {
   const [placement, setPlacement] = useState(ANY)
   const [campaignId, setCampaignId] = useState(ANY)
   const [tag, setTag] = useState('')
-  const [globalFilter, setGlobalFilter] = useState(ANY)
   const debouncedTag = useDebounced(tag)
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    page: 0,
-    pageSize: DEFAULT_PAGE_SIZE
-  })
+  const [globalFilter, setGlobalFilter] = useState(ANY)
+  const [page, setPage] = useState(0)
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
   const [cursors, setCursors] = useState<Array<string | undefined>>([undefined])
-  const [selection, setSelection] = useState<GridRowSelectionModel>({
-    type: 'include',
-    ids: new Set()
-  })
-
-  useEffect(() => {
-    setGridMounted(true)
-  }, [])
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   const filter = useMemo(
     () => ({
@@ -150,18 +169,12 @@ export function LinkList(): ReactElement {
 
   // Any filter change restarts cursor pagination from the first page.
   useEffect(() => {
-    setPaginationModel((current) =>
-      current.page === 0 ? current : { ...current, page: 0 }
-    )
+    setPage(0)
     setCursors([undefined])
   }, [filter])
 
   const { data, loading, refetch } = useQuery(GET_SHORT_LINKS, {
-    variables: {
-      filter,
-      first: paginationModel.pageSize,
-      after: cursors[paginationModel.page]
-    }
+    variables: { filter, first: pageSize, after: cursors[page] }
   })
   const { data: domainData } = useQuery(GET_SHORT_LINK_DOMAINS)
   const { data: campaignData } = useQuery(GET_SHORT_LINK_CAMPAIGN_OPTIONS)
@@ -172,10 +185,10 @@ export function LinkList(): ReactElement {
     if (endCursor == null) return
     setCursors((current) => {
       const next = [...current]
-      next[paginationModel.page + 1] = endCursor
+      next[page + 1] = endCursor
       return next
     })
-  }, [connection?.pageInfo.endCursor, paginationModel.page])
+  }, [connection?.pageInfo.endCursor, page])
 
   const domains =
     domainData?.shortLinkDomains.edges?.flatMap((edge) =>
@@ -212,275 +225,278 @@ export function LinkList(): ReactElement {
     [connection?.edges]
   )
 
-  const columns: GridColDef<LinkRow>[] = [
-    {
-      field: 'shortUrl',
-      headerName: 'Short URL',
-      flex: 1,
-      minWidth: 220,
-      renderCell: (params) => (
-        <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5 }}>
-          <Typography variant="body2" noWrap>
-            {params.value}
-          </Typography>
-          <CopyButton value={params.value} label="Copy short URL" />
-          {params.row.global && (
-            <Chip
-              size="small"
-              color="info"
-              label="Global"
-              data-testid="GlobalChip"
-            />
-          )}
-        </Stack>
-      )
-    },
-    { field: 'name', headerName: 'Name', flex: 1, minWidth: 160 },
-    { field: 'to', headerName: 'Destination', flex: 1.5, minWidth: 240 },
-    {
-      field: 'status',
-      headerName: 'Status',
-      width: 110,
-      renderCell: (params) => <StatusChip status={params.value} />
-    },
-    {
-      field: 'assetClass',
-      headerName: 'Asset class',
-      width: 140,
-      valueFormatter: (value) => labelFor(ASSET_CLASS_OPTIONS, value)
-    },
-    {
-      field: 'placement',
-      headerName: 'Placement',
-      width: 140,
-      valueFormatter: (value) => labelFor(PLACEMENT_OPTIONS, value)
-    },
-    { field: 'campaigns', headerName: 'Campaigns', flex: 1, minWidth: 160 },
-    {
-      field: 'health',
-      headerName: 'Health',
-      width: 120,
-      renderCell: (params) => <HealthChip health={params.value} />
-    },
-    { field: 'updatedAt', headerName: 'Updated', width: 180 }
-  ]
+  const totalCount = connection?.totalCount ?? 0
+  const hasNextPage = connection?.pageInfo.hasNextPage ?? false
+  const allSelected =
+    rows.length > 0 && rows.every((row) => selectedIds.has(row.id))
+  const someSelected = rows.some((row) => selectedIds.has(row.id))
 
-  function handlePaginationModelChange(model: GridPaginationModel): void {
-    if (model.pageSize !== paginationModel.pageSize) {
-      setCursors([undefined])
-      setPaginationModel({ page: 0, pageSize: model.pageSize })
-      return
+  function handlePageSizeChange(value: string): void {
+    setPageSize(Number(value))
+    setPage(0)
+    setCursors([undefined])
+  }
+
+  function handleToggleAll(checked: boolean): void {
+    setSelectedIds((current) => {
+      const next = new Set(current)
+      for (const row of rows) {
+        if (checked) next.add(row.id)
+        else next.delete(row.id)
+      }
+      return next
+    })
+  }
+
+  function handleToggleRow(id: string, checked: boolean): void {
+    setSelectedIds((current) => {
+      const next = new Set(current)
+      if (checked) next.add(id)
+      else next.delete(id)
+      return next
+    })
+  }
+
+  function handleRowKeyDown(
+    event: KeyboardEvent<HTMLTableRowElement>,
+    id: string
+  ): void {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      router.push(`/links/${id}`)
     }
-    setPaginationModel(model)
   }
 
   function handleBulkDone(): void {
-    setSelection({ type: 'include', ids: new Set() })
+    setSelectedIds(new Set())
     void refetch()
   }
 
-  const selectedIds = Array.from(selection.ids).map(String)
-
   return (
-    <Stack
-      sx={{
-        width: '100%',
-        maxWidth: { sm: '100%', md: '1700px' },
-        alignSelf: 'stretch',
-        height: { xs: 'calc(100svh - 160px)', md: 'calc(100vh - 150px)' },
-        minHeight: 0,
-        overflow: 'hidden',
-        pt: { xs: 4, md: 0 }
-      }}
-      spacing={2}
-    >
-      <Stack
-        direction="row"
-        sx={{ justifyContent: 'space-between', alignItems: 'center' }}
-      >
-        <Typography component="h2" variant="h6">
-          Links
-        </Typography>
-        <Button
-          component={NextLink}
-          href="/links/new"
-          variant="contained"
-          startIcon={<AddRoundedIcon />}
-        >
+    <div className="flex w-full flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold">Links</h2>
+        <Button render={<NextLink href="/links/new" />}>
+          <PlusIcon aria-hidden="true" />
           New link
         </Button>
-      </Stack>
+      </div>
 
-      <Paper
-        sx={{
-          width: '100%',
-          flex: 1,
-          minHeight: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-          [`& .${gridClasses.cell}:focus, & .${gridClasses.cell}:focus-within`]:
-            { outline: 'none' },
-          [`& .${gridClasses.row}`]: { cursor: 'pointer' }
-        }}
-      >
-        <Stack
-          direction="row"
-          spacing={1.5}
-          sx={{ p: 2, pb: 1, flexWrap: 'wrap', rowGap: 1.5 }}
-        >
-          <TextField
-            placeholder="Search name, pathname or destination"
-            value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-            size="small"
-            sx={{ width: { xs: '100%', sm: 320 } }}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon fontSize="small" />
-                  </InputAdornment>
-                )
-              },
-              htmlInput: { 'aria-label': 'Search links' }
-            }}
+      <Card className="flex w-full flex-col overflow-hidden">
+        <div className="flex flex-wrap items-end gap-3 p-4 pb-2">
+          <InputGroup className="w-full sm:w-80">
+            <InputGroupAddon>
+              <SearchIcon aria-hidden="true" />
+            </InputGroupAddon>
+            <InputGroupInput
+              aria-label="Search links"
+              placeholder="Search name, pathname or destination"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+            />
+          </InputGroup>
+          <SelectField
+            id="filter-hostname"
+            label="Domain"
+            size="sm"
+            className="min-w-40"
+            value={hostname}
+            onValueChange={setHostname}
+            options={[
+              { value: ANY, label: 'Any' },
+              ...domains.map((domain) => ({
+                value: domain.hostname,
+                label: formatDomainLabel(domain)
+              }))
+            ]}
+          />
+          <SelectField
+            id="filter-status"
+            label="Status"
+            size="sm"
+            className="min-w-32"
+            value={status}
+            onValueChange={setStatus}
+            options={STATUS_FILTER_OPTIONS}
+          />
+          <SelectField
+            id="filter-asset-class"
+            label="Asset class"
+            size="sm"
+            className="min-w-36"
+            value={assetClass}
+            onValueChange={setAssetClass}
+            options={ASSET_CLASS_FILTER_OPTIONS}
+          />
+          <SelectField
+            id="filter-placement"
+            label="Placement"
+            size="sm"
+            className="min-w-36"
+            value={placement}
+            onValueChange={setPlacement}
+            options={PLACEMENT_FILTER_OPTIONS}
+          />
+          <SelectField
+            id="filter-campaign"
+            label="Campaign"
+            size="sm"
+            className="min-w-40"
+            value={campaignId}
+            onValueChange={setCampaignId}
+            options={[
+              { value: ANY, label: 'Any' },
+              ...campaigns.map((campaign) => ({
+                value: campaign.id,
+                label: campaign.name
+              }))
+            ]}
           />
           <TextField
-            select
-            label="Domain"
-            value={hostname}
-            onChange={(event) => setHostname(event.target.value)}
-            size="small"
-            sx={{ minWidth: 160 }}
-          >
-            <MenuItem value={ANY}>Any</MenuItem>
-            {domains.map((domain) => (
-              <MenuItem key={domain.id} value={domain.hostname}>
-                {formatDomainLabel(domain)}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            select
-            label="Status"
-            value={status}
-            onChange={(event) => setStatus(event.target.value)}
-            size="small"
-            sx={{ minWidth: 130 }}
-          >
-            <MenuItem value={ANY}>Any</MenuItem>
-            {STATUS_OPTIONS.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            select
-            label="Asset class"
-            value={assetClass}
-            onChange={(event) => setAssetClass(event.target.value)}
-            size="small"
-            sx={{ minWidth: 150 }}
-          >
-            <MenuItem value={ANY}>Any</MenuItem>
-            {ASSET_CLASS_OPTIONS.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            select
-            label="Placement"
-            value={placement}
-            onChange={(event) => setPlacement(event.target.value)}
-            size="small"
-            sx={{ minWidth: 150 }}
-          >
-            <MenuItem value={ANY}>Any</MenuItem>
-            {PLACEMENT_OPTIONS.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            select
-            label="Campaign"
-            value={campaignId}
-            onChange={(event) => setCampaignId(event.target.value)}
-            size="small"
-            sx={{ minWidth: 160 }}
-          >
-            <MenuItem value={ANY}>Any</MenuItem>
-            {campaigns.map((campaign) => (
-              <MenuItem key={campaign.id} value={campaign.id}>
-                {campaign.name}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
+            id="filter-tag"
             label="Tag"
             value={tag}
             onChange={(event) => setTag(event.target.value)}
-            size="small"
-            sx={{ minWidth: 140 }}
+            className="min-w-32"
           />
-          <TextField
-            select
+          <SelectField
+            id="filter-global"
             label="Global"
+            size="sm"
+            className="min-w-32"
             value={globalFilter}
-            onChange={(event) => setGlobalFilter(event.target.value)}
-            size="small"
-            sx={{ minWidth: 140 }}
-          >
-            <MenuItem value={ANY}>Any</MenuItem>
-            <MenuItem value="global">Global</MenuItem>
-            <MenuItem value="local">Not global</MenuItem>
-          </TextField>
-        </Stack>
+            onValueChange={setGlobalFilter}
+            options={GLOBAL_FILTER_OPTIONS}
+          />
+        </div>
 
-        <BulkToolbar selectedIds={selectedIds} onDone={handleBulkDone} />
+        <BulkToolbar
+          selectedIds={Array.from(selectedIds)}
+          onDone={handleBulkDone}
+        />
 
-        <Box sx={{ flex: '1 1 auto', minHeight: { xs: 360, sm: 420 } }}>
-          {gridMounted ? (
-            <DataGrid
-              sx={{ height: '100%', minHeight: { xs: 360, sm: 420 } }}
-              rows={rows}
-              columns={columns}
-              rowCount={connection?.totalCount ?? 0}
-              loading={loading}
-              paginationMode="server"
-              paginationMeta={{
-                hasNextPage: connection?.pageInfo.hasNextPage ?? false
-              }}
-              paginationModel={paginationModel}
-              onPaginationModelChange={handlePaginationModelChange}
-              pageSizeOptions={[25, 50, 100]}
-              checkboxSelection
-              rowSelectionModel={selection}
-              onRowSelectionModelChange={setSelection}
-              disableColumnFilter
-              disableRowSelectionOnClick
-              onRowClick={(params) => router.push(`/links/${params.id}`)}
-            />
-          ) : (
-            <Box
-              sx={{
-                alignItems: 'center',
-                display: 'flex',
-                height: '100%',
-                justifyContent: 'center',
-                minHeight: { xs: 360, sm: 420 }
-              }}
-            >
-              <CircularProgress size={24} />
-            </Box>
+        <div className="relative min-h-64 overflow-x-auto">
+          {loading && (
+            <div className="bg-background/60 absolute inset-0 z-10 grid place-items-center">
+              <Spinner aria-label="Loading links" />
+            </div>
           )}
-        </Box>
-      </Paper>
-    </Stack>
+          <Table aria-label="Links">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-10">
+                  <Checkbox
+                    aria-label="Select all links on this page"
+                    checked={allSelected}
+                    indeterminate={someSelected && !allSelected}
+                    onCheckedChange={handleToggleAll}
+                  />
+                </TableHead>
+                <TableHead>Short URL</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Destination</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Asset class</TableHead>
+                <TableHead>Placement</TableHead>
+                <TableHead>Campaigns</TableHead>
+                <TableHead>Health</TableHead>
+                <TableHead>Updated</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  tabIndex={0}
+                  onClick={() => router.push(`/links/${row.id}`)}
+                  onKeyDown={(event) => handleRowKeyDown(event, row.id)}
+                  className="cursor-pointer"
+                  data-selected={selectedIds.has(row.id) ? '' : undefined}
+                >
+                  <TableCell onClick={(event) => event.stopPropagation()}>
+                    <Checkbox
+                      aria-label={`Select ${row.shortUrl}`}
+                      checked={selectedIds.has(row.id)}
+                      onCheckedChange={(checked) =>
+                        handleToggleRow(row.id, checked)
+                      }
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <span className="flex items-center gap-1">
+                      <span className="truncate">{row.shortUrl}</span>
+                      <CopyButton value={row.shortUrl} label="Copy short URL" />
+                      {row.global && (
+                        <Badge variant="info" data-testid="GlobalChip">
+                          Global
+                        </Badge>
+                      )}
+                    </span>
+                  </TableCell>
+                  <TableCell>{row.name}</TableCell>
+                  <TableCell className="max-w-72 truncate">{row.to}</TableCell>
+                  <TableCell>
+                    <StatusChip status={row.status} />
+                  </TableCell>
+                  <TableCell>
+                    {labelFor(ASSET_CLASS_OPTIONS, row.assetClass)}
+                  </TableCell>
+                  <TableCell>
+                    {labelFor(PLACEMENT_OPTIONS, row.placement)}
+                  </TableCell>
+                  <TableCell>{row.campaigns}</TableCell>
+                  <TableCell>
+                    <HealthChip health={row.health} />
+                  </TableCell>
+                  <TableCell className="whitespace-nowrap">
+                    {row.updatedAt}
+                  </TableCell>
+                </TableRow>
+              ))}
+              {!loading && rows.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={10} className="text-muted-foreground">
+                    No links match these filters
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t p-3">
+          <span className="text-muted-foreground text-sm">
+            {totalCount} links · page {page + 1}
+          </span>
+          <div className="flex items-center gap-2">
+            <SelectField
+              id="page-size"
+              label={<span className="sr-only">Page size</span>}
+              size="sm"
+              className="w-36"
+              value={String(pageSize)}
+              onValueChange={handlePageSizeChange}
+              options={PAGE_SIZE_OPTIONS}
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((current) => current - 1)}
+              disabled={page === 0 || loading}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((current) => current + 1)}
+              disabled={!hasNextPage || loading}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      </Card>
+    </div>
   )
 }

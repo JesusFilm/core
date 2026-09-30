@@ -1,10 +1,7 @@
 'use client'
 
 import { useMutation } from '@apollo/client/react'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/navigation'
-import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
@@ -14,6 +11,7 @@ import {
   emptyToNull,
   fromDateInputValue
 } from '../../../../../libs/shortLink'
+import { notify } from '../../../../../libs/toast'
 import {
   CampaignForm,
   CampaignFormValues,
@@ -45,7 +43,6 @@ export function toCampaignInput(values: CampaignFormValues) {
 
 export function NewCampaign(): ReactElement {
   const router = useRouter()
-  const { enqueueSnackbar } = useSnackbar()
   const [errorMessage, setErrorMessage] = useState<string>()
   const [create, { loading }] = useMutation(SHORT_LINK_CAMPAIGN_CREATE)
 
@@ -60,7 +57,7 @@ export function NewCampaign(): ReactElement {
         setErrorMessage('No response from the server')
         return
       }
-      enqueueSnackbar('Campaign created', { variant: 'success' })
+      notify('Campaign created', 'success')
       router.push(`/campaigns/${campaign.id}`)
     } catch (error) {
       setErrorMessage(
@@ -70,10 +67,8 @@ export function NewCampaign(): ReactElement {
   }
 
   return (
-    <Stack spacing={2} sx={{ width: '100%', maxWidth: 900 }}>
-      <Typography component="h2" variant="h6">
-        New campaign
-      </Typography>
+    <div className="flex w-full max-w-3xl flex-col gap-4">
+      <h2 className="text-lg font-semibold">New campaign</h2>
       <CampaignForm
         mode="create"
         initialValues={EMPTY_CAMPAIGN_FORM_VALUES}
@@ -82,6 +77,6 @@ export function NewCampaign(): ReactElement {
         onSubmit={handleSubmit}
         onCancel={() => router.push('/campaigns')}
       />
-    </Stack>
+    </div>
   )
 }

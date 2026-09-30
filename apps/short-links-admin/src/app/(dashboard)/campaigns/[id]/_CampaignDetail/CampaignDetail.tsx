@@ -1,23 +1,9 @@
 'use client'
 
 import { useMutation, useQuery } from '@apollo/client/react'
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
-import Alert from '@mui/material/Alert'
-import Button from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
-import Link from '@mui/material/Link'
-import Paper from '@mui/material/Paper'
-import Stack from '@mui/material/Stack'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableContainer from '@mui/material/TableContainer'
-import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
-import Typography from '@mui/material/Typography'
+import { Trash2Icon } from 'lucide-react'
 import NextLink from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
-import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
@@ -34,8 +20,22 @@ import {
   toDateInputValue,
   toIsoString
 } from '../../../../../libs/shortLink'
+import { notify, notifyError } from '../../../../../libs/toast'
 import { CampaignForm, CampaignFormValues } from '../../_CampaignForm'
 import { toCampaignInput } from '../../new/_NewCampaign'
+
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { Card, CardPanel } from '@/components/ui/card'
+import { Spinner } from '@/components/ui/spinner'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 
 export const GET_SHORT_LINK_CAMPAIGN = graphql(
   `
@@ -99,7 +99,6 @@ export const SHORT_LINK_CAMPAIGN_DELETE = graphql(`
 export function CampaignDetail(): ReactElement {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
-  const { enqueueSnackbar } = useSnackbar()
   const [errorMessage, setErrorMessage] = useState<string>()
   const [deleteOpen, setDeleteOpen] = useState(false)
   const { data, loading, error } = useQuery(GET_SHORT_LINK_CAMPAIGN, {
@@ -112,15 +111,22 @@ export function CampaignDetail(): ReactElement {
     SHORT_LINK_CAMPAIGN_DELETE
   )
 
-  if (loading) return <CircularProgress />
-  if (error != null) return <Alert severity="error">{error.message}</Alert>
+  if (loading) return <Spinner aria-label="Loading campaign" />
+  if (error != null)
+    return (
+      <Alert variant="error">
+        <AlertDescription>{error.message}</AlertDescription>
+      </Alert>
+    )
   const result = data?.shortLinkCampaign
   if (result == null || result.__typename !== 'QueryShortLinkCampaignSuccess') {
     return (
-      <Alert severity="error">
-        {result != null && 'message' in result && result.message != null
-          ? result.message
-          : 'Campaign not found'}
+      <Alert variant="error">
+        <AlertDescription>
+          {result != null && 'message' in result && result.message != null
+            ? result.message
+            : 'Campaign not found'}
+        </AlertDescription>
       </Alert>
     )
   }
@@ -148,7 +154,7 @@ export function CampaignDetail(): ReactElement {
         setErrorMessage(parseMutationError(outcome).message)
         return
       }
-      enqueueSnackbar('Campaign saved', { variant: 'success' })
+      notify('Campaign saved', 'success')
     } catch (caught) {
       setErrorMessage(
         caught instanceof Error ? caught.message : 'Could not save the campaign'
@@ -161,53 +167,43 @@ export function CampaignDetail(): ReactElement {
       const { data: deleted } = await remove({ variables: { id: campaign.id } })
       const outcome = deleted?.shortLinkCampaignDelete
       if (outcome != null && isMutationError(outcome)) {
-        enqueueSnackbar(parseMutationError(outcome).message, {
-          variant: 'error'
-        })
+        notify(parseMutationError(outcome).message, 'error')
         return
       }
-      enqueueSnackbar('Campaign deleted', { variant: 'success' })
+      notify('Campaign deleted', 'success')
       router.push('/campaigns')
     } catch (caught) {
-      enqueueSnackbar(
-        caught instanceof Error ? caught.message : 'Delete failed',
-        { variant: 'error' }
-      )
+      notifyError(caught, 'Delete failed')
     } finally {
       setDeleteOpen(false)
     }
   }
 
   return (
-    <Stack spacing={2} sx={{ width: '100%', maxWidth: 1100 }}>
-      <Paper sx={{ p: 2 }}>
-        <Stack
-          direction="row"
-          sx={{ justifyContent: 'space-between', alignItems: 'center' }}
-        >
-          <Stack spacing={0.5}>
-            <Typography component="h2" variant="h5">
-              {campaign.name}
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+    <div className="flex w-full max-w-5xl flex-col gap-4">
+      <Card>
+        <CardPanel className="flex items-center justify-between gap-3">
+          <div className="flex flex-col gap-1">
+            <h2 className="text-xl font-semibold">{campaign.name}</h2>
+            <span className="text-muted-foreground text-xs">
               {hasRange
                 ? `${formatDate(campaign.startsAt)} to ${formatDate(campaign.endsAt)}`
                 : 'No date range'}
               {' · '}
               {campaign.linkCount} links
-            </Typography>
-          </Stack>
+            </span>
+          </div>
           <Button
-            size="small"
-            color="error"
-            startIcon={<DeleteOutlineRoundedIcon />}
+            variant="destructive-outline"
+            size="sm"
             onClick={() => setDeleteOpen(true)}
             disabled={updating || deleting}
           >
+            <Trash2Icon aria-hidden="true" />
             Delete
           </Button>
-        </Stack>
-      </Paper>
+        </CardPanel>
+      </Card>
 
       <CampaignForm
         mode="edit"
@@ -217,38 +213,37 @@ export function CampaignDetail(): ReactElement {
         onSubmit={handleSubmit}
       />
 
-      <Paper sx={{ p: 2 }}>
-        <Typography component="h3" variant="h6" sx={{ mb: 1 }}>
-          Links in this campaign
-        </Typography>
-        {campaign.shortLinks.length === 0 ? (
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            No links yet. Add links from the links list with the bulk toolbar,
-            or pick this campaign when editing a link.
-          </Typography>
-        ) : (
-          <TableContainer>
-            <Table size="small" aria-label="Campaign links">
-              <TableHead>
+      <Card>
+        <CardPanel className="flex flex-col gap-3">
+          <h3 className="text-lg font-semibold">Links in this campaign</h3>
+          {campaign.shortLinks.length === 0 ? (
+            <p className="text-muted-foreground text-sm">
+              No links yet. Add links from the links list with the bulk toolbar,
+              or pick this campaign when editing a link.
+            </p>
+          ) : (
+            <Table aria-label="Campaign links">
+              <TableHeader>
                 <TableRow>
-                  <TableCell>Short URL</TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Destination</TableCell>
-                  <TableCell>Status</TableCell>
+                  <TableHead>Short URL</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Destination</TableHead>
+                  <TableHead>Status</TableHead>
                 </TableRow>
-              </TableHead>
+              </TableHeader>
               <TableBody>
                 {campaign.shortLinks.map((link) => (
                   <TableRow key={link.id}>
                     <TableCell>
-                      <Link component={NextLink} href={`/links/${link.id}`}>
+                      <NextLink
+                        href={`/links/${link.id}`}
+                        className="underline-offset-4 hover:underline"
+                      >
                         {link.shortUrl}
-                      </Link>
+                      </NextLink>
                     </TableCell>
                     <TableCell>{link.name ?? ''}</TableCell>
-                    <TableCell sx={{ wordBreak: 'break-all' }}>
-                      {link.to}
-                    </TableCell>
+                    <TableCell className="break-all">{link.to}</TableCell>
                     <TableCell>
                       <StatusChip status={link.status} />
                     </TableCell>
@@ -256,9 +251,9 @@ export function CampaignDetail(): ReactElement {
                 ))}
               </TableBody>
             </Table>
-          </TableContainer>
-        )}
-      </Paper>
+          )}
+        </CardPanel>
+      </Card>
 
       <StatsPanel
         campaignId={campaign.id}
@@ -277,6 +272,6 @@ export function CampaignDetail(): ReactElement {
         onConfirm={handleDelete}
         onClose={() => setDeleteOpen(false)}
       />
-    </Stack>
+    </div>
   )
 }

@@ -1,22 +1,15 @@
 'use client'
 
-import Alert from '@mui/material/Alert'
-import Autocomplete from '@mui/material/Autocomplete'
-import Button from '@mui/material/Button'
-import Chip from '@mui/material/Chip'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import FormHelperText from '@mui/material/FormHelperText'
-import Grid from '@mui/material/Grid'
-import MenuItem from '@mui/material/MenuItem'
-import Paper from '@mui/material/Paper'
-import Stack from '@mui/material/Stack'
-import Switch from '@mui/material/Switch'
-import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikHelpers } from 'formik'
-import { ReactElement, useMemo, useState } from 'react'
+import { ReactElement, ReactNode, useMemo, useState } from 'react'
 import { boolean, object, string } from 'yup'
 
+import {
+  SelectField,
+  SwitchField,
+  TextField,
+  TextareaField
+} from '../../../../components/form'
 import { TagsInput } from '../../../../components/TagsInput'
 import {
   ASSET_CLASS_OPTIONS,
@@ -35,6 +28,23 @@ import {
 } from '../../../../libs/shortLink'
 
 import { DestinationChangeDialog } from './_DestinationChangeDialog'
+
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardPanel } from '@/components/ui/card'
+import {
+  Combobox,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
+  ComboboxEmpty,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxPopup,
+  ComboboxValue
+} from '@/components/ui/combobox'
+import { Field, FieldLabel } from '@/components/ui/field'
 
 export interface LinkFormDomain {
   id: string
@@ -112,6 +122,22 @@ interface LinkFormProps {
   onCancel?: () => void
 }
 
+/** Select values must be non-empty strings; these stand in for "unset". */
+const NONE = 'none'
+const INHERIT = 'inherit'
+
+const PLACEMENT_SELECT_OPTIONS = [
+  { value: NONE, label: 'None' },
+  ...PLACEMENT_OPTIONS
+]
+const REDIRECT_STATUS_SELECT_OPTIONS = [
+  { value: INHERIT, label: 'Inherit from domain' },
+  ...REDIRECT_STATUS_OPTIONS.map((option) => ({
+    value: String(option.value),
+    label: option.label
+  }))
+]
+
 const OPTIONAL_URL = string()
   .trim()
   .test(
@@ -180,6 +206,81 @@ function buildSchema(domains: LinkFormDomain[], mode: 'create' | 'edit') {
     fallbackTo: OPTIONAL_URL,
     name: string().trim().max(200, 'Keep the name under 200 characters')
   })
+}
+
+function Section({
+  title,
+  children
+}: {
+  title: string
+  children: ReactNode
+}): ReactElement {
+  return (
+    <Card>
+      <CardPanel className="flex flex-col gap-4">
+        <h3 className="text-sm font-medium">{title}</h3>
+        {children}
+      </CardPanel>
+    </Card>
+  )
+}
+
+function CampaignsField({
+  campaigns,
+  selectedIds,
+  onChange
+}: {
+  campaigns: LinkFormCampaign[]
+  selectedIds: string[]
+  onChange: (ids: string[]) => void
+}): ReactElement {
+  const selected = campaigns.filter((campaign) =>
+    selectedIds.includes(campaign.id)
+  )
+
+  function handleValueChange(next: LinkFormCampaign[]): void {
+    onChange(next.map((campaign) => campaign.id))
+  }
+
+  return (
+    <Field name="campaignIds">
+      <FieldLabel>Campaigns</FieldLabel>
+      <Combobox<LinkFormCampaign, true>
+        items={campaigns}
+        multiple
+        value={selected}
+        onValueChange={handleValueChange}
+        itemToStringLabel={(campaign) => campaign.name}
+        isItemEqualToValue={(item, value) => item.id === value.id}
+      >
+        <ComboboxChips className="w-full">
+          <ComboboxValue>
+            {(value: LinkFormCampaign[]) => (
+              <>
+                {value.map((campaign) => (
+                  <ComboboxChip key={campaign.id}>{campaign.name}</ComboboxChip>
+                ))}
+                <ComboboxChipsInput
+                  id="campaignIds"
+                  placeholder={value.length === 0 ? 'Add to campaigns…' : ''}
+                />
+              </>
+            )}
+          </ComboboxValue>
+        </ComboboxChips>
+        <ComboboxPopup>
+          <ComboboxEmpty>No campaigns found.</ComboboxEmpty>
+          <ComboboxList>
+            {(campaign: LinkFormCampaign) => (
+              <ComboboxItem key={campaign.id} value={campaign}>
+                {campaign.name}
+              </ComboboxItem>
+            )}
+          </ComboboxList>
+        </ComboboxPopup>
+      </Combobox>
+    </Field>
+  )
 }
 
 export function LinkForm({
@@ -253,363 +354,233 @@ export function LinkForm({
             : undefined)
 
         return (
-          <Form noValidate>
-            <Stack spacing={2}>
-              {errorMessage != null && (
-                <Alert severity="error">{errorMessage}</Alert>
-              )}
-              {destinationLocked && (
-                <Alert severity="info">
+          <Form noValidate className="flex flex-col gap-4">
+            {errorMessage != null && (
+              <Alert variant="error">
+                <AlertDescription>{errorMessage}</AlertDescription>
+              </Alert>
+            )}
+            {destinationLocked && (
+              <Alert variant="info">
+                <AlertDescription>
                   Only a short-link admin can change the destination of a{' '}
                   {initialValues.assetClass === 'permanent'
                     ? 'permanent'
                     : 'video-embedded'}{' '}
                   link.
-                </Alert>
+                </AlertDescription>
+              </Alert>
+            )}
+
+            <Section title="Short URL">
+              <div className="grid gap-4 md:grid-cols-3">
+                <SelectField
+                  id="hostname"
+                  label="Domain"
+                  value={values.hostname}
+                  onValueChange={(value) =>
+                    void setFieldValue('hostname', value)
+                  }
+                  options={domains.map((option) => ({
+                    value: option.hostname,
+                    label: formatDomainLabel(option)
+                  }))}
+                  disabled={mode === 'edit'}
+                  error={errorFor('hostname')}
+                  required
+                />
+                <TextField
+                  id="pathname"
+                  label="Pathname"
+                  value={values.pathname}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  disabled={mode === 'edit'}
+                  error={mode === 'edit' ? undefined : errorFor('pathname')}
+                  helperText={
+                    mode === 'edit'
+                      ? 'Pathnames never change once minted'
+                      : getSlugGrammarHint(domain)
+                  }
+                />
+                <SelectField
+                  id="service"
+                  label="Service"
+                  value={values.service}
+                  onValueChange={(value) =>
+                    void setFieldValue('service', value)
+                  }
+                  options={serviceOptions}
+                  disabled={mode === 'edit'}
+                  helperText="The service recorded as the link's creator"
+                />
+              </div>
+              <TextField
+                id="to"
+                label="Destination URL"
+                value={values.to}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                disabled={destinationLocked}
+                error={errorFor('to')}
+                required
+              />
+            </Section>
+
+            <Section title="Details">
+              <div className="grid gap-4 md:grid-cols-2">
+                <TextField
+                  id="name"
+                  label="Name"
+                  value={values.name}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={errorFor('name')}
+                />
+                <TextField
+                  id="language"
+                  label="Language (BCP-47)"
+                  value={values.language}
+                  onChange={handleChange}
+                  placeholder="en"
+                />
+              </div>
+              <TextareaField
+                id="description"
+                label="Description"
+                value={values.description}
+                onChange={handleChange}
+              />
+              <div className="grid gap-4 md:grid-cols-3">
+                <SelectField
+                  id="assetClass"
+                  label="Asset class"
+                  value={values.assetClass}
+                  onValueChange={(value) =>
+                    void setFieldValue('assetClass', value)
+                  }
+                  options={ASSET_CLASS_OPTIONS}
+                  helperText={
+                    values.assetClass === 'videoEmbedded'
+                      ? 'Printed in a video: admin-only destination changes with a note'
+                      : values.assetClass === 'permanent'
+                        ? 'Admin-only destination changes'
+                        : 'Any editor may change the destination'
+                  }
+                />
+                <SelectField
+                  id="placement"
+                  label="Placement"
+                  value={values.placement === '' ? NONE : values.placement}
+                  onValueChange={(value) =>
+                    void setFieldValue('placement', value === NONE ? '' : value)
+                  }
+                  options={PLACEMENT_SELECT_OPTIONS}
+                />
+                <SelectField
+                  id="status"
+                  label="Status"
+                  value={values.status}
+                  onValueChange={(value) => void setFieldValue('status', value)}
+                  options={STATUS_OPTIONS}
+                />
+              </div>
+              {isAdmin ? (
+                <SwitchField
+                  id="global"
+                  label="Global"
+                  checked={values.global}
+                  onCheckedChange={(checked) =>
+                    void setFieldValue('global', checked)
+                  }
+                  error={errorFor('global')}
+                  helperText="Resolves on every short-link domain that has no link of its own for this slug. Global slugs must be lower-case and are unique across all domains."
+                />
+              ) : (
+                values.global && (
+                  <div className="flex items-center gap-2">
+                    <Badge variant="info">Global</Badge>
+                    <span className="text-muted-foreground text-xs">
+                      Resolves on every short-link domain. Only an admin can
+                      change this.
+                    </span>
+                  </div>
+                )
               )}
-              <Paper sx={{ p: 2 }}>
-                <Typography variant="subtitle2" sx={{ mb: 2 }}>
-                  Short URL
-                </Typography>
-                <Grid container spacing={2}>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <TextField
-                      select
-                      fullWidth
-                      id="hostname"
-                      name="hostname"
-                      label="Domain"
-                      value={values.hostname}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      disabled={mode === 'edit'}
-                      error={errorFor('hostname') != null}
-                      helperText={errorFor('hostname')}
-                      required
-                    >
-                      {domains.map((option) => (
-                        <MenuItem key={option.id} value={option.hostname}>
-                          {formatDomainLabel(option)}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <TextField
-                      fullWidth
-                      id="pathname"
-                      name="pathname"
-                      label="Pathname"
-                      value={values.pathname}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      disabled={mode === 'edit'}
-                      error={errorFor('pathname') != null}
-                      helperText={
-                        mode === 'edit'
-                          ? 'Pathnames never change once minted'
-                          : (errorFor('pathname') ?? getSlugGrammarHint(domain))
-                      }
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <TextField
-                      select
-                      fullWidth
-                      id="service"
-                      name="service"
-                      label="Service"
-                      value={values.service}
-                      onChange={handleChange}
-                      disabled={mode === 'edit'}
-                      helperText="The service recorded as the link's creator"
-                    >
-                      {serviceOptions.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
-                  <Grid size={12}>
-                    <TextField
-                      fullWidth
-                      id="to"
-                      name="to"
-                      label="Destination URL"
-                      value={values.to}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      disabled={destinationLocked}
-                      error={errorFor('to') != null}
-                      helperText={errorFor('to')}
-                      required
-                    />
-                  </Grid>
-                </Grid>
-              </Paper>
+              <div className="grid gap-4 md:grid-cols-2">
+                <TextField
+                  id="youtubeVideoId"
+                  label="YouTube video ID"
+                  value={values.youtubeVideoId}
+                  onChange={handleChange}
+                />
+                <TextField
+                  id="videoId"
+                  label="Core video ID"
+                  value={values.videoId}
+                  onChange={handleChange}
+                  placeholder="1_jf-0-0"
+                />
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <TagsInput
+                  value={values.tags}
+                  onChange={(tags) => void setFieldValue('tags', tags)}
+                />
+                <CampaignsField
+                  campaigns={campaigns}
+                  selectedIds={values.campaignIds}
+                  onChange={(ids) => void setFieldValue('campaignIds', ids)}
+                />
+              </div>
+            </Section>
 
-              <Paper sx={{ p: 2 }}>
-                <Typography variant="subtitle2" sx={{ mb: 2 }}>
-                  Details
-                </Typography>
-                <Grid container spacing={2}>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <TextField
-                      fullWidth
-                      id="name"
-                      name="name"
-                      label="Name"
-                      value={values.name}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      error={errorFor('name') != null}
-                      helperText={errorFor('name')}
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <TextField
-                      fullWidth
-                      id="language"
-                      name="language"
-                      label="Language (BCP-47)"
-                      value={values.language}
-                      onChange={handleChange}
-                      placeholder="en"
-                    />
-                  </Grid>
-                  <Grid size={12}>
-                    <TextField
-                      fullWidth
-                      id="description"
-                      name="description"
-                      label="Description"
-                      value={values.description}
-                      onChange={handleChange}
-                      multiline
-                      minRows={2}
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <TextField
-                      select
-                      fullWidth
-                      id="assetClass"
-                      name="assetClass"
-                      label="Asset class"
-                      value={values.assetClass}
-                      onChange={handleChange}
-                      helperText={
-                        values.assetClass === 'videoEmbedded'
-                          ? 'Printed in a video: admin-only destination changes with a note'
-                          : values.assetClass === 'permanent'
-                            ? 'Admin-only destination changes'
-                            : 'Any editor may change the destination'
-                      }
-                    >
-                      {ASSET_CLASS_OPTIONS.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <TextField
-                      select
-                      fullWidth
-                      id="placement"
-                      name="placement"
-                      label="Placement"
-                      value={values.placement}
-                      onChange={handleChange}
-                    >
-                      <MenuItem value="">None</MenuItem>
-                      {PLACEMENT_OPTIONS.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <TextField
-                      select
-                      fullWidth
-                      id="status"
-                      name="status"
-                      label="Status"
-                      value={values.status}
-                      onChange={handleChange}
-                    >
-                      {STATUS_OPTIONS.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
-                  <Grid size={12}>
-                    {isAdmin ? (
-                      <>
-                        <FormControlLabel
-                          control={
-                            <Switch
-                              id="global"
-                              name="global"
-                              checked={values.global}
-                              onChange={(event) =>
-                                void setFieldValue(
-                                  'global',
-                                  event.target.checked
-                                )
-                              }
-                            />
-                          }
-                          label="Global"
-                        />
-                        <FormHelperText error={errorFor('global') != null}>
-                          {errorFor('global') ??
-                            'Resolves on every short-link domain that has no link of its own for this slug. Global slugs must be lower-case and are unique across all domains.'}
-                        </FormHelperText>
-                      </>
-                    ) : (
-                      values.global && (
-                        <Stack
-                          direction="row"
-                          spacing={1}
-                          sx={{ alignItems: 'center' }}
-                        >
-                          <Chip size="small" color="info" label="Global" />
-                          <Typography
-                            variant="caption"
-                            sx={{ color: 'text.secondary' }}
-                          >
-                            Resolves on every short-link domain. Only an admin
-                            can change this.
-                          </Typography>
-                        </Stack>
-                      )
-                    )}
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <TextField
-                      fullWidth
-                      id="youtubeVideoId"
-                      name="youtubeVideoId"
-                      label="YouTube video ID"
-                      value={values.youtubeVideoId}
-                      onChange={handleChange}
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <TextField
-                      fullWidth
-                      id="videoId"
-                      name="videoId"
-                      label="Core video ID"
-                      value={values.videoId}
-                      onChange={handleChange}
-                      placeholder="1_jf-0-0"
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <TagsInput
-                      value={values.tags}
-                      onChange={(tags) => void setFieldValue('tags', tags)}
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Autocomplete
-                      multiple
-                      id="campaignIds"
-                      options={campaigns}
-                      getOptionLabel={(option) => option.name}
-                      isOptionEqualToValue={(option, value) =>
-                        option.id === value.id
-                      }
-                      value={campaigns.filter((campaign) =>
-                        values.campaignIds.includes(campaign.id)
-                      )}
-                      onChange={(_event, selected) =>
-                        void setFieldValue(
-                          'campaignIds',
-                          selected.map((campaign) => campaign.id)
-                        )
-                      }
-                      renderInput={(params) => (
-                        <TextField {...params} label="Campaigns" />
-                      )}
-                    />
-                  </Grid>
-                </Grid>
-              </Paper>
+            <Section title="Redirect overrides">
+              <div className="grid gap-4 md:grid-cols-3">
+                <SelectField
+                  id="redirectStatus"
+                  label="Redirect status"
+                  value={
+                    values.redirectStatus === ''
+                      ? INHERIT
+                      : String(values.redirectStatus)
+                  }
+                  onValueChange={(value) =>
+                    void setFieldValue(
+                      'redirectStatus',
+                      value === INHERIT ? '' : Number(value)
+                    )
+                  }
+                  options={REDIRECT_STATUS_SELECT_OPTIONS}
+                  helperText="Blank inherits the domain setting"
+                />
+                <TextField
+                  id="fallbackTo"
+                  label="Fallback URL while paused"
+                  value={values.fallbackTo}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={errorFor('fallbackTo')}
+                  helperText="Blank uses the domain fallback"
+                  className="md:col-span-2"
+                />
+              </div>
+            </Section>
 
-              <Paper sx={{ p: 2 }}>
-                <Typography variant="subtitle2" sx={{ mb: 2 }}>
-                  Redirect overrides
-                </Typography>
-                <Grid container spacing={2}>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <TextField
-                      select
-                      fullWidth
-                      id="redirectStatus"
-                      name="redirectStatus"
-                      label="Redirect status"
-                      value={values.redirectStatus}
-                      onChange={(event) =>
-                        void setFieldValue(
-                          'redirectStatus',
-                          event.target.value === ''
-                            ? ''
-                            : Number(event.target.value)
-                        )
-                      }
-                      helperText="Blank inherits the domain setting"
-                    >
-                      <MenuItem value="">Inherit from domain</MenuItem>
-                      {REDIRECT_STATUS_OPTIONS.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 8 }}>
-                    <TextField
-                      fullWidth
-                      id="fallbackTo"
-                      name="fallbackTo"
-                      label="Fallback URL while paused"
-                      value={values.fallbackTo}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      error={errorFor('fallbackTo') != null}
-                      helperText={
-                        errorFor('fallbackTo') ??
-                        'Blank uses the domain fallback'
-                      }
-                    />
-                  </Grid>
-                </Grid>
-              </Paper>
-
-              <Stack
-                direction="row"
-                spacing={1}
-                sx={{ justifyContent: 'flex-end' }}
-              >
-                {onCancel != null && (
-                  <Button onClick={onCancel} disabled={submitting}>
-                    Cancel
-                  </Button>
-                )}
-                <Button type="submit" variant="contained" loading={submitting}>
-                  {mode === 'create' ? 'Create link' : 'Save changes'}
+            <div className="flex justify-end gap-2">
+              {onCancel != null && (
+                <Button
+                  variant="ghost"
+                  onClick={onCancel}
+                  disabled={submitting}
+                >
+                  Cancel
                 </Button>
-              </Stack>
-            </Stack>
+              )}
+              <Button type="submit" loading={submitting}>
+                {mode === 'create' ? 'Create link' : 'Save changes'}
+              </Button>
+            </div>
             <DestinationChangeDialog
               open={pending != null}
               assetClass={initialValues.assetClass}

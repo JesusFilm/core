@@ -1,23 +1,7 @@
 'use client'
 
 import { useQuery } from '@apollo/client/react'
-import AddRoundedIcon from '@mui/icons-material/AddRounded'
-import SearchIcon from '@mui/icons-material/Search'
-import Alert from '@mui/material/Alert'
-import Button from '@mui/material/Button'
-import Chip from '@mui/material/Chip'
-import CircularProgress from '@mui/material/CircularProgress'
-import InputAdornment from '@mui/material/InputAdornment'
-import Paper from '@mui/material/Paper'
-import Stack from '@mui/material/Stack'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableContainer from '@mui/material/TableContainer'
-import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
-import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
+import { PlusIcon, SearchIcon } from 'lucide-react'
 import NextLink from 'next/link'
 import { useRouter } from 'next/navigation'
 import { KeyboardEvent, ReactElement, useEffect, useState } from 'react'
@@ -28,6 +12,25 @@ import {
   SHORT_LINK_CAMPAIGN_FIELDS,
   formatDate
 } from '../../../../libs/shortLink'
+
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardPanel } from '@/components/ui/card'
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput
+} from '@/components/ui/input-group'
+import { Spinner } from '@/components/ui/spinner'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 
 export const GET_SHORT_LINK_CAMPAIGNS = graphql(
   `
@@ -104,99 +107,89 @@ export function CampaignList(): ReactElement {
   }
 
   return (
-    <Stack spacing={2} sx={{ width: '100%', maxWidth: 1100 }}>
-      <Stack
-        direction="row"
-        sx={{ justifyContent: 'space-between', alignItems: 'center' }}
-      >
-        <Typography component="h2" variant="h6">
-          Campaigns
-        </Typography>
-        <Button
-          component={NextLink}
-          href="/campaigns/new"
-          variant="contained"
-          startIcon={<AddRoundedIcon />}
-        >
+    <div className="flex w-full max-w-5xl flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold">Campaigns</h2>
+        <Button render={<NextLink href="/campaigns/new" />}>
+          <PlusIcon aria-hidden="true" />
           New campaign
         </Button>
-      </Stack>
-      <Paper sx={{ p: 2 }}>
-        <TextField
-          placeholder="Search campaigns"
-          value={searchTerm}
-          onChange={(event) => setSearchTerm(event.target.value)}
-          size="small"
-          sx={{ width: { xs: '100%', sm: 320 }, mb: 2 }}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" />
-                </InputAdornment>
-              )
-            },
-            htmlInput: { 'aria-label': 'Search campaigns' }
-          }}
-        />
-        {error != null && <Alert severity="error">{error.message}</Alert>}
-        <TableContainer>
-          <Table size="small" aria-label="Campaigns">
-            <TableHead>
+      </div>
+      <Card>
+        <CardPanel className="flex flex-col gap-4">
+          <InputGroup className="w-full sm:w-80">
+            <InputGroupAddon>
+              <SearchIcon aria-hidden="true" />
+            </InputGroupAddon>
+            <InputGroupInput
+              aria-label="Search campaigns"
+              placeholder="Search campaigns"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+            />
+          </InputGroup>
+          {error != null && (
+            <Alert variant="error">
+              <AlertDescription>{error.message}</AlertDescription>
+            </Alert>
+          )}
+          <Table aria-label="Campaigns">
+            <TableHeader>
               <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Starts</TableCell>
-                <TableCell>Ends</TableCell>
-                <TableCell>Tags</TableCell>
-                <TableCell align="right">Links</TableCell>
+                <TableHead>Name</TableHead>
+                <TableHead>Starts</TableHead>
+                <TableHead>Ends</TableHead>
+                <TableHead>Tags</TableHead>
+                <TableHead className="text-right">Links</TableHead>
               </TableRow>
-            </TableHead>
+            </TableHeader>
             <TableBody>
               {campaigns.map((campaign) => (
                 <TableRow
                   key={campaign.id}
-                  hover
                   tabIndex={0}
                   role="link"
                   aria-label={campaign.name}
                   onClick={() => router.push(`/campaigns/${campaign.id}`)}
                   onKeyDown={(event) => handleRowKeyDown(event, campaign.id)}
-                  sx={{ cursor: 'pointer' }}
+                  className="cursor-pointer"
                 >
                   <TableCell>{campaign.name}</TableCell>
                   <TableCell>{formatDate(campaign.startsAt)}</TableCell>
                   <TableCell>{formatDate(campaign.endsAt)}</TableCell>
                   <TableCell>
-                    <Stack
-                      direction="row"
-                      spacing={0.5}
-                      sx={{ flexWrap: 'wrap' }}
-                    >
+                    <span className="flex flex-wrap gap-1">
                       {campaign.tags.map((tag) => (
-                        <Chip key={tag} size="small" label={tag} />
+                        <Badge key={tag} variant="secondary">
+                          {tag}
+                        </Badge>
                       ))}
-                    </Stack>
+                    </span>
                   </TableCell>
-                  <TableCell align="right">{campaign.linkCount}</TableCell>
+                  <TableCell className="text-right">
+                    {campaign.linkCount}
+                  </TableCell>
                 </TableRow>
               ))}
               {!loading && campaigns.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} sx={{ color: 'text.secondary' }}>
+                  <TableCell colSpan={5} className="text-muted-foreground">
                     No campaigns yet
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
-        </TableContainer>
-        <Stack direction="row" sx={{ justifyContent: 'center', mt: 2 }}>
-          {loading && <CircularProgress size={24} />}
-          {!loading && connection?.pageInfo.hasNextPage === true && (
-            <Button onClick={handleLoadMore}>Load more</Button>
-          )}
-        </Stack>
-      </Paper>
-    </Stack>
+          <div className="flex justify-center">
+            {loading && <Spinner aria-label="Loading campaigns" />}
+            {!loading && connection?.pageInfo.hasNextPage === true && (
+              <Button variant="outline" onClick={handleLoadMore}>
+                Load more
+              </Button>
+            )}
+          </div>
+        </CardPanel>
+      </Card>
+    </div>
   )
 }

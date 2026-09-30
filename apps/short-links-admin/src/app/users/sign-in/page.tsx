@@ -1,8 +1,5 @@
 'use client'
 
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
 import { UserCredential, signInWithEmailAndPassword } from 'firebase/auth'
 import Image from 'next/image'
 import { ReactElement, useCallback, useState } from 'react'
@@ -16,6 +13,9 @@ import { loginWithCredential } from '../../api'
 
 import { GoogleIcon } from './_GoogleIcon/GoogleIcon'
 import { PasswordForm, PasswordFormValue } from './_PasswordForm'
+
+import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
 
 export default function SignIn(): ReactElement {
   const [hasLogged, setHasLogged] = useState(false)
@@ -58,16 +58,9 @@ export default function SignIn(): ReactElement {
         height={70}
       />
       {hasLogged && (
-        <Box
-          sx={{
-            height: 300,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          <CircularProgress />
-        </Box>
+        <div className="flex h-72 items-center justify-center">
+          <Spinner aria-label="Signing in" />
+        </div>
       )}
       {!hasLogged && (
         <PasswordForm
@@ -76,13 +69,12 @@ export default function SignIn(): ReactElement {
           error={emailPasswordError ?? googleError}
         >
           <Button
-            variant="outlined"
+            variant="outline"
             loading={isGoogleLoading}
-            disabled={isGoogleLoading}
             onClick={handleLoginWithGoogle}
-            startIcon={<GoogleIcon />}
-            fullWidth
+            className="w-full"
           >
+            <GoogleIcon />
             Sign in with Google
           </Button>
         </PasswordForm>

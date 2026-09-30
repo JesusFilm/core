@@ -1,19 +1,13 @@
 'use client'
 
-import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded'
-import Alert from '@mui/material/Alert'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Grid from '@mui/material/Grid'
-import MenuItem from '@mui/material/MenuItem'
-import Paper from '@mui/material/Paper'
-import Stack from '@mui/material/Stack'
-import Switch from '@mui/material/Switch'
-import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
+import { DownloadIcon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
 
+import {
+  SelectField,
+  SwitchField,
+  TextField
+} from '../../../../../../components/form'
 import {
   MIN_QR_CONTRAST_RATIO,
   contrastRatio,
@@ -26,6 +20,10 @@ import {
   ShortLinkAssetClass,
   getDefaultErrorCorrection
 } from '../../../../../../libs/shortLink'
+
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { Card, CardPanel } from '@/components/ui/card'
 
 export interface QrImageParams {
   url: string
@@ -50,12 +48,51 @@ export function buildQrImageUrl(params: QrImageParams): string {
   return `/api/qr?${search.toString()}`
 }
 
-const SIZE_OPTIONS = [256, 512, 1024, 2048]
+const SIZE_OPTIONS = [256, 512, 1024, 2048].map((size) => ({
+  value: String(size),
+  label: String(size)
+}))
+const FORMAT_OPTIONS = [
+  { value: 'png', label: 'PNG' },
+  { value: 'svg', label: 'SVG' }
+]
 
 interface QrPanelProps {
   qrUrl: string
   pathname: string
   assetClass: ShortLinkAssetClass
+}
+
+function ColorField({
+  id,
+  label,
+  value,
+  onChange
+}: {
+  id: string
+  label: string
+  value: string
+  onChange: (value: string) => void
+}): ReactElement {
+  return (
+    <div className="flex items-end gap-2">
+      <input
+        type="color"
+        aria-label={`Pick ${label.toLowerCase()}`}
+        value={isHexColor(value) ? value : '#000000'}
+        onChange={(event) => onChange(event.target.value)}
+        className="size-8 shrink-0 cursor-pointer rounded border bg-transparent p-0"
+      />
+      <TextField
+        id={id}
+        label={label}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        error={isHexColor(value) ? undefined : 'Enter a hex colour'}
+        className="flex-1"
+      />
+    </div>
+  )
 }
 
 export function QrPanel({
@@ -87,180 +124,107 @@ export function QrPanel({
   const previewUrl = buildQrImageUrl({ ...params, format: 'png', size: 256 })
 
   return (
-    <Paper sx={{ p: 2, width: '100%' }} data-testid="QrPanel">
-      <Typography component="h3" variant="h6" sx={{ mb: 0.5 }}>
-        QR code
-      </Typography>
-      <Typography
-        variant="caption"
-        sx={{ color: 'text.secondary', display: 'block', mb: 2 }}
-      >
-        Encodes {qrUrl} so scans are attributed to the QR and keep working when
-        the destination changes.
-      </Typography>
-      <Grid container spacing={2}>
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Stack sx={{ alignItems: 'center' }} spacing={1}>
+    <Card data-testid="QrPanel" className="w-full">
+      <CardPanel className="flex flex-col gap-4">
+        <div>
+          <h3 className="text-lg font-semibold">QR code</h3>
+          <p className="text-muted-foreground text-xs">
+            Encodes {qrUrl} so scans are attributed to the QR and keep working
+            when the destination changes.
+          </p>
+        </div>
+        <div className="grid gap-6 md:grid-cols-3">
+          <div className="flex flex-col items-center gap-3">
             {validColors ? (
-              <Box
-                component="img"
+              // The QR route renders on demand; next/image would add nothing.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
                 src={previewUrl}
                 alt={`QR code for ${qrUrl}`}
-                sx={{
-                  width: 200,
-                  height: 200,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderRadius: 1
-                }}
+                width={200}
+                height={200}
+                className="size-50 rounded-md border"
               />
             ) : (
-              <Box sx={{ width: 200, height: 200 }} />
+              <div className="size-50" />
             )}
             <Button
-              component="a"
-              href={downloadUrl}
-              download={`${pathname}.${format}`}
-              variant="contained"
-              startIcon={<DownloadRoundedIcon />}
+              render={
+                <a href={downloadUrl} download={`${pathname}.${format}`} />
+              }
               disabled={!validColors}
             >
+              <DownloadIcon aria-hidden="true" />
               Download {format.toUpperCase()}
             </Button>
-          </Stack>
-        </Grid>
-        <Grid size={{ xs: 12, md: 8 }}>
-          <Grid container spacing={2}>
-            <Grid size={{ xs: 6, md: 4 }}>
-              <TextField
-                select
-                fullWidth
-                label="Size (px)"
-                value={size}
-                onChange={(event) => setSize(Number(event.target.value))}
-              >
-                {SIZE_OPTIONS.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid size={{ xs: 6, md: 4 }}>
-              <TextField
-                select
-                fullWidth
-                label="Format"
-                value={format}
-                onChange={(event) =>
-                  setFormat(event.target.value as 'png' | 'svg')
-                }
-              >
-                <MenuItem value="png">PNG</MenuItem>
-                <MenuItem value="svg">SVG</MenuItem>
-              </TextField>
-            </Grid>
-            <Grid size={{ xs: 12, md: 4 }}>
-              <TextField
-                select
-                fullWidth
-                label="Error correction"
-                value={errorCorrectionLevel}
-                onChange={(event) =>
-                  setErrorCorrectionLevel(
-                    event.target.value as QrErrorCorrection
-                  )
-                }
-                helperText={
-                  assetClass === 'videoEmbedded'
-                    ? 'H recommended for video-embedded links'
-                    : undefined
-                }
-              >
-                {ERROR_CORRECTION_OPTIONS.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid size={{ xs: 6, md: 4 }}>
-              <TextField
-                fullWidth
-                label="Dark colour"
-                value={dark}
-                onChange={(event) => setDark(event.target.value)}
-                error={!isHexColor(dark)}
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <Box
-                        component="input"
-                        type="color"
-                        aria-label="Pick dark colour"
-                        value={isHexColor(dark) ? dark : '#000000'}
-                        onChange={(event) => setDark(event.target.value)}
-                        sx={{ width: 28, height: 28, mr: 1, border: 0, p: 0 }}
-                      />
-                    )
-                  }
-                }}
-              />
-            </Grid>
-            <Grid size={{ xs: 6, md: 4 }}>
-              <TextField
-                fullWidth
-                label="Light colour"
-                value={light}
-                onChange={(event) => setLight(event.target.value)}
-                error={!isHexColor(light)}
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <Box
-                        component="input"
-                        type="color"
-                        aria-label="Pick light colour"
-                        value={isHexColor(light) ? light : '#ffffff'}
-                        onChange={(event) => setLight(event.target.value)}
-                        sx={{ width: 28, height: 28, mr: 1, border: 0, p: 0 }}
-                      />
-                    )
-                  }
-                }}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, md: 4 }}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={quietZone}
-                    onChange={(event) => setQuietZone(event.target.checked)}
-                  />
-                }
-                label="Quiet zone"
-              />
-            </Grid>
-            <Grid size={12}>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 md:col-span-2 md:grid-cols-3">
+            <SelectField
+              id="qr-size"
+              label="Size (px)"
+              value={String(size)}
+              onValueChange={(value) => setSize(Number(value))}
+              options={SIZE_OPTIONS}
+            />
+            <SelectField
+              id="qr-format"
+              label="Format"
+              value={format}
+              onValueChange={(value) => setFormat(value as 'png' | 'svg')}
+              options={FORMAT_OPTIONS}
+            />
+            <SelectField
+              id="qr-ec"
+              label="Error correction"
+              value={errorCorrectionLevel}
+              onValueChange={(value) =>
+                setErrorCorrectionLevel(value as QrErrorCorrection)
+              }
+              options={ERROR_CORRECTION_OPTIONS}
+              helperText={
+                assetClass === 'videoEmbedded'
+                  ? 'H recommended for video-embedded links'
+                  : undefined
+              }
+            />
+            <ColorField
+              id="qr-dark"
+              label="Dark colour"
+              value={dark}
+              onChange={setDark}
+            />
+            <ColorField
+              id="qr-light"
+              label="Light colour"
+              value={light}
+              onChange={setLight}
+            />
+            <SwitchField
+              id="qr-quiet-zone"
+              label="Quiet zone"
+              checked={quietZone}
+              onCheckedChange={setQuietZone}
+            />
+            <div className="sm:col-span-2 md:col-span-3">
               {lowContrast ? (
-                <Alert severity="warning">
-                  Contrast is {ratio?.toFixed(2)}:1. Scanners need at least{' '}
-                  {MIN_QR_CONTRAST_RATIO}:1 between the dark and light colours.
+                <Alert variant="warning">
+                  <AlertDescription>
+                    Contrast is {ratio?.toFixed(2)}:1. Scanners need at least{' '}
+                    {MIN_QR_CONTRAST_RATIO}:1 between the dark and light
+                    colours.
+                  </AlertDescription>
                 </Alert>
               ) : (
                 ratio != null && (
-                  <Typography
-                    variant="caption"
-                    sx={{ color: 'text.secondary' }}
-                  >
+                  <p className="text-muted-foreground text-xs">
                     Contrast {ratio.toFixed(2)}:1
-                  </Typography>
+                  </p>
                 )
               )}
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
-    </Paper>
+            </div>
+          </div>
+        </div>
+      </CardPanel>
+    </Card>
   )
 }

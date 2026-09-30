@@ -1,27 +1,26 @@
 'use client'
 
 import { useQuery } from '@apollo/client/react'
-import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded'
-import Alert from '@mui/material/Alert'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
-import Paper from '@mui/material/Paper'
-import Stack from '@mui/material/Stack'
-import { styled } from '@mui/material/styles'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
-import Tooltip from '@mui/material/Tooltip'
-import Typography from '@mui/material/Typography'
+import { DownloadIcon } from 'lucide-react'
 import { ReactElement, useMemo } from 'react'
 
 import { graphql } from '@core/shared/gql'
 
 import { downloadCsv, toCsv } from '../../libs/csv'
 import { SHORT_LINK_STATS_FIELDS, lastThirtyDays } from '../../libs/shortLink'
+
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { Card, CardPanel } from '@/components/ui/card'
+import { Spinner } from '@/components/ui/spinner'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 
 export const GET_SHORT_LINK_STATS = graphql(
   `
@@ -48,14 +47,6 @@ interface StatsPanelProps {
   csvFilename: string
 }
 
-const Bar = styled(Box)(({ theme }) => ({
-  flex: 1,
-  minWidth: 4,
-  borderRadius: 2,
-  backgroundColor: theme.palette.primary.main,
-  transition: 'height 200ms'
-}))
-
 function StatTile({
   label,
   value
@@ -64,12 +55,12 @@ function StatTile({
   value: number
 }): ReactElement {
   return (
-    <Paper variant="outlined" sx={{ p: 2, flex: 1, minWidth: 120 }}>
-      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-        {label}
-      </Typography>
-      <Typography variant="h5">{value.toLocaleString('en-US')}</Typography>
-    </Paper>
+    <div className="bg-card min-w-28 flex-1 rounded-lg border p-3">
+      <div className="text-muted-foreground text-xs">{label}</div>
+      <div className="text-2xl font-semibold">
+        {value.toLocaleString('en-US')}
+      </div>
+    </div>
   )
 }
 
@@ -78,30 +69,26 @@ function ByDayBars({ points }: { points: StatsPoint[] }): ReactElement {
 
   if (points.length === 0) {
     return (
-      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-        No scans in this period.
-      </Typography>
+      <p className="text-muted-foreground text-sm">No scans in this period.</p>
     )
   }
 
   return (
-    <Stack
-      direction="row"
-      spacing={0.5}
-      sx={{ alignItems: 'flex-end', height: 120 }}
+    <div
       role="img"
       aria-label="Scans by day"
       data-testid="StatsByDay"
+      className="flex h-32 items-end gap-0.5"
     >
       {points.map((point) => (
-        <Tooltip
+        <div
           key={point.key}
           title={`${point.key}: ${point.count} scans (${point.qrCount} QR)`}
-        >
-          <Bar sx={{ height: `${Math.max(2, (point.count / max) * 100)}%` }} />
-        </Tooltip>
+          className="bg-primary min-w-1 flex-1 rounded-sm transition-[height]"
+          style={{ height: `${Math.max(2, (point.count / max) * 100)}%` }}
+        />
       ))}
-    </Stack>
+    </div>
   )
 }
 
@@ -113,22 +100,20 @@ function BreakdownTable({
   points: StatsPoint[]
 }): ReactElement {
   return (
-    <Box sx={{ flex: 1, minWidth: 220 }}>
-      <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        {title}
-      </Typography>
-      <Table size="small" aria-label={title}>
-        <TableHead>
+    <div className="min-w-56 flex-1">
+      <h4 className="mb-2 text-sm font-medium">{title}</h4>
+      <Table aria-label={title}>
+        <TableHeader>
           <TableRow>
-            <TableCell>Key</TableCell>
-            <TableCell align="right">Scans</TableCell>
-            <TableCell align="right">QR</TableCell>
+            <TableHead>Key</TableHead>
+            <TableHead className="text-right">Scans</TableHead>
+            <TableHead className="text-right">QR</TableHead>
           </TableRow>
-        </TableHead>
+        </TableHeader>
         <TableBody>
           {points.length === 0 && (
             <TableRow>
-              <TableCell colSpan={3} sx={{ color: 'text.secondary' }}>
+              <TableCell colSpan={3} className="text-muted-foreground">
                 No data
               </TableCell>
             </TableRow>
@@ -136,13 +121,13 @@ function BreakdownTable({
           {points.map((point) => (
             <TableRow key={point.key}>
               <TableCell>{point.key === '' ? 'Unknown' : point.key}</TableCell>
-              <TableCell align="right">{point.count}</TableCell>
-              <TableCell align="right">{point.qrCount}</TableCell>
+              <TableCell className="text-right">{point.count}</TableCell>
+              <TableCell className="text-right">{point.qrCount}</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-    </Box>
+    </div>
   )
 }
 
@@ -178,44 +163,46 @@ export function StatsPanel({
   }
 
   return (
-    <Paper sx={{ p: 2, width: '100%' }} data-testid="StatsPanel">
-      <Stack
-        direction="row"
-        sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
-      >
-        <Box>
-          <Typography component="h3" variant="h6">
-            Scans
-          </Typography>
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            {range.from.slice(0, 10)} to {range.to.slice(0, 10)}
-          </Typography>
-        </Box>
-        <Button
-          size="small"
-          startIcon={<DownloadRoundedIcon />}
-          onClick={handleExport}
-          disabled={stats == null}
-        >
-          Export CSV
-        </Button>
-      </Stack>
-      {loading && <CircularProgress size={24} />}
-      {error != null && <Alert severity="error">{error.message}</Alert>}
-      {stats != null && (
-        <Stack spacing={3}>
-          <Stack direction="row" spacing={2}>
-            <StatTile label="Total" value={stats.total} />
-            <StatTile label="QR" value={stats.qr} />
-            <StatTile label="Direct" value={stats.direct} />
-          </Stack>
-          <ByDayBars points={stats.byDay} />
-          <Stack direction={{ xs: 'column', md: 'row' }} spacing={3}>
-            <BreakdownTable title="By country" points={stats.byCountry} />
-            <BreakdownTable title="By device" points={stats.byDeviceClass} />
-          </Stack>
-        </Stack>
-      )}
-    </Paper>
+    <Card data-testid="StatsPanel" className="w-full">
+      <CardPanel className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold">Scans</h3>
+            <p className="text-muted-foreground text-xs">
+              {range.from.slice(0, 10)} to {range.to.slice(0, 10)}
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExport}
+            disabled={stats == null}
+          >
+            <DownloadIcon aria-hidden="true" />
+            Export CSV
+          </Button>
+        </div>
+        {loading && <Spinner aria-label="Loading scans" />}
+        {error != null && (
+          <Alert variant="error">
+            <AlertDescription>{error.message}</AlertDescription>
+          </Alert>
+        )}
+        {stats != null && (
+          <div className="flex flex-col gap-6">
+            <div className="flex gap-3">
+              <StatTile label="Total" value={stats.total} />
+              <StatTile label="QR" value={stats.qr} />
+              <StatTile label="Direct" value={stats.direct} />
+            </div>
+            <ByDayBars points={stats.byDay} />
+            <div className="flex flex-col gap-6 md:flex-row">
+              <BreakdownTable title="By country" points={stats.byCountry} />
+              <BreakdownTable title="By device" points={stats.byDeviceClass} />
+            </div>
+          </div>
+        )}
+      </CardPanel>
+    </Card>
   )
 }

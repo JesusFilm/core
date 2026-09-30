@@ -1,16 +1,12 @@
 'use client'
-import Box from '@mui/material/Box'
-import CssBaseline from '@mui/material/CssBaseline'
-import Stack from '@mui/material/Stack'
-import { ThemeProvider, alpha } from '@mui/material/styles'
+
 import { ReactElement, ReactNode } from 'react'
 
 import { getEnvironmentBannerHeight } from '../../libs/environment'
-import { theme } from '../../theme'
 
 import { AppNavbar } from './_AppNavbar'
 import { Header } from './_Header'
-import { SideMenu } from './_SideMenu'
+import { Sidebar } from './_Sidebar'
 
 interface DashboardLayoutProps {
   children?: ReactNode
@@ -22,35 +18,18 @@ export default function DashboardLayout({
   const environmentBannerHeight = getEnvironmentBannerHeight()
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline enableColorScheme />
-      <Box sx={{ display: 'flex', paddingTop: `${environmentBannerHeight}px` }}>
-        <SideMenu />
-        <AppNavbar />
-        <Box
-          component="main"
-          sx={(theme) => ({
-            flexGrow: 1,
-            backgroundColor: alpha(theme.palette.background.default, 1),
-            overflow: 'auto',
-            minHeight: '100svh'
-          })}
-        >
-          <Stack
-            spacing={2}
-            sx={{
-              alignItems: 'center',
-              mx: 3,
-              pb: 10,
-              mt: { xs: 8, md: 0 },
-              height: '100%'
-            }}
-          >
-            <Header />
-            {children}
-          </Stack>
-        </Box>
-      </Box>
-    </ThemeProvider>
+    <div
+      className="bg-background flex min-h-svh"
+      style={{ paddingTop: environmentBannerHeight }}
+    >
+      <Sidebar topOffset={environmentBannerHeight} />
+      <AppNavbar topOffset={environmentBannerHeight} />
+      <main className="flex min-w-0 flex-1 flex-col">
+        <div className="mx-auto flex w-full max-w-[1700px] flex-1 flex-col items-center gap-4 px-4 pt-16 pb-10 md:px-6 md:pt-0">
+          <Header />
+          {children}
+        </div>
+      </main>
+    </div>
   )
 }

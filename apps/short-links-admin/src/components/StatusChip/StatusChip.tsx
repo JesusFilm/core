@@ -1,5 +1,4 @@
-import Chip, { ChipProps } from '@mui/material/Chip'
-import { ReactElement } from 'react'
+import { ComponentProps, ReactElement } from 'react'
 
 import {
   HEALTH_LABELS,
@@ -9,10 +8,14 @@ import {
   labelFor
 } from '../../libs/shortLink'
 
-const STATUS_COLORS: Record<ShortLinkStatus, ChipProps['color']> = {
+import { Badge } from '@/components/ui/badge'
+
+type BadgeVariant = ComponentProps<typeof Badge>['variant']
+
+const STATUS_VARIANTS: Record<ShortLinkStatus, BadgeVariant> = {
   active: 'success',
   paused: 'warning',
-  retired: 'default'
+  retired: 'outline'
 }
 
 interface StatusChipProps {
@@ -21,12 +24,9 @@ interface StatusChipProps {
 
 export function StatusChip({ status }: StatusChipProps): ReactElement {
   return (
-    <Chip
-      size="small"
-      label={labelFor(STATUS_OPTIONS, status)}
-      color={STATUS_COLORS[status] ?? 'default'}
-      variant={status === 'retired' ? 'outlined' : 'filled'}
-    />
+    <Badge variant={STATUS_VARIANTS[status] ?? 'secondary'}>
+      {labelFor(STATUS_OPTIONS, status)}
+    </Badge>
   )
 }
 
@@ -35,16 +35,11 @@ interface HealthChipProps {
 }
 
 export function HealthChip({ health }: HealthChipProps): ReactElement {
-  if (health == null) {
-    return <Chip size="small" label="Not checked" variant="outlined" />
-  }
+  if (health == null) return <Badge variant="outline">Not checked</Badge>
 
   return (
-    <Chip
-      size="small"
-      label={HEALTH_LABELS[health] ?? health}
-      color={health === 'ok' ? 'success' : 'error'}
-      variant={health === 'ok' ? 'outlined' : 'filled'}
-    />
+    <Badge variant={health === 'ok' ? 'success' : 'error'}>
+      {HEALTH_LABELS[health] ?? health}
+    </Badge>
   )
 }

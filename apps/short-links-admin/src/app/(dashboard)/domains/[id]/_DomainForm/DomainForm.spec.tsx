@@ -2,7 +2,6 @@ import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useParams } from 'next/navigation'
-import { SnackbarProvider } from 'notistack'
 
 import {
   DomainForm,
@@ -92,9 +91,7 @@ function updateMock(
 function renderForm(mocks: unknown[]): void {
   render(
     <MockedProvider mocks={mocks as never}>
-      <SnackbarProvider>
-        <DomainForm />
-      </SnackbarProvider>
+      <DomainForm />
     </MockedProvider>
   )
 }

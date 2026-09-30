@@ -1,30 +1,24 @@
 'use client'
 
 import { useLazyQuery, useQuery } from '@apollo/client/react'
-import Alert from '@mui/material/Alert'
-import Button from '@mui/material/Button'
-import Chip from '@mui/material/Chip'
-import Link from '@mui/material/Link'
-import MenuItem from '@mui/material/MenuItem'
-import Paper from '@mui/material/Paper'
-import Stack from '@mui/material/Stack'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableRow from '@mui/material/TableRow'
-import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { FormEvent, ReactElement, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
 
+import { SelectField, TextField } from '../../../../components/form'
 import { StatusChip } from '../../../../components/StatusChip'
 import {
   GET_SHORT_LINK_DOMAINS,
   SHORT_LINK_FIELDS,
   formatDomainLabel
 } from '../../../../libs/shortLink'
+
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardPanel } from '@/components/ui/card'
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 
 export const SHORT_LINK_RESOLVE = graphql(
   `
@@ -81,131 +75,123 @@ export function TestRedirect(): ReactElement {
   const resolution = data?.shortLinkResolve
 
   return (
-    <Stack spacing={2} sx={{ width: '100%', maxWidth: 900 }}>
-      <Typography component="h2" variant="h6">
-        Test Redirect
-      </Typography>
-      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-        Resolves a short URL exactly as the edge Worker would, without
-        redirecting anyone or recording a scan.
-      </Typography>
-      <Paper sx={{ p: 2 }}>
-        <Stack
-          component="form"
-          onSubmit={handleSubmit}
-          direction={{ xs: 'column', md: 'row' }}
-          spacing={2}
-          sx={{ alignItems: { md: 'flex-start' } }}
-        >
-          <TextField
-            select
-            label="Hostname"
-            value={selectedHostname}
-            onChange={(event) => setHostname(event.target.value)}
-            sx={{ minWidth: 200 }}
+    <div className="flex w-full max-w-3xl flex-col gap-4">
+      <div>
+        <h2 className="text-lg font-semibold">Test Redirect</h2>
+        <p className="text-muted-foreground text-sm">
+          Resolves a short URL exactly as the edge Worker would, without
+          redirecting anyone or recording a scan.
+        </p>
+      </div>
+      <Card>
+        <CardPanel>
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-4 md:flex-row md:items-end"
           >
-            {domains.map((domain) => (
-              <MenuItem key={domain.id} value={domain.hostname}>
-                {formatDomainLabel(domain)}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            label="Pathname"
-            value={pathname}
-            onChange={(event) => setPathname(event.target.value)}
-            placeholder="abc123"
-            sx={{ flex: 1 }}
-            slotProps={{ htmlInput: { 'aria-label': 'Pathname' } }}
-          />
-          <Button
-            type="submit"
-            variant="contained"
-            loading={loading}
-            disabled={selectedHostname === ''}
-          >
-            Resolve
-          </Button>
-        </Stack>
-      </Paper>
+            <SelectField
+              id="test-hostname"
+              label="Hostname"
+              value={selectedHostname}
+              onValueChange={setHostname}
+              options={domains.map((domain) => ({
+                value: domain.hostname,
+                label: formatDomainLabel(domain)
+              }))}
+              className="md:w-56"
+            />
+            <TextField
+              id="test-pathname"
+              label="Pathname"
+              value={pathname}
+              onChange={(event) => setPathname(event.target.value)}
+              placeholder="abc123"
+              className="flex-1"
+            />
+            <Button
+              type="submit"
+              loading={loading}
+              disabled={selectedHostname === ''}
+            >
+              Resolve
+            </Button>
+          </form>
+        </CardPanel>
+      </Card>
 
-      {error != null && <Alert severity="error">{error.message}</Alert>}
+      {error != null && (
+        <Alert variant="error">
+          <AlertDescription>{error.message}</AlertDescription>
+        </Alert>
+      )}
 
       {resolution != null && (
-        <Paper sx={{ p: 2 }} data-testid="ResolutionResult">
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{ alignItems: 'center', mb: 2 }}
-          >
-            <Chip
-              label={resolution.found ? 'Found' : 'Not found'}
-              color={resolution.found ? 'success' : 'error'}
-              size="small"
-            />
-            <Chip label={`HTTP ${resolution.status}`} size="small" />
-            <Chip
-              label={SOURCE_LABELS[resolution.source] ?? resolution.source}
-              size="small"
-              variant="outlined"
-            />
-          </Stack>
-          <Table size="small" aria-label="Resolution">
-            <TableBody>
-              <TableRow>
-                <TableCell sx={{ width: 160 }}>Location</TableCell>
-                <TableCell sx={{ wordBreak: 'break-all' }}>
-                  {resolution.location != null ? (
-                    <Link
-                      href={resolution.location}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {resolution.location}
-                    </Link>
-                  ) : (
-                    <Typography
-                      variant="body2"
-                      sx={{ color: 'text.secondary' }}
-                    >
-                      none (lost page)
-                    </Typography>
-                  )}
-                </TableCell>
-              </TableRow>
-              {resolution.shortLink != null && (
-                <>
-                  <TableRow>
-                    <TableCell>Matched link</TableCell>
-                    <TableCell>
-                      <Link
-                        component={NextLink}
-                        href={`/links/${resolution.shortLink.id}`}
+        <Card data-testid="ResolutionResult">
+          <CardPanel className="flex flex-col gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant={resolution.found ? 'success' : 'error'}>
+                {resolution.found ? 'Found' : 'Not found'}
+              </Badge>
+              <Badge variant="secondary">HTTP {resolution.status}</Badge>
+              <Badge variant="outline">
+                {SOURCE_LABELS[resolution.source] ?? resolution.source}
+              </Badge>
+            </div>
+            <Table aria-label="Resolution">
+              <TableBody>
+                <TableRow>
+                  <TableCell className="w-40">Location</TableCell>
+                  <TableCell className="break-all">
+                    {resolution.location != null ? (
+                      <a
+                        href={resolution.location}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="underline-offset-4 hover:underline"
                       >
-                        {resolution.shortLink.shortUrl}
-                      </Link>
-                      {resolution.shortLink.name != null &&
-                        ` · ${resolution.shortLink.name}`}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Link status</TableCell>
-                    <TableCell>
-                      <StatusChip status={resolution.shortLink.status} />
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Destination</TableCell>
-                    <TableCell sx={{ wordBreak: 'break-all' }}>
-                      {resolution.shortLink.to}
-                    </TableCell>
-                  </TableRow>
-                </>
-              )}
-            </TableBody>
-          </Table>
-        </Paper>
+                        {resolution.location}
+                      </a>
+                    ) : (
+                      <span className="text-muted-foreground">
+                        none (lost page)
+                      </span>
+                    )}
+                  </TableCell>
+                </TableRow>
+                {resolution.shortLink != null && (
+                  <>
+                    <TableRow>
+                      <TableCell>Matched link</TableCell>
+                      <TableCell>
+                        <NextLink
+                          href={`/links/${resolution.shortLink.id}`}
+                          className="underline-offset-4 hover:underline"
+                        >
+                          {resolution.shortLink.shortUrl}
+                        </NextLink>
+                        {resolution.shortLink.name != null &&
+                          ` · ${resolution.shortLink.name}`}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>Link status</TableCell>
+                      <TableCell>
+                        <StatusChip status={resolution.shortLink.status} />
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>Destination</TableCell>
+                      <TableCell className="break-all">
+                        {resolution.shortLink.to}
+                      </TableCell>
+                    </TableRow>
+                  </>
+                )}
+              </TableBody>
+            </Table>
+          </CardPanel>
+        </Card>
       )}
-    </Stack>
+    </div>
   )
 }

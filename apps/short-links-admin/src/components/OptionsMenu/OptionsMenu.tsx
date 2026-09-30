@@ -1,76 +1,31 @@
-import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded'
-import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded'
-import { listClasses } from '@mui/material/List'
-import ListItemIcon, { listItemIconClasses } from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
-import Menu from '@mui/material/Menu'
-import MuiMenuItem from '@mui/material/MenuItem'
-import { paperClasses } from '@mui/material/Paper'
-import { styled } from '@mui/material/styles'
-import { MouseEvent, ReactElement, useState } from 'react'
+'use client'
+
+import { LogOutIcon, MoreVerticalIcon } from 'lucide-react'
+import { ReactElement } from 'react'
 
 import { useLogout } from '../../libs/useLogout'
-import { MenuButton } from '../MenuButton'
 
-const MenuItem = styled(MuiMenuItem)({
-  margin: '2px 0'
-})
+import { Button } from '@/components/ui/button'
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@/components/ui/menu'
 
 export function OptionsMenu(): ReactElement {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
-  const handleLogout = useLogout({ onSuccess: handleClose })
-
-  function handleClick(event: MouseEvent<HTMLElement>): void {
-    setAnchorEl(event.currentTarget)
-  }
-
-  function handleClose(): void {
-    setAnchorEl(null)
-  }
+  const handleLogout = useLogout()
 
   return (
-    <>
-      <MenuButton
-        aria-label="Open menu"
-        onClick={handleClick}
-        sx={{ borderColor: 'transparent' }}
+    <Menu>
+      <MenuTrigger
+        render={
+          <Button variant="ghost" size="icon-sm" aria-label="Open menu" />
+        }
       >
-        <MoreVertRoundedIcon />
-      </MenuButton>
-      <Menu
-        anchorEl={anchorEl}
-        id="menu"
-        open={open}
-        onClose={handleClose}
-        onClick={handleClose}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        sx={{
-          [`& .${listClasses.root}`]: {
-            padding: '4px'
-          },
-          [`& .${paperClasses.root}`]: {
-            minWidth: 180,
-            padding: 0
-          }
-        }}
-      >
-        <MenuItem
-          onClick={handleLogout}
-          sx={{
-            [`& .${listItemIconClasses.root}`]: {
-              ml: 'auto',
-              minWidth: 0
-            }
-          }}
-        >
-          <ListItemText>Sign Out</ListItemText>
-          <ListItemIcon>
-            <LogoutRoundedIcon fontSize="small" />
-          </ListItemIcon>
+        <MoreVerticalIcon aria-hidden="true" />
+      </MenuTrigger>
+      <MenuPopup align="end">
+        <MenuItem onClick={handleLogout}>
+          <LogOutIcon aria-hidden="true" />
+          Sign Out
         </MenuItem>
-      </Menu>
-    </>
+      </MenuPopup>
+    </Menu>
   )
 }
