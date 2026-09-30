@@ -9,10 +9,19 @@ import type {
 import { normalizePathname } from '../lib/slug'
 
 /**
- * The shapes written to the edge store (Workers KV + D1) and read by
+ * The shapes written to the edge store and read by
  * `workers/short-links-redirect`. `v` lets the Worker reject a shape it does
  * not understand and fall through to the next store. See
- * prds/short-links/TECH-DESIGN.md "Edge store contracts".
+ * prds/short-links/TECH-DESIGN.md "Edge store contracts" and "Per-domain KV
+ * namespaces and global slugs".
+ *
+ * Namespaces and keys:
+ * - global namespace (`CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID`):
+ *   `domain:<hostname>` domain records, `link:<pathname>` global links
+ * - one namespace per domain (`ShortLinkDomain.kvNamespaceId`):
+ *   `<pathname>` the domain's routing records (bare slug, no prefix)
+ * - D1 replica (one table): `domain:<hostname>`, `link:<hostname>/<pathname>`,
+ *   `global:<pathname>`
  */
 
 export const EDGE_RECORD_VERSION = 1
@@ -28,15 +37,22 @@ export interface DomainRecord {
   passthroughOrigin: string | null
   reservedPaths: string[]
   slugCaseSensitive: boolean
+  /** Worker binding of the domain's own namespace; null = global links only */
+  kvBinding: string | null
 }
 
 export interface RoutingRecord {
   v: typeof EDGE_RECORD_VERSION
   id: string
   to: string
-  status: number
+  /** the link's own override only; the Worker falls back to the serving domain */
+  status: number | null
+  /** the link's own override only */
   fallbackTo: string | null
   paused: boolean
+  global: boolean
+  /** the owning domain (reporting) */
+  hostname: string
   assetClass: ShortLinkAssetClass
   placement: ShortLinkPlacement | null
   campaignIds: string[]
@@ -56,6 +72,7 @@ export type DomainForRecord = Pick<
   | 'passthroughOrigin'
   | 'reservedPaths'
   | 'slugCaseSensitive'
+  | 'kvBinding'
 >
 
 export type LinkForRecord = Pick<
@@ -64,6 +81,7 @@ export type LinkForRecord = Pick<
   | 'pathname'
   | 'to'
   | 'status'
+  | 'global'
   | 'redirectStatus'
   | 'fallbackTo'
   | 'assetClass'
@@ -75,23 +93,40 @@ export type LinkForRecord = Pick<
   | 'redirectType'
 > & { campaigns: Array<{ id: string }> }
 
+/** `domain:<hostname>` in the global namespace and D1. */
 export function domainKey(hostname: string): string {
   return `domain:${hostname.toLowerCase()}`
 }
 
 /**
- * `link:<hostname>/<pathname>` — hostname always lower-case, pathname exactly
- * as minted unless the domain is case-insensitive (then lower-cased, matching
- * the Worker's lookup).
+ * The bare slug — the key in the domain's own namespace. Lower-cased when the
+ * domain is case-insensitive, matching the Worker's lookup.
  */
+export function domainLinkKey(
+  link: Pick<ShortLink, 'pathname'>,
+  domain: Pick<ShortLinkDomain, 'slugCaseSensitive'>
+): string {
+  return normalizePathname(link.pathname, domain)
+}
+
+/** `link:<pathname>` in the global namespace (global pathnames are lower-case). */
+export function globalLinkKey(link: Pick<ShortLink, 'pathname'>): string {
+  return `link:${link.pathname}`
+}
+
+/** `link:<hostname>/<pathname>` — the D1 replica key of a domain routing record. */
 export function recordKeyForLink(
   link: Pick<ShortLink, 'pathname'>,
   domain: Pick<ShortLinkDomain, 'hostname' | 'slugCaseSensitive'>
 ): string {
-  return `link:${domain.hostname.toLowerCase()}/${normalizePathname(
-    link.pathname,
-    domain
-  )}`
+  return `link:${domain.hostname.toLowerCase()}/${domainLinkKey(link, domain)}`
+}
+
+/** `global:<pathname>` — the D1 replica key of a global link. */
+export function globalRecordKeyForLink(
+  link: Pick<ShortLink, 'pathname'>
+): string {
+  return `global:${link.pathname}`
 }
 
 export function buildDomainRecord(domain: DomainForRecord): DomainRecord {
@@ -105,15 +140,16 @@ export function buildDomainRecord(domain: DomainForRecord): DomainRecord {
     notFound: domain.notFound,
     passthroughOrigin: domain.passthroughOrigin,
     reservedPaths: domain.reservedPaths,
-    slugCaseSensitive: domain.slugCaseSensitive
+    slugCaseSensitive: domain.slugCaseSensitive,
+    kvBinding: domain.kvBinding
   }
 }
 
 /**
  * The URL the edge redirects to for an active link. An arc.gt link that
  * carries `brightcoveId` + `redirectType` keeps resolving through the Arclight
- * API (the domain's passthrough origin) so Brightcove URLs are built exactly
- * as they are today — one hop, same as the current wholesale redirect.
+ * API (the owning domain's passthrough origin) so Brightcove URLs are built
+ * exactly as they are today — one hop, same as the current wholesale redirect.
  */
 export function effectiveDestination(
   link: Pick<ShortLink, 'to' | 'pathname' | 'brightcoveId' | 'redirectType'>,
@@ -128,6 +164,7 @@ export function effectiveDestination(
   return link.to
 }
 
+/** Status the serving domain answers with: link override, else its default. */
 export function effectiveRedirectStatus(
   link: Pick<ShortLink, 'redirectStatus'>,
   domain: Pick<ShortLinkDomain, 'redirectStatus'>
@@ -137,18 +174,17 @@ export function effectiveRedirectStatus(
 
 export function buildRoutingRecord(
   link: LinkForRecord,
-  domain: Pick<
-    ShortLinkDomain,
-    'redirectStatus' | 'passthroughOrigin' | 'fallbackTo'
-  >
+  domain: Pick<ShortLinkDomain, 'hostname' | 'passthroughOrigin'>
 ): RoutingRecord {
   return {
     v: EDGE_RECORD_VERSION,
     id: link.id,
     to: effectiveDestination(link, domain),
-    status: effectiveRedirectStatus(link, domain),
+    status: link.redirectStatus,
     fallbackTo: link.fallbackTo,
     paused: link.status === 'paused',
+    global: link.global,
+    hostname: domain.hostname.toLowerCase(),
     assetClass: link.assetClass,
     placement: link.placement,
     campaignIds: link.campaigns.map(({ id }) => id),

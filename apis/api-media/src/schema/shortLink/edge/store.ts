@@ -27,27 +27,33 @@ function chunk<T>(items: T[], size: number): T[][] {
  */
 export async function kvWrite(
   config: EdgeConfig,
+  namespaceId: string,
   record: EdgeRecord
 ): Promise<void> {
-  await config.client.kv.namespaces.values.update(
-    config.kvNamespaceId,
-    record.key,
-    { account_id: config.accountId, value: record.value, metadata: '{}' }
-  )
+  await config.client.kv.namespaces.values.update(namespaceId, record.key, {
+    account_id: config.accountId,
+    value: record.value,
+    metadata: '{}'
+  })
 }
 
-export async function kvDelete(config: EdgeConfig, key: string): Promise<void> {
-  await config.client.kv.namespaces.values.delete(config.kvNamespaceId, key, {
+export async function kvDelete(
+  config: EdgeConfig,
+  namespaceId: string,
+  key: string
+): Promise<void> {
+  await config.client.kv.namespaces.values.delete(namespaceId, key, {
     account_id: config.accountId
   })
 }
 
 export async function kvWriteMany(
   config: EdgeConfig,
+  namespaceId: string,
   records: EdgeRecord[]
 ): Promise<void> {
   for (const batch of chunk(records, KV_BULK_CHUNK)) {
-    await config.client.kv.namespaces.bulkUpdate(config.kvNamespaceId, {
+    await config.client.kv.namespaces.bulkUpdate(namespaceId, {
       account_id: config.accountId,
       body: batch.map(({ key, value }) => ({ key, value }))
     })

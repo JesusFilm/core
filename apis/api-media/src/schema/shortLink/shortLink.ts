@@ -157,6 +157,11 @@ export const ShortLink = builder.prismaObject('ShortLink', {
       type: 'DateTime',
       nullable: true
     }),
+    global: t.exposeBoolean('global', {
+      nullable: false,
+      description:
+        'when true the pathname also resolves on every domain that has no link of its own for it; global pathnames are unique across all domains and never reissued'
+    }),
     shortUrl: t.field({
       type: 'String',
       nullable: false,
@@ -205,6 +210,7 @@ function buildShortLinksWhere(
     where.youtubeVideoId = filter.youtubeVideoId
   if (filter.service != null) where.service = filter.service
   if (filter.tag != null) where.tags = { has: filter.tag }
+  if (filter.global != null) where.global = filter.global
   if (filter.campaignId != null)
     where.campaigns = { some: { id: filter.campaignId } }
   if (filter.search != null && filter.search !== '') {
@@ -286,6 +292,46 @@ async function isNotBlocklisted(to: string): Promise<boolean> {
   )
 }
 
+/**
+ * The global registry fallback: the live link that claimed this pathname
+ * across every domain, if any.
+ */
+async function findGlobalClaim(pathname: string): Promise<string | null> {
+  const claim = await prisma.shortLinkGlobalSlug.findUnique({
+    where: { pathname },
+    select: { shortLinkId: true }
+  })
+  return claim?.shortLinkId ?? null
+}
+
+const GLOBAL_PATHNAME_ALREADY_CLAIMED =
+  'global pathname is already claimed by another short link'
+
+/** Register a global pathname; unique across every domain, never reissued. */
+async function claimGlobalPathname(
+  tx: Prisma.TransactionClient,
+  pathname: string,
+  shortLinkId: string
+): Promise<void> {
+  try {
+    await tx.shortLinkGlobalSlug.create({ data: { pathname, shortLinkId } })
+  } catch (error) {
+    if (isUniqueViolation(error))
+      throw new NotUniqueError(GLOBAL_PATHNAME_ALREADY_CLAIMED, [
+        { path: ['input', 'pathname'], value: pathname }
+      ])
+    throw error
+  }
+}
+
+function assertGlobalPathname(pathname: string): void {
+  if (pathname === pathname.toLowerCase()) return
+  throw inputValidationError(
+    ['input', 'pathname'],
+    'a global pathname must be lower-case so every domain can resolve it'
+  )
+}
+
 builder.queryFields((t) => ({
   shortLinkByPath: t.prismaField({
     type: 'ShortLink',
@@ -307,27 +353,42 @@ builder.queryFields((t) => ({
     },
     nullable: false,
     resolve: async (query, _, { pathname, hostname }) => {
-      try {
-        return await prisma.shortLink.findFirstOrThrow({
+      const shortLink = await prisma.shortLink.findFirst({
+        ...query,
+        where: {
+          pathname,
+          domain: { hostname },
+          deletedAt: null,
+          status: { not: 'retired' }
+        }
+      })
+      if (shortLink != null) return shortLink
+
+      // a pathname the domain does not own may be a global link
+      const domain = await prisma.shortLinkDomain.findUnique({
+        where: { hostname },
+        select: { slugCaseSensitive: true }
+      })
+      const claimedId = await findGlobalClaim(
+        domain?.slugCaseSensitive === false ? pathname.toLowerCase() : pathname
+      )
+      if (claimedId != null) {
+        const globalLink = await prisma.shortLink.findFirst({
           ...query,
           where: {
-            pathname,
-            domain: { hostname },
+            id: claimedId,
+            global: true,
             deletedAt: null,
             status: { not: 'retired' }
           }
         })
-      } catch (e) {
-        if (
-          e instanceof Prisma.PrismaClientKnownRequestError &&
-          e.code === 'P2025'
-        )
-          throw new NotFoundError('short link not found', [
-            { path: ['pathname'], value: pathname },
-            { path: ['hostname'], value: hostname }
-          ])
-        throw e
+        if (globalLink != null) return globalLink
       }
+
+      throw new NotFoundError('short link not found', [
+        { path: ['pathname'], value: pathname },
+        { path: ['hostname'], value: hostname }
+      ])
     }
   }),
   shortLink: t.withAuth(editorScopes).prismaField({
@@ -474,7 +535,12 @@ builder.mutationFields((t) => ({
       tags: t.input.stringList({ required: false }),
       videoId: t.input.string({ required: false }),
       youtubeVideoId: t.input.string({ required: false }),
-      campaignIds: t.input.stringList({ required: false })
+      campaignIds: t.input.stringList({ required: false }),
+      global: t.input.boolean({
+        required: false,
+        description:
+          'resolve this pathname on every domain (short link admin only); the pathname must be lower-case'
+      })
     },
     validate: [
       async ({ input: { hostname, service } }) => {
@@ -506,6 +572,14 @@ builder.mutationFields((t) => ({
         )
 
       const pathname = resolveCreatePathname(input.pathname, domain)
+      const global = input.global === true
+      if (global) {
+        assertShortLinkAdmin(
+          context,
+          'only a short link admin may create a global link'
+        )
+        assertGlobalPathname(pathname)
+      }
       await assertCampaignsExist(input.campaignIds)
       const id = input.id ?? uuidv4()
 
@@ -539,6 +613,7 @@ builder.mutationFields((t) => ({
                   ? { connect: { id: input.videoId } }
                   : undefined,
               youtubeVideoId: input.youtubeVideoId,
+              global: global || undefined,
               campaigns:
                 input.campaignIds != null && input.campaignIds.length > 0
                   ? {
@@ -549,6 +624,7 @@ builder.mutationFields((t) => ({
                   : undefined
             }
           })
+          if (global) await claimGlobalPathname(tx, pathname, id)
           const edgePublishedAt = await publishLink(id, tx)
           return edgePublishedAt == null
             ? shortLink
@@ -633,6 +709,11 @@ builder.mutationFields((t) => ({
         required: false,
         description:
           'recorded on the destination history row when `to` changes; required for videoEmbedded links'
+      }),
+      global: t.input.boolean({
+        required: false,
+        description:
+          'resolve this pathname on every domain (short link admin only); the pathname must be lower-case. Clearing it releases the global pathname'
       })
     },
     resolve: async (query, _, { input }, context) => {
@@ -668,6 +749,17 @@ builder.mutationFields((t) => ({
           context,
           `only a short link admin may change the asset class of a ${existing.assetClass} link`
         )
+      const globalChange =
+        input.global != null && input.global !== existing.global
+          ? input.global
+          : null
+      if (globalChange != null) {
+        assertShortLinkAdmin(
+          context,
+          'only a short link admin may change whether a link is global'
+        )
+        if (globalChange) assertGlobalPathname(existing.pathname)
+      }
       await assertCampaignsExist(input.campaignIds)
 
       return await prisma.$transaction(async (tx) => {
@@ -676,6 +768,7 @@ builder.mutationFields((t) => ({
           where: { id: input.id },
           data: {
             to: input.to,
+            global: globalChange ?? undefined,
             brightcoveId: input.brightcoveId,
             redirectType: input.redirectType,
             bitrate: input.bitrate,
@@ -710,7 +803,15 @@ builder.mutationFields((t) => ({
               note: input.note ?? undefined
             }
           })
+        if (globalChange === true)
+          await claimGlobalPathname(tx, existing.pathname, input.id)
+        // publish before releasing the claim: publishLink removes the global
+        // key only while this link still owns the registry row
         const edgePublishedAt = await publishLink(input.id, tx)
+        if (globalChange === false)
+          await tx.shortLinkGlobalSlug.deleteMany({
+            where: { shortLinkId: input.id }
+          })
         return edgePublishedAt == null
           ? shortLink
           : { ...shortLink, edgePublishedAt }

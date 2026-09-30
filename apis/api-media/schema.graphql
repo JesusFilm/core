@@ -679,6 +679,11 @@ input MutationShortLinkCreateInput {
   videoId: String
   youtubeVideoId: String
   campaignIds: [String!]
+
+  """
+  resolve this pathname on every domain (short link admin only); the pathname must be lower-case
+  """
+  global: Boolean
 }
 
 union MutationShortLinkCreateResult = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
@@ -730,6 +735,16 @@ input MutationShortLinkDomainCreateInput {
   """required when notFound is passthrough"""
   passthroughOrigin: String
 
+  """
+  id of the Cloudflare KV namespace this domain publishes its routing records to; empty clears it (the domain links are then not published)
+  """
+  kvNamespaceId: String
+
+  """
+  Worker binding name of that namespace (e.g. KV_JESUS_FILM); empty clears it
+  """
+  kvBinding: String
+
   """defaults to false"""
   autoFailover: Boolean
 }
@@ -775,6 +790,16 @@ input MutationShortLinkDomainUpdateInput {
 
   """required when notFound is passthrough"""
   passthroughOrigin: String
+
+  """
+  id of the Cloudflare KV namespace this domain publishes its routing records to; empty clears it (the domain links are then not published)
+  """
+  kvNamespaceId: String
+
+  """
+  Worker binding name of that namespace (e.g. KV_JESUS_FILM); empty clears it
+  """
+  kvBinding: String
   autoFailover: Boolean
 }
 
@@ -835,6 +860,11 @@ input MutationShortLinkUpdateInput {
   recorded on the destination history row when `to` changes; required for videoEmbedded links
   """
   note: String
+
+  """
+  resolve this pathname on every domain (short link admin only); the pathname must be lower-case. Clearing it releases the global pathname
+  """
+  global: Boolean
 }
 
 union MutationShortLinkUpdateResult = NotFoundError | ZodError | MutationShortLinkUpdateSuccess
@@ -1292,6 +1322,11 @@ type ShortLink
   healthCheckedAt: DateTime
 
   """
+  when true the pathname also resolves on every domain that has no link of its own for it; global pathnames are unique across all domains and never reissued
+  """
+  global: Boolean!
+
+  """
   https://<hostname>/<pathname>, or https://<hostname>/<pathPrefix>/<pathname> when the domain has a path prefix
   """
   shortUrl: String!
@@ -1401,6 +1436,14 @@ type ShortLinkDomain {
 
   """when the domain record was last written to the edge store"""
   edgePublishedAt: DateTime
+
+  """
+  id of the Cloudflare KV namespace holding this domain routing records; unset means the domain links are not published to the edge
+  """
+  kvNamespaceId: String
+
+  """name of the Worker binding for that namespace (e.g. KV_JESUS_FILM)"""
+  kvBinding: String
 
   """live (not soft-deleted) links on this domain"""
   linkCount: Int!
@@ -1555,6 +1598,9 @@ input ShortLinksFilter {
   youtubeVideoId: String
   tag: String
   service: Service
+
+  """only global links (true) or only domain-scoped links (false)"""
+  global: Boolean
 
   """include soft-deleted links (default false)"""
   includeDeleted: Boolean

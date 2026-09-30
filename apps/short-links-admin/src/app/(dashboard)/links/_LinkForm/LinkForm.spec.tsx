@@ -51,6 +51,57 @@ async function changeDestination(): Promise<void> {
   await userEvent.click(screen.getByRole('button', { name: 'Save changes' }))
 }
 
+describe('LinkForm global switch', () => {
+  it('shows the switch to admins and submits global: true', async () => {
+    const { onSubmit } = renderForm({ assetClass: 'standard' })
+
+    const toggle = screen.getByRole('switch', { name: 'Global' })
+    expect(toggle).not.toBeChecked()
+    expect(
+      screen.getByText(/Resolves on every short-link domain that has no link/)
+    ).toBeInTheDocument()
+
+    await userEvent.click(toggle)
+    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }))
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1))
+    expect(onSubmit.mock.calls[0][0]).toMatchObject({ global: true })
+  })
+
+  it('rejects a global flag on a pathname that is not lower-case', async () => {
+    const { onSubmit } = renderForm({
+      assetClass: 'standard',
+      pathname: 'JesusFilm'
+    })
+
+    await userEvent.click(screen.getByRole('switch', { name: 'Global' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }))
+
+    expect(
+      await screen.findByText('Global slugs must be lower-case')
+    ).toBeInTheDocument()
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it('hides the switch from editors and shows a chip when the link is global', () => {
+    renderForm({ assetClass: 'standard', global: true }, { isAdmin: false })
+
+    expect(
+      screen.queryByRole('switch', { name: 'Global' })
+    ).not.toBeInTheDocument()
+    expect(screen.getByText('Global')).toBeInTheDocument()
+  })
+
+  it('shows nothing about global to editors when the link is not global', () => {
+    renderForm({ assetClass: 'standard' }, { isAdmin: false })
+
+    expect(
+      screen.queryByRole('switch', { name: 'Global' })
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Global')).not.toBeInTheDocument()
+  })
+})
+
 describe('LinkForm destination protection', () => {
   it('submits a standard link without confirmation', async () => {
     const { onSubmit } = renderForm({ assetClass: 'standard' })

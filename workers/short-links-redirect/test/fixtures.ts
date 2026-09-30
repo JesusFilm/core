@@ -13,6 +13,7 @@ export function domainRecord(
     reservedPaths: [],
     slugCaseSensitive: true,
     pathPrefix: '',
+    kvBinding: null,
     ...overrides
   }
 }
@@ -24,7 +25,7 @@ export function routingRecord(
     v: 1,
     id: 'link-1',
     to: 'https://www.jesusfilm.org/watch/jesus.html',
-    status: 307,
+    status: null,
     fallbackTo: null,
     paused: false,
     assetClass: 'standard',
@@ -33,6 +34,8 @@ export function routingRecord(
     videoId: null,
     youtubeVideoId: null,
     language: null,
+    global: false,
+    hostname: '',
     ...overrides
   }
 }

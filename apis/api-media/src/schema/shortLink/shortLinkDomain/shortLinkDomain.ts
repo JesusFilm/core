@@ -113,6 +113,16 @@ builder.prismaObject('ShortLinkDomain', {
       nullable: true,
       description: 'when the domain record was last written to the edge store'
     }),
+    kvNamespaceId: t.exposeString('kvNamespaceId', {
+      nullable: true,
+      description:
+        'id of the Cloudflare KV namespace holding this domain routing records; unset means the domain links are not published to the edge'
+    }),
+    kvBinding: t.exposeString('kvBinding', {
+      nullable: true,
+      description:
+        'name of the Worker binding for that namespace (e.g. KV_JESUS_FILM)'
+    }),
     linkCount: t.relationCount('shortLinks', {
       nullable: false,
       description: 'live (not soft-deleted) links on this domain',
@@ -230,12 +240,41 @@ function resolvePathPrefix(
   return normalized
 }
 
-/** Fields whose change alters the routing records of every link on the domain. */
+const KV_BINDING_PATTERN = /^[A-Z][A-Z0-9_]*$/
+const KV_BINDING_MESSAGE =
+  'kvBinding must be an upper-case Worker binding name (e.g. KV_JESUS_FILM)'
+
+/** Empty string clears; undefined leaves untouched. */
+function resolveKvNamespaceId(
+  kvNamespaceId: string | null | undefined
+): string | null | undefined {
+  if (kvNamespaceId === undefined) return undefined
+  const trimmed = kvNamespaceId?.trim() ?? ''
+  return trimmed === '' ? null : trimmed
+}
+
+function resolveKvBinding(
+  kvBinding: string | null | undefined
+): string | null | undefined {
+  if (kvBinding === undefined) return undefined
+  const trimmed = kvBinding?.trim() ?? ''
+  if (trimmed === '') return null
+  if (!KV_BINDING_PATTERN.test(trimmed))
+    throw inputValidationError(['input', 'kvBinding'], KV_BINDING_MESSAGE)
+  return trimmed
+}
+
+/**
+ * Fields whose change alters the routing records of every link on the domain
+ * (or where they are published): the record `to` / `hostname`, its key, the
+ * namespace it goes to, and the binding the Worker reads it through. The
+ * domain redirect status and fallback are no longer in the routing record.
+ */
 const ROUTING_FIELDS = [
-  'redirectStatus',
-  'fallbackTo',
   'passthroughOrigin',
-  'slugCaseSensitive'
+  'slugCaseSensitive',
+  'kvNamespaceId',
+  'kvBinding'
 ] as const
 
 function routingChanged(
@@ -327,6 +366,16 @@ builder.mutationFields((t) => ({
         description: 'required when notFound is passthrough',
         validate: { refine: [isHttpsUrl, { message: HTTPS_URL_MESSAGE }] }
       }),
+      kvNamespaceId: t.input.string({
+        required: false,
+        description:
+          'id of the Cloudflare KV namespace this domain publishes its routing records to; empty clears it (the domain links are then not published)'
+      }),
+      kvBinding: t.input.string({
+        required: false,
+        description:
+          'Worker binding name of that namespace (e.g. KV_JESUS_FILM); empty clears it'
+      }),
       autoFailover: t.input.boolean({
         required: false,
         description: 'defaults to false'
@@ -335,6 +384,8 @@ builder.mutationFields((t) => ({
     resolve: async (query, _, { input }) => {
       const { hostname, services } = input
       const pathPrefix = resolvePathPrefix(input.pathPrefix)
+      const kvNamespaceId = resolveKvNamespaceId(input.kvNamespaceId)
+      const kvBinding = resolveKvBinding(input.kvBinding)
       assertDomainSettings({
         notFound: input.notFound ?? 'lostPage',
         passthroughOrigin: input.passthroughOrigin ?? null,
@@ -361,7 +412,9 @@ builder.mutationFields((t) => ({
               fallbackTo: input.fallbackTo,
               notFound: input.notFound ?? undefined,
               passthroughOrigin: input.passthroughOrigin,
-              autoFailover: input.autoFailover ?? undefined
+              autoFailover: input.autoFailover ?? undefined,
+              kvNamespaceId,
+              kvBinding
             }
           })
           const edgePublishedAt = await publishDomain(shortLinkDomain.id, tx)
@@ -439,6 +492,16 @@ builder.mutationFields((t) => ({
         description: 'required when notFound is passthrough',
         validate: { refine: [isHttpsUrl, { message: HTTPS_URL_MESSAGE }] }
       }),
+      kvNamespaceId: t.input.string({
+        required: false,
+        description:
+          'id of the Cloudflare KV namespace this domain publishes its routing records to; empty clears it (the domain links are then not published)'
+      }),
+      kvBinding: t.input.string({
+        required: false,
+        description:
+          'Worker binding name of that namespace (e.g. KV_JESUS_FILM); empty clears it'
+      }),
       autoFailover: t.input.boolean({ required: false })
     },
     resolve: async (query, _, { input }) => {
@@ -451,6 +514,8 @@ builder.mutationFields((t) => ({
         ])
 
       const pathPrefix = resolvePathPrefix(input.pathPrefix)
+      const kvNamespaceId = resolveKvNamespaceId(input.kvNamespaceId)
+      const kvBinding = resolveKvBinding(input.kvBinding)
       assertDomainSettings({
         notFound: input.notFound ?? existing.notFound,
         passthroughOrigin:
@@ -477,7 +542,9 @@ builder.mutationFields((t) => ({
             fallbackTo: input.fallbackTo,
             notFound: input.notFound ?? undefined,
             passthroughOrigin: input.passthroughOrigin,
-            autoFailover: input.autoFailover ?? undefined
+            autoFailover: input.autoFailover ?? undefined,
+            kvNamespaceId,
+            kvBinding
           }
         })
         const edgePublishedAt = routingChanged(existing, shortLinkDomain)

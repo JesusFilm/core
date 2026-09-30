@@ -277,6 +277,8 @@ describe('shortLinkDomain', () => {
                 notFound
                 passthroughOrigin
                 autoFailover
+                kvNamespaceId
+                kvBinding
                 edgePublishedAt
                 linkCount
                 check {
@@ -312,7 +314,9 @@ describe('shortLinkDomain', () => {
               redirectStatus: 302,
               reservedPaths: ['s', 'hls'],
               notFound: 'passthrough',
-              passthroughOrigin: 'https://api.arclight.org'
+              passthroughOrigin: 'https://api.arclight.org',
+              kvNamespaceId: 'ns-1',
+              kvBinding: 'KV_ARC_GT'
             }),
             {
               _count: { shortLinks: 3 }
@@ -348,6 +352,8 @@ describe('shortLinkDomain', () => {
                 notFound: 'passthrough',
                 passthroughOrigin: 'https://api.arclight.org',
                 autoFailover: false,
+                kvNamespaceId: 'ns-1',
+                kvBinding: 'KV_ARC_GT',
                 edgePublishedAt: null,
                 linkCount: 3,
                 check: {
@@ -567,6 +573,57 @@ describe('shortLinkDomain', () => {
           expect(prismaMock.shortLinkDomain.create).not.toHaveBeenCalled()
         }
       )
+
+      it('should create a short link domain with its KV namespace and binding', async () => {
+        prismaMock.shortLinkDomain.create.mockResolvedValue(
+          buildShortLinkDomain({
+            id: 'testId',
+            hostname: 'jesus.film',
+            kvNamespaceId: 'ns-1',
+            kvBinding: 'KV_JESUS_FILM'
+          })
+        )
+        await authClient({
+          document: SHORT_LINK_DOMAIN_CREATE_MUTATION,
+          variables: {
+            input: {
+              hostname: 'jesus.film',
+              kvNamespaceId: ' ns-1 ',
+              kvBinding: 'KV_JESUS_FILM'
+            }
+          }
+        })
+        expect(prismaMock.shortLinkDomain.create).toHaveBeenCalledWith({
+          data: {
+            hostname: 'jesus.film',
+            apexName: 'example.com',
+            services: [],
+            kvNamespaceId: 'ns-1',
+            kvBinding: 'KV_JESUS_FILM'
+          }
+        })
+        expect(publishDomainMock).toHaveBeenCalledWith('testId', prismaMock)
+      })
+
+      it('should return a ZodError for an invalid binding on create', async () => {
+        const result = await authClient({
+          document: SHORT_LINK_DOMAIN_CREATE_MUTATION,
+          variables: { input: { hostname: 'jesus.film', kvBinding: 'kv_bad' } }
+        })
+        expect(result).toMatchObject({
+          data: {
+            shortLinkDomainCreate: {
+              fieldErrors: [
+                {
+                  message: expect.stringContaining('kvBinding must be'),
+                  path: ['input', 'kvBinding']
+                }
+              ]
+            }
+          }
+        })
+        expect(prismaMock.shortLinkDomain.create).not.toHaveBeenCalled()
+      })
 
       it('should allow a shortLinkAdmin', async () => {
         setRoles(['shortLinkAdmin'])
@@ -936,7 +993,8 @@ describe('shortLinkDomain', () => {
         expect(publishDomainMock).not.toHaveBeenCalled()
       })
 
-      it('should republish every link when a routing setting changes', async () => {
+      it('should republish only the domain record when the redirect status changes', async () => {
+        // routing records no longer carry the domain default status
         prismaMock.shortLinkDomain.findUnique.mockResolvedValue(
           buildShortLinkDomain({ id: 'testId', redirectStatus: 307 })
         )
@@ -953,12 +1011,103 @@ describe('shortLinkDomain', () => {
           where: { id: 'testId' },
           data: { services: [], redirectStatus: 301 }
         })
+        expect(publishDomainMock).toHaveBeenCalledWith('testId', prismaMock)
+        expect(publishDomainWithLinksMock).not.toHaveBeenCalled()
+      })
+
+      it.each([
+        [
+          'passthroughOrigin',
+          { passthroughOrigin: 'https://api.arclight.org' }
+        ],
+        ['kvNamespaceId', { kvNamespaceId: 'ns-2' }],
+        ['kvBinding', { kvBinding: 'KV_NEW' }]
+      ])(
+        'should republish every link when %s changes',
+        async (_field, change) => {
+          prismaMock.shortLinkDomain.findUnique.mockResolvedValue(
+            buildShortLinkDomain({ id: 'testId', kvNamespaceId: 'ns-1' })
+          )
+          prismaMock.shortLinkDomain.update.mockResolvedValue(
+            buildShortLinkDomain({
+              id: 'testId',
+              kvNamespaceId: 'ns-1',
+              ...change
+            })
+          )
+          await authClient({
+            document: SHORT_LINK_DOMAIN_UPDATE_MUTATION,
+            variables: { input: { id: 'testId', services: [], ...change } }
+          })
+          expect(prismaMock.shortLinkDomain.update).toHaveBeenCalledWith({
+            where: { id: 'testId' },
+            data: { services: [], ...change }
+          })
+          expect(publishDomainWithLinksMock).toHaveBeenCalledWith(
+            'testId',
+            prismaMock
+          )
+          expect(publishDomainMock).not.toHaveBeenCalled()
+        }
+      )
+
+      it('should clear the namespace and binding with empty strings', async () => {
+        prismaMock.shortLinkDomain.findUnique.mockResolvedValue(
+          buildShortLinkDomain({
+            id: 'testId',
+            kvNamespaceId: 'ns-1',
+            kvBinding: 'KV_X'
+          })
+        )
+        prismaMock.shortLinkDomain.update.mockResolvedValue(
+          buildShortLinkDomain({ id: 'testId' })
+        )
+        await authClient({
+          document: SHORT_LINK_DOMAIN_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'testId',
+              services: [],
+              kvNamespaceId: '',
+              kvBinding: ' '
+            }
+          }
+        })
+        expect(prismaMock.shortLinkDomain.update).toHaveBeenCalledWith({
+          where: { id: 'testId' },
+          data: { services: [], kvNamespaceId: null, kvBinding: null }
+        })
         expect(publishDomainWithLinksMock).toHaveBeenCalledWith(
           'testId',
           prismaMock
         )
-        expect(publishDomainMock).not.toHaveBeenCalled()
       })
+
+      it.each(['kv_lower', '1KV', 'KV-DASH', 'KV X'])(
+        'should return a ZodError for the invalid binding %j',
+        async (kvBinding) => {
+          prismaMock.shortLinkDomain.findUnique.mockResolvedValue(
+            buildShortLinkDomain({ id: 'testId' })
+          )
+          const result = await authClient({
+            document: SHORT_LINK_DOMAIN_UPDATE_MUTATION,
+            variables: { input: { id: 'testId', services: [], kvBinding } }
+          })
+          expect(result).toMatchObject({
+            data: {
+              shortLinkDomainUpdate: {
+                fieldErrors: [
+                  {
+                    message: expect.stringContaining('kvBinding must be'),
+                    path: ['input', 'kvBinding']
+                  }
+                ]
+              }
+            }
+          })
+          expect(prismaMock.shortLinkDomain.update).not.toHaveBeenCalled()
+        }
+      )
 
       it('should validate the merged settings', async () => {
         prismaMock.shortLinkDomain.findUnique.mockResolvedValue(

@@ -8,7 +8,8 @@ const DEFAULT_REDIRECT_STATUS = 307
 /** Where a not-found path's `location` came from; mirrors `ShortLinkResolutionSource`. */
 export type RedirectSource = 'link' | 'linkFallback' | 'domainFallback'
 
-export type ResolvedFrom = 'kv' | 'd1' | 'api'
+/** Which store answered: the domain namespace, the global namespace, D1 (domain / global key), or api-media. */
+export type ResolvedFrom = 'kv' | 'kv-global' | 'd1' | 'd1-global' | 'api'
 
 export interface LinkLookupHit {
   record: RoutingRecord

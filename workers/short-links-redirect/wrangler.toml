@@ -5,7 +5,8 @@
 # BEFORE THE FIRST DEPLOY to an environment, replace every
 # `REPLACE_ME_BEFORE_DEPLOY` below with the real resource ids:
 #
-#   wrangler kv namespace create short-links-stage   -> kv_namespaces[].id
+#   wrangler kv namespace create short-links-stage   -> kv_namespaces[].id (SHORT_LINKS_KV)
+#   wrangler kv namespace create short-links-stage-jesus-film  -> KV_JESUS_FILM (one per domain)
 #   wrangler d1 database create short-links-stage     -> d1_databases[].database_id
 #   wrangler d1 migrations apply short-links-stage --env=stage --remote
 #   wrangler queues create short-links-events-stage
@@ -36,9 +37,32 @@ CORE_GRAPHQL_ENDPOINT = "http://localhost:4000"
 CLICKHOUSE_URL = ""
 CLICKHOUSE_DATABASE = "redirects"
 
+# Global namespace: domain records (`domain:<hostname>`) and global links
+# (`link:<pathname>`). Dev (top-level) ids are local-only names: miniflare keys
+# local namespaces by id, so each binding needs a distinct one or they alias.
 [[kv_namespaces]]
 binding = "SHORT_LINKS_KV"
-id = "REPLACE_ME_BEFORE_DEPLOY"
+id = "short-links-dev"
+
+# One namespace per domain, bound under the name in the domain record's
+# `kvBinding`; holds that domain's routing records keyed by bare slug. Adding
+# a domain means creating its namespace and adding a binding here (in every
+# environment), deploying, then setting kvNamespaceId / kvBinding on the row.
+[[kv_namespaces]]
+binding = "KV_JESUS_FILM"
+id = "short-links-dev-jesus-film"
+
+[[kv_namespaces]]
+binding = "KV_NXSTP_IS"
+id = "short-links-dev-nxstp-is"
+
+[[kv_namespaces]]
+binding = "KV_ARC_GT"
+id = "short-links-dev-arc-gt"
+
+[[kv_namespaces]]
+binding = "KV_STG_ARC_GT"
+id = "short-links-dev-stg-arc-gt"
 
 [[d1_databases]]
 binding = "SHORT_LINKS_DB"
@@ -78,8 +102,26 @@ CORE_GRAPHQL_ENDPOINT = "https://api-gateway.stage.central.jesusfilm.org/"
 CLICKHOUSE_URL = ""
 CLICKHOUSE_DATABASE = "redirects"
 
+# Global namespace.
 [[env.stage.kv_namespaces]]
 binding = "SHORT_LINKS_KV"
+id = "REPLACE_ME_BEFORE_DEPLOY"
+
+# Per-domain namespaces (see the top-level comment).
+[[env.stage.kv_namespaces]]
+binding = "KV_JESUS_FILM"
+id = "REPLACE_ME_BEFORE_DEPLOY"
+
+[[env.stage.kv_namespaces]]
+binding = "KV_NXSTP_IS"
+id = "REPLACE_ME_BEFORE_DEPLOY"
+
+[[env.stage.kv_namespaces]]
+binding = "KV_ARC_GT"
+id = "REPLACE_ME_BEFORE_DEPLOY"
+
+[[env.stage.kv_namespaces]]
+binding = "KV_STG_ARC_GT"
 id = "REPLACE_ME_BEFORE_DEPLOY"
 
 [[env.stage.d1_databases]]
@@ -124,8 +166,26 @@ CORE_GRAPHQL_ENDPOINT = "https://api-gateway.central.jesusfilm.org/"
 CLICKHOUSE_URL = ""
 CLICKHOUSE_DATABASE = "redirects"
 
+# Global namespace.
 [[env.prod.kv_namespaces]]
 binding = "SHORT_LINKS_KV"
+id = "REPLACE_ME_BEFORE_DEPLOY"
+
+# Per-domain namespaces (see the top-level comment).
+[[env.prod.kv_namespaces]]
+binding = "KV_JESUS_FILM"
+id = "REPLACE_ME_BEFORE_DEPLOY"
+
+[[env.prod.kv_namespaces]]
+binding = "KV_NXSTP_IS"
+id = "REPLACE_ME_BEFORE_DEPLOY"
+
+[[env.prod.kv_namespaces]]
+binding = "KV_ARC_GT"
+id = "REPLACE_ME_BEFORE_DEPLOY"
+
+[[env.prod.kv_namespaces]]
+binding = "KV_STG_ARC_GT"
 id = "REPLACE_ME_BEFORE_DEPLOY"
 
 [[env.prod.d1_databases]]

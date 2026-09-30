@@ -44,6 +44,14 @@ _Avoid_: Owner, superuser, "publisher role" when you mean admin
 The path a Short Link Domain's links live under, without slashes (`s` for `jesus.film`, so links are `https://jesus.film/s/<pathname>`). Empty means the domain serves links from its root, as nxstp.is and arc.gt do. It is part of the short URL but never part of the Pathname. Shown as `hostname/prefix` wherever a domain is chosen.
 _Avoid_: Folder, namespace, sub-path
 
+**Global Link**:
+A Short Link flagged `global`: it keeps its own domain (that is its canonical short URL) and additionally resolves on every other domain that has no link of its own for the same pathname. Global pathnames are lower-case, unique across all domains, and never reissued. Only an Admin can set or clear the flag; the links list can filter on it.
+_Avoid_: Shared link, wildcard, cross-domain link
+
+**KV Namespace / Worker Binding**:
+Each Short Link Domain publishes to its own Cloudflare KV namespace: `kvNamespaceId` is where api-media writes, `kvBinding` (upper-case, e.g. `KV_JESUS_FILM`) is the name the edge Worker reads it through. Both are set on the Domains page once the namespace exists and the Worker has been deployed with the binding; until then the domain shows as "not published" and `edgePublishedAt` stays empty. Global links also go to the shared global namespace, which is not a domain setting.
+_Avoid_: Cache, store (say which namespace), "the KV"
+
 **Republish**:
 Rewriting a link's (or a whole domain's) routing record to the edge store. A repair action for publish gaps or cutovers, not part of the normal save flow — every ordinary mutation already publishes.
 _Avoid_: Deploy, sync, refresh

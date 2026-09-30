@@ -35,6 +35,32 @@ describe('isDomainRecord', () => {
     ).toBe(false)
   })
 
+  it('normalises a missing or empty kvBinding to null and keeps a string', () => {
+    const missing: Record<string, unknown> = {
+      ...domainRecord({ hostname: 'x.example' })
+    }
+    delete missing.kvBinding
+    expect(isDomainRecord(missing)).toBe(true)
+    expect(missing.kvBinding).toBeNull()
+
+    const empty = { ...domainRecord({ hostname: 'x.example' }), kvBinding: '' }
+    expect(isDomainRecord(empty)).toBe(true)
+    expect(empty.kvBinding).toBeNull()
+
+    const named = {
+      ...domainRecord({ hostname: 'x.example' }),
+      kvBinding: 'KV_JESUS_FILM'
+    }
+    expect(isDomainRecord(named)).toBe(true)
+    expect(named.kvBinding).toBe('KV_JESUS_FILM')
+  })
+
+  it.each([[1], [true], [['KV']]])('rejects kvBinding %j', (kvBinding) => {
+    expect(
+      isDomainRecord({ ...domainRecord({ hostname: 'x.example' }), kvBinding })
+    ).toBe(false)
+  })
+
   it('rejects non-objects', () => {
     expect(isDomainRecord(null)).toBe(false)
     expect(isDomainRecord('{}')).toBe(false)
@@ -62,10 +88,28 @@ describe('isRoutingRecord', () => {
     ).toBe(true)
   })
 
+  it('normalises a missing status, global and hostname', () => {
+    const record: Record<string, unknown> = { ...routingRecord() }
+    delete record.status
+    delete record.global
+    delete record.hostname
+
+    expect(isRoutingRecord(record)).toBe(true)
+    expect(record).toMatchObject({ status: null, global: false, hostname: '' })
+  })
+
+  it.each([301, 302, 307, 308, null])('accepts status %s', (status) => {
+    expect(isRoutingRecord({ ...routingRecord(), status })).toBe(true)
+  })
+
   it.each([
     ['v mismatch', { v: 0 }],
     ['missing to', { to: '' }],
     ['bad status', { status: 404 }],
+    ['status 303', { status: 303 }],
+    ['status as string', { status: '307' }],
+    ['global not boolean', { global: 'yes' }],
+    ['hostname not string', { hostname: 1 }],
     ['paused not boolean', { paused: 'true' }],
     ['unknown assetClass', { assetClass: 'gold' }],
     ['campaignIds not array', { campaignIds: 'camp' }]

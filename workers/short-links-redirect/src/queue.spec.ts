@@ -45,6 +45,8 @@ function event(overrides: Partial<RedirectEvent> = {}): RedirectEvent {
     utmMedium: null,
     utmCampaign: 'easter',
     resolvedFrom: 'kv',
+    global: false,
+    ownerHostname: 'arc.gt',
     ...overrides
   }
 }
@@ -118,10 +120,30 @@ describe('toRedirectEventRow', () => {
       utm_source: null,
       utm_medium: null,
       utm_campaign: 'easter',
-      resolved_from: 'kv'
+      resolved_from: 'kv',
+      global: 0,
+      owner_hostname: 'arc.gt'
     })
     expect(row).not.toHaveProperty('userAgent')
     expect(row).not.toHaveProperty('user_agent')
+  })
+
+  it('maps a global link served from another store tier', () => {
+    const row = toRedirectEventRow(
+      event({
+        resolvedFrom: 'kv-global',
+        global: true,
+        ownerHostname: 'jesus.film',
+        hostname: 'arc.gt'
+      })
+    )
+
+    expect(row).toMatchObject({
+      hostname: 'arc.gt',
+      resolved_from: 'kv-global',
+      global: 1,
+      owner_hostname: 'jesus.film'
+    })
   })
 })
 

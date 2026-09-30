@@ -9,6 +9,7 @@ import PublishRoundedIcon from '@mui/icons-material/PublishRounded'
 import StopCircleOutlinedIcon from '@mui/icons-material/StopCircleOutlined'
 import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
@@ -162,11 +163,16 @@ export function toFormValues(link: ShortLinkData): LinkFormValues {
     campaignIds: link.campaigns.map((campaign) => campaign.id),
     redirectStatus: link.redirectStatus ?? '',
     fallbackTo: link.fallbackTo ?? '',
+    global: link.global,
     note: ''
   }
 }
 
-export function toUpdateInput(id: string, values: LinkFormValues) {
+export function toUpdateInput(
+  id: string,
+  values: LinkFormValues,
+  currentGlobal: boolean
+) {
   return {
     id,
     to: values.to.trim(),
@@ -182,6 +188,8 @@ export function toUpdateInput(id: string, values: LinkFormValues) {
     videoId: emptyToNull(values.videoId),
     youtubeVideoId: emptyToNull(values.youtubeVideoId),
     campaignIds: values.campaignIds,
+    // Toggling needs an admin; omit when unchanged so editors are not refused.
+    ...(values.global !== currentGlobal ? { global: values.global } : {}),
     note: emptyToNull(values.note)
   }
 }
@@ -236,7 +244,7 @@ export function LinkDetail(): ReactElement {
     setFieldErrors(undefined)
     try {
       const { data: updated } = await update({
-        variables: { input: toUpdateInput(link.id, values) }
+        variables: { input: toUpdateInput(link.id, values, link.global) }
       })
       const outcome = updated?.shortLinkUpdate
       if (outcome == null) {
@@ -349,6 +357,7 @@ export function LinkDetail(): ReactElement {
             <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
               <StatusChip status={link.status} />
               <HealthChip health={link.healthStatus} />
+              {link.global && <Chip size="small" color="info" label="Global" />}
               <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                 {link.edgePublishedAt != null
                   ? `Published ${formatDateTime(link.edgePublishedAt)}`

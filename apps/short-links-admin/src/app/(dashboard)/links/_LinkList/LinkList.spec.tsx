@@ -30,6 +30,7 @@ const shortLink = {
   description: null,
   assetClass: 'videoEmbedded',
   status: 'active',
+  global: false,
   redirectStatus: null,
   fallbackTo: null,
   placement: 'inVideoQr',
@@ -61,7 +62,8 @@ const emptyFilter = {
   assetClass: undefined,
   placement: undefined,
   campaignId: undefined,
-  tag: undefined
+  tag: undefined,
+  global: undefined
 }
 
 const shortLinksMock = {
@@ -131,6 +133,8 @@ const domainsMock = {
               hostname: 'nxstp.is',
               pathPrefix: '',
               apexName: 'nxstp.is',
+              kvNamespaceId: null,
+              kvBinding: null,
               services: [],
               redirectStatus: 307,
               slugAllowedChars: 'A-Za-z0-9_-',
@@ -164,9 +168,70 @@ const campaignsMock = {
   }
 }
 
+const globalLinksMock = {
+  request: {
+    query: GET_SHORT_LINKS,
+    variables: {
+      filter: { ...emptyFilter, global: true },
+      first: 25,
+      after: undefined
+    }
+  },
+  result: {
+    data: {
+      shortLinks: {
+        __typename: 'QueryShortLinksConnection',
+        totalCount: 1,
+        pageInfo: {
+          __typename: 'PageInfo',
+          hasNextPage: false,
+          endCursor: 'cursor-2'
+        },
+        edges: [
+          {
+            __typename: 'QueryShortLinksConnectionEdge',
+            cursor: 'cursor-2',
+            node: {
+              ...shortLink,
+              id: 'link-2',
+              pathname: 'jesus',
+              shortUrl: 'https://nxstp.is/jesus',
+              qrUrl: 'https://nxstp.is/jesus?qr=1',
+              name: 'Global JESUS link',
+              global: true
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+
 describe('LinkList', () => {
   beforeEach(() => {
     push.mockClear()
+  })
+
+  it('passes the global filter and marks global links', async () => {
+    render(
+      <MockedProvider
+        mocks={[shortLinksMock, globalLinksMock, domainsMock, campaignsMock]}
+      >
+        <SnackbarProvider>
+          <LinkList />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(await screen.findByText('JESUS film QR')).toBeInTheDocument()
+    expect(screen.queryByTestId('GlobalChip')).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('combobox', { name: 'Global' }))
+    await userEvent.click(await screen.findByRole('option', { name: 'Global' }))
+
+    expect(await screen.findByText('Global JESUS link')).toBeInTheDocument()
+    expect(screen.getByTestId('GlobalChip')).toBeInTheDocument()
+    expect(screen.queryByText('JESUS film QR')).not.toBeInTheDocument()
   })
 
   it('renders links from the connection', async () => {

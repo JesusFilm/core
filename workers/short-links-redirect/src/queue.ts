@@ -27,6 +27,9 @@ export interface RedirectEventRow {
   utm_medium: string | null
   utm_campaign: string | null
   resolved_from: string
+  /** UInt8: 1 for a global link. */
+  global: number
+  owner_hostname: string
 }
 
 /** `2026-09-26T10:00:00.000Z` -> `2026-09-26 10:00:00.000` (DateTime64(3, 'UTC')). */
@@ -63,7 +66,9 @@ export function toRedirectEventRow(event: RedirectEvent): RedirectEventRow {
     utm_source: event.utmSource ?? null,
     utm_medium: event.utmMedium ?? null,
     utm_campaign: event.utmCampaign ?? null,
-    resolved_from: event.resolvedFrom
+    resolved_from: event.resolvedFrom,
+    global: event.global === true ? 1 : 0,
+    owner_hostname: event.ownerHostname ?? ''
   }
 }
 

@@ -1,4 +1,5 @@
 import {
+  Prisma,
   ShortLink as PrismaShortLink,
   ShortLinkDomain,
   prisma
@@ -101,6 +102,28 @@ function notFoundResolution(
   }
 }
 
+/** Worker step 4 fallback: a live global link that claimed this pathname. */
+async function findLiveGlobalLink(
+  pathname: string
+): Promise<Prisma.ShortLinkGetPayload<{
+  include: { domain: true; campaigns: true }
+}> | null> {
+  const claim = await prisma.shortLinkGlobalSlug.findUnique({
+    where: { pathname },
+    select: { shortLinkId: true }
+  })
+  if (claim == null) return null
+  return await prisma.shortLink.findFirst({
+    where: {
+      id: claim.shortLinkId,
+      global: true,
+      deletedAt: null,
+      status: { not: 'retired' }
+    },
+    include: { domain: true, campaigns: true }
+  })
+}
+
 export async function resolveShortLink(
   hostname: string,
   pathnameInput: string
@@ -120,15 +143,17 @@ export async function resolveShortLink(
   )
     return notFoundResolution(domain, requestPath)
 
-  const shortLink = await prisma.shortLink.findFirst({
-    where: {
-      domainId: domain.id,
-      pathname: normalizePathname(requestPath, domain),
-      deletedAt: null,
-      status: { not: 'retired' }
-    },
-    include: { domain: true, campaigns: true }
-  })
+  const pathname = normalizePathname(requestPath, domain)
+  const shortLink =
+    (await prisma.shortLink.findFirst({
+      where: {
+        domainId: domain.id,
+        pathname,
+        deletedAt: null,
+        status: { not: 'retired' }
+      },
+      include: { domain: true, campaigns: true }
+    })) ?? (await findLiveGlobalLink(pathname))
   if (shortLink == null) return notFoundResolution(domain, requestPath)
 
   const status = effectiveRedirectStatus(shortLink, domain)
@@ -154,7 +179,8 @@ export async function resolveShortLink(
 
   return {
     found: true,
-    location: effectiveDestination(shortLink, domain),
+    // the Brightcove passthrough rule uses the owning domain, as published
+    location: effectiveDestination(shortLink, shortLink.domain),
     status,
     source: 'link',
     shortLink

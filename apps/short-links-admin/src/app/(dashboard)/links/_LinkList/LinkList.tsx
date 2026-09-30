@@ -5,6 +5,7 @@ import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import SearchIcon from '@mui/icons-material/Search'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
 import InputAdornment from '@mui/material/InputAdornment'
 import MenuItem from '@mui/material/MenuItem'
@@ -81,6 +82,7 @@ interface LinkRow {
   assetClass: ShortLinkAssetClass
   placement: ShortLinkPlacement | null
   campaigns: string
+  global: boolean
   health: string | null
   updatedAt: string
 }
@@ -105,6 +107,7 @@ export function LinkList(): ReactElement {
   const [placement, setPlacement] = useState(ANY)
   const [campaignId, setCampaignId] = useState(ANY)
   const [tag, setTag] = useState('')
+  const [globalFilter, setGlobalFilter] = useState(ANY)
   const debouncedTag = useDebounced(tag)
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -130,9 +133,19 @@ export function LinkList(): ReactElement {
       placement:
         placement === ANY ? undefined : (placement as ShortLinkPlacement),
       campaignId: campaignId === ANY ? undefined : campaignId,
-      tag: debouncedTag.trim() === '' ? undefined : debouncedTag.trim()
+      tag: debouncedTag.trim() === '' ? undefined : debouncedTag.trim(),
+      global: globalFilter === ANY ? undefined : globalFilter === 'global'
     }),
-    [search, hostname, status, assetClass, placement, campaignId, debouncedTag]
+    [
+      search,
+      hostname,
+      status,
+      assetClass,
+      placement,
+      campaignId,
+      debouncedTag,
+      globalFilter
+    ]
   )
 
   // Any filter change restarts cursor pagination from the first page.
@@ -190,6 +203,7 @@ export function LinkList(): ReactElement {
             campaigns: node.campaigns
               .map((campaign) => campaign.name)
               .join(', '),
+            global: node.global,
             health: node.healthStatus ?? null,
             updatedAt: formatDateTime(node.updatedAt)
           }
@@ -210,6 +224,14 @@ export function LinkList(): ReactElement {
             {params.value}
           </Typography>
           <CopyButton value={params.value} label="Copy short URL" />
+          {params.row.global && (
+            <Chip
+              size="small"
+              color="info"
+              label="Global"
+              data-testid="GlobalChip"
+            />
+          )}
         </Stack>
       )
     },
@@ -406,6 +428,18 @@ export function LinkList(): ReactElement {
             size="small"
             sx={{ minWidth: 140 }}
           />
+          <TextField
+            select
+            label="Global"
+            value={globalFilter}
+            onChange={(event) => setGlobalFilter(event.target.value)}
+            size="small"
+            sx={{ minWidth: 140 }}
+          >
+            <MenuItem value={ANY}>Any</MenuItem>
+            <MenuItem value="global">Global</MenuItem>
+            <MenuItem value="local">Not global</MenuItem>
+          </TextField>
         </Stack>
 
         <BulkToolbar selectedIds={selectedIds} onDone={handleBulkDone} />

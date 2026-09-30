@@ -1,4 +1,4 @@
-import type { Env } from './env'
+import { type Env, isKvNamespace } from './env'
 import { fetchShortLinkByPath, toRoutingRecord } from './graphql'
 import {
   type DomainRecord,
@@ -16,6 +16,9 @@ export type BackgroundContext = Pick<ExecutionContext, 'waitUntil'>
 
 const D1_SELECT_VALUE = 'SELECT value FROM short_link_records WHERE key = ?'
 
+/** The global namespace's binding name, for logs. */
+export const GLOBAL_BINDING = 'SHORT_LINKS_KV'
+
 interface CachedDomain {
   record: DomainRecord
   expiresAt: number
@@ -24,9 +27,17 @@ interface CachedDomain {
 /** Per-isolate domain cache: one KV/D1 read per host per minute at most. */
 const domainCache = new Map<string, CachedDomain>()
 
+/** Bindings already reported as missing, so each is logged once per isolate. */
+const reportedMissingBindings = new Set<string>()
+
 /** Test hook; production never needs it. */
 export function clearDomainCache(): void {
   domainCache.clear()
+}
+
+/** Test hook; production never needs it. */
+export function clearMissingBindingLog(): void {
+  reportedMissingBindings.clear()
 }
 
 /** Lower-cased, port-stripped host from the request URL. */
@@ -37,13 +48,50 @@ export function normaliseHost(host: string): string {
   return withoutPort.toLowerCase()
 }
 
-async function readKv<T>(
+/** Global-namespace key of a global link. */
+export function globalLinkKey(slug: string): string {
+  return `link:${slug}`
+}
+
+/** D1 key of a domain's link. */
+export function domainLinkKey(hostname: string, slug: string): string {
+  return `link:${hostname}/${slug}`
+}
+
+/** D1 key of a global link. */
+export function globalD1Key(slug: string): string {
+  return `global:${slug}`
+}
+
+/**
+ * The domain's own namespace, read through `env[domain.kvBinding]`. Null when
+ * the domain has no binding or the binding is not in `wrangler.toml`; the
+ * latter is a deployment gap and is logged once per isolate.
+ */
+export function domainNamespace(
   env: Env,
+  domain: Pick<DomainRecord, 'kvBinding'>
+): KVNamespace | null {
+  const binding = domain.kvBinding
+  if (binding == null || binding === '') return null
+
+  const candidate: unknown = env[binding]
+  if (isKvNamespace(candidate)) return candidate
+
+  if (!reportedMissingBindings.has(binding)) {
+    reportedMissingBindings.add(binding)
+    console.error(JSON.stringify({ event: 'missing_binding', binding }))
+  }
+  return null
+}
+
+async function readKv<T>(
+  namespace: KVNamespace,
   key: string,
   validate: (value: unknown) => value is T
 ): Promise<T | null> {
   try {
-    const value: unknown = await env.SHORT_LINKS_KV.get(key, 'json')
+    const value: unknown = await namespace.get(key, 'json')
     return parseRecord(value, validate)
   } catch (error) {
     console.error(JSON.stringify({ event: 'kv_read_failed', key }), error)
@@ -67,7 +115,7 @@ async function readD1<T>(
   }
 }
 
-/** Step 1: `domain:<host>` from KV, then D1, cached for 60 s per isolate. */
+/** Step 1: `domain:<host>` from the global namespace, then D1, cached for 60 s per isolate. */
 export async function loadDomain(
   env: Env,
   host: string,
@@ -78,7 +126,7 @@ export async function loadDomain(
 
   const key = `domain:${host}`
   const record =
-    (await readKv(env, key, isDomainRecord)) ??
+    (await readKv(env.SHORT_LINKS_KV, key, isDomainRecord)) ??
     (await readD1(env, key, isDomainRecord))
 
   if (record == null) return null
@@ -88,55 +136,116 @@ export async function loadDomain(
 }
 
 /**
- * Step 3: `link:<host>/<path>` from KV, then D1, then api-media. An api-media
- * hit is a publish gap: the converted record is written back to KV in the
+ * Step 3, the lookup order: the domain namespace (`<slug>`), the global
+ * namespace (`link:<slug>`), D1 (`link:<hostname>/<slug>`, then
+ * `global:<slug>`), then api-media. An api-media hit is a publish gap: the
+ * converted record is written back to the namespace that should have had it
+ * (the domain's when the link belongs to this domain and the binding exists,
+ * else the global one when the link is global, else nowhere) in the
  * background and logged so the gap can be repaired upstream.
  */
 export async function lookupLink(
   env: Env,
   ctx: BackgroundContext,
   domain: DomainRecord,
-  key: string,
-  pathname: string
+  slug: string
 ): Promise<LinkLookupHit | null> {
-  const fromKv = await readKv(env, key, isRoutingRecord)
-  if (fromKv != null) return { record: fromKv, resolvedFrom: 'kv' }
+  const ownNamespace = domainNamespace(env, domain)
+  if (ownNamespace != null) {
+    const fromDomainKv = await readKv(ownNamespace, slug, isRoutingRecord)
+    if (fromDomainKv != null) {
+      return { record: fromDomainKv, resolvedFrom: 'kv' }
+    }
+  }
 
-  const fromD1 = await readD1(env, key, isRoutingRecord)
+  const fromGlobalKv = await readKv(
+    env.SHORT_LINKS_KV,
+    globalLinkKey(slug),
+    isRoutingRecord
+  )
+  if (fromGlobalKv != null) {
+    return { record: fromGlobalKv, resolvedFrom: 'kv-global' }
+  }
+
+  const fromD1 = await readD1(
+    env,
+    domainLinkKey(domain.hostname, slug),
+    isRoutingRecord
+  )
   if (fromD1 != null) return { record: fromD1, resolvedFrom: 'd1' }
+
+  const fromGlobalD1 = await readD1(env, globalD1Key(slug), isRoutingRecord)
+  if (fromGlobalD1 != null) {
+    return { record: fromGlobalD1, resolvedFrom: 'd1-global' }
+  }
 
   const link = await fetchShortLinkByPath({
     endpoint: env.CORE_GRAPHQL_ENDPOINT,
     hostname: domain.hostname,
-    pathname
+    pathname: slug
   })
   if (link == null) return null
 
-  const record = toRoutingRecord(link, domain, pathname)
+  const record = toRoutingRecord(link, domain, slug)
   if (record == null) return null
 
-  writeBack(env, ctx, key, record)
-  console.log(JSON.stringify({ event: 'publish_gap', key }))
+  const target = writeBackTarget(env, domain, record, slug, ownNamespace)
+  if (target != null) writeBack(ctx, target.namespace, target.key, record)
+  console.log(
+    JSON.stringify({
+      event: 'publish_gap',
+      key: domainLinkKey(domain.hostname, slug),
+      target: target?.binding ?? null
+    })
+  )
 
   return { record, resolvedFrom: 'api' }
 }
 
-function writeBack(
+interface WriteBackTarget {
+  namespace: KVNamespace
+  key: string
+  binding: string
+}
+
+function writeBackTarget(
   env: Env,
+  domain: DomainRecord,
+  record: RoutingRecord,
+  slug: string,
+  ownNamespace: KVNamespace | null
+): WriteBackTarget | null {
+  if (record.hostname === domain.hostname && ownNamespace != null) {
+    return {
+      namespace: ownNamespace,
+      key: slug,
+      binding: domain.kvBinding ?? GLOBAL_BINDING
+    }
+  }
+  if (record.global) {
+    return {
+      namespace: env.SHORT_LINKS_KV,
+      key: globalLinkKey(slug),
+      binding: GLOBAL_BINDING
+    }
+  }
+  return null
+}
+
+function writeBack(
   ctx: BackgroundContext,
+  namespace: KVNamespace,
   key: string,
   record: RoutingRecord
 ): void {
   try {
     ctx.waitUntil(
-      env.SHORT_LINKS_KV.put(key, JSON.stringify(record)).catch(
-        (error: unknown) => {
-          console.error(
-            JSON.stringify({ event: 'kv_write_back_failed', key }),
-            error
-          )
-        }
-      )
+      namespace.put(key, JSON.stringify(record)).catch((error: unknown) => {
+        console.error(
+          JSON.stringify({ event: 'kv_write_back_failed', key }),
+          error
+        )
+      })
     )
   } catch (error) {
     console.error(JSON.stringify({ event: 'kv_write_back_failed', key }), error)

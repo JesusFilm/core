@@ -26,6 +26,10 @@ export interface RedirectEvent {
   utmMedium: string | null
   utmCampaign: string | null
   resolvedFrom: ResolvedFrom
+  /** The record was a global link (may have been served on another domain). */
+  global: boolean
+  /** The hostname the link belongs to; equals `hostname` unless it is global. */
+  ownerHostname: string
 }
 
 export interface BuildRedirectEventInput {
@@ -77,7 +81,9 @@ export function buildRedirectEvent({
     utmSource: searchParams.get('utm_source'),
     utmMedium: searchParams.get('utm_medium'),
     utmCampaign: searchParams.get('utm_campaign'),
-    resolvedFrom
+    resolvedFrom,
+    global: record.global,
+    ownerHostname: record.hostname
   }
 }
 

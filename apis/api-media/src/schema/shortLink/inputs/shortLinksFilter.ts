@@ -24,6 +24,11 @@ export const ShortLinksFilter = builder.inputType('ShortLinksFilter', {
     youtubeVideoId: t.string({ required: false }),
     tag: t.string({ required: false }),
     service: t.field({ type: Service, required: false }),
+    global: t.boolean({
+      required: false,
+      description:
+        'only global links (true) or only domain-scoped links (false)'
+    }),
     includeDeleted: t.boolean({
       required: false,
       description: 'include soft-deleted links (default false)'

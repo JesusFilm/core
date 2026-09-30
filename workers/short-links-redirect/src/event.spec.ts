@@ -20,7 +20,9 @@ function build(
       campaignIds: ['camp-1'],
       videoId: '1_jf-0-0',
       youtubeVideoId: 'yt',
-      placement: 'card'
+      placement: 'card',
+      global: true,
+      hostname: 'nxstp.is'
     }),
     destination: 'https://example.com/?utm_source=yt',
     status: 302,
@@ -55,8 +57,21 @@ describe('buildRedirectEvent', () => {
       utmSource: null,
       utmMedium: null,
       utmCampaign: null,
-      resolvedFrom: 'kv'
+      resolvedFrom: 'kv',
+      global: true,
+      ownerHostname: 'nxstp.is'
     })
+  })
+
+  it('carries the store tier and the owning domain', () => {
+    const event = build({
+      resolvedFrom: 'kv-global',
+      record: routingRecord({ global: false, hostname: 'arc.gt' })
+    })
+
+    expect(event.resolvedFrom).toBe('kv-global')
+    expect(event.global).toBe(false)
+    expect(event.ownerHostname).toBe('arc.gt')
   })
 
   it('attributes qr when the qr parameter is present, whatever its value', () => {

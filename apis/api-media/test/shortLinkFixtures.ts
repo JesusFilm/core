@@ -27,6 +27,8 @@ export function buildShortLinkDomain(
     passthroughOrigin: null,
     autoFailover: false,
     edgePublishedAt: null,
+    kvNamespaceId: null,
+    kvBinding: null,
     ...overrides
   }
 }
@@ -56,6 +58,7 @@ export function buildShortLink(overrides: Partial<ShortLink> = {}): ShortLink {
     tags: [],
     videoId: null,
     youtubeVideoId: null,
+    global: false,
     deletedAt: null,
     edgePublishedAt: null,
     healthStatus: null,

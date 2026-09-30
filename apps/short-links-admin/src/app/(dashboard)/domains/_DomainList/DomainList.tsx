@@ -62,6 +62,7 @@ export function DomainList(): ReactElement {
                 <TableCell>Fallback</TableCell>
                 <TableCell>Passthrough origin</TableCell>
                 <TableCell align="right">Links</TableCell>
+                <TableCell>Published</TableCell>
                 <TableCell>Edge published</TableCell>
               </TableRow>
             </TableHead>
@@ -112,6 +113,24 @@ export function DomainList(): ReactElement {
                     {domain.passthroughOrigin ?? ''}
                   </TableCell>
                   <TableCell align="right">{domain.linkCount}</TableCell>
+                  <TableCell>
+                    <Chip
+                      size="small"
+                      label={
+                        domain.kvNamespaceId != null &&
+                        domain.kvNamespaceId !== ''
+                          ? 'edge'
+                          : 'not published'
+                      }
+                      color={
+                        domain.kvNamespaceId != null &&
+                        domain.kvNamespaceId !== ''
+                          ? 'success'
+                          : 'default'
+                      }
+                      variant="outlined"
+                    />
+                  </TableCell>
                   <TableCell sx={{ whiteSpace: 'nowrap' }}>
                     {domain.edgePublishedAt != null
                       ? formatDateTime(domain.edgePublishedAt)

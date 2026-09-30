@@ -3,15 +3,19 @@
 import Alert from '@mui/material/Alert'
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormHelperText from '@mui/material/FormHelperText'
 import Grid from '@mui/material/Grid'
 import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
+import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikHelpers } from 'formik'
 import { ReactElement, useMemo, useState } from 'react'
-import { object, string } from 'yup'
+import { boolean, object, string } from 'yup'
 
 import { TagsInput } from '../../../../components/TagsInput'
 import {
@@ -67,6 +71,8 @@ export interface LinkFormValues {
   /** '' inherits the domain's redirect status. */
   redirectStatus: number | ''
   fallbackTo: string
+  /** Resolves on every domain without its own link for this slug. Admin only. */
+  global: boolean
   note: string
 }
 
@@ -87,6 +93,7 @@ export const EMPTY_LINK_FORM_VALUES: LinkFormValues = {
   campaignIds: [],
   redirectStatus: '',
   fallbackTo: '',
+  global: false,
   note: ''
 }
 
@@ -132,8 +139,24 @@ function buildSchema(domains: LinkFormDomain[], mode: 'create' | 'edit') {
       .trim()
       .required('Destination is required')
       .matches(/^https?:\/\/[^\s]+$/i, 'Must be an absolute http(s) URL'),
+    global: boolean().test(
+      'global-lowercase',
+      'Global slugs must be lower-case',
+      function (value) {
+        const pathname = (this.parent.pathname as string | undefined) ?? ''
+        return value !== true || pathname === pathname.toLowerCase()
+      }
+    ),
     pathname: string()
       .trim()
+      .test(
+        'global-lowercase',
+        'Global slugs must be lower-case',
+        function (value) {
+          if (mode === 'edit' || value == null || value === '') return true
+          return this.parent.global !== true || value === value.toLowerCase()
+        }
+      )
       .test(
         'slug-grammar',
         'Does not match the domain slug rules',
@@ -425,6 +448,49 @@ export function LinkForm({
                         </MenuItem>
                       ))}
                     </TextField>
+                  </Grid>
+                  <Grid size={12}>
+                    {isAdmin ? (
+                      <>
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              id="global"
+                              name="global"
+                              checked={values.global}
+                              onChange={(event) =>
+                                void setFieldValue(
+                                  'global',
+                                  event.target.checked
+                                )
+                              }
+                            />
+                          }
+                          label="Global"
+                        />
+                        <FormHelperText error={errorFor('global') != null}>
+                          {errorFor('global') ??
+                            'Resolves on every short-link domain that has no link of its own for this slug. Global slugs must be lower-case and are unique across all domains.'}
+                        </FormHelperText>
+                      </>
+                    ) : (
+                      values.global && (
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          sx={{ alignItems: 'center' }}
+                        >
+                          <Chip size="small" color="info" label="Global" />
+                          <Typography
+                            variant="caption"
+                            sx={{ color: 'text.secondary' }}
+                          >
+                            Resolves on every short-link domain. Only an admin
+                            can change this.
+                          </Typography>
+                        </Stack>
+                      )
+                    )}
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
                     <TextField

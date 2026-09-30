@@ -12,6 +12,7 @@ export const SHORT_LINK_FIELDS = graphql(`
     description
     assetClass
     status
+    global
     redirectStatus
     fallbackTo
     placement
@@ -43,6 +44,8 @@ export const SHORT_LINK_DOMAIN_FIELDS = graphql(`
     hostname
     pathPrefix
     apexName
+    kvNamespaceId
+    kvBinding
     services
     redirectStatus
     slugAllowedChars

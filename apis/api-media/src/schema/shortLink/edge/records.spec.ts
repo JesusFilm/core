@@ -7,20 +7,25 @@ import {
   buildDomainRecord,
   buildRoutingRecord,
   domainKey,
+  domainLinkKey,
   effectiveDestination,
+  effectiveRedirectStatus,
+  globalLinkKey,
+  globalRecordKeyForLink,
   isLiveLink,
   recordKeyForLink
 } from './records'
 
 describe('edge records', () => {
-  describe('domainKey', () => {
-    it('lower-cases the hostname', () => {
+  describe('keys', () => {
+    it('lower-cases the hostname of the domain key', () => {
       expect(domainKey('Arc.GT')).toBe('domain:arc.gt')
     })
-  })
 
-  describe('recordKeyForLink', () => {
-    it('keeps the pathname as minted on a case-sensitive domain', () => {
+    it('uses the bare slug in the domain namespace, as minted on a case-sensitive domain', () => {
+      expect(
+        domainLinkKey({ pathname: 'AbC' }, { slugCaseSensitive: true })
+      ).toBe('AbC')
       expect(
         recordKeyForLink(
           { pathname: 'AbC' },
@@ -29,7 +34,10 @@ describe('edge records', () => {
       ).toBe('link:nxstp.is/AbC')
     })
 
-    it('lower-cases the pathname on a case-insensitive domain', () => {
+    it('lower-cases the slug on a case-insensitive domain', () => {
+      expect(
+        domainLinkKey({ pathname: 'AbC' }, { slugCaseSensitive: false })
+      ).toBe('abc')
       expect(
         recordKeyForLink(
           { pathname: 'AbC' },
@@ -37,10 +45,15 @@ describe('edge records', () => {
         )
       ).toBe('link:yt.example/abc')
     })
+
+    it('prefixes global keys', () => {
+      expect(globalLinkKey({ pathname: 'promo' })).toBe('link:promo')
+      expect(globalRecordKeyForLink({ pathname: 'promo' })).toBe('global:promo')
+    })
   })
 
   describe('buildDomainRecord', () => {
-    it('builds the versioned domain record', () => {
+    it('builds the versioned domain record with the Worker binding', () => {
       const domain = buildShortLinkDomain({
         id: 'd1',
         hostname: 'Arc.gt',
@@ -48,7 +61,9 @@ describe('edge records', () => {
         notFound: 'passthrough',
         passthroughOrigin: 'https://api.arclight.org',
         reservedPaths: ['s', 'hls'],
-        slugCaseSensitive: true
+        slugCaseSensitive: true,
+        kvNamespaceId: 'ns-1',
+        kvBinding: 'KV_ARC_GT'
       })
       expect(buildDomainRecord(domain)).toEqual({
         v: 1,
@@ -60,12 +75,15 @@ describe('edge records', () => {
         notFound: 'passthrough',
         passthroughOrigin: 'https://api.arclight.org',
         reservedPaths: ['s', 'hls'],
-        slugCaseSensitive: true
+        slugCaseSensitive: true,
+        kvBinding: 'KV_ARC_GT'
       })
     })
-  })
 
-  describe('buildDomainRecord pathPrefix', () => {
+    it('carries a null binding for a domain without a namespace', () => {
+      expect(buildDomainRecord(buildShortLinkDomain()).kvBinding).toBeNull()
+    })
+
     it('carries the path prefix and leaves link keys bare', () => {
       const domain = buildShortLinkDomain({
         hostname: 'jesus.film',
@@ -73,31 +91,21 @@ describe('edge records', () => {
         slugCaseSensitive: false
       })
       expect(buildDomainRecord(domain).pathPrefix).toBe('s')
+      expect(domainLinkKey({ pathname: 'Easter' }, domain)).toBe('easter')
       expect(recordKeyForLink({ pathname: 'Easter' }, domain)).toBe(
         'link:jesus.film/easter'
-      )
-    })
-
-    it('keeps the Brightcove destination free of the prefix', () => {
-      const domain = buildShortLinkDomain({
-        pathPrefix: 's',
-        passthroughOrigin: 'https://api.arclight.org'
-      })
-      const link = buildShortLink({
-        pathname: 'abc123',
-        brightcoveId: '1',
-        redirectType: 'hls'
-      })
-      expect(effectiveDestination(link, domain)).toBe(
-        'https://api.arclight.org/abc123'
       )
     })
   })
 
   describe('buildRoutingRecord', () => {
-    const domain = buildShortLinkDomain({ redirectStatus: 307 })
+    const domain = buildShortLinkDomain({
+      hostname: 'Example.com',
+      redirectStatus: 307,
+      fallbackTo: 'https://domain-fallback.example'
+    })
 
-    it('builds the versioned routing record with the domain status', () => {
+    it('builds the versioned routing record with the link overrides only', () => {
       const link = {
         ...buildShortLink({
           id: 'l1',
@@ -114,9 +122,11 @@ describe('edge records', () => {
         v: 1,
         id: 'l1',
         to: 'https://www.jesusfilm.org/watch/jesus.html',
-        status: 307,
+        status: null,
         fallbackTo: null,
         paused: false,
+        global: false,
+        hostname: 'example.com',
         assetClass: 'videoEmbedded',
         placement: 'inVideoQr',
         campaignIds: ['c1', 'c2'],
@@ -126,10 +136,11 @@ describe('edge records', () => {
       })
     })
 
-    it('prefers the link redirect status and fallback and marks paused links', () => {
+    it('carries the link redirect status and fallback, the paused and global flags', () => {
       const link = {
         ...buildShortLink({
           status: 'paused',
+          global: true,
           redirectStatus: 301,
           fallbackTo: 'https://fallback.example'
         }),
@@ -138,6 +149,7 @@ describe('edge records', () => {
       const record = buildRoutingRecord(link, domain)
       expect(record.status).toBe(301)
       expect(record.paused).toBe(true)
+      expect(record.global).toBe(true)
       expect(record.fallbackTo).toBe('https://fallback.example')
       expect(record.campaignIds).toEqual([])
     })
@@ -161,7 +173,21 @@ describe('edge records', () => {
       expect(buildRoutingRecord(link, arcDomain).to).toBe(
         'https://api.arclight.org/abc123'
       )
-      expect(buildRoutingRecord(link, arcDomain).status).toBe(302)
+    })
+
+    it('keeps the Brightcove destination free of the path prefix', () => {
+      const prefixed = buildShortLinkDomain({
+        pathPrefix: 's',
+        passthroughOrigin: 'https://api.arclight.org'
+      })
+      const link = buildShortLink({
+        pathname: 'abc123',
+        brightcoveId: '1',
+        redirectType: 'hls'
+      })
+      expect(effectiveDestination(link, prefixed)).toBe(
+        'https://api.arclight.org/abc123'
+      )
     })
 
     it('keeps `to` for Brightcove links on domains without a passthrough origin', () => {
@@ -173,6 +199,16 @@ describe('edge records', () => {
       expect(effectiveDestination(link, domain)).toBe(
         'https://example.com/video'
       )
+    })
+  })
+
+  describe('effectiveRedirectStatus', () => {
+    it('prefers the link override over the serving domain default', () => {
+      const domain = buildShortLinkDomain({ redirectStatus: 302 })
+      expect(effectiveRedirectStatus(buildShortLink(), domain)).toBe(302)
+      expect(
+        effectiveRedirectStatus(buildShortLink({ redirectStatus: 308 }), domain)
+      ).toBe(308)
     })
   })
 

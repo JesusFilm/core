@@ -52,6 +52,28 @@ describe('resolve', () => {
     })
   })
 
+  it('uses the domain status when the record has none', async () => {
+    const resolution = await resolve({
+      domain: domainRecord({ hostname: 'nxstp.is', redirectStatus: 302 }),
+      pathname: '/abc',
+      search: '',
+      lookup: hit(routingRecord({ status: null }))
+    })
+
+    expect(resolution).toMatchObject({ kind: 'redirect', status: 302 })
+  })
+
+  it('prefers the record status over the domain status', async () => {
+    const resolution = await resolve({
+      domain: domainRecord({ hostname: 'nxstp.is', redirectStatus: 302 }),
+      pathname: '/abc',
+      search: '',
+      lookup: hit(routingRecord({ status: 308 }))
+    })
+
+    expect(resolution).toMatchObject({ kind: 'redirect', status: 308 })
+  })
+
   it('lower-cases the lookup key on a case-insensitive domain', async () => {
     const lookup = vi.fn(missing)
     await resolve({

@@ -1,8 +1,10 @@
 /**
  * Edge store record shapes (prds/short-links/TECH-DESIGN.md, "Edge store
- * contracts"). api-media publishes these to KV and D1; the Worker only reads
- * them. `v` is the shape version: any record whose `v` is not 1 is treated as a
- * miss for the store it came from so the Worker falls through to the next one.
+ * contracts" as amended on 2026-09-28 and 2026-09-29). api-media publishes
+ * these to KV and D1; the Worker only reads them. `v` is the shape version:
+ * any record whose `v` is not 1 is treated as a miss for the store it came from
+ * so the Worker falls through to the next one. Fields added after the first
+ * publish are optional on the wire and normalised in place by the validators.
  */
 
 export const RECORD_VERSION = 1
@@ -19,7 +21,7 @@ export type Placement =
   | 'inVideoQr'
   | 'other'
 
-/** `domain:<hostname>` */
+/** `domain:<hostname>` in the global namespace. */
 export interface DomainRecord {
   v: 1
   id: string
@@ -35,14 +37,26 @@ export interface DomainRecord {
    * (`s`, `a/b`). Empty keeps the domain at the root.
    */
   pathPrefix: string
+  /**
+   * Name of the Worker KV binding holding this domain's routing records
+   * (`KV_JESUS_FILM`). Null: the domain has no namespace and is served only
+   * through global links, D1 and the api-media fallback.
+   */
+  kvBinding: string | null
 }
 
-/** `link:<hostname>/<pathname>` */
+/**
+ * A routing record: `<pathname>` in the domain namespace, `link:<pathname>` in
+ * the global namespace, `link:<hostname>/<pathname>` / `global:<pathname>` in
+ * D1.
+ */
 export interface RoutingRecord {
   v: 1
   id: string
   to: string
-  status: number
+  /** The link's own status override only; null means "use the serving domain's". */
+  status: number | null
+  /** The link's own fallback override only. */
   fallbackTo: string | null
   paused: boolean
   assetClass: AssetClass
@@ -51,6 +65,10 @@ export interface RoutingRecord {
   videoId: string | null
   youtubeVideoId: string | null
   language: string | null
+  /** Resolves on every domain that has no link of its own for the pathname. */
+  global: boolean
+  /** The owning domain's hostname; reporting only. */
+  hostname: string
 }
 
 const NOT_FOUND_BEHAVIOURS: readonly string[] = [
@@ -65,6 +83,8 @@ const ASSET_CLASSES: readonly string[] = [
   'videoEmbedded'
 ]
 
+const REDIRECT_STATUSES: readonly number[] = [301, 302, 307, 308]
+
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value != null && !Array.isArray(value)
 }
@@ -78,18 +98,14 @@ function isStringArray(value: unknown): value is string[] {
 }
 
 function isRedirectStatus(value: unknown): value is number {
-  return (
-    typeof value === 'number' &&
-    Number.isInteger(value) &&
-    value >= 300 &&
-    value <= 399
-  )
+  return typeof value === 'number' && REDIRECT_STATUSES.includes(value)
 }
 
 /**
- * Validates a domain record. A record published before `pathPrefix` existed
- * has none; it is normalised in place to the empty string (root), so `v` stays
- * 1. A present non-string `pathPrefix` is invalid.
+ * Validates a domain record and normalises in place the fields that were
+ * added after the first publish: a missing `pathPrefix` becomes `''` (root)
+ * and a missing `kvBinding` becomes null. `v` stays 1. A present value of the
+ * wrong type makes the record invalid.
  */
 export function isDomainRecord(value: unknown): value is DomainRecord {
   if (!isObject(value)) return false
@@ -106,21 +122,39 @@ export function isDomainRecord(value: unknown): value is DomainRecord {
   if (!isNullableString(value.passthroughOrigin)) return false
   if (!isStringArray(value.reservedPaths)) return false
   if (typeof value.slugCaseSensitive !== 'boolean') return false
+
   if (value.pathPrefix === undefined) {
     value.pathPrefix = ''
-    return true
+  } else if (typeof value.pathPrefix === 'string') {
+    value.pathPrefix = value.pathPrefix.replace(/^\/+|\/+$/g, '')
+  } else {
+    return false
   }
-  if (typeof value.pathPrefix !== 'string') return false
-  value.pathPrefix = value.pathPrefix.replace(/^\/+|\/+$/g, '')
+
+  if (value.kvBinding === undefined || value.kvBinding === '') {
+    value.kvBinding = null
+  } else if (!isNullableString(value.kvBinding)) {
+    return false
+  }
+
   return true
 }
 
+/**
+ * Validates a routing record and normalises in place: a missing `status`
+ * becomes null (a present one must be 301/302/307/308), a missing `global`
+ * becomes false, a missing `hostname` becomes `''`.
+ */
 export function isRoutingRecord(value: unknown): value is RoutingRecord {
   if (!isObject(value)) return false
   if (value.v !== RECORD_VERSION) return false
   if (typeof value.id !== 'string' || value.id === '') return false
   if (typeof value.to !== 'string' || value.to === '') return false
-  if (!isRedirectStatus(value.status)) return false
+  if (value.status == null) {
+    value.status = null
+  } else if (!isRedirectStatus(value.status)) {
+    return false
+  }
   if (!isNullableString(value.fallbackTo)) return false
   if (typeof value.paused !== 'boolean') return false
   if (
@@ -133,6 +167,19 @@ export function isRoutingRecord(value: unknown): value is RoutingRecord {
   if (!isNullableString(value.videoId)) return false
   if (!isNullableString(value.youtubeVideoId)) return false
   if (!isNullableString(value.language)) return false
+
+  if (value.global === undefined) {
+    value.global = false
+  } else if (typeof value.global !== 'boolean') {
+    return false
+  }
+
+  if (value.hostname == null) {
+    value.hostname = ''
+  } else if (typeof value.hostname !== 'string') {
+    return false
+  }
+
   return true
 }
 

@@ -137,11 +137,18 @@ describe('shortLinkResolve', () => {
     )
     prismaMock.shortLink.findFirst.mockResolvedValue(
       withRelations(
-        buildShortLinkWithDomain({
-          pathname: 'abc123',
-          brightcoveId: '1',
-          redirectType: 'hls'
-        }),
+        buildShortLinkWithDomain(
+          {
+            pathname: 'abc123',
+            brightcoveId: '1',
+            redirectType: 'hls'
+          },
+          {
+            hostname: 'arc.gt',
+            redirectStatus: 302,
+            passthroughOrigin: 'https://api.arclight.org'
+          }
+        ),
         {
           campaigns: []
         }
@@ -226,6 +233,91 @@ describe('shortLinkResolve', () => {
           shortLink: { id: 'testId' }
         }
       }
+    })
+  })
+
+  describe('global fallback', () => {
+    const claim = {
+      pathname: 'promo',
+      shortLinkId: 'g1',
+      createdAt: new Date()
+    }
+    const globalLink = withRelations(
+      buildShortLinkWithDomain(
+        {
+          id: 'g1',
+          pathname: 'promo',
+          to: 'https://global.example',
+          global: true
+        },
+        { id: 'otherDomain', hostname: 'other.example', redirectStatus: 301 }
+      ),
+      { campaigns: [] }
+    )
+
+    it('serves a live global link with the requesting domain status', async () => {
+      prismaMock.shortLinkDomain.findUnique.mockResolvedValue(
+        buildShortLinkDomain({ slugCaseSensitive: false, redirectStatus: 302 })
+      )
+      prismaMock.shortLink.findFirst
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(globalLink)
+      prismaMock.shortLinkGlobalSlug.findUnique.mockResolvedValue(claim)
+      expect(await resolve('example.com', 'Promo')).toEqual({
+        data: {
+          shortLinkResolve: {
+            found: true,
+            location: 'https://global.example',
+            status: 302,
+            source: 'link',
+            shortLink: { id: 'g1', pathname: 'promo' }
+          }
+        }
+      })
+      expect(prismaMock.shortLinkGlobalSlug.findUnique).toHaveBeenCalledWith({
+        where: { pathname: 'promo' },
+        select: { shortLinkId: true }
+      })
+      expect(prismaMock.shortLink.findFirst).toHaveBeenLastCalledWith({
+        where: {
+          id: 'g1',
+          global: true,
+          deletedAt: null,
+          status: { not: 'retired' }
+        },
+        include: { domain: true, campaigns: true }
+      })
+    })
+
+    it('uses the requesting domain fallback for a paused global link', async () => {
+      prismaMock.shortLinkDomain.findUnique.mockResolvedValue(
+        buildShortLinkDomain({ fallbackTo: 'https://domain-fallback.example' })
+      )
+      prismaMock.shortLink.findFirst
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({ ...globalLink, status: 'paused' })
+      prismaMock.shortLinkGlobalSlug.findUnique.mockResolvedValue(claim)
+      expect(await resolve('example.com', 'promo')).toMatchObject({
+        data: {
+          shortLinkResolve: {
+            found: true,
+            location: 'https://domain-fallback.example',
+            source: 'domainFallback',
+            shortLink: { id: 'g1' }
+          }
+        }
+      })
+    })
+
+    it('does not serve a claimed pathname whose link is no longer live', async () => {
+      prismaMock.shortLinkDomain.findUnique.mockResolvedValue(
+        buildShortLinkDomain()
+      )
+      prismaMock.shortLink.findFirst.mockResolvedValue(null)
+      prismaMock.shortLinkGlobalSlug.findUnique.mockResolvedValue(claim)
+      expect(await resolve('example.com', 'promo')).toMatchObject({
+        data: { shortLinkResolve: { found: false, source: 'lostPage' } }
+      })
     })
   })
 

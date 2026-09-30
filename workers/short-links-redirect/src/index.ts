@@ -45,8 +45,8 @@ app.get('*', async (c) => {
     domain,
     pathname: url.pathname,
     search: url.search,
-    lookup: (key, _hostname, pathname) =>
-      lookupLink(c.env, c.executionCtx, domain, key, pathname)
+    lookup: (_key, _hostname, pathname) =>
+      lookupLink(c.env, c.executionCtx, domain, pathname)
   })
 
   if (resolution.kind === 'lostPage') return lostPageResponse()

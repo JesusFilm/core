@@ -25,7 +25,9 @@ CREATE TABLE IF NOT EXISTS redirects.redirect_events (
   utm_source       Nullable(String),
   utm_medium       Nullable(String),
   utm_campaign     Nullable(String),
-  resolved_from    LowCardinality(String)
+  resolved_from    LowCardinality(String),
+  global           UInt8,
+  owner_hostname   LowCardinality(String)
 )
 ENGINE = MergeTree
 PARTITION BY toYYYYMM(ts)

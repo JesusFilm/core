@@ -2,6 +2,8 @@ import { fetchMock } from '../test/fetchMock'
 import { domainRecord, routingRecord } from '../test/fixtures'
 import {
   graphQlEndpoint,
+  seedD1,
+  seedDomainLinks,
   seedRecords,
   workerRequest
 } from '../test/workerRequest'
@@ -150,6 +152,7 @@ describe('worker with a path prefix', () => {
       'domain:jesus.film': domainRecord({
         hostname: 'jesus.film',
         pathPrefix: 's',
+        kvBinding: 'KV_JESUS_FILM',
         slugCaseSensitive: false,
         notFound: 'fallback',
         fallbackTo: 'https://www.jesusfilm.org',
@@ -176,22 +179,22 @@ describe('worker with a path prefix', () => {
       }),
       'domain:multi.example': domainRecord({
         hostname: 'multi.example',
-        pathPrefix: 'go/to'
+        pathPrefix: 'go/to',
+        kvBinding: 'KV_ARC_GT'
       }),
-      'domain:legacy.example': legacyDomain,
-      'link:jesus.film/abc': routingRecord({
-        id: 'link-jf',
-        to: 'https://example.com/jf'
-      }),
-      'link:multi.example/abc': routingRecord({
-        id: 'link-multi',
-        to: 'https://example.com/multi'
-      }),
-      'link:legacy.example/abc': routingRecord({
-        id: 'link-legacy',
-        to: 'https://example.com/legacy'
-      })
+      'domain:legacy.example': legacyDomain
     })
+    await seedDomainLinks('KV_JESUS_FILM', {
+      abc: routingRecord({ id: 'link-jf', to: 'https://example.com/jf' })
+    })
+    await seedDomainLinks('KV_ARC_GT', {
+      abc: routingRecord({ id: 'link-multi', to: 'https://example.com/multi' })
+    })
+    // legacy.example has no namespace; its link is only reachable through D1.
+    await seedD1(
+      'link:legacy.example/abc',
+      routingRecord({ id: 'link-legacy', to: 'https://example.com/legacy' })
+    )
   })
 
   afterAll(() => fetchMock.deactivate())

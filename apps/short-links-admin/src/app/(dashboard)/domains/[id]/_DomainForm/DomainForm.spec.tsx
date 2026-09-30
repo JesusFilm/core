@@ -32,7 +32,9 @@ const domain = {
   passthroughOrigin: null,
   autoFailover: false,
   edgePublishedAt: null,
-  linkCount: 0
+  linkCount: 0,
+  kvNamespaceId: null,
+  kvBinding: null
 }
 
 const domainMock = {
@@ -47,7 +49,13 @@ const domainMock = {
   }
 }
 
-function updateMock(pathPrefix: string) {
+function updateMock(
+  pathPrefix: string,
+  kv: { kvNamespaceId: string | null; kvBinding: string | null } = {
+    kvNamespaceId: null,
+    kvBinding: null
+  }
+) {
   return {
     request: {
       query: SHORT_LINK_DOMAIN_UPDATE,
@@ -65,7 +73,8 @@ function updateMock(pathPrefix: string) {
           fallbackTo: 'https://www.jesusfilm.org',
           notFound: 'fallback',
           passthroughOrigin: null,
-          autoFailover: false
+          autoFailover: false,
+          ...kv
         }
       }
     },
@@ -73,7 +82,7 @@ function updateMock(pathPrefix: string) {
       data: {
         shortLinkDomainUpdate: {
           __typename: 'MutationShortLinkDomainUpdateSuccess',
-          data: { ...domain, pathPrefix }
+          data: { ...domain, pathPrefix, ...kv }
         }
       }
     }))
@@ -110,6 +119,47 @@ describe('DomainForm', () => {
     expect(
       await screen.findByRole('heading', { name: 'jesus.film/s' })
     ).toBeInTheDocument()
+  })
+
+  it('submits the KV namespace id and worker binding', async () => {
+    const update = updateMock('', {
+      kvNamespaceId: 'abc123namespace',
+      kvBinding: 'KV_JESUS_FILM'
+    })
+    renderForm([domainMock, update])
+
+    await userEvent.type(
+      await screen.findByRole('textbox', { name: 'KV namespace id' }),
+      'abc123namespace'
+    )
+    await userEvent.type(
+      screen.getByRole('textbox', { name: 'Worker binding' }),
+      'KV_JESUS_FILM'
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Save domain' }))
+
+    await waitFor(() => expect(update.result).toHaveBeenCalled())
+  })
+
+  it('rejects a lower-case worker binding', async () => {
+    const update = updateMock('', {
+      kvNamespaceId: null,
+      kvBinding: 'kv_jesus_film'
+    })
+    renderForm([domainMock, update])
+
+    await userEvent.type(
+      await screen.findByRole('textbox', { name: 'Worker binding' }),
+      'kv_jesus_film'
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Save domain' }))
+
+    expect(
+      await screen.findByText(
+        'Upper-case letters, digits and _ only, starting with a letter, e.g. KV_JESUS_FILM'
+      )
+    ).toBeInTheDocument()
+    expect(update.result).not.toHaveBeenCalled()
   })
 
   it('rejects a prefix with slashes around it', async () => {

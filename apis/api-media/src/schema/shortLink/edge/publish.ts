@@ -9,21 +9,34 @@ import {
   buildDomainRecord,
   buildRoutingRecord,
   domainKey,
+  domainLinkKey,
+  globalLinkKey,
+  globalRecordKeyForLink,
   isLiveLink,
   recordKeyForLink
 } from './records'
-import { d1Delete, d1Upsert, kvDelete, kvWrite, kvWriteMany } from './store'
+import {
+  EdgeRecord,
+  d1Delete,
+  d1Upsert,
+  kvDelete,
+  kvWrite,
+  kvWriteMany
+} from './store'
 
 type Db = Prisma.TransactionClient
 
 const linkInclude = {
   domain: true,
-  campaigns: { select: { id: true } }
+  campaigns: { select: { id: true } },
+  // the registry row this link owns (null when it never claimed its pathname
+  // or released it); only the owner may touch the global key
+  globalSlug: { select: { pathname: true } }
 } satisfies Prisma.ShortLinkInclude
 
 /**
- * Write the domain record. Call inside the mutation's transaction so a KV
- * rejection rolls the Postgres write back.
+ * Write the domain record to the global namespace (and D1). Call inside the
+ * mutation's transaction so a KV rejection rolls the Postgres write back.
  */
 export async function publishDomain(
   domainId: string,
@@ -43,7 +56,7 @@ export async function publishDomain(
     key: domainKey(domain.hostname),
     value: JSON.stringify(buildDomainRecord(domain))
   }
-  await kvWrite(config, record)
+  await kvWrite(config, config.globalNamespaceId, record)
   await d1Upsert(config, [record], logger)
 
   const edgePublishedAt = new Date()
@@ -64,13 +77,15 @@ export async function unpublishDomain(
     return
   }
   const key = domainKey(hostname)
-  await kvDelete(config, key)
+  await kvDelete(config, config.globalNamespaceId, key)
   await d1Delete(config, key, logger)
 }
 
 /**
- * Write (or, for a deleted / retired link, remove) one routing record and
- * stamp `edgePublishedAt`.
+ * Write (or, for a deleted / retired / un-flagged link, remove) the routing
+ * record in the domain's namespace and, for global links, the global
+ * namespace; stamp `edgePublishedAt`. Returns null when nothing applies (the
+ * domain has no namespace and the link is not global).
  */
 export async function publishLink(
   linkId: string,
@@ -87,18 +102,48 @@ export async function publishLink(
     where: { id: linkId },
     include: linkInclude
   })
-  const key = recordKeyForLink(link, link.domain)
+  const live = isLiveLink(link)
+  const ownsGlobalClaim = link.globalSlug != null
+  const domainNamespaceId = link.domain.kvNamespaceId
+  const value = JSON.stringify(buildRoutingRecord(link, link.domain))
+  let published = false
 
-  if (!isLiveLink(link)) {
-    await kvDelete(config, key)
-    await d1Delete(config, key, logger)
-  } else {
-    const record = {
-      key,
-      value: JSON.stringify(buildRoutingRecord(link, link.domain))
+  if (domainNamespaceId != null) {
+    const key = domainLinkKey(link, link.domain)
+    const replicaKey = recordKeyForLink(link, link.domain)
+    if (live) {
+      await kvWrite(config, domainNamespaceId, { key, value })
+      await d1Upsert(config, [{ key: replicaKey, value }], logger)
+    } else {
+      await kvDelete(config, domainNamespaceId, key)
+      await d1Delete(config, replicaKey, logger)
     }
-    await kvWrite(config, record)
-    await d1Upsert(config, [record], logger)
+    published = true
+  }
+
+  if (live && link.global) {
+    await kvWrite(config, config.globalNamespaceId, {
+      key: globalLinkKey(link),
+      value
+    })
+    await d1Upsert(
+      config,
+      [{ key: globalRecordKeyForLink(link), value }],
+      logger
+    )
+    published = true
+  } else if (ownsGlobalClaim) {
+    await kvDelete(config, config.globalNamespaceId, globalLinkKey(link))
+    await d1Delete(config, globalRecordKeyForLink(link), logger)
+    published = true
+  }
+
+  if (!published) {
+    logger.debug(
+      { linkId, hostname: link.domain.hostname },
+      'short link edge: domain has no namespace and link is not global; skipped'
+    )
+    return null
   }
 
   const edgePublishedAt = new Date()
@@ -109,7 +154,10 @@ export async function publishLink(
   return edgePublishedAt
 }
 
-/** Remove a link's routing record from KV and D1 (soft delete / retire). */
+/**
+ * Remove a link's routing records from the domain namespace, the global
+ * namespace (when this link owns the global pathname) and D1.
+ */
 export async function unpublishLink(
   linkId: string,
   db: Db = prisma,
@@ -123,19 +171,29 @@ export async function unpublishLink(
 
   const link = await db.shortLink.findUniqueOrThrow({
     where: { id: linkId },
-    include: { domain: true }
+    include: { domain: true, globalSlug: { select: { pathname: true } } }
   })
-  const key = recordKeyForLink(link, link.domain)
-  await kvDelete(config, key)
-  await d1Delete(config, key, logger)
+  if (link.domain.kvNamespaceId != null) {
+    await kvDelete(
+      config,
+      link.domain.kvNamespaceId,
+      domainLinkKey(link, link.domain)
+    )
+    await d1Delete(config, recordKeyForLink(link, link.domain), logger)
+  }
+  if (link.globalSlug != null) {
+    await kvDelete(config, config.globalNamespaceId, globalLinkKey(link))
+    await d1Delete(config, globalRecordKeyForLink(link), logger)
+  }
 }
 
 const DOMAIN_LINK_BATCH = 1000
 
 /**
- * Republish the domain record and every live link on it — backfill, cutover,
- * and publish-gap repair. Uses the KV bulk endpoint so a domain with tens of
- * thousands of links stays within the API rate limits.
+ * Republish the domain record, every live link into the domain's namespace
+ * (when it has one), and the global keys of its global links — backfill,
+ * cutover, and publish-gap repair. Uses the KV bulk endpoint so a domain with
+ * tens of thousands of links stays within the API rate limits.
  */
 export async function publishDomainWithLinks(
   domainId: string,
@@ -152,6 +210,7 @@ export async function publishDomainWithLinks(
   const domain = await db.shortLinkDomain.findUniqueOrThrow({
     where: { id: domainId }
   })
+  const domainNamespaceId = domain.kvNamespaceId
 
   let cursor: string | undefined
   let published = 0
@@ -165,24 +224,60 @@ export async function publishDomainWithLinks(
     })
     if (links.length === 0) break
 
-    const records = links.map((link) => ({
-      key: recordKeyForLink(link, domain),
-      value: JSON.stringify(buildRoutingRecord(link, domain))
-    }))
-    await kvWriteMany(config, records)
-    await d1Upsert(config, records, logger)
-    await db.shortLink.updateMany({
-      where: { id: { in: links.map(({ id }) => id) } },
-      data: { edgePublishedAt: edgePublishedAt ?? new Date() }
-    })
+    const replicaRecords: EdgeRecord[] = []
+    const publishedIds: string[] = []
 
-    published += links.length
+    if (domainNamespaceId != null) {
+      const records = links.map((link) => ({
+        key: domainLinkKey(link, domain),
+        value: JSON.stringify(buildRoutingRecord(link, domain))
+      }))
+      await kvWriteMany(config, domainNamespaceId, records)
+      replicaRecords.push(
+        ...links.map((link, index) => ({
+          key: recordKeyForLink(link, domain),
+          value: records[index].value
+        }))
+      )
+      publishedIds.push(...links.map(({ id }) => id))
+    }
+
+    const globalLinks = links.filter((link) => link.global)
+    if (globalLinks.length > 0) {
+      const records = globalLinks.map((link) => ({
+        key: globalLinkKey(link),
+        value: JSON.stringify(buildRoutingRecord(link, domain))
+      }))
+      await kvWriteMany(config, config.globalNamespaceId, records)
+      replicaRecords.push(
+        ...globalLinks.map((link, index) => ({
+          key: globalRecordKeyForLink(link),
+          value: records[index].value
+        }))
+      )
+      if (domainNamespaceId == null)
+        publishedIds.push(...globalLinks.map(({ id }) => id))
+    }
+
+    await d1Upsert(config, replicaRecords, logger)
+    if (publishedIds.length > 0)
+      await db.shortLink.updateMany({
+        where: { id: { in: publishedIds } },
+        data: { edgePublishedAt: edgePublishedAt ?? new Date() }
+      })
+
+    published += publishedIds.length
     cursor = links[links.length - 1].id
     if (links.length < DOMAIN_LINK_BATCH) break
   }
 
   logger.info(
-    { domainId, hostname: domain.hostname, published },
+    {
+      domainId,
+      hostname: domain.hostname,
+      published,
+      domainNamespace: domainNamespaceId != null
+    },
     'short link edge: domain published'
   )
   return edgePublishedAt

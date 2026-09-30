@@ -114,12 +114,16 @@ The row written every time a short link's destination changes: from, to, who, wh
 _Avoid_: Audit log (informally), revision
 
 **Routing Record**:
-The compact JSON a short link publishes to the Edge Store (`link:<hostname>/<pathname>` — the bare pathname, never the domain's path prefix): effective destination and status, paused flag, campaign ids, placement, video ids. Built by `schema/shortLink/edge`; the Worker redirects from it without touching this API.
+The compact JSON a short link publishes to the Edge Store (`link:<hostname>/<pathname>` — the bare pathname, never the domain's path prefix): effective destination and status, paused flag, campaign ids, placement, video ids. `status` and `fallbackTo` are the link's own overrides only, so a Global Link takes the serving domain's defaults. Built by `schema/shortLink/edge`; the Worker redirects from it without touching this API.
 _Avoid_: Cache entry, snapshot
 
 **Edge Store**:
-Cloudflare Workers KV (primary) and D1 (replica) holding Domain and Routing Records. A KV write failure fails the mutation; D1 failures are logged. Unset `CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID` makes publishing a no-op.
+Cloudflare Workers KV (primary) and D1 (replica) holding Domain and Routing Records. One **global namespace** per environment (`CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID`) holds `domain:<hostname>` records and `link:<pathname>` Global Links; each Short Link Domain publishes its own routing records as `<pathname>` into its own namespace (`kvNamespaceId`, read by the Worker through `kvBinding`). A domain without a namespace is not published. A KV write failure fails the mutation; D1 failures are logged. Unset `CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID` makes publishing a no-op.
 _Avoid_: Cache, CDN
+
+**Global Link**:
+A Short Link flagged `global`: it still belongs to its own domain (its canonical short URL) and additionally resolves on every domain that has no link of its own for the same pathname. Global pathnames are lower-case, unique across all domains (the `ShortLinkGlobalSlug` registry) and never reissued — a soft-deleted global link keeps its claim; only un-flagging a live link releases it. Toggling needs `shortLinkAdmin`.
+_Avoid_: Shared link, wildcard
 
 **Arclight API Key**:
 A credential granting access to the Arclight Platform, carrying a default platform for the caller.

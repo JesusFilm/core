@@ -112,11 +112,22 @@ export interface DomainFormValues {
   notFound: ShortLinkNotFound
   passthroughOrigin: string
   autoFailover: boolean
+  kvNamespaceId: string
+  kvBinding: string
 }
+
+export const KV_BINDING_PATTERN = /^[A-Z][A-Z0-9_]*$/
 
 const URL_PATTERN = /^https?:\/\/[^\s]+$/i
 
 const schema = object({
+  kvBinding: string()
+    .trim()
+    .test(
+      'kv-binding',
+      'Upper-case letters, digits and _ only, starting with a letter, e.g. KV_JESUS_FILM',
+      (value) => value == null || value === '' || KV_BINDING_PATTERN.test(value)
+    ),
   pathPrefix: string()
     .trim()
     .test(
@@ -208,7 +219,9 @@ export function DomainForm(): ReactElement {
     fallbackTo: domain.fallbackTo ?? '',
     notFound: domain.notFound,
     passthroughOrigin: domain.passthroughOrigin ?? '',
-    autoFailover: domain.autoFailover
+    autoFailover: domain.autoFailover,
+    kvNamespaceId: domain.kvNamespaceId ?? '',
+    kvBinding: domain.kvBinding ?? ''
   }
 
   async function handleSubmit(values: DomainFormValues): Promise<void> {
@@ -229,7 +242,9 @@ export function DomainForm(): ReactElement {
             fallbackTo: emptyToNull(values.fallbackTo),
             notFound: values.notFound,
             passthroughOrigin: emptyToNull(values.passthroughOrigin),
-            autoFailover: values.autoFailover
+            autoFailover: values.autoFailover,
+            kvNamespaceId: emptyToNull(values.kvNamespaceId),
+            kvBinding: emptyToNull(values.kvBinding)
           }
         }
       })
@@ -508,6 +523,42 @@ export function DomainForm(): ReactElement {
                         value={values.reservedPaths}
                         onChange={(paths) =>
                           void setFieldValue('reservedPaths', paths)
+                        }
+                      />
+                    </Grid>
+                  </Grid>
+                </Paper>
+
+                <Paper sx={{ p: 2 }}>
+                  <Typography variant="subtitle2" sx={{ mb: 2 }}>
+                    Edge publishing
+                  </Typography>
+                  <Grid container spacing={2}>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <TextField
+                        fullWidth
+                        id="kvNamespaceId"
+                        name="kvNamespaceId"
+                        label="KV namespace id"
+                        value={values.kvNamespaceId}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        helperText="From `wrangler kv namespace create`. Leave empty until the namespace exists; the domain is not published until then."
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <TextField
+                        fullWidth
+                        id="kvBinding"
+                        name="kvBinding"
+                        label="Worker binding"
+                        value={values.kvBinding}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={fieldError('kvBinding') != null}
+                        helperText={
+                          fieldError('kvBinding') ??
+                          'The [[kv_namespaces]] binding in wrangler.toml, e.g. KV_JESUS_FILM. Leave empty until the namespace exists.'
                         }
                       />
                     </Grid>

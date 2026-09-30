@@ -71,7 +71,9 @@ export function toCreateInput(values: LinkFormValues) {
     tags: values.tags,
     videoId: emptyToNull(values.videoId),
     youtubeVideoId: emptyToNull(values.youtubeVideoId),
-    campaignIds: values.campaignIds
+    campaignIds: values.campaignIds,
+    // Only admins may set it; leave it out so editors are not refused.
+    ...(values.global ? { global: true } : {})
   }
 }
 

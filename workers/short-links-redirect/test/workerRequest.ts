@@ -41,6 +41,26 @@ export async function workerRequest(
   return { response, sent }
 }
 
+/** Puts routing records into a domain namespace, keyed by bare slug. */
+export async function seedDomainLinks(
+  binding: string,
+  records: Record<string, unknown>
+): Promise<void> {
+  const namespace = bindings[binding] as KVNamespace
+  for (const [slug, record] of Object.entries(records)) {
+    await namespace.put(slug, JSON.stringify(record))
+  }
+}
+
+export async function seedD1(key: string, value: unknown): Promise<void> {
+  await bindings.SHORT_LINKS_DB.prepare(
+    'INSERT OR REPLACE INTO short_link_records (key, value, updated_at) VALUES (?, ?, ?)'
+  )
+    .bind(key, JSON.stringify(value), new Date().toISOString())
+    .run()
+}
+
+/** Puts records into the global namespace under the given keys. */
 export async function seedRecords(
   records: Record<string, unknown>
 ): Promise<void> {

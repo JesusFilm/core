@@ -23,12 +23,14 @@ export const SHORT_LINK_BY_PATH_QUERY = `
           videoId
           youtubeVideoId
           language
+          global
           brightcoveId
           redirectType
           campaigns {
             id
           }
           domain {
+            hostname
             redirectStatus
             fallbackTo
             passthroughOrigin
@@ -50,10 +52,12 @@ export interface ShortLinkByPathData {
   videoId: string | null
   youtubeVideoId: string | null
   language: string | null
+  global: boolean | null
   brightcoveId: string | null
   redirectType: string | null
   campaigns: Array<{ id: string }>
   domain: {
+    hostname: string
     redirectStatus: number
     fallbackTo: string | null
     passthroughOrigin: string | null
@@ -143,6 +147,9 @@ export async function fetchShortLinkByPath({
 /**
  * Converts an api-media short link into the routing record api-media would
  * have published. Retired links are a miss (their edge keys are deleted).
+ * `status` and `fallbackTo` are the link's own overrides only, never the
+ * owning domain's defaults, so a global link served on another domain takes
+ * that domain's status.
  *
  * Brightcove passthrough rule (TECH-DESIGN.md, "Routing record"): an arc.gt
  * link carrying `brightcoveId` + `redirectType` keeps `to = <passthroughOrigin>/<pathname>`
@@ -150,7 +157,7 @@ export async function fetchShortLinkByPath({
  */
 export function toRoutingRecord(
   link: ShortLinkByPathData,
-  domain: Pick<DomainRecord, 'passthroughOrigin' | 'redirectStatus'>,
+  domain: Pick<DomainRecord, 'passthroughOrigin'>,
   pathname: string
 ): RoutingRecord | null {
   if (link.status === 'retired') return null
@@ -172,10 +179,7 @@ export function toRoutingRecord(
     v: 1,
     id: link.id,
     to,
-    status:
-      link.redirectStatus ??
-      link.domain?.redirectStatus ??
-      domain.redirectStatus,
+    status: link.redirectStatus ?? null,
     fallbackTo: link.fallbackTo ?? null,
     paused: link.status === 'paused',
     assetClass: link.assetClass,
@@ -183,6 +187,8 @@ export function toRoutingRecord(
     campaignIds: (link.campaigns ?? []).map((campaign) => campaign.id),
     videoId: link.videoId ?? null,
     youtubeVideoId: link.youtubeVideoId ?? null,
-    language: link.language ?? null
+    language: link.language ?? null,
+    global: link.global === true,
+    hostname: link.domain?.hostname ?? ''
   }
 }

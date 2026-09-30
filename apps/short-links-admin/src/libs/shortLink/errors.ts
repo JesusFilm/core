@@ -63,7 +63,7 @@ export function parseMutationError(
   if (result.__typename === 'NotUniqueError') {
     for (const location of result.location ?? []) {
       const field = lastPathSegment(location.path)
-      if (field != null) fieldErrors[field] = 'Already in use'
+      if (field != null) fieldErrors[field] = result.message ?? 'Already in use'
     }
   }
 

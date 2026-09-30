@@ -20,10 +20,15 @@ const graphQlEndpoint = 'http://graphql.example.com'
 const bindings = env as unknown as Env
 
 const domains: Record<string, DomainRecord> = {
-  'nxstp.is': domainRecord({ hostname: 'nxstp.is', redirectStatus: 307 }),
+  'nxstp.is': domainRecord({
+    hostname: 'nxstp.is',
+    redirectStatus: 307,
+    kvBinding: 'KV_NXSTP_IS'
+  }),
   'arc.gt': domainRecord({
     hostname: 'arc.gt',
     redirectStatus: 302,
+    kvBinding: 'KV_ARC_GT',
     notFound: 'passthrough',
     passthroughOrigin: 'https://api.arclight.org',
     reservedPaths: ['s', 'hls', 'dl', 'dh', 'v2', 'api']
@@ -31,6 +36,7 @@ const domains: Record<string, DomainRecord> = {
   'fallback.example': domainRecord({
     hostname: 'fallback.example',
     redirectStatus: 301,
+    kvBinding: 'KV_STG_ARC_GT',
     notFound: 'fallback',
     fallbackTo: 'https://www.jesusfilm.org/'
   }),
@@ -47,41 +53,55 @@ const domains: Record<string, DomainRecord> = {
   'lower.example': domainRecord({
     hostname: 'lower.example',
     slugCaseSensitive: false,
+    kvBinding: 'KV_JESUS_FILM',
     reservedPaths: ['Admin']
   })
 }
 
-const links: Record<string, RoutingRecord> = {
-  'link:nxstp.is/jesus': routingRecord({ id: 'link-jesus' }),
-  'link:nxstp.is/perma': routingRecord({ id: 'link-perma', status: 301 }),
-  'link:nxstp.is/withquery': routingRecord({
-    id: 'link-withquery',
-    to: 'https://example.com/landing?keep=1#section'
-  }),
-  'link:nxstp.is/paused-link-fallback': routingRecord({
-    id: 'link-paused-1',
-    paused: true,
-    fallbackTo: 'https://example.com/link-fallback'
-  }),
-  'link:nxstp.is/paused-no-fallback': routingRecord({
-    id: 'link-paused-2',
-    paused: true
-  }),
-  'link:fallback.example/paused': routingRecord({
-    id: 'link-paused-3',
-    paused: true
-  }),
-  'link:arc.gt/abc123': routingRecord({
-    id: 'link-arc',
-    to: 'https://api.arclight.org/abc123',
-    status: 302,
-    campaignIds: ['camp-1'],
-    videoId: '1_jf-0-0',
-    youtubeVideoId: 'dQw4w9WgXcQ',
-    placement: 'inVideoQr',
-    language: 'en'
-  }),
-  'link:lower.example/mixedcase': routingRecord({ id: 'link-lower' })
+/** Routing records per domain, keyed by bare slug (they live in the domain's namespace). */
+const links: Record<string, Record<string, RoutingRecord>> = {
+  'nxstp.is': {
+    jesus: routingRecord({ id: 'link-jesus', hostname: 'nxstp.is' }),
+    perma: routingRecord({ id: 'link-perma', status: 301 }),
+    withquery: routingRecord({
+      id: 'link-withquery',
+      to: 'https://example.com/landing?keep=1#section'
+    }),
+    'paused-link-fallback': routingRecord({
+      id: 'link-paused-1',
+      paused: true,
+      fallbackTo: 'https://example.com/link-fallback'
+    }),
+    'paused-no-fallback': routingRecord({
+      id: 'link-paused-2',
+      paused: true
+    })
+  },
+  'fallback.example': {
+    paused: routingRecord({ id: 'link-paused-3', paused: true })
+  },
+  'arc.gt': {
+    abc123: routingRecord({
+      id: 'link-arc',
+      to: 'https://api.arclight.org/abc123',
+      status: 302,
+      campaignIds: ['camp-1'],
+      videoId: '1_jf-0-0',
+      youtubeVideoId: 'dQw4w9WgXcQ',
+      placement: 'inVideoQr',
+      language: 'en',
+      hostname: 'arc.gt'
+    })
+  },
+  'lower.example': {
+    mixedcase: routingRecord({ id: 'link-lower' })
+  }
+}
+
+function namespaceOf(hostname: string): KVNamespace {
+  const binding = domains[hostname]?.kvBinding
+  if (binding == null) throw new Error(`no kvBinding for ${hostname}`)
+  return bindings[binding] as KVNamespace
 }
 
 async function seedKv(): Promise<void> {
@@ -91,8 +111,10 @@ async function seedKv(): Promise<void> {
       JSON.stringify(record)
     )
   }
-  for (const [key, record] of Object.entries(links)) {
-    await bindings.SHORT_LINKS_KV.put(key, JSON.stringify(record))
+  for (const [hostname, records] of Object.entries(links)) {
+    for (const [slug, record] of Object.entries(records)) {
+      await namespaceOf(hostname).put(slug, JSON.stringify(record))
+    }
   }
 }
 
@@ -180,7 +202,9 @@ describe('short-links-redirect worker', () => {
         linkId: 'link-jesus',
         status: 307,
         attribution: 'unknown',
-        resolvedFrom: 'kv'
+        resolvedFrom: 'kv',
+        global: false,
+        ownerHostname: 'nxstp.is'
       })
     })
 
@@ -456,8 +480,8 @@ describe('short-links-redirect worker', () => {
     })
 
     it('treats a record with the wrong version as a miss for that store', async () => {
-      await bindings.SHORT_LINKS_KV.put(
-        'link:nxstp.is/versioned',
+      await namespaceOf('nxstp.is').put(
+        'versioned',
         JSON.stringify({ ...routingRecord({ id: 'stale' }), v: 2 })
       )
       await seedD1(
@@ -472,7 +496,7 @@ describe('short-links-redirect worker', () => {
       expect(sent[0]?.resolvedFrom).toBe('d1')
     })
 
-    it('falls back to api-media, writes the record back to KV and logs publish_gap', async () => {
+    it('falls back to api-media, writes the record back to the domain namespace and logs publish_gap', async () => {
       const log = vi.spyOn(console, 'log').mockImplementation(() => undefined)
       let variables: unknown
       fetchMock
@@ -500,8 +524,10 @@ describe('short-links-redirect worker', () => {
                     language: 'en',
                     brightcoveId: null,
                     redirectType: null,
+                    global: false,
                     campaigns: [{ id: 'camp-a' }, { id: 'camp-b' }],
                     domain: {
+                      hostname: 'nxstp.is',
                       redirectStatus: 307,
                       fallbackTo: null,
                       passthroughOrigin: null
@@ -527,21 +553,27 @@ describe('short-links-redirect worker', () => {
         resolvedFrom: 'api'
       })
 
-      const written = await bindings.SHORT_LINKS_KV.get(
-        'link:nxstp.is/from-api',
-        'json'
-      )
+      const written = await namespaceOf('nxstp.is').get('from-api', 'json')
       expect(written).toMatchObject({
         v: 1,
         id: 'link-api',
         to: 'https://example.com/api',
-        status: 307,
+        status: null,
         paused: false,
         assetClass: 'videoEmbedded',
-        campaignIds: ['camp-a', 'camp-b']
+        campaignIds: ['camp-a', 'camp-b'],
+        global: false,
+        hostname: 'nxstp.is'
       })
+      expect(
+        await bindings.SHORT_LINKS_KV.get('link:from-api', 'json')
+      ).toBeNull()
       expect(log).toHaveBeenCalledWith(
-        JSON.stringify({ event: 'publish_gap', key: 'link:nxstp.is/from-api' })
+        JSON.stringify({
+          event: 'publish_gap',
+          key: 'link:nxstp.is/from-api',
+          target: 'KV_NXSTP_IS'
+        })
       )
       log.mockRestore()
     })

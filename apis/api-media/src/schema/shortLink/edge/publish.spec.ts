@@ -4,7 +4,8 @@ import { prismaMock } from '../../../../test/prismaMock'
 import {
   buildShortLink,
   buildShortLinkDomain,
-  buildShortLinkWithDomain
+  buildShortLinkWithDomain,
+  withRelations
 } from '../../../../test/shortLinkFixtures'
 
 import {
@@ -43,11 +44,34 @@ const logger = {
   error: vi.fn()
 } as unknown as import('pino').Logger
 
-const domain = buildShortLinkDomain({
+const GLOBAL_NS = 'kv-global'
+const DOMAIN_NS = 'kv-domain'
+
+const domainOverrides = {
   id: 'domainId',
   hostname: 'Example.com',
-  redirectStatus: 302
-})
+  redirectStatus: 302,
+  kvNamespaceId: DOMAIN_NS,
+  kvBinding: 'KV_EXAMPLE'
+}
+const domain = buildShortLinkDomain(domainOverrides)
+
+function linkWithRelations(
+  overrides: Parameters<typeof buildShortLink>[0] = {},
+  domainOverride: Parameters<typeof buildShortLinkDomain>[0] = domainOverrides,
+  relations: { campaigns?: Array<{ id: string }>; ownsClaim?: boolean } = {}
+) {
+  const link = buildShortLinkWithDomain(overrides, domainOverride)
+  return withRelations(link, {
+    campaigns: relations.campaigns ?? [],
+    globalSlug:
+      relations.ownsClaim === true ? { pathname: link.pathname } : null
+  })
+}
+
+function d1Calls(): Array<{ sql: string; params: string[] }> {
+  return d1Query.mock.calls.map(([, params]) => params)
+}
 
 describe('edge publish', () => {
   const originalEnv = process.env
@@ -58,7 +82,7 @@ describe('edge publish', () => {
       ...originalEnv,
       CLOUDFLARE_ACCOUNT_ID: 'account',
       CLOUDFLARE_SHORT_LINKS_API_TOKEN: 'token',
-      CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID: 'kv',
+      CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID: GLOBAL_NS,
       CLOUDFLARE_SHORT_LINKS_D1_DATABASE_ID: 'd1'
     }
     kvUpdate.mockResolvedValue({})
@@ -71,7 +95,7 @@ describe('edge publish', () => {
     process.env = originalEnv
   })
 
-  describe('when the KV namespace is not configured', () => {
+  describe('when the global KV namespace is not configured', () => {
     beforeEach(() => {
       delete process.env.CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID
     })
@@ -102,14 +126,14 @@ describe('edge publish', () => {
   })
 
   describe('publishDomain', () => {
-    it('writes the domain record to KV and D1 and stamps edgePublishedAt', async () => {
+    it('writes the domain record to the global namespace and D1 and stamps edgePublishedAt', async () => {
       prismaMock.shortLinkDomain.findUniqueOrThrow.mockResolvedValue(domain)
       prismaMock.shortLinkDomain.update.mockResolvedValue(domain)
 
       const publishedAt = await publishDomain('domainId', prismaMock, logger)
 
       expect(publishedAt).toBeInstanceOf(Date)
-      expect(kvUpdate).toHaveBeenCalledWith('kv', 'domain:example.com', {
+      expect(kvUpdate).toHaveBeenCalledWith(GLOBAL_NS, 'domain:example.com', {
         account_id: 'account',
         value: expect.any(String),
         metadata: '{}'
@@ -118,7 +142,8 @@ describe('edge publish', () => {
         v: 1,
         id: 'domainId',
         hostname: 'example.com',
-        redirectStatus: 302
+        redirectStatus: 302,
+        kvBinding: 'KV_EXAMPLE'
       })
       expect(d1Query).toHaveBeenCalledWith('d1', {
         account_id: 'account',
@@ -129,6 +154,22 @@ describe('edge publish', () => {
         where: { id: 'domainId' },
         data: { edgePublishedAt: publishedAt }
       })
+    })
+
+    it('publishes a domain without its own namespace (global links only)', async () => {
+      prismaMock.shortLinkDomain.findUniqueOrThrow.mockResolvedValue(
+        buildShortLinkDomain({ id: 'domainId', hostname: 'bare.example' })
+      )
+      prismaMock.shortLinkDomain.update.mockResolvedValue(domain)
+
+      await publishDomain('domainId', prismaMock, logger)
+
+      expect(kvUpdate).toHaveBeenCalledWith(
+        GLOBAL_NS,
+        'domain:bare.example',
+        expect.anything()
+      )
+      expect(JSON.parse(kvUpdate.mock.calls[0][2].value).kvBinding).toBeNull()
     })
 
     it('skips D1 when the database id is unset', async () => {
@@ -168,14 +209,17 @@ describe('edge publish', () => {
   })
 
   describe('publishLink', () => {
-    it('writes the routing record under the lower-cased hostname key', async () => {
-      const link = {
-        ...buildShortLinkWithDomain(
-          { id: 'linkId', pathname: 'AbC', to: 'https://dest.example' },
-          { hostname: 'Example.com', redirectStatus: 302 }
-        ),
-        campaigns: [{ id: 'c1' }]
-      }
+    it('writes the bare-slug record to the domain namespace and the replica', async () => {
+      const link = linkWithRelations(
+        {
+          id: 'linkId',
+          pathname: 'AbC',
+          to: 'https://dest.example',
+          redirectStatus: 301
+        },
+        domainOverrides,
+        { campaigns: [{ id: 'c1' }] }
+      )
       prismaMock.shortLink.findUniqueOrThrow.mockResolvedValue(link)
       prismaMock.shortLink.update.mockResolvedValue(link)
 
@@ -183,20 +227,27 @@ describe('edge publish', () => {
 
       expect(prismaMock.shortLink.findUniqueOrThrow).toHaveBeenCalledWith({
         where: { id: 'linkId' },
-        include: { domain: true, campaigns: { select: { id: true } } }
+        include: {
+          domain: true,
+          campaigns: { select: { id: true } },
+          globalSlug: { select: { pathname: true } }
+        }
       })
+      expect(kvUpdate).toHaveBeenCalledTimes(1)
       expect(kvUpdate).toHaveBeenCalledWith(
-        'kv',
-        'link:example.com/AbC',
+        DOMAIN_NS,
+        'AbC',
         expect.objectContaining({ account_id: 'account' })
       )
       expect(JSON.parse(kvUpdate.mock.calls[0][2].value)).toEqual({
         v: 1,
         id: 'linkId',
         to: 'https://dest.example',
-        status: 302,
+        status: 301,
         fallbackTo: null,
         paused: false,
+        global: false,
+        hostname: 'example.com',
         assetClass: 'standard',
         placement: null,
         campaignIds: ['c1'],
@@ -204,65 +255,193 @@ describe('edge publish', () => {
         youtubeVideoId: null,
         language: null
       })
-      expect(d1Query).toHaveBeenCalledTimes(1)
+      expect(d1Calls()).toEqual([
+        expect.objectContaining({
+          params: [
+            'link:example.com/AbC',
+            expect.any(String),
+            expect.any(String)
+          ]
+        })
+      ])
       expect(prismaMock.shortLink.update).toHaveBeenCalledWith({
         where: { id: 'linkId' },
         data: { edgePublishedAt: publishedAt }
       })
     })
 
-    it('lower-cases the pathname key on a case-insensitive domain', async () => {
-      const link = {
-        ...buildShortLinkWithDomain(
-          { id: 'linkId', pathname: 'AbC' },
-          { hostname: 'yt.example', slugCaseSensitive: false }
-        ),
-        campaigns: []
-      }
+    it('leaves status null when the link has no override (the Worker uses the serving domain)', async () => {
+      const link = linkWithRelations({ id: 'linkId' })
       prismaMock.shortLink.findUniqueOrThrow.mockResolvedValue(link)
       prismaMock.shortLink.update.mockResolvedValue(link)
 
       await publishLink('linkId', prismaMock, logger)
 
-      expect(kvUpdate).toHaveBeenCalledWith(
-        'kv',
-        'link:yt.example/abc',
-        expect.anything()
-      )
+      expect(JSON.parse(kvUpdate.mock.calls[0][2].value).status).toBeNull()
     })
 
-    it('deletes the record instead when the link is retired or deleted', async () => {
-      const link = {
-        ...buildShortLinkWithDomain({
+    it('lower-cases the key on a case-insensitive domain', async () => {
+      const link = linkWithRelations(
+        { id: 'linkId', pathname: 'AbC' },
+        { ...domainOverrides, hostname: 'yt.example', slugCaseSensitive: false }
+      )
+      prismaMock.shortLink.findUniqueOrThrow.mockResolvedValue(link)
+      prismaMock.shortLink.update.mockResolvedValue(link)
+
+      await publishLink('linkId', prismaMock, logger)
+
+      expect(kvUpdate).toHaveBeenCalledWith(DOMAIN_NS, 'abc', expect.anything())
+      expect(d1Calls()[0].params[0]).toBe('link:yt.example/abc')
+    })
+
+    it('also writes link:<pathname> to the global namespace for a global link', async () => {
+      const link = linkWithRelations(
+        { id: 'linkId', pathname: 'promo', global: true },
+        domainOverrides,
+        { ownsClaim: true }
+      )
+      prismaMock.shortLink.findUniqueOrThrow.mockResolvedValue(link)
+      prismaMock.shortLink.update.mockResolvedValue(link)
+
+      await publishLink('linkId', prismaMock, logger)
+
+      expect(kvUpdate).toHaveBeenCalledTimes(2)
+      expect(kvUpdate).toHaveBeenNthCalledWith(
+        1,
+        DOMAIN_NS,
+        'promo',
+        expect.anything()
+      )
+      expect(kvUpdate).toHaveBeenNthCalledWith(
+        2,
+        GLOBAL_NS,
+        'link:promo',
+        expect.anything()
+      )
+      expect(JSON.parse(kvUpdate.mock.calls[1][2].value)).toMatchObject({
+        global: true,
+        hostname: 'example.com'
+      })
+      expect(d1Calls().map(({ params }) => params[0])).toEqual([
+        'link:example.com/promo',
+        'global:promo'
+      ])
+      expect(kvDelete).not.toHaveBeenCalled()
+    })
+
+    it('publishes only the global key when the domain has no namespace', async () => {
+      const link = linkWithRelations(
+        { id: 'linkId', pathname: 'promo', global: true },
+        { id: 'domainId', hostname: 'bare.example' },
+        { ownsClaim: true }
+      )
+      prismaMock.shortLink.findUniqueOrThrow.mockResolvedValue(link)
+      prismaMock.shortLink.update.mockResolvedValue(link)
+
+      const publishedAt = await publishLink('linkId', prismaMock, logger)
+
+      expect(publishedAt).toBeInstanceOf(Date)
+      expect(kvUpdate).toHaveBeenCalledTimes(1)
+      expect(kvUpdate).toHaveBeenCalledWith(
+        GLOBAL_NS,
+        'link:promo',
+        expect.anything()
+      )
+      expect(d1Calls().map(({ params }) => params[0])).toEqual(['global:promo'])
+    })
+
+    it('skips silently when the domain has no namespace and the link is not global', async () => {
+      const link = linkWithRelations(
+        { id: 'linkId' },
+        { id: 'domainId', hostname: 'bare.example' }
+      )
+      prismaMock.shortLink.findUniqueOrThrow.mockResolvedValue(link)
+
+      expect(await publishLink('linkId', prismaMock, logger)).toBeNull()
+
+      expect(kvUpdate).not.toHaveBeenCalled()
+      expect(kvDelete).not.toHaveBeenCalled()
+      expect(d1Query).not.toHaveBeenCalled()
+      expect(prismaMock.shortLink.update).not.toHaveBeenCalled()
+      expect(logger.debug).toHaveBeenCalled()
+    })
+
+    it('deletes both keys for a retired global link that owns its claim', async () => {
+      const link = linkWithRelations(
+        {
           id: 'linkId',
           pathname: 'gone',
+          global: true,
           status: 'retired',
           deletedAt: new Date()
-        }),
-        campaigns: []
-      }
+        },
+        domainOverrides,
+        { ownsClaim: true }
+      )
       prismaMock.shortLink.findUniqueOrThrow.mockResolvedValue(link)
       prismaMock.shortLink.update.mockResolvedValue(link)
 
       await publishLink('linkId', prismaMock, logger)
 
       expect(kvUpdate).not.toHaveBeenCalled()
-      expect(kvDelete).toHaveBeenCalledWith('kv', 'link:example.com/gone', {
+      expect(kvDelete).toHaveBeenCalledWith(DOMAIN_NS, 'gone', {
         account_id: 'account'
       })
-      expect(d1Query).toHaveBeenCalledWith('d1', {
-        account_id: 'account',
-        sql: 'DELETE FROM short_link_records WHERE key = ?',
-        params: ['link:example.com/gone']
+      expect(kvDelete).toHaveBeenCalledWith(GLOBAL_NS, 'link:gone', {
+        account_id: 'account'
+      })
+      expect(d1Calls()).toEqual([
+        {
+          account_id: 'account',
+          sql: 'DELETE FROM short_link_records WHERE key = ?',
+          params: ['link:example.com/gone']
+        },
+        {
+          account_id: 'account',
+          sql: 'DELETE FROM short_link_records WHERE key = ?',
+          params: ['global:gone']
+        }
+      ])
+    })
+
+    it('removes the global key for an un-flagged link that still owns its claim', async () => {
+      const link = linkWithRelations(
+        { id: 'linkId', pathname: 'promo', global: false },
+        domainOverrides,
+        { ownsClaim: true }
+      )
+      prismaMock.shortLink.findUniqueOrThrow.mockResolvedValue(link)
+      prismaMock.shortLink.update.mockResolvedValue(link)
+
+      await publishLink('linkId', prismaMock, logger)
+
+      expect(kvUpdate).toHaveBeenCalledTimes(1)
+      expect(kvUpdate).toHaveBeenCalledWith(
+        DOMAIN_NS,
+        'promo',
+        expect.anything()
+      )
+      expect(kvDelete).toHaveBeenCalledTimes(1)
+      expect(kvDelete).toHaveBeenCalledWith(GLOBAL_NS, 'link:promo', {
+        account_id: 'account'
       })
     })
 
-    it('throws when KV rejects the write', async () => {
-      const link = {
-        ...buildShortLinkWithDomain({ id: 'linkId' }),
-        campaigns: []
-      }
+    it('never touches a global key it does not own', async () => {
+      const link = linkWithRelations({ id: 'linkId', pathname: 'promo' })
       prismaMock.shortLink.findUniqueOrThrow.mockResolvedValue(link)
+      prismaMock.shortLink.update.mockResolvedValue(link)
+
+      await publishLink('linkId', prismaMock, logger)
+
+      expect(kvDelete).not.toHaveBeenCalled()
+      expect(kvUpdate).toHaveBeenCalledTimes(1)
+    })
+
+    it('throws when KV rejects the write', async () => {
+      prismaMock.shortLink.findUniqueOrThrow.mockResolvedValue(
+        linkWithRelations({ id: 'linkId' })
+      )
       kvUpdate.mockRejectedValue(new Error('kv down'))
 
       await expect(publishLink('linkId', prismaMock, logger)).rejects.toThrow(
@@ -273,43 +452,75 @@ describe('edge publish', () => {
   })
 
   describe('unpublishLink', () => {
-    it('deletes the KV and D1 records', async () => {
+    it('deletes the domain key, the owned global key and both replica rows', async () => {
       prismaMock.shortLink.findUniqueOrThrow.mockResolvedValue(
-        buildShortLinkWithDomain({ id: 'linkId', pathname: 'p1' })
+        withRelations(
+          buildShortLinkWithDomain(
+            { id: 'linkId', pathname: 'p1', global: true },
+            domainOverrides
+          ),
+          { globalSlug: { pathname: 'p1' } }
+        )
       )
 
       await unpublishLink('linkId', prismaMock, logger)
 
-      expect(kvDelete).toHaveBeenCalledWith('kv', 'link:example.com/p1', {
+      expect(kvDelete).toHaveBeenCalledWith(DOMAIN_NS, 'p1', {
         account_id: 'account'
       })
-      expect(d1Query).toHaveBeenCalledWith(
-        'd1',
-        expect.objectContaining({ params: ['link:example.com/p1'] })
+      expect(kvDelete).toHaveBeenCalledWith(GLOBAL_NS, 'link:p1', {
+        account_id: 'account'
+      })
+      expect(d1Calls().map(({ params }) => params[0])).toEqual([
+        'link:example.com/p1',
+        'global:p1'
+      ])
+    })
+
+    it('deletes nothing for a non-global link on a domain without a namespace', async () => {
+      prismaMock.shortLink.findUniqueOrThrow.mockResolvedValue(
+        withRelations(
+          buildShortLinkWithDomain(
+            { id: 'linkId' },
+            { id: 'domainId', hostname: 'bare.example' }
+          ),
+          { globalSlug: null }
+        )
       )
+
+      await unpublishLink('linkId', prismaMock, logger)
+
+      expect(kvDelete).not.toHaveBeenCalled()
+      expect(d1Query).not.toHaveBeenCalled()
     })
   })
 
   describe('unpublishDomain', () => {
-    it('deletes the domain record', async () => {
+    it('deletes the domain record from the global namespace', async () => {
       await unpublishDomain('Example.com', logger)
-      expect(kvDelete).toHaveBeenCalledWith('kv', 'domain:example.com', {
+      expect(kvDelete).toHaveBeenCalledWith(GLOBAL_NS, 'domain:example.com', {
         account_id: 'account'
       })
     })
   })
 
   describe('publishDomainWithLinks', () => {
-    it('publishes the domain then bulk-writes every live link', async () => {
+    const links = [
+      { ...buildShortLink({ id: 'a', pathname: 'one' }), campaigns: [] },
+      {
+        ...buildShortLink({
+          id: 'b',
+          pathname: 'two',
+          status: 'paused',
+          global: true
+        }),
+        campaigns: [{ id: 'c1' }]
+      }
+    ]
+
+    it('bulk-writes the domain namespace and refreshes global keys', async () => {
       prismaMock.shortLinkDomain.findUniqueOrThrow.mockResolvedValue(domain)
       prismaMock.shortLinkDomain.update.mockResolvedValue(domain)
-      const links = [
-        { ...buildShortLink({ id: 'a', pathname: 'one' }), campaigns: [] },
-        {
-          ...buildShortLink({ id: 'b', pathname: 'two', status: 'paused' }),
-          campaigns: [{ id: 'c1' }]
-        }
-      ]
       prismaMock.shortLink.findMany.mockResolvedValue(links)
       prismaMock.shortLink.updateMany.mockResolvedValue({ count: 2 })
 
@@ -321,7 +532,7 @@ describe('edge publish', () => {
 
       expect(publishedAt).toBeInstanceOf(Date)
       expect(kvUpdate).toHaveBeenCalledWith(
-        'kv',
+        GLOBAL_NS,
         'domain:example.com',
         expect.anything()
       )
@@ -334,27 +545,64 @@ describe('edge publish', () => {
           }
         })
       )
-      expect(kvBulkUpdate).toHaveBeenCalledWith('kv', {
+      expect(kvBulkUpdate).toHaveBeenCalledTimes(2)
+      expect(kvBulkUpdate).toHaveBeenNthCalledWith(1, DOMAIN_NS, {
         account_id: 'account',
         body: [
-          { key: 'link:example.com/one', value: expect.any(String) },
-          { key: 'link:example.com/two', value: expect.any(String) }
+          { key: 'one', value: expect.any(String) },
+          { key: 'two', value: expect.any(String) }
         ]
+      })
+      expect(kvBulkUpdate).toHaveBeenNthCalledWith(2, GLOBAL_NS, {
+        account_id: 'account',
+        body: [{ key: 'link:two', value: expect.any(String) }]
       })
       expect(
         JSON.parse(kvBulkUpdate.mock.calls[0][1].body[1].value)
       ).toMatchObject({
         id: 'b',
         paused: true,
+        global: true,
         campaignIds: ['c1'],
-        status: 302
+        status: null,
+        hostname: 'example.com'
       })
-      // one D1 statement for the domain, one multi-row statement for the links
+      // one D1 statement for the domain, one multi-row statement for the
+      // two domain rows plus the global row
       expect(d1Query).toHaveBeenCalledTimes(2)
-      expect(d1Query.mock.calls[1][1].params).toHaveLength(6)
+      expect(d1Calls()[1].params).toHaveLength(9)
+      expect(d1Calls()[1].params.filter((_, i) => i % 3 === 0)).toEqual([
+        'link:example.com/one',
+        'link:example.com/two',
+        'global:two'
+      ])
       expect(prismaMock.shortLink.updateMany).toHaveBeenCalledWith({
         where: { id: { in: ['a', 'b'] } },
         data: { edgePublishedAt: publishedAt }
+      })
+    })
+
+    it('publishes only the global links of a domain without a namespace', async () => {
+      const bareDomain = buildShortLinkDomain({
+        id: 'domainId',
+        hostname: 'bare.example'
+      })
+      prismaMock.shortLinkDomain.findUniqueOrThrow.mockResolvedValue(bareDomain)
+      prismaMock.shortLinkDomain.update.mockResolvedValue(bareDomain)
+      prismaMock.shortLink.findMany.mockResolvedValue(links)
+      prismaMock.shortLink.updateMany.mockResolvedValue({ count: 1 })
+
+      await publishDomainWithLinks('domainId', prismaMock, logger)
+
+      expect(kvBulkUpdate).toHaveBeenCalledTimes(1)
+      expect(kvBulkUpdate).toHaveBeenCalledWith(GLOBAL_NS, {
+        account_id: 'account',
+        body: [{ key: 'link:two', value: expect.any(String) }]
+      })
+      expect(d1Calls()[1].params[0]).toBe('global:two')
+      expect(prismaMock.shortLink.updateMany).toHaveBeenCalledWith({
+        where: { id: { in: ['b'] } },
+        data: { edgePublishedAt: expect.any(Date) }
       })
     })
   })

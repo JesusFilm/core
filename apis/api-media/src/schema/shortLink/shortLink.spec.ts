@@ -29,6 +29,12 @@ const nanoidMock = nanoid as MockedFunction<typeof nanoid>
 const publishLinkMock = publishLink as MockedFunction<typeof publishLink>
 const unpublishLinkMock = unpublishLink as MockedFunction<typeof unpublishLink>
 
+const CLAIM_ROW = {
+  pathname: 'testpath',
+  shortLinkId: 'g1',
+  createdAt: new Date()
+}
+
 const FORBIDDEN = {
   errors: [
     expect.objectContaining({
@@ -99,7 +105,7 @@ describe('shortLink', () => {
       `)
 
       it('should fetch a live short link by path and hostname', async () => {
-        prismaMock.shortLink.findFirstOrThrow.mockResolvedValue(
+        prismaMock.shortLink.findFirst.mockResolvedValue(
           buildShortLinkWithDomain()
         )
         const result = await client({
@@ -120,7 +126,7 @@ describe('shortLink', () => {
           }
         })
         // deleted and retired links are ignored; paused links still resolve
-        expect(prismaMock.shortLink.findFirstOrThrow).toHaveBeenCalledWith({
+        expect(prismaMock.shortLink.findFirst).toHaveBeenCalledWith({
           include: { domain: true },
           where: {
             pathname: 'testPath',
@@ -129,15 +135,73 @@ describe('shortLink', () => {
             status: { not: 'retired' }
           }
         })
+        expect(prismaMock.shortLinkGlobalSlug.findUnique).not.toHaveBeenCalled()
+      })
+
+      it('should fall back to a live global link, lower-cased on a case-insensitive domain', async () => {
+        prismaMock.shortLink.findFirst
+          .mockResolvedValueOnce(null)
+          .mockResolvedValueOnce(
+            buildShortLinkWithDomain(
+              { id: 'g1', pathname: 'testpath', global: true },
+              { id: 'otherDomain', hostname: 'other.example' }
+            )
+          )
+        prismaMock.shortLinkDomain.findUnique.mockResolvedValue(
+          buildShortLinkDomain({ slugCaseSensitive: false })
+        )
+        prismaMock.shortLinkGlobalSlug.findUnique.mockResolvedValue(CLAIM_ROW)
+        const result = await client({
+          document: SHORT_LINK_BY_PATH_QUERY,
+          variables: { pathname: 'TestPath', hostname: 'example.com' }
+        })
+        expect(result).toEqual({
+          data: {
+            shortLinkByPath: {
+              data: {
+                id: 'g1',
+                pathname: 'testpath',
+                to: 'https://example.com',
+                domain: { hostname: 'other.example' },
+                service: 'apiJourneys'
+              }
+            }
+          }
+        })
+        expect(prismaMock.shortLinkGlobalSlug.findUnique).toHaveBeenCalledWith({
+          where: { pathname: 'testpath' },
+          select: { shortLinkId: true }
+        })
+        expect(prismaMock.shortLink.findFirst).toHaveBeenLastCalledWith({
+          include: { domain: true },
+          where: {
+            id: 'g1',
+            global: true,
+            deletedAt: null,
+            status: { not: 'retired' }
+          }
+        })
+      })
+
+      it('should not serve a claimed global pathname whose link is retired', async () => {
+        prismaMock.shortLink.findFirst.mockResolvedValue(null)
+        prismaMock.shortLinkDomain.findUnique.mockResolvedValue(
+          buildShortLinkDomain()
+        )
+        prismaMock.shortLinkGlobalSlug.findUnique.mockResolvedValue(CLAIM_ROW)
+        const result = await client({
+          document: SHORT_LINK_BY_PATH_QUERY,
+          variables: { pathname: 'testpath', hostname: 'example.com' }
+        })
+        expect(result).toMatchObject({
+          data: { shortLinkByPath: { message: 'short link not found' } }
+        })
+        expect(prismaMock.shortLink.findFirst).toHaveBeenCalledTimes(2)
       })
 
       it('should return a NotFoundError if the short link does not exist', async () => {
-        prismaMock.shortLink.findFirstOrThrow.mockRejectedValue(
-          new Prisma.PrismaClientKnownRequestError('No ShortLink found', {
-            code: 'P2025',
-            clientVersion: 'prismaVersion'
-          })
-        )
+        prismaMock.shortLink.findFirst.mockResolvedValue(null)
+        prismaMock.shortLinkGlobalSlug.findUnique.mockResolvedValue(null)
         const result = await client({
           document: SHORT_LINK_BY_PATH_QUERY,
           variables: { pathname: 'testPath', hostname: 'example.com' }
@@ -433,6 +497,7 @@ describe('shortLink', () => {
               youtubeVideoId: 'y1',
               tag: 'easter',
               service: 'youtube',
+              global: true,
               includeDeleted: true
             }
           }
@@ -448,6 +513,7 @@ describe('shortLink', () => {
             youtubeVideoId: 'y1',
             service: 'youtube',
             tags: { has: 'easter' },
+            global: true,
             campaigns: { some: { id: 'c1' } },
             OR: [
               { pathname: contains },
@@ -1043,6 +1109,116 @@ describe('shortLink', () => {
         })
       })
 
+      describe('global links', () => {
+        it('should let an admin create a global link and claim the pathname', async () => {
+          setRoles(['shortLinkAdmin'])
+          const result = await authClient({
+            document: SHORT_LINK_CREATE_MUTATION,
+            variables: {
+              input: {
+                id: 'g1',
+                pathname: 'promo',
+                to: 'https://example.com',
+                hostname: 'example.com',
+                service: 'apiJourneys',
+                global: true
+              }
+            }
+          })
+          expect(result).toMatchObject({
+            data: { shortLinkCreate: { data: { id: 'testId' } } }
+          })
+          expect(prismaMock.shortLink.create).toHaveBeenCalledWith(
+            expect.objectContaining({
+              data: expect.objectContaining({ pathname: 'promo', global: true })
+            })
+          )
+          expect(prismaMock.shortLinkGlobalSlug.create).toHaveBeenCalledWith({
+            data: { pathname: 'promo', shortLinkId: 'g1' }
+          })
+          expect(publishLinkMock).toHaveBeenCalledWith('g1', prismaMock)
+        })
+
+        it('should refuse an editor creating a global link', async () => {
+          setRoles(['shortLinkEditor'])
+          const result = await authClient({
+            document: SHORT_LINK_CREATE_MUTATION,
+            variables: {
+              input: {
+                pathname: 'promo',
+                to: 'https://example.com',
+                hostname: 'example.com',
+                service: 'apiJourneys',
+                global: true
+              }
+            }
+          })
+          expect(result).toMatchObject(FORBIDDEN)
+          expect(prismaMock.shortLink.create).not.toHaveBeenCalled()
+        })
+
+        it('should require a lower-case pathname', async () => {
+          setRoles(['shortLinkAdmin'])
+          const result = await authClient({
+            document: SHORT_LINK_CREATE_MUTATION,
+            variables: {
+              input: {
+                pathname: 'Promo',
+                to: 'https://example.com',
+                hostname: 'example.com',
+                service: 'apiJourneys',
+                global: true
+              }
+            }
+          })
+          expect(result).toMatchObject({
+            data: {
+              shortLinkCreate: {
+                fieldErrors: [
+                  {
+                    message: expect.stringContaining('lower-case'),
+                    path: ['input', 'pathname']
+                  }
+                ]
+              }
+            }
+          })
+          expect(prismaMock.shortLink.create).not.toHaveBeenCalled()
+        })
+
+        it('should return a NotUniqueError when the global pathname is already claimed', async () => {
+          setRoles(['shortLinkAdmin'])
+          prismaMock.shortLinkGlobalSlug.create.mockRejectedValue(
+            new Prisma.PrismaClientKnownRequestError('Unique constraint', {
+              code: 'P2002',
+              clientVersion: 'prismaVersion'
+            })
+          )
+          const result = await authClient({
+            document: SHORT_LINK_CREATE_MUTATION,
+            variables: {
+              input: {
+                pathname: 'promo',
+                to: 'https://example.com',
+                hostname: 'example.com',
+                service: 'apiJourneys',
+                global: true
+              }
+            }
+          })
+          expect(result).toEqual({
+            data: {
+              shortLinkCreate: {
+                message:
+                  'global pathname is already claimed by another short link',
+                location: [{ path: ['input', 'pathname'], value: 'promo' }]
+              }
+            }
+          })
+          expect(publishLinkMock).not.toHaveBeenCalled()
+        })
+      })
+
       it('should fail the mutation when the edge publish fails', async () => {
         publishLinkMock.mockRejectedValue(new Error('kv down'))
         const result = await authClient({
@@ -1462,6 +1638,121 @@ describe('shortLink', () => {
             }
           })
           expect(result).toMatchObject(FORBIDDEN)
+        })
+
+        it('should let an admin make a lower-case link global and claim its pathname', async () => {
+          setRoles(['shortLinkAdmin'])
+          prismaMock.shortLink.findFirst.mockResolvedValue(
+            buildShortLink({ pathname: 'promo' })
+          )
+          const result = await authClient({
+            document: SHORT_LINK_UPDATE_MUTATION,
+            variables: {
+              input: { id: 'testId', to: 'https://example.com', global: true }
+            }
+          })
+          expect(result).toMatchObject({
+            data: { shortLinkUpdate: { data: { id: 'testId' } } }
+          })
+          expect(prismaMock.shortLink.update).toHaveBeenCalledWith(
+            expect.objectContaining({
+              data: expect.objectContaining({ global: true })
+            })
+          )
+          expect(prismaMock.shortLinkGlobalSlug.create).toHaveBeenCalledWith({
+            data: { pathname: 'promo', shortLinkId: 'testId' }
+          })
+          expect(
+            prismaMock.shortLinkGlobalSlug.deleteMany
+          ).not.toHaveBeenCalled()
+          expect(publishLinkMock).toHaveBeenCalledWith('testId', prismaMock)
+        })
+
+        it('should release the pathname after publishing when an admin clears global', async () => {
+          setRoles(['shortLinkAdmin'])
+          prismaMock.shortLink.findFirst.mockResolvedValue(
+            buildShortLink({ pathname: 'promo', global: true })
+          )
+          await authClient({
+            document: SHORT_LINK_UPDATE_MUTATION,
+            variables: {
+              input: { id: 'testId', to: 'https://example.com', global: false }
+            }
+          })
+          expect(prismaMock.shortLink.update).toHaveBeenCalledWith(
+            expect.objectContaining({
+              data: expect.objectContaining({ global: false })
+            })
+          )
+          expect(
+            prismaMock.shortLinkGlobalSlug.deleteMany
+          ).toHaveBeenCalledWith({
+            where: { shortLinkId: 'testId' }
+          })
+          expect(prismaMock.shortLinkGlobalSlug.create).not.toHaveBeenCalled()
+          const publishOrder = publishLinkMock.mock.invocationCallOrder[0]
+          const releaseOrder =
+            prismaMock.shortLinkGlobalSlug.deleteMany.mock
+              .invocationCallOrder[0]
+          expect(publishOrder).toBeLessThan(releaseOrder)
+        })
+
+        it('should refuse an editor toggling global', async () => {
+          setRoles(['shortLinkEditor'])
+          prismaMock.shortLink.findFirst.mockResolvedValue(
+            buildShortLink({ pathname: 'promo' })
+          )
+          const result = await authClient({
+            document: SHORT_LINK_UPDATE_MUTATION,
+            variables: {
+              input: { id: 'testId', to: 'https://example.com', global: true }
+            }
+          })
+          expect(result).toMatchObject(FORBIDDEN)
+          expect(prismaMock.shortLink.update).not.toHaveBeenCalled()
+        })
+
+        it('should let an editor send the unchanged global value', async () => {
+          setRoles(['shortLinkEditor'])
+          const result = await authClient({
+            document: SHORT_LINK_UPDATE_MUTATION,
+            variables: {
+              input: { id: 'testId', to: 'https://example.com', global: false }
+            }
+          })
+          expect(result).toMatchObject({
+            data: { shortLinkUpdate: { data: { id: 'testId' } } }
+          })
+          expect(prismaMock.shortLinkGlobalSlug.create).not.toHaveBeenCalled()
+          expect(
+            prismaMock.shortLinkGlobalSlug.deleteMany
+          ).not.toHaveBeenCalled()
+        })
+
+        it('should refuse making a mixed-case pathname global', async () => {
+          setRoles(['shortLinkAdmin'])
+          prismaMock.shortLink.findFirst.mockResolvedValue(
+            buildShortLink({ pathname: 'Promo' })
+          )
+          const result = await authClient({
+            document: SHORT_LINK_UPDATE_MUTATION,
+            variables: {
+              input: { id: 'testId', to: 'https://example.com', global: true }
+            }
+          })
+          expect(result).toMatchObject({
+            data: {
+              shortLinkUpdate: {
+                fieldErrors: [
+                  {
+                    message: expect.stringContaining('lower-case'),
+                    path: ['input', 'pathname']
+                  }
+                ]
+              }
+            }
+          })
+          expect(prismaMock.shortLink.update).not.toHaveBeenCalled()
         })
 
         it('should let a publisher change a permanent destination', async () => {
