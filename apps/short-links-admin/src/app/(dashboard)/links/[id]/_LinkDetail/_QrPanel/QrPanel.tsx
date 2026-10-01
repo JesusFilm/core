@@ -52,10 +52,7 @@ const SIZE_OPTIONS = [256, 512, 1024, 2048].map((size) => ({
   value: String(size),
   label: String(size)
 }))
-const FORMAT_OPTIONS = [
-  { value: 'png', label: 'PNG' },
-  { value: 'svg', label: 'SVG' }
-]
+const DOWNLOAD_FORMATS = ['svg', 'png'] as const
 
 interface QrPanelProps {
   qrUrl: string
@@ -101,7 +98,6 @@ export function QrPanel({
   assetClass
 }: QrPanelProps): ReactElement {
   const [size, setSize] = useState(512)
-  const [format, setFormat] = useState<'png' | 'svg'>('png')
   const [errorCorrectionLevel, setErrorCorrectionLevel] =
     useState<QrErrorCorrection>(getDefaultErrorCorrection(assetClass))
   const [dark, setDark] = useState('#000000')
@@ -111,16 +107,14 @@ export function QrPanel({
   const validColors = isHexColor(dark) && isHexColor(light)
   const ratio = contrastRatio(dark, light)
   const lowContrast = hasLowQrContrast(dark, light)
-  const params: QrImageParams = {
+  const params: Omit<QrImageParams, 'format'> = {
     url: qrUrl,
-    format,
     size,
     errorCorrectionLevel,
     quietZone,
     dark,
     light
   }
-  const downloadUrl = buildQrImageUrl(params)
   const previewUrl = buildQrImageUrl({ ...params, format: 'png', size: 256 })
 
   return (
@@ -148,15 +142,24 @@ export function QrPanel({
             ) : (
               <div className="size-50" />
             )}
-            <Button
-              render={
-                <a href={downloadUrl} download={`${pathname}.${format}`} />
-              }
-              disabled={!validColors}
-            >
-              <DownloadIcon aria-hidden="true" />
-              Download {format.toUpperCase()}
-            </Button>
+            <div className="flex flex-wrap justify-center gap-2">
+              {DOWNLOAD_FORMATS.map((format) => (
+                <Button
+                  key={format}
+                  variant={format === 'svg' ? 'default' : 'outline'}
+                  render={
+                    <a
+                      href={buildQrImageUrl({ ...params, format })}
+                      download={`${pathname}.${format}`}
+                    />
+                  }
+                  disabled={!validColors}
+                >
+                  <DownloadIcon aria-hidden="true" />
+                  Download {format.toUpperCase()}
+                </Button>
+              ))}
+            </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 md:col-span-2 md:grid-cols-3">
             <SelectField
@@ -165,13 +168,6 @@ export function QrPanel({
               value={String(size)}
               onValueChange={(value) => setSize(Number(value))}
               options={SIZE_OPTIONS}
-            />
-            <SelectField
-              id="qr-format"
-              label="Format"
-              value={format}
-              onValueChange={(value) => setFormat(value as 'png' | 'svg')}
-              options={FORMAT_OPTIONS}
             />
             <SelectField
               id="qr-ec"
