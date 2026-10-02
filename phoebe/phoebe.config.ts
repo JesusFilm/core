@@ -38,6 +38,12 @@ const config: PhoebeUserConfig = {
   readyCommand:
     'pnpm nx format:write --base=origin/main && pnpm nx affected -t lint type-check test --base=origin/main',
 
+  // core already uses the engine-default `ready-for-agent` as a shared triage
+  // label (AGENTS.md → Triage labels), so leaving Phoebe on it would make this
+  // instance work every triaged issue in the repo. A Phoebe-specific label
+  // keeps intake explicit: only issues a human tags `phoebe:ready` are worked.
+  readyLabel: 'phoebe:ready',
+
   // Which engine `phoebe boot` runs. This is the upgrade knob: edit it and the
   // running container drains the engine and relaunches on the new code at the
   // next work-unit boundary — no rebuild, no restart.
