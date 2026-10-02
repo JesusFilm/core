@@ -67,6 +67,9 @@ export class Publisher {
     await this.getTemplateListOfActiveTab()
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Archive All')
+    await this.verifyBulkActionDialogText(
+      'Are you sure you would like to archive all active Templates immediately?'
+    )
     await this.clickDialogBoxBtn('Archive')
     await this.verifyToastMessage('Templates Archived')
     await this.verifyActiveTabShowsEmptyMessage()
@@ -78,6 +81,9 @@ export class Publisher {
     await this.getTemplateListOfArchivedTab()
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Unarchive All')
+    await this.verifyBulkActionDialogText(
+      'Are you sure you would like to unarchive all archived Templates immediately?'
+    )
     await this.clickDialogBoxBtn('Unarchive')
     await this.verifyToastMessage('Templates Unarchived')
     await this.verifyEmptyMessageInArchivedTab()
@@ -85,9 +91,16 @@ export class Publisher {
     await this.verifyAllTemplateMovedToActiveTab()
   }
 
-  async verifyAllJourneysMovedToTrash() {
+  // 'Trash All' is reachable from both the active and archived tabs and the
+  // dialog wording differs, so the caller says which one it is.
+  async verifyAllJourneysMovedToTrash(fromStatus: 'active' | 'archived') {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Trash All')
+    await this.verifyBulkActionDialogText(
+      fromStatus === 'active'
+        ? 'Are you sure you would like to trash all active Templates immediately?'
+        : 'Are you sure you would like to trash all archived Templates immediately?'
+    )
     await this.clickDialogBoxBtn('Trash')
     await this.verifyToastMessage('Templates Trashed')
     await this.clickTrashTab()
@@ -97,6 +110,9 @@ export class Publisher {
   async verifyAllTemplateRestoredToActiveTab() {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Restore All')
+    await this.verifyBulkActionDialogText(
+      'Are you sure you would like to restore all trashed Templates immediately?'
+    )
     await this.clickDialogBoxBtn('Restore')
     await this.verifyToastMessage('Templates Restored')
     await this.clickActiveTab()
@@ -106,6 +122,9 @@ export class Publisher {
   async verifyAlltemplateDeletedForeverFromTrashTab() {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Delete All Forever')
+    await this.verifyBulkActionDialogText(
+      'Are you sure you would like to permanently delete all trashed Templates immediately?'
+    )
     await this.clickDialogBoxBtn('Delete Forever')
     await this.verifyToastMessage('Templates Deleted')
     await this.verifyAllTemplateAreDeletedFromTrashTab()
@@ -138,21 +157,21 @@ export class Publisher {
 
   async getExistingTemplateName() {
     await expect(
-      this.page.locator('div[aria-label="template-card"]').first()
+      this.page.locator('div[aria-label="journey-card"]').first()
     ).toBeVisible()
     const templateCount = await this.page
-      .locator('div[aria-label="template-card"]')
+      .locator('div[aria-label="journey-card"]')
       .count()
     for (let template = 0; template < templateCount; template++) {
       const templateName = await this.page
         .locator(
-          'div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .nth(template)
         .innerText()
       if (
         (await this.page
-          .locator('div[aria-label="template-card"]', { hasText: templateName })
+          .locator('div[aria-label="journey-card"]', { hasText: templateName })
           .count()) === 1
       ) {
         this.templateName = templateName
@@ -162,10 +181,11 @@ export class Publisher {
   }
 
   async clickThreeDotOfTemple() {
+    // The menu box sits before the card link, and the inner IconButton is
+    // pointer-events: none, so click the box that owns the handler instead.
     await this.page
-      .locator(
-        `//h6[text()='${this.templateName}']//ancestor::a/following-sibling::div//button[@id='journey-actions']`
-      )
+      .locator('div[aria-label="journey-card"]', { hasText: this.templateName })
+      .getByTestId('JourneyCardMenuButton')
       .first()
       .click()
   }
@@ -188,7 +208,7 @@ export class Publisher {
   async verifyCreatedNewTemplateMovedToArchiveOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="archived-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="archived-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: this.templateName }
       )
     ).toBeVisible()
@@ -227,7 +247,7 @@ export class Publisher {
   async verifyCreatedNewTemplateMovedToTrashTabOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: this.templateName }
       )
     ).toBeVisible()
@@ -244,7 +264,7 @@ export class Publisher {
   async verifyCreatedNewTemplateRemovedFromTrashTabOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: this.templateName }
       )
     ).toBeHidden()
@@ -261,7 +281,7 @@ export class Publisher {
 
   async clickThreeDotOfExistingTemplate() {
     await this.page
-      .locator('div[aria-label="template-card"]', {
+      .locator('div[aria-label="journey-card"]', {
         hasText: this.templateName
       })
       .locator('#journey-actions')
@@ -294,7 +314,7 @@ export class Publisher {
   async verifyTemplateMovedToActivePage() {
     await expect(
       this.page.locator(
-        'div[id*="active-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6',
+        'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6',
         { hasText: this.templateName }
       )
     ).toBeVisible()
@@ -310,13 +330,13 @@ export class Publisher {
     await expect(
       this.page
         .locator(
-          'div[id*="active-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .first()
     ).toBeVisible()
     this.templateList = await this.page
       .locator(
-        'div[id*="active-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
       .allInnerTexts()
   }
@@ -335,6 +355,14 @@ export class Publisher {
         hasText: option
       })
       .click()
+  }
+
+  // Publisher bulk dialogs are a single sentence, worded differently from the
+  // team pages — the two sets cannot share a check.
+  async verifyBulkActionDialogText(message: string) {
+    await expect(
+      this.page.getByRole('dialog').getByText(message, { exact: true })
+    ).toBeVisible()
   }
 
   async clickDialogBoxBtn(buttonName) {
@@ -361,13 +389,13 @@ export class Publisher {
     await expect(
       this.page
         .locator(
-          'div[id*="archived-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[id*="archived-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .first()
     ).toBeVisible({ timeout: 30000 })
     const archiveTabTemplateList = await this.page
       .locator(
-        'div[id*="archived-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="archived-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
       .allInnerTexts()
     for (let template = 0; template < this.templateList.length; template++) {
@@ -382,13 +410,13 @@ export class Publisher {
     await expect(
       this.page
         .locator(
-          'div[id*="archived-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[id*="archived-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .first()
     ).toBeVisible()
     this.templateList = await this.page
       .locator(
-        'div[id*="archived-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="archived-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
       .allInnerTexts()
   }
@@ -417,13 +445,13 @@ export class Publisher {
     await expect(
       this.page
         .locator(
-          'div[id*="active-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .first()
     ).toBeVisible({ timeout: 30000 })
     const activeTabTemplateList = await this.page
       .locator(
-        'div[id*="active-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
       .allInnerTexts()
     for (let template = 0; template < this.templateList.length; template++) {
@@ -439,13 +467,13 @@ export class Publisher {
     await expect(
       this.page
         .locator(
-          'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .first()
     ).toBeVisible({ timeout: 30000 })
     const trashTabTemplateList = await this.page
       .locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
       .allInnerTexts()
     for (let template = 0; template < this.templateList.length; template++) {
@@ -460,13 +488,13 @@ export class Publisher {
     await expect(
       this.page
         .locator(
-          'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+          'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
         )
         .first()
     ).toBeVisible()
     this.templateList = await this.page
       .locator(
-        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[id*="trashed-status-panel-tabpanel"] div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
       .allInnerTexts()
   }
@@ -477,7 +505,7 @@ export class Publisher {
     const trashedTabPanel = this.page.getByRole('tabpanel', { name: 'Trash' })
     await expect(
       trashedTabPanel.locator(
-        'div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
+        'div[aria-label="journey-card"] div[class*="MuiCardContent"] h6'
       )
     ).toHaveCount(0)
     // exact: true pins the casing — see verifyActiveTabShowsEmptyMessage.
@@ -497,7 +525,7 @@ export class Publisher {
 
   async clickOnTemplateInPublisherPage() {
     await this.page
-      .locator('div[aria-label="template-card"]', {
+      .locator('div[aria-label="journey-card"]', {
         hasText: this.templateName
       })
       .click()
