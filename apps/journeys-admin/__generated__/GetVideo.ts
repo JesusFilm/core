@@ -29,6 +29,7 @@ export interface GetVideo_video_variant {
   id: string;
   duration: number;
   hls: string | null;
+  published: boolean;
 }
 
 export interface GetVideo_video_variantLanguages_name {
