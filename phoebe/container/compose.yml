@@ -1,0 +1,95 @@
+# Phoebe compose file — scaffolded by `phoebe init`, consumer-owned.
+#
+# One long-lived container. Its main process is `phoebe boot` (pinned into the
+# image's ENTRYPOINT), which materializes the engine named by `engine` in
+# phoebe.config.ts, runs it, and keeps supervising it for the life of the
+# container — so this file describes a daemon, not a one-shot. From the
+# deployment root (where phoebe.config.ts lives):
+#
+#   phoebe start         # bring the container up detached
+#   phoebe stop          # SIGTERM → the engine drains, finishing its current
+#                        # work unit and starting no new one (grace: 1h, matching
+#                        # DEFAULT_DRAIN_TIMEOUT_MS — not Compose's 10s default)
+#   phoebe start --build # rebuild the image then start (when toolchain changes)
+#
+# Follow logs with raw compose (the wrappers cover start/stop, not log tailing):
+#
+#   docker compose logs -f
+#
+# For a scoped, non-daemon invocation, pass engine flags — the image's `CMD []`
+# means anything here is forwarded straight through `boot` to the engine:
+#
+#   docker compose run --rm phoebe --dry-run --run-once   # selection preview
+#   docker compose run --rm phoebe --run-once             # work exactly one unit
+#
+# To upgrade the engine, edit `engine.ref` in phoebe.config.ts — `boot` notices
+# within a poll interval and relaunches at the next work-unit boundary. No
+# rebuild and no restart; rebuild only when this image's toolchain changes.
+
+# Project name — namespaces this instance's containers and named volumes.
+# Defaults to `phoebe`. One Phoebe container can serve *many* repos as tenants
+# (a workspace root declaring its children), so you no longer need one instance
+# per repo — but if you *do* run more than one Phoebe container on the same host,
+# set COMPOSE_PROJECT_NAME uniquely per instance in `.env`, or Compose derives
+# the project from this file's parent dir (`container`, identical for everyone)
+# and the two `phoebe-data`/`phoebe-engine` volumes would be shared across them.
+name: ${COMPOSE_PROJECT_NAME:-phoebe}
+
+services:
+  phoebe:
+    build:
+      context: .
+      args:
+        PHOEBE_INSTALL_COMMAND: 'pnpm install --frozen-lockfile'
+    image: phoebe-runtime:latest
+    restart: unless-stopped
+    # Match bootstrap/supervise-fleet.ts DEFAULT_DRAIN_TIMEOUT_MS (1h). A work
+    # unit may run up to the per-unit timeout (45 min by default); without this,
+    # Compose's 10s default SIGKILLs mid-drain.
+    stop_grace_period: 1h
+    environment:
+      # Secrets — populate via `.env` (see `.env.example`). GH_TOKEN also
+      # authenticates the engine checkout when `engine.source` is "github".
+      GH_TOKEN: '${GH_TOKEN:?GH_TOKEN is required}'
+      ANTHROPIC_API_KEY: '${ANTHROPIC_API_KEY:-}'
+      # Claude Pro/Max subscription token (`claude setup-token`); only reaches
+      # the agent when phoebe.config.ts sets providerEnv.claude to this name.
+      CLAUDE_CODE_OAUTH_TOKEN: '${CLAUDE_CODE_OAUTH_TOKEN:-}'
+      CURSOR_API_KEY: '${CURSOR_API_KEY:-}'
+      OPENAI_KEY: '${OPENAI_KEY:-}'
+      # Where `boot` keeps engine checkouts. Pointed at a named volume below so
+      # a restart fetches into an existing clone instead of cloning again.
+      PHOEBE_ENGINE_DIR: /data/engine
+      # Optional runtime toggles.
+      PHOEBE_AGENT: '${PHOEBE_AGENT:-}'
+      PHOEBE_MODEL: '${PHOEBE_MODEL:-}'
+      PHOEBE_EFFORT: '${PHOEBE_EFFORT:-}'
+      PHOEBE_POLL_INTERVAL_MS: '${PHOEBE_POLL_INTERVAL_MS:-}'
+      PHOEBE_RECONCILE_INTERVAL_MS: '${PHOEBE_RECONCILE_INTERVAL_MS:-}'
+    volumes:
+      # Two named volumes (#62). All tenant data nests under /data/repos as
+      # /data/repos/<owner>/<repo>/{repo,worktrees,state,scratch}; the shared engine
+      # checkout + crash-loop record live on their own volume at /data/engine.
+      - phoebe-data:/data/repos
+      - phoebe-engine:/data/engine
+      # The whole deployment dir, mounted read-only so `boot` reads the top
+      # `phoebe.config.ts` (solo) and — in a workspace — every declared child
+      # tree too (their configs, `.env` files, prompt
+      # overrides). A *directory* mount (unlike the old single-file one) sees
+      # added/removed tenant dirs and atomic-save/`git pull` renames, so `boot`'s
+      # reconcile watch notices them without a `--force-recreate`.
+      - ..:/etc/phoebe:ro
+      # The deployment env-file is Compose's input, not the container's. It sits
+      # inside the read-only deployment mount above, where every tenant's engine
+      # child (same uid 10001) could read the deployment GH_TOKEN straight off
+      # disk — defeating the env allowlist in bootstrap/engine-child-env.ts. Mask
+      # it. A child that reads /etc/phoebe/.env gets empty rather than a missing
+      # path. The one shape that would collide is a future "workspace root is also
+      # a tenant of itself" layout whose envPath resolves here — that layout does
+      # not exist today.
+      - /dev/null:/etc/phoebe/.env:ro
+    working_dir: /etc/phoebe
+
+volumes:
+  phoebe-data:
+  phoebe-engine:

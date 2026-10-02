@@ -31,3 +31,7 @@ pnpm-lock.yaml
 # Kubernetes manifests: managed by upstream charts/tools and often intentionally not Prettier-formatted
 /infrastructure/kube/**/*.yaml
 /infrastructure/kube/**/*.yml
+# Phoebe prompts are the shipped copies from phoebe-agent, left unedited on
+# purpose (zero prompt overrides). Reformatting them would turn a verbatim copy
+# into a fork to reconcile on every engine upgrade.
+phoebe/prompts/
