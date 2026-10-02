@@ -48,7 +48,9 @@ In scope
   failover, and a per-link destination history that doubles as the audit log.
 - Roles: `shortLinkEditor` (links, campaigns) and `shortLinkAdmin` (domain
   settings, protected assets, republishing). `publisher` keeps its existing
-  powers.
+  powers. Adding and removing domains and their Cloudflare infrastructure (KV
+  namespace, Worker binding, route) belong to `superAdmin` users, from the
+  admin app.
 
 Out of scope for this version
 
@@ -133,6 +135,7 @@ QR branding, scheduled destination changes.
 ## Open questions
 
 - [x] Domain name: `jesus.film`. Short links live at `https://jesus.film/s/<pathname>`. The admin app is reached on its own `vercel.app` URL. See "Path prefix" in `TECH-DESIGN.md`.
+- [x] First rollout: `jesus.film/s` and `jesus.movie/s` only, proven on `stage.jesus.film/s` and `stage.jesus.movie/s` first. See "superAdmin-managed Cloudflare infrastructure" in `TECH-DESIGN.md`.
 - [ ] Which YouTube channels and staff are the first users.
 - [ ] Slug grammar for the YouTube domain. Proposal: `[a-z0-9-]{3,32}`, case-insensitive, 8-character generated default. The domain settings support this without code changes.
 - [ ] Confirm Cloudflare KV and Queues write limits against the expected publish rate.
