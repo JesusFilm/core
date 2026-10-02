@@ -64,6 +64,12 @@ export interface CollectionCardProps {
   onToggleCollapse?: (collection: TemplateGalleryPage) => void
   /** Rendered inside the card's templates area; the parent owns drag wiring. */
   children?: ReactNode
+  /**
+   * Rendered under the header only while `collapsed`. The collapsed body
+   * unmounts the templates grid, so the parent hands in a slim drop strip
+   * here to keep a collapsed collection a valid drop target during a drag.
+   */
+  collapsedDropSlot?: ReactNode
 }
 
 function CollectionCardImpl({
@@ -75,7 +81,8 @@ function CollectionCardImpl({
   publishBlockedReason = null,
   collapsed = false,
   onToggleCollapse,
-  children
+  children,
+  collapsedDropSlot
 }: CollectionCardProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -283,6 +290,8 @@ function CollectionCardImpl({
           drop targets and skew dnd-kit's collision detection. While collapsed
           the header alone fills the parent's droppable, so dropping onto it
           still lands the template in this collection (NES-1717). */}
+      {collapsed && collapsedDropSlot}
+
       <Collapse in={!collapsed} unmountOnExit id={contentId}>
         {collection.description != null && collection.description !== '' && (
           <Typography
@@ -304,7 +313,10 @@ function CollectionCardImpl({
           sx={{
             p: 0,
             '&:last-child': { pb: 0 },
-            minHeight: 100
+            minHeight: 100,
+            // Positioning context for the parent's CollectionDropReveal
+            // overlay, which floats over exactly the templates area.
+            position: 'relative'
           }}
         >
           {children}

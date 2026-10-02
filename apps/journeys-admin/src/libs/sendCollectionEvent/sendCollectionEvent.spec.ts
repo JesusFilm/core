@@ -17,7 +17,8 @@ import {
   sendCollectionPublishEvent,
   sendCollectionSlugUpdateEvent,
   sendCollectionTemplateAddEvent,
-  sendCollectionTemplateDragEvent
+  sendCollectionTemplateDragEvent,
+  sendCollectionTemplateRemoveEvent
 } from './sendCollectionEvent'
 
 vi.mock('@next/third-parties/google', () => ({
@@ -84,13 +85,31 @@ describe('sendCollectionEvent', () => {
     it('should send team_collection_template_added_via_drag event', () => {
       sendCollectionTemplateDragEvent({
         collectionId: 'collection.id',
-        templateId: 'template.id'
+        templateId: 'template.id',
+        mode: 'link'
       })
 
       expect(mockSendGTMEvent).toHaveBeenCalledWith({
         event: 'team_collection_template_added_via_drag',
         collectionId: 'collection.id',
-        templateId: 'template.id'
+        templateId: 'template.id',
+        mode: 'link'
+      })
+    })
+  })
+
+  describe('sendCollectionTemplateRemoveEvent', () => {
+    it('should send team_collection_template_removed event', () => {
+      sendCollectionTemplateRemoveEvent({
+        collectionId: 'collection.id',
+        templateId: 'template.id',
+        via: 'menu'
+      })
+      expect(mockSendGTMEvent).toHaveBeenCalledWith({
+        event: 'team_collection_template_removed',
+        collectionId: 'collection.id',
+        templateId: 'template.id',
+        via: 'menu'
       })
     })
   })

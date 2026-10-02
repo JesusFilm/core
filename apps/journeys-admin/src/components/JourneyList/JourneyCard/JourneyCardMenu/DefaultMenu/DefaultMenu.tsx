@@ -36,7 +36,7 @@ import { CreateTemplateItem } from '../../../../Editor/Toolbar/Items/CreateTempl
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
-import { CopyToCollectionMenuItem } from '../../../../TemplateGalleryPageList/CopyToCollectionMenuItem'
+import { RemoveFromCollectionMenuItem } from '../../../../TemplateGalleryPageList/RemoveFromCollectionMenuItem'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 
 import { ArchiveJourney } from './ArchiveJourney'
@@ -287,13 +287,12 @@ export function DefaultMenu({
         journey={journey}
         setHasOpenDialog={setHasOpenDialog}
       />
+      {/* Renders nothing outside a collection grid (no InCollectionContext). */}
       {teamTemplateCollection === true && template === true && (
-        <CopyToCollectionMenuItem
+        <RemoveFromCollectionMenuItem
           id={id}
-          journey={journey}
           handleCloseMenu={handleCloseMenu}
           handleKeepMounted={handleKeepMounted}
-          setHasOpenDialog={setHasOpenDialog}
         />
       )}
       {activeTeam != null && (

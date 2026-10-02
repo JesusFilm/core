@@ -103,7 +103,7 @@ The internal surface (under `/publisher`) where users holding the platform-wide 
 _Avoid_: admin pages; don't count Publisher Invite as a third invite type alongside team and journey invites
 
 **Collection**:
-The admin's name for a curated, publishable, drag-orderable grouping of templates in the public template gallery — the same entity Journeys calls a **Template Gallery Page**. **Featured Templates** is the highlighted default section.
+The admin's name for a curated, publishable, drag-orderable grouping of templates in the public template gallery — the same entity Journeys calls a **Template Gallery Page**. **Featured Templates** is the highlighted default section. A template can belong to many Collections: one membership is its **home** (drawn as a normal card) and the rest are **links** (drawn greyed, "Linked from <home>"). Dropping a card on another Collection reveals **Move here** / **Link here** boxes; dropping on **All Templates** or choosing **Remove from collection** removes that one membership, and a home with links elsewhere hands the home to its oldest link. **All Templates** still means "in no Collection".
 _Avoid_: confusing with **Journey Collection** (upstream: a team's own journeys wired to a Custom Domain — a different entity entirely)
 
 ### Sharing
