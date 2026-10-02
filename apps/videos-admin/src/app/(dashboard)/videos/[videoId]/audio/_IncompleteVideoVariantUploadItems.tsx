@@ -2,18 +2,21 @@
 
 import AddIcon from '@mui/icons-material/Add'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import ReplayIcon from '@mui/icons-material/Replay'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
+import Collapse from '@mui/material/Collapse'
 import IconButton from '@mui/material/IconButton'
 import ListItem from '@mui/material/ListItem'
 import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useSnackbar } from 'notistack'
-import { useCallback } from 'react'
+import { type ReactElement, useCallback, useMemo, useState } from 'react'
 
 type VideoVariantUploadStatus =
   | 'created'
@@ -70,11 +73,49 @@ interface IncompleteUploadDisplayState {
 }
 
 interface IncompleteVideoVariantUploadItemsProps {
-  uploads: VideoVariantUploadRow[]
+  outstandingUploads: VideoVariantUploadRow[]
+  supersededUploads: VideoVariantUploadRow[]
   resumingUploadId: string | null
   isResumeRequestInFlight: boolean
   onAddAudioLanguage: () => void
   onResumeUpload: (uploadId: string) => void
+}
+
+interface SupersededUploadGroup {
+  key: string
+  attempts: VideoVariantUploadRow[]
+}
+
+function groupSupersededUploads(
+  uploads: VideoVariantUploadRow[]
+): SupersededUploadGroup[] {
+  const groups = new Map<string, SupersededUploadGroup>()
+
+  for (const upload of uploads) {
+    const key = `${upload.languageId}::${upload.edition}`
+    const group = groups.get(key)
+    if (group != null) {
+      group.attempts.push(upload)
+      continue
+    }
+    groups.set(key, { key, attempts: [upload] })
+  }
+
+  return Array.from(groups.values()).map((group) => ({
+    ...group,
+    attempts: [...group.attempts].sort((a, b) => {
+      const aTime = a.createdAt != null ? Date.parse(a.createdAt) : 0
+      const bTime = b.createdAt != null ? Date.parse(b.createdAt) : 0
+      return bTime - aTime
+    })
+  }))
+}
+
+function getUploadTimestampLabel(upload: VideoVariantUploadRow): string {
+  if (upload.createdAt == null) return 'Unknown time'
+  const createdAtMs = Date.parse(upload.createdAt)
+  if (!Number.isFinite(createdAtMs)) return 'Unknown time'
+  return new Date(createdAtMs).toLocaleString()
 }
 
 function getMuxProcessingStaleMs(upload: VideoVariantUploadRow): number {
@@ -237,7 +278,7 @@ function getIncompleteUploadDisplayState(
         label: 'Upload not complete',
         color: 'warning',
         message:
-          'This upload cannot be resumed because the browser did not finish sending the file to R2. Add this audio language again.',
+          'This upload cannot be resumed because the browser did not finish sending the file to R2. Start a new upload for this audio language.',
         processingDurationLabel: null,
         action: 'addAgain',
         actionLabel: 'Add again'
@@ -302,8 +343,137 @@ function getIncompleteUploadDisplayState(
   }
 }
 
+interface SupersededUploadGroupItemProps {
+  group: SupersededUploadGroup
+  onCopyDetails: (upload: VideoVariantUploadRow) => void
+}
+
+function SupersededUploadGroupItem({
+  group,
+  onCopyDetails
+}: SupersededUploadGroupItemProps): ReactElement {
+  const [expanded, setExpanded] = useState(false)
+  const languageLabel = getUploadLanguageLabel(group.attempts[0])
+  const attemptCount = group.attempts.length
+
+  return (
+    <ListItem
+      sx={{
+        border: '1px solid',
+        borderColor: 'divider',
+        backgroundColor: 'background.default',
+        borderRadius: 1,
+        p: 1,
+        mb: 1,
+        display: 'block'
+      }}
+    >
+      <Box
+        component="button"
+        type="button"
+        onClick={() => setExpanded((value) => !value)}
+        aria-expanded={expanded}
+        aria-label={`${languageLabel} previous attempts`}
+        sx={{
+          all: 'unset',
+          display: 'flex',
+          width: '100%',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          cursor: 'pointer',
+          minHeight: 40
+        }}
+      >
+        <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
+          <Typography
+            variant="body2"
+            sx={{ fontWeight: 600, color: 'text.secondary' }}
+          >
+            {languageLabel}
+          </Typography>
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            {attemptCount} previous attempt{attemptCount === 1 ? '' : 's'}
+          </Typography>
+        </Stack>
+        {expanded ? (
+          <ExpandLessIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+        ) : (
+          <ExpandMoreIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+        )}
+      </Box>
+      <Collapse in={expanded} unmountOnExit sx={{ width: '100%' }}>
+        <Stack sx={{ mt: 1, gap: 1 }}>
+          {group.attempts.map((upload) => {
+            const displayState = getIncompleteUploadDisplayState(upload)
+
+            return (
+              <Box
+                key={upload.id}
+                sx={{
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 1,
+                  p: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 1
+                }}
+              >
+                <Box sx={{ minWidth: 0 }}>
+                  <Stack
+                    direction="row"
+                    sx={{ gap: 1, alignItems: 'center', flexWrap: 'wrap' }}
+                  >
+                    <Chip
+                      size="small"
+                      variant="outlined"
+                      label={displayState.label}
+                      color="default"
+                    />
+                    <Typography
+                      variant="caption"
+                      sx={{ color: 'text.secondary' }}
+                    >
+                      {getUploadTimestampLabel(upload)}
+                    </Typography>
+                  </Stack>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: 'text.secondary', display: 'block' }}
+                  >
+                    {upload.originalFilename ?? 'Unknown file'}
+                  </Typography>
+                  {upload.errorMessage != null && (
+                    <Typography
+                      variant="caption"
+                      sx={{ color: 'text.secondary', display: 'block' }}
+                    >
+                      {upload.errorMessage}
+                    </Typography>
+                  )}
+                </Box>
+                <Tooltip title="Copy upload details" arrow>
+                  <IconButton
+                    size="small"
+                    aria-label="copy upload details"
+                    onClick={() => onCopyDetails(upload)}
+                  >
+                    <ContentCopyIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            )
+          })}
+        </Stack>
+      </Collapse>
+    </ListItem>
+  )
+}
+
 export function IncompleteVideoVariantUploadItems({
-  uploads,
+  outstandingUploads,
+  supersededUploads,
   resumingUploadId,
   isResumeRequestInFlight,
   onAddAudioLanguage,
@@ -323,7 +493,12 @@ export function IncompleteVideoVariantUploadItems({
     [enqueueSnackbar]
   )
 
-  return uploads.map((upload) => {
+  const supersededGroups = useMemo(
+    () => groupSupersededUploads(supersededUploads),
+    [supersededUploads]
+  )
+
+  const outstandingItems = outstandingUploads.map((upload) => {
     const isResuming = resumingUploadId === upload.id
     const displayState = getIncompleteUploadDisplayState(upload)
 
@@ -464,4 +639,17 @@ export function IncompleteVideoVariantUploadItems({
       </ListItem>
     )
   })
+
+  return (
+    <>
+      {outstandingItems}
+      {supersededGroups.map((group) => (
+        <SupersededUploadGroupItem
+          key={group.key}
+          group={group}
+          onCopyDetails={(upload) => void handleCopyUploadDetails(upload)}
+        />
+      ))}
+    </>
+  )
 }
