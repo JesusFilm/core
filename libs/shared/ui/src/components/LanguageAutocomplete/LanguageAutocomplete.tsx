@@ -56,6 +56,11 @@ export interface LanguageAutocompleteProps {
   popper?: Omit<PopperProps, 'open'>
   error?: boolean
   disableSort?: boolean
+  /**
+   * Shows each language's id beside its name and makes the id searchable.
+   * For admin surfaces, where two languages can share a display name.
+   */
+  showLanguageId?: boolean
 }
 
 /**
@@ -74,7 +79,8 @@ export function LanguageAutocomplete({
   helperText,
   popper,
   error,
-  disableSort = false
+  disableSort = false,
+  showLanguageId = false
 }: LanguageAutocompleteProps): ReactElement {
   const options = useMemo(() => {
     if (!languages) return []
@@ -114,9 +120,15 @@ export function LanguageAutocomplete({
     () =>
       createFilterOptions<LanguageOption>({
         stringify: (option) =>
-          [option.localName, option.nativeName].filter(Boolean).join(' ')
+          [
+            option.localName,
+            option.nativeName,
+            showLanguageId ? option.id : undefined
+          ]
+            .filter(Boolean)
+            .join(' ')
       }),
-    []
+    [showLanguageId]
   )
 
   const defaultRenderInput = (
@@ -193,7 +205,7 @@ export function LanguageAutocomplete({
           }
           rowCount={itemCount}
           rowHeight={getRowHeight}
-          rowProps={{ rows: itemData }}
+          rowProps={{ rows: itemData, showLanguageId }}
           overscanCount={5}
           style={{
             height: Math.min(totalHeight + 10, smUp ? 400 : 200),
@@ -212,9 +224,10 @@ export function LanguageAutocomplete({
         data-testid="LanguageAutocomplete"
         value={value}
         isOptionEqualToValue={(option, value) => option.id === value.id}
-        getOptionLabel={({ localName, nativeName }) =>
-          localName ?? nativeName ?? ''
-        }
+        getOptionLabel={({ id, localName, nativeName }) => {
+          const label = localName ?? nativeName ?? ''
+          return showLanguageId ? `${label} (${id})` : label
+        }}
         onChange={(e, option) => {
           e.stopPropagation()
           handleChange(option)
