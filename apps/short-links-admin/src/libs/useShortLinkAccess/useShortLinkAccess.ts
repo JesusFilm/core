@@ -11,6 +11,7 @@ export const GET_SHORT_LINK_ACCESS = graphql(`
       __typename
       ... on AuthenticatedUser {
         mediaUserRoles
+        superAdmin
       }
     }
   }
@@ -22,8 +23,10 @@ export interface UseShortLinkAccessResult extends ShortLinkAccess {
 
 export function useShortLinkAccess(): UseShortLinkAccessResult {
   const { data, loading } = useQuery(GET_SHORT_LINK_ACCESS)
-  const roles =
-    data?.me?.__typename === 'AuthenticatedUser' ? data.me.mediaUserRoles : []
+  const me = data?.me?.__typename === 'AuthenticatedUser' ? data.me : null
 
-  return { ...getShortLinkAccess(roles), loading }
+  return {
+    ...getShortLinkAccess(me?.mediaUserRoles ?? [], me?.superAdmin),
+    loading
+  }
 }

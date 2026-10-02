@@ -19,6 +19,8 @@ interface ConfirmDialogProps {
   confirmLabel?: string
   confirmColor?: 'primary' | 'error' | 'warning'
   loading?: boolean
+  /** e.g. until the name of what is being removed has been typed */
+  confirmDisabled?: boolean
   onConfirm: () => void
   onClose: () => void
   children?: ReactNode
@@ -31,6 +33,7 @@ export function ConfirmDialog({
   confirmLabel = 'Confirm',
   confirmColor = 'primary',
   loading = false,
+  confirmDisabled = false,
   onConfirm,
   onClose,
   children
@@ -57,6 +60,7 @@ export function ConfirmDialog({
             variant={confirmColor === 'error' ? 'destructive' : 'default'}
             onClick={onConfirm}
             loading={loading}
+            disabled={confirmDisabled}
           >
             {confirmLabel}
           </Button>

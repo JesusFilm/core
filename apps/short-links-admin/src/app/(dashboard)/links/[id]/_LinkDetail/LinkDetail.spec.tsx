@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing/react'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { useParams, useRouter } from 'next/navigation'
 
 import { GET_SHORT_LINK_STATS } from '../../../../../components/StatsPanel'
@@ -8,11 +9,13 @@ import {
   GET_SHORT_LINK_DOMAINS,
   lastThirtyDays
 } from '../../../../../libs/shortLink'
+import { notify } from '../../../../../libs/toast'
 import { GET_SHORT_LINK_ACCESS } from '../../../../../libs/useShortLinkAccess'
 
-import { GET_SHORT_LINK, LinkDetail } from './LinkDetail'
+import { GET_SHORT_LINK, LinkDetail, SHORT_LINK_PUBLISH } from './LinkDetail'
 
 vi.mock('next/navigation')
+vi.mock('../../../../../libs/toast')
 
 const push = vi.fn()
 vi.mocked(useRouter).mockReturnValue({ push } as unknown as ReturnType<
@@ -74,7 +77,8 @@ function accessMock(roles: string[]) {
         me: {
           __typename: 'AuthenticatedUser',
           id: 'user-1',
-          mediaUserRoles: roles
+          mediaUserRoles: roles,
+          superAdmin: false
         }
       }
     }
@@ -140,6 +144,20 @@ const campaignsMock = {
   }
 }
 
+function publishMock(edgePublishedAt: string | null) {
+  return {
+    request: { query: SHORT_LINK_PUBLISH, variables: { id: 'link-1' } },
+    result: {
+      data: {
+        shortLinkPublish: {
+          __typename: 'MutationShortLinkPublishSuccess',
+          data: { ...shortLink, edgePublishedAt }
+        }
+      }
+    }
+  }
+}
+
 function statsMock() {
   return {
     request: {
@@ -195,6 +213,7 @@ describe('LinkDetail', () => {
 
   afterEach(() => {
     vi.useRealTimers()
+    vi.mocked(notify).mockClear()
   })
 
   it('renders the link, its history, QR panel and stats for an admin', async () => {
@@ -240,6 +259,64 @@ describe('LinkDetail', () => {
     expect(screen.getByText('mobile')).toBeInTheDocument()
     expect(screen.getAllByText('12').length).toBeGreaterThanOrEqual(3)
     expect(screen.getByRole('button', { name: 'Export CSV' })).toBeEnabled()
+  })
+
+  it('confirms a republish that api-media stamped with a new time', async () => {
+    render(
+      <MockedProvider
+        mocks={[
+          accessMock(['shortLinkAdmin']),
+          shortLinkMock,
+          domainsMock,
+          campaignsMock,
+          statsMock(),
+          publishMock('2026-09-25T12:00:00.000Z')
+        ]}
+      >
+        <LinkDetail />
+      </MockedProvider>
+    )
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Republish to edge' })
+    )
+
+    await waitFor(() =>
+      expect(notify).toHaveBeenCalledWith('Republished to the edge', 'success')
+    )
+  })
+
+  it('warns when the republish left the published time unchanged', async () => {
+    render(
+      <MockedProvider
+        mocks={[
+          accessMock(['shortLinkAdmin']),
+          shortLinkMock,
+          domainsMock,
+          campaignsMock,
+          statsMock(),
+          publishMock(shortLink.edgePublishedAt)
+        ]}
+      >
+        <LinkDetail />
+      </MockedProvider>
+    )
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Republish to edge' })
+    )
+
+    await waitFor(() =>
+      expect(notify).toHaveBeenCalledWith(
+        'Not published',
+        'warning',
+        'Edge publishing is not configured in this environment, or this domain has no KV namespace.'
+      )
+    )
+    expect(notify).not.toHaveBeenCalledWith(
+      'Republished to the edge',
+      'success'
+    )
   })
 
   it('hides admin-only controls and locks the destination for an editor', async () => {

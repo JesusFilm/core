@@ -68,19 +68,25 @@ interface MenuContentProps {
 
 export function MenuContent({ onNavigate }: MenuContentProps): ReactElement {
   const pathname = usePathname()
-  const { isAdmin } = useShortLinkAccess()
+  const { isEditor, isAdmin, isSuperAdmin, loading } = useShortLinkAccess()
+  // a superAdmin without a media role only has the domains section
+  const showEditorPages = isEditor || loading
 
   const mainListItems: Item[] = [
-    { text: 'Links', icon: <LinkIcon />, href: '/links' },
-    { text: 'Campaigns', icon: <MegaphoneIcon />, href: '/campaigns' },
-    ...(isAdmin
+    ...(showEditorPages
+      ? [
+          { text: 'Links', icon: <LinkIcon />, href: '/links' },
+          { text: 'Campaigns', icon: <MegaphoneIcon />, href: '/campaigns' }
+        ]
+      : []),
+    ...(isAdmin || isSuperAdmin
       ? [{ text: 'Domains', icon: <GlobeIcon />, href: '/domains' }]
       : [])
   ]
 
-  const secondaryListItems: Item[] = [
-    { text: 'Test Redirect', icon: <FlaskConicalIcon />, href: '/test' }
-  ]
+  const secondaryListItems: Item[] = showEditorPages
+    ? [{ text: 'Test Redirect', icon: <FlaskConicalIcon />, href: '/test' }]
+    : []
 
   return (
     <nav aria-label="Main" className="flex flex-1 flex-col justify-between p-2">

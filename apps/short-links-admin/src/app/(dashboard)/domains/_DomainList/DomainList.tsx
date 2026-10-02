@@ -1,8 +1,9 @@
 'use client'
 
 import { useQuery } from '@apollo/client/react'
+import { PlusIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { KeyboardEvent, ReactElement } from 'react'
+import { KeyboardEvent, ReactElement, useState } from 'react'
 
 import {
   GET_SHORT_LINK_DOMAINS,
@@ -10,9 +11,13 @@ import {
   formatDateTime,
   labelFor
 } from '../../../../libs/shortLink'
+import { useShortLinkAccess } from '../../../../libs/useShortLinkAccess'
+
+import { AddDomainDialog } from './_AddDomainDialog'
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardPanel } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
 import {
@@ -26,6 +31,8 @@ import {
 
 export function DomainList(): ReactElement {
   const router = useRouter()
+  const { isSuperAdmin } = useShortLinkAccess()
+  const [addOpen, setAddOpen] = useState(false)
   const { data, loading, error } = useQuery(GET_SHORT_LINK_DOMAINS)
 
   const domains =
@@ -45,7 +52,15 @@ export function DomainList(): ReactElement {
 
   return (
     <div className="flex w-full max-w-7xl flex-col gap-4">
-      <h2 className="text-lg font-semibold">Domains</h2>
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-lg font-semibold">Domains</h2>
+        {isSuperAdmin && (
+          <Button size="sm" onClick={() => setAddOpen(true)}>
+            <PlusIcon aria-hidden="true" />
+            Add domain
+          </Button>
+        )}
+      </div>
       <Card>
         <CardPanel className="flex flex-col gap-3">
           {error != null && (
@@ -136,6 +151,13 @@ export function DomainList(): ReactElement {
           </div>
         </CardPanel>
       </Card>
+      {isSuperAdmin && (
+        <AddDomainDialog
+          open={addOpen}
+          onClose={() => setAddOpen(false)}
+          onCreated={(id) => router.push(`/domains/${id}`)}
+        />
+      )}
     </div>
   )
 }

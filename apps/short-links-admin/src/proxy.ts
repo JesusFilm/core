@@ -19,6 +19,7 @@ const GET_AUTH = graphql(`
       __typename
       ... on AuthenticatedUser {
         mediaUserRoles
+        superAdmin
       }
     }
   }
@@ -63,7 +64,7 @@ export default async function proxy(
 
       const access =
         data?.me?.__typename === 'AuthenticatedUser'
-          ? getShortLinkAccess(data.me.mediaUserRoles)
+          ? getShortLinkAccess(data.me.mediaUserRoles, data.me.superAdmin)
           : getShortLinkAccess()
       const redirectPath = getAuthorizedRedirectPath(
         req.nextUrl.pathname,

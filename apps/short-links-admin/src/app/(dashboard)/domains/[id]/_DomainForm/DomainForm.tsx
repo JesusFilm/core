@@ -2,13 +2,14 @@
 
 import { useMutation, useQuery } from '@apollo/client/react'
 import { Form, Formik } from 'formik'
-import { UploadCloudIcon } from 'lucide-react'
-import { useParams } from 'next/navigation'
+import { Trash2Icon, UploadCloudIcon } from 'lucide-react'
+import { useParams, useRouter } from 'next/navigation'
 import { ReactElement, ReactNode, useState } from 'react'
 import { number, object, string } from 'yup'
 
 import { graphql } from '@core/shared/gql'
 
+import { ConfirmDialog } from '../../../../../components/ConfirmDialog'
 import {
   SelectField,
   SwitchField,
@@ -16,6 +17,7 @@ import {
 } from '../../../../../components/form'
 import { TagsInput } from '../../../../../components/TagsInput'
 import {
+  GET_SHORT_LINK_DOMAINS,
   NOT_FOUND_OPTIONS,
   REDIRECT_STATUS_OPTIONS,
   SERVICE_OPTIONS,
@@ -29,6 +31,8 @@ import {
   parseMutationError
 } from '../../../../../libs/shortLink'
 import { notify, notifyError } from '../../../../../libs/toast'
+import { useShortLinkAccess } from '../../../../../libs/useShortLinkAccess'
+import { DomainInfrastructure } from '../_DomainInfrastructure'
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -125,7 +129,8 @@ export interface DomainFormValues {
   kvBinding: string
 }
 
-export const KV_BINDING_PATTERN = /^[A-Z][A-Z0-9_]*$/
+// `KV_*` bindings are the ones api-media owns on the Worker
+export const KV_BINDING_PATTERN = /^KV_[A-Z0-9_]+$/
 
 const URL_PATTERN = /^https?:\/\/[^\s]+$/i
 
@@ -141,7 +146,7 @@ const schema = object({
     .trim()
     .test(
       'kv-binding',
-      'Upper-case letters, digits and _ only, starting with a letter, e.g. KV_JESUS_FILM',
+      'Upper-case letters, digits and _ only, starting with KV_, e.g. KV_JESUS_FILM',
       (value) => value == null || value === '' || KV_BINDING_PATTERN.test(value)
     ),
   pathPrefix: string()
@@ -263,15 +268,43 @@ function ServicesField({
   )
 }
 
+export const SHORT_LINK_DOMAIN_DELETE = graphql(`
+  mutation ShortLinkDomainDelete($id: String!) {
+    shortLinkDomainDelete(id: $id) {
+      __typename
+      ... on MutationShortLinkDomainDeleteSuccess {
+        data {
+          id
+        }
+      }
+      ... on NotFoundError {
+        message
+      }
+      ... on ForeignKeyConstraintError {
+        message
+      }
+    }
+  }
+`)
+
 export function DomainForm(): ReactElement {
   const { id } = useParams<{ id: string }>()
+  const router = useRouter()
+  // superAdmin owns the path prefix, the KV fields and removing the domain
+  const { isSuperAdmin } = useShortLinkAccess()
   const [errorMessage, setErrorMessage] = useState<string>()
+  const [removeOpen, setRemoveOpen] = useState(false)
+  const [typedHostname, setTypedHostname] = useState('')
   const { data, loading, error } = useQuery(GET_SHORT_LINK_DOMAIN, {
     variables: { id }
   })
   const [update, { loading: updating }] = useMutation(SHORT_LINK_DOMAIN_UPDATE)
   const [publish, { loading: publishing }] = useMutation(
     SHORT_LINK_DOMAIN_PUBLISH
+  )
+  const [remove, { loading: removing }] = useMutation(
+    SHORT_LINK_DOMAIN_DELETE,
+    { refetchQueries: [GET_SHORT_LINK_DOMAINS] }
   )
 
   if (loading) return <Spinner aria-label="Loading domain" />
@@ -321,7 +354,6 @@ export function DomainForm(): ReactElement {
             id: domain.id,
             services: values.services,
             redirectStatus: values.redirectStatus,
-            pathPrefix: values.pathPrefix.trim(),
             slugAllowedChars: values.slugAllowedChars,
             slugMinLength: values.slugMinLength,
             slugMaxLength: values.slugMaxLength,
@@ -331,8 +363,15 @@ export function DomainForm(): ReactElement {
             notFound: values.notFound,
             passthroughOrigin: emptyToNull(values.passthroughOrigin),
             autoFailover: values.autoFailover,
-            kvNamespaceId: emptyToNull(values.kvNamespaceId),
-            kvBinding: emptyToNull(values.kvBinding)
+            // api-media refuses these from anyone else, so they are only
+            // sent (and only shown) for a superAdmin
+            ...(isSuperAdmin
+              ? {
+                  pathPrefix: values.pathPrefix.trim(),
+                  kvNamespaceId: emptyToNull(values.kvNamespaceId),
+                  kvBinding: emptyToNull(values.kvBinding)
+                }
+              : {})
           }
         }
       })
@@ -341,7 +380,12 @@ export function DomainForm(): ReactElement {
         setErrorMessage(parseMutationError(outcome).message)
         return
       }
-      notify('Domain saved and republished', 'success')
+      notify(
+        outcome?.data.edgePublishedAt === domain.edgePublishedAt
+          ? 'Domain saved'
+          : 'Domain saved and republished',
+        'success'
+      )
     } catch (caught) {
       setErrorMessage(
         caught instanceof Error ? caught.message : 'Could not save the domain'
@@ -359,9 +403,41 @@ export function DomainForm(): ReactElement {
         notify(parseMutationError(outcome).message, 'error')
         return
       }
+      // every publish stamps a new time, so an unchanged one means api-media
+      // skipped it
+      if (outcome?.data.edgePublishedAt === domain.edgePublishedAt) {
+        notify(
+          'Not published',
+          'warning',
+          'Edge publishing is not configured in this environment.'
+        )
+        return
+      }
       notify('Domain and its links republished to the edge', 'success')
     } catch (caught) {
       notifyError(caught, 'Republish failed')
+    }
+  }
+
+  function closeRemove(): void {
+    setRemoveOpen(false)
+    setTypedHostname('')
+  }
+
+  async function handleRemove(): Promise<void> {
+    try {
+      const { data: removed } = await remove({ variables: { id: domain.id } })
+      const outcome = removed?.shortLinkDomainDelete
+      if (outcome != null && isMutationError(outcome)) {
+        notify(parseMutationError(outcome).message, 'error')
+        return
+      }
+      notify('Domain removed', 'success')
+      router.push('/domains')
+    } catch (caught) {
+      notifyError(caught, 'Could not remove the domain')
+    } finally {
+      closeRemove()
     }
   }
 
@@ -380,18 +456,33 @@ export function DomainForm(): ReactElement {
                 : 'never published to the edge'}
             </span>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handlePublish}
-            loading={publishing}
-            disabled={updating}
-          >
-            <UploadCloudIcon aria-hidden="true" />
-            Republish domain
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePublish}
+              loading={publishing}
+              disabled={updating}
+            >
+              <UploadCloudIcon aria-hidden="true" />
+              Republish domain
+            </Button>
+            {isSuperAdmin && (
+              <Button
+                variant="destructive-outline"
+                size="sm"
+                onClick={() => setRemoveOpen(true)}
+                disabled={updating || publishing}
+              >
+                <Trash2Icon aria-hidden="true" />
+                Remove domain
+              </Button>
+            )}
+          </div>
         </CardPanel>
       </Card>
+
+      {isSuperAdmin && <DomainInfrastructure domainId={domain.id} />}
 
       <Formik
         initialValues={initialValues}
@@ -471,15 +562,17 @@ export function DomainForm(): ReactElement {
               </Section>
 
               <Section title="Slug grammar">
-                <TextField
-                  id="pathPrefix"
-                  label="Path prefix"
-                  value={values.pathPrefix}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  error={fieldError('pathPrefix')}
-                  helperText="Path the short links live under, without slashes, e.g. s. Leave empty for the root."
-                />
+                {isSuperAdmin && (
+                  <TextField
+                    id="pathPrefix"
+                    label="Path prefix"
+                    value={values.pathPrefix}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={fieldError('pathPrefix')}
+                    helperText="Path the short links live under, without slashes, e.g. s. Leave empty for the root. Changing it changes what must be attached to the Worker."
+                  />
+                )}
                 <div className="grid gap-4 md:grid-cols-6">
                   <TextField
                     id="slugAllowedChars"
@@ -529,27 +622,29 @@ export function DomainForm(): ReactElement {
                 />
               </Section>
 
-              <Section title="Edge publishing">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <TextField
-                    id="kvNamespaceId"
-                    label="KV namespace id"
-                    value={values.kvNamespaceId}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    helperText="From `wrangler kv namespace create`. Leave empty until the namespace exists; the domain is not published until then."
-                  />
-                  <TextField
-                    id="kvBinding"
-                    label="Worker binding"
-                    value={values.kvBinding}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={fieldError('kvBinding')}
-                    helperText="The [[kv_namespaces]] binding in wrangler.toml, e.g. KV_JESUS_FILM. Leave empty until the namespace exists."
-                  />
-                </div>
-              </Section>
+              {isSuperAdmin && (
+                <Section title="Edge publishing">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <TextField
+                      id="kvNamespaceId"
+                      label="KV namespace id"
+                      value={values.kvNamespaceId}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      helperText="Filled in by Set up KV. Edit by hand only for local dev, where it is the Worker binding name."
+                    />
+                    <TextField
+                      id="kvBinding"
+                      label="Worker binding"
+                      value={values.kvBinding}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={fieldError('kvBinding')}
+                      helperText="Filled in by Set up KV, e.g. KV_JESUS_FILM. Edit by hand only for local dev."
+                    />
+                  </div>
+                </Section>
+              )}
 
               <Section title="Services">
                 <ServicesField
@@ -569,6 +664,28 @@ export function DomainForm(): ReactElement {
           )
         }}
       </Formik>
+
+      <ConfirmDialog
+        open={removeOpen}
+        title={`Remove ${domain.hostname}?`}
+        description="Removes the domain from core. Its links must be deleted and its KV setup removed first. Nothing is deleted in Cloudflare."
+        confirmLabel="Remove domain"
+        confirmColor="error"
+        loading={removing}
+        confirmDisabled={typedHostname.trim() !== domain.hostname}
+        onConfirm={() => void handleRemove()}
+        onClose={closeRemove}
+      >
+        <div className="px-6 pb-2">
+          <TextField
+            id="confirm-remove-hostname"
+            label={`Type ${domain.hostname} to confirm`}
+            value={typedHostname}
+            onChange={(event) => setTypedHostname(event.target.value)}
+            autoComplete="off"
+          />
+        </div>
+      </ConfirmDialog>
     </div>
   )
 }

@@ -49,6 +49,19 @@ describe('parseQrParams', () => {
     })
   })
 
+  it('accepts the http short URL of a local redirect Worker', () => {
+    expect(
+      parseQrParams(
+        new URLSearchParams({ url: 'http://localhost:8788/abc123?qr=1' })
+      )
+    ).toMatchObject({
+      params: {
+        url: 'http://localhost:8788/abc123?qr=1',
+        filename: 'abc123.png'
+      }
+    })
+  })
+
   it('rejects non-https and relative urls', () => {
     expect(
       parseQrParams(new URLSearchParams({ url: 'http://nxstp.is/abc' }))

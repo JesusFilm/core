@@ -63,7 +63,9 @@ export function parseQrParams(
   } catch {
     return { error: 'url must be an absolute https URL' }
   }
-  if (url.protocol !== 'https:')
+  // http is only what a local redirect Worker serves (`http://localhost:8788`)
+  const isLocalWorker = url.protocol === 'http:' && url.hostname === 'localhost'
+  if (url.protocol !== 'https:' && !isLocalWorker)
     return { error: 'url must be an absolute https URL' }
 
   const format = searchParams.get('format') ?? 'png'

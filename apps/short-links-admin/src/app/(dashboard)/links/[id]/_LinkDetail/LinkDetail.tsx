@@ -297,6 +297,16 @@ export function LinkDetail(): ReactElement {
         notify(parseMutationError(outcome).message, 'error')
         return
       }
+      // every publish stamps a new time, so an unchanged one means api-media
+      // skipped it
+      if (outcome?.data.edgePublishedAt === link.edgePublishedAt) {
+        notify(
+          'Not published',
+          'warning',
+          'Edge publishing is not configured in this environment, or this domain has no KV namespace.'
+        )
+        return
+      }
       notify('Republished to the edge', 'success')
     } catch (caught) {
       notifyError(caught, 'Republish failed')
