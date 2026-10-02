@@ -60,13 +60,13 @@ const config: PhoebeUserConfig = {
   // identifying leaves unless `includeRef: true` (then the repo slug and, where
   // a fault names one, the unit ref). Delete the block or set both off to opt
   // out. See docs/operating.md → Crash reporting.
-  reporting: { maintainers: false }
+  reporting: { maintainers: false },
 
-  // To drive the `claude` provider from a Claude Pro/Max subscription instead
-  // of an API key, forward the long-lived token from `claude setup-token`
-  // (set CLAUDE_CODE_OAUTH_TOKEN in .env) rather than ANTHROPIC_API_KEY. See
+  // The `claude` provider runs from a Claude Pro/Max subscription instead
+  // of an API key: the long-lived token from `claude setup-token` is forwarded
+  // (CLAUDE_CODE_OAUTH_TOKEN in .env) rather than ANTHROPIC_API_KEY. See
   // docs/claude-subscription-auth.md in JesusFilm/phoebe.
-  // providerEnv: { claude: 'CLAUDE_CODE_OAUTH_TOKEN' },
+  providerEnv: { claude: 'CLAUDE_CODE_OAUTH_TOKEN' }
 
   // How this repo's commits are attributed (optional). Declaring it here means
   // every deployment that runs this repo agrees on the attribution, instead of
