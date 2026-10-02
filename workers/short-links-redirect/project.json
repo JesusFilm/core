@@ -8,7 +8,7 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "wrangler dev --port=8788",
+        "command": "wrangler dev src/local.ts --port=8788",
         "cwd": "workers/short-links-redirect"
       }
     },
@@ -39,12 +39,12 @@
     "deploy": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "wrangler deploy --env=stage",
+        "command": "tsx scripts/deploy.ts --env=stage",
         "cwd": "workers/short-links-redirect"
       },
       "configurations": {
         "production": {
-          "command": "wrangler deploy --env=prod"
+          "command": "tsx scripts/deploy.ts --env=prod"
         }
       }
     }

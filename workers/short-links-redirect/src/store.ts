@@ -30,7 +30,7 @@ const domainCache = new Map<string, CachedDomain>()
 /** Bindings already reported as missing, so each is logged once per isolate. */
 const reportedMissingBindings = new Set<string>()
 
-/** Test hook; production never needs it. */
+/** Test and local edge API hook; production never needs it. */
 export function clearDomainCache(): void {
   domainCache.clear()
 }

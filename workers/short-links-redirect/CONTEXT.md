@@ -21,7 +21,7 @@ The read path for records, in order — the Domain Namespace (`<slug>`), the Glo
 _Avoid_: cache (KV is the primary serving store, not a cache of api-media), database (D1 is a replica)
 
 **Domain Namespace**:
-A domain's own Workers KV namespace, holding only its Routing Records keyed by bare slug. The Worker reaches it through the binding named in the Domain Record (`env[domain.kvBinding]`, e.g. `KV_JESUS_FILM`); bindings are static in `wrangler.toml`, so every domain is one `[[kv_namespaces]]` entry per environment ("one binding per domain"). A domain with a null `kvBinding` has no namespace and is served by the remaining tiers; a binding named on the record but absent from the deploy is a Missing Binding, logged once per isolate and skipped.
+A domain's own Workers KV namespace, holding only its Routing Records keyed by bare slug. The Worker reaches it through the binding named in the Domain Record (`env[domain.kvBinding]`, e.g. `KV_JESUS_FILM`); every domain has one binding ("one binding per domain"), named `KV_<HOSTNAME>`. On stage and prod api-media adds and removes these on the live Worker through the Cloudflare API for a superAdmin, and the deploy script carries them over; only the dev section of `wrangler.toml` declares any. A domain with a null `kvBinding` has no namespace and is served by the remaining tiers; a binding named on the record but absent from the deploy is a Missing Binding, logged once per isolate and skipped.
 _Avoid_: tenant store, per-domain cache, KV (ambiguous with the Global Namespace)
 
 **Global Namespace**:

@@ -1,12 +1,10 @@
-# short-links-redirect: the edge redirect Worker for every short-link domain
-# (nxstp.is, arc.gt, stg.arc.gt, the YouTube domain). Contract:
-# prds/short-links/TECH-DESIGN.md.
+# short-links-redirect: the edge redirect Worker for every short-link domain.
+# Contract: prds/short-links/TECH-DESIGN.md.
 #
 # BEFORE THE FIRST DEPLOY to an environment, replace every
 # `REPLACE_ME_BEFORE_DEPLOY` below with the real resource ids:
 #
 #   wrangler kv namespace create short-links-stage   -> kv_namespaces[].id (SHORT_LINKS_KV)
-#   wrangler kv namespace create short-links-stage-jesus-film  -> KV_JESUS_FILM (one per domain)
 #   wrangler d1 database create short-links-stage     -> d1_databases[].database_id
 #   wrangler d1 migrations apply short-links-stage --env=stage --remote
 #   wrangler queues create short-links-events-stage
@@ -21,11 +19,23 @@
 # Workers pool use; miniflare provisions local KV / D1 / Queues regardless of
 # the ids, so the placeholders are fine there.
 #
-# Routes are added one domain at a time at cutover (TECH-DESIGN.md, "Cutover
-# per domain"); see the commented `routes` examples under each environment.
-# jesus.film is first and is a ZONE ROUTE on `/s/*` (not a custom domain), so
-# the rest of the hostname stays free for other uses. Its domain record carries
-# `pathPrefix = "s"`, so short links are https://jesus.film/s/<slug>.
+# WHAT IS NOT IN THIS FILE for stage and prod, on purpose:
+#
+# - Per-domain KV bindings (`KV_JESUS_FILM`, ...). A superAdmin sets a domain
+#   up from the admin app; api-media creates its namespace and adds its `KV_*`
+#   binding to the live Worker through the Cloudflare API. `scripts/deploy.ts`
+#   (the `deploy` target) reads those live bindings and carries them over on
+#   every deploy. Never deploy stage or prod with a bare `wrangler deploy`: it
+#   uploads only what is declared here and unbinds every domain.
+# - `routes`. A domain is attached from the admin app too (a zone route for a
+#   path-prefixed domain such as `jesus.film/s/*`, a custom domain for a root
+#   domain). With no `routes` key a deploy leaves those alone; with ANY route
+#   declared here wrangler replaces the whole set and deletes the rest. Do not
+#   add one.
+#
+# Rollout: stage serves `stage.jesus.film/s/*` and `stage.jesus.movie/s/*`,
+# prod `jesus.film/s/*` and `jesus.movie/s/*`. Which hostnames an environment
+# may set up is api-media's CLOUDFLARE_SHORT_LINKS_ALLOWED_HOSTNAMES.
 
 name = "short-links-redirect-dev"
 compatibility_date = "2025-09-01"
@@ -45,9 +55,9 @@ binding = "SHORT_LINKS_KV"
 id = "short-links-dev"
 
 # One namespace per domain, bound under the name in the domain record's
-# `kvBinding`; holds that domain's routing records keyed by bare slug. Adding
-# a domain means creating its namespace and adding a binding here (in every
-# environment), deploying, then setting kvNamespaceId / kvBinding on the row.
+# `kvBinding`; holds that domain's routing records keyed by bare slug. These
+# are declared for dev only (tests and `wrangler dev`); on stage and prod
+# api-media manages them through the Cloudflare API (see the top comment).
 [[kv_namespaces]]
 binding = "KV_JESUS_FILM"
 id = "short-links-dev-jesus-film"
@@ -88,14 +98,8 @@ dead_letter_queue = "short-links-events-dlq-dev"
 [env.stage]
 name = "short-links-redirect-stage"
 logpush = true
-# Add one route per cutover. First (zone route; "stage.jesus.film" is a
-# PLACEHOLDER, the stage hostname is still to be decided):
-# routes = [{ pattern = "stage.jesus.film/s/*", zone_name = "jesus.film" }]
-# Later cutovers (custom domains):
-# routes = [
-#   { pattern = "stage.jesus.film/s/*", zone_name = "jesus.film" },
-#   { pattern = "stg.arc.gt", custom_domain = true }
-# ]
+# No `routes` and no per-domain KV bindings: both are managed from the admin
+# app through the Cloudflare API (see the top comment).
 
 [env.stage.vars]
 CORE_GRAPHQL_ENDPOINT = "https://api-gateway.stage.central.jesusfilm.org/"
@@ -105,23 +109,6 @@ CLICKHOUSE_DATABASE = "redirects"
 # Global namespace.
 [[env.stage.kv_namespaces]]
 binding = "SHORT_LINKS_KV"
-id = "REPLACE_ME_BEFORE_DEPLOY"
-
-# Per-domain namespaces (see the top-level comment).
-[[env.stage.kv_namespaces]]
-binding = "KV_JESUS_FILM"
-id = "REPLACE_ME_BEFORE_DEPLOY"
-
-[[env.stage.kv_namespaces]]
-binding = "KV_NXSTP_IS"
-id = "REPLACE_ME_BEFORE_DEPLOY"
-
-[[env.stage.kv_namespaces]]
-binding = "KV_ARC_GT"
-id = "REPLACE_ME_BEFORE_DEPLOY"
-
-[[env.stage.kv_namespaces]]
-binding = "KV_STG_ARC_GT"
 id = "REPLACE_ME_BEFORE_DEPLOY"
 
 [[env.stage.d1_databases]]
@@ -151,15 +138,8 @@ enabled = true
 [env.prod]
 name = "short-links-redirect-prod"
 logpush = true
-# Add one route per cutover. First (zone route, keeps the rest of jesus.film
-# free):
-# routes = [{ pattern = "jesus.film/s/*", zone_name = "jesus.film" }]
-# Later cutovers (custom domains):
-# routes = [
-#   { pattern = "jesus.film/s/*", zone_name = "jesus.film" },
-#   { pattern = "nxstp.is", custom_domain = true },
-#   { pattern = "arc.gt", custom_domain = true }
-# ]
+# No `routes` and no per-domain KV bindings: both are managed from the admin
+# app through the Cloudflare API (see the top comment).
 
 [env.prod.vars]
 CORE_GRAPHQL_ENDPOINT = "https://api-gateway.central.jesusfilm.org/"
@@ -169,23 +149,6 @@ CLICKHOUSE_DATABASE = "redirects"
 # Global namespace.
 [[env.prod.kv_namespaces]]
 binding = "SHORT_LINKS_KV"
-id = "REPLACE_ME_BEFORE_DEPLOY"
-
-# Per-domain namespaces (see the top-level comment).
-[[env.prod.kv_namespaces]]
-binding = "KV_JESUS_FILM"
-id = "REPLACE_ME_BEFORE_DEPLOY"
-
-[[env.prod.kv_namespaces]]
-binding = "KV_NXSTP_IS"
-id = "REPLACE_ME_BEFORE_DEPLOY"
-
-[[env.prod.kv_namespaces]]
-binding = "KV_ARC_GT"
-id = "REPLACE_ME_BEFORE_DEPLOY"
-
-[[env.prod.kv_namespaces]]
-binding = "KV_STG_ARC_GT"
 id = "REPLACE_ME_BEFORE_DEPLOY"
 
 [[env.prod.d1_databases]]
