@@ -185,6 +185,33 @@ builder.queryFields((t) => ({
             : undefined
       })
   }),
+  shortLinkDomainByHostname: t.prismaField({
+    type: 'ShortLinkDomain',
+    description:
+      'find a short link domain by hostname. Public: the redirect Worker reads it when its edge store has no domain record for the host',
+    errors: {
+      types: [NotFoundError]
+    },
+    nullable: false,
+    args: {
+      hostname: t.arg.string({
+        required: true,
+        description:
+          'the hostname including subdomain, domain, and TLD, but excluding port'
+      })
+    },
+    resolve: async (query, _, { hostname }) => {
+      const domain = await prisma.shortLinkDomain.findUnique({
+        ...query,
+        where: { hostname: hostname.toLowerCase() }
+      })
+      if (domain == null)
+        throw new NotFoundError('short link domain not found', [
+          { path: ['hostname'], value: hostname }
+        ])
+      return domain
+    }
+  }),
   shortLinkDomain: t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'ShortLinkDomain',
     description: 'Find a short link domain by id',

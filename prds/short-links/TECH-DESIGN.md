@@ -17,11 +17,9 @@ flowchart LR
   ADMIN[apps/short-links-admin<br/>Next.js on Vercel] --> API[api-media<br/>ShortLink models]
   JA[journeys-admin, Arclight,<br/>YouTube Studio] --> API
   API -->|publish on write| KV[Workers KV<br/>routing records]
-  API -->|publish on write| D1[D1<br/>fallback replica]
   V[Scan or click] --> W[workers/short-links-redirect]
   KV --> W
-  D1 -.->|KV miss| W
-  W -.->|KV and D1 miss| API
+  W -.->|KV miss| API
   W -->|30x| DEST[Destination]
   W -.->|waitUntil| Q[Cloudflare Queue]
   Q --> C[queue consumer<br/>same Worker]
@@ -31,13 +29,13 @@ flowchart LR
 
 ## Components
 
-| Piece                          | Path                                   | Role                                                                                                |
-| ------------------------------ | -------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Data + control plane           | `apis/api-media/src/schema/shortLink`  | Prisma models, Pothos schema, protection rules, edge publishing, ClickHouse reads, health checks    |
-| Redirect plane                 | `workers/short-links-redirect`         | Hono Worker: KV → D1 → api-media lookup, redirect, reserved paths, UTM pass-through, queue producer |
-| Analytics consumer             | `workers/short-links-redirect` (queue) | Batches queue messages into ClickHouse; parses user agent; never stores IP or raw UA                |
-| Admin UI                       | `apps/short-links-admin`               | Links, campaigns, domains, QR download, destination history, Test Redirect, dashboards              |
-| Legacy redirect surface (kept) | `apps/short-links`                     | Untouched. Cut a domain over by pointing its DNS / Cloudflare route at the Worker                   |
+| Piece                          | Path                                   | Role                                                                                             |
+| ------------------------------ | -------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Data + control plane           | `apis/api-media/src/schema/shortLink`  | Prisma models, Pothos schema, protection rules, edge publishing, ClickHouse reads, health checks |
+| Redirect plane                 | `workers/short-links-redirect`         | Hono Worker: KV → api-media lookup, redirect, reserved paths, UTM pass-through, queue producer   |
+| Analytics consumer             | `workers/short-links-redirect` (queue) | Batches queue messages into ClickHouse; parses user agent; never stores IP or raw UA             |
+| Admin UI                       | `apps/short-links-admin`               | Links, campaigns, domains, QR download, destination history, Test Redirect, dashboards           |
+| Legacy redirect surface (kept) | `apps/short-links`                     | Untouched. Cut a domain over by pointing its DNS / Cloudflare route at the Worker                |
 
 ## Data model (Prisma, `libs/prisma/media`)
 
@@ -109,7 +107,7 @@ Migration: `20260926045620_short_links_service`. All additive.
 
 `hostname` is always lower-case. `pathname` is stored exactly as minted; when the domain is case-insensitive it is lower-cased both at publish and at lookup.
 
-Deleted or retired links have their `link:` key deleted from KV and D1.
+Deleted or retired links have their key deleted from KV.
 
 ### Domain record (`domain:<hostname>`)
 
@@ -148,36 +146,24 @@ Deleted or retired links have their `link:` key deleted from KV and D1.
 
 `status` is the effective status (link override, else domain). `to` is the effective destination: for an arc.gt link that carries `brightcoveId` + `redirectType`, api-media publishes `to = <passthroughOrigin>/<pathname>` so the Arclight API keeps resolving Brightcove URLs exactly as it does today (one hop, same as the current wholesale redirect). `v` lets the Worker reject a shape it does not understand and fall through to the next store.
 
-### D1
-
-```sql
-CREATE TABLE IF NOT EXISTS short_link_records (
-  key TEXT PRIMARY KEY,
-  value TEXT NOT NULL,
-  updated_at TEXT NOT NULL
-);
-```
-
-Same keys and JSON values as KV. api-media upserts via the D1 REST API in the same publish call that writes KV.
-
 ### Publish semantics (api-media)
 
-- Publishing runs inside the mutation, after the Postgres write, inside the same `$transaction`; if KV rejects the write the transaction rolls back and the mutation fails. D1 failure is logged, not fatal (it is the replica).
+- Publishing runs inside the mutation, after the Postgres write, inside the same `$transaction`; if KV rejects the write the transaction rolls back and the mutation fails.
 - Local dev and tests: when `CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID` is unset, publishing is a no-op that resolves successfully (same pattern as the Vercel domain calls). `edgePublishedAt` is left unchanged, which is how the admin tells a skipped publish from a real one.
-- Local dev with the Worker: `CLOUDFLARE_SHORT_LINKS_API_BASE_URL` points the Cloudflare client at the Worker's `wrangler dev` (`http://localhost:8788/client/v4`), which serves the same KV and D1 endpoints over its local stores. There a namespace or database id is the Worker binding name. While it is set, `shortUrl` / `qrUrl` of the domain whose hostname matches that URL (`localhost`) use the Worker's origin, port included (`http://localhost:8788/<pathname>`); every other domain stays on `https://<hostname>`. Never set it in a deployed environment. See `workers/short-links-redirect/README.md`, "Publishing from a local api-media".
+- Local dev with the Worker: `CLOUDFLARE_SHORT_LINKS_API_BASE_URL` points the Cloudflare client at the Worker's `wrangler dev` (`http://localhost:8788/client/v4`), which serves the same KV endpoints over its local store. There a namespace id is the Worker binding name. While it is set, `shortUrl` / `qrUrl` of the domain whose hostname matches that URL (`localhost`) use the Worker's origin, port included (`http://localhost:8788/<pathname>`); every other domain stays on `https://<hostname>`. Never set it in a deployed environment. See `workers/short-links-redirect/README.md`, "Publishing from a local api-media".
 - Every KV write, single records included, uses the bulk endpoint (`PUT .../bulk`). The SDK's single-key `values.update` sends `{ value, metadata }` as a JSON body that Cloudflare stores verbatim as the value (cloudflare-typescript#2593). A bulk response that lists `unsuccessful_keys` fails the mutation.
 - `shortLinkDomainPublish(id)` republishes the domain record and every live link on it (backfill / cutover / publish-gap repair).
 - `shortLinkPublish(id)` republishes one link.
 
 ## Worker: `workers/short-links-redirect`
 
-Bindings: `SHORT_LINKS_KV` (KV), `SHORT_LINKS_DB` (D1), `SHORT_LINKS_EVENTS` (Queue producer + consumer). Vars: `CORE_GRAPHQL_ENDPOINT`, `CLICKHOUSE_URL`, `CLICKHOUSE_DATABASE` (`redirects`). Secrets: `CLICKHOUSE_USER`, `CLICKHOUSE_PASSWORD`.
+Bindings: `SHORT_LINKS_KV` (KV), `SHORT_LINKS_EVENTS` (Queue producer + consumer). Vars: `CORE_GRAPHQL_ENDPOINT`, `CLICKHOUSE_URL`, `CLICKHOUSE_DATABASE` (`redirects`). Secrets: `CLICKHOUSE_USER`, `CLICKHOUSE_PASSWORD`.
 
 Request flow for `GET`/`HEAD` `https://<host>/<path>?<query>`:
 
-1. Load `domain:<host>` (KV, then D1). Unknown host → 404 lost page.
+1. Load `domain:<host>` from KV, else api-media `shortLinkDomainByHostname` (hit → write back to KV, log `publish_gap`). Unknown host → 404 lost page.
 2. Strip a leading slash; if the path is empty, contains `/`, or its first segment is in `reservedPaths`, or it fails a cheap grammar check (`^[A-Za-z0-9_.~-]{1,64}$`) → not-found behaviour (`lostPage` 404 / `fallback` redirect / `passthrough` redirect to `passthroughOrigin + original path + query`).
-3. Look up `link:<host>/<path>` (lower-cased when the domain is case-insensitive): KV → D1 → api-media `shortLinkByPath` with a 2 s timeout (hit → write back to KV, log `publish_gap`) → not-found behaviour.
+3. Look up `link:<host>/<path>` (lower-cased when the domain is case-insensitive): KV → api-media `shortLinkByPath` with a 2 s timeout (hit → write back to KV, log `publish_gap`) → not-found behaviour.
 4. `paused` → redirect to link `fallbackTo`, else domain `fallbackTo`, else not-found behaviour.
 5. Build the destination: parse `to`; append every incoming query parameter except `qr` (UTMs pass through; existing destination params are kept). Redirect with `status`. `Cache-Control: no-store`.
 6. `ctx.waitUntil(SHORT_LINKS_EVENTS.send(event))` after the response is built. Failures never affect the response.
@@ -386,9 +372,8 @@ Existing `isPublisher` + `isValidInterop` gates on the short link mutations stay
 | Variable                                                      | Purpose                                                                                                |
 | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | `CLOUDFLARE_ACCOUNT_ID`                                       | already present                                                                                        |
-| `CLOUDFLARE_SHORT_LINKS_API_TOKEN`                            | API token with Workers KV Storage:Edit and D1:Edit                                                     |
+| `CLOUDFLARE_SHORT_LINKS_API_TOKEN`                            | API token with Workers KV Storage:Edit                                                                 |
 | `CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID`                      | KV namespace id; unset → publishing is a no-op                                                         |
-| `CLOUDFLARE_SHORT_LINKS_D1_DATABASE_ID`                       | D1 database id; unset → D1 replica skipped                                                             |
 | `CLOUDFLARE_SHORT_LINKS_API_BASE_URL`                         | local dev only: the Worker's local edge API; unset → api.cloudflare.com                                |
 | `CLOUDFLARE_SHORT_LINKS_WORKER_NAME`                          | the deployed redirect Worker, e.g. `short-links-redirect-stage`; unset → infrastructure management off |
 | `CLOUDFLARE_SHORT_LINKS_INFRA_API_TOKEN`                      | API token with Workers Scripts:Edit, Workers KV Storage:Edit, Workers Routes:Edit, Zone:Read           |
@@ -402,7 +387,7 @@ Existing `isPublisher` + `isValidInterop` gates on the short link mutations stay
 
 ### Worker (`wrangler.toml` vars / `wrangler secret`)
 
-`CORE_GRAPHQL_ENDPOINT`, `CLICKHOUSE_URL`, `CLICKHOUSE_DATABASE`; secrets `CLICKHOUSE_USER`, `CLICKHOUSE_PASSWORD`. KV / D1 / Queue ids are per environment in `wrangler.toml`.
+`CORE_GRAPHQL_ENDPOINT`, `CLICKHOUSE_URL`, `CLICKHOUSE_DATABASE`; secrets `CLICKHOUSE_USER`, `CLICKHOUSE_PASSWORD`. The global KV namespace id is per environment in `wrangler.toml`.
 
 ### Admin app (`apps/short-links-admin`, Doppler project `short-links-admin`)
 
@@ -414,12 +399,12 @@ Same Firebase + gateway variables as `videos-admin` (`NEXT_PUBLIC_GATEWAY_URL`, 
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | ClickHouse or Queues  | Redirects continue; events delay or drop.                                                                               |
 | api-media or Postgres | Known links redirect from the last published records; unknown paths get the domain's not-found behaviour; no new links. |
-| KV                    | D1 serves.                                                                                                              |
+| KV                    | Every redirect goes through api-media and is written back; with api-media also down, uncached hosts get the lost page.  |
 | Worker                | Nothing on the cut-over domains resolves. It is the one component with the 99.99% target.                               |
 
 ## Cutover per domain
 
-1. Create KV namespace, D1 database (apply `d1/0001_init.sql`), Queue, and ClickHouse table (`clickhouse/0001_init.sql`).
+1. Create KV namespace, Queue, and ClickHouse table (`clickhouse/0001_init.sql`).
 2. Fill the ids into `wrangler.toml`, set the Worker secrets, deploy to stage.
 3. Set the api-media env vars; run `shortLinkDomainPublish` for the domain (backfills every live link).
 4. Add the hostname as a custom domain / route of the Worker. For nxstp.is this replaces the Vercel `apps/short-links` deployment; for arc.gt the domain is configured with `notFound = passthrough`, `passthroughOrigin = https://api.arclight.org`, `redirectStatus = 302`, `reservedPaths = [s, hls, dl, dh, v2, api]` so non-keyword paths keep reaching the Arclight API.
@@ -480,18 +465,13 @@ Adds `"kvBinding": "KV_JESUS_FILM"` (nullable: a domain without a namespace is s
 
 `status` becomes nullable and holds only the link's own override (`redirectStatus`), never the owning domain's default, so a global link served on another domain takes that domain's status. Likewise `fallbackTo` is the link's own override only. The Worker already computes `record.status ?? domain.redirectStatus ?? 307`. Adds `"global": true|false` and `"hostname"` (the owning domain) for reporting.
 
-### D1 (replica, unchanged table)
-
-Keys: `link:<hostname>/<pathname>` for domain records-of-links as before, `global:<pathname>` for global links, `domain:<hostname>` for domains.
-
 ### Worker lookup order (amends step 3)
 
 1. Domain namespace `env[domain.kvBinding]` → `get(<slug>)` (skipped when `kvBinding` is null or the binding is absent, logged once per isolate as `missing_binding`).
 2. Global namespace `SHORT_LINKS_KV` → `get("link:<slug>")`.
-3. D1 `link:<hostname>/<slug>`, then `global:<slug>`.
-4. api-media `shortLinkByPath(hostname, pathname)`, which itself falls back to the global registry (below). A hit is written back to the namespace that should have had it (domain namespace when the returned link belongs to this domain and the binding exists, else the global namespace when the link is global) and logged as `publish_gap`.
+3. api-media `shortLinkByPath(hostname, pathname)`, which itself falls back to the global registry (below). A hit is written back to the namespace that should have had it (domain namespace when the returned link belongs to this domain and the binding exists, else the global namespace when the link is global) and logged as `publish_gap`.
 
-`resolvedFrom` gains the values `kv-global`, `d1-global`, and `api`.
+`resolvedFrom` gains the values `kv-global` and `api`.
 
 ### api-media (amended)
 
@@ -556,10 +536,10 @@ shortLinkDomainWorkerDetach(id: String!)
 
 ### What each operation does (`schema/shortLink/infrastructure`)
 
-Order is chosen so redirects keep working at every failure point (the Worker falls back domain KV → global KV → D1 → api-media).
+Order is chosen so redirects keep working at every failure point (the Worker falls back domain KV → global KV → api-media).
 
 - **KV setup**: find the namespace (the row's id, else the title `<workerName>:<hostname>`, else create it) → save `kvNamespaceId` → `publishDomainWithLinks` → prune keys that are no longer live when the namespace already existed → add the `KV_<HOSTNAME>` binding to the Worker → save `kvBinding` and republish the domain record. Also the repair for a binding a deploy dropped.
-- **KV remove** (refused while attached): clear `kvBinding` and republish the domain record → remove the binding → delete the domain's `link:<hostname>/…` rows from D1 → clear `kvNamespaceId`. The namespace is left in Cloudflare.
+- **KV remove** (refused while attached): clear `kvBinding` and republish the domain record → remove the binding → clear `kvNamespaceId`. The namespace is left in Cloudflare.
 - **Attach** (needs the KV setup): a domain with a path prefix gets the zone route `<hostname>/<pathPrefix>/*`; a root domain gets a Workers Custom Domain. Already attached to this Worker is a no-op; attached to another Worker is refused, with no override. A route needs the hostname to already have a proxied DNS record; a custom domain makes Cloudflare create the record and certificate and is refused when records already exist.
 - **Detach**: deletes only routes / custom domains on the hostname that point at this Worker.
 
@@ -580,15 +560,33 @@ Teardown order is detach → remove KV → remove domain.
 
 ### Cutover per domain (replaces the list above)
 
-1. Once per environment: the global namespace, D1, queues, ClickHouse and Worker secrets as before; fill the two ids into `wrangler.toml`; deploy.
+1. Once per environment: the global namespace, queues, ClickHouse and Worker secrets as before; fill the namespace id into `wrangler.toml`; deploy.
 2. Once per environment: set the api-media variables above (Doppler).
 3. Per domain, by a superAdmin in the admin: Add domain (or open the existing one) → Set up KV → Attach to Worker. The hostname's zone must already be in the account, and for a prefixed domain the hostname must already have a proxied DNS record.
 4. Watch `publish_gap` logs; zero is the goal.
 
 ### Not verified against the real API
 
-Built from the SDK source, wrangler's own requests and the API reference, and exercised against a fake API only. Prove on stage before prod: (1) "Set up KV" leaves the Worker's secrets, D1 and queue bindings intact; (2) a stage deploy keeps the binding; (3) attach, detach, remove KV and remove domain are each reflected in Cloudflare and the namespace is left in place; (4) attaching a hostname served by another Worker is refused.
+Built from the SDK source, wrangler's own requests and the API reference, and exercised against a fake API only. Prove on stage before prod: (1) "Set up KV" leaves the Worker's secrets and queue binding intact; (2) a stage deploy keeps the binding; (3) attach, detach, remove KV and remove domain are each reflected in Cloudflare and the namespace is left in place; (4) attaching a hostname served by another Worker is refused.
 
 ### Local dev
 
 Not emulated. With `CLOUDFLARE_SHORT_LINKS_API_BASE_URL` set (or the Worker name / token unset) the status reports `configured: false` and the mutations refuse; the manual KV fields (superAdmin) remain the local path.
+
+## KV-only edge store (2026-10-02)
+
+Decision: the D1 replica is removed. Workers KV is the only edge store, and api-media is the fallback when KV misses or cannot be read. This section amends everything above where they differ.
+
+Why:
+
+- The replica was written best-effort after the KV write, and read on a KV **miss**, not only on a KV error. A failed D1 delete for a deleted or retired link left a row that redirected that link again on every request, with nothing to reconcile it.
+- It protected only the case where KV fails and api-media is unreachable at the same moment. The outage goal (redirects survive a control-plane outage) is met by KV alone.
+- It cost an extra API call on every publish (30 rows per call on a domain republish), two extra reads on every unknown slug, and a database, migration, token permission and binding per environment.
+
+What changed:
+
+- **api-media** no longer writes D1. `CLOUDFLARE_SHORT_LINKS_D1_DATABASE_ID` is gone and the publishing token needs only Workers KV Storage:Edit.
+- **Worker** lookup is domain KV → global KV → api-media. `resolvedFrom` is `kv`, `kv-global` or `api`. The `SHORT_LINKS_DB` binding, `d1/` and the D1 endpoint of the local edge API are gone.
+- **Domain settings now fall back to api-media.** They used to be read from KV, then D1, with no api-media fallback. `shortLinkDomainByHostname(hostname)` is a new public query; on a KV miss the Worker calls it, writes the record back to `domain:<host>` and logs `publish_gap`. A host neither knows is remembered as unknown for 10 s per isolate, so it costs at most one api-media call in that time.
+
+What is given up: during a KV-only outage every redirect goes through api-media (2 s timeout, 1 to 3 tasks). That is acceptable at the first rollout's volume; revisit before nxstp.is or arc.gt traffic moves onto the Worker.

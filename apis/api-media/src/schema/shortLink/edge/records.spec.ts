@@ -11,9 +11,7 @@ import {
   effectiveDestination,
   effectiveRedirectStatus,
   globalLinkKey,
-  globalRecordKeyForLink,
-  isLiveLink,
-  recordKeyForLink
+  isLiveLink
 } from './records'
 
 describe('edge records', () => {
@@ -26,29 +24,16 @@ describe('edge records', () => {
       expect(
         domainLinkKey({ pathname: 'AbC' }, { slugCaseSensitive: true })
       ).toBe('AbC')
-      expect(
-        recordKeyForLink(
-          { pathname: 'AbC' },
-          { hostname: 'NXSTP.is', slugCaseSensitive: true }
-        )
-      ).toBe('link:nxstp.is/AbC')
     })
 
     it('lower-cases the slug on a case-insensitive domain', () => {
       expect(
         domainLinkKey({ pathname: 'AbC' }, { slugCaseSensitive: false })
       ).toBe('abc')
-      expect(
-        recordKeyForLink(
-          { pathname: 'AbC' },
-          { hostname: 'yt.example', slugCaseSensitive: false }
-        )
-      ).toBe('link:yt.example/abc')
     })
 
     it('prefixes global keys', () => {
       expect(globalLinkKey({ pathname: 'promo' })).toBe('link:promo')
-      expect(globalRecordKeyForLink({ pathname: 'promo' })).toBe('global:promo')
     })
   })
 
@@ -92,9 +77,6 @@ describe('edge records', () => {
       })
       expect(buildDomainRecord(domain).pathPrefix).toBe('s')
       expect(domainLinkKey({ pathname: 'Easter' }, domain)).toBe('easter')
-      expect(recordKeyForLink({ pathname: 'Easter' }, domain)).toBe(
-        'link:jesus.film/easter'
-      )
     })
   })
 

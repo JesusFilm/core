@@ -2,12 +2,7 @@ import { vi } from 'vitest'
 
 import { prismaMock } from '../../../../test/prismaMock'
 import { buildShortLinkDomain } from '../../../../test/shortLinkFixtures'
-import {
-  getEdgeConfig,
-  publishDomain,
-  publishDomainWithLinks,
-  purgeDomainLinkReplica
-} from '../edge'
+import { getEdgeConfig, publishDomain, publishDomainWithLinks } from '../edge'
 
 import {
   Attachment,
@@ -39,8 +34,7 @@ vi.mock('../edge', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../edge')>()),
   getEdgeConfig: vi.fn(),
   publishDomain: vi.fn(),
-  publishDomainWithLinks: vi.fn(),
-  purgeDomainLinkReplica: vi.fn()
+  publishDomainWithLinks: vi.fn()
 }))
 vi.mock('./config', async (importOriginal) => ({
   ...(await importOriginal<typeof import('./config')>()),
@@ -264,7 +258,7 @@ describe('infrastructure operations', () => {
   })
 
   describe('removeDomainKv', () => {
-    it('stops the Worker reading the namespace before removing the binding, then purges the replica', async () => {
+    it('stops the Worker reading the namespace before removing the binding', async () => {
       prismaMock.shortLinkDomain.findUnique.mockResolvedValue(setUp)
       vi.mocked(removeWorkerKvBindings).mockResolvedValue([
         'KV_STAGE_JESUS_FILM'
@@ -276,18 +270,12 @@ describe('infrastructure operations', () => {
         [{ where: { id: 'domainId' }, data: { kvBinding: null } }],
         [{ where: { id: 'domainId' }, data: { kvNamespaceId: null } }]
       ])
-      expect(purgeDomainLinkReplica).toHaveBeenCalledWith('stage.jesus.film')
       expect(
         callOrder(
           ['publishDomain', vi.mocked(publishDomain)],
-          ['removeWorkerKvBindings', vi.mocked(removeWorkerKvBindings)],
-          ['purgeDomainLinkReplica', vi.mocked(purgeDomainLinkReplica)]
+          ['removeWorkerKvBindings', vi.mocked(removeWorkerKvBindings)]
         )
-      ).toEqual([
-        'publishDomain',
-        'removeWorkerKvBindings',
-        'purgeDomainLinkReplica'
-      ])
+      ).toEqual(['publishDomain', 'removeWorkerKvBindings'])
 
       const selects = vi.mocked(removeWorkerKvBindings).mock.calls[0][1]
       const binding = (overrides: Partial<WorkerBinding>): WorkerBinding => ({
@@ -311,7 +299,6 @@ describe('infrastructure operations', () => {
 
       expect(publishDomain).not.toHaveBeenCalled()
       expect(removeWorkerKvBindings).toHaveBeenCalled()
-      expect(purgeDomainLinkReplica).toHaveBeenCalledWith('stage.jesus.film')
       expect(prismaMock.shortLinkDomain.update.mock.calls).toEqual([
         [{ where: { id: 'domainId' }, data: { kvNamespaceId: null } }]
       ])
@@ -330,14 +317,14 @@ describe('infrastructure operations', () => {
       expect(removeWorkerKvBindings).not.toHaveBeenCalled()
     })
 
-    it('keeps the namespace id when the replica purge fails, so it can be retried', async () => {
+    it('keeps the namespace id when removing the binding fails, so it can be retried', async () => {
       prismaMock.shortLinkDomain.findUnique.mockResolvedValue(setUp)
-      vi.mocked(purgeDomainLinkReplica).mockRejectedValueOnce(
-        new Error('d1 down')
+      vi.mocked(removeWorkerKvBindings).mockRejectedValueOnce(
+        new Error('cloudflare down')
       )
 
       await expect(removeDomainKv('domainId', logger)).rejects.toThrow(
-        'd1 down'
+        'cloudflare down'
       )
 
       expect(prismaMock.shortLinkDomain.update.mock.calls).toEqual([

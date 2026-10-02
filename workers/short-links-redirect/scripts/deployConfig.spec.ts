@@ -8,7 +8,7 @@ const live: LiveBinding[] = [
   { name: 'SHORT_LINKS_KV', type: 'kv_namespace', namespace_id: 'global-id' },
   { name: 'KV_JESUS_FILM', type: 'kv_namespace', namespace_id: 'film-id' },
   { name: 'KV_JESUS_MOVIE', type: 'kv_namespace', namespace_id: 'movie-id' },
-  { name: 'SHORT_LINKS_DB', type: 'd1' },
+  { name: 'SHORT_LINKS_EVENTS', type: 'queue' },
   { name: 'CLICKHOUSE_PASSWORD', type: 'secret_text' }
 ]
 
@@ -81,8 +81,8 @@ describe('deploy config', () => {
         'binding = "KV_NXSTP_IS"',
         'id = "short-links-dev-nxstp-is"',
         '',
-        '[[d1_databases]]',
-        'binding = "SHORT_LINKS_DB"',
+        '[[queues.producers]]',
+        'binding = "SHORT_LINKS_EVENTS"',
         '',
         '[[env.stage.kv_namespaces]]',
         'binding = "SHORT_LINKS_KV"',
@@ -101,7 +101,9 @@ describe('deploy config', () => {
       expect(rendered).toContain(
         '[[kv_namespaces]]\nbinding = "SHORT_LINKS_KV"\nid = "short-links-dev"'
       )
-      expect(rendered).toContain('[[d1_databases]]\nbinding = "SHORT_LINKS_DB"')
+      expect(rendered).toContain(
+        '[[queues.producers]]\nbinding = "SHORT_LINKS_EVENTS"'
+      )
       expect(rendered).toContain(
         '[[env.stage.kv_namespaces]]\nbinding = "SHORT_LINKS_KV"\nid = "stage-global"'
       )

@@ -1,23 +1,21 @@
 # short-links-redirect: the edge redirect Worker for every short-link domain.
 # Contract: prds/short-links/TECH-DESIGN.md.
 #
-# BEFORE THE FIRST DEPLOY to an environment, replace every
-# `REPLACE_ME_BEFORE_DEPLOY` below with the real resource ids:
+# BEFORE THE FIRST DEPLOY to an environment, replace the
+# `REPLACE_ME_BEFORE_DEPLOY` below with the real namespace id:
 #
 #   wrangler kv namespace create short-links-stage   -> kv_namespaces[].id (SHORT_LINKS_KV)
-#   wrangler d1 database create short-links-stage     -> d1_databases[].database_id
-#   wrangler d1 migrations apply short-links-stage --env=stage --remote
 #   wrangler queues create short-links-events-stage
 #   wrangler queues create short-links-events-dlq-stage
 #   wrangler secret put CLICKHOUSE_USER --env=stage
 #   wrangler secret put CLICKHOUSE_PASSWORD --env=stage
 #
 # (and the same with `-prod` / `--env=prod`). Queues are referenced by name, so
-# they need no id here. The placeholders are deliberately invalid so a deploy
-# with unfilled ids fails at the Cloudflare API instead of silently binding to
+# they need no id here. The placeholder is deliberately invalid so a deploy
+# with an unfilled id fails at the Cloudflare API instead of silently binding to
 # nothing. The top-level (dev) environment is what `wrangler dev` and the vitest
-# Workers pool use; miniflare provisions local KV / D1 / Queues regardless of
-# the ids, so the placeholders are fine there.
+# Workers pool use; miniflare provisions local KV / Queues regardless of the
+# ids.
 #
 # WHAT IS NOT IN THIS FILE for stage and prod, on purpose:
 #
@@ -74,12 +72,6 @@ id = "short-links-dev-arc-gt"
 binding = "KV_STG_ARC_GT"
 id = "short-links-dev-stg-arc-gt"
 
-[[d1_databases]]
-binding = "SHORT_LINKS_DB"
-database_name = "short-links-dev"
-database_id = "REPLACE_ME_BEFORE_DEPLOY"
-migrations_dir = "d1"
-
 [[queues.producers]]
 binding = "SHORT_LINKS_EVENTS"
 queue = "short-links-events-dev"
@@ -110,12 +102,6 @@ CLICKHOUSE_DATABASE = "redirects"
 [[env.stage.kv_namespaces]]
 binding = "SHORT_LINKS_KV"
 id = "REPLACE_ME_BEFORE_DEPLOY"
-
-[[env.stage.d1_databases]]
-binding = "SHORT_LINKS_DB"
-database_name = "short-links-stage"
-database_id = "REPLACE_ME_BEFORE_DEPLOY"
-migrations_dir = "d1"
 
 [[env.stage.queues.producers]]
 binding = "SHORT_LINKS_EVENTS"
@@ -150,12 +136,6 @@ CLICKHOUSE_DATABASE = "redirects"
 [[env.prod.kv_namespaces]]
 binding = "SHORT_LINKS_KV"
 id = "REPLACE_ME_BEFORE_DEPLOY"
-
-[[env.prod.d1_databases]]
-binding = "SHORT_LINKS_DB"
-database_name = "short-links-prod"
-database_id = "REPLACE_ME_BEFORE_DEPLOY"
-migrations_dir = "d1"
 
 [[env.prod.queues.producers]]
 binding = "SHORT_LINKS_EVENTS"

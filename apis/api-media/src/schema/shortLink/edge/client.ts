@@ -9,7 +9,6 @@ export interface EdgeConfig {
   accountId: string
   /** the environment-wide namespace: domain records and global links */
   globalNamespaceId: string
-  d1DatabaseId: string | null
   client: Cloudflare
 }
 
@@ -28,12 +27,11 @@ let cachedClient: {
  * Edge publishing is configured by `CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID`
  * (the global namespace; each domain names its own on the row).
  * When it is unset (tests, local dev without the Worker) publishing is a
- * successful no-op, the same pattern as the Vercel domain calls. When only the
- * D1 id is unset the replica is skipped.
+ * successful no-op, the same pattern as the Vercel domain calls.
  *
  * `CLOUDFLARE_SHORT_LINKS_API_BASE_URL` points the client somewhere other than
  * api.cloudflare.com. It is for local dev only: the redirect Worker's
- * `wrangler dev` serves the same endpoints over its local KV and D1
+ * `wrangler dev` serves the same endpoints over its local KV
  * (workers/short-links-redirect/README.md, "Publishing from a local api-media").
  */
 export function getEdgeConfig(): EdgeConfig | null {
@@ -62,7 +60,6 @@ export function getEdgeConfig(): EdgeConfig | null {
   return {
     accountId,
     globalNamespaceId,
-    d1DatabaseId: envValue('CLOUDFLARE_SHORT_LINKS_D1_DATABASE_ID'),
     client: cachedClient.client
   }
 }

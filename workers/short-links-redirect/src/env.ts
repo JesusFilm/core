@@ -15,7 +15,6 @@ export interface Env {
   KV_NXSTP_IS?: KVNamespace
   KV_ARC_GT?: KVNamespace
   KV_STG_ARC_GT?: KVNamespace
-  SHORT_LINKS_DB: D1Database
   SHORT_LINKS_EVENTS: Queue<RedirectEvent>
   CORE_GRAPHQL_ENDPOINT?: string
   CLICKHOUSE_URL?: string

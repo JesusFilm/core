@@ -38,7 +38,7 @@ app.get('*', async (c) => {
   const url = new URL(c.req.url)
   const host = normaliseHost(url.host)
 
-  const domain = await loadDomain(c.env, host)
+  const domain = await loadDomain(c.env, c.executionCtx, host)
   if (domain == null) return lostPageResponse()
 
   const resolution = await resolve({

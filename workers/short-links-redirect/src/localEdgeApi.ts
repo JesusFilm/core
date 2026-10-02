@@ -5,18 +5,16 @@ import { clearDomainCache } from './store'
 
 /**
  * Local stand-in for the Cloudflare REST endpoints api-media's edge publisher
- * calls (KV bulk write, KV delete, D1 query), backed by this Worker's own
- * bindings. `wrangler dev` keeps KV and D1 in miniflare, which
- * api.cloudflare.com cannot reach, so without this a local api-media has
- * nothing to publish to.
+ * calls (KV bulk write, KV delete), backed by this Worker's own bindings.
+ * `wrangler dev` keeps KV in miniflare, which api.cloudflare.com cannot reach,
+ * so without this a local api-media has nothing to publish to.
  *
  * Only `src/local.ts` (the `nx serve` entry) mounts it. `wrangler.toml` keeps
  * `main` on `src/index.ts`, so this file is never in a deployed bundle.
  *
  * Binding names stand in for ids, because a Worker cannot see the ids its
  * bindings were declared with: the namespace id in the path is the KV binding
- * name (`SHORT_LINKS_KV`, `KV_JESUS_FILM`, ...) and the database id is the D1
- * binding name (`SHORT_LINKS_DB`).
+ * name (`SHORT_LINKS_KV`, `KV_JESUS_FILM`, ...).
  */
 export const LOCAL_EDGE_API_PREFIX = '/client/v4/'
 
@@ -27,36 +25,12 @@ interface BulkPair {
   value: string
 }
 
-interface D1Query {
-  sql: string
-  params?: string[]
-}
-
 function isBulkPair(value: unknown): value is BulkPair {
   return (
     typeof value === 'object' &&
     value != null &&
     typeof (value as BulkPair).key === 'string' &&
     typeof (value as BulkPair).value === 'string'
-  )
-}
-
-function isD1Query(value: unknown): value is D1Query {
-  if (typeof value !== 'object' || value == null) return false
-  const { sql, params } = value as D1Query
-  return (
-    typeof sql === 'string' &&
-    (params == null ||
-      (Array.isArray(params) &&
-        params.every((param) => typeof param === 'string')))
-  )
-}
-
-function isD1Database(value: unknown): value is D1Database {
-  return (
-    typeof value === 'object' &&
-    value != null &&
-    typeof (value as { prepare?: unknown }).prepare === 'function'
   )
 }
 
@@ -77,10 +51,10 @@ function failure(status: number, message: string): Response {
   )
 }
 
-function missingBinding(kind: string, binding: string): Response {
+function missingBinding(binding: string): Response {
   return failure(
     404,
-    `local edge API: no ${kind} binding named "${binding}" in wrangler.toml (locally the id is the binding name)`
+    `local edge API: no KV binding named "${binding}" in wrangler.toml (locally the id is the binding name)`
   )
 }
 
@@ -91,7 +65,7 @@ localEdgeApi.put(
   async (c) => {
     const binding = c.req.param('namespaceId')
     const namespace = c.env[binding]
-    if (!isKvNamespace(namespace)) return missingBinding('KV', binding)
+    if (!isKvNamespace(namespace)) return missingBinding(binding)
 
     const pairs: unknown = await c.req.json().catch(() => null)
     if (!Array.isArray(pairs) || !pairs.every(isBulkPair))
@@ -112,36 +86,13 @@ localEdgeApi.delete(
   async (c) => {
     const binding = c.req.param('namespaceId')
     const namespace = c.env[binding]
-    if (!isKvNamespace(namespace)) return missingBinding('KV', binding)
+    if (!isKvNamespace(namespace)) return missingBinding(binding)
 
     await namespace.delete(c.req.param('key'))
     clearDomainCache()
     return success({})
   }
 )
-
-localEdgeApi.post(`${ACCOUNT}/d1/database/:databaseId/query`, async (c) => {
-  const binding = c.req.param('databaseId')
-  const database = c.env[binding]
-  if (!isD1Database(database)) return missingBinding('D1', binding)
-
-  const query: unknown = await c.req.json().catch(() => null)
-  if (!isD1Query(query))
-    return failure(400, 'body must be { sql, params? } with string params')
-
-  try {
-    const { results, meta } = await database
-      .prepare(query.sql)
-      .bind(...(query.params ?? []))
-      .run()
-    return success([{ success: true, results, meta }])
-  } catch (error) {
-    return failure(
-      400,
-      error instanceof Error ? error.message : 'D1 query failed'
-    )
-  }
-})
 
 localEdgeApi.all('*', (c) =>
   failure(

@@ -5,11 +5,11 @@ The Cloudflare Worker that serves every short-link domain (`workers/short-links-
 ## Language
 
 **Routing Record**:
-The compact, versioned (`v: 1`) JSON projection of one short link that api-media publishes — as `<pathname>` in its domain's Domain Namespace, as `link:<pathname>` in the Global Namespace when it is a Global Link, and as `link:<hostname>/<pathname>` / `global:<pathname>` in D1: the destination `to`, the link's own `status` and `fallbackTo` overrides (null means "use the serving domain's"), `paused`, `global`, the owning `hostname`, and the analytics dimensions (asset class, placement, campaign ids, video ids, language). The Worker never derives these from the database; it only reads what was published.
+The compact, versioned (`v: 1`) JSON projection of one short link that api-media publishes — as `<pathname>` in its domain's Domain Namespace, and as `link:<pathname>` in the Global Namespace when it is a Global Link: the destination `to`, the link's own `status` and `fallbackTo` overrides (null means "use the serving domain's"), `paused`, `global`, the owning `hostname`, and the analytics dimensions (asset class, placement, campaign ids, video ids, language). The Worker never derives these from the database; it only reads what was published.
 _Avoid_: short link (that's the Media entity), link config
 
 **Domain Record**:
-The versioned JSON projection of one `ShortLinkDomain` under `domain:<hostname>` in the Global Namespace: `redirectStatus`, `notFound`, `fallbackTo`, `passthroughOrigin`, `reservedPaths`, `slugCaseSensitive`, `pathPrefix`, `kvBinding` (the name of its Domain Namespace binding, or null). Cached per isolate for 60 s; an unknown host is a lost page.
+The versioned JSON projection of one `ShortLinkDomain` under `domain:<hostname>` in the Global Namespace: `redirectStatus`, `notFound`, `fallbackTo`, `passthroughOrigin`, `reservedPaths`, `slugCaseSensitive`, `pathPrefix`, `kvBinding` (the name of its Domain Namespace binding, or null). Cached per isolate for 60 s. When KV has no record the Worker asks api-media (`shortLinkDomainByHostname`) and writes the answer back; a host neither knows is a lost page.
 _Avoid_: tenant, zone (that's Cloudflare's DNS zone)
 
 **Path Prefix**:
@@ -17,8 +17,8 @@ The path a domain's short links live under, carried on the Domain Record as `pat
 _Avoid_: base path, route (that's the Cloudflare route pattern `jesus.film/s/*`), namespace
 
 **Edge Store**:
-The read path for records, in order — the Domain Namespace (`<slug>`), the Global Namespace (`link:<slug>`), the D1 replica (`link:<hostname>/<slug>`, then `global:<slug>`), api-media's `shortLinkByPath` last. Each tier stamps the Redirect Event's `resolvedFrom` (`kv`, `kv-global`, `d1`, `d1-global`, `api`). api-media writes KV and D1 in the same publish call; the Worker only ever reads them. A record with an unrecognised `v` is a miss for that tier, never an error.
-_Avoid_: cache (KV is the primary serving store, not a cache of api-media), database (D1 is a replica)
+The read path for records, in order — the Domain Namespace (`<slug>`), the Global Namespace (`link:<slug>`), api-media's `shortLinkByPath` last. Each tier stamps the Redirect Event's `resolvedFrom` (`kv`, `kv-global`, `api`). Workers KV is the only edge store: api-media writes it on every publish, and the Worker reads it and writes to it only to heal a Publish Gap. There is no replica; api-media is the fallback when KV misses or cannot be read. A record with an unrecognised `v` is a miss for that tier, never an error.
+_Avoid_: cache (KV is the primary serving store, not a cache of api-media), replica, database
 
 **Domain Namespace**:
 A domain's own Workers KV namespace, holding only its Routing Records keyed by bare slug. The Worker reaches it through the binding named in the Domain Record (`env[domain.kvBinding]`, e.g. `KV_JESUS_FILM`); every domain has one binding ("one binding per domain"), named `KV_<HOSTNAME>`. On stage and prod api-media adds and removes these on the live Worker through the Cloudflare API for a superAdmin, and the deploy script carries them over; only the dev section of `wrangler.toml` declares any. A domain with a null `kvBinding` has no namespace and is served by the remaining tiers; a binding named on the record but absent from the deploy is a Missing Binding, logged once per isolate and skipped.
@@ -41,11 +41,11 @@ The `passthrough` Not-Found Behaviour as arc.gt uses it: reserved first segments
 _Avoid_: proxy (the Worker redirects, it does not fetch on the visitor's behalf), fallback (that's the `fallback` behaviour, a different destination)
 
 **Publish Gap**:
-A link that exists in api-media but in none of the KV or D1 tiers — the miss that reaches the api-media tier. The Worker heals it (writes the converted Routing Record back, in `waitUntil`, to the Domain Namespace when the link belongs to the serving domain and the binding exists, else to the Global Namespace when it is a Global Link, else nowhere) and logs `{"event":"publish_gap","key":...,"target":...}`; the count of these is the health signal for api-media's publishing. Zero is the goal.
+A link (or a domain's settings) that exists in api-media but not in KV — the miss that reaches the api-media tier. The Worker heals it (writes the converted Routing Record back, in `waitUntil`, to the Domain Namespace when the link belongs to the serving domain and the binding exists, else to the Global Namespace when it is a Global Link, else nowhere) and logs `{"event":"publish_gap","key":...,"target":...}`; the count of these is the health signal for api-media's publishing. Zero is the goal.
 _Avoid_: cache miss, cold start
 
 **Redirect Event**:
-The versioned queue message the Worker sends after every record-backed redirect (`link` or `linkFallback`; domain fallbacks and passthroughs send nothing): hostname, pathname, link and campaign ids, destination, status, Attribution, country (from `request.cf`), the raw user agent, referrer host, language, UTMs, `resolvedFrom` (`kv` / `kv-global` / `d1` / `d1-global` / `api`), `global` and `ownerHostname`. The consumer parses the user agent into device class / OS / browser and drops it; no IP is ever on the queue.
+The versioned queue message the Worker sends after every record-backed redirect (`link` or `linkFallback`; domain fallbacks and passthroughs send nothing): hostname, pathname, link and campaign ids, destination, status, Attribution, country (from `request.cf`), the raw user agent, referrer host, language, UTMs, `resolvedFrom` (`kv` / `kv-global` / `api`), `global` and `ownerHostname`. The consumer parses the user agent into device class / OS / browser and drops it; no IP is ever on the queue.
 _Avoid_: click (QR scans are not clicks), page view, analytics row (that's the ClickHouse projection of it)
 
 **Attribution**:

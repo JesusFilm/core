@@ -1636,6 +1636,15 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
     last: Int
   ): QueryShortLinkDomainsConnection! @join__field(graph: API_MEDIA) 
   """
+  find a short link domain by hostname. Public: the redirect Worker reads it when its edge store has no domain record for the host
+  """
+  shortLinkDomainByHostname(
+    """
+    the hostname including subdomain, domain, and TLD, but excluding port
+    """
+    hostname: String!
+  ): QueryShortLinkDomainByHostnameResult! @join__field(graph: API_MEDIA) 
+  """
   Find a short link domain by id
   """
   shortLinkDomain(id: String!) : QueryShortLinkDomainResult! @join__field(graph: API_MEDIA) 
@@ -2996,6 +3005,10 @@ type QueryShortLinkCampaignsConnectionEdge @join__type(graph: API_MEDIA)  {
   cursor: String!
 }
 
+type QueryShortLinkDomainByHostnameSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLinkDomain!
+}
+
 type QueryShortLinkDomainSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLinkDomain!
 }
@@ -3796,6 +3809,8 @@ union QueryPlaylistResult @join__type(graph: API_MEDIA)  @join__unionMember(grap
 union QueryShortLinkByPathResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkByPathSuccess")  = NotFoundError | QueryShortLinkByPathSuccess
 
 union QueryShortLinkCampaignResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkCampaignSuccess")  = NotFoundError | QueryShortLinkCampaignSuccess
+
+union QueryShortLinkDomainByHostnameResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkDomainByHostnameSuccess")  = NotFoundError | QueryShortLinkDomainByHostnameSuccess
 
 union QueryShortLinkDomainResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkDomainSuccess")  = NotFoundError | QueryShortLinkDomainSuccess
 

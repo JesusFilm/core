@@ -8,8 +8,7 @@ import {
   domainLinkKey,
   getEdgeConfig,
   publishDomain,
-  publishDomainWithLinks,
-  purgeDomainLinkReplica
+  publishDomainWithLinks
 } from '../edge'
 import { failedPrecondition } from '../lib/errors'
 
@@ -75,7 +74,7 @@ async function liveLinkKeys(domain: ShortLinkDomain): Promise<Set<string>> {
  * Create (or adopt) the domain's KV namespace, fill it, bind it to the Worker
  * and only then tell the Worker to read it. Ordered so redirects keep working
  * if any step fails: until the last step the Worker serves the domain from the
- * global namespace, D1 and api-media, exactly as before. Safe to run again.
+ * global namespace and api-media, exactly as before. Safe to run again.
  */
 export async function setupDomainKv(
   domainId: string,
@@ -143,8 +142,8 @@ export async function setupDomainKv(
 
 /**
  * Take the domain off its own namespace: stop the Worker reading it, remove
- * the binding, drop the replica rows and clear the row. The namespace itself
- * is left in Cloudflare (it is adopted again by the next setup). Refused while
+ * the binding and clear the row. The namespace itself is left in Cloudflare
+ * (it is adopted, and pruned, by the next setup). Refused while
  * the hostname is attached, because the domain's links would then only
  * resolve through api-media. Safe to run again after a partial failure.
  */
@@ -187,7 +186,6 @@ export async function removeDomainKv(
       )
   )
 
-  await purgeDomainLinkReplica(domain.hostname)
   if (domain.kvNamespaceId != null)
     await prisma.shortLinkDomain.update({
       where: { id: domainId },

@@ -35,7 +35,7 @@ In scope
   destination history, soft delete, slug grammar, reserved paths, not-found
   behaviour, passthrough for arc.gt).
 - A Cloudflare Worker (`workers/short-links-redirect`) that serves every
-  redirect from KV with a D1 replica and an api-media lookup on a double miss.
+  redirect from KV, with an api-media lookup on a miss.
 - api-media publishes routing records to the edge on every write; the mutation
   fails if KV rejects it.
 - Server-side QR rendering (PNG and SVG) that encodes the short URL, never the
@@ -67,7 +67,7 @@ Out of scope for this version
 
 See `TECH-DESIGN.md`. In one line: the admin app and every existing minting
 client write through api-media; api-media publishes a compact routing record to
-KV and D1; the Worker resolves from the edge store, redirects, and enqueues a
+KV; the Worker resolves from the edge store, redirects, and enqueues a
 click event after the response; a consumer batches events into ClickHouse;
 api-media reads ClickHouse for the dashboard.
 
@@ -76,9 +76,8 @@ api-media reads ClickHouse for the dashboard.
 ### Phase 1: Redirect core, links, QR codes — delivered in this change
 
 - Data model, migration, Pothos schema, protection rules enforced server-side.
-- api-media publishes to KV and D1 synchronously on every write.
-- Worker: KV lookup, D1 fallback, api-media lookup on a double miss with KV
-  write-back, per-domain not-found behaviour (lost page / fallback /
+- api-media publishes to KV synchronously on every write.
+- Worker: KV lookup, api-media lookup on a miss with KV write-back, per-domain not-found behaviour (lost page / fallback /
   passthrough), per-domain and per-link status code, reserved paths, UTM
   pass-through, QR attribution via `?qr=1`, click event to the queue in
   `waitUntil`.

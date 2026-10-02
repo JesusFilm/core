@@ -118,14 +118,6 @@ async function seedKv(): Promise<void> {
   }
 }
 
-async function seedD1(key: string, value: unknown): Promise<void> {
-  await bindings.SHORT_LINKS_DB.prepare(
-    'INSERT OR REPLACE INTO short_link_records (key, value, updated_at) VALUES (?, ?, ?)'
-  )
-    .bind(key, JSON.stringify(value), new Date().toISOString())
-    .run()
-}
-
 interface RequestResult {
   response: Response
   sent: RedirectEvent[]
@@ -171,6 +163,37 @@ function graphQlReply(shortLink: unknown): void {
       }),
       responseOptions: { headers: { 'Content-Type': 'application/json' } }
     }))
+}
+
+/** Replies to the api-media domain lookup; null is the NotFoundError member. */
+function domainReply(domain: DomainRecord | null): void {
+  fetchMock
+    .get(graphQlEndpoint)
+    .intercept({ path: '/', method: 'POST' })
+    .reply(() => {
+      // api-media returns the fields of a domain record without its version
+      const data =
+        domain == null
+          ? null
+          : Object.fromEntries(
+              Object.entries(domain).filter(([field]) => field !== 'v')
+            )
+      return {
+        statusCode: 200,
+        data: JSON.stringify({
+          data: {
+            shortLinkDomainByHostname:
+              domain == null
+                ? {
+                    __typename: 'NotFoundError',
+                    message: 'short link domain not found'
+                  }
+                : { __typename: 'QueryShortLinkDomainByHostnameSuccess', data }
+          }
+        }),
+        responseOptions: { headers: { 'Content-Type': 'application/json' } }
+      }
+    })
 }
 
 describe('short-links-redirect worker', () => {
@@ -367,6 +390,7 @@ describe('short-links-redirect worker', () => {
 
   describe('not-found behaviour', () => {
     it('serves the lost page for an unknown host', async () => {
+      domainReply(null)
       const { response } = await request('https://unknown.example/jesus')
 
       expect(response.status).toBe(404)
@@ -447,36 +471,73 @@ describe('short-links-redirect worker', () => {
   })
 
   describe('store fallbacks', () => {
-    it('falls back to D1 when KV misses', async () => {
-      await seedD1(
-        'link:nxstp.is/from-d1',
-        routingRecord({ id: 'link-d1', to: 'https://example.com/d1' })
-      )
+    it('loads the domain from api-media when KV has no record, and writes it back', async () => {
+      const log = vi.spyOn(console, 'log').mockImplementation(() => undefined)
+      const domain = domainRecord({
+        hostname: 'apionly.example',
+        redirectStatus: 308,
+        notFound: 'fallback',
+        fallbackTo: 'https://example.com/api-domain'
+      })
+      domainReply(domain)
 
-      const { response, sent } = await request('https://nxstp.is/from-d1')
-
-      expect(response.status).toBe(307)
-      expect(response.headers.get('location')).toBe('https://example.com/d1')
-      expect(sent[0]?.resolvedFrom).toBe('d1')
-    })
-
-    it('loads the domain from D1 when KV misses', async () => {
-      await seedD1(
-        'domain:d1only.example',
-        domainRecord({
-          hostname: 'd1only.example',
-          redirectStatus: 308,
-          notFound: 'fallback',
-          fallbackTo: 'https://example.com/d1-domain'
-        })
-      )
-
-      const { response } = await request('https://d1only.example/x/y')
+      const { response } = await request('https://apionly.example/x/y')
 
       expect(response.status).toBe(308)
       expect(response.headers.get('location')).toBe(
-        'https://example.com/d1-domain'
+        'https://example.com/api-domain'
       )
+      expect(
+        await bindings.SHORT_LINKS_KV.get('domain:apionly.example', 'json')
+      ).toEqual(domain)
+      expect(log).toHaveBeenCalledWith(
+        JSON.stringify({
+          event: 'publish_gap',
+          key: 'domain:apionly.example',
+          target: 'SHORT_LINKS_KV'
+        })
+      )
+      log.mockRestore()
+    })
+
+    it('asks api-media about an unknown host once, then remembers the answer', async () => {
+      domainReply(null)
+
+      const fetchSpy = vi.spyOn(globalThis, 'fetch')
+      const callsBefore = fetchSpy.mock.calls.length
+
+      const first = await request('https://nowhere.example/jesus')
+      const second = await request('https://nowhere.example/jesus')
+
+      expect(fetchSpy.mock.calls.length - callsBefore).toBe(1)
+
+      expect(first.response.status).toBe(404)
+      expect(await second.response.text()).toContain(LOST_PAGE_TITLE)
+      expect(
+        await bindings.SHORT_LINKS_KV.get('domain:nowhere.example')
+      ).toBeNull()
+    })
+
+    it('serves the lost page when neither KV nor api-media can be reached for the host', async () => {
+      const error = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined)
+      fetchMock
+        .get(graphQlEndpoint)
+        .intercept({ path: '/', method: 'POST' })
+        .replyWithError(new Error('api-media down'))
+
+      const { response } = await request('https://outage.example/jesus')
+
+      expect(response.status).toBe(404)
+      expect(error).toHaveBeenCalledWith(
+        JSON.stringify({
+          event: 'api_domain_lookup_failed',
+          hostname: 'outage.example'
+        }),
+        expect.any(Error)
+      )
+      error.mockRestore()
     })
 
     it('treats a record with the wrong version as a miss for that store', async () => {
@@ -484,16 +545,34 @@ describe('short-links-redirect worker', () => {
         'versioned',
         JSON.stringify({ ...routingRecord({ id: 'stale' }), v: 2 })
       )
-      await seedD1(
-        'link:nxstp.is/versioned',
-        routingRecord({ id: 'link-v1', to: 'https://example.com/v1' })
-      )
+      graphQlReply({
+        id: 'link-v1',
+        to: 'https://example.com/v1',
+        status: 'active',
+        redirectStatus: null,
+        fallbackTo: null,
+        assetClass: 'standard',
+        placement: null,
+        videoId: null,
+        youtubeVideoId: null,
+        language: null,
+        brightcoveId: null,
+        redirectType: null,
+        global: false,
+        campaigns: [],
+        domain: {
+          hostname: 'nxstp.is',
+          redirectStatus: 307,
+          fallbackTo: null,
+          passthroughOrigin: null
+        }
+      })
 
       const { response, sent } = await request('https://nxstp.is/versioned')
 
       expect(response.status).toBe(307)
       expect(response.headers.get('location')).toBe('https://example.com/v1')
-      expect(sent[0]?.resolvedFrom).toBe('d1')
+      expect(sent[0]?.resolvedFrom).toBe('api')
     })
 
     it('falls back to api-media, writes the record back to the domain namespace and logs publish_gap', async () => {

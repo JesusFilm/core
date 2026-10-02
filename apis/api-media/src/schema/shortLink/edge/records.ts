@@ -20,8 +20,6 @@ import { normalizePathname } from '../lib/slug'
  *   `domain:<hostname>` domain records, `link:<pathname>` global links
  * - one namespace per domain (`ShortLinkDomain.kvNamespaceId`):
  *   `<pathname>` the domain's routing records (bare slug, no prefix)
- * - D1 replica (one table): `domain:<hostname>`, `link:<hostname>/<pathname>`,
- *   `global:<pathname>`
  */
 
 export const EDGE_RECORD_VERSION = 1
@@ -93,7 +91,7 @@ export type LinkForRecord = Pick<
   | 'redirectType'
 > & { campaigns: Array<{ id: string }> }
 
-/** `domain:<hostname>` in the global namespace and D1. */
+/** `domain:<hostname>` in the global namespace. */
 export function domainKey(hostname: string): string {
   return `domain:${hostname.toLowerCase()}`
 }
@@ -112,21 +110,6 @@ export function domainLinkKey(
 /** `link:<pathname>` in the global namespace (global pathnames are lower-case). */
 export function globalLinkKey(link: Pick<ShortLink, 'pathname'>): string {
   return `link:${link.pathname}`
-}
-
-/** `link:<hostname>/<pathname>` — the D1 replica key of a domain routing record. */
-export function recordKeyForLink(
-  link: Pick<ShortLink, 'pathname'>,
-  domain: Pick<ShortLinkDomain, 'hostname' | 'slugCaseSensitive'>
-): string {
-  return `link:${domain.hostname.toLowerCase()}/${domainLinkKey(link, domain)}`
-}
-
-/** `global:<pathname>` — the D1 replica key of a global link. */
-export function globalRecordKeyForLink(
-  link: Pick<ShortLink, 'pathname'>
-): string {
-  return `global:${link.pathname}`
 }
 
 export function buildDomainRecord(domain: DomainForRecord): DomainRecord {

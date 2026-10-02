@@ -74,7 +74,7 @@ function inherit(binding: WorkerBinding): { type: 'inherit'; name: string } {
  * Re-reads the bindings after a change and fails loudly when anything that
  * should have been kept is gone: the replace semantics of the endpoint are the
  * one thing that cannot be proven without the real API, and a silent loss here
- * would take the Worker's secrets or its D1 / queue bindings with it.
+ * would take the Worker's secrets or its queue binding with it.
  */
 async function assertBindingsKept(
   config: InfrastructureConfig,

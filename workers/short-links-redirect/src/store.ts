@@ -1,5 +1,9 @@
 import { type Env, isKvNamespace } from './env'
-import { fetchShortLinkByPath, toRoutingRecord } from './graphql'
+import {
+  fetchDomainRecord,
+  fetchShortLinkByPath,
+  toRoutingRecord
+} from './graphql'
 import {
   type DomainRecord,
   type RoutingRecord,
@@ -10,21 +14,27 @@ import {
 import type { LinkLookupHit } from './resolve'
 
 export const DOMAIN_CACHE_TTL_MS = 60_000
+/**
+ * How long "no such domain" is remembered. Short, so a domain that was just
+ * added, or a KV and api-media outage that just ended, is picked up quickly,
+ * while a host with no domain still costs at most one api-media call per
+ * isolate in that time.
+ */
+export const UNKNOWN_DOMAIN_CACHE_TTL_MS = 10_000
 
 /** The one piece of the execution context the store needs (Hono's context type is narrower than workers-types'). */
 export type BackgroundContext = Pick<ExecutionContext, 'waitUntil'>
-
-const D1_SELECT_VALUE = 'SELECT value FROM short_link_records WHERE key = ?'
 
 /** The global namespace's binding name, for logs. */
 export const GLOBAL_BINDING = 'SHORT_LINKS_KV'
 
 interface CachedDomain {
-  record: DomainRecord
+  /** null: neither KV nor api-media knows the host */
+  record: DomainRecord | null
   expiresAt: number
 }
 
-/** Per-isolate domain cache: one KV/D1 read per host per minute at most. */
+/** Per-isolate domain cache: one KV read per host per minute at most. */
 const domainCache = new Map<string, CachedDomain>()
 
 /** Bindings already reported as missing, so each is logged once per isolate. */
@@ -53,14 +63,9 @@ export function globalLinkKey(slug: string): string {
   return `link:${slug}`
 }
 
-/** D1 key of a domain's link. */
+/** How a domain's link is named in the `publish_gap` log. */
 export function domainLinkKey(hostname: string, slug: string): string {
   return `link:${hostname}/${slug}`
-}
-
-/** D1 key of a global link. */
-export function globalD1Key(slug: string): string {
-  return `global:${slug}`
 }
 
 /**
@@ -99,25 +104,15 @@ async function readKv<T>(
   }
 }
 
-async function readD1<T>(
-  env: Env,
-  key: string,
-  validate: (value: unknown) => value is T
-): Promise<T | null> {
-  try {
-    const value = await env.SHORT_LINKS_DB.prepare(D1_SELECT_VALUE)
-      .bind(key)
-      .first<string>('value')
-    return parseRecord(value, validate)
-  } catch (error) {
-    console.error(JSON.stringify({ event: 'd1_read_failed', key }), error)
-    return null
-  }
-}
-
-/** Step 1: `domain:<host>` from the global namespace, then D1, cached for 60 s per isolate. */
+/**
+ * Step 1: `domain:<host>` from the global namespace, cached per isolate. When
+ * KV has no record (the domain was never published, or KV cannot be read) the
+ * settings come from api-media and are written back, so a KV outage does not
+ * turn a known host into the lost page.
+ */
 export async function loadDomain(
   env: Env,
+  ctx: BackgroundContext,
   host: string,
   now: number = Date.now()
 ): Promise<DomainRecord | null> {
@@ -125,23 +120,34 @@ export async function loadDomain(
   if (cached != null && cached.expiresAt > now) return cached.record
 
   const key = `domain:${host}`
-  const record =
-    (await readKv(env.SHORT_LINKS_KV, key, isDomainRecord)) ??
-    (await readD1(env, key, isDomainRecord))
+  let record = await readKv(env.SHORT_LINKS_KV, key, isDomainRecord)
+  if (record == null) {
+    record = await fetchDomainRecord({
+      endpoint: env.CORE_GRAPHQL_ENDPOINT,
+      hostname: host
+    })
+    if (record != null) {
+      writeBack(ctx, env.SHORT_LINKS_KV, key, record)
+      console.log(
+        JSON.stringify({ event: 'publish_gap', key, target: GLOBAL_BINDING })
+      )
+    }
+  }
 
-  if (record == null) return null
-
-  domainCache.set(host, { record, expiresAt: now + DOMAIN_CACHE_TTL_MS })
+  domainCache.set(host, {
+    record,
+    expiresAt:
+      now + (record == null ? UNKNOWN_DOMAIN_CACHE_TTL_MS : DOMAIN_CACHE_TTL_MS)
+  })
   return record
 }
 
 /**
  * Step 3, the lookup order: the domain namespace (`<slug>`), the global
- * namespace (`link:<slug>`), D1 (`link:<hostname>/<slug>`, then
- * `global:<slug>`), then api-media. An api-media hit is a publish gap: the
- * converted record is written back to the namespace that should have had it
- * (the domain's when the link belongs to this domain and the binding exists,
- * else the global one when the link is global, else nowhere) in the
+ * namespace (`link:<slug>`), then api-media. An api-media hit is a publish
+ * gap: the converted record is written back to the namespace that should have
+ * had it (the domain's when the link belongs to this domain and the binding
+ * exists, else the global one when the link is global, else nowhere) in the
  * background and logged so the gap can be repaired upstream.
  */
 export async function lookupLink(
@@ -165,18 +171,6 @@ export async function lookupLink(
   )
   if (fromGlobalKv != null) {
     return { record: fromGlobalKv, resolvedFrom: 'kv-global' }
-  }
-
-  const fromD1 = await readD1(
-    env,
-    domainLinkKey(domain.hostname, slug),
-    isRoutingRecord
-  )
-  if (fromD1 != null) return { record: fromD1, resolvedFrom: 'd1' }
-
-  const fromGlobalD1 = await readD1(env, globalD1Key(slug), isRoutingRecord)
-  if (fromGlobalD1 != null) {
-    return { record: fromGlobalD1, resolvedFrom: 'd1-global' }
   }
 
   const link = await fetchShortLinkByPath({
@@ -236,7 +230,7 @@ function writeBack(
   ctx: BackgroundContext,
   namespace: KVNamespace,
   key: string,
-  record: RoutingRecord
+  record: DomainRecord | RoutingRecord
 ): void {
   try {
     ctx.waitUntil(

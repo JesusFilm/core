@@ -11,19 +11,9 @@ import {
   domainKey,
   domainLinkKey,
   globalLinkKey,
-  globalRecordKeyForLink,
-  isLiveLink,
-  recordKeyForLink
+  isLiveLink
 } from './records'
-import {
-  EdgeRecord,
-  d1Delete,
-  d1DeleteDomainLinks,
-  d1Upsert,
-  kvDelete,
-  kvWrite,
-  kvWriteMany
-} from './store'
+import { kvDelete, kvWrite, kvWriteMany } from './store'
 
 type Db = Prisma.TransactionClient
 
@@ -36,8 +26,8 @@ const linkInclude = {
 } satisfies Prisma.ShortLinkInclude
 
 /**
- * Write the domain record to the global namespace (and D1). Call inside the
- * mutation's transaction so a KV rejection rolls the Postgres write back.
+ * Write the domain record to the global namespace. Call inside the mutation's
+ * transaction so a KV rejection rolls the Postgres write back.
  */
 export async function publishDomain(
   domainId: string,
@@ -58,7 +48,6 @@ export async function publishDomain(
     value: JSON.stringify(buildDomainRecord(domain))
   }
   await kvWrite(config, config.globalNamespaceId, record)
-  await d1Upsert(config, [record], logger)
 
   const edgePublishedAt = new Date()
   await db.shortLinkDomain.update({
@@ -77,9 +66,7 @@ export async function unpublishDomain(
     logger.debug({ hostname }, 'short link edge: publishing disabled')
     return
   }
-  const key = domainKey(hostname)
-  await kvDelete(config, config.globalNamespaceId, key)
-  await d1Delete(config, key, logger)
+  await kvDelete(config, config.globalNamespaceId, domainKey(hostname))
 }
 
 /**
@@ -111,14 +98,8 @@ export async function publishLink(
 
   if (domainNamespaceId != null) {
     const key = domainLinkKey(link, link.domain)
-    const replicaKey = recordKeyForLink(link, link.domain)
-    if (live) {
-      await kvWrite(config, domainNamespaceId, { key, value })
-      await d1Upsert(config, [{ key: replicaKey, value }], logger)
-    } else {
-      await kvDelete(config, domainNamespaceId, key)
-      await d1Delete(config, replicaKey, logger)
-    }
+    if (live) await kvWrite(config, domainNamespaceId, { key, value })
+    else await kvDelete(config, domainNamespaceId, key)
     published = true
   }
 
@@ -127,15 +108,9 @@ export async function publishLink(
       key: globalLinkKey(link),
       value
     })
-    await d1Upsert(
-      config,
-      [{ key: globalRecordKeyForLink(link), value }],
-      logger
-    )
     published = true
   } else if (ownsGlobalClaim) {
     await kvDelete(config, config.globalNamespaceId, globalLinkKey(link))
-    await d1Delete(config, globalRecordKeyForLink(link), logger)
     published = true
   }
 
@@ -156,8 +131,8 @@ export async function publishLink(
 }
 
 /**
- * Remove a link's routing records from the domain namespace, the global
- * namespace (when this link owns the global pathname) and D1.
+ * Remove a link's routing records from the domain namespace and the global
+ * namespace (when this link owns the global pathname).
  */
 export async function unpublishLink(
   linkId: string,
@@ -174,29 +149,14 @@ export async function unpublishLink(
     where: { id: linkId },
     include: { domain: true, globalSlug: { select: { pathname: true } } }
   })
-  if (link.domain.kvNamespaceId != null) {
+  if (link.domain.kvNamespaceId != null)
     await kvDelete(
       config,
       link.domain.kvNamespaceId,
       domainLinkKey(link, link.domain)
     )
-    await d1Delete(config, recordKeyForLink(link, link.domain), logger)
-  }
-  if (link.globalSlug != null) {
+  if (link.globalSlug != null)
     await kvDelete(config, config.globalNamespaceId, globalLinkKey(link))
-    await d1Delete(config, globalRecordKeyForLink(link), logger)
-  }
-}
-
-/**
- * Drop a domain's link rows from the D1 replica (when its KV setup is removed
- * the links stop being published, so the replica must not keep serving them).
- * Global links keep their `global:<pathname>` rows.
- */
-export async function purgeDomainLinkReplica(hostname: string): Promise<void> {
-  const config = getEdgeConfig()
-  if (config == null) return
-  await d1DeleteDomainLinks(config, hostname)
 }
 
 const DOMAIN_LINK_BATCH = 1000
@@ -236,7 +196,6 @@ export async function publishDomainWithLinks(
     })
     if (links.length === 0) break
 
-    const replicaRecords: EdgeRecord[] = []
     const publishedIds: string[] = []
 
     if (domainNamespaceId != null) {
@@ -245,12 +204,6 @@ export async function publishDomainWithLinks(
         value: JSON.stringify(buildRoutingRecord(link, domain))
       }))
       await kvWriteMany(config, domainNamespaceId, records)
-      replicaRecords.push(
-        ...links.map((link, index) => ({
-          key: recordKeyForLink(link, domain),
-          value: records[index].value
-        }))
-      )
       publishedIds.push(...links.map(({ id }) => id))
     }
 
@@ -261,17 +214,10 @@ export async function publishDomainWithLinks(
         value: JSON.stringify(buildRoutingRecord(link, domain))
       }))
       await kvWriteMany(config, config.globalNamespaceId, records)
-      replicaRecords.push(
-        ...globalLinks.map((link, index) => ({
-          key: globalRecordKeyForLink(link),
-          value: records[index].value
-        }))
-      )
       if (domainNamespaceId == null)
         publishedIds.push(...globalLinks.map(({ id }) => id))
     }
 
-    await d1Upsert(config, replicaRecords, logger)
     if (publishedIds.length > 0)
       await db.shortLink.updateMany({
         where: { id: { in: publishedIds } },

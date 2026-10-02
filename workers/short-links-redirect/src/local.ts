@@ -6,7 +6,7 @@ import worker from '.'
 /**
  * The `wrangler dev` entry (`nx serve short-links-redirect`): the deployed
  * Worker plus the local edge API, so a local api-media can publish into this
- * Worker's local KV and D1. Never deployed: `wrangler.toml` keeps `main` on
+ * Worker's local KV. Never deployed: `wrangler.toml` keeps `main` on
  * `src/index.ts` and only the `serve` target names this file.
  */
 export default {

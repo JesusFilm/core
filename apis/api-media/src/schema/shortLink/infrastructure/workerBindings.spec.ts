@@ -62,7 +62,7 @@ function fakeWorker(
 
 const deployed: WorkerBinding[] = [
   { name: 'SHORT_LINKS_KV', type: 'kv_namespace', namespace_id: 'global' },
-  { name: 'SHORT_LINKS_DB', type: 'd1' },
+  { name: 'SHORT_LINKS_EVENTS', type: 'queue' },
   { name: 'CLICKHOUSE_PASSWORD', type: 'secret_text' }
 ]
 
@@ -91,7 +91,7 @@ describe('worker bindings', () => {
       expect(worker.patches).toEqual([
         [
           { type: 'inherit', name: 'SHORT_LINKS_KV' },
-          { type: 'inherit', name: 'SHORT_LINKS_DB' },
+          { type: 'inherit', name: 'SHORT_LINKS_EVENTS' },
           { type: 'inherit', name: 'CLICKHOUSE_PASSWORD' },
           { type: 'kv_namespace', name: 'KV_JESUS_FILM', namespace_id: 'ns-1' }
         ]
@@ -123,7 +123,7 @@ describe('worker bindings', () => {
 
       expect(worker.patches[0]).toEqual([
         { type: 'inherit', name: 'SHORT_LINKS_KV' },
-        { type: 'inherit', name: 'SHORT_LINKS_DB' },
+        { type: 'inherit', name: 'SHORT_LINKS_EVENTS' },
         { type: 'inherit', name: 'CLICKHOUSE_PASSWORD' },
         { type: 'kv_namespace', name: 'KV_JESUS_FILM', namespace_id: 'ns-1' }
       ])
@@ -135,7 +135,7 @@ describe('worker bindings', () => {
       await expect(
         setWorkerKvBinding(worker.config, 'KV_JESUS_FILM', 'ns-1', logger)
       ).rejects.toThrow(
-        'Cloudflare dropped the Worker bindings SHORT_LINKS_KV, SHORT_LINKS_DB, CLICKHOUSE_PASSWORD while changing KV_JESUS_FILM. Redeploy short-links-redirect-stage to restore them.'
+        'Cloudflare dropped the Worker bindings SHORT_LINKS_KV, SHORT_LINKS_EVENTS, CLICKHOUSE_PASSWORD while changing KV_JESUS_FILM. Redeploy short-links-redirect-stage to restore them.'
       )
       expect(logger.error).toHaveBeenCalledWith(
         expect.objectContaining({ before: deployed }),
@@ -184,7 +184,7 @@ describe('worker bindings', () => {
       expect(worker.patches).toEqual([
         [
           { type: 'inherit', name: 'SHORT_LINKS_KV' },
-          { type: 'inherit', name: 'SHORT_LINKS_DB' },
+          { type: 'inherit', name: 'SHORT_LINKS_EVENTS' },
           { type: 'inherit', name: 'CLICKHOUSE_PASSWORD' },
           { type: 'inherit', name: 'KV_JESUS_MOVIE' }
         ]

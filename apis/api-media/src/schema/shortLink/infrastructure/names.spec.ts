@@ -15,7 +15,7 @@ describe('infrastructure names', () => {
   it('owns only KV_ bindings', () => {
     expect(isOwnedBindingName('KV_JESUS_FILM')).toBe(true)
     expect(isOwnedBindingName('SHORT_LINKS_KV')).toBe(false)
-    expect(isOwnedBindingName('SHORT_LINKS_DB')).toBe(false)
+    expect(isOwnedBindingName('SHORT_LINKS_EVENTS')).toBe(false)
     expect(isOwnedBindingName('kv_lower')).toBe(false)
   })
 

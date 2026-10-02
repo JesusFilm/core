@@ -5,7 +5,6 @@ import { domainRecord, routingRecord } from '../test/fixtures'
 import {
   bindings,
   graphQlEndpoint,
-  seedD1,
   seedDomainLinks,
   seedRecords,
   workerRequest
@@ -239,20 +238,9 @@ describe('two-tier namespaces', () => {
     expect(response.status).toBe(404)
   })
 
-  it('serves a domain without a namespace from global, D1 and api only', async () => {
-    await seedD1(
-      'link:nons.example/d1only',
-      routingRecord({ id: 'link-nons-d1', to: 'https://example.com/nons-d1' })
-    )
-
+  it('serves a domain without a namespace from global and api only', async () => {
     const viaGlobal = await workerRequest('https://nons.example/everywhere')
     expect(viaGlobal.sent[0]?.resolvedFrom).toBe('kv-global')
-
-    const viaD1 = await workerRequest('https://nons.example/d1only')
-    expect(viaD1.response.headers.get('location')).toBe(
-      'https://example.com/nons-d1'
-    )
-    expect(viaD1.sent[0]?.resolvedFrom).toBe('d1')
 
     graphQlReply(null)
     const miss = await workerRequest('https://nons.example/own')
@@ -274,47 +262,6 @@ describe('two-tier namespaces', () => {
       )
     ).toHaveLength(1)
     error.mockRestore()
-  })
-
-  it('falls back to the D1 global key after the D1 domain key misses', async () => {
-    await seedD1(
-      'global:d1global',
-      routingRecord({
-        id: 'link-d1-global',
-        to: 'https://example.com/d1-global',
-        global: true,
-        hostname: 'arc.gt'
-      })
-    )
-
-    const { response, sent } = await workerRequest(
-      'https://jesus.film/d1global'
-    )
-
-    expect(response.headers.get('location')).toBe(
-      'https://example.com/d1-global'
-    )
-    expect(sent[0]).toMatchObject({
-      resolvedFrom: 'd1-global',
-      global: true,
-      ownerHostname: 'arc.gt'
-    })
-  })
-
-  it('prefers the D1 domain key over the D1 global key', async () => {
-    await seedD1(
-      'link:jesus.film/d1both',
-      routingRecord({ id: 'link-d1-own', to: 'https://example.com/d1-own' })
-    )
-    await seedD1(
-      'global:d1both',
-      routingRecord({ id: 'link-d1-glob', to: 'https://example.com/d1-glob' })
-    )
-
-    const { response, sent } = await workerRequest('https://jesus.film/d1both')
-
-    expect(response.headers.get('location')).toBe('https://example.com/d1-own')
-    expect(sent[0]?.resolvedFrom).toBe('d1')
   })
 
   describe('api-media write-back', () => {

@@ -3,7 +3,6 @@ export {
   publishDomain,
   publishDomainWithLinks,
   publishLink,
-  purgeDomainLinkReplica,
   unpublishDomain,
   unpublishLink
 } from './publish'
@@ -13,11 +12,9 @@ export {
   domainKey,
   domainLinkKey,
   globalLinkKey,
-  globalRecordKeyForLink,
   effectiveDestination,
   effectiveRedirectStatus,
   isLiveLink,
-  recordKeyForLink,
   type DomainRecord,
   type RoutingRecord
 } from './records'

@@ -413,6 +413,96 @@ describe('shortLinkDomain', () => {
     })
   })
 
+  describe('shortLinkDomainByHostname', () => {
+    const SHORT_LINK_DOMAIN_BY_HOSTNAME_QUERY = graphql(`
+      query ShortLinkDomainByHostnameQuery($hostname: String!) {
+        shortLinkDomainByHostname(hostname: $hostname) {
+          __typename
+          ... on QueryShortLinkDomainByHostnameSuccess {
+            data {
+              id
+              hostname
+              redirectStatus
+              fallbackTo
+              notFound
+              passthroughOrigin
+              reservedPaths
+              slugCaseSensitive
+              pathPrefix
+              kvBinding
+            }
+          }
+          ... on NotFoundError {
+            message
+          }
+        }
+      }
+    `)
+
+    // the redirect Worker calls this with no credentials
+    const publicClient = getClient()
+
+    it('returns the routing settings of a domain without authentication', async () => {
+      prismaMock.shortLinkDomain.findUnique.mockResolvedValue(
+        buildShortLinkDomain({
+          id: 'domainId',
+          hostname: 'jesus.film',
+          pathPrefix: 's',
+          redirectStatus: 302,
+          reservedPaths: ['dashboard'],
+          slugCaseSensitive: false,
+          kvBinding: 'KV_JESUS_FILM'
+        })
+      )
+
+      const result = await publicClient({
+        document: SHORT_LINK_DOMAIN_BY_HOSTNAME_QUERY,
+        variables: { hostname: 'Jesus.Film' }
+      })
+
+      expect(result).toEqual({
+        data: {
+          shortLinkDomainByHostname: {
+            __typename: 'QueryShortLinkDomainByHostnameSuccess',
+            data: {
+              id: 'domainId',
+              hostname: 'jesus.film',
+              redirectStatus: 302,
+              fallbackTo: null,
+              notFound: 'lostPage',
+              passthroughOrigin: null,
+              reservedPaths: ['dashboard'],
+              slugCaseSensitive: false,
+              pathPrefix: 's',
+              kvBinding: 'KV_JESUS_FILM'
+            }
+          }
+        }
+      })
+      expect(prismaMock.shortLinkDomain.findUnique).toHaveBeenCalledWith({
+        where: { hostname: 'jesus.film' }
+      })
+    })
+
+    it('returns a NotFoundError for an unknown hostname', async () => {
+      prismaMock.shortLinkDomain.findUnique.mockResolvedValue(null)
+
+      const result = await publicClient({
+        document: SHORT_LINK_DOMAIN_BY_HOSTNAME_QUERY,
+        variables: { hostname: 'unknown.example' }
+      })
+
+      expect(result).toEqual({
+        data: {
+          shortLinkDomainByHostname: {
+            __typename: 'NotFoundError',
+            message: 'short link domain not found'
+          }
+        }
+      })
+    })
+  })
+
   describe('mutations', () => {
     describe('shortLinkDomainCreate', () => {
       const SHORT_LINK_DOMAIN_CREATE_MUTATION = graphql(`

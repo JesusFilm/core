@@ -15,8 +15,11 @@ own URL and is not served by this Worker.
 For `GET` / `HEAD` `https://<host>/<path>?<query>`:
 
 1. **Domain.** `domain:<host>` (host lower-cased, port stripped) is read from
-   the global KV namespace, then D1, and cached in a module-level map for 60 s
-   per isolate. An unknown host gets the lost page (404).
+   the global KV namespace and cached in a module-level map for 60 s per
+   isolate. When KV has no record (never published, or KV cannot be read) the
+   settings come from api-media's `shortLinkDomainByHostname` and are written
+   back to KV, logged as a `publish_gap`. A host neither knows gets the lost
+   page (404), remembered for 10 s per isolate.
    When the domain has a **path prefix** (see [Path prefix](#path-prefix)) the
    path must be `/<prefix>/<rest>`; anything else gets the not-found behaviour
    and `<rest>` is what the following steps call the path.
@@ -27,8 +30,7 @@ For `GET` / `HEAD` `https://<host>/<path>?<query>`:
 3. **Link.** The slug (lower-cased when the domain is case-insensitive) is
    looked up in this order (see [KV namespaces and global links](#kv-namespaces-and-global-links)):
    the domain's own KV namespace (`<slug>`), the global KV namespace
-   (`link:<slug>`), D1 (`link:<host>/<slug>`, then `global:<slug>`), then
-   api-media's `shortLinkByPath` with a 2 s timeout. An api-media hit is a
+   (`link:<slug>`), then api-media's `shortLinkByPath` with a 2 s timeout. An api-media hit is a
    **publish gap**: the converted routing record is written back to the
    namespace that should have had it in `waitUntil` and
    `{"event":"publish_gap","key":...,"target":...}` is logged. Any record whose
@@ -106,16 +108,19 @@ on the event as `ownerHostname`.
 Lookup order for a slug on a domain, with the `resolvedFrom` value each tier
 reports on the redirect event:
 
-| Tier | Store                                                                        | Key                      | `resolvedFrom` |
-| ---- | ---------------------------------------------------------------------------- | ------------------------ | -------------- |
-| 1    | domain namespace `env[domain.kvBinding]`                                     | `<slug>`                 | `kv`           |
-| 2    | global namespace `SHORT_LINKS_KV`                                            | `link:<slug>`            | `kv-global`    |
-| 3    | D1                                                                           | `link:<hostname>/<slug>` | `d1`           |
-| 4    | D1                                                                           | `global:<slug>`          | `d1-global`    |
-| 5    | api-media `shortLinkByPath` (which falls back to the global registry itself) |                          | `api`          |
+| Tier | Store                                                                        | Key           | `resolvedFrom` |
+| ---- | ---------------------------------------------------------------------------- | ------------- | -------------- |
+| 1    | domain namespace `env[domain.kvBinding]`                                     | `<slug>`      | `kv`           |
+| 2    | global namespace `SHORT_LINKS_KV`                                            | `link:<slug>` | `kv-global`    |
+| 3    | api-media `shortLinkByPath` (which falls back to the global registry itself) |               | `api`          |
+
+There is no second edge store. KV is the only one; when it misses or cannot be
+read, api-media answers and the Worker writes the record back. A D1 replica was
+dropped: it was written best-effort, so a failed delete left a row that brought
+a deleted link back on every KV miss.
 
 Tier 1 is skipped when the domain record's `kvBinding` is null (a domain
-without a namespace is served through global links, D1 and api-media only) or
+without a namespace is served through global links and api-media only) or
 when the named binding is not in `wrangler.toml`; the latter is a deployment
 gap, logged once per isolate as `{"event":"missing_binding","binding":...}`.
 The binding is read as `env[domain.kvBinding]` and only used when the value
@@ -150,25 +155,24 @@ is ever stored.
 
 ## Source map
 
-| File                  | Role                                                                                                |
-| --------------------- | --------------------------------------------------------------------------------------------------- |
-| `src/index.ts`        | Hono app, `export default { fetch, queue }`                                                         |
-| `src/local.ts`        | The `wrangler dev` entry: `src/index.ts` plus the local edge API. Never deployed                    |
-| `src/localEdgeApi.ts` | Local stand-in for the Cloudflare KV / D1 REST endpoints api-media publishes through                |
-| `src/env.ts`          | `Env` binding types                                                                                 |
-| `src/records.ts`      | `DomainRecord` / `RoutingRecord` types and runtime validators (`isDomainRecord`, `isRoutingRecord`) |
-| `src/resolve.ts`      | Pure resolution: path gate, lookup, paused handling, not-found behaviour → discriminated union      |
-| `src/destination.ts`  | `buildDestination(to, incomingSearchParams)`                                                        |
-| `src/store.ts`        | Domain KV → global KV → D1 (domain, global) → api-media reads, the 60 s domain cache, KV write-back |
-| `src/graphql.ts`      | The api-media `shortLinkByPath` fallback and its conversion to a routing record (Brightcove rule)   |
-| `src/event.ts`        | `buildRedirectEvent(...)` (pure) and the queue message type                                         |
-| `src/userAgent.ts`    | `classifyUserAgent(ua)` → `{ deviceClass, os, browser }`                                            |
-| `src/queue.ts`        | `handleQueueBatch(batch, env)`: row mapping and the ClickHouse insert                               |
-| `src/lostPage.ts`     | The inline 404 HTML                                                                                 |
-| `d1/0001_init.sql`    | The D1 `short_link_records` table (also applied to the local D1 by the tests)                       |
-| `scripts/deploy.ts`   | The `deploy` target: carries the live `KV_*` bindings over, then runs `wrangler deploy`             |
-| `clickhouse/…`        | The ClickHouse database and table                                                                   |
-| `test/`               | `fetchMock` (outbound fetch stubbing), fixtures, and the D1 migration setup file                    |
+| File                  | Role                                                                                                                       |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `src/index.ts`        | Hono app, `export default { fetch, queue }`                                                                                |
+| `src/local.ts`        | The `wrangler dev` entry: `src/index.ts` plus the local edge API. Never deployed                                           |
+| `src/localEdgeApi.ts` | Local stand-in for the Cloudflare KV REST endpoints api-media publishes through                                            |
+| `src/env.ts`          | `Env` binding types                                                                                                        |
+| `src/records.ts`      | `DomainRecord` / `RoutingRecord` types and runtime validators (`isDomainRecord`, `isRoutingRecord`)                        |
+| `src/resolve.ts`      | Pure resolution: path gate, lookup, paused handling, not-found behaviour → discriminated union                             |
+| `src/destination.ts`  | `buildDestination(to, incomingSearchParams)`                                                                               |
+| `src/store.ts`        | Domain KV → global KV → api-media reads, the domain cache, KV write-back                                                   |
+| `src/graphql.ts`      | The api-media fallbacks (`shortLinkByPath`, `shortLinkDomainByHostname`) and their conversion to records (Brightcove rule) |
+| `src/event.ts`        | `buildRedirectEvent(...)` (pure) and the queue message type                                                                |
+| `src/userAgent.ts`    | `classifyUserAgent(ua)` → `{ deviceClass, os, browser }`                                                                   |
+| `src/queue.ts`        | `handleQueueBatch(batch, env)`: row mapping and the ClickHouse insert                                                      |
+| `src/lostPage.ts`     | The inline 404 HTML                                                                                                        |
+| `scripts/deploy.ts`   | The `deploy` target: carries the live `KV_*` bindings over, then runs `wrangler deploy`                                    |
+| `clickhouse/…`        | The ClickHouse database and table                                                                                          |
+| `test/`               | `fetchMock` (outbound fetch stubbing), fixtures and request helpers                                                        |
 
 ## Bindings and configuration
 
@@ -179,7 +183,6 @@ dev, `[env.stage]`, `[env.prod]`):
 | ------------------------------------------------------------ | -------------------------- | --------------------------------------------------------------------------------------- |
 | `SHORT_LINKS_KV`                                             | KV namespace               | Global namespace: domain records and global links                                       |
 | `KV_JESUS_FILM`, `KV_NXSTP_IS`, `KV_ARC_GT`, `KV_STG_ARC_GT` | KV namespace               | One per domain, named by the domain record's `kvBinding`; that domain's routing records |
-| `SHORT_LINKS_DB`                                             | D1 database                | `short-links-stage` / `short-links-prod`; replica read on a KV miss                     |
 | `SHORT_LINKS_EVENTS`                                         | Queue producer + consumer  | `short-links-events-<env>`; DLQ `short-links-events-dlq-<env>`                          |
 | `CORE_GRAPHQL_ENDPOINT`                                      | var                        | Gateway URL for the api-media fallback (`http://localhost:4000` locally)                |
 | `CLICKHOUSE_URL`                                             | var                        | Empty = consumer acks and drops                                                         |
@@ -187,12 +190,11 @@ dev, `[env.stage]`, `[env.prod]`):
 | `CLICKHOUSE_USER`                                            | secret (`wrangler secret`) |                                                                                         |
 | `CLICKHOUSE_PASSWORD`                                        | secret (`wrangler secret`) |                                                                                         |
 
-**Placeholder ids.** The stage and prod ids of the global namespace
-(`SHORT_LINKS_KV`) and the D1 database in `wrangler.toml` are
-`REPLACE_ME_BEFORE_DEPLOY`. They are deliberately invalid so a deploy with
-unfilled ids fails at the Cloudflare API rather than binding to nothing. Fill
-them per environment before the first deploy (commands are in the comment block
-at the top of `wrangler.toml`). Queues are referenced by name and need no id.
+**Placeholder id.** The stage and prod id of the global namespace
+(`SHORT_LINKS_KV`) in `wrangler.toml` is `REPLACE_ME_BEFORE_DEPLOY`. It is
+deliberately invalid so a deploy with an unfilled id fails at the Cloudflare
+API rather than binding to nothing. Fill it per environment before the first
+deploy (commands are in the comment block at the top of `wrangler.toml`). Queues are referenced by name and need no id.
 The dev (top-level) KV ids are local-only names (`short-links-dev-jesus-film`,
 ...) rather than the placeholder: miniflare keys local namespaces by id, so each
 binding needs a distinct one or the tests would see every domain namespace as
@@ -208,7 +210,7 @@ stage or prod.
 | What                      | Owned by        | Notes                                                                               |
 | ------------------------- | --------------- | ----------------------------------------------------------------------------------- |
 | `KV_*` bindings           | api-media       | One per domain; added and removed on the live Worker, carried over by every deploy  |
-| Every other binding       | `wrangler.toml` | `SHORT_LINKS_KV`, `SHORT_LINKS_DB`, the queue, vars and secrets                     |
+| Every other binding       | `wrangler.toml` | `SHORT_LINKS_KV`, the queue, vars and secrets                                       |
 | Routes and custom domains | api-media       | `jesus.film/s/*` style route for a prefixed domain, custom domain for a root domain |
 
 Two rules follow, and breaking either takes domains down:
@@ -231,14 +233,12 @@ to its own hostnames.
 nx serve short-links-redirect        # wrangler dev src/local.ts on http://localhost:8788
 ```
 
-`wrangler dev` runs against local miniflare KV / D1 / Queues, so there are no
+`wrangler dev` runs against local miniflare KV / Queues, so there are no
 records until something puts them there. Either publish from a local api-media
-(next section) or seed by hand. To seed by hand, apply the D1 schema and put a
-domain and a link:
+(next section) or seed by hand. To seed by hand, put a domain and a link:
 
 ```bash
 cd workers/short-links-redirect
-wrangler d1 migrations apply short-links-dev --local
 # the domain record goes to the global namespace and names its own binding
 wrangler kv key put --binding SHORT_LINKS_KV --local 'domain:localhost' \
   '{"v":1,"id":"d1","hostname":"localhost","redirectStatus":307,"fallbackTo":null,"notFound":"lostPage","passthroughOrigin":null,"reservedPaths":[],"slugCaseSensitive":true,"pathPrefix":"","kvBinding":"KV_JESUS_FILM"}'
@@ -253,15 +253,17 @@ curl -i http://localhost:8788/everywhere
 ```
 
 With the local gateway (`CORE_GRAPHQL_ENDPOINT = http://localhost:4000`) running,
-an unseeded slug falls through to api-media and is written back to KV.
+an unseeded host or slug falls through to api-media and is written back to KV,
+so a domain and its links that exist in the local database resolve without any
+seeding.
 
 ### Publishing from a local api-media
 
 api-media publishes through the Cloudflare REST API, which cannot reach the
-local KV and D1 that `wrangler dev` uses. So `nx serve` runs `src/local.ts`
+local KV that `wrangler dev` uses. So `nx serve` runs `src/local.ts`
 instead of `src/index.ts`: the same Worker plus a **local edge API** under
 `/client/v4/` that answers the three calls api-media makes (KV bulk write, KV
-delete, D1 query) from this Worker's own bindings. `wrangler.toml` keeps
+delete) from this Worker's own bindings. `wrangler.toml` keeps
 `main = "src/index.ts"`, so stage and prod bundles never contain it; a bare
 `wrangler dev` does not serve it either.
 
@@ -274,27 +276,18 @@ id is the binding name**.
    CLOUDFLARE_SHORT_LINKS_API_BASE_URL=http://localhost:8788/client/v4
    CLOUDFLARE_SHORT_LINKS_API_TOKEN=local
    CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID=SHORT_LINKS_KV
-   CLOUDFLARE_SHORT_LINKS_D1_DATABASE_ID=SHORT_LINKS_DB
    ```
 
    `nx fetch-secrets api-media` rewrites `.env` from Doppler, so re-add them
    afterwards. The token is not checked. `CLOUDFLARE_ACCOUNT_ID` is already
    there and is ignored.
 
-2. Apply the D1 schema once (skip it and KV still works; api-media logs
-   `D1 write failed` and carries on):
-
-   ```bash
-   cd workers/short-links-redirect
-   wrangler d1 migrations apply short-links-dev --local
-   ```
-
-3. In the admin, open the domain you serve locally (a `localhost` domain for
+2. In the admin, open the domain you serve locally (a `localhost` domain for
    `http://localhost:8788/<slug>`) and set both **KV namespace id** and
    **Worker binding** to one of the dev bindings in `wrangler.toml`, e.g.
    `KV_JESUS_FILM`. Two local domains that share a binding share their slugs.
 
-4. Use **Republish domain** once to write the domain record and every link,
+3. Use **Republish domain** once to write the domain record and every link,
    then create, edit or **Republish to edge** as usual:
 
    ```bash
@@ -315,10 +308,8 @@ too, so api-media fails loudly instead of publishing nowhere.
 ## Tests
 
 Vitest with `@cloudflare/vitest-pool-workers`: specs run inside workerd with
-real (local) KV, D1 and Queue bindings from `cloudflare:test`. The D1 schema in
-`d1/` is applied before each spec file by `test/applyD1Migrations.ts`
-(configured in `vitest.config.mts`). Outbound `fetch` (api-media, ClickHouse) is
-stubbed with `test/fetchMock.ts`.
+real (local) KV and Queue bindings from `cloudflare:test`. Outbound `fetch`
+(api-media, ClickHouse) is stubbed with `test/fetchMock.ts`.
 
 ```bash
 # from the repo root; --config must be absolute because it is resolved relative to --root
@@ -358,7 +349,7 @@ resolved the way wrangler does (`account_id` in the config, then
 
 A binding api-media adds between step 1 and the upload is lost. The domain page
 in the admin then shows the binding as missing and "Set up KV" restores it;
-redirects keep working through the global namespace, D1 and api-media meanwhile.
+redirects keep working through the global namespace and api-media meanwhile.
 
 Environment names: `short-links-redirect-dev` / `-stage` / `-prod`. Stage and
 prod have `logpush = true` and observability logs enabled.
@@ -369,11 +360,9 @@ Summarised from TECH-DESIGN.md ("superAdmin-managed Cloudflare infrastructure").
 
 Once per environment:
 
-1. Create the global KV namespace, the D1 database (apply `d1/0001_init.sql`
-   with `wrangler d1 migrations apply <db> --env=<env> --remote`), the queue and
-   its dead-letter queue, and the ClickHouse database/table
-   (`clickhouse/0001_init.sql`).
-2. Fill the two ids into `wrangler.toml`, set `CLICKHOUSE_USER` /
+1. Create the global KV namespace, the queue and its dead-letter queue, and the
+   ClickHouse database/table (`clickhouse/0001_init.sql`).
+2. Fill the namespace id into `wrangler.toml`, set `CLICKHOUSE_USER` /
    `CLICKHOUSE_PASSWORD` with `wrangler secret put`, deploy.
 3. Set api-media's `CLOUDFLARE_SHORT_LINKS_*` variables, including the Worker
    name, the infrastructure token and the allowed hostnames.
@@ -396,9 +385,9 @@ hostname still has DNS records pointing elsewhere.
 
 ## Failure order
 
-| Down                  | Effect                                                                                                   |
-| --------------------- | -------------------------------------------------------------------------------------------------------- |
-| ClickHouse or Queues  | Redirects continue; events delay (retries, then DLQ) or drop.                                            |
-| api-media or Postgres | Known links redirect from the last published records; unknown paths get the not-found behaviour.         |
-| KV                    | D1 serves.                                                                                               |
-| Worker                | Nothing on the cut-over domains resolves. This is the one component with the 99.99% availability target. |
+| Down                  | Effect                                                                                                                               |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| ClickHouse or Queues  | Redirects continue; events delay (retries, then DLQ) or drop.                                                                        |
+| api-media or Postgres | Known links redirect from the last published records; unknown paths get the not-found behaviour.                                     |
+| KV                    | Every redirect goes through api-media (2 s timeout) and is written back; with api-media also down, uncached hosts get the lost page. |
+| Worker                | Nothing on the cut-over domains resolves. This is the one component with the 99.99% availability target.                             |

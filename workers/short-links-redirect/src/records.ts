@@ -1,7 +1,7 @@
 /**
  * Edge store record shapes (prds/short-links/TECH-DESIGN.md, "Edge store
  * contracts" as amended on 2026-09-28 and 2026-09-29). api-media publishes
- * these to KV and D1; the Worker only reads them. `v` is the shape version:
+ * these to KV; the Worker only reads them. `v` is the shape version:
  * any record whose `v` is not 1 is treated as a miss for the store it came from
  * so the Worker falls through to the next one. Fields added after the first
  * publish are optional on the wire and normalised in place by the validators.
@@ -40,15 +40,14 @@ export interface DomainRecord {
   /**
    * Name of the Worker KV binding holding this domain's routing records
    * (`KV_JESUS_FILM`). Null: the domain has no namespace and is served only
-   * through global links, D1 and the api-media fallback.
+   * through global links and the api-media fallback.
    */
   kvBinding: string | null
 }
 
 /**
  * A routing record: `<pathname>` in the domain namespace, `link:<pathname>` in
- * the global namespace, `link:<hostname>/<pathname>` / `global:<pathname>` in
- * D1.
+ * the global namespace.
  */
 export interface RoutingRecord {
   v: 1
@@ -184,7 +183,7 @@ export function isRoutingRecord(value: unknown): value is RoutingRecord {
 }
 
 /**
- * Parses a raw store value (KV `json` or a D1 `value` column) into a validated
+ * Parses a raw store value (KV `json`, or a JSON string) into a validated
  * record, returning null for anything unparseable or of the wrong shape.
  */
 export function parseRecord<T>(

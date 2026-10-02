@@ -1102,6 +1102,14 @@ type Query {
     last: Int
   ): QueryShortLinkDomainsConnection!
 
+  """
+  find a short link domain by hostname. Public: the redirect Worker reads it when its edge store has no domain record for the host
+  """
+  shortLinkDomainByHostname(
+    """the hostname including subdomain, domain, and TLD, but excluding port"""
+    hostname: String!
+  ): QueryShortLinkDomainByHostnameResult!
+
   """Find a short link domain by id"""
   shortLinkDomain(id: String!): QueryShortLinkDomainResult!
 
@@ -1228,6 +1236,12 @@ type QueryShortLinkCampaignsConnection {
 type QueryShortLinkCampaignsConnectionEdge {
   node: ShortLinkCampaign
   cursor: String!
+}
+
+union QueryShortLinkDomainByHostnameResult = NotFoundError | QueryShortLinkDomainByHostnameSuccess
+
+type QueryShortLinkDomainByHostnameSuccess {
+  data: ShortLinkDomain!
 }
 
 union QueryShortLinkDomainResult = NotFoundError | QueryShortLinkDomainSuccess

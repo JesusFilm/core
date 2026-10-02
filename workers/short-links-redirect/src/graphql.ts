@@ -1,10 +1,16 @@
-import type { DomainRecord, Placement, RoutingRecord } from './records'
+import {
+  type DomainRecord,
+  type Placement,
+  RECORD_VERSION,
+  type RoutingRecord,
+  isDomainRecord
+} from './records'
 
 export const GRAPHQL_TIMEOUT_MS = 2000
 
 /**
- * The api-media fallback (step 3 of the request flow). Only reached when both
- * KV and D1 miss, which means a publish gap; the caller writes the converted
+ * The api-media fallback (step 3 of the request flow). Only reached when KV
+ * has no record, which means a publish gap; the caller writes the converted
  * record back to KV and logs `publish_gap`.
  */
 export const SHORT_LINK_BY_PATH_QUERY = `
@@ -93,6 +99,44 @@ export function readShortLinkByPath(body: unknown): ShortLinkByPathData | null {
   return link as ShortLinkByPathData
 }
 
+interface GraphQlRequest {
+  endpoint: string | undefined
+  query: string
+  variables: Record<string, string>
+  timeoutMs: number
+  fetchImpl: typeof fetch
+}
+
+/**
+ * POSTs one query and returns the parsed body, or null when there is no
+ * endpoint or the response is not OK. Throws on a transport error or the
+ * timeout; each caller logs that with its own context.
+ */
+async function graphQlRequest({
+  endpoint,
+  query,
+  variables,
+  timeoutMs,
+  fetchImpl
+}: GraphQlRequest): Promise<unknown> {
+  if (endpoint == null || endpoint === '') return null
+
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    const response = await fetchImpl(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, variables }),
+      signal: controller.signal
+    })
+    if (!response.ok) return null
+    return await response.json()
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
 export interface FetchShortLinkByPathInput {
   endpoint: string | undefined
   hostname: string
@@ -113,25 +157,14 @@ export async function fetchShortLinkByPath({
   timeoutMs = GRAPHQL_TIMEOUT_MS,
   fetchImpl = fetch
 }: FetchShortLinkByPathInput): Promise<ShortLinkByPathData | null> {
-  if (endpoint == null || endpoint === '') return null
-
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), timeoutMs)
-
   try {
-    const response = await fetchImpl(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        query: SHORT_LINK_BY_PATH_QUERY,
-        variables: { hostname, pathname }
-      }),
-      signal: controller.signal
+    const body = await graphQlRequest({
+      endpoint,
+      query: SHORT_LINK_BY_PATH_QUERY,
+      variables: { hostname, pathname },
+      timeoutMs,
+      fetchImpl
     })
-
-    if (!response.ok) return null
-
-    const body: unknown = await response.json()
     return readShortLinkByPath(body)
   } catch (error) {
     console.error(
@@ -139,8 +172,90 @@ export async function fetchShortLinkByPath({
       error
     )
     return null
-  } finally {
-    clearTimeout(timeout)
+  }
+}
+
+/**
+ * The api-media fallback for step 1: the routing settings of a domain, asked
+ * for when KV has no `domain:<host>` record (never published, or KV cannot be
+ * read). The selection is exactly the fields of a domain record.
+ */
+export const SHORT_LINK_DOMAIN_BY_HOSTNAME_QUERY = `
+  query ShortLinkDomainByHostname($hostname: String!) {
+    shortLinkDomainByHostname(hostname: $hostname) {
+      __typename
+      ... on QueryShortLinkDomainByHostnameSuccess {
+        data {
+          id
+          hostname
+          redirectStatus
+          fallbackTo
+          notFound
+          passthroughOrigin
+          reservedPaths
+          slugCaseSensitive
+          pathPrefix
+          kvBinding
+        }
+      }
+    }
+  }
+`
+
+/**
+ * Narrows the GraphQL response body to the domain record api-media would have
+ * published, or null for GraphQL errors, the `NotFoundError` member, or a
+ * shape the record validator rejects.
+ */
+export function readDomainRecord(body: unknown): DomainRecord | null {
+  if (!isObject(body)) return null
+  if (Array.isArray(body.errors) && body.errors.length > 0) return null
+
+  const data: unknown = body.data
+  if (!isObject(data)) return null
+
+  const result: unknown = data.shortLinkDomainByHostname
+  if (!isObject(result)) return null
+  if (result.__typename !== 'QueryShortLinkDomainByHostnameSuccess') return null
+  if (!isObject(result.data)) return null
+
+  const record: unknown = { v: RECORD_VERSION, ...result.data }
+  return isDomainRecord(record) ? record : null
+}
+
+export interface FetchDomainRecordInput {
+  endpoint: string | undefined
+  hostname: string
+  timeoutMs?: number
+  fetchImpl?: typeof fetch
+}
+
+/**
+ * Returns the domain record from api-media, or null for an unknown host, a
+ * transport error, or the timeout. Never throws: with KV and api-media both
+ * unavailable an uncached host gets the lost page, not a 5xx.
+ */
+export async function fetchDomainRecord({
+  endpoint,
+  hostname,
+  timeoutMs = GRAPHQL_TIMEOUT_MS,
+  fetchImpl = fetch
+}: FetchDomainRecordInput): Promise<DomainRecord | null> {
+  try {
+    const body = await graphQlRequest({
+      endpoint,
+      query: SHORT_LINK_DOMAIN_BY_HOSTNAME_QUERY,
+      variables: { hostname },
+      timeoutMs,
+      fetchImpl
+    })
+    return readDomainRecord(body)
+  } catch (error) {
+    console.error(
+      JSON.stringify({ event: 'api_domain_lookup_failed', hostname }),
+      error
+    )
+    return null
   }
 }
 

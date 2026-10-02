@@ -2,7 +2,6 @@ import { fetchMock } from '../test/fetchMock'
 import { domainRecord, routingRecord } from '../test/fixtures'
 import {
   graphQlEndpoint,
-  seedD1,
   seedDomainLinks,
   seedRecords,
   workerRequest
@@ -190,11 +189,15 @@ describe('worker with a path prefix', () => {
     await seedDomainLinks('KV_ARC_GT', {
       abc: routingRecord({ id: 'link-multi', to: 'https://example.com/multi' })
     })
-    // legacy.example has no namespace; its link is only reachable through D1.
-    await seedD1(
-      'link:legacy.example/abc',
-      routingRecord({ id: 'link-legacy', to: 'https://example.com/legacy' })
-    )
+    // legacy.example has no namespace; its link is reached as a global link.
+    await seedRecords({
+      'link:abc': routingRecord({
+        id: 'link-legacy',
+        to: 'https://example.com/legacy',
+        global: true,
+        hostname: 'legacy.example'
+      })
+    })
   })
 
   afterAll(() => fetchMock.deactivate())
