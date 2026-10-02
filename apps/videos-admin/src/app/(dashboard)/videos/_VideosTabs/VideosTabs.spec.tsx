@@ -49,6 +49,25 @@ describe('VideosTabs', () => {
     expect(mockPush).toHaveBeenCalledWith('/videos/library')
   })
 
+  it('selects Processing when on the processing page', () => {
+    mockPathname = '/videos/processing'
+
+    render(<VideosTabs />)
+
+    expect(screen.getByRole('tab', { name: 'Processing' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
+  })
+
+  it('routes Processing to the processing page', () => {
+    render(<VideosTabs />)
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Processing' }))
+
+    expect(mockPush).toHaveBeenCalledWith('/videos/processing')
+  })
+
   it('routes Algolia Search back to the main videos page', () => {
     mockPathname = '/videos/library'
 
