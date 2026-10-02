@@ -10,21 +10,30 @@ import { type MockedFunction } from 'vitest'
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
 import { TemplateGalleryPageStatus } from '../../../../__generated__/globalTypes'
-import { sendCollectionTemplateDragEvent } from '../../../libs/sendCollectionEvent'
-import { getTemplateGalleryPageAssignJourneyMock } from '../../../libs/useTemplateGalleryPageAssignJourneyMutation/useTemplateGalleryPageAssignJourneyMutation.mock'
+import {
+  sendCollectionTemplateDragEvent,
+  sendCollectionTemplateRemoveEvent
+} from '../../../libs/sendCollectionEvent'
+import { getTemplateGalleryPageLinkJourneyMock } from '../../../libs/useTemplateGalleryPageLinkJourneyMutation/useTemplateGalleryPageLinkJourneyMutation.mock'
+import { getTemplateGalleryPageMoveJourneyMock } from '../../../libs/useTemplateGalleryPageMoveJourneyMutation/useTemplateGalleryPageMoveJourneyMutation.mock'
+import { getTemplateGalleryPageRemoveJourneyMock } from '../../../libs/useTemplateGalleryPageRemoveJourneyMutation/useTemplateGalleryPageRemoveJourneyMutation.mock'
 import { getTemplateGalleryPageReorderTemplateMock } from '../../../libs/useTemplateGalleryPageReorderTemplateMutation/useTemplateGalleryPageReorderTemplateMutation.mock'
-import { GET_TEMPLATE_GALLERY_PAGES } from '../../../libs/useTemplateGalleryPagesQuery'
-import { encodeDropZoneId } from '../Droppables'
+import { encodeCardId, encodeDropZoneId } from '../Droppables'
 
-import { useDragEndHandler } from './useDragEndHandler'
+import { JourneyMembership, useDragEndHandler } from './useDragEndHandler'
 
 vi.mock('../../../libs/sendCollectionEvent', () => ({
-  sendCollectionTemplateDragEvent: vi.fn()
+  sendCollectionTemplateDragEvent: vi.fn(),
+  sendCollectionTemplateRemoveEvent: vi.fn()
 }))
 
 const mockSendCollectionTemplateDragEvent =
   sendCollectionTemplateDragEvent as MockedFunction<
     typeof sendCollectionTemplateDragEvent
+  >
+const mockSendCollectionTemplateRemoveEvent =
+  sendCollectionTemplateRemoveEvent as MockedFunction<
+    typeof sendCollectionTemplateRemoveEvent
   >
 
 const journey = (id: string, title: string): Journey =>
@@ -42,15 +51,29 @@ const templateRef = (j: Journey): TemplateGalleryPage['templates'][number] => ({
   primaryImageBlock: null
 })
 
+const membershipRef = (
+  journeyId: string,
+  isHome: boolean
+): TemplateGalleryPage['memberships'][number] => ({
+  __typename: 'TemplateGalleryPageMembership',
+  journeyId,
+  isHome
+})
+
+/**
+ * `links` are journeys whose home is elsewhere; everything else in
+ * `templates` is a home on this collection.
+ */
 function makeCollection(
   id: string,
   templates: Journey[],
-  overrides: Partial<TemplateGalleryPage> = {}
+  options: { links?: string[]; title?: string } = {}
 ): TemplateGalleryPage {
+  const links = new Set(options.links ?? [])
   return {
     __typename: 'TemplateGalleryPage',
     id,
-    title: id,
+    title: options.title ?? id,
     description: '',
     slug: id,
     status: TemplateGalleryPageStatus.draft,
@@ -62,7 +85,7 @@ function makeCollection(
     createdAt: '2026-05-06T00:00:00Z',
     updatedAt: '2026-05-06T00:00:00Z',
     templates: templates.map(templateRef),
-    ...overrides
+    memberships: templates.map((j) => membershipRef(j.id, !links.has(j.id)))
   }
 }
 
@@ -73,17 +96,26 @@ interface Harness {
 
 function buildIndexes({ collections, journeys }: Harness): {
   journeyById: Map<string, Journey>
-  templateIdToCollection: Map<string, TemplateGalleryPage>
   collectionsById: Map<string, TemplateGalleryPage>
+  membershipsByJourneyId: Map<string, JourneyMembership>
 } {
   const journeyById = new Map(journeys.map((j) => [j.id, j]))
-  const templateIdToCollection = new Map<string, TemplateGalleryPage>()
   const collectionsById = new Map<string, TemplateGalleryPage>()
+  const membershipsByJourneyId = new Map<string, JourneyMembership>()
   for (const c of collections) {
     collectionsById.set(c.id, c)
-    for (const tpl of c.templates) templateIdToCollection.set(tpl.id, c)
+    for (const m of c.memberships) {
+      const entry = membershipsByJourneyId.get(m.journeyId) ?? {
+        homeCollectionId: null,
+        collectionIds: []
+      }
+      membershipsByJourneyId.set(m.journeyId, {
+        homeCollectionId: m.isHome ? c.id : entry.homeCollectionId,
+        collectionIds: [...entry.collectionIds, c.id]
+      })
+    }
   }
-  return { journeyById, templateIdToCollection, collectionsById }
+  return { journeyById, collectionsById, membershipsByJourneyId }
 }
 
 function wrapperWithMocks(
@@ -106,348 +138,415 @@ function dropEvent(activeId: string, overId: string | null): DragEndEvent {
   } as unknown as DragEndEvent
 }
 
+const inCollection = (collectionId: string, journeyId: string): string =>
+  encodeCardId({ zone: { kind: 'collection', id: collectionId }, journeyId })
+const inPool = (journeyId: string): string =>
+  encodeCardId({ zone: { kind: 'unsectioned' }, journeyId })
+const moveInto = (collectionId: string): string =>
+  encodeDropZoneId({ kind: 'action', collectionId, action: 'move' })
+const linkInto = (collectionId: string): string =>
+  encodeDropZoneId({ kind: 'action', collectionId, action: 'link' })
+const collectionZone = (collectionId: string): string =>
+  encodeDropZoneId({ kind: 'collection', id: collectionId })
+const poolZone = encodeDropZoneId({ kind: 'unsectioned' })
+
+function renderHandler(
+  indexes: ReturnType<typeof buildIndexes>,
+  mocks: ReadonlyArray<MockLink.MockedResponse>,
+  extra: Partial<Parameters<typeof useDragEndHandler>[0]> = {}
+): {
+  handle: (event: DragEndEvent) => Promise<void>
+  setDragInFlight: ReturnType<typeof vi.fn>
+  setActiveDragId: ReturnType<typeof vi.fn>
+} {
+  const setDragInFlight = vi.fn()
+  const setActiveDragId = vi.fn()
+  const { result } = renderHook(
+    () =>
+      useDragEndHandler({
+        ...indexes,
+        dragInFlightRef: { current: false },
+        setDragInFlight,
+        setActiveDragId,
+        ...extra
+      }),
+    { wrapper: wrapperWithMocks(mocks) }
+  )
+  return { handle: result.current, setDragInFlight, setActiveDragId }
+}
+
 describe('useDragEndHandler', () => {
+  const j1 = journey('j1', 'A')
+  const j2 = journey('j2', 'B')
+  const j3 = journey('j3', 'C')
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   it('intra-collection reorder fires templateGalleryPageReorderTemplate', async () => {
-    const j1 = journey('j1', 'A')
-    const j2 = journey('j2', 'B')
-    const j3 = journey('j3', 'C')
     const collection = makeCollection('page-1', [j1, j2, j3])
     const indexes = buildIndexes({
       collections: [collection],
       journeys: [j1, j2, j3]
     })
-
     const reorderMock = getTemplateGalleryPageReorderTemplateMock({
       pageId: 'page-1',
       journeyId: 'j1',
       order: 2
     })
-    const setDragInFlight = vi.fn()
-    const setActiveDragId = vi.fn()
-
-    const { result } = renderHook(
-      () =>
-        useDragEndHandler({
-          ...indexes,
-          dragInFlightRef: { current: false },
-          setDragInFlight,
-          setActiveDragId
-        }),
-      { wrapper: wrapperWithMocks([reorderMock]) }
-    )
+    const { handle, setDragInFlight } = renderHandler(indexes, [reorderMock])
 
     // Drop j1 onto j3 (display index 2 inside its own collection).
     await act(async () => {
-      await result.current(dropEvent('j1', 'j3'))
+      await handle(
+        dropEvent(inCollection('page-1', 'j1'), inCollection('page-1', 'j3'))
+      )
     })
 
-    expect(reorderMock.result).toHaveBeenCalledTimes(1)
-    expect(setActiveDragId).toHaveBeenCalledWith(null)
+    await waitFor(() => expect(reorderMock.result).toHaveBeenCalled())
     expect(setDragInFlight).toHaveBeenNthCalledWith(1, true)
     expect(setDragInFlight).toHaveBeenLastCalledWith(false)
   })
 
-  it('cross-collection move fires templateGalleryPageAssignJourney with target pageId', async () => {
-    const j1 = journey('j1', 'A')
-    const source = makeCollection('page-A', [j1])
-    const target = makeCollection('page-B', [])
-    const indexes = buildIndexes({
-      collections: [source, target],
-      journeys: [j1]
-    })
-
-    const assignMock = getTemplateGalleryPageAssignJourneyMock({
-      journeyId: 'j1',
-      pageId: 'page-B'
-    })
-    const setDragInFlight = vi.fn()
-    const setActiveDragId = vi.fn()
-
-    const { result } = renderHook(
-      () =>
-        useDragEndHandler({
-          ...indexes,
-          dragInFlightRef: { current: false },
-          setDragInFlight,
-          setActiveDragId
-        }),
-      { wrapper: wrapperWithMocks([assignMock]) }
-    )
-
-    // Drop j1 onto the empty target collection's drop zone.
-    await act(async () => {
-      await result.current(
-        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
-      )
-    })
-
-    expect(assignMock.result).toHaveBeenCalledTimes(1)
-  })
-
-  // NES-1668 repro: drag a template from one draft collection to another and
-  // verify the source page's cached templates array no longer contains the
-  // moved journey. The mock returns the target page with j1 present so the
-  // post-mutation `accepted` check passes and the source-side cache.modify
-  // can run on the real-data pass. Pre-fix: source.templates still contains
-  // the moved ref, which is what Sharon QA'd. Post-fix: source.templates is
-  // empty.
-  it('NES-1668: cross-collection move trims the moving journey from the source page', async () => {
-    const j1 = journey('j1', 'A')
-    const source = makeCollection('page-A', [j1])
-    const target = makeCollection('page-B', [])
-    const indexes = buildIndexes({
-      collections: [source, target],
-      journeys: [j1]
-    })
-
-    const cache = new InMemoryCache()
-    cache.writeQuery({
-      query: GET_TEMPLATE_GALLERY_PAGES,
-      variables: { teamId: 'team-1' },
-      data: { templateGalleryPages: [source, target] }
-    })
-
-    // Realistic server response: target page now contains the moved journey.
-    const assignMock = getTemplateGalleryPageAssignJourneyMock(
-      { journeyId: 'j1', pageId: 'page-B' },
-      { id: 'page-B', templates: [templateRef(j1)] }
-    )
-
-    const { result } = renderHook(
-      () =>
-        useDragEndHandler({
-          ...indexes,
-          dragInFlightRef: { current: false },
-          setDragInFlight: vi.fn(),
-          setActiveDragId: vi.fn()
-        }),
-      { wrapper: wrapperWithMocks([assignMock], cache) }
-    )
-
-    await act(async () => {
-      await result.current(
-        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
-      )
-    })
-
-    expect(assignMock.result).toHaveBeenCalledTimes(1)
-
-    const cached = cache.readQuery<{
-      templateGalleryPages: TemplateGalleryPage[]
-    }>({
-      query: GET_TEMPLATE_GALLERY_PAGES,
-      variables: { teamId: 'team-1' }
-    })
-    const sourceAfter = cached?.templateGalleryPages.find(
-      (p) => p.id === 'page-A'
-    )
-    const targetAfter = cached?.templateGalleryPages.find(
-      (p) => p.id === 'page-B'
-    )
-    // Source must no longer reference the moved journey. Target gains it.
-    expect(sourceAfter?.templates.map((t) => t.id)).toEqual([])
-    expect(targetAfter?.templates.map((t) => t.id)).toEqual(['j1'])
-  })
-
-  it('drop on unsectioned fires assignJourney with pageId: null', async () => {
-    const j1 = journey('j1', 'A')
-    const source = makeCollection('page-A', [j1])
-    const indexes = buildIndexes({
-      collections: [source],
-      journeys: [j1]
-    })
-
-    const assignMock = getTemplateGalleryPageAssignJourneyMock({
-      journeyId: 'j1',
-      pageId: null
-    })
-    const setDragInFlight = vi.fn()
-    const setActiveDragId = vi.fn()
-
-    const { result } = renderHook(
-      () =>
-        useDragEndHandler({
-          ...indexes,
-          dragInFlightRef: { current: false },
-          setDragInFlight,
-          setActiveDragId
-        }),
-      { wrapper: wrapperWithMocks([assignMock]) }
-    )
-
-    await act(async () => {
-      await result.current(
-        dropEvent('j1', encodeDropZoneId({ kind: 'unsectioned' }))
-      )
-    })
-
-    expect(assignMock.result).toHaveBeenCalledTimes(1)
-  })
-
-  it('allows drops out of a published source collection (NES-1703)', async () => {
-    const j1 = journey('j1', 'A')
-    const source = makeCollection('page-A', [j1], {
-      status: TemplateGalleryPageStatus.published
-    })
-    const target = makeCollection('page-B', [])
-    const indexes = buildIndexes({
-      collections: [source, target],
-      journeys: [j1]
-    })
-
-    const assignMock = getTemplateGalleryPageAssignJourneyMock({
-      journeyId: 'j1',
-      pageId: 'page-B'
-    })
-    const setDragInFlight = vi.fn()
-
-    const { result } = renderHook(
-      () =>
-        useDragEndHandler({
-          ...indexes,
-          dragInFlightRef: { current: false },
-          setDragInFlight,
-          setActiveDragId: vi.fn()
-        }),
-      { wrapper: wrapperWithMocks([assignMock]) }
-    )
-
-    await act(async () => {
-      await result.current(
-        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
-      )
-    })
-
-    expect(assignMock.result).toHaveBeenCalledTimes(1)
-    expect(setDragInFlight).toHaveBeenCalledWith(true)
-  })
-
-  it('allows drops into a published target collection (NES-1703)', async () => {
-    const j1 = journey('j1', 'A')
-    const source = makeCollection('page-A', [j1])
-    const target = makeCollection('page-B', [], {
-      status: TemplateGalleryPageStatus.published
-    })
-    const indexes = buildIndexes({
-      collections: [source, target],
-      journeys: [j1]
-    })
-
-    const assignMock = getTemplateGalleryPageAssignJourneyMock({
-      journeyId: 'j1',
-      pageId: 'page-B'
-    })
-    const setDragInFlight = vi.fn()
-
-    const { result } = renderHook(
-      () =>
-        useDragEndHandler({
-          ...indexes,
-          dragInFlightRef: { current: false },
-          setDragInFlight,
-          setActiveDragId: vi.fn()
-        }),
-      { wrapper: wrapperWithMocks([assignMock]) }
-    )
-
-    await act(async () => {
-      await result.current(
-        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
-      )
-    })
-
-    expect(assignMock.result).toHaveBeenCalledTimes(1)
-    expect(setDragInFlight).toHaveBeenCalledWith(true)
-  })
-
-  it('is a no-op when sourceIndex === targetIndex (intra-collection same slot)', async () => {
-    const j1 = journey('j1', 'A')
-    const j2 = journey('j2', 'B')
+  it('drop on the collection background of its own collection is a no-op', async () => {
     const collection = makeCollection('page-1', [j1, j2])
     const indexes = buildIndexes({
       collections: [collection],
       journeys: [j1, j2]
     })
-
-    const reorderMock = getTemplateGalleryPageReorderTemplateMock({
-      pageId: 'page-1',
-      journeyId: 'j1',
-      order: 0
-    })
-    const setDragInFlight = vi.fn()
-
-    const { result } = renderHook(
-      () =>
-        useDragEndHandler({
-          ...indexes,
-          dragInFlightRef: { current: false },
-          setDragInFlight,
-          setActiveDragId: vi.fn()
-        }),
-      { wrapper: wrapperWithMocks([reorderMock]) }
-    )
-
-    // Drop j1 onto itself — sourceIndex === targetIndex.
-    await act(async () => {
-      await result.current(dropEvent('j1', 'j1'))
-    })
-
-    expect(reorderMock.result).not.toHaveBeenCalled()
-  })
-
-  it('is a no-op when there is no over target', async () => {
-    const j1 = journey('j1', 'A')
-    const collection = makeCollection('page-1', [j1])
-    const indexes = buildIndexes({
-      collections: [collection],
-      journeys: [j1]
-    })
-
-    const reorderMock = getTemplateGalleryPageReorderTemplateMock({
-      pageId: 'page-1',
-      journeyId: 'j1',
-      order: 0
-    })
-    const setDragInFlight = vi.fn()
-    const setActiveDragId = vi.fn()
-
-    const { result } = renderHook(
-      () =>
-        useDragEndHandler({
-          ...indexes,
-          dragInFlightRef: { current: false },
-          setDragInFlight,
-          setActiveDragId
-        }),
-      { wrapper: wrapperWithMocks([reorderMock]) }
-    )
+    const { handle, setDragInFlight } = renderHandler(indexes, [])
 
     await act(async () => {
-      await result.current(dropEvent('j1', null))
+      await handle(
+        dropEvent(inCollection('page-1', 'j1'), collectionZone('page-1'))
+      )
     })
 
-    expect(reorderMock.result).not.toHaveBeenCalled()
-    expect(setActiveDragId).toHaveBeenCalledWith(null)
+    expect(setDragInFlight).not.toHaveBeenCalled()
   })
 
-  it('skips the dispatch when dragInFlight is true', async () => {
-    // Use a real cross-collection drop target so this test proves the
-    // guard is what's suppressing dispatch — not the same-slot no-op
-    // short-circuit that would skip the mutation regardless.
-    const j1 = journey('j1', 'A')
-    const source = makeCollection('page-A', [j1])
-    const target = makeCollection('page-B', [])
+  it('"Move here" from another collection fires templateGalleryPageMoveJourney and reports it', async () => {
+    const pageA = makeCollection('page-A', [j1], { title: 'Easter' })
+    const pageB = makeCollection('page-B', [j2], { title: 'Youth' })
     const indexes = buildIndexes({
-      collections: [source, target],
+      collections: [pageA, pageB],
+      journeys: [j1, j2]
+    })
+    const moveMock = getTemplateGalleryPageMoveJourneyMock(
+      { journeyId: 'j1', fromPageId: 'page-A', toPageId: 'page-B' },
+      [
+        { id: 'page-A', title: 'Easter', templates: [], memberships: [] },
+        {
+          id: 'page-B',
+          title: 'Youth',
+          templates: [templateRef(j2), templateRef(j1)],
+          memberships: [membershipRef('j2', true), membershipRef('j1', true)]
+        }
+      ]
+    )
+    const { handle } = renderHandler(indexes, [moveMock])
+
+    await act(async () => {
+      await handle(dropEvent(inCollection('page-A', 'j1'), moveInto('page-B')))
+    })
+
+    await waitFor(() => expect(moveMock.result).toHaveBeenCalled())
+    expect(mockSendCollectionTemplateDragEvent).toHaveBeenCalledWith({
+      collectionId: 'page-B',
+      templateId: 'j1',
+      mode: 'move'
+    })
+    await waitFor(() =>
+      expect(screen.getByText('Moved A to Youth')).toBeInTheDocument()
+    )
+  })
+
+  it('"Link here" from another collection fires templateGalleryPageLinkJourney and keeps the source', async () => {
+    const pageA = makeCollection('page-A', [j1], { title: 'Easter' })
+    const pageB = makeCollection('page-B', [j2], { title: 'Youth' })
+    const indexes = buildIndexes({
+      collections: [pageA, pageB],
+      journeys: [j1, j2]
+    })
+    const linkMock = getTemplateGalleryPageLinkJourneyMock(
+      { journeyId: 'j1', pageId: 'page-B' },
+      {
+        id: 'page-B',
+        title: 'Youth',
+        templates: [templateRef(j2), templateRef(j1)],
+        memberships: [membershipRef('j2', true), membershipRef('j1', false)]
+      }
+    )
+    const { handle } = renderHandler(indexes, [linkMock])
+
+    await act(async () => {
+      await handle(dropEvent(inCollection('page-A', 'j1'), linkInto('page-B')))
+    })
+
+    await waitFor(() => expect(linkMock.result).toHaveBeenCalled())
+    expect(mockSendCollectionTemplateDragEvent).toHaveBeenCalledWith({
+      collectionId: 'page-B',
+      templateId: 'j1',
+      mode: 'link'
+    })
+    await waitFor(() =>
+      expect(
+        screen.getByText('Linked A into Youth. Still in Easter.')
+      ).toBeInTheDocument()
+    )
+  })
+
+  it('"Add here" from All Templates links the journey as its home', async () => {
+    const pageA = makeCollection('page-A', [], { title: 'Easter' })
+    const indexes = buildIndexes({ collections: [pageA], journeys: [j1] })
+    const linkMock = getTemplateGalleryPageLinkJourneyMock(
+      { journeyId: 'j1', pageId: 'page-A' },
+      {
+        id: 'page-A',
+        title: 'Easter',
+        templates: [templateRef(j1)],
+        memberships: [membershipRef('j1', true)]
+      }
+    )
+    const { handle } = renderHandler(indexes, [linkMock])
+
+    await act(async () => {
+      await handle(dropEvent(inPool('j1'), linkInto('page-A')))
+    })
+
+    await waitFor(() => expect(linkMock.result).toHaveBeenCalled())
+    expect(mockSendCollectionTemplateDragEvent).toHaveBeenCalledWith({
+      collectionId: 'page-A',
+      templateId: 'j1',
+      mode: 'add'
+    })
+    // The card visibly left the pool — no toast unless the target was
+    // collapsed (NES-1717).
+    expect(screen.queryByText(/Added to/)).not.toBeInTheDocument()
+  })
+
+  it('confirms an add into a collapsed collection with a toast (NES-1717)', async () => {
+    const pageA = makeCollection('page-A', [], { title: 'Easter' })
+    const indexes = buildIndexes({ collections: [pageA], journeys: [j1] })
+    const linkMock = getTemplateGalleryPageLinkJourneyMock(
+      { journeyId: 'j1', pageId: 'page-A' },
+      {
+        id: 'page-A',
+        title: 'Easter',
+        templates: [templateRef(j1)],
+        memberships: [membershipRef('j1', true)]
+      }
+    )
+    const { handle } = renderHandler(indexes, [linkMock], {
+      isCollectionCollapsed: (id) => id === 'page-A'
+    })
+
+    await act(async () => {
+      await handle(dropEvent(inPool('j1'), linkInto('page-A')))
+    })
+
+    await waitFor(() =>
+      expect(screen.getByText('Added to Easter')).toBeInTheDocument()
+    )
+  })
+
+  it('drop on another collection between the boxes does nothing and hints', async () => {
+    const pageA = makeCollection('page-A', [j1])
+    const pageB = makeCollection('page-B', [j2])
+    const indexes = buildIndexes({
+      collections: [pageA, pageB],
+      journeys: [j1, j2]
+    })
+    const { handle, setDragInFlight } = renderHandler(indexes, [])
+
+    await act(async () => {
+      await handle(
+        dropEvent(inCollection('page-A', 'j1'), collectionZone('page-B'))
+      )
+    })
+
+    await waitFor(() =>
+      expect(
+        screen.getByText('Drop on “Move here” or “Link here”.')
+      ).toBeInTheDocument()
+    )
+    expect(setDragInFlight).toHaveBeenLastCalledWith(false)
+    expect(mockSendCollectionTemplateDragEvent).not.toHaveBeenCalled()
+  })
+
+  it('drop onto a card in another collection is treated like the collection background', async () => {
+    const pageA = makeCollection('page-A', [j1])
+    const pageB = makeCollection('page-B', [j2])
+    const indexes = buildIndexes({
+      collections: [pageA, pageB],
+      journeys: [j1, j2]
+    })
+    const { handle } = renderHandler(indexes, [])
+
+    await act(async () => {
+      await handle(
+        dropEvent(inCollection('page-A', 'j1'), inCollection('page-B', 'j2'))
+      )
+    })
+
+    await waitFor(() =>
+      expect(
+        screen.getByText('Drop on “Move here” or “Link here”.')
+      ).toBeInTheDocument()
+    )
+  })
+
+  it('drop on All Templates removes the membership from the source collection', async () => {
+    const pageA = makeCollection('page-A', [j1], { title: 'Easter' })
+    const indexes = buildIndexes({ collections: [pageA], journeys: [j1] })
+    const removeMock = getTemplateGalleryPageRemoveJourneyMock(
+      { journeyId: 'j1', pageId: 'page-A' },
+      [{ id: 'page-A', title: 'Easter', templates: [], memberships: [] }]
+    )
+    const { handle } = renderHandler(indexes, [removeMock])
+
+    await act(async () => {
+      await handle(dropEvent(inCollection('page-A', 'j1'), poolZone))
+    })
+
+    await waitFor(() => expect(removeMock.result).toHaveBeenCalled())
+    expect(mockSendCollectionTemplateRemoveEvent).toHaveBeenCalledWith({
+      collectionId: 'page-A',
+      templateId: 'j1',
+      via: 'drag'
+    })
+    await waitFor(() =>
+      expect(screen.getByText('Removed A from Easter')).toBeInTheDocument()
+    )
+  })
+
+  it('names the promoted home when the removed membership was the home', async () => {
+    const pageA = makeCollection('page-A', [j1], { title: 'Easter' })
+    const pageB = makeCollection('page-B', [j1], {
+      title: 'Youth',
+      links: ['j1']
+    })
+    const indexes = buildIndexes({
+      collections: [pageA, pageB],
       journeys: [j1]
     })
+    const removeMock = getTemplateGalleryPageRemoveJourneyMock(
+      { journeyId: 'j1', pageId: 'page-A' },
+      [
+        { id: 'page-A', title: 'Easter', templates: [], memberships: [] },
+        {
+          id: 'page-B',
+          title: 'Youth',
+          templates: [templateRef(j1)],
+          memberships: [membershipRef('j1', true)]
+        }
+      ]
+    )
+    const { handle } = renderHandler(indexes, [removeMock])
 
-    const assignMock = getTemplateGalleryPageAssignJourneyMock({
-      journeyId: 'j1',
-      pageId: 'page-B'
+    await act(async () => {
+      await handle(dropEvent(inCollection('page-A', 'j1'), poolZone))
+    })
+
+    await waitFor(() =>
+      expect(
+        screen.getByText('Removed A from Easter. Its home is now Youth.')
+      ).toBeInTheDocument()
+    )
+  })
+
+  it('drop from All Templates onto All Templates is a no-op', async () => {
+    const indexes = buildIndexes({ collections: [], journeys: [j1] })
+    const { handle, setDragInFlight } = renderHandler(indexes, [])
+
+    await act(async () => {
+      await handle(dropEvent(inPool('j1'), poolZone))
+    })
+
+    expect(setDragInFlight).not.toHaveBeenCalled()
+  })
+
+  it('ignores a drop onto a box of a collection that already holds the journey', async () => {
+    const pageA = makeCollection('page-A', [j1])
+    const pageB = makeCollection('page-B', [j1], { links: ['j1'] })
+    const indexes = buildIndexes({
+      collections: [pageA, pageB],
+      journeys: [j1]
+    })
+    const { handle, setDragInFlight } = renderHandler(indexes, [])
+
+    await act(async () => {
+      await handle(dropEvent(inCollection('page-A', 'j1'), linkInto('page-B')))
+    })
+
+    expect(setDragInFlight).toHaveBeenLastCalledWith(false)
+    expect(mockSendCollectionTemplateDragEvent).not.toHaveBeenCalled()
+  })
+
+  it('surfaces a snackbar and releases the lock when the server rejects a link', async () => {
+    const pageA = makeCollection('page-A', [j1], { title: 'Easter' })
+    const pageB = makeCollection('page-B', [], { title: 'Youth' })
+    const indexes = buildIndexes({
+      collections: [pageA, pageB],
+      journeys: [j1]
+    })
+    // Success-shaped response whose page does not include the journey.
+    const linkMock = getTemplateGalleryPageLinkJourneyMock(
+      { journeyId: 'j1', pageId: 'page-B' },
+      { id: 'page-B', title: 'Youth', templates: [], memberships: [] }
+    )
+    const { handle, setDragInFlight } = renderHandler(indexes, [linkMock])
+
+    await act(async () => {
+      await handle(dropEvent(inCollection('page-A', 'j1'), linkInto('page-B')))
+    })
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(
+          "Couldn't add template — the server rejected the drop."
+        )
+      ).toBeInTheDocument()
+    )
+    expect(setDragInFlight).toHaveBeenLastCalledWith(false)
+    expect(mockSendCollectionTemplateDragEvent).not.toHaveBeenCalled()
+  })
+
+  it('surfaces the error and releases the lock when the mutation throws', async () => {
+    const pageA = makeCollection('page-A', [j1])
+    const pageB = makeCollection('page-B', [])
+    const indexes = buildIndexes({
+      collections: [pageA, pageB],
+      journeys: [j1]
+    })
+    const failingMock: MockLink.MockedResponse = {
+      ...getTemplateGalleryPageMoveJourneyMock({
+        journeyId: 'j1',
+        fromPageId: 'page-A',
+        toPageId: 'page-B'
+      }),
+      result: undefined,
+      error: new Error('boom')
+    }
+    const { handle, setDragInFlight } = renderHandler(indexes, [failingMock])
+
+    await act(async () => {
+      await handle(dropEvent(inCollection('page-A', 'j1'), moveInto('page-B')))
+    })
+
+    await waitFor(() => expect(screen.getByText('boom')).toBeInTheDocument())
+    expect(setDragInFlight).toHaveBeenLastCalledWith(false)
+  })
+
+  it('refuses a drop while a previous mutation is still in flight', async () => {
+    const pageA = makeCollection('page-A', [j1])
+    const pageB = makeCollection('page-B', [])
+    const indexes = buildIndexes({
+      collections: [pageA, pageB],
+      journeys: [j1]
     })
     const setDragInFlight = vi.fn()
-
     const { result } = renderHook(
       () =>
         useDragEndHandler({
@@ -456,399 +555,31 @@ describe('useDragEndHandler', () => {
           setDragInFlight,
           setActiveDragId: vi.fn()
         }),
-      { wrapper: wrapperWithMocks([assignMock]) }
+      { wrapper: wrapperWithMocks([]) }
     )
 
     await act(async () => {
       await result.current(
-        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
+        dropEvent(inCollection('page-A', 'j1'), moveInto('page-B'))
       )
     })
 
-    expect(assignMock.result).not.toHaveBeenCalled()
-    // The guard MUST short-circuit before setDragInFlight(true) too — if
-    // a mutation had started, setDragInFlight would have been toggled.
-    expect(setDragInFlight).not.toHaveBeenCalledWith(true)
+    expect(setDragInFlight).not.toHaveBeenCalled()
   })
 
-  it('does not trim the source cache when the server silently rejects the move', async () => {
-    // The mutation can succeed at the GraphQL layer but return a target
-    // page that does NOT include the journey we asked it to add — e.g.
-    // when the journey's team mismatches the page's team. Apollo merges
-    // the response over the optimistic write, so without a guard the
-    // source-page cache.modify would still run on the real-response pass
-    // and permanently drop the moving journey from the source page until
-    // the next refetch. This test seeds the source page with the journey,
-    // wires an assign mock that returns the target with empty templates,
-    // and asserts the source's cached templates still hold the journey.
-    const j1 = journey('j1', 'A')
-    const source = makeCollection('page-A', [j1])
-    const target = makeCollection('page-B', [])
-    const indexes = buildIndexes({
-      collections: [source, target],
-      journeys: [j1]
-    })
-
-    const cache = new InMemoryCache()
-    cache.writeQuery({
-      query: GET_TEMPLATE_GALLERY_PAGES,
-      variables: { teamId: 'team-1' },
-      data: { templateGalleryPages: [source, target] }
-    })
-
-    // Silent rejection: returned target page does not include j1.
-    const assignMock = getTemplateGalleryPageAssignJourneyMock(
-      { journeyId: 'j1', pageId: 'page-B' },
-      { id: 'page-B', templates: [] }
-    )
-
-    const { result } = renderHook(
-      () =>
-        useDragEndHandler({
-          ...indexes,
-          dragInFlightRef: { current: false },
-          setDragInFlight: vi.fn(),
-          setActiveDragId: vi.fn()
-        }),
-      { wrapper: wrapperWithMocks([assignMock], cache) }
+  it('clears the active drag id and does nothing when dropped outside every zone', async () => {
+    const pageA = makeCollection('page-A', [j1])
+    const indexes = buildIndexes({ collections: [pageA], journeys: [j1] })
+    const { handle, setDragInFlight, setActiveDragId } = renderHandler(
+      indexes,
+      []
     )
 
     await act(async () => {
-      await result.current(
-        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
-      )
+      await handle(dropEvent(inCollection('page-A', 'j1'), null))
     })
 
-    expect(assignMock.result).toHaveBeenCalledTimes(1)
-
-    const cached = cache.readQuery<{
-      templateGalleryPages: TemplateGalleryPage[]
-    }>({
-      query: GET_TEMPLATE_GALLERY_PAGES,
-      variables: { teamId: 'team-1' }
-    })
-    const sourceAfter = cached?.templateGalleryPages.find(
-      (p) => p.id === 'page-A'
-    )
-    expect(sourceAfter?.templates.map((t) => t.id)).toEqual(['j1'])
-  })
-
-  // NES-1717: dropping onto a collapsed collection lands the template out of
-  // sight, so the handler surfaces an "Added to {collection}" toast.
-  it('toasts when a template is added to a collapsed collection', async () => {
-    const j1 = journey('j1', 'A')
-    const source = makeCollection('page-A', [j1])
-    const target = makeCollection('page-B', [])
-    const indexes = buildIndexes({
-      collections: [source, target],
-      journeys: [j1]
-    })
-
-    // Server confirms the move (target now contains j1) so `accepted` is true.
-    const assignMock = getTemplateGalleryPageAssignJourneyMock(
-      { journeyId: 'j1', pageId: 'page-B' },
-      { id: 'page-B', title: 'page-B', templates: [templateRef(j1)] }
-    )
-
-    const { result } = renderHook(
-      () =>
-        useDragEndHandler({
-          ...indexes,
-          dragInFlightRef: { current: false },
-          setDragInFlight: vi.fn(),
-          setActiveDragId: vi.fn(),
-          isCollectionCollapsed: (id) => id === 'page-B'
-        }),
-      { wrapper: wrapperWithMocks([assignMock]) }
-    )
-
-    await act(async () => {
-      await result.current(
-        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
-      )
-    })
-
-    expect(assignMock.result).toHaveBeenCalledTimes(1)
-    await waitFor(() =>
-      expect(screen.getByText('Added to page-B')).toBeInTheDocument()
-    )
-  })
-
-  it('does not toast when the target collection is expanded', async () => {
-    const j1 = journey('j1', 'A')
-    const source = makeCollection('page-A', [j1])
-    const target = makeCollection('page-B', [])
-    const indexes = buildIndexes({
-      collections: [source, target],
-      journeys: [j1]
-    })
-
-    const assignMock = getTemplateGalleryPageAssignJourneyMock(
-      { journeyId: 'j1', pageId: 'page-B' },
-      { id: 'page-B', title: 'page-B', templates: [templateRef(j1)] }
-    )
-
-    const { result } = renderHook(
-      () =>
-        useDragEndHandler({
-          ...indexes,
-          dragInFlightRef: { current: false },
-          setDragInFlight: vi.fn(),
-          setActiveDragId: vi.fn(),
-          isCollectionCollapsed: () => false
-        }),
-      { wrapper: wrapperWithMocks([assignMock]) }
-    )
-
-    await act(async () => {
-      await result.current(
-        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
-      )
-    })
-
-    expect(assignMock.result).toHaveBeenCalledTimes(1)
-    // waitFor so the check runs after notistack has settled — a synchronous
-    // negative assertion could pass before a (wrongly) enqueued toast renders.
-    await waitFor(() =>
-      expect(screen.queryByText('Added to page-B')).not.toBeInTheDocument()
-    )
-  })
-
-  it('shows the rejection error (not the added toast) when a collapsed-target drop is rejected', async () => {
-    const j1 = journey('j1', 'A')
-    const source = makeCollection('page-A', [j1])
-    const target = makeCollection('page-B', [])
-    const indexes = buildIndexes({
-      collections: [source, target],
-      journeys: [j1]
-    })
-
-    // Server returns the target WITHOUT j1 → silent rejection (accepted false).
-    const assignMock = getTemplateGalleryPageAssignJourneyMock(
-      { journeyId: 'j1', pageId: 'page-B' },
-      { id: 'page-B', title: 'page-B', templates: [] }
-    )
-
-    const { result } = renderHook(
-      () =>
-        useDragEndHandler({
-          ...indexes,
-          dragInFlightRef: { current: false },
-          setDragInFlight: vi.fn(),
-          setActiveDragId: vi.fn(),
-          isCollectionCollapsed: () => true
-        }),
-      { wrapper: wrapperWithMocks([assignMock]) }
-    )
-
-    await act(async () => {
-      await result.current(
-        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
-      )
-    })
-
-    await waitFor(() =>
-      expect(
-        screen.getByText(
-          "Couldn't move template — the server rejected the move."
-        )
-      ).toBeInTheDocument()
-    )
-    expect(screen.queryByText('Added to page-B')).not.toBeInTheDocument()
-  })
-
-  it('uses a generic confirmation when the collapsed target has no resolvable name', async () => {
-    const j1 = journey('j1', 'A')
-    const source = makeCollection('page-A', [j1])
-    // page-B is a collapsed drop target that is NOT in collectionsById and the
-    // server returns an empty title → the toast must not interpolate a blank.
-    const indexes = buildIndexes({ collections: [source], journeys: [j1] })
-
-    const assignMock = getTemplateGalleryPageAssignJourneyMock(
-      { journeyId: 'j1', pageId: 'page-B' },
-      { id: 'page-B', title: '', templates: [templateRef(j1)] }
-    )
-
-    const { result } = renderHook(
-      () =>
-        useDragEndHandler({
-          ...indexes,
-          dragInFlightRef: { current: false },
-          setDragInFlight: vi.fn(),
-          setActiveDragId: vi.fn(),
-          isCollectionCollapsed: () => true
-        }),
-      { wrapper: wrapperWithMocks([assignMock]) }
-    )
-
-    await act(async () => {
-      await result.current(
-        dropEvent('j1', encodeDropZoneId({ kind: 'collection', id: 'page-B' }))
-      )
-    })
-
-    await waitFor(() =>
-      expect(screen.getByText('Added to collection')).toBeInTheDocument()
-    )
-  })
-
-  // NES-1698: the drag analytics event's correctness depends on its
-  // placement — it must fire only when the server confirms a template
-  // landed in a collection. These tests lock in that wiring so a future
-  // refactor can't silently start counting rejected drops or reorders.
-  describe('analytics wiring (NES-1698)', () => {
-    beforeEach(() => {
-      mockSendCollectionTemplateDragEvent.mockClear()
-    })
-
-    it('fires the drag event once on a server-accepted drop into a collection', async () => {
-      const j1 = journey('j1', 'A')
-      const source = makeCollection('page-A', [j1])
-      const target = makeCollection('page-B', [])
-      const indexes = buildIndexes({
-        collections: [source, target],
-        journeys: [j1]
-      })
-
-      // Server confirms the move: returned target contains j1.
-      const assignMock = getTemplateGalleryPageAssignJourneyMock(
-        { journeyId: 'j1', pageId: 'page-B' },
-        { id: 'page-B', title: 'page-B', templates: [templateRef(j1)] }
-      )
-
-      const { result } = renderHook(
-        () =>
-          useDragEndHandler({
-            ...indexes,
-            dragInFlightRef: { current: false },
-            setDragInFlight: vi.fn(),
-            setActiveDragId: vi.fn()
-          }),
-        { wrapper: wrapperWithMocks([assignMock]) }
-      )
-
-      await act(async () => {
-        await result.current(
-          dropEvent(
-            'j1',
-            encodeDropZoneId({ kind: 'collection', id: 'page-B' })
-          )
-        )
-      })
-
-      expect(mockSendCollectionTemplateDragEvent).toHaveBeenCalledTimes(1)
-      expect(mockSendCollectionTemplateDragEvent).toHaveBeenCalledWith({
-        collectionId: 'page-B',
-        templateId: 'j1'
-      })
-    })
-
-    it('does not fire the drag event when the server silently rejects the move', async () => {
-      const j1 = journey('j1', 'A')
-      const source = makeCollection('page-A', [j1])
-      const target = makeCollection('page-B', [])
-      const indexes = buildIndexes({
-        collections: [source, target],
-        journeys: [j1]
-      })
-
-      // Silent rejection: returned target page does not include j1.
-      const assignMock = getTemplateGalleryPageAssignJourneyMock(
-        { journeyId: 'j1', pageId: 'page-B' },
-        { id: 'page-B', templates: [] }
-      )
-
-      const { result } = renderHook(
-        () =>
-          useDragEndHandler({
-            ...indexes,
-            dragInFlightRef: { current: false },
-            setDragInFlight: vi.fn(),
-            setActiveDragId: vi.fn()
-          }),
-        { wrapper: wrapperWithMocks([assignMock]) }
-      )
-
-      await act(async () => {
-        await result.current(
-          dropEvent(
-            'j1',
-            encodeDropZoneId({ kind: 'collection', id: 'page-B' })
-          )
-        )
-      })
-
-      expect(assignMock.result).toHaveBeenCalledTimes(1)
-      expect(mockSendCollectionTemplateDragEvent).not.toHaveBeenCalled()
-    })
-
-    it('does not fire the drag event on an intra-collection reorder', async () => {
-      const j1 = journey('j1', 'A')
-      const j2 = journey('j2', 'B')
-      const j3 = journey('j3', 'C')
-      const collection = makeCollection('page-1', [j1, j2, j3])
-      const indexes = buildIndexes({
-        collections: [collection],
-        journeys: [j1, j2, j3]
-      })
-
-      const reorderMock = getTemplateGalleryPageReorderTemplateMock({
-        pageId: 'page-1',
-        journeyId: 'j1',
-        order: 2
-      })
-
-      const { result } = renderHook(
-        () =>
-          useDragEndHandler({
-            ...indexes,
-            dragInFlightRef: { current: false },
-            setDragInFlight: vi.fn(),
-            setActiveDragId: vi.fn()
-          }),
-        { wrapper: wrapperWithMocks([reorderMock]) }
-      )
-
-      await act(async () => {
-        await result.current(dropEvent('j1', 'j3'))
-      })
-
-      expect(reorderMock.result).toHaveBeenCalledTimes(1)
-      expect(mockSendCollectionTemplateDragEvent).not.toHaveBeenCalled()
-    })
-
-    it('does not fire the drag event when a template is dragged out to unsectioned', async () => {
-      const j1 = journey('j1', 'A')
-      const source = makeCollection('page-A', [j1])
-      const indexes = buildIndexes({
-        collections: [source],
-        journeys: [j1]
-      })
-
-      const assignMock = getTemplateGalleryPageAssignJourneyMock({
-        journeyId: 'j1',
-        pageId: null
-      })
-
-      const { result } = renderHook(
-        () =>
-          useDragEndHandler({
-            ...indexes,
-            dragInFlightRef: { current: false },
-            setDragInFlight: vi.fn(),
-            setActiveDragId: vi.fn()
-          }),
-        { wrapper: wrapperWithMocks([assignMock]) }
-      )
-
-      await act(async () => {
-        await result.current(
-          dropEvent('j1', encodeDropZoneId({ kind: 'unsectioned' }))
-        )
-      })
-
-      expect(assignMock.result).toHaveBeenCalledTimes(1)
-      expect(mockSendCollectionTemplateDragEvent).not.toHaveBeenCalled()
-    })
+    expect(setActiveDragId).toHaveBeenCalledWith(null)
+    expect(setDragInFlight).not.toHaveBeenCalled()
   })
 })

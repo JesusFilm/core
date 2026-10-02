@@ -6,10 +6,10 @@
 import { TemplateGalleryPageStatus, TemplateGalleryPageMediaType } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: TemplateGalleryPageAssignJourney
+// GraphQL mutation operation: TemplateGalleryPageRemoveJourney
 // ====================================================
 
-export interface TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_media {
+export interface TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney_media {
   __typename: "TemplateGalleryPageMedia";
   id: string;
   /**
@@ -38,21 +38,30 @@ export interface TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourn
   muxDuration: number | null;
 }
 
-export interface TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_templates_primaryImageBlock {
+export interface TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney_templates_primaryImageBlock {
   __typename: "ImageBlock";
   id: string;
   src: string | null;
   alt: string;
 }
 
-export interface TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_templates {
+export interface TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney_templates {
   __typename: "TemplateGalleryItem";
   id: string;
   title: string;
-  primaryImageBlock: TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_templates_primaryImageBlock | null;
+  primaryImageBlock: TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney_templates_primaryImageBlock | null;
 }
 
-export interface TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney {
+export interface TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney_memberships {
+  __typename: "TemplateGalleryPageMembership";
+  journeyId: string;
+  /**
+   * True when this page is the journey's home; false when it is a link.
+   */
+  isHome: boolean;
+}
+
+export interface TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney {
   __typename: "TemplateGalleryPage";
   /**
    * Stable UUID identifier.
@@ -89,7 +98,7 @@ export interface TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourn
   /**
    * Embedded media with both retained payload slots and the raw `muxVideoId`, so the editor can restore a parked link/upload. `null` only when the page has no media row.
    */
-  media: TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_media | null;
+  media: TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney_media | null;
   /**
    * Timestamp of the first publish event. Monotonic — never re-set on subsequent unpublish/republish, and never cleared. Null while the page has not yet been published.
    */
@@ -99,30 +108,29 @@ export interface TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourn
   /**
    * Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.
    */
-  templates: TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney_templates[];
+  templates: TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney_templates[];
+  /**
+   * Every journey on this page with whether this page is its home. A journey has exactly one home across all pages; its other memberships are links. Home is presentational (the admin draws links greyed) and carries no behaviour. Unlike `templates`, this list is not filtered by the journey's status.
+   */
+  memberships: TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney_memberships[];
 }
 
-export interface TemplateGalleryPageAssignJourney {
+export interface TemplateGalleryPageRemoveJourney {
   /**
-   * Assign a journey to a TemplateGalleryPage, or unassign it. A journey may belong to at most one page at a time (single-membership invariant).
+   * Remove a journey from a TemplateGalleryPage. When the removed membership was the journey's home and links remain on other pages, the oldest link becomes the new home. Returns every page that changed: the page removed from and, when a promotion happened, the page that now holds the home. Idempotent: an empty list when the journey was not on the page.
    * 
-   * - `pageId` set: move the journey into that page. The new row appends at the end of the target's display order; if the journey was already in another page (cross-page move) it is removed from the source page first. Both pages are renumbered to contiguous orders 0..N-1 after the change. Allowed on both `draft` and `published` pages.
-   * - `pageId` null/omitted: unassign — remove the journey from whatever page it is currently in. Returns null (idempotent no-op) if the journey is not in any page.
-   * - Same-page-already: idempotent return; no row changes.
+   * When `pageId` is omitted the journey is removed from every page it belongs to (used when a template is archived or trashed). Returns the pages it was removed from.
    * 
-   * Auth: caller must be a member of the target page's team (and, on a cross-page move, also of the source page's team).
+   * Auth: caller must be a member of each affected page's team.
    * 
    * Errors:
-   * - NOT_FOUND: target `pageId` does not resolve.
-   * - NOT_FOUND (field: `journeyId`): journey does not exist or is soft-deleted.
-   * - BAD_USER_INPUT (field: `journeyId`): journey is not flagged as a template.
-   * - FORBIDDEN: caller is not in the target page's team.
-   * - FORBIDDEN (field: `journeyId`): journey belongs to a different team than the target page.
+   * - NOT_FOUND: `pageId` does not resolve.
+   * - FORBIDDEN: caller is not in an affected page's team.
    */
-  templateGalleryPageAssignJourney: TemplateGalleryPageAssignJourney_templateGalleryPageAssignJourney | null;
+  templateGalleryPageRemoveJourney: TemplateGalleryPageRemoveJourney_templateGalleryPageRemoveJourney[];
 }
 
-export interface TemplateGalleryPageAssignJourneyVariables {
+export interface TemplateGalleryPageRemoveJourneyVariables {
   journeyId: string;
   pageId?: string | null;
 }
