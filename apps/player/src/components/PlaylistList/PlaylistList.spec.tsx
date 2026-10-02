@@ -12,7 +12,7 @@ type PlaylistItem = {
     duration: number
     language: {
       id: string
-      name: { value: string }[]
+      name: { value: string; primary: boolean }[]
     }
     video: {
       id: string
@@ -32,7 +32,7 @@ const mockItems = [
       duration: 3661,
       language: {
         id: 'lang-1',
-        name: [{ value: 'English' }]
+        name: [{ value: 'English', primary: true }]
       },
       video: {
         id: 'video-1',
@@ -50,7 +50,7 @@ const mockItems = [
       duration: 125,
       language: {
         id: 'lang-2',
-        name: [{ value: 'Spanish' }]
+        name: [{ value: 'Spanish', primary: true }]
       },
       video: {
         id: 'video-2',
@@ -68,7 +68,7 @@ const mockItems = [
       duration: 90,
       language: {
         id: 'lang-3',
-        name: [{ value: 'French' }]
+        name: [{ value: 'French', primary: true }]
       },
       video: null
     }
@@ -132,7 +132,7 @@ describe('PlaylistList', () => {
           duration: 90,
           language: {
             id: 'lang-3',
-            name: [{ value: 'French' }]
+            name: [{ value: 'French', primary: true }]
           },
           video: {
             id: 'video-3',
@@ -201,7 +201,7 @@ describe('PlaylistList', () => {
           duration: 125,
           language: {
             id: 'lang-1',
-            name: [{ value: 'English' }]
+            name: [{ value: 'English', primary: true }]
           },
           video: {
             id: 'video-1',
@@ -230,6 +230,41 @@ describe('PlaylistList', () => {
       />
     )
     expect(screen.getByText('English')).toBeInTheDocument()
+  })
+
+  it('displays the non-primary (local) name when the native autonym is primary', () => {
+    const itemsWithAutonymPrimary = [
+      {
+        id: 'item-1',
+        order: 1,
+        videoVariant: {
+          id: 'variant-1',
+          hls: 'https://example.com/video1.m3u8',
+          duration: 3661,
+          language: {
+            id: 'lang-1',
+            name: [
+              { value: 'Deutsch', primary: true },
+              { value: 'German', primary: false }
+            ]
+          },
+          video: {
+            id: 'video-1',
+            title: [{ value: 'Test Video 1' }],
+            images: [{ mobileCinematicHigh: null }]
+          }
+        }
+      }
+    ]
+    render(
+      <PlaylistList
+        items={itemsWithAutonymPrimary}
+        activeIndex={0}
+        onVideoSelect={mockOnVideoSelect}
+      />
+    )
+    expect(screen.getByText('German')).toBeInTheDocument()
+    expect(screen.queryByText('Deutsch')).not.toBeInTheDocument()
   })
 
   it('disables item without HLS', () => {
