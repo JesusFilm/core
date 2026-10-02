@@ -36,6 +36,32 @@
 name: ${COMPOSE_PROJECT_NAME:-phoebe}
 
 services:
+  # Local Postgres for core's Prisma migration tooling. `nx prisma-migrate`
+  # (and prisma-reset) go through tools/scripts/env-validator.sh, which refuses
+  # to run unless PG_DATABASE_URL_<DOMAIN> is *exactly*
+  # postgresql://postgres:postgres@localhost:5432/<domain>?schema=public — so the
+  # server has to answer on the agent's own localhost. Same image, credentials
+  # and namespace trick as the repo's docker-compose.services.yml: `db` anchors
+  # the network namespace and `phoebe` joins it (`network_mode: service:db`).
+  # Prisma creates the per-domain databases and its shadow database itself; the
+  # issue prompt resets the database from the branch's migration history before
+  # generating a new migration, so state left by an earlier unit never counts
+  # as drift. Nothing is published outside the container.
+  db:
+    image: postgres:13
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - phoebe-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
   phoebe:
     build:
       context: .
@@ -43,6 +69,12 @@ services:
         PHOEBE_INSTALL_COMMAND: 'pnpm install --frozen-lockfile'
     image: phoebe-runtime:latest
     restart: unless-stopped
+    # Share db's network namespace so Postgres is `localhost:5432` for the
+    # agent, as core's tooling hard-requires (see the db service above).
+    network_mode: service:db
+    depends_on:
+      db:
+        condition: service_healthy
     # Match bootstrap/supervise-fleet.ts DEFAULT_DRAIN_TIMEOUT_MS (1h). A work
     # unit may run up to the per-unit timeout (45 min by default); without this,
     # Compose's 10s default SIGKILLs mid-drain.
@@ -93,3 +125,4 @@ services:
 volumes:
   phoebe-data:
   phoebe-engine:
+  phoebe-postgres:

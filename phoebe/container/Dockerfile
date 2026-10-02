@@ -87,6 +87,19 @@ RUN npm install -g phoebe-agent@${PHOEBE_AGENT_VERSION}
 ARG PNPM_VERSION=10.33.4
 RUN npm install -g pnpm@${PNPM_VERSION}
 
+# Frontend GraphQL codegen. core's `codegen` targets shell out to the legacy
+# `apollo client:codegen` CLI, which cannot be a repo devDependency (it peers on
+# graphql 14/15 while the repo is on 16, so `npx apollo` dies with EOVERRIDE from
+# the `next` override in package.json). The devcontainer and autofix.ci both
+# install it globally (`npm i -g apollo graphql`); without it here Phoebe would
+# have to hand-write `__generated__/*.ts`, which is exactly what AGENTS.md
+# forbids. Pinned, unlike the devcontainer: unpinned `graphql` now resolves to
+# 17.x, which apollo's bundled validator has never been run against. Keep
+# GRAPHQL_VERSION on the repo's own graphql major.
+ARG APOLLO_CLI_VERSION=2.34.0
+ARG GRAPHQL_VERSION=16.10.0
+RUN npm install -g apollo@${APOLLO_CLI_VERSION} graphql@${GRAPHQL_VERSION}
+
 # Provider agent CLI. The engine spawns the selected provider's CLI as a child
 # (`agent` for cursor, `claude`, or `codex`), so the one matching your
 # `defaultProvider` / `PHOEBE_AGENT` must be on PATH — otherwise the run dies
