@@ -5,10 +5,12 @@ import { Prisma, Video } from '@core/prisma/media/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { videoCacheReset } from '../../../lib/videoCacheReset'
 import { enqueueVideoAlgoliaSync } from '../../../workers/videoAlgoliaSync'
+import { logger } from '../../logger'
 
 import {
   addLanguageToVideo,
   findContainerParentIds,
+  sameLanguageSet,
   updateParentCollectionLanguages,
   updateVideoAvailableLanguages
 } from './updateAvailableLanguages'
@@ -28,12 +30,18 @@ vi.mock('../../../lib/videoCacheReset', () => ({
   videoCacheReset: vi.fn()
 }))
 
+vi.mock('../../logger', () => ({
+  logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() }
+}))
+
 const mockedEnqueueVideoAlgoliaSync = vi.mocked(enqueueVideoAlgoliaSync)
 const mockedVideoCacheReset = vi.mocked(videoCacheReset)
+const mockedLoggerError = vi.mocked(logger.error)
 
 type AvailableLanguagesVideoPayload = Prisma.VideoGetPayload<{
   select: {
     label: true
+    availableLanguages: true
     variants: { select: { languageId: true } }
     children: { select: { availableLanguages: true } }
   }
@@ -63,11 +71,127 @@ const containerParents: ContainerParentPayload[] = [
   { id: 'parent-2' }
 ]
 
+// A small in-memory video graph, wired up as the backing store for
+// video.findUnique/findMany/update, so cascade tests can exercise the real
+// multi-hop walker (not a single mocked response) across several videos at
+// once. `childIds` models the container's live children relation;
+// `availableLanguages` models the currently-stored value, and is mutated in
+// place whenever the walker writes a video, so a later read in the same
+// test sees the just-written value - exactly like calling through real
+// Prisma against a real row.
+interface FixtureVideo {
+  variants: string[]
+  childIds: string[]
+  availableLanguages: string[]
+}
+
+function buildFixtureGraph(
+  initial: Record<string, FixtureVideo>
+): Record<string, FixtureVideo> {
+  const store: Record<string, FixtureVideo> = structuredClone(initial)
+
+  ;(prismaMock.video.findUnique as any).mockImplementation((args: any) => {
+    const video = store[args.where.id]
+    if (video == null) return Promise.resolve(null)
+
+    // calculateAvailableLanguages' single query asks for variants/children
+    // (to compute the new value) and availableLanguages (the stored
+    // "before" value) together, in one findUnique.
+    return Promise.resolve({
+      label: 'series',
+      availableLanguages: video.availableLanguages,
+      variants: video.variants.map((languageId) => ({ languageId })),
+      children: video.childIds
+        .filter((childId) => store[childId] != null)
+        .map((childId) => ({
+          availableLanguages: store[childId].availableLanguages
+        }))
+    } as unknown as Video)
+  })
+  ;(prismaMock.video.findMany as any).mockImplementation((args: any) => {
+    const childId = args.where.children.some.id
+    const parentIds = Object.keys(store).filter((id) =>
+      store[id].childIds.includes(childId)
+    )
+    return Promise.resolve(
+      parentIds.map((id) => ({ id })) as unknown as Video[]
+    )
+  })
+  ;(prismaMock.video.update as any).mockImplementation((args: any) => {
+    const video = store[args.where.id]
+    if (video != null) {
+      video.availableLanguages = args.data.availableLanguages.set
+    }
+    return Promise.resolve({} as unknown as Video)
+  })
+
+  return store
+}
+
+type VideoUpdateImplementation = (
+  args: Prisma.VideoUpdateArgs
+) => Promise<Video>
+
+// The video ids written by prisma.video.update, in call order. Used to
+// assert both how many times a given ancestor was recomputed and that a
+// level finished before the level above it started.
+function updatedVideoIds(): string[] {
+  return prismaMock.video.update.mock.calls.map(
+    (call) => (call[0] as Prisma.VideoUpdateArgs).where.id as string
+  )
+}
+
+// Makes prisma.video.update reject for the given video ids, leaving the
+// fixture-graph-backed implementation in place for every other id - the
+// shape of a transient database write failure part-way up a cascade.
+function failUpdatesFor(videoIds: readonly string[]): void {
+  const failing = new Set(videoIds)
+  const storeBackedUpdate = prismaMock.video.update.getMockImplementation() as
+    | VideoUpdateImplementation
+    | undefined
+
+  if (storeBackedUpdate == null) {
+    throw new Error('failUpdatesFor must be called after buildFixtureGraph')
+  }
+
+  const failingUpdate: VideoUpdateImplementation = (args) => {
+    if (failing.has(String(args.where.id))) {
+      return Promise.reject(
+        new Error(`simulated update failure for ${String(args.where.id)}`)
+      )
+    }
+    return storeBackedUpdate(args)
+  }
+
+  prismaMock.video.update.mockImplementation(
+    failingUpdate as unknown as Parameters<
+      typeof prismaMock.video.update.mockImplementation
+    >[0]
+  )
+}
+
+// `await expect(...).rejects` can't hand back the error object itself, and
+// these assertions need the AggregateError's `errors` array.
+async function captureRejection(promise: Promise<unknown>): Promise<unknown> {
+  const resolved = Symbol('resolved')
+  const outcome = await promise.then(
+    () => resolved,
+    (error: unknown) => error
+  )
+
+  if (outcome === resolved) {
+    throw new Error('expected the cascade to reject, but it resolved')
+  }
+
+  return outcome
+}
+
 describe('updateVideoAvailableLanguages', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockCalculateAvailableLanguagesQuery({
       label: 'series',
+      availableLanguages: [],
       variants: [],
       children: []
     })
@@ -188,5 +312,336 @@ describe('updateParentCollectionLanguages', () => {
       },
       expect.anything()
     )
+  })
+})
+
+describe('sameLanguageSet', () => {
+  it('treats equal sets as the same regardless of order', () => {
+    expect(sameLanguageSet(['529', '496'], ['496', '529'])).toBe(true)
+  })
+
+  it('treats different-length arrays as different', () => {
+    expect(sameLanguageSet(['529'], ['529', '496'])).toBe(false)
+  })
+
+  it('treats same-length arrays with different members as different', () => {
+    expect(sameLanguageSet(['529', '496'], ['529', '21754'])).toBe(false)
+  })
+
+  it('treats arrays as different when a duplicate makes their raw lengths equal but their sets differ', () => {
+    expect(sameLanguageSet(['529', '496'], ['529', '529'])).toBe(false)
+  })
+})
+
+describe('cascading availableLanguages upward to the root', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('updates the outermost container, not just the immediate parent, when a leaf changes', async () => {
+    // leaf -> mid-level container -> outer container, three levels deep.
+    // leaf's own availableLanguages has already picked up a new published
+    // variant ('496') that mid/outer don't know about yet.
+    const store = buildFixtureGraph({
+      leaf: {
+        variants: ['529', '496'],
+        childIds: [],
+        availableLanguages: ['529', '496']
+      },
+      mid: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      outer: { variants: [], childIds: ['mid'], availableLanguages: ['529'] }
+    })
+
+    await updateParentCollectionLanguages('leaf')
+
+    expect(store.mid.availableLanguages.slice().sort()).toEqual(['496', '529'])
+    expect(store.outer.availableLanguages.slice().sort()).toEqual([
+      '496',
+      '529'
+    ])
+    // Every level on the path actually got recomputed and written, not
+    // just the immediate parent.
+    expect(prismaMock.video.update).toHaveBeenCalledTimes(2)
+    expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+      'outer',
+      expect.anything(),
+      expect.anything()
+    )
+  })
+
+  it('terminates instead of hanging when a container is its own ancestor', async () => {
+    // leaf -> A -> B -> A: A and B form a cycle above the leaf. A and B's
+    // stored values start stale so every hop recomputes to a changed value,
+    // forcing the walk to keep climbing until it revisits A and the guard
+    // fires.
+    const store = buildFixtureGraph({
+      leaf: { variants: ['529'], childIds: [], availableLanguages: ['529'] },
+      A: { variants: [], childIds: ['leaf', 'B'], availableLanguages: [] },
+      B: { variants: [], childIds: ['A'], availableLanguages: [] }
+    })
+
+    await expect(
+      updateParentCollectionLanguages('leaf')
+    ).resolves.toBeUndefined()
+
+    expect(store.A.availableLanguages).toEqual(['529'])
+    expect(store.B.availableLanguages).toEqual(['529'])
+    // A and B were each written exactly once - the cycle back to A was
+    // detected and abandoned rather than recomputing forever.
+    expect(prismaMock.video.update).toHaveBeenCalledTimes(2)
+    expect(mockedLoggerError).toHaveBeenCalledWith(
+      expect.objectContaining({ videoId: 'A' }),
+      expect.stringContaining(
+        'already recomputed in this availableLanguages cascade'
+      )
+    )
+  })
+
+  it('stops walking upward once a level recomputes to the same value it already had', async () => {
+    // mid is already correct for leaf's current state, so recomputing it
+    // changes nothing - outer must never even be queried.
+    buildFixtureGraph({
+      leaf: { variants: ['529'], childIds: [], availableLanguages: ['529'] },
+      mid: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      outer: { variants: [], childIds: ['mid'], availableLanguages: ['529'] }
+    })
+
+    await updateParentCollectionLanguages('leaf')
+
+    // One findMany for leaf's own parents; mid's parents are never looked up.
+    expect(prismaMock.video.findMany).toHaveBeenCalledTimes(1)
+    // mid is still recomputed and written once (we don't know it's
+    // unaffected until after computing it) but outer never is.
+    expect(prismaMock.video.update).toHaveBeenCalledTimes(1)
+    expect(mockedEnqueueVideoAlgoliaSync).not.toHaveBeenCalledWith(
+      'outer',
+      expect.anything(),
+      expect.anything()
+    )
+  })
+
+  it('walks two independent parent branches to completion, each to its own further ancestor', async () => {
+    // leaf has two direct parents, A and B, each with its own further
+    // ancestor beyond it (A -> A_parent, B -> B_parent). Both branches must
+    // be walked all the way to their respective root independently of one
+    // another.
+    const store = buildFixtureGraph({
+      leaf: {
+        variants: ['529', '496'],
+        childIds: [],
+        availableLanguages: ['529', '496']
+      },
+      A: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      A_parent: {
+        variants: [],
+        childIds: ['A'],
+        availableLanguages: ['529']
+      },
+      B: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      B_parent: {
+        variants: [],
+        childIds: ['B'],
+        availableLanguages: ['529']
+      }
+    })
+
+    await updateParentCollectionLanguages('leaf')
+
+    expect(store.A.availableLanguages.slice().sort()).toEqual(['496', '529'])
+    expect(store.A_parent.availableLanguages.slice().sort()).toEqual([
+      '496',
+      '529'
+    ])
+    expect(store.B.availableLanguages.slice().sort()).toEqual(['496', '529'])
+    expect(store.B_parent.availableLanguages.slice().sort()).toEqual([
+      '496',
+      '529'
+    ])
+    // A, A_parent, B, B_parent - every level on both branches got written.
+    expect(prismaMock.video.update).toHaveBeenCalledTimes(4)
+  })
+
+  it('finishes the sibling branches but still rejects when one ancestor write fails', async () => {
+    // Two sibling parents of leaf, A and B. A's update fails. B's branch
+    // must still run to completion rather than being aborted by A's error -
+    // but the failure must not be swallowed: leaving A (and everything above
+    // it) silently stale with nothing surfacing to the caller is the bug.
+    const store = buildFixtureGraph({
+      leaf: {
+        variants: ['529', '496'],
+        childIds: [],
+        availableLanguages: ['529', '496']
+      },
+      A: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      B: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] }
+    })
+
+    failUpdatesFor(['A'])
+
+    const error = await captureRejection(
+      updateParentCollectionLanguages('leaf')
+    )
+
+    expect(error).toBeInstanceOf(AggregateError)
+    expect((error as AggregateError).errors).toHaveLength(1)
+    expect((error as AggregateError).message).toContain('A')
+
+    // A was never actually written, since its update rejected.
+    expect(store.A.availableLanguages).toEqual(['529'])
+    // B's sibling branch still ran to completion, unaffected by A's failure.
+    expect(store.B.availableLanguages.slice().sort()).toEqual(['496', '529'])
+  })
+
+  it('rejects rather than leaving the ancestors above a failed write silently stale', async () => {
+    // leaf -> A -> outer, a single chain. A's write fails, so outer can
+    // never be brought up to date on this pass. Before, that was logged and
+    // swallowed and the caller was told the cascade succeeded; now the
+    // caller gets an error it can retry or roll back on.
+    const store = buildFixtureGraph({
+      leaf: {
+        variants: ['529', '496'],
+        childIds: [],
+        availableLanguages: ['529', '496']
+      },
+      A: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      outer: { variants: [], childIds: ['A'], availableLanguages: ['529'] }
+    })
+
+    failUpdatesFor(['A'])
+
+    await expect(updateParentCollectionLanguages('leaf')).rejects.toThrow(
+      AggregateError
+    )
+
+    expect(store.A.availableLanguages).toEqual(['529'])
+    // outer is not written from A's known-stale value - the walk does not
+    // continue past a level that failed to recompute.
+    expect(store.outer.availableLanguages).toEqual(['529'])
+  })
+
+  it('reports every failed ancestor, not just the first', async () => {
+    const store = buildFixtureGraph({
+      leaf: {
+        variants: ['529', '496'],
+        childIds: [],
+        availableLanguages: ['529', '496']
+      },
+      A: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      B: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      C: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] }
+    })
+
+    failUpdatesFor(['A', 'B'])
+
+    const error = await captureRejection(
+      updateParentCollectionLanguages('leaf')
+    )
+
+    expect((error as AggregateError).errors).toHaveLength(2)
+    // The one healthy sibling still completed.
+    expect(store.C.availableLanguages.slice().sort()).toEqual(['496', '529'])
+  })
+
+  it('recomputes a shared grandparent once in total, not once per diamond branch', async () => {
+    // leaf's two direct parents, A and B, both list a shared grandparent C
+    // as their own parent. A and B are one level, so C is collected once for
+    // the level above them and recomputed a single time - after both A and B
+    // have settled. A depth-first walk recomputes C once per incoming path,
+    // which is wasted work and a hazard if the two recomputes interleave.
+    const store = buildFixtureGraph({
+      leaf: {
+        variants: ['529', '496'],
+        childIds: [],
+        availableLanguages: ['529', '496']
+      },
+      A: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      B: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      C: {
+        variants: [],
+        childIds: ['A', 'B'],
+        availableLanguages: ['529']
+      }
+    })
+
+    await expect(
+      updateParentCollectionLanguages('leaf')
+    ).resolves.toBeUndefined()
+
+    expect(store.C.availableLanguages.slice().sort()).toEqual(['496', '529'])
+
+    // C is recomputed exactly once, however many branches reach it.
+    expect(updatedVideoIds().filter((id) => id === 'C')).toEqual(['C'])
+
+    // ...and only after both A and B, its two children, had settled.
+    const writeOrder = updatedVideoIds()
+    expect(writeOrder.indexOf('C')).toBeGreaterThan(writeOrder.indexOf('A'))
+    expect(writeOrder.indexOf('C')).toBeGreaterThan(writeOrder.indexOf('B'))
+  })
+
+  it('finishes every ancestor at one depth before recomputing the depth above it', async () => {
+    // Two branches of unequal shape off leaf: A -> A_parent and B -> C.
+    // Level-batching means both depth-1 ancestors (A, B) are written before
+    // either depth-2 ancestor (A_parent, C).
+    buildFixtureGraph({
+      leaf: {
+        variants: ['529', '496'],
+        childIds: [],
+        availableLanguages: ['529', '496']
+      },
+      A: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      B: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      A_parent: { variants: [], childIds: ['A'], availableLanguages: ['529'] },
+      C: { variants: [], childIds: ['B'], availableLanguages: ['529'] }
+    })
+
+    await updateParentCollectionLanguages('leaf')
+
+    const writeOrder = updatedVideoIds()
+    expect(writeOrder.slice(0, 2).slice().sort()).toEqual(['A', 'B'])
+    expect(writeOrder.slice(2).slice().sort()).toEqual(['A_parent', 'C'])
+  })
+})
+
+describe('calculateAvailableLanguages via a container with overlapping-language children', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('drops a language when the child that uniquely provided it is removed', async () => {
+    const store = buildFixtureGraph({
+      container: {
+        variants: [],
+        childIds: ['childA', 'childB'],
+        availableLanguages: ['496', '529']
+      },
+      childA: { variants: [], childIds: [], availableLanguages: ['529'] },
+      childB: { variants: [], childIds: [], availableLanguages: ['496', '529'] }
+    })
+
+    // childB, the only source of '496', is removed from the container.
+    store.container.childIds = ['childA']
+
+    const result = await updateVideoAvailableLanguages('container')
+
+    expect(result.after).toEqual(['529'])
+  })
+
+  it('keeps a language still provided by the sibling that remains', async () => {
+    const store = buildFixtureGraph({
+      container: {
+        variants: [],
+        childIds: ['childA', 'childB'],
+        availableLanguages: ['496', '529']
+      },
+      childA: { variants: [], childIds: [], availableLanguages: ['529'] },
+      childB: { variants: [], childIds: [], availableLanguages: ['496', '529'] }
+    })
+
+    // childA, redundant for '529', is removed - childB still provides both.
+    store.container.childIds = ['childB']
+
+    const result = await updateVideoAvailableLanguages('container')
+
+    expect(result.after.slice().sort()).toEqual(['496', '529'])
   })
 })
