@@ -53,5 +53,42 @@ describe('short url', () => {
         'https://jesus.film/s/easter?qr=1'
       )
     })
+
+    describe('when publishing points at a local redirect Worker', () => {
+      const originalEnv = process.env
+
+      beforeEach(() => {
+        process.env = {
+          ...originalEnv,
+          CLOUDFLARE_SHORT_LINKS_API_BASE_URL: 'http://localhost:8788/client/v4'
+        }
+      })
+
+      afterEach(() => {
+        process.env = originalEnv
+      })
+
+      it("serves the Worker's own hostname from its origin, port included", () => {
+        const domain = { hostname: 'localhost', pathPrefix: '' }
+        expect(buildShortUrl(domain, 'abc')).toBe('http://localhost:8788/abc')
+        expect(buildQrUrl(domain, 'abc')).toBe('http://localhost:8788/abc?qr=1')
+        expect(
+          buildShortUrl({ hostname: 'LocalHost', pathPrefix: 's' }, 'abc')
+        ).toBe('http://localhost:8788/s/abc')
+      })
+
+      it('leaves every other domain on https', () => {
+        expect(buildShortUrl({ hostname: 'jesus.film' }, 'abc')).toBe(
+          'https://jesus.film/abc'
+        )
+      })
+
+      it('ignores a value that is not a URL', () => {
+        process.env.CLOUDFLARE_SHORT_LINKS_API_BASE_URL = 'not a url'
+        expect(buildShortUrl({ hostname: 'localhost' }, 'abc')).toBe(
+          'https://localhost/abc'
+        )
+      })
+    })
   })
 })

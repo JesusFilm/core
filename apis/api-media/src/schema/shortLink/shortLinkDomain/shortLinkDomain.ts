@@ -11,9 +11,11 @@ import {
 } from '../../error'
 import { publishDomain, publishDomainWithLinks, unpublishDomain } from '../edge'
 import { ShortLinkNotFound } from '../enums/shortLinkNotFound'
+import { assertSuperAdmin } from '../lib/access'
 import {
   HTTPS_URL_MESSAGE,
   REDIRECT_STATUS_MESSAGE,
+  failedPrecondition,
   inputValidationError,
   isHttpsUrl,
   isRedirectStatus
@@ -32,10 +34,18 @@ import {
   removeVercelDomain
 } from './shortLinkDomain.service'
 
-// admin = shortLinkAdmin or publisher
-const adminScopes = {
-  $any: { isPublisher: true, isShortLinkAdmin: true }
+// Redirect, slug and service settings: shortLinkAdmin, publisher or superAdmin.
+// The lazy superAdmin scope is only evaluated when the role scopes fail.
+const settingsScopes = {
+  $any: { isPublisher: true, isShortLinkAdmin: true, isSuperAdmin: true }
 } as const
+
+// Which domains exist, and everything that decides where a domain is served
+// from (path prefix, KV namespace, Worker binding), belongs to superAdmin.
+const superAdminScopes = { isSuperAdmin: true } as const
+
+const INFRASTRUCTURE_FIELDS_MESSAGE =
+  'only a superAdmin may change the path prefix, KV namespace or Worker binding of a domain'
 
 const SLUG_ALLOWED_CHARS_MESSAGE =
   'slugAllowedChars must be a valid regex character-class body (e.g. A-Za-z0-9_-)'
@@ -187,12 +197,12 @@ builder.queryFields((t) => ({
     },
     resolve: async (query, _, { id }) => {
       try {
-        const domain = await prisma.shortLinkDomain.findFirstOrThrow({
+        // `check` resolves on demand: a domain served by the Worker was never
+        // registered on Vercel, and asking Vercel about it here would throw
+        return await prisma.shortLinkDomain.findFirstOrThrow({
           ...query,
           where: { id }
         })
-        const check = await checkVercelDomain(domain.hostname)
-        return { ...domain, check }
       } catch (e) {
         if (
           e instanceof Prisma.PrismaClientKnownRequestError &&
@@ -240,9 +250,11 @@ function resolvePathPrefix(
   return normalized
 }
 
-const KV_BINDING_PATTERN = /^[A-Z][A-Z0-9_]*$/
+// `KV_*` bindings on the Worker are owned by api-media; every other binding is
+// owned by wrangler.toml (the Worker deploy carries `KV_*` over, nothing else)
+const KV_BINDING_PATTERN = /^KV_[A-Z0-9_]+$/
 const KV_BINDING_MESSAGE =
-  'kvBinding must be an upper-case Worker binding name (e.g. KV_JESUS_FILM)'
+  'kvBinding must be an upper-case Worker binding name starting with KV_ (e.g. KV_JESUS_FILM)'
 
 /** Empty string clears; undefined leaves untouched. */
 function resolveKvNamespaceId(
@@ -285,10 +297,10 @@ function routingChanged(
 }
 
 builder.mutationFields((t) => ({
-  shortLinkDomainCreate: t.withAuth(adminScopes).prismaFieldWithInput({
+  shortLinkDomainCreate: t.withAuth(superAdminScopes).prismaFieldWithInput({
     type: 'ShortLinkDomain',
     description:
-      'Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)',
+      'Create a new short link domain that can be used for short links (superAdmin only). A domain served by the legacy Vercel app must have a CNAME record pointing to it; a domain served by the redirect Worker is created with vercel: false and attached with shortLinkDomainWorkerAttach',
     errors: {
       types: [ZodError, NotUniqueError]
     },
@@ -379,10 +391,16 @@ builder.mutationFields((t) => ({
       autoFailover: t.input.boolean({
         required: false,
         description: 'defaults to false'
+      }),
+      vercel: t.input.boolean({
+        required: false,
+        description:
+          'register the hostname on the legacy Vercel short links project; defaults to true. Pass false for a domain served by the redirect Worker'
       })
     },
     resolve: async (query, _, { input }) => {
       const { hostname, services } = input
+      const registerOnVercel = input.vercel ?? true
       const pathPrefix = resolvePathPrefix(input.pathPrefix)
       const kvNamespaceId = resolveKvNamespaceId(input.kvNamespaceId)
       const kvBinding = resolveKvBinding(input.kvBinding)
@@ -395,7 +413,9 @@ builder.mutationFields((t) => ({
 
       return await prisma.$transaction(async (tx) => {
         try {
-          const { apexName } = await addVercelDomain(hostname)
+          const { apexName } = registerOnVercel
+            ? await addVercelDomain(hostname)
+            : { apexName: hostname }
           const shortLinkDomain = await tx.shortLinkDomain.create({
             ...query,
             data: {
@@ -430,16 +450,17 @@ builder.mutationFields((t) => ({
               { path: ['input', 'hostname'], value: hostname }
             ])
           }
-          await removeVercelDomain(hostname)
+          // never deregister a hostname this call did not register
+          if (registerOnVercel) await removeVercelDomain(hostname)
           throw e
         }
       })
     }
   }),
-  shortLinkDomainUpdate: t.withAuth(adminScopes).prismaFieldWithInput({
+  shortLinkDomainUpdate: t.withAuth(settingsScopes).prismaFieldWithInput({
     type: 'ShortLinkDomain',
     description:
-      'Update the services and edge settings of a short link domain; routing changes republish every live link on it',
+      'Update the services and edge settings of a short link domain; routing changes republish every live link on it. Changing pathPrefix, kvNamespaceId or kvBinding needs superAdmin',
     errors: {
       types: [ZodError, NotFoundError]
     },
@@ -504,7 +525,7 @@ builder.mutationFields((t) => ({
       }),
       autoFailover: t.input.boolean({ required: false })
     },
-    resolve: async (query, _, { input }) => {
+    resolve: async (query, _, { input }, context) => {
       const existing = await prisma.shortLinkDomain.findUnique({
         where: { id: input.id }
       })
@@ -516,6 +537,13 @@ builder.mutationFields((t) => ({
       const pathPrefix = resolvePathPrefix(input.pathPrefix)
       const kvNamespaceId = resolveKvNamespaceId(input.kvNamespaceId)
       const kvBinding = resolveKvBinding(input.kvBinding)
+      const changesInfrastructure =
+        (pathPrefix !== undefined && pathPrefix !== existing.pathPrefix) ||
+        (kvNamespaceId !== undefined &&
+          kvNamespaceId !== existing.kvNamespaceId) ||
+        (kvBinding !== undefined && kvBinding !== existing.kvBinding)
+      if (changesInfrastructure)
+        await assertSuperAdmin(context, INFRASTRUCTURE_FIELDS_MESSAGE)
       assertDomainSettings({
         notFound: input.notFound ?? existing.notFound,
         passthroughOrigin:
@@ -556,10 +584,10 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  shortLinkDomainDelete: t.withAuth(adminScopes).prismaField({
+  shortLinkDomainDelete: t.withAuth(superAdminScopes).prismaField({
     type: 'ShortLinkDomain',
     description:
-      'delete an existing short link domain (all related short links must be deleted first)',
+      'delete an existing short link domain (superAdmin only; all related short links must be deleted and its KV setup removed first)',
     errors: {
       types: [NotFoundError, ForeignKeyConstraintError]
     },
@@ -568,6 +596,17 @@ builder.mutationFields((t) => ({
       id: t.arg.string({ required: true })
     },
     resolve: async (query, _, { id }) => {
+      // A domain cannot be attached to the Worker without its KV setup, so
+      // this also keeps an attached hostname from losing its domain record.
+      const existing = await prisma.shortLinkDomain.findUnique({
+        where: { id },
+        select: { kvNamespaceId: true, kvBinding: true }
+      })
+      if (existing?.kvNamespaceId != null || existing?.kvBinding != null)
+        throw failedPrecondition(
+          'remove the KV setup of this domain before deleting it'
+        )
+
       return await prisma.$transaction(async (tx) => {
         try {
           const shortLinkDomain = await tx.shortLinkDomain.delete({

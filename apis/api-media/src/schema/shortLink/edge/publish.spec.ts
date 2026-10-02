@@ -1,3 +1,4 @@
+import Cloudflare from 'cloudflare'
 import { vi } from 'vitest'
 
 import { prismaMock } from '../../../../test/prismaMock'
@@ -16,9 +17,16 @@ import {
   unpublishLink
 } from './publish'
 
-const kvUpdate = vi.fn()
 const kvDelete = vi.fn()
-const kvBulkUpdate = vi.fn()
+const kvBulkUpdate = vi.fn<
+  (
+    namespaceId: string,
+    params: {
+      account_id: string
+      body: Array<{ key: string; value: string }>
+    }
+  ) => Promise<unknown>
+>()
 const d1Query = vi.fn()
 
 vi.mock('cloudflare/shims/web', () => ({}))
@@ -29,7 +37,7 @@ vi.mock('cloudflare', () => ({
       kv: {
         namespaces: {
           bulkUpdate: kvBulkUpdate,
-          values: { update: kvUpdate, delete: kvDelete }
+          values: { delete: kvDelete }
         }
       },
       d1: { database: { query: d1Query } }
@@ -69,6 +77,19 @@ function linkWithRelations(
   })
 }
 
+interface KvWrite {
+  namespaceId: string
+  key: string
+  value: string
+}
+
+/** Every pair sent to the KV bulk endpoint, flattened in call order. */
+function kvWrites(): KvWrite[] {
+  return kvBulkUpdate.mock.calls.flatMap(([namespaceId, params]) =>
+    params.body.map((pair) => ({ namespaceId, ...pair }))
+  )
+}
+
 function d1Calls(): Array<{ sql: string; params: string[] }> {
   return d1Query.mock.calls.map(([, params]) => params)
 }
@@ -85,7 +106,6 @@ describe('edge publish', () => {
       CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID: GLOBAL_NS,
       CLOUDFLARE_SHORT_LINKS_D1_DATABASE_ID: 'd1'
     }
-    kvUpdate.mockResolvedValue({})
     kvDelete.mockResolvedValue({})
     kvBulkUpdate.mockResolvedValue({})
     d1Query.mockResolvedValue([])
@@ -108,7 +128,7 @@ describe('edge publish', () => {
       expect(
         await publishDomainWithLinks('domainId', prismaMock, logger)
       ).toBeNull()
-      expect(kvUpdate).not.toHaveBeenCalled()
+      expect(kvBulkUpdate).not.toHaveBeenCalled()
       expect(d1Query).not.toHaveBeenCalled()
       expect(
         prismaMock.shortLinkDomain.findUniqueOrThrow
@@ -125,6 +145,18 @@ describe('edge publish', () => {
     )
   })
 
+  it('points the client at CLOUDFLARE_SHORT_LINKS_API_BASE_URL when it is set', async () => {
+    process.env.CLOUDFLARE_SHORT_LINKS_API_BASE_URL =
+      'http://localhost:8788/client/v4'
+
+    await unpublishDomain('example.com', logger)
+
+    expect(Cloudflare).toHaveBeenCalledWith({
+      apiToken: 'token',
+      baseURL: 'http://localhost:8788/client/v4'
+    })
+  })
+
   describe('publishDomain', () => {
     it('writes the domain record to the global namespace and D1 and stamps edgePublishedAt', async () => {
       prismaMock.shortLinkDomain.findUniqueOrThrow.mockResolvedValue(domain)
@@ -133,12 +165,11 @@ describe('edge publish', () => {
       const publishedAt = await publishDomain('domainId', prismaMock, logger)
 
       expect(publishedAt).toBeInstanceOf(Date)
-      expect(kvUpdate).toHaveBeenCalledWith(GLOBAL_NS, 'domain:example.com', {
+      expect(kvBulkUpdate).toHaveBeenCalledWith(GLOBAL_NS, {
         account_id: 'account',
-        value: expect.any(String),
-        metadata: '{}'
+        body: [{ key: 'domain:example.com', value: expect.any(String) }]
       })
-      expect(JSON.parse(kvUpdate.mock.calls[0][2].value)).toMatchObject({
+      expect(JSON.parse(kvWrites()[0].value)).toMatchObject({
         v: 1,
         id: 'domainId',
         hostname: 'example.com',
@@ -164,12 +195,14 @@ describe('edge publish', () => {
 
       await publishDomain('domainId', prismaMock, logger)
 
-      expect(kvUpdate).toHaveBeenCalledWith(
-        GLOBAL_NS,
-        'domain:bare.example',
-        expect.anything()
-      )
-      expect(JSON.parse(kvUpdate.mock.calls[0][2].value).kvBinding).toBeNull()
+      expect(kvWrites()).toEqual([
+        {
+          namespaceId: GLOBAL_NS,
+          key: 'domain:bare.example',
+          value: expect.any(String)
+        }
+      ])
+      expect(JSON.parse(kvWrites()[0].value).kvBinding).toBeNull()
     })
 
     it('skips D1 when the database id is unset', async () => {
@@ -179,17 +212,30 @@ describe('edge publish', () => {
 
       await publishDomain('domainId', prismaMock, logger)
 
-      expect(kvUpdate).toHaveBeenCalledTimes(1)
+      expect(kvBulkUpdate).toHaveBeenCalledTimes(1)
       expect(d1Query).not.toHaveBeenCalled()
     })
 
     it('throws when KV rejects the write and does not stamp edgePublishedAt', async () => {
       prismaMock.shortLinkDomain.findUniqueOrThrow.mockResolvedValue(domain)
-      kvUpdate.mockRejectedValue(new Error('kv down'))
+      kvBulkUpdate.mockRejectedValue(new Error('kv down'))
 
       await expect(
         publishDomain('domainId', prismaMock, logger)
       ).rejects.toThrow('kv down')
+      expect(prismaMock.shortLinkDomain.update).not.toHaveBeenCalled()
+    })
+
+    it('throws when KV reports keys it did not write', async () => {
+      prismaMock.shortLinkDomain.findUniqueOrThrow.mockResolvedValue(domain)
+      kvBulkUpdate.mockResolvedValue({
+        successful_key_count: 0,
+        unsuccessful_keys: ['domain:example.com']
+      })
+
+      await expect(
+        publishDomain('domainId', prismaMock, logger)
+      ).rejects.toThrow('KV did not write 1 key(s): domain:example.com')
       expect(prismaMock.shortLinkDomain.update).not.toHaveBeenCalled()
     })
 
@@ -233,13 +279,12 @@ describe('edge publish', () => {
           globalSlug: { select: { pathname: true } }
         }
       })
-      expect(kvUpdate).toHaveBeenCalledTimes(1)
-      expect(kvUpdate).toHaveBeenCalledWith(
-        DOMAIN_NS,
-        'AbC',
-        expect.objectContaining({ account_id: 'account' })
-      )
-      expect(JSON.parse(kvUpdate.mock.calls[0][2].value)).toEqual({
+      expect(kvBulkUpdate).toHaveBeenCalledTimes(1)
+      expect(kvBulkUpdate).toHaveBeenCalledWith(DOMAIN_NS, {
+        account_id: 'account',
+        body: [{ key: 'AbC', value: expect.any(String) }]
+      })
+      expect(JSON.parse(kvWrites()[0].value)).toEqual({
         v: 1,
         id: 'linkId',
         to: 'https://dest.example',
@@ -277,7 +322,7 @@ describe('edge publish', () => {
 
       await publishLink('linkId', prismaMock, logger)
 
-      expect(JSON.parse(kvUpdate.mock.calls[0][2].value).status).toBeNull()
+      expect(JSON.parse(kvWrites()[0].value).status).toBeNull()
     })
 
     it('lower-cases the key on a case-insensitive domain', async () => {
@@ -290,7 +335,9 @@ describe('edge publish', () => {
 
       await publishLink('linkId', prismaMock, logger)
 
-      expect(kvUpdate).toHaveBeenCalledWith(DOMAIN_NS, 'abc', expect.anything())
+      expect(kvWrites()).toEqual([
+        { namespaceId: DOMAIN_NS, key: 'abc', value: expect.any(String) }
+      ])
       expect(d1Calls()[0].params[0]).toBe('link:yt.example/abc')
     })
 
@@ -305,20 +352,15 @@ describe('edge publish', () => {
 
       await publishLink('linkId', prismaMock, logger)
 
-      expect(kvUpdate).toHaveBeenCalledTimes(2)
-      expect(kvUpdate).toHaveBeenNthCalledWith(
-        1,
-        DOMAIN_NS,
-        'promo',
-        expect.anything()
-      )
-      expect(kvUpdate).toHaveBeenNthCalledWith(
-        2,
-        GLOBAL_NS,
-        'link:promo',
-        expect.anything()
-      )
-      expect(JSON.parse(kvUpdate.mock.calls[1][2].value)).toMatchObject({
+      expect(kvWrites()).toEqual([
+        { namespaceId: DOMAIN_NS, key: 'promo', value: expect.any(String) },
+        {
+          namespaceId: GLOBAL_NS,
+          key: 'link:promo',
+          value: expect.any(String)
+        }
+      ])
+      expect(JSON.parse(kvWrites()[1].value)).toMatchObject({
         global: true,
         hostname: 'example.com'
       })
@@ -341,12 +383,13 @@ describe('edge publish', () => {
       const publishedAt = await publishLink('linkId', prismaMock, logger)
 
       expect(publishedAt).toBeInstanceOf(Date)
-      expect(kvUpdate).toHaveBeenCalledTimes(1)
-      expect(kvUpdate).toHaveBeenCalledWith(
-        GLOBAL_NS,
-        'link:promo',
-        expect.anything()
-      )
+      expect(kvWrites()).toEqual([
+        {
+          namespaceId: GLOBAL_NS,
+          key: 'link:promo',
+          value: expect.any(String)
+        }
+      ])
       expect(d1Calls().map(({ params }) => params[0])).toEqual(['global:promo'])
     })
 
@@ -359,7 +402,7 @@ describe('edge publish', () => {
 
       expect(await publishLink('linkId', prismaMock, logger)).toBeNull()
 
-      expect(kvUpdate).not.toHaveBeenCalled()
+      expect(kvBulkUpdate).not.toHaveBeenCalled()
       expect(kvDelete).not.toHaveBeenCalled()
       expect(d1Query).not.toHaveBeenCalled()
       expect(prismaMock.shortLink.update).not.toHaveBeenCalled()
@@ -383,7 +426,7 @@ describe('edge publish', () => {
 
       await publishLink('linkId', prismaMock, logger)
 
-      expect(kvUpdate).not.toHaveBeenCalled()
+      expect(kvBulkUpdate).not.toHaveBeenCalled()
       expect(kvDelete).toHaveBeenCalledWith(DOMAIN_NS, 'gone', {
         account_id: 'account'
       })
@@ -415,12 +458,9 @@ describe('edge publish', () => {
 
       await publishLink('linkId', prismaMock, logger)
 
-      expect(kvUpdate).toHaveBeenCalledTimes(1)
-      expect(kvUpdate).toHaveBeenCalledWith(
-        DOMAIN_NS,
-        'promo',
-        expect.anything()
-      )
+      expect(kvWrites()).toEqual([
+        { namespaceId: DOMAIN_NS, key: 'promo', value: expect.any(String) }
+      ])
       expect(kvDelete).toHaveBeenCalledTimes(1)
       expect(kvDelete).toHaveBeenCalledWith(GLOBAL_NS, 'link:promo', {
         account_id: 'account'
@@ -435,14 +475,14 @@ describe('edge publish', () => {
       await publishLink('linkId', prismaMock, logger)
 
       expect(kvDelete).not.toHaveBeenCalled()
-      expect(kvUpdate).toHaveBeenCalledTimes(1)
+      expect(kvBulkUpdate).toHaveBeenCalledTimes(1)
     })
 
     it('throws when KV rejects the write', async () => {
       prismaMock.shortLink.findUniqueOrThrow.mockResolvedValue(
         linkWithRelations({ id: 'linkId' })
       )
-      kvUpdate.mockRejectedValue(new Error('kv down'))
+      kvBulkUpdate.mockRejectedValue(new Error('kv down'))
 
       await expect(publishLink('linkId', prismaMock, logger)).rejects.toThrow(
         'kv down'
@@ -531,11 +571,6 @@ describe('edge publish', () => {
       )
 
       expect(publishedAt).toBeInstanceOf(Date)
-      expect(kvUpdate).toHaveBeenCalledWith(
-        GLOBAL_NS,
-        'domain:example.com',
-        expect.anything()
-      )
       expect(prismaMock.shortLink.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
@@ -545,20 +580,24 @@ describe('edge publish', () => {
           }
         })
       )
-      expect(kvBulkUpdate).toHaveBeenCalledTimes(2)
-      expect(kvBulkUpdate).toHaveBeenNthCalledWith(1, DOMAIN_NS, {
+      expect(kvBulkUpdate).toHaveBeenCalledTimes(3)
+      expect(kvBulkUpdate).toHaveBeenNthCalledWith(1, GLOBAL_NS, {
+        account_id: 'account',
+        body: [{ key: 'domain:example.com', value: expect.any(String) }]
+      })
+      expect(kvBulkUpdate).toHaveBeenNthCalledWith(2, DOMAIN_NS, {
         account_id: 'account',
         body: [
           { key: 'one', value: expect.any(String) },
           { key: 'two', value: expect.any(String) }
         ]
       })
-      expect(kvBulkUpdate).toHaveBeenNthCalledWith(2, GLOBAL_NS, {
+      expect(kvBulkUpdate).toHaveBeenNthCalledWith(3, GLOBAL_NS, {
         account_id: 'account',
         body: [{ key: 'link:two', value: expect.any(String) }]
       })
       expect(
-        JSON.parse(kvBulkUpdate.mock.calls[0][1].body[1].value)
+        JSON.parse(kvBulkUpdate.mock.calls[1][1].body[1].value)
       ).toMatchObject({
         id: 'b',
         paused: true,
@@ -594,11 +633,12 @@ describe('edge publish', () => {
 
       await publishDomainWithLinks('domainId', prismaMock, logger)
 
-      expect(kvBulkUpdate).toHaveBeenCalledTimes(1)
-      expect(kvBulkUpdate).toHaveBeenCalledWith(GLOBAL_NS, {
-        account_id: 'account',
-        body: [{ key: 'link:two', value: expect.any(String) }]
-      })
+      expect(
+        kvWrites().map(({ namespaceId, key }) => [namespaceId, key])
+      ).toEqual([
+        [GLOBAL_NS, 'domain:bare.example'],
+        [GLOBAL_NS, 'link:two']
+      ])
       expect(d1Calls()[1].params[0]).toBe('global:two')
       expect(prismaMock.shortLink.updateMany).toHaveBeenCalledWith({
         where: { id: { in: ['b'] } },

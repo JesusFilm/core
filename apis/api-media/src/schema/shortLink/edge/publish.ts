@@ -18,6 +18,7 @@ import {
 import {
   EdgeRecord,
   d1Delete,
+  d1DeleteDomainLinks,
   d1Upsert,
   kvDelete,
   kvWrite,
@@ -185,6 +186,17 @@ export async function unpublishLink(
     await kvDelete(config, config.globalNamespaceId, globalLinkKey(link))
     await d1Delete(config, globalRecordKeyForLink(link), logger)
   }
+}
+
+/**
+ * Drop a domain's link rows from the D1 replica (when its KV setup is removed
+ * the links stop being published, so the replica must not keep serving them).
+ * Global links keep their `global:<pathname>` rows.
+ */
+export async function purgeDomainLinkReplica(hostname: string): Promise<void> {
+  const config = getEdgeConfig()
+  if (config == null) return
+  await d1DeleteDomainLinks(config, hostname)
 }
 
 const DOMAIN_LINK_BATCH = 1000

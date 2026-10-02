@@ -2,6 +2,7 @@ import { GraphQLError } from 'graphql'
 
 import { ShortLinkAssetClass } from '@core/prisma/media/client'
 
+import { contextIsSuperAdmin } from '../../../lib/superAdmin'
 import { Context, isShortLinkAdmin } from '../../builder'
 
 const PROTECTED_ASSET_CLASSES: ShortLinkAssetClass[] = [
@@ -46,5 +47,18 @@ export function forbidden(message: string): GraphQLError {
 
 export function assertShortLinkAdmin(context: Context, message: string): void {
   if (contextIsShortLinkAdmin(context)) return
+  throw forbidden(message)
+}
+
+/**
+ * superAdmin (the flag on the user in the users database) owns a domain's
+ * Cloudflare infrastructure: its KV namespace and Worker binding, what is
+ * attached to the Worker, and which domains exist.
+ */
+export async function assertSuperAdmin(
+  context: Context,
+  message: string
+): Promise<void> {
+  if (await contextIsSuperAdmin(context)) return
   throw forbidden(message)
 }

@@ -13,19 +13,28 @@ export interface EdgeConfig {
   client: Cloudflare
 }
 
-function envValue(name: string): string | null {
+export function envValue(name: string): string | null {
   const value = process.env[name]
   return value == null || value === '' ? null : value
 }
 
-let cachedClient: { apiToken: string; client: Cloudflare } | null = null
+let cachedClient: {
+  apiToken: string
+  baseURL: string | null
+  client: Cloudflare
+} | null = null
 
 /**
  * Edge publishing is configured by `CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID`
  * (the global namespace; each domain names its own on the row).
- * When it is unset (local dev, tests) publishing is a successful no-op, the
- * same pattern as the Vercel domain calls. When only the D1 id is unset the
- * replica is skipped.
+ * When it is unset (tests, local dev without the Worker) publishing is a
+ * successful no-op, the same pattern as the Vercel domain calls. When only the
+ * D1 id is unset the replica is skipped.
+ *
+ * `CLOUDFLARE_SHORT_LINKS_API_BASE_URL` points the client somewhere other than
+ * api.cloudflare.com. It is for local dev only: the redirect Worker's
+ * `wrangler dev` serves the same endpoints over its local KV and D1
+ * (workers/short-links-redirect/README.md, "Publishing from a local api-media").
  */
 export function getEdgeConfig(): EdgeConfig | null {
   const globalNamespaceId = envValue('CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID')
@@ -38,8 +47,17 @@ export function getEdgeConfig(): EdgeConfig | null {
       'Missing CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_SHORT_LINKS_API_TOKEN'
     )
 
-  if (cachedClient == null || cachedClient.apiToken !== apiToken)
-    cachedClient = { apiToken, client: new Cloudflare({ apiToken }) }
+  const baseURL = envValue('CLOUDFLARE_SHORT_LINKS_API_BASE_URL')
+  if (
+    cachedClient == null ||
+    cachedClient.apiToken !== apiToken ||
+    cachedClient.baseURL !== baseURL
+  )
+    cachedClient = {
+      apiToken,
+      baseURL,
+      client: new Cloudflare({ apiToken, baseURL: baseURL ?? undefined })
+    }
 
   return {
     accountId,

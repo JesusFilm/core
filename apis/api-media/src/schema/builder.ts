@@ -21,6 +21,8 @@ import { MediaRole, prisma } from '@core/prisma/media/client'
 import { User } from '@core/yoga/firebaseClient'
 import { InteropContext } from '@core/yoga/interop'
 
+import { contextIsSuperAdmin } from '../lib/superAdmin'
+
 const PrismaPlugin = pluginName
 
 interface BaseContext {
@@ -73,6 +75,7 @@ export const builder = new SchemaBuilder<{
     isYoutubeAdmin: boolean
     isShortLinkEditor: boolean
     isShortLinkAdmin: boolean
+    isSuperAdmin: boolean
   }
   AuthContexts: {
     isAuthenticated: Extract<Context, { type: 'authenticated' }>
@@ -81,6 +84,7 @@ export const builder = new SchemaBuilder<{
     isYoutubeAdmin: Extract<Context, { type: 'authenticated' }>
     isShortLinkEditor: Extract<Context, { type: 'authenticated' }>
     isShortLinkAdmin: Extract<Context, { type: 'authenticated' }>
+    isSuperAdmin: Extract<Context, { type: 'authenticated' }>
     isValidInterop: Extract<Context, { type: 'interop' }>
   }
   PrismaTypes: PrismaTypes
@@ -118,6 +122,9 @@ export const builder = new SchemaBuilder<{
             isYoutubeAdmin: context.currentRoles.includes('youtubeAdmin'),
             isShortLinkEditor: isShortLinkEditor(context.currentRoles),
             isShortLinkAdmin: isShortLinkAdmin(context.currentRoles),
+            // Lazy: the users database is only queried when a resolver checks
+            // this scope, and only after the boolean scopes in an `$any`.
+            isSuperAdmin: async () => await contextIsSuperAdmin(context),
             isValidInterop: false
           }
         case 'interop':
@@ -128,6 +135,7 @@ export const builder = new SchemaBuilder<{
             isYoutubeAdmin: false,
             isShortLinkEditor: false,
             isShortLinkAdmin: false,
+            isSuperAdmin: false,
             isValidInterop: true
           }
         default:
@@ -138,6 +146,7 @@ export const builder = new SchemaBuilder<{
             isYoutubeAdmin: false,
             isShortLinkEditor: false,
             isShortLinkAdmin: false,
+            isSuperAdmin: false,
             isValidInterop: false
           }
       }

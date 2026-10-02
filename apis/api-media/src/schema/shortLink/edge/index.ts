@@ -1,7 +1,9 @@
+export { getEdgeConfig } from './client'
 export {
   publishDomain,
   publishDomainWithLinks,
   publishLink,
+  purgeDomainLinkReplica,
   unpublishDomain,
   unpublishLink
 } from './publish'

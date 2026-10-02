@@ -572,21 +572,37 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   shortLinkCampaignDelete(id: String!) : MutationShortLinkCampaignDeleteResult! @join__field(graph: API_MEDIA) 
   """
-  Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)
+  Create a new short link domain that can be used for short links (superAdmin only). A domain served by the legacy Vercel app must have a CNAME record pointing to it; a domain served by the redirect Worker is created with vercel: false and attached with shortLinkDomainWorkerAttach
   """
   shortLinkDomainCreate(input: MutationShortLinkDomainCreateInput!) : MutationShortLinkDomainCreateResult! @join__field(graph: API_MEDIA) 
   """
-  Update the services and edge settings of a short link domain; routing changes republish every live link on it
+  Update the services and edge settings of a short link domain; routing changes republish every live link on it. Changing pathPrefix, kvNamespaceId or kvBinding needs superAdmin
   """
   shortLinkDomainUpdate(input: MutationShortLinkDomainUpdateInput!) : MutationShortLinkDomainUpdateResult! @join__field(graph: API_MEDIA) 
   """
-  delete an existing short link domain (all related short links must be deleted first)
+  delete an existing short link domain (superAdmin only; all related short links must be deleted and its KV setup removed first)
   """
   shortLinkDomainDelete(id: String!) : MutationShortLinkDomainDeleteResult! @join__field(graph: API_MEDIA) 
   """
   republish the domain record and every live link on it to the edge store (backfill, cutover, publish-gap repair)
   """
   shortLinkDomainPublish(id: String!) : MutationShortLinkDomainPublishResult! @join__field(graph: API_MEDIA) 
+  """
+  create or adopt the KV namespace of a domain, publish its links into it and bind it to the redirect Worker (superAdmin only; safe to repeat)
+  """
+  shortLinkDomainKvSetup(id: String!) : MutationShortLinkDomainKvSetupResult! @join__field(graph: API_MEDIA) 
+  """
+  remove the Worker binding of a domain and clear its KV setup; the namespace is left in Cloudflare (superAdmin only; refused while the hostname is attached)
+  """
+  shortLinkDomainKvRemove(id: String!) : MutationShortLinkDomainKvRemoveResult! @join__field(graph: API_MEDIA) 
+  """
+  send the hostname to the redirect Worker: a route for a domain with a path prefix, a custom domain otherwise (superAdmin only; refused when it points at another Worker)
+  """
+  shortLinkDomainWorkerAttach(id: String!) : MutationShortLinkDomainWorkerAttachResult! @join__field(graph: API_MEDIA) 
+  """
+  remove the route or custom domain sending the hostname to the redirect Worker (superAdmin only)
+  """
+  shortLinkDomainWorkerDetach(id: String!) : MutationShortLinkDomainWorkerDetachResult! @join__field(graph: API_MEDIA) 
   """
   create a new short link
   """
@@ -2851,11 +2867,27 @@ type MutationShortLinkDomainDeleteSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLinkDomain!
 }
 
+type MutationShortLinkDomainKvRemoveSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLinkDomain!
+}
+
+type MutationShortLinkDomainKvSetupSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLinkDomain!
+}
+
 type MutationShortLinkDomainPublishSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLinkDomain!
 }
 
 type MutationShortLinkDomainUpdateSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLinkDomain!
+}
+
+type MutationShortLinkDomainWorkerAttachSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLinkDomain!
+}
+
+type MutationShortLinkDomainWorkerDetachSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLinkDomain!
 }
 
@@ -3105,6 +3137,10 @@ type ShortLinkDomain @join__type(graph: API_MEDIA)  {
   live (not soft-deleted) links on this domain
   """
   linkCount: Int!
+  """
+  Cloudflare infrastructure of this domain (superAdmin only; several Cloudflare API calls, so never select it in a list)
+  """
+  infrastructure: ShortLinkDomainInfrastructure!
 }
 
 type ShortLinkDomainCheck @join__type(graph: API_MEDIA)  {
@@ -3120,6 +3156,48 @@ type ShortLinkDomainCheck @join__type(graph: API_MEDIA)  {
   Verification records to be added to the DNS to confirm ownership.
   """
   verification: [ShortLinkDomainVerfication!]!
+}
+
+"""
+live state of a short link domain on Cloudflare, read from the Cloudflare API on every request
+"""
+type ShortLinkDomainInfrastructure @join__type(graph: API_MEDIA)  {
+  """
+  false when this environment cannot manage Cloudflare infrastructure (local dev, or the Worker name / token is unset)
+  """
+  configured: Boolean!
+  """
+  the redirect Worker this environment manages
+  """
+  workerName: String
+  """
+  whether this environment may set this hostname up (CLOUDFLARE_SHORT_LINKS_ALLOWED_HOSTNAMES)
+  """
+  hostnameAllowed: Boolean!
+  """
+  the Cloudflare zone the hostname belongs to
+  """
+  zone: ShortLinkDomainInfrastructureCheck!
+  """
+  the KV namespace holding this domain routing records
+  """
+  kvNamespace: ShortLinkDomainInfrastructureCheck!
+  """
+  the binding the Worker reads that namespace through
+  """
+  kvBinding: ShortLinkDomainInfrastructureCheck!
+  """
+  the route (path prefix) or custom domain (root) sending the hostname to the Worker
+  """
+  attachment: ShortLinkDomainInfrastructureCheck!
+}
+
+type ShortLinkDomainInfrastructureCheck @join__type(graph: API_MEDIA)  {
+  state: ShortLinkDomainInfrastructureState!
+  """
+  what was found, in words a superAdmin can act on
+  """
+  detail: String!
 }
 
 type ShortLinkDomainVerfication @join__type(graph: API_MEDIA)  {
@@ -3695,9 +3773,17 @@ union MutationShortLinkDomainCreateResult @join__type(graph: API_MEDIA)  @join__
 
 union MutationShortLinkDomainDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ForeignKeyConstraintError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainDeleteSuccess")  = NotFoundError | ForeignKeyConstraintError | MutationShortLinkDomainDeleteSuccess
 
+union MutationShortLinkDomainKvRemoveResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainKvRemoveSuccess")  = NotFoundError | MutationShortLinkDomainKvRemoveSuccess
+
+union MutationShortLinkDomainKvSetupResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainKvSetupSuccess")  = NotFoundError | MutationShortLinkDomainKvSetupSuccess
+
 union MutationShortLinkDomainPublishResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainPublishSuccess")  = NotFoundError | MutationShortLinkDomainPublishSuccess
 
 union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = NotFoundError | ZodError | MutationShortLinkDomainUpdateSuccess
+
+union MutationShortLinkDomainWorkerAttachResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainWorkerAttachSuccess")  = NotFoundError | MutationShortLinkDomainWorkerAttachSuccess
+
+union MutationShortLinkDomainWorkerDetachResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainWorkerDetachSuccess")  = NotFoundError | MutationShortLinkDomainWorkerDetachSuccess
 
 union MutationShortLinkPublishResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkPublishSuccess")  = NotFoundError | MutationShortLinkPublishSuccess
 
@@ -4281,6 +4367,29 @@ enum ShortLinkHealth @join__type(graph: API_MEDIA)  {
   dns @join__enumValue(graph: API_MEDIA) 
   tls @join__enumValue(graph: API_MEDIA) 
   redirectLoop @join__enumValue(graph: API_MEDIA) 
+  unknown @join__enumValue(graph: API_MEDIA) 
+}
+
+enum ShortLinkDomainInfrastructureState @join__type(graph: API_MEDIA)  {
+  """
+  in place and as this domain expects
+  """
+  ok @join__enumValue(graph: API_MEDIA) 
+  """
+  not set up yet
+  """
+  missing @join__enumValue(graph: API_MEDIA) 
+  """
+  exists, but not as this domain expects (see detail)
+  """
+  mismatch @join__enumValue(graph: API_MEDIA) 
+  """
+  Cloudflare could not be asked (see detail)
+  """
+  error @join__enumValue(graph: API_MEDIA) 
+  """
+  not checked: management is not configured here, or an earlier check has to pass first
+  """
   unknown @join__enumValue(graph: API_MEDIA) 
 }
 
@@ -5846,6 +5955,10 @@ input MutationShortLinkDomainCreateInput @join__type(graph: API_MEDIA)  {
   defaults to false
   """
   autoFailover: Boolean
+  """
+  register the hostname on the legacy Vercel short links project; defaults to true. Pass false for a domain served by the redirect Worker
+  """
+  vercel: Boolean
 }
 
 input MutationShortLinkDomainUpdateInput @join__type(graph: API_MEDIA)  {

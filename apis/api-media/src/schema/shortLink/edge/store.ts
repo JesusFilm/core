@@ -24,17 +24,18 @@ function chunk<T>(items: T[], size: number): T[][] {
 /**
  * KV is the primary store: a failure here is thrown so the surrounding
  * transaction rolls back and the mutation fails.
+ *
+ * A single record goes through the bulk endpoint too. The SDK's
+ * `values.update` sends `{ value, metadata }` as a JSON body, which Cloudflare
+ * stores verbatim as the value (cloudflare-typescript#2593), so the Worker
+ * would read a wrapper instead of a record.
  */
 export async function kvWrite(
   config: EdgeConfig,
   namespaceId: string,
   record: EdgeRecord
 ): Promise<void> {
-  await config.client.kv.namespaces.values.update(namespaceId, record.key, {
-    account_id: config.accountId,
-    value: record.value,
-    metadata: '{}'
-  })
+  await kvWriteMany(config, namespaceId, [record])
 }
 
 export async function kvDelete(
@@ -53,10 +54,16 @@ export async function kvWriteMany(
   records: EdgeRecord[]
 ): Promise<void> {
   for (const batch of chunk(records, KV_BULK_CHUNK)) {
-    await config.client.kv.namespaces.bulkUpdate(namespaceId, {
+    const result = await config.client.kv.namespaces.bulkUpdate(namespaceId, {
       account_id: config.accountId,
       body: batch.map(({ key, value }) => ({ key, value }))
     })
+    // the bulk endpoint answers 200 even when some keys were not written
+    const unsuccessfulKeys = result?.unsuccessful_keys ?? []
+    if (unsuccessfulKeys.length > 0)
+      throw new Error(
+        `short link edge: KV did not write ${unsuccessfulKeys.length} key(s): ${unsuccessfulKeys.slice(0, 5).join(', ')}`
+      )
   }
 }
 
@@ -95,6 +102,25 @@ export async function d1Upsert(
     const params = batch.flatMap(({ key, value }) => [key, value, updatedAt])
     await d1Query(config, sql, params, logger)
   }
+}
+
+/**
+ * Deletes every `link:<hostname>/…` row. Unlike the other D1 writes this
+ * throws: it runs when a domain's KV setup is removed, after which nothing
+ * republishes those rows, so a row left behind would be served stale.
+ */
+export async function d1DeleteDomainLinks(
+  config: EdgeConfig,
+  hostname: string
+): Promise<void> {
+  if (config.d1DatabaseId == null) return
+  const prefix = `link:${hostname.toLowerCase()}/`
+  await config.client.d1.database.query(config.d1DatabaseId, {
+    account_id: config.accountId,
+    // '0' is the character after '/', so this is every key with the prefix
+    sql: 'DELETE FROM short_link_records WHERE key >= ? AND key < ?',
+    params: [prefix, `${prefix.slice(0, -1)}0`]
+  })
 }
 
 export async function d1Delete(

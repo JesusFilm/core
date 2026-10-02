@@ -6,7 +6,9 @@ import { publishDomainWithLinks } from '../edge'
 
 builder.mutationFields((t) => ({
   shortLinkDomainPublish: t
-    .withAuth({ $any: { isPublisher: true, isShortLinkAdmin: true } })
+    .withAuth({
+      $any: { isPublisher: true, isShortLinkAdmin: true, isSuperAdmin: true }
+    })
     .prismaField({
       type: 'ShortLinkDomain',
       description:
