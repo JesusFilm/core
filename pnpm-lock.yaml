@@ -1053,45 +1053,6 @@ importers:
         specifier: ^7.0.0
         version: 7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@7.0.2)
 
-  apps/short-links-admin:
-    dependencies:
-      '@base-ui/react':
-        specifier: '*'
-        version: 1.8.0(@date-fns/tz@1.5.0)(@types/react@19.2.2)(date-fns@4.1.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@daypicker/react':
-        specifier: ^10.0.2
-        version: 10.0.2(@types/react@19.2.2)(react@19.2.6)
-      class-variance-authority:
-        specifier: '*'
-        version: 0.7.1
-      clsx:
-        specifier: '*'
-        version: 2.1.1
-      cn:
-        specifier: ^0.4.0
-        version: 0.4.0
-      lucide-react:
-        specifier: '*'
-        version: 0.513.0(react@19.2.6)
-      next:
-        specifier: '*'
-        version: 16.3.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.1)(@types/node@22.18.8)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(sass@1.102.0)
-      react:
-        specifier: '*'
-        version: 19.2.6
-      react-dom:
-        specifier: '*'
-        version: 19.2.6(react@19.2.6)
-      tailwind-merge:
-        specifier: '*'
-        version: 3.3.1
-      tailwindcss:
-        specifier: '*'
-        version: 4.3.2
-      tw-animate-css:
-        specifier: '*'
-        version: 1.3.7
-
   tools/typescript7:
     dependencies:
       typescript:
@@ -3542,16 +3503,6 @@ packages:
 
   '@date-fns/tz@1.5.0':
     resolution: {integrity: sha512-lwYN/vDPeNRULcepoE/LO2Pgx+7/RV+S9ARfbc9lr2DtGkOD7pAiruHvbR1RX3Qyf6ja47EWJDMsNK5vK08DJg==}
-
-  '@daypicker/react@10.0.2':
-    resolution: {integrity: sha512-Z/gvGXnc/xjRr5Z6l9OhIey00C7kwbIyJ85Pff9B9EWDkjTlkTQztB3qeylmGJDQ9xmxRJUV1W+02rskqarUBw==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      '@types/react': '>=16.8.0'
-      react: '>=16.8.0'
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
 
   '@discoveryjs/json-ext@0.5.7':
     resolution: {integrity: sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==}
@@ -12773,11 +12724,6 @@ packages:
     resolution: {integrity: sha512-RMr0FhtfXemyinomL4hrWcYJxmX6deFdCxpJzhDttxgO1+bcCnkk+9drydLVDmAMG7NE6aN/fl4F7ucU/90gAA==}
     engines: {node: '>=0.10.0'}
 
-  cn@0.4.0:
-    resolution: {integrity: sha512-qOAeUhPwPzBxx6jaeQdo646XIKliKHc2j1ZF7Ngb1o0pJZKH5gq8FkA0aVdUdPFUDXNXyUCXpCtoJISo6dhizg==}
-    engines: {node: '>=20'}
-    hasBin: true
-
   co@4.6.0:
     resolution: {integrity: sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==}
     engines: {iojs: '>= 1.0.0', node: '>= 0.12.0'}
@@ -19295,16 +19241,6 @@ packages:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
 
-  react-day-picker@10.0.2:
-    resolution: {integrity: sha512-QetiKtZWE9Uaw/pM/SYNv6WPYOTRnSJ2puL0GgwkmUFMIwiY0dtjH1W4B7DOVXVNQM0ZOClGpH/heOfBSzWeiA==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      '@types/react': '>=16.8.0'
-      react: '>=16.8.0'
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-
   react-div-100vh@0.7.0:
     resolution: {integrity: sha512-I3d77tQyaSlOx/6vurDDLk7upb5GA2ldEtVXkk7Kn5cy+tLlS0KlqDK14xUxlxh7jz4StjgKcwFyrpymsPpomA==}
     peerDependencies:
@@ -25739,20 +25675,6 @@ snapshots:
       '@types/react': 19.2.2
       date-fns: 4.1.0
 
-  '@base-ui/react@1.8.0(@date-fns/tz@1.5.0)(@types/react@19.2.2)(date-fns@4.1.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
-    dependencies:
-      '@babel/runtime': 7.29.7
-      '@base-ui/utils': 0.4.0(@types/react@19.2.2)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@floating-ui/react-dom': 2.1.9(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@floating-ui/utils': 0.2.12
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
-      use-sync-external-store: 1.6.0(react@19.2.6)
-    optionalDependencies:
-      '@date-fns/tz': 1.5.0
-      '@types/react': 19.2.2
-      date-fns: 4.1.0
-
   '@base-ui/utils@0.3.2(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
       '@babel/runtime': 7.29.7
@@ -25772,17 +25694,6 @@ snapshots:
       react-dom: 19.2.0(react@19.2.0)
       reselect: 5.2.0
       use-sync-external-store: 1.6.0(react@19.2.0)
-    optionalDependencies:
-      '@types/react': 19.2.2
-
-  '@base-ui/utils@0.4.0(@types/react@19.2.2)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
-    dependencies:
-      '@babel/runtime': 7.29.7
-      '@floating-ui/utils': 0.2.12
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
-      reselect: 5.2.0
-      use-sync-external-store: 1.6.0(react@19.2.6)
     optionalDependencies:
       '@types/react': 19.2.2
 
@@ -26422,14 +26333,8 @@ snapshots:
       node-gyp-build: 4.6.0
     optional: true
 
-  '@date-fns/tz@1.5.0': {}
-
-  '@daypicker/react@10.0.2(@types/react@19.2.2)(react@19.2.6)':
-    dependencies:
-      react: 19.2.6
-      react-day-picker: 10.0.2(@types/react@19.2.2)(react@19.2.6)
-    optionalDependencies:
-      '@types/react': 19.2.2
+  '@date-fns/tz@1.5.0':
+    optional: true
 
   '@discoveryjs/json-ext@0.5.7': {}
 
@@ -28313,12 +28218,6 @@ snapshots:
       '@floating-ui/dom': 1.8.0
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
-
-  '@floating-ui/react-dom@2.1.9(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
-    dependencies:
-      '@floating-ui/dom': 1.8.0
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
 
   '@floating-ui/utils@0.2.10': {}
 
@@ -37744,8 +37643,6 @@ snapshots:
 
   cluster-key-slot@1.1.2: {}
 
-  cn@0.4.0: {}
-
   co@4.6.0:
     optional: true
 
@@ -42841,10 +42738,6 @@ snapshots:
     dependencies:
       react: 19.2.0
 
-  lucide-react@0.513.0(react@19.2.6):
-    dependencies:
-      react: 19.2.6
-
   luxon@3.6.1: {}
 
   lz-string@1.5.0: {}
@@ -43839,35 +43732,6 @@ snapshots:
       '@next/swc-win32-arm64-msvc': 16.3.6
       '@next/swc-win32-x64-msvc': 16.3.6
       '@opentelemetry/api': 1.9.0
-      '@playwright/test': 1.59.1
-      babel-plugin-react-compiler: 19.1.0-rc.3
-      sass: 1.102.0
-      sharp: 0.35.4(@types/node@22.18.8)
-    transitivePeerDependencies:
-      - '@babel/core'
-      - '@types/node'
-      - babel-plugin-macros
-
-  next@16.3.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.1)(@types/node@22.18.8)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(sass@1.102.0):
-    dependencies:
-      '@next/env': 16.3.6
-      '@swc/helpers': 0.5.23
-      baseline-browser-mapping: 2.10.24
-      caniuse-lite: 1.0.30001788
-      postcss: 8.5.23
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
-      styled-jsx: 5.1.6(@babel/core@7.29.0)(babel-plugin-macros@3.1.0)(react@19.2.6)
-    optionalDependencies:
-      '@next/swc-darwin-arm64': 16.3.6
-      '@next/swc-darwin-x64': 16.3.6
-      '@next/swc-linux-arm64-gnu': 16.3.6
-      '@next/swc-linux-arm64-musl': 16.3.6
-      '@next/swc-linux-x64-gnu': 16.3.6
-      '@next/swc-linux-x64-musl': 16.3.6
-      '@next/swc-win32-arm64-msvc': 16.3.6
-      '@next/swc-win32-x64-msvc': 16.3.6
-      '@opentelemetry/api': 1.9.1
       '@playwright/test': 1.59.1
       babel-plugin-react-compiler: 19.1.0-rc.3
       sass: 1.102.0
@@ -45846,14 +45710,6 @@ snapshots:
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
 
-  react-day-picker@10.0.2(@types/react@19.2.2)(react@19.2.6):
-    dependencies:
-      '@date-fns/tz': 1.5.0
-      date-fns: 4.1.0
-      react: 19.2.6
-    optionalDependencies:
-      '@types/react': 19.2.2
-
   react-div-100vh@0.7.0(react@19.2.0):
     dependencies:
       react: 19.2.0
@@ -47582,14 +47438,6 @@ snapshots:
     dependencies:
       client-only: 0.0.1
       react: 19.2.0
-    optionalDependencies:
-      '@babel/core': 7.29.0
-      babel-plugin-macros: 3.1.0
-
-  styled-jsx@5.1.6(@babel/core@7.29.0)(babel-plugin-macros@3.1.0)(react@19.2.6):
-    dependencies:
-      client-only: 0.0.1
-      react: 19.2.6
     optionalDependencies:
       '@babel/core': 7.29.0
       babel-plugin-macros: 3.1.0
