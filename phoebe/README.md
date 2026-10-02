@@ -18,7 +18,8 @@ This file holds the concrete values for **this** deployment. The engine's genera
 | `workOrder` (default)            | conflicts → checks → reviews → issues → research | Order tried each cycle. Janitor kinds run in persistent mode only.                                                                                                                        |
 | `engine.ref`                     | `v0.13.2`                                        | Pinned engine. Upgrade = edit this line; the running container relaunches on it.                                                                                                          |
 | Provider                         | `claude` via `CLAUDE_CODE_OAUTH_TOKEN` (`.env`)  | Claude Code on a Pro/Max subscription token, not an API key. Cursor is also in the image.                                                                                                 |
-| GitHub identity                  | `GH_TOKEN` in `.env`                             | PRs, branches and comments appear as the token's account.                                                                                                                                 |
+| GitHub identity                  | `GH_TOKEN` in `.env`                             | PRs, branches and comments appear as the token's account (siyang-bot).                                                                                                                    |
+| `gitIdentity`                    | siyang-bot + its GitHub noreply email            | Commit author for every Phoebe commit, so commits link to the account that opens the PR.                                                                                                  |
 
 Required labels already exist on JesusFilm/core: `phoebe:ready`, `processing`, `ready-for-human`, `wayfinder:research`.
 

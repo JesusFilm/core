@@ -85,7 +85,7 @@ const config: PhoebeUserConfig = {
   // of an API key: the long-lived token from `claude setup-token` is forwarded
   // (CLAUDE_CODE_OAUTH_TOKEN in .env) rather than ANTHROPIC_API_KEY. See
   // docs/claude-subscription-auth.md in JesusFilm/phoebe.
-  providerEnv: { claude: 'CLAUDE_CODE_OAUTH_TOKEN' }
+  providerEnv: { claude: 'CLAUDE_CODE_OAUTH_TOKEN' },
 
   // How this repo's commits are attributed (optional). Declaring it here means
   // every deployment that runs this repo agrees on the attribution, instead of
@@ -93,7 +93,14 @@ const config: PhoebeUserConfig = {
   // Both halves are required, and the email must be exactly the address GitHub
   // knows (a noreply address is the usual answer), or the commits link to no
   // account at all.
-  // gitIdentity: { name: "Phoebe", email: "12345+phoebe@users.noreply.github.com" },
+  //
+  // Set to the siyang-bot account (the GH_TOKEN owner), so commits link to the
+  // same account that opens the PR. Without this the first test run (#9648)
+  // found no identity in the container and set a repo-local one itself.
+  gitIdentity: {
+    name: 'siyang-bot',
+    email: '317690486+siyang-bot@users.noreply.github.com'
+  }
 }
 
 export default config
