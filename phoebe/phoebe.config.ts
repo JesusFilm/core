@@ -41,15 +41,8 @@ const config: PhoebeUserConfig = {
   readyCommand:
     'pnpm lint:changed --fix && pnpm nx format:write --base=origin/main && pnpm nx affected -t lint type-check test --base=origin/main',
 
-  // Branch names. The engine always names branches `<branchPrefix>issue-<n>`
-  // (and `<branchPrefix>feature-<m>`, `<branchPrefix>workspace`); only the
-  // prefix is ours. core's required `lint` check runs validate-branch-name
-  // against the AGENTS.md pattern, which rejects the shipped `phoebe/issue-N`
-  // (the `<user>/<ticket>-<n>-<slug>` arm wants a 2–4 char ticket prefix before
-  // the number). `cursor/.*` is the pattern's arm for agent-cut branches, so
-  // Phoebe's branches live there: `cursor/phoebe-issue-9630`. `prScope` keys
-  // off this prefix too, so Phoebe still only maintains its own PRs.
-  branchPrefix: 'cursor/phoebe-',
+  // branchPrefix stays on the engine default `phoebe/` (branches
+  // `phoebe/issue-<n>`): core's branch-name rule admits `phoebe/.*` since #9649.
 
   // core already uses the engine-default `ready-for-agent` as a shared triage
   // label (AGENTS.md → Triage labels), so leaving Phoebe on it would make this
