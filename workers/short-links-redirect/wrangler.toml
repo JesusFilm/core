@@ -1,0 +1,152 @@
+# short-links-redirect: the edge redirect Worker for every short-link domain.
+# Contract: prds/short-links/TECH-DESIGN.md.
+#
+# BEFORE THE FIRST DEPLOY to an environment, replace the
+# `REPLACE_ME_BEFORE_DEPLOY` below with the real namespace id:
+#
+#   wrangler kv namespace create short-links-stage   -> kv_namespaces[].id (SHORT_LINKS_KV)
+#   wrangler queues create short-links-events-stage
+#   wrangler queues create short-links-events-dlq-stage
+#   wrangler secret put CLICKHOUSE_USER --env=stage
+#   wrangler secret put CLICKHOUSE_PASSWORD --env=stage
+#
+# (and the same with `-prod` / `--env=prod`). Queues are referenced by name, so
+# they need no id here. The placeholder is deliberately invalid so a deploy
+# with an unfilled id fails at the Cloudflare API instead of silently binding to
+# nothing. The top-level (dev) environment is what `wrangler dev` and the vitest
+# Workers pool use; miniflare provisions local KV / Queues regardless of the
+# ids.
+#
+# WHAT IS NOT IN THIS FILE for stage and prod, on purpose:
+#
+# - Per-domain KV bindings (`KV_JESUS_FILM`, ...). A superAdmin sets a domain
+#   up from the admin app; api-media creates its namespace and adds its `KV_*`
+#   binding to the live Worker through the Cloudflare API. `scripts/deploy.ts`
+#   (the `deploy` target) reads those live bindings and carries them over on
+#   every deploy. Never deploy stage or prod with a bare `wrangler deploy`: it
+#   uploads only what is declared here and unbinds every domain.
+# - `routes`. A domain is attached from the admin app too (a zone route for a
+#   path-prefixed domain such as `jesus.film/s/*`, a custom domain for a root
+#   domain). With no `routes` key a deploy leaves those alone; with ANY route
+#   declared here wrangler replaces the whole set and deletes the rest. Do not
+#   add one.
+#
+# Rollout: stage serves `stage.jesus.film/s/*` and `stage.jesus.movie/s/*`,
+# prod `jesus.film/s/*` and `jesus.movie/s/*`. Which hostnames an environment
+# may set up is api-media's CLOUDFLARE_SHORT_LINKS_ALLOWED_HOSTNAMES.
+
+name = "short-links-redirect-dev"
+compatibility_date = "2025-09-01"
+compatibility_flags = ["nodejs_compat"]
+main = "src/index.ts"
+
+[vars]
+CORE_GRAPHQL_ENDPOINT = "http://localhost:4000"
+CLICKHOUSE_URL = ""
+CLICKHOUSE_DATABASE = "redirects"
+
+# Global namespace: domain records (`domain:<hostname>`) and global links
+# (`link:<pathname>`). Dev (top-level) ids are local-only names: miniflare keys
+# local namespaces by id, so each binding needs a distinct one or they alias.
+[[kv_namespaces]]
+binding = "SHORT_LINKS_KV"
+id = "short-links-dev"
+
+# One namespace per domain, bound under the name in the domain record's
+# `kvBinding`; holds that domain's routing records keyed by bare slug. These
+# are declared for dev only (tests and `wrangler dev`); on stage and prod
+# api-media manages them through the Cloudflare API (see the top comment).
+[[kv_namespaces]]
+binding = "KV_JESUS_FILM"
+id = "short-links-dev-jesus-film"
+
+[[kv_namespaces]]
+binding = "KV_NXSTP_IS"
+id = "short-links-dev-nxstp-is"
+
+[[kv_namespaces]]
+binding = "KV_ARC_GT"
+id = "short-links-dev-arc-gt"
+
+[[kv_namespaces]]
+binding = "KV_STG_ARC_GT"
+id = "short-links-dev-stg-arc-gt"
+
+[[queues.producers]]
+binding = "SHORT_LINKS_EVENTS"
+queue = "short-links-events-dev"
+
+[[queues.consumers]]
+queue = "short-links-events-dev"
+max_batch_size = 100
+max_batch_timeout = 5
+max_retries = 3
+dead_letter_queue = "short-links-events-dlq-dev"
+
+# ---------------------------------------------------------------------------
+# stage
+# ---------------------------------------------------------------------------
+
+[env.stage]
+name = "short-links-redirect-stage"
+logpush = true
+# No `routes` and no per-domain KV bindings: both are managed from the admin
+# app through the Cloudflare API (see the top comment).
+
+[env.stage.vars]
+CORE_GRAPHQL_ENDPOINT = "https://api-gateway.stage.central.jesusfilm.org/"
+CLICKHOUSE_URL = ""
+CLICKHOUSE_DATABASE = "redirects"
+
+# Global namespace.
+[[env.stage.kv_namespaces]]
+binding = "SHORT_LINKS_KV"
+id = "REPLACE_ME_BEFORE_DEPLOY"
+
+[[env.stage.queues.producers]]
+binding = "SHORT_LINKS_EVENTS"
+queue = "short-links-events-stage"
+
+[[env.stage.queues.consumers]]
+queue = "short-links-events-stage"
+max_batch_size = 100
+max_batch_timeout = 5
+max_retries = 3
+dead_letter_queue = "short-links-events-dlq-stage"
+
+[env.stage.observability.logs]
+enabled = true
+
+# ---------------------------------------------------------------------------
+# prod
+# ---------------------------------------------------------------------------
+
+[env.prod]
+name = "short-links-redirect-prod"
+logpush = true
+# No `routes` and no per-domain KV bindings: both are managed from the admin
+# app through the Cloudflare API (see the top comment).
+
+[env.prod.vars]
+CORE_GRAPHQL_ENDPOINT = "https://api-gateway.central.jesusfilm.org/"
+CLICKHOUSE_URL = ""
+CLICKHOUSE_DATABASE = "redirects"
+
+# Global namespace.
+[[env.prod.kv_namespaces]]
+binding = "SHORT_LINKS_KV"
+id = "REPLACE_ME_BEFORE_DEPLOY"
+
+[[env.prod.queues.producers]]
+binding = "SHORT_LINKS_EVENTS"
+queue = "short-links-events-prod"
+
+[[env.prod.queues.consumers]]
+queue = "short-links-events-prod"
+max_batch_size = 100
+max_batch_timeout = 5
+max_retries = 3
+dead_letter_queue = "short-links-events-dlq-prod"
+
+[env.prod.observability.logs]
+enabled = true

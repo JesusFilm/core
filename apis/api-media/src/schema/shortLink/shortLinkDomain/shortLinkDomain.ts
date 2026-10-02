@@ -1,6 +1,6 @@
 import { ZodError } from 'zod'
 
-import { Prisma, prisma } from '@core/prisma/media/client'
+import { Prisma, ShortLinkDomain, prisma } from '@core/prisma/media/client'
 
 import { builder } from '../../builder'
 import { Service } from '../../enums/service'
@@ -9,6 +9,23 @@ import {
   NotFoundError,
   NotUniqueError
 } from '../../error'
+import { publishDomain, publishDomainWithLinks, unpublishDomain } from '../edge'
+import { ShortLinkNotFound } from '../enums/shortLinkNotFound'
+import { assertSuperAdmin } from '../lib/access'
+import {
+  HTTPS_URL_MESSAGE,
+  REDIRECT_STATUS_MESSAGE,
+  failedPrecondition,
+  inputValidationError,
+  isHttpsUrl,
+  isRedirectStatus
+} from '../lib/errors'
+import {
+  PATH_PREFIX_MESSAGE,
+  isValidPathPrefix,
+  normalizePathPrefix
+} from '../lib/shortUrl'
+import { isValidSlugAllowedChars } from '../lib/slug'
 
 import { ShortLinkDomainCheckRef } from './objects/shortLinkDomainCheck'
 import {
@@ -16,6 +33,24 @@ import {
   checkVercelDomain,
   removeVercelDomain
 } from './shortLinkDomain.service'
+
+// Redirect, slug and service settings: shortLinkAdmin, publisher or superAdmin.
+// The lazy superAdmin scope is only evaluated when the role scopes fail.
+const settingsScopes = {
+  $any: { isPublisher: true, isShortLinkAdmin: true, isSuperAdmin: true }
+} as const
+
+// Which domains exist, and everything that decides where a domain is served
+// from (path prefix, KV namespace, Worker binding), belongs to superAdmin.
+const superAdminScopes = { isSuperAdmin: true } as const
+
+const INFRASTRUCTURE_FIELDS_MESSAGE =
+  'only a superAdmin may change the path prefix, KV namespace or Worker binding of a domain'
+
+const SLUG_ALLOWED_CHARS_MESSAGE =
+  'slugAllowedChars must be a valid regex character-class body (e.g. A-Za-z0-9_-)'
+// the edge Worker never looks up paths longer than this
+const SLUG_MAX_LENGTH_LIMIT = 64
 
 builder.prismaObject('ShortLinkDomain', {
   description: 'A domain that can be used for short links',
@@ -37,6 +72,71 @@ builder.prismaObject('ShortLinkDomain', {
       nullable: false,
       description: 'check status of the domain',
       resolve: async ({ hostname }) => await checkVercelDomain(hostname)
+    }),
+    pathPrefix: t.exposeString('pathPrefix', {
+      nullable: false,
+      description:
+        'path the short links live under, without leading or trailing slashes (e.g. s); empty means the root of the hostname'
+    }),
+    redirectStatus: t.exposeInt('redirectStatus', {
+      nullable: false,
+      description:
+        'HTTP status the edge redirects with (301, 302, 307, 308) unless a link overrides it'
+    }),
+    slugAllowedChars: t.exposeString('slugAllowedChars', {
+      nullable: false,
+      description:
+        'regex character-class body describing the characters a pathname may use'
+    }),
+    slugMinLength: t.exposeInt('slugMinLength', { nullable: false }),
+    slugMaxLength: t.exposeInt('slugMaxLength', { nullable: false }),
+    slugCaseSensitive: t.exposeBoolean('slugCaseSensitive', {
+      nullable: false,
+      description:
+        'when false, pathnames are lower-cased on create and matched case-insensitively at the edge'
+    }),
+    reservedPaths: t.exposeStringList('reservedPaths', {
+      nullable: false,
+      description: 'first path segments that are never minted as short links'
+    }),
+    fallbackTo: t.exposeString('fallbackTo', {
+      nullable: true,
+      description:
+        'where unresolved traffic goes when notFound is fallback, and where paused links go unless they override it'
+    }),
+    notFound: t.expose('notFound', {
+      type: ShortLinkNotFound,
+      nullable: false
+    }),
+    passthroughOrigin: t.exposeString('passthroughOrigin', {
+      nullable: true,
+      description:
+        'origin that receives unresolved requests with their path and query intact when notFound is passthrough'
+    }),
+    autoFailover: t.exposeBoolean('autoFailover', {
+      nullable: false,
+      description:
+        'when true, a failing destination health check pauses the link (never for videoEmbedded)'
+    }),
+    edgePublishedAt: t.expose('edgePublishedAt', {
+      type: 'DateTime',
+      nullable: true,
+      description: 'when the domain record was last written to the edge store'
+    }),
+    kvNamespaceId: t.exposeString('kvNamespaceId', {
+      nullable: true,
+      description:
+        'id of the Cloudflare KV namespace holding this domain routing records; unset means the domain links are not published to the edge'
+    }),
+    kvBinding: t.exposeString('kvBinding', {
+      nullable: true,
+      description:
+        'name of the Worker binding for that namespace (e.g. KV_JESUS_FILM)'
+    }),
+    linkCount: t.relationCount('shortLinks', {
+      nullable: false,
+      description: 'live (not soft-deleted) links on this domain',
+      where: { deletedAt: null }
     })
   })
 })
@@ -85,6 +185,33 @@ builder.queryFields((t) => ({
             : undefined
       })
   }),
+  shortLinkDomainByHostname: t.prismaField({
+    type: 'ShortLinkDomain',
+    description:
+      'find a short link domain by hostname. Public: the redirect Worker reads it when its edge store has no domain record for the host',
+    errors: {
+      types: [NotFoundError]
+    },
+    nullable: false,
+    args: {
+      hostname: t.arg.string({
+        required: true,
+        description:
+          'the hostname including subdomain, domain, and TLD, but excluding port'
+      })
+    },
+    resolve: async (query, _, { hostname }) => {
+      const domain = await prisma.shortLinkDomain.findUnique({
+        ...query,
+        where: { hostname: hostname.toLowerCase() }
+      })
+      if (domain == null)
+        throw new NotFoundError('short link domain not found', [
+          { path: ['hostname'], value: hostname }
+        ])
+      return domain
+    }
+  }),
   shortLinkDomain: t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'ShortLinkDomain',
     description: 'Find a short link domain by id',
@@ -97,12 +224,12 @@ builder.queryFields((t) => ({
     },
     resolve: async (query, _, { id }) => {
       try {
-        const domain = await prisma.shortLinkDomain.findFirstOrThrow({
+        // `check` resolves on demand: a domain served by the Worker was never
+        // registered on Vercel, and asking Vercel about it here would throw
+        return await prisma.shortLinkDomain.findFirstOrThrow({
           ...query,
           where: { id }
         })
-        const check = await checkVercelDomain(domain.hostname)
-        return { ...domain, check }
       } catch (e) {
         if (
           e instanceof Prisma.PrismaClientKnownRequestError &&
@@ -120,114 +247,374 @@ builder.queryFields((t) => ({
   })
 }))
 
+type DomainSettings = Pick<
+  ShortLinkDomain,
+  'notFound' | 'passthroughOrigin' | 'slugMinLength' | 'slugMaxLength'
+>
+
+/** Cross-field rules that need the merged (existing + input) settings. */
+function assertDomainSettings(settings: DomainSettings): void {
+  if (settings.notFound === 'passthrough' && settings.passthroughOrigin == null)
+    throw inputValidationError(
+      ['input', 'passthroughOrigin'],
+      'passthroughOrigin is required when notFound is passthrough'
+    )
+  if (settings.slugMinLength > settings.slugMaxLength)
+    throw inputValidationError(
+      ['input', 'slugMinLength'],
+      'slugMinLength must not exceed slugMaxLength'
+    )
+}
+
+/** '/s/' -> 's'; undefined when the input leaves the prefix untouched. */
+function resolvePathPrefix(
+  pathPrefix: string | null | undefined
+): string | undefined {
+  if (pathPrefix == null) return undefined
+  const normalized = normalizePathPrefix(pathPrefix)
+  if (!isValidPathPrefix(normalized))
+    throw inputValidationError(['input', 'pathPrefix'], PATH_PREFIX_MESSAGE)
+  return normalized
+}
+
+// `KV_*` bindings on the Worker are owned by api-media; every other binding is
+// owned by wrangler.toml (the Worker deploy carries `KV_*` over, nothing else)
+const KV_BINDING_PATTERN = /^KV_[A-Z0-9_]+$/
+const KV_BINDING_MESSAGE =
+  'kvBinding must be an upper-case Worker binding name starting with KV_ (e.g. KV_JESUS_FILM)'
+
+/** Empty string clears; undefined leaves untouched. */
+function resolveKvNamespaceId(
+  kvNamespaceId: string | null | undefined
+): string | null | undefined {
+  if (kvNamespaceId === undefined) return undefined
+  const trimmed = kvNamespaceId?.trim() ?? ''
+  return trimmed === '' ? null : trimmed
+}
+
+function resolveKvBinding(
+  kvBinding: string | null | undefined
+): string | null | undefined {
+  if (kvBinding === undefined) return undefined
+  const trimmed = kvBinding?.trim() ?? ''
+  if (trimmed === '') return null
+  if (!KV_BINDING_PATTERN.test(trimmed))
+    throw inputValidationError(['input', 'kvBinding'], KV_BINDING_MESSAGE)
+  return trimmed
+}
+
+/**
+ * Fields whose change alters the routing records of every link on the domain
+ * (or where they are published): the record `to` / `hostname`, its key, the
+ * namespace it goes to, and the binding the Worker reads it through. The
+ * domain redirect status and fallback are no longer in the routing record.
+ */
+const ROUTING_FIELDS = [
+  'passthroughOrigin',
+  'slugCaseSensitive',
+  'kvNamespaceId',
+  'kvBinding'
+] as const
+
+function routingChanged(
+  before: ShortLinkDomain,
+  after: ShortLinkDomain
+): boolean {
+  return ROUTING_FIELDS.some((field) => before[field] !== after[field])
+}
+
 builder.mutationFields((t) => ({
-  shortLinkDomainCreate: t
-    .withAuth({ isPublisher: true })
-    .prismaFieldWithInput({
-      type: 'ShortLinkDomain',
-      description:
-        'Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)',
-      errors: {
-        types: [ZodError, NotUniqueError]
-      },
-      nullable: false,
-      input: {
-        hostname: t.input.string({
-          required: true,
-          description:
-            'the hostname including subdomain, domain, and TLD, but excluding port',
-          validate: [
-            (value) => {
-              try {
-                return new URL(`https://${value}`).hostname === value
-              } catch {
-                return false
-              }
-            },
-            'hostname must be valid'
-          ]
-        }),
-        services: t.input.field({
-          type: [Service],
-          required: false,
-          description:
-            'the services that are enabled for this domain, if empty then this domain can be used by all services'
-        })
-      },
-      resolve: async (query, _, { input: { hostname, services } }) => {
-        return await prisma.$transaction(async (tx) => {
-          try {
-            const { apexName } = await addVercelDomain(hostname)
-            const shortLinkDomain = await tx.shortLinkDomain.create({
-              ...query,
-              data: {
-                hostname,
-                apexName,
-                services: services ?? []
-              }
-            })
-            return shortLinkDomain
-          } catch (e) {
-            if (
-              e instanceof Prisma.PrismaClientKnownRequestError &&
-              e.code === 'P2002'
-            ) {
-              throw new NotUniqueError('short link domain already exists', [
-                { path: ['input', 'hostname'], value: hostname }
-              ])
+  shortLinkDomainCreate: t.withAuth(superAdminScopes).prismaFieldWithInput({
+    type: 'ShortLinkDomain',
+    description:
+      'Create a new short link domain that can be used for short links (superAdmin only). A domain served by the legacy Vercel app must have a CNAME record pointing to it; a domain served by the redirect Worker is created with vercel: false and attached with shortLinkDomainWorkerAttach',
+    errors: {
+      types: [ZodError, NotUniqueError]
+    },
+    nullable: false,
+    input: {
+      hostname: t.input.string({
+        required: true,
+        description:
+          'the hostname including subdomain, domain, and TLD, but excluding port',
+        validate: [
+          (value) => {
+            try {
+              return new URL(`https://${value}`).hostname === value
+            } catch {
+              return false
             }
-            await removeVercelDomain(hostname)
-            throw e
-          }
-        })
-      }
-    }),
-  shortLinkDomainUpdate: t
-    .withAuth({ isPublisher: true })
-    .prismaFieldWithInput({
-      type: 'ShortLinkDomain',
-      description: 'Update services that can use this short link domain',
-      errors: {
-        types: [NotFoundError]
-      },
-      nullable: false,
-      input: {
-        id: t.input.string({ required: true }),
-        services: t.input.field({
-          type: [Service],
-          required: true,
-          description:
-            'the services that are enabled for this domain, if empty then this domain can be used by all services'
-        })
-      },
-      resolve: async (query, _, { input: { id, services } }) => {
+          },
+          'hostname must be valid'
+        ]
+      }),
+      services: t.input.field({
+        type: [Service],
+        required: false,
+        description:
+          'the services that are enabled for this domain, if empty then this domain can be used by all services'
+      }),
+      pathPrefix: t.input.string({
+        required: false,
+        description:
+          'path the short links live under, without leading or trailing slashes (e.g. s); defaults to empty (root of the hostname)'
+      }),
+      redirectStatus: t.input.int({
+        required: false,
+        description: 'defaults to 307',
+        validate: {
+          refine: [isRedirectStatus, { message: REDIRECT_STATUS_MESSAGE }]
+        }
+      }),
+      slugAllowedChars: t.input.string({
+        required: false,
+        description: 'defaults to A-Za-z0-9_-',
+        validate: {
+          refine: [
+            isValidSlugAllowedChars,
+            { message: SLUG_ALLOWED_CHARS_MESSAGE }
+          ]
+        }
+      }),
+      slugMinLength: t.input.int({
+        required: false,
+        description: 'defaults to 1',
+        validate: { min: 1, max: SLUG_MAX_LENGTH_LIMIT }
+      }),
+      slugMaxLength: t.input.int({
+        required: false,
+        description: 'defaults to 64',
+        validate: { min: 1, max: SLUG_MAX_LENGTH_LIMIT }
+      }),
+      slugCaseSensitive: t.input.boolean({
+        required: false,
+        description: 'defaults to true'
+      }),
+      reservedPaths: t.input.stringList({ required: false }),
+      fallbackTo: t.input.string({
+        required: false,
+        validate: { refine: [isHttpsUrl, { message: HTTPS_URL_MESSAGE }] }
+      }),
+      notFound: t.input.field({
+        type: ShortLinkNotFound,
+        required: false,
+        description: 'defaults to lostPage'
+      }),
+      passthroughOrigin: t.input.string({
+        required: false,
+        description: 'required when notFound is passthrough',
+        validate: { refine: [isHttpsUrl, { message: HTTPS_URL_MESSAGE }] }
+      }),
+      kvNamespaceId: t.input.string({
+        required: false,
+        description:
+          'id of the Cloudflare KV namespace this domain publishes its routing records to; empty clears it (the domain links are then not published)'
+      }),
+      kvBinding: t.input.string({
+        required: false,
+        description:
+          'Worker binding name of that namespace (e.g. KV_JESUS_FILM); empty clears it'
+      }),
+      autoFailover: t.input.boolean({
+        required: false,
+        description: 'defaults to false'
+      }),
+      vercel: t.input.boolean({
+        required: false,
+        description:
+          'register the hostname on the legacy Vercel short links project; defaults to true. Pass false for a domain served by the redirect Worker'
+      })
+    },
+    resolve: async (query, _, { input }) => {
+      const { hostname, services } = input
+      const registerOnVercel = input.vercel ?? true
+      const pathPrefix = resolvePathPrefix(input.pathPrefix)
+      const kvNamespaceId = resolveKvNamespaceId(input.kvNamespaceId)
+      const kvBinding = resolveKvBinding(input.kvBinding)
+      assertDomainSettings({
+        notFound: input.notFound ?? 'lostPage',
+        passthroughOrigin: input.passthroughOrigin ?? null,
+        slugMinLength: input.slugMinLength ?? 1,
+        slugMaxLength: input.slugMaxLength ?? SLUG_MAX_LENGTH_LIMIT
+      })
+
+      return await prisma.$transaction(async (tx) => {
         try {
-          return await prisma.shortLinkDomain.update({
+          const { apexName } = registerOnVercel
+            ? await addVercelDomain(hostname)
+            : { apexName: hostname }
+          const shortLinkDomain = await tx.shortLinkDomain.create({
             ...query,
-            where: { id },
             data: {
-              services
+              hostname,
+              apexName,
+              services: services ?? [],
+              pathPrefix,
+              redirectStatus: input.redirectStatus ?? undefined,
+              slugAllowedChars: input.slugAllowedChars ?? undefined,
+              slugMinLength: input.slugMinLength ?? undefined,
+              slugMaxLength: input.slugMaxLength ?? undefined,
+              slugCaseSensitive: input.slugCaseSensitive ?? undefined,
+              reservedPaths: input.reservedPaths ?? undefined,
+              fallbackTo: input.fallbackTo,
+              notFound: input.notFound ?? undefined,
+              passthroughOrigin: input.passthroughOrigin,
+              autoFailover: input.autoFailover ?? undefined,
+              kvNamespaceId,
+              kvBinding
             }
           })
+          const edgePublishedAt = await publishDomain(shortLinkDomain.id, tx)
+          return edgePublishedAt == null
+            ? shortLinkDomain
+            : { ...shortLinkDomain, edgePublishedAt }
         } catch (e) {
           if (
             e instanceof Prisma.PrismaClientKnownRequestError &&
-            e.code === 'P2025'
-          )
-            throw new NotFoundError('short link domain not found', [
-              {
-                path: ['input', 'id'],
-                value: id
-              }
+            e.code === 'P2002'
+          ) {
+            throw new NotUniqueError('short link domain already exists', [
+              { path: ['input', 'hostname'], value: hostname }
             ])
+          }
+          // never deregister a hostname this call did not register
+          if (registerOnVercel) await removeVercelDomain(hostname)
           throw e
         }
-      }
-    }),
-  shortLinkDomainDelete: t.withAuth({ isPublisher: true }).prismaField({
+      })
+    }
+  }),
+  shortLinkDomainUpdate: t.withAuth(settingsScopes).prismaFieldWithInput({
     type: 'ShortLinkDomain',
     description:
-      'delete an existing short link domain (all related short links must be deleted first)',
+      'Update the services and edge settings of a short link domain; routing changes republish every live link on it. Changing pathPrefix, kvNamespaceId or kvBinding needs superAdmin',
+    errors: {
+      types: [ZodError, NotFoundError]
+    },
+    nullable: false,
+    input: {
+      id: t.input.string({ required: true }),
+      services: t.input.field({
+        type: [Service],
+        required: true,
+        description:
+          'the services that are enabled for this domain, if empty then this domain can be used by all services'
+      }),
+      pathPrefix: t.input.string({
+        required: false,
+        description:
+          'path the short links live under, without leading or trailing slashes (e.g. s); empty serves links at the root of the hostname'
+      }),
+      redirectStatus: t.input.int({
+        required: false,
+        validate: {
+          refine: [isRedirectStatus, { message: REDIRECT_STATUS_MESSAGE }]
+        }
+      }),
+      slugAllowedChars: t.input.string({
+        required: false,
+        validate: {
+          refine: [
+            isValidSlugAllowedChars,
+            { message: SLUG_ALLOWED_CHARS_MESSAGE }
+          ]
+        }
+      }),
+      slugMinLength: t.input.int({
+        required: false,
+        validate: { min: 1, max: SLUG_MAX_LENGTH_LIMIT }
+      }),
+      slugMaxLength: t.input.int({
+        required: false,
+        validate: { min: 1, max: SLUG_MAX_LENGTH_LIMIT }
+      }),
+      slugCaseSensitive: t.input.boolean({ required: false }),
+      reservedPaths: t.input.stringList({ required: false }),
+      fallbackTo: t.input.string({
+        required: false,
+        validate: { refine: [isHttpsUrl, { message: HTTPS_URL_MESSAGE }] }
+      }),
+      notFound: t.input.field({ type: ShortLinkNotFound, required: false }),
+      passthroughOrigin: t.input.string({
+        required: false,
+        description: 'required when notFound is passthrough',
+        validate: { refine: [isHttpsUrl, { message: HTTPS_URL_MESSAGE }] }
+      }),
+      kvNamespaceId: t.input.string({
+        required: false,
+        description:
+          'id of the Cloudflare KV namespace this domain publishes its routing records to; empty clears it (the domain links are then not published)'
+      }),
+      kvBinding: t.input.string({
+        required: false,
+        description:
+          'Worker binding name of that namespace (e.g. KV_JESUS_FILM); empty clears it'
+      }),
+      autoFailover: t.input.boolean({ required: false })
+    },
+    resolve: async (query, _, { input }, context) => {
+      const existing = await prisma.shortLinkDomain.findUnique({
+        where: { id: input.id }
+      })
+      if (existing == null)
+        throw new NotFoundError('short link domain not found', [
+          { path: ['input', 'id'], value: input.id }
+        ])
+
+      const pathPrefix = resolvePathPrefix(input.pathPrefix)
+      const kvNamespaceId = resolveKvNamespaceId(input.kvNamespaceId)
+      const kvBinding = resolveKvBinding(input.kvBinding)
+      const changesInfrastructure =
+        (pathPrefix !== undefined && pathPrefix !== existing.pathPrefix) ||
+        (kvNamespaceId !== undefined &&
+          kvNamespaceId !== existing.kvNamespaceId) ||
+        (kvBinding !== undefined && kvBinding !== existing.kvBinding)
+      if (changesInfrastructure)
+        await assertSuperAdmin(context, INFRASTRUCTURE_FIELDS_MESSAGE)
+      assertDomainSettings({
+        notFound: input.notFound ?? existing.notFound,
+        passthroughOrigin:
+          input.passthroughOrigin === undefined
+            ? existing.passthroughOrigin
+            : input.passthroughOrigin,
+        slugMinLength: input.slugMinLength ?? existing.slugMinLength,
+        slugMaxLength: input.slugMaxLength ?? existing.slugMaxLength
+      })
+
+      return await prisma.$transaction(async (tx) => {
+        const shortLinkDomain = await tx.shortLinkDomain.update({
+          ...query,
+          where: { id: input.id },
+          data: {
+            services: input.services,
+            pathPrefix,
+            redirectStatus: input.redirectStatus ?? undefined,
+            slugAllowedChars: input.slugAllowedChars ?? undefined,
+            slugMinLength: input.slugMinLength ?? undefined,
+            slugMaxLength: input.slugMaxLength ?? undefined,
+            slugCaseSensitive: input.slugCaseSensitive ?? undefined,
+            reservedPaths: input.reservedPaths ?? undefined,
+            fallbackTo: input.fallbackTo,
+            notFound: input.notFound ?? undefined,
+            passthroughOrigin: input.passthroughOrigin,
+            autoFailover: input.autoFailover ?? undefined,
+            kvNamespaceId,
+            kvBinding
+          }
+        })
+        const edgePublishedAt = routingChanged(existing, shortLinkDomain)
+          ? await publishDomainWithLinks(input.id, tx)
+          : await publishDomain(input.id, tx)
+        return edgePublishedAt == null
+          ? shortLinkDomain
+          : { ...shortLinkDomain, edgePublishedAt }
+      })
+    }
+  }),
+  shortLinkDomainDelete: t.withAuth(superAdminScopes).prismaField({
+    type: 'ShortLinkDomain',
+    description:
+      'delete an existing short link domain (superAdmin only; all related short links must be deleted and its KV setup removed first)',
     errors: {
       types: [NotFoundError, ForeignKeyConstraintError]
     },
@@ -236,6 +623,17 @@ builder.mutationFields((t) => ({
       id: t.arg.string({ required: true })
     },
     resolve: async (query, _, { id }) => {
+      // A domain cannot be attached to the Worker without its KV setup, so
+      // this also keeps an attached hostname from losing its domain record.
+      const existing = await prisma.shortLinkDomain.findUnique({
+        where: { id },
+        select: { kvNamespaceId: true, kvBinding: true }
+      })
+      if (existing?.kvNamespaceId != null || existing?.kvBinding != null)
+        throw failedPrecondition(
+          'remove the KV setup of this domain before deleting it'
+        )
+
       return await prisma.$transaction(async (tx) => {
         try {
           const shortLinkDomain = await tx.shortLinkDomain.delete({
@@ -243,6 +641,7 @@ builder.mutationFields((t) => ({
             where: { id }
           })
           await removeVercelDomain(shortLinkDomain.hostname)
+          await unpublishDomain(shortLinkDomain.hostname)
           return shortLinkDomain
         } catch (e) {
           if (e instanceof Prisma.PrismaClientKnownRequestError) {

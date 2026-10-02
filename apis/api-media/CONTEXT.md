@@ -98,8 +98,32 @@ A user-owned, ordered collection of Variants, with an optional shareable note. C
 _Avoid_: Collection (that is a Video Label), list
 
 **Short Link**:
-A short, redirecting URL owned by a Short Link Domain — mapping a path on a managed hostname to a destination, including legacy video redirects. The catalog's URL-shortening surface.
+A short, redirecting URL owned by a Short Link Domain — mapping a path on a managed hostname to a destination, including legacy video redirects. Carries an **asset class** (`standard`, `permanent`, `videoEmbedded`) that drives its protection rules, a **status** (`active`, `paused`, `retired`), and is soft-deleted only so its pathname is never reissued. Every write publishes a Routing Record to the Edge Store.
 _Avoid_: Redirect, slug, permalink
+
+**Short Link Domain**:
+A hostname short links are minted on, optionally under a **path prefix** (`https://jesus.film/s/<pathname>`; empty serves links at the root), with the edge settings the redirect Worker follows: redirect status, slug grammar (allowed characters, length, case), reserved paths, and the not-found behaviour (`lostPage`, `fallback`, `passthrough`).
+_Avoid_: Host, site
+
+**Short Link Campaign**:
+A named group of short links — a YouTube push, a season, a partner — with an optional date range, tags, and owner. A link may sit in many campaigns; deleting a campaign detaches its links.
+_Avoid_: Tag (that is a free label on the link), folder
+
+**Destination History**:
+The row written every time a short link's destination changes: from, to, who, when, and an optional note (required for `videoEmbedded`). The audit log for links burned into published assets.
+_Avoid_: Audit log (informally), revision
+
+**Routing Record**:
+The compact JSON a short link publishes to the Edge Store (`link:<hostname>/<pathname>` — the bare pathname, never the domain's path prefix): effective destination and status, paused flag, campaign ids, placement, video ids. `status` and `fallbackTo` are the link's own overrides only, so a Global Link takes the serving domain's defaults. Built by `schema/shortLink/edge`; the Worker redirects from it without touching this API.
+_Avoid_: Cache entry, snapshot
+
+**Edge Store**:
+Cloudflare Workers KV holding Domain and Routing Records; there is no replica, api-media itself is the Worker's fallback (`shortLinkByPath`, `shortLinkDomainByHostname`). One **global namespace** per environment (`CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID`) holds `domain:<hostname>` records and `link:<pathname>` Global Links; each Short Link Domain publishes its own routing records as `<pathname>` into its own namespace (`kvNamespaceId`, read by the Worker through `kvBinding`). A domain without a namespace is not published. A KV write failure fails the mutation. Unset `CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID` makes publishing a no-op. Locally, `CLOUDFLARE_SHORT_LINKS_API_BASE_URL` points publishing at the redirect Worker's `wrangler dev`, where a namespace id is the Worker binding name. On stage and prod a domain's namespace, its `KV_*` Worker binding and its route are created through the Cloudflare API by a superAdmin (`schema/shortLink/infrastructure`); `KV_*` bindings are owned here, everything else on the Worker by its `wrangler.toml`.
+_Avoid_: Cache, CDN
+
+**Global Link**:
+A Short Link flagged `global`: it still belongs to its own domain (its canonical short URL) and additionally resolves on every domain that has no link of its own for the same pathname. Global pathnames are lower-case, unique across all domains (the `ShortLinkGlobalSlug` registry) and never reissued — a soft-deleted global link keeps its claim; only un-flagging a live link releases it. Toggling needs `shortLinkAdmin`.
+_Avoid_: Shared link, wildcard
 
 **Arclight API Key**:
 A credential granting access to the Arclight Platform, carrying a default platform for the caller.
@@ -112,7 +136,7 @@ A user's media-specific preferences — their interest in particular Videos, lan
 _Avoid_: Account, user (the identity lives elsewhere)
 
 **Media Role**:
-A media-scoped permission held by a user — `publisher` or `youtubeAdmin`. Governs what a user may do within this context specifically.
+A media-scoped permission held by a user — `publisher`, `youtubeAdmin`, `shortLinkEditor` (links, campaigns, QR codes) or `shortLinkAdmin` (domain settings, protected links, republishing). Governs what a user may do within this context specifically. `superAdmin` is not a Media Role: it is the flag on the user in the users database, read here (lazily, failing closed) to gate which domains exist and their Cloudflare infrastructure.
 _Avoid_: Permission, access level
 
 ### External media services

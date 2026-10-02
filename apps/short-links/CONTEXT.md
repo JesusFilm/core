@@ -38,3 +38,7 @@ Inside the app, the hostname appears as the first URL path segment — injected 
 
 **Redirect status**:
 This surface uses Next.js's default temporary redirect (307), while Arclight's keyword surface issues explicit 302s. "The short link redirects" hides that difference — name the surface when the status code matters.
+
+### Relationship to the edge Worker
+
+`workers/short-links-redirect` is the edge-served successor of this surface: it answers the same Short Link Domains from Cloudflare KV (published by api-media on every write) instead of querying the gateway per request, honours the domain's Not-Found Behaviour (including the arc.gt passthrough), and records scans. Domains move from this app to the Worker one at a time by DNS / route configuration; until a domain is cut over, this app keeps serving it unchanged. See `prds/short-links/TECH-DESIGN.md`.
