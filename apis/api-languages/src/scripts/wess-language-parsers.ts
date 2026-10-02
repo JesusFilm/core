@@ -19,6 +19,7 @@ const WESS_LANGUAGE_ID_KEYS: string[] = [
 export interface WessLanguageRow {
   id: string
   name: string | null
+  nativeName: string | null
   bcp47: string | null
   iso3: string | null
   slug: string | null
@@ -45,6 +46,11 @@ export function normalizeWessLanguageRow(
     'LanName',
     'lan_name'
   ])
+  const nativeName = readStringField(row, [
+    'nativeName',
+    'NativeName',
+    'NATIVE_LAN_NAME'
+  ])
   const bcp47 = readStringField(
     row,
     ['bcp47', 'BCP47', 'languageTag', 'LanguageTag', 'ietf'],
@@ -63,6 +69,7 @@ export function normalizeWessLanguageRow(
   return {
     id,
     name,
+    nativeName,
     bcp47,
     iso3,
     slug,
