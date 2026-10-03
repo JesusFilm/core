@@ -133,7 +133,12 @@ async function upsertLanguageNameEntry(params: {
   parentLanguageId: string
   languageId: string
   value: string
-  primary: boolean
+  /**
+   * Omitted leaves an existing row's `primary` flag untouched (defaults to `true` only
+   * when the row is newly created) — used for the English gloss, whose primary status is
+   * decided by the caller's unconditional demotion rather than by this write.
+   */
+  primary?: boolean
 }): Promise<void> {
   const { parentLanguageId, languageId, value, primary } = params
   await prisma.languageName.upsert({
@@ -147,16 +152,21 @@ async function upsertLanguageNameEntry(params: {
       parentLanguageId,
       languageId,
       value,
-      primary
+      primary: primary ?? true
     },
     update: {
       value,
-      primary
+      ...(primary != null ? { primary } : {})
     }
   })
 }
 
-async function upsertLanguage(row: WessLanguageRow): Promise<void> {
+/**
+ * Upserts one WESS row into `Language` and its `LanguageName` rows. Returns
+ * `true` when an autonym (native-name) row was written for this language, so
+ * the caller can tally `nativeNamesImported`.
+ */
+async function upsertLanguage(row: WessLanguageRow): Promise<boolean> {
   const existing = await prisma.language.findUnique({
     where: { id: row.id },
     select: { id: true, slug: true }
@@ -190,31 +200,74 @@ async function upsertLanguage(row: WessLanguageRow): Promise<void> {
     }
   })
 
-  if (row.name == null) {
-    return
-  }
-
   const englishLanguageId = WESS_ENGLISH_LANGUAGE_ID
+  const hasNativeName = row.nativeName != null
 
-  if (row.id === englishLanguageId) {
-    return
+  // WESS only gives one English-gloss label per row; store it as the English `LanguageName`
+  // (GraphQL default uses `languageId` 529). English's own row (id 529) never gets one of
+  // these via this branch — it would just redundantly overwrite the identical autonym row
+  // written below with the same value.
+  //
+  // `primary` is deliberately not passed: a brand-new row defaults to primary, and the
+  // autonym branch below demotes it when this run has an autonym to promote in its place.
+  // Deciding the flag here instead would tie the demotion to WESS having supplied a
+  // `name` this run, which it need not have.
+  if (row.name != null && row.id !== englishLanguageId) {
+    await upsertLanguageNameEntry({
+      parentLanguageId: row.id,
+      languageId: englishLanguageId,
+      value: row.name
+    })
   }
 
-  // WESS only gives one label per row; store it as the English `LanguageName` (GraphQL default uses `languageId` 529).
-  await upsertLanguageNameEntry({
-    parentLanguageId: row.id,
-    languageId: englishLanguageId,
-    value: row.name,
-    primary: true
-  })
+  if (row.nativeName != null) {
+    // The autonym becomes the language's sole Primary Name, so demote every other name
+    // row for this language first — unconditionally, before the insert below.
+    //
+    // Demoting only the English row written above would be wrong: that branch is skipped
+    // whenever WESS supplies no `name` for the row, yet a previously stored English row
+    // can still be flagged primary. The insert would then add a second primary: true row
+    // and the language would have two Primary Names. The same applies to a primary row
+    // left behind in some third language by older data.
+    //
+    // Absence of an autonym stays a no-op: no demotion and no write, so a previously
+    // imported autonym keeps its primary flag when a later run omits NATIVE_LAN_NAME.
+    await prisma.languageName.updateMany({
+      where: {
+        parentLanguageId: row.id,
+        languageId: { not: row.id },
+        primary: true
+      },
+      data: { primary: false }
+    })
+
+    // Autonym: the language's own name for itself, written in itself. Flows through the
+    // same branch for every language, including English (id 529 → 529, value "English") —
+    // no special case.
+    await upsertLanguageNameEntry({
+      parentLanguageId: row.id,
+      languageId: row.id,
+      value: row.nativeName,
+      primary: true
+    })
+  }
+
+  return hasNativeName
+}
+
+export interface WessLanguagesImportResult {
+  languagesImported: number
+  nativeNamesImported: number
 }
 
 /**
- * Runs the WESS languages import and returns the number of rows upserted.
- * Safe to call in-process (e.g. from a GraphQL resolver): it never calls
- * `process.exit` and throws on failure so the caller can handle the error.
+ * Runs the WESS languages import and returns the number of rows upserted,
+ * plus how many autonym (native-name) `LanguageName` rows were created or
+ * updated along the way. Safe to call in-process (e.g. from a GraphQL
+ * resolver): it never calls `process.exit` and throws on failure so the
+ * caller can handle the error.
  */
-export async function runWessLanguagesImport(): Promise<number> {
+export async function runWessLanguagesImport(): Promise<WessLanguagesImportResult> {
   log.info('Starting (this can take a while over HTTP and per-row DB upserts)…')
   const rows = await fetchWessLanguages()
 
@@ -223,12 +276,16 @@ export async function runWessLanguagesImport(): Promise<number> {
     `Database: upserting ${total.toLocaleString()} language(s) (progress every ${WESS_IMPORT_PROGRESS_LOG_EVERY.toLocaleString()} rows)…`
   )
 
+  let nativeNamesImported = 0
   for (let i = 0; i < total; i++) {
     const n = i + 1
     if (n === 1 || n === total || n % WESS_IMPORT_PROGRESS_LOG_EVERY === 0) {
       log.info(`Upsert ${n.toLocaleString()}/${total.toLocaleString()}…`)
     }
-    await upsertLanguage(rows[i])
+    const wroteNativeName = await upsertLanguage(rows[i])
+    if (wroteNativeName) {
+      nativeNamesImported++
+    }
   }
 
   if (rows.length > 0) {
@@ -240,8 +297,10 @@ export async function runWessLanguagesImport(): Promise<number> {
     })
   }
 
-  log.info(`Finished successfully (${total.toLocaleString()} row(s)).`)
-  return total
+  log.info(
+    `Finished successfully (${total.toLocaleString()} row(s), ${nativeNamesImported.toLocaleString()} native name(s)).`
+  )
+  return { languagesImported: total, nativeNamesImported }
 }
 
 async function main(): Promise<void> {
