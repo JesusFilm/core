@@ -103,15 +103,6 @@ export const websiteComponents: Required<Pick<ThemeOptions, 'components'>> = {
         popupIcon: <KeyboardArrowDownIcon />
       }
     },
-    MuiListItemIcon: {
-      styleOverrides: {
-        // MUI 9 shrank the default from spacing(7) to spacing(4.5). Keep the
-        // pre-upgrade width so icons and labels in menus stay aligned.
-        root: ({ theme }) => ({
-          minWidth: theme.spacing(7)
-        })
-      }
-    },
     MuiTabs: {
       styleOverrides: {
         root: {
