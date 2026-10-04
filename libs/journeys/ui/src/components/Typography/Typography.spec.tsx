@@ -50,6 +50,42 @@ describe('Typography', () => {
     expect(getByText('Hello World!').tagName).toBe('P')
   })
 
+  it('should apply a hex color from settings', () => {
+    render(
+      <Typography
+        {...block}
+        settings={{ __typename: 'TypographyBlockSettings', color: '#EBB109' }}
+      />
+    )
+
+    expect(screen.getByTestId('JourneysTypography')).toHaveStyle({
+      color: '#EBB109'
+    })
+  })
+
+  it('should fall back to the palette color when settings has no color', () => {
+    render(<Typography {...block} color={TypographyColor.error} />)
+
+    expect(screen.getByTestId('JourneysTypography')).toHaveStyle({
+      color: 'rgb(211, 47, 47)'
+    })
+  })
+
+  it('should use the disabled text color when content is empty', () => {
+    render(
+      <Typography
+        {...block}
+        content=""
+        placeholderText="Add your text here..."
+        settings={{ __typename: 'TypographyBlockSettings', color: '#EBB109' }}
+      />
+    )
+
+    expect(screen.getByTestId('JourneysTypography')).toHaveStyle({
+      color: 'rgba(0, 0, 0, 0.38)'
+    })
+  })
+
   it('should render placholder text if content is empty', () => {
     const emptyContentMock = {
       ...block,
