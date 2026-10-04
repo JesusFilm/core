@@ -198,6 +198,15 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
         }
       }
     },
+    MuiListItemIcon: {
+      styleOverrides: {
+        // MUI 9 shrank the default from spacing(7) to spacing(4.5). Keep the
+        // pre-upgrade width so icons and labels in menus stay aligned.
+        root: ({ theme }) => ({
+          minWidth: theme.spacing(7)
+        })
+      }
+    },
     MuiListItemText: {
       styleOverrides: {
         primary: {
