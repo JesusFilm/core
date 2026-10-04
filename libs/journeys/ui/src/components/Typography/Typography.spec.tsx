@@ -1,3 +1,4 @@
+import { createTheme } from '@mui/material/styles'
 import { render, screen } from '@testing-library/react'
 
 import {
@@ -11,6 +12,8 @@ import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated
 
 import { TypographyFields } from './__generated__/TypographyFields'
 import { Typography } from './Typography'
+
+const theme = createTheme()
 
 const block: TreeBlock<TypographyFields> = {
   __typename: 'TypographyBlock',
@@ -67,7 +70,7 @@ describe('Typography', () => {
     render(<Typography {...block} color={TypographyColor.error} />)
 
     expect(screen.getByTestId('JourneysTypography')).toHaveStyle({
-      color: 'rgb(211, 47, 47)'
+      color: theme.palette.error.main
     })
   })
 
@@ -82,7 +85,7 @@ describe('Typography', () => {
     )
 
     expect(screen.getByTestId('JourneysTypography')).toHaveStyle({
-      color: 'rgba(0, 0, 0, 0.38)'
+      color: theme.palette.text.disabled
     })
   })
 
