@@ -74,10 +74,7 @@ export async function revalidatePaths(
   }
 }
 
-export async function revalidate(
-  job: Job<RevalidateSlugJob>,
-  logger?: Logger
-) {
+export async function revalidate(job: Job<RevalidateSlugJob>, logger?: Logger) {
   const { slug, hostname } = job.data
   const path = hostname != null ? `/${slug}` : `/home/${slug}`
   const journeyUrl =

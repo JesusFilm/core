@@ -21,7 +21,9 @@ const light: CampaignThemeInput = {
   buttonRadius: 'pill'
 }
 
-function rootButtonRadius(theme: ReturnType<typeof createCampaignTheme>): unknown {
+function rootButtonRadius(
+  theme: ReturnType<typeof createCampaignTheme>
+): unknown {
   const root = theme.components?.MuiButton?.styleOverrides?.root
   return (root as { borderRadius: number }).borderRadius
 }
@@ -37,7 +39,9 @@ describe('createCampaignTheme', () => {
     expect(theme.palette.text.primary).toBe('#26262E')
     expect(theme.palette.text.secondary).toBe('#6D6F81')
 
-    expect(createCampaignTheme({ ...light, themeMode: 'dark' }, false).palette.mode).toBe('dark')
+    expect(
+      createCampaignTheme({ ...light, themeMode: 'dark' }, false).palette.mode
+    ).toBe('dark')
   })
 
   it('computes the on-primary and on-accent text by luminance', () => {
@@ -47,39 +51,79 @@ describe('createCampaignTheme', () => {
   })
 
   it('maps radius to 0 / 6 / 14 / 24 px', () => {
-    expect(createCampaignTheme({ ...light, radius: 'square' }, false).shape.borderRadius).toBe(0)
-    expect(createCampaignTheme({ ...light, radius: 'slight' }, false).shape.borderRadius).toBe(6)
-    expect(createCampaignTheme({ ...light, radius: 'rounded' }, false).shape.borderRadius).toBe(14)
-    expect(createCampaignTheme({ ...light, radius: 'veryRounded' }, false).shape.borderRadius).toBe(24)
+    expect(
+      createCampaignTheme({ ...light, radius: 'square' }, false).shape
+        .borderRadius
+    ).toBe(0)
+    expect(
+      createCampaignTheme({ ...light, radius: 'slight' }, false).shape
+        .borderRadius
+    ).toBe(6)
+    expect(
+      createCampaignTheme({ ...light, radius: 'rounded' }, false).shape
+        .borderRadius
+    ).toBe(14)
+    expect(
+      createCampaignTheme({ ...light, radius: 'veryRounded' }, false).shape
+        .borderRadius
+    ).toBe(24)
   })
 
   it('maps buttonRadius to the pill shape or the theme radius', () => {
-    expect(rootButtonRadius(createCampaignTheme(light, false))).toBe(PILL_RADIUS_PX)
+    expect(rootButtonRadius(createCampaignTheme(light, false))).toBe(
+      PILL_RADIUS_PX
+    )
     expect(
       rootButtonRadius(
-        createCampaignTheme({ ...light, buttonRadius: 'rounded', radius: 'slight' }, false)
+        createCampaignTheme(
+          { ...light, buttonRadius: 'rounded', radius: 'slight' },
+          false
+        )
       )
     ).toBe(6)
   })
 
   it('uses the base Montserrat / Open Sans pairing when the three fonts are null', () => {
     const theme = createCampaignTheme(light, false)
-    expect(theme.typography.h1.fontFamily).toBe('Montserrat,"Open Sans",sans-serif')
-    expect(theme.typography.body1.fontFamily).toBe('Montserrat,"Open Sans",sans-serif')
-    expect(theme.typography.overline.fontFamily).toBe('Montserrat,"Open Sans",sans-serif')
+    expect(theme.typography.h1.fontFamily).toBe(
+      'Montserrat,"Open Sans",sans-serif'
+    )
+    expect(theme.typography.body1.fontFamily).toBe(
+      'Montserrat,"Open Sans",sans-serif'
+    )
+    expect(theme.typography.overline.fontFamily).toBe(
+      'Montserrat,"Open Sans",sans-serif'
+    )
   })
 
   it('binds the three theme fonts by role through createCustomTypography', () => {
     const theme = createCampaignTheme(
-      { ...light, headerFont: 'Fraunces', bodyFont: 'Lora', labelFont: 'Barlow' },
+      {
+        ...light,
+        headerFont: 'Fraunces',
+        bodyFont: 'Lora',
+        labelFont: 'Barlow'
+      },
       false
     )
-    expect(theme.typography.h1.fontFamily).toBe('"Fraunces",Montserrat,"Open Sans",sans-serif')
-    expect(theme.typography.subtitle1.fontFamily).toBe('"Fraunces",Montserrat,"Open Sans",sans-serif')
-    expect(theme.typography.body1.fontFamily).toBe('"Lora",Montserrat,"Open Sans",sans-serif')
-    expect(theme.typography.caption.fontFamily).toBe('"Lora",Montserrat,"Open Sans",sans-serif')
-    expect(theme.typography.overline.fontFamily).toBe('"Barlow",Montserrat,"Open Sans",sans-serif')
-    expect(theme.typography.button.fontFamily).toBe('"Barlow",Montserrat,"Open Sans",sans-serif')
+    expect(theme.typography.h1.fontFamily).toBe(
+      '"Fraunces",Montserrat,"Open Sans",sans-serif'
+    )
+    expect(theme.typography.subtitle1.fontFamily).toBe(
+      '"Fraunces",Montserrat,"Open Sans",sans-serif'
+    )
+    expect(theme.typography.body1.fontFamily).toBe(
+      '"Lora",Montserrat,"Open Sans",sans-serif'
+    )
+    expect(theme.typography.caption.fontFamily).toBe(
+      '"Lora",Montserrat,"Open Sans",sans-serif'
+    )
+    expect(theme.typography.overline.fontFamily).toBe(
+      '"Barlow",Montserrat,"Open Sans",sans-serif'
+    )
+    expect(theme.typography.button.fontFamily).toBe(
+      '"Barlow",Montserrat,"Open Sans",sans-serif'
+    )
   })
 
   it('keeps the base theme weights per variant', () => {
@@ -95,16 +139,23 @@ describe('createCampaignTheme', () => {
     // responsiveFontSizes keys its steps by raw min-width, not theme.breakpoints.up
     const mdUp = '@media (min-width:600px)'
     for (const variant of ['h1', 'h2', 'h3', 'h4', 'h5'] as const) {
-      const style = theme.typography[variant] as Record<string, { fontSize: string }>
+      const style = theme.typography[variant] as Record<
+        string,
+        { fontSize: string }
+      >
       expect(style[mdUp]).toBeDefined()
-      expect(parseFloat(String(theme.typography[variant].fontSize))).toBeLessThan(
-        parseFloat(style[mdUp].fontSize)
-      )
+      expect(
+        parseFloat(String(theme.typography[variant].fontSize))
+      ).toBeLessThan(parseFloat(style[mdUp].fontSize))
     }
     expect(theme.breakpoints.values.md).toBe(600)
     // h6 already sits at the smallest step and stays put
-    expect((theme.typography.h6 as Record<string, unknown>)[mdUp]).toBeUndefined()
-    expect((theme.typography.body1 as Record<string, unknown>)[mdUp]).toBeUndefined()
+    expect(
+      (theme.typography.h6 as Record<string, unknown>)[mdUp]
+    ).toBeUndefined()
+    expect(
+      (theme.typography.body1 as Record<string, unknown>)[mdUp]
+    ).toBeUndefined()
   })
 
   it('sets the direction from rtl', () => {

@@ -44,6 +44,7 @@ describe('RevalidateService', () => {
         'https://example.com/api/revalidate?accessToken=test-token&slug=test-journey'
       )
     })
+
     it('should handle the paths[] job variant beside the slug job', async () => {
       const job = {
         name: 'revalidate',
@@ -71,7 +72,13 @@ describe('RevalidateService', () => {
   describe('revalidatePaths', () => {
     it('calls /api/revalidate once per path', async () => {
       const job = {
-        data: { paths: ['/home/campaign/a', '/custom.example.com', '/custom.example.com/eur'] }
+        data: {
+          paths: [
+            '/home/campaign/a',
+            '/custom.example.com',
+            '/custom.example.com/eur'
+          ]
+        }
       } as Job
 
       mockFetch.mockResolvedValue({ ok: true } as any)

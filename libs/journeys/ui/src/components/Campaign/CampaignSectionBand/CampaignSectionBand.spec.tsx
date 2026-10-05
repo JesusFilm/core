@@ -57,11 +57,18 @@ function sectionWithExtras(): CampaignSectionTree {
   return transformCampaignBlocks(blocks)[0] as CampaignSectionTree
 }
 
-function renderBand(section: CampaignSectionTree, align: TypographyAlign | null = null) {
+function renderBand(
+  section: CampaignSectionTree,
+  align: TypographyAlign | null = null
+) {
   return render(
     <ThemeProvider theme={theme}>
       <CampaignProvider
-        value={{ campaign: campaignPublic, pageKind: CampaignPageKind.landing, region: null }}
+        value={{
+          campaign: campaignPublic,
+          pageKind: CampaignPageKind.landing,
+          region: null
+        }}
       >
         <CampaignSectionBand block={section} align={align}>
           <p data-testid="Body">The body</p>
@@ -83,18 +90,24 @@ describe('CampaignSectionBand', () => {
     const section = sectionWithExtras()
     renderBand(section)
     const band = screen.getByTestId('CampaignSectionBand-heroId')
-    const expected = bandCssVariables(resolveBand(section, campaignPublic.theme))
+    const expected = bandCssVariables(
+      resolveBand(section, campaignPublic.theme)
+    )
     for (const [name, value] of Object.entries(expected)) {
       expect(band.style.getPropertyValue(name)).toBe(value)
     }
-    expect(band.style.getPropertyValue('--campaign-band-background')).toBe('#26262E')
+    expect(band.style.getPropertyValue('--campaign-band-background')).toBe(
+      '#26262E'
+    )
   })
 
   it('orders above children by parentOrder, then the body, then below children by parentOrder', () => {
     renderBand(sectionWithExtras())
     const band = screen.getByTestId('CampaignSectionBand-heroId')
     const texts = Array.from(
-      band.querySelectorAll('[data-testid="CampaignTypography"], [data-testid="Body"], [data-testid="CampaignButton"]')
+      band.querySelectorAll(
+        '[data-testid="CampaignTypography"], [data-testid="Body"], [data-testid="CampaignButton"]'
+      )
     ).map((node) => node.textContent)
     expect(texts).toEqual([
       'Above first',
@@ -107,6 +120,8 @@ describe('CampaignSectionBand', () => {
 
   it('applies the body alignment to the band', () => {
     renderBand(sectionWithExtras(), TypographyAlign.center)
-    expect(screen.getByTestId('CampaignSectionBand-heroId')).toHaveStyle({ textAlign: 'center' })
+    expect(screen.getByTestId('CampaignSectionBand-heroId')).toHaveStyle({
+      textAlign: 'center'
+    })
   })
 })

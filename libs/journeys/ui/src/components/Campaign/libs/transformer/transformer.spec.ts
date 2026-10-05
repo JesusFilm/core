@@ -71,7 +71,10 @@ describe('transformCampaignBlocks', () => {
 
   it('leaves an owned slot empty when the owned row is missing', () => {
     const tree = transformCampaignBlocks([
-      block('hero', null, 0, { __typename: 'CampaignHeroBlock', mediaBlockId: 'missing' })
+      block('hero', null, 0, {
+        __typename: 'CampaignHeroBlock',
+        mediaBlockId: 'missing'
+      })
     ])
     expect(tree[0].media).toBeNull()
   })
