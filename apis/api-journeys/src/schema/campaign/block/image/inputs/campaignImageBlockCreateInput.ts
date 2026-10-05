@@ -5,7 +5,7 @@ export const CampaignImageBlockCreateInput = builder.inputType(
   'CampaignImageBlockCreateInput',
   {
     description:
-      'One of two roles: an Image section (`pageId`, optional `parentOrder`), or an owned image (`parentBlockId` and `slot`) that replaces the parent’s current cover or logo and gets `parentOrder: null`. Exactly one of `pageId` and `parentBlockId`.',
+      'One of two roles: an Image section (`pageId`, optional `parentOrder`), or an owned image (`parentBlockId` and `slot`) that replaces the parent’s current cover, logo or media and gets `parentOrder: null`. Exactly one of `pageId` and `parentBlockId`.',
     fields: (t) => ({
       id: t.id({ required: false }),
       campaignId: t.id({ required: true }),
@@ -27,7 +27,7 @@ export const CampaignImageBlockCreateInput = builder.inputType(
         type: CampaignImageSlot,
         required: false,
         description:
-          'Owned role only: which slot of the parent this image fills. Defaults to `cover`; `logo` needs the header as parent.'
+          'Owned role only: which slot of the parent this image fills. Defaults to `cover`; `logo` needs the header as parent, `media` a hero or Featured Media section.'
       }),
       src: t.string({
         required: false,

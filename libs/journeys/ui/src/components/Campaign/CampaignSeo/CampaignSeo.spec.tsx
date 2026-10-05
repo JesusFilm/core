@@ -8,6 +8,7 @@ import {
   campaignPublic,
   chromeBlocks,
   eurRegion,
+  heroVideoBlock,
   landingBlocks,
   regionPageBlocks
 } from '../testData'
@@ -306,6 +307,27 @@ describe('campaignSeoProps', () => {
       expect(props.openGraph?.images).toEqual([
         {
           url: 'https://images.example.org/landing-poster.jpg',
+          width: undefined,
+          height: undefined,
+          alt: 'Christmas 2026'
+        }
+      ])
+    })
+
+    it("uses a Watch hero video's banner as its poster", () => {
+      const campaign = withPages([
+        ...landingHero({ mediaBlockId: heroVideoBlock.id }),
+        heroVideoBlock
+      ])
+      const props = campaignSeoProps(
+        withLogo(campaign),
+        CampaignPageKind.landing,
+        null,
+        ROOT
+      )
+      expect(props.openGraph?.images).toEqual([
+        {
+          url: 'https://imagedelivery.net/accountHash/nativityVideoId/mobileCinematicHigh',
           width: undefined,
           height: undefined,
           alt: 'Christmas 2026'

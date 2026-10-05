@@ -11,7 +11,7 @@ import { campaignBlockRestoreUpdate } from '../campaignBlockCache'
 
 export const CAMPAIGN_BLOCK_RESTORE = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
-  mutation CampaignBlockRestore($id: ID!) {
+  mutation CampaignBlockRestore($id: ID!, $languageId: ID) {
     campaignBlockRestore(id: $id) {
       ...CampaignPublicBlockFields
     }

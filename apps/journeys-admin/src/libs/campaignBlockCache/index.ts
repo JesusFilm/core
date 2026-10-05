@@ -3,6 +3,7 @@ export {
   campaignBlockDeleteUpdate,
   campaignBlockInsertUpdate,
   campaignBlockRestoreUpdate,
+  campaignBlockSlotWrite,
   campaignBlocksAdd,
   campaignBlocksInsert,
   campaignBlocksRemove,
@@ -11,5 +12,6 @@ export {
 export type {
   CampaignBlockOrder,
   CampaignBlockRef,
-  CampaignBlockScopeRef
+  CampaignBlockScopeRef,
+  CampaignSlotColumn
 } from './campaignBlockCache'

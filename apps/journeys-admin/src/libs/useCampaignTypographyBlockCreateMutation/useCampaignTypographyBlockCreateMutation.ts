@@ -13,6 +13,7 @@ export const CAMPAIGN_TYPOGRAPHY_BLOCK_CREATE = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
   mutation CampaignTypographyBlockCreate(
     $input: CampaignTypographyBlockCreateInput!
+    $languageId: ID
   ) {
     campaignTypographyBlockCreate(input: $input) {
       ...CampaignPublicBlockFields

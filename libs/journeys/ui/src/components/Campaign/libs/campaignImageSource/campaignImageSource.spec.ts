@@ -37,6 +37,26 @@ describe('campaignImageSource', () => {
     })
   })
 
+  it('reads a Watch video banner when the video has no captured poster', () => {
+    expect(
+      campaignImageSource({
+        __typename: 'CampaignVideoBlock',
+        image: null,
+        mediaVideo: {
+          __typename: 'Video',
+          images: [
+            { mobileCinematicHigh: 'https://images.example.org/banner.jpg' }
+          ]
+        }
+      })
+    ).toEqual({
+      src: 'https://images.example.org/banner.jpg',
+      alt: null,
+      width: null,
+      height: null
+    })
+  })
+
   it('returns null for a block with no image', () => {
     expect(
       campaignImageSource({ __typename: 'CampaignImageBlock', src: ' ' })

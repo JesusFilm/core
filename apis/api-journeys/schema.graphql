@@ -542,6 +542,142 @@ input CampaignCreateInput {
 }
 
 """
+A section placing one Media Slot beside eyebrow, title, lede and bullets (one per line, split at render), the media on `mediaSide`. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.
+"""
+type CampaignFeaturedMediaBlock implements CampaignBlock & CampaignSectionBlock {
+  id: ID!
+  campaignId: ID!
+
+  """The Campaign Page this block sits on, if page-scoped."""
+  pageId: ID
+
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+  backgroundKind: CampaignBackgroundKind!
+
+  """Read only when backgroundKind is `custom`. `#RRGGBB`."""
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock; read only when backgroundKind is `image`.
+  """
+  coverBlockId: ID
+
+  """Read only when backgroundKind is `image`; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+  headingColor: String
+  textColor: String
+  buttonColor: String
+  buttonTextColor: String
+  accentColor: String
+  eyebrow: String
+  eyebrowTranslations: [TranslatedValue!]!
+  title: String
+  titleTranslations: [TranslatedValue!]!
+  lede: String
+  ledeTranslations: [TranslatedValue!]!
+
+  """One bullet per line; the viewer splits on line breaks."""
+  bullets: String
+  bulletsTranslations: [TranslatedValue!]!
+
+  """Which side the media sits on at `md` and up."""
+  mediaSide: CampaignMediaSide!
+
+  """The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot."""
+  mediaBlockId: ID
+}
+
+input CampaignFeaturedMediaBlockCreateInput {
+  id: ID
+  campaignId: ID!
+
+  """A page of the campaign."""
+  pageId: ID!
+
+  """
+  Position among the page’s sections; appended when omitted or past the end.
+  """
+  parentOrder: Int
+
+  """At most 80 characters."""
+  eyebrow: String
+
+  """At most 150 characters."""
+  title: String
+
+  """At most 500 characters."""
+  lede: String
+
+  """One bullet per line; at most 1000 characters."""
+  bullets: String
+
+  """Defaults to `right`."""
+  mediaSide: CampaignMediaSide
+}
+
+input CampaignFeaturedMediaBlockUpdateInput {
+  """At most 80 characters."""
+  eyebrow: String
+
+  """At most 150 characters."""
+  title: String
+
+  """At most 500 characters."""
+  lede: String
+
+  """One bullet per line; at most 1000 characters."""
+  bullets: String
+  mediaSide: CampaignMediaSide
+
+  """
+  The owned CampaignVideoBlock or CampaignImageBlock to show in the Media Slot (one this section owns, even if an earlier swap soft-deleted it), or null to empty the slot. The block the slot held is soft-deleted; the new one is restored. Fill the slot with `campaignVideoBlockCreate` or `campaignImageBlockCreate` (`slot: media`); this field swaps between blocks the section already owns, which is how undo works.
+  """
+  mediaBlockId: ID
+
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+
+  """Overlay strength over an image background; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+
+  """`#RRGGBB` or null to inherit."""
+  headingColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  textColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonTextColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  accentColor: String
+}
+
+"""
 Campaign Chrome: the one footer every page shares. pageId and regionId are both null. Typography children are the footer lines, button children the footer links. Never deletable, movable or duplicable.
 """
 type CampaignFooterBlock implements CampaignBlock & CampaignSectionBlock {
@@ -789,6 +925,11 @@ input CampaignHeroBlockUpdateInput {
   align: TypographyAlign
 
   """
+  The owned CampaignVideoBlock or CampaignImageBlock to show in the Media Slot (one this section owns, even if an earlier swap soft-deleted it), or null to empty the slot. The block the slot held is soft-deleted; the new one is restored. Fill the slot with `campaignVideoBlockCreate` or `campaignImageBlockCreate` (`slot: media`); this field swaps between blocks the section already owns, which is how undo works.
+  """
+  mediaBlockId: ID
+
+  """
   The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
   """
   backgroundKind: CampaignBackgroundKind
@@ -877,7 +1018,7 @@ type CampaignImageBlock implements CampaignBlock & CampaignSectionBlock {
 }
 
 """
-One of two roles: an Image section (`pageId`, optional `parentOrder`), or an owned image (`parentBlockId` and `slot`) that replaces the parent’s current cover or logo and gets `parentOrder: null`. Exactly one of `pageId` and `parentBlockId`.
+One of two roles: an Image section (`pageId`, optional `parentOrder`), or an owned image (`parentBlockId` and `slot`) that replaces the parent’s current cover, logo or media and gets `parentOrder: null`. Exactly one of `pageId` and `parentBlockId`.
 """
 input CampaignImageBlockCreateInput {
   id: ID
@@ -895,7 +1036,7 @@ input CampaignImageBlockCreateInput {
   parentBlockId: ID
 
   """
-  Owned role only: which slot of the parent this image fills. Defaults to `cover`; `logo` needs the header as parent.
+  Owned role only: which slot of the parent this image fills. Defaults to `cover`; `logo` needs the header as parent, `media` a hero or Featured Media section.
   """
   slot: CampaignImageSlot
 
@@ -952,11 +1093,12 @@ input CampaignImageBlockUpdateInput {
 }
 
 """
-Which slot of its parent an owned CampaignImageBlock fills: the Section Background `cover` of any section or chrome block, or the header `logo` (the Brand Mark). An owned image has `parentOrder: null` and replaces the slot’s previous image.
+Which slot of its parent an owned CampaignImageBlock fills: the Section Background `cover` of any section or chrome block, the header `logo` (the Brand Mark), or the `media` slot of a hero or Featured Media section. An owned image has `parentOrder: null` and replaces the slot’s previous block.
 """
 enum CampaignImageSlot {
   cover
   logo
+  media
 }
 
 """
@@ -1836,6 +1978,111 @@ input CampaignUpdateInput {
   The Palette, newest first: each entry a hex colour (stored as `#RRGGBB` uppercase), deduplicated, at most eight kept. Picker chrome, committed on picker blur and never undone.
   """
   palette: [String!]
+}
+
+"""
+The Campaign Video: a reference to a Watch Video (`internal`), a YouTube video or an uploaded Mux video, with optional title and description overrides. Owned by a hero or Featured Media section through its `mediaBlockId` (`parentOrder: null`). YouTube and Mux text, poster and duration are captured once when the video is picked; Watch text is read live through `mediaVideo` in the campaign language, the row’s overrides winning.
+"""
+type CampaignVideoBlock implements CampaignBlock {
+  id: ID!
+  campaignId: ID!
+
+  """The Campaign Page this block sits on, if page-scoped."""
+  pageId: ID
+
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+
+  """Always `internal`, `youTube` or `mux`."""
+  source: VideoBlockSource
+
+  """
+  The Watch Video id, the YouTube video id or the Mux video id, by `source`.
+  """
+  videoId: ID
+
+  """
+  For `internal`: the campaign language at link time; the language `mediaVideo` resolves in.
+  """
+  videoVariantLanguageId: ID
+
+  """
+  The author’s override (at most 200 characters), or for YouTube and Mux the title captured at pick. Null on a Watch video means the Video’s own title.
+  """
+  title: String
+  titleTranslations: [TranslatedValue!]!
+
+  """
+  The author’s override (at most 1000 characters), or for YouTube the description captured at pick. Null on a Watch video means the Video’s own text.
+  """
+  description: String
+  descriptionTranslations: [TranslatedValue!]!
+
+  """
+  The poster captured at pick for YouTube and Mux; null for a Watch video (read through `mediaVideo`).
+  """
+  image: String
+
+  """Seconds, captured at pick for YouTube and Mux."""
+  duration: Int
+
+  """
+  The federated video reference (`Video`, `YouTube` or `MuxVideo` by `source`, with `id` and `primaryLanguageId`); the gateway resolves it, api-journeys never does.
+  """
+  mediaVideo: MediaVideo
+}
+
+"""
+A Campaign Video for the Media Slot of a hero or Featured Media section (`parentBlockId`); it replaces the block the slot held and gets `parentOrder: null`. A Watch video is a pasted `url` (`source: internal`); a YouTube or Mux video is its `videoId`.
+"""
+input CampaignVideoBlockCreateInput {
+  id: ID
+  campaignId: ID!
+
+  """The hero or Featured Media section whose Media Slot this fills."""
+  parentBlockId: ID!
+
+  """`internal` (Watch), `youTube` or `mux`."""
+  source: VideoBlockSource!
+
+  """
+  The YouTube or Mux video id (zod-validated, then fetched once); for `internal`, a known Watch Video id instead of `url`.
+  """
+  videoId: ID
+
+  """
+  `internal` only: a Watch address, resolved by the server through its variant slug.
+  """
+  url: String
+
+  """
+  Title override, at most 200 characters; omitted or null shows the source title.
+  """
+  title: String
+
+  """
+  Description override, at most 1000 characters; omitted or null shows the source text.
+  """
+  description: String
+}
+
+"""
+The author’s default-language overrides. Null (or empty) falls back to the source text: read live for a Watch video, re-read from YouTube or Mux otherwise.
+"""
+input CampaignVideoBlockUpdateInput {
+  """At most 200 characters."""
+  title: String
+
+  """At most 1000 characters."""
+  description: String
 }
 
 """
@@ -3411,7 +3658,7 @@ type Mutation {
   campaignHeroBlockCreate(input: CampaignHeroBlockCreateInput!): CampaignHeroBlock!
 
   """
-  Update the hero’s default-language eyebrow, title, lede or alignment, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
+  Update the hero’s default-language eyebrow, title, lede or alignment, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -3420,6 +3667,7 @@ type Mutation {
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede`): over 80 / 150 / 500 characters.
   - BAD_USER_INPUT (field: `align`): not left, center or right.
+  - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns.
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
@@ -3612,7 +3860,7 @@ type Mutation {
   campaignRegionShareBlockUpdate(id: ID!, input: CampaignRegionShareBlockUpdateInput!): CampaignRegionShareBlock!
 
   """
-  Add an image in one of two roles. With `pageId`: an Image section, last among the page’s sections or at `parentOrder`. With `parentBlockId` and `slot`: an owned image with `parentOrder: null` that becomes the parent’s background cover (any section or chrome block) or the header logo, replacing (soft-deleting) the image that slot held. `width` and `height` are measured by the server from `src`; the editor never supplies them.
+  Add an image in one of two roles. With `pageId`: an Image section, last among the page’s sections or at `parentOrder`. With `parentBlockId` and `slot`: an owned image with `parentOrder: null` that becomes the parent’s background cover (any section or chrome block), the header logo, or the Media Slot of a hero or Featured Media section, replacing (soft-deleting) the block that slot held. `width` and `height` are measured by the server from `src`; the editor never supplies them.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -3624,6 +3872,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `pageId`): neither or both of pageId and parentBlockId given.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign.
   - BAD_USER_INPUT (field: `logoBlockId`): the logo slot on a block that is not the header.
+  - BAD_USER_INPUT (field: `mediaBlockId`): the media slot on a block that is not a hero or Featured Media section.
   - BAD_USER_INPUT (field: `src`): not an https imagedelivery.net address, or the image could not be read.
   - BAD_USER_INPUT (field: `alt`): over 500 characters.
   """
@@ -3645,6 +3894,68 @@ type Mutation {
   - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock of this campaign.
   """
   campaignImageBlockUpdate(id: ID!, input: CampaignImageBlockUpdateInput!): CampaignImageBlock!
+
+  """
+  Fill the Media Slot of a hero or Featured Media section with a Campaign Video, replacing (soft-deleting) the block the slot held. YouTube and Mux ids are validated by the VideoBlock zod schemas and their title, description, poster and duration fetched once; a Watch `url` is stripped of its `.html` parts to a variant slug and resolved through the gateway, and only its ids are stored (the variant language is the campaign language). Title and description overrides win over the source text.
+  
+  Auth: campaign Update — any member or manager of the campaign's team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve; a YouTube or Mux id unknown to its service.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `parentBlockId`): not a live section of this campaign.
+  - BAD_USER_INPUT (field: `mediaBlockId`): the section has no Media Slot (only hero and Featured Media do).
+  - BAD_USER_INPUT (field: `source`): not internal, youTube or mux.
+  - BAD_USER_INPUT (field: `videoId`): not a valid YouTube or Mux id.
+  - BAD_USER_INPUT (field: `url`): "That link isn't a Watch video", or a url on a YouTube or Mux video.
+  - BAD_USER_INPUT (field: `title` / `description`): over 200 / 1000 characters.
+  """
+  campaignVideoBlockCreate(input: CampaignVideoBlockCreateInput!): CampaignVideoBlock!
+
+  """
+  Set or clear a Campaign Video's default-language title and description overrides. Only the given fields change; translations are untouched. Null (or empty) falls back to the source text: a Watch video's is read live, so the column is cleared; a YouTube or Mux video's is fetched again and stored.
+  
+  Auth: campaign Update — any member or manager of the campaign's team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignVideoBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `title` / `description`): over 200 / 1000 characters.
+  """
+  campaignVideoBlockUpdate(id: ID!, input: CampaignVideoBlockUpdateInput!): CampaignVideoBlock!
+
+  """
+  Add a Featured Media section to a page, last among its sections or at `parentOrder` with the later sections renumbered. It starts with an empty Media Slot; text is empty when omitted and the media sits on the right unless `mediaSide` says otherwise.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `bullets`): over 80 / 150 / 500 / 1000 characters.
+  - BAD_USER_INPUT (field: `mediaSide`): not left or right.
+  """
+  campaignFeaturedMediaBlockCreate(input: CampaignFeaturedMediaBlockCreateInput!): CampaignFeaturedMediaBlock!
+
+  """
+  Update a Featured Media section’s default-language eyebrow, title, lede or bullets, its media side, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignFeaturedMediaBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `bullets`): over 80 / 150 / 500 / 1000 characters.
+  - BAD_USER_INPUT (field: `mediaSide`): not left or right.
+  - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock of this campaign.
+  """
+  campaignFeaturedMediaBlockUpdate(id: ID!, input: CampaignFeaturedMediaBlockUpdateInput!): CampaignFeaturedMediaBlock!
 
   """
   Update the header’s Section Background, colour overrides or logo. Only the given fields change.

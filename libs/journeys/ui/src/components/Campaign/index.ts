@@ -4,6 +4,10 @@ export {
 } from './campaignPublicFields'
 export { CampaignAnalytics } from './CampaignAnalytics'
 export { CampaignButton, resolveCampaignAction } from './CampaignButton'
+export {
+  CampaignFeaturedMedia,
+  featuredMediaBullets
+} from './CampaignFeaturedMedia'
 export { CampaignFooter } from './CampaignFooter'
 export {
   CampaignHeader,
@@ -11,8 +15,13 @@ export {
   languageAutonym
 } from './CampaignHeader'
 export { CampaignHero } from './CampaignHero'
-export { CampaignImage } from './CampaignImage'
+export { CampaignImage, CampaignPicture } from './CampaignImage'
 export { CampaignJourneyList } from './CampaignJourneyList'
+export {
+  CampaignMediaSlot,
+  CampaignMediaSplit,
+  hasCampaignMedia
+} from './CampaignMediaSlot'
 export {
   CampaignPage,
   campaignChromeTrees,
@@ -44,6 +53,7 @@ export {
   campaignSocialImage
 } from './CampaignSeo'
 export { CampaignTypography } from './CampaignTypography'
+export { CampaignVideo } from './CampaignVideo'
 export { CampaignVideoCarousel } from './CampaignVideoCarousel'
 export {
   campaignFontsHref,
@@ -62,6 +72,7 @@ export {
   resolveBand
 } from './libs/resolveBand'
 export { transformCampaignBlocks } from './libs/transformer'
+export { watchUrl } from './libs/watchUrl'
 export { hasText, isCampaignSection } from './types'
 export type {
   CampaignBlock,

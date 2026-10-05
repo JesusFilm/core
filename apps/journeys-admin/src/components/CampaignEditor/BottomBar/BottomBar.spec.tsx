@@ -253,6 +253,19 @@ describe('BottomBar', () => {
     expect(screen.getByRole('button', { name: 'Add' })).toBeEnabled()
   })
 
+  it('opens the media editor in a drawer from a hero’s Edit', async () => {
+    renderBar({ selectedBlockId: 'heroId' })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
+
+    expect(
+      await screen.findByTestId('CampaignMediaSectionEdit')
+    ).toHaveAttribute('data-block-id', 'heroId')
+    expect(
+      screen.getByRole('textbox', { name: 'Watch or YouTube link' })
+    ).toBeInTheDocument()
+  })
+
   it('disables Move down for the last section on the page', () => {
     renderBar({ selectedBlockId: 'landingAnalyticsId' })
 
@@ -375,7 +388,8 @@ describe('BottomBar', () => {
         'Video carousel',
         'Journey list',
         'Analytics',
-        'Image'
+        'Image',
+        'Featured media'
       ])
     )
 
@@ -386,7 +400,7 @@ describe('BottomBar', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('appends a section to the Region Page from the campaign row, offering all eight types', async () => {
+  it('appends a section to the Region Page from the campaign row, offering all nine types', async () => {
     renderBar({ pageKind: CampaignPageKind.regionTemplate })
 
     fireEvent.click(screen.getByRole('button', { name: 'Add section' }))
@@ -398,7 +412,8 @@ describe('BottomBar', () => {
       'Analytics',
       'Region header',
       'Region share',
-      'Image'
+      'Image',
+      'Featured media'
     ])
 
     fireEvent.click(screen.getByRole('menuitem', { name: 'Region share' }))

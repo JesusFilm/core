@@ -99,11 +99,12 @@ export enum CampaignChildPlacement {
 }
 
 /**
- * Which slot of its parent an owned CampaignImageBlock fills: the Section Background `cover` of any section or chrome block, or the header `logo` (the Brand Mark). An owned image has `parentOrder: null` and replaces the slot’s previous image.
+ * Which slot of its parent an owned CampaignImageBlock fills: the Section Background `cover` of any section or chrome block, the header `logo` (the Brand Mark), or the `media` slot of a hero or Featured Media section. An owned image has `parentOrder: null` and replaces the slot’s previous block.
  */
 export enum CampaignImageSlot {
   cover = "cover",
   logo = "logo",
+  media = "media",
 }
 
 /**
@@ -112,6 +113,14 @@ export enum CampaignImageSlot {
 export enum CampaignJourneyListDisplay {
   grid = "grid",
   list = "list",
+}
+
+/**
+ * Which side of a Featured Media section the Media Slot renders on.
+ */
+export enum CampaignMediaSide {
+  left = "left",
+  right = "right",
 }
 
 /**
@@ -490,6 +499,17 @@ export enum VideoBlockSource {
   youTube = "youTube",
 }
 
+export enum VideoLabel {
+  behindTheScenes = "behindTheScenes",
+  collection = "collection",
+  episode = "episode",
+  featureFilm = "featureFilm",
+  segment = "segment",
+  series = "series",
+  shortFilm = "shortFilm",
+  trailer = "trailer",
+}
+
 export enum VisitorStatus {
   checkMarkSymbol = "checkMarkSymbol",
   partyPopper = "partyPopper",
@@ -625,6 +645,36 @@ export interface CampaignCreateInput {
   defaultLanguageId: string;
 }
 
+export interface CampaignFeaturedMediaBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentOrder?: number | null;
+  eyebrow?: string | null;
+  title?: string | null;
+  lede?: string | null;
+  bullets?: string | null;
+  mediaSide?: CampaignMediaSide | null;
+}
+
+export interface CampaignFeaturedMediaBlockUpdateInput {
+  eyebrow?: string | null;
+  title?: string | null;
+  lede?: string | null;
+  bullets?: string | null;
+  mediaSide?: CampaignMediaSide | null;
+  mediaBlockId?: string | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
+}
+
 /**
  * The footer’s Section Background and colour overrides: the shared section fields and nothing else.
  */
@@ -672,6 +722,7 @@ export interface CampaignHeroBlockUpdateInput {
   title?: string | null;
   lede?: string | null;
   align?: TypographyAlign | null;
+  mediaBlockId?: string | null;
   backgroundKind?: CampaignBackgroundKind | null;
   backgroundColor?: string | null;
   coverBlockId?: string | null;
@@ -684,7 +735,7 @@ export interface CampaignHeroBlockUpdateInput {
 }
 
 /**
- * One of two roles: an Image section (`pageId`, optional `parentOrder`), or an owned image (`parentBlockId` and `slot`) that replaces the parent’s current cover or logo and gets `parentOrder: null`. Exactly one of `pageId` and `parentBlockId`.
+ * One of two roles: an Image section (`pageId`, optional `parentOrder`), or an owned image (`parentBlockId` and `slot`) that replaces the parent’s current cover, logo or media and gets `parentOrder: null`. Exactly one of `pageId` and `parentBlockId`.
  */
 export interface CampaignImageBlockCreateInput {
   id?: string | null;
@@ -831,6 +882,20 @@ export interface CampaignUpdateInput {
   title?: string | null;
   slug?: string | null;
   palette?: string[] | null;
+}
+
+/**
+ * A Campaign Video for the Media Slot of a hero or Featured Media section (`parentBlockId`); it replaces the block the slot held and gets `parentOrder: null`. A Watch video is a pasted `url` (`source: internal`); a YouTube or Mux video is its `videoId`.
+ */
+export interface CampaignVideoBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  parentBlockId: string;
+  source: VideoBlockSource;
+  videoId?: string | null;
+  url?: string | null;
+  title?: string | null;
+  description?: string | null;
 }
 
 export interface CampaignVideoCarouselBlockCreateInput {
