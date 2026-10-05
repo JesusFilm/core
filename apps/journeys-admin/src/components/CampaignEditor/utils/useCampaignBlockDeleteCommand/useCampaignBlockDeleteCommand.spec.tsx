@@ -1,4 +1,6 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+
+import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
 
 import { CAMPAIGN_BLOCK_DELETE } from '../../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_BLOCK_RESTORE } from '../../../../libs/useCampaignBlockRestoreMutation'
@@ -118,5 +120,130 @@ describe('useCampaignBlockDeleteCommand', () => {
     )
     expect(restoreMock.result).not.toHaveBeenCalled()
     await waitFor(() => expect(restoreMock.result).toHaveBeenCalled())
+  })
+
+  describe('sections', () => {
+    const hero = campaign.blocks.find((block) => block.id === 'heroId')!
+    const landingSections = [
+      'heroId',
+      'landingSwitcherId',
+      'carouselId',
+      'landingJourneyListId',
+      'landingAnalyticsId'
+    ]
+
+    const sectionDeleteMock = {
+      delay: 200,
+      request: { query: CAMPAIGN_BLOCK_DELETE, variables: { id: 'heroId' } },
+      result: vi.fn(() => ({
+        data: {
+          campaignBlockDelete: landingSections.slice(1).map((id, parentOrder) => ({
+            __typename: campaign.blocks.find((block) => block.id === id)!
+              .__typename,
+            id,
+            parentOrder
+          }))
+        }
+      }))
+    }
+
+    const sectionRestoreMock = {
+      delay: 200,
+      request: { query: CAMPAIGN_BLOCK_RESTORE, variables: { id: 'heroId' } },
+      result: vi.fn(() => ({
+        data: {
+          campaignBlockRestore: [
+            ...landingSections.map((id) =>
+              campaign.blocks.find((block) => block.id === id)
+            ),
+            campaign.blocks.find((block) => block.id === 'heroButtonId')
+          ]
+        }
+      }))
+    }
+
+    function renderSectionEditor(
+      selectedBlockId = 'heroId',
+      pageKind = CampaignPageKind.landing
+    ): ReturnType<typeof render> {
+      return render(
+        <QueriedEditor
+          initialState={{ selectedBlockId, pageKind }}
+          mocks={[sectionDeleteMock, sectionRestoreMock]}
+        >
+          <CommandUndoItem variant="button" />
+          <SelectionProbe />
+          <BlocksProbe />
+          <BottomBar onSettingsClick={vi.fn()} />
+        </QueriedEditor>
+      )
+    }
+
+    it('asks for confirmation, deletes on confirm, renumbers the page at once and selects the campaign row', async () => {
+      renderSectionEditor()
+      expect(await screen.findByTestId('Block-heroId')).toBeInTheDocument()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+
+      const dialog = screen.getByTestId('CampaignSectionDeleteDialog')
+      expect(dialog).toHaveTextContent('You can undo this afterwards.')
+      expect(dialog).not.toHaveTextContent('from every region page')
+      expect(screen.getByTestId('Block-heroId')).toBeInTheDocument()
+
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Delete' }))
+
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('campaign')
+      await waitFor(() =>
+        expect(screen.queryByTestId('Block-heroId')).not.toBeInTheDocument()
+      )
+      expect(screen.getByTestId('Block-landingSwitcherId')).toHaveTextContent(
+        'CampaignRegionSwitcherBlock||0|'
+      )
+      expect(sectionDeleteMock.result).not.toHaveBeenCalled()
+      await waitFor(() => expect(sectionDeleteMock.result).toHaveBeenCalled())
+    })
+
+    it('carries the "from every region page" warning on the Region Page', async () => {
+      renderSectionEditor('regionHeaderId', CampaignPageKind.regionTemplate)
+      expect(await screen.findByTestId('Block-regionHeaderId')).toBeInTheDocument()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+
+      const dialog = screen.getByTestId('CampaignSectionDeleteDialog')
+      expect(dialog).toHaveTextContent(
+        'This removes the section from every region page.'
+      )
+      expect(dialog).toHaveTextContent('You can undo this afterwards.')
+    })
+
+    it('restores the section with its children in place on undo', async () => {
+      renderSectionEditor()
+      expect(await screen.findByTestId('Block-heroId')).toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+      fireEvent.click(
+        within(screen.getByTestId('CampaignSectionDeleteDialog')).getByRole(
+          'button',
+          { name: 'Delete' }
+        )
+      )
+      await waitFor(() => expect(sectionDeleteMock.result).toHaveBeenCalled())
+
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
+      await waitFor(() =>
+        expect(screen.getByTestId('Block-heroId')).toHaveTextContent(
+          `CampaignHeroBlock||0||||${String(hero.__typename === 'CampaignHeroBlock' ? hero.align : '')}|`
+        )
+      )
+      expect(screen.getByTestId('Block-landingSwitcherId')).toHaveTextContent(
+        'CampaignRegionSwitcherBlock||1|'
+      )
+      expect(screen.getByTestId('Block-heroButtonId')).toHaveTextContent(
+        'CampaignButtonBlock|heroId|0|'
+      )
+      expect(sectionRestoreMock.result).not.toHaveBeenCalled()
+      await waitFor(() => expect(sectionRestoreMock.result).toHaveBeenCalled())
+    })
   })
 })

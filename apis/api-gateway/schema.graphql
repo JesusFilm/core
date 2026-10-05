@@ -315,6 +315,19 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignButtonBlockUpdate(id: ID!, input: CampaignButtonBlockUpdateInput!) : CampaignButtonBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
+  Add a hero section to a page, last among its sections or at `parentOrder` with the later sections renumbered. Text is empty when omitted.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `align`): the value fails its rule.
+  """
+  campaignHeroBlockCreate(input: CampaignHeroBlockCreateInput!) : CampaignHeroBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
   Update the hero’s default-language eyebrow, title, lede or alignment. Only the given fields change; empty text is allowed and not rendered.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
@@ -326,6 +339,19 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `align`): not left, center or right.
   """
   campaignHeroBlockUpdate(id: ID!, input: CampaignHeroBlockUpdateInput!) : CampaignHeroBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Add a region switcher section to a page, last among its sections or at `parentOrder` with the later sections renumbered. It reads the campaign’s listed regions; nothing is stored but the title and variant.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `title` / `variant`): the value fails its rule.
+  """
+  campaignRegionSwitcherBlockCreate(input: CampaignRegionSwitcherBlockCreateInput!) : CampaignRegionSwitcherBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Update the region switcher’s default-language title or its variant (cards, list, pills). Only the given fields change.
   
@@ -339,6 +365,19 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignRegionSwitcherBlockUpdate(id: ID!, input: CampaignRegionSwitcherBlockUpdateInput!) : CampaignRegionSwitcherBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
+  Add a video carousel section to a page, last among its sections or at `parentOrder` with the later sections renumbered. It starts with no video and no items.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
+  """
+  campaignVideoCarouselBlockCreate(input: CampaignVideoCarouselBlockCreateInput!) : CampaignVideoCarouselBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
   Update the video carousel’s default-language eyebrow or title. Only the given fields change; the Watch expansion and items are set by the media ticket’s mutations.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
@@ -349,6 +388,19 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
   """
   campaignVideoCarouselBlockUpdate(id: ID!, input: CampaignVideoCarouselBlockUpdateInput!) : CampaignVideoCarouselBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Add a journey list section to a page, last among its sections or at `parentOrder` with the later sections renumbered. It starts with no items.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `display`): the value fails its rule.
+  """
+  campaignJourneyListBlockCreate(input: CampaignJourneyListBlockCreateInput!) : CampaignJourneyListBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Update the journey list’s default-language eyebrow, title or lede, or its display (grid, list). Only the given fields change.
   
@@ -362,6 +414,19 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignJourneyListBlockUpdate(id: ID!, input: CampaignJourneyListBlockUpdateInput!) : CampaignJourneyListBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
+  Add an analytics section to a page, last among its sections or at `parentOrder` with the later sections renumbered. Its scope follows the page it sits on.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
+  """
+  campaignAnalyticsBlockCreate(input: CampaignAnalyticsBlockCreateInput!) : CampaignAnalyticsBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
   Update the analytics section’s default-language eyebrow or title, or whether the world map shows. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
@@ -372,6 +437,20 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
   """
   campaignAnalyticsBlockUpdate(id: ID!, input: CampaignAnalyticsBlockUpdateInput!) : CampaignAnalyticsBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Add a region header section to the Region Page, last among its sections or at `parentOrder` with the later sections renumbered. It renders the region being viewed, so the landing page refuses it.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `pageId`): the landing page.
+  - BAD_USER_INPUT (field: `intro`): over 500 characters.
+  """
+  campaignRegionHeaderBlockCreate(input: CampaignRegionHeaderBlockCreateInput!) : CampaignRegionHeaderBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Update the region header’s default-language intro.
   
@@ -384,6 +463,20 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignRegionHeaderBlockUpdate(id: ID!, input: CampaignRegionHeaderBlockUpdateInput!) : CampaignRegionHeaderBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
+  Add a region share section to the Region Page, last among its sections or at `parentOrder` with the later sections renumbered. It reads the region’s Share Languages, so the landing page refuses it.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `pageId`): the landing page.
+  - BAD_USER_INPUT (field: `title` / `intro`): over 150 / 500 characters.
+  """
+  campaignRegionShareBlockCreate(input: CampaignRegionShareBlockCreateInput!) : CampaignRegionShareBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
   Update the region share panel’s default-language title or intro. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
@@ -395,14 +488,14 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignRegionShareBlockUpdate(id: ID!, input: CampaignRegionShareBlockUpdateInput!) : CampaignRegionShareBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Soft-delete a campaign block: stamp `deletedAt` and renumber the remaining siblings contiguously. Returns those siblings with their new `parentOrder`. The row keeps everything, so `campaignBlockRestore` is how undo of a delete works.
+  Soft-delete a campaign block: stamp `deletedAt` and renumber the remaining siblings contiguously. Returns those siblings with their new `parentOrder`. Children keep their rows and fall out of the tree with the parent, so `campaignBlockRestore` is how undo of a delete works.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
   Errors:
   - NOT_FOUND: id does not resolve to a live block.
   - FORBIDDEN: caller is not in the team.
-  - CONFLICT (field: `id`): the header or footer; chrome is never deleted.
+  - CONFLICT (field: `id`): the header, the footer, a column slot or a page; protected rows are never deleted.
   """
   campaignBlockDelete(id: ID!) : [CampaignBlock!]! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -415,6 +508,37 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   """
   campaignBlockRestore(id: ID!) : [CampaignBlock!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Move a campaign block among its siblings to `parentOrder` (a position past the end moves it last) and renumber them contiguously. An Extra may change `placement` in the same move: crossing the Section Body updates the column, moving among neighbours is an order update only. Returns the renumbered siblings.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live block.
+  - FORBIDDEN: caller is not in the team.
+  - CONFLICT (field: `id`): the header, the footer, a column slot, a page, or an owned block with no order.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `placement`): not above or below, or given for a block that is not a section child.
+  """
+  campaignBlockOrderUpdate(
+    id: ID!
+    parentOrder: Int!
+    """
+    For an Extra moving across the Section Body; omitted keeps its side.
+    """
+    placement: CampaignChildPlacement
+  ): [CampaignBlock!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Deep-copy a campaign block with its children, owned blocks and actions under new ids (`idMap` fixes any of them; the rest are fresh), remapping slot columns and action targets that point inside the copy, and insert the copy directly after the original. Returns the renumbered siblings with the copy among them, followed by the copied descendants.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live block.
+  - FORBIDDEN: caller is not in the team.
+  - CONFLICT (field: `id`): the header, the footer, a column slot, a page, or an owned block.
+  """
+  campaignBlockDuplicate(id: ID!, idMap: [CampaignBlockDuplicateIdMapInput!]) : [CampaignBlock!]! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Create a draft Campaign born complete (the Campaign Seed): the generated slug, one Campaign Language, the Light Campaign Theme and a Palette drawn from it, both Campaign Pages, the Campaign Chrome, the seventeen Campaign Strings and the starter sections, all in one transaction. No regions, media or journeys. Returns the full campaign so the editor opens it with no second fetch.
   
@@ -5364,6 +5488,31 @@ input ButtonClickEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   actionValue: String
 }
 
+input CampaignAnalyticsBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  campaignId: ID!
+  """
+  A page of the campaign.
+  """
+  pageId: ID!
+  """
+  Position among the page’s sections; appended when omitted or past the end.
+  """
+  parentOrder: Int
+  """
+  At most 80 characters.
+  """
+  eyebrow: String
+  """
+  At most 150 characters.
+  """
+  title: String
+  """
+  Defaults to false.
+  """
+  showMap: Boolean
+}
+
 input CampaignAnalyticsBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   At most 80 characters.
@@ -5374,6 +5523,14 @@ input CampaignAnalyticsBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN) 
   """
   title: String
   showMap: Boolean
+}
+
+"""
+A client-chosen id for one block of the copy, so the editor can show the duplicate before the response arrives.
+"""
+input CampaignBlockDuplicateIdMapInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  oldId: ID!
+  newId: ID!
 }
 
 input CampaignButtonBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5444,6 +5601,32 @@ input CampaignCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   defaultLanguageId: ID!
 }
 
+input CampaignHeroBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  campaignId: ID!
+  """
+  A page of the campaign.
+  """
+  pageId: ID!
+  """
+  Position among the page’s sections; appended when omitted or past the end.
+  """
+  parentOrder: Int
+  """
+  At most 80 characters.
+  """
+  eyebrow: String
+  """
+  At most 150 characters.
+  """
+  title: String
+  """
+  At most 500 characters.
+  """
+  lede: String
+  align: TypographyAlign
+}
+
 input CampaignHeroBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   At most 80 characters.
@@ -5458,6 +5641,35 @@ input CampaignHeroBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   lede: String
   align: TypographyAlign
+}
+
+input CampaignJourneyListBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  campaignId: ID!
+  """
+  A page of the campaign.
+  """
+  pageId: ID!
+  """
+  Position among the page’s sections; appended when omitted or past the end.
+  """
+  parentOrder: Int
+  """
+  At most 80 characters.
+  """
+  eyebrow: String
+  """
+  At most 150 characters.
+  """
+  title: String
+  """
+  At most 500 characters.
+  """
+  lede: String
+  """
+  Defaults to grid.
+  """
+  display: CampaignJourneyListDisplay
 }
 
 input CampaignJourneyListBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5476,7 +5688,45 @@ input CampaignJourneyListBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN
   display: CampaignJourneyListDisplay
 }
 
+input CampaignRegionHeaderBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  campaignId: ID!
+  """
+  The Region Page; refused on the landing page.
+  """
+  pageId: ID!
+  """
+  Position among the page’s sections; appended when omitted or past the end.
+  """
+  parentOrder: Int
+  """
+  At most 500 characters.
+  """
+  intro: String
+}
+
 input CampaignRegionHeaderBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  At most 500 characters.
+  """
+  intro: String
+}
+
+input CampaignRegionShareBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  campaignId: ID!
+  """
+  The Region Page; refused on the landing page.
+  """
+  pageId: ID!
+  """
+  Position among the page’s sections; appended when omitted or past the end.
+  """
+  parentOrder: Int
+  """
+  At most 150 characters.
+  """
+  title: String
   """
   At most 500 characters.
   """
@@ -5492,6 +5742,27 @@ input CampaignRegionShareBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN
   At most 500 characters.
   """
   intro: String
+}
+
+input CampaignRegionSwitcherBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  campaignId: ID!
+  """
+  A page of the campaign.
+  """
+  pageId: ID!
+  """
+  Position among the page’s sections; appended when omitted or past the end.
+  """
+  parentOrder: Int
+  """
+  At most 150 characters.
+  """
+  title: String
+  """
+  Defaults to cards.
+  """
+  variant: CampaignSwitcherVariant
 }
 
 input CampaignRegionSwitcherBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5554,6 +5825,27 @@ input CampaignUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   Author-edited Campaign Address slug: lowercase letters, digits and single hyphens, at most 200 characters, not a reserved word, globally unique.
   """
   slug: String
+}
+
+input CampaignVideoCarouselBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  campaignId: ID!
+  """
+  A page of the campaign.
+  """
+  pageId: ID!
+  """
+  Position among the page’s sections; appended when omitted or past the end.
+  """
+  parentOrder: Int
+  """
+  At most 80 characters.
+  """
+  eyebrow: String
+  """
+  At most 150 characters.
+  """
+  title: String
 }
 
 input CampaignVideoCarouselBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {

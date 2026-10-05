@@ -4,10 +4,12 @@ import { ReactElement } from 'react'
 import { CAMPAIGN_BLOCK_DELETE } from '../../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_BLOCK_RESTORE } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { CAMPAIGN_BUTTON_BLOCK_CREATE } from '../../../../libs/useCampaignButtonBlockCreateMutation'
+import { CAMPAIGN_ANALYTICS_BLOCK_CREATE } from '../../../../libs/useCampaignSectionCreateMutation'
 import { CAMPAIGN_TYPOGRAPHY_BLOCK_CREATE } from '../../../../libs/useCampaignTypographyBlockCreateMutation'
 import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { BottomBar } from '../../BottomBar'
+import { campaign } from '../../data'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { Canvas } from '../../Canvas'
 import {
@@ -191,5 +193,116 @@ describe('useCampaignBlockCreateCommand', () => {
     )
     expect(restoreTextMock.result).not.toHaveBeenCalled()
     await waitFor(() => expect(restoreTextMock.result).toHaveBeenCalled())
+  })
+
+  describe('sections', () => {
+    const newAnalytics = {
+      __typename: 'CampaignAnalyticsBlock',
+      id: 'newId',
+      campaignId: 'campaignId',
+      pageId: 'landingPageId',
+      regionId: null,
+      parentBlockId: null,
+      parentOrder: 1,
+      backgroundKind: 'none',
+      backgroundColor: null,
+      coverBlockId: null,
+      backgroundOverlay: null,
+      headingColor: null,
+      textColor: null,
+      buttonColor: null,
+      buttonTextColor: null,
+      accentColor: null,
+      eyebrow: null,
+      title: null,
+      showMap: false
+    }
+
+    const sectionCreateMock = {
+      request: {
+        query: CAMPAIGN_ANALYTICS_BLOCK_CREATE,
+        variables: {
+          input: {
+            id: 'newId',
+            campaignId: 'campaignId',
+            pageId: 'landingPageId',
+            parentOrder: 1
+          }
+        }
+      },
+      result: vi.fn(() => ({
+        data: { campaignAnalyticsBlockCreate: newAnalytics }
+      }))
+    }
+
+    const sectionDeleteMock = {
+      delay: 200,
+      request: { query: CAMPAIGN_BLOCK_DELETE, variables: { id: 'newId' } },
+      result: vi.fn(() => ({
+        data: {
+          campaignBlockDelete: [
+            'heroId',
+            'landingSwitcherId',
+            'carouselId',
+            'landingJourneyListId',
+            'landingAnalyticsId'
+          ].map((id, parentOrder) => ({
+            __typename: campaign.blocks.find((block) => block.id === id)!
+              .__typename,
+            id,
+            parentOrder
+          }))
+        }
+      }))
+    }
+
+    function renderSectionEditor(): ReturnType<typeof render> {
+      return render(
+        <QueriedEditor
+          initialState={{ selectedBlockId: 'heroId' }}
+          mocks={[sectionCreateMock, sectionDeleteMock]}
+        >
+          <CommandUndoItem variant="button" />
+          <SelectionProbe />
+          <BlocksProbe />
+          <BottomBar onSettingsClick={vi.fn()} />
+        </QueriedEditor>
+      )
+    }
+
+    it('adds a section below the selected one as a page-level sibling, shifting the later sections, and undo deletes it', async () => {
+      renderSectionEditor()
+      expect(await screen.findByTestId('Block-heroId')).toBeInTheDocument()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+      fireEvent.click(screen.getByRole('menuitem', { name: 'Section below' }))
+      fireEvent.click(screen.getByRole('menuitem', { name: 'Analytics' }))
+
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('newId')
+      await waitFor(() =>
+        expect(screen.getByTestId('Block-newId')).toHaveTextContent(
+          'CampaignAnalyticsBlock||1|||||'
+        )
+      )
+      expect(screen.getByTestId('Block-landingSwitcherId')).toHaveTextContent(
+        'CampaignRegionSwitcherBlock||2|'
+      )
+      expect(screen.getByTestId('Block-heroId')).toHaveTextContent(
+        'CampaignHeroBlock||0|'
+      )
+      await waitFor(() => expect(sectionCreateMock.result).toHaveBeenCalled())
+
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
+      await waitFor(() =>
+        expect(screen.queryByTestId('Block-newId')).not.toBeInTheDocument()
+      )
+      expect(screen.getByTestId('Block-landingSwitcherId')).toHaveTextContent(
+        'CampaignRegionSwitcherBlock||1|'
+      )
+      expect(sectionDeleteMock.result).not.toHaveBeenCalled()
+      await waitFor(() => expect(sectionDeleteMock.result).toHaveBeenCalled())
+    })
   })
 })
